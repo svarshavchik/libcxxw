@@ -8,6 +8,7 @@
 #include "peepholed_listcontainerfwd.H"
 #include "peephole/peepholed_elementfwd.H"
 #include "listlayoutmanager/listcontainerobj.H"
+#include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "peephole/peepholedobj.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/layoutmanagerobj.H"
@@ -28,15 +29,13 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj
 	typedef peepholed_elementObj<listcontainerObj> superclass_t;
  public:
 
-	class implObj;
-
 	//! The implementation object.
-	const ref<implObj> impl;
+	const ref< listcontainer_pseudo_implObj> impl;
 
 	//! Constructor
-	peepholed_listcontainerObj(const ref<implObj> &impl,
+	peepholed_listcontainerObj(const ref<listcontainer_pseudo_implObj>
+				   &impl,
 				   const focusable_impl &focusable_impl,
-				   const container_impl &container_impl,
 				   const layout_impl &list_impl);
 
 	//! Destructor

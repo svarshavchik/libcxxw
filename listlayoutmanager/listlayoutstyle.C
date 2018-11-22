@@ -13,8 +13,8 @@
 #include "listlayoutmanager/list_cellseparator.H"
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
+#include "listlayoutmanager/listcontainer_dim_element.H"
 #include "listlayoutmanager/list_cell.H"
-#include "peepholed_listcontainer_impl_element.H"
 #include "peephole/peephole_impl.H"
 #include "popup/popup.H"
 #include "popup/popup_attachedto_handler.H"
@@ -48,8 +48,7 @@ listlayoutstyle_impl
 	// A container that uses the listlayoutmanager.
 
 	auto internal_listcontainer_impl=
-		ref<peepholed_listcontainer_impl_elementObj
-		    <listcontainer_pseudo_implObj>>
+		ref<listcontainer_dim_elementObj<listcontainer_pseudo_implObj>>
 		::create(style, peephole_parent);
 
 	// The single element in the container, used to draw the list, and
@@ -72,7 +71,6 @@ listlayoutstyle_impl
 	auto container=peepholed_listcontainer::create
 		(internal_listcontainer_impl,
 		 t_impl,
-		 internal_listcontainer_impl,
 		 internal_listlayoutmanager_impl);
 
 	t->show();

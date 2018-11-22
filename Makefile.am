@@ -611,10 +611,6 @@ libcxxw_la_SOURCES=\
 	peepholed_listcontainer.H		    \
 	peepholed_listcontainerfwd.H		    \
 	peepholed_listcontainerobj.H		    \
-	peepholed_listcontainer_impl.C		    \
-	peepholed_listcontainer_impl.H		    \
-	peepholed_listcontainer_impl_element.H	    \
-	peepholed_listcontainer_impl_elementfwd.H   \
 	peepholed_toplevel_main_window.C	    \
 	peepholed_toplevel_main_window.H	    \
 	peepholed_toplevel_main_windowobj.H	    \
