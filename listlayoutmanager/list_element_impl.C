@@ -670,7 +670,7 @@ void list_elementObj::implObj
 
 	// If the current element is in the selected range, unselect it.
 
-	if (current_element(lock) && current_element(lock).value() <= row &&
+	if (current_element(lock) && current_element(lock).value() >= row &&
 	    current_element(lock).value() < row+count)
 	{
 		is_key_or_button_down=false;
@@ -678,7 +678,7 @@ void list_elementObj::implObj
 	}
 
 	if (current_keyed_element(lock) &&
-	    current_keyed_element(lock).value() <= row &&
+	    current_keyed_element(lock).value() >= row &&
 	    current_keyed_element(lock).value() < row+count)
 		current_keyed_element(lock)={};
 
