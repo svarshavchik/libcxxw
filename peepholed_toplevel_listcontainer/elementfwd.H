@@ -95,6 +95,8 @@ public:
 	dim_t horizontal_increment(ONLY IN_THREAD) const override;
 
 	dim_t vertical_increment(ONLY IN_THREAD) const override;
+
+	size_t peepholed_rows(ONLY IN_THREAD) const override;
 };
 
 LIBCXXW_NAMESPACE_END

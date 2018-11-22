@@ -35,6 +35,12 @@ class LIBCXX_HIDDEN peepholedObj : virtual public obj {
 
 	//! Return the preferred vertical increment
 	virtual dim_t vertical_increment(ONLY IN_THREAD) const=0;
+
+	//! Number of logical rows in the peepholed object.
+
+	//! If what's peepholed consists of some logical number of rows;
+
+	virtual size_t peepholed_rows(ONLY IN_THREAD) const=0;
 };
 
 LIBCXXW_NAMESPACE_END

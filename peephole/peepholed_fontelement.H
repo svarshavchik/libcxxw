@@ -39,6 +39,13 @@ dim_t peepholed_fontelementObj<element_impl, font_tag>
 	return font_impl->font_height(IN_THREAD);
 }
 
+template<typename element_impl, typename font_tag>
+size_t peepholed_fontelementObj<element_impl, font_tag>
+::peepholed_rows(ONLY IN_THREAD) const
+{
+	return 0;
+}
+
 LIBCXXW_NAMESPACE_END
 
 #endif

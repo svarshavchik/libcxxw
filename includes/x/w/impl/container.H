@@ -67,10 +67,11 @@ public:
 
 	typedef mpobj<layout_implptr> layoutmanager_ptr_t;
 
+private:
 	//! The link to the container's layout manager.
 
-	layoutmanager_ptr_t layoutmanager_ptr;
-
+	mutable layoutmanager_ptr_t layoutmanager_ptr;
+public:
 	//! If the layout manager has been installed, invoke it.
 
 	//! This nicely handles race conditions during destructions by
@@ -85,6 +86,23 @@ public:
 			return; // In the process of being destroyed
 
 		functor(layout_impl{p});
+	}
+
+	//! If the layout manager has been installed, invoke it.
+
+	//! This nicely handles race conditions during destructions by
+	//! doing nothing.
+
+	template<typename functor_type>
+		inline void invoke_layoutmanager(functor_type &&functor)
+		const
+	{
+		auto p=layoutmanager_ptr.get();
+
+		if (!p)
+			return; // In the process of being destroyed
+
+		functor(const_layout_impl{p});
 	}
 
 	//! Invoked from layoutmanager's public object's constructor

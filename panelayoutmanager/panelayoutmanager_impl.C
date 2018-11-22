@@ -148,6 +148,11 @@ create_pane_info_t panelayoutmanagerObj::implObj
 	return {peephole_container_impl, peephole_impl};
 }
 
+namespace {
+#if 0
+}
+#endif
+
 // Helper object for the pane element's peephole.
 
 // The peephole layout manager uses the peepholed interface to access the
@@ -187,7 +192,16 @@ class LIBCXX_HIDDEN pane_peepholed_elementObj : public peepholedObj {
 	{
 		return pane_peephole_impl->font_height(IN_THREAD);
 	}
+
+	size_t peepholed_rows(ONLY IN_THREAD) const override
+	{
+		return 0;
+	}
 };
+#if 0
+{
+#endif
+}
 
 pane_peephole_container panelayoutmanagerObj::implObj
 ::created_pane_peephole(const panelayoutmanager &public_object,

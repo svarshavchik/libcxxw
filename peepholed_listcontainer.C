@@ -32,4 +32,9 @@ dim_t peepholed_listcontainerObj::vertical_increment(ONLY IN_THREAD) const
 	return impl->rowsize(IN_THREAD);
 }
 
+size_t peepholed_listcontainerObj::peepholed_rows(ONLY IN_THREAD) const
+{
+	return impl->rows(IN_THREAD);
+}
+
 LIBCXXW_NAMESPACE_END

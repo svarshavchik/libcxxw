@@ -48,4 +48,9 @@ dim_t peepholed_toplevel_main_windowObj::vertical_increment(ONLY IN_THREAD) cons
 	return impl->reference_font::font_height(IN_THREAD);
 }
 
+size_t peepholed_toplevel_main_windowObj::peepholed_rows(ONLY IN_THREAD) const
+{
+	return 0;
+}
+
 LIBCXXW_NAMESPACE_END

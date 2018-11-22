@@ -42,6 +42,11 @@ dim_t peepholed_listcontainerObj::implObj::rowsize(ONLY IN_THREAD) const
 		(list_reference_font().font_height(IN_THREAD)+v+v);
 }
 
+size_t peepholed_listcontainerObj::implObj::rows(ONLY IN_THREAD) const
+{
+	return get_pseudo_impl().rows(IN_THREAD);
+}
+
 void peepholed_listcontainerObj::implObj
 ::theme_updated(ONLY IN_THREAD,
 		const defaulttheme &new_theme)

@@ -516,6 +516,11 @@ class LIBCXX_HIDDEN pagetabpeepholed_containerObj
 
 	dim_t horizontal_increment(ONLY IN_THREAD) const override { return 0; }
 	dim_t vertical_increment(ONLY IN_THREAD) const override { return 0; }
+
+	size_t peepholed_rows(ONLY IN_THREAD) const override
+	{
+		return 0;
+	}
 };
 
 // And we need to implement our focusable_container.

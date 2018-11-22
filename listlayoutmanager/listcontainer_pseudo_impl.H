@@ -49,7 +49,7 @@ class LIBCXX_HIDDEN listcontainer_pseudo_implObj :
 						      size_t) const=0;
 
 	//! Number of rows in the list.
-	size_t rows(ONLY IN_THREAD);
+	size_t rows(ONLY IN_THREAD) const;
 
 	//! Override do_draw().
 

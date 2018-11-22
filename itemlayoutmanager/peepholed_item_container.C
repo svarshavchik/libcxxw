@@ -28,4 +28,9 @@ dim_t peepholed_item_containerObj::vertical_increment(ONLY IN_THREAD) const
 	return impl->font_height(IN_THREAD);
 }
 
+size_t peepholed_item_containerObj::peepholed_rows(ONLY IN_THREAD) const
+{
+	return 0;
+}
+
 LIBCXXW_NAMESPACE_END

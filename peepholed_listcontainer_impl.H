@@ -75,6 +75,9 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 	//! to the font's height.
 	dim_t rowsize(ONLY IN_THREAD) const;
 
+	//! Return number of rows
+	size_t rows(ONLY IN_THREAD) const;
+
 	//! Stub, does nothing.
 	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 

@@ -39,7 +39,13 @@ public:
 typedef ref<layoutmanagerObj::implObj> layout_impl;
 
 //! Alias
+typedef const_ref<layoutmanagerObj::implObj> const_layout_impl;
+
+//! Alias
 typedef ptr<layoutmanagerObj::implObj> layout_implptr;
+
+//! Alias
+typedef const_ptr<layoutmanagerObj::implObj> const_layout_implptr;
 
 LIBCXXW_NAMESPACE_END
 

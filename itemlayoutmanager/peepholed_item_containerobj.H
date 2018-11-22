@@ -39,6 +39,9 @@ public:
 
 	//! Implement horizontal_increment()
 	dim_t vertical_increment(ONLY IN_THREAD) const override;
+
+	//! Implement peepholed_rows()
+	size_t peepholed_rows(ONLY IN_THREAD) const override;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -7,6 +7,7 @@
 
 #include <x/ref.H>
 #include "x/w/focusableownerobj.H"
+#include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "popup/popup_attachedto_info.H"
 #include "peepholed_toplevel_listcontainer/elementfwd.H"
 #include "screen.H"
@@ -96,6 +97,17 @@ dim_t peepholed_toplevel_listcontainer_elementObj<element_impl>
 {
 	return toplevel_listcontainer_impl->tallest_row_height(IN_THREAD)
 		.with_padding;
+}
+
+//! Inherited from peepholed_toplevelObj
+
+template<typename element_impl>
+size_t
+peepholed_toplevel_listcontainer_elementObj<element_impl>
+::peepholed_rows(ONLY IN_THREAD) const
+{
+	return toplevel_listcontainer_impl->listcontainer_element()
+		.rows(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

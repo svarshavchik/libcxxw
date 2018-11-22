@@ -100,13 +100,13 @@ void listcontainer_pseudo_implObj::do_draw(ONLY IN_THREAD,
 	superclass_t::do_draw(IN_THREAD, di, areas);
 }
 
-size_t listcontainer_pseudo_implObj::rows(ONLY IN_THREAD)
+size_t listcontainer_pseudo_implObj::rows(ONLY IN_THREAD) const
 {
 	size_t n=0;
 
 	invoke_layoutmanager
 		([&]
-		 (const ref<listlayoutmanagerObj::implObj> &lm)
+		 (const const_ref<listlayoutmanagerObj::implObj> &lm)
 		 {
 			 n=lm->list_element_singleton->impl->size();
 		 });
