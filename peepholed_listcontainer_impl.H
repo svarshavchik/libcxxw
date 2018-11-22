@@ -43,12 +43,6 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 
 	virtual const listcontainer_pseudo_implObj &get_pseudo_impl() const=0;
 
-	//! Update_peephole_metrics().
-	void initialize(ONLY IN_THREAD);
-
-	//! Call update_peephole_metrics().
-	void horizvert_updated(ONLY IN_THREAD);
-
 	//! Compute the height of the single row.
 
 	//! Adds the vertical padding, specified in the list style,
@@ -57,14 +51,6 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 
 	//! Return number of rows
 	size_t rows(ONLY IN_THREAD) const;
-
-	//! Stub, does nothing.
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
-
- private:
-
-	//! Recalculate and update my peephole's metrics.
-	void update_peephole_metrics(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -19,17 +19,6 @@ peepholed_listcontainerObj::implObj::implObj()=default;
 
 peepholed_listcontainerObj::implObj::~implObj()=default;
 
-void peepholed_listcontainerObj::implObj::initialize(ONLY IN_THREAD)
-{
-	update_peephole_metrics(IN_THREAD);
-}
-
-void peepholed_listcontainerObj::implObj
-::horizvert_updated(ONLY IN_THREAD)
-{
-	update_peephole_metrics(IN_THREAD);
-}
-
 dim_t peepholed_listcontainerObj::implObj::rowsize(ONLY IN_THREAD) const
 {
 	return get_pseudo_impl().rowsize(IN_THREAD).with_padding;
@@ -38,18 +27,6 @@ dim_t peepholed_listcontainerObj::implObj::rowsize(ONLY IN_THREAD) const
 size_t peepholed_listcontainerObj::implObj::rows(ONLY IN_THREAD) const
 {
 	return get_pseudo_impl().rows(IN_THREAD);
-}
-
-void peepholed_listcontainerObj::implObj
-::theme_updated(ONLY IN_THREAD,
-		const defaulttheme &new_theme)
-{
-	update_peephole_metrics(IN_THREAD);
-}
-
-void peepholed_listcontainerObj::implObj
-::update_peephole_metrics(ONLY IN_THREAD)
-{
 }
 
 LIBCXXW_NAMESPACE_END
