@@ -877,7 +877,6 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 	dim_t height=dim_t::truncate(y);
 
 	lock->row_infos.modified=false;
-	textlist_container->rows(IN_THREAD)=n;
 
 	update_metrics(IN_THREAD,
 		       { width, width, width},

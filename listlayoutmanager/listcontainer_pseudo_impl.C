@@ -5,6 +5,8 @@
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "listlayoutmanager/listcontainer_dim_elementfwd.H"
+#include "listlayoutmanager/listlayoutmanager_impl.H"
+#include "listlayoutmanager/list_element_impl.H"
 #include "screen.H"
 #include "defaulttheme.H"
 #include "x/w/impl/container_element.H"
@@ -96,6 +98,20 @@ void listcontainer_pseudo_implObj::do_draw(ONLY IN_THREAD,
 					 coord_t::truncate(highest));
 	}
 	superclass_t::do_draw(IN_THREAD, di, areas);
+}
+
+size_t listcontainer_pseudo_implObj::rows(ONLY IN_THREAD)
+{
+	size_t n=0;
+
+	invoke_layoutmanager
+		([&]
+		 (const ref<listlayoutmanagerObj::implObj> &lm)
+		 {
+			 n=lm->list_element_singleton->impl->size();
+		 });
+
+	return n;
 }
 
 ///////////////////////////////////////////////////////////////////////////
