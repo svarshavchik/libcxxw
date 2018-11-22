@@ -35,6 +35,7 @@
 #include <x/weakcapture.H>
 #include <x/strtok.H>
 #include <x/join.H>
+#include <algorithm>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
 
@@ -365,7 +366,39 @@ void elementObj::implObj::schedule_full_redraw(ONLY IN_THREAD)
 	    data(IN_THREAD).current_position.height == 0)
 		return; // Nothing to redraw.
 
-	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(element_impl(this));
+	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(element_impl{this});
+	data(IN_THREAD).areas_to_redraw.reset();
+}
+
+void elementObj::implObj::schedule_redraw(ONLY IN_THREAD,
+					  const rectangle &area)
+{
+	if (!get_window_handler().has_exposed(IN_THREAD))
+		return;
+
+	if (DO_NOT_DRAW(IN_THREAD))
+		return;
+
+	if (data(IN_THREAD).current_position.width == 0 ||
+	    data(IN_THREAD).current_position.height == 0)
+		return; // Nothing to redraw.
+
+	if (!data(IN_THREAD).areas_to_redraw)
+		return; // Full redraw pending.
+
+	auto &areas=*data(IN_THREAD).areas_to_redraw;
+	auto b=areas.begin(), e=areas.end();
+
+	if (e-b >= 10)
+	{
+		schedule_full_redraw(IN_THREAD); // Just do everything
+		return;
+	}
+	if (std::find(b, e, area) != e)
+		return; // Already there, minor optimization.
+
+	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(element_impl{this});
+	areas.push_back(area);
 }
 
 void elementObj::implObj::schedule_redraw_recursively()
@@ -438,9 +471,12 @@ bool elementObj::implObj::can_be_under_pointer(ONLY IN_THREAD) const
 
 bool elementObj::implObj::full_redraw_scheduled(ONLY IN_THREAD)
 {
+	if (!data(IN_THREAD).areas_to_redraw)
+		return true; // Fast check.
+
 	auto elements_to_redraw=IN_THREAD->elements_to_redraw(IN_THREAD);
 
-	return elements_to_redraw->find(ref(this)) != elements_to_redraw->end();
+	return elements_to_redraw->find(ref{this}) != elements_to_redraw->end();
 }
 
 void elementObj::implObj::explicit_redraw(ONLY IN_THREAD)
@@ -456,9 +492,22 @@ void elementObj::implObj::explicit_redraw(ONLY IN_THREAD)
 
 	auto &di=get_draw_info(IN_THREAD);
 
+	rectarea what_to_redraw;
+
+	if (data(IN_THREAD).areas_to_redraw)
+	{
+		std::swap(*data(IN_THREAD).areas_to_redraw,
+			  what_to_redraw); // Resets area_to_redraw.
+	}
+	else
+	{
+		what_to_redraw=di.entire_area();
+		data(IN_THREAD).areas_to_redraw=rectarea{}; // Resets it.
+	}
+
 	// Simulate an exposure of the entire element.
 
-	draw(IN_THREAD, di, di.entire_area());
+	draw(IN_THREAD, di, what_to_redraw);
 }
 
 void elementObj::implObj

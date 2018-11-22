@@ -366,64 +366,60 @@ void scrollbarObj::implObj::do_draw(ONLY IN_THREAD,
 				   const draw_info &di,
 				   const rectarea &areas)
 {
-	// We just draw the entire universe.
+	auto entire_area=bounds(areas);
 
 	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
-	draw_using_scratch_buffer
-		(IN_THREAD,
-		 [&, this]
-		 (const auto &picture,
-		  const auto &pixmap,
-		  const auto &gc)
-		 {
-			 this->do_draw_scroll_low(IN_THREAD,
-						  picture);
-			 this->do_draw_scroll_high(IN_THREAD,
-						   picture,
-						   this->scroll_high_position
-						   (IN_THREAD));
+	const auto &[low, slider, high]=regions(IN_THREAD);
 
-			 this->do_draw_slider(IN_THREAD,
-					      picture,
-					      dim_t::truncate
-					      (this->scroll_low_size(IN_THREAD)
-					       ));
-		 },
-		 {0, 0, data(IN_THREAD).current_position.width,
-				 data(IN_THREAD).current_position.height},
-		 di, di, clipped);
+	if (low.overlaps(entire_area))
+	{
+		draw_using_scratch_buffer
+			(IN_THREAD,
+			 [&, this]
+			 (const auto &picture,
+			  const auto &pixmap,
+			  const auto &gc)
+			 {
+				 this->do_draw_scroll_low(IN_THREAD, picture);
+			 },
+			 low, di, di, clipped);
+	}
+
+	if (slider.overlaps(entire_area))
+	{
+		draw_using_scratch_buffer
+			(IN_THREAD,
+			 [&, this]
+			 (const auto &picture,
+			  const auto &pixmap,
+			  const auto &gc)
+			 {
+				 this->do_draw_slider(IN_THREAD, picture);
+			 },
+			 slider, di, di, clipped);
+	}
+
+	if (high.overlaps(entire_area))
+	{
+		draw_using_scratch_buffer
+			(IN_THREAD,
+			 [&, this]
+			 (const auto &picture,
+			  const auto &pixmap,
+			  const auto &gc)
+			 {
+				 this->do_draw_scroll_high(IN_THREAD, picture);
+			 },
+			 high, di, di, clipped);
+	}
 }
 
 void scrollbarObj::implObj::draw_scroll_low(ONLY IN_THREAD)
 {
-	if (metrics.too_small)
-		return;
+	const auto &[low, slider, high]=regions(IN_THREAD);
 
-	if (DO_NOT_DRAW(IN_THREAD))
-		return;
-	auto &di=get_draw_info(IN_THREAD);
-
-	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
-
-	rectangle r=data(IN_THREAD).current_position;
-
-	r.x=0;
-	r.y=0;
-
-	r.*(orientation.major_size)=scroll_low_size(IN_THREAD);
-
-	draw_using_scratch_buffer
-		(IN_THREAD,
-		 [&, this]
-		 (const auto &picture,
-		  const auto &pixmap,
-		  const auto &gc)
-		 {
-			 this->do_draw_scroll_low(IN_THREAD,
-						  picture);
-		 },
-		 r, di, di, clipped);
+	schedule_redraw(IN_THREAD, low);
 }
 
 void scrollbarObj::implObj::do_draw_scroll_low(ONLY IN_THREAD,
@@ -439,93 +435,40 @@ void scrollbarObj::implObj::do_draw_scroll_low(ONLY IN_THREAD,
 
 void scrollbarObj::implObj::draw_scroll_high(ONLY IN_THREAD)
 {
-	if (metrics.too_small)
-		return;
+	const auto &[low, slider, high]=regions(IN_THREAD);
 
-	if (DO_NOT_DRAW(IN_THREAD))
-		return;
-	auto &di=get_draw_info(IN_THREAD);
-
-	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
-
-	rectangle r=data(IN_THREAD).current_position;
-
-	r.x=0;
-	r.y=0;
-
-	r.*(orientation.major_coord)=scroll_high_position(IN_THREAD);
-	r.*(orientation.major_size)=scroll_high_size(IN_THREAD);
-
-	draw_using_scratch_buffer
-		(IN_THREAD,
-		 [&, this]
-		 (const auto &picture,
-		  const auto &pixmap,
-		  const auto &gc)
-		 {
-			 this->do_draw_scroll_high(IN_THREAD,
-						   picture, 0);
-		 },
-		 r, di, di, clipped);
+	schedule_redraw(IN_THREAD, high);
 }
 
 void scrollbarObj::implObj::do_draw_scroll_high(ONLY IN_THREAD,
-						const picture &buffer,
-						coord_t coordinate)
+						const picture &buffer)
 {
 	if (metrics.too_small)
 		return;
+
 	do_draw_icon(IN_THREAD, buffer,
 		     &scrollbar_icon_set::high,
 		     scroll_high_pressed,
-		     coordinate);
+		     0);
 }
 
 void scrollbarObj::implObj::draw_slider(ONLY IN_THREAD)
 {
-	if (metrics.too_small)
-		return;
+	const auto &[low, slider, high]=regions(IN_THREAD);
 
-	if (DO_NOT_DRAW(IN_THREAD))
-		return;
-	auto &di=get_draw_info(IN_THREAD);
-
-	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
-
-	rectangle r=data(IN_THREAD).current_position;
-
-	r.x=0;
-	r.y=0;
-
-	r.*(orientation.major_coord)=coord_t::truncate(scroll_low_size(IN_THREAD));
-	r.*(orientation.major_size)=slider_size(IN_THREAD);
-
-	draw_using_scratch_buffer
-		(IN_THREAD,
-		 [&, this]
-		 (const auto &picture,
-		  const auto &pixmap,
-		  const auto &gc)
-		 {
-			 if (metrics.no_slider)
-				 return;
-			 this->do_draw_slider(IN_THREAD, picture, 0);
-		 },
-		 r, di, di, clipped);
+	schedule_redraw(IN_THREAD, slider);
 }
 
 void scrollbarObj::implObj::do_draw_slider(ONLY IN_THREAD,
-					   const picture &buffer,
-					   coord_t coordinate)
+					   const picture &buffer)
 {
 	if (metrics.too_small || metrics.no_slider)
 		return;
 
-	auto s=current_pixel+coord_t::truncate(coordinate);
-
 	auto c=do_draw_icon(IN_THREAD, buffer,
 			    &scrollbar_icon_set::handlebar_start,
-			    handlebar_pressed, coord_t::truncate(s));
+			    handlebar_pressed,
+			    coord_t::truncate(current_pixel));
 
 	c=do_draw_icon(IN_THREAD, buffer,
 		       &scrollbar_icon_set::handlebar,
@@ -1021,6 +964,25 @@ void scrollbarObj::implObj::report_current_values(ONLY IN_THREAD,
 					busy_impl{*this}
 			});
 	} REPORT_EXCEPTIONS(this);
+}
+
+std::tuple<rectangle, rectangle,
+	   rectangle> scrollbarObj::implObj::regions(ONLY IN_THREAD) const
+{
+	rectangle all=data(IN_THREAD).current_position;
+
+	all.x=0;
+	all.y=0;
+
+	std::tuple<rectangle, rectangle, rectangle> ret{all, all, all};
+
+	auto &[low, slider, high]=ret;
+
+	metrics.regions(low, slider, high,
+			orientation.major_coord,
+			orientation.major_size);
+
+	return ret;
 }
 
 LIBCXXW_NAMESPACE_END

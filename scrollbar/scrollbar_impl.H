@@ -392,7 +392,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! Draw the 'scroll low' button
 
-	//! Constructs a scratch buffer and invokes do_draw_scroll_low().
+	//! Schedules the scroll low button to be redrawn.
 
 	void draw_scroll_low(ONLY IN_THREAD);
 
@@ -402,38 +402,23 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! Draw the 'scroll high' button
 
-	//! Constructs a scratch buffer and invokes do_draw_scroll_high().
+	//! Schedules the scroll high button to be redrawn.
 
 	void draw_scroll_high(ONLY IN_THREAD);
 
 	//! Draw the "scroll high" button.
 
-	//! To redraw the button only, this is called with a scratch
-	//! buffer for just the button, and the coordinate of 0.
-	//!
-	//! When redrawing the entire display element we use a scratch buffer
-	//! for the entire display element, and pass the scroll_high_position()
-	//! for the coordinate.
-
-	void do_draw_scroll_high(ONLY IN_THREAD, const picture &buffer,
-				 coord_t coordinate);
+	void do_draw_scroll_high(ONLY IN_THREAD, const picture &buffer);
 
 	//! Draw the slider.
 
-	//! Constructs a scratch buffer and invokes do_draw_slider().
+	//! Schedules the slider to be redrawn.
 
 	void draw_slider(ONLY IN_THREAD);
 
 	//! Draw the scrollbar slider
 
-	//! To redraw the slider only, this is called with a scratch
-	//! buffer for just the button, and the coordinate of 0.
-	//!
-	//! When redrawing the entire display element we use a scratch buffer
-	//! for the entire display element, and pass scroll_low_size() for the
-	//! coordinate.
-	void do_draw_slider(ONLY IN_THREAD, const picture &buffer,
-			    coord_t coordinate);
+	void do_draw_slider(ONLY IN_THREAD, const picture &buffer);
 
 	//! Draw an icon at the given major coordinate
 
@@ -456,6 +441,13 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 			     icon scrollbar_icon_set::*which_icon,
 			     bool pressed,
 			     coord_t major_coord);
+
+	//! Compute where the low scroll, slider, and high scroll get drawn
+
+	//! If the scrollbar is too small, each one is the entire scrollbar.
+
+	std::tuple<rectangle, rectangle,
+		   rectangle> regions(ONLY IN_THREAD) const;
 };
 
 LIBCXXW_NAMESPACE_END

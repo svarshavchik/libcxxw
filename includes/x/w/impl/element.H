@@ -152,6 +152,13 @@ class elementObj::implObj : public element_drawObj,
 
 		std::optional<draw_info> cached_draw_info;
 
+		//! Which parts of the element need redrawing.
+
+		//! The default state is an empty rectarea. When an
+		//! schedule_full_redraw() is called, this is removed.
+
+		std::optional<rectarea> areas_to_redraw=rectarea{};
+
 		////////////////////////////////////////////////////////////
 		//
 		// Defaulted values.
@@ -729,6 +736,12 @@ class elementObj::implObj : public element_drawObj,
 	//! Schedule the connection thread to invoke explicit_redraw().
 
 	void schedule_full_redraw(ONLY IN_THREAD);
+
+	//! Schedule the connection thread to invoke explicit_redraw().
+
+	//! Add the area to areas_to_redraw(), unless it's been cleared for
+	//! a full redraw.
+	void schedule_redraw(ONLY IN_THREAD, const rectangle &area);
 
 	//! schedule_full_redraw() this one, and all child elements.
 

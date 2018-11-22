@@ -1,9 +1,10 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
 #include "scrollbar/scrollbar_metrics.H"
+#include "x/w/rectangle.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -138,6 +139,26 @@ scrollbar_metrics::pixel_info scrollbar_metrics::pixel_to_value(scroll_v_t pixel
 		  scroll_squared_v_t::truncate(pixel)) /
 		 scroll_squared_v_t::truncate(p_range));
 	return info;
+}
+
+void scrollbar_metrics::regions(rectangle &scroll_low,
+				rectangle &slider,
+				rectangle &scroll_high,
+				coord_t rectangle::*coordinate,
+				dim_t rectangle::*size) const
+{
+	if (too_small)
+		return;
+
+	scroll_low.*coordinate=0;
+	scroll_low.*size=dim_t::truncate(scroll_low_size);
+
+	scroll_high.*size=dim_t::truncate(scroll_high_size);
+	scroll_high.*coordinate=coord_t::truncate(pixel_size-scroll_high_size);
+
+	slider.*coordinate=coord_t::truncate(scroll_low_size);
+	slider.*size=dim_t::truncate(pixel_size-scroll_low_size
+				     -scroll_high_size);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -1,5 +1,6 @@
 #include "libcxxw_config.h"
 #include "scrollbar/scrollbar_metrics.H"
+#include "x/w/rectangle.H"
 #include <x/exception.H>
 #include <iostream>
 #include <vector>
@@ -166,6 +167,21 @@ void testscrollbar_metrics()
 						<< pv.second);
 		}
 	}
+
+	scrollbar_metrics sm;
+
+	sm.calculate(10, 10, 100, 10, 100, 20);
+
+	rectangle low{0, 0, 5, 100}, slider=low, high=low;
+
+	sm.regions(low, slider, high,
+		   &rectangle::y,
+		   &rectangle::height);
+
+	if (low != rectangle{0, 0, 5, 10} ||
+	    slider != rectangle{0, 10, 5, 80} ||
+	    high != rectangle{0, 90, 5, 10})
+		throw EXCEPTION("regions() failed");
 }
 
 int main(int argc, char **argv)

@@ -7,6 +7,7 @@
 
 #include "x/w/namespace.H"
 #include "x/w/scrollbarfwd.H"
+#include "x/w/rectanglefwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -112,6 +113,23 @@ class LIBCXX_HIDDEN scrollbar_metrics {
 	//! The inverse of value_to_pixel().
 
         pixel_info pixel_to_value(scroll_v_t) const;
+
+	//! Compute the region occupied by each scrollbar element.
+
+	//! scroll_low, slider, and scroll_high should be initialized with
+	//! the scroll-bar's width and height, and (x,y) set to 0.
+	//!
+	//! This returns with each rectangle set to the appropriate area of
+	//! the scrollbar element.
+	//!
+	//! coordinate and size points to y and height for vertical scrollbars
+	//! and x and width for horizontal scrollbars.
+
+	void regions(rectangle &scroll_low,
+		     rectangle &slider,
+		     rectangle &scroll_high,
+		     coord_t rectangle::*coordinate,
+		     dim_t rectangle::*size) const;
 };
 
 LIBCXXW_NAMESPACE_END
