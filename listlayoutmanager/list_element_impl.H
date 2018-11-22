@@ -12,6 +12,7 @@
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "x/w/impl/focus/focusable_elementfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
+#include "x/w/impl/themedim_elementfwd.H"
 #include "iconfwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/themeborder_elementfwd.H"
@@ -41,6 +42,8 @@ LIBCXXW_NAMESPACE_START
 struct listcontainer_selected_color;
 struct listcontainer_highlighted_color;
 struct listcontainer_current_color;
+struct listcontainer_dim_v;
+struct listcontainer_dim_h;
 
 struct list_font_tag;
 struct shortcut_font_tag;
@@ -212,9 +215,23 @@ struct listimpl_info_s {
 	bool row_redraw_needed=false;
 };
 
-typedef background_color_elementObj<themeborder_elementObj
-				    <focusable_elementObj
-				     <child_elementObj>>,
+//! list_elementObj superclass
+
+//! The list_elementObj::implObj uses the following mixins:
+//!
+//! - Three background colors, for selected, highlighted, and current items
+//!
+//! - Default vertical and horizontal paddings.
+//!
+//! - The border for the list item separator element.
+//!
+//! - It is a focusable element.
+
+typedef background_color_elementObj<themedim_elementObj<themeborder_elementObj
+							<focusable_elementObj
+							 <child_elementObj>>,
+							listcontainer_dim_h,
+							listcontainer_dim_v>,
 				    listcontainer_selected_color,
 				    listcontainer_highlighted_color,
 				    listcontainer_current_color
@@ -253,6 +270,15 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	implObj(const list_element_impl_init_args &init_args,
 		elementObj::implObj &container_element_impl,
 		const screen &container_screen);
+
+	//! Cell borders, in millimeters
+	const std::unordered_map<size_t, std::tuple<dim_arg, dim_arg>
+				 > lr_paddings;
+
+	//! Cell borders, in pixels
+	std::unordered_map<size_t, std::tuple<dim_t, dim_t>
+			   > lr_padding_pixels_thread_only;
+	THREAD_DATA_ONLY(lr_padding_pixels);
 
 	//! Tallest row height
 
@@ -564,6 +590,12 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	const richtextmeta itemshortcut_meta;
 
  private:
+	//! Return the vertical padding of each row.
+	dim_t list_v_padding(ONLY IN_THREAD) const;
+
+	//! Return the left and the right padding of the given column
+	std::tuple<dim_t, dim_t> get_paddings(ONLY IN_THREAD, size_t) const;
+
 	//! Schedule running redraw_needed_rows() in the connection thread.
 
 	void schedule_row_redraw(listimpl_info_t::lock &lock);

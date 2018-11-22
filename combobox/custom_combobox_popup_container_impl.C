@@ -12,9 +12,8 @@
 LIBCXXW_NAMESPACE_START
 
 custom_combobox_popup_containerObj::implObj
-::implObj(const container_impl &parent,
-	  const new_listlayoutmanager &style)
-	: superclass_t(style, parent)
+::implObj(const container_impl &parent)
+	: superclass_t{parent}
 {
 }
 

@@ -22,11 +22,6 @@ LIBCXXW_NAMESPACE_START
 //! draws the items in the list. This container makes it possible to use
 //! the layout manager framework for managing list items, even though they
 //! are not, themselves, discrete display elements.
-//!
-//! This base class defines virtual method that the list element uses to
-//! obtain the padding for the list items. The subclass is responsible for
-//! implementing the virtual methods, using the
-//! \ref listcontainer_dim_elementObj "list padding dimension mixin".
 
 class LIBCXX_HIDDEN listcontainer_pseudo_implObj :
 	public container_elementObj<child_elementObj> {
@@ -41,13 +36,6 @@ class LIBCXX_HIDDEN listcontainer_pseudo_implObj :
 
 	//! Destructor
 	~listcontainer_pseudo_implObj();
-
-	//! Implemented in the subclass.
-	virtual dim_t list_v_padding(ONLY IN_THREAD) const=0;
-
-	//! Implemented in the subclass.
-	virtual std::tuple<dim_t, dim_t> get_paddings(ONLY IN_THREAD,
-						      size_t) const=0;
 
 	//! Number of rows in the list.
 	size_t rows(ONLY IN_THREAD) const;

@@ -12,6 +12,7 @@
 #include "popup/popup_attachedto_handler.H"
 #include "x/w/impl/focus/focusable_element.H"
 #include "x/w/impl/background_color_element.H"
+#include "x/w/impl/themedim_element.H"
 #include "x/w/impl/themeborder_element.H"
 #include "x/w/impl/border_impl.H"
 #include "icon.H"
@@ -200,6 +201,25 @@ static auto initial_minimum_column_width_pixels
 	return m;
 }
 
+inline dim_t list_elementObj::implObj::list_v_padding(ONLY IN_THREAD) const
+{
+	return themedim_element<listcontainer_dim_v>::pixels(IN_THREAD);
+}
+
+std::tuple<dim_t, dim_t> list_elementObj::implObj
+::get_paddings(ONLY IN_THREAD, size_t n) const
+{
+	auto default_value=themedim_element<listcontainer_dim_h>
+		::pixels(IN_THREAD);
+
+	auto iter=lr_padding_pixels(IN_THREAD).find(n);
+
+	if (iter == lr_padding_pixels(IN_THREAD).end())
+		return {default_value, default_value};
+
+	return iter->second;
+}
+
 // Recompute minimum_column_width_pixels after a theme change.
 
 // This is called before recursively invoking theme_updated (and initialize).
@@ -210,6 +230,18 @@ void list_elementObj::implObj
 ::recalculate_minimum_column_width_pixels(ONLY IN_THREAD,
 					  const defaulttheme &theme)
 {
+	// First, recompute padding pixels
+	for (const auto &dim_args:lr_paddings)
+	{
+		auto &[l,r]=dim_args.second;
+
+		auto lp=theme->get_theme_dim_t(l, themedimaxis::width);
+		auto rp=theme->get_theme_dim_t(r, themedimaxis::width);
+
+		lr_padding_pixels(IN_THREAD)[dim_args.first]={lp, rp};
+	}
+
+	// And the minimum column widths
 	for (auto &v:minimum_column_widths(IN_THREAD))
 	{
 		auto &[mm, pixels]=v.second;
@@ -224,6 +256,10 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 	: superclass_t{init_args.style.selected_color,
 		       init_args.style.highlighted_color,
 		       init_args.style.current_color,
+		       init_args.style.h_padding,
+		       themedimaxis::width,
+		       init_args.style.v_padding,
+		       themedimaxis::height,
 		       "list_separator_border",
 		       init_args.textlist_container},
 	  richtext_alteration_config{
@@ -232,6 +268,7 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 				     ->get(container_element_impl)
 	  },
 	  textlist_container{init_args.textlist_container},
+	  lr_paddings{init_args.style.lr_paddings},
 	  list_style{init_args.style.list_style},
 	  columns{list_style.actual_columns(init_args.style)},
 	  requested_col_widths{validate_col_widths
@@ -781,8 +818,7 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 
 	calculate_column_widths(IN_THREAD, lock);
 
-	auto v_padding_times_two=
-		textlist_container->list_v_padding(IN_THREAD);
+	auto v_padding_times_two=list_v_padding(IN_THREAD);
 
 	v_padding_times_two=dim_t::truncate(v_padding_times_two +
 					    v_padding_times_two);
@@ -933,7 +969,7 @@ dim_t list_elementObj::implObj
 		}
 
 		auto [left_h_padding, right_h_padding] =
-			textlist_container->get_paddings(IN_THREAD, i);
+			get_paddings(IN_THREAD, i);
 		++i;
 
 		dim_t total_padding=dim_t::truncate(left_h_padding +
@@ -1019,7 +1055,7 @@ dim_t list_elementObj::implObj
 			continue; // Ignore extra columns
 
 		auto [left_h_padding, right_h_padding]=
-			textlist_container->get_paddings(IN_THREAD, col);
+			get_paddings(IN_THREAD, col);
 
 		dim_t total_padding=dim_t::truncate(left_h_padding +
 						   right_h_padding);
@@ -1349,7 +1385,7 @@ rectangle list_elementObj::implObj
 
 	coord_t y=r.y;
 
-	dim_t v_padding=textlist_container->list_v_padding(IN_THREAD);
+	dim_t v_padding=list_v_padding(IN_THREAD);
 
 	rectangle entire_row{0, y, di.absolute_location.width,
 			dim_t::truncate(r.height + v_padding + v_padding)};

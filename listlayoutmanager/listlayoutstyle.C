@@ -13,7 +13,6 @@
 #include "listlayoutmanager/list_cellseparator.H"
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
-#include "listlayoutmanager/listcontainer_dim_element.H"
 #include "listlayoutmanager/list_cell.H"
 #include "peephole/peephole_impl.H"
 #include "popup/popup.H"
@@ -48,8 +47,7 @@ listlayoutstyle_impl
 	// A container that uses the listlayoutmanager.
 
 	auto internal_listcontainer_impl=
-		ref<listcontainer_dim_elementObj<listcontainer_pseudo_implObj>>
-		::create(style, peephole_parent);
+		ref<listcontainer_pseudo_implObj>::create(peephole_parent);
 
 	// The single element in the container, used to draw the list, and
 	// its public object.

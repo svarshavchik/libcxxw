@@ -51,8 +51,7 @@ do_create_menu_popup(const function<void (const listlayoutmanager &)> &creator,
 		 ->create_popup_factory_ret_t
 		 {
 			 auto impl=ref<p_t_l_impl_t>
-				 ::create(style,
-					  peephole_container);
+				 ::create(peephole_container);
 
 			 auto textlist_impl=ref<list_elementObj::implObj>
 				 ::create(list_element_impl_init_args

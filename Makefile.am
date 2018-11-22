@@ -469,8 +469,6 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/listcontainerobj.H	    \
 	listlayoutmanager/listcontainer_impl.C	    \
 	listlayoutmanager/listcontainer_impl.H	    \
-	listlayoutmanager/listcontainer_dim_element.H \
-	listlayoutmanager/listcontainer_dim_elementfwd.H \
 	listlayoutmanager/listcontainer_pseudo_impl.C \
 	listlayoutmanager/listcontainer_pseudo_impl.H \
 	listlayoutmanager/listcontainer_pseudo_implfwd.H \
