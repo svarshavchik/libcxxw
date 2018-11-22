@@ -1,5 +1,7 @@
 2018-11-22  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* listlayoutmanager/listlayoutmanager.C: Added remove_items().
+
 	* listlayoutmanager/list_element_impl.C: Expose the style for list
 	item separator in new_listlayoutmanager.list_separator_border
 

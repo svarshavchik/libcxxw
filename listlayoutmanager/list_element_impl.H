@@ -342,9 +342,10 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	THREAD_DATA_ONLY(minimum_column_widths);
 
 	//! Remove a row.
-	void remove_row(ONLY IN_THREAD,
-			const listlayoutmanager &ll,
-			size_t row_number);
+	void remove_rows(ONLY IN_THREAD,
+			 const listlayoutmanager &ll,
+			 size_t row_number,
+			 size_t n_items);
 
 	//! Add rows to the end.
 	void append_rows(ONLY IN_THREAD,

@@ -57,9 +57,9 @@ public:
 		override;
 
 	//! Remove an item from the combo-box.
-	void remove_item(ONLY IN_THREAD, size_t i) override;
+	void remove_items(ONLY IN_THREAD, size_t i, size_t n_items) override;
 
-	using custom_comboboxlayoutmanagerObj::remove_item;
+	using custom_comboboxlayoutmanagerObj::remove_items;
 
 	//! Replace an item.
 

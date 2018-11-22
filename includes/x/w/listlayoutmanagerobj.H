@@ -32,8 +32,16 @@ public:
 	//! Remove a list item
 	void remove_item(size_t item_number);
 
+	//! Remove multiple consecutive items.
+	void remove_items(size_t item_number,
+			 size_t n_items);
+
 	//! Remove a list item
-	virtual void remove_item(ONLY IN_THREAD, size_t item_number);
+	void remove_item(ONLY IN_THREAD, size_t item_number);
+
+	//! Remove multiple consecutive items.
+	virtual void remove_items(ONLY IN_THREAD, size_t item_number,
+				  size_t n_items);
 
 	//! Append new list items.
 

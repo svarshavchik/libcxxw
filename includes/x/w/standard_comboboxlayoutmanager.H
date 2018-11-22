@@ -184,6 +184,12 @@ public:
 	//! Remove an item from the combo-box.
 	void remove_item(ONLY IN_THREAD, size_t i);
 
+	//! Remove items from the combo-box.
+	void remove_items(size_t i, size_t n);
+
+	//! Remove items from the combo-box.
+	void remove_items(ONLY IN_THREAD, size_t i, size_t n);
+
 	//! Replace an item in the combo-box.
 	void replace_items(size_t i, const list_item_param &item);
 

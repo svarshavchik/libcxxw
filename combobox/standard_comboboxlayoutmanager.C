@@ -225,18 +225,35 @@ void standard_combobox_lock::replace_items(ONLY IN_THREAD,
 
 void standard_combobox_lock::remove_item(size_t i)
 {
-	locked_layoutmanager->superclass_t::remove_item(i);
+	remove_items(i, 1);
+}
+
+void standard_combobox_lock::remove_items(size_t i, size_t n)
+{
+	locked_layoutmanager->remove_items(i, n);
 }
 
 void standard_combobox_lock::remove_item(ONLY IN_THREAD, size_t i)
 {
+	remove_items(IN_THREAD, i, 1);
+}
+
+void standard_combobox_lock::remove_items(ONLY IN_THREAD, size_t i, size_t n)
+{
 	auto &ti=text_items();
 
-	if (ti.size() <= i)
+	size_t s=ti.size();
+
+	if (s <= i)
 		nosuchitem(i);
 
-	locked_layoutmanager->superclass_t::remove_item(IN_THREAD, i);
-	ti.erase(ti.begin()+i);
+	auto m=s-i;
+
+	if (m < n)
+		nosuchitem(i+m);
+
+	locked_layoutmanager->superclass_t::remove_items(IN_THREAD, i, n);
+	ti.erase(ti.begin()+i, ti.begin()+i+n);
 }
 
 void standard_combobox_lock::replace_all_items(const std::vector<list_item_param>
@@ -427,11 +444,13 @@ void standard_comboboxlayoutmanagerObj
 	return lock.replace_items(IN_THREAD, i, items);
 }
 
-void standard_comboboxlayoutmanagerObj::remove_item(ONLY IN_THREAD, size_t i)
+void standard_comboboxlayoutmanagerObj::remove_items(ONLY IN_THREAD,
+						     size_t i,
+						     size_t n_items)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
 
-	lock.remove_item(IN_THREAD, i);
+	lock.remove_items(IN_THREAD, i, n_items);
 }
 
 text_param standard_comboboxlayoutmanagerObj::item(size_t i) const

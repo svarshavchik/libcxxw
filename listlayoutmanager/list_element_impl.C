@@ -348,15 +348,16 @@ void list_elementObj::implObj::removed_from_container(ONLY IN_THREAD)
 	synchronized_info.removed_from_container(IN_THREAD);
 }
 
-void list_elementObj::implObj::remove_row(ONLY IN_THREAD,
-					  const listlayoutmanager &lm,
-					  size_t row_number)
+void list_elementObj::implObj::remove_rows(ONLY IN_THREAD,
+					   const listlayoutmanager &lm,
+					   size_t row_number,
+					   size_t n_rows)
 {
 	list_lock lock{lm};
 
 	listimpl_info_t::lock &l{lock};
 
-	remove_rows(IN_THREAD, lm, l, row_number, 1);
+	remove_rows(IN_THREAD, lm, l, row_number, n_rows);
 }
 
 void list_elementObj::implObj::append_rows(ONLY IN_THREAD,

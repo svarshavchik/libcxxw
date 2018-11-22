@@ -27,17 +27,31 @@ listlayoutmanagerObj::~listlayoutmanagerObj()=default;
 
 void listlayoutmanagerObj::remove_item(size_t item_number)
 {
-	impl->run_as([me=ref(this), item_number]
+	remove_items(item_number, 1);
+}
+
+void listlayoutmanagerObj::remove_items(size_t item_number,
+					size_t n_items)
+{
+	impl->run_as([me=ref(this), item_number, n_items]
 		     (ONLY IN_THREAD)
 		     {
-			     me->remove_item(IN_THREAD, item_number);
+			     me->remove_items(IN_THREAD, item_number, n_items);
 		     });
 }
 
 void listlayoutmanagerObj::remove_item(ONLY IN_THREAD, size_t item_number)
 {
-	impl->list_element_singleton->impl->remove_row(IN_THREAD,
-						       ref(this), item_number);
+	remove_items(IN_THREAD, item_number, 1);
+}
+
+void listlayoutmanagerObj::remove_items(ONLY IN_THREAD, size_t item_number,
+					size_t n_items)
+{
+	impl->list_element_singleton->impl->remove_rows(IN_THREAD,
+							ref(this),
+							item_number,
+							n_items);
 }
 
 void listlayoutmanagerObj::append_items(const std::vector<list_item_param>
