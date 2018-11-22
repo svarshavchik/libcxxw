@@ -8,7 +8,7 @@
 #include "listlayoutmanager/list_element.H"
 #include "listlayoutmanager/listlayoutstyle_implfwd.H"
 #include "listlayoutmanager/list_cellfwd.H"
-#include "listlayoutmanager/extra_list_row_info.H"
+#include "listlayoutmanager/extra_list_row_infofwd.H"
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "x/w/impl/focus/focusable_elementfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
@@ -41,10 +41,16 @@ LIBCXXW_NAMESPACE_START
 struct listcontainer_selected_color;
 struct listcontainer_highlighted_color;
 struct listcontainer_current_color;
-struct textlist_rowinfo;
 
 struct list_font_tag;
 struct shortcut_font_tag;
+
+//! Container that keeps track of item ident levels
+
+//! An entry for each row gets added to this container. Using std::greater
+//! as the comparison results in the maximum indentation level being simply
+//! begin().
+typedef std::multiset<size_t, std::greater<size_t>> item_indents_t;
 
 //! Container that keeps track of minimum columns widths.
 
@@ -63,7 +69,13 @@ typedef std::multiset<dim_t, std::greater<dim_t>> list_column_widths_t;
 
 //! \see list_element
 
-struct LIBCXX_HIDDEN list_row_info_t {
+struct list_row_info_t {
+
+	//! Constructor
+	list_row_info_t();
+
+	//! Destructor
+	~list_row_info_t();
 
 	//! Height of this row.
 	dim_t height;
@@ -85,12 +97,20 @@ struct LIBCXX_HIDDEN list_row_info_t {
 	//! This is set after enabled or selected is changed
 	bool redraw_needed=false;
 
+	//! This item's indentation level
+	size_t indent=0;
+
+	//! And this item's entry in item_indents
+
+	//! Only set if size_computed.
+	item_indents_t::iterator indent_iter;
+
 	//! Extra information about this row.
 
 	//! Stored in discrete object, so that the object remains in place
 	//! if rows are added or removed from the list.
 
-	extra_list_row_info extra=extra_list_row_info::create();
+	extra_list_row_info extra;
 };
 
 //! A vector of list_row_info_t structures
@@ -157,8 +177,11 @@ struct listimpl_info_s {
 	//! Callback
 	list_selection_changed_cb_t selection_changed;
 
+	//! The indentation levels.
+	item_indents_t item_indents;
+
 	//! The columns
-	std::vector<list_column_widths_t> column_widths;
+	std::vector<list_column_widths_t> list_column_widths;
 
 	//! The calculated column widths.
 

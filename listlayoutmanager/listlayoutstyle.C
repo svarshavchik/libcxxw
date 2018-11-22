@@ -105,6 +105,10 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 				[&](const list_item_status_change_callback &cb)
 				{
 				},
+				[this](const hierindent &)
+				{
+					nonmenu_attribute_requested();
+				},
 				[this](const menuoption &mo)
 				{
 					menu_attribute_requested();
@@ -325,6 +329,10 @@ void listlayoutstyle_impl::do_process_list_item_param
 						      "items"));
 				   next_rowinfo.listitem_callback=&cb;
 			   },
+			   [&](const hierindent &i)
+			   {
+				   next_rowinfo.indent_level=i.n;
+			   },
 			   [&](const menuoption &mo)
 			   {
 				   next_rowinfo.setting_menu_item();
@@ -378,6 +386,10 @@ void listlayoutstyle_impl::menu_attribute_requested() const
 {
 	throw EXCEPTION(_("menuoption and submenu attributes are allowed "
 			  "only in menus"));
+}
+
+void listlayoutstyle_impl::nonmenu_attribute_requested() const
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -612,11 +624,37 @@ class LIBCXX_HIDDEN menu_list_style_impl
 	void menu_attribute_requested() const override
 	{
 	}
+
+	void nonmenu_attribute_requested() const override
+	{
+		throw EXCEPTION(_("hierindent attribute is not allowed "
+			  "in menus"));
+	}
 };
 
 static const
 menu_list_style_impl menu_list_instance;
 
 const listlayoutstyle_impl &menu_list=menu_list_instance;
+
+/////////////////////////////////////////////////////////////////////////
+
+// List style for combo-boxes: highlighted list, but not hierindent allowed.
+
+class LIBCXX_HIDDEN combobox_layout_style_impl
+	: public highlighted_listlayoutstyle_impl {
+
+ public:
+	void nonmenu_attribute_requested() const override
+	{
+		throw EXCEPTION(_("hierindent attribute is not allowed "
+			  "in combo-boxes"));
+	}
+};
+
+static const combobox_layout_style_impl combobox_list_instance;
+
+const listlayoutstyle_impl &combobox_list=combobox_list_instance;
+
 
 LIBCXXW_NAMESPACE_END

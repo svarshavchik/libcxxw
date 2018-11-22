@@ -9,6 +9,7 @@
 #include "listlayoutmanager/menu_item.H"
 #include "listlayoutmanager/list_element_impl.H"
 #include "listlayoutmanager/listcontainer_pseudo_implfwd.H"
+#include "listlayoutmanager/extra_list_row_infofwd.H"
 #include "peephole/peepholedfwd.H"
 #include "peephole/peepholeobj.H"
 #include "x/w/impl/draw_infofwd.H"
@@ -26,9 +27,11 @@ LIBCXXW_NAMESPACE_START
 
 //! Metadata for each list item returned by \ref listlayoutstyle_impl "create_newcell()
 
-struct LIBCXX_HIDDEN textlist_rowinfo {
+struct textlist_rowinfo {
 	const shortcut                         *listitem_shortcut=nullptr;
 	const list_item_status_change_callback *listitem_callback=nullptr;
+
+	size_t indent_level=0;
 
 	menu_item_t menu_item;
 
@@ -131,9 +134,13 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 				      bool selected_flag) const=0;
  private:
 
-	//! Whether a menuoption or a submenu can be separated.
+	//! Whether a menuoption or a submenu can be specified.
 
 	virtual void menu_attribute_requested() const;
+
+	//! Whether a hierindent can be specified.
+
+	virtual void nonmenu_attribute_requested() const;
 
 	//! How many extra leading columns there are.
 

@@ -19,8 +19,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct textlist_rowinfo;
-
 //! Implementation object.
 
 //! \see extra_list_row_info
@@ -63,6 +61,7 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	//! Initialize this row's metadata.
 
 	void set_meta(const listlayoutmanager &lm,
+		      list_row_info_t &row_info,
 		      const textlist_rowinfo &meta);
 
 	//! This item's status change callback.

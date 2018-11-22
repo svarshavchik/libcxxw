@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listlayoutmanager_impl.H"
+#include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "menu/menu_popup.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"

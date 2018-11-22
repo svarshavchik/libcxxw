@@ -7,6 +7,7 @@
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/list_cell.H"
+#include "listlayoutmanager/extra_list_row_info.H"
 #include "popup/popup.H"
 #include "popup/popup_attachedto_handler.H"
 #include "x/w/impl/focus/focusable_element.H"
@@ -143,6 +144,13 @@ static inline auto create_column_borders(elementObj::implObj &e,
 
 	return column_borders;
 }
+
+list_row_info_t::list_row_info_t()
+	: extra{extra_list_row_info::create()}
+{
+}
+
+list_row_info_t::~list_row_info_t()=default;
 
 list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args)
 	: implObj{init_args,
@@ -288,7 +296,7 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 
 	listimpl_info_t::lock lock{textlist_info};
 
-	lock->column_widths.resize(columns);
+	lock->list_column_widths.resize(columns);
 }
 
 list_elementObj::implObj::~implObj()=default;
@@ -409,7 +417,8 @@ void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
 				      iter.extra=extra_list_row_info::create();
 			      first_one=false;
 
-			      iter.extra->set_meta(lm, meta.at(row_num++));
+			      iter.extra->set_meta(lm, iter,
+						   meta.at(row_num++));
 		      });
 
 	lock->cells.insert(lock->cells.begin() + row_number * columns,
@@ -485,7 +494,7 @@ void list_elementObj::implObj::replace_rows(ONLY IN_THREAD,
 		      {
 			      list_row_info_t r;
 
-			      r.extra->set_meta(lm, meta.at(row_num++));
+			      r.extra->set_meta(lm, r, meta.at(row_num++));
 
 			      return r;
 		      });
@@ -534,7 +543,8 @@ void list_elementObj::implObj
 
 	lock->row_infos.clear();
 	lock->cells.clear();
-	for (auto &column_widths:lock->column_widths)
+	lock->item_indents.clear();
+	for (auto &column_widths:lock->list_column_widths)
 		column_widths.clear();
 	insert_rows(IN_THREAD, lm, ll, 0, texts, meta);
 }
@@ -639,7 +649,10 @@ void list_elementObj::implObj
 
 	for (; count; ++p, --count)
 	{
-		for (auto &column_widths:lock->column_widths)
+		if (p->size_computed)
+			lock->item_indents.erase(p->indent_iter);
+
+		for (auto &column_widths:lock->list_column_widths)
 		{
 			if (p->size_computed)
 				column_widths.erase((*cellp)->column_iterator);
@@ -694,7 +707,7 @@ void list_elementObj::implObj
 
 	size_t i=0;
 
-	for (auto &column_widths:lock->column_widths)
+	for (auto &column_widths:lock->list_column_widths)
 	{
 		dim_t maximum_width{0};
 
@@ -751,8 +764,9 @@ void list_elementObj::implObj::recalculate_with_new_theme(ONLY IN_THREAD,
 	for (auto &cell:lock->row_infos)
 		cell.size_computed=false;
 
-	for (auto &cw:lock->column_widths)
+	for (auto &cw:lock->list_column_widths)
 		cw.clear();
+	lock->item_indents.clear();
 
 	lock->full_redraw_needed=true;
 	recalculate(IN_THREAD, lock);
@@ -797,7 +811,7 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 
 			bool is_separator=false;
 
-			for (auto &column_widths:lock->column_widths)
+			for (auto &column_widths:lock->list_column_widths)
 			{
 				auto preferred_width=
 					*calculated_column_width++;
@@ -830,6 +844,7 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 				++cell_iter;
 			}
 			row->size_computed=true;
+			row->indent_iter=lock->item_indents.insert(row->indent);
 
 			if (is_separator)
 			{

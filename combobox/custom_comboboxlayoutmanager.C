@@ -256,7 +256,7 @@ focusable_container new_custom_comboboxlayoutmanager
 {
 	// Start by creating the popup first.
 
-	new_listlayoutmanager style{highlighted_list};
+	new_listlayoutmanager style{combobox_list};
 
 	style.synchronized_columns=synchronized_columns;
 	style.background_color="combobox_background_color";

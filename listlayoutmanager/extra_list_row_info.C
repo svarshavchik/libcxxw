@@ -151,6 +151,7 @@ bool extra_list_row_infoObj::enabled() const
 }
 
 void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
+				      list_row_info_t &row_info,
 				      const textlist_rowinfo &meta)
 {
 	if (meta.listitem_callback)
@@ -159,6 +160,7 @@ void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 		status_change_callback=nullptr;
 
 	menu_item=meta.menu_item;
+	row_info.indent=meta.indent_level;
 
 	if (!meta.listitem_shortcut || !*meta.listitem_shortcut)
 	{
