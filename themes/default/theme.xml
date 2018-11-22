@@ -586,6 +586,7 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <dim id="list_v_padding" axis="vert">.2</dim>
   <dim id="list_h_padding" axis="horiz">2</dim>
+  <dim id="list_indent" axis="horiz">6</dim>
 
   <border id="list_border" from="thin_0%" />
 

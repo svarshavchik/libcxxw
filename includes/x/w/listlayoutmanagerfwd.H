@@ -566,6 +566,9 @@ extern const listlayoutstyle_impl &bulleted_list LIBCXX_PUBLIC;
 
 //! selection_type callback.
 
+//! The selection type callback gets invoked with an internal list lock in
+//! place. The selection type callback does not need to lock the list.
+//!
 //! \see new_listlayoutmanager
 
 typedef functionref<void (THREAD_CALLBACK,

@@ -162,6 +162,11 @@ bool listlayoutmanagerObj::selected(size_t i) const
 	return impl->list_element_singleton->impl->selected(i);
 }
 
+size_t listlayoutmanagerObj::hierindent(size_t i) const
+{
+	return impl->list_element_singleton->impl->hierindent(i);
+}
+
 std::optional<size_t> listlayoutmanagerObj::selected() const
 {
 	return impl->list_element_singleton->impl->selected();

@@ -423,6 +423,191 @@ auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 	return c;
 }
 
+void listtest(const LIBCXX_NAMESPACE::w::screen &default_screen,
+	      const LIBCXX_NAMESPACE::w::main_window &main_window,
+	      const LIBCXX_NAMESPACE::w::screen_positions &pos,
+	      const testlistoptions &options)
+{
+	auto [original_theme, original_scale, original_options]
+		=default_screen->get_connection()->current_theme();
+
+	LIBCXX_NAMESPACE::w::gridlayoutmanager
+		layout=main_window->get_layoutmanager();
+	LIBCXX_NAMESPACE::w::gridfactory factory=layout->append_row();
+
+	factory->halign(LIBCXX_NAMESPACE::w::halign::fill);
+	factory->colspan(2);
+	auto l=create_process_table(main_window, pos, factory, options);
+
+	factory=layout->append_row();
+
+	auto b=factory->create_normal_button_with_label("Bigger/Smaller");
+
+	b->on_activate
+		([=]
+		 (THREAD_CALLBACK,
+		  const auto &trigger,
+		  const auto &busy)
+		 mutable
+		 {
+			 original_scale=original_scale == 100 ? 200:100;
+
+			 default_screen->get_connection()
+				 ->set_theme(original_theme,
+					     original_scale,
+					     original_options,
+					     true);
+		 });
+	factory->create_canvas();
+	factory=layout->append_row();
+
+	b=factory->create_normal_button_with_label("Reorder");
+
+	b->on_activate
+		([l]
+		 (ONLY IN_THREAD,
+		  const auto &trigger,
+		  const auto &busy)
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager
+				 lm=l->get_layoutmanager();
+
+			 size_t n=lm->size();
+
+			 std::vector<size_t> i;
+
+			 i.resize(n);
+
+			 std::generate(i.begin(), i.end(),
+				       [n=0]
+				       ()
+				       mutable
+				       {
+					       return n++;
+				       });
+
+			 std::random_shuffle(i.begin(), i.end());
+			 lm->resort_items(IN_THREAD, i);
+		 });
+	factory->create_canvas();
+
+	factory=layout->append_row();
+	b=factory->create_normal_button_with_label("Swap Header");
+
+	b->on_activate
+		([l, flag=false]
+		 (ONLY IN_THREAD,
+		  const auto &trigger,
+		  const auto &busy)
+		 mutable
+		 {
+			 LIBCXX_NAMESPACE::w
+				 ::tablelayoutmanager
+				 lm=l->get_layoutmanager();
+
+			 (void)lm->header(1);
+
+			 lm->replace_header(1)
+				 ->create_label
+				 (flag ? "CPU":"CPU %")
+				 ->show();
+
+			 flag=!flag;
+		 });
+	factory->create_canvas();
+}
+
+static const char * const lorem_ipsum[]=
+	{
+	 "Lorem ipsum",
+	 "dolor sit amet",
+	 "consectetur",
+	 "adipisicing elit",
+	 "sed do eiusmod",
+	 "tempor incididunt",
+	 "ut labore",
+	 "et dolore magna"
+	 "aliqua"
+	};
+
+static std::string next_lorem_ipsum()
+{
+	static size_t counter=0;
+
+	size_t i=counter;
+
+	if (++i > sizeof(lorem_ipsum)/sizeof(lorem_ipsum)[0])
+		i=0;
+
+	counter=i;
+
+	return lorem_ipsum[i];
+}
+
+void listhiertest(const LIBCXX_NAMESPACE::w::main_window &main_window)
+{
+	LIBCXX_NAMESPACE::w::gridlayoutmanager
+		layout=main_window->get_layoutmanager();
+	LIBCXX_NAMESPACE::w::gridfactory factory=layout->append_row();
+
+	LIBCXX_NAMESPACE::w::new_listlayoutmanager
+		nlm{LIBCXX_NAMESPACE::w::highlighted_list};
+
+	nlm.width(LIBCXX_NAMESPACE::w::dim_axis_arg{75});
+	nlm.height(LIBCXX_NAMESPACE::w::dim_axis_arg{100});
+
+	nlm.selection_type=
+		[]
+		(ONLY IN_THREAD,
+		 const LIBCXX_NAMESPACE::w::listlayoutmanager &ll,
+		 size_t i,
+		 const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
+		 const LIBCXX_NAMESPACE::w::busy &mcguffin)
+		{
+			size_t i_indent=ll->hierindent(i);
+
+			size_t s=ll->size();
+
+			size_t e;
+
+			for (e=i; ++e < s; )
+			{
+				if (ll->hierindent(e) <= i_indent)
+					break;
+			}
+
+			if (e-i > 1)
+			{
+				ll->remove_items(i+1, e-i-1);
+				return;
+			}
+
+			LIBCXX_NAMESPACE::w::hierindent new_indent{++i_indent};
+
+			ll->insert_items(i+1, {
+					new_indent,
+					next_lorem_ipsum(),
+					new_indent,
+					next_lorem_ipsum(),
+					new_indent,
+					next_lorem_ipsum(),
+					new_indent,
+					next_lorem_ipsum()
+				});
+		};
+
+	factory->create_focusable_container
+		([]
+		 (const auto &fc)
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager ll=
+				 fc->get_layoutmanager();
+
+			 ll->append_items({lorem_ipsum[0]});
+		 },
+		 nlm);
+}
+
 void testlist(const testlistoptions &options)
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
@@ -438,105 +623,16 @@ void testlist(const testlistoptions &options)
 
 	auto default_screen=LIBCXX_NAMESPACE::w::screen::create();
 
-	auto [original_theme, original_scale, original_options]
-		=default_screen->get_connection()->current_theme();
-
 	auto main_window=default_screen->create_mainwindow
 		(pos, "main",
 		 [&]
 		 (const auto &main_window)
 		 {
-			 LIBCXX_NAMESPACE::w::gridlayoutmanager
-				 layout=main_window->get_layoutmanager();
-			 LIBCXX_NAMESPACE::w::gridfactory factory=
-				     layout->append_row();
-
-			 factory->halign(LIBCXX_NAMESPACE::w
-					 ::halign::fill);
-			 factory->colspan(2);
-			 auto l=create_process_table(main_window, pos,
-						     factory, options);
-
-			 factory=layout->append_row();
-
-			 auto b=factory->create_normal_button_with_label
-				 ("Bigger/Smaller");
-
-			 b->on_activate
-				 ([=]
-				  (THREAD_CALLBACK,
-				   const auto &trigger,
-				   const auto &busy)
-				  mutable
-				  {
-					  original_scale=original_scale == 100
-						  ? 200:100;
-
-					  default_screen->get_connection()
-						  ->set_theme(original_theme,
-							      original_scale,
-							      original_options,
-							      true);
-				  });
-			 factory->create_canvas();
-			 factory=layout->append_row();
-
-			 b=factory->create_normal_button_with_label("Reorder");
-
-			 b->on_activate
-				 ([l]
-				  (ONLY IN_THREAD,
-				   const auto &trigger,
-				   const auto &busy)
-				  {
-					  LIBCXX_NAMESPACE::w::listlayoutmanager
-						  lm=l->get_layoutmanager();
-
-					  size_t n=lm->size();
-
-					  std::vector<size_t> i;
-
-					  i.resize(n);
-
-					  std::generate(i.begin(), i.end(),
-							[n=0]
-							()
-							mutable
-							{
-								return n++;
-							});
-
-					  std::random_shuffle(i.begin(),
-							      i.end());
-					  lm->resort_items(IN_THREAD, i);
-				  });
-			 factory->create_canvas();
-
-			 factory=layout->append_row();
-			 b=factory->create_normal_button_with_label
-				 ("Swap Header");
-
-			 b->on_activate
-				 ([l, flag=false]
-				  (ONLY IN_THREAD,
-				   const auto &trigger,
-				   const auto &busy)
-				  mutable
-				  {
-					  LIBCXX_NAMESPACE::w
-						  ::tablelayoutmanager
-						  lm=l->get_layoutmanager();
-
-					  (void)lm->header(1);
-
-					  lm->replace_header(1)
-						  ->create_label
-						  (flag ? "CPU":"CPU %")
-						  ->show();
-
-					  flag=!flag;
-				  });
-			 factory->create_canvas();
+			 if (options.hier->value)
+				 listhiertest(main_window);
+			 else
+				 listtest(default_screen, main_window, pos,
+					  options);
 		 });
 
 	guard(main_window->connection_mcguffin());
@@ -559,14 +655,17 @@ void testlist(const testlistoptions &options)
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 	lock.wait([&] { return *lock; });
 
-	main_window->save("main", pos);
+	if (main_window->appdata)
+	{
+		main_window->save("main", pos);
 
-	LIBCXX_NAMESPACE::w::tablelayoutmanager tlm=
-		LIBCXX_NAMESPACE::w::focusable_container(main_window->appdata)
-		->get_layoutmanager();
-	tlm->save("list", pos);
+		LIBCXX_NAMESPACE::w::tablelayoutmanager tlm=
+			LIBCXX_NAMESPACE::w::focusable_container(main_window->appdata)
+			->get_layoutmanager();
+		tlm->save("list", pos);
 
-	pos.save(configfile);
+		pos.save(configfile);
+	}
 }
 
 int main(int argc, char **argv)

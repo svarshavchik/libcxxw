@@ -80,6 +80,7 @@ new_listlayoutmanager
 	  focuson_border{"listfocuson_border"},
 	  v_padding{"list_v_padding"},
 	  h_padding{"list_h_padding"},
+	  indent{"list_indent"},
 	  horizontal_scrollbar{scrollbar_visibility::automatic},
 	  vertical_scrollbar{scrollbar_visibility::automatic},
 	  background_color{"list_background_color"},

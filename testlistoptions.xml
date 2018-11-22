@@ -8,6 +8,13 @@
     <descr>Invoked by make check</descr>
   </option>
 
+  <option>
+    <name>hier</name>
+    <type>bool</type>
+    <default>false</default>
+    <longopt>hier</longopt>
+    <descr>Hierarchical list test</descr>
+  </option>
 
   <option>
     <name>adjustable</name>

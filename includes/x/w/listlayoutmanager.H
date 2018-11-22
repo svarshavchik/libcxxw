@@ -297,9 +297,11 @@ public:
 	//! Padding above and below each list item
 	dim_arg v_padding;
 
-	//! Default padding
-
+	//! Default padding before and after each list item.
 	dim_arg h_padding;
+
+	//! When using hierarchical indentations, indentation increment.
+	dim_arg indent;
 
 	//! Optionally-specified paddings for each cell
 

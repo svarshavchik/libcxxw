@@ -260,6 +260,8 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 		       themedimaxis::width,
 		       init_args.style.v_padding,
 		       themedimaxis::height,
+		       init_args.style.indent,
+		       themedimaxis::width,
 		       init_args.style.list_separator_border,
 		       init_args.textlist_container},
 	  richtext_alteration_config{
@@ -1095,6 +1097,13 @@ dim_t list_elementObj::implObj
 				(sync_lock->unscaled_values.begin(),
 				 sync_lock->unscaled_values.end()));
 
+	// Add the maximum indentation in the list.
+	if (!lock->item_indents.empty())
+		minimum_width=dim_t::truncate
+			(minimum_width +
+			 themedim_element<listcontainer_indent>
+			 ::pixels(IN_THREAD)* *lock->item_indents.begin());
+
 	if (minimum_width == dim_t::infinite())
 		--minimum_width;
 	return minimum_width;
@@ -1398,6 +1407,11 @@ rectangle list_elementObj::implObj
 		// Don't bother, ensure_visibility() punted us.
 		return entire_row;
 
+	// Indentation level:
+	dim_t indent=dim_t::truncate
+		(themedim_element<listcontainer_indent>::pixels(IN_THREAD)
+		 * r.indent);
+
 	coord_t bottom_y=coord_t::truncate(y+r.height+v_padding);
 
 	auto *cell=&lock->cells.at(row_number * columns);
@@ -1406,7 +1420,7 @@ rectangle list_elementObj::implObj
 	{
 		const auto &[x, width]=poswidth;
 
-		rectangle rc{x,
+		rectangle rc{coord_t::truncate(x+indent),
 				coord_t::truncate(bottom_y-(*cell)->height),
 				width,
 				(*cell)->height};
@@ -1421,9 +1435,10 @@ rectangle list_elementObj::implObj
 		++cell;
 	}
 
-	do_draw_row_borders(IN_THREAD, di, clipped, lock,
-			    entire_row,
-			    drawn_columns);
+	if (indent == 0) // Not supposed to have borders with indentation level
+		do_draw_row_borders(IN_THREAD, di, clipped, lock,
+				    entire_row,
+				    drawn_columns);
 
 	auto to_clear=subtract(rectarea{{entire_row}},
 			       drawn_columns);
@@ -1538,10 +1553,12 @@ void list_elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
 						 const key_event &ke)
 {
-	textlist_info_lock lock{IN_THREAD, *this};
+	{
+		textlist_info_lock lock{IN_THREAD, *this};
 
-	if (process_key_event(IN_THREAD, ke, lock))
-		return true;
+		if (process_key_event(IN_THREAD, ke, lock))
+			return true;
+	}
 
 	return superclass_t::process_key_event(IN_THREAD, ke);
 }
@@ -2041,7 +2058,15 @@ bool list_elementObj::implObj::selected(size_t i)
 {
 	listimpl_info_t::lock lock{textlist_info};
 
-	return i < lock->row_infos.size() && lock->row_infos.at(i).extra->selected;
+	return i < lock->row_infos.size() &&
+		lock->row_infos.at(i).extra->selected;
+}
+
+size_t list_elementObj::implObj::hierindent(size_t i)
+{
+	listimpl_info_t::lock lock{textlist_info};
+
+	return i < lock->row_infos.size() ? lock->row_infos.at(i).indent : 0;
 }
 
 std::optional<size_t> list_elementObj::implObj::selected()

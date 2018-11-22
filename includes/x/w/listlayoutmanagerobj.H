@@ -96,6 +96,9 @@ public:
 	//! Whether list item \#i is selected right now.
 	bool selected(size_t i) const;
 
+	//! Return indentation level of the given element.
+	size_t hierindent(size_t i) const;
+
 	//! Return the currently selected item.
 
 	//! For convenience of a single_selection_type() list, returns

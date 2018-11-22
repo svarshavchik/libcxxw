@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef list_element_impl_h
@@ -44,6 +44,7 @@ struct listcontainer_highlighted_color;
 struct listcontainer_current_color;
 struct listcontainer_dim_v;
 struct listcontainer_dim_h;
+struct listcontainer_indent;
 
 struct list_font_tag;
 struct shortcut_font_tag;
@@ -221,7 +222,7 @@ struct listimpl_info_s {
 //!
 //! - Three background colors, for selected, highlighted, and current items
 //!
-//! - Default vertical and horizontal paddings.
+//! - Default vertical and horizontal paddings, and indentation level.
 //!
 //! - The border for the list item separator element.
 //!
@@ -231,7 +232,8 @@ typedef background_color_elementObj<themedim_elementObj<themeborder_elementObj
 							<focusable_elementObj
 							 <child_elementObj>>,
 							listcontainer_dim_h,
-							listcontainer_dim_v>,
+							listcontainer_dim_v,
+							listcontainer_indent>,
 				    listcontainer_selected_color,
 				    listcontainer_highlighted_color,
 				    listcontainer_current_color
@@ -486,6 +488,9 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Whether list item \#i is selected right now.
 	bool selected(size_t i);
+
+	//! Return list item \#i's hierarchical indentation level.
+	size_t hierindent(size_t i);
 
 	//! Return the currently selected item.
 
