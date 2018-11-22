@@ -116,7 +116,7 @@ void peepholeObj::layoutmanager_implObj
 	}
 
 	auto max_width=hv->horiz.minimum();
-	auto max_height=hv->horiz.minimum();
+	auto max_height=hv->vert.minimum();
 
 	if (dim_t::truncate(r.x) >= max_width ||
 	    dim_t::truncate(r.y) >= max_height)
