@@ -47,16 +47,6 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 
 	virtual metrics::axis get_height_metrics(ONLY IN_THREAD) const=0;
 
-	//! Return the list reference font.
-
-	//! Implemented by the mixin template.
-	virtual const theme_fontObj &list_reference_font() const=0;
-
-	//! Return padding amount.
-
-	//! Implemented by the mixin template.
-	virtual dim_t list_v_padding(ONLY IN_THREAD) const=0;
-
 	//! Return the element is mixin is a part of.
 
 	virtual listcontainer_pseudo_implObj &get_pseudo_impl()=0;

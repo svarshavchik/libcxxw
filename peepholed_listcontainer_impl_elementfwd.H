@@ -8,7 +8,6 @@
 #include "peepholed_listcontainer_impl.H"
 #include "listlayoutmanager/listcontainer_dim_elementfwd.H"
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
-#include "x/w/impl/theme_font_elementfwd.H"
 #include "x/w/impl/themedimfwd.H"
 #include "x/w/impl/themedim_axis_elementfwd.H"
 
@@ -74,16 +73,14 @@ class peepholed_listcontainer_impl_element_baseObj
 template<typename element_impl>
 class peepholed_listcontainer_impl_elementObj :
 	public themedim_axis_heightObj<
-	theme_font_elementObj<
 		listcontainer_dim_elementObj
-		<peepholed_listcontainer_impl_element_baseObj<element_impl>>>> {
+		<peepholed_listcontainer_impl_element_baseObj<element_impl>>> {
 
 public:
-	typedef themedim_axis_heightObj<theme_font_elementObj<
-		listcontainer_dim_elementObj<
-			peepholed_listcontainer_impl_element_baseObj<
-				element_impl>>>
-				       > superclass_t;
+	typedef themedim_axis_heightObj<
+	listcontainer_dim_elementObj<
+		peepholed_listcontainer_impl_element_baseObj<
+			element_impl>>> superclass_t;
 
 	template<typename ...Args>
 		peepholed_listcontainer_impl_elementObj
@@ -91,9 +88,6 @@ public:
 		 Args && ...args);
 
 	~peepholed_listcontainer_impl_elementObj();
-
-	const theme_fontObj &list_reference_font()
-		const override;
 
 	listcontainer_pseudo_implObj &get_pseudo_impl() override;
 	const listcontainer_pseudo_implObj &get_pseudo_impl() const override;

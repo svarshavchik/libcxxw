@@ -7,7 +7,6 @@
 
 #include "peepholed_listcontainer_impl_elementfwd.H"
 #include "listlayoutmanager/listcontainer_dim_element.H"
-#include "x/w/impl/theme_font_element.H"
 #include "x/w/impl/themedim.H"
 #include "x/w/impl/themedim_axis_element.H"
 #include "x/w/impl/metrics_horizvert.H"
@@ -101,7 +100,6 @@ peepholed_listcontainer_impl_elementObj<element_impl>
 	(std::holds_alternative<dim_axis_arg>(style.height_value)
 		? std::get<dim_axis_arg>(style.height_value):
 	 dim_axis_arg{}),
-		style.list_font,
 		style, style,
 		std::forward<Args>(args)...}
 {
@@ -112,17 +110,6 @@ peepholed_listcontainer_impl_elementObj<element_impl>
 template<typename element_impl>
 peepholed_listcontainer_impl_elementObj<element_impl>
 ::~peepholed_listcontainer_impl_elementObj()=default;
-
-//! Implement list_reference_font().
-
-//! Used by peepholed_listcontainerObj::implObj.
-
-template<typename element_impl>
-const theme_fontObj &peepholed_listcontainer_impl_elementObj<element_impl>
-::list_reference_font() const
-{
-	return *this;
-}
 
 //! Implement get_pseudo_impl().
 
