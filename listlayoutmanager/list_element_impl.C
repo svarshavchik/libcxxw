@@ -260,7 +260,7 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 		       themedimaxis::width,
 		       init_args.style.v_padding,
 		       themedimaxis::height,
-		       "list_separator_border",
+		       init_args.style.list_separator_border,
 		       init_args.textlist_container},
 	  richtext_alteration_config{
 				     container_element_impl.get_window_handler()

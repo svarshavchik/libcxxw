@@ -1,3 +1,10 @@
+2018-11-22  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* listlayoutmanager/list_element_impl.C: Expose the style for list
+	item separator in new_listlayoutmanager.list_separator_border
+
+0.10.0
+
 2018-11-14  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Fixed-size shading theme option.

@@ -86,7 +86,8 @@ new_listlayoutmanager
 	  selected_color{"list_selected_color"},
 	  highlighted_color{"list_highlighted_color"},
 	  current_color{"list_current_color"},
-	  list_font{theme_font{"list"}}
+	  list_font{theme_font{"list"}},
+	  list_separator_border{"list_separator_border"}
 {
 }
 

@@ -20,6 +20,7 @@
 #include <x/w/border_arg.H>
 #include <x/w/dim_axis_arg.H>
 #include <x/w/font_arg.H>
+#include <x/w/border_arg.H>
 #include <x/w/synchronized_axisfwd.H>
 #include <x/w/factoryfwd.H>
 #include <x/ref.H>
@@ -338,6 +339,9 @@ public:
 
 	//! Default list font
 	font_arg list_font;
+
+	//! Horizontal separator line
+	border_arg list_separator_border;
 
 	//! Constructor
 	new_listlayoutmanager(const listlayoutstyle_impl &list_style
