@@ -36,10 +36,7 @@ void peepholed_listcontainerObj::implObj
 
 dim_t peepholed_listcontainerObj::implObj::rowsize(ONLY IN_THREAD) const
 {
-	auto v=list_v_padding(IN_THREAD);
-
-	return dim_t::truncate
-		(list_reference_font().font_height(IN_THREAD)+v+v);
+	return get_pseudo_impl().rowsize(IN_THREAD).with_padding;
 }
 
 size_t peepholed_listcontainerObj::implObj::rows(ONLY IN_THREAD) const

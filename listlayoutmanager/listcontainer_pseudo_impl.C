@@ -114,6 +114,20 @@ size_t listcontainer_pseudo_implObj::rows(ONLY IN_THREAD) const
 	return n;
 }
 
+tallest_row_height_t listcontainer_pseudo_implObj::rowsize(ONLY IN_THREAD) const
+{
+	tallest_row_height_t h;
+
+	invoke_layoutmanager
+		([&]
+		 (const const_ref<listlayoutmanagerObj::implObj> &lm)
+		 {
+			 h=lm->list_element_singleton->impl
+				 ->tallest_row_height(IN_THREAD);
+		 });
+
+	return h;
+}
 ///////////////////////////////////////////////////////////////////////////
 
 

@@ -6,6 +6,7 @@
 #define listcontainer_pseudo_impl_h
 
 #include "listlayoutmanager/listcontainer_pseudo_implfwd.H"
+#include "listlayoutmanager/list_elementfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/containerobj.H"
@@ -50,6 +51,9 @@ class LIBCXX_HIDDEN listcontainer_pseudo_implObj :
 
 	//! Number of rows in the list.
 	size_t rows(ONLY IN_THREAD) const;
+
+	//! The height of the tallest row.
+	tallest_row_height_t rowsize(ONLY IN_THREAD) const;
 
 	//! Override do_draw().
 
