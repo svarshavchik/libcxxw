@@ -14,19 +14,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Constructor
-
-template<typename element_impl>
-template<typename ...Args>
-peepholed_listcontainer_impl_element_baseObj<element_impl>
-::peepholed_listcontainer_impl_element_baseObj(const new_listlayoutmanager
-					       &style,
-					       Args && ...args)
-	: element_impl(std::forward<Args>(args)...),
-	  peepholed_listcontainerObj::implObj(style)
-{
-}
-
 //! Destructor
 
 template<typename element_impl>
@@ -96,12 +83,7 @@ template<typename ...Args>
 peepholed_listcontainer_impl_elementObj<element_impl>
 ::peepholed_listcontainer_impl_elementObj(const new_listlayoutmanager &style,
 					  Args && ...args)
-	: superclass_t{
-	(std::holds_alternative<dim_axis_arg>(style.height_value)
-		? std::get<dim_axis_arg>(style.height_value):
-	 dim_axis_arg{}),
-		style, style,
-		std::forward<Args>(args)...}
+	: superclass_t{style, std::forward<Args>(args)...}
 {
 }
 
@@ -131,15 +113,6 @@ const listcontainer_pseudo_implObj &peepholed_listcontainer_impl_elementObj<elem
 ::get_pseudo_impl() const
 {
 	return *this;
-}
-
-//! Implement
-
-template<typename element_impl>
-metrics::axis peepholed_listcontainer_impl_elementObj<element_impl>
-::get_height_metrics(ONLY IN_THREAD) const
-{
-	return this->get_height_axis(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

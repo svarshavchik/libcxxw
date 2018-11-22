@@ -111,10 +111,11 @@ class new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	list_selection_changed_cb_t selection_changed;
 
+private:
 	//! The height of the list.
 
 	std::variant<std::tuple<size_t, size_t>, dim_axis_arg> height_value;
-
+public:
 	//! The list's height is set to this number of rows.
 
 	inline void height(size_t rows)

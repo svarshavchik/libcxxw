@@ -23,7 +23,7 @@ class LIBCXX_HIDDEN peepholeObj : public containerObj {
 
 	const ref<implObj> impl;
 
-	class layoutmanager_implObj;
+	class LIBCXX_HIDDEN layoutmanager_implObj;
 
 	//! Constructor
 	peepholeObj(const ref<implObj> &impl,

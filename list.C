@@ -15,6 +15,7 @@
 #include "peephole/peepholed.H"
 #include "peephole/peephole_impl.H"
 #include "peepholed_focusable.H"
+#include "messages.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/container.H"
 #include "x/w/impl/theme_font_element.H"
@@ -144,11 +145,25 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 			[&]
 			(const std::tuple<size_t, size_t> &height)
 			{
+				const auto &[min, max]=height;
+
+				if (min <= 0)
+					throw EXCEPTION
+						(_("Cannot create a list with 0"
+						   " visible rows."));
+
+				if (max < min)
+					throw EXCEPTION(_("Cannot have maximum"
+							  " number of rows "
+							  "less than the "
+							  "minimum."));
+
 				list_peephole_style.height_algorithm=height;
 			},
 			[&]
 			(const dim_axis_arg &height)
 			{
+				list_peephole_style.height_algorithm=height;
 			}},
 		height_value);
 

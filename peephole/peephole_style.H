@@ -7,6 +7,7 @@
 #define peephole_style_H
 
 #include "x/w/alignment.H"
+#include "x/w/dim_axis_arg.H"
 #include <variant>
 #include <tuple>
 
@@ -58,7 +59,8 @@ struct peephole_style {
 
 	//! How the peephole's height gets processed.
 
-	std::variant<peephole_algorithm, std::tuple<size_t, size_t>
+	std::variant<peephole_algorithm, std::tuple<size_t, size_t>,
+		     dim_axis_arg
 		     > height_algorithm=peephole_algorithm::automatic;
 
 	//! Peephole scrolling strategy

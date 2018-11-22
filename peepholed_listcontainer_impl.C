@@ -15,11 +15,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-peepholed_listcontainerObj::implObj
-::implObj(const new_listlayoutmanager &style)
-	: height{style.height_value}
-{
-}
+peepholed_listcontainerObj::implObj::implObj()=default;
 
 peepholed_listcontainerObj::implObj::~implObj()=default;
 
@@ -54,31 +50,6 @@ void peepholed_listcontainerObj::implObj
 void peepholed_listcontainerObj::implObj
 ::update_peephole_metrics(ONLY IN_THREAD)
 {
-	// If the list specified dim_axis_arg for the list's vertical
-	// size, update the vertical metrics here.
-
-	std::visit
-		(visitor
-		 {
-		  [&, this](const std::tuple<size_t, size_t> &rows)
-		  {
-		  },
-		  [&, this](const dim_axis_arg &arg)
-		  {
-			  auto v=get_height_metrics(IN_THREAD);
-
-			  auto &peepholed_listcontainer=get_pseudo_impl();
-			  auto &peephole=peepholed_listcontainer.child_container
-				  ->container_element_impl();
-
-			  auto hv=peepholed_listcontainer
-				  .get_horizvert(IN_THREAD);
-
-			  peephole.get_horizvert(IN_THREAD)
-				  ->set_element_metrics(IN_THREAD, hv->horiz,
-							v);
-		  }},
-		 height);
 }
 
 LIBCXXW_NAMESPACE_END

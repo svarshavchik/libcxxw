@@ -31,21 +31,11 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 
  public:
 
-	//! Size peephole to this many rows, based on the reference font.
-	const std::variant<std::tuple<size_t, size_t>, dim_axis_arg> height;
-
 	//! Constructor
-	implObj(const new_listlayoutmanager &style);
+	implObj();
 
 	//! Destructor
 	~implObj();
-
-	//! Return the height metrics.
-
-	//! If the height was specified as dim_axis_arg, return the computed
-	//! dimensions based on the current theme.
-
-	virtual metrics::axis get_height_metrics(ONLY IN_THREAD) const=0;
 
 	//! Return the element is mixin is a part of.
 

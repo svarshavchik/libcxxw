@@ -12,6 +12,8 @@
 #include "gc.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/scratch_buffer.H"
+#include "screen.H"
+#include "defaulttheme.H"
 #include "run_as.H"
 #include <x/property_value.H>
 #include <x/visitor.H>
@@ -43,7 +45,7 @@ peepholeObj::layoutmanager_implObj
 ::layoutmanager_implObj(const container_impl &container_impl,
 			peephole_style style,
 			const peepholed &element_in_peephole)
-	: layoutmanagerObj::implObj(container_impl),
+	: superclass_t(container_impl),
 	style(style),
 	element_in_peephole(element_in_peephole)
 {
@@ -54,7 +56,7 @@ peepholeObj::layoutmanager_implObj::~layoutmanager_implObj()=default;
 void peepholeObj::layoutmanager_implObj::child_metrics_updated(ONLY IN_THREAD)
 {
 	update_our_metrics(IN_THREAD);
-	layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD);
+	superclass_t::child_metrics_updated(IN_THREAD);
 }
 
 void peepholeObj::layoutmanager_implObj
@@ -220,14 +222,49 @@ static void center_visibility_at(coord_t &requested_pos,
 
 void peepholeObj::layoutmanager_implObj::initialize(ONLY IN_THREAD)
 {
+	superclass_t::initialize(IN_THREAD);
+
 	// Now we can initialize our element.
 
-	element_in_peephole->get_peepholed_element()->impl
-		->initialize_if_needed(IN_THREAD);
+	auto element_in_peephole_impl=
+		element_in_peephole->get_peepholed_element()->impl;
+
+	element_in_peephole_impl->initialize_if_needed(IN_THREAD);
+
+	recompute_vertical_metrics(IN_THREAD,
+				   element_in_peephole_impl->get_screen()
+				   ->impl->current_theme.get());
 
 	update_our_metrics(IN_THREAD);
 
 	needs_recalculation(IN_THREAD);
+}
+
+void peepholeObj::layoutmanager_implObj
+::theme_updated(ONLY IN_THREAD,
+		const defaulttheme &theme)
+{
+	superclass_t::theme_updated(IN_THREAD, theme);
+	recompute_vertical_metrics(IN_THREAD, theme);
+}
+
+void peepholeObj::layoutmanager_implObj
+::recompute_vertical_metrics(ONLY IN_THREAD,
+			     const defaulttheme &theme)
+{
+	std::visit(visitor
+		 {
+		  [&,this](const dim_axis_arg &arg)
+		  {
+			  vertical_metrics(IN_THREAD)=
+				  arg.compute(theme,
+					      themedimaxis::height);
+		  },
+		  [](const auto &)
+		  {
+		  }
+		 },
+		   style.height_algorithm);
 }
 
 void peepholeObj::layoutmanager_implObj::update_our_metrics(ONLY IN_THREAD)
@@ -261,6 +298,10 @@ void peepholeObj::layoutmanager_implObj::update_our_metrics(ONLY IN_THREAD)
 			   {
 				   if (a==peephole_algorithm::stretch_peephole)
 					   vert=element_horizvert->vert;
+			   },
+			   [&, this](const dim_axis_arg &)
+			   {
+				   vert=vertical_metrics(IN_THREAD);
 			   },
 			   [&](const std::tuple<size_t, size_t> &s)
 			   {

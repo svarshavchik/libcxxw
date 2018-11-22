@@ -22,11 +22,13 @@ LIBCXXW_NAMESPACE_START
 
 //! \ref peephole "peephole" implementation object.
 
-class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
+class peepholeObj::layoutmanager_implObj
 	: public layoutmanagerObj::implObj {
 
+	//! Alias
+	typedef layoutmanagerObj::implObj superclass_t;
 
- public:
+public:
 	LOG_CLASS_SCOPE;
 
 	class scrollbarsObj;
@@ -97,7 +99,21 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
 	//! Override initialize().
 	void initialize(ONLY IN_THREAD) override;
- private:
+
+	//! theme_updated().
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &theme) override;
+
+private:
+
+	//! Explicitly-specified vertical metrics.
+	metrics::axis vertical_metrics_thread_only;
+
+	THREAD_DATA_ONLY(vertical_metrics);
+
+	//! Recompute explicit vertical metrics.
+
+	void recompute_vertical_metrics(ONLY IN_THREAD,
+					const defaulttheme &theme);
 
 	//! Implement recalculate()
 

@@ -263,24 +263,6 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 			  {"menu_shortcut"})}
 
 {
-	// Some sanity checks will be done here, instead of in
-	// update_peephole_metrics().
-	if (std::holds_alternative<std::tuple<size_t, size_t>>
-	    (init_args.style.height_value))
-	{
-		auto &min_max=std::get<std::tuple<size_t, size_t>
-				       >(init_args.style.height_value);
-		auto &[min, max]=min_max;
-
-		if (min <= 0)
-			throw EXCEPTION(_("Cannot create a list with 0 "
-					  "visible rows."));
-
-		if (max < min)
-			throw EXCEPTION(_("Cannot have maximum number of rows "
-					  "less than the minimum."));
-	}
-
 	for (auto &info:requested_col_widths)
 	{
 		if (info.first >= columns)

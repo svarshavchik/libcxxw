@@ -8,7 +8,6 @@
 #include "peepholed_listcontainer_impl.H"
 #include "listlayoutmanager/listcontainer_dim_elementfwd.H"
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
-#include "x/w/impl/themedimfwd.H"
 #include "x/w/impl/themedim_axis_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
@@ -43,10 +42,7 @@ class peepholed_listcontainer_impl_element_baseObj
 	: public element_impl, public peepholed_listcontainerObj::implObj {
 
  public:
-	template<typename ...Args>
-	peepholed_listcontainer_impl_element_baseObj(const new_listlayoutmanager
-						     &style,
-						     Args && ...args);
+	using element_impl::element_impl;
 
 	~peepholed_listcontainer_impl_element_baseObj();
 
@@ -72,15 +68,13 @@ class peepholed_listcontainer_impl_element_baseObj
 
 template<typename element_impl>
 class peepholed_listcontainer_impl_elementObj :
-	public themedim_axis_heightObj<
-		listcontainer_dim_elementObj
-		<peepholed_listcontainer_impl_element_baseObj<element_impl>>> {
+	public listcontainer_dim_elementObj<
+	peepholed_listcontainer_impl_element_baseObj<element_impl>> {
 
 public:
-	typedef themedim_axis_heightObj<
-	listcontainer_dim_elementObj<
-		peepholed_listcontainer_impl_element_baseObj<
-			element_impl>>> superclass_t;
+	typedef listcontainer_dim_elementObj<
+	peepholed_listcontainer_impl_element_baseObj<
+		element_impl>> superclass_t;
 
 	template<typename ...Args>
 		peepholed_listcontainer_impl_elementObj
@@ -91,8 +85,6 @@ public:
 
 	listcontainer_pseudo_implObj &get_pseudo_impl() override;
 	const listcontainer_pseudo_implObj &get_pseudo_impl() const override;
-
-	virtual metrics::axis get_height_metrics(ONLY IN_THREAD) const override;
 };
 
 LIBCXXW_NAMESPACE_END
