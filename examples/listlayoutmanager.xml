@@ -15,6 +15,16 @@
     <longopt>maxrows</longopt>
     <descr>Maximum number of rows in the list that are visible</descr>
   </option>
+
+  <option>
+    <name>height</name>
+    <type>double</type>
+    <opt>h</opt>
+    <longopt>height</longopt>
+    <hasvalue />
+    <descr>Height of the list, in millimeters</descr>
+  </option>
+
   <option>
     <name>multiple</name>
     <type>bool</type>

@@ -21,11 +21,19 @@ See COPYING for distribution information.
     <caption>
       <para>
 	A selection list is a vertical list, typically containing text labels.
-	One or more items in the list are selected by clicking on them or
-	by using the keyboard.
+	One or more items in the list get visually picked by clicking on them,
+	or by using the keyboard.
       </para>
     </caption>
   </mediaobject>
+
+  <para>
+    The list layout manager is quite versatile, although by itself all it
+    seems to do is show a vertical list of text labels, but it's versatility
+    becomes apparent when it gets used to underpin
+    <link linkend="menu">menus</link>, <link linkend="combobox">combo-boxes</link>,
+    and <link linkend="tables">tables</link>.
+  </para>
 
   <blockquote>
     <title><ulink url="examples/listlayoutmanager.C">listlayoutmanager.C</ulink></title>
@@ -62,12 +70,12 @@ See COPYING for distribution information.
       A &factory;'s
       <methodname>create_focusable_container</methodname>() creates
       a &container; that processes &focusable; events.
-      The first parameter to a
+      The first parameter to
       <methodname>create_focusable_container</methodname>() is a
       &creator;.
       Passing a
       <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>
-      for the second parameter results in a <quote>selection list</quote>.
+      for the second parameter creates a <quote>selection list</quote>.
       The newly-created
       <ulink url="&link-typedef-x--w-focusable-container;"><classname>&ns;::w::focusable_container</classname></ulink>'s
       <methodname>get_layoutmanager</methodname>() returns an
@@ -84,7 +92,8 @@ new_list.height(6);
 
     <para>
       The selection list consists of rows of items. The selection list
-      automatically sizes itself to be wide enough to show its widest item.
+      automatically sizes itself to be wide enough to show its widest item
+      (this is the default behavior).
       The selection list's default height is four rows.
       <quote><literal>height(6)</literal></quote> sets the list's height
       to six rows.
@@ -112,16 +121,16 @@ new_list.height(4, 10);
 
     <note>
       <para>
-	The list's height gets computed based on the list's default font's
-	height and the number of rows in the list. Setting a variable list
-	height may not work correctly if the list contains
+	The list's height gets computed based on the list items' default font's
+	height and the number of rows in the list. The list's height does not
+	come up to be an even number of rows if the list contains
 	<link linkend="listitemmethods">separators or items with custom
 	  fonts</link>.
       </para>
     </note>
 
     <para>
-      An item in a list is selected by clicking on it, or by tabbing
+      An item in a list gets selected by clicking on it, or by tabbing
       to the selection list, pressing <keycap>Cursor-Down</keycap> to
       highlight the first item in the list, then using
       <keycap>Cursor-Down</keycap> and <keycap>Cursor-Up</keycap> to
@@ -393,7 +402,8 @@ llmanager->append_items(
     </itemizedlist>
 
     <para>
-      All items in a selection list are numbered starting with 0, and get
+      All items in a selection list
+      get automatically numbered starting with 0, and get
       automatically renumbered whenever list items get added or removed from
       the list.
       <methodname>size</methodname>() returns the number of items in the list.
@@ -426,8 +436,8 @@ llmanager->append_items(
     <note>
       <para>
 	The height of the selection list gets specified as the number of list
-	rows. The actual height gets computed using the default list label
-	font. Using custom fonts and separators results in a selection list
+	rows. The actual height gets computed based on the height of the list's
+	items. Using custom fonts and separators results in a selection list
 	with rows of varying height.
       </para>
     </note>

@@ -78,16 +78,24 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	// The default value is:
 	//
 	// new_list.selection_type=x::w::single_selection_type;
-
-	if (opts.multiple->value)
-		new_list.selection_type=x::w::multiple_selection_type;
-
+	//
 	// Other possible values also include:
 	//
 	// x::w::single_optional_selection_type
 	//
 	// x::w::no_selection_type
 
+
+	if (opts.multiple->value)
+		new_list.selection_type=x::w::multiple_selection_type;
+
+	// The list's height can be specified as a number of rows, both
+	// the minimum and maximum (which could be the same). A scrollbar
+	// gets added if the actual list exceeds the number of rows. The
+	// number of rows gets multiplied by the default font's height,
+	// so a list containing items that use different fonts may not
+	// end up showing an exact number of lines specified, because of
+	// that.
 	if (opts.rows->isSet())
 	{
 		size_t min=opts.rows->value, max=min;
@@ -102,7 +110,15 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	else if (opts.maxrows->isSet())
 	{
 		auto v=opts.maxrows->value;
-		new_list.height(v, v);
+		new_list.height(v); //
+	}
+
+	// Alternatively, the list's height gets set in millimeters, via
+	// x::w::dim_axis_arg.
+	else if (opts.height->isSet())
+	{
+		auto v=opts.height->value;
+		new_list.height(x::w::dim_axis_arg{v});
 	}
 
 	// An optional callback that gets invoked whenever a list item gets

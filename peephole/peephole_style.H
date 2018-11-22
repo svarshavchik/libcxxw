@@ -55,7 +55,8 @@ struct peephole_style {
 
 	//! How the peephole's width gets processed.
 
-	peephole_algorithm width_algorithm=peephole_algorithm::automatic;
+	std::variant<peephole_algorithm, dim_axis_arg
+		     > width_algorithm=peephole_algorithm::automatic;
 
 	//! How the peephole's height gets processed.
 

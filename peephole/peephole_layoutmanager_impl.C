@@ -231,9 +231,9 @@ void peepholeObj::layoutmanager_implObj::initialize(ONLY IN_THREAD)
 
 	element_in_peephole_impl->initialize_if_needed(IN_THREAD);
 
-	recompute_vertical_metrics(IN_THREAD,
-				   element_in_peephole_impl->get_screen()
-				   ->impl->current_theme.get());
+	recompute_hv_metrics(IN_THREAD,
+			     element_in_peephole_impl->get_screen()
+			     ->impl->current_theme.get());
 
 	update_our_metrics(IN_THREAD);
 
@@ -245,13 +245,27 @@ void peepholeObj::layoutmanager_implObj
 		const defaulttheme &theme)
 {
 	superclass_t::theme_updated(IN_THREAD, theme);
-	recompute_vertical_metrics(IN_THREAD, theme);
+	recompute_hv_metrics(IN_THREAD, theme);
 }
 
 void peepholeObj::layoutmanager_implObj
-::recompute_vertical_metrics(ONLY IN_THREAD,
+::recompute_hv_metrics(ONLY IN_THREAD,
 			     const defaulttheme &theme)
 {
+	std::visit(visitor
+		 {
+		  [&,this](const dim_axis_arg &arg)
+		  {
+			  horizontal_metrics(IN_THREAD)=
+				  arg.compute(theme,
+					      themedimaxis::width);
+		  },
+		  [](const auto &)
+		  {
+		  }
+		 },
+		   style.width_algorithm);
+
 	std::visit(visitor
 		 {
 		  [&,this](const dim_axis_arg &arg)
@@ -269,9 +283,11 @@ void peepholeObj::layoutmanager_implObj
 
 void peepholeObj::layoutmanager_implObj::update_our_metrics(ONLY IN_THREAD)
 {
-	// Copy the peepholed element's metrics to ours, if auto width/height.
+	// Avoid all this work if we're on cruize control.
 
-	if (style.width_algorithm==peephole_algorithm::automatic &&
+	if (std::holds_alternative<peephole_algorithm>(style.width_algorithm)&&
+	    std::get<peephole_algorithm>(style.width_algorithm)==
+	    peephole_algorithm::automatic &&
 	    std::holds_alternative<peephole_algorithm>(style.height_algorithm)&&
 	    std::get<peephole_algorithm>(style.height_algorithm)==
 	    peephole_algorithm::automatic)
@@ -289,8 +305,18 @@ void peepholeObj::layoutmanager_implObj::update_our_metrics(ONLY IN_THREAD)
 	auto horiz=my_horizvert->horiz;
 	auto vert=my_horizvert->vert;
 
-	if (style.width_algorithm==peephole_algorithm::stretch_peephole)
-		horiz=element_horizvert->horiz;
+	std::visit(visitor
+		   {
+			   [&](peephole_algorithm a)
+			   {
+				   if (a==peephole_algorithm::stretch_peephole)
+					   horiz=element_horizvert->horiz;
+			   },
+			   [&, this](const dim_axis_arg &)
+			   {
+				   horiz=horizontal_metrics(IN_THREAD);
+			   }
+		   }, style.width_algorithm);
 
 	std::visit(visitor
 		   {
@@ -405,7 +431,9 @@ void peepholeObj::layoutmanager_implObj
 						current_position.height);
 	}
 
-	if (style.width_algorithm==peephole_algorithm::stretch_peephole)
+	if (std::holds_alternative<peephole_algorithm>(style.width_algorithm)
+	    && std::get<peephole_algorithm>(style.width_algorithm) ==
+	    peephole_algorithm::stretch_peephole)
 		min_scroll_x=0;
 
 	if (std::holds_alternative<peephole_algorithm>(style.height_algorithm)

@@ -105,15 +105,19 @@ public:
 
 private:
 
+	//! Explicitly-specified horizontal metrics.
+	metrics::axis horizontal_metrics_thread_only;
+
 	//! Explicitly-specified vertical metrics.
 	metrics::axis vertical_metrics_thread_only;
 
+	THREAD_DATA_ONLY(horizontal_metrics);
 	THREAD_DATA_ONLY(vertical_metrics);
 
-	//! Recompute explicit vertical metrics.
+	//! Recompute explicit horizontal and vertical metrics.
 
-	void recompute_vertical_metrics(ONLY IN_THREAD,
-					const defaulttheme &theme);
+	void recompute_hv_metrics(ONLY IN_THREAD,
+				  const defaulttheme &theme);
 
 	//! Implement recalculate()
 

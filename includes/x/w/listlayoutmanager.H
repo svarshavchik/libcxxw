@@ -147,11 +147,40 @@ public:
 	//! Set the new list's height as completely variable.
 
 	//! This is often used when creating a selection list
-	//! inside a \ref panelayoutmanager "pane".
+	//! inside a \ref panelayoutmanager "pane". This is a shortcut for
+	//! specifying an x::w::dim_axis_arg that specifies a minimum height
+	//! of 0, and no maximum height.
 
 	inline void variable_height()
 	{
 		height_value=dim_axis_arg{0, 0};
+	}
+
+private:
+	//! List's width.
+
+	//! If not set, the list is always wide enough for its widest element.
+
+	std::optional<dim_axis_arg> width_value;
+public:
+
+	//! By default, the list's width is determined by its widest element.
+	inline void default_width()
+	{
+		width_value.reset();
+	}
+
+	//! Specify an explicit list width.
+
+	inline void width(const dim_axis_arg &arg)
+	{
+		width_value=arg;
+	}
+
+	//! Set the new list's width as completely variable.
+	inline void variable_width()
+	{
+		width(dim_axis_arg{0, 0});
 	}
 
 	//! Number of columns in the list
@@ -199,7 +228,7 @@ public:
 
 	//! Lists created using the same synchronized_columns will have
 	//! their columns' widths equalized. Positioning the lists above
-	//! each results in both lists's columns ligning up with each other.
+	//! each results in both lists's columns lining up with each other.
 	//!
 	//! For this to work correctly:
 	//!
@@ -213,7 +242,7 @@ public:
 	//! focusoff_border, focuson_border, and column_borders. Or, at least,
 	//! the borders must have the same width.
 	//!
-	//! - Both list have the same h_padding.
+	//! - Both lists have the same h_padding.
 	//!
 	//! It is also possible to, very carefully, synchronize the columns
 	//! between a grid and the list, by using the same
@@ -229,7 +258,7 @@ public:
 	//!
 	//! - Their left and right paddings are the same as v_padding.
 	//!
-	//! This field is ignored if this list is part of the table, and
+	//! synchronized_columns ignored if this list is part of the table, and
 	//! this is overridden by
 	//! \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
 	//! which uses this to implement the table's header.
@@ -278,7 +307,14 @@ public:
 
 	std::unordered_map<size_t, std::tuple<dim_arg, dim_arg>> lr_paddings;
 
+	//! Visibility of the horizontal scrollbar
+	scrollbar_visibility horizontal_scrollbar;
+
 	//! Visibility of the vertical scrollbar
+
+	//! If the list's height, height() is set to a varying number of rows,
+	//! the default "automatic" visibility always gets replaced with
+	//! "automatic_reserved", to avoid suboptimal behavior.
 	scrollbar_visibility vertical_scrollbar;
 
 	//! Background color
@@ -300,7 +336,7 @@ public:
 	//! the button being pressed.
 	color_arg current_color;
 
-	//! List font
+	//! Default list font
 	font_arg list_font;
 
 	//! Constructor

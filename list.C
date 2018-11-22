@@ -80,6 +80,7 @@ new_listlayoutmanager
 	  focuson_border{"listfocuson_border"},
 	  v_padding{"list_v_padding"},
 	  h_padding{"list_h_padding"},
+	  horizontal_scrollbar{scrollbar_visibility::automatic},
 	  vertical_scrollbar{scrollbar_visibility::automatic},
 	  background_color{"list_background_color"},
 	  selected_color{"list_selected_color"},
@@ -138,9 +139,15 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 
 	peephole_style list_peephole_style{halign::fill, valign::fill};
 
-	list_peephole_style.width_algorithm=
-		peephole_algorithm::stretch_peephole;
+	if (width_value)
+		list_peephole_style.width_algorithm=*width_value;
+	else
+	{
+		list_peephole_style.width_algorithm=
+			peephole_algorithm::stretch_peephole;
+	}
 
+	auto vertical_scrollbar_value=vertical_scrollbar;
 	std::visit(visitor{
 			[&]
 			(const std::tuple<size_t, size_t> &height)
@@ -159,6 +166,15 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 							  "minimum."));
 
 				list_peephole_style.height_algorithm=height;
+
+				if (min < max &&
+				    vertical_scrollbar_value==
+				    scrollbar_visibility::automatic)
+				{
+					vertical_scrollbar_value=
+						scrollbar_visibility
+						::automatic_reserved;
+				}
 			},
 			[&]
 			(const dim_axis_arg &height)
@@ -175,8 +191,8 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 		  background_color,
 		  focusable_container_impl,
 		  list_peephole_style,
-		  scrollbar_visibility::never,
-		  vertical_scrollbar
+		  horizontal_scrollbar,
+		  vertical_scrollbar_value
 		}, [&, this]
 			(const container_impl &peepholed_parent,
 			 const gridlayoutmanager &glm)
