@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listcontainer_impl.H"
+#include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "peepholed_toplevel_listcontainer/impl.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/container.H"

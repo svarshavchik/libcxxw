@@ -11,6 +11,7 @@
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/focus/focusable.H"
 #include "listlayoutmanager/list_elementfwd.H"
+#include "listlayoutmanager/listcontainer_pseudo_implfwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -49,9 +50,11 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_implObj
 					       const tallest_row_height_t
 					       &new_tallest_height);
 
-	//! Return the child_elementObj this mixin implementation is a part of.
+	//! Return the listcontainer_pseudo_implobj.
 
-	virtual child_elementObj &listcontainer_element()=0;
+	//! Returns what this mixin implementation is a part of.
+
+	virtual listcontainer_pseudo_implObj &listcontainer_element()=0;
 };
 
 LIBCXXW_NAMESPACE_END

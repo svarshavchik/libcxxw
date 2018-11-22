@@ -14,7 +14,7 @@ peepholed_toplevel_listcontainer_impl_elementObj<element_impl>
 ::~peepholed_toplevel_listcontainer_impl_elementObj()=default;
 
 template<typename element_impl>
-child_elementObj
+listcontainer_pseudo_implObj
 &peepholed_toplevel_listcontainer_impl_elementObj<element_impl>
 ::listcontainer_element()
 {
