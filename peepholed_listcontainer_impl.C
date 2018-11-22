@@ -57,51 +57,31 @@ void peepholed_listcontainerObj::implObj
 void peepholed_listcontainerObj::implObj
 ::update_peephole_metrics(ONLY IN_THREAD)
 {
-	// We keep our horizontal metrics, and override the vertical
-	// metrics to the fixed height.
-	//
-	// Multiple rowsize by # of rows if the height got specified as rows.
-	//
-	// If the height got specified as a dim_axis_arg, retrieve the current
-	// dimensions from the mixin-specified get_height_metrics().
+	// If the list specified dim_axis_arg for the list's vertical
+	// size, update the vertical metrics here.
 
-	auto v=std::visit(visitor{
-			[&, this](const std::tuple<size_t, size_t> &rows)
-			{
-				auto &[min, max]=rows;
+	std::visit
+		(visitor
+		 {
+		  [&, this](const std::tuple<size_t, size_t> &rows)
+		  {
+		  },
+		  [&, this](const dim_axis_arg &arg)
+		  {
+			  auto v=get_height_metrics(IN_THREAD);
 
-				auto n=get_pseudo_impl().rows(IN_THREAD);
+			  auto &peepholed_listcontainer=get_pseudo_impl();
+			  auto &peephole=peepholed_listcontainer.child_container
+				  ->container_element_impl();
 
-				if (n > max)
-					n=max;
+			  auto hv=peepholed_listcontainer
+				  .get_horizvert(IN_THREAD);
 
-				if (n < min)
-					n=min;
-
-				auto h=dim_t::truncate(rowsize(IN_THREAD) *
-						       dim_t{dim_t::truncate(n)}
-						       );
-
-				return metrics::axis{h, h, h};
-			},
-			[&, this](const dim_axis_arg &arg)
-			{
-				return get_height_metrics(IN_THREAD);
-
-			}},
-		height);
-
-	// Update the peephole metrics based on the peepholed list container's
-	// metrics, as adjusted above.
-
-	auto &peepholed_listcontainer=get_pseudo_impl();
-	auto &peephole=	peepholed_listcontainer.child_container
-		->container_element_impl();
-
-	auto hv=peepholed_listcontainer.get_horizvert(IN_THREAD);
-
-	peephole.get_horizvert(IN_THREAD)
-		->set_element_metrics(IN_THREAD, hv->horiz, v);
+			  peephole.get_horizvert(IN_THREAD)
+				  ->set_element_metrics(IN_THREAD, hv->horiz,
+							v);
+		  }},
+		 height);
 }
 
 LIBCXXW_NAMESPACE_END

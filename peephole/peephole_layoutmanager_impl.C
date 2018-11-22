@@ -14,6 +14,7 @@
 #include "x/w/scratch_buffer.H"
 #include "run_as.H"
 #include <x/property_value.H>
+#include <x/visitor.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::peepholeObj::layoutmanager_implObj);
 
@@ -233,8 +234,10 @@ void peepholeObj::layoutmanager_implObj::update_our_metrics(ONLY IN_THREAD)
 {
 	// Copy the peepholed element's metrics to ours, if auto width/height.
 
-	if (style.width_algorithm!=peephole_algorithm::stretch_peephole &&
-	    style.height_algorithm!=peephole_algorithm::stretch_peephole)
+	if (style.width_algorithm==peephole_algorithm::automatic &&
+	    std::holds_alternative<peephole_algorithm>(style.height_algorithm)&&
+	    std::get<peephole_algorithm>(style.height_algorithm)==
+	    peephole_algorithm::automatic)
 		return;
 
 	auto peephole_element_impl=
@@ -251,9 +254,38 @@ void peepholeObj::layoutmanager_implObj::update_our_metrics(ONLY IN_THREAD)
 
 	if (style.width_algorithm==peephole_algorithm::stretch_peephole)
 		horiz=element_horizvert->horiz;
-	if (style.height_algorithm==
-	    peephole_algorithm::stretch_peephole)
-		vert=element_horizvert->vert;
+
+	std::visit(visitor
+		   {
+			   [&](peephole_algorithm a)
+			   {
+				   if (a==peephole_algorithm::stretch_peephole)
+					   vert=element_horizvert->vert;
+			   },
+			   [&](const std::tuple<size_t, size_t> &s)
+			   {
+				   const auto &[min, max]=s;
+
+				   auto rows=element_in_peephole->
+					   peepholed_rows(IN_THREAD);
+
+				   if (rows < min)
+					   rows=min;
+
+				   if (rows > max)
+					   rows=max;
+
+				   dim_t height=dim_t::truncate
+					   (element_in_peephole->
+					    vertical_increment(IN_THREAD)
+					    * rows);
+
+				   if (height == dim_t::infinite())
+					   --height;
+				   vert={height, height, height};
+			   }
+		   }, style.height_algorithm);
+
 	my_horizvert->set_element_metrics(IN_THREAD, horiz, vert);
 }
 
@@ -332,9 +364,12 @@ void peepholeObj::layoutmanager_implObj
 						current_position.height);
 	}
 
-	if (style.width_algorithm!=peephole_algorithm::automatic)
+	if (style.width_algorithm==peephole_algorithm::stretch_peephole)
 		min_scroll_x=0;
-	if (style.height_algorithm!=peephole_algorithm::automatic)
+
+	if (std::holds_alternative<peephole_algorithm>(style.height_algorithm)
+	    && std::get<peephole_algorithm>(style.height_algorithm) ==
+	    peephole_algorithm::stretch_peephole)
 		min_scroll_y=0;
 
 	LOG_DEBUG("Minimum X position is " << min_scroll_x);

@@ -4,12 +4,14 @@
     <type>size_t</type>
     <opt>r</opt>
     <longopt>rows</longopt>
+    <hasvalue />
     <descr>Minimum number of rows in the list that are visible</descr>
   </option>
   <option>
     <name>maxrows</name>
     <type>size_t</type>
     <opt>m</opt>
+    <hasvalue />
     <longopt>maxrows</longopt>
     <descr>Maximum number of rows in the list that are visible</descr>
   </option>
@@ -17,7 +19,7 @@
     <name>multiple</name>
     <type>bool</type>
     <default>false</default>
-    <opt>m</opt>
+    <opt>u</opt>
     <longopt>multiple</longopt>
     <descr>Multiple selection list</descr>
   </option>

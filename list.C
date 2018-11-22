@@ -18,7 +18,7 @@
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/container.H"
 #include "x/w/impl/theme_font_element.H"
-
+#include <x/visitor.H>
 #include <tuple>
 #include <utility>
 
@@ -136,6 +136,21 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 	containerptr internal_listcontainer;
 
 	peephole_style list_peephole_style{halign::fill, valign::fill};
+
+	list_peephole_style.width_algorithm=
+		peephole_algorithm::stretch_peephole;
+
+	std::visit(visitor{
+			[&]
+			(const std::tuple<size_t, size_t> &height)
+			{
+				list_peephole_style.height_algorithm=height;
+			},
+			[&]
+			(const dim_axis_arg &height)
+			{
+			}},
+		height_value);
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({list_border,

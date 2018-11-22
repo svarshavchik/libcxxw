@@ -113,15 +113,6 @@ class new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	//! The height of the list.
 
-	//! The height may be specified either as a number of rows, this
-	//! sets the actual size of the list element based on the number
-	//! of rows and the default list font height. The tuple specifies
-	//! the minimum and the maximum number of rows.
-	//!
-	//! Alternatively the list's height may be specified as a dim_axis_arg.
-	//!
-	//! The default height is four rows.
-
 	std::variant<std::tuple<size_t, size_t>, dim_axis_arg> height_value;
 
 	//! The list's height is set to this number of rows.
@@ -134,6 +125,11 @@ class new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! The list's height is between these many rows.
 
 	//! Minimum list height, and maximum list height.
+	//!
+	//! \ref scrollbar_visibility "vertical_scrollbar" should be set
+	//! to either \c scrollbar_visibility::always or
+	//! scrollbar_visibility::automatic_reserved when specifying a varying
+	//! number of rows, to avoid display flicker.
 
 	inline void height(size_t min_rows, size_t max_rows)
 	{

@@ -7,6 +7,8 @@
 #define peephole_style_H
 
 #include "x/w/alignment.H"
+#include <variant>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -38,9 +40,11 @@ enum class LIBCXX_HIDDEN peephole_algorithm {
 	stretch_peephole
 };
 
+struct LIBCXX_HIDDEN peephole_style;
+
 //! Peephole style.
 
-struct LIBCXX_HIDDEN peephole_style {
+struct peephole_style {
 
 	//! Alignment of the element when it is smaller than the peephole.
 	halign horizontal_alignment=halign::left;
@@ -54,7 +58,8 @@ struct LIBCXX_HIDDEN peephole_style {
 
 	//! How the peephole's height gets processed.
 
-	peephole_algorithm height_algorithm=peephole_algorithm::automatic;
+	std::variant<peephole_algorithm, std::tuple<size_t, size_t>
+		     > height_algorithm=peephole_algorithm::automatic;
 
 	//! Peephole scrolling strategy
 
