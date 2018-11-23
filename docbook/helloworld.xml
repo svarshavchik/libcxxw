@@ -248,9 +248,9 @@ make</programlisting>
 
       <para>
 	In all cases, callbacks, in general,
-	should not engage in lengthy, time-consuming tasks. Until the
-	callback returns, the internal connection thread will be unable to
-	process any additional X protocol messages. Callbacks should be
+	should not engage in lengthy, time-consuming tasks. The internal
+	connection thread does not process any additional X protocol
+	messages until the callback returns. Callbacks should be
 	limited to simple tasks, such as sending messages to the main
 	application thread, to execute the actual task at hand.
       </para>

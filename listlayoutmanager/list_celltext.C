@@ -13,9 +13,11 @@ LIBCXXW_NAMESPACE_START
 list_celltextObj::list_celltextObj(const richtext_alteration_config
 				   &richtext_alteration,
 				   const richtextstring &string,
-				   halign alignment,
+				   halign halignment,
+				   valign valignment,
 				   dim_t word_wrap_width)
-	: richtextObj{string, alignment, word_wrap_width},
+	: list_cellObj{valignment},
+	  richtextObj{string, halignment, word_wrap_width},
 	  richtext_alteration{richtext_alteration}
 {
 }

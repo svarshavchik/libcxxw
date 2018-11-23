@@ -28,10 +28,13 @@ See COPYING for distribution information.
   </mediaobject>
 
   <para>
-    The list layout manager is quite versatile, although by itself all it
+    The list layout manager gives an initial impression of a simple, basic
+    layout manager. All it
     seems to do is show a vertical list of text labels, but it's versatility
-    becomes apparent when it gets used to underpin
-    <link linkend="menu">menus</link>, <link linkend="combobox">combo-boxes</link>,
+    becomes more apparent when it gets used to underpin
+    <link linkend="hierlist">hierarchical lists</link>,
+    <link linkend="menu">menus</link>,
+    <link linkend="combobox">combo-boxes</link>,
     and <link linkend="tables">tables</link>.
   </para>
 
@@ -73,7 +76,7 @@ See COPYING for distribution information.
       The first parameter to
       <methodname>create_focusable_container</methodname>() is a
       &creator;.
-      Passing a
+      Passing an
       <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>
       for the second parameter creates a <quote>selection list</quote>.
       The newly-created

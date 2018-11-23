@@ -180,11 +180,13 @@ table.externallinks th, table.externallinks td {
 }
 
 #panelayoutmanager div.mediaobject,
+#hierlist div.mediaobject,
 #customcanvas div.mediaobject {
     float: right;
     margin-left: 2em;
 }
 
+#hierlist div.blockquote,
 #panelayoutmanager div.blockquote {
     clear: right;
 }

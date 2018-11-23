@@ -1,4 +1,11 @@
+2018-11-23  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* list layout manager settings for hierarchical lists.
+
 2018-11-22  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* list layout manager: added optional row_alignments setting.
+	Implemented hierindent{}.
 
 	* listlayoutmanager/listlayoutmanager.C: Added remove_items().
 

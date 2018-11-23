@@ -21,6 +21,7 @@
 #include "x/w/button.H"
 #include "x/w/canvas.H"
 #include "x/w/screen.H"
+#include "x/w/image_param_literals.H"
 #include "x/w/connection.H"
 
 #include <vector>
@@ -553,6 +554,10 @@ void listhiertest(const LIBCXX_NAMESPACE::w::main_window &main_window)
 	LIBCXX_NAMESPACE::w::new_listlayoutmanager
 		nlm{LIBCXX_NAMESPACE::w::highlighted_list};
 
+	nlm.columns=2;
+	nlm.requested_col_widths={{1, 100}};
+	nlm.row_alignments={{0, LIBCXX_NAMESPACE::w::valign::middle}};
+	nlm.h_padding=0;
 	nlm.width(LIBCXX_NAMESPACE::w::dim_axis_arg{75});
 	nlm.height(LIBCXX_NAMESPACE::w::dim_axis_arg{100});
 
@@ -586,12 +591,16 @@ void listhiertest(const LIBCXX_NAMESPACE::w::main_window &main_window)
 
 			ll->insert_items(i+1, {
 					new_indent,
+					"scroll-right1"_image,
 					next_lorem_ipsum(),
 					new_indent,
+					"scroll-right1",
 					next_lorem_ipsum(),
 					new_indent,
+					"scroll-right1",
 					next_lorem_ipsum(),
 					new_indent,
+					"scroll-right1",
 					next_lorem_ipsum()
 				});
 		};
@@ -603,7 +612,9 @@ void listhiertest(const LIBCXX_NAMESPACE::w::main_window &main_window)
 			 LIBCXX_NAMESPACE::w::listlayoutmanager ll=
 				 fc->get_layoutmanager();
 
-			 ll->append_items({lorem_ipsum[0]});
+			 ll->append_items({LIBCXX_NAMESPACE::w::image_param
+					   {"scroll-right1"},
+					   lorem_ipsum[0]});
 		 },
 		 nlm);
 }

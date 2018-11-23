@@ -306,6 +306,11 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Specified in new_listlayoutmanager.
 	const std::unordered_map<size_t, halign> col_alignments;
 
+	//! Alignment of all columns.
+
+	//! Specified in new_listlayoutmanager.
+	const std::unordered_map<size_t, valign> row_alignments;
+
 	//! Borders
 
 	//! Specified in new_listlayoutmanager.

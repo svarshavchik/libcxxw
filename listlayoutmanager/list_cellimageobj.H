@@ -22,7 +22,7 @@ struct list_cellimageObj : public list_cellObj,
 
 	//! Image's alignment.
 
-	const halign alignment;
+	const halign halignment;
 
 	//! Which image number is currently drawn.
 	mpobj<size_t> n=0;
@@ -30,7 +30,8 @@ struct list_cellimageObj : public list_cellObj,
 	//! Constructor.
 
 	list_cellimageObj(const std::vector<icon> &images,
-			      halign alignment);
+			  halign halignment,
+			  valign valignment);
 
 	//! Implement cell_get_metrics().
 	std::pair<metrics::axis, metrics::axis>

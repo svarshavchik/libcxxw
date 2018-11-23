@@ -1,0 +1,305 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="hierlist">
+  <title>Hierarchical lists</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="hierlist.png" format="PNG"
+		 contentwidth="303px" contentdepth="419px" />
+    </imageobject>
+  </mediaobject>
+
+  <para>
+    It's possible to adjust several configuration settings when
+    <link linkend="list">creating a selection list</link> so that the end
+    result looks like a hierarchical list of items; with the hierarchy
+    conveyed as increased levels of indentation.
+  </para>
+
+  <para>
+    This effect is mostly visual eye candy. This is still a selection list,
+    with consecutively-numbered list items. The look of a hierarchical
+    list comes from setting the indentation level for each list item,
+    accordingly. The list layout manager takes each individual
+    list item's identation level and draws it accordingly; without any
+    further processing. The application is responsible for correctly setting
+    each list item's indentation level.
+  </para>
+
+  <para>
+    <filename>hierlist.C</filename> gives a basic example. Clicking or
+    selecting any item in the list adds four <quote>sub-items</quote> below
+    it, and clicking or selecting on the item again removes it. Clicking
+    on a sub-item creates sub-items for the sub-item, and so on.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/hierlist.C">hierlist.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/hierlist.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="hierlistcreate">
+    <title>Creating a hierarchical list</title>
+
+    <para>
+      The default settings in a
+      <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>
+      create a typical <link linkend="list">selection list</link>.
+      <filename>hierlist.C</filename> adjusts several settings to achieve
+      the look of a hierarchial list.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::new_listlayoutmanager nlm{x::w::highlighted_list};
+
+nlm.width(&ns;::w::dim_axis_arg{75});
+nlm.height(&ns;::w::dim_axis_arg{100});</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The list layout manager's default setting compute the list's width
+      so that it's just wide enough for the largest item in the list, and
+      it's a set number of rows high.
+      Hierarchical lists grow and shrink all the time, varying their
+      width and height.
+    </para>
+
+    <para>
+      <filename>hierlist.C</filename> sets the list's size to 75 millimeters
+      wide and 100 millimeters tall. As usual, scroll-bars appear when the
+      list's contents are too big to fit inside its set size.
+    </para>
+    <blockquote>
+      <informalexample>
+	<programlisting>
+nlm.columns=2;
+nlm.requested_col_widths={{1, 100}};</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This hierarchical list is a <link linkend="listcolumns">multiple
+	column list</link>, a list with two columns. The first column, column
+      #0 is a small bullet icon. The second column, column #1 contains the
+      stock text string.
+    </para>
+
+    <para>
+      The sample hierarchical list's width gets fixed as 75 millimeters,
+      wider than its initial contents of one small item.
+      When the list has more width than it needs, the
+      list layout manager gives the extra space to all columns, proportionately.
+      This normally results in extra space between all columns in the
+      list.
+    </para>
+
+    <para>
+      <varname>requested_col_widths</varname> specifies which columns in the
+      list get extra space. <filename>hierlist.C</filename> sets
+      <varname>requested_col_widths</varname> to specify that column #1, the
+      2nd column, gets 100% of the available space. Column #1 won't get all of
+      it, since some real estate goes to column #0, but this is sufficient
+      to have column #1 take up all extra space, and remove the gap between
+      the two columns.
+    </para>
+
+    <para>
+      In general, hierarchical lists should always specify 100% of the
+      list's width for the last column in the list.
+    </para>
+    <blockquote>
+      <informalexample>
+	<programlisting>
+nlm.h_padding=.5;</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The list layout manager defaults to give generous padding for all columns
+      in a multi-column lists. To have the bullet appear next to its label,
+      the requested padding for each column's left and right margin gets
+      reduced to .5 millimeters.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+nlm.selection_type=
+    []
+    (ONLY IN_THREAD,
+    const x::w::listlayoutmanager &amp;ll,
+    size_t i,
+    const x::w::callback_trigger_t &amp;trigger,
+    const x::w::busy &amp;mcguffin)
+    {
+        // ...
+    };</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The <varname>selection_type</varname> &callback; controls what happens
+      when a list item gets selected by clicking on it, or by navigating
+      to the list item using the keyboard and pressing
+      <keycap>Enter</keycap>.
+      The normal behavior of a selection list visually highlights
+      the list item and removes the highlight from the previously selected
+      item (or moving a small bullet to the selected item).
+    </para>
+
+    <para>
+      <filename>hierlist.C</filename> replaces this callback with a custom
+      callback that implements the function of expanding a hierarchical
+      list by adding new items after the selected item with a higher
+      indentation level; or by collapsing the list by removing these
+      items.
+    </para>
+
+    <section id="hierindent">
+      <title>List item hierarchical indentation</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+&ns;::w::listlayoutmanager ll;
+
+ll->insert_items(i+1, {
+    &ns;::w::hierindent{2},
+    "Lorem Ipsum"
+});</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This is explained in <xref linkend="listitemmethods" />.
+	New items in the
+	list get specified by a vector containing both the new items as well
+	as values that provide additional metadata for the new items.
+	Any metadata values precede the list items they apply to.
+      </para>
+
+      <para>
+	A <classname>&ns;::w::hierindent</classname> parameter specifies the
+	number of indentation levels for the next new item. The default
+	indentation level is 0, no indentation.
+	This chapter's introduction explains how the list layout
+	manager uses the indentation level to show each list item accordingly,
+	and otherwise leaves it up to the application to deal with what
+	the indentation level means.
+      </para>
+
+      <para>
+	<filename>hierlist.C</filename>'s custom
+	<varname>selection_type</varname> &callback; gets invoked when
+	an existing item in the list gets selected with they keyboard or
+	clicked on. The callback uses the list layout manager's
+	<methodname>hierindent</methodname>() method to retrieve the
+	item's indentation level, as well as the indentation level of the
+	items that follow it.
+      </para>
+
+      <para>
+	The indention level visually indicates if the list item has any
+	sub-items that
+	follow it. If not, the callback adds four
+	items after the selected item, with a higher indentation level.
+	This has the appearance of expanding an item in the hierarchical
+	list and showing its sub-items. If the selected item has sub-items,
+	the sub-items get removed. This has the appearance of collapsing
+	a hierarchical list.
+      </para>
+
+      <para>
+	But all of this is just an illusion. This is just an ordinary
+	selection list, with a flat list of consecutively-numbered items.
+	The appearance of a hierarchical list comes from intelligently
+	adding or removing items from the middle of the list, with
+	specific indentation levels.
+      </para>
+    </section>
+  </section>
+
+  <section id="imageparam">
+    <title>Image icons in selection lists</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;/w/image_param_literals.H&gt;
+
+&ns;::w::listlayoutmanager ll;
+
+&ns;::w::hierindent new_indent{++i_indent};
+
+ll->insert_items(i+1, {
+    &ns;::w::hierindent{new_ident},
+    "bullet2.sxg"_image,
+    "Lorem Ipsum"
+});</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Selection list items are ordinary labels, or text strings.
+      The list layout manager's <methodname>insert_items</methodname>()
+      method is one of the methods that add new items to the list.
+      Its second parameter is a <classname>std::vector</classname> of
+      <ulink url="&link-x--w--list-item-param;"><classname>&ns;::w::list_item_param</classname></ulink>s.
+      This is a variant datatype that has several possible values.
+      This specifies both the new items themselves, as strings, unicode
+      strings, or
+      <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>;
+      as well as any additional options for the new item that follows the
+      option (an
+      <link linkend="hierindent"><classname>&ns;::w::hierindent</classname></link>
+      in this example).
+    </para>
+
+    <para>
+      <ulink url="&link-function-x--w-operatorQQ--image;"><replaceable>"filename"</replaceable>_image</ulink>
+      specifies an image that gets loaded from a file, an
+      <ulink url="&link-x--w--image-param;"><classname>&ns;::w::image_param</classname></ulink>.
+      <filename>hierlist.C</filename> creates a list with two columns, so
+      one new logical list item consists of two actual list items, which are
+      always an <classname>&ns;::w::image_param</classname> and a text string,
+      as shown here.
+    </para>
+
+    <para>
+      Images specified by <classname>&ns;::w::image_param</classname> get
+      loaded from the current directory or from the current
+      <link linkend="cxxwtheme.1">display theme</link>'s directory.
+      Images can be <acronym>gif</acronym>,
+      <acronym>png</acronym>,
+      <acronym>jpg</acronym>, or
+      <acronym>sxg</acronym> images. <quote>sxg</quote> is
+      the <link linkend="sxg">&app;'s scalable image format</link>.
+      <filename>hierlist.C</filename> uses the
+      <filename>"bullet2.sxg"</filename> image from the current display
+      theme. The loaded bullet icon, accordingly, gets scaled according to
+      the current display theme's settings.
+      <acronym>gif</acronym>,
+      <acronym>png</acronym> and
+      <acronym>jpg</acronym> images always get loaded with their fixed
+      image size, irrespective of the current display theme's scale.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

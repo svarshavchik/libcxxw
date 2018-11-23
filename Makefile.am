@@ -442,6 +442,7 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/extra_list_row_info.H	    \
 	listlayoutmanager/extra_list_row_infofwd.H  \
 	listlayoutmanager/extra_list_row_infoobj.H  \
+	listlayoutmanager/list_cell.C		    \
 	listlayoutmanager/list_cell.H		    \
 	listlayoutmanager/list_cellfwd.H	    \
 	listlayoutmanager/list_cellobj.H	    \

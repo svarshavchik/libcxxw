@@ -199,8 +199,11 @@ public:
 	//! the total width of the list, in the range 0-100.
 	std::unordered_map<size_t, int> requested_col_widths;
 
-	//! Alignment of all columns.
+	//! Horizontal alignment of columns.
 	std::unordered_map<size_t, halign> col_alignments;
+
+	//! Vertical alignment of columns.
+	std::unordered_map<size_t, valign> row_alignments;
 
 	//! Optional borders between columns
 

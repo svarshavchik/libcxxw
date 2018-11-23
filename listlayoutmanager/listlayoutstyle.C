@@ -152,7 +152,8 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 	for (const auto &s:t)
 	{
-		halign alignment=halign::left;
+		halign halignment=halign::left;
+		valign valignment=valign::bottom;
 
 		// Was this column's alignment specifically requested?
 		auto col_alignment=textlist_element
@@ -160,7 +161,14 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 		if (col_alignment != textlist_element
 		    .col_alignments.end())
-			alignment=col_alignment->second;
+			halignment=col_alignment->second;
+
+		auto row_alignment=textlist_element
+			.row_alignments.find(c % textlist_element.columns);
+
+		if (row_alignment != textlist_element
+		    .row_alignments.end())
+			valignment=row_alignment->second;
 
 		// Create the cell.
 
@@ -170,7 +178,8 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 		process_list_item_param
 			(s,
 			 textlist_element,
-			 alignment,
+			 halignment,
+			 valignment,
 			 next_rowinfo,
 			 [&, this]
 			 (const auto &new_cell)
@@ -301,7 +310,8 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 void listlayoutstyle_impl::do_process_list_item_param
 (const list_item_param::variant_t &item,
  list_elementObj::implObj &textlist_element,
- halign alignment,
+ halign halignment,
+ valign valignment,
  textlist_rowinfo &next_rowinfo,
  const function<void (const list_cell &)>&item_callback,
  const function<void ()> &separator_callback) const
@@ -357,7 +367,8 @@ void listlayoutstyle_impl::do_process_list_item_param
 
 				   auto t=list_celltext
 					   ::create(textlist_element,
-						    rts, alignment, 0);
+						    rts, halignment,
+						    valignment, 0);
 
 				   item_callback(t);
 			   },
@@ -370,7 +381,7 @@ void listlayoutstyle_impl::do_process_list_item_param
 				   auto t=list_cell
 					   (list_cellimage::create
 					    (std::vector<icon>{i},
-					     alignment));
+					     halignment, valignment));
 				   item_callback(t);
 			   },
 			   [&](const separator &)
@@ -394,6 +405,11 @@ void listlayoutstyle_impl::nonmenu_attribute_requested() const
 //
 // Highlighted list style.
 
+namespace {
+#if 0
+}
+#endif
+
 class LIBCXX_HIDDEN highlighted_listlayoutstyle_impl
 	: public listlayoutstyle_impl {
 
@@ -415,6 +431,13 @@ class LIBCXX_HIDDEN highlighted_listlayoutstyle_impl
 		const override
 	{
 		return style.col_alignments;
+	}
+
+	std::unordered_map<size_t, valign>
+		actual_row_alignments(const new_listlayoutmanager &style)
+		const override
+	{
+		return style.row_alignments;
 	}
 
 	void set_selected_background(ONLY IN_THREAD,
@@ -460,13 +483,23 @@ class LIBCXX_HIDDEN highlighted_listlayoutstyle_impl
 };
 
 static const
-highlighted_listlayoutstyle_impl textlistlayout_style_instance;
+highlighted_listlayoutstyle_impl highlighted_style_instance;
 
-const listlayoutstyle_impl &highlighted_list=textlistlayout_style_instance;
+#if 0
+{
+#endif
+}
+
+const listlayoutstyle_impl &highlighted_list=highlighted_style_instance;
 
 ////////////////////////////////////////////////////////////////////////////
 //
 // Bulleted list style.
+
+namespace {
+#if 0
+}
+#endif
 
 class LIBCXX_HIDDEN bulleted_listlayoutstyle_impl
 	: public listlayoutstyle_impl {
@@ -510,6 +543,21 @@ class LIBCXX_HIDDEN bulleted_listlayoutstyle_impl
 		return actual;
 	}
 
+	// Adjust row_alignments accordingly.
+	std::unordered_map<size_t, valign>
+		actual_row_alignments(const new_listlayoutmanager &style)
+		const override
+	{
+		std::unordered_map<size_t, valign> actual;
+
+		for (const auto &cw:style.row_alignments)
+		{
+			actual.insert({cw.first+1, cw.second});
+		}
+
+		return actual;
+	}
+
 	void set_selected_background(ONLY IN_THREAD,
 				     draw_info &di,
 				     const background_color &bgcolor)
@@ -536,7 +584,8 @@ class LIBCXX_HIDDEN bulleted_listlayoutstyle_impl
 		return list_cellimage::create(std::vector<icon>{
 				textlist_element.bullet1,
 					textlist_element.bullet2},
-			halign::center);
+			halign::center,
+			valign::middle);
 	}
 
 	list_cell create_trailing_column(list_elementObj::implObj
@@ -560,6 +609,11 @@ class LIBCXX_HIDDEN bulleted_listlayoutstyle_impl
 
 static const
 bulleted_listlayoutstyle_impl bulleted_style_instance;
+
+#if 0
+{
+#endif
+}
 
 const listlayoutstyle_impl &bulleted_list=bulleted_style_instance;
 
@@ -603,7 +657,9 @@ class LIBCXX_HIDDEN menu_list_style_impl
 				.create_icon({"submenu"});
 
 			return list_cellimage::create
-				(std::vector<icon>{i}, halign::left);
+				(std::vector<icon>{i},
+				 halign::left,
+				 valign::middle);
 		}
 
 		std::u32string s;
@@ -616,7 +672,8 @@ class LIBCXX_HIDDEN menu_list_style_impl
 					       .itemshortcut_meta, s);
 
 		return list_celltext::create(textlist_element,
-					     rt, halign::left, 0);
+					     rt, halign::left,
+					     valign::bottom, 0);
 	}
 
 	void menu_attribute_requested() const override

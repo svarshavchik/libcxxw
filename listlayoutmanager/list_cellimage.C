@@ -14,8 +14,10 @@
 LIBCXXW_NAMESPACE_START
 
 list_cellimageObj::list_cellimageObj(const std::vector<icon> &images,
-					     halign alignment)
-	: icon_images_vector(images), alignment(alignment)
+				     halign halignment,
+				     valign valignment)
+	: list_cellObj{valignment},
+	  icon_images_vector{images}, halignment{halignment}
 {
 }
 
@@ -70,7 +72,7 @@ void list_cellimageObj::cell_redraw(ONLY IN_THREAD,
 			 dim_t y=0;
 
 			 if (boundaries.position.width > w)
-				 switch (alignment) {
+				 switch (halignment) {
 				 case halign::right:
 					 x=boundaries.position.width-w;
 					 break;

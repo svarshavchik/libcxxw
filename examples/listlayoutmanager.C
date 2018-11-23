@@ -8,7 +8,6 @@
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/ref.H>
-#include <x/refptr_traits.H>
 #include <x/obj.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>

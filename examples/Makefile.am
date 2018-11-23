@@ -17,6 +17,7 @@ noinst_PROGRAMS=\
 	fontcolorpickers			\
 	gridlayoutmanager			\
 	helloworld				\
+	hierlist				\
 	inputfieldsandbuttons			\
 	itemlayoutmanager			\
 	listlayoutmanager			\
@@ -89,6 +90,9 @@ gridlayoutmanager_LDADD=-lcxxw -lcxx
 
 helloworld_SOURCES=helloworld.C close_flag.H
 helloworld_LDADD=-lcxxw -lcxx
+
+hierlist_SOURCES=hierlist.C close_flag.H
+hierlist_LDADD=-lcxxw -lcxx
 
 $(call REFCOLLECTION_GEN,inputfields.inc.H,inputfields.xml)
 

@@ -196,7 +196,7 @@ renumbers the remaining items in the list.
 
 New list items get specified by a \c std::vector of
 \ref list_item_param "list_item_param"s, which is a \c std::variant with
-several possibilites. The possible values consist of two classes of parameters
+several possibilites. The possible values consist of two classes of parameters:
 
 - Parameters that specify discrete items, such as text labels and separator
 items. Each such parameter creates a new list item.
@@ -204,9 +204,9 @@ items. Each such parameter creates a new list item.
 - List item metadata, such as selection callbacks and keyboard shortcuts.
 
 All metadata parameters apply to the immediately following list item, and
-therefore cannot appear at the end of the vector. When more than one
-metadata parameter gets specified for a single list item, the parameters
-may be specified in any relative order.
+therefore cannot appear at the end of the vector. Two or more metadata
+parameters for a single list item can appear in any relative order, as long
+as they appear before the single list item.
 
 \par Text label items
 
@@ -222,7 +222,7 @@ a list item with font and color mark-ups.
 This example inserts two text items before the existing item #0.
 
 An \ref image_param "INSERT_LIBX_NAMESPACE::w::image_param" value
-is not documented, and reserved for internal library use, at this time.
+adds an image icon instead of a text label.
 
 \par Separators
 
@@ -237,37 +237,6 @@ for a horizontal line that visually separates groups of items in the list.
 The separator line is considered a list item, gets numbered like all
 other items, and may be removed or replaced, with remove_item(), or
 replace_items().
-
-\par Sorting the list
-
-\code
-std::vector<size_t> index;
-
-l->resort_items(index);
-\endcode
-
-resort_items() reorders the items in the list. The index vector's size must
-match the number of items in the list. The index vector's values must consist
-of strictly increasing values, starting at 0, in some particular order,
-meaning that: for a list of 8 items, the index vector must contain values
-0 through 7.
-
-resort_items() reorders the items in its list as if the index vector gets
-sorted in its natural order, and the corresponding item in the list gets
-repositioned accordingly. For example, when the index vector contains
-the values:
-
-\code
-std::vector<size_t> index={6, 1, 2, 0, 4, 5, 3, 7};
-
-l->resort_items(index);
-\endcode
-
-This ends up moving the first item in the list, item index \#0 to item \#6,
-item \#6 to \#3, and item \#3 to position \#0.
-
-The results are unspecified if the index vector fails to meet the stated
-requirements.
 
 \par Selection callbacks
 
@@ -363,6 +332,75 @@ list layout manager.
 The closure serves to create the contents of the sub-menu. The closure gets
 invoked by the library, and is responsible for creating the contents of the
 sub-menu.
+
+\par Hierarchical lists
+
+\code
+auto f=l->append_items(
+    {
+        INSERT_LIBX_NAMESPACE::w::hierindent{1},
+        "Lorem Ipsum",
+    });
+\endcode
+
+\c INSERT_LIBX_NAMESPACE::w::hierindent indicates an indentation level for
+the following list item.
+Its parameter is the number of units of indentation.
+
+The list layout manager uses the indentation level to horizontally shift
+the contents of the list item; and does not treat the list item any
+differently otherwise. This allows using the list layout manager to
+present a hierarchical tree of items, with progressively-indented items
+intuitively appearing as sub-items of the preceding items.
+
+\note
+The application is responsible for making sure that the list items'
+hierarchy indentation level makes sense. Removing or adding new list items
+has no effect on the hierarchy indentation level of other items in the list.
+The hierindent() method returns the indentation level of an existing list
+item, for information purposes.
+The only way to modify an existing list item indentation level is to
+replace it completely, with replace_items().
+
+\note
+A list that uses indentation levels should not set any column borders.
+Column borders are not drawn for indented list items, at all, only
+list items that have a default indentation level of 0.
+When adding new list to the list,
+\c INSERT_LIBX_NAMESPACE::w::hierindent applies only to the next specified
+list item; and a non-zero indentation level must be explicitly specified
+for each list item, individually.
+
+\par Sorting the list
+
+\code
+std::vector<size_t> index;
+
+l->resort_items(index);
+\endcode
+
+resort_items() reorders the items in the list. The index vector's size must
+match the number of items in the list. The index vector's values must consist
+of strictly increasing values, starting at 0, in some particular order,
+meaning that: for a list of 8 items, the index vector must contain values
+0 through 7.
+
+resort_items() reorders the items in its list as if the index vector gets
+sorted in its natural order, and the corresponding item in the list gets
+repositioned accordingly. For example, when the index vector contains
+the values:
+
+\code
+std::vector<size_t> index={6, 1, 2, 0, 4, 5, 3, 7};
+
+l->resort_items(index);
+\endcode
+
+This ends up moving the first item in the list, item index \#0 to item \#6,
+item \#6 to \#3, and item \#3 to position \#0.
+
+The results are unspecified if the index vector fails to meet the stated
+requirements.
 
 \par Enabling and disabling list items
 

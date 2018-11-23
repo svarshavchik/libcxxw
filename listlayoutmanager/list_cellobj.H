@@ -24,6 +24,13 @@ struct list_cellObj : virtual public obj {
 	//! Cached height.
 	dim_t height;
 
+	//! Our requested alignment
+	valign valignment;
+
+	list_cellObj(valign valignment);
+
+	~list_cellObj();
+
 	//! Return this cell's metrics.
 	virtual std::pair<metrics::axis, metrics::axis>
 		cell_get_metrics(ONLY IN_THREAD, dim_t preferred_width)=0;

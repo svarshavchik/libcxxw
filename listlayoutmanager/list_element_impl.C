@@ -276,6 +276,7 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 	  requested_col_widths{validate_col_widths
 			       (list_style.actual_col_widths(init_args.style))},
 	  col_alignments{list_style.actual_col_alignments(init_args.style)},
+	  row_alignments{list_style.actual_row_alignments(init_args.style)},
 	  column_borders{create_column_borders(textlist_container
 					       ->container_element_impl(),
 					       init_args.style)},
@@ -322,6 +323,11 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 	}
 
 	for (auto &info:col_alignments)
+		if (info.first >= columns)
+			throw EXCEPTION(gettextmsg(_("Column %1% does not exist"),
+						   info.first));
+
+	for (auto &info:row_alignments)
 		if (info.first >= columns)
 			throw EXCEPTION(gettextmsg(_("Column %1% does not exist"),
 						   info.first));
@@ -1413,7 +1419,7 @@ rectangle list_elementObj::implObj
 		(themedim_element<listcontainer_indent>::pixels(IN_THREAD)
 		 * r.indent);
 
-	coord_t bottom_y=coord_t::truncate(y+r.height+v_padding);
+	coord_t top_y=coord_t::truncate(y+v_padding);
 
 	auto *cell=&lock->cells.at(row_number * columns);
 
@@ -1422,9 +1428,14 @@ rectangle list_elementObj::implObj
 		const auto &[x, width]=poswidth;
 
 		rectangle rc{coord_t::truncate(x+indent),
-				coord_t::truncate(bottom_y-(*cell)->height),
-				width,
-				(*cell)->height};
+			     coord_t::truncate
+			     (top_y + ((*cell)->valignment == valign::middle
+				       ? (r.height - (*cell)->height)/2
+				       : (*cell)->valignment == valign::bottom
+				       ? (r.height - (*cell)->height)
+				       : dim_t{0})),
+			     width,
+			     (*cell)->height};
 
 		bounds.position_at(rc);
 		drawn_columns.push_back(rc);

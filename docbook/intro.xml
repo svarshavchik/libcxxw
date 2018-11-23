@@ -101,10 +101,9 @@ See COPYING for distribution information.
       <title>Status</title>
 
       <para>
-	&app; is in active development. The most recent build adds enhancements
-	to the <link linkend="panelayoutmanager">pane layout manager</link>,
-	and adds a theme setting for a reduced gradient shading, for
-	improved performance with slower graphics hardware.
+	&app; is in active development. The most recent build adds new
+	settings to the list layout manager for implementing
+	<link linkend="hierlist">hierarchical lists</link>.
       </para>
     </section>
   </section>

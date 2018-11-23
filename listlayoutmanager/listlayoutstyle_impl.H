@@ -89,6 +89,16 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 	virtual std::unordered_map<size_t, halign>
 		actual_col_alignments(const new_listlayoutmanager &) const=0;
 
+	//! Alignment of all columns.
+
+	//! Returns row_alignments as is, for a highlighted-style list.
+	//! For a bulleted list returns a modified map, since column 0 is
+	//! the bullet column, so all the row_alignments get shifted
+	//! over by 1.
+
+	virtual std::unordered_map<size_t, valign>
+		actual_row_alignments(const new_listlayoutmanager &) const=0;
+
 	//! Install the highlighted background color, before drawing.
 
 	//! If this is the highlighted list style. Does nothing, for the
@@ -183,13 +193,15 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 		 typename Separator_callback> void process_list_item_param
 		(const list_item_param &item,
 		 list_elementObj::implObj &textlist_element,
-		 halign alignment,
+		 halign halignment,
+		 valign valignment,
 		 textlist_rowinfo &next_rowinfo,
 		 Item_callback &&item_callback,
 		 Separator_callback &&separator_callback) const
 	{
 		do_process_list_item_param(item, textlist_element,
-					   alignment,
+					   halignment,
+					   valignment,
 					   next_rowinfo,
 					   make_function
 					   <void (const list_cell &)>
@@ -206,6 +218,7 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 		(const list_item_param::variant_t &,
 		 list_elementObj::implObj &,
 		 halign,
+		 valign,
 		 textlist_rowinfo &,
 		 const function<void (const list_cell &)> &,
 		 const function<void ()> &) const;
