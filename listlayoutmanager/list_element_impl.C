@@ -583,7 +583,6 @@ void list_elementObj::implObj
 
 	lock->row_infos.clear();
 	lock->cells.clear();
-	lock->item_indents.clear();
 	for (auto &column_widths:lock->list_column_widths)
 		column_widths.clear();
 	insert_rows(IN_THREAD, lm, ll, 0, texts, meta);
@@ -689,9 +688,6 @@ void list_elementObj::implObj
 
 	for (; count; ++p, --count)
 	{
-		if (p->size_computed)
-			lock->item_indents.erase(p->indent_iter);
-
 		for (auto &column_widths:lock->list_column_widths)
 		{
 			if (p->size_computed)
@@ -806,7 +802,6 @@ void list_elementObj::implObj::recalculate_with_new_theme(ONLY IN_THREAD,
 
 	for (auto &cw:lock->list_column_widths)
 		cw.clear();
-	lock->item_indents.clear();
 
 	lock->full_redraw_needed=true;
 	recalculate(IN_THREAD, lock);
@@ -850,6 +845,8 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 
 			bool is_separator=false;
 
+			size_t column_counter=columns;
+
 			for (auto &column_widths:lock->list_column_widths)
 			{
 				auto preferred_width=
@@ -866,15 +863,27 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 					 preferred_width);
 
 				// If this is a separator row we still need
-				// to go through the motion and visit event
+				// to go through the motion and visit every
 				// cell, in order to initialize the column
 				// separators.
 
 				if ((*cell_iter)->cell_is_separator())
 					is_separator=true;
 
+				auto h=horiz.preferred();
+
+				// Add the row's indent to the
+				// last column's width.
+				if (--column_counter == 0 && !is_separator)
+					h=dim_t::truncate
+						(h + dim_t::truncate
+						 (row->indent) *
+						 themedim_element
+						 <listcontainer_indent>
+						 ::pixels(IN_THREAD));
+
 				(*cell_iter)->column_iterator=
-					column_widths.insert(horiz.preferred());
+					column_widths.insert(h);
 				(*cell_iter)->height=vert.preferred();
 
 				if (row->height < vert.preferred())
@@ -883,7 +892,6 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 				++cell_iter;
 			}
 			row->size_computed=true;
-			row->indent_iter=lock->item_indents.insert(row->indent);
 
 			if (is_separator)
 			{
@@ -1096,13 +1104,6 @@ dim_t list_elementObj::implObj
 		dim_t::truncate(metrics::axis::total_minimum
 				(sync_lock->unscaled_values.begin(),
 				 sync_lock->unscaled_values.end()));
-
-	// Add the maximum indentation in the list.
-	if (!lock->item_indents.empty())
-		minimum_width=dim_t::truncate
-			(minimum_width +
-			 themedim_element<listcontainer_indent>
-			 ::pixels(IN_THREAD)* *lock->item_indents.begin());
 
 	if (minimum_width == dim_t::infinite())
 		--minimum_width;

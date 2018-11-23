@@ -49,13 +49,6 @@ struct listcontainer_indent;
 struct list_font_tag;
 struct shortcut_font_tag;
 
-//! Container that keeps track of item ident levels
-
-//! An entry for each row gets added to this container. Using std::greater
-//! as the comparison results in the maximum indentation level being simply
-//! begin().
-typedef std::multiset<size_t, std::greater<size_t>> item_indents_t;
-
 //! Container that keeps track of minimum columns widths.
 
 //! An entry for each text element in each row, for each column,
@@ -103,11 +96,6 @@ struct list_row_info_t {
 
 	//! This item's indentation level
 	size_t indent=0;
-
-	//! And this item's entry in item_indents
-
-	//! Only set if size_computed.
-	item_indents_t::iterator indent_iter;
 
 	//! Extra information about this row.
 
@@ -180,9 +168,6 @@ struct listimpl_info_s {
 
 	//! Callback
 	list_selection_changed_cb_t selection_changed;
-
-	//! The indentation levels.
-	item_indents_t item_indents;
 
 	//! The columns
 	std::vector<list_column_widths_t> list_column_widths;
