@@ -10,6 +10,8 @@
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "listlayoutmanager/list_element_impl.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
+#include "listlayoutmanager/listlayoutmanager_impl.H"
+#include "listlayoutmanager/listcontainer_pseudo_impl.H"
 
 #include "x/w/impl/focus/focusable_element.H"
 
@@ -266,6 +268,28 @@ focusable_container new_custom_comboboxlayoutmanager
 
 	if (!selection_required)
 		style.selection_type=single_optional_selection_type;
+
+	// Close the popup when a selection is made. We hook the
+	// selection type callback.
+
+	auto combobox_selection_type=style.selection_type;
+
+	style.selection_type=
+		[combobox_selection_type]
+		(ONLY IN_THREAD,
+		 const listlayoutmanager &ll,
+		 size_t i,
+		 const callback_trigger_t &trigger,
+		 const busy &mcguffin)
+		{
+			elementObj::implObj &e=
+				*ll->impl->container_impl;
+
+			e.get_window_handler()
+				.request_visibility(IN_THREAD, false);
+			combobox_selection_type(IN_THREAD, ll, i, trigger,
+						mcguffin);
+		};
 
 	custom_combobox_popup_containerptr popup_containerptr;
 
