@@ -25,26 +25,24 @@ class peephole_gridlayoutmanagerObj
  public:
 
 	//! Constructor
+
+	//! The elements that go into the grid get pre-created, and we save
+	//! them here.
+
 	peephole_gridlayoutmanagerObj(const container_impl
-				      &container_impl);
+				      &container_impl,
+				      const peephole &my_peephole,
+				      const scrollbar &my_vertical_scrollbar,
+				      const scrollbar &my_horizontal_scrollbar);
 
-	//! Return the peephole container.
+	//! My peephole
+	const peephole my_peephole;
 
-	//! It's in cell (0, 0)
+	//! My vertical scrollbar
+	const scrollbar my_vertical_scrollbar;
 
-	peephole get_peephole();
-
-	//! Return the vertical scrollbar
-
-	//! It's in cell (0, 1)
-
-	scrollbar get_vertical_scrollbar();
-
-	//! Return the horizontal_scrollbar
-
-	//! It's in cell(1, 0)
-
-	scrollbar get_horizontal_scrollbar();
+	//! My horizontal scrollbar
+	const scrollbar my_horizontal_scrollbar;
 
 	//! Override request_visibility_recursive().
 

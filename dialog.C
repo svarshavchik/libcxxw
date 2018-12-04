@@ -79,17 +79,17 @@ void main_windowObj::do_create_dialog(const std::string_view &dialog_id,
 
 	ptr<dialogObj::implObj> dialog_impl;
 
-	auto lm=std::get<1>(create_main_window_impl
-			    (handler, layout_factory,
-			     [&,this](const auto &args)
-		{
-			auto impl=ref<dialogObj::implObj>::create
-			(handler, this->impl->handler, args);
+	auto [ignored, lm]=create_main_window_impl
+		(handler, layout_factory,
+		 [&,this](const auto &args)
+		 {
+			 auto impl=ref<dialogObj::implObj>::create
+				 (handler, this->impl->handler, args);
 
-			dialog_impl=impl;
+			 dialog_impl=impl;
 
-			return impl;
-		}));
+			 return impl;
+		 });
 
 	// Call the creator, to flesh out what's in the dialog.
 

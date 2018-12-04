@@ -73,7 +73,20 @@ struct LIBCXX_HIDDEN create_peepholed_focusable_args_t {
 
 //! Type-erased implementation of \ref create_peepholed_focusable_with_frame "create_peepholed_focusable_with_frame()".
 
-std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
+struct LIBCXX_HIDDEN peepholed_focusable_with_frame_ret_t;
+
+//! The return value from create_peepohled_focusable_with_frame.
+
+//! Guarantees the destruction order. The grid layout manager, and its
+//! internal lock, gets destroyed first.
+
+struct peepholed_focusable_with_frame_ret_t {
+
+	ref<peepholed_focusableObj::implObj> peepholed_focusable_impl;
+	gridlayoutmanager container_lm;
+};
+
+peepholed_focusable_with_frame_ret_t
 create_peepholed_focusable_with_frame_impl(const
 					   create_peepholed_focusable_args_t &,
 					   const function<make_peepholed_func_t>
@@ -129,7 +142,7 @@ typedef nonrecursive_visibilityObj<container_elementObj<child_elementObj>
 //! the focusable object in the peephole.
 
 template<typename make_peepholed_t>
-inline std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
+inline peepholed_focusable_with_frame_ret_t
 create_peepholed_focusable_with_frame
 (const create_peepholed_focusable_args_t &args,
  //! Factor for the peephole and the focusable.

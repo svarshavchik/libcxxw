@@ -87,14 +87,29 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 typedef ref<main_windowObj::implObj
 	    > make_window_impl_factory_t(const main_window_impl_args &);
 
+struct LIBCXX_HIDDEN create_main_window_impl_ret_t;
+
+//! Return type from create_main_window_impl().
+
+//! The main_window_impl object is the first member of this structure.
+//! If an exception gets thrown, the main window's layout manager, which
+//! is the grid layout manager, gets destroyed first releasing an internal
+//! lock, before the main window implementation object gets destroyed.
+
+struct create_main_window_impl_ret_t {
+	ref<main_windowObj::implObj> main_window_impl;
+	layoutmanager main_window_lm;
+};
+
 //! Helper for constructing a new main_windowObj::implObj.
 
 //! The requested layout manager for the top level window actually gets
 //! shoved into the main window's peephole that gets created. Returns
 //! the real layout manager for the top level window.
 
+
 template<typename functor>
-inline std::tuple<ref<main_windowObj::implObj>, layoutmanager>
+inline create_main_window_impl_ret_t
 create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			const new_layoutmanager &layout_factory,
 			functor &&f)
@@ -107,7 +122,7 @@ create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 
 //! Type-erased create_main_window_impl().
 
-std::tuple<ref<main_windowObj::implObj>, layoutmanager>
+create_main_window_impl_ret_t
 do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			   const new_layoutmanager &layout_factory,
 			   const function<make_window_impl_factory_t> &factory)

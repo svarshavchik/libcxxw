@@ -34,7 +34,7 @@ focusable_impl pane_peephole_containerObj::get_impl() const
 		([&]
 		 (const ref<peephole_gridlayoutmanagerObj> &lm_impl)
 		 {
-			 fp=lm_impl->get_horizontal_scrollbar();
+			 fp=lm_impl->my_horizontal_scrollbar;
 		 });
 	return fp->get_impl();
 }
@@ -67,7 +67,7 @@ void pane_peephole_containerObj
 		([&]
 		 (const ref<peephole_gridlayoutmanagerObj> &lm_impl)
 		 {
-			 lm_impl->get_vertical_scrollbar()->get_impl
+			 lm_impl->my_vertical_scrollbar->get_impl
 				 ([&]
 				  (const auto &focusable_info)
 				  {
@@ -79,7 +79,7 @@ void pane_peephole_containerObj
 						   .internal_impl_count);
 				  });
 
-			 lm_impl->get_horizontal_scrollbar()->get_impl
+			 lm_impl->my_horizontal_scrollbar->get_impl
 				 ([&]
 				  (const auto &focusable_info)
 				  {
@@ -105,7 +105,7 @@ peephole pane_peephole_containerObj::get_peephole()
 		([&]
 		 (const ref<peephole_gridlayoutmanagerObj> &lm)
 		 {
-			 c=lm->get_peephole();
+			 c=lm->my_peephole;
 		 });
 
 	return c;

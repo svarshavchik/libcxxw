@@ -78,28 +78,18 @@ void peepholed_focusableObj::implObj
 				horizontal_scrollbar->get_impl());
 }
 
-std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
+peepholed_focusable_with_frame_ret_t
 create_peepholed_focusable_with_frame_impl
 (const create_peepholed_focusable_args_t &args,
  const function<make_peepholed_func_t> &make_peepholed)
 {
-	auto grid_impl=
-		ref<peephole_gridlayoutmanagerObj>
-		::create(args.parent_container);
-
-	auto grid=grid_impl->create_gridlayoutmanager();
-
-	auto factory=grid->append_row();
-
-	factory->padding(0);
-
 	auto pfc_impl=ref<bordercontainer_elementObj<container_elementObj
 						     <child_elementObj>>>
 		::create(args.border,
 			 args.border,
 			 args.border,
 			 args.border, 0, 0,
-			 factory->get_container_impl());
+			 args.parent_container);
 
 	// Create the focusframe implementation object, first.
 
@@ -181,6 +171,19 @@ create_peepholed_focusable_with_frame_impl
 	auto pfc=container::create(pfc_impl, blm_impl);
 
 	pfc->show();
+
+	auto grid_impl=
+		ref<peephole_gridlayoutmanagerObj>
+		::create(args.parent_container,
+			 peephole_container,
+			 scrollbars.vertical_scrollbar,
+			 scrollbars.horizontal_scrollbar);
+
+	auto grid=grid_impl->create_gridlayoutmanager();
+
+	auto factory=grid->append_row();
+
+	factory->padding(0);
 
 	factory->created_internally(pfc);
 

@@ -13,8 +13,14 @@ LIBCXXW_NAMESPACE_START
 
 peephole_gridlayoutmanagerObj
 ::peephole_gridlayoutmanagerObj(const container_impl
-				&container_impl)
-	: gridlayoutmanagerObj::implObj{container_impl, {}}
+				&container_impl,
+				const peephole &my_peephole,
+				const scrollbar &my_vertical_scrollbar,
+				const scrollbar &my_horizontal_scrollbar)
+	: gridlayoutmanagerObj::implObj{container_impl, {}},
+	  my_peephole{my_peephole},
+	  my_vertical_scrollbar{my_vertical_scrollbar},
+	  my_horizontal_scrollbar{my_horizontal_scrollbar}
 {
 	// If the peephole itself is fill-ed horizontally or vertically,
 	// we want to make sure this carries over to the actual peephole
@@ -30,25 +36,10 @@ peephole_gridlayoutmanagerObj
 	row_alignment(grid_lock, 0, valign::fill);
 }
 
-peephole peephole_gridlayoutmanagerObj::get_peephole()
-{
-	return get(0, 0);
-}
-
-scrollbar peephole_gridlayoutmanagerObj::get_vertical_scrollbar()
-{
-	return get(0, 1);
-}
-
-scrollbar peephole_gridlayoutmanagerObj::get_horizontal_scrollbar()
-{
-	return get(1, 0);
-}
-
 void peephole_gridlayoutmanagerObj::request_visibility_recursive(ONLY IN_THREAD,
 								 bool flag)
 {
-	get_peephole()->elementObj::impl
+	my_peephole->elementObj::impl
 		->request_visibility_recursive(IN_THREAD, flag);
 }
 

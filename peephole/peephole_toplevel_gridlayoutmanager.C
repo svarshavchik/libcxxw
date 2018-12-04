@@ -6,6 +6,7 @@
 
 #include "peephole/peephole_toplevel_gridlayoutmanagerobj.H"
 #include "peephole/peephole_impl.H"
+#include "x/w/scrollbar.H"
 #include "x/w/impl/container.H"
 #include "x/w/impl/layoutmanager.H"
 
@@ -15,7 +16,7 @@ void peephole_toplevel_gridlayoutmanagerObj::needs_recalculation(ONLY IN_THREAD)
 {
 	peephole_gridlayoutmanagerObj::needs_recalculation(IN_THREAD);
 
-	get_peephole()->impl->invoke_layoutmanager
+	my_peephole->impl->invoke_layoutmanager
 		([&]
 		 (const auto &lm)
 		 {

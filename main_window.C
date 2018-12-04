@@ -254,7 +254,7 @@ init_containers(const container_impl &parent,
 // exceed the maximum permissible size of the main window, whose size is
 // limited by the desktop's size.
 
-std::tuple<ref<main_windowObj::implObj>, layoutmanager>
+create_main_window_impl_ret_t
 do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			   const new_layoutmanager &layout_factory,
 			   const function<make_window_impl_factory_t> &factory)

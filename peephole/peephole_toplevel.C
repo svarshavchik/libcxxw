@@ -13,6 +13,7 @@
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
 #include "peephole/peepholed_toplevel_element.H"
 #include "scrollbar/scrollbar_impl.H"
+#include "screen.H"
 #include "x/w/impl/current_border_impl.H"
 #include "x/w/impl/border_impl.H"
 #include "x/w/screen.H"
@@ -132,18 +133,11 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 			      const function<create_peepholed_element_t>
 			      &factory)
 {
-	// Never mind what layout_factory is. The main window uses the
-	// grid layout manager, this is my final word.
-	auto toplevel_impl=
-		peephole_toplevel_gridlayoutmanager::create(toplevel);
-
-	auto toplevel_grid=toplevel_impl->create_gridlayoutmanager();
 
 	// Create the scrollbars, they'll also be child elements
 	// of the toplevel_grid.
 
-	auto scrollbars=create_peephole_scrollbars(toplevel_grid->impl
-						   ->layout_container_impl,
+	auto scrollbars=create_peephole_scrollbars(toplevel,
 						   scrollbars_background_color);
 
 	// The toplevel_grid will have a peephole as its child element,
@@ -168,18 +162,13 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 
 	auto inner_container=factory(peephole_impl);
 
-	// Install everything into the toplevel_grid.
-
-	auto row0_factory=toplevel_grid->append_row();
-	row0_factory->padding(0);
-	if (border)
-		row0_factory->border(border.value());
-
 	// The peephole layoutmanager needs to know what border is in place,
 	// because that needs to be factored into calculations.
-	current_border_implptr border_impl=
-		gridfactoryObj::implObj::new_grid_element_t::lock{
-		row0_factory->impl->new_grid_element}->left_border;
+	current_border_implptr border_impl;
+
+	if (border)
+		border_impl=toplevel->container_element_impl()
+			.get_screen()->impl->get_cached_border(*border);
 
 	// Create the peephole layoutmanager...
 
@@ -197,6 +186,24 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 	// and the layout manager.
 	auto peephole_element=peephole::create(peephole_impl,
 					       peephole_layoutmanager);
+
+	// Never mind what layout_factory is. The main window uses the
+	// grid layout manager, this is my final word.
+	auto toplevel_impl=
+		peephole_toplevel_gridlayoutmanager::create
+		(toplevel,
+		 peephole_element,
+		 scrollbars.vertical_scrollbar,
+		 scrollbars.horizontal_scrollbar);
+
+	auto toplevel_grid=toplevel_impl->create_gridlayoutmanager();
+
+	// Install everything into the toplevel_grid.
+
+	auto row0_factory=toplevel_grid->append_row();
+	row0_factory->padding(0);
+	if (border)
+		row0_factory->border(*border);
 
 	row0_factory->created_internally(peephole_element);
 
