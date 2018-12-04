@@ -101,21 +101,22 @@ public:
 
 		// Bad input. Show an error dialog.
 
-		auto d=main_window
-			->create_ok_dialog("example@libcxx.com",
-					   "alert",
-					   []
-					   (const x::w::factory &f)
-					   {
-						   f->create_label("Bad input");
-					   },
+		auto d=main_window->create_ok_dialog
+			({"scrollbar_error@examples.w.libcxx.com", true},
+			 "alert",
+			 []
+			 (const x::w::factory &f)
+			 {
+				 f->create_label("Bad input");
+			 },
 
-					   main_window->destroy_when_closed("example@libcxx.com"),
-					   true);
+			 main_window->destroy_when_closed
+			 ("scrollbar_error@examples.w.libcxx.com"));
 
 		d->dialog_window->set_window_title("Error");
-		main_window->set_window_class("main",
-					      "scrollbar@examples.w.libcxx.com");
+		main_window->set_window_class
+			("main",
+			 "scrollbar@examples.w.libcxx.com");
 		d->dialog_window->show_all();
 	}
 

@@ -490,7 +490,8 @@ void create_help_about(const x::w::main_window &main_window)
 			(x::w::rgb::maximum * .75)};
 
 	x::w::dialog d=main_window->create_ok_dialog
-		("help_about@example.libcxx.com",
+		(// dialog id, modal dialog flag
+		 {"help_about@example.libcxx.com", true},
 		 "alert",
 		 []
 		 (const x::w::gridfactory &f)
@@ -499,23 +500,24 @@ void create_help_about(const x::w::main_window &main_window)
 
 				 black{};
 
-			 x::w::label_config config;
+				 x::w::label_config config;
 
-			 // 100mm-wide label (initial word-wrapped width).
+				 // 100mm-wide label (initial
+				 // word-wrapped width).
 
-			 config.widthmm=100;
+				 config.widthmm=100;
 
-			 f->create_label
-				 ({
-					 blue,
-					 "underline"_decoration,
-					 "serif; point_size=24; weight=bold"_font,
+				 f->create_label
+					 ({
+					   blue,
+					   "underline"_decoration,
+					   "serif; point_size=24; weight=bold"_font,
 
-					 "Lorem ipsum\n",
+					   "Lorem ipsum\n",
 
-					 "no"_decoration,
-					 "sans serif; point_size=12"_font,
-					 black,
+					   "no"_decoration,
+					   "sans serif; point_size=12"_font,
+					   black,
 
 		"dolor sit amet, consectetur adipisicing elit, "
 		"sed do eiusmod tempor incididunt ut labore et dolore mana "
@@ -526,16 +528,14 @@ void create_help_about(const x::w::main_window &main_window)
 		"Excepteur sint occaecat cupidatat non proident, "
 		"sunt in culpa qui officia deserunt mollit anim id est "
 		"laborum."
-						 },
-					 config);
+					 },
+						 config);
 		 },
 		 []
 		 (ONLY IN_THREAD, const x::w::busy &)
 		 {
 			 std::cout << "Help/About closed!" << std::endl;
-		 },
-		 // Modal dialog:
-		 true);
+		 });
 
 	auto w=d->dialog_window;
 
@@ -578,7 +578,8 @@ void stop_message_dialog(const x::w::main_window &mw)
 void create_help_question(const x::w::main_window &main_window)
 {
 	x::w::input_dialog d=main_window->create_input_dialog
-		("help_question@example.libcxx.com",
+		(// Dialog ID, modal dialog flag:
+		 {"help_question@example.libcxx.com", true},
 		 "question",
 		 []
 		 (const x::w::gridfactory &f)
@@ -603,9 +604,7 @@ void create_help_question(const x::w::main_window &main_window)
 		 (ONLY IN_THREAD, const x::w::busy &)
 		 {
 			 std::cout << "How rude..." << std::endl;
-		 },
-		 // Modal dialog:
-		 true);
+		 });
 
 	d->dialog_window->set_window_title("Hello!");
 }
@@ -669,9 +668,8 @@ void create_file_open(const x::w::main_window &main_window)
 	set_filename_filters(config);
 
 	x::w::file_dialog d=main_window->create_file_dialog
-		("file_open@example.libcxx.com",
-		 config,
-		 true);
+		({"file_open@example.libcxx.com", true},
+		 config);
 
 	d->dialog_window->set_window_title("Open File");
 }
@@ -700,9 +698,7 @@ void create_file_new(const x::w::main_window &main_window)
 	set_filename_filters(config);
 
 	x::w::file_dialog d=main_window->create_file_dialog
-		("file_new@example.libcxx.com",
-		 config,
-		 true);
+		({"file_new@example.libcxx.com", true}, config);
 
 	d->dialog_window->set_window_title("Create File");
 }

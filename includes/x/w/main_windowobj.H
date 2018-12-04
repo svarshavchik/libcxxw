@@ -128,30 +128,25 @@ public:
 	//! Create an empty dialog.
 
 	template<typename dialog_creator>
-	auto create_dialog(const std::string_view &dialog_id,
-			   dialog_creator &&f,
-			   bool modal=false,
-			   const new_layoutmanager &l=new_gridlayoutmanager{})
+	auto create_dialog(const create_dialog_args &args,
+			   dialog_creator &&f)
 	{
 		return do_create_dialog
-			(dialog_id,
+			(args,
 			 make_function<void (const dialog &)>
-			 (std::forward<dialog_creator>(f)),
-			 l, modal);
+			 (std::forward<dialog_creator>(f)));
 	}
 
 	template<typename dialog_creator>
-	auto create_custom_dialog(const std::string_view &dialog_id,
-				  dialog_creator &&f,
-				  bool modal=false,
-				  const new_layoutmanager &l=new_gridlayoutmanager{})
+	auto create_custom_dialog(const create_dialog_args &args,
+				  dialog_creator &&f)
 	{
 		typedef decltype(f( std::declval<const dialog_args &>())
 				 ) f_ret;
 
 		typename refptr_traits<f_ret>::ptr_t retptr;
 
-		do_create_dialog(dialog_id,
+		do_create_dialog(args,
 				 make_function<external_dialog_creator_t>
 				 ([&]
 				  (const dialog_args &args)
@@ -161,26 +156,22 @@ public:
 					  retptr=r;
 
 					  return r;
-				  }),
-				 l, modal);
+				  }));
 
 		return f_ret{retptr};
 	}
 
 	//! Type-erased create_dialog().
 
-	dialog do_create_dialog(const std::string_view &dialog_id,
-				const function<void (const dialog &)> &creator,
-				const new_layoutmanager &layout_factory,
-				bool modal);
+	dialog do_create_dialog(const create_dialog_args &args,
+				const function<void (const dialog &)> &creator)
+		LIBCXX_PUBLIC;
 
 	//! Type-erased create_custom_dialog().
 
-	void do_create_dialog(const std::string_view &dialog_id,
+	void do_create_dialog(const create_dialog_args &args,
 			      const function<external_dialog_creator_t>
-			      &creator,
-			      const new_layoutmanager &layout_factory,
-			      bool modal)
+			      &creator)
 		LIBCXX_PUBLIC;
 
 	//! Remove an existing dialog, if it exists.
@@ -194,26 +185,24 @@ public:
 
 	//! Create an OK dialog
 
-	dialog create_ok_dialog(const std::string_view &dialog_id,
+	dialog create_ok_dialog(const standard_dialog_args &args,
 				const std::string &icon,
 				const functionref<void (const factory &)>
 				&content_factory,
 				const functionref<void (THREAD_CALLBACK,
 							const busy &)>
-				&ok_action,
-				bool modal=false);
+				&ok_action);
 
 	//! Create an OK dialog
 
-	dialog create_ok_dialog(const std::string_view &dialog_id,
+	dialog create_ok_dialog(const standard_dialog_args &args,
 				const std::string &icon,
 				const functionref<void (const factory &)>
 				&content_factory,
 				const functionref<void (THREAD_CALLBACK,
 							const busy &)>
 				&ok_action,
-				const text_param &ok_label,
-				bool modal=false);
+				const text_param &ok_label);
 
 	//! Use create_ok_dialog() to create a simple informational message dialog.
 
@@ -245,7 +234,7 @@ public:
 	//! Create an OK or CANCEL dialog
 
 	dialog
-	create_ok_cancel_dialog(const std::string_view &dialog_id,
+	create_ok_cancel_dialog(const standard_dialog_args &args,
 				const std::string &icon,
 				const functionref<void (const factory &)>
 				&content_factory,
@@ -254,13 +243,12 @@ public:
 				&ok_action,
 				const functionref<void (THREAD_CALLBACK,
 							const busy &)>
-				&cancel_action,
-				bool modal=false);
+				&cancel_action);
 
 	//! Create an OK or CANCEL dialog
 
 	dialog
-	create_ok_cancel_dialog(const std::string_view &dialog_id,
+	create_ok_cancel_dialog(const standard_dialog_args &args,
 				const std::string &icon,
 				const functionref<void (const factory &)>
 				&content_factory,
@@ -271,13 +259,12 @@ public:
 							const busy &)>
 				&cancel_action,
 				const text_param &ok_label,
-				const text_param &cancel_label,
-				bool modal=false);
+				const text_param &cancel_label);
 
 	//! Create a dialog with an input field.
 
 	input_dialog
-	create_input_dialog(const std::string_view &dialog_id,
+	create_input_dialog(const standard_dialog_args &args,
 			    const std::string &icon,
 			    const functionref<void (const factory &)>
 			    &label_factory,
@@ -289,13 +276,12 @@ public:
 			    &ok_action,
 			    const functionref<void (THREAD_CALLBACK,
 						    const busy &)>
-			    &cancel_action,
-			    bool modal=false);
+			    &cancel_action);
 
 	//! Create a dialog with an input field.
 
 	input_dialog
-	create_input_dialog(const std::string_view &dialog_id,
+	create_input_dialog(const standard_dialog_args &args,
 			    const std::string &icon,
 			    const functionref<void (const factory &)>
 			    &label_factory,
@@ -309,18 +295,15 @@ public:
 						    const busy &)>
 			    &cancel_action,
 			    const text_param &ok_label,
-			    const text_param &cancel_label,
-			    bool modal=false);
+			    const text_param &cancel_label);
 
 	//! Create a file dialog
-	file_dialog create_file_dialog(const std::string_view &dialog_id,
-				       const file_dialog_config &,
-				       bool modal=false);
+	file_dialog create_file_dialog(const standard_dialog_args &args,
+				       const file_dialog_config &);
 
 	//! Create a print dialog
-	print_dialog create_print_dialog(const std::string_view &dialog_id,
-					 const print_dialog_config &,
-					 bool modal=false);
+	print_dialog create_print_dialog(const standard_dialog_args &args,
+					 const print_dialog_config &);
 
 	//! Construct a callback that calls remove_dialog().
 

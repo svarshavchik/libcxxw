@@ -50,13 +50,11 @@ void dialogObj::set_dialog_position(dialog_position pos)
 ///////////////////////////////////////////////////////////////////////////
 
 dialog main_windowObj
-::do_create_dialog(const std::string_view &dialog_id,
-		   const function<void (const dialog &)> &creator,
-		   const new_layoutmanager &layout_factory,
-		   bool modal)
+::do_create_dialog(const create_dialog_args &args,
+		   const function<void (const dialog &)> &creator)
 {
 	return create_custom_dialog
-		(dialog_id,
+		(args,
 		 [&]
 		 (const dialog_args &args)
 		 {
@@ -64,14 +62,12 @@ dialog main_windowObj
 
 			 creator(d);
 			 return d;
-		 }, modal, layout_factory);
+		 });
 }
 
-void main_windowObj::do_create_dialog(const std::string_view &dialog_id,
+void main_windowObj::do_create_dialog(const create_dialog_args &args,
 				      const function<external_dialog_creator_t>
-				      &creator,
-				      const new_layoutmanager &layout_factory,
-				      bool modal)
+				      &creator)
 {
 	// Keep a batch queue in scope for the duration of the creation,
 	// so everything gets buffered up.
@@ -82,14 +78,18 @@ void main_windowObj::do_create_dialog(const std::string_view &dialog_id,
 
 	auto handler=ref<dialogObj::handlerObj>
 		::create(s->connref->impl->thread,
-			 impl->handler, "dialog_background", modal);
+			 impl->handler, "dialog_background", args.modal);
 
 	handler->set_window_type("dialog,normal");
 
 	ptr<dialogObj::implObj> dialog_impl;
 
+	std::optional<new_gridlayoutmanager> default_lm;
+
 	auto [ignored, lm]=create_main_window_impl
-		(handler, layout_factory,
+		(handler, args.dialog_layout ? args.dialog_layout->get()
+		 : static_cast<const new_layoutmanager &>
+		 (default_lm.emplace()),
 		 [&,this](const auto &args)
 		 {
 			 auto impl=ref<dialogObj::implObj>::create
@@ -109,7 +109,7 @@ void main_windowObj::do_create_dialog(const std::string_view &dialog_id,
 
 	auto d=creator(dialog_args{ref_dialog_impl, mw});
 
-	std::string dialog_ids{dialog_id.begin(), dialog_id.end()};
+	std::string dialog_ids{args.dialog_id.begin(), args.dialog_id.end()};
 
 	// Insert or replace this dialog_id.
 

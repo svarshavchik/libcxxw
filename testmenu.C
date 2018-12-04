@@ -135,7 +135,7 @@ LIBCXX_NAMESPACE::w::input_dialog
 app_dialogsObj::create_help_question(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
 	auto d=main_window->create_input_dialog
-		("question",
+		({"question", true},
 		 "question",
 		 []
 		 (const auto &factory)
@@ -157,8 +157,7 @@ app_dialogsObj::create_help_question(const LIBCXX_NAMESPACE::w::main_window &mai
 		  const auto &ignore)
 		 {
 			 std::cout << "Never mind!" << std::endl;
-		 },
-		 true);
+		 });
 	d->dialog_window->set_window_title("Hello!");
 
 	return d;
@@ -168,7 +167,7 @@ LIBCXX_NAMESPACE::w::dialog
 app_dialogsObj::create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
 	auto d=main_window->create_ok_cancel_dialog
-		("alert",
+		({"alert", true},
 		 "alert",
 		 []
 		 (const auto &factory)
@@ -184,8 +183,7 @@ app_dialogsObj::create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_w
 		 (THREAD_CALLBACK, const auto &ignore)
 		 {
 			 std::cout << "Help -> About Cancel!" << std::endl;
-		 },
-		 true);
+		 });
 	d->dialog_window->set_window_title("Help/About");
 
 	return d;
@@ -221,7 +219,7 @@ app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_wi
 		("Image files", "\\.(gif|png|jpg)$");
 	config.initial_filename_filter=0;
 
-	auto d=main_window->create_file_dialog("file_open", config, true);
+	auto d=main_window->create_file_dialog({"file_open", true}, config);
 
 	return d;
 }
@@ -245,7 +243,7 @@ app_dialogsObj::create_file_print(const LIBCXX_NAMESPACE::w::main_window &main_w
 			std::cout << "Cancelled" << std::endl;
 		}};
 
-	auto d=main_window->create_print_dialog("file_print", config, true);
+	auto d=main_window->create_print_dialog({"file_print", true}, config);
 
 	d->dialog_window->set_window_title("Print File");
 

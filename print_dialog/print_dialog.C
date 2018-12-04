@@ -423,9 +423,8 @@ standard_dialog_elements_t print_dialog_init_helper
 }
 
 print_dialog main_windowObj
-::create_print_dialog(const std::string_view &dialog_id,
-		      const print_dialog_config &conf,
-		      bool modal)
+::create_print_dialog(const standard_dialog_args &args,
+		      const print_dialog_config &conf)
 {
 	auto future_parent=ref<print_dialog_parentObj>::create();
 
@@ -453,7 +452,7 @@ print_dialog main_windowObj
 	print_dialog_init_helper helper{ref(this)};
 
 	auto d=create_custom_dialog
-		(dialog_id,
+		(create_dialog_args{args},
 		 [&]
 		 (const dialog_args &args)
 		 {
@@ -481,8 +480,7 @@ print_dialog main_windowObj
 			 impl->fields.ok_button->autofocus(true);
 			 return print_dialog::create(print_dialog_args{
 					 args, impl});
-		 },
-		 modal);
+		 });
 
 	future_parent->parent=d;
 

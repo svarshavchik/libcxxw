@@ -719,15 +719,15 @@ static void file_menu(const w::main_window &mw,
 		w::file_dialog_type::create_file};
 
 	auto file_new=mw->create_file_dialog
-		("file_new@cxxwtheme.w.libcxx.com", conf, true);
+		({"file_new@cxxwtheme.w.libcxx.com", true}, conf);
 
 	conf.type=w::file_dialog_type::existing_file;
 
 	auto file_open=mw->create_file_dialog
-		("file_open@cxxwtheme.w.libcxx.com", conf, true);
+		({"file_open@cxxwtheme.w.libcxx.com", true}, conf);
 
 	auto file_ok_cancel=mw->create_ok_cancel_dialog
-		("file_ok_cancel@cxxwtheme.w.libcxx.com",
+		({"file_ok_cancel@cxxwtheme.w.libcxx.com", true},
 		 "stop",
 		 []
 		 (const auto &f)
@@ -741,10 +741,10 @@ static void file_menu(const w::main_window &mw,
 		 []
 		 (THREAD_CALLBACK, const auto &ignore)
 		 {
-		 }, true);
+		 });
 
 	auto file_input_dialog=mw->create_input_dialog
-		("file_input_dialog@cxxwtheme.w.libcxx.com",
+		({"file_input_dialog@cxxwtheme.w.libcxx.com", true},
 		 "question",
 		 []
 		 (const auto &f)
@@ -760,7 +760,7 @@ static void file_menu(const w::main_window &mw,
 		 []
 		 (THREAD_CALLBACK, const auto &ignore)
 		 {
-		 }, true);
+		 });
 
 	lm->append_items({
 			[file_new](THREAD_CALLBACK,
@@ -812,7 +812,7 @@ static void help_menu(const w::main_window &mw,
 		      const w::listlayoutmanager &lm)
 {
 	auto help_about=mw->create_ok_dialog
-		("help_about@cxxwtheme.w.libcxx.com",
+		({"help_about@cxxwtheme.w.libcxx.com", true},
 		 "alert",
 		 []
 		 (const w::gridfactory &f)

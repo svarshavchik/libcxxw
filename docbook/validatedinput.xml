@@ -71,7 +71,7 @@ See COPYING for distribution information.
     <para>
       The closure's first parameter is a <classname>std::string</classname> or
       a <classname>std::u32string</classname> containing the entered text,
-      and the escond parameter is its own
+      and the second parameter is its own
       <classname>&ns;::w::input_field</classname> object.
       <filename>validatedinput.C</filename> shows a simple example of
       using its <methodname>stop_message</methodname>() method, which

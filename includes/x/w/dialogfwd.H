@@ -7,12 +7,15 @@
 
 #include <x/w/namespace.H>
 #include <x/w/factoryfwd.H>
+#include <x/w/gridlayoutmanagerfwd.H>
+#include <x/w/new_layoutmanagerfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/ptrfwd.H>
 
 #include <unordered_map>
 #include <string>
 #include <functional>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -28,6 +31,54 @@ enum class dialog_position {
 			    on_the_right,
 			    above,
 			    below,
+};
+
+struct LIBCXX_PUBLIC standard_dialog_args;
+struct LIBCXX_PUBLIC create_dialog_args;
+
+//! Parameters for a new dialog.
+
+//! Passed to \ref main_window "main window"'s methods that create new
+//! dialogs, specifies the new dialog's configuration and parameters.
+
+struct standard_dialog_args {
+
+	//! Unique dialog ID.
+
+	//! Cannot be set to a temporary object, this is a \c std::string_view.
+	std::string_view dialog_id;
+
+	//! Whether the new dialog is a modal dialog.
+	bool modal=false;
+};
+
+//! An additional parameter for create_dialog() and create_custom_dialog().
+
+//! Passed to \ref main_window "main window"'s create_dialog() or
+//! create_custom_dialog(), setting the new dialog's parameters.
+//!
+//! A subclass of \ref standard_dialog_args "INSERT_LIBX_NAMESPACE::w::standard_dialog_args"
+//! that adds an optional \c dialog_layout, the layout manager for the new
+//! dialog.
+
+struct create_dialog_args : public standard_dialog_args {
+
+	//! New dialog's layout manager.
+
+	//! \code
+	//! INSERT_LIBX_NAMESPACE::w::create_dialog_args args{"example@example.com"};
+	//!
+	//! INSERT_LIBX_NAMESPACE::w::new_toolboxlayoutmanager ntlm;
+	//!
+	//! args.dialog_layout=ntlm;
+	//! \endcode
+	//!
+	//! The new layout manager object cannot be a temporary object, and
+	//! the object must exist until create_dialog() or
+	//! create_custom_dialog() returns.
+
+	std::optional<std::reference_wrapper<const new_layoutmanager>
+		      > dialog_layout;
 };
 
 /*! A dialog pop-up from another main window (or of a parent dialog).

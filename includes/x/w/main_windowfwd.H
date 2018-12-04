@@ -119,13 +119,25 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_dialog("dialog_id@example.com",
      {
      });
 
-// ...
+INSERT_LIBX_NAMESPACE::w::create_dialog_args args{"dialog_id@example.com"};
+
+INSERT_LIBX_NAMESPACE::w::dialog d=w->create_dialog(args,
+     []
+     (const INSERT_LIBX_NAMESPACE::w::dialog &f)
+     {
+     });
 
 d->dialog_window->show_all();
 \endcode
 
 Creates a generic dialog. The dialog needs to be show_all()ed, to make
-it visible by showing all of the dialog's display elements. The first
+it visible by showing all of the dialog's display elements.
+
+The first parameter is an
+\ref create_dialog_args "INSERT_LIBX_NAMESPACE::w::create_dialog_args"
+object. This object sets the new dialog's parameters. It's constructible
+from a single literal string, or this object is individually constructible,
+and passed in. Its required first
 parameter is a unique identifier for the new dialog. All dialogs created
 by the same main window must have unique identifiers. By convention,
 unique dialog identifiers are based on Internet domain names, either
@@ -137,20 +149,53 @@ called just before
 create_dialog() returns. It receives the just-created dialog as its
 parameter, and its job is to create the dialog's contents.
 
-The remaining parameters are optional. The third parameter
+Optional
+\ref create_dialog_args "INSERT_LIBX_NAMESPACE::w::create_dialog_args"
+parameters:
+
+\code
+    args.modal=true;
+
+INSERT_LIBX_NAMESPACE::w::dialog d=w->create_dialog({"dialog_id@example.com", true},
+     []
+     (const INSERT_LIBX_NAMESPACE::w::dialog &f)
+     {
+     });
+\endcode
+
+\c modal is
 a \c bool flag. It's \c false by default. Setting it to \c true
 creates a modal dialog. While a modal dialog is visible, the parent
 window or dialog ignores all pointer and button events, and gets visibly
 shaded accordingly.
 
-The 4th parameter specifies the new dialog's layout manager, and defaults to
+\code
+INSERT_LIBX_NAMESPACE::w::new_toolboxlayoutmanager ntlm;
+
+args.dialog_layout=ntlm;
+\endcode
+
+\ref create_dialog_args "INSERT_LIBX_NAMESPACE::w::create_dialog_args"'s
+\c dialog_layout member specifies the new dialog's layout manager.
+It defaults to
 \ref new_gridlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager".
+
+If specified, \c dialog_layout cannot be set to a temporary object, and the
+new layout manager object cannot be destroyed before the new dialog gets
+created.
 
 \par Standard dialogs
 
 \code
 INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_dialog(
-    // Dialog identifier label
+    // INSERT_LIBX_NAMESPACE::w::standard_dialog_args
+    //
+    // Same as INSERT_LIBX_NAMESPACE::w::create_dialog_args except that there's
+    // no dialog_layout.
+    //
+    // Like INSERT_LIBX_NAMESPACE::w::create_dialog_args, it's constructible
+    // from a single literal string, and also has an optional modal flag;
+    // the literal string sets a unique identifier, or a label, for the dialog.
     //
     // All dialogs must have unique labels in the parent windows or dialogs.
     // Different parent main window or parent dialogs can use the same labels.
@@ -158,7 +203,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_dialog(
     // hostnames or E-mail addresses using domain names that belong to
     // the application.
 
-    "lorem_ipsum@example.com",
+    {"lorem_ipsum@example.com", true},
 
     // Use this icon for this dialog.
     "alert",
@@ -176,10 +221,10 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_dialog(
      const INSERT_LIBX_NAMESPACE::w::busy &ignore)
     {
          // ...
-    }, true);
+    });
 
 INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
-    // Dialog identifier label
+    // Just a dialog label, the modal flag defaults to false.
     "dolores@example.com",
 
     // Icon
@@ -200,8 +245,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
      const INSERT_LIBX_NAMESPACE::w::busy &ignore)
     {
          // Cancel action.
-    },
-    true);
+    });
 \endcode
 
 create_ok_dialog() creates a \ref dialog "dialog" with only an "Ok" button.
@@ -214,13 +258,10 @@ one of the predefined icon names from the current theme. The second
 parameter is a callback lambda that creates the main contents of the
 dialog to show next to the icon, typically a short label.
 
-The last optional parameter specifies whether the created dialog is
-modal.
-
 \code
 INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog
-      (// Identifier label
-       "help_question@example.com",
+      (// Identifier label, modal dialog.
+       {"help_question@example.com", true},
 
        // Show an icon with a question mark.
        "question",
@@ -262,9 +303,7 @@ INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog
         const INSERT_LIBX_NAMESPACE::w::busy &)
        {
            std::cout << "How rude..." << std::endl;
-       },
-       // Modal dialog:
-       true);
+       });
 \endcode
 
 create_input_dialog() constructs an
@@ -326,7 +365,7 @@ INSERT_LIBX_NAMESPACE::w::file_dialog_config config{
 
      }};
 
-INSERT_LIBX_NAMESPACE::w::file_dialog d=main_window->create_file_dialog("file_open@example.com", config, true);
+INSERT_LIBX_NAMESPACE::w::file_dialog d=main_window->create_file_dialog({"file_open@example.com", true}, config);
 \endcode
 
 create_file_dialog() returns a
@@ -339,7 +378,7 @@ an existing or a new file.
 
 INSERT_LIBX_NAMESPACE::w::print_dialog_config config;
 
-INSERT_LIBX_NAMESPACE::w::print_dialog d=main_window->create_print_dialog("print@example.com", config, true);
+INSERT_LIBX_NAMESPACE::w::print_dialog d=main_window->create_print_dialog({"print@example.com", true}, config);
 
 \endcode
 

@@ -387,7 +387,7 @@ void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
 					   const std::string &title)
 {
 	auto d=the_file_dialog->dialog_window->create_ok_dialog
-		("error@libcxx.com", "alert",
+		({"error@libcxx.com", true}, "alert",
 		 [error_message]
 		 (const auto &f)
 		 {
@@ -398,8 +398,7 @@ void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
 			 f->create_label(error_message, config);
 		 },
 		 the_file_dialog->dialog_window
-		 ->destroy_when_closed("error@libcxx.com"),
-		 true);
+		 ->destroy_when_closed("error@libcxx.com"));
 	d->dialog_window->set_window_title(title);
 	d->dialog_window->show_all();
 }
@@ -716,12 +715,11 @@ class LIBCXX_HIDDEN file_dialog_container_implObj :
 }
 
 file_dialog main_windowObj
-::create_file_dialog(const std::string_view &dialog_id,
-		     const file_dialog_config &conf,
-		     bool modal)
+::create_file_dialog(const standard_dialog_args &args,
+		     const file_dialog_config &conf)
 {
 	return create_custom_dialog
-		(dialog_id,
+		(create_dialog_args{args},
 		 [&]
 		 (const dialog_args &args)
 		 {
@@ -762,8 +760,7 @@ file_dialog main_windowObj
 				 fd->impl;
 
 			 return fd;
-		 },
-		 modal);
+		 });
 }
 
 //////////////////////////////////////////////////////////////////////////

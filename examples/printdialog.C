@@ -97,9 +97,8 @@ static x::w::file_dialog create_select_file_dialog(const x::w::main_window &main
 		}};
 
 	auto d=main_window->create_file_dialog
-		("file@printdialog.examples.w.libcxx.com",
-		 config,
-		 true);
+		({"file@printdialog.examples.w.libcxx.com", true},
+		 config);
 
 	d->dialog_window->set_window_title("Select the file to print");
 
@@ -153,9 +152,8 @@ static x::w::print_dialog create_print_dialog(const x::w::main_window &main_wind
 		}};
 
 	auto d=main_window->create_print_dialog
-		("print@printdialog.examples.w.libcxx.com",
-		 config,
-		 true);
+		({"print@printdialog.examples.w.libcxx.com", true},
+		 config);
 	d->dialog_window->set_window_title("Select the printer");
 
 	return d;

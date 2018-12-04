@@ -484,36 +484,33 @@ void hide_and_invoke_when_closed(const dialog &d,
 }
 
 dialog main_windowObj
-::create_ok_dialog(const std::string_view &dialog_id,
+::create_ok_dialog(const standard_dialog_args &args,
 		   const std::string &icon,
 		   const functionref<void (const factory &)>
 		   &content_factory,
 		   const functionref<void (THREAD_CALLBACK,
 					   const busy &)>
-		   &ok_action,
-		   bool modal)
+		   &ok_action)
 {
-	return create_ok_dialog(dialog_id,
+	return create_ok_dialog(args,
 				icon, content_factory, ok_action,
-				stop_message_config::default_ok_label(),
-				modal);
+				stop_message_config::default_ok_label());
 }
 
 dialog main_windowObj
-::create_ok_dialog(const std::string_view &dialog_id,
+::create_ok_dialog(const standard_dialog_args &args,
 		   const std::string &icon,
 		   const functionref<void (const factory &)>
 		   &content_factory,
 		   const functionref<void (THREAD_CALLBACK,
 					   const busy &)>
 		   &ok_action,
-		   const text_param &ok_label,
-		   bool modal)
+		   const text_param &ok_label)
 {
 	buttonptr ok_button;
 
 	auto d=create_dialog
-		(dialog_id,
+		(create_dialog_args{args},
 		 [&]
 		 (const dialog &d)
 		 {
@@ -542,8 +539,7 @@ dialog main_windowObj
 
 			 d->dialog_window->initialize_theme_dialog
 			 ("ok-dialog", tmpl);
-		 },
-		 modal);
+		 });
 
 	// Ok button's shortcut is ESC. autofocus() th einput on the Ok
 	// button. "Enter" will activate the "Ok" button, closing the popup.
@@ -587,7 +583,7 @@ void main_windowObj::stop_message(const text_param &msg,
 {
 	auto autodestroy=destroy_when_closed("stop_message@libcxx.com");
 
-	auto d=create_ok_dialog("stop_message@libcxx.com",
+	auto d=create_ok_dialog({"stop_message@libcxx.com", config.modal},
 				"stop",
 				[&]
 				(const auto &f)
@@ -604,8 +600,7 @@ void main_windowObj::stop_message(const text_param &msg,
 					if (cb)
 						cb(IN_THREAD);
 				},
-				config.ok_label,
-				config.modal);
+				config.ok_label);
 
 	std::visit( [&](const auto &title)
 		    {
@@ -637,7 +632,7 @@ void main_windowObj::alert_message(const text_param &msg,
 {
 	auto autodestroy=destroy_when_closed("alert_message@libcxx.com");
 
-	auto d=create_ok_dialog("alert_message@libcxx.com",
+	auto d=create_ok_dialog({"alert_message@libcxx.com", config.modal},
 				"alert",
 				[&]
 				(const auto &f)
@@ -651,8 +646,7 @@ void main_windowObj::alert_message(const text_param &msg,
 					if (cb)
 						cb(IN_THREAD);
 				},
-				config.ok_label,
-				config.modal);
+				config.ok_label);
 
 	std::visit( [&](const auto &title)
 		    {
@@ -675,7 +669,7 @@ text_param alert_message_config::default_ok_label() noexcept
 alert_message_config::~alert_message_config()=default;
 
 dialog main_windowObj
-::create_ok_cancel_dialog(const std::string_view &dialog_id,
+::create_ok_cancel_dialog(const standard_dialog_args &args,
 			  const std::string &icon,
 			  const functionref<void (const factory &)>
 			  &content_factory,
@@ -684,18 +678,17 @@ dialog main_windowObj
 			  &ok_action,
 			  const functionref<void (THREAD_CALLBACK,
 						  const busy &)>
-			  &cancel_action,
-			  bool modal)
+			  &cancel_action)
 {
-	return create_ok_cancel_dialog(dialog_id,
+	return create_ok_cancel_dialog(args,
 				       icon, content_factory, ok_action,
 				       cancel_action,
 				       _("Ok"),
-				       _("Cancel"), modal);
+				       _("Cancel"));
 }
 
 dialog main_windowObj
-::create_ok_cancel_dialog(const std::string_view &dialog_id,
+::create_ok_cancel_dialog(const standard_dialog_args &args,
 			  const std::string &icon,
 			  const functionref<void (const factory &)>
 			  &content_factory,
@@ -706,14 +699,13 @@ dialog main_windowObj
 						  const busy &)>
 			  &cancel_action,
 			  const text_param &ok_label,
-			  const text_param &cancel_label,
-			  bool modal)
+			  const text_param &cancel_label)
 {
 	buttonptr ok_button;
 	buttonptr cancel_button;
 
 	auto d=create_dialog
-		(dialog_id,
+		(create_dialog_args{args},
 		 [&]
 		 (const dialog &d)
 		 {
@@ -733,8 +725,7 @@ dialog main_windowObj
 
 			 d->dialog_window->initialize_theme_dialog
 			 ("ok-cancel-dialog", tmpl);
-		 },
-		 modal);
+		 });
 
 	hide_and_invoke_when_activated(d, ok_button, ok_action);
 	hide_and_invoke_when_activated(d, cancel_button, cancel_action);
@@ -744,7 +735,7 @@ dialog main_windowObj
 }
 
 input_dialog main_windowObj
-::create_input_dialog(const std::string_view &dialog_id,
+::create_input_dialog(const standard_dialog_args &args,
 		      const std::string &icon,
 		      const functionref<void (const factory &)>
 		      &label_factory,
@@ -756,20 +747,19 @@ input_dialog main_windowObj
 		      &ok_action,
 		      const functionref<void (THREAD_CALLBACK,
 					      const busy &)>
-		      &cancel_action,
-		      bool modal)
+		      &cancel_action)
 {
-	return create_input_dialog(dialog_id,
+	return create_input_dialog(args,
 				   icon, label_factory,
 				   initial_text, config,
 				   ok_action,
 				   cancel_action,
 				   _("Ok"),
-				   _("Cancel"), modal);
+				   _("Cancel"));
 }
 
 input_dialog main_windowObj
-::create_input_dialog(const std::string_view &dialog_id,
+::create_input_dialog(const standard_dialog_args &args,
 		      const std::string &icon,
 		      const functionref<void (const factory &)>
 		      &label_factory,
@@ -781,8 +771,7 @@ input_dialog main_windowObj
 		      const functionref<void (THREAD_CALLBACK,
 					      const busy &)> &cancel_action,
 		      const text_param &ok_label,
-		      const text_param &cancel_label,
-		      bool modal)
+		      const text_param &cancel_label)
 {
 	buttonptr ok_button;
 	buttonptr cancel_button;
@@ -791,7 +780,7 @@ input_dialog main_windowObj
 	input_dialogptr new_input_dialog;
 
 	auto d=create_custom_dialog
-		(dialog_id,
+		(create_dialog_args{args},
 		 [&]
 		 (const auto &args)
 		 {
@@ -825,7 +814,7 @@ input_dialog main_windowObj
 
 			 return id;
 
-		 }, modal);
+		 });
 
 	hide_and_invoke_when_activated
 		(d, ok_button,
