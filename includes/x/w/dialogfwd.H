@@ -18,6 +18,18 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC dialogObj;
 
+//! Position of the dialog with respect to its main window.
+
+//! This is used mostly with toolbox dialogs.
+
+enum class dialog_position {
+			    default_position,
+			    on_the_left,
+			    on_the_right,
+			    above,
+			    below,
+};
+
 /*! A dialog pop-up from another main window (or of a parent dialog).
 
 A dialog gets created by using one of main_window's methods, like
@@ -68,6 +80,14 @@ This means that each dialog can have its own dialogs, too.
 
 Several INSERT_LIBX_NAMESPACE::w::main_window methods, like
 create_ok_cancel_dialog() construct stock, theme-specified dialogs.
+
+\code
+d->set_dialog_position(INSERT_LIBX_NAMESPACE::w::dialog_position::on_the_left);
+\endcode
+
+set_dialog_position() specifies where the dialog should appear with
+respect to its parent main window. This is effective only before the dialog
+is shown for the first time.
 
 */
 

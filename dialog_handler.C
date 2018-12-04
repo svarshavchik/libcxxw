@@ -31,9 +31,10 @@ const char *dialogObj::handlerObj::default_wm_class_instance() const
 	return "dialog";
 }
 
-bool dialogObj::handlerObj::handle_our_own_placement()
+bool dialogObj::handlerObj::handle_our_own_placement(ONLY IN_THREAD)
 {
-	return !get_screen()->supported("_NET_WM_FULL_PLACEMENT");
+	return !get_screen()->supported("_NET_WM_FULL_PLACEMENT") ||
+		my_position(IN_THREAD) != dialog_position::default_position;
 }
 
 void dialogObj::handlerObj::set_inherited_visibility_mapped(ONLY IN_THREAD)
@@ -41,70 +42,6 @@ void dialogObj::handlerObj::set_inherited_visibility_mapped(ONLY IN_THREAD)
 	if (modal)
 		acquired_busy_mcguffin(IN_THREAD)=
 			parent_handler->get_shade_busy_mcguffin();
-
-	if (handle_our_own_placement())
-	{
-		// Before we become visible we are going to
-		// manually position the dialog so that it's
-		// centered over its parent window.
-
-		rectangle parent_pos=
-			parent_handler->get_absolute_location(IN_THREAD);
-
-		parent_pos.x=0;
-		parent_pos.y=0;
-		parent_handler->get_absolute_location_on_screen(IN_THREAD,
-								parent_pos);
-
-		auto parent_center_x=
-			coord_squared_t::truncate(parent_pos.x +
-						  parent_pos.width/2);
-
-		auto parent_center_y=
-			coord_squared_t::truncate(parent_pos.y +
-						  parent_pos.height/2);
-
-		mpobj<rectangle>::lock lock{current_position};
-
-		coord_t placement_x=coord_t::truncate
-			(parent_center_x-dim_t::truncate(lock->width/2));
-		coord_t placement_y=coord_t::truncate
-			(parent_center_y-dim_t::truncate(lock->height/2));
-
-		auto workarea=get_screen()->get_workarea();
-
-		coord_t right=coord_t::truncate(workarea.x+workarea.width-
-						dim_t::truncate
-						(data(IN_THREAD)
-						 .current_position.width));
-		coord_t bottom=coord_t::truncate(workarea.y+workarea.height-
-						 dim_t::truncate
-						 (data(IN_THREAD)
-						  .current_position.height));
-
-		if (placement_x > right)
-			placement_x=right;
-
-		if (placement_y > bottom)
-			placement_y=bottom;
-
-		if (placement_x < workarea.x)
-			placement_x=workarea.x;
-
-		if (placement_y < workarea.y)
-			placement_y=workarea.y;
-
-		values_and_mask configure_window_vals
-			(XCB_CONFIG_WINDOW_X,
-			 (coord_t::value_type)placement_x,
-
-			 XCB_CONFIG_WINDOW_Y,
-			 (coord_t::value_type)placement_y);
-
-		xcb_configure_window(IN_THREAD->info->conn, id(),
-				     configure_window_vals.mask(),
-				     configure_window_vals.values().data());
-	}
 
 	parent_handler->handler_data->opening_dialog(IN_THREAD);
 	superclass_t::set_inherited_visibility_mapped(IN_THREAD);
@@ -114,8 +51,122 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 {
 	auto hints=superclass_t::compute_size_hints(IN_THREAD);
 
-	if (handle_our_own_placement())
-		hints.flags |= XCB_ICCCM_SIZE_HINT_P_POSITION;
+	if (!handle_our_own_placement(IN_THREAD))
+		return hints;
+
+	if (hints.flags & XCB_ICCCM_SIZE_HINT_US_POSITION)
+		return hints; // Overridden in the superclass.
+
+	// Before we become visible we are going to
+	// manually position the dialog so that it's
+	// centered over its parent window.
+
+	rectangle parent_pos=
+		parent_handler->get_absolute_location(IN_THREAD);
+
+	parent_pos.x=0;
+	parent_pos.y=0;
+	parent_handler->get_absolute_location_on_screen(IN_THREAD,
+							parent_pos);
+
+	auto &workarea=frame_extents(IN_THREAD).workarea;
+
+	mpobj<rectangle>::lock lock{current_position};
+
+	coord_t placement_x=parent_pos.x;
+	coord_t placement_y=parent_pos.y;
+
+	switch (my_position(IN_THREAD)) {
+	case dialog_position::on_the_left:
+		{
+			dim_t sub_x=dim_t::truncate
+				(parent_handler->
+				 frame_extents(IN_THREAD).left +
+				 frame_extents(IN_THREAD)
+				 .right+lock->width);
+			placement_x=coord_t::truncate
+				(placement_x-sub_x);
+		}
+		break;
+	case dialog_position::on_the_right:
+		{
+			dim_t add_x=dim_t::truncate
+				(parent_handler->
+				 frame_extents(IN_THREAD).right +
+				 frame_extents(IN_THREAD)
+				 .left+parent_pos.width);
+			placement_x=coord_t::truncate
+				(placement_x+add_x);
+		}
+		break;
+	case dialog_position::above:
+		{
+			dim_t sub_y=dim_t::truncate
+				(parent_handler->
+				 frame_extents(IN_THREAD).top +
+				 frame_extents(IN_THREAD)
+				 .bottom+lock->height);
+			placement_y=coord_t::truncate
+				(placement_y-sub_y);
+		}
+		break;
+	case dialog_position::below:
+		{
+			dim_t add_y=dim_t::truncate
+				(parent_handler->
+				 frame_extents(IN_THREAD).bottom +
+				 frame_extents(IN_THREAD)
+				 .top+parent_pos.height);
+			placement_y=coord_t::truncate
+				(placement_y+add_y);
+		}
+		break;
+	default:
+		coord_t parent_center_x=
+			coord_t::truncate(parent_pos.x +
+					  parent_pos.width/2);
+
+		coord_t parent_center_y=
+			coord_t::truncate(parent_pos.y +
+					  parent_pos.height/2);
+
+		placement_x=coord_t::truncate
+			(parent_center_x-lock->width/2);
+		placement_y=coord_t::truncate
+			(parent_center_y-lock->height/2);
+
+		break;
+	};
+
+	// Make sure we are not placed outside of the workarea
+
+	coord_t right=coord_t::truncate(workarea.x+workarea.width-
+					dim_t::truncate
+					(data(IN_THREAD)
+					 .current_position.width));
+	coord_t bottom=coord_t::truncate(workarea.y+workarea.height-
+					 dim_t::truncate
+					 (data(IN_THREAD)
+					  .current_position.height));
+
+	if (placement_x > right)
+		placement_x=right;
+
+	if (placement_y > bottom)
+		placement_y=bottom;
+
+	if (placement_x < workarea.x)
+		placement_x=workarea.x;
+
+	if (placement_y < workarea.y)
+		placement_y=workarea.y;
+
+	xcb_icccm_size_hints_set_position(&hints, 0,
+					  coord_t::truncate(placement_x),
+					  coord_t::truncate(placement_y));
+
+	xcb_icccm_size_hints_set_win_gravity(&hints,
+					     XCB_GRAVITY_STATIC);
 
 	return hints;
 }
@@ -125,6 +176,7 @@ void dialogObj::handlerObj::set_inherited_visibility_unmapped(ONLY IN_THREAD)
 	superclass_t::set_inherited_visibility_unmapped(IN_THREAD);
 	parent_handler->handler_data->closing_dialog(IN_THREAD);
 	acquired_busy_mcguffin(IN_THREAD)=nullptr;
+	my_position(IN_THREAD)=dialog_position::default_position;
 }
 
 std::string dialogObj::handlerObj::default_wm_class_resource(ONLY IN_THREAD)

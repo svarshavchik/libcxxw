@@ -38,6 +38,15 @@ dialogObj::dialogObj(const dialog_args &args)
 
 dialogObj::~dialogObj()=default;
 
+void dialogObj::set_dialog_position(dialog_position pos)
+{
+	dialog_window->in_thread([handler=impl->handler, pos]
+				 (ONLY IN_THREAD)
+				 {
+					 handler->my_position(IN_THREAD)=pos;
+				 });
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
 dialog main_windowObj

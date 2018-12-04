@@ -187,7 +187,8 @@ void main_windowObj::handlerObj::update_size_hints(ONLY IN_THREAD)
 	// are not enough for XFCE.
 
 	if (!data(IN_THREAD).reported_inherited_visibility &&
-	    (hints.flags & XCB_ICCCM_SIZE_HINT_US_POSITION))
+	    (hints.flags & (XCB_ICCCM_SIZE_HINT_US_POSITION |
+			    XCB_ICCCM_SIZE_HINT_P_POSITION)))
 	{
 		values_and_mask configure_window_vals
 			(XCB_CONFIG_WINDOW_X, hints.x,

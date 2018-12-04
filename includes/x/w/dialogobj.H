@@ -33,6 +33,10 @@ public:
 
 	//! Destructor
 	~dialogObj() LIBCXX_PUBLIC;
+
+	//! Set dialog position with respect to its parent main window.
+
+	void set_dialog_position(dialog_position);
 };
 
 LIBCXXW_NAMESPACE_END

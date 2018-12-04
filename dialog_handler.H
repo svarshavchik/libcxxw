@@ -6,9 +6,11 @@
 #define dialog_handler_h
 
 #include "x/w/dialogobj.H"
+#include "x/w/dialogfwd.H"
 #include "x/w/rgbfwd.H"
 #include "main_window_handler.H"
 #include "x/w/connection_threadfwd.H"
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -29,8 +31,13 @@ class dialogObj::handlerObj : public main_windowObj::handlerObj {
 	//! This is a "dialog".
 	const char *default_wm_class_instance() const override;
 
+	//! My position with respect to the parent
+
+	dialog_position my_position_thread_only=
+		dialog_position::default_position;
  public:
 	THREAD_DATA_ONLY(acquired_busy_mcguffin);
+	THREAD_DATA_ONLY(my_position);
 
 	//! Whether this is a modal dialog.
 
@@ -82,7 +89,9 @@ class dialogObj::handlerObj : public main_windowObj::handlerObj {
 
 	//! Check if the window manager support _NET_WM_FULL_PLACEMENT, or not.
 
-	bool handle_our_own_placement();
+	//! This may not be the only reason we want to set our own position,
+	//! it also depends on my_position, too.
+	bool handle_our_own_placement(ONLY IN_THREAD);
 
  public:
 	//! Destructor

@@ -1,3 +1,7 @@
+2018-11-27  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* dialog_handler.C: Add set_dialog_position().
+
 2018-11-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* generic_window.C: Add set_window_type(), on_stabilized().
