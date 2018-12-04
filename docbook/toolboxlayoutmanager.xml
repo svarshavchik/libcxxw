@@ -1,0 +1,207 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="toolbox">
+  <title>Toolbox Dialogs</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="toolboxlayoutmanager.png" format="PNG"
+		 contentwidth="259px" contentdepth="261px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Toolbox dialogs, using the toolbox layout manager.
+      </phrase>
+    </textobject>
+  </mediaobject>
+
+  <para>
+    A toolbox gets implemented as a custom
+    <link linkend="dialogs">dialog</link> that uses the toolbox
+    layout manager.
+  </para>
+
+  <para>
+    All display elements in a container that uses the toolbox layout manager
+    should have the same size. This gets typically done by creating icon
+    buttons for image files that all have the same size.
+    The toolbox layout manager automatically arranges the icons in a grid;
+    and its container's width gets resizable in even incremental steps.
+    The toolbox layout manager automatically repositions its icon according
+    to the new width, automatically adjusting the container's height.
+  </para>
+
+  <para>
+    A top level window cannot have two or more containers with the toolbox
+    layout manager. This is because the toolbox layout manager computes its
+    elements' width and height and sets its size so that its' adjustable
+    only in even increments, and it's only possible to specify a single
+    sizing increment for a window. The toolbox layout manager normally gets
+    used by itself, in a dialog, with no other containers. This is mostly
+    a formal restriction.
+  </para>
+
+  <para>
+    <filename>toolboxlayoutmanager.C</filename> creates a toolbox dialog
+    that gets placed, by default, to the left of its main window. The
+    toolbox dialog contains eight small image icons, a set of default
+    icons from &appshort;'s default theme. The toolbox icons don't do anything,
+    this is for demonstration purposes.
+  </para>
+
+  <para>
+    Adjusting the toolbox dialog's width rearranges the icons automatically.
+    Closing and rerunning <filename>toolboxlayoutmanager.C</filename>
+    <link linkend="screen_positions">preserves the main window's and the
+      dialog's position</link>.
+    The <quote>View</quote> menu's <quote>Toolbox</quote> item has an
+    <keycap>Alt-T</keycap> keyboard shortcut. This closes and reopens the
+    toolbox dialog. This reopens the toolbox dialog in its default position
+    and size.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/toolboxlayoutmanager.C">toolboxlayoutmanager.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/toolboxlayoutmanager.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="toolboxlayoutmanager">
+    <title>Creating a toolbox layout manager</title>
+
+    <para>
+      Passing a
+      <ulink url="&link-x--w--new-toolboxlayoutmanager;"><classname>&ns;::w::new_toolboxlayoutmanager</classname></ulink>
+      as a 2nd parameter
+      to <methodname>create_container</methodname>() creates a new container
+      that uses the
+      <ulink url="&link-typedef-x--w-toolboxlayoutmanager;"><classname>&ns;::w::toolboxlayoutmanager</classname></ulink>;
+      but the toolbox layout manager usually gets used as a layout manager
+      for a dialog.
+      This is done by creating a custom dialog with
+      <methodname>create_dialog</methodname>(), and setting
+      <varname>dialog_layout</varname> in the
+      <link linkend="dialogidentifiers"><classname>&ns;::w::create_dialog_args</classname></link>
+      parameter.
+      This creates a new dialog that uses the toolbox layout manager
+      instead of the default grid layout manager.
+    </para>
+  </section>
+
+  <section id="initdialogpos">
+    <title>Initial dialog position</title>
+
+    <para>
+      An <classname>&ns;::w::create_dialog_args</classname> or a
+      <classname>&ns;::w::standard_dialog_args</classname> object
+      <link linkend="dialogidentifiers">specifies a new dialog's
+	settings</link>.
+
+      <link linkend="toolbox"><filename>toolboxlayoutmanager.C</filename></link>
+      uses an overloaded <methodname>screen_position</methodname>()
+      method to explicitly specify where the new dialog opens:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+args.screen_position(&ns;::w::dialog_position::on_the_left);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A <ulink url="&link-enum-x--w-dialog-position;"><classname>&ns;::w::dialog_position</classname></ulink>
+      places the new dialog next to one of the main window's borders.
+      It's possible to place only one dialog on each border, intelligently.
+    </para>
+
+    <note>
+      <para>
+	Showing a dialog together with its main window requires using
+	the <link linkend="onstabilized">on_stabilized</link>() callback,
+	for reliable dialog positioning.
+      </para>
+    </note>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+args.screen_position(pos, "toolbox");</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      An <link linkend="screen_positions"><classname>&ns;::w::screen_positions</classname></link>
+      object restores the dialog's prior location and size, identified by
+      a unique label.
+      <link linkend="toolbox"><filename>toolboxlayoutmanager.C</filename></link>
+      first sets the dialog to open next to the main window's left border,
+      then attempts to restore its prior position. If there was no
+      previously saved position, the dialog's initial position on the
+      left border remains in place.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+toolbox_dialog->set_dialog_position(x::w::dialog_position::on_the_left);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Calling
+      an existing <ulink url="&link-typedef-x--w-dialog;"><classname>&ns;::w::dialog</classname></ulink>'s
+      <methodname>set_dialog_position</methodname>() with an
+      <classname>&ns;::w::dialog_position</classname> resets the dialog's
+      default position. This is effective only when the dialog is not shown,
+      and has no effect for visible dialogs.
+    </para>
+  </section>
+
+  <section id="onstabilized">
+    <title>The <methodname>on_stabilized</methodname>() callback</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+main_window->on_stabilized
+        ([]
+         (THREAD_CALLBACK,
+          const &ns;::w::busy &amp;mcguffin)
+         {
+             // ...
+         });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The <methodname>on_stabilized</methodname>() &callback; executes
+      the lambda after the window's size and
+      position gets computed and the window becomes visible.
+      The window's final size and position is not fixed until it's visible.
+      The display's window manager has the final word on a new window's
+      position and size, and this cannot be determined in advance.
+    </para>
+
+    <para>
+      <link linkend="toolbox"><filename>toolboxlayoutmanager.C</filename></link>
+      shows both the main window and its toolbox dialog initially.
+      Since the toolbox dialog's default position should be to the left
+      of its window, <filename>toolboxlayoutmanager.C</filename> needs to
+      wait to show the dialog until its main window is stable.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

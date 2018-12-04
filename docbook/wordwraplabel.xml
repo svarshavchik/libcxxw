@@ -178,7 +178,7 @@ pos->save(configfile);</programlisting>
       the screen in the
       <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>.
       More than one window's position may be recorded, and a unique label
-      association each position with its window. Each main window that gets
+      associaties each position with its window. Each main window that gets
       created by the application (if there's more than one) has a unique
       identifying label which serves as the window's identifier.
       The application may put more
@@ -210,18 +210,34 @@ auto main_window=
     </blockquote>
 
     <para>
-      Passing a filename to
-      <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>'s
-      constructor
-      reads the previously saved positions from the file, if the file exists.
-      The <classname>&ns;::w::screen_positions</classname> object
-      and the application-assigned label for the
-      main window gets passed to the overloaded main window
-      <function>create</function>()or.
-      If the named window's position
-      were saved the last time
+      Reopening a window in the same position is a two-step process:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Passing a filename to
+	  <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>'s
+	  constructor
+	  reads the previously saved positions from the file, if the file exists.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The <classname>&ns;::w::screen_positions</classname> object
+	  and the application-assigned label for the
+	  main window gets passed to the overloaded main window
+	  <function>create</function>()or.
+	  The above example passes <quote>main</quote> for the label.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The named window's position that was saved the last time
       <filename>wordwraplabel</filename> ran, the same position and size
-      gets set for the new window; and the same label gets used to
+      gets set for the new window. The same label gets used to
       record the window's position, by its <methodname>save</methodname>()
       method.
     </para>

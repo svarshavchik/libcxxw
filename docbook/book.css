@@ -180,6 +180,7 @@ table.externallinks th, table.externallinks td {
 }
 
 #panelayoutmanager div.mediaobject,
+#toolbox div.mediaobject,
 #hierlist div.mediaobject,
 #customcanvas div.mediaobject {
     float: right;
@@ -187,6 +188,7 @@ table.externallinks th, table.externallinks td {
 }
 
 #hierlist div.blockquote,
+#toolbox div.blockquote,
 #panelayoutmanager div.blockquote {
     clear: right;
 }

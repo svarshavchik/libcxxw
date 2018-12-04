@@ -731,6 +731,18 @@ while (!appdata->close_flag)
 	    </para>
 	  </listitem>
 	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <link linkend="toolbox"><classname>&ns;::w::toolboxlayoutmanager</classname></link>
+	  </term>
+	  <listitem>
+	    <para>
+	      The toolbox layout manager arranges the elements in a resizable
+	      matrix. This layout manager typically gets used to implement
+	      a separate dialog with <quote>toolbox icons</quote>.
+	    </para>
+	  </listitem>
+	</varlistentry>
       </variablelist>
 
       <para>

@@ -33,6 +33,7 @@ noinst_PROGRAMS=\
 	spininput				\
 	table					\
 	table2				        \
+	toolboxlayoutmanager			\
 	validatedinput				\
 	wordwraplabel
 
@@ -143,6 +144,9 @@ table_LDADD=-lcxxw -lcxx
 
 table2_SOURCES=table2.C close_flag.H
 table2_LDADD=-lcxxw -lcxx
+
+toolboxlayoutmanager_SOURCES=toolboxlayoutmanager.C close_flag.H
+toolboxlayoutmanager_LDADD=-lcxxw -lcxx
 
 validatedinput_SOURCES=validatedinput.C close_flag.H
 validatedinput_LDADD=-lcxxw -lcxx

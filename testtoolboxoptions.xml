@@ -1,0 +1,38 @@
+<optclass name="testtoolboxoptions">
+  <option>
+    <name>default_width</name>
+    <type>size_t</type>
+    <default>2</default>
+    <opt>w</opt>
+    <longopt>default-width</longopt>
+    <descr>Number of columns in the toolbox</descr>
+    <hasvalue />
+  </option>
+
+  <option>
+    <name>norestore</name>
+    <type>bool</type>
+    <default>false</default>
+    <longopt>norestore</longopt>
+    <descr>Do not restore previous window position</descr>
+  </option>
+
+  <option>
+    <name>testthemescale</name>
+    <type>bool</type>
+    <default>false</default>
+    <longopt>testthemescale</longopt>
+    <opt>s</opt>
+    <descr>Automated test</descr>
+  </option>
+
+  <option>
+    <name>testmetrics</name>
+    <type>bool</type>
+    <default>false</default>
+    <longopt>testmetrics</longopt>
+    <opt>t</opt>
+    <descr>Automated test</descr>
+  </option>
+  <defaultoptions />
+</optclass>

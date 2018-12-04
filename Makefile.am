@@ -831,6 +831,10 @@ libcxxw_la_SOURCES=\
 	themeiconpixmap.C			    \
 	theme_parser_lock.H			    \
 	theme_parser_lock.C			    \
+	toolboxlayoutmanager/toolboxfactory.C       \
+	toolboxlayoutmanager/toolboxlayoutmanager.C \
+	toolboxlayoutmanager/toolboxlayoutmanager_impl.C \
+	toolboxlayoutmanager/toolboxlayoutmanager_impl.H \
 	tooltip.C				    \
 	windowobj.C				    \
 	windowobj.H				    \
@@ -947,6 +951,7 @@ INTERACTIVETESTPROGRAMS=\
 	testshowhide					\
 	testpage					\
 	testpane					\
+	testtoolbox					\
 	testtooltip					\
 	testwordwrappablelabel				\
 	#
@@ -1087,6 +1092,11 @@ testshowhide_LDADD=libcxxw.la
 testtextparam_SOURCES=testtextparam.C
 testtextparam_LDADD=libcxxw.la
 testtextparam_LDFLAGS=-static $(STATICLINKFLAGS)
+
+$(call OPTIONS_GEN,testtoolboxoptions.H,testtoolboxoptions.xml)
+testtoolbox_SOURCES=testtoolbox.C
+testtoolbox_LDADD=libcxxw.la
+testtoolbox_LDFLAGS=-static $(STATICLINKFLAGS)
 
 $(call OPTIONS_GEN,testtooltip.H,testtooltip.xml)
 testtooltip_SOURCES=testtooltip.C testtooltip.H
@@ -1275,6 +1285,9 @@ test:
 	LC_ALL=ru_RU.UTF-8 ./testpage --testfocus
 	./testwordwrappablelabel --testmetrics
 	./testunfocus
+	./testtoolbox --norestore -w=4 --testmetrics
+	./testtoolbox --testmetrics
+	./testtoolbox --norestore --testthemescale
 
 .PHONY: rpm
 

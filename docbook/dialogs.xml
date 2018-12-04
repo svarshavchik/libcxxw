@@ -226,6 +226,14 @@ const &ns;::w::main_window dialog_window;</programlisting>
                                              });</programlisting>
       </informalexample>
     </blockquote>
+
+    <para>
+      Additional settings in an
+      <classname>&ns;::w::create_dialog_args</classname> and
+      <classname>&ns;::w::standard_dialog_args</classname> control
+      where the dialog opens, in relation to the main window,
+      see <xref linkend="initdialogpos" /> for more information.
+    </para>
   </section>
 
   <section id="dialogparameters">

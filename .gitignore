@@ -74,6 +74,8 @@ suppressfile*
 /testscrollbar_metrics
 /testshowhide
 /testtextparam
+/testtoolbox
+/testtoolboxoptions.H
 /testtooltip
 /testtooltip.H
 /testunfocus

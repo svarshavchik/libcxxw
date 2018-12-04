@@ -24,17 +24,16 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC dialogObj;
 
-//! Position of the dialog with respect to its main window.
+//! Position of a new dialog with respect to its parent window
 
-//! This is used mostly with toolbox dialogs.
-
-enum class dialog_position {
-			    default_position,
-			    on_the_left,
-			    on_the_right,
-			    above,
-			    below,
-};
+enum class dialog_position
+	{
+	 default_position, //!< Default dialog position
+	 on_the_left,	//!< Position the dialog to the left of the main window
+	 on_the_right,	//!< Position the dialog to the right of the main window
+	 above,	//!< Position the dialog above the main window
+	 below, //!< Position the dialog below the main window
+	};
 
 struct LIBCXX_PUBLIC standard_dialog_args;
 struct LIBCXX_PUBLIC create_dialog_args;
@@ -158,7 +157,8 @@ d->set_dialog_position(INSERT_LIBX_NAMESPACE::w::dialog_position::on_the_left);
 
 set_dialog_position() specifies where the dialog should appear with
 respect to its parent main window. This is effective only before the dialog
-is shown for the first time.
+is shown for the first time; or while the dialog is hidden, and its position
+and size gets reset to this default position.
 
 */
 
