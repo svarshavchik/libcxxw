@@ -109,7 +109,7 @@ factoryObj::create_input_field(const text_param &text,
 		},
 			[&]
 			(const auto &parent_container_impl,
-			 const gridlayoutmanager &lm)
+			 const auto &peephole_container_impl)
 		   {
 			   auto peephole_impl=ref<editor_peephole_implObj>
 				   ::create(parent_container_impl);

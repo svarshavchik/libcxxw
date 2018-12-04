@@ -123,7 +123,7 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 	//! Implement created_list_container().
 
 	//! \internal
-	virtual void created_list_container(const gridlayoutmanager &,
+	virtual void created_list_container(const container_impl &,
 					    table_create_info *)
 		const override;
 	//! Implement create_table_header_row()

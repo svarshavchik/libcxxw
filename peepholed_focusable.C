@@ -118,7 +118,8 @@ create_peepholed_focusable_with_frame_impl
 
 	auto [impl, peepholed_element, focusable_element,
 	      focusable_element_impl]=
-		make_peepholed(focusframecontainer_impl, grid);
+		make_peepholed(focusframecontainer_impl,
+			       args.parent_container);
 
 	// We can now create our layout manager, and give it the created
 	// peepholed_element.

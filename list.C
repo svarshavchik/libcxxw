@@ -202,9 +202,9 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 		  vertical_scrollbar_value
 		}, [&, this]
 			(const container_impl &peepholed_parent,
-			 const gridlayoutmanager &glm)
+			 const container_impl &layout_container_impl)
 		   {
-			   created_list_container(glm, tci);
+			   created_list_container(layout_container_impl, tci);
 
 			   auto peephole_impl=ref<peepholeObj::implObj>
 				   ::create(peepholed_parent);
@@ -235,7 +235,7 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 				    lm->impl);
 }
 
-void new_listlayoutmanager::created_list_container(const gridlayoutmanager &,
+void new_listlayoutmanager::created_list_container(const container_impl &,
 						   table_create_info *)
 	const
 {

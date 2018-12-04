@@ -382,7 +382,7 @@ public:
 	//! Implemented in \ref new_tablelayoutmanager "new_tablelayoutmanager".
 
 	//! \internal
-	virtual void created_list_container(const gridlayoutmanager &,
+	virtual void created_list_container(const container_impl &,
 					    table_create_info *) const;
 
 	//! Implemented in \ref new_tablelayoutmanager "new_tablelayoutmanager".

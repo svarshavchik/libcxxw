@@ -767,8 +767,8 @@ new_tablelayoutmanager::create(const container_impl &parent_container) const
 			   axis, &tci, lci);
 }
 
-void new_tablelayoutmanager::created_list_container(const gridlayoutmanager
-						    &lm,
+void new_tablelayoutmanager::created_list_container(const container_impl
+						    &layout_container_impl,
 						    table_create_info *tci)
 	const
 {
@@ -782,7 +782,7 @@ void new_tablelayoutmanager::created_list_container(const gridlayoutmanager
 				child_elementObj>>>>
 		::create(list_border, list_border,
 			 list_border, "empty", 0, 0,
-			 lm->layoutmanagerObj::impl->layout_container_impl,
+			 layout_container_impl,
 			 header_init_params);
 
 	// Now create a (not quite a) replica of the focus frame.

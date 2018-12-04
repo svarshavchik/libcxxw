@@ -31,8 +31,8 @@ LIBCXXW_NAMESPACE_START
 typedef std::tuple<ref<peepholeObj::implObj>, peepholed,
 		   focusable,
 		   focusable_impl
-		   > make_peepholed_func_t(const ref<containerObj::implObj> &,
-					   const gridlayoutmanager &);
+		   > make_peepholed_func_t(const container_impl &,
+					   const container_impl &);
 
 //! Non type-erased parameters to create_peepholed_focusable_with_frame()
 
@@ -108,13 +108,14 @@ typedef nonrecursive_visibilityObj<container_elementObj<child_elementObj>
 //! the \c peepholed_focusable implementation object together with the
 //! layout manager to the constructor.
 //!
-//! The \c make_peepholed parameter is a lambda that gets invoked with a
-//! container implementation object as its first parameter, and
-//! the container's grid layoutmanager as the second parameter (the same
-//! grid layout manager value that gets returned). This will be the
-//! focusframe container.
+//! The \c make_peepholed parameter is a lambda that gets invoked with two
+//! container implementation objects as its parameters. The first container
+//! should be the parent container of peepholeObj::implObj that the lambda
+//! is responsible for creating. The second container implementation objetc
+//! is the implementation object of the grid that contains the focus-framed
+//! peephole, and the scroll-bars.
 //!
-//! The lambda must create a subclass of peepholeObj::implObj, using the
+//! The lambda must create a subclass of peepholeObj::implObj, using the 1st
 //! container implementation parameter to construct it. The lambda returns
 //! a subclass of peepholeObj::implObj, the peepholed display element,
 //! its focusable, and its focusable implementation object.
