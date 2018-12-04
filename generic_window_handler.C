@@ -1389,6 +1389,14 @@ void generic_windowObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
 		} REPORT_EXCEPTIONS(this);
 }
 
+void generic_windowObj::handlerObj::install_size_hints(const size_hints &hints)
+{
+}
+
+void generic_windowObj::handlerObj::size_hints_updated(ONLY IN_THREAD)
+{
+}
+
 void generic_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
 {
 	const auto &pos=data(IN_THREAD).current_position;

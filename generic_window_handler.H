@@ -31,6 +31,7 @@
 #include "x/w/impl/focus/focusablefwd.H"
 #include "x/w/impl/dnd.H"
 #include "x/w/fontfwd.H"
+#include "size_hintsfwd.H"
 #include <string_view>
 #include <courier-unicode.h>
 #include <list>
@@ -442,6 +443,16 @@ class generic_windowObj::handlerObj
 	//! Metrics updated.
 
 	void horizvert_updated(ONLY IN_THREAD) override;
+
+	//! Size hints have been installed.
+
+	//! This is implemented in main_window_handlerObj.
+	virtual void install_size_hints(const size_hints &hints);
+
+	//! Size hints have been updated.
+
+	//! This is implemented in main_window_handlerObj.
+	virtual void size_hints_updated(ONLY IN_THREAD);
 
 	//! Process TAB/Shift TAB, do move the input focus.
 

@@ -747,6 +747,21 @@ libcxxw_la_SOURCES=\
 	scrollbar/scrollbar_impl.H		    \
 	scrollbar/scrollbar_metrics.C		    \
 	scrollbar/scrollbar_metrics.H		    \
+	selection/current_selection.C		    \
+	selection/current_selection.H		    \
+	selection/current_selectionfwd.H	    \
+	selection/current_selection_handler.C	    \
+	selection/current_selection_handler.H	    \
+	selection/current_selection_handlerobj.H    \
+	selection/current_selection_paste_handler.C \
+	selection/current_selection_paste_handler.H \
+	selection/current_selection_paste_handlerfwd.H \
+	selection/current_selection_paste_handlerobj.H \
+	selection/incremental_selection_updates.C   \
+	selection/incremental_selection_updates.H   \
+	selection/convert_selection.C		    \
+	service_window_handler.C		    \
+	service_window_handler.H		    \
 	shared_handler_data.C			    \
 	shared_handler_data.H			    \
 	shared_handler_datafwd.H		    \
@@ -766,21 +781,10 @@ libcxxw_la_SOURCES=\
 	shortcut/shortcut_activation_element_impl.H \
 	singletonlayoutmanager.C		    \
 	singletonlayoutmanager_impl.C		    \
-	selection/current_selection.C		    \
-	selection/current_selection.H		    \
-	selection/current_selectionfwd.H	    \
-	selection/current_selection_handler.C	    \
-	selection/current_selection_handler.H	    \
-	selection/current_selection_handlerobj.H    \
-	selection/current_selection_paste_handler.C \
-	selection/current_selection_paste_handler.H \
-	selection/current_selection_paste_handlerfwd.H \
-	selection/current_selection_paste_handlerobj.H \
-	selection/incremental_selection_updates.C   \
-	selection/incremental_selection_updates.H   \
-	selection/convert_selection.C		    \
-	service_window_handler.C		    \
-	service_window_handler.H		    \
+	size_hints.C				    \
+	size_hints.H				    \
+	size_hintsfwd.H				    \
+	size_hintsobj.H				    \
 	straight_border.C			    \
 	straight_border.H			    \
 	straight_borderfwd.H			    \
