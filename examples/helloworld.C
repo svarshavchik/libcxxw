@@ -100,8 +100,18 @@ void testlabel()
 
 				 // Also pad the new element
 				 factory->padding(8);
+
 				 // Create an image element.
-				 factory->create_image("dandelion-flower.jpg");
+				 //
+				 // Load the dandelion-flower.jpg file from
+				 // the examples directory.
+				 //
+				 // Must use "." to load images from the
+				 // current directory. Filenames without a
+				 // path component search the default theme
+				 // directory, and are used to load theme
+				 // icons.
+				 factory->create_image("./dandelion-flower.jpg");
 			 },
 
 			 // Our main window will use the grid layout manager...

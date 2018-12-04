@@ -300,12 +300,17 @@ This creates a new date input field.
 \code
 #include <INSERT_LIBX_NAMESPACE/w/image.H>
 
-INSERT_LIBX_NAMESPACE::w::image image=factory->create_image("image1.gif");
+INSERT_LIBX_NAMESPACE::w::image image=factory->create_image("./image1.gif");
 \endcode
 
 This creates an
 \ref image "INSERT_LIBX_NAMESPACE::w::image" that shows an image loaded
 from a file.
+
+\note
+Filenames without a path component get searched for in the
+current display theme's directory, and NOT the current
+directory. Use "./filename" to load an image file from the current directory.
 
 \par Checkboxes and radio buttons.
 

@@ -136,9 +136,6 @@ static bool search_file(std::string &filename,
 {
 	struct stat stat_buf;
 
-	if (stat(filename.c_str(), &stat_buf) == 0)
-		return true;
-
 	if (filename.find('/') == filename.npos)
 	{
 		std::string n=theme->themedir + "/" + filename;
@@ -163,7 +160,11 @@ static bool search_file(std::string &filename,
 			}
 		}
 	}
-
+	else
+	{
+		if (stat(filename.c_str(), &stat_buf) == 0)
+			return true;
+	}
 	return false;
 }
 

@@ -126,10 +126,19 @@ train->update_label([selected]
       </para>
 
       <para>
-	Specifying the last, optional parameter to
+	The last optional paramater
 	<methodname>create_checkbox</methodname>() and
-	<methodname>create_radio</methodname>() adjusts their
-	<ulink url="&link-enum-x--w-valign;">vertical alignment</ulink>.
+	<methodname>create_radio</methodname>()
+	is a
+	<ulink url="&link-x--w--checkbox-config;"><classname>&ns;::w::checkbox_config</classname></ulink>
+	or a
+	<ulink url="&link-x--w--radio-config;"><classname>&ns;::w::radio_config</classname></ulink>
+	object.
+	Their <varname>alignment</varname> member
+	adjusts the
+	<ulink url="&link-enum-x--w-valign;">vertical alignment</ulink>
+	of the label display element with respect to the checkbox or the
+	radio button.
 	Note that the button and its label is a single display element,
 	in the button's &container;.
       </para>
@@ -140,7 +149,7 @@ train->update_label([selected]
 	<methodname>create_checkbox</methodname>() and
 	<methodname>create_radio</methodname>() is optional. Without it,
 	this results in a
-	<classname>&ns;::w::image_button</classname> all by itself, a small,
+	<classname>&ns;::w::image_button</classname> all by itself: a small,
 	clickable button. It's presumed that the label display element
 	gets created independently, as a discrete display element of its own.
       </para>
@@ -205,6 +214,15 @@ bottom_label->label_for(train);</programlisting>
       <para>
 	It is possible to define two or more labels for the same focusable;
 	but a given label can be a label for only one focusable.
+      </para>
+
+      <para>
+	Setting <varname>images</varname> in a
+	<ulink url="&link-x--w--checkbox-config;"><classname>&ns;::w::checkbox_config</classname></ulink>
+	or a
+	<ulink url="&link-x--w--radio-config;"><classname>&ns;::w::radio_config</classname></ulink>
+	parameter loads custom checkbox or radio button images.
+	See <xref linkend="iconimages" /> for more information.
       </para>
     </section>
   </section>

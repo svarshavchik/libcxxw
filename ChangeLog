@@ -1,3 +1,10 @@
+2018-12-03  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Create the toolbox layout manager.
+
+	* Images: image filenames without a path component search the
+	only theme directory.
+
 2018-12-02  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Remove the need to specify window labels when preserving

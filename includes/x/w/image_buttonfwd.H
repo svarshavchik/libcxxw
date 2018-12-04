@@ -52,6 +52,14 @@ struct checkbox_config : public image_button_config {
 
 	//! Checkbox images
 
+	//! Specifies filenames the checkbox images get loaded from.
+	//!
+	//! \note
+	//! Filenames without a path component get searched for in the
+	//! current display theme's directory, and NOT the current
+	//! directory.
+	//!
+	//! All images' sizes should be the same.
 	std::vector<std::string> images;
 
 	checkbox_config();
@@ -66,6 +74,15 @@ struct checkbox_config : public image_button_config {
 struct radio_config : public image_button_config {
 
 	//! Radio button images
+
+	//! Specifies filenames the radio button images get loaded from.
+	//!
+	//! \note
+	//! Filenames without a path component get searched for in the
+	//! current display theme's directory, and NOT the current
+	//! directory.
+	//!
+	//! All images' sizes should be the same.
 
 	std::vector<std::string> images;
 

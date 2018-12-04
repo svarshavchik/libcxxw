@@ -198,6 +198,70 @@ main_window->on_stabilized
       wait to show the dialog until its main window is stable.
     </para>
   </section>
+
+  <section id="iconimages">
+    <title>Custom images for checkbox and radio buttons</title>
+
+    <para>
+      The individual tool icons created by
+      <link linkend="toolbox"><filename>toolboxlayoutmanager.C</filename></link>
+      are nothing more than customized radio buttons. Existing radio buttons
+      have all the needed functionality to implement the individual toolbox
+      tools: choosing a new icon automatically deselects the previous icon.
+      This is stock radio button functionality: selecting one radio button
+      deselects the previous one.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::radio_config config;
+config.images={icon_set[0], icon_set[1]};
+
+config.visible_focusoff_border();
+auto b=f->create_radio(rg,
+                       [](const auto &amp;f) {},
+                       config);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A &factory;'s <methodname>create_radio</methodname>() method takes
+      an optional
+      <ulink url="&link-x--w--radio-config;"><classname>&ns;::w::radio_config</classname></ulink>
+      parameter that specifies a custom configuration for the new radio button
+      (<methodname>create_checkbox</methodname>() has an optional
+      <ulink url="&link-x--w--checkbox-config;"><classname>&ns;::w::checkbox_config</classname></ulink> parameter).
+      The <varname>images</varname> member is a vector of custom images for
+      the radio button: typically two filenames, the normal and the selected
+      radio button image.
+    </para>
+
+    <para>
+      All toolbox icon images should have the same width and height, for best
+      results using the toolbox layout manager. Image files can be
+      <acronym>png</acronym>,
+      <acronym>gif</acronym>, and
+      <acronym>jpg</acronym> images; in addition to
+      the &appshort;-specific
+      <link linkend="sxg">&sxg;</link> format.
+      <acronym>png</acronym>,
+      <acronym>gif</acronym>, and
+      <acronym>jpg</acronym> images have a fixed size.
+      &sxg; images are scalable.
+      <link linkend="toolbox"><filename>toolboxlayoutmanager.C</filename></link>
+      loads a set of &sxg; images from &appshort;'s default theme, whose
+      size gets automatically scaled in sync with the current display theme.
+    </para>
+
+    <para>
+      Custom application image filenames should include a path component.
+      Use <quote>./<replaceable>filename</replaceable></quote> to load an
+      image file from the current directory. This is because filenames
+      without a path components are also searched in &appshort;'s theme
+      directory.
+    </para>
+  </section>
 </chapter>
 <!--
 Local Variables:
