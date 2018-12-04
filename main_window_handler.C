@@ -183,6 +183,9 @@ void main_windowObj::handlerObj
 						 {"mainwindow-icon", 48, 48}
 					 }));
 			} CATCH_EXCEPTIONS;
+#ifdef MAINWINDOW_HINTS_DEBUG3
+		MAINWINDOW_HINTS_DEBUG3();
+#endif
 	}
 	else
 	{

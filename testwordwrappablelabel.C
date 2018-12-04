@@ -29,33 +29,6 @@
 #include <string>
 #include <iostream>
 
-static int mainwindow_hints_update_counter=0;
-
-#define MAINWINDOW_HINTS_DEBUG1()					\
-	do {								\
-		std::cout << "MAIN: (" << hints.x << ", " << hints.y	\
-			  << ")x(" << hints.width << ", "		\
-			  << hints.height << ")"			\
-			  << std::endl;					\
-		++mainwindow_hints_update_counter;			\
-	} while(0)
-
-#define MAINWINDOW_HINTS_DEBUG2()					\
-	do {								\
-		std::cout << "MAIN: minimum: " << minimum_width		\
-		  << "x" << minimum_height << "; "			\
-		  << "maximum: " << p->horiz.maximum()			\
-			  << "x" << p->vert.maximum() << std::endl;	\
-	} while(0)
-
-// The main window gets updated with the frame extents metrics after it opens,
-// this triggers hints recalculation. Disable this. We're testing to make
-// sure that we're setting the hints just once.
-#define UPDATE_DEST_METRICS_RECEIVED() return
-
-#include "main_window_handler.C"
-#include "generic_window_handler.C"
-
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
 public:
@@ -74,6 +47,44 @@ public:
 };
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
+static LIBCXX_NAMESPACE::mpobj<int> mainwindow_hints_update_counter=0;
+
+auto close_flag=close_flag_ref::create();
+
+static bool mainwindow_made_visible=false;
+
+#define MAINWINDOW_HINTS_DEBUG1()					\
+	do {								\
+		std::cout << "MAIN: (" << hints.x << ", " << hints.y	\
+			  << ")x(" << hints.width << ", "		\
+			  << hints.height << ")"			\
+			  << std::endl;					\
+		mainwindow_hints_update_counter=			\
+			mainwindow_hints_update_counter.get()+1;	\
+	} while(0)
+
+#define MAINWINDOW_HINTS_DEBUG2()					\
+	do {								\
+		std::cout << "MAIN: minimum: " << minimum_width		\
+		  << "x" << minimum_height << "; "			\
+		  << "maximum: " << p->horiz.maximum()			\
+			  << "x" << p->vert.maximum() << std::endl;	\
+	} while(0)
+
+#define MAINWINDOW_HINTS_DEBUG3()					\
+	do {								\
+		LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag}; \
+		mainwindow_made_visible=true;				\
+		lock.notify_all();					\
+	} while(0);
+// The main window gets updated with the frame extents metrics after it opens,
+// this triggers hints recalculation. Disable this. We're testing to make
+// sure that we're setting the hints just once.
+#define UPDATE_DEST_METRICS_RECEIVED() return
+
+#include "main_window_handler.C"
+#include "generic_window_handler.C"
+
 
 struct hotspot_processor {
 
@@ -194,9 +205,10 @@ void testlabel(const testwordwrappablelabel_options &options)
 
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
-	auto close_flag=close_flag_ref::create();
-
-	LIBCXX_NAMESPACE::w::screen_positions pos{configfile};
+	LIBCXX_NAMESPACE::w::screen_positions pos=
+		options.testmetrics->value ?
+		LIBCXX_NAMESPACE::w::screen_positions{}:
+	LIBCXX_NAMESPACE::w::screen_positions{configfile};
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create(pos, "main",
@@ -225,7 +237,7 @@ void testlabel(const testwordwrappablelabel_options &options)
 				   });
 
 	main_window->on_delete
-		([close_flag]
+		([]
 		 (THREAD_CALLBACK,
 		  const auto &ignore)
 		 {
@@ -252,13 +264,16 @@ void testlabel(const testwordwrappablelabel_options &options)
 #endif
 	if (options.testmetrics->value)
 	{
-		lock.wait_for(std::chrono::seconds(4),
-			      [&]
-			      {
-				      return *lock;
-			      });
+		lock.wait([&]
+			  {
+				  return mainwindow_made_visible;
+			  });
 
-		if (mainwindow_hints_update_counter != 1)
+		std::cout << "Made visible" << std::endl;
+
+		lock.wait_for(std::chrono::seconds(4),
+			      [&] { return *lock; });
+		if (mainwindow_hints_update_counter.get() != 1)
 			throw EXCEPTION("Set hints more than once.");
 	}
 	else
@@ -266,21 +281,28 @@ void testlabel(const testwordwrappablelabel_options &options)
 		lock.wait([&] { return *lock; });
 	}
 
-	main_window->save(pos);
-	pos.save(configfile);
+	if (!options.testmetrics->value)
+	{
+		main_window->save(pos);
+		pos.save(configfile);
+	}
 }
 
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::property
-			::load_property(LIBCXX_NAMESPACE_STR "::themes",
-					"themes", true, true);
-
 		testwordwrappablelabel_options options;
 
 		options.parse(argc, argv);
 
+		if (options.testmetrics->value)
+		{
+			LIBCXX_NAMESPACE::property
+				::load_property(LIBCXX_NAMESPACE_STR
+						"::w::resize_timeout",
+						"10000", true, true);
+			alarm(5);
+		}
 		testlabel(options);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
