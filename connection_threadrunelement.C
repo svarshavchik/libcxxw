@@ -32,6 +32,7 @@ bool connection_threadObj::resize_pending(ONLY IN_THREAD,
 	if (now >= wh.resizing_timeout(IN_THREAD))
 	{
 		wh.resizing(IN_THREAD)=false;
+		wh.invoke_stabilized(IN_THREAD);
 		return false;
 	}
 

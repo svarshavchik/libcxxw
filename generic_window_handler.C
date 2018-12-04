@@ -12,6 +12,7 @@
 #include "pixmap_extractor.H"
 #include "icon.H"
 #include "icon_images_set_element.H"
+#include "busy.H"
 #include "cursor_pointer_element.H"
 #include "x/w/impl/draw_info.H"
 #include "x/w/impl/container_element.H"
@@ -676,6 +677,7 @@ void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 	exposure_event_recursively_top_down
 		(IN_THREAD,
 		 exposure_rectangles(IN_THREAD).rectangles);
+	invoke_stabilized(IN_THREAD);
 }
 
 void generic_windowObj::handlerObj
@@ -1408,6 +1410,26 @@ void generic_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
 			tick_clock_t::now()+
 			std::chrono::duration_cast<tick_clock_t::duration>
 			(std::chrono::milliseconds(resize_timeout.get()));
+	}
+	invoke_stabilized(IN_THREAD);
+}
+
+void generic_windowObj::handlerObj::invoke_stabilized(ONLY IN_THREAD)
+{
+	if (resizing(IN_THREAD) || !has_exposed(IN_THREAD))
+		return;
+
+	auto callbacks=stabilized_callbacks(IN_THREAD);
+
+	stabilized_callbacks(IN_THREAD).clear();
+
+	busy_impl yes_i_am{*this};
+
+	for (const auto &callback:callbacks)
+	{
+		try {
+			callback(IN_THREAD, yes_i_am);
+		} REPORT_EXCEPTIONS(this);
 	}
 }
 

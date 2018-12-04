@@ -69,6 +69,12 @@ public:
 
 	void on_disconnect(const functionref<void ()> &callback);
 
+	//! Invoke this lambda when the window's size and position is stable.
+
+	//! The callback gets invoked when the window is visible, and its
+	//! size and position are stable.
+	void on_stabilized(const stabilized_callback_t &);
+
 	//! Whether a selection is available.
 
 	//! This gets forwarded to this window's

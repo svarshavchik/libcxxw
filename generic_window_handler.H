@@ -155,9 +155,15 @@ class generic_windowObj::handlerObj
 	//! update_resizing_timeout() sets this when it determines that
 	//! the window manager should resize us soon.
 	tick_clock_t::time_point resizing_timeout_thread_only;
+
+	//! Window size and position stabilized callbacks.
+
+	std::vector<stabilized_callback_t> stabilized_callbacks_thread_only;
+
  public:
 	THREAD_DATA_ONLY(resizing);
 	THREAD_DATA_ONLY(resizing_timeout);
+	THREAD_DATA_ONLY(stabilized_callbacks);
 
 	//! Determine whether we expect to be resized by the window manager.
 
@@ -172,6 +178,10 @@ class generic_windowObj::handlerObj
 	//! the respected resize does not come we will proceed and do what we
 	//! wanted.
 	virtual void update_resizing_timeout(ONLY IN_THREAD);
+
+	//! Invoke stabilized_callbacks(), if the conditions are right.
+
+	void invoke_stabilized(ONLY IN_THREAD);
 
 	//! Keep track of opened popups and shortcuts.
 

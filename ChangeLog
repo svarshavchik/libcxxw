@@ -1,6 +1,6 @@
 2018-11-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
-	* generic_window.C: Add set_window_type().
+	* generic_window.C: Add set_window_type(), on_stabilized().
 
 2018-11-25  Sam Varshavchik  <mrsam@courier-mta.com>
 

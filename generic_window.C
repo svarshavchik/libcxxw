@@ -32,6 +32,19 @@ void generic_windowObj::on_disconnect(const functionref<void ()> &callback)
 	get_screen()->get_connection()->on_disconnect(callback);
 }
 
+void generic_windowObj::on_stabilized(const stabilized_callback_t &callback)
+{
+	impl->handler->thread()->run_as
+		([callback, handler=impl->handler]
+		 (ONLY IN_THREAD)
+		 {
+			 handler->stabilized_callbacks(IN_THREAD)
+				 .push_back(callback);
+
+			 handler->invoke_stabilized(IN_THREAD);
+		 });
+}
+
 void generic_windowObj::set_window_title(const std::string_view &s)
 {
 	impl->handler->set_window_title(s);

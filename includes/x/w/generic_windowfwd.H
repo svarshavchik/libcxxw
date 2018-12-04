@@ -6,12 +6,20 @@
 #define x_w_generic_windowfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/busyfwd.H>
+#include <x/w/connection_threadfwd.H>
 #include <x/ptrfwd.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC generic_windowObj;
 class LIBCXX_PUBLIC generic_windowBase;
+
+//! on_stabilized() callback type.
+
+typedef functionref<void (THREAD_CALLBACK,
+			  const busy &)> stabilized_callback_t;
 
 //! Generic top level window methods.
 
@@ -65,6 +73,20 @@ class LIBCXX_PUBLIC generic_windowBase;
 //!
 //! Installs a callback that gets invoked if the connection to the X server
 //! gets shut down unexpectedly.
+//!
+//! \code
+//! main_window->on_stabilized([]
+//!                            (ONLY IN_THREAD,
+//!                             const LIBCXX_NAMESPACE::w::busy &mcguffin)
+//!                             {
+//!                             });
+//! \endcode
+//!
+//! on_stabilized() arranges for its callback to get invoked after the
+//! window becomes visible and its screen position and size is computed
+//! and fixed.
+//!
+//! The callback gets invoked with no delay if this already occured.
 //!
 //! A generic window is also a
 //! \ref container "container" and a
