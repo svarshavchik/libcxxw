@@ -65,12 +65,28 @@ class main_windowObj::handlerObj :
 
 	//! Override horizvert_updated()
 
-	//! Invoke update_size_hints() if we are visible.
+	//! Invoke publish_size_hints() if we are visible.
 	void horizvert_updated(ONLY IN_THREAD) override;
+
+	//! Override install_size_hints
+
+	//! Installs current_size_hints
+	void install_size_hints(const size_hints &hints) override;
+
+	//! Override size_hints_updated
+
+	//! Invokes publish_size_hints.
+	void size_hints_updated(ONLY IN_THREAD) override;
+
+	//! Thread-safe container for current size hints.
+	typedef mpobj<weakptr<size_hintsptr>> current_size_hints_t;
+
+	//! Current hints installed in this window
+		current_size_hints_t current_size_hints;
 
 	//! Override set_inherited_visibility().
 
-	//! Invoke update_size_hints() before invoking the superclass if
+	//! Invoke publish_size_hints() before invoking the superclass if
 	//! the window is made visible.
 
 	void set_inherited_visibility(ONLY IN_THREAD,
@@ -79,9 +95,9 @@ class main_windowObj::handlerObj :
 	//! Invoke compute_size_hints(), then put them into WM_SIZE_HINTS.
 
 	//! Our metrics go into WM_SIZE_HINTS, for the window manager to
-	//! resize us, if we are visible.
+	//! resize us, if we are are ok_to_publish_hints.
 
-	void update_size_hints(ONLY IN_THREAD);
+	void publish_size_hints(ONLY IN_THREAD);
 
 	//! Override update_resizing_timeout().
 
@@ -119,6 +135,17 @@ class main_windowObj::handlerObj :
 	//! The first time the window is mapped, it's resized to its preferred size, first.
 
 	bool preferred_dimensions_set_thread_only=false;
+
+	//! And once that's done, we're ok to publish size hints.
+	bool ok_to_publish_hints_thread_only=false;
+
+	//! Determine what the initial window size should be.
+	std::tuple<dim_t, dim_t> compute_initial_size(ONLY IN_THREAD);
+
+	//! Check if we're ok to publish the initial window size.
+	void update_initial_size(ONLY IN_THREAD,
+				 dim_t, dim_t,
+				 size_t);
 
 	//! Preferred width
 	dim_t preferred_width_thread_only;
@@ -168,6 +195,7 @@ class main_windowObj::handlerObj :
 		override;
 
 	THREAD_DATA_ONLY(preferred_dimensions_set);
+	THREAD_DATA_ONLY(ok_to_publish_hints);
 	THREAD_DATA_ONLY(preferred_width);
 	THREAD_DATA_ONLY(preferred_height);
 };

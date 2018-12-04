@@ -19,6 +19,8 @@
 #include "busy.H"
 #include "catch_exceptions.H"
 #include "inherited_visibility_info.H"
+#include "size_hints.H"
+#include "messages.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -121,8 +123,25 @@ void main_windowObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
 	preferred_width(IN_THREAD)=p->horiz.preferred();
 	preferred_height(IN_THREAD)=p->vert.preferred();
 
-	if (data(IN_THREAD).reported_inherited_visibility)
-		update_size_hints(IN_THREAD);
+	if (ok_to_publish_hints(IN_THREAD))
+		publish_size_hints(IN_THREAD);
+}
+
+void main_windowObj::handlerObj::install_size_hints(const size_hints &hints)
+{
+	current_size_hints_t::lock lock{current_size_hints};
+
+	if (lock->getptr())
+		throw EXCEPTION(_("Cannot install more than one element"
+				  " with size increment hints"));
+
+	*lock=hints;
+}
+
+void main_windowObj::handlerObj::size_hints_updated(ONLY IN_THREAD)
+{
+	if (ok_to_publish_hints(IN_THREAD))
+		publish_size_hints(IN_THREAD);
 }
 
 static std::vector<icon> create_icons(drawableObj::implObj &me,
@@ -162,7 +181,6 @@ void main_windowObj::handlerObj
 						 {"mainwindow-icon", 48, 48}
 					 }));
 			} CATCH_EXCEPTIONS;
-		update_size_hints(IN_THREAD);
 	}
 	else
 	{
@@ -179,7 +197,7 @@ void main_windowObj::handlerObj
 		::set_inherited_visibility(IN_THREAD, visibility_info);
 }
 
-void main_windowObj::handlerObj::update_size_hints(ONLY IN_THREAD)
+void main_windowObj::handlerObj::publish_size_hints(ONLY IN_THREAD)
 {
 	auto hints=compute_size_hints(IN_THREAD);
 #ifdef MAINWINDOW_HINTS_DEBUG1
@@ -191,8 +209,10 @@ void main_windowObj::handlerObj::update_size_hints(ONLY IN_THREAD)
 	// Before making ourselves visible, if we have a suggested position
 	// explicitly send it via ConfigureWindow(). Apparently the hints
 	// are not enough for XFCE.
+	//
+	// This is called from update_initial_size().
 
-	if (!data(IN_THREAD).reported_inherited_visibility &&
+	if (!ok_to_publish_hints(IN_THREAD) &&
 	    (hints.flags & (XCB_ICCCM_SIZE_HINT_US_POSITION |
 			    XCB_ICCCM_SIZE_HINT_P_POSITION)))
 	{
@@ -208,7 +228,6 @@ void main_windowObj::handlerObj::update_size_hints(ONLY IN_THREAD)
 				    id(),
 				    conn->info->atoms_info.wm_normal_hints,
 				    &hints);
-
 }
 
 xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
@@ -286,11 +305,59 @@ xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 					  (dim_t::value_type)minimum_width,
 					  (dim_t::value_type)minimum_height);
 
-#if 0
-	xcb_icccm_size_hints_set_base_size(&hints,
-					   (dim_t::value_type)new_preferred_width,
-					   (dim_t::value_type)new_preferred_height);
-#endif
+	{
+		current_size_hints_t::lock lock{current_size_hints};
+
+		auto sh=lock->getptr();
+
+		if (sh)
+		{
+			auto minimum_width_v=(dim_t::value_type)minimum_width;
+			auto minimum_height_v=(dim_t::value_type)minimum_height;
+
+			auto minimum_width_increment=
+				(dim_t::value_type)
+				sh->width_increment(IN_THREAD);
+			auto minimum_height_increment=
+				(dim_t::value_type)
+				sh->height_increment(IN_THREAD);
+
+			// Size hints are specified, but set them only if
+			// they're more than 1 pixel.
+
+			if (minimum_width_increment > 1 ||
+			    minimum_height_increment > 1)
+			{
+				auto base_width=
+					dim_t::truncate
+					(sh->base_width(IN_THREAD) *
+					 sh->width_increment(IN_THREAD));
+
+				auto base_height=
+					dim_t::truncate
+					(sh->base_height(IN_THREAD) *
+					 sh->height_increment(IN_THREAD));
+
+				minimum_width_v = minimum_width_v > base_width
+					? minimum_width_v-base_width:0;
+
+				minimum_height_v =
+					minimum_height_v > base_height
+					? minimum_height_v - base_height:0;
+
+				xcb_icccm_size_hints_set_base_size
+					(&hints,
+					 minimum_width_v,
+					 minimum_height_v);
+
+				xcb_icccm_size_hints_set_resize_inc
+					(&hints,
+					 minimum_width_increment,
+					 minimum_height_increment);
+			}
+		}
+	}
+
 	xcb_icccm_size_hints_set_max_size(&hints,
 					  (dim_t::value_type)p->horiz.maximum(),
 					  (dim_t::value_type)p->vert.maximum());
@@ -329,6 +396,13 @@ void main_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
 void main_windowObj::handlerObj::request_visibility(ONLY IN_THREAD,
 						    bool flag)
 {
+	if (flag == data(IN_THREAD).requested_visibility) // NOOP.
+	{
+		generic_windowObj::handlerObj::request_visibility(IN_THREAD,
+								  flag);
+		return;
+	}
+
 	if (!flag || preferred_dimensions_set(IN_THREAD))
 	{
 		generic_windowObj::handlerObj::request_visibility(IN_THREAD,
@@ -345,69 +419,107 @@ void main_windowObj::handlerObj::request_visibility(ONLY IN_THREAD,
 		 {
 			 me->preferred_dimensions_set(IN_THREAD)=true;
 
-			 auto w=me->preferred_width(IN_THREAD);
-			 auto h=me->preferred_height(IN_THREAD);
+			 auto [w, h]=me->compute_initial_size(IN_THREAD);
 
-			 // If we have a suggested window size, use that
-			 // instead.
+			 me->update_initial_size(IN_THREAD, w, h, 0);
+		 });
+}
 
-			 auto hints=me->compute_size_hints(IN_THREAD);
+std::tuple<dim_t, dim_t>
+main_windowObj::handlerObj::compute_initial_size(ONLY IN_THREAD)
+{
+	auto w=preferred_width(IN_THREAD);
+	auto h=preferred_height(IN_THREAD);
 
-			 if (hints.flags & XCB_ICCCM_SIZE_HINT_US_POSITION)
+	// If we have a suggested window size, use that
+	// instead.
+
+	auto hints=compute_size_hints(IN_THREAD);
+
+	if (hints.flags & XCB_ICCCM_SIZE_HINT_US_POSITION)
+	{
+		w=dim_t::truncate(hints.width);
+		h=dim_t::truncate(hints.height);
+	}
+
+	return {w, h};
+}
+
+void main_windowObj::handlerObj::update_initial_size(ONLY IN_THREAD,
+						     dim_t w,
+						     dim_t h,
+						     size_t counter)
+{
+	// An X server will report a BadValue for a window
+	// of size (0,0). Our metrics can compute such
+	// a preferred size, as an edge case. So, we deal
+	// with it.
+
+	if (w == 0 || h == 0)
+		w=h=1;
+
+	// Simulate a configure_notify(), so that the
+	// display elements get arranged accordingly right
+	// away. We will eventually send an xcb_configure_notify
+	// to match this.
+
+	auto r=*mpobj<rectangle>::lock(current_position);
+
+	r.width=w;
+	r.height=h;
+
+	configure_notify_received(IN_THREAD, r);
+	process_configure_notify(IN_THREAD);
+	update_resizing_timeout(IN_THREAD);
+
+	// Ok, need to wait for the reconfiguration to shake
+	// itself out too, so schedule another job to finally
+	// nail this coffin shut.
+
+	IN_THREAD->get_batch_queue()->run_as
+		([me=ref{this}, counter, w, h]
+		 (ONLY IN_THREAD)
+		 {
+			 auto [new_w, new_h]=
+				 me->compute_initial_size(IN_THREAD);
+
+			 if (new_w != w || new_h != h)
 			 {
-				 w=dim_t::truncate(hints.width);
-				 h=dim_t::truncate(hints.height);
+				 if (counter < 5)
+				 {
+					 me->update_initial_size(IN_THREAD,
+								 new_w, new_h,
+								 counter+1);
+					 return;
+				 }
+				 LOG_ERROR("Top level window metrics"
+					   " keep changing.");
 			 }
 
-			 // An X server will report a BadValue for a window
-			 // of size (0,0). Our metrics can compute such
-			 // a preferred size, as an edge case. So, we deal
-			 // with it.
+			 // Time to send a matching configure window.
 
 			 values_and_mask configure_window_vals
 				 (XCB_CONFIG_WINDOW_WIDTH,
-				  (w == 0 || h == 0 ? 1
-				   : (dim_t::value_type)w),
-
+				  (dim_t::value_type)w,
 				  XCB_CONFIG_WINDOW_HEIGHT,
-				  (w == 0 || h == 0 ? 1
-				   : (dim_t::value_type)h));
+				  (dim_t::value_type)h);
 
 #ifdef REQUEST_VISIBILITY_LOG
-			 REQUEST_VISIBILITY_LOG(me->preferred_width(IN_THREAD),
-						me->preferred_height(IN_THREAD)
-						);
+			 REQUEST_VISIBILITY_LOG(w, h);
 #endif
 			 xcb_configure_window(IN_THREAD->info->conn, me->id(),
 					      configure_window_vals.mask(),
 					      configure_window_vals.values()
 					      .data());
 
-			 // Also simulate a configure_notify(), so that the
-			 // display elements get arranged accordingly right
-			 // away. We don't know when we'll get back the
-			 // ConfigureNotify message from the display server.
+			 me->publish_size_hints(IN_THREAD);
 
-			 auto r=*mpobj<rectangle>::lock(me->current_position);
+			 // publish_size_hints() is normally called if
+			 // ok_to_push_hints. Intentionally set this AFTER
+			 // calling it.
+			 me->ok_to_publish_hints(IN_THREAD)=true;
 
-			 r.width=w;
-			 r.height=h;
-
-			 me->configure_notify_received(IN_THREAD, r);
-			 me->process_configure_notify(IN_THREAD);
-			 me->update_resizing_timeout(IN_THREAD);
-
-			 // Ok, need to wait for the reconfiguration to shake
-			 // itself out too, so schedule another job to finally
-			 // nail this coffin shut.
-
-			 IN_THREAD->get_batch_queue()->run_as
-				 ([me]
-				  (ONLY IN_THREAD)
-				  {
-					  me->request_visibility(IN_THREAD,
-								 true);
-				  });
+			 me->request_visibility(IN_THREAD, true);
 		 });
 }
 
