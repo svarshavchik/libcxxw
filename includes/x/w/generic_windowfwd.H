@@ -25,6 +25,8 @@ class LIBCXX_PUBLIC generic_windowBase;
 //! main_window->set_window_title(U"Hello world");
 //!
 //! main_window->set_window_class("main", "myapp");
+//!
+//! main_window->set_window_type("toolbar");
 //! \endcode
 //!
 //! \c set_window_title() sets the top level window's title, that gets
@@ -39,6 +41,23 @@ class LIBCXX_PUBLIC generic_windowBase;
 //! The default resource identifier is the executing program's name. The
 //! default instance identifier may be one of: "main", "menu", "dialog",
 //! "combobox", or "tooltip".
+//!
+//! \c set_window_type() overrides the _NET_WM_WINDOW_TYPE property.
+//! Its argument is a comma/whitespace separated list of known window types:
+//!
+//! - "normal"
+//!
+//! - "toolbar"
+//!
+//! - "menu"
+//!
+//! - "utility"
+//!
+//! - "splash"
+//!
+//! - "dialog"
+//!
+//! - "notification"
 //!
 //! \code
 //! main_window->on_disconnect([]{ /* ... */ });

@@ -1930,6 +1930,9 @@ void generic_windowObj::handlerObj::frame_extents_updated(ONLY IN_THREAD)
 
 void generic_windowObj::handlerObj::set_window_type(const std::string &s)
 {
+	// This is done in the connection thread in order to ensure a
+	// flush.
+
 	thread()->run_as
 		([s,
 		  connection_impl=screenref->get_connection()->impl,

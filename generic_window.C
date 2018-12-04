@@ -62,6 +62,11 @@ void generic_windowObj::set_window_class(const std::string_view &instance,
 		 });
 }
 
+void generic_windowObj::set_window_type(const std::string &s)
+{
+	impl->handler->set_window_type(s);
+}
+
 void generic_windowObj::raise()
 {
 	impl->handler->thread()->run_as

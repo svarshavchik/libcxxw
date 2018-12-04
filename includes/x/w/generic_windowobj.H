@@ -60,6 +60,9 @@ public:
 	//! Lower this window
 	void lower();
 
+	//! Set the type of this window.
+	void set_window_type(const std::string &);
+
 	//! Invoke this lambda if the server disconnects unexpectedly.
 
 	//! \see connection
