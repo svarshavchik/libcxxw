@@ -166,8 +166,14 @@ void main_windowObj::handlerObj
 	}
 	else
 	{
-		// Time for suggestions is over.
-		suggested_position(IN_THREAD).reset();
+		// If we ever reopen, we would like to reopen in the
+		// same position.
+
+		auto position=get_absolute_location(IN_THREAD);
+
+		get_absolute_location_on_screen(IN_THREAD, position);
+
+		suggested_position(IN_THREAD)=position;
 	}
 	generic_windowObj::handlerObj
 		::set_inherited_visibility(IN_THREAD, visibility_info);
