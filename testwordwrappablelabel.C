@@ -266,7 +266,7 @@ void testlabel(const testwordwrappablelabel_options &options)
 		lock.wait([&] { return *lock; });
 	}
 
-	main_window->save("main", pos);
+	main_window->save(pos);
 	pos.save(configfile);
 }
 

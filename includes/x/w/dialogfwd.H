@@ -9,12 +9,15 @@
 #include <x/w/factoryfwd.H>
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/rectangle.H>
+#include <x/w/screen_positionsfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/ptrfwd.H>
 
 #include <unordered_map>
 #include <string>
 #include <functional>
+#include <optional>
 #include <string_view>
 
 LIBCXXW_NAMESPACE_START
@@ -50,6 +53,23 @@ struct standard_dialog_args {
 
 	//! Whether the new dialog is a modal dialog.
 	bool modal=false;
+
+	//! Window ID
+	std::string window_id;
+
+	//! Default dialog position
+	std::variant<dialog_position, rectangle> position=
+		dialog_position::default_position;
+
+	//! Default dialog position.
+	void screen_position(dialog_position) LIBCXX_PUBLIC;
+
+	//! Restore the dialog's previous screen position.
+	void screen_position(const screen_positions &) LIBCXX_PUBLIC;
+
+	//! Restore the dialog's previous screen position.
+	void screen_position(const screen_positions &,
+			     const std::string_view &) LIBCXX_PUBLIC;
 };
 
 //! An additional parameter for create_dialog() and create_custom_dialog().

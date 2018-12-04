@@ -44,12 +44,14 @@ class dialogObj::handlerObj : public main_windowObj::handlerObj {
 	const bool modal;
 
 	//! Parent display element.
-	const ref<generic_windowObj::handlerObj> parent_handler;
+	const ref<main_windowObj::handlerObj> parent_handler;
 
 	//! Constructor
 
 	handlerObj(ONLY IN_THREAD,
-		   const ref<generic_windowObj::handlerObj> &parent_handler,
+		   const ref<main_windowObj::handlerObj> &parent_handler,
+		   const std::variant<dialog_position, rectangle> &position,
+		   const std::string &window_id,
 		   const color_arg &background_color,
 		   bool modal);
 

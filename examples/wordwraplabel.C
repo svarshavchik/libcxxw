@@ -130,7 +130,7 @@ void wordwrap()
 	// Before terminating the most recent window position and save
 	// needs to be saved into a screen_positions object:
 
-	main_window->save("main", pos);
+	main_window->save(pos);
 
 	// In this case we're using the initial screen_positions that were
 	// loaded from the configuration file. Specifying an existing label

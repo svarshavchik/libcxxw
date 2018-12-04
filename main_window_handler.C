@@ -28,6 +28,7 @@ main_windowObj::handlerObj::handlerObj(ONLY IN_THREAD,
 				       const screen &parent_screen,
 				       const std::optional<rectangle>
 				       &suggested_position,
+				       const std::string &window_id,
 				       const color_arg &background_color)
 	: superclass_t({},
 		       IN_THREAD, parent_screen,
@@ -36,7 +37,8 @@ main_windowObj::handlerObj::handlerObj(ONLY IN_THREAD,
 		       0),
 	  on_delete_callback_thread_only([](THREAD_CALLBACK,
 					    const auto &ignore) {}),
-	  suggested_position_thread_only{suggested_position}
+	  suggested_position_thread_only{suggested_position},
+	  window_id{window_id}
 {
 	// Set WM_PROTOCOLS to WM_DELETE_WINDOW -- we handle the window
 	// close request ourselves.

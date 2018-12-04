@@ -325,7 +325,7 @@ void testbook()
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 
 	lock.wait([&] { return *lock; });
-	mw->save("main", pos);
+	mw->save(pos);
 	pos.save(configfile);
 
 }

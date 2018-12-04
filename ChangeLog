@@ -1,3 +1,9 @@
+2018-12-02  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Remove the need to specify window labels when preserving
+	window positions. Automatically use the same label when the window
+	was created.
+
 2018-11-28  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* main_window.C: overhaul parameters to methods that create dialogs.

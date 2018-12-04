@@ -19,11 +19,10 @@ class screen_positions;
 //!
 //! INSERT_LIBX_NAMESPACE::w::screen_positions my_screen_positions;
 //!
-//! auto pos=main_window->get_screen_position();
+//! main_window->save(my_screen_positions);
 //!
 //! pos.screen_number.reset(); // Optional
 //!
-//! my_screen_positions.emplace("main", pos);
 //!
 //! INSERT_LIBX_NAMESPACE::w::save_screen_positions(INSERT_LIBX_NAMESPACE::configdir("app@example.com") + "/windows",
 //!                             my_screen_positions);
@@ -59,7 +58,8 @@ void save_screen_positions(const std::string_view &filename,
 //!     INSERT_LIBX_NAMESPACE::w::load_screen_positions(INSERT_LIBX_NAMESPACE::configdir("app@example.com") + "/windows");
 //!
 //! auto main_window=INSERT_LIBX_NAMESPACE::w::main_window::create
-//!    (my_screen_positions, "main",
+//!    (my_screen_positions,
+//!     "main", // Unique identifier for this main window.
 //!     []
 //!     (const auto &main_window)
 //!     {
@@ -74,7 +74,7 @@ void save_screen_positions(const std::string_view &filename,
 //! application's configuration directory. load_memorize_coordinates() first
 //! parameter is the configuration file's name.
 //!
-//! No error occurs if the configuraiton file does not exist, in which case an
+//! No error occurs if the configuration file does not exist, in which case an
 //! empty list of coordinates gets returned.
 //!
 //! \see save_screen_positions

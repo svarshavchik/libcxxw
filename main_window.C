@@ -115,7 +115,17 @@ main_window main_windowBase::do_create(const function<main_window_creator_t> &f,
 
 struct LIBCXX_HIDDEN screenObj::pos_info {
 
+	std::string name;
+
 	std::optional<screen_positions::window_info> info;
+
+	pos_info() {}
+
+	pos_info(const screen_positions &pos,
+		 const std::string_view &name)
+		: name{name}, info{pos.find(name)}
+	{
+	}
 
 	screen find_screen()
 	{
@@ -145,7 +155,7 @@ main_window main_windowBase::do_create(const screen_positions &pos,
 				       const function<main_window_creator_t> &f,
 				       const new_layoutmanager &factory)
 {
-	screenObj::pos_info loaded_pos{pos.find(std::string{name})};
+	screenObj::pos_info loaded_pos{pos, name};
 
 	return loaded_pos.find_screen()
 		->do_create_mainwindow(loaded_pos, f, factory);
@@ -305,7 +315,7 @@ main_window screenObj
 		       const function<main_window_creator_t> &f,
 		       const new_layoutmanager &factory)
 {
-	pos_info loaded_pos{pos.find(std::string{name})};
+	pos_info loaded_pos{pos, name};
 
 	return do_create_mainwindow(loaded_pos, f, factory);
 }
@@ -337,6 +347,7 @@ main_window screenObj
 	auto handler=ref<main_windowObj::handlerObj>
 		::create(connref->impl->thread, ref{this},
 			 suggested_position,
+			 pos.name,
 			 "mainwindow_background");
 
 	handler->set_window_type("normal");

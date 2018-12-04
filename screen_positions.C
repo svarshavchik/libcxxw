@@ -7,6 +7,7 @@
 #include "main_window_handler.H"
 #include "screen.H"
 #include "catch_exceptions.H"
+#include "messages.H"
 #include <x/xml/doc.H>
 #include <x/exception.H>
 #include <x/logger.H>
@@ -64,22 +65,35 @@ screen_positions::screen_positions(const std::string &filename)
 {
 }
 
-std::string saved_element_to_xpath(const std::string &type,
-				   const std::string &name)
+std::string saved_element_to_xpath(const std::string_view &type,
+				   const std::string_view &name)
 {
-	return "/windows/" + type + "[name="
-		+ xml::quote_string_literal(name) + "]";
+	std::string s;
+
+	s.reserve(type.size()+name.size()+20);
+
+	s += "/windows/";
+
+	s += type;
+	s += "[name=";
+	s += xml::quote_string_literal(std::string{name});
+	s += "]";
+
+	return s;
 }
 
 xml::doc::base::writelock
-screen_positions::create_writelock_for_saving(const std::string &type,
-					      const std::string &name)
+screen_positions::create_writelock_for_saving(const std::string_view &type,
+					      const std::string_view &name_s)
 {
+	std::string name{name_s};
+
 	auto lock=data->writelock();
 
 	if (lock->get_root())
 	{
-		auto xpath=lock->get_xpath(saved_element_to_xpath(type, name));
+		auto xpath=lock->get_xpath(saved_element_to_xpath(type,
+								  name_s));
 
 		// Remove any existing memorized setting.
 		size_t n=xpath->count();
@@ -97,22 +111,25 @@ screen_positions::create_writelock_for_saving(const std::string &type,
 
 	lock->get_xpath("/windows")->to_node();
 
-	lock->create_child()->element({type})
+	lock->create_child()->element(std::string{type})
 		->element({"name"})->text(name)->parent()->parent();
 
 	return lock;
 }
 
-void main_windowObj::save(const std::string &window_name,
-			  screen_positions &pos) const
+void main_windowObj::save(screen_positions &pos) const
 {
 	auto handler=impl->handler;
+
+	if (handler->window_id.empty())
+		throw EXCEPTION(_("Window label was not set."));
 
 	auto [wx, wy] = handler->root_xy.get();
 
 	auto r=handler->current_position.get();
 
-	auto lock=pos.create_writelock_for_saving("window", window_name);
+	auto lock=pos.create_writelock_for_saving("window",
+						  handler->window_id);
 
 	std::ostringstream x, y, width, height;
 
@@ -143,7 +160,7 @@ void main_windowObj::save(const std::string &window_name,
 
 
 std::optional<screen_positions::window_info>
-screen_positions::find(const std::string &window_name) const
+screen_positions::find(const std::string_view &window_name) const
 {
 	LOG_FUNC_SCOPE(load_log);
 

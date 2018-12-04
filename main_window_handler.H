@@ -45,6 +45,7 @@ class main_windowObj::handlerObj :
 	//! Constructor
 	handlerObj(ONLY IN_THREAD, const screen &parent_screen,
 		   const std::optional<rectangle> &suggested_position,
+		   const std::string &window_id,
 		   const color_arg &background_color);
 
 	//! Destructor
@@ -113,6 +114,9 @@ class main_windowObj::handlerObj :
 	std::optional<rectangle> suggested_position_thread_only;
  public:
 	THREAD_DATA_ONLY(suggested_position);
+
+	//! Unique identifier for the window.
+	const std::string window_id;
 
 	//! Translate our metrics into WM_SIZE_HINTS
 	virtual xcb_size_hints_t compute_size_hints(ONLY IN_THREAD);

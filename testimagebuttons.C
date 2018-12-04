@@ -277,7 +277,7 @@ void testimagebuttons()
 				    (i % 2) ? 100:200);
 	}
 #endif
-	main_window->save("main", pos);
+	main_window->save(pos);
 	pos.save(configfile);
 }
 

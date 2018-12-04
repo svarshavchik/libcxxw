@@ -1402,10 +1402,14 @@ void generic_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
 	const auto &pos=data(IN_THREAD).current_position;
 	auto hv=get_horizvert(IN_THREAD);
 
-	bool flag=(pos.width < hv->horiz.minimum()) ||
-		(pos.width > hv->horiz.maximum()) ||
-		(pos.height < hv->vert.minimum()) ||
-		(pos.height > hv->vert.maximum());
+	bool flag=
+		data(IN_THREAD).requested_visibility &&
+		(
+		 (pos.width < hv->horiz.minimum()) ||
+		 (pos.width > hv->horiz.maximum()) ||
+		 (pos.height < hv->vert.minimum()) ||
+		 (pos.height > hv->vert.maximum())
+		 );
 
 	if (flag == resizing(IN_THREAD))
 		return;
@@ -1424,7 +1428,7 @@ void generic_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
 
 void generic_windowObj::handlerObj::invoke_stabilized(ONLY IN_THREAD)
 {
-	if (resizing(IN_THREAD) || !has_exposed(IN_THREAD))
+	if (resizing(IN_THREAD) || !data(IN_THREAD).requested_visibility)
 		return;
 
 	auto callbacks=stabilized_callbacks(IN_THREAD);

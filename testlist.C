@@ -668,7 +668,7 @@ void testlist(const testlistoptions &options)
 
 	if (main_window->appdata)
 	{
-		main_window->save("main", pos);
+		main_window->save(pos);
 
 		LIBCXX_NAMESPACE::w::tablelayoutmanager tlm=
 			LIBCXX_NAMESPACE::w::focusable_container(main_window->appdata)

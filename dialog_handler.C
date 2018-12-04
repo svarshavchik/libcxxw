@@ -7,19 +7,45 @@
 #include "connection_thread.H"
 #include "inherited_visibility_info.H"
 #include "shared_handler_data.H"
+#include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
 
 dialogObj::handlerObj::handlerObj(ONLY IN_THREAD,
-				  const ref<generic_windowObj
-				  ::handlerObj> &parent_handler,
+				  const ref<main_windowObj::handlerObj>
+				  &parent_handler,
+				  const std::variant<dialog_position,
+				  rectangle> &position,
+				  const std::string &window_id,
 				  const color_arg &background_color,
 				  bool modal)
-	: superclass_t(IN_THREAD, parent_handler->get_screen(),
-		       std::nullopt,
-		       background_color),
-	modal(modal),
-	parent_handler(parent_handler)
+	: superclass_t{IN_THREAD, parent_handler->get_screen(),
+
+		       std::visit(visitor{[&](const rectangle &r)
+					  -> std::optional<rectangle>
+					  {
+					   return r;
+					  },
+					  [](const auto &)
+					  -> std::optional<rectangle>
+					  {
+					   return std::nullopt;
+					  }}, position),
+		       window_id,
+		       background_color},
+	  my_position_thread_only
+	{
+	 std::visit(visitor{[&](const dialog_position &pos)
+			    {
+				    return pos;
+			    },
+			    [](const auto &)
+			    {
+				    return dialog_position::default_position;
+			    }}, position)
+	},
+	  modal(modal),
+	  parent_handler(parent_handler)
 {
 	update_user_time(IN_THREAD);
 }
@@ -62,7 +88,7 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 	// centered over its parent window.
 
 	rectangle parent_pos=
-		parent_handler->get_absolute_location(IN_THREAD);
+		parent_handler->current_position.get();
 
 	parent_pos.x=0;
 	parent_pos.y=0;
@@ -71,7 +97,8 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 
 	auto &workarea=frame_extents(IN_THREAD).workarea;
 
-	mpobj<rectangle>::lock lock{current_position};
+	auto width=preferred_width(IN_THREAD);
+	auto height=preferred_height(IN_THREAD);
 
 	coord_t placement_x=parent_pos.x;
 	coord_t placement_y=parent_pos.y;
@@ -80,10 +107,8 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 	case dialog_position::on_the_left:
 		{
 			dim_t sub_x=dim_t::truncate
-				(parent_handler->
-				 frame_extents(IN_THREAD).left +
-				 frame_extents(IN_THREAD)
-				 .right+lock->width);
+				(parent_handler->frame_extents(IN_THREAD).left +
+				 frame_extents(IN_THREAD).right + width);
 			placement_x=coord_t::truncate
 				(placement_x-sub_x);
 		}
@@ -93,8 +118,8 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 			dim_t add_x=dim_t::truncate
 				(parent_handler->
 				 frame_extents(IN_THREAD).right +
-				 frame_extents(IN_THREAD)
-				 .left+parent_pos.width);
+				 frame_extents(IN_THREAD).left +
+				 parent_pos.width);
 			placement_x=coord_t::truncate
 				(placement_x+add_x);
 		}
@@ -102,10 +127,8 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 	case dialog_position::above:
 		{
 			dim_t sub_y=dim_t::truncate
-				(parent_handler->
-				 frame_extents(IN_THREAD).top +
-				 frame_extents(IN_THREAD)
-				 .bottom+lock->height);
+				(parent_handler->frame_extents(IN_THREAD).top +
+				 frame_extents(IN_THREAD).bottom + height);
 			placement_y=coord_t::truncate
 				(placement_y-sub_y);
 		}
@@ -115,25 +138,19 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 			dim_t add_y=dim_t::truncate
 				(parent_handler->
 				 frame_extents(IN_THREAD).bottom +
-				 frame_extents(IN_THREAD)
-				 .top+parent_pos.height);
-			placement_y=coord_t::truncate
-				(placement_y+add_y);
+				 frame_extents(IN_THREAD).top + height);
+			placement_y=coord_t::truncate(placement_y+add_y);
 		}
 		break;
 	default:
 		coord_t parent_center_x=
-			coord_t::truncate(parent_pos.x +
-					  parent_pos.width/2);
+			coord_t::truncate(parent_pos.x + parent_pos.width/2);
 
 		coord_t parent_center_y=
-			coord_t::truncate(parent_pos.y +
-					  parent_pos.height/2);
+			coord_t::truncate(parent_pos.y + parent_pos.height/2);
 
-		placement_x=coord_t::truncate
-			(parent_center_x-lock->width/2);
-		placement_y=coord_t::truncate
-			(parent_center_y-lock->height/2);
+		placement_x=coord_t::truncate(parent_center_x-width/2);
+		placement_y=coord_t::truncate(parent_center_y-height/2);
 
 		break;
 	};
@@ -164,6 +181,9 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 	xcb_icccm_size_hints_set_position(&hints, 0,
 					  coord_t::truncate(placement_x),
 					  coord_t::truncate(placement_y));
+	xcb_icccm_size_hints_set_size(&hints, 0,
+				      dim_t::truncate(width),
+				      dim_t::truncate(height));
 
 	xcb_icccm_size_hints_set_win_gravity(&hints,
 					     XCB_GRAVITY_STATIC);

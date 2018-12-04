@@ -7,6 +7,7 @@
 #include "x/w/element_state.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/container.H"
+#include "x/w/screen_positions.H"
 #include "main_window.H"
 #include "dialog_impl.H"
 #include "dialog_handler.H"
@@ -40,11 +41,48 @@ dialogObj::~dialogObj()=default;
 
 void dialogObj::set_dialog_position(dialog_position pos)
 {
-	dialog_window->in_thread([handler=impl->handler, pos]
-				 (ONLY IN_THREAD)
-				 {
-					 handler->my_position(IN_THREAD)=pos;
-				 });
+	dialog_window->in_thread
+		([handler=impl->handler, pos]
+		 (ONLY IN_THREAD)
+		 {
+			 // We can reset the dialog position only if
+			 // the dialog is not visible and is not in the process
+			 // of being shown.
+			 if (handler->data(IN_THREAD)
+			     .reported_inherited_visibility ||
+			     handler->data(IN_THREAD).requested_visibility)
+				 return;
+
+			 handler->suggested_position(IN_THREAD).reset();
+			 handler->my_position(IN_THREAD)=pos;
+
+			 // Reset the state of the dialog, so it gets
+			 // resized to the default position the next time
+			 // it's made visible.
+			 handler->ok_to_publish_hints(IN_THREAD)=false;
+			 handler->preferred_dimensions_set(IN_THREAD)=false;
+		 });
+}
+
+void standard_dialog_args::screen_position(dialog_position my_position)
+{
+	position=my_position;
+}
+
+void standard_dialog_args::screen_position(const screen_positions &pos)
+{
+	screen_position(pos, dialog_id);
+}
+
+void standard_dialog_args::screen_position(const screen_positions &pos,
+					   const std::string_view &name)
+{
+	window_id=name;
+
+	auto window_pos=pos.find(window_id);
+
+	if (window_pos)
+		position=window_pos->coordinates;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -78,7 +116,10 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 
 	auto handler=ref<dialogObj::handlerObj>
 		::create(s->connref->impl->thread,
-			 impl->handler, "dialog_background", args.modal);
+			 impl->handler,
+			 args.position,
+			 args.window_id,
+			 "dialog_background", args.modal);
 
 	handler->set_window_type("dialog,normal");
 

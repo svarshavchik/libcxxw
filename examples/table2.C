@@ -211,7 +211,7 @@ void testlist()
 
 	// Save the final position and size of the main window.
 
-	main_window->save("main", pos);
+	main_window->save(pos);
 
 	// Save the final adjusted column widths.
 

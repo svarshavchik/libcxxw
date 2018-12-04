@@ -127,22 +127,22 @@ public:
 	//! Find a memorized position.
 
 	//! \internal
-	std::optional<window_info> find(const std::string &identifier)
+	std::optional<window_info> find(const std::string_view &identifier)
 		const LIBCXX_HIDDEN;
 
 	//! Create a new node when saving something.
 
 	xml::doc::base::writelock
-	create_writelock_for_saving(const std::string &type,
-				    const std::string &name);
+	create_writelock_for_saving(const std::string_view &type,
+				    const std::string_view &name);
 };
 
 //! Internal Xpath assembler.
 
 //! \internal
 
-std::string saved_element_to_xpath(const std::string &type,
-				   const std::string &name) LIBCXX_HIDDEN;
+std::string saved_element_to_xpath(const std::string_view &type,
+				   const std::string_view &name) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

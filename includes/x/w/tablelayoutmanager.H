@@ -9,6 +9,7 @@
 #include <x/w/tablelayoutmanagerobj.H>
 #include <x/w/listlayoutmanager.H>
 #include <cmath>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -102,7 +103,7 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 	//! Restore previously save()d columns widths.
 
 	void restore(const screen_positions &,
-		     const std::string &) LIBCXX_PUBLIC;
+		     const std::string_view &) LIBCXX_PUBLIC;
 
 	//! Restored widths.
 

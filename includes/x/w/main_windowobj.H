@@ -320,12 +320,14 @@ public:
 
 	//! Save the main window's current position and size.
 
-	//! Each main window has a unique identifier. The main window's
+	//! Each main window has a unique identifier that was used to
+	//! restore the main window's previous position. The main window's
+	//! current
 	//! position replaces any previous memorized position with the same
 	//! identifier, if it exists.
 	//!
 	//! \see screen_positions
-	void save(const std::string &window_name, screen_positions &pos) const;
+	void save(screen_positions &pos) const;
 };
 
 LIBCXXW_NAMESPACE_END

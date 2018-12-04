@@ -166,7 +166,7 @@ std::string configfile=
 
 // ...
 
-main_window->save("main", pos);
+main_window->save(pos);
 pos->save(configfile);</programlisting>
       </informalexample>
     </blockquote>
@@ -178,7 +178,10 @@ pos->save(configfile);</programlisting>
       the screen in the
       <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>.
       More than one window's position may be recorded, and a unique label
-      association each position with its window. The application may put more
+      association each position with its window. Each main window that gets
+      created by the application (if there's more than one) has a unique
+      identifying label which serves as the window's identifier.
+      The application may put more
       than one
       window's position in the container, by using a unique identifier for each
       window.
@@ -218,7 +221,9 @@ auto main_window=
       If the named window's position
       were saved the last time
       <filename>wordwraplabel</filename> ran, the same position and size
-      gets set for the new window.
+      gets set for the new window; and the same label gets used to
+      record the window's position, by its <methodname>save</methodname>()
+      method.
     </para>
 
     <note>

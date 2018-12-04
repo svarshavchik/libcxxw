@@ -539,7 +539,7 @@ LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::new_tablelayoutmanager_restore,
 		    restore_log);
 
 void new_tablelayoutmanager::restore(const screen_positions &pos,
-				     const std::string &name)
+				     const std::string_view &name)
 {
 	LOG_FUNC_SCOPE(restore_log);
 
