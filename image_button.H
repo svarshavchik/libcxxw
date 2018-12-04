@@ -38,10 +38,10 @@ struct create_image_button_info {
 
 	//! By default true, when this image button is used to create another
 	//! display element. This employs the always_visible_elementObj mixin.
-	bool always_visible=true;
+	const bool always_visible;
 
-	//! Alignment of the image button and its optional label.
-	valign alignment=valign::middle;
+	//! Factory-specific configuration
+	const image_button_config &config;
 
 	//! Whether non-recursive visiblity is enabled.
 
@@ -61,17 +61,6 @@ struct create_image_button_info {
 	//! Button's background color.
 
 	std::optional<color_arg> button_background_color;
-
-	//! Focus borders
-	struct borders_t {
-
-		border_arg focusoff_border;
-		border_arg focuson_border;
-
-		borders_t();
-	};
-
-	borders_t borders;
 
 	~create_image_button_info();
 };

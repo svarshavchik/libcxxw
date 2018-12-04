@@ -25,11 +25,34 @@
 
 LIBCXXW_NAMESPACE_START
 
-create_image_button_info::borders_t::borders_t()
-	: focusoff_border{"thin_inputfocusoff_border"},
+image_button_config::image_button_config()
+	: alignment{valign::middle},
+	  focusoff_border{"thin_inputfocusoff_border"},
 	  focuson_border{"thin_inputfocuson_border"}
+
 {
 }
+
+image_button_config::~image_button_config()=default;
+
+void image_button_config::visible_focusoff_border()
+{
+	focusoff_border="thin_inputfocusoff_border_color2";
+}
+
+checkbox_config::checkbox_config()
+	: images{"checkbox1", "checkbox2", "checkbox3"}
+{
+}
+
+checkbox_config::~checkbox_config()=default;
+
+radio_config::radio_config()
+	: images{"radio1", "radio2"}
+{
+}
+
+radio_config::~radio_config()=default;
 
 create_image_button_info::~create_image_button_info()=default;
 
@@ -262,7 +285,7 @@ do_create_image_button(const create_image_button_info &info,
 
 	auto glm=image_button_outer_container_layout->create_gridlayoutmanager();
 
-	glm->row_alignment(0, info.alignment);
+	glm->row_alignment(0, info.config.alignment);
 
 	// If there's going to be a label, it gets all extra space.
 	glm->requested_col_width(1, 100);
@@ -272,8 +295,8 @@ do_create_image_button(const create_image_button_info &info,
 	auto focus_frame_impl=
 		create_always_visible_focusframe_impl
 		(image_button_outer_container_impl,
-		 info.borders.focusoff_border,
-		 info.borders.focuson_border, 0, 0);
+		 info.config.focusoff_border,
+		 info.config.focuson_border, 0, 0);
 
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.
@@ -324,45 +347,23 @@ do_create_image_button(const create_image_button_info &info,
 	return b;
 }
 
-image_button factoryObj::create_checkbox(valign alignment)
+image_button factoryObj::create_checkbox(const checkbox_config &config)
 {
-	return create_checkbox([](const auto &) {}, alignment);
+	return create_checkbox([](const auto &) {}, config);
 }
 
 image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
 					    &label_factory,
-					    valign alignment)
-{
-
-	return do_create_checkbox(label_factory,
-				  {"checkbox1", "checkbox2", "checkbox3"},
-				  alignment);
-}
-
-// Call create_image_button, using create_checkbox_impl() to create the
-// internal image button.
-
-image_button factoryObj::create_checkbox(const std::vector<std::string>
-					 &images,
-					 valign alignment)
-{
-	return create_checkbox([](const factory &){}, images, alignment);
-}
-
-image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
-					    &label_factory,
-					    const std::vector<std::string>
-					    &images,
-					    valign alignment)
+					    const checkbox_config &config)
 {
 	auto icons=get_element_impl().get_window_handler()
-		.create_icon_vector(images);
+		.create_icon_vector(config.images);
 
 	if (icons.empty())
 		throw EXCEPTION(_("Attempt to create a checkbox without any images."));
 
 	auto im=create_image_button_with_label_factory
-		({get_container_impl(), false, alignment},
+		({get_container_impl(), false, config},
 		 [&]
 		 (const auto &container)
 		 {
@@ -373,48 +374,25 @@ image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
 }
 
 image_button factoryObj::create_radio(const radio_group &group,
-				      valign alignment)
+				      const radio_config &config)
 {
-	return create_radio(group, [](const auto &){}, alignment);
+	return create_radio(group, [](const auto &){}, config);
 }
 
 image_button factoryObj::do_create_radio(const radio_group &group,
 					 const function<factory_creator_t>
 					 &label_creator,
-					 valign alignment)
-{
-
-	return do_create_radio(group, label_creator,
-			       {"radio1", "radio2"}, alignment);
-}
-
-// Call create_image_button, using create_radio_impl() to create the
-// internal image button.
-
-image_button factoryObj::create_radio(const radio_group &group,
-				      const std::vector<std::string>
-				      &images,
-				      valign alignment)
-{
-	return create_radio(group, [](const auto &) {}, images, alignment);
-}
-
-image_button factoryObj::do_create_radio(const radio_group &group,
-					 const function<factory_creator_t>
-					 &label_creator,
-					 const std::vector<std::string>
-					 &images,
-					 valign alignment)
+					 const radio_config &config)
 {
 	auto icons=get_element_impl().get_window_handler()
-		.create_icon_vector(images);
+		.create_icon_vector(config.images);
 
 	if (icons.empty())
 		throw EXCEPTION(_("Attempt to create a radio button without any images."));
 
 
 	auto b=create_image_button_with_label_factory
-		({get_container_impl(), false, alignment},
+		({get_container_impl(), false, config},
 		 [&]
 		 (const auto &container)
 		 {

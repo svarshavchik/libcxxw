@@ -251,8 +251,12 @@ void date_input_field_calendarObj
 
 			 auto f=row0_lm->append_row();
 
+			 image_button_config i_config;
+
+			 i_config.alignment=valign::bottom;
+
 			 create_image_button_info scroll_button_info
-				 {f->get_container_impl(), true, valign::bottom,
+				 {f->get_container_impl(), true, i_config,
 				  true};
 
 			 auto b=create_image_button

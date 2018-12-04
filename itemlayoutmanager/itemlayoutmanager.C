@@ -47,7 +47,8 @@ static auto create_new_itembutton(const ref<itemlayoutmanagerObj::implObj>
 		 impl->layout_container_impl,
 		 child_element_init_params{"background@libcxx.com"});
 
-	create_image_button_info cibi{new_itembutton_impl};
+	image_button_config i_config;
+	create_image_button_info cibi{new_itembutton_impl, true, i_config};
 
 	cibi.button_background_color=impl->itembutton_background_color;
 	cibi.click_anywhere=false;

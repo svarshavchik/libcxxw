@@ -280,17 +280,22 @@ public:
 	//! the list when it has no focus. This border is the same size as
 	//! "listfocuson_border".
 	//!
-	//! If this is a superclass of
-	//! \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
-	//! this defaults to "listvisiblefocusoff_border".
-	//!
-	//! "listvisiblefocusoff_border" draws a lesser intensity border that's
-	//! visible, but does not indicate input focus, and provides a visual
-	//! connection with column_borders, which are common to tables.
-	//! "listvisiblefocusoff_border" is not restricted to the table
-	//! layout manager, and can be used with plain lists.
+	//! Use visible_focusoff_border() to install the default theme
+	//! focusoff border.
 
 	border_arg focusoff_border;
+
+	//! Set the focusoff_border to a visible border.
+
+	//! This gets called automatically if this is a superclass of
+	//! \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
+	//! because it typically has visible borders. If a plain list has
+	//! borders, this should be invoked to install a lesser intensity
+	//~ border that's
+	//! visible, but does not indicate input focus, and provides a visual
+	//! connection with column_borders.
+
+	void visible_focusoff_border();
 
 	//! Inner border around the list when the list has input focus
 

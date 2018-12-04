@@ -1,3 +1,15 @@
+2018-11-25  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Clean up create_checkbox() and create_radio(), replacing overloads
+	with a reference to checkbox_config and radio_config, which may be
+	default-constructed, and inherit from a common image_button_config
+	superclass. Replace some data in the internal
+	create_image_button_info with a reference to the image_button_config.
+
+	* Implement a formal visible-focusoff_border() in new_listlayoutmanager
+	and image_button_config, rather than documenting theme border
+	names.
+
 0.11
 
 2018-11-23  Sam Varshavchik  <mrsam@courier-mta.com>

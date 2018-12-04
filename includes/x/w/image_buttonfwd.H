@@ -8,12 +8,70 @@
 #include <x/w/namespace.H>
 #include <x/w/busyfwd.H>
 #include <x/w/callback_triggerfwd.H>
+#include <x/w/alignment.H>
+#include <x/w/border_arg.H>
 #include <x/ptrfwd.H>
 #include <x/functionalrefptrfwd.H>
+#include <string>
+#include <vector>
 
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC image_buttonObj;
+
+struct LIBCXX_HIDDEN image_button_config;
+struct LIBCXX_PUBLIC checkbox_config;
+struct LIBCXX_PUBLIC radio_config;
+
+//! Common superlcass of \ref checkbox_config "checkbox_config" and \ref radio_config "radio_config"
+
+struct image_button_config {
+
+	//! Vertical alignment, defaults to \c middle
+	valign alignment;
+
+	//! Default focus off border
+	border_arg focusoff_border;
+
+	//! Default focus on border
+	border_arg focuson_border;
+
+	//! Set the default focus off border to a visible focus off border.
+	void visible_focusoff_border() LIBCXX_PUBLIC;
+
+	image_button_config();
+	~image_button_config();
+};
+
+//! Default checkbox configuration.
+
+//! Passed as a parameter to a \ref factory "factory"'s create_checkbox()
+//! to specify the visual appearance of a checkbox.
+
+struct checkbox_config : public image_button_config {
+
+	//! Checkbox images
+
+	std::vector<std::string> images;
+
+	checkbox_config();
+	~checkbox_config();
+};
+
+//! Default radio button configuration.
+
+//! Passed as a parameter to a \ref factory "factory"'s create_radio()
+//! to specify the visual appearance of a radio button.
+
+struct radio_config : public image_button_config {
+
+	//! Radio button images
+
+	std::vector<std::string> images;
+
+	radio_config();
+	~radio_config();
+};
 
 //! Signature for an image_button activation function.
 

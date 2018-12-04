@@ -350,94 +350,46 @@ public:
 			   const dim_arg &height);
 
 	//! Create a checkbox
-	image_button create_checkbox(valign=valign::middle);
-
-	//! Create a checkbox, with custom images
-	image_button create_checkbox(const std::vector<std::string> &,
-				     valign=valign::middle);
+	image_button create_checkbox(const checkbox_config &config={});
 
 	//! Create a checkbox with a label factory
 	template<typename functor,
 		 typename sfinae=decltype(std::declval<functor &&>()
 					  (std::declval<const factory &>()))>
-	image_button create_checkbox(functor &&f, valign align=valign::middle)
-	{
-		return do_create_checkbox(make_function<factory_creator_t>
-					  (std::forward<functor>(f)),
-					  align);
-	}
-
-	//! Create a checkbox, with a label factory, with custom images
-	template<typename functor,
-		 typename sfinae=decltype(std::declval<functor &&>()
-					  (std::declval<const factory &>()))>
 	image_button create_checkbox(functor &&f,
-				     const std::vector<std::string> &i,
-				     valign align=valign::middle)
+				     const checkbox_config &config={})
 	{
 		return do_create_checkbox(make_function<factory_creator_t>
 					  (std::forward<functor>(f)),
-					  i, align);
+					  config);
 	}
 
 	//! Create a radio button
 	image_button create_radio(const radio_group &group,
-				  valign=valign::middle);
+				  const radio_config &config={});
 
-	//! Create a radio button, with custom images
-	image_button create_radio(const radio_group &group,
-				  const std::vector<std::string> &images,
-				  valign=valign::middle);
-
-	//! Create a radio button with a label
+	//! Create a radio button with a label factory
 	template<typename functor,
 		 typename sfinae=decltype(std::declval<functor &&>()
 					  (std::declval<const factory &>()))>
 	image_button create_radio(const radio_group &group,
 				  functor &&f,
-				  valign align=valign::middle)
+				  const radio_config &config={})
 	{
 		return do_create_radio(group,
 				       make_function<factory_creator_t>
 				       (std::forward<functor>(f)),
-				       align);
-	}
-
-	//! Create a radio button, with a label and custom images
-	template<typename functor,
-		 typename sfinae=decltype(std::declval<functor &&>()
-					  (std::declval<const factory &>()))>
-	image_button create_radio(const radio_group &group,
-				  functor &&f,
-				  const std::vector<std::string> &images,
-				  valign align=valign::middle)
-	{
-		return do_create_radio(group,
-				       make_function<factory_creator_t>
-				       (std::forward<functor>(f)),
-				       images,
-				       align);
+				       config);
 	}
 
 	//! Type-erased create_checkbox().
 	image_button do_create_checkbox(const function<factory_creator_t>&,
-					valign);
-
-	//! Type-erased create_checkbox().
-	image_button do_create_checkbox(const function<factory_creator_t>&,
-					const std::vector<std::string> &,
-					valign);
+					const checkbox_config &config);
 
 	//! Type-erased create_radio().
 	image_button do_create_radio(const radio_group &,
 				     const function<factory_creator_t>&,
-				     valign);
-
-	//! Type-erased create_radio().
-	image_button do_create_radio(const radio_group &,
-				     const function<factory_creator_t>&,
-				     const std::vector<std::string> &,
-				     valign);
+				     const radio_config &);
 
 	//! Create a focusable container.
 

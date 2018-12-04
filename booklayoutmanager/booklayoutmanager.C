@@ -592,11 +592,17 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	ptr<image_button_internalObj::implObj> left_scroll_impl,
 		right_scroll_impl;
 
-	create_image_button_info scroll_button_info
-		{factory->get_container_impl(), true, valign::bottom, true};
+	image_button_config i_config;
 
-	scroll_button_info.borders.focusoff_border=
-		"thin_inputfocusoff_border_color2";
+	// Scroll buttons, just above the main page area. Align the scroll
+	// buttons to the bottom, where the page area is. Use a visible
+	// focusoff border, to avoid ugly empty separation between the page
+	// border and the visible button, when it does not have input focus.
+	i_config.alignment=valign::bottom;
+	i_config.visible_focusoff_border();
+
+	create_image_button_info scroll_button_info
+		{factory->get_container_impl(), true, i_config, true};
 
 	auto left_scroll=create_image_button
 		(scroll_button_info,

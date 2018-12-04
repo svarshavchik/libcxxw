@@ -94,6 +94,11 @@ new_listlayoutmanager
 
 new_listlayoutmanager::~new_listlayoutmanager()=default;
 
+void new_listlayoutmanager::visible_focusoff_border()
+{
+	focusoff_border="listvisiblefocusoff_border";
+}
+
 focusable_container
 new_listlayoutmanager::create(const container_impl &parent_container) const
 {

@@ -699,7 +699,7 @@ new_tablelayoutmanager
 	  adjustable_header_highlight_width
 	{"list_adjustable_header_highlight_width"}
 {
-	focusoff_border="listvisiblefocusoff_border";
+	visible_focusoff_border();
 }
 
 new_tablelayoutmanager::~new_tablelayoutmanager()=default;
