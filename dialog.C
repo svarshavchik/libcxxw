@@ -55,7 +55,7 @@ dialog main_windowObj
 
 			 creator(d);
 			 return d;
-		 }, modal);
+		 }, modal, layout_factory);
 }
 
 void main_windowObj::do_create_dialog(const std::string_view &dialog_id,
