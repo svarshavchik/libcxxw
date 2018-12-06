@@ -101,9 +101,9 @@ See COPYING for distribution information.
       <title>Status</title>
 
       <para>
-	&app; is in active development. The most recent build adds new
-	settings to the list layout manager for implementing
-	<link linkend="hierlist">hierarchical lists</link>.
+	&app; is in active development. The most recent build adds a
+	new layout manager for implemented
+	<link linkend="toolbox">toolbox dialogs</link>.
       </para>
     </section>
   </section>
