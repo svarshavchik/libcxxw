@@ -156,7 +156,8 @@ public:
 	//! Configure a new list or a table.
 
 	//! Configure a new list for best visual appearance.
-	void configure_new_list(new_listlayoutmanager &);
+	void configure_new_list(new_listlayoutmanager &,
+				bool synchronized=false);
 };
 
 LIBCXXW_NAMESPACE_END

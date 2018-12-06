@@ -59,7 +59,7 @@ static inline auto create_filedir_list(const factory &f,
 
 	nlm.columns=3;
 
-	pf->configure_new_list(nlm);
+	pf->configure_new_list(nlm, true);
 
 	// Give all space to the first column, with the filename.
 	nlm.requested_col_widths.emplace(0, 100);
@@ -102,7 +102,8 @@ static inline auto create_filedir_list(const factory &f,
 			 mcguffin);
 		};
 
-	pf->configure_new_list(nlm);
+	pf->configure_new_list(nlm, true);
+
 	pf->set_initial_size(50)
 		.create_focusable_container([]
 					    (const auto &ignore)

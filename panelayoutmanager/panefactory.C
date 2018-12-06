@@ -16,14 +16,18 @@ panefactoryObj::panefactoryObj(const panelayoutmanager &layout)
 
 panefactoryObj::~panefactoryObj()=default;
 
-void panefactoryObj::configure_new_list(new_listlayoutmanager &nlm)
+void panefactoryObj::configure_new_list(new_listlayoutmanager &nlm,
+					bool synchronized)
 {
 	nlm.variable_height();
 	nlm.list_border={};
-	set_scrollbar_visibility(x::w::scrollbar_visibility::never);
+	if (synchronized)
+		nlm.vertical_scrollbar=scrollbar_visibility::always;
+
+	set_scrollbar_visibility(scrollbar_visibility::never);
 	padding(0);
-	halign(x::w::halign::fill);
-	valign(x::w::valign::fill);
+	halign(halign::fill);
+	valign(valign::fill);
 }
 
 LIBCXXW_NAMESPACE_END

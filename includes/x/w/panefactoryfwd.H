@@ -123,6 +123,15 @@ and disables the scrollbar, and adjusts the new table or list to have
 an adjustable height, and no borders. The pane layout manager-provided borders
 are sufficient.
 
+Setting configure_new_list()'s optional second parameter to \c true
+indicates that the new list is synchronized with another list; most likely
+the list in the preceding or the following pane. It's necessary to make those
+lists' scrollbars \c always visible; so all synchronized lists always have
+the same base width, preventing the situation where one list is wider
+than the others because it does not currently show a scrollbar (the
+\c automatic_reserved setting does not result in good visual appearance).
+This will prevent the lists' column widths from getting correctly synchronized.
+
 After this selection list gets placed in the pane,
 the pane's sliders indirectly adjust the selection list's height. The
 pane's sliders adjust the pane's height, and with the pane's now having
