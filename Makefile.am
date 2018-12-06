@@ -1266,6 +1266,7 @@ check-am:
 test:
 	./testmainwindow --state
 	./testmainwindow --state --nopadding
+	./testmainwindow --exception
 	./testmainwindow
 	./testmainwindow --nopadding
 	./testmainwindow --showhide

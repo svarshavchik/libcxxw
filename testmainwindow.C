@@ -439,6 +439,9 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 				  (const auto &c) {
 					 if (options.showhide->value)
 						 set_filler_color(c);
+
+					 if (options.exceptiontest->value)
+						 throw EXCEPTION("Test");
 				 },
 		{10.0}, {10.0});
 
@@ -870,7 +873,17 @@ int main(int argc, char **argv)
 		}
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
+		if (options.exceptiontest->value)
+		{
+			std::cout << "Caught exception" << std::endl;
+			return 0;
+		}
 		e->caught();
+		exit(1);
+	}
+	if (options.exceptiontest->value)
+	{
+		std::cout << "No exception was thrown" << std::endl;
 		exit(1);
 	}
 	return 0;

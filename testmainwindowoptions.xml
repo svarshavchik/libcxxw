@@ -47,12 +47,22 @@
     <longopt>themescale</longopt>
     <descr>Alternate theme scales</descr>
   </option>
+  <option>
+    <name>exceptiontest</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>e</opt>
+    <longopt>exception</longopt>
+    <descr>Test throwing an exception in main window's creator</descr>
+  </option>
+
   <mutex>
     <name>state</name>
     <name>usemain</name>
     <name>showhide</name>
     <name>usetheme</name>
     <name>themescale</name>
+    <name>exceptiontest</name>
   </mutex>
   <defaultoptions />
 </optclass>
