@@ -25,9 +25,9 @@
 #include "x/w/metrics/axis.H"
 #include "synchronized_axis_impl.H"
 #include "synchronized_axis_valuefwd.H"
-#include "richtext/richtextfwd.H"
-#include "richtext/richtext_draw_boundariesfwd.H"
-#include "richtext/richtextmeta.H"
+#include "x/w/impl/richtext/richtextfwd.H"
+#include "x/w/impl/richtext/richtext_draw_boundariesfwd.H"
+#include "x/w/impl/richtext/richtextmeta.H"
 #include "richtext/richtext_alteration_config.H"
 #include <x/mpobj.H>
 #include <x/derivedvaluefwd.H>

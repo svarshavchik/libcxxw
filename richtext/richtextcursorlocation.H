@@ -6,7 +6,7 @@
 #ifndef richtextcursorlocation_H
 #define richtextcursorlocation_H
 
-#include "richtext/richtextcursorlocationfwd.H"
+#include "x/w/impl/richtext/richtextcursorlocationfwd.H"
 #include "richtext/richtextfragment.H"
 
 LIBCXXW_NAMESPACE_START

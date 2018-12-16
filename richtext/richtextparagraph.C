@@ -6,7 +6,7 @@
 #include "libcxxw_config.h"
 #include "richtext/richtextparagraph.H"
 #include "richtext/fragment_list.H"
-#include "richtext/richtext.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "richtext/paragraph_list.H"
 #include "assert_or_throw.H"
 

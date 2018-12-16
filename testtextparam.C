@@ -6,8 +6,8 @@
 #include "libcxxw_config.h"
 #include <x/exception.H>
 #include <x/options.H>
-#include "richtext/richtextstring.H"
-#include "richtext/richtextmeta.H"
+#include "x/w/impl/richtext/richtextstring.H"
+#include "x/w/impl/richtext/richtextmeta.H"
 #include "x/w/text_param.H"
 #include "x/w/text_param_literals.H"
 #include "screen.H"

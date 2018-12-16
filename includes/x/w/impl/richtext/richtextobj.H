@@ -3,23 +3,26 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef richtextobj_H
-#define richtextobj_H
+#ifndef x_w_impl_richtext_richtextobj_H
+#define x_w_impl_richtext_richtextobj_H
 
-#include "x/w/connection_threadfwd.H"
-#include "x/w/impl/element_draw.H"
-#include "richtext/richtextfwd.H"
-#include "richtext/richtextstring.H"
-#include "richtext/richtextiteratorfwd.H"
-#include "richtext/richtextcursorlocation.H"
-#include "richtext/richtext_insertfwd.H"
-#include "richtext/richtext_draw_infofwd.H"
-#include "richtext/richtext_draw_boundariesfwd.H"
-#include "x/w/types.H"
-#include "x/w/metrics/axis.H"
-#include "x/w/rectanglefwd.H"
-#include "x/w/drawablefwd.H"
-#include "x/w/input_field_lock.H"
+#include <x/w/connection_threadfwd.H>
+#include <x/w/impl/element_draw.H>
+#include <x/w/impl/richtext/richtextstringfwd.H>
+#include <x/w/impl/richtext/richtextfwd.H>
+#include <x/w/impl/richtext/richtextfragmentfwd.H>
+#include <x/w/impl/richtext/richtextiteratorfwd.H>
+#include <x/w/impl/richtext/richtextcursorlocationfwd.H>
+#include <x/w/impl/richtext/richtext_insertfwd.H>
+#include <x/w/impl/richtext/richtext_draw_infofwd.H>
+#include <x/w/impl/richtext/richtext_draw_boundariesfwd.H>
+#include <x/w/types.H>
+#include <x/w/alignment.H>
+#include <x/w/metrics/axis.H>
+#include <x/w/rectanglefwd.H>
+#include <x/w/drawablefwd.H>
+#include <x/w/input_field_lock.H>
+#include <x/w/defaultthemefwd.H>
 #include <x/obj.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
@@ -29,10 +32,12 @@ LIBCXXW_NAMESPACE_START
 
 //! A \ref richtext "rich text" object.
 
-class LIBCXX_HIDDEN richtextObj : virtual public obj {
+class richtextObj : virtual public obj {
 
 
  public:
+
+	class LIBCXX_PUBLIC impl_t;
 
 	//! The implementation object is mutex-protected.
 
@@ -173,7 +178,9 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! Draw the text
 
-	void draw(ONLY IN_THREAD,
+	void draw(//! Invoked only in the connection thread.
+
+		  ONLY IN_THREAD,
 		  //! The element being drawn
 		  element_drawObj &element,
 

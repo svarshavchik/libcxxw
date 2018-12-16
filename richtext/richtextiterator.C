@@ -5,7 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "richtext/richtextiterator.H"
-#include "richtext/richtext.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtext_insert.H"
 #include "richtext/richtextcursorlocation.H"
 #include "messages.H"

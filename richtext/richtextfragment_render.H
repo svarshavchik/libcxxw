@@ -7,7 +7,7 @@
 #define richtextfragment_render_H
 
 #include "richtext/richtextfragment.H"
-#include "richtext/richtextmeta.H"
+#include "x/w/impl/richtext/richtextmeta.H"
 #include "x/w/picturefwd.H"
 #include "x/w/impl/draw_infofwd.H"
 

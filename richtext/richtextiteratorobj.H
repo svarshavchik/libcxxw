@@ -6,11 +6,11 @@
 #ifndef richtextiteratorobj_H
 #define richtextiteratorobj_H
 
-#include "richtext/richtextiteratorfwd.H"
-#include "richtext/richtextfwd.H"
+#include "x/w/impl/richtext/richtextiteratorfwd.H"
+#include "x/w/impl/richtext/richtextfwd.H"
 #include "richtext/richtextcursorlocation.H"
-#include "richtext/richtextstring.H"
-#include "richtext/richtextfragmentfwd.H"
+#include "x/w/impl/richtext/richtextstring.H"
+#include "x/w/impl/richtext/richtextfragmentfwd.H"
 #include "x/w/rectangle.H"
 #include "x/w/text_hotspot.H"
 #include <x/obj.H>

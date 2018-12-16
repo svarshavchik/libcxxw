@@ -11,8 +11,8 @@
 #include "x/w/text_param.H"
 #include "x/w/text_param_literals.H"
 #include "x/w/picture.H"
-#include "richtext/richtextmeta.H"
-#include "richtext/richtextstring.H"
+#include "x/w/impl/richtext/richtextmeta.H"
+#include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/text_hotspot.H"
 #include <courier-unicode.h>
 

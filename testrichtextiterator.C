@@ -1,5 +1,5 @@
 #include "libcxxw_config.h"
-#include "richtext/richtext.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtextiterator.H"
 #include "richtext/richtextiterator.H"
 #include "richtext/fragment_list.H"

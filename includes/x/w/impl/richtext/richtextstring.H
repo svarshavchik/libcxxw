@@ -3,14 +3,15 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef richtextstring_H
-#define richtextstring_H
+#ifndef x_w_impl_richtext_richtextstring_H
+#define x_w_impl_richtext_richtextstring_H
 
-#include "x/w/defaultthemefwd.H"
-#include "richtext/richtextmetafwd.H"
-#include "x/w/impl/fonts/freetypefontfwd.H"
-#include "x/w/connection_threadfwd.H"
-#include "x/w/types.H"
+#include <x/w/defaultthemefwd.H>
+#include <x/w/impl/richtext/richtextstringfwd.H>
+#include <x/w/impl/richtext/richtextmetafwd.H>
+#include <x/w/impl/fonts/freetypefontfwd.H>
+#include <x/w/connection_threadfwd.H>
+#include <x/w/types.H>
 #include <courier-unicode.h>
 #include <unordered_map>
 #include <x/functional.H>
@@ -24,7 +25,7 @@ LIBCXXW_NAMESPACE_START
 //! it.
 //!
 //! Define a \c std::u32string, and a list of
-//! index+richtextmeta tuples. "index" specifies that character #n in the
+//! index+richtextmeta tuples. "index" specifies that character \#n in the
 //! \c std::u32string, and all following characters up until th enext "index"
 //! are rendered by the corresponding \c richtextmeta.
 //!
@@ -36,7 +37,7 @@ LIBCXXW_NAMESPACE_START
 //! a lock, somewhere. Some methods are accessible only to the execution
 //! thread, but the lock must still be acquired before invoking them.
 
-class LIBCXX_HIDDEN richtextstring {
+class richtextstring {
 
 	//! Our unicode string.
 	std::u32string string;
@@ -74,16 +75,16 @@ class LIBCXX_HIDDEN richtextstring {
 	//! Consecutive entries with the same metadata are removed.
 	void coalesce();
 
-	//! Make sure there is an entry in the metadata vector for index #n.
+	//! Make sure there is an entry in the metadata vector for index \#n.
 
 	//! If there isn't one, duplicate the next lowest one, just before
-	//! index #n.
+	//! index \#n.
 	meta_t::iterator duplicate(size_t);
 
-	//! Make sure there is an entry in the metadata vector for index #n.
+	//! Make sure there is an entry in the metadata vector for index \#n.
 
 	//! If there isn't one, duplicate the next lowest one, just before
-	//! index #n.
+	//! index \#n.
 	static meta_t::iterator duplicate(meta_t &, size_t);
 
 	class compare_meta_by_pos;

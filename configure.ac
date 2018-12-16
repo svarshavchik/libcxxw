@@ -134,6 +134,7 @@ AC_CONFIG_FILES([Makefile
 	includes/x/w/impl/focus/Makefile
 	includes/x/w/impl/fonts/Makefile
 	includes/x/w/impl/popup/Makefile
+	includes/x/w/impl/richtext/Makefile
 	includes/x/w/impl/selection/Makefile
 	includes/x/w/metrics/Makefile
 	packaging/fedora/libcxxw.spec

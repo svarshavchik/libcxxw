@@ -8,7 +8,7 @@
 #include "richtext/fragment_list.H"
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextparagraph.H"
-#include "richtext.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "assert_or_throw.H"
 #include "defaulttheme.H"
 

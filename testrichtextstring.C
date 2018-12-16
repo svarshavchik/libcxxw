@@ -8,7 +8,7 @@
 #include "x/w/namespace.H"
 #include <iostream>
 
-#define richtextmeta_H
+#define x_w_impl_richtext_richtextmeta_H
 
 LIBCXXW_NAMESPACE_START
 

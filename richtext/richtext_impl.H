@@ -6,11 +6,11 @@
 #ifndef richtext_impl_H
 #define richtext_impl_H
 
-#include "richtext/richtextparagraphfwd.H"
-#include "richtext/richtextfragmentfwd.H"
-#include "richtext/richtext.H"
-#include "richtext/richtextstring.H"
-#include "richtext/richtextmeta.H"
+#include "x/w/impl/richtext/richtextparagraphfwd.H"
+#include "x/w/impl/richtext/richtextfragmentfwd.H"
+#include "x/w/impl/richtext/richtext.H"
+#include "x/w/impl/richtext/richtextstringfwd.H"
+#include "x/w/impl/richtext/richtextmeta.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/screenfwd.H"
 #include "x/w/input_field_lock.H"

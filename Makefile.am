@@ -685,43 +685,30 @@ libcxxw_la_SOURCES=\
 	richtext/paragraph_list.C		    \
 	richtext/paragraph_list.H		    \
 	richtext/richtext.C			    \
-	richtext/richtext.H			    \
-	richtext/richtextobj.H			    \
 	richtext/richtext_alteration_config.H	    \
 	richtext/richtext_alteration_configfwd.H    \
 	richtext/richtext_draw_boundaries.C	    \
 	richtext/richtext_draw_boundaries.H	    \
-	richtext/richtext_draw_boundariesfwd.H	    \
 	richtext/richtext_draw_info.H		    \
-	richtext/richtext_draw_infofwd.H	    \
 	richtext/richtext_impl.C		    \
 	richtext/richtext_impl.H		    \
-	richtext/richtextfwd.H			    \
 	richtext/richtext_insert.H		    \
-	richtext/richtext_insertfwd.H		    \
 	richtext/richtextiterator.C		    \
 	richtext/richtextiterator.H		    \
-	richtext/richtextiteratorfwd.H		    \
 	richtext/richtextiteratorobj.H		    \
 	richtext/richtextcursorlocation.C	    \
 	richtext/richtextcursorlocation.H	    \
-	richtext/richtextcursorlocationfwd.H	    \
 	richtext/richtextfragment.C		    \
 	richtext/richtextfragment.H		    \
-	richtext/richtextfragmentfwd.H		    \
 	richtext/richtextfragment_render.H	    \
 	richtext/richtexthorizinfo.C		    \
 	richtext/richtexthorizinfo.H		    \
 	richtext/richtextmeta.C			    \
-	richtext/richtextmeta.H			    \
-	richtext/richtextmetafwd.H		    \
 	richtext/richtextparagraph.C		    \
 	richtext/richtextparagraph.H		    \
-	richtext/richtextparagraphfwd.H		    \
 	richtext/richtext_password_info.C	    \
 	richtext/richtext_password_info.H	    \
 	richtext/richtextstring.C		    \
-	richtext/richtextstring.H		    \
 	richtext/richtextstring2.C		    \
 	richtext/text_hotspot.C			    \
 	run_as.H				    \
@@ -1324,3 +1311,49 @@ upload:
 	rm -f @PACKAGE@-@VERSION@.tar.bz2.sig; gpg --detach-sign --default-key mrsam@courier-mta.com @PACKAGE@-@VERSION@.tar.bz2; test -f @PACKAGE@-@VERSION@.tar.bz2.sig || exit 1
 	pag upload @PACKAGE@-@VERSION@.tar.bz2
 	pag upload @PACKAGE@-@VERSION@.tar.bz2.sig
+
+
+Z=	richtext/fragment_list.C		    \
+	richtext/fragment_list.H		    \
+	richtext/paragraph_list.C		    \
+	richtext/paragraph_list.H		    \
+	richtext/richtext.C			    \
+	richtext/richtext.H			    \
+	richtext/richtextobj.H			    \
+	richtext/richtext_alteration_config.H	    \
+	richtext/richtext_alteration_configfwd.H    \
+	richtext/richtext_draw_boundaries.C	    \
+	richtext/richtext_draw_boundaries.H	    \
+	richtext/richtext_draw_boundariesfwd.H	    \
+	richtext/richtext_draw_info.H		    \
+	richtext/richtext_draw_infofwd.H	    \
+	richtext/richtext_impl.C		    \
+	richtext/richtext_impl.H		    \
+	richtext/richtextfwd.H			    \
+	richtext/richtext_insert.H		    \
+	richtext/richtext_insertfwd.H		    \
+	richtext/richtextiterator.C		    \
+	richtext/richtextiterator.H		    \
+	richtext/richtextiteratorfwd.H		    \
+	richtext/richtextiteratorobj.H		    \
+	richtext/richtextcursorlocation.C	    \
+	richtext/richtextcursorlocation.H	    \
+	richtext/richtextcursorlocationfwd.H	    \
+	richtext/richtextfragment.C		    \
+	richtext/richtextfragment.H		    \
+	richtext/richtextfragmentfwd.H		    \
+	richtext/richtextfragment_render.H	    \
+	richtext/richtexthorizinfo.C		    \
+	richtext/richtexthorizinfo.H		    \
+	richtext/richtextmeta.C			    \
+	richtext/richtextmeta.H			    \
+	richtext/richtextmetafwd.H		    \
+	richtext/richtextparagraph.C		    \
+	richtext/richtextparagraph.H		    \
+	richtext/richtextparagraphfwd.H		    \
+	richtext/richtext_password_info.C	    \
+	richtext/richtext_password_info.H	    \
+	richtext/richtextstring.C		    \
+	richtext/richtextstring.H		    \
+	richtext/richtextstring2.C		    \
+	richtext/text_hotspot.C

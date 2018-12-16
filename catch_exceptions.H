@@ -7,6 +7,7 @@
 
 #include <x/exception.H>
 #include <x/logger.H>
+#include "x/w/text_param.H"
 
 #define CATCH_EXCEPTIONS catch (const exception &e)		\
 	{							\

@@ -3,10 +3,10 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef richtextmetafwd_H
-#define richtextmetafwd_H
+#ifndef x_w_impl_richtext_richtextmetafwd_H
+#define x_w_impl_richtext_richtextmetafwd_H
 
-#include "x/w/namespace.H"
+#include <x/w/namespace.H>
 
 LIBCXXW_NAMESPACE_START
 

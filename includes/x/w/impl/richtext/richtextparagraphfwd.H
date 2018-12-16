@@ -3,10 +3,10 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef richtextparagraphfwd_H
-#define richtextparagraphfwd_H
+#ifndef x_w_impl_richtext_richtextparagraphfwd_H
+#define x_w_impl_richtext_richtextparagraphfwd_H
 
-#include "x/w/namespace.H"
+#include <x/w/namespace.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START

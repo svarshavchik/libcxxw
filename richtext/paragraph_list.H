@@ -6,8 +6,8 @@
 #ifndef paragraph_list_H
 #define paragraph_list_H
 
-#include "richtext/richtextfwd.H"
-#include "richtext/richtextfragmentfwd.H"
+#include "x/w/impl/richtext/richtextfwd.H"
+#include "x/w/impl/richtext/richtextfragmentfwd.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtext_impl.H"
 #include "connection_thread.H"

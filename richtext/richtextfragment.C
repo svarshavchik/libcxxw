@@ -7,7 +7,7 @@
 #include "richtext/richtextfragment_render.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtextcursorlocation.H"
-#include "richtext/richtext.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtext_insert.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"

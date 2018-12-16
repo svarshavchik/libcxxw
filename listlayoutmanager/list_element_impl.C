@@ -16,7 +16,7 @@
 #include "x/w/impl/themeborder_element.H"
 #include "x/w/impl/border_impl.H"
 #include "icon.H"
-#include "richtext/richtext.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtext_draw_boundaries.H"
 #include "calculate_borders.H"
 #include "x/w/motion_event.H"

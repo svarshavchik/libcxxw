@@ -7,7 +7,7 @@
 #define richtext_draw_boundaries_H
 
 #include "x/w/impl/draw_infofwd.H"
-#include "richtext/richtext_draw_boundariesfwd.H"
+#include "x/w/impl/richtext/richtext_draw_boundariesfwd.H"
 #include "x/w/rectangle.H"
 
 LIBCXXW_NAMESPACE_START

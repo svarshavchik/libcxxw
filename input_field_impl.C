@@ -7,7 +7,7 @@
 #include "editor.H"
 #include "peepholed_focusable.H"
 #include "editor_impl.H"
-#include "richtext/richtextobj.H"
+#include "x/w/impl/richtext/richtextobj.H"
 #include "x/w/input_field.H"
 #include <courier-unicode.h>
 

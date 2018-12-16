@@ -4,10 +4,13 @@
 */
 #include "libcxxw_config.h"
 #include "ellipsiscache.H"
-#include "richtext/richtext.H"
+#include "x/w/impl/richtext/richtextstring.H"
+#include "x/w/impl/richtext/richtext.H"
+#include "x/w/impl/richtext/richtextmeta.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/fonts/current_fontcollection.H"
+#include "x/w/text_param.H"
 #include <x/weakunordered_map.H>
 
 LIBCXXW_NAMESPACE_START

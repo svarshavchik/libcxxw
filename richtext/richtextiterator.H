@@ -7,7 +7,7 @@
 #define richtextiterator_H
 
 #include <x/ref.H>
-#include "richtext/richtextiteratorfwd.H"
+#include "x/w/impl/richtext/richtextiteratorfwd.H"
 #include "richtext/richtextiteratorobj.H"
 
 LIBCXXW_NAMESPACE_START

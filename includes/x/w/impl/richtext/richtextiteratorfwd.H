@@ -3,17 +3,17 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef richtextiteratorfwd_H
-#define richtextiteratorfwd_H
+#ifndef x_w_impl_richtext_richtextiteratorfwd_H
+#define x_w_impl_richtext_richtextiteratorfwd_H
 
 #include <x/ptrfwd.H>
-#include "x/w/namespace.H"
+#include <x/w/namespace.H>
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN richtextiteratorObj;
+class LIBCXX_PUBLIC richtextiteratorObj;
 
-//! Iterator, or a pointer, into a \ref "rich text object".
+//! Iterator, or a pointer, into a \ref richtext "rich text object".
 
 //! \ref richtext "rich text"'s begin(), end(), and at() methods create new
 //! iterators. Each iterator owns a reference on its richtext object, and

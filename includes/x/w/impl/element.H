@@ -21,11 +21,12 @@
 #include <x/w/rgbfwd.H>
 #include <x/w/focusableobj.H>
 #include <x/w/font_arg.H>
-#include <x/w/text_param.H>
+#include <x/w/text_paramfwd.H>
 #include <x/w/impl/clock.H>
 #include <x/w/impl/connection_threadfwd.H>
 #include <x/w/defaultthemefwd.H>
 #include <x/w/fontcollectionfwd.H>
+#include <x/w/impl/richtext/richtextstringfwd.H>
 #include <x/w/impl/inherited_visibility_infofwd.H>
 #include <x/w/impl/element_draw.H>
 #include <x/w/impl/draw_info.H>
@@ -37,6 +38,7 @@
 #include <x/w/impl/fonts/current_fontcollectionfwd.H>
 #include <x/w/impl/popup/popupfwd.H>
 #include <x/w/impl/dnd.H>
+#include <x/w/impl/richtext/richtextmetafwd.H>
 #include <x/w/impl/selection/current_selection_handlerfwd.H>
 #include <x/w/key_eventfwd.H>
 #include <x/w/fontfwd.H>
@@ -52,14 +54,6 @@
 #include <chrono>
 
 LIBCXXW_NAMESPACE_START
-
-//! \class richtextstring
-//!
-//! TODO: documentation
-
-//! \class richtextmeta
-//!
-//! TODO: documentation
 
 //! \class x::w::generic_windowObj::handlerObj
 //!
@@ -94,9 +88,6 @@ LIBCXXW_NAMESPACE_START
 //! TODO: documentation
 
 class clip_region_set;
-class richtextstring;
-class richtextmeta;
-class text_param;
 
 //! Base class for element implementation.
 

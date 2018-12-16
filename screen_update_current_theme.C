@@ -9,7 +9,7 @@
 #include "screen_fontcaches.H"
 #include "generic_window_handler.H"
 #include "x/w/impl/fonts/current_fontcollection.H"
-#include "richtext/richtext.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "recycled_pixmaps.H"
 #include "border_cache.H"
 #include "x/w/border_arg_hash.H"

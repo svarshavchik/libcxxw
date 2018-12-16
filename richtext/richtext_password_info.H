@@ -8,7 +8,7 @@
 
 #include "x/w/namespace.H"
 #include <string>
-#include "richtext/richtextstring.H"
+#include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/input_field_configfwd.H"
 
 LIBCXXW_NAMESPACE_START

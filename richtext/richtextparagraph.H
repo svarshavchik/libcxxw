@@ -6,9 +6,9 @@
 #ifndef richtextparagraph_H
 #define richtextparagraph_H
 
-#include "richtext/richtextparagraphfwd.H"
+#include "x/w/impl/richtext/richtextparagraphfwd.H"
 #include "richtext/richtextfragment.H"
-#include "richtext/richtextstring.H"
+#include "x/w/impl/richtext/richtextstring.H"
 #include "richtext/richtext_impl.H"
 #include "x/w/connection_threadfwd.H"
 

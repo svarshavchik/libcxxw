@@ -5,7 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "richtext/richtext_password_info.H"
-#include "richtext/richtextmeta.H"
+#include "x/w/impl/richtext/richtextmeta.H"
 #include "x/w/input_field_config.H"
 
 LIBCXXW_NAMESPACE_START

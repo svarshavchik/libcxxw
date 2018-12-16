@@ -7,7 +7,7 @@
 
 #include "listlayoutmanager/list_celltextfwd.H"
 #include "listlayoutmanager/list_cellobj.H"
-#include "richtext/richtext.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtext_alteration_configfwd.H"
 
 LIBCXXW_NAMESPACE_START

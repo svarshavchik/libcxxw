@@ -3,15 +3,14 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef richtextmeta_H
-#define richtextmeta_H
+#ifndef x_w_impl_richtext_richtextmeta_H
+#define x_w_impl_richtext_richtextmeta_H
 
-#include "x/w/rgb.H"
-#include "richtext/richtextmetafwd.H"
-#include "x/w/text_hotspotfwd.H"
-#include "x/w/impl/fonts/current_fontcollection.H"
-#include "x/w/impl/background_colorfwd.H"
-#include "x/w/namespace.H"
+#include <x/w/rgb.H>
+#include <x/w/text_hotspotfwd.H>
+#include <x/w/impl/richtext/richtextmetafwd.H>
+#include <x/w/impl/fonts/current_fontcollection.H>
+#include <x/w/impl/background_colorfwd.H>
 
 LIBCXXW_NAMESPACE_START
 

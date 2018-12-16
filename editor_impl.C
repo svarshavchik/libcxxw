@@ -19,7 +19,7 @@
 #include "x/w/impl/fonts/fontcollection.H"
 #include "x/w/impl/focus/focusable_element.H"
 #include "label_element.H"
-#include "richtext/richtext.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtext_impl.H"
 #include "richtext/richtextiterator.H"
 #include "richtext/richtext_draw_info.H"

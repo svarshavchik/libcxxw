@@ -3,11 +3,11 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef richtextcursorlocationfwd_H
-#define richtextcursorlocationfwd_H
+#ifndef x_w_impl_richtext_richtextcursorlocationfwd_H
+#define x_w_impl_richtext_richtextcursorlocationfwd_H
 
 #include <x/ref.H>
-#include "x/w/namespace.H"
+#include <x/w/namespace.H>
 
 LIBCXXW_NAMESPACE_START
 

@@ -6,9 +6,9 @@
 #ifndef richtext_insert_H
 #define richtext_insert_H
 
-#include "richtext/richtextstring.H"
-#include "richtext/richtext_insertfwd.H"
-#include "richtext/richtextcursorlocationfwd.H"
+#include "x/w/impl/richtext/richtextstring.H"
+#include "x/w/impl/richtext/richtext_insertfwd.H"
+#include "x/w/impl/richtext/richtextcursorlocationfwd.H"
 #include <string>
 
 LIBCXXW_NAMESPACE_START

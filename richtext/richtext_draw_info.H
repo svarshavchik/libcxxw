@@ -6,7 +6,7 @@
 #ifndef richtext_draw_info_H
 #define richtext_draw_info_H
 
-#include "richtext/richtext_draw_infofwd.H"
+#include "x/w/impl/richtext/richtext_draw_infofwd.H"
 #include "richtext/richtext_alteration_configfwd.H"
 #include "richtext/richtextiterator.H"
 

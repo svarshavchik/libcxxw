@@ -3,16 +3,15 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef richtextfwd_H
-#define richtextfwd_H
+#ifndef x_w_impl_richtext_richtextfwd_H
+#define x_w_impl_richtext_richtextfwd_H
 
 #include <x/ptrfwd.H>
-#include "x/w/input_fieldfwd.H"
-#include "x/w/namespace.H"
+#include <x/w/input_fieldfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN richtextObj;
+class richtextObj;
 
 //! A list of text paragraphs.
 
