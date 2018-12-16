@@ -9,6 +9,7 @@
 #include <xcb/xproto.h>
 #include "x/w/namespace.H"
 #include "x/w/rectangle.H"
+#include "x/w/main_windowobj.H"
 #include <x/logger.H>
 #include <unordered_set>
 
@@ -86,9 +87,12 @@ class LIBCXX_HIDDEN ewmh : public xcb_ewmh_connection_t {
 	//! Process an XCB_CLIENT_MESSAGE.
 
 	//! Handles a response to a _NET_WM_PING, and returns true.
+	//! Handles a response to a _NET_WM_SYNC_REQUEST, and returns true.
 	//! Returns false if the client message is not recognized.
 
-	bool client_message(const xcb_client_message_event_t *event,
+	bool client_message(ONLY IN_THREAD,
+			    main_windowObj::handlerObj &handler,
+			    const xcb_client_message_event_t *event,
 			    xcb_window_t root_window);
 };
 

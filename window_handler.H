@@ -192,6 +192,10 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	void release_grabs(ONLY IN_THREAD);
 
+	//! Idle processing
+
+	virtual void idle(ONLY IN_THREAD);
+
 	//! Set a window property.
 
 	void change_property(ONLY IN_THREAD,

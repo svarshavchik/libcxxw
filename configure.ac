@@ -75,10 +75,10 @@ do
 	fi
 done
 
-CFLAGS="$CFLAGS `pkg-config --cflags xcb-keysyms xcb-ewmh xcb-icccm xcb-image xcb-renderutil freetype2 fontconfig libpng`"
-CXXFLAGS="$CXXFLAGS `pkg-config --cflags xcb-keysyms xcb-ewmh xcb-icccm xcb-image xcb-renderutil freetype2 fontconfig libpng`"
+CFLAGS="$CFLAGS `pkg-config --cflags xcb-keysyms xcb-ewmh xcb-sync xcb-icccm xcb-image xcb-renderutil freetype2 fontconfig libpng`"
+CXXFLAGS="$CXXFLAGS `pkg-config --cflags xcb-keysyms xcb-ewmh xcb-sync xcb-icccm xcb-image xcb-renderutil freetype2 fontconfig libpng`"
 
-all_libs="`pkg-config --libs xcb-keysyms xcb-ewmh xcb-icccm xcb-image xcb-renderutil freetype2 fontconfig libpng`"
+all_libs="`pkg-config --libs xcb-keysyms xcb-ewmh xcb-sync xcb-icccm xcb-image xcb-renderutil freetype2 fontconfig libpng`"
 
 LIBCXXW_LIBS=""
 

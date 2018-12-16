@@ -274,6 +274,9 @@ void connection_threadObj::release_grabs(ONLY IN_THREAD)
 		// At this point, all window activity has ceased, so any
 		// grabs can be released.
 		w.release_grabs(IN_THREAD);
+
+		// And perform IDLE processing.
+		w.idle(IN_THREAD);
 	}
 }
 

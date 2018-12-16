@@ -10,6 +10,7 @@
 #include "x/w/connection_threadfwd.H"
 #include "icon_images_vector_elementfwd.H"
 #include "x/w/busyfwd.H"
+#include "sync_counter.H"
 #include <xcb/xcb_icccm.h>
 
 LIBCXXW_NAMESPACE_START
@@ -32,12 +33,27 @@ class main_windowObj::handlerObj :
 	//! Whether an icon was set.
 	bool wm_icon_set_thread_only=false;
 
+	//!  _NET_WM_SYNC_REQUEST counter
+
+	sync_counter net_wm_sync_request_counter;
+
+	//! Received a _NET_WM_SYNC_REQUEST
+	std::optional<int64_t> reconfigure_sync_request_received_thread_only;
+
+	//! Processed a _NET_WM_SYNC_REQUEST
+	std::optional<int64_t> reconfigure_sync_request_processed_thread_only;
+
+public:
+	THREAD_DATA_ONLY(reconfigure_sync_request_received);
+	THREAD_DATA_ONLY(reconfigure_sync_request_processed);
+
+private:
 	//! Override default_wm_class_instance()
 
 	//! This is a "main".
 	const char *default_wm_class_instance() const override;
 
- public:
+public:
 
 	THREAD_DATA_ONLY(on_delete_callback);
 	THREAD_DATA_ONLY(wm_icon_set);
@@ -206,6 +222,16 @@ class main_windowObj::handlerObj :
 	THREAD_DATA_ONLY(ok_to_publish_hints);
 	THREAD_DATA_ONLY(preferred_width);
 	THREAD_DATA_ONLY(preferred_height);
+
+	//! Override process_configure_notify
+
+	void process_configure_notify(ONLY IN_THREAD) override;
+
+	//! Override idle().
+
+	//! Check if reconfigure_sync_request_processed,
+	void idle(ONLY IN_THREAD) override;
+
 };
 
 LIBCXXW_NAMESPACE_END

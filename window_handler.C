@@ -111,6 +111,10 @@ void window_handlerObj::release_grabs(ONLY IN_THREAD)
 	xcb_ungrab_keyboard(IN_THREAD->info->conn, timestamp);
 }
 
+void window_handlerObj::idle(ONLY IN_THREAD)
+{
+}
+
 void window_handlerObj::change_property(ONLY IN_THREAD,
 					uint8_t mode,
 					xcb_atom_t property,

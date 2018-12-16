@@ -6,6 +6,7 @@
 #include "connection_info.H"
 #include "messages.H"
 #include <x/exception.H>
+#include <xcb/sync.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -46,6 +47,32 @@ connection_infoObj::connection_infoObj(connection_handle &&handle)
 	{
 		xcb_disconnect(conn);
 		throw EXCEPTION(_("The display server does not support the X render extension"));
+	}
+
+	{
+		returned_pointer<xcb_generic_error_t *> error;
+
+		auto r=xcb_sync_initialize_reply
+			(conn,
+			 xcb_sync_initialize(conn,
+					     XCB_SYNC_MAJOR_VERSION,
+					     XCB_SYNC_MINOR_VERSION),
+			 error.addressof());
+
+		if (!r || error)
+		{
+			xcb_render_util_disconnect(conn);
+			xcb_disconnect(conn);
+			if (r)
+				free(r);
+
+			if (error)
+				throw EXCEPTION(connection_error(error));
+
+			throw EXCEPTION(_("The display server does not support"
+					  " the Sync extension"));
+		}
+		free(r);
 	}
 }
 

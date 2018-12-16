@@ -819,6 +819,8 @@ libcxxw_la_SOURCES=\
 	sxg/sxg_parserfwd.H			    \
 	sxg/sxg_parserobj.H			    \
 	sxg/sxg_parser_text.C			    \
+	sync_counter.C				    \
+	sync_counter.H				    \
 	text_param.C				    \
 	themeborder_element_impl.C		    \
 	themedim.C				    \

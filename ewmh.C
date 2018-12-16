@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -7,6 +7,7 @@
 #include <x/exception.H>
 
 #include "ewmh.H"
+#include "main_window_handler.H"
 #include "returned_pointer.H"
 #include "connectionfwd.H"
 #include <xcb/xcb_icccm.h>
@@ -279,7 +280,9 @@ void ewmh::set_user_time_window(xcb_window_t wid, xcb_window_t time_wid)
 	xcb_ewmh_set_wm_user_time_window(this, wid, time_wid);
 }
 
-bool ewmh::client_message(const xcb_client_message_event_t *event,
+bool ewmh::client_message(ONLY IN_THREAD,
+			  main_windowObj::handlerObj &handler,
+			  const xcb_client_message_event_t *event,
 			  xcb_window_t root_window)
 {
 	if (!ewmh_available)
@@ -298,6 +301,21 @@ bool ewmh::client_message(const xcb_client_message_event_t *event,
 				XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT),
 			       reinterpret_cast<char *>(&message));
 
+		return true;
+	}
+
+	if (event->data.data32[0] == _NET_WM_SYNC_REQUEST)
+	{
+		set_user_time(handler.id(), event->data.data32[1]);
+		handler.reconfigure_sync_request_received(IN_THREAD)=
+			static_cast<int64_t>
+			((static_cast<uint64_t>
+			  (static_cast<uint32_t>
+			   (event->data.data32[3]))
+			  << 32)
+			 |
+			 static_cast<uint32_t>(event->data.data32[2])
+			 );
 		return true;
 	}
 	return false;

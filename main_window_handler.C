@@ -37,13 +37,14 @@ main_windowObj::handlerObj::handlerObj(ONLY IN_THREAD,
 		       0),
 	  on_delete_callback_thread_only([](THREAD_CALLBACK,
 					    const auto &ignore) {}),
+	  net_wm_sync_request_counter{IN_THREAD},
 	  suggested_position_thread_only{suggested_position},
 	  window_id{window_id}
 {
 	// Set WM_PROTOCOLS to WM_DELETE_WINDOW -- we handle the window
 	// close request ourselves.
 
-	xcb_atom_t protocols[2];
+	xcb_atom_t protocols[3];
 
 	protocols[0]=conn()->atoms_info.wm_delete_window;
 
@@ -56,8 +57,20 @@ main_windowObj::handlerObj::handlerObj(ONLY IN_THREAD,
 		if (lock->ewmh_available)
 		{
 			protocols[1]=lock->_NET_WM_PING;
-			++n;
+			protocols[2]=lock->_NET_WM_SYNC_REQUEST;
+			n += 2;
 		}
+
+		xcb_atom_t sync_request_counter{
+			net_wm_sync_request_counter.id()};
+
+		change_property(IN_THREAD,
+				XCB_PROP_MODE_REPLACE,
+				lock->_NET_WM_SYNC_REQUEST_COUNTER,
+				XCB_ATOM_CARDINAL,
+				32,
+				1,
+				&sync_request_counter);
 	}
 
 	change_property(IN_THREAD,
@@ -109,7 +122,9 @@ void main_windowObj::handlerObj
 		mpobj<ewmh>::lock lock{screenref->get_connection()
 				->impl->ewmh_info};
 
-		if (lock->client_message(event,
+		if (lock->client_message(IN_THREAD,
+					 *this,
+					 event,
 					 screenref->impl->xcb_screen->root))
 			return;
 	}
@@ -641,6 +656,34 @@ void main_windowObj::handlerObj
 	}
 
 	screenref->get_connection()->impl->set_wm_icon(id(), raw_data);
+}
+
+void main_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD)
+{
+	superclass_t::process_configure_notify(IN_THREAD);
+
+	// If we processed a reconfigure sync request, log it as such.
+
+	if (reconfigure_sync_request_received(IN_THREAD))
+	{
+		reconfigure_sync_request_processed(IN_THREAD)=
+			reconfigure_sync_request_received(IN_THREAD);
+
+		reconfigure_sync_request_received(IN_THREAD).reset();
+	}
+}
+
+void main_windowObj::handlerObj::idle(ONLY IN_THREAD)
+{
+	if (reconfigure_sync_request_processed(IN_THREAD))
+	{
+		auto v=*reconfigure_sync_request_processed(IN_THREAD);
+
+		net_wm_sync_request_counter.set(IN_THREAD, v);
+		reconfigure_sync_request_processed(IN_THREAD).reset();
+	}
+
+	superclass_t::idle(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END
