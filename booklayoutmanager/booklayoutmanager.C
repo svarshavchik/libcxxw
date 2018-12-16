@@ -749,7 +749,12 @@ new_booklayoutmanager::create(const container_impl &parent) const
 					  if (next == 0)
 						  return;
 
-					  lm->open(IN_THREAD, --next, trigger);
+					  // Don't forward the button event.
+					  // ensure_visibility won't, for a
+					  // button event, and we want to make
+					  // it visible.
+					  lm->open(IN_THREAD, --next,
+						   prev_key{});
 				  });
 		 });
 
@@ -791,7 +796,12 @@ new_booklayoutmanager::create(const container_impl &parent) const
 					  if (next >= n)
 						  return;
 
-					  lm->open(IN_THREAD, next, trigger);
+					  // Don't forward the button event.
+					  // ensure_visibility won't, for a
+					  // button event, and we want to make
+					  // it visible.
+					  lm->open(IN_THREAD, next,
+						   next_key{});
 				  });
 		 });
 

@@ -1,3 +1,8 @@
+2018-12-14  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* booklayoutmanager: clicking on left/right scroll buttons
+	make sure the new page's tab is visible.
+
 2018-12-09  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Implement synchronization of window repainting.
