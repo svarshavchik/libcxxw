@@ -119,7 +119,8 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 			 impl->handler,
 			 args.position,
 			 args.window_id,
-			 "dialog_background", args.modal);
+			 "dialog_background", args.modal, args.urgent,
+			 args.grab_input_focus);
 
 	handler->set_window_type("dialog,normal");
 

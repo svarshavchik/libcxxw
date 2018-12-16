@@ -976,9 +976,10 @@ class generic_windowObj::handlerObj
 			   const std::u32string_view &)
 		override;
 
-	// Retrieve WM_HINTS, invoke functor to update it.
-
+	//! Callback used by update_wm_hints().
 	typedef void update_wm_hints_t(xcb_icccm_wm_hints_t &);
+
+	//! Retrieve WM_HINTS, invoke functor to update it.
 
 	template<typename functor_type>
 		void update_wm_hints(functor_type &&functor)
@@ -987,8 +988,17 @@ class generic_windowObj::handlerObj
 				   (std::forward<functor_type>(functor)));
 	}
 
+	//! Type-erased update_wm_hints().
 	void do_update_wm_hints(const function<update_wm_hints_t> &callback);
 
+	//! Use set_default_wm_hints() to update our WM_HINTS
+
+	void update_wm_hints(ONLY IN_THREAD);
+
+	//! Subclass must specify the default WM_HINTS.
+
+	virtual void set_default_wm_hints(ONLY IN_THREAD,
+					  xcb_icccm_wm_hints_t &)=0;
  private:
 	//! Which cursor pointer we're currently displaying.
 

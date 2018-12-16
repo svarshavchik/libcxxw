@@ -102,7 +102,7 @@ See COPYING for distribution information.
 
       <para>
 	&app; is in active development. The most recent build adds a
-	new layout manager for implemented
+	new layout manager for implementing
 	<link linkend="toolbox">toolbox dialogs</link>.
       </para>
     </section>

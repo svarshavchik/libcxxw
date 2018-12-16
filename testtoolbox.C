@@ -207,6 +207,7 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 	args.screen_position(pos, "toolbox");
 
 	args.dialog_layout=dialog_lm;
+	args.grab_input_focus=false;
 
 	auto d=mw->create_dialog
 		(args,

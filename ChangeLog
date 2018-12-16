@@ -1,3 +1,9 @@
+2018-12-09  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Implement WM_HINTS. Specify that we handle input processing.
+	Option to set urgent hint for dialog windows. Set alert and stop
+	dialogs to urgent, by default.
+
 0.12
 
 2018-12-03  Sam Varshavchik  <mrsam@courier-mta.com>

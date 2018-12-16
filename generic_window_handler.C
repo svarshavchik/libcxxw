@@ -276,6 +276,8 @@ void generic_windowObj::handlerObj::installed(ONLY IN_THREAD)
 					    id());
 	}
 
+	update_wm_hints(IN_THREAD);
+
 	// Drag and drop version 5
 
 	xcb_atom_t version=5;
@@ -290,6 +292,15 @@ void generic_windowObj::handlerObj::installed(ONLY IN_THREAD)
 	// so it is, hereby, initialized!
 
 	initialize_if_needed(IN_THREAD);
+}
+
+void generic_windowObj::handlerObj::update_wm_hints(ONLY IN_THREAD)
+{
+	update_wm_hints([&, this]
+			(xcb_icccm_wm_hints_t &hints)
+			{
+				this->set_default_wm_hints(IN_THREAD, hints);
+			});
 }
 
 void generic_windowObj::handlerObj

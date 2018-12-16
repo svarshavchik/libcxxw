@@ -94,6 +94,12 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 		// Dummy stub
 	}
 
+	void set_default_wm_hints(ONLY IN_THREAD,
+				  xcb_icccm_wm_hints_t &hints) override
+	{
+		// No default input flag.
+	}
+
 #ifdef TOOLTIP_HANDLER_EXTRA_METHODS
 	TOOLTIP_HANDLER_EXTRA_METHODS
 #endif

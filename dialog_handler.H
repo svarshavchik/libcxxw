@@ -53,7 +53,43 @@ class dialogObj::handlerObj : public main_windowObj::handlerObj {
 		   const std::variant<dialog_position, rectangle> &position,
 		   const std::string &window_id,
 		   const color_arg &background_color,
-		   bool modal);
+		   bool modal,
+		   bool urgent,
+		   bool grab_input_focus);
+
+	//! Override set_default_wm_hints().
+
+	void set_default_wm_hints(ONLY IN_THREAD,
+				  xcb_icccm_wm_hints_t &hints) override;
+
+	//! Override button_press_event
+
+	//! Turn off the urgent flag.
+	void button_press_event(ONLY IN_THREAD,
+				const xcb_button_press_event_t *event) override;
+
+	//! Override key_press_event
+
+	//! Turn off the urgent flag.
+	void key_press_event(ONLY IN_THREAD,
+			     const xcb_key_press_event_t *event,
+			     uint16_t sequencehi) override;
+private:
+	//! This is an urgent dialog
+	const bool urgent_dialog;
+
+	//! Grab input focus before mapping
+	const bool grab_input_focus;
+
+	//! This dialog is in urgent state.
+
+	//! Set to urgent_dialog when the dialog gets mapped. Turned off by
+	//! the first keypress or button click.
+
+	bool urgent_thread_only;
+
+public:
+	THREAD_DATA_ONLY(urgent);
 
 	//! Override set_inherited_visibility_mapped)(.
 

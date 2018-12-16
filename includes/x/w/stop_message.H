@@ -8,6 +8,7 @@
 
 #include <x/w/stop_messagefwd.H>
 #include <x/w/connection_threadfwd.H>
+#include <x/w/dialogfwd.H>
 #include <string>
 #include <x/functionalrefptr.H>
 
@@ -15,7 +16,10 @@ LIBCXXW_NAMESPACE_START
 
 //! Optional parameters for a \ref main_window "main window"'s stop_message().
 
-struct stop_message_config {
+struct stop_message_config : standard_dialog_args {
+
+	//! Constructor
+	stop_message_config();
 
 	//! Callback when the dialog gets closed.
 
@@ -45,9 +49,6 @@ struct stop_message_config {
 	//! If not 0, specifies widthmm to create_label().
 
 	double widthmm=0;
-
-	//! Whether the dialog is modal
-	bool modal=true;
 
 	//! Destructor
 	~stop_message_config();

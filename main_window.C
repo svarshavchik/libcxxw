@@ -592,9 +592,9 @@ void main_windowObj::stop_message(const text_param &msg)
 void main_windowObj::stop_message(const text_param &msg,
 				  const stop_message_config &config)
 {
-	auto autodestroy=destroy_when_closed("stop_message@libcxx.com");
+	auto autodestroy=destroy_when_closed(config.dialog_id);
 
-	auto d=create_ok_dialog({"stop_message@libcxx.com", config.modal},
+	auto d=create_ok_dialog(config,
 				"stop",
 				[&]
 				(const auto &f)
@@ -631,6 +631,13 @@ text_param stop_message_config::default_ok_label() noexcept
 	return _("Ok");
 }
 
+stop_message_config::stop_message_config()
+	: standard_dialog_args{"stop_message@libcxx.com"}
+{
+	modal=true;
+	urgent=true;
+}
+
 stop_message_config::~stop_message_config()=default;
 
 void main_windowObj::alert_message(const text_param &msg)
@@ -641,9 +648,9 @@ void main_windowObj::alert_message(const text_param &msg)
 void main_windowObj::alert_message(const text_param &msg,
 				   const alert_message_config &config)
 {
-	auto autodestroy=destroy_when_closed("alert_message@libcxx.com");
+	auto autodestroy=destroy_when_closed(config.dialog_id);
 
-	auto d=create_ok_dialog({"alert_message@libcxx.com", config.modal},
+	auto d=create_ok_dialog(config,
 				"alert",
 				[&]
 				(const auto &f)
@@ -675,6 +682,13 @@ std::string alert_message_config::default_title() noexcept
 text_param alert_message_config::default_ok_label() noexcept
 {
 	return _("Ok");
+}
+
+alert_message_config::alert_message_config()
+	: standard_dialog_args{"alert_message@libcxx.com"}
+{
+	modal=true;
+	urgent=true;
 }
 
 alert_message_config::~alert_message_config()=default;

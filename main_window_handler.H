@@ -79,6 +79,10 @@ class main_windowObj::handlerObj :
 	//! Invokes publish_size_hints.
 	void size_hints_updated(ONLY IN_THREAD) override;
 
+	//! Implement set_default_wm_hints().
+	void set_default_wm_hints(ONLY IN_THREAD,
+				  xcb_icccm_wm_hints_t &hints) override;
+
 	//! Thread-safe container for current size hints.
 	typedef mpobj<weakptr<size_hintsptr>> current_size_hints_t;
 

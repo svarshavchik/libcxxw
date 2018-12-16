@@ -18,7 +18,9 @@ dialogObj::handlerObj::handlerObj(ONLY IN_THREAD,
 				  rectangle> &position,
 				  const std::string &window_id,
 				  const color_arg &background_color,
-				  bool modal)
+				  bool modal,
+				  bool urgent,
+				  bool grab_input_focus)
 	: superclass_t{IN_THREAD, parent_handler->get_screen(),
 
 		       std::visit(visitor{[&](const rectangle &r)
@@ -44,10 +46,12 @@ dialogObj::handlerObj::handlerObj(ONLY IN_THREAD,
 				    return dialog_position::default_position;
 			    }}, position)
 	},
-	  modal(modal),
-	  parent_handler(parent_handler)
+	  modal{modal},
+	  parent_handler{parent_handler},
+	  urgent_dialog{urgent},
+	  grab_input_focus{grab_input_focus},
+	  urgent_thread_only{urgent}
 {
-	update_user_time(IN_THREAD);
 }
 
 dialogObj::handlerObj::~handlerObj()=default;
@@ -55,6 +59,41 @@ dialogObj::handlerObj::~handlerObj()=default;
 const char *dialogObj::handlerObj::default_wm_class_instance() const
 {
 	return "dialog";
+}
+
+void dialogObj::handlerObj
+::set_default_wm_hints(ONLY IN_THREAD,
+		       xcb_icccm_wm_hints_t &hints)
+{
+	superclass_t::set_default_wm_hints(IN_THREAD, hints);
+
+	if (urgent(IN_THREAD))
+		hints.flags |= XCB_ICCCM_WM_HINT_X_URGENCY;
+}
+
+void dialogObj::handlerObj
+::button_press_event(ONLY IN_THREAD,
+		     const xcb_button_press_event_t *event)
+{
+	if (urgent(IN_THREAD))
+	{
+		urgent(IN_THREAD)=false;
+		update_wm_hints(IN_THREAD);
+	}
+
+	superclass_t::button_press_event(IN_THREAD, event);
+}
+
+void dialogObj::handlerObj::key_press_event(ONLY IN_THREAD,
+					    const xcb_key_press_event_t *event,
+					    uint16_t sequencehi)
+{
+	if (urgent(IN_THREAD))
+	{
+		urgent(IN_THREAD)=false;
+		update_wm_hints(IN_THREAD);
+	}
+	superclass_t::key_press_event(IN_THREAD, event, sequencehi);
 }
 
 bool dialogObj::handlerObj::handle_our_own_placement(ONLY IN_THREAD)
@@ -70,6 +109,19 @@ void dialogObj::handlerObj::set_inherited_visibility_mapped(ONLY IN_THREAD)
 			parent_handler->get_shade_busy_mcguffin();
 
 	parent_handler->handler_data->opening_dialog(IN_THREAD);
+
+	if (urgent(IN_THREAD) != urgent_dialog)
+	{
+		urgent(IN_THREAD)=urgent_dialog; // Reset when reopening.
+		update_wm_hints(IN_THREAD);
+	}
+
+	if (grab_input_focus)
+		update_user_time(IN_THREAD);
+	else
+	{
+		update_user_time(IN_THREAD, 0);
+	}
 	superclass_t::set_inherited_visibility_mapped(IN_THREAD);
 }
 

@@ -31,7 +31,7 @@ file_dialog_config
 				: _("You do not have permissions to create "
 				    "\"%1%\"")
 				),
-	  access_denied_title(_("Unable to open"))
+	  access_denied_title(_("Unable to open file"))
 {
 }
 

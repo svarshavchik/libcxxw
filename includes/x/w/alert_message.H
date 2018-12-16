@@ -8,6 +8,7 @@
 
 #include <x/w/alert_messagefwd.H>
 #include <x/w/connection_threadfwd.H>
+#include <x/w/dialogfwd.H>
 #include <string>
 #include <x/functionalrefptr.H>
 
@@ -15,7 +16,11 @@ LIBCXXW_NAMESPACE_START
 
 //! Optional parameters for a \ref main_window "main window"'s alert_message().
 
-struct alert_message_config {
+struct alert_message_config : standard_dialog_args {
+
+	//! Constructor
+
+	alert_message_config();
 
 	//! Callback when the dialog gets closed.
 
@@ -39,9 +44,6 @@ struct alert_message_config {
 
 	//! Default value for ok_label.
 	static text_param default_ok_label() noexcept;
-
-	//! Whether the dialog is modal
-	bool modal=true;
 
 	//! Destructor
 	~alert_message_config();

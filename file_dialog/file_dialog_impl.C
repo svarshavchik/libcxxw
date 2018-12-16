@@ -386,8 +386,12 @@ void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
 					   const std::string &error_message,
 					   const std::string &title)
 {
+	standard_dialog_args args{"error@libcxx.com", true};
+
+	args.urgent=true;
+
 	auto d=the_file_dialog->dialog_window->create_ok_dialog
-		({"error@libcxx.com", true}, "alert",
+		(args, "alert",
 		 [error_message]
 		 (const auto &f)
 		 {

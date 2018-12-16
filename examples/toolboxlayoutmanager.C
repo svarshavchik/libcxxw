@@ -218,6 +218,11 @@ static void create_main_window(const x::w::main_window &mw,
 	// The new dialog's layout manager is th etoolbox layout manager.
 	args.dialog_layout=dialog_lm;
 
+	// The toolbox dialog will not grab input focus when shown. Some
+	// window managers may not need this when specifying a "toolbar" for
+	// set_window_type(), below.
+	args.grab_input_focus=false;
+
 	auto d=mw->create_dialog
 		(args,
 		 []

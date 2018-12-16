@@ -77,6 +77,11 @@ public:
 	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override;
 
+	//! Override set_default_wm_hints
+
+	void set_default_wm_hints(ONLY IN_THREAD,
+				  xcb_icccm_wm_hints_t &hints) override;
+
 	//! Recalculate what my position should be.
 
 	//! r is set to the default popup position, which the subclass can

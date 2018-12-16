@@ -146,6 +146,13 @@ void main_windowObj::handlerObj::size_hints_updated(ONLY IN_THREAD)
 		publish_size_hints(IN_THREAD);
 }
 
+void main_windowObj::handlerObj
+::set_default_wm_hints(ONLY IN_THREAD, xcb_icccm_wm_hints_t &hints)
+{
+	hints.flags=XCB_ICCCM_WM_HINT_INPUT;
+	hints.input=1;
+}
+
 static std::vector<icon> create_icons(drawableObj::implObj &me,
 				      const std::vector<std::tuple<std::string,
 				      dim_t, dim_t>> &icons)

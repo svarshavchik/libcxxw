@@ -60,6 +60,15 @@ struct standard_dialog_args {
 	std::variant<dialog_position, rectangle> position=
 		dialog_position::default_position;
 
+	//! Set the urgent flag on the dialog.
+
+	//! Some window managers draw attention, in some way, to urgent
+	//! dialogs. This sets the urgent flag on the new dialog.
+	bool urgent=false;
+
+	//! Whether the new dialog grabs input focus when it opens.
+	bool grab_input_focus=true;
+
 	//! Default dialog position.
 	void screen_position(dialog_position) LIBCXX_PUBLIC;
 

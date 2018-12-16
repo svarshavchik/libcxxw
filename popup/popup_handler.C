@@ -78,6 +78,13 @@ void popupObj::handlerObj::theme_updated(ONLY IN_THREAD,
 	set_popup_position(IN_THREAD);
 }
 
+void popupObj::handlerObj::set_default_wm_hints(ONLY IN_THREAD,
+						xcb_icccm_wm_hints_t &hints)
+{
+	hints.flags=XCB_ICCCM_WM_HINT_INPUT;
+	hints.input=1;
+}
+
 void popupObj::handlerObj::set_popup_position(ONLY IN_THREAD)
 {
 	auto hv=get_horizvert(IN_THREAD);
