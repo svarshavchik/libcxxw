@@ -18,6 +18,7 @@
 #include "x/w/impl/container_visible_element.H"
 #include "x/w/impl/bordercontainer_element.H"
 #include "x/w/impl/borderlayoutmanager.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "gridlayoutmanager.H"
 #include "x/w/factory.H"
 #include "x/w/gridfactory.H"
@@ -88,7 +89,9 @@ create_peepholed_focusable_with_frame_impl
 		::create(args.border,
 			 args.border,
 			 args.border,
-			 args.border, 0, 0,
+			 args.border,
+			 richtextptr{},
+			 0, 0, 0,
 			 args.parent_container);
 
 	// Create the focusframe implementation object, first.

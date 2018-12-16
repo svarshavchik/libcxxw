@@ -24,6 +24,7 @@
 #include "x/w/impl/always_visible.H"
 #include "x/w/impl/bordercontainer_element.H"
 #include "x/w/impl/borderlayoutmanager.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "capturefactory.H"
 #include "busy.H"
 #include "run_as.H"
@@ -292,7 +293,8 @@ auto create_new_tab(const gridfactory &gridfactory,
 			 book_tab_border,
 			 book_tab_border,
 			 border_infomm{},
-			 0, 0,
+			 richtextptr{},
+			 0, 0, 0,
 			 gridfactory->get_container_impl());
 
 	// Create the implementation object for the pagetab.

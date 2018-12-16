@@ -7,8 +7,10 @@
 #include "x/w/impl/container.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/current_border_impl.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "x/w/scratch_buffer.H"
 #include "screen.H"
+#include "defaulttheme.H"
 #include "generic_window_handler.H"
 
 LIBCXXW_NAMESPACE_START
@@ -59,5 +61,16 @@ bordercontainer_implObj
 }
 
 bordercontainer_implObj::~bordercontainer_implObj()=default;
+void bordercontainer_implObj::initialize(ONLY IN_THREAD)
+{
+	auto title=get_title(IN_THREAD);
+
+	if (!title)
+		return;
+
+	title->theme_updated(IN_THREAD,
+			     get_container_impl().container_element_impl()
+			     .get_screen()->impl->current_theme.get());
+}
 
 LIBCXXW_NAMESPACE_END

@@ -22,15 +22,19 @@ bordercontainer_elementObj<element_impl>
 			     const border_arg &right_border,
 			     const border_arg &top_border,
 			     const border_arg &bottom_border,
+			     const richtextptr &title,
+			     const dim_arg &title_indent,
 			     const dim_arg &hpad,
 			     const dim_arg &vpad,
 			     Args && ...args)
 	: superclass_t{left_border, right_border,
 		       top_border, bottom_border,
+		       title_indent, themedimaxis::width,
 		       hpad, themedimaxis::width,
 		       vpad, themedimaxis::height,
 		       std::forward<Args>(args)...},
-	  bordercontainer_implObj{this->child_container}
+	  bordercontainer_implObj{this->child_container},
+	  title_thread_only{title}
 {
 }
 
@@ -105,12 +109,21 @@ current_border_impl bordercontainer_elementObj<element_impl>
 	return this->themeborder_element_impl<bottom_border_tag>::current_border(IN_THREAD);
 }
 
+//! Implement get_title().
+
+//! Inherited from bordercontainer_implObj.
+
+template<typename element_impl>
+richtextptr bordercontainer_elementObj<element_impl>::get_title(ONLY IN_THREAD)
+	const
+{
+	return this->title(IN_THREAD);
+}
+
 //! Implement set_border().
 
 //! Inherited from bordercontainer_implObj.
-//!
-//! \note
-//! Not
+
 template<typename element_impl>
 void bordercontainer_elementObj<element_impl>
 ::set_border(ONLY IN_THREAD,
@@ -160,6 +173,17 @@ void bordercontainer_elementObj<element_impl>
 		 });
 }
 
+//! Implement get_title_indent()
+
+template<typename element_impl>
+dim_t bordercontainer_elementObj<element_impl>
+::get_title_indent(ONLY IN_THREAD) const
+{
+	return this->themedim_element<titleindent_tag>::pixels(IN_THREAD);
+}
+
+//! Implement get_border_hpad
+
 template<typename element_impl>
 dim_t bordercontainer_elementObj<element_impl>
 ::get_border_hpad(ONLY IN_THREAD) const
@@ -167,11 +191,39 @@ dim_t bordercontainer_elementObj<element_impl>
 	return this->themedim_element<borderhpad_tag>::pixels(IN_THREAD);
 }
 
+//! Implement get_border_hpad
+
 template<typename element_impl>
 dim_t bordercontainer_elementObj<element_impl>
 ::get_border_vpad(ONLY IN_THREAD) const
 {
 	return this->themedim_element<bordervpad_tag>::pixels(IN_THREAD);
+}
+
+//! Override initialize().
+
+//! If there's a title, initialize it, to make sure.
+template<typename element_impl>
+void bordercontainer_elementObj<element_impl>::initialize(ONLY IN_THREAD)
+{
+	bordercontainer_implObj::initialize(IN_THREAD);
+
+	superclass_t::initialize(IN_THREAD);
+}
+
+//! Override initialize().
+
+//! If there's a title, forward the call there.
+
+template<typename element_impl>
+void bordercontainer_elementObj<element_impl>
+::theme_updated(ONLY IN_THREAD,
+		const defaulttheme &new_theme)
+{
+	if (this->title(IN_THREAD))
+		this->title(IN_THREAD)->theme_updated(IN_THREAD, new_theme);
+
+	superclass_t::theme_updated(IN_THREAD, new_theme);
 }
 
 LIBCXXW_NAMESPACE_END

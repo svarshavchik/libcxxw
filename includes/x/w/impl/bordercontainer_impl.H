@@ -13,6 +13,7 @@
 #include <x/w/pictformatfwd.H>
 #include <x/w/scratch_bufferfwd.H>
 #include <x/w/impl/current_border_implfwd.H>
+#include <x/w/impl/richtext/richtextfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -110,6 +111,12 @@ public:
 				const border_arg &top_border,
 				const border_arg &bottom_border)=0;
 
+	//! Implemented by the mixin container, to get the title.
+	virtual richtextptr get_title(ONLY IN_THREAD) const=0;
+
+	//! Get title indentation
+	virtual dim_t get_title_indent(ONLY IN_THREAD) const=0;
+
 	//! Additional padding.
 
 	//! Implemented by the mixin template, to return the additional
@@ -123,6 +130,13 @@ public:
 	//! padding between the border and the element.
 
 	virtual dim_t get_border_vpad(ONLY IN_THREAD) const=0;
+
+
+	//! Initialize the title in the connection thread.
+
+	//! Helper used by the bordercontainer_element mixin.
+
+	void initialize(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

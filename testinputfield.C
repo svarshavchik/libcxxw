@@ -115,6 +115,8 @@ void testbutton()
 
 			 factory=layout->append_row();
 
+			 neb.title("This is a title");
+
 			 auto be=factory->create_bordered_element
 				 ([&]
 				  (const auto &f)

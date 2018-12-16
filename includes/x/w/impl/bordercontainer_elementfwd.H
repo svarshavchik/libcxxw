@@ -15,6 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 struct borderhpad_tag;
 struct bordervpad_tag;
+struct titleindent_tag;
 
 struct left_border_tag;
 struct right_border_tag;
@@ -38,6 +39,7 @@ class LIBCXX_PUBLIC bordercontainer_elementObj;
 template<typename element_impl>
 class bordercontainer_elementObj
 	: public themeborder_elementObj<themedim_elementObj<element_impl,
+							    titleindent_tag,
 							    borderhpad_tag,
 							    bordervpad_tag>,
 					left_border_tag,
@@ -52,6 +54,7 @@ class bordercontainer_elementObj
 
 	//! Alias.
 	typedef themeborder_elementObj<themedim_elementObj<element_impl,
+							   titleindent_tag,
 							   borderhpad_tag,
 							   bordervpad_tag>,
 				       left_border_tag,
@@ -59,12 +62,20 @@ class bordercontainer_elementObj
 				       top_border_tag,
 				       bottom_border_tag> superclass_t;
 
- public:
+	//! Current title
+
+	richtextptr title_thread_only;
+
+public:
+	THREAD_DATA_ONLY(title);
+
 	template<typename ...Args>
 	bordercontainer_elementObj(const border_arg &left_border,
 				   const border_arg &right_border,
 				   const border_arg &top_border,
 				   const border_arg &bottom_border,
+				   const richtextptr &title,
+				   const dim_arg &title_indent,
 				   const dim_arg &hpad,
 				   const dim_arg &vpad,
 				   Args && ...args);
@@ -84,8 +95,13 @@ class bordercontainer_elementObj
 			const border_arg &right_border,
 			const border_arg &top_border,
 			const border_arg &bottom_border) override;
+	richtextptr get_title(ONLY IN_THREAD) const override;
+	dim_t get_title_indent(ONLY IN_THREAD) const override;
 	dim_t get_border_hpad(ONLY IN_THREAD) const override;
 	dim_t get_border_vpad(ONLY IN_THREAD) const override;
+	void initialize(ONLY IN_THREAD) override;
+	void theme_updated(ONLY IN_THREAD,
+			   const defaulttheme &new_theme) override;
 };
 
 

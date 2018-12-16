@@ -32,6 +32,9 @@ struct new_element_border {
 
 	text_param title;
 
+	//! Title indentation
+	dim_arg title_indent={2};
+
 	//! Horizontal padding
 
 	dim_arg hpad={0};

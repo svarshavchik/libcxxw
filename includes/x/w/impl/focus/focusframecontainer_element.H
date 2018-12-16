@@ -8,6 +8,7 @@
 #include <x/w/impl/focus/focusframecontainer_elementfwd.H>
 #include <x/w/impl/bordercontainer_element.H>
 #include <x/w/impl/themeborder_element.H>
+#include "x/w/impl/richtext/richtext.H"
 #include <x/w/impl/container.H>
 
 LIBCXXW_NAMESPACE_START
@@ -27,7 +28,8 @@ focusframecontainer_elementObj(const border_arg &focusoff_border,
 		       focuson_border,
 
 		       focusoff_border, focusoff_border, focusoff_border, focusoff_border,
-
+		       richtextptr{},
+		       0,
 		       hpad,
 		       vpad,
 		       std::forward<Args>(args)...},

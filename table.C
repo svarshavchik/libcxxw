@@ -22,6 +22,7 @@
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/borderlayoutmanager.H"
 #include "x/w/impl/focus/focusable.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "cursor_pointer_element.H"
 #include "generic_window_handler.H"
 #include "icon.H"
@@ -781,7 +782,9 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 			bordercontainer_elementObj<container_elementObj<
 				child_elementObj>>>>
 		::create(list_border, list_border,
-			 list_border, "empty", 0, 0,
+			 list_border, "empty",
+			 richtextptr{},
+			 0, 0, 0,
 			 layout_container_impl,
 			 header_init_params);
 
@@ -792,7 +795,8 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 			bordercontainer_elementObj<container_elementObj<
 				child_elementObj>>>>
 		::create(focusoff_border, focusoff_border,
-			 "empty", "empty", 0, 0,
+			 "empty", "empty", richtextptr{},
+			 0, 0, 0,
 			 header_border_container_impl);
 
 	// We now create the actual header row element.

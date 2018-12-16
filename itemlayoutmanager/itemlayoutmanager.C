@@ -14,6 +14,7 @@
 #include "x/w/impl/focus/focusable.H"
 #include "x/w/impl/bordercontainer_element.H"
 #include "x/w/impl/borderlayoutmanager.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "x/w/focusable_container.H"
 #include "gridlayoutmanager.H"
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
@@ -42,6 +43,8 @@ static auto create_new_itembutton(const ref<itemlayoutmanagerObj::implObj>
 		 impl->button_border,
 		 impl->button_border,
 		 impl->button_border,
+		 richtextptr{},
+		 0,
 		 impl->itembutton_h_padding,
 		 impl->itembutton_v_padding,
 		 impl->layout_container_impl,
