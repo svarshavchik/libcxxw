@@ -63,33 +63,57 @@ struct border_implObj::corner_draw_info {
 
 	// Draw extra lines in the padding areas.
 
-	void draw_top_pad(ONLY IN_THREAD)
+	void draw_top_pad(ONLY IN_THREAD,
+			  const surrounding_elements_info &elements)
 	{
+		di.background_vertical(IN_THREAD,
+				       elements.topleft,
+				       elements.topright,
+				       0, top_pad);
 		me.draw_vertical(IN_THREAD,
 				 di, 0, top_pad);
 	}
 
-	void draw_bottom_pad(ONLY IN_THREAD)
+	void draw_bottom_pad(ONLY IN_THREAD,
+			     const surrounding_elements_info &elements)
 	{
+		auto offset=top_pad+me.calculated_border_height;
+
+		di.background_vertical(IN_THREAD,
+				       elements.bottomleft,
+				       elements.bottomright,
+				       coord_t::truncate(offset),
+				       bottom_pad);
+
 		me.draw_vertical(IN_THREAD, di,
-				 coord_t::truncate(top_pad
-						   +me.calculated_border_height
-						   ),
+				 coord_t::truncate(offset),
 				 bottom_pad);
 	}
 
-	void draw_left_pad(ONLY IN_THREAD)
+	void draw_left_pad(ONLY IN_THREAD,
+			   const surrounding_elements_info &elements)
 	{
+		di.background_horizontal(IN_THREAD,
+					 elements.topleft,
+					 elements.bottomleft,
+					 0, left_pad);
 		me.draw_horizontal(IN_THREAD,
 				   di, 0, left_pad);
 	}
 
-	void draw_right_pad(ONLY IN_THREAD)
+	void draw_right_pad(ONLY IN_THREAD,
+			    const surrounding_elements_info &elements)
 	{
+		auto offset=left_pad+me.calculated_border_width;
+
+		di.background_horizontal(IN_THREAD,
+					 elements.topright,
+					 elements.bottomright,
+					 coord_t::truncate(offset),
+					 right_pad);
+
 		me.draw_horizontal(IN_THREAD, di,
-				   coord_t::truncate(left_pad
-						     +me.calculated_border_width
-						     ),
+				   coord_t::truncate(offset),
 				   right_pad);
 	}
 
@@ -346,35 +370,56 @@ void border_implObj
 				   const elementptr &above_element,
 				   const elementptr &below_element) const
 {
+	background_horizontal(IN_THREAD,
+			      above_element
+			      ? element_implptr{above_element->impl}
+			      : element_implptr{},
+			      below_element
+			      ? element_implptr{below_element->impl}
+			      : element_implptr(),
+			      0, area_rectangle.width);
+}
+
+void border_implObj
+::draw_info::background_horizontal(ONLY IN_THREAD,
+				   const element_implptr &above_element,
+				   const element_implptr &below_element,
+				   coord_t start, dim_t size) const
+{
+	if (size <= 0)
+		return;
+
 	dim_t top_height=area_rectangle.height/2;
 	dim_t bottom_height=area_rectangle.height - top_height;
 
 	if (above_element && top_height > 0)
 	{
-		auto &di=above_element->impl->get_draw_info(IN_THREAD);
+		auto &di=above_element->get_draw_info(IN_THREAD);
 
 		auto xy=di.background_xy_to(area_x, area_y);
 
 		area_picture->impl->composite(di.window_background_color->impl,
-					      xy.first, xy.second,
-					      0, 0,
-					      area_rectangle.width,
+					      coord_t::truncate(xy.first+start),
+					      xy.second,
+					      start, 0,
+					      size,
 					      top_height);
 	}
 
 	if (below_element && bottom_height > 0)
 	{
-		auto &di=below_element->impl->get_draw_info(IN_THREAD);
+		auto &di=below_element->get_draw_info(IN_THREAD);
 
 		auto xy=di.background_xy_to(area_x, area_y,
 					    0,
 					    dim_t::value_type(top_height));
 
 		area_picture->impl->composite(di.window_background_color->impl,
-					      xy.first, xy.second,
-					      0,
+					      coord_t::truncate(xy.first+start),
+					      xy.second,
+					      start,
 					      coord_t::truncate(top_height),
-					      area_rectangle.width,
+					      size,
 					      bottom_height);
 	}
 }
@@ -445,36 +490,59 @@ void border_implObj::draw_info
 		      const elementptr &left_element,
 		      const elementptr &right_element) const
 {
+	background_vertical(IN_THREAD,
+			    left_element
+			    ? element_implptr{left_element->impl}
+			    : element_implptr{},
+			    right_element
+			    ? element_implptr{right_element->impl}
+			    : element_implptr{},
+			    0, area_rectangle.height);
+}
+
+void border_implObj::draw_info
+::background_vertical(ONLY IN_THREAD,
+		      const element_implptr &left_element,
+		      const element_implptr &right_element,
+		      coord_t start, dim_t size) const
+{
+	if (size <= 0)
+		return;
+
 	dim_t left_width=area_rectangle.width/2;
 	dim_t right_width=area_rectangle.width - left_width;
 
 	if (left_element && left_width > 0)
 	{
-		auto &di=left_element->impl->get_draw_info(IN_THREAD);
+		auto &di=left_element->get_draw_info(IN_THREAD);
 
 		auto xy=di.background_xy_to(area_x, area_y);
 
 		area_picture->impl->composite(di.window_background_color->impl,
-					      xy.first, xy.second,
-					      0, 0,
+					      xy.first,
+					      coord_t::truncate(xy.second
+								+start),
+					      0, start,
 					      left_width,
-					      area_rectangle.height);
+					      size);
 	}
 
 	if (right_element && right_width > 0)
 	{
-		auto &di=right_element->impl->get_draw_info(IN_THREAD);
+		auto &di=right_element->get_draw_info(IN_THREAD);
 
 		auto xy=di.background_xy_to(area_x, area_y,
 					    dim_t::value_type(left_width),
 					    0);
 
 		area_picture->impl->composite(di.window_background_color->impl,
-					      xy.first, xy.second,
+					      xy.first,
+					      coord_t::truncate(xy.second
+								+ start),
 					      coord_t::truncate(left_width),
-					      0,
+					      start,
 					      right_width,
-					      area_rectangle.height);
+					      size);
 	}
 }
 
@@ -525,16 +593,16 @@ void border_implObj::draw_corner(ONLY IN_THREAD,
 	bool br=which_corners & border_impl::base::cornerbr() ? true:false;
 
 	if (tl || tr)
-		cdi.draw_top_pad(IN_THREAD);
+		cdi.draw_top_pad(IN_THREAD, elements);
 
 	if (bl || br)
-		cdi.draw_bottom_pad(IN_THREAD);
+		cdi.draw_bottom_pad(IN_THREAD, elements);
 
 	if (tl || bl)
-		cdi.draw_left_pad(IN_THREAD);
+		cdi.draw_left_pad(IN_THREAD, elements);
 
 	if (tr || br)
-		cdi.draw_right_pad(IN_THREAD);
+		cdi.draw_right_pad(IN_THREAD, elements);
 
 	// If which_corners is a single corner, we have special code for that.
 
@@ -878,28 +946,28 @@ void border_implObj::draw_stubs(ONLY IN_THREAD,
 	if ((stubs & border_impl::base::top_stub())
 	    && !no_vertical_border(di))
 	{
-		cdi.draw_top_pad(IN_THREAD);
+		cdi.draw_top_pad(IN_THREAD, {});
 		cdi.draw_top_stub(IN_THREAD);
 	}
 
 	if ((stubs & border_impl::base::bottom_stub())
 	    && !no_vertical_border(di))
 	{
-		cdi.draw_bottom_pad(IN_THREAD);
+		cdi.draw_bottom_pad(IN_THREAD, {});
 		cdi.draw_bottom_stub(IN_THREAD);
 	}
 
 	if ((stubs & border_impl::base::left_stub())
 	    && !no_horizontal_border(di))
 	{
-		cdi.draw_left_pad(IN_THREAD);
+		cdi.draw_left_pad(IN_THREAD, {});
 		cdi.draw_left_stub(IN_THREAD);
 	}
 
 	if ((stubs & border_impl::base::right_stub())
 	    && !no_horizontal_border(di))
 	{
-		cdi.draw_right_pad(IN_THREAD);
+		cdi.draw_right_pad(IN_THREAD, {});
 		cdi.draw_right_stub(IN_THREAD);
 	}
 }

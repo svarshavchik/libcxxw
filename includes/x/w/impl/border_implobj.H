@@ -134,20 +134,44 @@ class border_implObj: virtual public obj, public border_info {
 
 		//! Fill in the background color.
 
-		//! Called before calling draw_horizontal().
+		//! Called before calling draw_horizontal(). Passes
+		//! 0 and area_rectangle.width for the 3rd and 4th parameter
+		//! to the overloaded function.
 
 		void background_horizontal(ONLY IN_THREAD,
 					   const elementptr &above_element,
 					   const elementptr &below_element)
 			const;
 
+		//! Fill in the background color
+		//!
+		//! \overload
+		void background_horizontal(ONLY IN_THREAD,
+					   const element_implptr &above_element,
+					   const element_implptr &below_element,
+					   coord_t start,
+					   dim_t size)
+			const;
+
 		//! Fill in the background color.
 
-		//! Called before calling draw_vertical().
+		//! Called before calling draw_vertical(). Passes
+		//! 0 and area_rectangle.height for the 3rd and 4th parameter
+		//! to the overloaded function.
 
 		void background_vertical(ONLY IN_THREAD,
 					 const elementptr &left_element,
 					 const elementptr &right_element)
+			const;
+
+		//! Fill in the background color.
+
+		//! \overload
+		void background_vertical(ONLY IN_THREAD,
+					 const element_implptr &left_element,
+					 const element_implptr &right_element,
+					 coord_t start,
+					 dim_t size)
 			const;
 	};
 
