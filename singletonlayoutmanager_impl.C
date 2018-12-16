@@ -151,8 +151,13 @@ void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 	// to it.
 	auto child_horizvert=list_impl->get_horizvert(IN_THREAD);
 
-	horiz=child_horizvert->horiz + horiz;
-	vert=child_horizvert->vert + vert;
+	auto child_horiz=child_horizvert->horiz;
+	auto child_vert=child_horizvert->vert;
+
+	adjust_child_horiz_vert_metrics(IN_THREAD, child_horiz, child_vert);
+
+	horiz=child_horiz + horiz;
+	vert=child_vert + vert;
 
 	update_metrics(IN_THREAD, horiz, vert);
 
@@ -161,6 +166,13 @@ void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 
 	recalculate(IN_THREAD, get_element_impl().data(IN_THREAD)
 		    .current_position, list_impl);
+}
+
+void singletonlayoutmanagerObj::implObj
+::adjust_child_horiz_vert_metrics(ONLY IN_THREAD,
+				  metrics::axis &child_horiz,
+				  metrics::axis &child_vert)
+{
 }
 
 void singletonlayoutmanagerObj::implObj

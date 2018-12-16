@@ -125,6 +125,13 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 	//! Override theme_updated().
 
 	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
+
+	//! Override adjust_child_horiz_vert_metrics()
+
+	//! Enforce enough minimum width for the title.
+	void adjust_child_horiz_vert_metrics(ONLY IN_THREAD,
+					     metrics::axis &child_horiz,
+					     metrics::axis &child_vert) override;
 };
 
 LIBCXXW_NAMESPACE_END

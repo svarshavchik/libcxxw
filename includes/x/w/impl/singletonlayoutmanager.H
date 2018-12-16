@@ -111,6 +111,15 @@ public:
 	//! Calls process_updated_position().
 	void recalculate(ONLY IN_THREAD) override;
 
+	//! Adjust factored in child element's metrics.
+
+	//! Before they're used to set our own metrics, this allows the subclass
+	//! to adjust them.
+
+	virtual void adjust_child_horiz_vert_metrics(ONLY IN_THREAD,
+						     metrics::axis &child_horiz,
+						     metrics::axis &child_vert);
+
 	//! Set the container's default metrics.
 
 	//! Takes the metrics computed by recalculate(), and sets its as the

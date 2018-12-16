@@ -8,6 +8,10 @@
 #include "x/w/impl/borderlayoutmanager.H"
 #include "x/w/impl/current_border_impl.H"
 #include "x/w/impl/border_impl.H"
+#include "x/w/impl/richtext/richtext.H"
+#include "richtext/richtext_alteration_config.H"
+#include "richtext/richtext_draw_info.H"
+#include "richtext/richtext_draw_boundaries.H"
 #include "corner_borderfwd.H"
 
 LIBCXXW_NAMESPACE_START
@@ -91,6 +95,20 @@ borderlayoutmanagerObj::implObj::get_all_borders(ONLY IN_THREAD)
 	dim_t top_pad=(tl->compare(*tr) ? tr:tl)->calculated_border_height;
 	dim_t bottom_pad=(bl->compare(*br) ? br:bl)->calculated_border_height;
 
+	auto title=bordercontainer_impl->get_title(IN_THREAD);
+
+	// If there's a title, make sure the top border is tall enough for it.
+
+	if (title)
+	{
+		auto [wm, hm]=title->get_metrics(0);
+
+		dim_t text_height=hm.preferred();
+
+		if (text_height > top_pad)
+			top_pad=text_height;
+	}
+
 	// HOWEVER: if the given side's border is all wet, there is no padding.
 
 	if (lb->no_border())
@@ -99,7 +117,7 @@ borderlayoutmanagerObj::implObj::get_all_borders(ONLY IN_THREAD)
 	if (rb->no_border())
 		right_pad=0;
 
-	if (tb->no_border())
+	if (tb->no_border() && !title)
 		top_pad=0;
 
 	if (bb->no_border())
@@ -196,11 +214,18 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 {
 	superclass_t::do_draw(IN_THREAD, di, clip, drawn_areas);
 
-	drawn_areas.reserve(drawn_areas.size()+8);
+	drawn_areas.reserve(drawn_areas.size()+9);
 
 	const auto &info=get_all_borders(IN_THREAD);
 
 	auto &e=bordercontainer_impl->get_container_impl().container_element_impl();
+	auto &current_position=e.data(IN_THREAD).current_position;
+
+	if (current_position.width <= dim_t::truncate(info.left_pad
+						      + info.right_pad) ||
+	    current_position.height <= dim_t::truncate(info.top_pad
+						       + info.bottom_pad))
+		return; // To small to draw anything.
 
 	element my_element=get();
 
@@ -259,13 +284,13 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 
 	// The starting X coordinate for the two corners on the right.
 	four_corners[1].r.x=four_corners[3].r.x=
-		coord_t::truncate(e.data(IN_THREAD).current_position.width-
+		coord_t::truncate(current_position.width-
 				  info.right_pad);
 
 	// The starting Y coordinate for the two corners at the bottom.
 
 	four_corners[2].r.y=four_corners[3].r.y=
-		coord_t::truncate(e.data(IN_THREAD).current_position.height-
+		coord_t::truncate(current_position.height-
 				  info.bottom_pad);
 
 	for (const auto &corner_info:four_corners)
@@ -344,36 +369,115 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 	// - the starting Y coordinate.
 	//
 	// - either the element above or below the border.
+	// Compute the length of the horizontal border.
+
+	dim_t length=dim_t::truncate(coord_t::truncate(current_position.width)
+				     - (info.left_pad+info.right_pad));
 
 	struct {
 		coord_t starting_coord;
 		dim_t thickness;
+		coord_t x;
+		dim_t width;
 		const_border_impl border;
 		elementptr first_e;
 		elementptr second_e;
-	} lines[2]={
-		    {0, info.top_pad, info.tb, {}, my_element},
-		    {0, info.bottom_pad, info.bb, my_element, {}}
+	} hlines[3]={
+		     {0, info.top_pad,
+		      coord_t::truncate(info.left_pad),
+		      length, info.tb, {}, my_element},
+		     {0, info.bottom_pad,
+		      hlines[0].x, length, info.bb, my_element, {}},
+		     hlines[0] // Filler.
 	};
 
 	// Compute the Y coordinate for the bottom border.
 
-	lines[1].starting_coord=
-		coord_t::truncate(coord_t::truncate(e.data(IN_THREAD)
-						    .current_position.height)
+	hlines[1].starting_coord=
+		coord_t::truncate(coord_t::truncate(current_position.height)
 				  -info.bottom_pad);
 
-	// Compute the length of the horizontal border.
-	dim_t length=dim_t::truncate(coord_t::truncate(e.data(IN_THREAD)
-						       .current_position.width)
-				     - (info.left_pad+info.right_pad));
+	size_t n=2;
 
-	for (const auto &line_info:lines)
+	auto title=bordercontainer_impl->get_title(IN_THREAD);
+	dim_t text_width;
+	dim_t text_height;
+
+	if (title)
 	{
-		// Calculate where the drawn border sohuld go.
-		rectangle r{coord_t::truncate(info.left_pad),
+		auto [w, h]=title->get_metrics(0);
+
+		auto text_width=w.preferred();
+		auto text_height=h.preferred();
+
+		auto title_indent=
+			bordercontainer_impl->get_title_indent(IN_THREAD);
+
+		if (title_indent > length)
+			title_indent=length;
+
+		if (text_width > length-title_indent)
+		{
+			text_width=length-title_indent;
+		}
+
+		if (text_width > 0)
+		{
+			dim_t width_and_indent
+				{dim_t::truncate(text_width+title_indent)};
+
+			// hlines[0] is the top border.
+			//
+			// Adjust the top border to not draw where the title
+			// goes. But before we do that, copy it, and have the
+			// copy draw the border in the title indent area.
+
+			if (title_indent > 0)
+			{
+				hlines[2]=hlines[0];
+				hlines[2].width=title_indent;
+				++n;
+			}
+
+			hlines[0].x=coord_t::truncate(hlines[0].x+
+						      width_and_indent);
+			hlines[0].width -= width_and_indent;
+
+
+			rectangle r{coord_t::truncate(info.left_pad+
+						      title_indent), 0,
+					text_width,
+					info.top_pad};
+
+			if (r.height > text_height)
+			{
+				r.y=coord_t::truncate((r.height-text_height)/2);
+				r.height=text_height;
+			}
+
+			drawn_areas.push_back(r); // We are drawing this
+
+			richtext_draw_boundaries bounds{di, di.entire_area()};
+
+			bounds.position_at(r);
+
+			richtext_alteration_config richtext_alteration;
+			richtext_draw_info rdi{richtext_alteration};
+
+			title->full_redraw(IN_THREAD, e, rdi, di,
+					   clip,
+					   bounds);
+		}
+	}
+
+	for (size_t i=0; i<n; ++i)
+	{
+		const auto &line_info=hlines[i];
+
+		// Calculate where the drawn border should go.
+		rectangle r{line_info.x,
 			    line_info.starting_coord,
-			    length,
+			    line_info.width,
 			    line_info.thickness};
 		drawn_areas.push_back(r); // We are drawing this rectangle.
 
@@ -415,15 +519,15 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 							   (di.absolute_location
 							    .y + r.y)};
 
-						  if (line_info.border
-						      ->no_horizontal_border(bdi)
-						      )
-							  return;
-
 						  bdi.background_horizontal
 							  (IN_THREAD,
 							   line_info.first_e,
 							   line_info.second_e);
+
+						  if (line_info.border
+						      ->no_horizontal_border(bdi)
+						      )
+							  return;
 
 						  line_info.border
 							  ->draw_horizontal
@@ -436,29 +540,34 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 			 bordercontainer_impl->h_scratch_buffer);
 	}
 
-	// And now for the two vertical borders, which are drawn similary.
+	// And now for the two vertical borders, which are drawn similarly.
 	//
 	// Compute the starting X coordinate of the right border, and
 	// the height of both vertical borders.
 
-	lines[0].thickness=info.left_pad;
-	lines[1].thickness=info.right_pad;
-	lines[0].border=info.lb;
-	lines[1].border=info.rb;
 
-	lines[1].starting_coord=
-		coord_t::truncate(coord_t::truncate(e.data(IN_THREAD)
-						    .current_position.width)
+	struct {
+		coord_t starting_coord;
+		dim_t thickness;
+		const_border_impl border;
+		elementptr first_e;
+		elementptr second_e;
+	} vlines[2]={
+		    {0, info.left_pad, info.lb, {}, my_element},
+		    {0, info.bottom_pad, info.rb, my_element, {}},
+	};
+
+	vlines[1].starting_coord=
+		coord_t::truncate(coord_t::truncate(current_position.width)
 				  -info.right_pad);
 
-	length=dim_t::truncate(coord_t::truncate(e.data(IN_THREAD)
-						 .current_position.height)
+	length=dim_t::truncate(coord_t::truncate(current_position.height)
 			       - (info.top_pad+info.bottom_pad));
 
 	// And now do similar things for vertical borders; using
 	// background_vertical() and draw_vertical().
 
-	for (const auto &line_info:lines)
+	for (const auto &line_info: vlines)
 	{
 		rectangle r{line_info.starting_coord,
 			    coord_t::truncate(info.top_pad),
@@ -519,5 +628,34 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 			 bordercontainer_impl->h_scratch_buffer);
 	}
 }
+
+void borderlayoutmanagerObj::implObj
+::adjust_child_horiz_vert_metrics(ONLY IN_THREAD,
+				  metrics::axis &child_horiz,
+				  metrics::axis &child_vert)
+{
+	auto title=bordercontainer_impl->get_title(IN_THREAD);
+
+	if (!title)
+		return;
+
+	auto [wm, hm]=title->get_metrics(0);
+
+	dim_t title_indent=bordercontainer_impl
+		->get_title_indent(IN_THREAD);
+
+	dim_t double_title_indent=dim_t::truncate(title_indent + title_indent);
+	dim_t minimum=dim_t::truncate(wm.preferred()+double_title_indent);
+
+	if (minimum == dim_t::infinite())
+		--minimum;
+
+	if (minimum > child_horiz.minimum())
+	{
+		child_horiz=child_horiz
+			.increase_minimum_by(minimum - child_horiz.minimum());
+	}
+}
+
 
 LIBCXXW_NAMESPACE_END
