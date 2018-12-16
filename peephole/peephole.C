@@ -12,23 +12,15 @@ LIBCXXW_NAMESPACE_START
 
 peepholeObj::peepholeObj(const ref<implObj> &impl,
 			 const ref<layoutmanager_implObj> &layout)
-	: containerObj(impl, layout), impl(impl)
+	: containerObj{impl, layout}, impl{impl},
+	  peepholed_element
+	{
+	 layout->element_in_peephole->get_peepholed_element()
+	}
 {
 }
 
 peepholeObj::~peepholeObj()=default;
 
-element peepholeObj::get_peepholed() const
-{
-	ptr<peepholeObj::layoutmanager_implObj> peephole_lm_impl;
-
-	impl->invoke_layoutmanager([&]
-				   (const auto &lm_impl)
-				   {
-					   peephole_lm_impl=lm_impl;
-				   });
-
-	return peephole_lm_impl->element_in_peephole->get_peepholed_element();
-}
 
 LIBCXXW_NAMESPACE_END

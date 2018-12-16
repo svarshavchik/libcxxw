@@ -70,9 +70,7 @@ elementptr panelayoutmanagerObj::implObj
 	{
 		pane_peephole_container container=get_element(grid_lock, n*2);
 
-		auto peephole=container->get_peephole();
-
-		e=peephole->get_peepholed();
+		e=container->get_peephole()->peepholed_element;
 	}
 
 	return e;

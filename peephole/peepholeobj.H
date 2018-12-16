@@ -32,9 +32,9 @@ class LIBCXX_HIDDEN peepholeObj : public containerObj {
 	//! Destructor
 	~peepholeObj();
 
-	//! Return the element in the peephole.
+	//! Peepholed element
 
-	element get_peepholed() const;
+	const element peepholed_element;
 };
 
 LIBCXXW_NAMESPACE_END

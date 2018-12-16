@@ -37,8 +37,8 @@ booklayoutmanagerObj::implObj
 	  right_scrollbutton{(*grid_lock)->get(0,2)},
 	  book_pagecontainer{(*grid_lock)->get(1,0)},
 	  book_pagelayoutmanager_impl{book_pagecontainer->get_layout_impl()},
-	  book_pagetabgrid{container(peephole((*grid_lock)->get(0, 1))
-				     ->get_peepholed())},
+	  book_pagetabgrid{container{peephole((*grid_lock)->get(0, 1))
+				     ->peepholed_element}},
 	  book_pagetabgridlayoutmanager_impl{book_pagetabgrid
 					     ->get_layout_impl()}
 {
