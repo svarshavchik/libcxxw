@@ -88,6 +88,11 @@ void testbutton()
 			 my_border.rounded=true;
 			 my_border.radius=2;
 
+			 LIBCXX_NAMESPACE::w::new_element_border neb{my_border};
+
+			 neb.hpad=3;
+			 neb.vpad=3;
+
 			 factory->create_bordered_element
 				 ([&]
 				  (const auto &f)
@@ -106,9 +111,8 @@ void testbutton()
 					  l->set_background_color(g);
 					  l->show();
 				  },
-				  my_border,
-				  3,
-				  3);
+				  neb);
+
 			 factory=layout->append_row();
 
 			 auto be=factory->create_bordered_element
@@ -128,9 +132,7 @@ void testbutton()
 						       ::white}};
 					  l->set_background_color(g);
 				  },
-				  my_border,
-				  3,
-				  3);
+				  neb);
 
 			 LIBCXX_NAMESPACE::w::borderlayoutmanager{
 				 be->get_layoutmanager()

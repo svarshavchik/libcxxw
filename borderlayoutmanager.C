@@ -25,9 +25,7 @@ borderlayoutmanagerObj::~borderlayoutmanagerObj()=default;
 container factoryObj
 ::do_create_bordered_element(const function<void (const factory &)>
 			     &creator,
-			     const border_arg &border,
-			     const dim_arg &hpad,
-			     const dim_arg &vpad)
+			     const new_element_border &info)
 {
 	// Retrieve my parent, and create the container for the
 	// border layout manager.
@@ -35,8 +33,11 @@ container factoryObj
 
 	auto c_impl=ref<bordercontainer_elementObj<container_elementObj
 						   <child_elementObj>>>
-		::create(border, border, border, border,
-			 hpad, vpad,
+		::create(info.border,
+			 info.border,
+			 info.border,
+			 info.border,
+			 info.hpad, info.vpad,
 			 parent);
 
 	// Invoke the creator to set the element for which we're providing

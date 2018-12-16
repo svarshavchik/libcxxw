@@ -6,11 +6,39 @@
 #define x_w_borderlayoutmanagerfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/border_arg.H>
+#include <x/w/dim_arg.H>
+#include <x/w/text_param.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC borderlayoutmanagerObj;
+
+/*!
+Border layout manager properties.
+
+Specifies the properties for a new
+\ref borderlayoutmanager "border layout manager".
+*/
+
+struct new_element_border {
+
+	//! The border itself.
+
+	border_arg border;
+
+	//! Optional title. Results in a visible frame.
+
+	text_param title;
+
+	//! Horizontal padding
+
+	dim_arg hpad={0};
+
+	//! Verticla padding
+	dim_arg vpad={0};
+};
 
 /*! Draw a border around an element.
 

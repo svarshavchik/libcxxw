@@ -13,6 +13,7 @@
 #include <x/w/containerobj.H>
 #include <x/w/canvasfwd.H>
 #include <x/w/border_argfwd.H>
+#include <x/w/borderlayoutmanagerfwd.H>
 #include <x/w/alignment.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/shortcutfwd.H>
@@ -134,14 +135,12 @@ public:
 
 	template<typename creator>
 	container create_bordered_element(creator &&c,
-					  const border_arg &border,
-					  const dim_arg &hpad=0,
-					  const dim_arg &vpad=0)
+					  const new_element_border &info)
 	{
 		return do_create_bordered_element(make_function
 						  <void (const factory &)>
 						  (std::forward<creator>(c)),
-						  border, hpad, vpad);
+						  info);
 	}
 
 	//! Type-erased create_bordered_element()
@@ -149,9 +148,8 @@ public:
 	container do_create_bordered_element(const function<void (const factory
 								  &)>
 					     &creator,
-					     const border_arg &border,
-					     const dim_arg &hpad,
-					     const dim_arg &vpad);
+					     const new_element_border &info);
+
 	//! Create a nested container
 
 	container do_create_container(const function<void (const container &)>
