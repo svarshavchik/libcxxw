@@ -7,6 +7,8 @@
 
 #include <x/w/borderlayoutmanagerfwd.H>
 #include <x/w/singletonlayoutmanagerobj.H>
+#include <x/w/text_paramfwd.H>
+#include <x/w/connection_threadfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -27,6 +29,14 @@ public:
 
 	//! Destructor
 	~borderlayoutmanagerObj() LIBCXX_HIDDEN;
+
+	//! Update the title.
+
+	void update_title(const text_param &);
+
+	//! Update the title
+
+	void update_title(ONLY IN_THREAD, const text_param &);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -13,7 +13,6 @@
 #include <x/w/containerobj.H>
 #include <x/w/canvasfwd.H>
 #include <x/w/border_argfwd.H>
-#include <x/w/borderlayoutmanagerfwd.H>
 #include <x/w/alignment.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/shortcutfwd.H>
@@ -130,25 +129,6 @@ public:
 					   (creator),
 					   layout_manager);
 	}
-
-	//! Create a container with a border around an element.
-
-	template<typename creator>
-	container create_bordered_element(creator &&c,
-					  const new_element_border &info)
-	{
-		return do_create_bordered_element(make_function
-						  <void (const factory &)>
-						  (std::forward<creator>(c)),
-						  info);
-	}
-
-	//! Type-erased create_bordered_element()
-
-	container do_create_bordered_element(const function<void (const factory
-								  &)>
-					     &creator,
-					     const new_element_border &info);
 
 	//! Create a nested container
 

@@ -1251,6 +1251,52 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <color  id="noshade:itembutton_background_color" scale="80%" />
 
+  <!-- Border layout manager -->
+
+  <border id="frame_border" from="thin">
+    <color>50%</color>
+    <hradius>.5</hradius>
+    <vradius>.5</vradius>
+  </border>
+
+  <dim id="frame_title_indent" axis="horiz">2</dim>
+
+  <dim id="frame_hpad" axis="horiz">1</dim>
+
+  <dim id="frame_vpad" axis="vert">1</dim>
+
+  <!--
+      If a frame does not have a title, the frame's element can have this
+      background color.
+  -->
+
+  <color  id="frame_background" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+
+    <gradient>
+      <value>1</value>
+      <color>90%</color>
+    </gradient>
+  </color>
+
+  <color  id="fixshade:frame_background" type="linear_gradient">
+    <widthmm>10</widthmm>
+    <heightmm>10</heightmm>
+
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+
+    <gradient>
+      <value>1</value>
+      <color>90%</color>
+    </gradient>
+  </color>
+
   <!-- Dialogs -->
 
   <color id="dialog_background" scale="90%" />

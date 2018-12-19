@@ -2,6 +2,7 @@
 
 noinst_PROGRAMS=\
 	booklayoutmanager			\
+	borderlayoutmanager			\
 	busy					\
 	checkradio				\
 	combobox				\
@@ -41,6 +42,9 @@ AM_CPPFLAGS=-Wall -Werror
 
 booklayoutmanager_SOURCES=booklayoutmanager.C close_flag.H
 booklayoutmanager_LDADD=-lcxxw -lcxx
+
+borderlayoutmanager_SOURCES=borderlayoutmanager.C close_flag.H
+borderlayoutmanager_LDADD=-lcxxw -lcxx
 
 $(call THREADMSGDISPATCHER_GEN,busy.inc.H,busy.xml)
 busy_SOURCES=busy.C

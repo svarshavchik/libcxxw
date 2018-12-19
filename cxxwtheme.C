@@ -14,6 +14,7 @@
 #include "x/w/label.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
+#include "x/w/borderlayoutmanager.H"
 #include "x/w/focusable_container.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
@@ -1057,7 +1058,33 @@ static void demo_input(const w::gridlayoutmanager &lm)
 	f->create_input_field("", {40, 4});
 }
 
+static void demo_misc_column1(const w::gridlayoutmanager &);
+
+static void demo_misc_column2(const w::gridlayoutmanager &);
+
 static void demo_misc(const w::gridlayoutmanager &lm)
+{
+	auto columns=lm->append_row();
+	w::new_gridlayoutmanager nglm;
+
+	columns->padding(0).create_container
+		([&]
+		 (const auto &c)
+		 {
+			 demo_misc_column1(c->get_layoutmanager());
+		 },
+		 nglm);
+
+	columns->padding(0).create_container
+		([&]
+		 (const auto &c)
+		 {
+			 demo_misc_column2(c->get_layoutmanager());
+		 },
+		 nglm);
+}
+
+static void demo_misc_column1(const w::gridlayoutmanager &lm)
 {
 	auto rg=w::radio_group::create();
 
@@ -1119,6 +1146,46 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 					    sleep(5);
 				    });
 		 });
+
+}
+
+static void demo_misc_column2(const w::gridlayoutmanager &glm)
+{
+	auto f=glm->append_row();
+
+	w::new_borderlayoutmanager nblm
+		{[&]
+		 (const auto &factory)
+		 {
+			 factory->create_container
+				 ([&]
+				  (const auto &c)
+				  {
+					  w::gridlayoutmanager lm=
+						  c->get_layoutmanager();
+
+					  auto f=lm->append_row();
+
+					  f->padding(4);
+					  f->create_label("This is a frame");
+				  },
+				  w::new_gridlayoutmanager{});
+		 }};
+
+	f->create_container([]
+			    (const auto &)
+			    {
+			    },
+			    nblm);
+
+	f=glm->insert_row(0);
+
+	nblm.title("Frame title");
+	f->create_container([]
+			    (const auto &)
+			    {
+			    },
+			    nblm);
 
 }
 

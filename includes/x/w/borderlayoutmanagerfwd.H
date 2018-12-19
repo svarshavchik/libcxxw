@@ -15,34 +15,6 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC borderlayoutmanagerObj;
 
-/*!
-Border layout manager properties.
-
-Specifies the properties for a new
-\ref borderlayoutmanager "border layout manager".
-*/
-
-struct new_element_border {
-
-	//! The border itself.
-
-	border_arg border;
-
-	//! Optional title. Results in a visible frame.
-
-	text_param title;
-
-	//! Title indentation
-	dim_arg title_indent={2};
-
-	//! Horizontal padding
-
-	dim_arg hpad={0};
-
-	//! Verticla padding
-	dim_arg vpad={0};
-};
-
 /*! Draw a border around an element.
 
 A subclass of the \ref singletonlayoutmanager "singleton layout manager"
@@ -51,7 +23,8 @@ that draws a border around the display element.
 The same effect can be obtained by using the
 \ref gridlayoutmanager "grid layout manager", but this is more efficient.
 
-A \ref factory "factory"'s create_bordered_element() creates a container
+Passing a \ref new_borderlayoutmanager "new_borderlayoutmanager" to
+a \ref factory "factory"'s create_container() creates a container
 that uses the border layout manager.
 
 */

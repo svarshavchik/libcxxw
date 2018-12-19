@@ -20,7 +20,7 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    A dashed frame gets typically drawn around the display element that
+    A dashed border gets typically drawn around the display element that
     has keyboard input focus.
     <keycap>Tab</keycap> moves the keyboard input focus to the next display
     element, and

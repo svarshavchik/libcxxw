@@ -228,6 +228,11 @@ main_SOURCES=main.C
 main_LDADD=-lcxxw -lcxx</programlisting>
       </informalexample>
     </blockquote>
+
+    <para>
+      See the <link linkend="examples">examples directory</link> for a
+      working example.
+    </para>
   </simplesect>
 
   <simplesect id="multiver">

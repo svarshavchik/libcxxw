@@ -45,6 +45,7 @@
 <!ENTITY pagelayoutmanager SYSTEM "pagelayoutmanager.xml">
 <!ENTITY booklayoutmanager SYSTEM "booklayoutmanager.xml">
 <!ENTITY panelayoutmanager SYSTEM "panelayoutmanager.xml">
+<!ENTITY borderlayoutmanager SYSTEM "borderlayoutmanager.xml">
 <!ENTITY list SYSTEM "list.xml">
 <!ENTITY toolbox SYSTEM "toolboxlayoutmanager.xml">
 <!ENTITY hierlist SYSTEM "hierlist.xml">
@@ -109,6 +110,7 @@ See COPYING for distribution information.
     &focusable_section;
     &checkradio;
     &gridlayoutmanager;
+    &borderlayoutmanager;
     &pagelayoutmanager;
     &booklayoutmanager;
     &list;

@@ -177,6 +177,8 @@ void borderlayoutmanagerObj::implObj::theme_updated(ONLY IN_THREAD,
 
 void borderlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
+	auto title=bordercontainer_impl->get_title(IN_THREAD);
+
 	// If the border changed, we need to redraw even if recalculate()
 	// will do nothing, and we always need to clear the cached_border_info, in
 	// order for it to be computed from scratch.
@@ -188,7 +190,8 @@ void borderlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 	    current_top_border != bordercontainer_impl->get_top_border(IN_THREAD)
 	    ->border(IN_THREAD) ||
 	    current_bottom_border != bordercontainer_impl->get_bottom_border(IN_THREAD)
-	    ->border(IN_THREAD))
+	    ->border(IN_THREAD) ||
+	    current_title != title)
 	{
 		cached_border_info.reset();
 
@@ -198,6 +201,7 @@ void borderlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 		current_right_border=info.rb;
 		current_top_border=info.tb;
 		current_bottom_border=info.bb;
+		current_title=title;
 
 		bordercontainer_impl->get_container_impl()
 			.container_element_impl()
@@ -399,13 +403,12 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 
 	size_t n=2;
 
-	auto title=bordercontainer_impl->get_title(IN_THREAD);
 	dim_t text_width;
 	dim_t text_height;
 
-	if (title)
+	if (current_title)
 	{
-		auto [w, h]=title->get_metrics(0);
+		auto [w, h]=current_title->get_metrics(0);
 
 		auto text_width=w.preferred();
 		auto text_height=h.preferred();
@@ -464,9 +467,9 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 			richtext_alteration_config richtext_alteration;
 			richtext_draw_info rdi{richtext_alteration};
 
-			title->full_redraw(IN_THREAD, e, rdi, di,
-					   clip,
-					   bounds);
+			current_title->full_redraw(IN_THREAD, e, rdi, di,
+						   clip,
+						   bounds);
 		}
 	}
 
@@ -634,12 +637,10 @@ void borderlayoutmanagerObj::implObj
 				  metrics::axis &child_horiz,
 				  metrics::axis &child_vert)
 {
-	auto title=bordercontainer_impl->get_title(IN_THREAD);
-
-	if (!title)
+	if (!current_title)
 		return;
 
-	auto [wm, hm]=title->get_metrics(0);
+	auto [wm, hm]=current_title->get_metrics(0);
 
 	dim_t title_indent=bordercontainer_impl
 		->get_title_indent(IN_THREAD);

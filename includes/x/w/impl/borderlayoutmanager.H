@@ -9,6 +9,7 @@
 #include "x/w/impl/singletonlayoutmanager.H"
 #include "x/w/impl/bordercontainer_impl.H"
 #include "x/w/impl/border_implfwd.H"
+#include "x/w/impl/richtext/richtextfwd.H"
 #include <tuple>
 
 LIBCXXW_NAMESPACE_START
@@ -43,6 +44,9 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 	//! Current border being used for drawing.
 
 	const_border_implptr current_bottom_border;
+
+	//! Current title
+	richtextptr current_title;
 
  public:
 	//! Constructor

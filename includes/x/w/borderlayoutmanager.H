@@ -7,9 +7,82 @@
 
 #include <x/w/borderlayoutmanagerfwd.H>
 #include <x/w/borderlayoutmanagerobj.H>
+#include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/text_param.H>
 #include <x/ref.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
+
+class LIBCXX_PUBLIC new_borderlayoutmanager;
+
+/*!
+Border layout manager properties.
+
+Specifies the properties for a new
+\ref borderlayoutmanager "border layout manager".
+*/
+
+class new_borderlayoutmanager : public new_layoutmanager {
+
+public:
+	//! Constructor
+	new_borderlayoutmanager(//! Create the border contain's element.
+
+				//! The callback gets invoked, and must
+				//! use the factory parameter to create
+				//! exactly one display element. This is
+				//! the element in the border layout manager's
+				//! container.
+				const functionref<void (const factory &)> &);
+
+	//! Destructor
+	~new_borderlayoutmanager();
+
+	//! Factory for the initial element insoider the border
+
+	functionref<void (const factory &)> element_factory;
+
+	//! The border itself.
+
+	border_arg border;
+
+	//! Optional title. Results in a visible frame.
+
+	text_param title;
+
+	//! Title indentation
+	dim_arg title_indent;
+
+	//! Disable automatic background.
+
+	//! If no title is set, automatically sets the element's background
+	//! color to the theme default. Borders with titles are not visually
+	//! "coherent" if the element inside the border has a custom
+	//! background color, because the border is interrupted by the
+	//! title.
+	//!
+	//! Set this to true to prevent the element from having its background
+	//! set, even if there's no title.
+
+	bool no_background;
+
+	//! Extra padding between the border and the element in the container
+
+	dim_arg hpad;
+
+	//! Extra padding between the border and the element in the container
+	dim_arg vpad;
+
+private:
+	//! Implement create()
+	layout_impl create(const container_impl &) const override LIBCXX_HIDDEN;
+
+	//! Implement create()
+	container create(const container_impl &,
+			 const function<void(const container &)> &)
+		const override LIBCXX_HIDDEN;
+};
 
 LIBCXXW_NAMESPACE_END
 

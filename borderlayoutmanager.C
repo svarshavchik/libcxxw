@@ -28,18 +28,34 @@ borderlayoutmanagerObj::borderlayoutmanagerObj(const ref<implObj> &impl)
 
 borderlayoutmanagerObj::~borderlayoutmanagerObj()=default;
 
-container factoryObj
-::do_create_bordered_element(const function<void (const factory &)>
-			     &creator,
-			     const new_element_border &info)
+	//! Constructor
+new_borderlayoutmanager::new_borderlayoutmanager(const functionref<void
+						 (const factory &)>
+						 &element_factory)
+	: element_factory{element_factory},
+	  border{"frame_border"},
+	  title_indent{"frame_title_indent"},
+	  no_background{false},
+	  hpad{"frame_hpad"},
+	  vpad{"frame_vpad"}
 {
-	// Retrieve my parent, and create the container for the
-	// border layout manager.
-	auto parent=get_container_impl();
+}
 
-	richtextptr title;
+new_borderlayoutmanager::~new_borderlayoutmanager()=default;
 
-	if (info.title.string.size())
+layout_impl new_borderlayoutmanager::create(const container_impl &parent) const
+{
+	throw EXCEPTION("Not implemented");
+}
+
+container new_borderlayoutmanager::create(const container_impl &parent,
+					  const function<void(const container &)
+					  > &creator)
+	const
+{
+	richtextptr richtext_title;
+
+	if (title.string.size())
 	{
 		auto &e=parent->container_element_impl();
 
@@ -50,27 +66,26 @@ container factoryObj
 			 (theme_font{e.label_theme_font()})
 			};
 
-		auto string=e.create_richtextstring(meta,
-						    info.title.string);
-		title=richtext::create(string, halign::left, 0);
+		auto string=e.create_richtextstring(meta, title);
+		richtext_title=richtext::create(string, halign::left, 0);
 	}
 
 	auto c_impl=ref<bordercontainer_elementObj<container_elementObj
 						   <child_elementObj>>>
-		::create(info.border,
-			 info.border,
-			 info.border,
-			 info.border,
-			 title,
-			 info.title_indent,
-			 info.hpad, info.vpad,
+		::create(border,
+			 border,
+			 border,
+			 border,
+			 richtext_title,
+			 title_indent,
+			 hpad, vpad,
 			 parent);
 
 	// Invoke the creator to set the element for which we're providing
 	// the border.
 	auto f=capturefactory::create(c_impl);
 
-	creator(f);
+	element_factory(f);
 
 	auto e=f->get();
 
@@ -81,8 +96,45 @@ container factoryObj
 								  halign::fill,
 								  valign::fill);
 	auto new_container=container::create(c_impl, lm_impl);
-	created(new_container);
+
+	if (!no_background && title.string.empty())
+		e->set_background_color("frame_background");
+
+	creator(new_container);
+
 	return new_container;
+}
+
+void borderlayoutmanagerObj::update_title(const text_param &title)
+{
+	impl->run_as([me=ref{this}, title]
+		     (ONLY IN_THREAD)
+		     {
+			     me->update_title(IN_THREAD, title);
+		     });
+}
+
+void borderlayoutmanagerObj::update_title(ONLY IN_THREAD,
+					  const text_param &title)
+{
+	richtextptr richtext_title;
+
+	if (title.string.size())
+	{
+		auto &e=impl->get_element_impl();
+
+		richtextmeta meta
+			{
+			 e.create_background_color(e.label_theme_color()),
+			 e.create_current_fontcollection
+			 (theme_font{e.label_theme_font()})
+			};
+
+		auto string=e.create_richtextstring(meta, title);
+		richtext_title=richtext::create(string, halign::left, 0);
+	}
+
+	impl->bordercontainer_impl->set_title(IN_THREAD, richtext_title);
 }
 
 LIBCXXW_NAMESPACE_END

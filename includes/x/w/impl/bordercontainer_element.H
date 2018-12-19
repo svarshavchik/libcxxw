@@ -120,6 +120,16 @@ richtextptr bordercontainer_elementObj<element_impl>::get_title(ONLY IN_THREAD)
 	return this->title(IN_THREAD);
 }
 
+//! Implement set_title().
+
+//! Inherited from bordercontainer_implObj.
+template<typename element_impl>
+void bordercontainer_elementObj<element_impl>::set_title(ONLY IN_THREAD,
+							 const richtextptr &t)
+{
+	this->title(IN_THREAD)=t;
+}
+
 //! Implement set_border().
 
 //! Inherited from bordercontainer_implObj.

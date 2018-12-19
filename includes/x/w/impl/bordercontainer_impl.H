@@ -114,6 +114,9 @@ public:
 	//! Implemented by the mixin container, to get the title.
 	virtual richtextptr get_title(ONLY IN_THREAD) const=0;
 
+	//! Implemented by the mixin container, to set the title.
+	virtual void set_title(ONLY IN_THREAD, const richtextptr &)=0;
+
 	//! Get title indentation
 	virtual dim_t get_title_indent(ONLY IN_THREAD) const=0;
 

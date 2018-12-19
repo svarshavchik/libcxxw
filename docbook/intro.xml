@@ -101,9 +101,8 @@ See COPYING for distribution information.
       <title>Status</title>
 
       <para>
-	&app; is in active development. The most recent build adds a
-	new layout manager for implementing
-	<link linkend="toolbox">toolbox dialogs</link>.
+	The most recent build of &app; adds the
+	<link linkend="borderlayoutmanager">border layout manager</link>.
       </para>
     </section>
   </section>

@@ -480,8 +480,10 @@ while (!appdata->close_flag)
 
       <para>
 	The creator lambda gets the new display element as its parameter.
-	This is the same object that's going returned from the function or
-	a method that's creating it. The creator lambda gets invoked just
+	This is the same object that's going to be returned from the function
+	or
+	a method that's creating the container.
+	The creator lambda gets invoked just
 	before that function or method returns.
       </para>
 
@@ -495,7 +497,7 @@ while (!appdata->close_flag)
       <para>
 	Observe that
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>'s
-	window gets automatically sized for the label.
+	window gets automatically sized for its label.
 	The creator lambda is an optimization.
 	The size of a new container gets computed after the creator lambda
 	returns, but before the newly-created container itself gets returned
@@ -551,7 +553,7 @@ while (!appdata->close_flag)
 
 	<varlistentry>
 	  <term>
-	    <ulink url="&link-typedef-x--w-borderlayoutmanager;"><classname>&ns;::w::borderlayoutmanager</classname></ulink>
+	    <link linkend="borderlayoutmanager"><classname>&ns;::w::borderlayoutmanager</classname></link>
 	  </term>
 	  <listitem>
 	    <para>
@@ -563,11 +565,16 @@ while (!appdata->close_flag)
 	    <para>
 	      This layout manager is optimized for this purpose. The grid
 	      layout manager is capable of drawing borders around the elements
-	      in the rectangular grid too, and manage multiple elements.
+	      in the rectangular grid too, and managing multiple elements.
 	      The grid layout manager's complexity results in non-trivial
 	      overhead, and when all that's needed is a simple border
-	      around an element the border layout manager does the job faster
+	      around an element, the border layout manager does the job faster
 	      and with less cost.
+	    </para>
+
+	    <para>
+	      The border layout manager offers a value-added feature of
+	      adding title text to the border.
 	    </para>
 	  </listitem>
 	</varlistentry>

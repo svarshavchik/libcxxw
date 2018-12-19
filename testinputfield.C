@@ -88,13 +88,8 @@ void testbutton()
 			 my_border.rounded=true;
 			 my_border.radius=2;
 
-			 LIBCXX_NAMESPACE::w::new_element_border neb{my_border};
-
-			 neb.hpad=3;
-			 neb.vpad=3;
-
-			 factory->create_bordered_element
-				 ([&]
+			 LIBCXX_NAMESPACE::w::new_borderlayoutmanager neb
+				 {[&]
 				  (const auto &f)
 				  {
 					  auto l=f->create_label
@@ -110,29 +105,35 @@ void testbutton()
 						       ::white}};
 					  l->set_background_color(g);
 					  l->show();
+				  }};
+
+			 neb.border=my_border;
+			 neb.hpad=3;
+			 neb.vpad=3;
+
+			 factory->create_container
+				 ([&]
+				  (const auto &c)
+				  {
 				  },
 				  neb);
 
 			 factory=layout->append_row();
 
-			 neb.title("This is a title");
-
-			 auto be=factory->create_bordered_element
-				 ([&]
+			 neb=LIBCXX_NAMESPACE::w::new_borderlayoutmanager
+				 {[&]
 				  (const auto &f)
 				  {
 					  auto l=f->create_label
 						  ("Border Layout Manager");
+				  }};
 
-					  LIBCXX_NAMESPACE::w::linear_gradient
-						  g;
+			 neb.title("This is a title");
 
-					  g.gradient={
-						      {0, LIBCXX_NAMESPACE::w
-						       ::silver},
-						      {1, LIBCXX_NAMESPACE::w
-						       ::white}};
-					  l->set_background_color(g);
+			 auto be=factory->create_container
+				 ([&]
+				  (const auto &)
+				  {
 				  },
 				  neb);
 

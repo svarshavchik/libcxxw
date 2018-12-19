@@ -96,6 +96,7 @@ public:
 			const border_arg &top_border,
 			const border_arg &bottom_border) override;
 	richtextptr get_title(ONLY IN_THREAD) const override;
+	void set_title(ONLY IN_THREAD, const richtextptr &) override;
 	dim_t get_title_indent(ONLY IN_THREAD) const override;
 	dim_t get_border_hpad(ONLY IN_THREAD) const override;
 	dim_t get_border_vpad(ONLY IN_THREAD) const override;
