@@ -1,3 +1,9 @@
+0.13
+
+2018-12-18  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Implement the border layout manager.
+
 2018-12-14  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* booklayoutmanager: clicking on left/right scroll buttons
