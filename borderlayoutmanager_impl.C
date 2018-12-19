@@ -554,7 +554,7 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 		elementptr second_e;
 	} vlines[2]={
 		    {0, info.left_pad, info.lb, {}, my_element},
-		    {0, info.bottom_pad, info.rb, my_element, {}},
+		    {0, info.right_pad, info.rb, my_element, {}},
 	};
 
 	vlines[1].starting_coord=
