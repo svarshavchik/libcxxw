@@ -79,7 +79,7 @@ image_button_internal
 do_create_popup_imagebutton(const gridfactory &f,
 			    const function<popup_imagebutton_focusframe_factory>
 			    &ff_factory,
-			    const ref<elementObj::implObj> &popup_element,
+			    const popup_attachedto_handler &my_popup_handler,
 			    const popup_imagebutton_config &config)
 	LIBCXX_HIDDEN;
 
@@ -102,7 +102,7 @@ create_popup_imagebutton(//! Factory for the grid cell with the popup button
 			 focusframe_factory &&ff,
 
 			 //! Popup that gets shown or hidden.
-			 const ref<elementObj::implObj> &popup_element,
+			 const popup_attachedto_handler &my_popup_handler,
 
 			 //! Visual appearance of the button.
 			 const popup_imagebutton_config &config)
@@ -110,7 +110,7 @@ create_popup_imagebutton(//! Factory for the grid cell with the popup button
 	return do_create_popup_imagebutton
 		(f, make_function<popup_imagebutton_focusframe_factory>
 		 (std::forward<focusframe_factory>(ff)),
-		 popup_element,
+		 my_popup_handler,
 		 config);
 }
 

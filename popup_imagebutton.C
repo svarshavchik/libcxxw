@@ -57,7 +57,7 @@ image_button_internal
 do_create_popup_imagebutton(const gridfactory &f,
 			    const function<popup_imagebutton_focusframe_factory>
 			    &ff_factory,
-			    const ref<elementObj::implObj> &popup_element,
+			    const popup_attachedto_handler &my_popup_handler,
 			    const popup_imagebutton_config &config)
 {
 	// Visual appearance of the button.
@@ -102,7 +102,7 @@ do_create_popup_imagebutton(const gridfactory &f,
 	auto image_button_internal_impl=
 		ref<popup_showhide_elementObj<always_visible_elementObj<
 			popup_imagebutton_implObj>>>
-		::create(popup_element, cbfc_container_impl,
+		::create(my_popup_handler, cbfc_container_impl,
 			 std::vector<icon>{ icon1, icon2 });
 
 	// Create the "public" object.

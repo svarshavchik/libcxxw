@@ -39,12 +39,6 @@ typedef always_visibleObj<
 typedef peepholed_toplevel_listcontainer_elementObj<
 	peepholed_toplevel_elementObj<containerObj>> p_t_l_t;
 
-//! Return value from the create_p_t_l_impl_t callback.
-
-typedef std::tuple<ref<p_t_l_impl_t>,
-		   ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
-		   > create_p_t_l_impl_ret_t;
-
 //! Return value from the content factory passed to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup".
 
 typedef std::tuple<container, peepholed_toplevel> create_popup_factory_ret_t;
