@@ -106,6 +106,7 @@ menu menubarlayoutmanagerObj::implObj
 
 	auto hotspot_impl=ref<menubar_hotspot_implObj>
 		::create(menu_popup,
+			 popup_handler,
 			 e.create_background_color("menu_background_color"),
 			 e.create_background_color("menu_highlighted_color"),
 			 e.create_background_color("menu_clicked_color"),

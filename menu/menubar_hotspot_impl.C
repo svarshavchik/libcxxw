@@ -15,14 +15,15 @@ LIBCXXW_NAMESPACE_START
 
 menubar_hotspot_implObj
 ::menubar_hotspot_implObj(const popup &menu_popup,
+			  const popup_attachedto_handler &menu_popup_handler,
 			  const background_color &bg_color,
 			  const background_color &highlighted_color,
 			  const background_color &clicked_color,
 			  const container_impl &container_impl)
-	: superclass_t(menu_popup->impl->handler,
+	: superclass_t{menu_popup_handler,
 		       bg_color, highlighted_color, clicked_color,
-		       container_impl),
-	  menu_popup(menu_popup)
+		       container_impl},
+	  menu_popup{menu_popup}
 {
 }
 
