@@ -5,6 +5,7 @@
 #ifndef peepholed_toplevel_listcontainer_create_popup_h
 #define peepholed_toplevel_listcontainer_create_popup_h
 
+#include "peepholed_toplevel_listcontainer/create_popupfwd.H"
 #include "popup/popup.H"
 #include "popup/popup_attachedto_info.H"
 #include "popup/popup_attachedto_handler.H"
@@ -21,48 +22,9 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Typedef alias.
-
-//! The class used by create_peepholed_toplevel_listcontainer_popup() for
-//! the list layout manager's container's implementation object.
-
-typedef always_visibleObj<
-	peepholed_toplevel_listcontainer_impl_elementObj<
-		listcontainer_pseudo_implObj>
-	> p_t_l_impl_t;
-
-//! Typedef alias.
-
-//! The class used by create_peepholed_toplevel_listcontainer_popup() for
-//! the list layout manager's container.
-
-typedef peepholed_toplevel_listcontainer_elementObj<
-	peepholed_toplevel_elementObj<containerObj>> p_t_l_t;
-
-//! Return value from the content factory passed to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup".
-
-typedef std::tuple<container, peepholed_toplevel> create_popup_factory_ret_t;
-
-//! Signature of the content factory passed to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup".
-
-typedef create_popup_factory_ret_t
-create_p_t_l_t(const container_impl &,
-	       const popup_attachedto_info &);
-
-//! Signature for the handler factory parameter to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
-
-typedef peepholed_toplevel_listcontainer_handler
-create_p_t_l_handler_t(const peepholed_toplevel_listcontainer_handler_args &);
-
-//! Default handler factory parameter for \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
-
-peepholed_toplevel_listcontainer_handler
-create_p_t_l_handler(const peepholed_toplevel_listcontainer_handler_args &)
-	LIBCXX_HIDDEN;
-
 //! Non-factory parameters to create_peepholed_toplevel_listcontainer_popup().
 
-struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
+struct create_peepholed_toplevel_listcontainer_popup_args {
 
 	//! Parent window.
 
