@@ -15,6 +15,7 @@
 #include "peepholed_toplevel_listcontainer/element.H"
 #include "peepholed_toplevel_listcontainer/layoutmanager_impl.H"
 #include "peephole/peepholed_toplevel_element.H"
+#include "peephole/peephole_style.H"
 #include "x/w/impl/element.H"
 #include "shared_handler_data.H"
 #include "x/w/border_arg.H"
@@ -66,6 +67,8 @@ struct create_peepholed_toplevel_listcontainer_popup_args {
 	//! Popup's background color when it's below/to the right of its element
 	color_arg bottomright_color;
 
+	//! Peephole style
+	peephole_style popup_peephole_style{halign::fill};
 };
 
 //! Return value from create_peepholed_toplevel_listcontainer_popup().
