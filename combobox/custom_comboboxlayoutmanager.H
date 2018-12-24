@@ -7,6 +7,8 @@
 
 #include "x/w/custom_comboboxlayoutmanager.H"
 #include "combobox/custom_combobox_containerobj.H"
+#include "combobox/custom_combobox_popup_container.H"
+#include "popup/popup_attachedto_info.H"
 #include "gridlayoutmanager.H"
 #include "peepholed_toplevel_listcontainer/create_popupfwd.H"
 
@@ -27,6 +29,28 @@ create_peepholed_toplevel_listcontainer_popup_args
 combobox_listcontainer_popup_args(const element_impl &parent_element,
 				  const new_listlayoutmanager &style,
 				  unsigned nesting_level)
+	LIBCXX_HIDDEN;
+
+//! Create the peepholed combo-box list.
+
+//! This is passed in as the first callback to
+// !create_peepholed_toplevel_listcontainer_popup(), in order to create
+//! a list in the peepholed popup.
+//!
+//! The first two parameters the callback receives gets passed through to
+//! combobox_create_list().
+//!
+//! style is the return value from combobox_new_listlayouamanager().
+//!
+//! Returns what the create_peepholed_toplevel_listcontainer_popup()
+//! should return, and sets popup_containerptr to the
+//! custom_combobox_popup_container.
+
+create_popup_factory_ret_t
+combobox_create_list(const container_impl &peephole_container,
+		     const popup_attachedto_info &attachedto_info,
+		     const new_listlayoutmanager &style,
+		     custom_combobox_popup_containerptr &popup_containerptr)
 	LIBCXX_HIDDEN;
 
 //! Arguments to custom_comboboxlayoutmanagerObj::implObj's constructor

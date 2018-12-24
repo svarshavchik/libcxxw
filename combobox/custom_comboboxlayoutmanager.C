@@ -311,6 +311,35 @@ combobox_listcontainer_popup_args(const element_impl &parent_element,
 	};
 }
 
+create_popup_factory_ret_t
+combobox_create_list(const container_impl &peephole_container,
+		     const popup_attachedto_info &attachedto_info,
+		     const new_listlayoutmanager &style,
+		     custom_combobox_popup_containerptr &popup_containerptr)
+{
+	auto impl=ref<custom_combobox_popup_containerObj
+		      ::implObj>::create(peephole_container);
+
+	auto textlist_impl=ref<list_elementObj::implObj>
+		::create(list_element_impl_init_args
+			 {
+			  impl, style,
+			  style.synchronized_columns
+			 });
+
+	auto lm=ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
+		::create(impl, impl,
+			 list_element::create(textlist_impl));
+
+	auto container=
+		custom_combobox_popup_container::create(impl,
+							lm,
+							attachedto_info);
+	popup_containerptr=container;
+
+	return {container, container};
+}
+
 focusable_container new_custom_comboboxlayoutmanager
 ::create(const container_impl &parent) const
 {
@@ -340,31 +369,11 @@ focusable_container new_custom_comboboxlayoutmanager
 		 [&]
 		(const auto &peephole_container,
 		 const popup_attachedto_info &attachedto_info)
-			->create_popup_factory_ret_t
 		 {
-			 auto impl=ref<custom_combobox_popup_containerObj
-				       ::implObj>::create(peephole_container);
-
-			 auto textlist_impl=ref<list_elementObj::implObj>
-				 ::create(list_element_impl_init_args
-					  {
-					   impl, style,
-					   style.synchronized_columns
-					  });
-
-			 auto lm=ref<
-				 peepholed_toplevel_listcontainer_layoutmanager_implObj
-				 >::create(impl, impl,
-					   list_element::create(textlist_impl));
-
-			 auto container=custom_combobox_popup_container
-			 ::create(impl,
-				  lm,
-				  attachedto_info);
-
-			 popup_containerptr=container;
-
-			 return {container, container};
+			 return combobox_create_list(peephole_container,
+						     attachedto_info,
+						     style,
+						     popup_containerptr);
 		 },
 
 		create_p_t_l_handler);
