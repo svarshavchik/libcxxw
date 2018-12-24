@@ -1,11 +1,14 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
 #include "editor.H"
 #include "editor_impl.H"
 #include "input_field/input_field.H"
+#include "input_field/input_field_search.H"
+#include "input_field/input_field_search_popup_handler.H"
+#include "input_field/editor_search_impl.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
@@ -14,6 +17,8 @@
 #include "peephole/peephole.H"
 #include "peephole/peepholed.H"
 #include "peephole/peephole_layoutmanager_impl.H"
+#include "combobox/custom_comboboxlayoutmanager.H"
+#include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "editor_peephole_impl.H"
 #include "button.H"
 #include "grid_map_info.H"
@@ -81,15 +86,78 @@ input_field factoryObj::create_input_field(const text_param &text)
 	return create_input_field(text, input_field_config());
 }
 
+// Create the container that will have the editor implementation object's
+// peephole.
+
+static inline input_fieldObj::implObj::impl_mixin
+create_input_field_impl_mixin(const container_impl &parent,
+			      const input_field_config &config,
+			      ptr<input_field_searchObj> &search_container)
+{
+	// If there's no search callback, this is just the impl_mixin.
+
+	if (!config.input_field_search_callback)
+		return input_fieldObj::implObj::impl_mixin::create(parent);
+
+	if (config.password_char)
+		throw EXCEPTION(_("Input field with search callbacks cannot be passwords"));
+	// Otherwise, we need to do more work, such as creating the popup.
+	//
+	// We are going to borrow most of the combo-box popup's code for this.
+
+	new_listlayoutmanager style=combobox_new_listlayoutmanager(true);
+
+	create_peepholed_toplevel_listcontainer_popup_args
+		popup_args=combobox_listcontainer_popup_args(parent, style, 1);
+
+	// The search popup should be as tall as it wants to be.
+	popup_args.popup_peephole_style.height_algorithm=
+		peephole_algorithm::stretch_peephole;
+
+	custom_combobox_popup_containerptr popup_containerptr;
+
+	auto [combobox_popup, popup_handler]=
+		create_peepholed_toplevel_listcontainer_popup
+		(popup_args,
+		 [&]
+		 (const auto &peephole_container,
+		  const popup_attachedto_info &attachedto_info)
+		 {
+			 return combobox_create_list(peephole_container,
+						     attachedto_info,
+						     style,
+						     popup_containerptr);
+		 },
+		 [&]
+		 (const peepholed_toplevel_listcontainer_handler_args &args)
+		 {
+			 return ref<input_field_search_popup_handlerObj>
+				 ::create(args);
+		 }
+		 );
+
+	auto search=ref<input_field_searchObj>::create(combobox_popup,
+						       popup_handler,
+						       parent);
+	search_container=search;
+
+	return search;
+}
+
 input_field
 factoryObj::create_input_field(const text_param &text,
 			       const input_field_config &config)
 {
 	// First, create the input field object. The input field object is
 	// basically a grid container.
+	//
+	// If, however, a search_callback was specified, a subclass gets
+	// created that implements the search functionality.
+	ptr<input_field_searchObj> search_container;
 
-	auto impl_mixin=input_fieldObj::implObj::impl_mixin
-		::create(get_container_impl());
+	auto impl_mixin=
+		create_input_field_impl_mixin(get_container_impl(), config,
+					      search_container);
 
 	editorptr created_editor;
 
@@ -116,10 +184,19 @@ factoryObj::create_input_field(const text_param &text,
 
 			   // The peephole contains the real editor element.
 
+			   // If an optional search callback was specified,
+			   // we will create an editor_search_implObj subclass.
+
 			   editorObj::implObj::init_args args
 				   {
 				    peephole_impl, text, config};
-			   auto e_impl=ref<editorObj::implObj>::create(args);
+			   auto e_impl=
+				   search_container ?
+				   ref<editorObj::implObj>
+				   {
+				    ref<editor_search_implObj>::create
+				    (args, search_container)
+				   } : ref<editorObj::implObj>::create(args);
 
 			   auto e=editor::create(e_impl);
 

@@ -9,7 +9,9 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct input_field_config;
+struct LIBCXX_PUBLIC input_field_config;
+
+struct LIBCXX_HIDDEN input_field_search_info;
 
 LIBCXXW_NAMESPACE_END
 

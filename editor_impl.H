@@ -92,9 +92,10 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Mcguffin for the scheduled cursor blink callback.
 	ptr<obj> blinking;
 
+ protected:
 	//! The current cursor position.
 	const richtextiterator cursor;
-
+ private:
 	//! The current dragging position
 
 	//! dragging_location() updates this cursor. If we ever drop something,
@@ -146,7 +147,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	void clear_password_peek(ONLY IN_THREAD);
 
- private:
+ protected:
 
 	struct moving_cursor;
 
@@ -209,7 +210,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Whether a selection is currently in effect.
 
 	selection_cursor_t selection_cursor;
-
+ private:
 	//! Our subclass of current_selectionObj
 
 	class selectionObj;
@@ -669,8 +670,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void set(ONLY IN_THREAD, const std::u32string &string);
 
 	//! Set the current contents of the editor
-	void set(ONLY IN_THREAD, const std::u32string &string,
-		 size_t cursor_pos, size_t selection_pos);
+	virtual void set(ONLY IN_THREAD, const std::u32string &string,
+			 size_t cursor_pos, size_t selection_pos);
 
 	//! Whether we're cool with giving up focus.
 	bool ok_to_lose_focus(ONLY IN_THREAD,

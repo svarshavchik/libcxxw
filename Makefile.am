@@ -410,9 +410,21 @@ libcxxw_la_SOURCES=\
 	impl_connection_thread.H		    \
 	inherited_visibility_info.H		    \
 	input_dialog.C				    \
+	input_field/editor_search_impl.C	    \
+	input_field/editor_search_impl.H	    \
+	input_field/editor_search_implfwd.H	    \
+	input_field/editor_search_implobj.H	    \
 	input_field/input_field.C		    \
 	input_field/input_field.H		    \
 	input_field/input_field_impl.C		    \
+	input_field/input_field_search.C	    \
+	input_field/input_field_search.H	    \
+	input_field/input_field_searchfwd.H	    \
+	input_field/input_field_searchobj.H	    \
+	input_field/input_field_search_popup_handler.C \
+	input_field/input_field_search_popup_handler.H \
+	input_field/input_field_search_popup_handlerfwd.H \
+	input_field/input_field_search_popup_handlerobj.H \
 	input_mask.C				    \
 	itemlayoutmanager/itembutton.C		    \
 	itemlayoutmanager/itembutton.H		    \

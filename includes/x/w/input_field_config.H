@@ -15,10 +15,14 @@
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/factory.H>
-#include <x/functionalrefptrfwd.H>
+#include <x/functionalrefptr.H>
 #include <optional>
 
 LIBCXXW_NAMESPACE_START
+
+//! Callback used by an \ref input_field "input field" to search for values.
+
+typedef void input_field_search_callback_t(input_field_search_info &);
 
 //! The configuration of an \ref input_field "input field".
 
@@ -143,6 +147,15 @@ struct input_field_config {
 
 	//! Enables two spin buttons next to the input field.
 	void set_default_spin_control_factories();
+
+	//! Search callback
+
+	//! Optional callback that enables concurrent searching. The callback
+	//! gets invoked to search for potential values that could match the
+	//! partially-entered text. The list of values gets presented in a
+	//! combo-box style popup below or above the input field.
+
+	functionptr<input_field_search_callback_t> input_field_search_callback;
 
 	//! Destructor
 
