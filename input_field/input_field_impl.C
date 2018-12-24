@@ -1,9 +1,9 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "input_field.H"
+#include "input_field/input_field.H"
 #include "editor.H"
 #include "peepholed_focusable.H"
 #include "editor_impl.H"

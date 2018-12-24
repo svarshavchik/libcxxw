@@ -410,9 +410,9 @@ libcxxw_la_SOURCES=\
 	impl_connection_thread.H		    \
 	inherited_visibility_info.H		    \
 	input_dialog.C				    \
-	input_field.H				    \
-	input_field.C				    \
-	input_field_impl.C			    \
+	input_field/input_field.C		    \
+	input_field/input_field.H		    \
+	input_field/input_field_impl.C		    \
 	input_mask.C				    \
 	itemlayoutmanager/itembutton.C		    \
 	itemlayoutmanager/itembutton.H		    \

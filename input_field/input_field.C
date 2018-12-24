@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "editor.H"
 #include "editor_impl.H"
-#include "input_field.H"
+#include "input_field/input_field.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"

@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "combobox/editable_comboboxlayoutmanager.H"
-#include "input_field.H"
+#include "input_field/input_field.H"
 #include "editor_impl.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/impl/container.H"
