@@ -150,7 +150,7 @@ bool shared_handler_dataObj
 		auto handler=exclusive_popup->handler.getptr();
 
 		if (handler &&
-		    handler->data(IN_THREAD).requested_visibility)
+		    handler->popup_accepts_key_events(IN_THREAD))
 		{
 			// Once we found an exclusive popup it will
 			// process the keypress. Even if it doesn't, we

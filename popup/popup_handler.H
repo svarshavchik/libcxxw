@@ -235,6 +235,14 @@ public:
 	grabbed_pointerptr grab_pointer(ONLY IN_THREAD,
 					const element_implptr &) override;
 
+	//! Whether this popup accepts key events.
+
+	//! The default implementation returns requested_visibility.
+	//!
+	//! When this popup is visible it accepts key events forwarded from
+	//! the main window.
+	virtual bool popup_accepts_key_events(ONLY IN_THREAD);
+
 	//! Override process_key_event()
 
 	//! If the ESC key is pressed, close the combo-box popup.

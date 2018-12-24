@@ -369,6 +369,12 @@ void popupObj::handlerObj::ungrab(ONLY IN_THREAD)
 }
 
 bool popupObj::handlerObj
+::popup_accepts_key_events(ONLY IN_THREAD)
+{
+	return data(IN_THREAD).requested_visibility;
+}
+
+bool popupObj::handlerObj
 ::process_key_event(ONLY IN_THREAD, const key_event &ke)
 {
 	if (generic_windowObj::handlerObj::process_key_event(IN_THREAD, ke))
