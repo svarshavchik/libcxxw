@@ -253,14 +253,10 @@ new_custom_comboboxlayoutmanager::get_selection_changed() const
 	return selection_changed;
 }
 
-focusable_container new_custom_comboboxlayoutmanager
-::create(const container_impl &parent) const
+new_listlayoutmanager combobox_new_listlayoutmanager(bool selection_required)
 {
-	// Start by creating the popup first.
-
 	new_listlayoutmanager style{combobox_list};
 
-	style.synchronized_columns=synchronized_columns;
 	style.background_color="combobox_background_color";
 	style.selected_color="combobox_selected_color";
 	style.highlighted_color="combobox_highlighted_color";
@@ -291,31 +287,56 @@ focusable_container new_custom_comboboxlayoutmanager
 						mcguffin);
 		};
 
+	return style;
+}
+
+create_peepholed_toplevel_listcontainer_popup_args
+combobox_listcontainer_popup_args(const element_impl &parent_element,
+				  const new_listlayoutmanager &style,
+				  unsigned nesting_level)
+{
+	return {
+		parent_element,
+
+		"combo,popup_menu,dropdown_menu",
+		"combobox",
+		"combobox_popup_border",
+
+		nesting_level,
+		attached_to::combobox_above_or_below,
+		exclusive_popup_type,
+		style,
+		"combobox_above_background_color",
+		"combobox_below_background_color"
+	};
+}
+
+focusable_container new_custom_comboboxlayoutmanager
+::create(const container_impl &parent) const
+{
+	// Start by creating the popup first.
+
+	new_listlayoutmanager style=
+		combobox_new_listlayoutmanager(selection_required);
+	style.synchronized_columns=synchronized_columns;
+
 	custom_combobox_popup_containerptr popup_containerptr;
 
 	auto [combobox_popup, popup_handler]=
 		create_peepholed_toplevel_listcontainer_popup
-		({
-			ref(&parent->container_element_impl()),
-				"combo,popup_menu,dropdown_menu",
-				"combobox",
-				"combobox_popup_border",
+		(combobox_listcontainer_popup_args
+		 (ref(&parent->container_element_impl()), style,
+		  // We're about to create the combobox container,
+		  // with nesting_level of parent+1
+		  //
+		  // The current selection element in the combox
+		  // container will be parent+2.
+		  //
+		  // Need to set the popup's nesting level to
+		  // parent+3, so that it gets recalculated after
+		  // the popup gets recalculated.
 
-				// We're about to create the combobox container,
-				// with nesting_level of parent+1
-				//
-				// The current selection element in the combox
-				// container will be parent+2.
-				//
-				// Need to set the popup's nesting level to
-				// parent+3, so that it gets recalculated after
-				// the popup gets recalculated.
-				3,
-				attached_to::combobox_above_or_below,
-				exclusive_popup_type,
-				style,
-				"combobox_above_background_color",
-				"combobox_below_background_color"},
+		  3),
 		 [&]
 		(const auto &peephole_container,
 		 const popup_attachedto_info &attachedto_info)

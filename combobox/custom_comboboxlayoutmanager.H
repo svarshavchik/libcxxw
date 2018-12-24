@@ -8,9 +8,26 @@
 #include "x/w/custom_comboboxlayoutmanager.H"
 #include "combobox/custom_combobox_containerobj.H"
 #include "gridlayoutmanager.H"
+#include "peepholed_toplevel_listcontainer/create_popupfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
+//! Create a new_listlayoutmanager for a combo-box dropdown list.
+
+new_listlayoutmanager combobox_new_listlayoutmanager(bool selection_required)
+	LIBCXX_HIDDEN;
+
+//! Create parameters for create_peepholed_toplevel_listcontainer_popup()
+
+//! Constructs the first parameter for
+//! create_peepholed_toplevel_listcontainer_popup, for creating the
+//! combo-box's popup.
+
+create_peepholed_toplevel_listcontainer_popup_args
+combobox_listcontainer_popup_args(const element_impl &parent_element,
+				  const new_listlayoutmanager &style,
+				  unsigned nesting_level)
+	LIBCXX_HIDDEN;
 
 //! Arguments to custom_comboboxlayoutmanagerObj::implObj's constructor
 
