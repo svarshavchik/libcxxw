@@ -101,6 +101,10 @@ create_input_field_impl_mixin(const container_impl &parent,
 
 	if (config.password_char)
 		throw EXCEPTION(_("Input field with search callbacks cannot be passwords"));
+
+	if (config.rows > 1)
+		throw EXCEPTION(_("Input field with search callbacks must have one row"));
+
 	// Otherwise, we need to do more work, such as creating the popup.
 	//
 	// We are going to borrow most of the combo-box popup's code for this.

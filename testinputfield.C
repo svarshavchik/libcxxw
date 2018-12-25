@@ -30,6 +30,8 @@
 #include <x/weakcapture.H>
 #include <string>
 #include <iostream>
+#include <algorithm>
+#include <courier-unicode.h>
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -57,6 +59,57 @@ class appdataObj : public inputfields, virtual public LIBCXX_NAMESPACE::obj {
 public:
 	using inputfields::inputfields;
 };
+
+static void search_function(LIBCXX_NAMESPACE::w::input_field_search_info &info)
+{
+	static const std::u32string lorem_ipsum[]=
+		{
+		 U"Lorem Ipsum",
+		 U"dolor sit amet",
+		 U"consectetur adipisicing elit",
+		 U"sed do eiusmod tempor",
+		 U"incididunt ut labore",
+		 U"et dolore magna aliqua",
+		 U"Ut enim ad minim veniam",
+		 U"quis nostrud exercitation",
+		 U"ullamco laboris nisi",
+		 U"ut aliquip ex ea commodo",
+		 U"consequat",
+		 U"Duis aute irure dolor",
+		 U"in reprehenderit",
+		 U"in voluptate velit",
+		 U"esse cillum dolore eu",
+		 U"fugiat nulla pariatur",
+		 U"Excepteur sint occaecat cupidatat non proident",
+		 U"sunt in culpa qui officia deserunt mollit anim",
+		 U"id est laborum",
+		};
+
+	std::vector<std::u32string> results;
+	std::vector<LIBCXX_NAMESPACE::w::text_param> items;
+
+	for (const auto &search:lorem_ipsum)
+	{
+		auto iter=std::search(search.begin(), search.end(),
+				      info.search_string.begin(),
+				      info.search_string.end(),
+				      []
+				      (const auto &a,
+				       const auto &b)
+				      {
+					      return unicode_uc(a) ==
+						      unicode_uc(b);
+				      });
+
+		if (iter==search.end())
+			continue;
+
+		results.push_back(search);
+		items.push_back(search);
+	}
+
+	info.results(results, items);
+}
 
 void testbutton()
 {
@@ -429,6 +482,15 @@ void testbutton()
 #endif
 			 fields.spinner=factory->create_input_field("", conf4);
 
+			 factory=layout->append_row();
+
+			 LIBCXX_NAMESPACE::w::input_field_config conf5{20};
+
+			 conf5.hint = "Search...";
+			 conf5.input_field_search_callback=search_function;
+
+			 fields.password=factory->create_input_field({},
+								     conf5);
 			 factory=layout->append_row();
 
 			 auto b=factory->create_special_button_with_label({"Ok"});

@@ -7,6 +7,7 @@
 
 #include "input_field/editor_search_implfwd.H"
 #include "input_field/input_field_searchfwd.H"
+#include "input_field/input_field_search_threadobj.H"
 #include "editor_impl.H"
 
 LIBCXXW_NAMESPACE_START
@@ -15,7 +16,8 @@ LIBCXXW_NAMESPACE_START
 
 //! \see editor_search_impl
 
-class editor_search_implObj: public editorObj::implObj {
+class editor_search_implObj: public editorObj::implObj,
+			     private input_field_search_threadObj {
 
 	//! Alias
 
@@ -67,6 +69,41 @@ private:
 	//! A new search is being requested, or existing one aborted.
 	void request_or_abort_search(ONLY IN_THREAD,
 				     const text_state &new_state);
+
+	//! Implement get_search_string()
+
+	//! Inherited from input_field_search_threadObj to get the next contents
+	//! to search.
+
+	std::u32string get_search_string(ONLY IN_THREAD) override;
+
+	//! Implement search_executed()
+
+	//! Inherited from input_field_search_threadObj to notify the connection
+	//! thread and have it invoke search_completed().
+
+	void search_executed(const search_thread_info &info,
+			     const search_thread_results &mcguffin) override;
+
+	//! Implement search_results()
+
+	//! Inherited from input_field_search_threadObj to report a completed
+	//! search.
+	void search_results(ONLY IN_THREAD,
+			    const std::vector<std::u32string>
+			    &search_result_text,
+			    const std::vector<text_param>
+			    &search_result_items) override;
+
+	//! Implement search_exception_message()
+
+	//! Inherited from input_field_search_threadObj to report an error.
+	void search_exception_message(const exception &e) override;
+
+	//! Implement search_stop_message()
+
+	//! Inherited from input_field_search_threadObj to report an error.
+	void search_stop_message(const text_param &t) override;
 };
 
 LIBCXXW_NAMESPACE_END
