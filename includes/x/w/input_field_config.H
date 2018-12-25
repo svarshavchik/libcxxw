@@ -20,10 +20,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Callback used by an \ref input_field "input field" to search for values.
-
-typedef void input_field_search_callback_t(input_field_search_info &);
-
 //! The configuration of an \ref input_field "input field".
 
 struct input_field_config {
@@ -160,6 +156,46 @@ struct input_field_config {
 	//! Destructor
 
 	~input_field_config();
+};
+
+//! Parameter to the search callback.
+
+//! The search callback gets invoked in a separate execution thread.
+//! search_string is the string to search, and upon a successfull search,
+//! the callback prior to returning should invoke results() with two vectors.
+//!
+//! The first vector contains the found search results. The 2nd vector lists
+//! what should be shown in the search results popup.
+//!
+//! At this time both vectors must always be the same size. A helper overload
+//! takes a single vector of std::u32string, and duplicates it as the 2nd
+//! vector.
+
+struct input_field_search_info {
+
+	//! Constructor
+
+	input_field_search_info(const std::u32string &);
+
+	//! Original search string.
+
+	const std::u32string &search_string;
+
+	//! Found results.
+	virtual void results(const std::vector<std::u32string> &text,
+			     const std::vector<text_param> &items) const=0;
+
+	//! Found results
+	void results(const std::vector<std::u32string> &text) const;
+
+	//! Returns the mcguffin that indicates an aborted search
+
+	//! If the search gets aborted (additional text gets typed into the
+	//! search box while the search is running), the search execution
+	//! thread can use this mcguffin to signal it should abort execution.
+	//!
+	//! The new search does not get started until the callback returns.
+	virtual ref<obj> get_abort_mcguffin() const=0;
 };
 
 LIBCXXW_NAMESPACE_END

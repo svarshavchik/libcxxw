@@ -63,6 +63,7 @@ suppressfile*
 /testping
 /testlistoptions.H
 /testprogressbar
+/testsearch
 /testwordwrappablelabel
 /testmainwindow
 /testmainwindowoptions.H
