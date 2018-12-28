@@ -1676,6 +1676,17 @@ void defaultthemeObj::do_load_fonts(const theme_parser_lock &lock,
 
 font defaultthemeObj::get_theme_font(const std::string &id)
 {
+	auto semicolon=id.find(';');
+
+	if (semicolon != id.npos)
+	{
+		auto base_font=get_theme_font(id.substr(0, semicolon));
+
+		base_font += id.substr(++semicolon);
+
+		return base_font;
+	}
+
 	auto iter=fonts.find(id);
 
 	if (iter != fonts.end())

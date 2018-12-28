@@ -1,3 +1,9 @@
+2018-12-27  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* ""_theme_font literals may now include font modifiers like
+	""_font. Implement + and += operator overloads on x::w::font
+	that modify an existing font.
+
 0.13
 
 2018-12-18  Sam Varshavchik  <mrsam@courier-mta.com>

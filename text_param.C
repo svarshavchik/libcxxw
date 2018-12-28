@@ -271,6 +271,8 @@ richtextstring elementObj::implObj
 		// We made sure that all_positions includes t.string.size(),
 		// above.
 		m.find(t.string.size())->second=default_font;
+	else if (m.find(t.string.size()) != m.end())
+		throw EXCEPTION(gettextmsg("Font or color specification not followed by text."));
 
 	return {t.string, m, allow_links};
 }

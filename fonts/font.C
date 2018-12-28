@@ -24,19 +24,26 @@ LIBCXXW_NAMESPACE_START
 #define DEFAULT_FONT_POINT_SIZE 12
 #endif
 
-font::font() : font(DEFAULT_FONT, DEFAULT_FONT_POINT_SIZE)
+font::font() : font{DEFAULT_FONT, DEFAULT_FONT_POINT_SIZE}
 {
 }
 
-font::font(const std::string &family)
-	: family(family)
+font::font(const std::string &family_arg)
+	: font(DEFAULT_FONT, DEFAULT_FONT_POINT_SIZE)
 {
+	size_t p=family.find(';');
+
+	if (p == family.npos)
+		family=family_arg;
+	else
+		operator+=(family_arg);
 }
 
 font::font(const std::string &family, double point_size)
-	: family(family), point_size(point_size)
+	: family{family}, point_size{point_size}
 {
 }
+
 font::~font()=default;
 
 bool font::operator==(const font &o) const
@@ -259,12 +266,24 @@ font operator"" _font(const char *str, size_t s)
 {
 	font f;
 
-	const char *end=str+s;
+	f += std::string_view{str, s};
 
-	const char *beg=std::find(str, end, ';');
+	return f;
+}
 
-	if (beg != str)
-		f.family=std::string(str, beg);
+font font::operator+(const std::string_view &s) const
+{
+	font f{*this};
+
+	f += s;
+
+	return f;
+}
+
+font &font::operator+=(const std::string_view &s)
+{
+	const char *beg=s.begin();
+	const char *end=s.end();
 
 	chrcasecmp::str_equal_to cmpi;
 
@@ -272,7 +291,13 @@ font operator"" _font(const char *str, size_t s)
 
 	while (beg != end)
 	{
-		auto p=++beg;
+		if (*beg == ';')
+		{
+			++beg;
+			continue;
+		}
+
+		auto p=beg;
 		beg=std::find(beg, end, ';');
 
 		std::string setting{p, beg};
@@ -282,7 +307,10 @@ font operator"" _font(const char *str, size_t s)
 		auto equals=setting.find('=');
 
 		if (equals == setting.npos)
-			throw EXCEPTION(_("Invalid font specification"));
+		{
+			family=setting;
+			continue;
+		}
 
 		std::string name=trim(setting.substr(0, equals));
 		std::string value=trim(setting.substr(equals+1));
@@ -296,7 +324,7 @@ font operator"" _font(const char *str, size_t s)
 			i >> v;
 
 			if (!i.fail() || i.get() == eof)
-				f.set_point_size(v);
+				set_point_size(v);
 		}
 
 		if (cmpi(name, "scale"))
@@ -308,29 +336,32 @@ font operator"" _font(const char *str, size_t s)
 			i >> v;
 
 			if (!i.fail() || i.get() == eof)
-				f.scale(v);
+				scale(v);
 		}
 
 		if (cmpi(name, "weight"))
-			f.set_weight(value);
+			set_weight(value);
 
 		if (cmpi(name, "slant"))
-			f.set_slant(value);
+			set_slant(value);
 
 		if (cmpi(name, "width"))
-			f.set_width(value);
+			set_width(value);
 
 		if (cmpi(name, "style"))
-			f.set_style(value);
+			set_style(value);
+
+		if (cmpi(name, "family"))
+			family=value;
 
 		if (cmpi(name, "foundry"))
-			f.set_foundry(value);
+			set_foundry(value);
 
 		if (cmpi(name, "spacing"))
-			f.set_spacing(value);
+			set_spacing(value);
 	}
 
-	return f;
+	return *this;
 }
 
 font::operator std::string() const

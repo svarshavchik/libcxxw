@@ -280,6 +280,26 @@ struct font {
 	//! Does include scaled_size, which is for internal use only.
 
 	operator std::string() const;
+
+	//! Create a new font by modifying this font.
+
+	//! The string consists of:
+	//!
+	//! - "foundry=<n>" - font foundry
+	//! - "family=<n>" - font family
+	//! - "weight=n"   - same as calling set_weight()
+	//! - "slant=n"    - same as calling set_slant()
+	//! - "width=n"    - same as calling set_width()
+	//! - "style=n"    - same as calling set_style()
+	//! - "point_size" - same as calling set_point_size()
+	//! - "pixel_size" - same as calling pixel_size()
+
+	font operator+(const std::string_view &s) const;
+
+	//! Modify this font
+
+	//! \see operator+
+	font &operator+=(const std::string_view &);
 };
 
 //! Overload << operator
