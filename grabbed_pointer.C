@@ -151,10 +151,8 @@ static xcb_grab_status_t do_grab(xcb_connection_t *c,
 		  xcb_grab_pointer(c, owner_events, grab_window,
 				   XCB_EVENT_MASK_BUTTON_PRESS |
 				   XCB_EVENT_MASK_BUTTON_RELEASE |
-#if 0
 				   XCB_EVENT_MASK_ENTER_WINDOW |
 				   XCB_EVENT_MASK_LEAVE_WINDOW |
-#endif
 				   XCB_EVENT_MASK_POINTER_MOTION,
 				   pointer_mode,
 				   keyboard_mode,
