@@ -67,6 +67,20 @@ struct peephole_style {
 	//! Peephole scrolling strategy
 
 	peephole_scroll scroll=peephole_scroll::minimal;
+
+	//! Truncate the peepholed element's width to peephole width.
+
+	//! Even if the peephole width is smaller than the peepholed element's
+	//! minimum width, the peepholed element's width never exceeds the
+	//! peephole's width.
+	bool width_truncate=false;
+
+	//! Truncate the peepholed element's height to peephole height.
+
+	//! Even if the peephole height is smaller than the peepholed element's
+	//! minimum height, the peepholed element's height never exceeds the
+	//! peephole's height.
+	bool height_truncate=false;
 };
 
 LIBCXXW_NAMESPACE_END

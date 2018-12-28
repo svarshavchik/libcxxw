@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "input_field/input_field_search_popup_handlerobj.H"
+#include "popup/popup_attachedto_info.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -15,6 +16,21 @@ input_field_search_popup_handlerObj::input_field_search_popup_handlerObj
 
 input_field_search_popup_handlerObj::~input_field_search_popup_handlerObj()
 {
+}
+
+popup_position_affinity input_field_search_popup_handlerObj
+::recalculate_popup_position(ONLY IN_THREAD,
+			     rectangle &r,
+			     dim_t screen_width,
+			     dim_t screen_height)
+{
+	auto &attachedto_element_position=
+		attachedto_info->attachedto_element_position(IN_THREAD);
+
+	r.width=attachedto_element_position.width;
+	return superclass_t::recalculate_popup_position(IN_THREAD, r,
+							screen_width,
+							screen_height);
 }
 
 bool input_field_search_popup_handlerObj

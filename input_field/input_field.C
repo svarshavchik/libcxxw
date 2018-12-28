@@ -114,6 +114,9 @@ create_input_field_impl_mixin(const container_impl &parent,
 	create_peepholed_toplevel_listcontainer_popup_args
 		popup_args=combobox_listcontainer_popup_args(parent, style, 1);
 
+	popup_args.popup_peephole_style.width_algorithm=dim_axis_arg{};
+	popup_args.popup_peephole_style.width_truncate=true;
+
 	// The search popup should be as tall as it wants to be.
 	popup_args.popup_peephole_style.height_algorithm=
 		peephole_algorithm::stretch_peephole;

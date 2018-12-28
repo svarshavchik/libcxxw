@@ -36,6 +36,7 @@ extern const popup_visibility_semantics LIBCXX_HIDDEN exclusive_popup_type;
 
 class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
+ protected:
 	//! Popup attachedment information
 
 	const popup_attachedto_info attachedto_info;

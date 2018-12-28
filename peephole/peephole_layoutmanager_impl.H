@@ -111,9 +111,10 @@ private:
 	//! Explicitly-specified vertical metrics.
 	metrics::axis vertical_metrics_thread_only;
 
+protected:
 	THREAD_DATA_ONLY(horizontal_metrics);
 	THREAD_DATA_ONLY(vertical_metrics);
-
+private:
 	//! Recompute explicit horizontal and vertical metrics.
 
 	void recompute_hv_metrics(ONLY IN_THREAD,

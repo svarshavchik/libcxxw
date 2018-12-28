@@ -1423,6 +1423,8 @@ rectangle list_elementObj::implObj
 
 	auto *cell=&lock->cells.at(row_number * columns);
 
+	dim_t element_width=data(IN_THREAD).current_position.width;
+
 	for (const auto &poswidth:lock->columns_poswidths)
 	{
 		const auto &[x, width]=poswidth;
@@ -1437,6 +1439,21 @@ rectangle list_elementObj::implObj
 			     width,
 			     (*cell)->height};
 
+		// Check if the column lies outside of the element.
+		//
+		// Input field search popup limits the width of the list
+		// to the width of the input field, truncating it if necessary.
+		//
+		// In order to show too-long search results with ellipsis we
+		// need to truncate the column width.
+
+		if (dim_t::truncate(rc.x) >= element_width)
+			continue;
+		dim_t maximum_width{element_width - dim_t::truncate(rc.x)};
+		if (rc.width > maximum_width)
+			rc.width=maximum_width;
+
+		// Reposition the draw boundaries here.
 		bounds.position_at(rc);
 		drawn_columns.push_back(rc);
 

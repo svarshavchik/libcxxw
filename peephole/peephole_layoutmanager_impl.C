@@ -392,9 +392,11 @@ void peepholeObj::layoutmanager_implObj
 
 	// But don't go below the element's minimum size. This is what the
 	// peephole is, after all.
-	if (element_pos.width < element_horizvert->horiz.minimum())
+	if (element_pos.width < element_horizvert->horiz.minimum()
+	    && !style.width_truncate)
 		element_pos.width=element_horizvert->horiz.minimum();
-	if (element_pos.height < element_horizvert->vert.minimum())
+	if (element_pos.height < element_horizvert->vert.minimum()
+	    && !style.height_truncate)
 		element_pos.height=element_horizvert->vert.minimum();
 
 	LOG_DEBUG("Peephole " << this

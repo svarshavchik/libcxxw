@@ -389,9 +389,18 @@ void toplevelpeephole_layoutmanagerObj::recalculate(ONLY IN_THREAD)
 	if (v_minimum > max_height)
 		v_minimum=max_height;
 
+	metrics::axis new_horiz{h_minimum, h_preferred, h_maximum};
+
+	// input field search popup forces specific width.
+	//
+	// If the peephole's width_algorithm specifies explicit metrics,
+	// don't override them here, instead use them.
+	if (std::holds_alternative<dim_axis_arg>(style.width_algorithm))
+		new_horiz=horizontal_metrics(IN_THREAD);
+
 	get_element_impl().get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD,
-				      {h_minimum, h_preferred, h_maximum},
+				      new_horiz,
 				      {v_minimum, v_preferred, v_maximum});
 
 	peepholeObj::layoutmanager_implObj::scrollbarsObj

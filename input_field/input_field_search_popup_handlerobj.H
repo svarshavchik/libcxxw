@@ -39,6 +39,17 @@ public:
 
 	//! Returns search_popup_activated
 	bool popup_accepts_key_events(ONLY IN_THREAD) override;
+
+	//! Override recalculate_popup_position()
+
+	//! Force popup width to be always equal to the main input field
+	//! element's width.
+
+	popup_position_affinity recalculate_popup_position(ONLY IN_THREAD,
+							   rectangle &r,
+							   dim_t screen_width,
+							   dim_t screen_height)
+		override;
 };
 
 LIBCXXW_NAMESPACE_END
