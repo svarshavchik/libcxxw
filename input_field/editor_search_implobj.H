@@ -92,7 +92,7 @@ private:
 	void search_results(ONLY IN_THREAD,
 			    const std::vector<std::u32string>
 			    &search_result_text,
-			    const std::vector<text_param>
+			    const std::vector<list_item_param>
 			    &search_result_items) override;
 
 	//! Implement search_exception_message()

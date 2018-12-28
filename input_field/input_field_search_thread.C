@@ -6,6 +6,7 @@
 #include "input_field/input_field_search_thread.H"
 #include "x/w/text_param.H"
 #include "x/w/input_field_config.H"
+#include "x/w/listlayoutmanager.H"
 #include "catch_exceptions.H"
 #include <x/threads/run.H>
 #include <x/functionalrefptrfwd.H>
@@ -128,15 +129,20 @@ void input_field_search_threadObj::search_thread_request_stop(ONLY IN_THREAD)
 
 
 input_field_search_info
-::input_field_search_info(const std::u32string &search_string)
-	: search_string{search_string}
+::input_field_search_info(const std::u32string &search_string,
+			  std::vector<std::u32string> &search_results,
+			  std::vector<list_item_param> &search_items)
+	: search_string{search_string},
+	  search_results{search_results},
+	  search_items{search_items}
 {
 }
 
 void input_field_search_info::results(const std::vector<std::u32string> &text)
 	const
 {
-	results(text, {text.begin(), text.end()});
+	search_results=text;
+	search_items={text.begin(), text.end()};
 }
 
 namespace {
@@ -148,7 +154,10 @@ namespace {
 
 // Collect search results.
 
-struct input_field_search_info_impl : public input_field_search_info {
+struct input_field_search_info_impl :
+	public mpobj<input_field_search_threadObj::search_thread_results_s
+		     >::lock,
+	public input_field_search_info {
 
 	typedef input_field_search_threadObj
 	::search_thread_info search_thread_info;
@@ -160,10 +169,17 @@ struct input_field_search_info_impl : public input_field_search_info {
 
 	typedef input_field_search_threadObj::info_lock info_lock;
 
+	typedef mpobj<search_thread_results_s>::lock results_lock;
+
 	input_field_search_info_impl(const std::u32string &search_string,
 				     const search_thread_info &info,
 				     const search_thread_results &mcguffin)
-		: input_field_search_info{search_string},
+		: results_lock{mcguffin->results},
+		  input_field_search_info{search_string,
+					  results_lock::operator->()
+					  ->search_result_text,
+					  results_lock::operator->()
+					  ->search_result_items},
 		  info{info},
 		  mcguffin{mcguffin}
 	{
@@ -171,15 +187,6 @@ struct input_field_search_info_impl : public input_field_search_info {
 
 	const search_thread_info info;
 	const search_thread_results mcguffin;
-
-	void results(const std::vector<std::u32string> &text,
-		     const std::vector<text_param> &items) const override
-	{
-		mpobj<search_thread_results_s>::lock lock{mcguffin->results};
-
-		lock->search_result_text=text;
-		lock->search_result_items=items;
-	}
 
 	ref<obj> get_abort_mcguffin() const override
 	{

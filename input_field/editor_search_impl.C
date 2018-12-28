@@ -161,15 +161,12 @@ void editor_search_implObj
 void editor_search_implObj
 ::search_results(ONLY IN_THREAD,
 		 const std::vector<std::u32string> &search_result_text,
-		 const std::vector<text_param> &search_result_items)
+		 const std::vector<list_item_param> &search_result_items)
 {
 	// Use the public API to update the popup and make it visible.
 	listlayoutmanager lm=search_container->my_popup->get_layoutmanager();
 
-	lm->replace_all_items(std::vector<list_item_param>{
-			search_result_items.begin(),
-				search_result_items.end()});
-
+	lm->replace_all_items(search_result_items);
 	search_container->my_popup->show_all();
 }
 

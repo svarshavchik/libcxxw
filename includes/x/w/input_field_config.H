@@ -11,6 +11,7 @@
 #include <x/w/alignment.H>
 #include <x/w/text_param.H>
 #include <x/w/input_field_configfwd.H>
+#include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/scrollbar.H>
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
@@ -175,15 +176,23 @@ struct input_field_search_info {
 
 	//! Constructor
 
-	input_field_search_info(const std::u32string &);
+	input_field_search_info(const std::u32string &,
+				std::vector<std::u32string> &search_results,
+				std::vector<list_item_param> &search_items);
 
 	//! Original search string.
 
 	const std::u32string &search_string;
 
-	//! Found results.
-	virtual void results(const std::vector<std::u32string> &text,
-			     const std::vector<text_param> &items) const=0;
+	//! Search result text
+
+	//! What gets placed into the input field, if selected.
+	std::vector<std::u32string> &search_results;
+
+	//! Search result list
+
+	//! What goes into the popup list.
+	std::vector<list_item_param> &search_items;
 
 	//! Found results
 	void results(const std::vector<std::u32string> &text) const;

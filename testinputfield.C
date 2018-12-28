@@ -85,9 +85,6 @@ static void search_function(LIBCXX_NAMESPACE::w::input_field_search_info &info)
 		 U"id est laborum",
 		};
 
-	std::vector<std::u32string> results;
-	std::vector<LIBCXX_NAMESPACE::w::text_param> items;
-
 	for (const auto &search:lorem_ipsum)
 	{
 		auto iter=std::search(search.begin(), search.end(),
@@ -104,11 +101,9 @@ static void search_function(LIBCXX_NAMESPACE::w::input_field_search_info &info)
 		if (iter==search.end())
 			continue;
 
-		results.push_back(search);
-		items.push_back(search);
+		info.search_results.push_back(search);
+		info.search_items.push_back(search);
 	}
-
-	info.results(results, items);
 }
 
 void testbutton()

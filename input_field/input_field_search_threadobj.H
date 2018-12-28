@@ -9,6 +9,7 @@
 #include "x/w/impl/connection_threadfwd.H"
 #include "x/w/text_paramfwd.H"
 #include "x/w/input_field_configfwd.H"
+#include "x/w/listlayoutmanagerfwd.H"
 #include <x/obj.H>
 #include <x/ptrfwd.H>
 #include <x/weakptrfwd.H>
@@ -130,7 +131,7 @@ public:
 		std::vector<std::u32string> search_result_text;
 
 		//! The results of the search
-		std::vector<text_param> search_result_items;
+		std::vector<list_item_param> search_result_items;
 	};
 
 	//! Search result object.
@@ -222,7 +223,7 @@ public:
 	virtual void search_results(ONLY IN_THREAD,
 				    const std::vector<std::u32string>
 				    &search_result_text,
-				    const std::vector<text_param>
+				    const std::vector<list_item_param>
 				    &search_result_items)=0;
 
 	//! Convenient shortcut
