@@ -162,11 +162,6 @@ public:
 	//! Our intended size.
 	rectangle most_recent_configuration;
 
-	//! Make sure most_recent_configuration is our actual configuration.
-
-	//! Only when we're visible.
-	void update_my_configuration(ONLY IN_THREAD);
-
 	//! The pointer is grabbed while the popup is open.
 	ptr<obj> current_grab;
 

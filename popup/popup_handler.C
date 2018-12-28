@@ -85,8 +85,22 @@ void popupObj::handlerObj::set_default_wm_hints(ONLY IN_THREAD,
 	hints.input=1;
 }
 
+void popupObj::handlerObj::request_visibility(ONLY IN_THREAD, bool flag)
+{
+	superclass_t::request_visibility(IN_THREAD, flag);
+	set_popup_position(IN_THREAD);
+}
+
 void popupObj::handlerObj::set_popup_position(ONLY IN_THREAD)
 {
+	// Wait until we're becoming visible, before moving us.
+	//
+	// request_visibility() will call us, when we are, and that's when
+	// the show starts.
+
+	if (!data(IN_THREAD).requested_visibility)
+		return;
+
 	auto hv=get_horizvert(IN_THREAD);
 
 	rectangle r=*mpobj<rectangle>::lock{current_position};
@@ -162,24 +176,6 @@ void popupObj::handlerObj::set_popup_position(ONLY IN_THREAD)
 #endif
 
 	most_recent_configuration=r;
-	update_my_configuration(IN_THREAD);
-}
-
-void popupObj::handlerObj::request_visibility(ONLY IN_THREAD, bool flag)
-{
-	superclass_t::request_visibility(IN_THREAD, flag);
-	update_my_configuration(IN_THREAD);
-}
-
-void popupObj::handlerObj::update_my_configuration(ONLY IN_THREAD)
-{
-	// Wait until we're becoming visible, before moving us.
-	//
-	// request_visibility() will call us, when we are, and that's when
-	// the show starts.
-
-	if (!data(IN_THREAD).requested_visibility)
-		return;
 
 	{
 		mpobj<rectangle>::lock lock(current_position);
