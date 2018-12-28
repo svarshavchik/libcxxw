@@ -201,18 +201,12 @@ bool shared_handler_dataObj
 }
 
 void shared_handler_dataObj
-::reporting_button_event_to(ONLY IN_THREAD,
-			    const ref<generic_windowObj::handlerObj> &from,
-			    const ref<generic_windowObj::handlerObj> &to,
-			    const button_event &be)
+::reporting_pointer_xy_to(ONLY IN_THREAD,
+			  const ref<generic_windowObj::handlerObj> &from,
+			  const ref<generic_windowObj::handlerObj> &to)
 {
-	if (be.press)
-		return;
-
-	if (from == to)
-		return;
-
-	from->pointer_focus_lost(IN_THREAD);
+	if (from != to)
+		from->pointer_focus_lost(IN_THREAD);
 
 	for (auto &b:*opened_menu_popups)
 	{
@@ -230,7 +224,26 @@ void shared_handler_dataObj
 		if (handler == to)
 			continue;
 
-		from->pointer_focus_lost(IN_THREAD);
+		handler->pointer_focus_lost(IN_THREAD);
+	}
+
+	for (auto &b:*opened_exclusive_popups)
+	{
+		auto popup=b.getptr();
+
+		if (!popup)
+			continue;
+
+		ptr<generic_windowObj::handlerObj>
+			handler=popup->handler.getptr();
+
+		if (!handler)
+			continue;
+
+		if (handler == to)
+			continue;
+
+		handler->pointer_focus_lost(IN_THREAD);
 	}
 }
 

@@ -111,18 +111,22 @@ public:
 			      uint16_t sequencehi,
 			      bool keypress);
 
-	//! The window handler takes care of button events, just an FYI.
+	//! Make sure pointer focus is removed from any other popups.
 
-	//! We'll invoke, ourselves, ungrab_pointer for everything else.
+	//! When reporting pointer and button events to a popup, make sure
+	//! that the original window formally loses pointer focus.
+	//!
 	//! This way when a button press opens a popup, when the button
 	//! release gets processed we'll unhighlight the button in the original
 	//! window.
+	//!
+	//! When an input field with a search popup hides the mouse pointer
+	//! as a result of typing, moving the pointer will un-hide it.
 
-	void reporting_button_event_to
+	void reporting_pointer_xy_to
 		(ONLY IN_THREAD,
 		 const ref<generic_windowObj::handlerObj> &from,
-		 const ref<generic_windowObj::handlerObj> &to,
-		 const button_event &);
+		 const ref<generic_windowObj::handlerObj> &to);
 
  private:
 

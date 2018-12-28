@@ -1133,9 +1133,6 @@ void generic_windowObj::handlerObj
 	if (report_to->is_input_busy())
 		return;
 
-	handler_data->reporting_button_event_to(IN_THREAD, ref(this),
-						report_to, be);
-
 	report_to->do_button_event(IN_THREAD, event, be, me);
 
 	// The passive grab was released by a button release event.
@@ -1742,6 +1739,11 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 				was_grabbed=grabbed_element_window
 					->grab_locked(IN_THREAD);
 
+			handler_data->reporting_pointer_xy_to
+				(IN_THREAD,
+				 ref{this},
+				 grabbed_element_window);
+
 			grabbed_element_window
 				->report_pointer_xy_to_this_handler
 				(IN_THREAD, pg, me, was_grabbed);
@@ -1775,14 +1777,20 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 				&& dim_t::truncate(me2.x) < popup->get_width()
 				&& dim_t::truncate(me2.y) < popup->get_height();
 
-			popup->report_pointer_xy_to_this_handler
-				(IN_THREAD,
-				 pg,
-				 me2,
-				 was_grabbed);
-
 			if (remained_inside)
+			{
+				handler_data->reporting_pointer_xy_to
+					(IN_THREAD,
+					 ref{this},
+					 popup);
+				popup->report_pointer_xy_to_this_handler
+					(IN_THREAD,
+					 pg,
+					 me2,
+					 was_grabbed);
+
 				return popup; // This is where we reported this.
+			}
 		}
 
 		if (new_popup)
@@ -1791,6 +1799,11 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 			new_popup->subtract_root_xy(IN_THREAD, me.x, me.y);
 			most_recent_popup_with_pointer(IN_THREAD).getptr()
 				=new_popup;
+			handler_data->reporting_pointer_xy_to
+				(IN_THREAD,
+				 ref{this},
+				 new_popup);
+
 			new_popup->report_pointer_xy_to_this_handler
 				(IN_THREAD, pg, me, was_grabbed);
 			return new_popup;
