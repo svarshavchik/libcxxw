@@ -56,12 +56,15 @@ public:
 				  xcb_timestamp_t timestamp)
 		override;
 
+	using editorObj::implObj::set;
+
 	//! Override set()
 
 	//! Invoke request_or_abort_search() if necessary.
 	void set(ONLY IN_THREAD, const std::u32string &string,
 		 size_t cursor_pos, size_t selection_pos)
 		override;
+
 private:
 
 	struct text_state;
@@ -104,6 +107,18 @@ private:
 
 	//! Inherited from input_field_search_threadObj to report an error.
 	void search_stop_message(const text_param &t) override;
+
+	//! The most recent search_results().
+
+	std::vector<std::u32string> most_recent_search_results_thread_only;
+
+public:
+	THREAD_DATA_ONLY(most_recent_search_results);
+
+	//! Selected a search result from the popup.
+
+	void selected(ONLY IN_THREAD, size_t item_number,
+		      const callback_trigger_t &trigger);
 };
 
 LIBCXXW_NAMESPACE_END

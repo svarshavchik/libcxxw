@@ -6,6 +6,7 @@
 #define x_w_input_field_searchobj_h
 
 #include "input_field/input_field_searchfwd.H"
+#include "input_field/input_field_search_popup_handlerfwd.H"
 #include "popup/popup_attachedto_handler_elementfwd.H"
 #include "popup/popup_attachedto_handlerfwd.H"
 #include "x/w/impl/popup/popupfwd.H"
@@ -27,7 +28,8 @@ class input_field_searchObj :
  public:
 	//! Constructor
 	input_field_searchObj(const popup &my_popup,
-			      const popup_attachedto_handler &handler,
+			      const ref<input_field_search_popup_handlerObj>
+			      &handler,
 			      const container_impl &parent);
 
 	//! Destructor
@@ -35,6 +37,9 @@ class input_field_searchObj :
 
 	//! The attached popup.
 	const popup my_popup;
+
+	//! The attached popup's handler.
+	const ref<input_field_search_popup_handlerObj> popup_handler;
 };
 
 LIBCXXW_NAMESPACE_END

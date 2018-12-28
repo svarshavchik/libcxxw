@@ -102,7 +102,27 @@ static void search_function(LIBCXX_NAMESPACE::w::input_field_search_info &info)
 			continue;
 
 		info.search_results.push_back(search);
-		info.search_items.push_back(search);
+
+		auto iter_end=iter+info.search_string.size();
+
+		LIBCXX_NAMESPACE::w::text_param t;
+
+		if (iter != search.begin())
+		{
+			t("sans_serif"_theme_font);
+			t(std::u32string{search.begin(), iter});
+		}
+		t("sans_serif;weight=bold"_theme_font);
+		t(LIBCXX_NAMESPACE::w::text_decoration::underline);
+		t(std::u32string{iter, iter_end});
+
+		if (iter_end != search.end())
+		{
+			t("sans_serif"_theme_font);
+			t(LIBCXX_NAMESPACE::w::text_decoration::none);
+			t(std::u32string{iter_end, search.end()});
+		}
+		info.search_items.push_back(t);
 	}
 }
 
@@ -484,8 +504,30 @@ void testbutton()
 			 conf5.hint = "Search...";
 			 conf5.input_field_search_callback=search_function;
 
-			 fields.password=factory->create_input_field({},
-								     conf5);
+			 auto search=factory->create_input_field({},
+								 conf5);
+
+			 search->on_validate
+				 ([f=make_weak_capture(search)]
+				  (ONLY IN_THREAD,
+				   const auto &trigger)
+				  {
+					  auto got=f.get();
+
+					  if (!got)
+						  return true;
+
+					  auto &[f]=*got;
+
+					  LIBCXX_NAMESPACE::w::input_lock
+						  lock{f};
+
+					  std::cout << "Search found: "
+						    << lock.get()
+						    << std::endl;
+					  return true;
+				  });
+
 			 factory=layout->append_row();
 
 			 auto b=factory->create_special_button_with_label({"Ok"});

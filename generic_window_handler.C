@@ -954,6 +954,12 @@ bool generic_windowObj::handlerObj
 	if (!has_unicode)
 		ke.unicode=0;
 
+	return handle_key_event(IN_THREAD, ke);
+}
+
+bool generic_windowObj::handlerObj::handle_key_event(ONLY IN_THREAD,
+						     const key_event &ke)
+{
 	// If there's an element with a focus, delegate this to it. If
 	// it doesn't process the key event, it'll eventually percolate back
 	// to us.

@@ -701,6 +701,9 @@ class generic_windowObj::handlerObj
 			      const xcb_key_release_event_t *event,
 			      bool keypress) override;
 
+	//! Process a key press or release event.
+	bool handle_key_event(ONLY IN_THREAD, const key_event &ke);
+
 	//! Process a button press or release event.
 
 	//! Use grab_locked() for was_grabbed in the overloaded method.

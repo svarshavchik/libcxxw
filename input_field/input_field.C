@@ -9,6 +9,8 @@
 #include "input_field/input_field_search.H"
 #include "input_field/input_field_search_popup_handler.H"
 #include "input_field/editor_search_impl.H"
+#include "listlayoutmanager/listlayoutmanager_impl.H"
+#include "listlayoutmanager/list_element_impl.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
@@ -122,8 +124,9 @@ create_input_field_impl_mixin(const container_impl &parent,
 		peephole_algorithm::stretch_peephole;
 
 	custom_combobox_popup_containerptr popup_containerptr;
+	ptr<input_field_search_popup_handlerObj> popup_handler;
 
-	auto [combobox_popup, popup_handler]=
+	auto [combobox_popup, ignored_popup_handler]=
 		create_peepholed_toplevel_listcontainer_popup
 		(popup_args,
 		 [&]
@@ -138,8 +141,12 @@ create_input_field_impl_mixin(const container_impl &parent,
 		 [&]
 		 (const peepholed_toplevel_listcontainer_handler_args &args)
 		 {
-			 return ref<input_field_search_popup_handlerObj>
+			 auto ret=ref<input_field_search_popup_handlerObj>
 				 ::create(args);
+
+			 popup_handler=ret;
+
+			 return ret;
 		 }
 		 );
 
@@ -149,6 +156,37 @@ create_input_field_impl_mixin(const container_impl &parent,
 	search_container=search;
 
 	return search;
+}
+
+static inline ref<editorObj::implObj>
+create_editor_impl(editorObj::implObj::init_args &args,
+		   const ptr<input_field_searchObj> &search_container)
+{
+	if (!search_container)
+		return ref<editorObj::implObj>::create(args);
+
+	auto editor_search_impl=
+		ref<editor_search_implObj>::create(args, search_container);
+
+	ref<listlayoutmanagerObj::implObj> llm_impl=
+		search_container->my_popup->get_layout_impl();
+
+	listimpl_info_t::lock lock
+		{llm_impl->list_element_singleton->impl->textlist_info};
+
+	lock->selection_changed=
+		[editor_search_impl=weakptr<ptr<editor_search_implObj>>
+				{editor_search_impl}]
+		(ONLY IN_THREAD, const auto &info)
+		{
+			auto impl=editor_search_impl.getptr();
+
+			if (impl && info.selected)
+				impl->selected(IN_THREAD, info.item_number,
+					       info.trigger);
+		};
+
+	return editor_search_impl;
 }
 
 input_field
@@ -197,13 +235,8 @@ factoryObj::create_input_field(const text_param &text,
 			   editorObj::implObj::init_args args
 				   {
 				    peephole_impl, text, config};
-			   auto e_impl=
-				   search_container ?
-				   ref<editorObj::implObj>
-				   {
-				    ref<editor_search_implObj>::create
-				    (args, search_container)
-				   } : ref<editorObj::implObj>::create(args);
+			   auto e_impl=create_editor_impl(args,
+							  search_container);
 
 			   auto e=editor::create(e_impl);
 

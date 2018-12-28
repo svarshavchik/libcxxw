@@ -39,4 +39,11 @@ bool input_field_search_popup_handlerObj
 	return search_popup_activated(IN_THREAD);
 }
 
+void input_field_search_popup_handlerObj
+::set_inherited_visibility_unmapped(ONLY IN_THREAD)
+{
+	search_popup_activated(IN_THREAD)=false;
+	superclass_t::set_inherited_visibility_unmapped(IN_THREAD);
+}
+
 LIBCXXW_NAMESPACE_END

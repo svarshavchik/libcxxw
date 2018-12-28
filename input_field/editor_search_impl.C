@@ -5,11 +5,14 @@
 #include "libcxxw_config.h"
 #include "input_field/editor_search_impl.H"
 #include "input_field/input_field_search.H"
+#include "input_field/input_field_search_popup_handler.H"
 #include "input_field/input_field_search_thread.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtextiterator.H"
 #include "popup/popup.H"
+#include <sstream>
+#include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -64,12 +67,63 @@ void editor_search_implObj::keyboard_focus(ONLY IN_THREAD,
 
 	text_state new_state{IN_THREAD, *this};
 
+	// Upon gaining focus, do not kick off a search right away. Require
+	// at least some key to be pressed. If had a search popup opened,
+	// cursor-down-ed into it, then hit escape closing it, we regain
+	// input focus and don't want to reopen the same popup!
+	if (new_state.enabled_cursor_at_end)
+		return;
+
 	request_or_abort_search(IN_THREAD, new_state);
 }
 
 bool editor_search_implObj::process_key_event(ONLY IN_THREAD,
 					      const key_event &ke)
 {
+	// Cursor down enables the popup.
+
+	if (ke.keypress && ke.notspecial() &&
+	    search_container->popup_handler->data(IN_THREAD)
+	    .requested_visibility &&
+	    !search_container->popup_handler->search_popup_activated(IN_THREAD))
+		switch (ke.keysym) {
+		case XK_Down:
+		case XK_KP_Down:
+			search_container->popup_handler
+				->search_popup_activated(IN_THREAD)=true;
+
+			// Abort any search in progress, so that it
+			// doesn't update the popup and sweep the rug
+			// from under our fee.
+			search_abort(IN_THREAD);
+
+			search_container->popup_handler
+				->set_default_focus(IN_THREAD, next_key{});
+			search_container->popup_handler
+				->handle_key_event(IN_THREAD, ke);
+
+			// Unset our keyboard focus (stop blinking).
+			// When the popup gets closed, we'll get it
+			// back because we're autorestorable_focusable.
+			//
+			// Preserve the current validation status of
+			// the input field's contents. We don't want
+			// to trigger validation as a result of losing
+			// input focus.
+
+			auto status=validation_required(IN_THREAD);
+			validation_required(IN_THREAD)=false;
+
+			get_window_handler()
+				.unset_keyboard_focus(IN_THREAD, &ke);
+
+			// Restore it.
+			validation_required(IN_THREAD)=status;
+
+			return true;
+		}
+
+
 	text_state old_state{IN_THREAD, *this};
 
 	bool flag=superclass_t::process_key_event(IN_THREAD, ke);
@@ -134,9 +188,22 @@ void editor_search_implObj::request_or_abort_search(ONLY IN_THREAD,
 			search_thread_request_stop(IN_THREAD);
 		}
 
+		// If the search popup has been activated for keyboard entry,
+		// don't close it here.
+		//
+		// input_field_search_popup_handlerObj will clear this flag
+		// in set_inherited_visibility_unmapped.
+
+		if (search_container->popup_handler
+		    ->search_popup_activated(IN_THREAD))
+			return;
+
 		// Because we use the public API below to show() the popup,
 		// we also must use the public API even though we're IN_THREAD.
 		search_container->my_popup->hide();
+
+		most_recent_search_results(IN_THREAD).clear();
+		// Recycle memory.
 	}
 }
 
@@ -167,7 +234,42 @@ void editor_search_implObj
 	listlayoutmanager lm=search_container->my_popup->get_layoutmanager();
 
 	lm->replace_all_items(search_result_items);
-	search_container->my_popup->show_all();
+
+	most_recent_search_results(IN_THREAD)=search_result_text;
+
+	if (search_result_items.empty())
+	{
+		search_container->my_popup->hide();
+	}
+	else
+	{
+		search_container->my_popup->show_all();
+	}
+}
+
+void editor_search_implObj
+::selected(ONLY IN_THREAD, size_t item_number,
+	   const callback_trigger_t &trigger)
+{
+	if (item_number >= most_recent_search_results(IN_THREAD).size())
+	{
+		std::ostringstream o;
+
+		o << "There were only "
+		  << most_recent_search_results(IN_THREAD).size()
+		  << " search results that\nwere returned by the search"
+			" function.";
+		search_stop_message(o.str());
+		return;
+	}
+
+	const auto &s=most_recent_search_results(IN_THREAD)[item_number];
+
+	// We override set(), so must go straight to the horse's mouth.
+	editorObj::implObj::set(IN_THREAD, s, s.size(), s.size());
+
+	validation_required(IN_THREAD)=true;
+	validate_modified(IN_THREAD, trigger);
 }
 
 void editor_search_implObj::search_exception_message(const exception &e)
