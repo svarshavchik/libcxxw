@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -44,12 +44,40 @@ class LIBCXX_PUBLIC my_search_threadObj;
 mpcobj<int> search_counter=0;
 mpcobj<int> wait_until_search_counter=0;
 
+class debug {
+
+	mpobj<bool>::lock lock;
+
+	static mpobj<bool> debug_dump;
+
+public:
+
+	debug() : lock{debug_dump} {}
+
+	~debug()
+	{
+		std::cout << std::endl;
+	}
+
+	template<typename T>
+	const debug &operator<<(T && t) const
+	{
+		std::cout << std::forward<T>(t);
+		return *this;
+	}
+};
+
+mpobj<bool> debug::debug_dump{false};
+
 void wait_for_search(int n)
 {
+	debug{} << "MAIN: WAIT_FOR_SEARCH " << n << " STARTED";
 	mpcobj<int>::lock lock{search_counter};
 
 	while (*lock < n)
 		lock.wait();
+
+	debug{} << "MAIN: WAIT_FOR_SEARCH " << n << " FINISHED";
 }
 
 void search_proceed(int n)
@@ -95,8 +123,8 @@ public:
 				 n=++*lock;
 				 lock.notify_all();
 
-				 std::cout << "SEARCH "
-					   << n << " STARTING" << std::endl;
+				 debug{} << "THREAD: SEARCH "
+					   << n << " STARTING";
 			 }
 
 			 {
@@ -108,8 +136,11 @@ public:
 			 }
 
 			 if (info.search_string == U"EXCEPT")
+			 {
+				 debug{} << "THREAD: EXCEPTION THROWN"
+					  ;
 				 throw EXCEPTION("Exception");
-
+			 }
 			 if (info.search_string == U"WAIT4ABORT")
 			 {
 				 mpcobj<bool>::lock lock{flag->flag};
@@ -117,8 +148,11 @@ public:
 				 while (!*lock)
 					 lock.wait();
 			 }
-			 std::cout << "SEARCH "
-				   << n << " PROCEEDING" << std::endl;
+			 debug{} << "THREAD: SEARCH "
+				   << n << " PROCEEDING: "
+				   << std::string{info.search_string.begin(),
+						  info.search_string.end()}
+				  ;
 
 			 info.results({info.search_string});
 		 }
@@ -146,16 +180,35 @@ public:
 
 	std::u32string get_search_string(ONLY IN_THREAD) override
 	{
-		return *mpobj<std::u32string>::lock{search_string};
+		mpobj<std::u32string>::lock lock{search_string};
+
+		debug{} << "MAIN: SEARCH " << std::string{lock->begin(),
+				lock->end()};
+		return *lock;
 	}
+
+	typedef mpcobj<std::optional<std::tuple<search_thread_info,
+						search_thread_results>>
+		       > results_t;
+
+	results_t results;
+
+	std::vector<std::u32string> final_results;
 
 	void search_executed(const search_thread_info &info,
 			     const search_thread_results &mcguffin) override
 	{
-		search_completed(0, info, mcguffin);
-	}
+		results_t::lock lock{results};
 
-	mpcobj<std::vector<std::u32string>> results;
+		debug{} << "THREAD: SEARCH_EXECUTED, PLACING RESULTS";
+		while (*lock)
+			lock.wait();
+
+		*lock=std::tuple{info, mcguffin};
+
+		debug{} << "THREAD: RESULTS PLACED";
+		lock.notify_all();
+	}
 
 	void search_results(ONLY IN_THREAD,
 			    const std::vector<std::u32string>
@@ -163,48 +216,75 @@ public:
 			    const std::vector<list_item_param>
 			    &search_result_items) override
 	{
+		{
+			debug d;
+
+			d << "MAIN: RECEIVED " << search_result_text.size()
+			  << " RESULTS\n";
+			for (const auto &s:search_result_text)
+				d << "    "
+				  << std::string{s.begin(), s.end()} << "\n";
+		}
+
+		final_results.insert(final_results.end(),
+				     search_result_text.begin(),
+				     search_result_text.end());
+
 		if (search_result_text ==
 		    std::vector<std::u32string>{U"EXCEPT2"})
 			throw EXCEPTION("SEARCH");
-
-		mpcobj<std::vector<std::u32string>>::lock lock{results};
-
-		lock->insert(lock->end(), search_result_text.begin(),
-			     search_result_text.end());
-		lock.notify_all();
 	}
 
 	std::vector<std::string> wait_for_n_search_results(size_t n)
 	{
-		mpcobj<std::vector<std::u32string>>::lock lock{results};
+		while (final_results.size() < n)
+		{
+			auto [info, mcguffin]=
+				({
+					results_t::lock lock{results};
 
-		while (lock->size() < n)
-			lock.wait();
+					debug{} << "MAIN: WAITING FOR " << n
+						  << " RESULTS, "
+						"I CURRENTLY HAVE "
+						  << final_results.size()
+						 ;
 
+					while (!*lock)
+						lock.wait();
+
+					auto [info, mcguffin]=**lock;
+
+					lock->reset();
+
+					lock.notify_all();
+
+					debug{} << "MAIN: A RESULT WAS COMPLETED"
+						 ;
+
+					std::tuple{info, mcguffin};
+				});
+
+			search_completed(0, info, mcguffin);
+		}
 		std::vector<std::string> s;
 
-		for (const auto &us:*lock)
-		{
+		for (const auto &us:final_results)
 			s.emplace_back(us.begin(), us.end());
-		}
 
 		return s;
 	}
 
+	mpobj<std::string> caught_exception;
+
 	void search_exception_message(const exception &e) override
 	{
-		mpcobj<std::vector<std::u32string>>::lock lock{results};
-
 		std::ostringstream o;
 
 		o << e;
 
-		std::u32string msg{U"CAUGHT: "};
+		caught_exception=std::string{"CAUGHT: "}+o.str();
 
-		std::string s=o.str();
-		msg.insert(msg.end(), s.begin(), s.end());
-
-		lock->push_back(msg);
+		debug{} << "CAUGHT: " << caught_exception.get();
 	}
 
 	void search_stop_message(const text_param &t) override
@@ -214,7 +294,7 @@ public:
 
 void test1()
 {
-	std::cout << "test1" << std::endl;
+	debug{} << "test1";
 
 	{
 		auto s=ref<my_search_threadObj>::create();
@@ -225,17 +305,14 @@ void test1()
 
 		s->search("two");
 		s->search("three");
-		search_proceed(1);
-
-		wait_for_search(2);
 		search_proceed(2);
 
-		if (s->wait_for_n_search_results(2) !=
-		    std::vector<std::string>{"one","three"})
+		if (s->wait_for_n_search_results(1) !=
+		    std::vector<std::string>{"three"})
 			throw EXCEPTION("test1 failed");
 
 	}
-	std::cout << "Waiting for thread to stop" << std::endl;
+	debug{} << "Waiting for thread to stop";
 	mpcobj<int>::lock lock{thread_stopped};
 
 	while (*lock < 1)
@@ -244,7 +321,7 @@ void test1()
 
 void test2()
 {
-	std::cout << "test2" << std::endl;
+	debug{} << "test2";
 
 	{
 		auto s=ref<my_search_threadObj>::create();
@@ -255,6 +332,7 @@ void test2()
 
 		s->search_abort(0);
 
+		s->search("one");
 		s->search("two");
 		search_proceed(2);
 
@@ -263,7 +341,7 @@ void test2()
 			throw EXCEPTION("test2 failed");
 
 	}
-	std::cout << "Waiting for thread to stop" << std::endl;
+	debug{} << "Waiting for thread to stop";
 	mpcobj<int>::lock lock{thread_stopped};
 
 	while (*lock < 1)
@@ -272,7 +350,7 @@ void test2()
 
 void test3()
 {
-	std::cout << "test3" << std::endl;
+	debug{} << "test3";
 
 	{
 		auto s=ref<my_search_threadObj>::create();
@@ -285,7 +363,7 @@ void test3()
 
 		search_proceed(1);
 
-		std::cout << "Waiting for thread to stop" << std::endl;
+		debug{} << "Waiting for thread to stop";
 		{
 			mpcobj<int>::lock lock{thread_stopped};
 
@@ -300,7 +378,7 @@ void test3()
 			throw EXCEPTION("test3 failed");
 
 	}
-	std::cout << "Waiting for thread to stop" << std::endl;
+	debug{} << "Waiting for thread to stop";
 	mpcobj<int>::lock lock{thread_stopped};
 
 	while (*lock < 2)
@@ -312,7 +390,7 @@ void test3()
 
 void test4()
 {
-	std::cout << "test4" << std::endl;
+	debug{} << "test4";
 
 	{
 		auto s=ref<my_search_threadObj>::create();
@@ -332,7 +410,7 @@ void test4()
 			throw EXCEPTION("test4 failed");
 
 	}
-	std::cout << "Waiting for thread to stop" << std::endl;
+	debug{} << "Waiting for thread to stop";
 	mpcobj<int>::lock lock{thread_stopped};
 
 	while (*lock < 1)
@@ -344,24 +422,28 @@ void test4()
 
 void test5()
 {
-	std::cout << "test5" << std::endl;
+	debug{} << "test5";
 
 	{
 		auto s=ref<my_search_threadObj>::create();
 
 		s->search("EXCEPT");
-		s->search("two");
 
 		wait_for_search(1);
 
+		s->search("two");
+
 		search_proceed(2);
 
-		if (s->wait_for_n_search_results(2) !=
-		    std::vector<std::string>{"CAUGHT: Exception", "two"})
-			throw EXCEPTION("test5 failed");
+		if (s->wait_for_n_search_results(1) !=
+		    std::vector<std::string>{"two"})
+			throw EXCEPTION("test5 did not get its results");
+
+		if (s->caught_exception.get() != "CAUGHT: Exception")
+			throw EXCEPTION("test5 did not catch an exception");
 
 	}
-	std::cout << "Waiting for thread to stop" << std::endl;
+	debug{} << "Waiting for thread to stop";
 	mpcobj<int>::lock lock{thread_stopped};
 
 	while (*lock < 1)
@@ -373,24 +455,30 @@ void test5()
 
 void test6()
 {
-	std::cout << "test6" << std::endl;
+	debug{} << "test6";
 
 	{
 		auto s=ref<my_search_threadObj>::create();
 
 		s->search("EXCEPT2");
-		s->search("two");
-
 		wait_for_search(1);
+		search_proceed(1);
+
+		s->wait_for_n_search_results(1);
+
+		s->search("two");
 
 		search_proceed(2);
 
 		if (s->wait_for_n_search_results(2) !=
-		    std::vector<std::string>{"CAUGHT: SEARCH", "two"})
-			throw EXCEPTION("test6 failed");
+		    std::vector<std::string>{"EXCEPT2", "two"})
+			throw EXCEPTION("test6 did not get its results");
+
+		if (s->caught_exception.get() != "CAUGHT: SEARCH")
+			throw EXCEPTION("test6 did not catch an exception");
 
 	}
-	std::cout << "Waiting for thread to stop" << std::endl;
+	debug{} << "Waiting for thread to stop";
 	mpcobj<int>::lock lock{thread_stopped};
 
 	while (*lock < 1)
@@ -402,7 +490,7 @@ void test6()
 
 void test7()
 {
-	std::cout << "test7" << std::endl;
+	debug{} << "test7";
 
 	{
 		destroy_callback::base::guard guard;
@@ -412,14 +500,14 @@ void test7()
 		guard(s);
 
 		s->search("EXCEPT");
-		s->search("two");
-
 		wait_for_search(1);
+
+		s->search("two");
 	}
 
 	search_proceed(1);
 
-	std::cout << "Waiting for thread to stop" << std::endl;
+	debug{} << "Waiting for thread to stop";
 	mpcobj<int>::lock lock{thread_stopped};
 
 	while (*lock < 1)

@@ -70,10 +70,9 @@ void input_field_search_threadObj::search_request(ONLY IN_THREAD)
 		// The execution thread has stopped, but we can restart it.
 		goto restart;
 
-	if (lock->state==state_t::stopping)
-		// We can save the execution thread from stopping, just abort
-		// the search.
-		lock->state=state_t::aborting;
+	// We can save the execution thread from stopping, just abort
+	// the search.
+	lock->stopping=false;
 
 	// If the execution thread is not idling, we'll try again later.
 
@@ -87,6 +86,9 @@ void input_field_search_threadObj
 {
 	if (!search_requested(IN_THREAD))
 		return;
+
+	if (lock->state == state_t::searching)
+		lock->search_mcguffin=nullptr; // Abort previous search
 
 	if (lock->state != state_t::idle)
 		return;
@@ -106,12 +108,12 @@ void input_field_search_threadObj::search_abort(ONLY IN_THREAD)
 
 	info_lock lock{current_thread(IN_THREAD)->info};
 
+	// Note, search_completed cannot transition to aborting.
 	if (lock->state==state_t::searching)
 	{
-		// Reuse set-stopping(), but change it the aborting state.
-
-		lock.set_stopping();
 		lock->state=state_t::aborting;
+		lock->search_mcguffin=nullptr;
+		lock.notify_all();
 	}
 }
 
@@ -123,6 +125,9 @@ void input_field_search_threadObj::search_thread_request_stop(ONLY IN_THREAD)
 		return;
 
 	info_lock lock{current_thread(IN_THREAD)->info};
+
+	if (lock->state==state_t::searching)
+		lock->state=state_t::aborting;
 
 	lock.set_stopping();
 }
@@ -245,12 +250,12 @@ void input_field_search_threadObj::info_lock::set_stopping()
 {
 	auto &info=operator*();
 
-	if (info.state == state_t::stopped ||
-	    info.state == state_t::stopping)
+	if (info.state == state_t::stopped)
 		return;
 
 	info.search_mcguffin=nullptr;
-	info.state=state_t::stopping;
+	info.stopping=true;
+
 	notify_all();
 }
 
@@ -262,7 +267,6 @@ void input_field_search_threadObj::search_thread_infoObj
 #ifdef LIBCXXW_DEBUG_THREAD_STARTED
 	LIBCXXW_DEBUG_THREAD_STARTED();
 #endif
-
 	while (1)
 	{
 		std::u32string search_string=
@@ -272,7 +276,7 @@ void input_field_search_threadObj::search_thread_infoObj
 
 				// Are we instruct to bail out?
 
-				if (lock->state == state_t::stopping)
+				if (lock->stopping)
 				{
 					lock->state=state_t::stopped;
 				}
@@ -280,24 +284,22 @@ void input_field_search_threadObj::search_thread_infoObj
 				if (lock->state == state_t::stopped)
 				{
 					lock.notify_all();
+					lock->stopping=false;
 
 					// Yes, we're stopped.
 					break;
 				}
 
-				if (lock->state == state_t::aborting)
-				{
-					// Initiate an empty search.
-					lock->search_string.clear();
-					lock->state=state_t::searching;
-				}
-
-				if (lock->state != state_t::searching)
+				if (lock->state != state_t::searching &&
+				    lock->state != state_t::aborting)
 				{
 					// Must be idle.
 					lock.wait();
 					continue;
 				}
+
+				if (lock->state == state_t::aborting)
+					lock->search_string.clear();
 
 				lock->search_string;
 			});
@@ -318,8 +320,28 @@ void input_field_search_threadObj::search_thread_infoObj
 
 		auto p=parent.getptr();
 
-		if (p)
-			p->search_executed(info, mcguffin);
+		{
+			info_lock lock{info->info};
+
+
+			if (!p)
+			{
+				lock->stopping=false;
+				lock->state=state_t::stopped;
+				lock.notify_all();
+				break;
+			}
+
+			if (lock->state == state_t::aborting)
+			{
+				lock->state=state_t::aborted;
+			}
+			else
+			{
+				lock->state=state_t::search_completed;
+			}
+		}
+		p->search_executed(info, mcguffin);
 	}
 #ifdef LIBCXXW_DEBUG_THREAD_STOPPED
 	LIBCXXW_DEBUG_THREAD_STOPPED();
@@ -337,7 +359,7 @@ input_field_search_threadObj::search_thread_resultsObj
 {
 	// If search_completed() hasn't marked us as being processed,
 	// something seriously went haywire somewhere. In this case we
-	// will signal the exevution thread to bail out.
+	// will signal the execution thread to bail out.
 
 	{
 		mpobj<search_thread_results_s>::lock lock{results};
@@ -369,7 +391,7 @@ void input_field_search_threadObj
 
 	info_lock lock{info->info};
 
-	if (lock->state == state_t::searching)
+	if (lock->state == state_t::search_completed && !lock->stopping)
 	{
 		try {
 			search_results(IN_THREAD,
@@ -378,17 +400,14 @@ void input_field_search_threadObj
 		} REPORT_EXCEPTIONS(thread_exception_helper{ref{this}});
 	}
 
-	// If the execution thread is stopping/stopped, we're done.
-	if (lock->state == state_t::stopping ||
-	    lock->state == state_t::stopped)
-		return;
-
-	// Ok, the execution thread has nothing to do...
-	lock->state=state_t::idle;
-
-	// ... unless another search was already requested.
-	initialize_search(IN_THREAD, lock);
-	lock.notify_all();
+	if (lock->state == state_t::search_completed ||
+	    lock->state == state_t::aborted)
+	{
+		lock->state=state_t::idle;
+		// ... unless another search was already requested.
+		initialize_search(IN_THREAD, lock);
+		lock.notify_all();
+	}
 }
 
 LIBCXXW_NAMESPACE_END

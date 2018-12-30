@@ -235,14 +235,16 @@ void editor_search_implObj
 
 	lm->replace_all_items(search_result_items);
 
-	most_recent_search_results(IN_THREAD)=search_result_text;
+	text_state current_state{IN_THREAD, *this};
 
-	if (search_result_items.empty())
+	if (search_result_items.empty() || !current_state.enabled_cursor_at_end)
 	{
+		most_recent_search_results(IN_THREAD).clear();
 		search_container->my_popup->hide();
 	}
 	else
 	{
+		most_recent_search_results(IN_THREAD)=search_result_text;
 		search_container->my_popup->show_all();
 	}
 }

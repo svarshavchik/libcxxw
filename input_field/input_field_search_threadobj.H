@@ -45,32 +45,39 @@ public:
 		{
 		 //! The execution thread is waiting for the next search
 
-		 //! Previous states: searching, aborting
-		 //! Next states: searching, stopping
+		 //! Previous states:  aborting
+		 //! Next states: searching
 		 idle,
 
 		 //! The execution thread is executing a search
 
 		 //! Previous states: idle
-		 //! Next states: idle, aborting, stopping
+		 //! Next states: aborting, search_completed
 		 searching,
+
+		 //! The execution thread completed the search
+
+		 //! Previous states: searching
+		 //! Next states: idle
+		 search_completed,
 
 		 //! The execution thread is aborting a search
 
-		 //! Previous state: searching, stopping
-		 //! Next states: idle, stopping
+		 //! Previous state: searching
+		 //! Next states: aborted
+
 		 aborting,
 
-		 //! The execution thread is stopping
+		 //! The execution thread aborted a search
 
-		 //! Previous states: all except stopping, stopped
-		 //!
-		 //! Next states: aborting, stopped
-		 stopping,
+		 //! Previous state: aborting
+		 //! Next states: idle
+
+		 aborted,
 
 		 //! The execution thread has stopped
 
-		 //! Previous state: stopping
+		 //! Previous state: idle, aborting
 		 //! Next states: idle
 		 stopped
 		};
@@ -81,6 +88,9 @@ public:
 
 		//! Current state
 		state_t state=state_t::idle;
+
+		//! Whether the thread should stop
+		bool stopping=false;
 
 		//! The search mcguffin
 
@@ -190,7 +200,7 @@ private:
 	//! A new search can be started now.
 
 	//! Invoked by search_request(), if possible. Otherwise after the
-	//! current search_completed() we'll initialize it.
+	//! current search finishes we'll initialize it.
 
 	void initialize_search(ONLY IN_THREAD, info_lock &lock);
 public:

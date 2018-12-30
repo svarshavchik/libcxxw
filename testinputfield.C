@@ -85,6 +85,9 @@ static void search_function(LIBCXX_NAMESPACE::w::input_field_search_info &info)
 		 U"id est laborum",
 		};
 
+	if (info.search_string.size() > 2)
+		sleep(1);
+
 	for (const auto &search:lorem_ipsum)
 	{
 		auto iter=std::search(search.begin(), search.end(),
