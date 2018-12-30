@@ -33,6 +33,7 @@
 /printdialog
 /progressbar
 /scrollbar
+/searchinputfield
 /singleton
 /spininput
 /spininput.H

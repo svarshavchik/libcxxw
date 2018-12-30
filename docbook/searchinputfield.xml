@@ -1,0 +1,316 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="searchwidgets">
+  <title>Search fields</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="searchinputfield.png" format="PNG"
+		 contentwidth="456px" contentdepth="216px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	A search input field.
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	<link linkend="combobox">Combo-boxes</link> provide efficient
+	means for choosing or picking an item from a large list of
+	options; but at some point the list of items becomes too large to
+	be useful.
+	A search field combines the feature of an
+	<link linkend="inputfields">input field</link> and a combo-box.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <para>
+    <filename>searchinputfield.C</filename> demonstrates how to implement
+    a search field. This is done by creating an
+    <link linkend="inputfields">input field</link> with a callback that
+    executes as characters get typed into the input field.
+    The application implements this callback as a callable object or a lambda
+    that searches
+    for potential matches for the partial contents of the input field,
+    and the callback returns the list of potential matches.
+  </para>
+
+  <para>
+    This list of matches returned from the callback gets displayed
+    a popup below (or above) the input field.
+    Clicking on one of the popped-up results, or using
+    <keycap>Cursor-Down</keycap> to move the cursor into the popup to
+    select a match result, copies the matching result into the input field:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/searchinputfield.C">searchinputfield.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/searchinputfield.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="creatingsearchfield">
+    <title>Creating a search field</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;/w/input_field.H&gt;
+#include &lt;&ns;/w/input_field_config.H&gt;
+#include &lt;&ns;/w/listlayoutmanager.H&gt;
+
+&ns;::w::input_field_config config{30};
+
+config.input_field_search_callback=
+    []
+    (const &ns;::w::input_field_search_info &amp;search_info)
+    {
+          // ...
+    };</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      As explained in <xref linkend="inputfields" />, a &factory;'s
+      <methodname>create_input_field</methodname>() method
+      creates a new
+      <ulink url="&link-typedef-x--w-input-field;"><classname>&ns;::w::input_field</classname></ulink>,
+      using its
+      <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>
+      parameter to set the new input field's options.
+      Setting
+      <varname>input_field_search_callback</varname> adds a combo-box like
+      popup to the search input field.
+    </para>
+
+    <section id="searchinputthread">
+      <title>The search callback thread</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+[]
+(const &ns;::w::input_field_search_info &amp;search_info)
+{
+    std::u32string search_string=search_info.search_string;
+
+    // ... Find this string
+
+    std::vector&lt;std::u32string&gt; results;
+
+    // Either plain text results:
+
+    search_info.results(results);
+
+    // ... or plain text results and a text_param with custom fonts or
+    // colors:
+
+    std::u32string search_result;
+    &ns;::w::text_param search_item;
+
+    search_info.search_results.push_back(search_result);
+    search_info.search_items.push_back(search_item);
+};</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	The search callback receives an
+	<ulink url="&link-x--w--input-field-search-info;"><classname>&ns;::w::input_field_search_info</classname></ulink>.
+	This parameter contains a <varname>search_string</varname>, the
+	current contents of the input field, as a Unicode string.
+      </para>
+
+      <para>
+	This search callback is not a typical connection thread
+	&callback;, and does not receive an
+	<classname>IN_THREAD</classname> parameter.
+	The search callback gets invoked from a separate,
+	independent execution thread that does not block
+	the &connection_thread;.
+	The search callback takes the search string,
+	and places the search results
+	into its <classname>&ns;::w::input_field_search_info</classname>
+	parameter, and returns. These search results then show up in the
+	search field's popup.
+      </para>
+
+      <para>
+	There are two ways to return the list of matches for the search
+	string:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Pass a
+	    <classname>&ns;::std::vector&lt;std::u32string&gt;</classname>
+	    to <varname>search_info</varname>'s
+	    <methodname>results</methodname>() method. This records the
+	    list of strings that comprise the found matches, and shows them
+	    without any special highlighting or formatting, in the popup.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Initialize <varname>search_info</varname>'s
+	    <varname>search_results</varname> and
+	    <varname>search_items</varname> individually. These are two
+	    <classname>std::vector</classname>s.
+	    <varname>search_results</varname> is a
+	    <classname>&ns;::std::vector&lt;std::u32string&gt;</classname>
+	    and represents the found matches, as plain text.
+	    <varname>search_items</varname> is a
+	    <classname>&ns;::std::vector&lt;&ns;::w::list_item_param&gt;</classname>.
+	  </para>
+
+	  <para>
+	    Both of these vectors must have the same size.
+	    The corresponding value in each vector represents:
+	    1) a single matching search result, as plain text, and
+	    2) a formatted representation of the search result, as a
+	    <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>.
+	    The second vector's
+	    <classname>&ns;::w::list_item_param</classname> reveal that they
+	    get passed to the search popup's
+	    <link linkend="listitemmethods">list layout manager</link>; but
+	    at this time, the
+	    <classname>&ns;::w::list_item_param</classname>s
+	    in the <varname>search_items</varname> can only be
+	    <classname>&ns;::w::text_param</classname>s.
+	  </para>
+
+	  <para>
+	    The
+	    <methodname>results</methodname>() method is simply a shortcut
+	    for initializing both vectors from a single vector of Unicode
+	    text strings.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	The search popup displays the
+	<varname>search_items</varname>, as is.
+	Selecting one of the search items from the popup copies the
+	corresponding value from
+	<varname>search_results</varname> into the input field.
+      </para>
+
+      <para>
+	<filename>searchinputfield.C</filename> gives a basic example
+	of a rudimentary search function, that searches a list of canned
+	strings, for a substring that matches the
+	<varname>search_string</varname>.
+	Each matching string gets copied into the
+	<varname>search_results</varname>, with
+	<varname>search_items</varname> formatted so that the matching
+	substring gets shown in bold, and underlined.
+      </para>
+    </section>
+  </section>
+
+  <section id="searchabortmcguffin">
+    <title>Aborting searches</title>
+
+    <para>
+      As mentioned in <xref linkend="searchinputthread" />,
+      the search callback gets executed by a separate execution thread.
+      It's possible that the search function could take some non-trivial
+      amount of time to run the entire search, but it's a separate
+      execution thread, and &appshort;'s &connection_thread; continues with
+      its duties, without delay. It's possible that additional text gets
+      typed into the
+      input field while the search callback is still searching,
+      so the eventual search results will be stale; or the search field
+      loses keyboard input focus.
+    </para>
+
+    <para>
+      The search callback gets invoked again only after
+      the current search finishes and the search callback returns
+      with the original results.
+      There's only one execution thread. &appshort; takes care of starting
+      and stopping it the search thread, as needed. However the search
+      thread can only be stopped after the search callback returns.
+      It's not possible to stop C++ execution threads unilaterally.
+    </para>
+
+    <para>
+      A search callback can use the abort mcguffin as the means of
+      getting notified that the current search should stop:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+search_info.get_abort_mcguffin()-&gt;ondestroy
+   ([abort_flag]
+    {
+         // ...
+    });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      See the <ulink url="/ondestroy.html">&libcxxname; documentation</ulink>
+      for a complete explanation of its mcguffin design pattern.
+      The &connection_thread; releases its only reference on the opaque
+      reference-counted object to indicate that the search results are
+      stale, and the mcguffin object gets destroyed, invoking the
+      <methodname>ondestroy</methodname>() lambda.
+    </para>
+
+    <para>
+      <link linkend="searchwidgets"><filename>searchinputfield.C</filename></link>
+      demonstrates the advantages of using search abort mcguffins.
+      Its search callback artificially pauses for one second when the search
+      string is three or more characters.
+      Between three and six characters the search callback uses an abort
+      mcguffin and returns without any results immediately, before the
+      full second is up. The search popup gets closed immediately without
+      showing any search results until the <quote>slow</quote> search
+      function finally completes.
+    </para>
+
+    <para>
+      For matching search strings of seven and more characters, the search
+      results will be visibly stale, as typing continues, until they
+      eventually catch up.
+    </para>
+  </section>
+
+  <section id="searchresults">
+    <title>Processing search results</title>
+
+    <para>
+      <link linkend="searchwidgets"><filename>searchinputfield.C</filename></link>
+      demonstrates how to use
+      <link linkend="onvalidate"><methodname>on_validate</methodname>()</link>
+      to take action on the contents of the search input field, whether
+      the search results get typed manually or selected from the search
+      popup.
+    </para>
+
+    <para>
+      <methodname>on_validate</methodname>()'s &callback; gets invoked,
+      as usual, after the input field loses keyboard input focus. It also
+      gets invoked when a search result gets selected from the search popup,
+      even though the keyboard input focus remains in the search input field.
+    </para>
+  </section>
+</chapter>
+<!--
+
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

@@ -131,10 +131,14 @@ See COPYING for distribution information.
       <para>
 	An <ulink url="&link-x--w--font;"><classname>x::w::font</classname></ulink>
 	parameter sets the font for the following text.
-	<literal>#include &lt;&ns;/w/font_literals.H&gt;</literal> allows
-	specifying the font as a
+	<literal>#include &lt;&ns;/w/font_literals.H&gt;</literal>
+	enables
 	<ulink url="&link-function-x--w-operatorQQ--font;">"<replaceable>description</replaceable>"<literal>_font</literal>
-	  decorator</ulink>.
+	  decorators</ulink>.
+	<literal>#include &lt;&ns;/w/text_param_literals.H&gt;</literal>
+	enables
+	<ulink url="&link-function-x--w-operatorQQ--theme-font;">"<replaceable>description</replaceable>"<literal>_theme_font</literal>
+	decorators</ulink>.
       </para>
     </listitem>
   </itemizedlist>

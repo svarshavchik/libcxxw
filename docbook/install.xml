@@ -293,7 +293,7 @@ main_LDADD=-lcxxw -lcxx</programlisting>
 	</listitem>
       </varlistentry>
       <varlistentry>
-	<term><filename><replaceable>$includedir</replaceable>/libcxxsw-<replaceable>$version</replaceable></filename></term>
+	<term><filename><replaceable>$includedir</replaceable>/libcxxw-<replaceable>$version</replaceable></filename></term>
 	<listitem>
 	  <para>
 	    This directory whose name includes the &app;'s and &libcxx;'s
@@ -306,7 +306,7 @@ main_LDADD=-lcxxw -lcxx</programlisting>
       </varlistentry>
 
       <varlistentry>
-	<term><filename><replaceable>$datadir</replaceable>/libcxxsw-<replaceable>$version</replaceable></filename></term>
+	<term><filename><replaceable>$datadir</replaceable>/libcxxw-<replaceable>$version</replaceable></filename></term>
 	<listitem>
 	  <para>
 	    This directory whose name includes the &app;'s and &libcxx;'s

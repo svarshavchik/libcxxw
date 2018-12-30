@@ -60,7 +60,8 @@ public:
 	using inputfields::inputfields;
 };
 
-static void search_function(LIBCXX_NAMESPACE::w::input_field_search_info &info)
+static void search_function(const LIBCXX_NAMESPACE::w::input_field_search_info
+			    &info)
 {
 	static const std::u32string lorem_ipsum[]=
 		{

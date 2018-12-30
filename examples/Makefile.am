@@ -30,6 +30,7 @@ noinst_PROGRAMS=\
 	printdialog				\
 	progressbar				\
 	scrollbar				\
+	searchinputfield			\
 	singleton				\
 	spininput				\
 	table					\
@@ -135,6 +136,9 @@ progressbar_LDADD=-lcxxw -lcxx
 
 scrollbar_SOURCES=scrollbar.C close_flag.H
 scrollbar_LDADD=-lcxxw -lcxx
+
+searchinputfield_SOURCES=searchinputfield.C close_flag.H
+searchinputfield_LDADD=-lcxxw -lcxx -lcourier-unicode
 
 singleton_SOURCES=singleton.C close_flag.H
 singleton_LDADD=-lcxxw -lcxx

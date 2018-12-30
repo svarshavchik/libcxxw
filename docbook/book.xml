@@ -51,6 +51,7 @@
 <!ENTITY hierlist SYSTEM "hierlist.xml">
 <!ENTITY table SYSTEM "table.xml">
 <!ENTITY combobox SYSTEM "combobox.xml">
+<!ENTITY searchinputfield SYSTEM "searchinputfield.xml">
 <!ENTITY menu SYSTEM "menu.xml">
 <!ENTITY popupmenu SYSTEM "popupmenu.xml">
 <!ENTITY copycutpastemenu SYSTEM "copycutpastemenu.xml">
@@ -117,6 +118,7 @@ See COPYING for distribution information.
     &table;
     &hierlist;
     &combobox;
+    &searchinputfield;
     &menu;
     &popupmenu;
     &copycutpastemenu;

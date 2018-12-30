@@ -51,12 +51,18 @@ void create_mainwindow(const x::w::main_window &main_window)
 	factory->create_label({
 		 blue,
 		"underline"_decoration,
-		"serif; point_size=24; weight=bold"_font,
+
+		 // "name"_font - string literal
+		"liberation serif; point_size=24; weight=bold"_font,
 
 	        "Lorem ipsum\n",
 
 		"no"_decoration,
-		"sans serif; point_size=12"_font,
+
+		 // "name"_theme_font - font specified by the current theme/
+		 //
+		 // The "label" font is used for ordinary labels
+		"label; point_size=12"_theme_font,
 		black,
 
 		"dolor sit amet, consectetur adipisicing elit, "

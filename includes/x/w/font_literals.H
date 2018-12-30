@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 /*!
 
-Construct a \ref font "INSERT_LIBX_NAMESPACE::w::font" from a string.
+\anchor font_decorator Construct a \ref font "INSERT_LIBX_NAMESPACE::w::font" from a string.
 
 \c "_font" literal suffix constructs a \ref font "font" from a string.
 The string, at a minimum consists of a font family name. A
@@ -22,6 +22,16 @@ for example:
 \code
 "liberation mono; point_size=10; weight=bold"_font
 \endcode
+
+\c "_theme_font" literal suffix is similar, except that the font name refers
+to a theme-specified font, with any attributes modifying it:
+
+\code
+"label; point_size=10; weight=bold"_theme_font
+\endcode
+
+This uses the theme font "label" as the initial font.
+The \c _theme_font literal is defined in \c text_param_literals.H .
 
 The available attributes are:
 

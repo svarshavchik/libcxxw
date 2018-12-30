@@ -28,7 +28,11 @@ See COPYING for distribution information.
     <itemizedlist>
       <listitem>
 	<para>
-	  Implements classical, tradition UI elements &mdash;
+	  Combines a clean modern look with classical, traditional UI
+	  elements.
+	  Mild gradient shading provides a subtle, non-intrusive
+	  3D effect.
+	  UI elements include
 	  labels, text input fields,
 	  lists, combo-boxes, menus, and dialogs &mdash; updated to modern
 	  UI standards: confirming the last character typed into a
@@ -38,10 +42,7 @@ See COPYING for distribution information.
       </listitem>
       <listitem>
 	<para>
-	  Clean
-	  modern look, with mild gradient shading for a subtle, non-intrusive
-	  3D effect.
-	  Fully keyboard-accessible. All display elements have full
+	  All display elements have full
 	  keyboard navigation, where possible. No explicit application
 	  support is needed. Even scroll-bars have keyboard controls.
 	</para>
@@ -101,8 +102,10 @@ See COPYING for distribution information.
       <title>Status</title>
 
       <para>
-	The most recent build of &app; adds the
-	<link linkend="borderlayoutmanager">border layout manager</link>.
+	&app;'s basic functionality is complete, and it's source
+	<link linkend="INSTALL">is available for downloading</link>.
+	The most recent build of &app; adds
+	<link linkend="searchwidgets">search fields</link>.
       </para>
     </section>
   </section>

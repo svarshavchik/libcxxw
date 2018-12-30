@@ -16,6 +16,9 @@ enum class text_decoration;
 //! Theme font name
 
 //! "sans_serif"_theme_font specifies a theme font in a \ref text_param "text parameter".
+//!
+//! See \ref font_decorator "_font literal" for more information on font
+//! literals.
 
 theme_font operator"" _theme_font(const char *, size_t);
 

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([libcxxw], [0.13.0], [libcxx-users@lists.libcxx.org])
+AC_INIT([libcxxw], [0.14.0], [libcxx-users@lists.libcxx.org])
 AC_CONFIG_SRCDIR([connection.C])
 AC_CONFIG_HEADERS([libcxxw_config.h])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign -Wno-portability])
@@ -55,12 +55,12 @@ export LDFLAGS
 # Our package $VERSION is:
 #
 #   $libdir/pkgconfig/libcxxw-$VERSION.pc
-#   $datadir/aclocak/libcxxw-$VERSION.m4
+#   $datadir/aclocal/libcxxw-$VERSION.m4
 #
-ABIVER=0.13
+ABIVER=0.14
 AC_SUBST(ABIVER)
 
-VERSION_INFO=13:0:0
+VERSION_INFO=14:0:0
 AC_SUBST(VERSION_INFO)
 
 # Checks for libraries.

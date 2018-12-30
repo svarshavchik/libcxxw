@@ -15,7 +15,7 @@ struct LIBCXX_HIDDEN input_field_search_info;
 
 //! Callback used by an \ref input_field "input field" to search for values.
 
-typedef void input_field_search_callback_t(input_field_search_info &);
+typedef void input_field_search_callback_t(const input_field_search_info &);
 
 LIBCXXW_NAMESPACE_END
 
