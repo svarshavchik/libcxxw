@@ -202,8 +202,9 @@ peephole_scrollbars::~peephole_scrollbars()=default;
 
 scrollbarsObj::scrollbarsObj(const peephole_with_scrollbars_info &info,
 			     const peephole_scrollbars &peephole_scrollbars,
+			     const container_impl &peephole_impl,
 			     const peepholed &element_in_peephole)
-	: scrollbarsObj{info.peephole_impl,
+	: scrollbarsObj{peephole_impl,
 			info.style,
 			element_in_peephole,
 			peephole_scrollbars,

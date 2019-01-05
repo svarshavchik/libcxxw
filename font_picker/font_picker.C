@@ -231,13 +231,13 @@ static inline font_picker_preview create_preview_label(const factory &f)
 			 return ref<peepholeObj::layoutmanager_implObj
 				    ::scrollbarsObj>
 				 ::create(info, scrollbars,
+					  preview_peep_container_impl,
 					  new_preview_label);
 		 },
 		 create_peephole_gridlayoutmanager,
 		 {
 		  preview_container_impl,
 		  std::nullopt,
-		  preview_peep_container_impl,
 		  pstyle,
 		  scrollbar_visibility::automatic_reserved,
 		  scrollbar_visibility::automatic_reserved,

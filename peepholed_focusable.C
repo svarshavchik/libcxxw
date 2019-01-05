@@ -178,13 +178,13 @@ create_peepholed_focusable_with_frame_impl
 			 return ref<peepholeObj::layoutmanager_implObj
 				    ::scrollbarsObj>
 				 ::create(info, scrollbars,
+					  impl,
 					  peepholed_element);
 		 },
 		 create_peephole_gridlayoutmanager,
 		 {
 		  args.parent_container,
 		  std::nullopt,
-		  impl,
 		  args.style,
 		  args.horizontal_visibility,
 		  args.vertical_visibility,

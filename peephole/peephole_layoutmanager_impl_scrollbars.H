@@ -159,6 +159,8 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj::scrollbarsObj
 	//! Constructor
 	scrollbarsObj(const peephole_with_scrollbars_info &info,
 		      const peephole_scrollbars &peephole_scrollbars,
+		      // Can be ref<peepholeObj::implObj>:
+		      const container_impl &peephole_impl,
 		      const peepholed &element_in_peephole);
 
 	scrollbarsObj(const container_impl &container_impl,
@@ -253,7 +255,6 @@ struct LIBCXX_HIDDEN peephole_scrollbars {
 struct peephole_with_scrollbars_info {
 	container_impl grid_container_impl;
 	std::optional<color_arg> background_color;
-	container_impl peephole_impl; // Can be ref<peepholeObj::implObj>
 	const peephole_style &style;
 	scrollbar_visibility horizontal_visibility;
 	scrollbar_visibility vertical_visibility;
