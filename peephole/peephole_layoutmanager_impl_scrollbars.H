@@ -13,6 +13,8 @@
 #include "x/w/scrollbar.H"
 #include "x/w/rgb.H"
 #include "x/w/border_arg.H"
+#include "x/w/alignment.H"
+#include "x/w/dim_arg.H"
 
 #include <optional>
 #include <x/functional.H>
@@ -284,6 +286,13 @@ struct peephole_element_factory_ret_t {
 	std::optional<border_arg> grid_peephole_element_border;
 	std::optional<border_arg> grid_scrollbar_border;
 	focusableptr focusable_peephole_element;
+
+	dim_arg peephole_left_padding=0;
+	dim_arg peephole_right_padding=0;
+	dim_arg peephole_top_padding=0;
+	dim_arg peephole_bottom_padding=0;
+	halign peephole_horizontal_alignment=halign::left;
+	valign peephole_vertical_alignment=valign::top;
 };
 
 template<typename peephole_element_factory_t,

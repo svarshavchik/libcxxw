@@ -357,7 +357,13 @@ create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 		     grid_peephole_element,
 		     grid_peephole_element_border,
 		     grid_scrollbar_border,
-		     focusable_peephole_element]=
+		     focusable_peephole_element,
+		     peephole_left_padding,
+		     peephole_right_padding,
+		     peephole_top_padding,
+		     peephole_bottom_padding,
+		     peephole_horizontal_alignment,
+		     peephole_vertical_alignment]=
 		pe_factory(layout_impl);
 
 	// Make sure the tabbing order is right.
@@ -382,7 +388,12 @@ create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 
 	auto factory=grid->append_row();
 
-	factory->padding(0);
+	factory->left_padding(peephole_left_padding);
+	factory->right_padding(peephole_right_padding);
+	factory->top_padding(peephole_top_padding);
+	factory->bottom_padding(peephole_bottom_padding);
+	factory->halign(peephole_horizontal_alignment);
+	factory->valign(peephole_vertical_alignment);
 
 	if (grid_peephole_element_border)
 		factory->border(*grid_peephole_element_border);
