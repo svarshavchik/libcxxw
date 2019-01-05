@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2018 Double Precision, Inc.
+** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -38,12 +38,17 @@ class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
  public:
 
 	//! Constructor
-	toplevelpeephole_layoutmanagerObj
-		(const container_impl &container_impl,
-		 peephole_style style,
-		 const peepholed_toplevel &element_in_peephole,
-		 const current_border_implptr &peephole_border,
-		 const peephole_scrollbars &scrollbars);
+
+	toplevelpeephole_layoutmanagerObj(const peephole_with_scrollbars_info
+					  &info,
+					  const peephole_scrollbars
+					  &peephole_scrollbars,
+					  // Can be ref<peepholeObj::implObj>:
+					  const container_impl &peephole_impl,
+					  const peepholed_toplevel
+					  &element_in_peephole,
+					  const current_border_implptr
+					  &peephole_border);
 
 	const peepholed_toplevel element_in_peephole;
 
@@ -133,132 +138,113 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 			      &peephole_background_color,
 			      const std::optional<color_arg>
 			      &scrollbars_background_color,
-			      peephole_style style,
+			      const peephole_style &style,
 			      const function<create_peepholed_element_t>
 			      &factory)
 {
 
-	// Create the scrollbars, they'll also be child elements
-	// of the toplevel_grid.
+	ptr<peephole_toplevel_implObj> peephole_implptr;
 
-	auto scrollbars=create_peephole_scrollbars(toplevel,
-						   scrollbars_background_color);
+	const auto &[layout_impl, grid_impl, grid]=
+		create_peephole_with_scrollbars
+		([&]
+		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
+		 -> peephole_element_factory_ret_t
+		 {
+			 // Ok, we can now create the container.
+			 auto peephole_container=
+				 peephole::create(peephole_implptr,
+						  layout_impl);
 
-	// The toplevel_grid will have a peephole as its child element,
-	// and the scrollbars, but we'll get around to them later.
-	//
-	// First, create the "internal" implementation object for the peephole.
-	//
-	// This peephole element will be always_visible.
+			 return {
+				 peephole_container,
+				 peephole_container,
+				 border,
+				 border,
+				 {},
+			 };
+		 },
+		 [&]
+		 (const auto &info, const auto &scrollbars)
+		 {
+			 // First, create the "internal" implementation
+			 // object for the peephole.
+			 //
+			 // This peephole element will be always_visible.
 
-	child_element_init_params init_params;
+			 child_element_init_params init_params;
 
-	init_params.background_color=peephole_background_color;
+			 init_params.background_color=peephole_background_color;
 
-	auto peephole_impl=ref<peephole_toplevel_implObj>
-		::create(toplevel,
-			 scrollbars.horizontal_scrollbar,
-			 scrollbars.vertical_scrollbar,
-			 init_params);
+			 auto peephole_impl=ref<peephole_toplevel_implObj>
+				 ::create(toplevel,
+					  scrollbars.horizontal_scrollbar,
+					  scrollbars.vertical_scrollbar,
+					  init_params);
 
-	// Now the fake top level element that we wanted to create originally,
-	// it'll be a child element of the peephole.
+			 peephole_implptr=peephole_impl;
 
-	auto inner_container=factory(peephole_impl);
+			 // Now the fake top level element that we wanted
+			 // to create originally, it'll be a child element
+			 // of the peephole.
 
-	// The peephole layoutmanager needs to know what border is in place,
-	// because that needs to be factored into calculations.
-	current_border_implptr border_impl;
+			 auto inner_container=factory(peephole_impl);
 
-	if (border)
-		border_impl=toplevel->container_element_impl()
-			.get_screen()->impl->get_cached_border(*border);
+			 // The peephole layoutmanager needs to know what
+			 // border is in place, because that needs to be
+			 // factored into calculations.
+			 current_border_implptr border_impl;
 
-	// Create the peephole layoutmanager...
-
-	auto peephole_layoutmanager=
-		ref<toplevelpeephole_layoutmanagerObj>::create
-		(peephole_impl,
-		 style,
-		 inner_container,
-		 border_impl,
-		 scrollbars);
-
-	peephole_layoutmanager->initialize_scrollbars();
-
-	// ... and the element, to go with the peephole implementation object
-	// and the layout manager.
-	auto peephole_element=peephole::create(peephole_impl,
-					       peephole_layoutmanager);
-
-	// Never mind what layout_factory is. The main window uses the
-	// grid layout manager, this is my final word.
-	auto toplevel_impl=
-		peephole_toplevel_gridlayoutmanager::create
-		(toplevel,
-		 peephole_element,
-		 scrollbars.vertical_scrollbar,
-		 scrollbars.horizontal_scrollbar);
-
-	auto toplevel_grid=toplevel_impl->create_gridlayoutmanager();
-
-	// Install everything into the toplevel_grid.
-
-	auto row0_factory=toplevel_grid->append_row();
-	row0_factory->padding(0);
-	if (border)
-		row0_factory->border(*border);
-
-	row0_factory->created_internally(peephole_element);
-
-	auto row1_factory=toplevel_grid->append_row();
-
-	if (border)
-	{
-		row0_factory->top_border(border.value());
-		row0_factory->right_border(border.value());
-		row0_factory->bottom_border(border.value());
-		row1_factory->left_border(border.value());
-		row1_factory->bottom_border(border.value());
-		row1_factory->right_border(border.value());
-	}
-
-	install_peephole_scrollbars(toplevel_grid,
-				    scrollbars.vertical_scrollbar,
-				    scrollbar_visibility::never,
-				    row0_factory,
-				    scrollbars.horizontal_scrollbar,
-				    scrollbar_visibility::never,
-				    row1_factory);
-
-	// Final misc details.
-	set_peephole_scrollbar_focus_order(scrollbars.horizontal_scrollbar,
-					   scrollbars.vertical_scrollbar);
+			 if (border)
+				 border_impl=toplevel->container_element_impl()
+					 .get_screen()->impl
+					 ->get_cached_border(*border);
 
 
-	return toplevel_grid;
+
+			 return ref<toplevelpeephole_layoutmanagerObj>::create
+				 (info,
+				  scrollbars,
+				  peephole_impl,
+				  inner_container,
+				  border_impl);
+		 },
+		 [&]
+		 (const peephole_gridlayoutmanagerObj::init_args &args)
+		 {
+			 return ref<peephole_toplevel_gridlayoutmanagerObj>
+				 ::create(args);
+		 },
+		 {
+		  toplevel,
+		  scrollbars_background_color,
+		  style,
+		  // Opening bid: do not show the
+		  // scrollbars.
+		  scrollbar_visibility::never,
+		  scrollbar_visibility::never,
+		 });
+
+	return grid;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 toplevelpeephole_layoutmanagerObj::toplevelpeephole_layoutmanagerObj
-(const container_impl &layout_container_impl,
- peephole_style style,
+(const peephole_with_scrollbars_info &info,
+ const peephole_scrollbars &peephole_scrollbars,
+ const container_impl &peephole_impl,
  const peepholed_toplevel &element_in_peephole,
- const current_border_implptr &peephole_border,
- const peephole_scrollbars &scrollbars)
-	: peepholeObj::layoutmanager_implObj
-	::scrollbarsObj(layout_container_impl,
-			style,
-			element_in_peephole,
-			scrollbars,
-
-			// Opening bid: do not show the
-			// scrollbars.
-			scrollbar_visibility::never,
-			scrollbar_visibility::never),
-	element_in_peephole(element_in_peephole),
-	peephole_border(peephole_border)
+ const current_border_implptr &peephole_border)
+	: peepholeObj::layoutmanager_implObj::scrollbarsObj
+	{
+	 info,
+	 peephole_scrollbars,
+	 peephole_impl,
+	 element_in_peephole,
+	},
+	  element_in_peephole{element_in_peephole},
+	  peephole_border{peephole_border}
 {
 }
 

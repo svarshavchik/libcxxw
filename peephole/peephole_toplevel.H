@@ -31,13 +31,13 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 			      &peephole_background_color,
 			      const std::optional<color_arg>
 			      &scrollbars_background_color,
-			      peephole_style style,
+			      const peephole_style &style,
 			      const function<create_peepholed_element_t>
 			      &factory) LIBCXX_HIDDEN;
 
 template<typename create_peepholed_element_factory_t>
 auto create_peephole_toplevel(const container_impl &toplevel,
-			      peephole_style style,
+			      const peephole_style &style,
 			      const std::optional<border_arg> &border,
 			      const std::optional<color_arg>
 			      &peephole_background_color,
@@ -99,7 +99,7 @@ auto create_peephole_toplevel(const container_impl &toplevel,
 			      &peephole_background_color,
 			      const std::optional<color_arg>
 			      &scrollbars_background_color,
-			      peephole_style style,
+			      const peephole_style &style,
 			      create_peepholed_element_factory_t
 			      &&element_factory)
 {
