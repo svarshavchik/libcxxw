@@ -33,11 +33,6 @@ class LIBCXX_HIDDEN peepholeObj::implObj
 	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
-
-	//! Retrieve the element in the peephole.
-
-	template<typename lambda>
-		void get_element(lambda &&callback);
 };
 
 LIBCXXW_NAMESPACE_END

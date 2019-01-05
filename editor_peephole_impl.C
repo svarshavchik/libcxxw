@@ -5,7 +5,6 @@
 #include "libcxxw_config.h"
 #include "x/w/impl/container_element.H"
 #include "editor_peephole_impl.H"
-#include "peephole/peephole_get_element.H"
 #include "editor.H"
 #include "editor_impl.H"
 #include "peephole/peephole_layoutmanager_impl.H"
