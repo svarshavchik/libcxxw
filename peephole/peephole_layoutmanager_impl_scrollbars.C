@@ -73,7 +73,9 @@ public:
 	}
 };
 
-peephole_scrollbars
+// Create the scrollbars for a new peephole.
+
+static inline peephole_scrollbars
 create_peephole_scrollbars(const container_impl &container,
 			   const std::optional<color_arg> &background_color)
 {
@@ -109,6 +111,9 @@ create_peephole_scrollbars(const container_impl &container,
 	return {horizontal, vertical, horizontal_impl, vertical_impl};
 }
 
+// Install the peephole scrollbars.
+
+static inline
 void install_peephole_scrollbars(const gridlayoutmanager &lm,
 				 const scrollbar &vertical_scrollbar,
 				 scrollbar_visibility v_visibility,
@@ -147,6 +152,25 @@ void install_peephole_scrollbars(const gridlayoutmanager &lm,
 					       {0, 0, 0});
 }
 
+//! Set scrollbar focus order.
+
+//! If the peephole is not for a focusable element, the horizontal scrollbar
+//! gets focus after the vertical one, that's it.
+
+static inline
+void set_peephole_scrollbar_focus_order(const focusable &horizontal_scrollbar,
+					const focusable &vertical_scrollbar)
+{
+	horizontal_scrollbar->get_focus_after(vertical_scrollbar);
+}
+
+//! Set correct focus order for a focusable element in a peephole.
+
+//! After everything gets constructed, we'll arrange for the vertical
+//! scrollbar to get focus after the focusable element, and the horizontal
+//! scrollbar after the vertical scrollbar.
+
+static inline
 void set_peephole_scrollbar_focus_order(const focusable &element,
 					const focusable &horizontal_scrollbar,
 					const focusable &vertical_scrollbar)
@@ -158,12 +182,6 @@ void set_peephole_scrollbar_focus_order(const focusable &element,
 
 	set_peephole_scrollbar_focus_order(horizontal_scrollbar,
 					   vertical_scrollbar);
-}
-
-void set_peephole_scrollbar_focus_order(const focusable &horizontal_scrollbar,
-					const focusable &vertical_scrollbar)
-{
-	horizontal_scrollbar->get_focus_after(vertical_scrollbar);
 }
 
 void set_top_level_peephole_scrollbar_focus_order
@@ -201,40 +219,27 @@ peephole_scrollbars::~peephole_scrollbars()=default;
 //////////////////////////////////////////////////////////////////////////////
 
 scrollbarsObj::scrollbarsObj(const peephole_with_scrollbars_info &info,
-			     const peephole_scrollbars &peephole_scrollbars,
+			     const peephole_scrollbars &scrollbars,
 			     const container_impl &peephole_impl,
 			     const peepholed &element_in_peephole)
-	: scrollbarsObj{peephole_impl,
-			info.style,
-			element_in_peephole,
-			peephole_scrollbars,
-			info.horizontal_visibility,
-			info.vertical_visibility}
-{
-}
-
-scrollbarsObj
-::scrollbarsObj(const container_impl &container_impl,
-		const peephole_style &style,
-		const peepholed &element_in_peephole,
-		const peephole_scrollbars &scrollbars,
-		const scrollbar_visibility horizontal_scrollbar_visibility,
-		const scrollbar_visibility vertical_scrollbar_visibility)
-	: layoutmanager_implObj(container_impl, style, element_in_peephole),
-	h_scrollbar(scrollbars.horizontal_scrollbar),
-	v_scrollbar(scrollbars.vertical_scrollbar),
-	horizontal_scrollbar_visibility_thread_only(horizontal_scrollbar_visibility),
-	vertical_scrollbar_visibility_thread_only(vertical_scrollbar_visibility),
-	h_callback(scrollbars.h_callback),
-	v_callback(scrollbars.v_callback),
-	horizontal_scrollbar_element(scrollbars.horizontal_scrollbar->elementObj::impl),
-	vertical_scrollbar_element(scrollbars.vertical_scrollbar->elementObj::impl)
+	: layoutmanager_implObj{peephole_impl, info.style, element_in_peephole},
+	  h_scrollbar{scrollbars.horizontal_scrollbar},
+	  v_scrollbar{scrollbars.vertical_scrollbar},
+	  horizontal_scrollbar_visibility_thread_only
+	{info.horizontal_visibility},
+	  vertical_scrollbar_visibility_thread_only{info.vertical_visibility},
+	  h_callback{scrollbars.h_callback},
+	  v_callback{scrollbars.v_callback},
+	  horizontal_scrollbar_element{scrollbars
+				       .horizontal_scrollbar->elementObj::impl},
+	  vertical_scrollbar_element{scrollbars
+				     .vertical_scrollbar->elementObj::impl}
 {
 }
 
 void scrollbarsObj::initialize_scrollbars()
 {
-	auto me=ref(this);
+	auto me=ref{this};
 
 	h_callback->my_layoutmanager=me;
 	v_callback->my_layoutmanager=me;

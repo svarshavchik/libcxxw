@@ -26,59 +26,6 @@ struct LIBCXX_HIDDEN peephole_element_factory_ret_t;
 struct LIBCXX_HIDDEN peephole_with_scrollbars_info;
 struct LIBCXX_HIDDEN create_peephole_with_scrollbars_ret_t;
 
-//! Create scrollbar elements for a peephole.
-
-//! This must be called, passing in the scrollbars' container, before
-//! constructing the peephole layout manager.
-//!
-//! The resulting peephole_scrollbars gets passed to peephole layout
-//! manager's constructor.
-
-peephole_scrollbars
-create_peephole_scrollbars(const container_impl &container,
-			   const std::optional<color_arg> &background_color)
-	LIBCXX_HIDDEN;
-
-//! Install scrollbar elements for a peephole.
-
-//! Everything is about ready to be wrapped up. The peephole element
-//! is installed in the grid layout manager's cell (0, 0). Let's take
-//! the scrollbars that create_peephole_scrollbars() created, take their
-//! visibility, the factory for the grid layout's row #0 (which
-//! already contains the peephole element and the factory is going to
-//! install its new element into row 1), and the factory for the
-//! grid layout's row #1 (which is empty), and officially install the
-//! scrollbars into the grid.
-
-void install_peephole_scrollbars(const gridlayoutmanager &lm,
-				 const scrollbar &vertical_scrollbar,
-				 scrollbar_visibility v_visibility,
-				 const gridfactory &row0_factory,
-				 const scrollbar &horizontal_scrollbar,
-				 scrollbar_visibility h_visibility,
-				 const gridfactory &row1_factory)
-	LIBCXX_HIDDEN;
-
-//! Set correct focus order for a focusable element in a peephole.
-
-//! After everything gets constructed, we'll arrange for the vertical
-//! scrollbar to get focus after the focusable element, and the horizontal
-//! scrollbar after the vertical scrollbar.
-
-void set_peephole_scrollbar_focus_order(const focusable &element,
-					const focusable &horizontal_scrollbar,
-					const focusable &vertical_scrollbar)
-	LIBCXX_HIDDEN;
-
-//! Set scrollbar focus order.
-
-//! If the peephole is not for a focusable element, the horizontal scrollbar
-//! gets focus after the vertical one, that's it.
-
-void set_peephole_scrollbar_focus_order(const focusable &horizontal_scrollbar,
-					const focusable &vertical_scrollbar)
-	LIBCXX_HIDDEN;
-
 //! Set correct focus order for a focusable element in a peephole.
 
 //! A new focusable element has been created, as the last focusable element
@@ -164,13 +111,6 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj::scrollbarsObj
 		      // Can be ref<peepholeObj::implObj>:
 		      const container_impl &peephole_impl,
 		      const peepholed &element_in_peephole);
-
-	scrollbarsObj(const container_impl &container_impl,
-		      const peephole_style &style,
-		      const peepholed &element_in_peephole,
-		      const peephole_scrollbars &scrollbars,
-		      const scrollbar_visibility horizontal_scrollbar_visibility,
-		      const scrollbar_visibility vertical_scrollbar_visibility);
 
 	//! Finish initialization of the scrollbars
 
