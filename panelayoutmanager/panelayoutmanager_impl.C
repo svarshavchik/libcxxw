@@ -203,7 +203,7 @@ class LIBCXX_HIDDEN pane_peepholed_elementObj : public peepholedObj {
 
 pane_peephole_container panelayoutmanagerObj::implObj
 ::created_pane_peephole(const panelayoutmanager &public_object,
-			const create_pane_info_t &info,
+			const create_pane_info_t &pane_info,
 			const create_pane_properties_t &properties,
 			panefactoryObj &pfactory,
 			const element &e,
@@ -225,17 +225,17 @@ pane_peephole_container panelayoutmanagerObj::implObj
 	// 1) Pane container, with a panelayoutmanager (a grid layout manager
 	// in disguise).
 	//
-	// 2) info.peephole_container_impl. A child element of my
+	// 2) pane_info.peephole_container_impl. A child element of my
 	// container_impl, represents a pane. This is a container that will
 	// use the peephole_gridlayoutmanagerObj, to manage the layout of
 	// a peephole with scrollbars.
 	//
-	// 3) info.peephole_impl. A child element of
-	// info.peephole_container_impl. Uses the
+	// 3) pane_info.peephole_impl. A child element of
+	// pane_info.peephole_container_impl. Uses the
 	// peepholeObj::layoutmanager_implObj::scrollbarsObj layout manager.
 	//
 	// 4) "e" parameter, will be the peepholed element placed into the
-	// info.peephole_impl.
+	// pane_info.peephole_impl.
 
 	auto [style, horizontal_scrollbar_visibility,
 	      vertical_scrollbar_visibility]=
@@ -244,66 +244,55 @@ pane_peephole_container panelayoutmanagerObj::implObj
 	style.horizontal_alignment=properties.horizontal_alignment;
 	style.vertical_alignment=properties.vertical_alignment;
 
-	auto scrollbars=
-		create_peephole_scrollbars(info.peephole_container_impl,
-					   std::nullopt);
-
 	auto peepholed_element=ref<pane_peepholed_elementObj>
-		::create(e, info.peephole_impl);
+		::create(e, pane_info.peephole_impl);
 
-	auto layout_impl=ref<peepholeObj::layoutmanager_implObj::scrollbarsObj>
-		::create(info.peephole_impl,
-			 style,
-			 peepholed_element,
-			 scrollbars,
-			 horizontal_scrollbar_visibility,
-			 vertical_scrollbar_visibility);
+	const auto &[layout_impl, pane_container_grid_impl, grid]=
+		create_peephole_with_scrollbars
+		([&]
+		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
+		 -> peephole_element_factory_ret_t
+		 {
+			 auto peephole_in_pane=
+				 peephole::create(pane_info.peephole_impl,
+						  layout_impl);
 
-	layout_impl->initialize_scrollbars();
-
-	// Trigger recalculation by creating the public layout manager object.
-	auto public_layout=layout_impl->create_public_object();
-
-	auto peephole_in_pane=
-		peephole::create(info.peephole_impl, layout_impl);
-
-	auto pane_container_grid_impl=
-		ref<peephole_gridlayoutmanagerObj>
-		::create(info.peephole_container_impl, peephole_in_pane,
-			 scrollbars.vertical_scrollbar,
-			 scrollbars.horizontal_scrollbar);
-
-	auto pane_container_grid=
-		pane_container_grid_impl->create_gridlayoutmanager();
-
-	auto pane_container_grid_factory=pane_container_grid->append_row();
-
-	pane_container_grid_factory
-		->left_padding(properties.left_padding_set)
-		.right_padding(properties.right_padding_set)
-		.top_padding(properties.top_padding_set)
-		.bottom_padding(properties.bottom_padding_set)
-		.halign(halign::fill)
-		.valign(valign::fill);
+			 return {
+				 peephole_in_pane,
+				 peephole_in_pane,
+				 std::nullopt,
+				 std::nullopt,
+				 {},
+				 properties.left_padding_set,
+				 properties.right_padding_set,
+				 properties.top_padding_set,
+				 properties.bottom_padding_set,
+				 halign::fill,
+				 valign::fill,
+			 };
+		 },
+		 [&, this]
+		 (const auto &info, const auto &scrollbars)
+		 {
+			 return ref<peepholeObj::layoutmanager_implObj
+				    ::scrollbarsObj>
+				 ::create(info, scrollbars,
+					  pane_info.peephole_impl,
+					  peepholed_element);
+		 },
+		 create_peephole_gridlayoutmanager,
+		 {
+		  pane_info.peephole_container_impl,
+		  std::nullopt,
+		  style,
+		  horizontal_scrollbar_visibility,
+		  vertical_scrollbar_visibility,
+		 });
 
 	// Ok, we can now create the container.
-	auto pane=pane_peephole_container::create(info.peephole_container_impl,
+	auto pane=pane_peephole_container::create(pane_info
+						  .peephole_container_impl,
 						  pane_container_grid_impl);
-
-
-	// Install the peephole_impl into the pane.
-
-	pane_container_grid_factory
-		->created_internally(peephole_in_pane);
-
-	// And install the scrollbars
-	install_peephole_scrollbars(pane_container_grid,
-				    scrollbars.vertical_scrollbar,
-				    vertical_scrollbar_visibility,
-				    pane_container_grid_factory,
-				    scrollbars.horizontal_scrollbar,
-				    horizontal_scrollbar_visibility,
-				    pane_container_grid->append_row());
 
 	// How the new pane gets inserted into the pane container depends
 	// on the existing contents of the pane.
@@ -368,10 +357,6 @@ pane_peephole_container panelayoutmanagerObj::implObj
 			f->created_internally(pane);
 		}
 	}
-
-	set_peephole_scrollbar_focus_order
-		(scrollbars.horizontal_scrollbar,
-		 scrollbars.vertical_scrollbar);
 
 	// Now, make sure that the tabbing order remains consistent.
 
