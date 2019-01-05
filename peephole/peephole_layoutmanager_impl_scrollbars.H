@@ -281,6 +281,7 @@ struct peephole_element_factory_ret_t {
 	peephole peephole_container;
 	element grid_peephole_element;
 	std::optional<border_arg> grid_peephole_element_border;
+	std::optional<border_arg> grid_scrollbar_border;
 	focusableptr focusable_peephole_element;
 };
 

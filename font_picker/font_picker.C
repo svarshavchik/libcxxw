@@ -220,6 +220,7 @@ static inline font_picker_preview create_preview_label(const factory &f)
 				 preview_peep_container,
 				 preview_peep_container,
 				 "font_picker_preview_border",
+				 std::nullopt,
 				 {},
 			 };
 

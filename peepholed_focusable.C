@@ -168,6 +168,7 @@ create_peepholed_focusable_with_frame_impl
 				 peephole_container,
 				 pfc,
 				 std::nullopt,
+				 std::nullopt,
 				 ff,
 			 };
 		 },
