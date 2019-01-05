@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -7,10 +7,14 @@
 #define peephole_layoutmanager_impl_scrollbars_H
 
 #include "peephole/peephole_layoutmanager_impl.H"
+#include "peephole/peephole.H"
+#include "peephole/peephole_impl.H"
+#include "peephole/peephole_gridlayoutmanagerobj.H"
 #include "x/w/scrollbar.H"
 #include "x/w/rgb.H"
 
 #include <optional>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -234,6 +238,53 @@ struct LIBCXX_HIDDEN peephole_scrollbars {
 	//! Destructor
 	~peephole_scrollbars();
 };
+
+
+//////////////////////////////////////////////////////////////////////////////
+
+struct LIBCXX_HIDDEN peephole_element_factory_ret_t;
+struct LIBCXX_HIDDEN peephole_with_scrollbars_info;
+struct LIBCXX_HIDDEN create_peephole_with_scrollbars_ret_t;
+
+struct peephole_with_scrollbars_info {
+	container_impl grid_container_impl;
+	std::optional<color_arg> background_color;
+	container_impl peephole_impl; // Can be ref<peepholeObj::implObj>
+	const peephole_style &style;
+	scrollbar_visibility horizontal_visibility;
+	scrollbar_visibility vertical_visibility;
+
+	peepholed peepholed_element;
+};
+
+struct create_peephole_with_scrollbars_ret_t {
+	ref<peepholeObj::layoutmanager_implObj> layout_impl;
+	ref<peephole_gridlayoutmanagerObj> grid_layout_impl;
+	gridlayoutmanager grid_layout;
+};
+
+typedef peephole_element_factory_ret_t
+peephole_element_factory(const ref<peepholeObj::layoutmanager_implObj> &);
+
+struct peephole_element_factory_ret_t {
+	peephole peephole_container;
+	element grid_peephole_element;
+	focusableptr focusable_peephole_element;
+};
+
+template<typename peephole_element_factory_t> inline
+create_peephole_with_scrollbars_ret_t
+create_peephole_with_scrollbars(peephole_element_factory_t &&pe_factory,
+				const peephole_with_scrollbars_info &info)
+{
+	return do_create_peephole_with_scrollbars
+		(make_function<peephole_element_factory>
+		 (std::forward<peephole_element_factory_t>(pe_factory)), info);
+}
+
+create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
+(const function<peephole_element_factory> &pe_factory,
+ const peephole_with_scrollbars_info &info) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

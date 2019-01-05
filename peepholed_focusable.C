@@ -114,96 +114,77 @@ create_peepholed_focusable_with_frame_impl
 		make_peepholed(focusframecontainer_impl,
 			       args.parent_container);
 
-	// We can now create our layout manager, and give it the created
-	// peepholed_element.
+	const auto &[layout_impl, grid_impl, grid]=
+		create_peephole_with_scrollbars
+		([&]
+		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
+		 -> peephole_element_factory_ret_t
+		 {
+			 // In order to properly initialize the focusable
+			 // element, the layout manager needs_recalculation().
+			 // Arrange to invoke it indirectly by constructing
+			 // the layout manager public object, which will
+			 // take care of calling needs_recalculation().
 
-	auto scrollbars=create_peephole_scrollbars(args.parent_container,
-						   std::nullopt);
+			 auto public_layout=layout_impl->create_public_object();
 
-	auto layout_impl=ref<peepholeObj::layoutmanager_implObj::scrollbarsObj>
-		::create(impl,
-			 args.style,
-			 peepholed_element,
-			 scrollbars,
-			 args.horizontal_visibility,
-			 args.vertical_visibility);
+			 // Ok, we can now create the container.
+			 auto peephole_container=peephole::create(impl,
+								  layout_impl);
 
-	layout_impl->initialize_scrollbars();
+			 // We can now create the focusframecontainer public
+			 // object, now that the implementation object, and
+			 // the focusable object exist.
 
-	// In order to properly initialize the focusable element, the layout
-	// manager needs_recalculation(). Arrange to invoke it indirectly
-	// by constructing the layout manager public object, which will
-	// take care of calling needs_recalculation().
+			 auto ff=focusable_container_owner::create
+				 (focusframecontainer_impl,
+				  ref<focusframelayoutimplObj>
+				  ::create(focusframecontainer_impl,
+					   focusframecontainer_impl,
+					   peephole_container),
+				  focusable_element_impl);
 
-	auto public_layout=layout_impl->create_public_object();
+			 // We still need to:
+			 //
+			 // Explicitly show() the peephole_container and
+			 // the focusframe, since the whole thing has
+			 // nonrecursive_visibility.
+			 //
+			 // Officially place the focusframe inside the grid
+			 // layout manager, it was created_internally().
 
-	// Ok, we can now create the container.
-	auto peephole_container=peephole::create(impl, layout_impl);
+			 peephole_container->show();
+			 ff->show();
 
-	// We can now create the focusframecontainer public object, now that
-	// the implementation object, and the focusable object exist.
+			 auto blm_impl=ref<borderlayoutmanagerObj::implObj>
+				 ::create(pfc_impl, pfc_impl, ff, halign::fill,
+					  valign::fill);
 
-	auto ff=focusable_container_owner::create
-		(focusframecontainer_impl,
-		 ref<focusframelayoutimplObj>::create(focusframecontainer_impl,
-						      focusframecontainer_impl,
-						      peephole_container),
-		 focusable_element_impl);
+			 auto pfc=container::create(pfc_impl, blm_impl);
 
-	// Make sure that the the focusframe and the scrollbars use the
-	// correct tabbing order.
-	set_peephole_scrollbar_focus_order(ff,
-					   scrollbars.horizontal_scrollbar,
-					   scrollbars.vertical_scrollbar);
+			 pfc->show();
 
-	// We still need to:
-	//
-	// Explicitly show() the peephole_container and the focusframe, since
-	// the whole thing has nonrecursive_visibility.
-	//
-	// Officially place the focusframe inside the grid
-	// layout manager, it was created_internally().
-
-	peephole_container->show();
-	ff->show();
-
-	auto blm_impl=ref<borderlayoutmanagerObj::implObj>
-		::create(pfc_impl, pfc_impl, ff, halign::fill,
-			 valign::fill);
-
-	auto pfc=container::create(pfc_impl, blm_impl);
-
-	pfc->show();
-
-	auto grid_impl=
-		ref<peephole_gridlayoutmanagerObj>
-		::create(args.parent_container,
-			 peephole_container,
-			 scrollbars.vertical_scrollbar,
-			 scrollbars.horizontal_scrollbar);
-
-	auto grid=grid_impl->create_gridlayoutmanager();
-
-	auto factory=grid->append_row();
-
-	factory->padding(0);
-
-	factory->created_internally(pfc);
-
-	auto factory2=grid->append_row();
-
-	install_peephole_scrollbars(grid,
-				    scrollbars.vertical_scrollbar,
-				    args.vertical_visibility,
-				    factory,
-				    scrollbars.horizontal_scrollbar,
-				    args.horizontal_visibility,
-				    factory2);
+			 return {
+				 peephole_container,
+				 pfc,
+				 std::nullopt,
+				 ff,
+			 };
+		 },
+		 {
+		  args.parent_container,
+		  std::nullopt,
+		  impl,
+		  args.style,
+		  args.horizontal_visibility,
+		  args.vertical_visibility,
+		  peepholed_element,
+		 });
 
 	return {ref<peepholed_focusableObj::implObj>
 			::create(focusable_element,
-				 scrollbars.vertical_scrollbar,
-				 scrollbars.horizontal_scrollbar),
+				 grid_impl->my_vertical_scrollbar,
+				 grid_impl->my_horizontal_scrollbar),
 			grid};
 }
 

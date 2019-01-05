@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -324,5 +324,71 @@ void scrollbarsObj
 						       new_config.range
 						       > new_config.page_size);
 }
+
+///////////////////////////////////////////////////////////////////////////
+
+create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
+(const function<peephole_element_factory> &pe_factory,
+ const peephole_with_scrollbars_info &info)
+{
+	auto scrollbars=
+		create_peephole_scrollbars(info.grid_container_impl,
+					   info.background_color);
+
+	auto layout_impl=ref<peepholeObj::layoutmanager_implObj::scrollbarsObj>
+		::create(info.peephole_impl,
+			 info.style,
+			 info.peepholed_element,
+			 scrollbars,
+			 info.horizontal_visibility,
+			 info.vertical_visibility);
+
+	layout_impl->initialize_scrollbars();
+
+	const auto &[peephole_container,
+		     grid_peephole_element,
+		     focusable_peephole_element]=
+		pe_factory(layout_impl);
+
+	// Make sure the tabbing order is right.
+
+	if (focusable_peephole_element)
+		set_peephole_scrollbar_focus_order
+			(focusable_peephole_element,
+			 scrollbars.horizontal_scrollbar,
+			 scrollbars.vertical_scrollbar);
+	else
+		set_peephole_scrollbar_focus_order
+			(scrollbars.horizontal_scrollbar,
+			 scrollbars.vertical_scrollbar);
+
+	auto grid_impl=
+		ref<peephole_gridlayoutmanagerObj>
+		::create(info.grid_container_impl,
+			 peephole_container,
+			 scrollbars.vertical_scrollbar,
+			 scrollbars.horizontal_scrollbar);
+
+	auto grid=grid_impl->create_gridlayoutmanager();
+
+	auto factory=grid->append_row();
+
+	factory->padding(0);
+
+	factory->created_internally(grid_peephole_element);
+
+	auto factory2=grid->append_row();
+
+	install_peephole_scrollbars(grid,
+				    scrollbars.vertical_scrollbar,
+				    info.vertical_visibility,
+				    factory,
+				    scrollbars.horizontal_scrollbar,
+				    info.horizontal_visibility,
+				    factory2);
+
+	return {layout_impl, grid_impl, grid};
+}
+
 
 LIBCXXW_NAMESPACE_END
