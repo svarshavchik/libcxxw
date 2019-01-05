@@ -12,6 +12,15 @@
 LIBCXXW_NAMESPACE_START
 
 peephole_gridlayoutmanagerObj
+::peephole_gridlayoutmanagerObj(const init_args &args)
+	: peephole_gridlayoutmanagerObj{args.my_container_impl,
+					args.my_peephole,
+					args.my_vertical_scrollbar,
+					args.my_horizontal_scrollbar}
+{
+}
+
+peephole_gridlayoutmanagerObj
 ::peephole_gridlayoutmanagerObj(const container_impl
 				&container_impl,
 				const peephole &my_peephole,

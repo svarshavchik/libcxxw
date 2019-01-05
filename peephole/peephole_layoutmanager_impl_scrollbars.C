@@ -341,6 +341,7 @@ void scrollbarsObj
 create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 (const function<peephole_element_factory> &pe_factory,
  const function<peephole_with_scrollbars_layoutmanager_factory> &lm_factory,
+ const function<peephole_with_scrollbars_gridlayoutmanager_factory> &glm_factory,
  const peephole_with_scrollbars_info &info)
 {
 	auto scrollbars=
@@ -369,12 +370,11 @@ create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 			(scrollbars.horizontal_scrollbar,
 			 scrollbars.vertical_scrollbar);
 
-	auto grid_impl=
-		ref<peephole_gridlayoutmanagerObj>
-		::create(info.grid_container_impl,
-			 peephole_container,
-			 scrollbars.vertical_scrollbar,
-			 scrollbars.horizontal_scrollbar);
+	auto grid_impl=glm_factory({info.grid_container_impl,
+				    peephole_container,
+				    scrollbars.vertical_scrollbar,
+				    scrollbars.horizontal_scrollbar
+		});
 
 	auto grid=grid_impl->create_gridlayoutmanager();
 
@@ -399,5 +399,11 @@ create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 	return {layout_impl, grid_impl, grid};
 }
 
+ref<peephole_gridlayoutmanagerObj>
+create_peephole_gridlayoutmanager(const peephole_gridlayoutmanagerObj
+				  ::init_args &init_args)
+{
+	return ref<peephole_gridlayoutmanagerObj>::create(init_args);
+}
 
 LIBCXXW_NAMESPACE_END

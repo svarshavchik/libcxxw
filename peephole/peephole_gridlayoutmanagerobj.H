@@ -24,10 +24,13 @@ class peephole_gridlayoutmanagerObj
 
  public:
 
+	struct LIBCXX_HIDDEN init_args;
+
 	//! Constructor
 
 	//! The elements that go into the grid get pre-created, and we save
 	//! them here.
+	peephole_gridlayoutmanagerObj(const init_args &args);
 
 	peephole_gridlayoutmanagerObj(const container_impl
 				      &container_impl,
@@ -52,6 +55,17 @@ class peephole_gridlayoutmanagerObj
 
 	void request_visibility_recursive(ONLY IN_THREAD, bool) override;
 };
+
+//! Constructor parameters.
+
+struct peephole_gridlayoutmanagerObj::init_args {
+	const container_impl &my_container_impl;
+	const peephole &my_peephole;
+	const scrollbar &my_vertical_scrollbar;
+	const scrollbar &my_horizontal_scrollbar;
+};
+
+
 
 LIBCXXW_NAMESPACE_END
 

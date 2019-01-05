@@ -232,6 +232,7 @@ static inline font_picker_preview create_preview_label(const factory &f)
 				 ::create(info, scrollbars,
 					  new_preview_label);
 		 },
+		 create_peephole_gridlayoutmanager,
 		 {
 		  preview_container_impl,
 		  std::nullopt,

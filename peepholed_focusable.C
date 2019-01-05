@@ -179,6 +179,7 @@ create_peepholed_focusable_with_frame_impl
 				 ::create(info, scrollbars,
 					  peepholed_element);
 		 },
+		 create_peephole_gridlayoutmanager,
 		 {
 		  args.parent_container,
 		  std::nullopt,

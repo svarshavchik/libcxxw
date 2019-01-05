@@ -273,6 +273,10 @@ peephole_with_scrollbars_layoutmanager_factory
 (const peephole_with_scrollbars_info &info,
  const peephole_scrollbars &scrollbars);
 
+typedef ref<peephole_gridlayoutmanagerObj>
+peephole_with_scrollbars_gridlayoutmanager_factory
+(const peephole_gridlayoutmanagerObj::init_args &init_args);
+
 struct peephole_element_factory_ret_t {
 	peephole peephole_container;
 	element grid_peephole_element;
@@ -281,11 +285,14 @@ struct peephole_element_factory_ret_t {
 };
 
 template<typename peephole_element_factory_t,
-	 typename peephole_with_scrollbars_layoutmanager_factory_t> inline
+	 typename peephole_with_scrollbars_layoutmanager_factory_t,
+	 typename peephole_with_scrollbars_gridlayoutmanager_factory_t> inline
 create_peephole_with_scrollbars_ret_t
 create_peephole_with_scrollbars(peephole_element_factory_t &&pe_factory,
 				peephole_with_scrollbars_layoutmanager_factory_t
 				&&lm_factory,
+				peephole_with_scrollbars_gridlayoutmanager_factory_t
+				&&glm_factory,
 				const peephole_with_scrollbars_info &info)
 {
 	return do_create_peephole_with_scrollbars
@@ -294,13 +301,21 @@ create_peephole_with_scrollbars(peephole_element_factory_t &&pe_factory,
 		 make_function<peephole_with_scrollbars_layoutmanager_factory>
 		 (std::forward<peephole_with_scrollbars_layoutmanager_factory_t>
 		  (lm_factory)),
+		 make_function<peephole_with_scrollbars_gridlayoutmanager_factory>
+		 (std::forward<peephole_with_scrollbars_gridlayoutmanager_factory_t>
+		  (glm_factory)),
 		 info);
 }
 
 create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 (const function<peephole_element_factory> &pe_factory,
  const function<peephole_with_scrollbars_layoutmanager_factory> &lm_factory,
+ const function<peephole_with_scrollbars_gridlayoutmanager_factory> &glm_factory,
  const peephole_with_scrollbars_info &info) LIBCXX_HIDDEN;
+
+ref<peephole_gridlayoutmanagerObj>
+create_peephole_gridlayoutmanager(const peephole_gridlayoutmanagerObj
+				  ::init_args &init_args) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 
