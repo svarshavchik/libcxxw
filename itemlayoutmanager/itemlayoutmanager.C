@@ -1,5 +1,5 @@
 /*
-** Copyright 2018 Double Precision, Inc.
+** Copyright 2018-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -18,6 +18,8 @@
 #include "x/w/focusable_container.H"
 #include "gridlayoutmanager.H"
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
+#include "peephole/peephole.H"
+#include "peephole/peephole_impl_element.H"
 #include "image_button.H"
 #include "image_button_internal_impl.H"
 
@@ -213,7 +215,7 @@ public:
 //////////////////////////////////////////////////////////////////////////////
 //
 // The actual container we create is a container with a grid layout manager
-// containing a peephole. The peephole containers the real container that's
+// containing a peephole. The peephole contains the real container that's
 // managed by the item layout manager.
 
 focusable_container new_itemlayoutmanager::create(const container_impl &parent)
@@ -231,81 +233,81 @@ focusable_container new_itemlayoutmanager::create(const container_impl &parent)
 					   {{0, 0, dim_t::infinite()},
 					    {0, 0, 0}}});
 
-
-	auto gridlm_impl=ref<gridlayoutmanagerObj::implObj>
-		::create(impl, new_gridlayoutmanager{});
-
-	auto gridlm=gridlm_impl->create_gridlayoutmanager();
-
 	// The first element in the grid is a peephole. Here's its container.
 
 	auto peephole_container_impl=ref<always_visible_elementObj<
-		container_elementObj<child_elementObj>>>
+		peephole_impl_elementObj<container_elementObj
+					 <child_elementObj>>>>
 		::create(impl,
 			 child_element_init_params{"background@libcxx.com",
 						   {{0, 0, dim_t::infinite()},
 						    {0, 0, 0}}});
 
-	// Prepare the factories for the peephole container and the
-	// scrollbars.
-	auto row0_factory=gridlm->append_row();
-	auto row1_factory=gridlm->append_row();
-
-	auto sb=create_peephole_scrollbars(impl,
-					   std::nullopt);
-
-	// The peephole shows this peepholed container, the real container
-	// with the item layout manager.
-
-	auto peepholed_container_impl=ref<peepholed_item_containerObj::implObj>
-		::create(peephole_container_impl,
-			 sb.horizontal_scrollbar,
-			 sb.vertical_scrollbar,
-			 *this);
-
-	auto itemlm_impl=ref<itemlayoutmanagerObj::implObj>
-		::create(peepholed_container_impl,
-			 *this);
-
-	// The container is the peepholed container.
-	auto peepholed_container=ref<peepholed_item_containerObj>
-		::create(peepholed_container_impl, itemlm_impl);
-
-	// Create the peephole layout manager, and the peephole container's
-	// public object, add it to the grid layout manager.
-
 	peephole_style p_style;
 
 	p_style.height_algorithm=peephole_algorithm::stretch_peephole;
 
-	auto peephole_lm=
-		ref<peepholeObj::layoutmanager_implObj::scrollbarsObj>
-		::create(peephole_container_impl,
-			 p_style,
-			 peepholed_container,
-			 sb,
-			 scrollbar_visibility::automatic,
-			 scrollbar_visibility::never);
+	ptr<itemlayoutmanagerObj::implObj> itemlm_implptr;
 
-	auto peephole_container=container::create(peephole_container_impl,
-						  peephole_lm);
+	const auto &[layout_impl, grid_impl, grid]=
+		create_peephole_with_scrollbars
+		([&]
+		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
+		 -> peephole_element_factory_ret_t
+		 {
+			 auto peephole_container=
+				 peephole::create(peephole_container_impl,
+						  layout_impl);
 
-	row0_factory->padding(0);
-	row0_factory->created_internally(peephole_container);
+			 return {
+				 peephole_container,
+				 peephole_container,
+				 std::nullopt,
+				 std::nullopt,
+				 {},
+			 };
+		 },
+		 [&, this]
+		 (const auto &info, const auto &scrollbars)
+		 {
+			 // The peephole shows this peepholed container,
+			 // the real container with the item layout manager.
 
-	// We can now create the peephole scrollbars.
-	install_peephole_scrollbars(gridlm,
-				    sb.vertical_scrollbar,
-				    scrollbar_visibility::never,
-				    row0_factory,
-				    sb.horizontal_scrollbar,
-				    scrollbar_visibility::automatic,
-				    row1_factory);
+			 auto peepholed_container_impl=
+				 ref<peepholed_item_containerObj::implObj>
+				 ::create(peephole_container_impl,
+					  scrollbars.horizontal_scrollbar,
+					  scrollbars.vertical_scrollbar,
+					  *this);
 
-	set_peephole_scrollbar_focus_order(sb.horizontal_scrollbar,
-					   sb.vertical_scrollbar);
+			 auto itemlm_impl=ref<itemlayoutmanagerObj::implObj>
+				 ::create(peepholed_container_impl,
+					  *this);
 
-	return ref<item_containerObj>::create(impl, gridlm_impl, itemlm_impl);
+			 itemlm_implptr=itemlm_impl;
+
+			 // The container is the peepholed container.
+			 auto peepholed_container=
+				 ref<peepholed_item_containerObj>
+				 ::create(peepholed_container_impl,
+					  itemlm_impl);
+
+			 return ref<peepholeObj::layoutmanager_implObj
+				    ::scrollbarsObj>
+				 ::create(info, scrollbars,
+					  peephole_container_impl,
+					  peepholed_container);
+		 },
+		 create_peephole_gridlayoutmanager,
+		 {
+		  impl,
+		  std::nullopt,
+		  p_style,
+		  scrollbar_visibility::automatic,
+		  scrollbar_visibility::never,
+		 });
+
+	return ref<item_containerObj>::create(impl, grid_impl, itemlm_implptr);
 }
 
 LIBCXXW_NAMESPACE_END
