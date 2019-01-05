@@ -171,6 +171,14 @@ create_peepholed_focusable_with_frame_impl
 				 ff,
 			 };
 		 },
+		 [&]
+		 (const auto &info, const auto &scrollbars)
+		 {
+			 return ref<peepholeObj::layoutmanager_implObj
+				    ::scrollbarsObj>
+				 ::create(info, scrollbars,
+					  peepholed_element);
+		 },
 		 {
 		  args.parent_container,
 		  std::nullopt,
@@ -178,7 +186,6 @@ create_peepholed_focusable_with_frame_impl
 		  args.style,
 		  args.horizontal_visibility,
 		  args.vertical_visibility,
-		  peepholed_element,
 		 });
 
 	return {ref<peepholed_focusableObj::implObj>

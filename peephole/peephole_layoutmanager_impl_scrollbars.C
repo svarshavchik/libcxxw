@@ -200,11 +200,22 @@ peephole_scrollbars::~peephole_scrollbars()=default;
 
 //////////////////////////////////////////////////////////////////////////////
 
+scrollbarsObj::scrollbarsObj(const peephole_with_scrollbars_info &info,
+			     const peephole_scrollbars &peephole_scrollbars,
+			     const peepholed &element_in_peephole)
+	: scrollbarsObj{info.peephole_impl,
+			info.style,
+			element_in_peephole,
+			peephole_scrollbars,
+			info.horizontal_visibility,
+			info.vertical_visibility}
+{
+}
+
 scrollbarsObj
 ::scrollbarsObj(const container_impl &container_impl,
-		peephole_style style,
+		const peephole_style &style,
 		const peepholed &element_in_peephole,
-
 		const peephole_scrollbars &scrollbars,
 		const scrollbar_visibility horizontal_scrollbar_visibility,
 		const scrollbar_visibility vertical_scrollbar_visibility)
@@ -329,19 +340,14 @@ void scrollbarsObj
 
 create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 (const function<peephole_element_factory> &pe_factory,
+ const function<peephole_with_scrollbars_layoutmanager_factory> &lm_factory,
  const peephole_with_scrollbars_info &info)
 {
 	auto scrollbars=
 		create_peephole_scrollbars(info.grid_container_impl,
 					   info.background_color);
 
-	auto layout_impl=ref<peepholeObj::layoutmanager_implObj::scrollbarsObj>
-		::create(info.peephole_impl,
-			 info.style,
-			 info.peepholed_element,
-			 scrollbars,
-			 info.horizontal_visibility,
-			 info.vertical_visibility);
+	auto layout_impl=lm_factory(info, scrollbars);
 
 	layout_impl->initialize_scrollbars();
 

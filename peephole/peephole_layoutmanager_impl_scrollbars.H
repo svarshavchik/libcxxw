@@ -20,6 +20,9 @@
 LIBCXXW_NAMESPACE_START
 
 struct LIBCXX_HIDDEN peephole_scrollbars;
+struct LIBCXX_HIDDEN peephole_element_factory_ret_t;
+struct LIBCXX_HIDDEN peephole_with_scrollbars_info;
+struct LIBCXX_HIDDEN create_peephole_with_scrollbars_ret_t;
 
 //! Create scrollbar elements for a peephole.
 
@@ -154,8 +157,12 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj::scrollbarsObj
  public:
 
 	//! Constructor
+	scrollbarsObj(const peephole_with_scrollbars_info &info,
+		      const peephole_scrollbars &peephole_scrollbars,
+		      const peepholed &element_in_peephole);
+
 	scrollbarsObj(const container_impl &container_impl,
-		      peephole_style style,
+		      const peephole_style &style,
 		      const peepholed &element_in_peephole,
 		      const peephole_scrollbars &scrollbars,
 		      const scrollbar_visibility horizontal_scrollbar_visibility,
@@ -243,10 +250,6 @@ struct LIBCXX_HIDDEN peephole_scrollbars {
 
 //////////////////////////////////////////////////////////////////////////////
 
-struct LIBCXX_HIDDEN peephole_element_factory_ret_t;
-struct LIBCXX_HIDDEN peephole_with_scrollbars_info;
-struct LIBCXX_HIDDEN create_peephole_with_scrollbars_ret_t;
-
 struct peephole_with_scrollbars_info {
 	container_impl grid_container_impl;
 	std::optional<color_arg> background_color;
@@ -254,8 +257,6 @@ struct peephole_with_scrollbars_info {
 	const peephole_style &style;
 	scrollbar_visibility horizontal_visibility;
 	scrollbar_visibility vertical_visibility;
-
-	peepholed peepholed_element;
 };
 
 struct create_peephole_with_scrollbars_ret_t {
@@ -267,6 +268,11 @@ struct create_peephole_with_scrollbars_ret_t {
 typedef peephole_element_factory_ret_t
 peephole_element_factory(const ref<peepholeObj::layoutmanager_implObj> &);
 
+typedef ref<peepholeObj::layoutmanager_implObj::scrollbarsObj>
+peephole_with_scrollbars_layoutmanager_factory
+(const peephole_with_scrollbars_info &info,
+ const peephole_scrollbars &scrollbars);
+
 struct peephole_element_factory_ret_t {
 	peephole peephole_container;
 	element grid_peephole_element;
@@ -274,18 +280,26 @@ struct peephole_element_factory_ret_t {
 	focusableptr focusable_peephole_element;
 };
 
-template<typename peephole_element_factory_t> inline
+template<typename peephole_element_factory_t,
+	 typename peephole_with_scrollbars_layoutmanager_factory_t> inline
 create_peephole_with_scrollbars_ret_t
 create_peephole_with_scrollbars(peephole_element_factory_t &&pe_factory,
+				peephole_with_scrollbars_layoutmanager_factory_t
+				&&lm_factory,
 				const peephole_with_scrollbars_info &info)
 {
 	return do_create_peephole_with_scrollbars
 		(make_function<peephole_element_factory>
-		 (std::forward<peephole_element_factory_t>(pe_factory)), info);
+		 (std::forward<peephole_element_factory_t>(pe_factory)),
+		 make_function<peephole_with_scrollbars_layoutmanager_factory>
+		 (std::forward<peephole_with_scrollbars_layoutmanager_factory_t>
+		  (lm_factory)),
+		 info);
 }
 
 create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 (const function<peephole_element_factory> &pe_factory,
+ const function<peephole_with_scrollbars_layoutmanager_factory> &lm_factory,
  const peephole_with_scrollbars_info &info) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END

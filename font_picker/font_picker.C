@@ -224,6 +224,14 @@ static inline font_picker_preview create_preview_label(const factory &f)
 			 };
 
 		 },
+		 [&]
+		 (const auto &info, const auto &scrollbars)
+		 {
+			 return ref<peepholeObj::layoutmanager_implObj
+				    ::scrollbarsObj>
+				 ::create(info, scrollbars,
+					  new_preview_label);
+		 },
 		 {
 		  preview_container_impl,
 		  std::nullopt,
@@ -231,7 +239,6 @@ static inline font_picker_preview create_preview_label(const factory &f)
 		  pstyle,
 		  scrollbar_visibility::automatic_reserved,
 		  scrollbar_visibility::automatic_reserved,
-		  new_preview_label,
 		 });
 
 	// And, finally, we can create the container
