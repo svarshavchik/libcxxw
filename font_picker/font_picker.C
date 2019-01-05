@@ -27,6 +27,8 @@
 
 #include "peephole/peepholed_attachedto_container_impl.H"
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
+#include "peephole/peephole.H"
+#include "peephole/peephole_impl_element.H"
 
 #include "popup/popup_attachedto_element.H"
 #include "messages.H"
@@ -158,11 +160,6 @@ static inline font_picker_preview create_preview_label(const factory &f)
 				child_elementObj>>>
 		::create(f->get_container_impl());
 
-	// Create the scrollbars.
-
-	auto ps=create_peephole_scrollbars
-		(preview_container_impl, {});
-
 	peephole_style pstyle{
 		halign::center,
 			valign::middle};
@@ -175,8 +172,9 @@ static inline font_picker_preview create_preview_label(const factory &f)
 
 	auto preview_peep_container_impl=
 		ref<always_visibleObj<
-			container_elementObj<
-				canvasObj::implObj>>>
+			peephole_impl_elementObj<
+				container_elementObj<
+					canvasObj::implObj>>>>
 		::create
 		(preview_container_impl,
 		 canvas_init_params{
@@ -203,62 +201,38 @@ static inline font_picker_preview create_preview_label(const factory &f)
 
 	// We can now construct the peephole+scrollbars
 	// layout manager.
+	const auto &[layout_impl, glm_impl, grid]=
+		create_peephole_with_scrollbars
+		([&]
+		 (const ref<peepholeObj::layoutmanager_implObj> &peephole_lm)
+		 -> peephole_element_factory_ret_t
+		 {
+			 // The container public object, for the
+			 // peephole.
 
-	const auto sb_visibility=scrollbar_visibility::automatic_reserved;
-
-	auto peephole_lm=
-		ref<peepholeObj::layoutmanager_implObj
-		    ::scrollbarsObj>
-		::create(preview_peep_container_impl,
-			 pstyle,
-			 new_preview_label,
-			 ps,
-			 sb_visibility,
-			 sb_visibility);
-
-	peephole_lm->initialize_scrollbars();
-
-	// The container public object, for the
-	// peephole.
-
-	auto preview_peep_container=
-		container::create
-		(preview_peep_container_impl,
-		 peephole_lm);
+			 auto preview_peep_container=
+				 peephole::create
+				 (preview_peep_container_impl,
+				  peephole_lm);
 
 
-	// Construct the grid layout manager, for
-	// the peephole element.
+			 return {
+				 preview_peep_container,
+				 preview_peep_container,
+				 "font_picker_preview_border",
+				 {},
+			 };
 
-	ref<gridlayoutmanagerObj::implObj> glm_impl=
-		new_gridlayoutmanager{}.create(preview_container_impl);
-
-	auto glm=glm_impl->create_gridlayoutmanager();
-
-	auto row0_factory=glm->append_row();
-	auto row1_factory=glm->append_row();
-
-	// Now "create" the peephole element inside
-	// the grid, and the scrollbars.
-
-	row0_factory->padding(0);
-	row0_factory->border("font_picker_preview_border");
-
-	row0_factory->created_internally
-		(preview_peep_container);
-
-	install_peephole_scrollbars
-		(glm,
-		 ps.vertical_scrollbar,
-		 sb_visibility,
-		 row0_factory,
-		 ps.horizontal_scrollbar,
-		 sb_visibility,
-		 row1_factory);
-
-	set_peephole_scrollbar_focus_order
-		(ps.horizontal_scrollbar,
-		 ps.vertical_scrollbar);
+		 },
+		 {
+		  preview_container_impl,
+		  std::nullopt,
+		  preview_peep_container_impl,
+		  pstyle,
+		  scrollbar_visibility::automatic_reserved,
+		  scrollbar_visibility::automatic_reserved,
+		  new_preview_label,
+		 });
 
 	// And, finally, we can create the container
 	// that represents this preview element.

@@ -6,8 +6,10 @@
 #ifndef editor_peephole_impl_H
 #define editor_peephole_impl_H
 
-#include "peephole/peephole_impl.H"
+#include "peephole/peephole_impl_element.H"
 #include "x/w/button_eventfwd.H"
+#include "x/w/impl/container_elementfwd.H"
+#include "x/w/impl/child_element.H"
 #include "editorobj.H"
 
 LIBCXXW_NAMESPACE_START
@@ -22,11 +24,14 @@ LIBCXXW_NAMESPACE_START
 //! We process these events by setting the focus to the editor element.
 
 class LIBCXX_HIDDEN editor_peephole_implObj
-	: public peepholeObj::implObj {
-
+	: public peephole_impl_elementObj<container_elementObj<child_elementObj>
+					  > {
  public:
 
-	using peepholeObj::implObj::implObj;
+	typedef peephole_impl_elementObj<container_elementObj<child_elementObj>
+					 > superclass_t;
+
+	using superclass_t::superclass_t;
 
 	//! Override report_motion_event().
 

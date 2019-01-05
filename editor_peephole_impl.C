@@ -11,6 +11,7 @@
 #include "drag_destination_element.H"
 #include "x/w/impl/fonts/current_fontcollection.H"
 #include "x/w/impl/fonts/fontcollection.H"
+#include "x/w/impl/container_element.H"
 #include "x/w/button_event.H"
 
 LIBCXXW_NAMESPACE_START
@@ -39,7 +40,7 @@ void editor_peephole_implObj::report_motion_event(ONLY IN_THREAD,
 {
 	// If we're hiding the pointer, remove it.
 	remove_cursor_pointer(IN_THREAD);
-	peepholeObj::implObj::report_motion_event(IN_THREAD, me);
+        superclass_t::report_motion_event(IN_THREAD, me);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -10,7 +10,7 @@
 #include "booklayoutmanager/pagetab_impl.H"
 #include "booklayoutmanager/pagetabsingletonlayoutmanager_implobj.H"
 #include "peephole/peephole.H"
-#include "peephole/peephole_impl.H"
+#include "peephole/peephole_impl_element.H"
 #include "peephole/peepholed_element.H"
 #include "peephole/peephole_style.H"
 #include "peephole/peephole_layoutmanager_impl.H"
@@ -639,7 +639,8 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	peephole_impl_init_params.background_color="book_tab_background_color";
 
 	auto peephole_impl=
-		ref<always_visibleObj<peepholeObj::implObj>>
+		ref<always_visibleObj<peephole_impl_elementObj<
+			container_elementObj<child_elementObj>>>>
 		::create(factory->get_container_impl(),
 			 peephole_impl_init_params);
 

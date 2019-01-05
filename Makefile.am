@@ -573,6 +573,8 @@ libcxxw_la_SOURCES=\
 	peephole/peephole_gridlayoutmanagerobj.H    \
 	peephole/peephole_impl.C		    \
 	peephole/peephole_impl.H		    \
+	peephole/peephole_impl_element.H	    \
+	peephole/peephole_impl_elementfwd.H	    \
 	peephole/peephole_layoutmanager_impl.C	    \
 	peephole/peephole_layoutmanager_impl.H	    \
 	peephole/peephole_layoutmanager_impl_scrollbars.C \

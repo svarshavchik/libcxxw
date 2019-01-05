@@ -16,7 +16,7 @@ void peephole_toplevel_gridlayoutmanagerObj::needs_recalculation(ONLY IN_THREAD)
 {
 	peephole_gridlayoutmanagerObj::needs_recalculation(IN_THREAD);
 
-	my_peephole->impl->invoke_layoutmanager
+	my_peephole->impl->get_container_impl().invoke_layoutmanager
 		([&]
 		 (const auto &lm)
 		 {

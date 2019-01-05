@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "panelayoutmanager/pane_peephole_impl.H"
 #include "panelayoutmanager/pane_peephole_container_impl.H"
+#include "peephole/peephole_impl_element.H"
 #include "x/w/impl/always_visible.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/theme_font_element.H"

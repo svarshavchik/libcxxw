@@ -8,7 +8,7 @@
 #include "x/w/impl/always_visible.H"
 #include "gridlayoutmanager.H"
 #include "peephole/peephole.H"
-#include "peephole/peephole_impl.H"
+#include "peephole/peephole_impl_element.H"
 #include "peephole/peephole_toplevel_gridlayoutmanager.H"
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
 #include "peephole/peepholed_toplevel_element.H"
@@ -16,6 +16,7 @@
 #include "screen.H"
 #include "x/w/impl/current_border_impl.H"
 #include "x/w/impl/border_impl.H"
+#include "x/w/impl/container_element.H"
 #include "x/w/screen.H"
 #include "x/w/scrollbar.H"
 
@@ -65,9 +66,12 @@ class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
 //! in the tabbing order.
 
 class LIBCXX_HIDDEN peephole_toplevel_implObj
-	: public always_visibleObj<peepholeObj::implObj> {
+	: public always_visibleObj<peephole_impl_elementObj<
+					   container_elementObj<
+						   child_elementObj>>> {
 
-	typedef always_visibleObj<peepholeObj::implObj> superclass_t;
+	typedef always_visibleObj<peephole_impl_elementObj<
+		container_elementObj<child_elementObj>>> superclass_t;
 
  public:
 

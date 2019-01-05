@@ -347,6 +347,7 @@ create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 
 	const auto &[peephole_container,
 		     grid_peephole_element,
+		     grid_peephole_element_border,
 		     focusable_peephole_element]=
 		pe_factory(layout_impl);
 
@@ -375,6 +376,8 @@ create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 
 	factory->padding(0);
 
+	if (grid_peephole_element_border)
+		factory->border(*grid_peephole_element_border);
 	factory->created_internally(grid_peephole_element);
 
 	auto factory2=grid->append_row();

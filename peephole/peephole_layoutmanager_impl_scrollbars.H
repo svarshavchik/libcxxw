@@ -12,6 +12,7 @@
 #include "peephole/peephole_gridlayoutmanagerobj.H"
 #include "x/w/scrollbar.H"
 #include "x/w/rgb.H"
+#include "x/w/border_arg.H"
 
 #include <optional>
 #include <x/functional.H>
@@ -269,6 +270,7 @@ peephole_element_factory(const ref<peepholeObj::layoutmanager_implObj> &);
 struct peephole_element_factory_ret_t {
 	peephole peephole_container;
 	element grid_peephole_element;
+	std::optional<border_arg> grid_peephole_element_border;
 	focusableptr focusable_peephole_element;
 };
 

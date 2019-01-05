@@ -7,7 +7,7 @@
 
 #include "panelayoutmanager/pane_peephole.H"
 #include "panelayoutmanager/pane_peephole_containerobj.H"
-#include "peephole/peephole_impl.H"
+#include "peephole/peephole_impl_elementfwd.H"
 #include "x/w/impl/always_visiblefwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/theme_font_elementfwd.H"
@@ -26,12 +26,18 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN pane_peepholeObj::implObj
 	: public theme_font_elementObj<always_visibleObj
-					   <peepholeObj::implObj>> {
+					   <peephole_impl_elementObj<
+						    container_elementObj<
+							    child_elementObj>>
+					    >> {
 
 	//! Alias.
 
 	typedef theme_font_elementObj<always_visibleObj
-					  <peepholeObj::implObj>> superclass_t;
+				      <peephole_impl_elementObj<
+					      container_elementObj<
+						      child_elementObj>>
+				       >> superclass_t;
  public:
 	//! My parent container.
 

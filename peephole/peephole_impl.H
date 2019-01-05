@@ -7,24 +7,28 @@
 #define peephole_impl_H
 
 #include "peephole/peepholeobj.H"
-#include "x/w/impl/container_elementfwd.H"
-#include "x/w/impl/child_element.H"
+#include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
 
 //! \ref peephole "peephole" implementation object.
 
-class LIBCXX_HIDDEN peepholeObj::implObj
-	: public container_elementObj<child_elementObj> {
+//! Combined with the \ref peephole::elementObj mixin.
+
+class peepholeObj::implObj : virtual public obj {
 
  public:
 
-	using container_elementObj<child_elementObj>::container_elementObj;
+	//! Constructor.
 
-	typedef container_elementObj<child_elementObj> superclass_t;
+	implObj();
 
 	//! Destructor
 	~implObj();
+
+	//! Return my container.
+
+	virtual containerObj::implObj &get_container_impl()=0;
 
 	//! Scroll wheel in a peephole scrolls it vertically.
 
@@ -32,7 +36,7 @@ class LIBCXX_HIDDEN peepholeObj::implObj
 
 	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
-				  xcb_timestamp_t timestamp) override;
+				  xcb_timestamp_t timestamp);
 };
 
 LIBCXXW_NAMESPACE_END

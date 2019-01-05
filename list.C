@@ -13,11 +13,12 @@
 #include "gridlayoutmanager.H"
 #include "x/w/impl/focus/focusable.H"
 #include "peephole/peepholed.H"
-#include "peephole/peephole_impl.H"
+#include "peephole/peephole_impl_element.H"
 #include "peepholed_focusable.H"
 #include "messages.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/container.H"
+#include "x/w/impl/container_element.H"
 #include "x/w/impl/theme_font_element.H"
 #include <x/visitor.H>
 #include <tuple>
@@ -206,7 +207,8 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 		   {
 			   created_list_container(layout_container_impl, tci);
 
-			   auto peephole_impl=ref<peepholeObj::implObj>
+			   auto peephole_impl=ref<peephole_impl_elementObj<
+				   container_elementObj<child_elementObj>>>
 				   ::create(peepholed_parent);
 
 			   auto [container_element,
