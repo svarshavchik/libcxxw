@@ -153,8 +153,10 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj::scrollbarsObj
 //! Scrollbar elements for a peephole
 
 //! A temporary object that gets used during creation of a peephole.
+//!
+//! \see create_peephole_with_scrollbars()
 
-struct LIBCXX_HIDDEN peephole_scrollbars {
+struct peephole_scrollbars {
 
 	//! The horizontal scrollbar
 
@@ -194,46 +196,193 @@ struct LIBCXX_HIDDEN peephole_scrollbars {
 
 //////////////////////////////////////////////////////////////////////////////
 
+/*!
+
+Peephole scroll-bar parameters for create_peephole_with_scrollbars()
+
+*/
 struct peephole_with_scrollbars_info {
+
+	//! The grid container implementation object.
 	container_impl grid_container_impl;
+
+	//! Optional non-default background color for the two scroll-bars.
 	std::optional<color_arg> background_color;
+
+	//! Peephole style and options
 	const peephole_style &style;
+
+	//! Horizontal scroll-bar visibility
 	scrollbar_visibility horizontal_visibility;
+
+	//! Vertical scroll-bar visibility
 	scrollbar_visibility vertical_visibility;
 };
 
+//! Return values from create_peephole_with_scrollbars()
+
 struct create_peephole_with_scrollbars_ret_t {
+
+	//! The new peephole layout manager
 	ref<peepholeObj::layoutmanager_implObj> layout_impl;
+
+	//! The grid layout manager implementation object, for the container.
 	ref<peephole_gridlayoutmanagerObj> grid_layout_impl;
+
+	//! The grid layout manager.
 	gridlayoutmanager grid_layout;
 };
 
+//! The peephole element factory callback signature
+
+//! \see create_peephole_with_scrollbars()
 typedef peephole_element_factory_ret_t
 peephole_element_factory(const ref<peepholeObj::layoutmanager_implObj> &);
 
+//! The peephole layout manager factory callback signature
+
+//! \see create_peephole_with_scrollbars()
 typedef ref<peepholeObj::layoutmanager_implObj::scrollbarsObj>
 peephole_with_scrollbars_layoutmanager_factory
 (const peephole_with_scrollbars_info &info,
  const peephole_scrollbars &scrollbars);
 
+//! The grid layout manager factory callback signature
+
+//! \see create_peephole_with_scrollbars()
+
 typedef ref<peephole_gridlayoutmanagerObj>
 peephole_with_scrollbars_gridlayoutmanager_factory
 (const peephole_gridlayoutmanagerObj::init_args &init_args);
 
+/*! Return values from the peephole element factory callback.
+
+\see create_peephole_with_scrollbars()
+ */
 struct peephole_element_factory_ret_t {
+
+	//! The new peephole element
 	peephole peephole_container;
+
+	/*! The element that goes into the grid container
+
+	  This is usually the same object as the peephole_container.
+	  create_peepholed_focusable_with_frame() creates an intermediate
+	  container
+	  that uses the border layout manager to implement a focus frame
+	  around the peephole, and the peephole_container is inside the
+	  border container.
+	 */
 	element grid_peephole_element;
+
+	//! Optional border around the grid_peephole_element
 	std::optional<border_arg> grid_peephole_element_border;
+
+	//! Optional border around the scroll-bars.
+
+	//! Should be set only if grid_peephole_element_border is also set,
+	//! and it's the same border.
 	std::optional<border_arg> grid_scrollbar_border;
+
+	//! The focusable element inside the peephole
+
+	//! Used by create_peepholed_focus_with_frame().
+	//! create_peephole_with_scrollbars() initializes the focus tabbing
+	//! order of the scrollbars together with the focusable_peephole_element
+	//! if it's specified.
 	focusableptr focusable_peephole_element;
 
+	//! grid_peephole_element attribute.
+
+	//! create_peephole_with_scrollbars() sets this for the new
+	//! grid_peephole_element when it gets placed into the grid container.
 	dim_arg peephole_left_padding=0;
+
+	//! grid_peephole_element attribute.
+
+	//! create_peephole_with_scrollbars() sets this for the new
+	//! grid_peephole_element when it gets placed into the grid container.
+
 	dim_arg peephole_right_padding=0;
+
+	//! grid_peephole_element attribute.
+
+	//! create_peephole_with_scrollbars() sets this for the new
+	//! grid_peephole_element when it gets placed into the grid container.
+
 	dim_arg peephole_top_padding=0;
+
+	//! grid_peephole_element attribute.
+
+	//! create_peephole_with_scrollbars() sets this for the new
+	//! grid_peephole_element when it gets placed into the grid container.
+
 	dim_arg peephole_bottom_padding=0;
-	halign peephole_horizontal_alignment=halign::left;
-	valign peephole_vertical_alignment=valign::top;
+
+	//! grid_peephole_element attribute.
+
+	//! create_peephole_with_scrollbars() sets this for the new
+	//! grid_peephole_element when it gets placed into the grid container.
+
+	halign peephole_horizontal_alignment=halign::fill;
+
+	//! grid_peephole_element attribute.
+
+	//! create_peephole_with_scrollbars() sets this for the new
+	//! grid_peephole_element when it gets placed into the grid container.
+
+	valign peephole_vertical_alignment=valign::fill;
 };
+
+/*!
+
+Framework for setting up a peephole with scroll-bars
+
+This is done by using a container with a grid layout manager to position
+the peephole and both scroll-bars.
+
+Prerequisites:
+
+- A container implementation object for these display elements, the grid
+container implementation object.
+
+- The future peephole container implementation object. It should use the
+peephole_impl_elementObj mixing, and its parent container implementation
+object is the grid container implementation object. It's possible to have
+another container have the grid container as its parent container, and the
+peephole container's parent is the intermediate container. This is used with
+individual focusable elements. The intermediate container uses the border
+layout manager to draw a focus frame around the peephole.
+
+- The display element in the container, fully constructed with an
+implementation object, whose parent object is the peephole container
+implementation object, and its public object that uses the peepholed_elementObj
+mixin.
+
+create_peephole_with_scrollbars() takes three callbacks, and a fixed parameter.
+
+- The first callback gets invoked with two parameters: a
+peephole_with_scrollbars_info, and a peephole_scrollbars. The callback
+is expected to construct a new peepholeObj::layoutmanager_implobj::scrollbarsObj
+object and return it. The two parameters get forwarded to scrollbarsObj's
+constructor together with peepholed container implementation object and the
+peepholed object.
+
+- The second callback receives the scrollbarsObj returned by the first
+callback. It is expected to construct the peephole container implementation
+object's public object, and return a
+\ref peephole_element_factory_ret_t "peephole_element_factory_ret_t" object.
+
+- The third callback gets invoked to create the peephole_gridlayoutmanagerObj,
+for the grid container implementation object, and
+\ref create_peephole_gridlayoutmanager "create_peephole_gridlayoutmanager"
+is the default value for this callback.
+
+The last parameter is a peephole_with_scrollbars_info, and
+create_peephole_with_scrollbars() returns a
+create_peephole_with_scrollbars_ret_t.
+
+*/
 
 template<typename peephole_with_scrollbars_layoutmanager_factory_t,
 	 typename peephole_element_factory_t,
