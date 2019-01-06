@@ -148,23 +148,6 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 	const auto &[layout_impl, grid_impl, grid]=
 		create_peephole_with_scrollbars
 		([&]
-		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
-		 -> peephole_element_factory_ret_t
-		 {
-			 // Ok, we can now create the container.
-			 auto peephole_container=
-				 peephole::create(peephole_implptr,
-						  layout_impl);
-
-			 return {
-				 peephole_container,
-				 peephole_container,
-				 border,
-				 border,
-				 {},
-			 };
-		 },
-		 [&]
 		 (const auto &info, const auto &scrollbars)
 		 {
 			 // First, create the "internal" implementation
@@ -208,6 +191,23 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 				  peephole_impl,
 				  inner_container,
 				  border_impl);
+		 },
+		 [&]
+		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
+		 -> peephole_element_factory_ret_t
+		 {
+			 // Ok, we can now create the container.
+			 auto peephole_container=
+				 peephole::create(peephole_implptr,
+						  layout_impl);
+
+			 return {
+				 peephole_container,
+				 peephole_container,
+				 border,
+				 border,
+				 {},
+			 };
 		 },
 		 [&]
 		 (const peephole_gridlayoutmanagerObj::init_args &args)

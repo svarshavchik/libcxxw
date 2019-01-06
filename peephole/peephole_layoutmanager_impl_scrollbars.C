@@ -345,8 +345,8 @@ void scrollbarsObj
 ///////////////////////////////////////////////////////////////////////////
 
 create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
-(const function<peephole_element_factory> &pe_factory,
- const function<peephole_with_scrollbars_layoutmanager_factory> &lm_factory,
+(const function<peephole_with_scrollbars_layoutmanager_factory> &lm_factory,
+ const function<peephole_element_factory> &pe_factory,
  const function<peephole_with_scrollbars_gridlayoutmanager_factory> &glm_factory,
  const peephole_with_scrollbars_info &info)
 {

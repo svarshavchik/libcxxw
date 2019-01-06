@@ -251,23 +251,7 @@ focusable_container new_itemlayoutmanager::create(const container_impl &parent)
 
 	const auto &[layout_impl, grid_impl, grid]=
 		create_peephole_with_scrollbars
-		([&]
-		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
-		 -> peephole_element_factory_ret_t
-		 {
-			 auto peephole_container=
-				 peephole::create(peephole_container_impl,
-						  layout_impl);
-
-			 return {
-				 peephole_container,
-				 peephole_container,
-				 std::nullopt,
-				 std::nullopt,
-				 {},
-			 };
-		 },
-		 [&, this]
+		([&, this]
 		 (const auto &info, const auto &scrollbars)
 		 {
 			 // The peephole shows this peepholed container,
@@ -297,6 +281,22 @@ focusable_container new_itemlayoutmanager::create(const container_impl &parent)
 				 ::create(info, scrollbars,
 					  peephole_container_impl,
 					  peepholed_container);
+		 },
+		 [&]
+		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
+		 -> peephole_element_factory_ret_t
+		 {
+			 auto peephole_container=
+				 peephole::create(peephole_container_impl,
+						  layout_impl);
+
+			 return {
+				 peephole_container,
+				 peephole_container,
+				 std::nullopt,
+				 std::nullopt,
+				 {},
+			 };
 		 },
 		 create_peephole_gridlayoutmanager,
 		 {

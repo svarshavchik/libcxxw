@@ -250,6 +250,15 @@ pane_peephole_container panelayoutmanagerObj::implObj
 	const auto &[layout_impl, pane_container_grid_impl, grid]=
 		create_peephole_with_scrollbars
 		([&]
+		 (const auto &info, const auto &scrollbars)
+		 {
+			 return ref<peepholeObj::layoutmanager_implObj
+				    ::scrollbarsObj>
+				 ::create(info, scrollbars,
+					  pane_info.peephole_impl,
+					  peepholed_element);
+		 },
+		 [&]
 		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
 		 -> peephole_element_factory_ret_t
 		 {
@@ -270,15 +279,6 @@ pane_peephole_container panelayoutmanagerObj::implObj
 				 halign::fill,
 				 valign::fill,
 			 };
-		 },
-		 [&, this]
-		 (const auto &info, const auto &scrollbars)
-		 {
-			 return ref<peepholeObj::layoutmanager_implObj
-				    ::scrollbarsObj>
-				 ::create(info, scrollbars,
-					  pane_info.peephole_impl,
-					  peepholed_element);
 		 },
 		 create_peephole_gridlayoutmanager,
 		 {

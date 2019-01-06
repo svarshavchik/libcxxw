@@ -117,6 +117,15 @@ create_peepholed_focusable_with_frame_impl
 	const auto &[layout_impl, grid_impl, grid]=
 		create_peephole_with_scrollbars
 		([&]
+		 (const auto &info, const auto &scrollbars)
+		 {
+			 return ref<peepholeObj::layoutmanager_implObj
+				    ::scrollbarsObj>
+				 ::create(info, scrollbars,
+					  impl,
+					  peepholed_element);
+		 },
+		 [&]
 		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
 		 -> peephole_element_factory_ret_t
 		 {
@@ -171,15 +180,6 @@ create_peepholed_focusable_with_frame_impl
 				 std::nullopt,
 				 ff,
 			 };
-		 },
-		 [&]
-		 (const auto &info, const auto &scrollbars)
-		 {
-			 return ref<peepholeObj::layoutmanager_implObj
-				    ::scrollbarsObj>
-				 ::create(info, scrollbars,
-					  impl,
-					  peepholed_element);
 		 },
 		 create_peephole_gridlayoutmanager,
 		 {

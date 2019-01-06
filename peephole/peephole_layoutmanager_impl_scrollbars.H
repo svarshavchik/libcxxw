@@ -235,23 +235,23 @@ struct peephole_element_factory_ret_t {
 	valign peephole_vertical_alignment=valign::top;
 };
 
-template<typename peephole_element_factory_t,
-	 typename peephole_with_scrollbars_layoutmanager_factory_t,
+template<typename peephole_with_scrollbars_layoutmanager_factory_t,
+	 typename peephole_element_factory_t,
 	 typename peephole_with_scrollbars_gridlayoutmanager_factory_t> inline
 create_peephole_with_scrollbars_ret_t
-create_peephole_with_scrollbars(peephole_element_factory_t &&pe_factory,
-				peephole_with_scrollbars_layoutmanager_factory_t
+create_peephole_with_scrollbars(peephole_with_scrollbars_layoutmanager_factory_t
 				&&lm_factory,
+				peephole_element_factory_t &&pe_factory,
 				peephole_with_scrollbars_gridlayoutmanager_factory_t
 				&&glm_factory,
 				const peephole_with_scrollbars_info &info)
 {
 	return do_create_peephole_with_scrollbars
-		(make_function<peephole_element_factory>
-		 (std::forward<peephole_element_factory_t>(pe_factory)),
-		 make_function<peephole_with_scrollbars_layoutmanager_factory>
+		(make_function<peephole_with_scrollbars_layoutmanager_factory>
 		 (std::forward<peephole_with_scrollbars_layoutmanager_factory_t>
 		  (lm_factory)),
+		 make_function<peephole_element_factory>
+		 (std::forward<peephole_element_factory_t>(pe_factory)),
 		 make_function<peephole_with_scrollbars_gridlayoutmanager_factory>
 		 (std::forward<peephole_with_scrollbars_gridlayoutmanager_factory_t>
 		  (glm_factory)),
@@ -259,8 +259,8 @@ create_peephole_with_scrollbars(peephole_element_factory_t &&pe_factory,
 }
 
 create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
-(const function<peephole_element_factory> &pe_factory,
- const function<peephole_with_scrollbars_layoutmanager_factory> &lm_factory,
+(const function<peephole_with_scrollbars_layoutmanager_factory> &lm_factory,
+ const function<peephole_element_factory> &pe_factory,
  const function<peephole_with_scrollbars_gridlayoutmanager_factory> &glm_factory,
  const peephole_with_scrollbars_info &info) LIBCXX_HIDDEN;
 

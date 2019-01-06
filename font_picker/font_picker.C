@@ -204,6 +204,15 @@ static inline font_picker_preview create_preview_label(const factory &f)
 	const auto &[layout_impl, glm_impl, grid]=
 		create_peephole_with_scrollbars
 		([&]
+		 (const auto &info, const auto &scrollbars)
+		 {
+			 return ref<peepholeObj::layoutmanager_implObj
+				    ::scrollbarsObj>
+				 ::create(info, scrollbars,
+					  preview_peep_container_impl,
+					  new_preview_label);
+		 },
+		 [&]
 		 (const ref<peepholeObj::layoutmanager_implObj> &peephole_lm)
 		 -> peephole_element_factory_ret_t
 		 {
@@ -224,15 +233,6 @@ static inline font_picker_preview create_preview_label(const factory &f)
 				 {},
 			 };
 
-		 },
-		 [&]
-		 (const auto &info, const auto &scrollbars)
-		 {
-			 return ref<peepholeObj::layoutmanager_implObj
-				    ::scrollbarsObj>
-				 ::create(info, scrollbars,
-					  preview_peep_container_impl,
-					  new_preview_label);
 		 },
 		 create_peephole_gridlayoutmanager,
 		 {
