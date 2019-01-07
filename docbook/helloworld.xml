@@ -461,17 +461,16 @@ while (!appdata->close_flag)
 
       <blockquote>
 	<informalexample>
-	  <programlisting><![CDATA[
-	auto main_window=x::w::main_window
+	  <programlisting>
+	auto main_window=&ns;::w::main_window
 		::create([]
-			 (const x::w::main_window &main_window)
+			 (const &ns;::w::main_window &amp;main_window)
 			 {
                             // ...
-]]>
 
-        x::w::container c=factory->create_container(
+        &ns;::w::container c=factory->create_container(
 	         []
-	         (const x::w::container &amp;c)
+	         (const &ns;::w::container &amp;c)
                  {
                       // ...
 </programlisting>
@@ -518,6 +517,20 @@ while (!appdata->close_flag)
       <para>
 	Populating the container in its creator lambda avoids doing this
 	extra recalculation, and is more efficient.
+      </para>
+
+      <para>
+	There are some isolated exceptions.
+	The <link linkend="peepholelayoutmanager">peephole layout manager</link>
+	does not use creator lambdas. Peepholes always contain a single
+	display element in the peephole (but the display element itself can
+	be a container with many other display elements).
+	The peepholed's creator gets specified separately, as a constructor
+	to the new layout manager specification parameter.
+	However, an empty creator lambda must still be provided, to
+	<methodname>create_container</methodname>() or
+	<methodname>create_focusable_container</methodname>(), which typically
+	does nothing; but it can be repurposed for some other use.
       </para>
     </section>
 

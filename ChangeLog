@@ -1,8 +1,21 @@
+0.15
+
+2019-01-06  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Clean up the internal code that created scrollable peepholes
+	(used by input fields, combo-boxes, the item layout manager, and
+	the pane layout manager).
+
+	Add a public API for the underlying peephole layout manager.
+
 2018-12-27  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* ""_theme_font literals may now include font modifiers like
 	""_font. Implement + and += operator overloads on x::w::font
 	that modify an existing font.
+
+0.14
+	* Added search callback to the input field.
 
 0.13
 

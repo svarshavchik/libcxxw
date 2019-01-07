@@ -53,6 +53,9 @@ enum class peephole_algorithm {
 
 //! Peephole style.
 
+//! Specifies attributes for a new
+//! \ref peepholelayoutmanager "peephole layout manager".
+
 struct peephole_style {
 
 	//! How the peephole's width gets set.

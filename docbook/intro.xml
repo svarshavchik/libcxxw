@@ -104,8 +104,8 @@ See COPYING for distribution information.
       <para>
 	&app;'s basic functionality is complete, and it's source
 	<link linkend="INSTALL">is available for downloading</link>.
-	The most recent build of &app; adds
-	<link linkend="searchwidgets">search fields</link>.
+	The most recent build of &app; adds the
+	<link linkend="peepholelayoutmanager">peephole layout manager</link>.
       </para>
     </section>
   </section>

@@ -1,0 +1,248 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="peepholelayoutmanager">
+  <title>The peephole layout manager</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="peepholelayoutmanager.png" format="PNG"
+		 contentwidth="523px" contentdepth="506px" />
+    </imageobject>
+  </mediaobject>
+
+  <para>
+    The peephole layout manager is another way to conserve valuable window
+    real estate, and share just a small amount of it with
+    multiple display elements.
+  </para>
+
+  <para>
+    The peephole layout manager servers as a foundation for the UI that
+    uses scroll-bars (usually) to move a small <quote>peephole</quote>
+    that brings different portions of a larger display element into view.
+    The peephole container always has one display element.
+    This display element, the <quote>peepholed</quote> display element can
+    be bigger than the peephole itself. The peephole layout manager
+    scrolls different parts of the peepholed element into view, as needed.
+  </para>
+
+  <para>
+    Passing an
+    <ulink url="&link-x--w--new-scrollable-peepholelayoutmanager;"><classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname></ulink>
+    to a &factory;'s <methodname>create_focusable_container</methodname>()
+    creates a &container; with a
+    <ulink url="&link-typedef-x--w-peepholelayoutmanager;"><classname>&ns;::w::peepholelayoutmanager</classname></ulink>.
+    The peephole layout manager draws a border and scroll-bars that move
+    the peephole's view of the peepholed element.
+  </para>
+
+  <para>
+    Using
+    <ulink url="&link-x--w--new-peepholelayoutmanager;"><classname>&ns;::w::new_peepholelayoutmanager</classname></ulink>
+    with a &factory;'s <methodname>create_container</methodname>()
+    is a more light-weight alternative.
+    This results in a plain display element, with no borders or scroll-bars.
+    The light-weight peephole moves only in response to tabbing the
+    keyboard input focus to a different focusable display element in the
+    peephole, making it visible; or by explicitly
+    <link linkend="ensure_entire_visibility">ensuring the visibility</link>
+    of a specific display element in the peephole.
+  </para>
+
+  <para>
+    In either case,
+    the peephole container had a single, peepholed display element.
+    This peepholed display element is usually, itself, a container
+    with multiple display elements.
+    <filename>peepholelayoutmanager.C</filename> gives an example of
+    creating two peepholes: a
+    fully-scrollable one and a plain one. A row of ten buttons gets placed
+    into each peephole:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/peepholelayoutmanager.C">peepholelayoutmanager.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/peepholelayoutmanager.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="creatingpeephole">
+    <title>Creating a peephole</title>
+
+    <para>
+      <filename>peepholelayoutmanager.C</filename> creates two peepholes:
+      a fully scrollable peephole, using
+      <ulink url="&link-x--w--new-scrollable-peepholelayoutmanager;"><classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname></ulink>
+      together with <methodname>create_focusable_container</methodname>();
+      and a plain peephole, using
+      <ulink url="&link-x--w--new-peepholelayoutmanager;"><classname>&ns;::w::new_peepholelayoutmanager</classname></ulink>
+      together with <methodname>create_container</methodname>().
+      In both cases, their constructors require a callback that takes
+      a &factory; as a parameter. The callback must use this factory
+      to create exactly one display element, which becomes the peepholed
+      display element:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::new_scrollable_peepholelayoutmanager nsplm{
+    []
+    (const &ns;::w::factory &amp;peepholed_factory)
+    {
+        peepholed_factory->create_container(
+            []
+            (const &ns;::w::container &amp;peepholed_container)
+            {
+                &ns;::w::gridlayoutmanager=peepholed_container-&gt;get_layoutmanager();
+                // ...
+            },
+            &ns;::w::gridlayoutmanager{});
+    }
+};
+
+// Other new_scrollable_peepholelayoutmanager initialization.
+
+f->create_focusable_container(
+    []
+    (const &ns;::w::focusable_container &amp;)
+    {
+          // Unused
+    },
+    nsplm);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      In the peephole layout manager's case,
+      <methodname>create_container</methodname>()'s and
+      <methodname>create_focusable_container</methodname>()'s
+      &creator;s are generally
+      unused. The only initialization required by a peephole is invoking
+      <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>'s
+      or <classname>&ns;::w::new_peepholelayoutmanager</classname>'s
+      factory callback.
+    </para>
+  </section>
+
+  <section id="peepholesize">
+    <title>Specifying the peephole's size</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::new_scrollable_peepholelayoutmanager nsplm{create_peephole_container};
+
+nsplm.width({20, 100, 300});
+nsplm.height({20, 100, 300});
+</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>width</methodname>()
+      and
+      <methodname>height</methodname>()
+      set the peephole's size, given as a
+      <ulink url="&link-x--w--dim-axis-arg;"><classname>&ns;::w::dim_axis_arg</classname></ulink> parameter.
+      <link linkend="peepholelayoutmanager"><filename>peepholelayoutmanager.C</filename></link>
+      gives an example of only specifying the width. An unspecified width
+      or height results in the peephole always sizing its width or height
+      to be the same as the peepholed element's.
+      <filename>peepholelayoutmanager.C</filename>'s peepholes don't have
+      a specified height, so the peepholes' height matches their peepholed
+      elements' height, so the peepholes scroll only in the horizontal
+      direction.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::new_peepholelayoutmanager nplm{create_peephole_container};
+
+// ...
+
+nplm.scroll=&ns;::w::peephole_scroll::centered;
+</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The only way for a peephole without scroll-bars to scroll the peephole
+      is by tabbing the keyboard focus to a focusable display element that's
+      not visible. This causes the peephole layout manager to automatically
+      scroll it into view.
+      The peephole scrolls only as much as needed to make the new element
+      with the keyboard focus visible at the nearest peephole edge.
+    </para>
+
+    <para>
+      Setting <varname>scroll</varname> to
+      <literal>&ns;::w::peephole_scroll::centered</literal> scrolls the
+      display element with the current keyboard focus to the center of the
+      peephole, if possible.
+    </para>
+
+    <note>
+      <para>
+	This is done only when keyboard focus is moved by
+	<keycap>Tab</keycap>ing. Bringing the keyboard focus to a
+	visible display
+	element by clicking on it with a pointer does not re-center the
+	peephole on the new display element with the keyboard focus.
+	It would be rather rude to have the display element jump away
+	from the pointer as soon as it gets clicked on.
+      </para>
+    </note>
+  </section>
+
+  <section id="ensure_entire_visibility">
+    <title>Ensuring visibility of display elements in a peephole</title>
+
+    <para>
+      <link linkend="peepholelayoutmanager"><filename>peepholelayoutmanager.C</filename></link>'s
+      second peephole is a plain peephole without the scroll-bars.
+      Repeatedly <keycap>Tab</keycap>bing eventually advances the keyboard
+      input focus to each button in the peephole, with the peephole trying to
+      keep the button with the keyboard input focus visible.
+    </para>
+
+    <para>
+      <methodname>ensure_entire_visibility</methodname>() requests that a
+      peephole make the specified display element visible:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::button b=glm->get(0, which);
+
+b-&gt;ensure_entire_visibility(IN_THREAD);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Clicking on the <filename>peepholelayoutmanager.C</filename>'s
+      <quote>Flip</quote> button, located below the plain peephole,
+      alternatively makes the plain peephole's first and last button visible.
+      The <quote>Flip</quote> button's &callback; obtains, alternatively,
+      the first or the last button in the second peephole; then
+      calls the button's <methodname>ensure_entire_visibility</methodname>().
+      This manually moves the peephole so that this button is visible, if it's
+      not already visible.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

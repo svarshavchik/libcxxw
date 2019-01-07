@@ -17,9 +17,50 @@ class LIBCXX_PUBLIC peepholelayoutmanagerObj;
 This layout manager puts another display element inside a (usually)
 smaller area, and scrolls parts of it into view, as needed.
 
-\see new_scrollable_peephole
+\see new_scrollable_peepholelayoutmanager
 
-\see new_peephole
+\see new_peepholelayoutmanager
+
+\code
+INSERT_LIBX_NAMESPACE::w::new_peepholelayoutmanager nplm{
+    [&]
+    (const INSERT_LIBX_NAMESPACE::w::factory &f)
+    {
+        f->create_container(
+            [&]
+            (const INSERT_LIBX_NAMESPACE::w::container &c)
+            {
+                INSERT_LIBX_NAMESPACE::w::gridlayoutmanager glm=c->get_layoutmanager();
+                // ...
+            },
+            INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager{});
+     }
+};
+
+npl.width({20, 50, 100});
+npl.height({20, 50, 100});
+
+f->create_focusable_container(
+    []
+    (const auto &c)
+    {
+           // Unused
+    });
+\endcode
+
+width() and height() sets the peephole's size, given as
+\ref dim_axis_arg "dim_axis_arg"'s.
+new_scrollable_peepholelayoutmanager/new_peepholelayoutmanager's callback
+creates the peepholed display element, and gets scrolled within the peephole
+if its size exceeds the peephole's.
+
+create_container() and create_focusable_container()'s creators are not used
+because the callback creates the peepholed element; but the creators can
+tweak some generic container-specific settings.
+
+Not setting the width or the height makes the peephole's size, in that
+dimension, always match the peepholed element's. This results in a peephole
+that typically scrolls only the other dimension.
 
 */
 

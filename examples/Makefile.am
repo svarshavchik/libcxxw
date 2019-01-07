@@ -25,6 +25,7 @@ noinst_PROGRAMS=\
 	menu					\
 	pagelayoutmanager			\
 	panelayoutmanager			\
+	peepholelayoutmanager			\
 	popupmenu1				\
 	popupmenu2				\
 	printdialog				\
@@ -121,6 +122,9 @@ pagelayoutmanager_LDADD=-lcxxw -lcxx
 $(call OPTIONS_GEN,panelayoutmanager.H,panelayoutmanager.xml)
 panelayoutmanager_SOURCES=panelayoutmanager.C close_flag.H
 panelayoutmanager_LDADD=-lcxxw -lcxx
+
+peepholelayoutmanager_SOURCES=peepholelayoutmanager.C close_flag.H
+peepholelayoutmanager_LDADD=-lcxxw -lcxx
 
 popupmenu1_SOURCES=popupmenu1.C close_flag.H
 popupmenu1_LDADD=-lcxxw -lcxx

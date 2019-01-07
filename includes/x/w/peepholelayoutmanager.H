@@ -28,6 +28,16 @@ class LIBCXX_PUBLIC new_scrollable_peepholelayoutmanager;
 
 //! Create a new container that uses the \ref peepholelayoutmanager "peephole layout manager".
 
+//! Passing this object to a \ref factory "factory"'s create_container() creates
+//! a lightweight
+//! peephole for another display element. No borders or scroll-bars get
+//! created.
+//!
+//! Use \ref new_scrollable_peepholelayoutmanager "new_scrollable_peepholelayoutmanager"
+//! to create a more fleshed out peephole, with scroll-bars and a border.
+//!
+//! Inherits from peephole_style, which sets most peephole properties.
+
 class new_peepholelayoutmanager : public new_layoutmanager,
 				  public peephole_style {
 
@@ -52,6 +62,23 @@ private:
 };
 
 //! Create a new container that uses the \ref peepholelayoutmanager "peephole layout manager", with provided scroll-bars.
+
+//! Passing this object to a \ref factory "factory"'s
+//! create_focusable_container()
+//! creates a peephole for another display element.
+//! Like \ref new_peepholelayoutmanager "new_peepholelayoutmanager", but
+//! with a border and operational scroll-bars.
+//!
+//! The constructors to \c new_peepholelayoutmanager and
+//! \c new_scrollable_peepholelayoutmanager have one required parameter:
+//! a closure that takes a \ref factory "factory" object.
+//! The closure must use the factory to create exactly
+//! one display element. This becomes the display element in the peephole.
+//! The display element can be a container with many display elements.
+//!
+//! Inherits from peephole_style, which sets most peephole properties.
+//! Additionally, the peephole's border, optional padding, and scroll-bar
+//! visibility controls are set here.
 
 class new_scrollable_peepholelayoutmanager : public new_focusable_layoutmanager,
 					     public peephole_style {
