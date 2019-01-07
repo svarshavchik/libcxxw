@@ -78,6 +78,12 @@ public:
 
 	void hide();
 
+	//! Moves this display element into view, if it's in a peephole.
+	void ensure_entire_visibility();
+
+	//! Moves this display element into view, if it's in a peephole.
+	void ensure_entire_visibility(ONLY IN_THREAD);
+
 	//! Use a standard background color for this display element.
 
 	void set_background_color(const color_arg &name);

@@ -148,6 +148,20 @@ void elementObj::hide()
 	impl->request_visibility(false);
 }
 
+void elementObj::ensure_entire_visibility()
+{
+	in_thread([me=ref{this}]
+		  (ONLY IN_THREAD)
+		  {
+			  me->ensure_entire_visibility(IN_THREAD);
+		  });
+}
+
+void elementObj::ensure_entire_visibility(ONLY IN_THREAD)
+{
+	impl->ensure_entire_visibility(IN_THREAD);
+}
+
 void elementObj::stop_message(const text_param &t)
 {
 	impl->stop_message(t);

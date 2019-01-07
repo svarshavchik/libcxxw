@@ -6,6 +6,7 @@
 #ifndef peephole_layoutmanager_impl_H
 #define peephole_layoutmanager_impl_H
 
+#include "x/w/peepholelayoutmanager.H"
 #include "peephole/peepholeobj.H"
 #include "x/w/peephole_style.H"
 #include "x/w/impl/layoutmanager.H"
@@ -22,7 +23,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \ref peephole "peephole" implementation object.
 
-class peepholeObj::layoutmanager_implObj
+class peepholelayoutmanagerObj::implObj
 	: public layoutmanagerObj::implObj {
 
 	//! Alias
@@ -40,11 +41,11 @@ public:
 
 	const peepholed element_in_peephole;
 
-	layoutmanager_implObj(const container_impl &container_impl,
-			      peephole_style style,
-			      const peepholed &element_in_peephole);
+	implObj(const container_impl &container_impl,
+		const peephole_style &style,
+		const peepholed &element_in_peephole);
 
-	~layoutmanager_implObj();
+	~implObj();
 
 	virtual bool process_button_event(ONLY IN_THREAD,
 					  const button_event &be,
@@ -69,7 +70,6 @@ public:
 
 	//! Implement create_public_object().
 
-	//! We just construct a base layoutmanager object.
 	layoutmanager create_public_object() override;
 
 	//! Implement recalculate().

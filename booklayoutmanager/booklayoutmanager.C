@@ -676,7 +676,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	style.scroll=peephole_scroll::centered;
 
 	auto peephole_lm=
-		ref<peepholeObj::layoutmanager_implObj>::create
+		ref<peepholelayoutmanagerObj::implObj>::create
 		(peephole_impl,
 		 style,
 		 pagetab_container);

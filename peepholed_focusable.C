@@ -119,14 +119,14 @@ create_peepholed_focusable_with_frame_impl
 		([&]
 		 (const auto &info, const auto &scrollbars)
 		 {
-			 return ref<peepholeObj::layoutmanager_implObj
+			 return ref<peepholelayoutmanagerObj::implObj
 				    ::scrollbarsObj>
 				 ::create(info, scrollbars,
 					  impl,
 					  peepholed_element);
 		 },
 		 [&]
-		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
+		 (const ref<peepholelayoutmanagerObj::implObj> &layout_impl)
 		 -> peephole_element_factory_ret_t
 		 {
 			 // In order to properly initialize the focusable

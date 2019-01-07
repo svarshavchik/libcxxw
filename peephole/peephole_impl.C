@@ -22,7 +22,7 @@ bool peepholeObj::implObj::process_button_event(ONLY IN_THREAD,
 
 	get_container_impl().invoke_layoutmanager
 		([&]
-		 (const ref<peepholeObj::layoutmanager_implObj> &lm)
+		 (const ref<peepholelayoutmanagerObj::implObj> &lm)
 		 {
 			 processed=lm->process_button_event(IN_THREAD, be,
 							    timestamp);

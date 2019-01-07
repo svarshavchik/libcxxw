@@ -14,7 +14,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-typedef peepholeObj::layoutmanager_implObj::scrollbarsObj scrollbarsObj;
+typedef peepholelayoutmanagerObj::implObj::scrollbarsObj scrollbarsObj;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -222,7 +222,8 @@ scrollbarsObj::scrollbarsObj(const peephole_with_scrollbars_info &info,
 			     const peephole_scrollbars &scrollbars,
 			     const container_impl &peephole_impl,
 			     const peepholed &element_in_peephole)
-	: layoutmanager_implObj{peephole_impl, info.style, element_in_peephole},
+	: peepholelayoutmanagerObj::implObj{peephole_impl, info.style,
+					    element_in_peephole},
 	  h_scrollbar{scrollbars.horizontal_scrollbar},
 	  v_scrollbar{scrollbars.vertical_scrollbar},
 	  horizontal_scrollbar_visibility_thread_only

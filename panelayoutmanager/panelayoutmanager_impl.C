@@ -232,7 +232,7 @@ pane_peephole_container panelayoutmanagerObj::implObj
 	//
 	// 3) pane_info.peephole_impl. A child element of
 	// pane_info.peephole_container_impl. Uses the
-	// peepholeObj::layoutmanager_implObj::scrollbarsObj layout manager.
+	// peepholelayoutmanagerObj::implObj::scrollbarsObj layout manager.
 	//
 	// 4) "e" parameter, will be the peepholed element placed into the
 	// pane_info.peephole_impl.
@@ -252,14 +252,14 @@ pane_peephole_container panelayoutmanagerObj::implObj
 		([&]
 		 (const auto &info, const auto &scrollbars)
 		 {
-			 return ref<peepholeObj::layoutmanager_implObj
+			 return ref<peepholelayoutmanagerObj::implObj
 				    ::scrollbarsObj>
 				 ::create(info, scrollbars,
 					  pane_info.peephole_impl,
 					  peepholed_element);
 		 },
 		 [&]
-		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
+		 (const ref<peepholelayoutmanagerObj::implObj> &layout_impl)
 		 -> peephole_element_factory_ret_t
 		 {
 			 auto peephole_in_pane=

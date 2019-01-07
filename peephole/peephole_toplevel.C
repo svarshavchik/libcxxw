@@ -33,8 +33,11 @@ namespace {
 //! metrics, and keeps an eye on the element's metrics.
 
 class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
-	: public peepholeObj::layoutmanager_implObj::scrollbarsObj {
+	: public peepholelayoutmanagerObj::implObj::scrollbarsObj {
 
+	//! Alias.
+
+	typedef peepholelayoutmanagerObj::implObj::scrollbarsObj superclass_t;
  public:
 
 	//! Constructor
@@ -193,7 +196,7 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 				  border_impl);
 		 },
 		 [&]
-		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
+		 (const ref<peepholelayoutmanagerObj::implObj> &layout_impl)
 		 -> peephole_element_factory_ret_t
 		 {
 			 // Ok, we can now create the container.
@@ -236,13 +239,11 @@ toplevelpeephole_layoutmanagerObj::toplevelpeephole_layoutmanagerObj
  const container_impl &peephole_impl,
  const peepholed_toplevel &element_in_peephole,
  const current_border_implptr &peephole_border)
-	: peepholeObj::layoutmanager_implObj::scrollbarsObj
-	{
-	 info,
-	 peephole_scrollbars,
-	 peephole_impl,
-	 element_in_peephole,
-	},
+	: superclass_t{
+		       info,
+		       peephole_scrollbars,
+		       peephole_impl,
+		       element_in_peephole},
 	  element_in_peephole{element_in_peephole},
 	  peephole_border{peephole_border}
 {
@@ -393,8 +394,7 @@ void toplevelpeephole_layoutmanagerObj::recalculate(ONLY IN_THREAD)
 				      new_horiz,
 				      {v_minimum, v_preferred, v_maximum});
 
-	peepholeObj::layoutmanager_implObj::scrollbarsObj
-		::recalculate(IN_THREAD);
+	superclass_t::recalculate(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

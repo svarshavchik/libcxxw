@@ -275,14 +275,14 @@ focusable_container new_itemlayoutmanager::create(const container_impl &parent)
 				 ::create(peepholed_container_impl,
 					  itemlm_impl);
 
-			 return ref<peepholeObj::layoutmanager_implObj
+			 return ref<peepholelayoutmanagerObj::implObj
 				    ::scrollbarsObj>
 				 ::create(info, scrollbars,
 					  peephole_container_impl,
 					  peepholed_container);
 		 },
 		 [&]
-		 (const ref<peepholeObj::layoutmanager_implObj> &layout_impl)
+		 (const ref<peepholelayoutmanagerObj::implObj> &layout_impl)
 		 -> peephole_element_factory_ret_t
 		 {
 			 auto peephole_container=

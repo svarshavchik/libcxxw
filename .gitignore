@@ -60,6 +60,7 @@ suppressfile*
 /testlist
 /testmenu
 /testpane
+/testpeephole
 /testping
 /testlistoptions.H
 /testprogressbar

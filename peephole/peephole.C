@@ -12,7 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 peepholeObj::peepholeObj(const ref<implObj> &impl,
-			 const ref<layoutmanager_implObj> &layout)
+			 const ref<peepholelayoutmanagerObj::implObj> &layout)
 	: containerObj{ref{&impl->get_container_impl()}, layout}, impl{impl},
 	  peepholed_element
 	{

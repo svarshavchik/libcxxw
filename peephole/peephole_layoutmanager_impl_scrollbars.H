@@ -41,7 +41,7 @@ void set_top_level_peephole_scrollbar_focus_order
 
 //! Add automatic scrollbars to a peephole.
 
-//! A subclass of peepholeObj::layoutmanager_implObj that links the peephole
+//! A subclass of peepholelayoutmanagerObj::implObj that links the peephole
 //! with scrollbars that scroll the peephole automatically, and updates
 //! the scrollbar when the peephole gets scrolled on its own.
 //!
@@ -49,8 +49,8 @@ void set_top_level_peephole_scrollbar_focus_order
 //! Implements update_scrollbars() to reflect the position of the scrolled
 //! viewport.
 
-class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj::scrollbarsObj
-	: public layoutmanager_implObj {
+class LIBCXX_HIDDEN peepholelayoutmanagerObj::implObj::scrollbarsObj
+	: public peepholelayoutmanagerObj::implObj {
 
  public:
 	class callbackObj;
@@ -167,7 +167,7 @@ struct peephole_scrollbars {
 	const scrollbar vertical_scrollbar;
 
 	//! Alias
-	typedef peepholeObj::layoutmanager_implObj::scrollbarsObj scrollbarsObj;
+	typedef peepholelayoutmanagerObj::implObj::scrollbarsObj scrollbarsObj;
 
 	//! Horizontal scrollbar's callback object.
 
@@ -224,7 +224,7 @@ struct peephole_with_scrollbars_info {
 struct create_peephole_with_scrollbars_ret_t {
 
 	//! The new peephole layout manager
-	ref<peepholeObj::layoutmanager_implObj> layout_impl;
+	ref<peepholelayoutmanagerObj::implObj> layout_impl;
 
 	//! The grid layout manager implementation object, for the container.
 	ref<peephole_gridlayoutmanagerObj> grid_layout_impl;
@@ -237,12 +237,12 @@ struct create_peephole_with_scrollbars_ret_t {
 
 //! \see create_peephole_with_scrollbars()
 typedef peephole_element_factory_ret_t
-peephole_element_factory(const ref<peepholeObj::layoutmanager_implObj> &);
+peephole_element_factory(const ref<peepholelayoutmanagerObj::implObj> &);
 
 //! The peephole layout manager factory callback signature
 
 //! \see create_peephole_with_scrollbars()
-typedef ref<peepholeObj::layoutmanager_implObj::scrollbarsObj>
+typedef ref<peepholelayoutmanagerObj::implObj::scrollbarsObj>
 peephole_with_scrollbars_layoutmanager_factory
 (const peephole_with_scrollbars_info &info,
  const peephole_scrollbars &scrollbars);

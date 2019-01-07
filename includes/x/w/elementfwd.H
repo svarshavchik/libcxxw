@@ -58,6 +58,15 @@ hide_all() also shows or hides any other display elements contained
 in this one (this display element is a \ref container "container").
 
 \code
+e->ensure_entire_visibility();
+
+e->ensure_entire_visibility(IN_THREAD);
+\endcode
+
+Scrolls this display element into view if it's currently hidden inside
+a \ref peepholelayoutmanager "peephole".
+
+\code
 auto p=e->set_background_color(INSERT_LIBX_NAMESPACE::w::rgb(INSERT_LIBX_NAMESPACE::w::rgb::maximum(), 0, 0));
 
 e->set_background_color("action_color1");

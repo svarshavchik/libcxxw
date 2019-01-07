@@ -160,6 +160,9 @@
     <dash>.75</dash>
   </border>
 
+  <border id="peephole_border" from="thin_0%">
+  </border>
+
   <!--
       Borders around the horizontal bar at the bottom of dialogs/popups
       with "Ok"/"Cancel" buttons.

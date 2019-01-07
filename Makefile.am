@@ -575,6 +575,7 @@ libcxxw_la_SOURCES=\
 	peephole/peephole_impl.H		    \
 	peephole/peephole_impl_element.H	    \
 	peephole/peephole_impl_elementfwd.H	    \
+	peephole/peephole_layoutmanager.C	    \
 	peephole/peephole_layoutmanager_impl.C	    \
 	peephole/peephole_layoutmanager_impl.H	    \
 	peephole/peephole_layoutmanager_impl_scrollbars.C \
@@ -951,6 +952,7 @@ INTERACTIVETESTPROGRAMS=\
 	testmainwindow					\
 	testmenu					\
 	testlabel					\
+	testpeephole					\
 	testping					\
 	testprogressbar					\
 	testunfocus					\
@@ -1064,6 +1066,10 @@ $(call OPTIONS_GEN,testpane.inc.H,testpane.xml)
 testpane_SOURCES=testpane.C
 testpane_LDADD=libcxxw.la
 testpane_LDFLAGS=$(TESTLINKTYPE)
+
+testpeephole_SOURCES=testpeephole.C
+testpeephole_LDADD=libcxxw.la
+testpeephole_LDFLAGS=$(TESTLINKTYPE)
 
 testping_SOURCES=testping.C
 testping_LDADD=libcxxw.la

@@ -62,6 +62,13 @@ struct peephole_style {
 	std::variant<peephole_algorithm, dim_axis_arg
 		     > width_algorithm=peephole_algorithm::stretch_peephole;
 
+	//! Helper function to set width_algorithm.
+
+	inline void width(const dim_axis_arg &a)
+	{
+		width_algorithm=a;
+	}
+
 	//! How the peephole's height gets set.
 
 	//! The peephole's height is either explicitly specified (as a
@@ -74,6 +81,13 @@ struct peephole_style {
 	std::variant<peephole_algorithm, std::tuple<size_t, size_t>,
 		     dim_axis_arg
 		     > height_algorithm=peephole_algorithm::stretch_peephole;
+
+	//! Helper function to set width_algorithm.
+
+	inline void height(const dim_axis_arg &a)
+	{
+		height_algorithm=a;
+	}
 
 	//! Alignment of the element when it is smaller than the peephole.
 	halign horizontal_alignment=halign::left;

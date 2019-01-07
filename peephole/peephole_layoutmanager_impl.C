@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2018 Double Precision, Inc.
+** Copyright 2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -18,7 +18,7 @@
 #include <x/property_value.H>
 #include <x/visitor.H>
 
-LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::peepholeObj::layoutmanager_implObj);
+LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::peepholelayoutmanagerObj::implObj);
 
 LIBCXXW_NAMESPACE_START
 
@@ -26,14 +26,14 @@ static property::value<bool>
 disable_fast_scroll(LIBCXX_NAMESPACE_STR
 		    "::w::disable_fast_scroll", false);
 
-void peepholeObj::layoutmanager_implObj
+void peepholelayoutmanagerObj::implObj
 ::update_scrollbars(ONLY IN_THREAD,
 		    const rectangle &element_pos,
 		    const rectangle &current_position)
 {
 }
 
-bool peepholeObj::layoutmanager_implObj
+bool peepholelayoutmanagerObj::implObj
 ::process_button_event(ONLY IN_THREAD,
 		       const button_event &be,
 		       xcb_timestamp_t timestamp)
@@ -41,42 +41,41 @@ bool peepholeObj::layoutmanager_implObj
 	return false;
 }
 
-peepholeObj::layoutmanager_implObj
-::layoutmanager_implObj(const container_impl &container_impl,
-			peephole_style style,
-			const peepholed &element_in_peephole)
-	: superclass_t(container_impl),
-	style(style),
-	element_in_peephole(element_in_peephole)
+peepholelayoutmanagerObj::implObj::implObj(const container_impl &container_impl,
+					   const peephole_style &style,
+					   const peepholed &element_in_peephole)
+	: superclass_t{container_impl},
+	  style{style},
+	  element_in_peephole{element_in_peephole}
 {
 }
 
-peepholeObj::layoutmanager_implObj::~layoutmanager_implObj()=default;
+peepholelayoutmanagerObj::implObj::~implObj()=default;
 
-void peepholeObj::layoutmanager_implObj::child_metrics_updated(ONLY IN_THREAD)
+void peepholelayoutmanagerObj::implObj::child_metrics_updated(ONLY IN_THREAD)
 {
 	update_our_metrics(IN_THREAD);
 	superclass_t::child_metrics_updated(IN_THREAD);
 }
 
-void peepholeObj::layoutmanager_implObj
+void peepholelayoutmanagerObj::implObj
 ::do_for_each_child(ONLY IN_THREAD,
 		    const function<void (const element &e)> &callback)
 {
 	callback(element_in_peephole->get_peepholed_element());
 }
 
-size_t peepholeObj::layoutmanager_implObj::num_children(ONLY IN_THREAD)
+size_t peepholelayoutmanagerObj::implObj::num_children(ONLY IN_THREAD)
 {
 	return 1;
 }
 
-layoutmanager peepholeObj::layoutmanager_implObj::create_public_object()
+layoutmanager peepholelayoutmanagerObj::implObj::create_public_object()
 {
-	return layoutmanager::create(layout_impl{this});
+	return peepholelayoutmanager::create(ref{this});
 }
 
-void peepholeObj::layoutmanager_implObj
+void peepholelayoutmanagerObj::implObj
 ::ensure_visibility(ONLY IN_THREAD,
 		    elementObj::implObj &e,
 		    const rectangle &rArg)
@@ -169,7 +168,7 @@ static void adjust_for_visibility(rectangle &element_pos,
 	}
 }
 
-void peepholeObj::layoutmanager_implObj::recalculate(ONLY IN_THREAD)
+void peepholelayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	recalculate_with_requested_visibility(IN_THREAD, nullptr);
 }
@@ -220,7 +219,7 @@ static void center_visibility_at(coord_t &requested_pos,
 		requested_pos=coord_t::truncate(element_size-peephole_size);
 }
 
-void peepholeObj::layoutmanager_implObj::initialize(ONLY IN_THREAD)
+void peepholelayoutmanagerObj::implObj::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 
@@ -240,7 +239,7 @@ void peepholeObj::layoutmanager_implObj::initialize(ONLY IN_THREAD)
 	needs_recalculation(IN_THREAD);
 }
 
-void peepholeObj::layoutmanager_implObj
+void peepholelayoutmanagerObj::implObj
 ::theme_updated(ONLY IN_THREAD,
 		const defaulttheme &theme)
 {
@@ -248,7 +247,7 @@ void peepholeObj::layoutmanager_implObj
 	recompute_hv_metrics(IN_THREAD, theme);
 }
 
-void peepholeObj::layoutmanager_implObj
+void peepholelayoutmanagerObj::implObj
 ::recompute_hv_metrics(ONLY IN_THREAD,
 			     const defaulttheme &theme)
 {
@@ -281,7 +280,7 @@ void peepholeObj::layoutmanager_implObj
 		   style.height_algorithm);
 }
 
-void peepholeObj::layoutmanager_implObj::update_our_metrics(ONLY IN_THREAD)
+void peepholelayoutmanagerObj::implObj::update_our_metrics(ONLY IN_THREAD)
 {
 	// Avoid all this work if we're on cruize control.
 
@@ -356,7 +355,7 @@ void peepholeObj::layoutmanager_implObj::update_our_metrics(ONLY IN_THREAD)
 	my_horizvert->set_element_metrics(IN_THREAD, horiz, vert);
 }
 
-void peepholeObj::layoutmanager_implObj
+void peepholelayoutmanagerObj::implObj
 ::recalculate_with_requested_visibility(ONLY IN_THREAD, rectangle *adjust_for)
 {
 	auto peephole_element_impl=
@@ -548,7 +547,7 @@ void peepholeObj::layoutmanager_implObj
 	update_scrollbars(IN_THREAD, element_pos, current_position);
 }
 
-bool peepholeObj::layoutmanager_implObj
+bool peepholelayoutmanagerObj::implObj
 ::attempt_scroll_to(ONLY IN_THREAD, const rectangle &r)
 {
 	if (disable_fast_scroll.get())
@@ -726,7 +725,7 @@ bool peepholeObj::layoutmanager_implObj
 	return true;
 }
 
-void peepholeObj::layoutmanager_implObj
+void peepholelayoutmanagerObj::implObj
 ::update_horizontal_scroll(ONLY IN_THREAD, dim_t offset)
 {
 	auto peephole_element_impl=
@@ -743,7 +742,7 @@ void peepholeObj::layoutmanager_implObj
 							       cur_pos);
 }
 
-void peepholeObj::layoutmanager_implObj
+void peepholelayoutmanagerObj::implObj
 ::update_vertical_scroll(ONLY IN_THREAD, dim_t offset)
 {
 	auto peephole_element_impl=
@@ -759,7 +758,7 @@ void peepholeObj::layoutmanager_implObj
 							       cur_pos);
 }
 
-void peepholeObj::layoutmanager_implObj
+void peepholelayoutmanagerObj::implObj
 ::process_updated_position(ONLY IN_THREAD,
 			   const rectangle &position)
 {

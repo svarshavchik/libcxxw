@@ -207,14 +207,14 @@ static inline font_picker_preview create_preview_label(const factory &f)
 		([&]
 		 (const auto &info, const auto &scrollbars)
 		 {
-			 return ref<peepholeObj::layoutmanager_implObj
+			 return ref<peepholelayoutmanagerObj::implObj
 				    ::scrollbarsObj>
 				 ::create(info, scrollbars,
 					  preview_peep_container_impl,
 					  new_preview_label);
 		 },
 		 [&]
-		 (const ref<peepholeObj::layoutmanager_implObj> &peephole_lm)
+		 (const ref<peepholelayoutmanagerObj::implObj> &peephole_lm)
 		 -> peephole_element_factory_ret_t
 		 {
 			 // The container public object, for the

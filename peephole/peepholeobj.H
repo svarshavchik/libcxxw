@@ -6,6 +6,7 @@
 #define peepholeobj_h
 
 #include "peephole/peepholefwd.H"
+#include "x/w/peepholelayoutmanagerobj.H"
 #include "x/w/containerobj.H"
 #include "x/w/elementfwd.H"
 
@@ -23,11 +24,9 @@ class LIBCXX_HIDDEN peepholeObj : public containerObj {
 
 	const ref<implObj> impl;
 
-	class LIBCXX_HIDDEN layoutmanager_implObj;
-
 	//! Constructor
 	peepholeObj(const ref<implObj> &impl,
-		    const ref<layoutmanager_implObj> &layout);
+		    const ref<peepholelayoutmanagerObj::implObj> &layout);
 
 	//! Destructor
 	~peepholeObj();
