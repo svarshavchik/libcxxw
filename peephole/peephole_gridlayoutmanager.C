@@ -37,10 +37,6 @@ peephole_gridlayoutmanagerObj
 	// Column 0 and row 0 is set to span 100% of any extra space, and
 	// the peephole element gets force-fully filled.
 
-	// peephole_element_factory_ret_t also defaults to halign::fill
-	// and valign::fill for peephole_horizontal_alignment and
-	// peephole_vertical_alignment, this is consistent with that.
-
 	grid_map_t::lock grid_lock{grid_map};
 
 	requested_row_height(grid_lock, 0, 100);

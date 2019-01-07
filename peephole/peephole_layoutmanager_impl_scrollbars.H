@@ -318,20 +318,6 @@ struct peephole_element_factory_ret_t {
 	//! grid_peephole_element when it gets placed into the grid container.
 
 	dim_arg peephole_bottom_padding=0;
-
-	//! grid_peephole_element attribute.
-
-	//! create_peephole_with_scrollbars() sets this for the new
-	//! grid_peephole_element when it gets placed into the grid container.
-
-	halign peephole_horizontal_alignment=halign::fill;
-
-	//! grid_peephole_element attribute.
-
-	//! create_peephole_with_scrollbars() sets this for the new
-	//! grid_peephole_element when it gets placed into the grid container.
-
-	valign peephole_vertical_alignment=valign::fill;
 };
 
 /*!

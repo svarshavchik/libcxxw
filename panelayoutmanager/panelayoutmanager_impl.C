@@ -276,8 +276,6 @@ pane_peephole_container panelayoutmanagerObj::implObj
 				 properties.right_padding_set,
 				 properties.top_padding_set,
 				 properties.bottom_padding_set,
-				 halign::fill,
-				 valign::fill,
 			 };
 		 },
 		 create_peephole_gridlayoutmanager,

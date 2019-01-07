@@ -366,9 +366,7 @@ create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 		     peephole_left_padding,
 		     peephole_right_padding,
 		     peephole_top_padding,
-		     peephole_bottom_padding,
-		     peephole_horizontal_alignment,
-		     peephole_vertical_alignment]=
+		     peephole_bottom_padding]=
 		pe_factory(layout_impl);
 
 	// Make sure the tabbing order is right.
@@ -397,8 +395,6 @@ create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 	factory->right_padding(peephole_right_padding);
 	factory->top_padding(peephole_top_padding);
 	factory->bottom_padding(peephole_bottom_padding);
-	factory->halign(peephole_horizontal_alignment);
-	factory->valign(peephole_vertical_alignment);
 
 	if (grid_peephole_element_border)
 		factory->border(*grid_peephole_element_border);
