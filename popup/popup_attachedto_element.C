@@ -59,7 +59,9 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 	auto popup_impl=ref<popupObj::implObj>::create(attachedto_handler,
 						       parent_handler);
 
-	peephole_style popup_peephole_style{halign::fill};
+	peephole_style popup_peephole_style{peephole_algorithm::automatic,
+					    peephole_algorithm::automatic,
+					    halign::fill};
 
 	// Create the contents of the popup.
 

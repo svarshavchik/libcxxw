@@ -9,8 +9,8 @@
 #include "x/w/container.H"
 #include "x/w/layoutmanagerfwd.H"
 #include "x/w/border_arg.H"
+#include "x/w/peephole_style.H"
 #include "peephole/peepholed_toplevelfwd.H"
-#include "peephole/peephole_style.H"
 
 #include <x/functional.H>
 #include <optional>

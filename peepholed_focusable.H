@@ -10,7 +10,7 @@
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/scrollbarfwd.H"
 #include "x/w/border_arg.H"
-#include "peephole/peephole_style.H"
+#include "x/w/peephole_style.H"
 #include "peephole/peepholefwd.H"
 #include "peephole/peepholedfwd.H"
 #include "peephole/peepholeobj.H"

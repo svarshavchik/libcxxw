@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "peephole/peephole_style.H"
+#include "x/w/peephole_style.H"
 #include "peephole/peephole_toplevel.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "peepholed_toplevel_listcontainer/layoutmanager_impl.H"

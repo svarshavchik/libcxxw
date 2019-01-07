@@ -12,7 +12,7 @@
 #include "peephole/peephole.H"
 #include "peephole/peephole_impl_element.H"
 #include "peephole/peepholed_element.H"
-#include "peephole/peephole_style.H"
+#include "x/w/peephole_style.H"
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "x/w/impl/layoutmanager.H"
 #include "image_button.H"
@@ -670,7 +670,8 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	// We can now create the peephole layoutmanager for the
 	// peephole_container_impl;
 
-	peephole_style style;
+	peephole_style style{peephole_algorithm::automatic,
+			     peephole_algorithm::automatic};
 
 	style.scroll=peephole_scroll::centered;
 

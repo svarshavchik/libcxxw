@@ -145,15 +145,12 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 
 	containerptr internal_listcontainer;
 
-	peephole_style list_peephole_style{halign::fill, valign::fill};
+	peephole_style list_peephole_style{peephole_algorithm::stretch_peephole,
+					   peephole_algorithm::automatic,
+					   halign::fill, valign::fill};
 
 	if (width_value)
 		list_peephole_style.width_algorithm=*width_value;
-	else
-	{
-		list_peephole_style.width_algorithm=
-			peephole_algorithm::stretch_peephole;
-	}
 
 	auto vertical_scrollbar_value=vertical_scrollbar;
 	std::visit(visitor{

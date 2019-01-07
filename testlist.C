@@ -594,13 +594,13 @@ void listhiertest(const LIBCXX_NAMESPACE::w::main_window &main_window)
 					"scroll-right1"_image,
 					next_lorem_ipsum(),
 					new_indent,
-					"scroll-right1",
+					"scroll-right1"_image,
 					next_lorem_ipsum(),
 					new_indent,
-					"scroll-right1",
+					"scroll-right1"_image,
 					next_lorem_ipsum(),
 					new_indent,
-					"scroll-right1",
+					"scroll-right1"_image,
 					next_lorem_ipsum()
 				});
 		};

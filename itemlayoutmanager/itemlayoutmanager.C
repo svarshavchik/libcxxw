@@ -243,9 +243,8 @@ focusable_container new_itemlayoutmanager::create(const container_impl &parent)
 						   {{0, 0, dim_t::infinite()},
 						    {0, 0, 0}}});
 
-	peephole_style p_style;
-
-	p_style.height_algorithm=peephole_algorithm::stretch_peephole;
+	peephole_style p_style{peephole_algorithm::automatic,
+			       peephole_algorithm::stretch_peephole};
 
 	ptr<itemlayoutmanagerObj::implObj> itemlm_implptr;
 

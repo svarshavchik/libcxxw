@@ -160,9 +160,10 @@ static inline font_picker_preview create_preview_label(const factory &f)
 				child_elementObj>>>
 		::create(f->get_container_impl());
 
-	peephole_style pstyle{
-		halign::center,
-			valign::middle};
+	peephole_style pstyle{peephole_algorithm::automatic,
+			      peephole_algorithm::automatic,
+			      halign::center,
+			      valign::middle};
 
 	// Create a container for the peephole.
 	//

@@ -160,7 +160,9 @@ date_input_field factoryObj
 	auto popup_impl=ref<popupObj::implObj>::create(attachedto_handler,
 						       parent_handler);
 
-	peephole_style popup_peephole_style{halign::fill};
+	peephole_style popup_peephole_style{peephole_algorithm::automatic,
+					    peephole_algorithm::automatic,
+					    halign::fill};
 
 	date_input_field_calendarptr calendar_containerptr;
 

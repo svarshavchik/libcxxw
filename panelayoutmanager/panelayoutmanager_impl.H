@@ -20,7 +20,7 @@
 #include "panelayoutmanager/panefactory_impl.H"
 #include "gridlayoutmanager.H"
 #include "metrics_grid.H"
-#include "peephole/peephole_style.H"
+#include "x/w/peephole_style.H"
 #include "x/w/impl/current_border_implfwd.H"
 #include <tuple>
 

@@ -1,13 +1,13 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
-#ifndef peephole_style_H
-#define peephole_style_H
+#ifndef x_w_peephole_style_H
+#define x_w_peephole_style_H
 
-#include "x/w/alignment.H"
-#include "x/w/dim_axis_arg.H"
+#include <x/w/alignment.H>
+#include <x/w/dim_axis_arg.H>
 #include <variant>
 #include <tuple>
 
@@ -15,19 +15,29 @@ LIBCXXW_NAMESPACE_START
 
 //! How a peephole scrolls elements that gain focus into view.
 
-enum class LIBCXX_HIDDEN peephole_scroll {
+//! \see peephole_style
+
+enum class peephole_scroll {
 	minimal, //!< Scroll the peephole minimally.
 	centered, //!< Try to keep the input focus centered in the peephole
 };
 
 //! Peephole sizing algorithm.
 
-enum class LIBCXX_HIDDEN peephole_algorithm {
+//! \see peephole_style
+
+enum class peephole_algorithm {
 
 	//! Default sizing algorithm
 
 	//! We take the width/height of the peepholed element, the
 	//! width/height of the peephole, and work with it.
+        //!
+        //! This is used mostly internally by the library in situation where
+        //! the peephole's container completely controls the peephole size.
+        //! For example, the peephole is in a container that uses the
+        //! grid layout manager, with the peephole's width or height
+        //! alignment set to 'fill'.
 
 	automatic,
 
@@ -41,28 +51,35 @@ enum class LIBCXX_HIDDEN peephole_algorithm {
 	stretch_peephole
 };
 
-struct LIBCXX_HIDDEN peephole_style;
-
 //! Peephole style.
 
 struct peephole_style {
+
+	//! How the peephole's width gets set.
+
+	//! The peephole's width is either explicitly specified (as a
+	//! dim_axis_arg), or as a peephole_algorithm.
+	std::variant<peephole_algorithm, dim_axis_arg
+		     > width_algorithm=peephole_algorithm::stretch_peephole;
+
+	//! How the peephole's height gets set.
+
+	//! The peephole's height is either explicitly specified (as a
+	//! dim_axis_arg), or as a peephole_algorithm.
+	//!
+	//! The library also uses an internal option that specifies the
+	//! height as a minimum or maximum number of rows. This is used
+	//! internally by the \ref new_listlayoutmanager "list layout manager".
+
+	std::variant<peephole_algorithm, std::tuple<size_t, size_t>,
+		     dim_axis_arg
+		     > height_algorithm=peephole_algorithm::stretch_peephole;
 
 	//! Alignment of the element when it is smaller than the peephole.
 	halign horizontal_alignment=halign::left;
 
 	//! Alignment of the element when it is smaller than the peephole.
 	valign vertical_alignment=valign::top;
-
-	//! How the peephole's width gets processed.
-
-	std::variant<peephole_algorithm, dim_axis_arg
-		     > width_algorithm=peephole_algorithm::automatic;
-
-	//! How the peephole's height gets processed.
-
-	std::variant<peephole_algorithm, std::tuple<size_t, size_t>,
-		     dim_axis_arg
-		     > height_algorithm=peephole_algorithm::automatic;
 
 	//! Peephole scrolling strategy
 

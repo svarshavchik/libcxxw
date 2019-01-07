@@ -838,9 +838,8 @@ std::tuple<peephole_style, scrollbar_visibility, scrollbar_visibility>
 panelayoutmanagerObj::implObj::orientation<vertical>
 ::pane_peephole_style(scrollbar_visibility pane_scrollbar_visibility)
 {
-	peephole_style style;
-
-	style.width_algorithm=peephole_algorithm::stretch_peephole;
+	peephole_style style{peephole_algorithm::stretch_peephole,
+			     peephole_algorithm::automatic};
 
 	return {style, scrollbar_visibility::never,
 			pane_scrollbar_visibility};
@@ -1054,9 +1053,9 @@ std::tuple<peephole_style, scrollbar_visibility, scrollbar_visibility>
 panelayoutmanagerObj::implObj::orientation<horizontal>
 ::pane_peephole_style(scrollbar_visibility pane_scrollbar_visibility)
 {
-	peephole_style style;
+	peephole_style style{peephole_algorithm::automatic,
+			     peephole_algorithm::stretch_peephole};
 
-	style.height_algorithm=peephole_algorithm::stretch_peephole;
 	return {style, pane_scrollbar_visibility,
 			scrollbar_visibility::never};
 }
