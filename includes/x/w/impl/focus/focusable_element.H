@@ -56,7 +56,7 @@ void focusable_elementObj<element_impl>::creating_focusable_element()
 	this->creating_focusable_child_element();
 }
 
-//! Button 1 press set_focus_only().
+//! Button 1 or 3 press set_focus_only().
 
 template<typename element_impl>
 bool focusable_elementObj<element_impl>
@@ -66,7 +66,7 @@ bool focusable_elementObj<element_impl>
 {
 	bool flag=false;
 
-	if (be.button == 1 && this->activate_for(be))
+	if ((be.button == 1 || be.button == 3) && this->activate_for(be))
 	{
 		this->set_focus_only(IN_THREAD, &be);
 		flag=true;

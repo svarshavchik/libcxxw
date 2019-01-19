@@ -1157,7 +1157,14 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 
 	autoselected=false;
 
-	if (be.press && (be.button == 1 || be.button == 2))
+	if (be.press && (be.button == 1 || be.button == 2
+
+			 // Respond to right mouse button click only if
+			 // we do not have input focus already. Otherwise
+			 // we might have something already selected, and
+			 // don't really want to deselect it.
+			 || (be.button == 3 &&
+			     !current_keyboard_focus(IN_THREAD))))
 	{
 		bool ignored;
 
