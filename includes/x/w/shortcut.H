@@ -86,6 +86,19 @@ public:
 	operator std::u32string() const;
 };
 
+//! Inactive shortcut
+
+//! Used in menus to show a shortcut for a menu item but without creating
+//! the actual shortcut. The key combination gets implemented elsewhere.
+//! This is used for copy/cut/paste menu items. The input field response to
+//! the key combinations itself.
+
+class inactive_shortcut : public shortcut {
+
+public:
+	using shortcut::shortcut;
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

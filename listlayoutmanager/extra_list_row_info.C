@@ -162,7 +162,8 @@ void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 	menu_item=meta.menu_item;
 	row_info.indent=meta.indent_level;
 
-	if (!meta.listitem_shortcut || !*meta.listitem_shortcut)
+	if (meta.inactive_shortcut ||
+	    !meta.listitem_shortcut || !*meta.listitem_shortcut)
 	{
 		if (current_shortcut)
 		{

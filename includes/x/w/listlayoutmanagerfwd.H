@@ -589,6 +589,7 @@ using is_list_item_status_change_callback=
 //! insert_items(), and append_items() parameters.
 
 typedef std::variant<text_param, image_param, separator, shortcut,
+		     inactive_shortcut,
 		     hierindent,
 		     menuoption, submenu,
 		     list_item_status_change_callback> list_item_param_base;

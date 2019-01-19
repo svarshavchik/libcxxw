@@ -100,6 +100,9 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 				[&](const shortcut &sc)
 				{
 				},
+				[&](const inactive_shortcut &sc)
+				{
+				},
 				[&](const list_item_status_change_callback &cb)
 				{
 				},
@@ -327,6 +330,17 @@ void listlayoutstyle_impl::do_process_list_item_param
 						    );
 
 				   next_rowinfo.listitem_shortcut=&sc;
+			   },
+			   [&](const inactive_shortcut &sc)
+			   {
+				   if (next_rowinfo.listitem_shortcut)
+					   throw EXCEPTION
+						   (_("Cannot specify multiple "
+						      "shorcuts for list items")
+						    );
+
+				   next_rowinfo.listitem_shortcut=&sc;
+				   next_rowinfo.inactive_shortcut=true;
 			   },
 			   [&](const list_item_status_change_callback &cb)
 			   {

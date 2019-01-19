@@ -33,6 +33,8 @@ struct textlist_rowinfo {
 
 	size_t indent_level=0;
 
+	bool inactive_shortcut=false;
+
 	menu_item_t menu_item;
 
 	void setting_menu_item();

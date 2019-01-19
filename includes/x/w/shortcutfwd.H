@@ -11,6 +11,7 @@
 LIBCXXW_NAMESPACE_START
 
 class shortcut;
+class inactive_shortcut;
 
 LIBCXXW_NAMESPACE_END
 #endif
