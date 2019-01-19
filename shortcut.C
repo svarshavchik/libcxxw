@@ -9,8 +9,36 @@
 #include <x/exception.H>
 #include <courier-unicode.h>
 #include <X11/keysym.h>
+#include <cstring>
+#include <algorithm>
 
 LIBCXXW_NAMESPACE_START
+
+static const struct {
+	uint32_t keysym;
+	const char *name;
+} special_keys[]={
+		  {XK_Left,      "Left"},
+		  {XK_KP_Left,   "KP_Left"},
+		  {XK_Right,     "Right"},
+		  {XK_KP_Right,  "KP_Right"},
+		  {XK_Up,        "Up"},
+		  {XK_KP_Up,     "KP_Up"},
+		  {XK_Down,      "Down"},
+		  {XK_KP_Down,   "KP_Down"},
+		  {XK_Delete,    "Del"},
+		  {XK_KP_Delete, "KP_Del"},
+		  {XK_Page_Up,   "PgUp"},
+		  {XK_KP_Page_Up,"KP_PgUp"},
+		  {XK_Page_Down, "PgDn"},
+		  {XK_KP_Page_Down,"KP_PgDn"},
+		  {XK_Home,      "Home"},
+		  {XK_End,       "End"},
+		  {XK_KP_Home,   "KP_Home"},
+		  {XK_KP_End,    "KP_End"},
+		  {XK_Insert,    "Ins"},
+		  {XK_KP_Insert, "KP_Ins"},
+};
 
 shortcut::shortcut() : unicode(0), keysym(0)
 {
@@ -80,6 +108,29 @@ shortcut::shortcut(size_t dash_pos,
 				return;
 			}
 		}
+
+		for (auto &c:ustr)
+			c=unicode_lc(c);
+
+		for (const auto &sk:special_keys)
+		{
+			size_t l=strlen(sk.name);
+
+			char32_t name[l+1];
+
+			std::copy(sk.name, sk.name+l, name);
+
+			name[l]=0;
+			for (auto &c:name)
+				c=unicode_lc(c);
+
+			if (ustr == name)
+			{
+				keysym=sk.keysym;
+				unicode=0;
+				return;
+			}
+		}
 	}
 	throw EXCEPTION(_("Invalid shortcut key"));
 }
@@ -127,6 +178,17 @@ shortcut::operator std::u32string() const
 	}
 	else
 	{
+		for (const auto &sk:special_keys)
+		{
+			if (keysym==sk.keysym)
+			{
+				s.insert(s.end(),
+					 sk.name,
+					 sk.name+strlen(sk.name));
+				return s;
+			}
+		}
+
 		if (keysym < XK_F1 || keysym > XK_F35)
 			throw EXCEPTION(_("No description available for the shortcut"));
 

@@ -35,6 +35,7 @@
 #include "x/w/factory.H"
 #include "messages.H"
 #include <courier-unicode.h>
+#include <x/weakptr.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -189,6 +190,32 @@ create_editor_impl(editorObj::implObj::init_args &args,
 	return editor_search_impl;
 }
 
+namespace {
+#if 0
+}
+#endif
+
+// The copy/cut/paste menu container.
+
+// We install_contextpopup_callback(), which will capture this object with
+// the reference to the popup menu. This is how the popup menu object
+// continues to exist, unless install_contextpopup_callback() overrides it.
+//
+// An element state callback removes the popup_menu from this object
+// when the popup gets hidden, thus destroying it.
+
+class copy_cut_paste_popup_captureObj : virtual public obj {
+
+	containerptr popup_menu_thread_only;
+public:
+	THREAD_DATA_ONLY(popup_menu);
+};
+
+#if 0
+{
+#endif
+}
+
 input_field
 factoryObj::create_input_field(const text_param &text,
 			       const input_field_config &config)
@@ -313,12 +340,206 @@ factoryObj::create_input_field(const text_param &text,
 			 init_params)->show_all();
 	}
 
-	auto input_field=input_field::create(impl,
-					     peephole_info,
-					     lm->impl);
+	auto new_input_field=input_field::create(impl,
+						 peephole_info,
+						 lm->impl);
 
-	created(input_field);
-	return input_field;
+	if (config.update_clipboards)
+	{
+		// Default cut/copy/paste menu.
+
+		new_input_field->install_contextpopup_callback
+			([popup_menu=ref<copy_cut_paste_popup_captureObj>
+			  ::create()]
+			 (ONLY IN_THREAD,
+			  const input_field &me,
+			  const auto &trigger,
+			  const auto &busy)
+			 mutable
+			 {
+				 auto new_popup_menu=me->create_popup_menu
+					 ([&]
+					  (const auto &llm)
+					  {
+						  me->create_copy_cut_paste_popup_menu_items(IN_THREAD, llm);
+					  });
+
+				 me->update_copy_cut_paste_popup_menu_items
+					 (IN_THREAD, new_popup_menu, 0);
+
+				 new_popup_menu->show_all(IN_THREAD);
+
+				 // Capture it in an object referenced by
+				 // this lambda, thus making sure it exists.
+
+				 popup_menu->popup_menu(IN_THREAD)=
+					 new_popup_menu;
+
+				 // But when hidden, we'll drop this reference,
+				 // and destroying the new_popup_menu().
+				 //
+				 // The on_state_update() callback must
+				 // capture the popup_menu object weakly,
+				 // to avoid a circular reference (this the
+				 // popup_menu object has a reference to the
+				 // new_popup_menu, which has this callback).
+
+				 new_popup_menu->on_state_update
+					 ([popup_menu=weakptr<
+					   ptr<copy_cut_paste_popup_captureObj>
+					   >{popup_menu}]
+					  (ONLY IN_THREAD,
+					   const auto &state,
+					   const auto &mcguffin)
+					  {
+						  auto p=popup_menu.getptr();
+
+						  if (!p)
+							  return;
+
+						  if (state.state_update !=
+						      state.after_hiding)
+							  return;
+
+						  p->popup_menu(IN_THREAD)={};
+					  });
+			 });
+	}
+
+	created(new_input_field);
+	return new_input_field;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+// Weak capture of the input_field, used by the copy/cut/paste callbacks
+// to their own input field.
+
+class weak_input_field_captureObj : virtual public obj {
+
+public:
+	weak_input_field_captureObj(const input_field &ifield)
+		: ifieldptr{ifield}
+	{
+	}
+
+	weakptr<input_fieldptr> ifieldptr;
+
+	input_fieldptr get()
+	{
+		return ifieldptr.getptr();
+	}
+};
+
+// Create the copy/cut/paste menu items.
+
+// The key combinations are implemented directly in editorObj::implObj,
+// so we specify that their shorcuts are inactive_shortcut.
+
+static std::vector<list_item_param>
+get_copy_cut_paste_popup_menu_items(const ref<weak_input_field_captureObj> &me)
+{
+	return {
+		[me]
+		(ONLY IN_THREAD,
+		 const auto &status_info)
+		{
+			auto f=me->get();
+
+			if (!f)
+				return;
+
+			f->focusable_cut_or_copy_selection
+				(cut_or_copy_op::copy);
+		},
+		inactive_shortcut{"Ctrl-Ins"},
+		{_("Copy")},
+
+		[me]
+		(ONLY IN_THREAD,
+		 const auto &status_info)
+		{
+			auto f=me->get();
+
+			if (!f)
+				return;
+
+			f->focusable_cut_or_copy_selection
+				(cut_or_copy_op::cut);
+		},
+		inactive_shortcut{"Shift-Del"},
+		{_("Cut")},
+
+		[me]
+		(ONLY IN_THREAD,
+		 const auto &status_info)
+		{
+			auto f=me->get();
+
+			if (!f)
+				return;
+
+			f->focusable_receive_selection();
+		},
+		inactive_shortcut{"Shift-Ins"},
+		{_("Paste")},
+	};
+}
+
+#if 0
+{
+#endif
+}
+
+void input_fieldObj::
+create_copy_cut_paste_popup_menu_items(const listlayoutmanager &llm)
+{
+	auto me=ref<weak_input_field_captureObj>::create(ref{this});
+
+	llm->append_items(get_copy_cut_paste_popup_menu_items(me));
+}
+
+void input_fieldObj::
+create_copy_cut_paste_popup_menu_items(ONLY IN_THREAD,
+				       const listlayoutmanager &llm)
+{
+	auto me=ref<weak_input_field_captureObj>::create(ref{this});
+
+	llm->append_items(IN_THREAD, get_copy_cut_paste_popup_menu_items(me));
+}
+
+void input_fieldObj
+::update_copy_cut_paste_popup_menu_items(const container &context_popup,
+					 size_t n)
+{
+	listlayoutmanager l=context_popup->get_layoutmanager();
+
+	bool cut_or_copy=focusable_cut_or_copy_selection
+		(cut_or_copy_op::available);
+
+	l->enabled(n, cut_or_copy);
+	l->enabled(n+1, cut_or_copy);
+	l->enabled(n+2, selection_has_owner()
+		   && selection_can_be_received());
+}
+
+void input_fieldObj
+::update_copy_cut_paste_popup_menu_items(ONLY IN_THREAD,
+					 const container &context_popup,
+					 size_t n)
+{
+	listlayoutmanager l=context_popup->get_layoutmanager();
+
+	bool cut_or_copy=focusable_cut_or_copy_selection
+		(IN_THREAD, cut_or_copy_op::available);
+
+	l->enabled(IN_THREAD, n, cut_or_copy);
+	l->enabled(IN_THREAD, n+1, cut_or_copy);
+	l->enabled(IN_THREAD, n+2, selection_has_owner()
+		   && selection_can_be_received());
 }
 
 void input_fieldObj::do_get_impl(const function<internal_focusable_cb> &cb)

@@ -8,6 +8,8 @@
 #include <x/w/peepholed_focusableobj.H>
 #include <x/w/input_fieldfwd.H>
 #include <x/w/hotspotfwd.H>
+#include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/containerfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <string>
 
@@ -100,6 +102,21 @@ public:
 
 	void on_spin(const hotspot_callback_t &,
 		     const hotspot_callback_t &);
+
+	//! Add Copy/Cut/Paste menu items to a context popup menu for this input field.
+	void create_copy_cut_paste_popup_menu_items(const listlayoutmanager &);
+
+	//! Add Copy/Cut/Paste menu items to a context popup menu for this input field.
+	void create_copy_cut_paste_popup_menu_items(ONLY IN_THREAD,
+						    const listlayoutmanager &);
+
+	//! Update Copy/Cut/Paste menu items in a popup menu for this input field
+	void update_copy_cut_paste_popup_menu_items(const container &,
+						    size_t);
+	//! Update Copy/Cut/Paste menu items in a popup menu for this input field
+	void update_copy_cut_paste_popup_menu_items(ONLY IN_THREAD,
+						    const container &,
+						    size_t);
 };
 
 LIBCXXW_NAMESPACE_END

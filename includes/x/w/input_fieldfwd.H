@@ -384,6 +384,42 @@ the hint.
 \ref input_field_config "input_field_config"'s \c hint is an
 \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param".
 
+\par Custom Copy/Cut/Paste menu
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/listlayoutmanager.H>
+#include <INSERT_LIBX_NAMESPACE/w/container.H>
+
+INSERT_LIBX_NAMESPACE::w::container new_popup_menu=field->create_popup_menu(
+    [&]
+    (const INSERT_LIBX_NAMESPACE::w::listlayoutmanager &lm)
+    {
+        size_t n=lm->size();
+
+        field->create_copy_cut_paste_popup_menu_items(IN_THREAD, lm);
+
+        field->create_copy_cut_paste_popup_menu_items(lm);
+    });
+
+me->update_copy_cut_paste_popup_menu_items(IN_THREAD, c, n);
+
+me->update_copy_cut_paste_popup_menu_items(c, n);
+\endcode
+
+Each input_field has a default copy/cut/paste context popup menu. Using
+install_contextpopup_callback() replaces it with a custom context popup menu.
+
+create_copy_cut_paste_popup_menu_items() (both IN_THREAD and non-IN_THREAD
+versions) adds default Copy/Cut/Paste entries to the popup menu, using
+its \ref listlayoutmanager "list layout manager" append_items().
+
+update_copy_cut_paste_popup_menu_items() selectively enables or disables
+these entries depending upon whether it is currently possible to copy, cut,
+or paste a selection. update_copy_cut_paste_popup_menu_items() needs to know
+the number of items in the popup menu before
+create_copy_cut_paste_popup_menu_items() got called, in order to enable and
+disable the correct menu entries.
+
 */
 
 typedef ref<input_fieldObj> input_field;

@@ -818,6 +818,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 	case XK_KP_End:
 		return to_end(IN_THREAD, ke);
 	case XK_Insert:
+	case XK_KP_Insert:
 		if (ke.shift)
 			get_window_handler().receive_selection
 				(IN_THREAD,

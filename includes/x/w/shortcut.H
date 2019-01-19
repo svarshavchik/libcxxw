@@ -62,9 +62,17 @@ public:
 
 	//! Specify a shortcut as a single string.
 
-	//! The constructor can be either a single (UTF-8) character, or
-	//! "Fn", and sets the unicode shortcut to the character, or the keysym
-	//! to the appropriate function key.
+	//! The constructor's parameter must be one of the following:
+	//!
+	//! - a single (UTF-8) character
+	//!
+	//! - "Fn", specifying a function key.
+	//!
+	//! - "Left", "Right", "Up", "Down", "Del", "Ins", "PgUp", "PgDn",
+	//!   "Home", "End", with an optional "Kp_" prefix.
+	//!
+	//! This sets the unicode shortcut to the character, or the keysym
+	//! to the appropriate function key or special key.
 	//!
 	//! The specified string may also have a "modifier-" prefix, example:
 	//! "shift-F1".
