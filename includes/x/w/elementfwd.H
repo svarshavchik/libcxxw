@@ -46,6 +46,13 @@ e->hide();
 
 e->hide_all();
 
+e->show(IN_THREAD);
+
+e->show_all(IN_THREAD);
+
+e->hide(IN_THREAD);
+
+e->hide_all(IN_THREAD);
 \endcode
 
 \c appdata is an opaque object pointer for the application's use.

@@ -78,6 +78,22 @@ public:
 
 	void hide();
 
+	//! Show this display element, and all elements inside it.
+
+	void show_all(ONLY IN_THREAD);
+
+	//! Hide this display element, and all elements inside it.
+
+	void hide_all(ONLY IN_THREAD);
+
+	//! Show this display element only.
+
+	void show(ONLY IN_THREAD);
+
+	//! Hide this display element only.
+
+	void hide(ONLY IN_THREAD);
+
 	//! Moves this display element into view, if it's in a peephole.
 	void ensure_entire_visibility();
 

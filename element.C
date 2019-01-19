@@ -148,6 +148,26 @@ void elementObj::hide()
 	impl->request_visibility(false);
 }
 
+void elementObj::show_all(ONLY IN_THREAD)
+{
+	impl->request_visibility_recursive(IN_THREAD, true);
+}
+
+void elementObj::hide_all(ONLY IN_THREAD)
+{
+	impl->request_visibility_recursive(IN_THREAD, false);
+}
+
+void elementObj::show(ONLY IN_THREAD)
+{
+	impl->request_visibility(IN_THREAD, true);
+}
+
+void elementObj::hide(ONLY IN_THREAD)
+{
+	impl->request_visibility(IN_THREAD, false);
+}
+
 void elementObj::ensure_entire_visibility()
 {
 	in_thread([me=ref{this}]
