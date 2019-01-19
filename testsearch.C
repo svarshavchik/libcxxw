@@ -307,8 +307,8 @@ void test1()
 		s->search("three");
 		search_proceed(2);
 
-		if (s->wait_for_n_search_results(1) !=
-		    std::vector<std::string>{"three"})
+		if (s->wait_for_n_search_results(2) !=
+		    std::vector<std::string>{"one","three"})
 			throw EXCEPTION("test1 failed");
 
 	}
