@@ -749,6 +749,13 @@ class generic_windowObj::handlerObj
 	void draw_child_elements_after_visibility_updated(ONLY IN_THREAD,
 							  bool flag) override;
 
+	//! Override update_visibility()
+
+	//! Because top_level_always_visible(), update_visibility() gets
+	//! overridden to avoid comparing actual_visibility with
+	//! requested_visibility().
+	void update_visibility(ONLY IN_THREAD) override;
+
 	void inherited_visibility_updated(ONLY IN_THREAD,
 					  inherited_visibility_info &) override;
 

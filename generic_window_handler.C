@@ -497,6 +497,19 @@ void generic_windowObj::handlerObj
 {
 }
 
+void generic_windowObj::handlerObj::update_visibility(ONLY IN_THREAD)
+{
+	// Ignore visibility updates until such time we are
+	// initialize_if_needed(). Same check as the overridden
+	// elementObj::implObj
+
+	if (!initialized(IN_THREAD))
+		return;
+
+	visibility_updated(IN_THREAD,
+			   data(IN_THREAD).requested_visibility);
+}
+
 void generic_windowObj::handlerObj
 ::inherited_visibility_updated(ONLY IN_THREAD,
 			       inherited_visibility_info &visibility_info)
