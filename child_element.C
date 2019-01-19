@@ -364,17 +364,6 @@ bool child_elementObj::process_button_event(ONLY IN_THREAD,
 	return ret;
 }
 
-bool child_elementObj
-::invoke_contextpopup_callback(ONLY IN_THREAD,
-			       const callback_trigger_t &trigger)
-{
-	if (superclass_t::invoke_contextpopup_callback(IN_THREAD, trigger))
-		return true;
-
-	return child_container->container_element_impl()
-		.invoke_contextpopup_callback(IN_THREAD, trigger);
-}
-
 void child_elementObj::grab(ONLY IN_THREAD)
 {
 	get_window_handler().grab(IN_THREAD, element_impl{this});

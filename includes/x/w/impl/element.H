@@ -1274,14 +1274,10 @@ class elementObj::implObj : public element_drawObj,
 
 	//! If contextpopup_callback is set invoke it and return true.
 	//! Returns false if contextpopup_callback is not set.
-	//!
-	//! Overridden in child_elementObj. If the most immediate element
-	//! under the pointer does not have the contextpopup_callback
-	//! popup initialized maybe its parent container does.
 
-	virtual bool invoke_contextpopup_callback(ONLY IN_THREAD,
-						  const callback_trigger_t
-						  &trigger);
+	bool invoke_contextpopup_callback(ONLY IN_THREAD,
+					  const callback_trigger_t
+					  &trigger);
 
 	//! Whether this element will use the X Input Method.
 
