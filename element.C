@@ -73,7 +73,7 @@ bool elementObj::selection_can_be_received() const
 
 void elementObj::receive_selection()
 {
-	selection_has_owner(impl->default_cut_paste_selection());
+	receive_selection(impl->default_cut_paste_selection());
 }
 
 void elementObj::receive_selection(const std::string_view &selection)

@@ -120,7 +120,7 @@ menu menubarlayoutmanagerObj::implObj
 	auto ff_impl=ref<focusframelayoutimplObj>
 		::create(menu_impl, menu_impl, hotspot);
 
-	x::w::gridlayoutmanager glm=hotspot->get_layoutmanager();
+	gridlayoutmanager glm=hotspot->get_layoutmanager();
 
 	auto creator_factory=glm->append_row();
 	creator_factory->halign(halign::center);
