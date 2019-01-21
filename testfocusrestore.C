@@ -19,6 +19,7 @@
 #include "x/w/menubarfactory.H"
 #include "x/w/menu.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/copy_cut_paste_menu_items.H"
 #include <x/weakcapture.H>
 
 using namespace LIBCXX_NAMESPACE;
@@ -48,6 +49,8 @@ void create_mainwindow(const main_window &mw)
 	auto mblm=mw->get_menubarlayoutmanager();
 	auto mbf=mblm->append_menus();
 
+	copy_cut_paste_menu_itemsptr ccp;
+
 	auto file_menu=mbf->add([]
 				(const auto &f)
 				{
@@ -56,52 +59,11 @@ void create_mainwindow(const main_window &mw)
 				[&]
 				(const auto &f)
 				{
-					f->append_items
-						({
-						  [w=make_weak_capture(mw)]
-						  (ONLY IN_THREAD,
-						   const auto &status_info)
-						  {
-							  auto got=w.get();
-							  if (!got)
-								  return;
-
-							  auto &[w]=*got;
-
-							  w->cut_or_copy_selection(cut_or_copy_op::cut);
-						  },
-						  "Cut",
-						  [w=make_weak_capture(mw)]
-						  (ONLY IN_THREAD,
-						   const auto &status_info)
-						  {
-							  auto got=w.get();
-							  if (!got)
-								  return;
-
-							  auto &[w]=*got;
-
-							  w->cut_or_copy_selection(cut_or_copy_op::copy);
-						  },
-						  "Copy",
-						  [w=make_weak_capture(mw)]
-						  (ONLY IN_THREAD,
-						   const auto &status_info)
-						  {
-							  auto got=w.get();
-							  if (!got)
-								  return;
-
-							  auto &[w]=*got;
-
-							  w->receive_selection();
-						  },
-						  "Paste"
-						});
+					ccp=f->append_copy_cut_paste(mw);
 				});
 
 	file_menu->on_popup_state_update
-		([file_menu=make_weak_capture(file_menu)]
+		([ccp=copy_cut_paste_menu_items{ccp}]
 		 (ONLY IN_THREAD,
 		  const element_state &es,
 		  const busy &mcguffin)
@@ -109,23 +71,7 @@ void create_mainwindow(const main_window &mw)
 			 if (es.state_update != es.before_showing)
 				 return;
 
-			 auto got=file_menu.get();
-
-			 if (!got)
-				 return;
-
-			 auto & [file_menu] = *got;
-
-			 listlayoutmanager lm=file_menu->get_layoutmanager();
-
-			 bool has_cut_or_copy=
-				 file_menu->cut_or_copy_selection
-				 (cut_or_copy_op::available);
-
-			 lm->enabled(0, has_cut_or_copy);
-			 lm->enabled(1, has_cut_or_copy);
-
-			 lm->enabled(2, file_menu->selection_has_owner());
+			 ccp->update(0);
 		 });
 	mw->get_menubar()->show();
 	gridlayoutmanager layout=mw->get_layoutmanager();

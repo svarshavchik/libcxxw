@@ -481,6 +481,40 @@ library connection thread that implements this method. The \c IN_THREAD
 version of each message is the implemention method that executes the
 operation.
 
+\par Standard Copy/Cut/Paste menu items
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/copy_cut_paste_menu_items.H>
+
+INSERT_LIBX_NAMESPACE::w::copy_cut_paste_menu_items items=l->append_copy_cut_paste(parent);
+
+INSERT_LIBX_NAMESPACE::w::copy_cut_paste_menu_items items=l->append_copy_cut_paste(IN_THREAD, parent);
+\endcode
+
+append_copy_cut_paste() calls append_items() to create the standard
+"Copy", "Cut", and "Paste" menu items. This is typically used with the
+list layout manager to add them to the \ref menu "application's menu".
+
+It's also possible to use append_copy_cut_paste() in a custom right pointer
+button context popup menu of an \ref input_field "input field". All input
+fields have a default right context popup menu with these options.
+Calling an input field's install_contextpopup_callback() replaces the default
+popup with a custom one. Using
+append_copy_cut_paste() with that menu allows implementing a custom
+input field context popup menu that includes these standard menu items.
+
+append_copy_cut_paste()'s parameter is either:
+
+- the \ref main_window "main window" when adding the default
+"Copy", "Cut", and "Paste" menu items to an application field.
+
+- a display element when adding the menu items to the element's right context
+button popup.
+
+append_copy_cut_paste() returns
+an \ref copy_cut_paste_menu_items "INSERT_LIBX_NAMESPACE::w::copy_cut_paste_menu_items"
+object.
+
 */
 
 typedef ref<listlayoutmanagerObj> listlayoutmanager;

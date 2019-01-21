@@ -107,6 +107,7 @@ libcxxw_la_SOURCES=\
 	button.H				    \
 	button_event.C				    \
 	button_impl.C				    \
+	copy_cut_paste_menu_items.C		    \
 	corner_border.C				    \
 	corner_border.H				    \
 	corner_borderfwd.H			    \

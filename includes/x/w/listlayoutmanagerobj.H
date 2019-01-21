@@ -7,6 +7,8 @@
 
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/layoutmanagerobj.H>
+#include <x/w/copy_cut_paste_menu_itemsfwd.H>
+#include <x/w/elementfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -147,6 +149,15 @@ public:
 
 	//! Return an existing menu item's submenu layoutmanager.
 	listlayoutmanagerptr get_item_layoutmanager(size_t i);
+
+	//! Append Copy/Cut/Paste menu items.
+
+	copy_cut_paste_menu_items append_copy_cut_paste(const element &parent);
+
+	//! Append Copy/Cut/Paste menu items.
+
+	copy_cut_paste_menu_items append_copy_cut_paste(ONLY IN_THREAD,
+							const element &parent);
 };
 
 LIBCXXW_NAMESPACE_END

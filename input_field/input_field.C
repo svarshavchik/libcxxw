@@ -31,6 +31,7 @@
 #include "x/w/scrollbar.H"
 #include "x/w/button.H"
 #include "x/w/image.H"
+#include "x/w/copy_cut_paste_menu_items.H"
 #include "gridlayoutmanager.H"
 #include "x/w/factory.H"
 #include "messages.H"
@@ -361,11 +362,11 @@ factoryObj::create_input_field(const text_param &text,
 					 ([&]
 					  (const auto &llm)
 					  {
-						  me->create_copy_cut_paste_popup_menu_items(IN_THREAD, llm);
+						  llm->append_copy_cut_paste
+							  (IN_THREAD, me)
+							  ->update
+							  (IN_THREAD, 0);
 					  });
-
-				 me->update_copy_cut_paste_popup_menu_items
-					 (IN_THREAD, new_popup_menu, 0);
 
 				 new_popup_menu->show_all(IN_THREAD);
 
@@ -408,138 +409,6 @@ factoryObj::create_input_field(const text_param &text,
 
 	created(new_input_field);
 	return new_input_field;
-}
-
-namespace {
-#if 0
-}
-#endif
-
-// Weak capture of the input_field, used by the copy/cut/paste callbacks
-// to their own input field.
-
-class weak_input_field_captureObj : virtual public obj {
-
-public:
-	weak_input_field_captureObj(const input_field &ifield)
-		: ifieldptr{ifield}
-	{
-	}
-
-	weakptr<input_fieldptr> ifieldptr;
-
-	input_fieldptr get()
-	{
-		return ifieldptr.getptr();
-	}
-};
-
-// Create the copy/cut/paste menu items.
-
-// The key combinations are implemented directly in editorObj::implObj,
-// so we specify that their shorcuts are inactive_shortcut.
-
-static std::vector<list_item_param>
-get_copy_cut_paste_popup_menu_items(const ref<weak_input_field_captureObj> &me)
-{
-	return {
-		[me]
-		(ONLY IN_THREAD,
-		 const auto &status_info)
-		{
-			auto f=me->get();
-
-			if (!f)
-				return;
-
-			f->focusable_cut_or_copy_selection
-				(cut_or_copy_op::copy);
-		},
-		inactive_shortcut{"Ctrl-Ins"},
-		{_("Copy")},
-
-		[me]
-		(ONLY IN_THREAD,
-		 const auto &status_info)
-		{
-			auto f=me->get();
-
-			if (!f)
-				return;
-
-			f->focusable_cut_or_copy_selection
-				(cut_or_copy_op::cut);
-		},
-		inactive_shortcut{"Shift-Del"},
-		{_("Cut")},
-
-		[me]
-		(ONLY IN_THREAD,
-		 const auto &status_info)
-		{
-			auto f=me->get();
-
-			if (!f)
-				return;
-
-			f->focusable_receive_selection();
-		},
-		inactive_shortcut{"Shift-Ins"},
-		{_("Paste")},
-	};
-}
-
-#if 0
-{
-#endif
-}
-
-void input_fieldObj::
-create_copy_cut_paste_popup_menu_items(const listlayoutmanager &llm)
-{
-	auto me=ref<weak_input_field_captureObj>::create(ref{this});
-
-	llm->append_items(get_copy_cut_paste_popup_menu_items(me));
-}
-
-void input_fieldObj::
-create_copy_cut_paste_popup_menu_items(ONLY IN_THREAD,
-				       const listlayoutmanager &llm)
-{
-	auto me=ref<weak_input_field_captureObj>::create(ref{this});
-
-	llm->append_items(IN_THREAD, get_copy_cut_paste_popup_menu_items(me));
-}
-
-void input_fieldObj
-::update_copy_cut_paste_popup_menu_items(const container &context_popup,
-					 size_t n)
-{
-	listlayoutmanager l=context_popup->get_layoutmanager();
-
-	bool cut_or_copy=focusable_cut_or_copy_selection
-		(cut_or_copy_op::available);
-
-	l->enabled(n, cut_or_copy);
-	l->enabled(n+1, cut_or_copy);
-	l->enabled(n+2, selection_has_owner()
-		   && selection_can_be_received());
-}
-
-void input_fieldObj
-::update_copy_cut_paste_popup_menu_items(ONLY IN_THREAD,
-					 const container &context_popup,
-					 size_t n)
-{
-	listlayoutmanager l=context_popup->get_layoutmanager();
-
-	bool cut_or_copy=focusable_cut_or_copy_selection
-		(IN_THREAD, cut_or_copy_op::available);
-
-	l->enabled(IN_THREAD, n, cut_or_copy);
-	l->enabled(IN_THREAD, n+1, cut_or_copy);
-	l->enabled(IN_THREAD, n+2, selection_has_owner()
-		   && selection_can_be_received());
 }
 
 void input_fieldObj::do_get_impl(const function<internal_focusable_cb> &cb)

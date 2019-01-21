@@ -1,5 +1,5 @@
 /*
-** Copyright 2018 Double Precision, Inc.
+** Copyright 2018-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -19,6 +19,7 @@
 #include <x/w/menubarfactory.H>
 #include <x/w/menu.H>
 #include <x/w/listlayoutmanager.H>
+#include <x/w/copy_cut_paste_menu_items.H>
 #include <x/singletonptr.H>
 
 #include "close_flag.H"
@@ -50,74 +51,6 @@ public:
 };
 
 typedef x::singletonptr<my_appObj> my_app;
-
-// Populate the application "File" menu.
-
-static inline void make_file_menu(const x::w::main_window &mw,
-				  const x::w::listlayoutmanager &file_menu)
-{
-	// Cut, Copy, and Paste menu items.
-	//
-	// Any display element's cut_or_copy_selection() (for the cutting and
-	// copying operation) and receive_selection() (for the paste operation)
-	// execute the corresponding operation. These methods are available
-	// from every display element, and they get executed in whichever
-	// display element in the same window has keyboard focus, not
-	// necessarily the same element whose method gets invoked.
-	//
-	// Use x::w::inactive_shortcut to specify the default keyboard
-	// shortcuts, to avoid interfering with the default implementation
-	// of Ctrl-Ins/Shift-Ins/Shift-Del key commands, so that they
-	// continue to work normally in their input field, instead of
-	// executing the menu action (although this won't do much harm).
-
-	file_menu->append_items
-		({
-		  []
-		  (ONLY IN_THREAD,
-		   const x::w::list_item_status_info_t &status_info)
-		  {
-			  my_app app;
-
-			  if (!app)
-				  return;
-
-			  app->main_window->cut_or_copy_selection
-				  (IN_THREAD, x::w::cut_or_copy_op::copy);
-		  },
-		  x::w::inactive_shortcut{"Ctrl-Ins"},
-		  "Copy",
-
-		  []
-		  (ONLY IN_THREAD,
-		   const x::w::list_item_status_info_t &status_info)
-		  {
-			  my_app app;
-
-			  if (!app)
-				  return;
-
-			  app->main_window->cut_or_copy_selection
-				  (IN_THREAD, x::w::cut_or_copy_op::cut);
-		  },
-		  x::w::inactive_shortcut{"Shift-Del"},
-		  "Cut",
-
-		  []
-		  (ONLY IN_THREAD,
-		   const x::w::list_item_status_info_t &status_info)
-		  {
-			  my_app app;
-
-			  if (!app)
-				  return;
-
-			  app->main_window->receive_selection(IN_THREAD);
-		  },
-		  x::w::inactive_shortcut{"Shift-Ins"},
-		  "Paste"
-		});
-}
 
 // Helper object for storing the popup menu
 //
@@ -171,34 +104,40 @@ static void create_context_menu(ONLY IN_THREAD,
 {
 	// Create the right button context menu popup for
 	// the input field.
+
 	x::w::container context_popup=
 		ifield->create_popup_menu
 		([&]
 		 (const x::w::listlayoutmanager &llm)
 		 {
-			 // Add some custom menu items here,
+			 // We can add some custom menu items here,
 			 // before the standard Copy/Cut/Paste
 			 // items. An input field's
 			 // create_copy_cut_paste_popup_menu_items()
 			 // adds Cut, Copy, and Paste items to the popup
 			 // menu, after any existing items. In this example,
 			 // there's nothing.
-			 ifield->create_copy_cut_paste_popup_menu_items
-				 (IN_THREAD, llm);
 
-			 // Or, any custom menu items can be added here.
+			 llm->append_copy_cut_paste(IN_THREAD, ifield)
+
+				 // There's no need to install an
+				 // on_state_update(), in this case, and
+				 // shuffle everything in there.
+				 //
+				 // This is called from
+				 // install_contextpopup_callback(), and
+				 // we're about to show_all(), so just
+				 // call update() immediately.
+				 //
+				 // Since there are no other items, the item
+				 // index is 0. If some custom menu items get
+				 // added beforehand, first, this needs to
+				 // get adjusted accordingly.
+				 ->update(IN_THREAD, 0);
+
+			 // Or, any custom menu items can be added here,
+			 // after the Copy/Cut/Paste items.
 		 });
-
-	// Before showing the menu, enable/disable the
-	// Copy/Cut/Paste items in the menu. The third parameter is the
-	// starting index position of the menu items that
-	// create_copy_cut_paste_popup_menu_items() created. This is always
-	// llm->size() before create_copy_cut_paste_popup_menu_items()
-	// got called, basically. Since there were no existing items, this is
-	// 0.
-
-	ifield->update_copy_cut_paste_popup_menu_items
-		(IN_THREAD, context_popup, 0);
 
 	context_popup->show_all(IN_THREAD);
 
@@ -244,37 +183,31 @@ x::ref<my_appObj> create_mainwindow(const x::w::main_window &mw)
 
 	// Create the file menu.
 
-	x::w::menu file_menu=mbf->add([]
-				      (const auto &f)
-				      {
-					      f->create_label("File");
-				      },
-				      [&]
-				      (const x::w::listlayoutmanager &lm)
-				      {
-					      make_file_menu(mw, lm);
-				      });
+	// append_copy_paste() returns an x::w::copy_cut_paste_menu_items
+	// reference-counted object. We'll need to use it in the
+	// on_popup_state_update() callback.
+
+	x::w::copy_cut_paste_menu_itemsptr ccp;
+
+	x::w::menu file_menu=
+		mbf->add([]
+			 (const auto &f)
+			 {
+				 f->create_label("File");
+			 },
+			 [&]
+			 (const x::w::listlayoutmanager &lm)
+			 {
+				 ccp=lm->append_copy_cut_paste(mw);
+			 });
 
 	// Attach a callback that gets invoked before the "File" menu
 	// becomes visible (or hidden). Use this callback to enable or
 	// disable the Cut/Copy/Paste menu items depending upon whether the
 	// given operation is possible at this time.
-	//
-	// Passing "x::w::cut_or_copy_op::available" to
-	// cut_or_copy_selection() indicates whether the current element
-	// with keyboard focus has something that's copyable or cuttable.
-	//
-	// selection_can_be_received() indicates whether the display element
-	// with the keyboard focus accepts pasting text, and
-	// selection_has_owner() indicates whether any window has something
-	// to paste. Both must be true in order to enable the "Paste" option.
-	// Like cut_or_copy_selection and receive_selection(),
-	// selection_can_be_received() checks the display element with the
-	// keyboard focus, not necessarily the same display element whose
-	// selection_can_be_received() gets invoked.
 
 	file_menu->on_popup_state_update
-		([]
+		([ccp=x::w::copy_cut_paste_menu_items{ccp}]
 		 (ONLY IN_THREAD,
 		  const x::w::element_state &es,
 		  const x::w::busy &mcguffin)
@@ -282,26 +215,9 @@ x::ref<my_appObj> create_mainwindow(const x::w::main_window &mw)
 			 if (es.state_update != es.before_showing)
 				 return;
 
-			 my_app app;
-
-			 if (!app)
-				 return;
-
-			 x::w::listlayoutmanager lm=
-				 app->file_menu->get_layoutmanager();
-
-			 bool has_cut_or_copy=
-				 app->file_menu->cut_or_copy_selection
-				 (IN_THREAD, x::w::cut_or_copy_op::available);
-
-			 // Menu items are Copy, Cut, and Paste
-			 lm->enabled(0, has_cut_or_copy);
-			 lm->enabled(1, has_cut_or_copy);
-
-			 lm->enabled(2, app->file_menu
-				     ->selection_can_be_received() &&
-				     app->file_menu->selection_has_owner());
+			 ccp->update(IN_THREAD, 0);
 		 });
+
 	mw->get_menubar()->show();
 	x::w::gridlayoutmanager layout=mw->get_layoutmanager();
 

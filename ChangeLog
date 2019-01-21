@@ -1,3 +1,10 @@
+0.16
+
+2019-01-20  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Reimplemented and simplified API for creating Copy/Cut/Paste
+	menu items.
+
 2019-01-19  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Default context popup menu in input fields, with Copy/Cut/Paste
