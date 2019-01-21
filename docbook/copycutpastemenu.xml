@@ -22,11 +22,12 @@ See COPYING for distribution information.
       <para>
 	This chapter gives an example of creating and implementing
 	traditional <quote>Copy</quote>, <quote>Cut</quote>, and
-	<quote>Paste</quote> menu options. The application needs to take
-	explicit action to create these menu items in the appropriate place in
-	<link linkend="menu">its menu</link>. It's also possible to create these
-	menu options in a context popup menu that's shown by pressing pointer
-	button #3 (typically the right mouse button).
+	<quote>Paste</quote> menu options. All input field have a default
+	right pointer context popup menu with these options. This example
+	shows how to add these options to an application's
+	<link linkend="menu"> main menu</link>, for
+	convenience, and how to customize or replace the default input
+	field context popup menu.
       </para>
     </caption>
   </mediaobject>
@@ -89,7 +90,7 @@ See COPYING for distribution information.
       <para>
 	The usual menu item callback, for these menu items, implements the
 	appropriate action by invoking the appropriate method on an element
-	or a window boject.
+	or a window object.
       </para>
     </listitem>
   </itemizedlist>
@@ -147,13 +148,99 @@ file_menu->on_popup_state_update([]
     </para>
   </section>
 
+  <section id="copycutpastepopup">
+    <title>Context popups with copy, cut, and paste items</title>
+
+    <para>
+      Input fields get a default context popup menu with just
+      <quote>Copy</quote>,
+      <quote>Cut</quote>, and
+      <quote>Paste</quote> options.
+      Using
+      <link linkend="popupmenu"><methodname>install_contextpopup_callback</methodname></link>()
+      on an input field replaces the default popup menu with a custom one.
+      <ulink url="examples/copycutpastemenu.C">copycutpastemenu.C</ulink> gives
+      an example of adding the default options to a custom popup menu.
+      <filename>copycutpastemenu.C</filename> creates a context popup menu
+      for an input field containing just these default options, so the
+      end result looks just like the default popup, but is trivially
+      extendible with any other options.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+ifield->install_contextpopup_callback
+    ([]
+     (ONLY IN_THREAD,
+      const x::w::input_field &amp;ifield,
+      const x::w::callback_trigger_t &amp;trigger,
+      const x::w::busy &amp;mcguffin)
+     {
+          // ...
+
+          size_t n;
+
+          &ns;::w::container context_popup=
+              ifield->create_popup_menu
+              ([&amp;]
+               (const &ns;::w::listlayoutmanager &amp;llm)
+               {
+                   // ...
+
+                   n=llm->size();
+
+                   ifield->create_copy_cut_paste_popup_menu_items
+                           (IN_THREAD, llm);
+               });
+
+           context_popup->update_copy_cut_paste_popup_menu_items
+               (IN_THREAD, context_popup, n);
+
+           // ...
+       });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      An <ulink url="&link-typedef-x--w-input-field;">input field's</ulink>
+      <methodname>create_copy_cut_paste_popup_menu_items</methodname>()
+      method takes a <link linkend="listlayoutmanager">list layout
+	manager</link> that comes, presumably, from its new context popup
+      menu; and appends default
+      <quote>Copy</quote>,
+      <quote>Cut</quote>, and
+      <quote>Paste</quote> items.
+      <methodname>update_copy_cut_paste_popup_menu_items</methodname>()
+      takes an existing popup menu container, and enables or disables these
+      items depending upon whether the corresponding operation is possible
+      at this time (there's an existing selection).
+    </para>
+
+    <para>
+      <ulink url="examples/copycutpastemenu.C">copycutpastemenu.C</ulink>
+      gives an example of following the rules for managing
+      <link linkend="callbackrefs">references to
+	the popup menu and its callbacks</link>, and correctly creating and
+      destroying the context popup menu after it's no longer needed.
+    </para>
+  </section>
+
   <section id="copycutpasteavailable">
     <title>Determining whether a copy, cut, or paste operation is possible</title>
 
     <para>
       <ulink url="examples/copycutpastemenu.C">copycutpastemenu.C</ulink>
       gives an example for determining whether a copy, cut, or paste operation
-      is possible at the given moment.
+      is possible at the given moment, in order to enable and disable the
+      menu items accordingly.
+      Existing input field methods <link linkend="copycutpastepopup">implement
+	this for the menu items in input field context popups</link>,
+      but explicit logic is required for these menu items in application
+      menus.
+    </para>
+
+    <para>
       Passing <literal>&ns;::w::cut_or_copy_op::available</literal> to
       <methodname>cut_or_copy_selection</methodname>() determines whether
       a display element in the window has content that's available to be
@@ -211,18 +298,6 @@ file_menu->on_popup_state_update([]
 	<xref linkend='connection_thread' /> for more information.
       </para>
     </note>
-
-    <para>
-      <ulink url="examples/copycutpastemenu.C">copycutpastemenu.C</ulink>
-      gives an example of using both the <emphasis>focusable</emphasis>
-      and non-<emphasis>focusable</emphasis> overloaded methods.
-      The
-      <quote>Copy</quote>, <quote>Cut</quote>, and
-      <quote>Paste</quote> menu items in the main application menu use
-      the non-<emphasis>focusable</emphasis> versions, and the
-      input field's context popup menu uses the
-      <emphasis>focusable</emphasis> versions.
-    </para>
   </section>
 
   <section id="copycutpasteexecute">
@@ -257,14 +332,6 @@ file_menu->on_popup_state_update([]
       element has the current keyboard focus. It's the application's choice
       which set of methods to invoke, whatever makes the most sense for the
       particular application.
-      <ulink url="examples/copycutpastemenu.C">copycutpastemenu.C</ulink> uses
-      both sets, the non-<emphasis>focusable</emphasis> versions for the
-      <quote>Copy</quote>, <quote>Cut</quote>, and
-      <quote>Paste</quote> menu items in the main application menu, and
-      the
-      <emphasis>focusable</emphasis> versions for the
-      <quote>Copy</quote>, <quote>Cut</quote>, and
-      <quote>Paste</quote> items in the input field's context popup.
     </para>
 
     <note>
@@ -281,8 +348,8 @@ file_menu->on_popup_state_update([]
 
     <note>
       <para>
-	The &xproto; does not provide the means for a general real-time
-	notification mechanism for the availability status of copy/paste
+	There is no general real-time notification mechanism in the
+	&xproto; that indicates the availability status of copy/paste
 	content.
 	It's possible that a copying, cuting, or pasting something
 	is available at the time the menu gets shown, and the corresponding

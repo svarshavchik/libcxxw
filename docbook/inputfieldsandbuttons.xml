@@ -195,14 +195,15 @@ See COPYING for distribution information.
       </para>
 
       <para>
-	It's also possible to create traditional
+	Pointer button #3 (typically the right mouse button) opens a
+	context menu popup with
 	<quote>Copy</quote>,
 	<quote>Cut</quote>, and
-	<quote>Paste</quote> menu items, to implement the cut, copy, and paste
-	operations. It's possible to implement these menu items in the
-	applcation's main menu, or in a context menu
-	that gets popped up by pointer button #3 (typically the right mouse
-	button).
+	<quote>Paste</quote> options. Each option is enabled only when
+	the corresponding operation is possible (some text is selected,
+	or pasted text is available).
+	It's also possible to create a custom context popup menu, with or
+	without these default options.
 	See <xref linkend="copycutpastemenu" /> for more information.
       </para>
     </section>

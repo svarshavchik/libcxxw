@@ -239,7 +239,7 @@ m->append_items(
       "real" <classname>&ns;::w::list_item_param</classname>.
       This example creates two new menu items, "New" and "Open", specifying
       an optional
-      <ulink url="&link-x--w--shortcut;">keyboard short</ulink> for the new
+      <ulink url="&link-x--w--shortcut;">keyboard shortcut</ulink> for the new
       item and a &callback; that gets invoked whenever the menu item gets
       selected. This is the most common case.
       The callback's parameter is the usual
@@ -265,6 +265,28 @@ m->append_items(
       </para>
 
       <variablelist>
+	<varlistentry>
+	  <term>
+	    <ulink url="&link-x--w--inactive-shortcut;"><classname>&ns;::w::inactive_shortcut</classname></ulink>
+	  </term>
+
+	  <listitem>
+	    <para>
+	      This attribute shows a keyboard shortcut for its menu item,
+	      but without actually implementing the shortcut itself.
+	      Presumably, the keyboard shortcut gets implemented separately.
+	    </para>
+
+	    <para>
+	      This option exists mainly for the benefit of the
+	      default <link linkend="copycutpastemenu">default
+		Copy/Cut/Paste context menu</link> for text input fields.
+	      The next input field directly implements the keyboard commands
+	      for copying/cutting/pasting text. The context popup menu
+	      lists the keyboard shortcuts for informative purposes only.
+	    </para>
+	  </listitem>
+	</varlistentry>
 	<varlistentry>
 	  <term>
 	    <classname>&ns;::w::menuoption</classname>

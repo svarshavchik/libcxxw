@@ -64,6 +64,12 @@ static inline void make_file_menu(const x::w::main_window &mw,
 	// from every display element, and they get executed in whichever
 	// display element in the same window has keyboard focus, not
 	// necessarily the same element whose method gets invoked.
+	//
+	// Use x::w::inactive_shortcut to specify the default keyboard
+	// shortcuts, to avoid interfering with the default implementation
+	// of Ctrl-Ins/Shift-Ins/Shift-Del key commands, so that they
+	// continue to work normally in their input field, instead of
+	// executing the menu action (although this won't do much harm).
 
 	file_menu->append_items
 		({
@@ -79,6 +85,7 @@ static inline void make_file_menu(const x::w::main_window &mw,
 			  app->main_window->cut_or_copy_selection
 				  (IN_THREAD, x::w::cut_or_copy_op::copy);
 		  },
+		  x::w::inactive_shortcut{"Ctrl-Ins"},
 		  "Copy",
 
 		  []
@@ -93,6 +100,7 @@ static inline void make_file_menu(const x::w::main_window &mw,
 			  app->main_window->cut_or_copy_selection
 				  (IN_THREAD, x::w::cut_or_copy_op::cut);
 		  },
+		  x::w::inactive_shortcut{"Shift-Del"},
 		  "Cut",
 
 		  []
@@ -106,74 +114,126 @@ static inline void make_file_menu(const x::w::main_window &mw,
 
 			  app->main_window->receive_selection(IN_THREAD);
 		  },
+		  x::w::inactive_shortcut{"Shift-Ins"},
 		  "Paste"
 		});
 }
 
-// Populate the context popup menu that opens by right-clicking on the
-// text input field.
+// Helper object for storing the popup menu
+//
+// A popup menu goes away when the last reference to it get destroyed.
+// In order for the popup menu to be visible, a reference to it must exist,
+// somewhere.
+//
+// The install_contextpopup_callback() callback captures a reference to this
+// helper object. When the callback gets invoked, it creates the popup menu
+// container and stores it here, then shows it. Even after the callback
+// returns, because the reference to the popup menu containe remains here,
+// it remains visible.
+//
+// We'll also remove the reference to the popup menu container when it gets
+// closed, destroying all memory used by it. The same approach can be used
+// with multiple fields, avoiding having to use up memory for multiple copies
+// of the same basic context popup menu, only creating one when it needs to
+// be shown, then getting rid of it when it is no longer needed.
 
-static void create_context_menu(const x::w::listlayoutmanager &llm)
+class contextpopup_containerObj : virtual public x::obj {
+
+public:
+
+	// This container is accessed only IN_THREAD, so we don't need to
+	// make it thread-safe and protected by a mutex.
+
+	x::w::containerptr menu;
+};
+
+// A normal ref for a contextpopup_containerObj
+typedef x::ref<contextpopup_containerObj> contextpopup_container;
+
+// A weak reference to a contextpopup_container
+typedef x::weakptr<x::ptr<contextpopup_containerObj>
+		   > weak_contextpopup_containerptr;
+
+// Context popup menu callback. install_contextpopup_callback() for the
+// input field installs a callback that invokes this function.
+//
+// menu_container is the container holder, that's captured by the actual
+// callback lambda, so it exists as long as the callback is installed.
+//
+// ifield is the input field this callback is for.
+//
+// This gets invoked when pointer button #3 get clicked on top of the input
+// field, so:
+
+static void create_context_menu(ONLY IN_THREAD,
+				const contextpopup_container &menu_container,
+				const x::w::input_field &ifield)
 {
-	// Cut/Copy/Paste menu items.
+	// Create the right button context menu popup for
+	// the input field.
+	x::w::container context_popup=
+		ifield->create_popup_menu
+		([&]
+		 (const x::w::listlayoutmanager &llm)
+		 {
+			 // Add some custom menu items here,
+			 // before the standard Copy/Cut/Paste
+			 // items. An input field's
+			 // create_copy_cut_paste_popup_menu_items()
+			 // adds Cut, Copy, and Paste items to the popup
+			 // menu, after any existing items. In this example,
+			 // there's nothing.
+			 ifield->create_copy_cut_paste_popup_menu_items
+				 (IN_THREAD, llm);
 
-	// Focusable elements also have focusable_cut_or_copy_selection()
-	// and focusable_receive_selection(), which are similar to
-	// cut_or_copy_selection() and receive_selection(), but unlike them
-	// they only take action if their focusable element has keyboard
-	// input focus, and they get ignored otherwise.
+			 // Or, any custom menu items can be added here.
+		 });
+
+	// Before showing the menu, enable/disable the
+	// Copy/Cut/Paste items in the menu. The third parameter is the
+	// starting index position of the menu items that
+	// create_copy_cut_paste_popup_menu_items() created. This is always
+	// llm->size() before create_copy_cut_paste_popup_menu_items()
+	// got called, basically. Since there were no existing items, this is
+	// 0.
+
+	ifield->update_copy_cut_paste_popup_menu_items
+		(IN_THREAD, context_popup, 0);
+
+	context_popup->show_all(IN_THREAD);
+
+	// Store a reference to the new context popup menu
+	// here, so it doesn't go out of scope, get destroyed
+	// and immediately disappear...
+	menu_container->menu=context_popup;
+
+	// ... but when the popup menu gets closed, we
+	// can destroy the context_popup by clearing
+	// the menu->menu reference.
 	//
-	// This the context popup menu gets shown only when the keyboard
-	// focus is in the input field, this makes no material difference,
-	// this is for demonstration purposes.
-	//
-	// Like with the regular popup menu, these menu items get enabled or
-	// disabled depending upon whether their corresponding action can be
-	// taken. This is done before showing the context menu.
+	// It is necessary for this callback to capture
+	// context_popup weakly, to avoid a circular
+	// reference.
 
-	llm->append_items
-		({
-		  []
-		  (ONLY IN_THREAD,
-		   const x::w::list_item_status_info_t &status_info)
-		  {
-			  my_app app;
+	context_popup->on_state_update
+		([weak_menu=weak_contextpopup_containerptr{menu_container}]
+		 (ONLY IN_THREAD,
+		  const auto &state,
+		  const auto &mcguffin)
+		 {
+			 // When the popup menu gets closed...
+			 if (state.state_update != state.after_hiding)
+				 return;
 
-			  if (!app)
-				  return;
+			 // ... recover the strong ref.
+			 auto menu_container=weak_menu.getptr();
 
-			  app->input_field->focusable_cut_or_copy_selection
-				  (IN_THREAD, x::w::cut_or_copy_op::copy);
-		  },
-		  "Copy",
+			 if (!menu_container)
+				 return;
 
-		  []
-		  (ONLY IN_THREAD,
-		   const x::w::list_item_status_info_t &status_info)
-		  {
-			  my_app app;
-
-			  if (!app)
-				  return;
-
-			  app->input_field->focusable_cut_or_copy_selection
-				  (IN_THREAD, x::w::cut_or_copy_op::cut);
-		  },
-		  "Cut",
-
-		  []
-		  (ONLY IN_THREAD,
-		   const x::w::list_item_status_info_t &status_info)
-		  {
-			  my_app app;
-
-			  if (!app)
-				  return;
-
-			  app->input_field->focusable_receive_selection();
-		  },
-		  "Paste",
-		});
+			 // And clear the context_popup.
+			 menu_container->menu={};
+		 });
 }
 
 x::ref<my_appObj> create_mainwindow(const x::w::main_window &mw)
@@ -255,44 +315,18 @@ x::ref<my_appObj> create_mainwindow(const x::w::main_window &mw)
 
 	x::w::input_field ifield=f->create_input_field("", config);
 
-	// Create the right button context menu popup for the input field.
-	x::w::container context_popup=ifield->create_popup_menu
-		([&]
-		 (const x::w::listlayoutmanager &llm)
-		 {
-			 create_context_menu(llm);
-		 });
+	// This input field already has this right pointer button context
+	// popup, but we'll go through the motions of creating one ourselves,
+	// for demonstration purposes.
 
 	ifield->install_contextpopup_callback
-		([context_popup]
+		([menu=contextpopup_container::create()]
 		 (ONLY IN_THREAD,
-		  const x::w::element &my_element,
+		  const x::w::input_field &ifield,
 		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &mcguffin)
 		 {
-			 my_app app;
-
-			 if (!app)
-				 return;
-
-			 // Determine whether cut, copy, and paste actions are
-			 // possible before showing the popup menu.
-
-			 x::w::listlayoutmanager l=
-				 context_popup->get_layoutmanager();
-
-			 bool cut_or_copy=app->input_field
-				 ->focusable_cut_or_copy_selection
-				 (IN_THREAD, x::w::cut_or_copy_op::available);
-
-			 // Menu items are Copy, Cut, and Paste
-			 l->enabled(IN_THREAD, 0, cut_or_copy);
-			 l->enabled(IN_THREAD, 1, cut_or_copy);
-			 l->enabled(IN_THREAD, 2,
-				    app->input_field->selection_has_owner() &&
-				    app->input_field
-				    ->selection_can_be_received());
-			 context_popup->show_all();
+			 create_context_menu(IN_THREAD, menu, ifield);
 		 });
 
 	// The "Ok" button doesn't do anything.
@@ -301,7 +335,7 @@ x::ref<my_appObj> create_mainwindow(const x::w::main_window &mw)
 	return x::ref<my_appObj>::create(mw, file_menu, ifield);
 }
 
-void testfocusrestore()
+void copycutpastemenu()
 {
 	x::destroy_callback::base::guard guard;
 
@@ -341,7 +375,7 @@ void testfocusrestore()
 int main(int argc, char **argv)
 {
 	try {
-		testfocusrestore();
+		copycutpastemenu();
 	} catch (const x::exception &e)
 	{
 		e->caught();
