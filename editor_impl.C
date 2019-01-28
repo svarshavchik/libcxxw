@@ -868,7 +868,8 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 		auto old=cursor->clone();
 		cursor->prev(IN_THREAD);
 
-		if (cursor->pos() == old->pos())
+		auto p=cursor->pos();
+		if (p == old->pos())
 		{
 			if (deleted > 0)
 				draw_changes(IN_THREAD, del_info.cursor_lock,
@@ -878,7 +879,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 			return true; // Nothing more to delete.
 		}
 
-		remove_content(IN_THREAD, old);
+		remove_content(IN_THREAD, p, 1);
 
 		draw_changes(IN_THREAD, del_info.cursor_lock,
 			     input_change_type::deleted, 1, 0);
@@ -888,26 +889,30 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 }
 
 void editorObj::implObj::remove_content(ONLY IN_THREAD,
-					const richtextiterator &other)
+					size_t starting_pos,
+					size_t n)
 {
+	auto starting_cursor=cursor->pos(starting_pos);
+	auto other=starting_cursor->clone();
+
+	other->move(IN_THREAD, n);
+
+	// This may no longer be the case:
+	starting_pos=starting_cursor->pos();
+	n=other->pos()-starting_pos;
+
+	starting_cursor->remove(IN_THREAD, other);
+
 	if (password_char == 0)
-	{
-		cursor->remove(IN_THREAD, other);
 		return;
-	}
 
 	// Extra work for password fields.
 
-	auto a=cursor->pos();
-	auto b=other->pos();
-
-	if (a > b)
-		std::swap(a, b);
-
-	cursor->remove(IN_THREAD, other);
+	starting_cursor->remove(IN_THREAD, other);
 
 	mpobj<richtextstring>::lock lock{real_string};
-	lock->erase(a, b-a);
+
+	lock->erase(starting_pos, n);
 }
 
 void editorObj::implObj::insert_content(ONLY IN_THREAD,
@@ -1539,7 +1544,13 @@ void editorObj::implObj::delete_selection_info::do_delete(ONLY IN_THREAD)
 	if (!cursor_lock.cursor)
 		return;
 
-	me.remove_content(IN_THREAD, cursor_lock.cursor);
+	auto p=me.cursor->pos();
+	auto other_pos=cursor_lock.cursor->pos();
+
+	if (other_pos < p)
+		std::swap(other_pos, p);
+
+	me.remove_content(IN_THREAD, p, other_pos-p);
 	cursor_lock.cursor=richtextiteratorptr();
 	me.remove_primary_selection(IN_THREAD);
 }
@@ -1756,10 +1767,12 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 	auto clone=cursor->clone();
 	clone->next(IN_THREAD);
 
-	if (cursor->pos() == clone->pos())
+	auto p=cursor->pos();
+
+	if (p == clone->pos())
 		return;
 
-	remove_content(IN_THREAD, clone);
+	remove_content(IN_THREAD, p, 1);
 
 	draw_changes(IN_THREAD, del_info.cursor_lock,
 		     input_change_type::deleted, 1, 0);
@@ -1835,11 +1848,9 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 
 	selection_cursor_t::lock &cursor_lock=moving;
 
-	cursor->swap(cursor->end());
+	size_t deleted=cursor->end()->pos();
 
-	size_t deleted=cursor->pos();
-
-	remove_content(IN_THREAD, cursor->begin());
+	remove_content(IN_THREAD, 0, deleted);
 	remove_primary_selection(IN_THREAD);
 	insert_content(IN_THREAD, string);
 

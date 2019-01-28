@@ -102,14 +102,19 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! it'll go here.
 
 	const richtextiterator dragged_pos;
+
 	//! All access to the contents of the input field goes through here.
 
-	//! Removes the characters between the \c cursor and the \c other
-	//! iterator. If this is a password input field we also remove
+	//! Removes n characters, starting with character \#starting_pos.
+	//! If this is a password input field we also remove
 	//! the corresponding characters from the real_string.
+	//!
+	//! Returns the number of characters actually removed. starting_pos and
+	//! n parameters can get quietly bounded by the actual text size.
 
 	void remove_content(ONLY IN_THREAD,
-			    const richtextiterator &other);
+			    size_t starting_pos,
+			    size_t n);
 
 	//! All access to the contents of the input field goes through here.
 
