@@ -1,3 +1,8 @@
+2019-01-26  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* richtext/richtext.C (richtextObj::redraw_whatsneeded): Fix
+	multi-line input field display bug.
+
 0.16
 
 2019-01-20  Sam Varshavchik  <mrsam@courier-mta.com>

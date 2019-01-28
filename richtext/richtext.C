@@ -116,8 +116,10 @@ void richtextObj::full_redraw(ONLY IN_THREAD,
 	draw(IN_THREAD, element, rdi, di, clipped,
 	     make_function<bool (richtextfragmentObj *)>
 	     ([]
-	      (richtextfragmentObj *ignore)
+	      (richtextfragmentObj *f)
 	      {
+		      // Record where this fragment was (about to be) redrawn.
+		      f->redrawn_y_position=f->y_position();
 		      return true;
 	      }),
 	     true, draw_bounds);
@@ -147,6 +149,17 @@ void richtextObj::redraw_whatsneeded(ONLY IN_THREAD,
 	      {
 		      bool flag=f->redraw_needed;
 		      f->redraw_needed=false;
+
+		      // Even if redraw_needed was false, if another row
+		      // was inserted above this one, this row's position
+		      // has changed. redraw_needed gets set only if something
+		      // about this specific row has changed, and won't be
+		      // set in that case. So, redraw this row, in any case.
+
+		      coord_t y_pos=coord_t::truncate(f->y_position());
+		      if (y_pos != f->redrawn_y_position)
+			      flag=true;
+		      f->redrawn_y_position=y_pos;
 		      return flag;
 	      }),
 	     false, draw_bounds);
