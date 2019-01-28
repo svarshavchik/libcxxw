@@ -882,9 +882,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 					 del_info.cursor_lock,
 					 input_change_type::deleted};
 
-		size_t deleted=del_info.to_be_deleted();
-
-		if (deleted > 0)
+		if (del_info.n > 0)
 		{
 			del_info.do_delete(IN_THREAD, modifying);
 		}
@@ -1066,9 +1064,7 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 				 del_info.cursor_lock,
 				 input_change_type::inserted};
 
-	size_t deleted=del_info.to_be_deleted();
-
-	if (cursor->my_richtext->size(IN_THREAD)-deleted + str.size()
+	if (cursor->my_richtext->size(IN_THREAD)-del_info.n + str.size()
 	    -1 // We have an extra space at the end, in there.
 	    > config.maximum_size)
 		return;
@@ -1544,38 +1540,70 @@ ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
 		::create(type, 8, bytes);
 }
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// Determining whether there's a current selection. Constructing a
+// delete_selection_info object.
+//
+// The first order of business is to capture my parent object, and create the
+// cursor lock.
+
+editorObj::implObj
+::delete_selection_info_me_and_cursor_lock
+::delete_selection_info_me_and_cursor_lock(ONLY IN_THREAD,
+					   implObj &me)
+	: me{me},
+	  cursor_lock{IN_THREAD, me}
+{
+}
+
+// Now that the lock is created, check if there's a locked cursor starting
+// position. If not, delegate a pair of goose eggs to the delegated constructor,
+// otherwise delegating the locked cursor's starting position, and the active
+// cursor's position. The delegated constructor will figure out which one is
+// first.
+
+editorObj::implObj
+::delete_selection_info_range::delete_selection_info_range
+(delete_selection_info_me_and_cursor_lock &info)
+	: delete_selection_info_range{info.cursor_lock.cursor ?
+				      info.cursor_lock.cursor->pos() : 0,
+				      info.cursor_lock.cursor ?
+				      info.me.cursor->pos() : 0}
+{
+}
+
+// The end result is the current selection's starting position and
+// character count.
+
+editorObj::implObj
+::delete_selection_info_range::delete_selection_info_range(size_t p1,
+							   size_t p2)
+	: starting_pos{p1 < p2 ? p1:p2},
+	  n{p1 < p2 ? p2-p1:p1-p2}
+{
+}
+
+
 editorObj::implObj::delete_selection_info::delete_selection_info(ONLY IN_THREAD,
 								 implObj &me)
-	: me{me},
-	  cursor_lock{IN_THREAD, me},
-	  n{0}
+	: delete_selection_info_me_and_cursor_lock{IN_THREAD, me},
+	  delete_selection_info_range
+	{
+	 static_cast<delete_selection_info_me_and_cursor_lock &>(*this)
+	}
 {
-	if (!cursor_lock.cursor)
-		return;
-
-	auto p1=me.cursor->pos();
-
-	auto p2=cursor_lock.cursor->pos();
-
-	if (p1 > p2)
-		std::swap(p1, p2);
-
-	n=p2-p1;
 }
+
+editorObj::implObj::delete_selection_info::~delete_selection_info()=default;
 
 void editorObj::implObj::delete_selection_info::do_delete(ONLY IN_THREAD,
 							  modifying_text &modifying)
 {
-	if (!cursor_lock.cursor)
+	if (n == 0)
 		return;
 
-	auto p=me.cursor->pos();
-	auto other_pos=cursor_lock.cursor->pos();
-
-	if (other_pos < p)
-		std::swap(other_pos, p);
-
-	me.remove_content(IN_THREAD, modifying, p, other_pos-p);
+	me.remove_content(IN_THREAD, modifying, starting_pos, n);
 
 	cursor_lock.cursor=richtextiteratorptr();
 	me.remove_primary_selection(IN_THREAD);
@@ -1767,9 +1795,7 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 				 del_info.cursor_lock,
 				 input_change_type::deleted};
 
-	size_t n=del_info.to_be_deleted();
-
-	if (n > 0)
+	if (del_info.n > 0)
 	{
 		if (mask.shift)
 			create_secondary_selection

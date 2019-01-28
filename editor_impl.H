@@ -568,48 +568,80 @@ class LIBCXX_HIDDEN editorObj::implObj
 					     const callback_trigger_t &)
 		override;
 
-	//! Delete the current selection.
+	struct LIBCXX_HIDDEN delete_selection_info_me_and_cursor_lock;
+	struct LIBCXX_HIDDEN delete_selection_info_range;
+	struct LIBCXX_HIDDEN delete_selection_info;
 
-	//! Constructed to begin the process of deleting the current selection.
-	//! to_be_deleted() returns the number of characters in the current
-	//! selection that will be deleted (0 if there is no current selection).
-	//!
-	//! do_delete() executes the deletion.
-	//!
-	//! to_be_deleted() is a slight misnomer. It can also be called after
-	//! do_delete(), and returns the number of characters that were
-	//! deleted.
+	//! delete_selection_info's object and cursor lock
 
-	struct delete_selection_info {
+	//! First superclass of delete_selection_info that gets constructed
+	//! first. Contains the reference to the main editor object, and
+	//! the cursor lock. The cursor lock must be constructed first,
+	//! before constructing the second delete_selection_info superclass.
+
+	struct delete_selection_info_me_and_cursor_lock {
 
 		//! Who created me
 
 		implObj &me;
 
-	public:
 		//! The lock on me's cursor.
 
 		selection_cursor_t::lock cursor_lock;
 
+		//! Constructor.
+		delete_selection_info_me_and_cursor_lock(ONLY IN_THREAD,
+							 implObj &me);
+
+	};
+
+	//! delete_selection_info's starting position and character count.
+
+	//! Second superclass of delete_selection_info. Holds the computed
+	//! starting_pos and character count of the current selection.
+
+	struct delete_selection_info_range {
+
+		//! Current selection's starting position.
+
+		const size_t starting_pos;
+
+		//! Current selection's range.
+
+		//! 0 if there is no current selection.
+
+		const size_t n;
+
+		//! Constructor
+
+		delete_selection_info_range
+		(delete_selection_info_me_and_cursor_lock &info);
+
 	private:
+		//! Delegated constructor.
+		delete_selection_info_range(size_t, size_t);
+	};
 
-		//! The constructor computed the character count.
+	//! Delete the current selection.
 
-		size_t n;
+	//! Constructed to begin the process of deleting the current selection.
+	//! This is always constructed on the stack.
+	//!
+	//! do_delete() executes the deletion.
 
-	public:
+	struct delete_selection_info :
+		delete_selection_info_me_and_cursor_lock,
+		delete_selection_info_range {
+
 		//! Constructor
 		delete_selection_info(ONLY IN_THREAD, implObj &me);
-
-		//! Return the computed character count.
-		inline size_t to_be_deleted() const
-		{
-			return n;
-		}
 
 		//! Delete the current selection.
 
 		void do_delete(ONLY IN_THREAD, modifying_text &);
+
+		//! Destructor
+		~delete_selection_info();
 	};
 
 	//! This element can receive a selection
