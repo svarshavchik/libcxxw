@@ -775,15 +775,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 		return moved;
 	case XK_Delete:
 	case XK_KP_Delete:
-		{
-			modifying_text modifying{IN_THREAD, *this};
-			selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
-
-			size_t deleted=delete_char_or_selection(IN_THREAD, ke);
-
-			draw_changes(IN_THREAD, cursor_lock,
-				     input_change_type::deleted, deleted, 0);
-		}
+		delete_char_or_selection(IN_THREAD, ke);
 		return true;
 	case XK_Page_Up:
 	case XK_KP_Page_Up:
@@ -1716,12 +1708,16 @@ void editorObj::implObj::select_all(ONLY IN_THREAD)
 	to_end(IN_THREAD, mask);
 }
 
-size_t editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
+void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 						  const input_mask &mask)
 {
+	modifying_text modifying{IN_THREAD, *this};
+	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 	delete_selection_info del_info{IN_THREAD, *this};
 
-	if (del_info.cursor_lock.cursor)
+	size_t n=del_info.to_be_deleted();
+
+	if (n > 0)
 	{
 		if (mask.shift)
 			create_secondary_selection
@@ -1731,17 +1727,21 @@ size_t editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 
 		del_info.do_delete(IN_THREAD);
 
-		return del_info.to_be_deleted();
+		draw_changes(IN_THREAD, cursor_lock,
+			     input_change_type::deleted, n, 0);
+		return;
 	}
 
 	auto clone=cursor->clone();
 	clone->next(IN_THREAD);
 
-	size_t p=cursor->pos() == clone->pos() ? 0:1;
+	if (cursor->pos() == clone->pos())
+		return;
 
 	remove_content(IN_THREAD, clone);
 
-	return p;
+	draw_changes(IN_THREAD, cursor_lock,
+		     input_change_type::deleted, 1, 0);
 }
 
 std::u32string editorObj::implObj::get()

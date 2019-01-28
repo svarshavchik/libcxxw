@@ -645,7 +645,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void select_all(ONLY IN_THREAD);
 
 	//! What happens when DEL is pressed.
-	size_t delete_char_or_selection(ONLY IN_THREAD, const input_mask &mask);
+	void delete_char_or_selection(ONLY IN_THREAD, const input_mask &mask);
 
  public:
 
