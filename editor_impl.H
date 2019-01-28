@@ -96,6 +96,11 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! The current cursor position.
 	const richtextiterator cursor;
  private:
+
+	struct LIBCXX_HIDDEN modifying_text;
+
+	struct LIBCXX_HIDDEN moving_cursor;
+
 	//! The current dragging position
 
 	//! dragging_location() updates this cursor. If we ever drop something,
@@ -113,8 +118,23 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! n parameters can get quietly bounded by the actual text size.
 
 	void remove_content(ONLY IN_THREAD,
+			    modifying_text &modifying,
 			    size_t starting_pos,
 			    size_t n);
+
+	//! How many characters were deleted by the current operation.
+
+	//! Cleared to 0 in modifying_text's constructor.
+	//!
+	//! Updated in remove_content().
+	size_t deleted_count;
+
+	//! How many characters were inserted by the current operation.
+
+	//! Cleared to 0 in modifying_text's constructor.
+	//!
+	//! Updated in insert_content().
+	size_t inserted_count;
 
 	//! All access to the contents of the input field goes through here.
 
@@ -154,11 +174,6 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void clear_password_peek(ONLY IN_THREAD);
 
  protected:
-
-	struct LIBCXX_HIDDEN modifying_text;
-
-	struct LIBCXX_HIDDEN moving_cursor;
-
 	//! A container for the current selection cursor.
 
 	//! A container for another richtextiterator cursor that marks the
@@ -594,7 +609,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		//! Delete the current selection.
 
-		void do_delete(ONLY IN_THREAD);
+		void do_delete(ONLY IN_THREAD, modifying_text &);
 	};
 
 	//! This element can receive a selection

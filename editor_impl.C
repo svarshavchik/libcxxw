@@ -165,10 +165,25 @@ public:
 	{
 		// Make sure blinking is turned off.
 		me.unblink(IN_THREAD);
+		me.deleted_count=0;
+		me.inserted_count=0;
 	}
 
 	~modifying_text()
 	{
+		// Must check this, and call draw_changes() before blink().
+
+		// Changes to the contents update the metadata of what needs
+		// to be redrawn, so this must be taken care of first, before
+		// letting blink() draw what it wants to draw.
+
+		if (me.deleted_count || me.inserted_count)
+		{
+			me.draw_changes(IN_THREAD, cursor_lock,
+					change_type,
+					me.deleted_count, me.inserted_count);
+		}
+
 		if (me.current_keyboard_focus(IN_THREAD))
 			me.blink(IN_THREAD);
 	}
@@ -216,8 +231,17 @@ struct editorObj::implObj::moving_cursor :
 		  modifying_text{IN_THREAD, me,
 				 *this, // selection_cursor_t::lock &
 
-				 // We won't use this:
-				 input_change_type::inserted},
+				 // If there's an autocomplete callback, and
+				 // it returns something to autocomplete,
+				 // set() gets called which recursively called
+				 // from draw_changes(), called from
+				 // modifying_text's destructor. We depend
+				 // on this second turn on the merry-go-round
+				 // to skip the autocomplete step, because
+				 // the input_change_type is set.
+				 //
+				 // Otherwise, this is not used, at all.
+				 input_change_type::set},
 		  old_cursor{me.cursor->clone()},
 		moved{moved}
 	{
@@ -862,7 +886,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 		if (deleted > 0)
 		{
-			del_info.do_delete(IN_THREAD);
+			del_info.do_delete(IN_THREAD, modifying);
 		}
 
 		auto old=cursor->clone();
@@ -879,16 +903,14 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 			return true; // Nothing more to delete.
 		}
 
-		remove_content(IN_THREAD, p, 1);
-
-		draw_changes(IN_THREAD, del_info.cursor_lock,
-			     input_change_type::deleted, 1, 0);
+		remove_content(IN_THREAD, modifying, p, 1);
 		return true;
 	}
 	return false;
 }
 
 void editorObj::implObj::remove_content(ONLY IN_THREAD,
+					modifying_text &modifying,
 					size_t starting_pos,
 					size_t n)
 {
@@ -900,6 +922,8 @@ void editorObj::implObj::remove_content(ONLY IN_THREAD,
 	// This may no longer be the case:
 	starting_pos=starting_cursor->pos();
 	n=other->pos()-starting_pos;
+
+	deleted_count += n;
 
 	starting_cursor->remove(IN_THREAD, other);
 
@@ -921,6 +945,7 @@ void editorObj::implObj::insert_content(ONLY IN_THREAD,
 {
 	auto insert_cursor=cursor->pos(p);
 	p=insert_cursor->pos(); // Bounds checking.
+	inserted_count += str.size();
 
 	if (password_char == 0)
 	{
@@ -1048,12 +1073,8 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 	    > config.maximum_size)
 		return;
 
-	del_info.do_delete(IN_THREAD);
-
+	del_info.do_delete(IN_THREAD, modifying);
 	insert_content(IN_THREAD, str, cursor->pos());
-
-	draw_changes(IN_THREAD, del_info.cursor_lock,
-		     input_change_type::inserted, deleted, str.size());
 }
 
 void editorObj::implObj::enablability_changed(ONLY IN_THREAD)
@@ -1542,7 +1563,8 @@ editorObj::implObj::delete_selection_info::delete_selection_info(ONLY IN_THREAD,
 	n=p2-p1;
 }
 
-void editorObj::implObj::delete_selection_info::do_delete(ONLY IN_THREAD)
+void editorObj::implObj::delete_selection_info::do_delete(ONLY IN_THREAD,
+							  modifying_text &modifying)
 {
 	if (!cursor_lock.cursor)
 		return;
@@ -1553,7 +1575,8 @@ void editorObj::implObj::delete_selection_info::do_delete(ONLY IN_THREAD)
 	if (other_pos < p)
 		std::swap(other_pos, p);
 
-	me.remove_content(IN_THREAD, p, other_pos-p);
+	me.remove_content(IN_THREAD, modifying, p, other_pos-p);
+
 	cursor_lock.cursor=richtextiteratorptr();
 	me.remove_primary_selection(IN_THREAD);
 }
@@ -1625,13 +1648,7 @@ bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
 						       selection,
 						       del_info.cursor_lock))
 			{
-				size_t deleted=del_info.to_be_deleted();
-
-				del_info.do_delete(IN_THREAD);
-
-				draw_changes(IN_THREAD, del_info.cursor_lock,
-					     input_change_type::deleted,
-					     deleted, 0);
+				del_info.do_delete(IN_THREAD, modifying);
 			}
 		}
 		break;
@@ -1760,10 +1777,7 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 				 secondary_clipboard(IN_THREAD),
 				 del_info.cursor_lock);
 
-		del_info.do_delete(IN_THREAD);
-
-		draw_changes(IN_THREAD, del_info.cursor_lock,
-			     input_change_type::deleted, n, 0);
+		del_info.do_delete(IN_THREAD, modifying);
 		return;
 	}
 
@@ -1775,10 +1789,7 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 	if (p == clone->pos())
 		return;
 
-	remove_content(IN_THREAD, p, 1);
-
-	draw_changes(IN_THREAD, del_info.cursor_lock,
-		     input_change_type::deleted, 1, 0);
+	remove_content(IN_THREAD, modifying, p, 1);
 }
 
 std::u32string editorObj::implObj::get()
@@ -1853,7 +1864,7 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 
 	size_t deleted=cursor->end()->pos();
 
-	remove_content(IN_THREAD, 0, deleted);
+	remove_content(IN_THREAD, moving, 0, deleted);
 	remove_primary_selection(IN_THREAD);
 	insert_content(IN_THREAD, string, cursor->pos());
 
@@ -1867,9 +1878,6 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 	{
 		cursor_lock.cursor=nullptr;
 	}
-
-	draw_changes(IN_THREAD, cursor_lock,
-		     input_change_type::set, deleted, string.size());
 }
 
 bool editorObj::implObj::ok_to_lose_focus(ONLY IN_THREAD,
