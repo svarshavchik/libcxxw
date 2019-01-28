@@ -123,7 +123,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! the actual field gets password_char-s instead.
 
 	void insert_content(ONLY IN_THREAD,
-			    const std::u32string_view &str);
+			    const std::u32string_view &str,
+			    size_t pos);
 
 	//! All access to the contents of the input field goes through here.
 

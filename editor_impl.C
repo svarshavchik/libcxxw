@@ -916,19 +916,22 @@ void editorObj::implObj::remove_content(ONLY IN_THREAD,
 }
 
 void editorObj::implObj::insert_content(ONLY IN_THREAD,
-					const std::u32string_view &str)
+					const std::u32string_view &str,
+					size_t p)
 {
+	auto insert_cursor=cursor->pos(p);
+	p=insert_cursor->pos(); // Bounds checking.
+
 	if (password_char == 0)
 	{
-		cursor->insert(IN_THREAD, str);
+		insert_cursor->insert(IN_THREAD, str);
 		return;
 	}
 
 	// Extra work for password fields.
 
-	auto p=cursor->pos();
-
-	if (str.size() == 1 && cursor->end()->compare(cursor) == 0)
+	if (str.size() == 1 &&
+	    insert_cursor->end()->compare(insert_cursor) == 0)
 	{
 		password_peeking=get_screen()->impl->thread->schedule_callback
 			(IN_THREAD,
@@ -946,11 +949,11 @@ void editorObj::implObj::insert_content(ONLY IN_THREAD,
 					 me->clear_password_peek(IN_THREAD);
 				 }
 			 });
-		cursor->insert(IN_THREAD, str);
+		insert_cursor->insert(IN_THREAD, str);
 	}
 	else
 	{
-		cursor->insert(IN_THREAD,
+		insert_cursor->insert(IN_THREAD,
 			       std::u32string(str.size(), password_char));
 	}
 
@@ -1047,7 +1050,7 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 
 	del_info.do_delete(IN_THREAD);
 
-	insert_content(IN_THREAD, str);
+	insert_content(IN_THREAD, str, cursor->pos());
 
 	draw_changes(IN_THREAD, del_info.cursor_lock,
 		     input_change_type::inserted, deleted, str.size());
@@ -1852,7 +1855,7 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 
 	remove_content(IN_THREAD, 0, deleted);
 	remove_primary_selection(IN_THREAD);
-	insert_content(IN_THREAD, string);
+	insert_content(IN_THREAD, string, cursor->pos());
 
 	cursor->swap(cursor->pos(cursor_pos));
 
