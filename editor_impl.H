@@ -108,42 +108,38 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	const richtextiterator dragged_pos;
 
-	//! All access to the contents of the input field goes through here.
-
-	//! Removes n characters, starting with character \#starting_pos.
-	//! If this is a password input field we also remove
-	//! the corresponding characters from the real_string.
-	//!
-	//! Returns the number of characters actually removed. starting_pos and
-	//! n parameters can get quietly bounded by the actual text size.
-
-	void remove_content(ONLY IN_THREAD,
-			    size_t starting_pos,
-			    size_t n);
-
 	//! How many characters were deleted by the current operation.
 
 	//! Cleared to 0 in modifying_text's constructor.
 	//!
-	//! Updated in remove_content().
+	//! Updated in update_content().
 	size_t deleted_count;
 
 	//! How many characters were inserted by the current operation.
 
 	//! Cleared to 0 in modifying_text's constructor.
 	//!
-	//! Updated in insert_content().
+	//! Updated in update_content().
 	size_t inserted_count;
 
-	//! All access to the contents of the input field goes through here.
+	//! All changes to the contents of the input field go through here.
 
-	//! Inserts into the input field. If this is a password input field
-	//! the new unicode text gets inserted into the \c real_string, and
-	//! the actual field gets password_char-s instead.
-
-	void insert_content(ONLY IN_THREAD,
-			    const std::u32string_view &str,
-			    size_t pos);
+	//! Remove and/or inserts the contents of the input field.
+	//!
+	//! Removes 'n' characters starting at 'pos', and replaces them
+	//! with str.
+	//!
+	//! An insert is done by passing n=0.
+	//!
+	//! A delete is done by passing an empty str.
+	//!
+	//! A modifying_text object must be constructed first. This
+	//! parameter enforces this contract.
+	void update_content(ONLY IN_THREAD,
+			    modifying_text &modifying,
+			    size_t pos,
+			    size_t n,
+			    const std::u32string_view &str);
 
 	//! All access to the contents of the input field goes through here.
 
