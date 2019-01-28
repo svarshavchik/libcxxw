@@ -152,15 +152,14 @@ struct editorObj::implObj::modifying_text {
 protected:
 	ONLY IN_THREAD;
 	editorObj::implObj &me;
-	selection_cursor_t::lock &cursor_lock;
-	input_change_type change_type;
-
 public:
+	selection_cursor_t::lock cursor_lock;
+	const input_change_type change_type;
+
 	modifying_text(ONLY IN_THREAD, editorObj::implObj &me,
-		       selection_cursor_t::lock &cursor_lock,
 		       input_change_type change_type)
 		: IN_THREAD{IN_THREAD}, me{me},
-		  cursor_lock{cursor_lock},
+		  cursor_lock{IN_THREAD, me},
 		  change_type{change_type}
 	{
 		// Make sure blinking is turned off.
@@ -205,7 +204,6 @@ public:
 // that the selection has been removed.
 
 struct editorObj::implObj::moving_cursor :
-	public selection_cursor_t::lock,
 	public modifying_text {
 
 	bool in_selection=false;
@@ -227,10 +225,7 @@ struct editorObj::implObj::moving_cursor :
 		      bool selection_in_progress,
 		      bool processing_clear,
 		      bool &moved)
-		: selection_cursor_t::lock{IN_THREAD, me},
-		  modifying_text{IN_THREAD, me,
-				 *this, // selection_cursor_t::lock &
-
+		: modifying_text{IN_THREAD, me,
 				 // If there's an autocomplete callback, and
 				 // it returns something to autocomplete,
 				 // set() gets called which recursively called
@@ -245,8 +240,6 @@ struct editorObj::implObj::moving_cursor :
 		  old_cursor{me.cursor->clone()},
 		moved{moved}
 	{
-		selection_cursor_t::lock &cursor_lock{*this};
-
 		if (selection_in_progress)
 		{
 			if (!cursor_lock.cursor)
@@ -877,41 +870,35 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 	if (ke.unicode == '\b')
 	{
-		delete_selection_info del_info{IN_THREAD, *this};
 		modifying_text modifying{IN_THREAD, *this,
-					 del_info.cursor_lock,
 					 input_change_type::deleted};
+		delete_selection_info del_info{IN_THREAD, *this, modifying};
 
-		if (del_info.n > 0)
+		auto starting_pos=del_info.starting_pos;
+		auto n_to_delete=del_info.n;
+
+		if (starting_pos > 0)
 		{
-			del_info.do_delete(IN_THREAD, modifying);
+			--starting_pos;
+			++n_to_delete;
 		}
 
-		auto old=cursor->clone();
-		cursor->prev(IN_THREAD);
-
-		auto p=cursor->pos();
-		if (p == old->pos())
-		{
-			if (deleted > 0)
-				draw_changes(IN_THREAD, del_info.cursor_lock,
-					     input_change_type::deleted,
-					     deleted, 0);
-
+		if (n_to_delete == 0)
 			return true; // Nothing more to delete.
-		}
 
-		remove_content(IN_THREAD, modifying, p, 1);
+		remove_content(IN_THREAD, starting_pos, n_to_delete);
 		return true;
 	}
 	return false;
 }
 
 void editorObj::implObj::remove_content(ONLY IN_THREAD,
-					modifying_text &modifying,
 					size_t starting_pos,
 					size_t n)
 {
+	if (n == 0)
+		return;
+
 	auto starting_cursor=cursor->pos(starting_pos);
 	auto other=starting_cursor->clone();
 
@@ -1059,17 +1046,16 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 	if (str.empty())
 		return;
 
-	delete_selection_info del_info{IN_THREAD, *this};
 	modifying_text modifying{IN_THREAD, *this,
-				 del_info.cursor_lock,
 				 input_change_type::inserted};
+	delete_selection_info del_info{IN_THREAD, *this, modifying};
 
 	if (cursor->my_richtext->size(IN_THREAD)-del_info.n + str.size()
 	    -1 // We have an extra space at the end, in there.
 	    > config.maximum_size)
 		return;
 
-	del_info.do_delete(IN_THREAD, modifying);
+	remove_content(IN_THREAD, del_info.starting_pos, del_info.n);
 	insert_content(IN_THREAD, str, cursor->pos());
 }
 
@@ -1542,71 +1528,51 @@ ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Determining whether there's a current selection. Constructing a
-// delete_selection_info object.
+// Constructing a delete_selection_info. Invoke the delegated constructor
+// with the parameters specifying the boundaries of the current selection.
 //
-// The first order of business is to capture my parent object, and create the
-// cursor lock.
+// If there's a current selection, the delegated constructor receives
+// the pos() of both rich text iterators, else a pair of 0s.
+//
+// The delegated constructor figures out which one of the rich text iterators
+// is the first one, and sets the starting_pos and n accordingly.
 
-editorObj::implObj
-::delete_selection_info_me_and_cursor_lock
-::delete_selection_info_me_and_cursor_lock(ONLY IN_THREAD,
-					   implObj &me)
-	: me{me},
-	  cursor_lock{IN_THREAD, me}
+editorObj::implObj::delete_selection_info
+::delete_selection_info(ONLY IN_THREAD,
+			implObj &me,
+			modifying_text &modifying)
+	: delete_selection_info{IN_THREAD, me, modifying,
+				modifying.cursor_lock.cursor ?
+				modifying.cursor_lock.cursor->pos()
+				: me.cursor->pos(),
+				me.cursor->pos()}
 {
 }
 
-// Now that the lock is created, check if there's a locked cursor starting
-// position. If not, delegate a pair of goose eggs to the delegated constructor,
-// otherwise delegating the locked cursor's starting position, and the active
-// cursor's position. The delegated constructor will figure out which one is
-// first.
-
-editorObj::implObj
-::delete_selection_info_range::delete_selection_info_range
-(delete_selection_info_me_and_cursor_lock &info)
-	: delete_selection_info_range{info.cursor_lock.cursor ?
-				      info.cursor_lock.cursor->pos() : 0,
-				      info.cursor_lock.cursor ?
-				      info.me.cursor->pos() : 0}
-{
-}
-
-// The end result is the current selection's starting position and
-// character count.
-
-editorObj::implObj
-::delete_selection_info_range::delete_selection_info_range(size_t p1,
-							   size_t p2)
-	: starting_pos{p1 < p2 ? p1:p2},
+editorObj::implObj::delete_selection_info
+::delete_selection_info(ONLY IN_THREAD,
+			implObj &me,
+			modifying_text &modifying,
+			size_t p1,
+			size_t p2)
+	: IN_THREAD{IN_THREAD},
+	  me{me},
+	  cursor_lock{modifying.cursor_lock},
+	  starting_pos{p1 < p2 ? p1:p2},
 	  n{p1 < p2 ? p2-p1:p1-p2}
 {
 }
 
+editorObj::implObj::delete_selection_info::~delete_selection_info()
+{
+	// Now that we've computed what the current situation is, we
+	// can go ahead and remove the primary selection.
 
-editorObj::implObj::delete_selection_info::delete_selection_info(ONLY IN_THREAD,
-								 implObj &me)
-	: delete_selection_info_me_and_cursor_lock{IN_THREAD, me},
-	  delete_selection_info_range
+	if (n > 0)
 	{
-	 static_cast<delete_selection_info_me_and_cursor_lock &>(*this)
+		cursor_lock.cursor=richtextiteratorptr();
+		me.remove_primary_selection(IN_THREAD);
 	}
-{
-}
-
-editorObj::implObj::delete_selection_info::~delete_selection_info()=default;
-
-void editorObj::implObj::delete_selection_info::do_delete(ONLY IN_THREAD,
-							  modifying_text &modifying)
-{
-	if (n == 0)
-		return;
-
-	me.remove_content(IN_THREAD, modifying, starting_pos, n);
-
-	cursor_lock.cursor=richtextiteratorptr();
-	me.remove_primary_selection(IN_THREAD);
 }
 
 bool editorObj::implObj::selection_can_be_received()
@@ -1667,16 +1633,19 @@ bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
 		break;
 	case cut_or_copy_op::cut:
 		{
-			delete_selection_info del_info{IN_THREAD, *this};
 			modifying_text modifying{IN_THREAD, *this,
-						 del_info.cursor_lock,
 						 input_change_type::deleted};
+
+			delete_selection_info del_info{IN_THREAD, *this,
+						       modifying};
 
 			if (create_secondary_selection(IN_THREAD,
 						       selection,
 						       del_info.cursor_lock))
 			{
-				del_info.do_delete(IN_THREAD, modifying);
+				remove_content(IN_THREAD,
+					       del_info.starting_pos,
+					       del_info.n);
 			}
 		}
 		break;
@@ -1790,10 +1759,9 @@ void editorObj::implObj::select_all(ONLY IN_THREAD)
 void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 						  const input_mask &mask)
 {
-	delete_selection_info del_info{IN_THREAD, *this};
 	modifying_text modifying{IN_THREAD, *this,
-				 del_info.cursor_lock,
 				 input_change_type::deleted};
+	delete_selection_info del_info{IN_THREAD, *this, modifying};
 
 	if (del_info.n > 0)
 	{
@@ -1803,7 +1771,9 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 				 secondary_clipboard(IN_THREAD),
 				 del_info.cursor_lock);
 
-		del_info.do_delete(IN_THREAD, modifying);
+		remove_content(IN_THREAD,
+			       del_info.starting_pos,
+			       del_info.n);
 		return;
 	}
 
@@ -1815,7 +1785,7 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 	if (p == clone->pos())
 		return;
 
-	remove_content(IN_THREAD, modifying, p, 1);
+	remove_content(IN_THREAD, p, 1);
 }
 
 std::u32string editorObj::implObj::get()
@@ -1886,11 +1856,11 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 	moving_cursor moving{IN_THREAD, *this, will_have_selection, false,
 			ignored};
 
-	selection_cursor_t::lock &cursor_lock=moving;
+	selection_cursor_t::lock &cursor_lock=moving.cursor_lock;
 
 	size_t deleted=cursor->end()->pos();
 
-	remove_content(IN_THREAD, moving, 0, deleted);
+	remove_content(IN_THREAD, 0, deleted);
 	remove_primary_selection(IN_THREAD);
 	insert_content(IN_THREAD, string, cursor->pos());
 

@@ -118,7 +118,6 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! n parameters can get quietly bounded by the actual text size.
 
 	void remove_content(ONLY IN_THREAD,
-			    modifying_text &modifying,
 			    size_t starting_pos,
 			    size_t n);
 
@@ -568,18 +567,19 @@ class LIBCXX_HIDDEN editorObj::implObj
 					     const callback_trigger_t &)
 		override;
 
-	struct LIBCXX_HIDDEN delete_selection_info_me_and_cursor_lock;
-	struct LIBCXX_HIDDEN delete_selection_info_range;
 	struct LIBCXX_HIDDEN delete_selection_info;
 
-	//! delete_selection_info's object and cursor lock
+	//! Delete the current selection.
 
-	//! First superclass of delete_selection_info that gets constructed
-	//! first. Contains the reference to the main editor object, and
-	//! the cursor lock. The cursor lock must be constructed first,
-	//! before constructing the second delete_selection_info superclass.
+	//! Constructed to begin the process of deleting the current selection.
+	//! This is always constructed on the stack.
+	//!
+	//! If there is a current selection, the destructor clears it.
 
-	struct delete_selection_info_me_and_cursor_lock {
+	struct delete_selection_info {
+
+		//! Constructed on the stack by the connection thread.
+		ONLY IN_THREAD;
 
 		//! Who created me
 
@@ -587,20 +587,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		//! The lock on me's cursor.
 
-		selection_cursor_t::lock cursor_lock;
-
-		//! Constructor.
-		delete_selection_info_me_and_cursor_lock(ONLY IN_THREAD,
-							 implObj &me);
-
-	};
-
-	//! delete_selection_info's starting position and character count.
-
-	//! Second superclass of delete_selection_info. Holds the computed
-	//! starting_pos and character count of the current selection.
-
-	struct delete_selection_info_range {
+		selection_cursor_t::lock &cursor_lock;
 
 		//! Current selection's starting position.
 
@@ -614,33 +601,20 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		//! Constructor
 
-		delete_selection_info_range
-		(delete_selection_info_me_and_cursor_lock &info);
+		delete_selection_info(ONLY IN_THREAD,
+				      implObj &me,
+				      modifying_text &modifying);
 
 	private:
-		//! Delegated constructor.
-		delete_selection_info_range(size_t, size_t);
-	};
 
-	//! Delete the current selection.
-
-	//! Constructed to begin the process of deleting the current selection.
-	//! This is always constructed on the stack.
-	//!
-	//! do_delete() executes the deletion.
-
-	struct delete_selection_info :
-		delete_selection_info_me_and_cursor_lock,
-		delete_selection_info_range {
-
-		//! Constructor
-		delete_selection_info(ONLY IN_THREAD, implObj &me);
-
-		//! Delete the current selection.
-
-		void do_delete(ONLY IN_THREAD, modifying_text &);
-
-		//! Destructor
+		//! Delegated constructor
+		delete_selection_info(ONLY IN_THREAD,
+				      implObj &me,
+				      modifying_text &modifying,
+				      size_t p1,
+				      size_t p2);
+	public:
+		//! Destructor deletes the current selection, if there is one.
 		~delete_selection_info();
 	};
 
