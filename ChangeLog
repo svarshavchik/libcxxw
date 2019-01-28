@@ -1,5 +1,8 @@
 2019-01-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* editor_impl.C (editorObj::implObj::process_keypress): Backspace
+	deletes only the current selection, if there is one.
+
 	* richtext/richtext.C (richtextObj::redraw_whatsneeded): Fix
 	multi-line input field display bug.
 

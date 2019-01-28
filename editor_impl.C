@@ -780,7 +780,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 			selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 			size_t deleted=delete_char_or_selection(IN_THREAD, ke);
-			recalculate(IN_THREAD);
+
 			draw_changes(IN_THREAD, cursor_lock,
 				     input_change_type::deleted, deleted, 0);
 		}
@@ -852,18 +852,28 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 		size_t deleted=del_info.to_be_deleted();
 
-		del_info.do_delete(IN_THREAD);
+		if (deleted > 0)
+		{
+			del_info.do_delete(IN_THREAD);
+		}
 
 		auto old=cursor->clone();
 		cursor->prev(IN_THREAD);
 
-		deleted += (cursor->pos() == old->pos() ? 0:1);
+		if (cursor->pos() == old->pos())
+		{
+			if (deleted > 0)
+				draw_changes(IN_THREAD, del_info.cursor_lock,
+					     input_change_type::deleted,
+					     deleted, 0);
+
+			return true; // Nothing more to delete.
+		}
 
 		remove_content(IN_THREAD, old);
 
-		recalculate(IN_THREAD);
 		draw_changes(IN_THREAD, del_info.cursor_lock,
-			     input_change_type::deleted, deleted, 0);
+			     input_change_type::deleted, 1, 0);
 		return true;
 	}
 	return false;
@@ -1023,7 +1033,7 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 	del_info.do_delete(IN_THREAD);
 
 	insert_content(IN_THREAD, str);
-	recalculate(IN_THREAD);
+
 	draw_changes(IN_THREAD, del_info.cursor_lock,
 		     input_change_type::inserted, deleted, str.size());
 }
@@ -1045,6 +1055,8 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 				      size_t deleted,
 				      size_t inserted)
 {
+	recalculate(IN_THREAD);
+
 	// If we originally should've shown the hint, but now not, or vice
 	// versa, we should redraw everything fully.
 
@@ -1590,7 +1602,7 @@ bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
 				size_t deleted=del_info.to_be_deleted();
 
 				del_info.do_delete(IN_THREAD);
-				recalculate(IN_THREAD);
+
 				draw_changes(IN_THREAD, del_info.cursor_lock,
 					     input_change_type::deleted,
 					     deleted, 0);
@@ -1821,7 +1833,6 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 		cursor_lock.cursor=nullptr;
 	}
 
-	recalculate(IN_THREAD);
 	draw_changes(IN_THREAD, cursor_lock,
 		     input_change_type::set, deleted, string.size());
 }
