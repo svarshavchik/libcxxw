@@ -152,10 +152,16 @@ struct editorObj::implObj::modifying_text {
 protected:
 	ONLY IN_THREAD;
 	editorObj::implObj &me;
+	selection_cursor_t::lock &cursor_lock;
+	input_change_type change_type;
 
 public:
-	modifying_text(ONLY IN_THREAD, editorObj::implObj &me)
-		: IN_THREAD{IN_THREAD}, me{me}
+	modifying_text(ONLY IN_THREAD, editorObj::implObj &me,
+		       selection_cursor_t::lock &cursor_lock,
+		       input_change_type change_type)
+		: IN_THREAD{IN_THREAD}, me{me},
+		  cursor_lock{cursor_lock},
+		  change_type{change_type}
 	{
 		// Make sure blinking is turned off.
 		me.unblink(IN_THREAD);
@@ -183,7 +189,9 @@ public:
 // is removed and the formerly selected text fragments get redrawn, to show
 // that the selection has been removed.
 
-struct editorObj::implObj::moving_cursor : public modifying_text {
+struct editorObj::implObj::moving_cursor :
+	public selection_cursor_t::lock,
+	public modifying_text {
 
 	bool in_selection=false;
 	richtextiterator old_cursor;
@@ -204,10 +212,16 @@ struct editorObj::implObj::moving_cursor : public modifying_text {
 		      bool selection_in_progress,
 		      bool processing_clear,
 		      bool &moved)
-		: modifying_text{IN_THREAD, me}, old_cursor{me.cursor->clone()},
+		: selection_cursor_t::lock{IN_THREAD, me},
+		  modifying_text{IN_THREAD, me,
+				 *this, // selection_cursor_t::lock &
+
+				 // We won't use this:
+				 input_change_type::inserted},
+		  old_cursor{me.cursor->clone()},
 		moved{moved}
 	{
-		selection_cursor_t::lock cursor_lock{IN_THREAD, me};
+		selection_cursor_t::lock &cursor_lock{*this};
 
 		if (selection_in_progress)
 		{
@@ -839,8 +853,10 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 	if (ke.unicode == '\b')
 	{
-		modifying_text modifying{IN_THREAD, *this};
 		delete_selection_info del_info{IN_THREAD, *this};
+		modifying_text modifying{IN_THREAD, *this,
+					 del_info.cursor_lock,
+					 input_change_type::deleted};
 
 		size_t deleted=del_info.to_be_deleted();
 
@@ -1012,8 +1028,10 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 	if (str.empty())
 		return;
 
-	modifying_text modifying{IN_THREAD, *this};
 	delete_selection_info del_info{IN_THREAD, *this};
+	modifying_text modifying{IN_THREAD, *this,
+				 del_info.cursor_lock,
+				 input_change_type::inserted};
 
 	size_t deleted=del_info.to_be_deleted();
 
@@ -1584,8 +1602,10 @@ bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
 		break;
 	case cut_or_copy_op::cut:
 		{
-			modifying_text modifying{IN_THREAD, *this};
 			delete_selection_info del_info{IN_THREAD, *this};
+			modifying_text modifying{IN_THREAD, *this,
+						 del_info.cursor_lock,
+						 input_change_type::deleted};
 
 			if (create_secondary_selection(IN_THREAD,
 						       selection,
@@ -1711,9 +1731,10 @@ void editorObj::implObj::select_all(ONLY IN_THREAD)
 void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 						  const input_mask &mask)
 {
-	modifying_text modifying{IN_THREAD, *this};
-	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 	delete_selection_info del_info{IN_THREAD, *this};
+	modifying_text modifying{IN_THREAD, *this,
+				 del_info.cursor_lock,
+				 input_change_type::deleted};
 
 	size_t n=del_info.to_be_deleted();
 
@@ -1727,7 +1748,7 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 
 		del_info.do_delete(IN_THREAD);
 
-		draw_changes(IN_THREAD, cursor_lock,
+		draw_changes(IN_THREAD, del_info.cursor_lock,
 			     input_change_type::deleted, n, 0);
 		return;
 	}
@@ -1740,7 +1761,7 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 
 	remove_content(IN_THREAD, clone);
 
-	draw_changes(IN_THREAD, cursor_lock,
+	draw_changes(IN_THREAD, del_info.cursor_lock,
 		     input_change_type::deleted, 1, 0);
 }
 
@@ -1805,14 +1826,14 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 	if (selection_pos > s)
 		selection_pos=s;
 
-	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
-
 	bool will_have_selection=cursor_pos != selection_pos;
 
 	bool ignored;
 
 	moving_cursor moving{IN_THREAD, *this, will_have_selection, false,
 			ignored};
+
+	selection_cursor_t::lock &cursor_lock=moving;
 
 	cursor->swap(cursor->end());
 
