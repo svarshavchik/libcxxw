@@ -104,8 +104,8 @@ See COPYING for distribution information.
       <para>
 	&app;'s basic functionality is complete, and it's source
 	<link linkend="INSTALL">is available for downloading</link>.
-	The most recent build of &app; adds the
-	<link linkend="peepholelayoutmanager">peephole layout manager</link>.
+	The most recent build of &app; adds a simplified implementation of
+	<link linkend="copycutpastemenu">Copy/Cut/Paste menu items</link>.
       </para>
     </section>
   </section>

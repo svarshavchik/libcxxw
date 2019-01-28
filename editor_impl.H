@@ -149,7 +149,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 
  protected:
 
-	struct moving_cursor;
+	struct LIBCXX_HIDDEN modifying_text;
+
+	struct LIBCXX_HIDDEN moving_cursor;
 
 	//! A container for the current selection cursor.
 
@@ -491,28 +493,24 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void scroll(ONLY IN_THREAD);
 
 	//! Set a callback for the next cursor blink on/off.
+
+	//! Invoked only from blink().
 	void schedule_blink(ONLY IN_THREAD);
 
 	//! Blink the cursor, on or off.
+
+	//! Invoked only from modifying_text, blink_if_has_focus(),
+	//! schedule_blink(), and unblink().
+
 	void blink(ONLY IN_THREAD);
-
-	//! Blink the cursor, on or off.
-
-	//! Entry point using by moving_cursor, with the saved cursor position
-	//! prior the move.
-	void blink(ONLY IN_THREAD, const richtextiterator &cursor);
 
 	//! Whether the cursor is blinked on.
 	bool blinkon=false;
 
 	//! If the cursor is currently blinked on, blink it off.
+
+	//! Invoked only from blink_if_has_focus(),
 	void unblink(ONLY IN_THREAD);
-
-	//! If the cursor is currently blinked on, blink it off.
-
-	//! Entry point using by moving_cursor, with the saved cursor position
-	//! prior the move.
-	void unblink(ONLY IN_THREAD, const richtextiterator &cursor);
 
 	//! Override enablability_changed()
 

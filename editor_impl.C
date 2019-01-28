@@ -141,8 +141,36 @@ create_initial_string(editorObj::implObj::init_args &args,
 
 ////////////////////////////////////////////////////////////////////////////
 
+// Helper object constructed on the stack before modifying the edited text.
+//
+// The constructor turns off the blinking cursor.
+//
+// The destructor reenables the blinking cursor.
+
+struct editorObj::implObj::modifying_text {
+
+protected:
+	ONLY IN_THREAD;
+	editorObj::implObj &me;
+
+public:
+	modifying_text(ONLY IN_THREAD, editorObj::implObj &me)
+		: IN_THREAD{IN_THREAD}, me{me}
+	{
+		// Make sure blinking is turned off.
+		me.unblink(IN_THREAD);
+	}
+
+	~modifying_text()
+	{
+		if (me.current_keyboard_focus(IN_THREAD))
+			me.blink(IN_THREAD);
+	}
+};
+
 // Helper object constructed on the stack before moving the cursor, and
-// destroyed after the cursor is moved.
+// destroyed after the cursor is moved. Inherits from modifying_text, in
+// order to turn off/on the blinking cursor, concurrent with the move.
 //
 // If the SHIFT key or button #1 is held down, and there is no current
 // selection, a new selection is started.
@@ -154,14 +182,8 @@ create_initial_string(editorObj::implObj::init_args &args,
 // If the SHIFT key is not held down, and there is a current selection, it
 // is removed and the formerly selected text fragments get redrawn, to show
 // that the selection has been removed.
-//
-// If the cursor is actually moved, it is unblink-ed, and then re-blinked
-// at the new position.
 
-struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
-
-	ONLY IN_THREAD;
-	editorObj::implObj &me;
+struct editorObj::implObj::moving_cursor : public modifying_text {
 
 	bool in_selection=false;
 	richtextiterator old_cursor;
@@ -182,14 +204,10 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 		      bool selection_in_progress,
 		      bool processing_clear,
 		      bool &moved)
-		: IN_THREAD(IN_THREAD), me(me), old_cursor(me.cursor->clone()),
+		: modifying_text{IN_THREAD, me}, old_cursor{me.cursor->clone()},
 		moved{moved}
 	{
 		selection_cursor_t::lock cursor_lock{IN_THREAD, me};
-
-		// Make sure to turn off the blink, before
-		// starting a selection.
-		me.unblink(IN_THREAD);
 
 		if (selection_in_progress)
 		{
@@ -231,9 +249,6 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 					old_cursor,
 					me.cursor);
 		}
-
-		if (me.current_keyboard_focus(IN_THREAD))
-			me.blink(IN_THREAD);
 
 		moved=old_cursor->compare(me.cursor) != 0;
 	}
@@ -615,23 +630,11 @@ void editorObj::implObj::schedule_blink(ONLY IN_THREAD)
 
 void editorObj::implObj::unblink(ONLY IN_THREAD)
 {
-	unblink(IN_THREAD, cursor);
-}
-
-void editorObj::implObj::unblink(ONLY IN_THREAD,
-				  const richtextiterator &cursor)
-{
 	if (blinkon)
-		blink(IN_THREAD, cursor);
+		blink(IN_THREAD);
 }
 
 void editorObj::implObj::blink(ONLY IN_THREAD)
-{
-	blink(IN_THREAD, cursor);
-}
-
-void editorObj::implObj::blink(ONLY IN_THREAD,
-			       const richtextiterator &cursor)
 {
 	selection_cursor_t::lock cursor_lock{IN_THREAD, *this, true};
 
@@ -772,8 +775,8 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 		return moved;
 	case XK_Delete:
 	case XK_KP_Delete:
-		unblink(IN_THREAD);
 		{
+			modifying_text modifying{IN_THREAD, *this};
 			selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 			size_t deleted=delete_char_or_selection(IN_THREAD, ke);
@@ -781,7 +784,6 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 			draw_changes(IN_THREAD, cursor_lock,
 				     input_change_type::deleted, deleted, 0);
 		}
-		blink(IN_THREAD);
 		return true;
 	case XK_Page_Up:
 	case XK_KP_Page_Up:
@@ -845,9 +847,8 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 	if (ke.unicode == '\b')
 	{
+		modifying_text modifying{IN_THREAD, *this};
 		delete_selection_info del_info{IN_THREAD, *this};
-
-		unblink(IN_THREAD);
 
 		size_t deleted=del_info.to_be_deleted();
 
@@ -863,7 +864,6 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 		recalculate(IN_THREAD);
 		draw_changes(IN_THREAD, del_info.cursor_lock,
 			     input_change_type::deleted, deleted, 0);
-		blink(IN_THREAD);
 		return true;
 	}
 	return false;
@@ -1010,9 +1010,8 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 	if (str.empty())
 		return;
 
+	modifying_text modifying{IN_THREAD, *this};
 	delete_selection_info del_info{IN_THREAD, *this};
-
-	unblink(IN_THREAD);
 
 	size_t deleted=del_info.to_be_deleted();
 
@@ -1027,7 +1026,6 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 	recalculate(IN_THREAD);
 	draw_changes(IN_THREAD, del_info.cursor_lock,
 		     input_change_type::inserted, deleted, str.size());
-	blink(IN_THREAD);
 }
 
 void editorObj::implObj::enablability_changed(ONLY IN_THREAD)
@@ -1582,9 +1580,9 @@ bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
 		break;
 	case cut_or_copy_op::cut:
 		{
+			modifying_text modifying{IN_THREAD, *this};
 			delete_selection_info del_info{IN_THREAD, *this};
 
-			unblink(IN_THREAD);
 			if (create_secondary_selection(IN_THREAD,
 						       selection,
 						       del_info.cursor_lock))
@@ -1597,8 +1595,6 @@ bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
 					     input_change_type::deleted,
 					     deleted, 0);
 			}
-			if (current_keyboard_focus(IN_THREAD))
-				blink(IN_THREAD);
 		}
 		break;
 	}
