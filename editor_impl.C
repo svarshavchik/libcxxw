@@ -941,6 +941,11 @@ struct editorObj::implObj::input_field_filter_info_impl
 					   n_delete,
 					   new_contents);
 	}
+
+	void move(size_t pos) const override
+	{
+		me.cursor->swap(me.cursor->pos(pos));
+	}
 };
 
 void editorObj::implObj::update_content(ONLY IN_THREAD,
@@ -985,6 +990,9 @@ void editorObj::implObj::update_filtered_content(ONLY IN_THREAD,
 		 // May no longer be the case, either:
 		n=other->pos()-starting_pos;
 
+		if (size() - n + str.size() > config.maximum_size)
+			return;
+
 		deleted_count += n;
 
 		if (n)
@@ -1001,6 +1009,9 @@ void editorObj::implObj::update_filtered_content(ONLY IN_THREAD,
 			}
 		}
 	}
+	else
+		if (size() + str.size() > config.maximum_size)
+			return;
 
 	inserted_count += str.size();
 
@@ -1122,11 +1133,6 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 	modifying_text modifying{IN_THREAD, *this,
 				 input_change_type::inserted};
 	delete_selection_info del_info{IN_THREAD, *this, modifying};
-
-	if (cursor->my_richtext->size(IN_THREAD)-del_info.n + str.size()
-	    -1 // We have an extra space at the end, in there.
-	    > config.maximum_size)
-		return;
 
 	update_content(IN_THREAD, modifying,
 		       del_info.starting_pos,

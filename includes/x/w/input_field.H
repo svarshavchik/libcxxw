@@ -436,6 +436,9 @@ struct input_field_filter_info {
 			    size_t n_delete,
 			    const std::u32string_view &new_contents) const
 		LIBCXX_PUBLIC=0;
+
+	//! Move the cursor to the given position.
+	virtual void move(size_t pos) const LIBCXX_PUBLIC=0;
 };
 
 LIBCXXW_NAMESPACE_END
