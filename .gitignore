@@ -48,6 +48,7 @@ suppressfile*
 /testcombobox
 /testcustomcanvas
 /testdateinput
+/testdateinputfilter
 /testderivedaxis
 /testfiledircontents
 /testfocusable

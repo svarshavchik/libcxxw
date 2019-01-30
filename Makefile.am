@@ -185,6 +185,7 @@ libcxxw_la_SOURCES=\
 	cursor_pointer_element.H		    \
 	cursor_pointer_elementfwd.H		    \
 	date_input_field/date_input_field.C	    \
+	date_input_field/date_input_field_filter.H  \
 	date_input_field/date_input_field_handler.C \
 	date_input_field/date_input_field_handler.H \
 	date_input_field/date_input_field_impl.C    \
@@ -925,6 +926,7 @@ $(call THREADMSGDISPATCHER_GEN,dirlisting/filedircontents_impl.msgs.H,dirlisting
 
 TESTPROGRAMS=\
 	testcollapse					\
+	testdateinputfilter				\
 	testderivedaxis					\
 	testfiledircontents				\
 	testfocusable					\
@@ -1018,6 +1020,9 @@ testitemlayoutmanager_LDFLAGS=$(TESTLINKTYPE)
 testcollapse_SOURCES=testcollapse.C
 testcollapse_LDADD=-lcxx
 testcollapse_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testdateinputfilter_SOURCES=testdateinputfilter.C
+testdateinputfilter_LDADD=-lcxx -lcourier-unicode
 
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la

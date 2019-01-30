@@ -1,5 +1,5 @@
 /*
-** Copyright 2018 Double Precision, Inc.
+** Copyright 2018-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -19,6 +19,7 @@
 #include "x/w/impl/focus/focusable.H"
 #include "gridlayoutmanager.H"
 #include "x/w/input_field.H"
+#include "x/w/input_field_lock.H"
 #include "x/w/text_param_literals.H"
 #include "x/w/stop_message.H"
 #include "x/w/main_window.H"
@@ -28,6 +29,9 @@
 #include <x/functional.H>
 #include <x/weakcapture.H>
 #include <x/strtok.H>
+#include <x/strftime.H>
+#include <courier-unicode.h>
+#include <algorithm>
 
 LIBCXXW_NAMESPACE_START
 
@@ -127,10 +131,19 @@ date_input_field factoryObj
 	f->padding(0);
 	f->border(config.border);
 
-	input_field_config input_conf{11};
+	// Investigate the current locale date format:
+	auto preferred=strftime::upreferred();
+
+	// Now format today's date, later we'll replace all digits by
+	// 'Y','m', or 'd', by parsing "preferred" ourselves. This results
+	// in something like "mm/dd/YYYY" or "YYYY.mm.dd".
+
+	auto date_format=ymd{}.format_date(preferred);
+
+	input_field_config input_conf{date_format.size()+1};
 
 	input_conf.autoselect=true;
-	input_conf.maximum_size=10;
+	input_conf.maximum_size=date_format.size();
 
 	// ... and remove the border provided by the input field
 	input_conf.border="empty";
@@ -201,6 +214,92 @@ date_input_field factoryObj
 			 return container;
 		 });
 
+	// Ok, time to fullfill our earlier promise by figuring out
+	// the date format.
+
+	{
+		auto b=date_format.begin(), e=date_format.end();
+
+		int Y=0,m=0,d=0;
+
+		for (auto c:preferred)
+		{
+			switch (c) {
+			case 'Y':
+				++Y;
+				break;
+			case 'm':
+				++m;
+				break;
+			case 'd':
+				++d;
+				break;
+			default:
+				continue;
+			}
+
+			// No consecutive punctuation between values.
+			int nondigit=0;
+
+			// Find where this number starts in the sample date.
+			while (b != e && !unicode_isdigit(*b))
+			{
+				if (++nondigit > 1)
+				{
+					date_format.clear();
+					break;
+				}
+
+				++b;
+			}
+			// And replace all digits by the corresponding
+			// character.
+
+			while (b != e && unicode_isdigit(*b))
+			{
+				*b=c;
+				++b;
+			}
+		}
+
+		// Sanity check, part 1.
+
+		if (Y != 1 && m != 1 && d != 1)
+			date_format.clear();
+	}
+
+	// Input field filter only if it passes the sanity check.
+
+	if (std::count(date_format.begin(), date_format.end(), 'Y') == 4 &&
+	    std::count(date_format.begin(), date_format.end(), 'm') == 2 &&
+	    std::count(date_format.begin(), date_format.end(), 'd') == 2)
+		text_input_field->on_filter
+			([date_format, preferred,
+			  me=make_weak_capture(text_input_field)]
+			 (ONLY IN_THREAD,
+			  const input_field_filter_info &info)
+			 {
+				 auto got=me.get();
+
+				 if (!got)
+					 return;
+
+				 auto & [text_input_field]=*got;
+
+				 auto starting_pos=info.starting_pos;
+				 auto n_delete=info.n_delete;
+				 auto &str=info.new_contents;
+				 const size_t size=info.size;
+
+#define CURRENT_INPUT_FIELD_CONTENTS()					\
+				 (input_lock{text_input_field}.get_unicode())
+
+#include "date_input_field/date_input_field_filter.H"
+
+				 info.update(starting_pos, n_delete,
+					     new_string);
+			 });
+
 	// Validate the contents of the date input field.
 
 	text_input_field->set_validator
@@ -245,12 +344,12 @@ date_input_field factoryObj
 
 			 return parsed_date;
 		 },
-		 []
+		 [preferred]
 		 (const auto &new_date)
 		 {
 			 // Canonically format the date.
 
-			 return new_date.format_date(U"%x");
+			 return new_date.format_date(preferred);
 		 });
 
 	auto date_picker_popup=popup::create(popup_impl, popup_lm->impl);
