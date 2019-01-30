@@ -1,0 +1,303 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="filteredinput">
+  <title>Filtered input fields</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="filteredinput.png" format="PNG"
+		 contentwidth="217px" contentdepth="111px" />
+    </imageobject>
+
+    <caption>
+      <para>
+	A input field filter implements custom editing behavior for an
+	input field.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <para>
+    <link linkend="validatedinput">Input validation</link> checks the
+    contents of an input field after it gets edited. The validation
+    &callback; gets invoked at the conclusion of the input field's editing
+    process, just before the keyboard focus leaves the input field.
+  </para>
+
+  <para>
+    An optional input filter callback provides additional means for
+    customizing the input field's behavior. Typical examples of using an
+    input filter include:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	Restricting which characters the input field accepts, such as blocking
+	everything but digits 0-9 from getting entered into a numerical
+	input field; with the validation callback that further makes sure
+	that the final number is within an allowed range.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Having input fields with internal punctuation or delimiters that
+	cannot be typed over. It's important to understand that the input
+	field still contains all the text that appears inside it, just that
+	all immutable characters get skipped over, automatically, during
+	editing.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    <filename>filterinput.C</filename> gives an example of implementing
+    an input field that accepts numerical input as three groups of three
+    digits, separated by dashes. Letters and other punctuations get silently
+    ignored. The nine digits may be typed in with or without the intermediate
+    dashes. The dashes are quietly ignored, and the cursor automatically skips
+    over the immutable dashes that are always shown.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/filteredinput.C">filteredinput.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/filteredinput.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="onfilter">
+    <title>The <methodname>on_filter</methodname>() callback</title>
+
+    <para>
+      The &callback; that gets installed by <methodname>on_filter</methodname>()
+      gets invoked to filter every tentative change to the contents of the
+      input field before it gets carried out, and for any reason:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Keyboard typing.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Cut or paste operations.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Modifying the contents of the input field with
+	  <methodname>set</methodname>().
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The callback receives an
+      <ulink url="&link-x--w--input-field-filter-info;"><classname>&ns;::w::input_field_filter_info</classname></ulink>
+      object that specifies the tentative change.
+      The callback inspects the tentative change's details. Returning
+      without taking any further action results in the tentative change
+      getting quietly ignored, without inserting or removing any text from
+      the input field.
+      Invoking <classname>&ns;::w::input_field_filter_info</classname>'s
+      <methodname>update</methodname>() applies the tentative change to
+      the input fields, either as is, or with some adjustments.
+    </para>
+
+    <para>
+      A tentative change to the contents of the input field consists of three
+      values:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><varname>starting_pos</varname></term>
+	<listitem>
+	  <para>
+	    The index of the tentative change to the input field. Adding
+	    or deleting text at the beginning of the input field gets
+	    specified as a starting position #0. Removal of the third
+	    character in the input field (with a <keycap>Backspace</keycap>
+	    or <keycap>Del</keycap>, for example) sets
+	    <varname>starting_pos</varname>
+	    to 2.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><varname>n_delete</varname></term>
+	<listitem>
+	  <para>
+	    Number of characters to be deleted. This gets set to 0 if no
+	    characters get deleted, and only new text gets inserted.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><varname>new_contents</varname></term>
+	<listitem>
+	  <para>
+	    The new text that gets inserted.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>
+      It's possible that a single change specifies both a non-0
+      <varname>n_delete</varname> and a non-empty
+      <varname>new_contents</varname>. An example would be highlighting a
+      range of existing text, then executing a paste operation to replace
+      it with different text. This is a single change, deleting the existing
+      text and inserting the replacement text.
+    </para>
+
+    <para>
+      <varname>new_contents</varname> is a
+      <classname>std::u32string_view</classname> that specifies the new
+      text in Unicode.
+      <varname>starting_pos</varname> and
+      <varname>n_delete</varname> also count Unicode characters.
+    </para>
+  </section>
+
+  <section id="ondefaultfilter">
+    <title>Using <methodname>on_default_filter</methodname>()</title>
+
+    <para>
+      Filter and validation callbacks serve different purposes. Filter
+      callbacks get invoked as part of the input field's editing process,
+      and validation callbacks get invoked at the conclusion of the
+      editing process. The input filter example in
+      <xref linkend="filteredinput" /> accepts only digits as input, but
+      it has no means of blocking tabbing out of the input field after
+      typing in fewer than the requisite nine digits.
+    </para>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="filteredinput2.png" format="PNG"
+		   contentwidth="256px" contentdepth="111px" />
+      </imageobject>
+
+      <caption>
+	<para>
+	  <filename>filteredinput2.C</filename> shows an example of
+	  using a validation callback together with an input filter.
+	  This is also an example of using
+	  <methodname>on_default_filter</methodname>() to install
+	  a basic input filter with basic, default, semantics that require
+	  fewer supporting code.
+	</para>
+      </caption>
+    </mediaobject>
+
+    <blockquote>
+      <title><ulink url="examples/filteredinput2.C">filteredinput2.C</ulink></title>
+
+      <informalexample>
+	<programlisting><xi:include href="../examples/filteredinput2.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>on_default_filter</methodname>() uses
+      <methodname>on_filter</methodname>() to install an input filter with
+      behavior similar to
+      what <link linkend="onfilter"><filename>filteredinput.C</filename></link>
+      implements.
+      <filename>filteredinput2.C</filename> implements an input field
+      for entering a phone number in the US telephone number format, with
+      hashes serving as placeholders for the ten digits. A
+      <link linkend="validatedinput">validation callback</link> checks that
+      all ten digits of the phone number got typed in, and provides a validated
+      phone number string containing just the ten digits, with the punctuation
+      stripped off.
+    </para>
+
+    <section id="ondefaultfilterrequirements">
+      <title><methodname>on_default_filter</methodname>() requirements</title>
+
+      <para>
+	<methodname>on_default_filter</methodname>() takes the following
+	parameters:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    A closure or a lambda that determines whether a single Unicode
+	    character is acceptable input.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    A <classname>std::vector&lt;size_t&gt;</classname> that specifies
+	    the indexes of the immutable characters in the input field.
+	    These immutable characters get skipped in the input field and
+	    cannot be modified.
+	    <filename>filteredinput2.C</filename> passes in a vector that
+	    lists the parenthesis, the space, and the dash characters' indexes.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    The placeholder character for an empty character position.
+	    This defaults to a space character.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	<methodname>on_default_filter</methodname>() imposes additional
+	requirements on the input field:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    The initial contents of the input field should be set to a text
+	    string with the same number of Unicode characters as the
+	    input field's defined maximum size.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    All characters except the immutable ones should be set to the
+	    empty placeholder value.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	An input field with an
+	<methodname>on_default_filter</methodname>() is effectively a
+	fixed-sized field. New text gets added to the input field replacing
+	the empty placeholder characters, and removed text gets replaced
+	with placeholder characters.
+	<filename>filteredinput2.C</filename> uses <quote>#</quote> as
+	empty placeholders where phone number digits go. They get replaced
+	by the typed-in digits, and deleting the phone number's digits
+	replaces them with <quote>#</quote>s.
+      </para>
+    </section>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

@@ -415,6 +415,8 @@ update() with no parameters applies the tentative change. Alternatively,
 invoking update() with explicit parameter applies a specific change which
 may or may not have anything to do with the tentative change.
 
+move() moves the cursor pointer to the indicated position in the input field.
+
 \par Spin buttons
 
 \code

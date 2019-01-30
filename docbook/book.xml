@@ -36,6 +36,7 @@
 <!ENTITY inputfieldsandbuttons SYSTEM "inputfieldsandbuttons.xml">
 <!ENTITY dateinputfield SYSTEM "dateinputfield.xml">
 <!ENTITY validatedinput SYSTEM "validatedinput.xml">
+<!ENTITY filteredinput SYSTEM "filteredinput.xml">
 <!ENTITY itemlayoutmanager SYSTEM "itemlayoutmanager.xml">
 <!ENTITY spininput SYSTEM "spininput.xml">
 <!ENTITY busy SYSTEM "busy.xml">
@@ -106,6 +107,7 @@ See COPYING for distribution information.
     &inputfieldsandbuttons;
     &dateinputfield;
     &validatedinput;
+    &filteredinput;
     &itemlayoutmanager;
     &spininput;
     &busy;
