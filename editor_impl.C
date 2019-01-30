@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -8,6 +8,7 @@
 #include "cursor_pointer_element.H"
 #include "drag_source_element.H"
 #include "drag_destination_element.H"
+#include "x/w/input_field.H"
 #include "x/w/impl/theme_font_element.H"
 #include "x/w/impl/background_color_element.H"
 #include "screen.H"
@@ -893,11 +894,83 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 	return false;
 }
 
+inline
+input_field_filter_info::input_field_filter_info(input_change_type type,
+						 size_t starting_pos,
+						 size_t n_delete,
+						 const std::u32string_view
+						 &new_contents,
+						 size_t size)
+	: type{type}, starting_pos{starting_pos}, n_delete{n_delete},
+	  new_contents{new_contents}, size{size}
+{
+}
+
+void input_field_filter_info::update() const
+{
+	update(starting_pos, n_delete, new_contents);
+}
+
+struct editorObj::implObj::input_field_filter_info_impl
+	: public input_field_filter_info {
+
+	ONLY IN_THREAD;
+	implObj &me;
+
+	//! Constructor
+	inline input_field_filter_info_impl(ONLY IN_THREAD,
+					    implObj &me,
+					    input_change_type type,
+					    size_t starting_pos,
+					    size_t n_delete,
+					    const std::u32string_view
+					    &new_contents,
+					    size_t size)
+		: input_field_filter_info{type, starting_pos, n_delete,
+					  new_contents, size},
+		  IN_THREAD{IN_THREAD},
+		  me{me}
+	{
+	}
+
+	void update(size_t starting_pos,
+		    size_t n_delete,
+		    const std::u32string_view &new_contents) const override
+	{
+		me.update_filtered_content(IN_THREAD, starting_pos,
+					   n_delete,
+					   new_contents);
+	}
+};
+
 void editorObj::implObj::update_content(ONLY IN_THREAD,
 					modifying_text &modifying,
 					size_t starting_pos,
 					size_t n,
 					const std::u32string_view &str)
+{
+	if (on_filter(IN_THREAD))
+	{
+		input_field_filter_info_impl impl{IN_THREAD,
+						  *this,
+						  modifying.change_type,
+						  starting_pos,
+						  n,
+						  str,
+						  size()};
+
+		try {
+			on_filter(IN_THREAD)(IN_THREAD, impl);
+		} CATCH_EXCEPTIONS(this);
+		return;
+	}
+	update_filtered_content(IN_THREAD, starting_pos, n, str);
+}
+
+void editorObj::implObj::update_filtered_content(ONLY IN_THREAD,
+						 size_t starting_pos,
+						 size_t n,
+						 const std::u32string_view &str)
 {
 	auto starting_cursor=cursor->pos(starting_pos);
 	// This may no longer be the case:

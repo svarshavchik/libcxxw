@@ -135,11 +135,23 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//!
 	//! A modifying_text object must be constructed first. This
 	//! parameter enforces this contract.
+	//!
+	//! Immediately invokes update_filtered_content if no filter callback is
+	//! installed, otherwise invokes the filter callback, instead.
+
 	void update_content(ONLY IN_THREAD,
 			    modifying_text &modifying,
 			    size_t pos,
 			    size_t n,
 			    const std::u32string_view &str);
+
+	struct LIBCXX_HIDDEN input_field_filter_info_impl;
+
+	//! Apply filtered update.
+	void update_filtered_content(ONLY IN_THREAD,
+				     size_t pos,
+				     size_t n,
+				     const std::u32string_view &str);
 
 	//! All access to the contents of the input field goes through here.
 
@@ -259,6 +271,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 	functionptr<bool(THREAD_CALLBACK, input_autocomplete_info_t &)
 		    > on_autocomplete_thread_only;
 
+	//! Callback
+	functionptr<input_field_filter_callback_t> on_filter_thread_only;
+
 	//! My parent peephole
 	const ref<editor_peephole_implObj> parent_peephole;
 
@@ -291,6 +306,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	THREAD_DATA_ONLY(secondary_selection);
 	THREAD_DATA_ONLY(on_change);
 	THREAD_DATA_ONLY(on_autocomplete);
+	THREAD_DATA_ONLY(on_filter);
 
 	//! This editor's configuration.
 

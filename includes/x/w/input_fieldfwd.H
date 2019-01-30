@@ -23,6 +23,15 @@ template<typename type> class validated_input_fieldObj;
 typedef bool input_field_validation_callback_t(THREAD_CALLBACK,
 					       const callback_trigger_t &);
 
+//! Parameter to the input field filter callback.
+
+struct LIBCXX_HIDDEN input_field_filter_info;
+
+//! Callback for filtering changes to the input field.
+
+typedef void input_field_filter_callback_t(THREAD_CALLBACK,
+					   const input_field_filter_info &);
+
 /*! A text input field.
 
 \code

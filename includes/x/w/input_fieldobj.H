@@ -63,6 +63,10 @@ public:
 	void on_validate(const functionref<input_field_validation_callback_t>
 			 &);
 
+	//! Install a callback to filter changes to the input field.
+
+	void on_filter(const functionref<input_field_filter_callback_t> &);
+
 	//! Inherited from elementObj
 
 	//! The minimum overrides are set for the editor display element

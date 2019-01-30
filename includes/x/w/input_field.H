@@ -19,6 +19,7 @@
 #include <sstream>
 #include <optional>
 #include <utility>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -392,6 +393,50 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 		 std::forward<canonical_format_functor>(canonical_format),
 		 std::forward<new_value_functor>(new_value));
 }
+
+//! Parameter to the input field filter callback.
+
+//! A description of the change to the input field that results from a key
+//! press (or a cut/paste operation).
+
+struct input_field_filter_info {
+
+	//! Type of the input change.
+	input_change_type type;
+
+	//! Starting character index.
+	size_t starting_pos;
+
+	//! Number of characters to be removed.
+	size_t n_delete;
+
+	//! New contents to be inserted at the starting position.
+
+	//! n_delete may also be set to a non-0 value. For example, highlighting
+	//! a portion of the input field and executing a paste operation sets
+	//! n_delete to the number of characters that are highlighted, and
+	//! new_contents to the pasted contents.
+	std::u32string_view new_contents;
+
+	//! Current number of characters in the input field.
+	size_t size;
+
+	//! Constructor
+	input_field_filter_info(input_change_type type,
+				size_t starting_pos,
+				size_t n_delete,
+				const std::u32string_view &new_contents,
+				size_t size);
+
+	//! Apply this change.
+	void update() const LIBCXX_PUBLIC;
+
+	//! Apply some other kind of a change.
+	virtual void update(size_t starting_pos,
+			    size_t n_delete,
+			    const std::u32string_view &new_contents) const
+		LIBCXX_PUBLIC=0;
+};
 
 LIBCXXW_NAMESPACE_END
 
