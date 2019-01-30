@@ -990,8 +990,19 @@ color_picker factoryObj
 		  const element_state &new_state,
 		  const busy &mcguffin)
 		 {
+			 // popup_closed() must be tied to "after_hiding".
+			 //
+			 // If one of the channel input fields is modified
+			 // and Esc is hit triggering the popup closing, the
+			 // channel input validator executes, updating the
+			 // current color value swatch, as part of hiding
+			 // the popup, since it loses the input focus.
+			 //
+			 // We need to call popup_closed() after that occurs,
+			 // to restore the official color, so trigger this
+			 // to happen after the popup is hidden.
 			 if (new_state.state_update !=
-			     new_state.before_hiding)
+			     new_state.after_hiding)
 				 return;
 
 			 auto impl=wimpl->get();
