@@ -486,7 +486,7 @@ make_manual_input_validator(const input_field &f,
 					chrcasecmp::tolower);
 
 			 rgb_component_t value{};
-			 uint8_t value_c;
+			 uint8_t value_c{};
 
 			 auto c=s.c_str();
 
@@ -671,6 +671,46 @@ make_manual_input_validator(const input_field &f,
 
 			   ((*impl).*n)(IN_THREAD);
 		   });
+
+	// As long as we're here, install a filter.
+
+	f->on_filter([wimpl]
+		     (ONLY IN_THREAD, const auto &info)
+		     {
+			 auto impl=wimpl->get();
+
+			 if (!impl)
+				 return;
+
+			 const auto &str=info.new_contents;
+
+			 for (auto c:str)
+				 if ( (char32_t)(char)c != c)
+					 return;
+
+			 auto s=str.size();
+			 if (s == 0)
+			 {
+				 info.update();
+				 return;
+			 }
+
+			 char buf[s];
+
+			 std::copy(str.begin(), str.end(), buf);
+
+			 rgb_component_t value{};
+
+			 auto ret=std::from_chars(buf, buf+s,
+						  value,
+						  impl->hexadecimal.get()
+						  ? 16:10);
+
+			 if (ret.ec != std::errc{} || ret.ptr != buf+s)
+				 return;
+
+			 info.update();
+		     });
 
 	return validator;
 }
