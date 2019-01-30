@@ -65,6 +65,12 @@ public:
 
 	//! Install a callback to filter changes to the input field.
 
+	void on_default_filter(const functionref<bool(char32_t)> &,
+			       const std::vector<size_t> &,
+			       char32_t empty=' ');
+
+	//! Install a callback to filter changes to the input field.
+
 	void on_filter(const functionref<input_field_filter_callback_t> &);
 
 	//! Inherited from elementObj

@@ -15,6 +15,7 @@ noinst_PROGRAMS=\
 	customkeyfocus				\
 	dateinputfield				\
 	filteredinput				\
+	filteredinput2				\
 	focusable				\
 	fontcolorpickers			\
 	gridlayoutmanager			\
@@ -87,6 +88,9 @@ dateinputfield_LDADD=-lcxxw -lcxx
 
 filteredinput_SOURCES=filteredinput.C close_flag.H
 filteredinput_LDADD=-lcxxw -lcxx
+
+filteredinput2_SOURCES=filteredinput2.C close_flag.H
+filteredinput2_LDADD=-lcxxw -lcxx
 
 focusable_SOURCES=focusable.C close_flag.H
 focusable_LDADD=-lcxxw -lcxx

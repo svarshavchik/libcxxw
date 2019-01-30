@@ -534,6 +534,22 @@ void testbutton()
 
 			 factory=layout->append_row();
 
+			 LIBCXX_NAMESPACE::w::input_field_config conf6{12};
+
+			 conf6.maximum_size=11;
+			 conf6.autoselect=true;
+			 conf6.autodeselect=true;
+
+			 factory->create_input_field("           ", conf6)
+				 ->on_default_filter
+				 ([](char32_t c)
+				  {
+					  return c >= '0' && c <= '9';
+				  },
+					 {3, 7});
+
+			 factory=layout->append_row();
+
 			 auto b=factory->create_special_button_with_label({"Ok"});
 			 b->on_activate([close_flag](THREAD_CALLBACK,
 						     const auto &,

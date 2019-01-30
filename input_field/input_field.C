@@ -27,6 +27,7 @@
 #include "xid_t.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_config.H"
+#include "x/w/input_field_lock.H"
 #include "x/w/text_param.H"
 #include "x/w/scrollbar.H"
 #include "x/w/button.H"
@@ -37,6 +38,8 @@
 #include "messages.H"
 #include <courier-unicode.h>
 #include <x/weakptr.H>
+
+#include <algorithm>
 
 LIBCXXW_NAMESPACE_START
 
@@ -589,6 +592,162 @@ void input_fieldObj::on_filter(const
 		 (ONLY IN_THREAD)
 		 {
 			 editor_impl->on_filter(IN_THREAD)=callback;
+		 });
+}
+
+void input_fieldObj::on_default_filter(const functionref<bool(char32_t)> &cb,
+				       const std::vector<size_t> &immutable,
+				       char32_t empty)
+{
+	on_filter
+		([me=weakptr<input_fieldptr>(ref{this}), cb, immutable, empty]
+		 (ONLY IN_THREAD,
+		  const input_field_filter_info &s)
+		 {
+			 // Recover a strong reference to my input field.
+
+			 auto got=me.getptr();
+
+			 if (!got)
+				 return;
+
+			 auto starting_pos=s.starting_pos;
+			 auto n_delete=s.n_delete;
+
+			 auto current_contents=input_lock{got}.get_unicode();
+
+			 // If the insertion point is in the middle of the
+			 // input field, move it back to the beginning.
+
+			 for (auto i=starting_pos; i>0; --i)
+				 if (std::find(immutable.begin(),
+					       immutable.end(),
+					       i-1) == immutable.end() &&
+				     current_contents.at(i-1) == empty)
+				 {
+					 starting_pos=i-1;
+					 n_delete=0;
+				 }
+
+			 if (n_delete > 0)
+			 {
+				 // Include immutable positions within the
+				 // deletion zone.
+
+				 size_t end_pos=starting_pos+n_delete;
+
+				 while (std::find(immutable.begin(),
+						  immutable.end(),
+						  end_pos) != immutable.end())
+				 {
+					 ++end_pos;
+					 ++n_delete;
+				 }
+
+				 // If the deletion zone starts at an immutable
+				 // position, move it back. A backspace from
+				 // the character that follows the immutable
+				 // position ends up getting extended to the
+				 // preceding position, effectively skipping
+				 // over the immutable position.
+
+				 while (std::find(immutable.begin(),
+						  immutable.end(),
+						  starting_pos)
+					!= immutable.end())
+				 {
+					 if (starting_pos == 0)
+						 break;
+
+					 --starting_pos;
+					 ++n_delete;
+				 }
+
+				 // Make sure there is no non-immutable content
+				 // after the deletion zone. Can't delete the
+				 // middle of "real" entered text.
+
+				 while (end_pos < current_contents.size())
+				 {
+					 if (std::find(immutable.begin(),
+						       immutable.end(),
+						       end_pos)
+					     != immutable.end()
+					     || current_contents[end_pos]
+					     == empty)
+					 {
+						 ++end_pos;
+						 continue;
+					 }
+
+					 return;
+				 }
+			 }
+
+			 // Now, rebuild what we're inserting.
+			 std::u32string new_contents;
+
+			 new_contents.reserve(s.new_contents.size());
+
+			 for (auto c:s.new_contents)
+			 {
+				 if (c == empty || !cb(c))
+					 continue; // Only valid characters.
+
+				 while (1)
+				 {
+					 auto p=starting_pos+
+						 new_contents.size();
+
+					 if (std::find(immutable.begin(),
+						       immutable.end(), p)
+					     == immutable.end())
+						 break;
+
+					 if (p >= current_contents.size())
+						 break;
+
+					 new_contents.push_back
+						 (current_contents[p]);
+				 }
+
+				 new_contents.push_back(c);
+			 }
+
+			 // This is the ending cursor position.
+
+			 auto end_pos=starting_pos+new_contents.size();
+
+			 // However, if n_deleted was more, more stuff is
+			 // to be deleted, so pad out new_contents, to
+			 // effectively delete it, by overwriting it.
+
+			 while (new_contents.size() < n_delete)
+			 {
+				 auto i=starting_pos+new_contents.size();
+
+				 if (std::find(immutable.begin(),
+					       immutable.end(), i)
+				     != immutable.end() &&
+				     i < current_contents.size())
+				 {
+					 new_contents.push_back
+						 (current_contents[i]);
+				 }
+				 else
+					 new_contents.push_back(empty);
+			 }
+
+			 n_delete=new_contents.size();
+
+			 s.update(starting_pos, n_delete, new_contents);
+
+			 while (std::find(immutable.begin(),
+					  immutable.end(),
+					  end_pos) != immutable.end())
+				 ++end_pos;
+
+			 s.move(end_pos);
 		 });
 }
 

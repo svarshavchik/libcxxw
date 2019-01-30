@@ -308,6 +308,113 @@ set_validator() and set_string_validator() automatically trim off any
 leading and trailing whitespace in the typed in text before attempting
 to validate it.
 
+\par Input filters
+
+\code
+INSERT_LIBX_NAMESPACE::w::input_field_config config{15};
+
+config.maximum_size=14;
+config.autoselect=true;
+config.autodeselect=true;
+auto field=factory->create_input_field("(###) ###-####", config);
+
+field->on_default_filter([]
+                         (char32_t c)
+                         {
+                             return c >= '0' && c <= '9';
+                         },
+                         {0, 4, 5, 9},
+                         '#');
+\endcode
+
+on_validate() callbacks get executed only after finishing the editing of the
+input field (while tabbing out, or clicking out of the input field).
+An input field filter adds more control over the input field's editing process.
+An input field filter checks each individual modification to the input field,
+and has the ability to ignore it, or do a different modification.
+
+In all cases, the input field edits a single text string (a Unicode text
+string). All the input filter does is modify the text that gets added
+or removed from the input field, during editing.
+
+on_default_filter() installs a basic input filter, with the following
+requirements:
+
+- the input field's initial contents is the same size as the input field's
+configured maximum size.
+
+- optionally, the input field's width should be one extra column, to avoid
+scrolling (extra room for the trailing cursor), and the input field gets
+configured to \c autoselect and \c autodeselect its contents, upon gaining
+or losing keyboard focus.
+
+The first parameter to on_default_filter() is a callback that determines
+whether a given Unicode character is valid input. Invalid characters
+(typed in, or pasted), get ignored.
+
+The second parameter is a \c std::vector<size_t> that specifies which
+character in the input field are fixed and cannot be typed over.
+
+The third parameter specifies a placeholder Unicode character where text
+input actually goes. A input field with a default filter is, essentially,
+a fixed size and the placeholder character designates where text input goes.
+As text gets typed in, these placeholder characters get replaced by the
+typed text.
+
+Existing text always gets removed from the end of the entered text, and
+gets replaced by the placeholder character. Although the cursor is movable
+anywhere in the input field, any changes get quietly ignored except
+the ones that add or remove text at the end.
+
+\note
+The entire contents of the input field inclues the placeholders, and
+immutable characters. An input field validation callback gets typically used
+together with the input filter, to convert the contents into a usable form,
+typically stripping off the immutable characters and placeholders.
+
+\code
+field->on_filter([]
+                 (ONLY IN_THREAD,
+                  const INSERT_LIBX_NAMESPACE::w::input_field_filter_info &info)
+                 {
+                      size_t starting_pos=info.starting_pos;
+                      size_t n_delete=info.n_delete;
+                      std::u32string_view new_contents=info.new_contents;
+
+                      INSERT_LIBX_NAMESPACE::w::input_change_type type=info.type;
+                      size_t size=info.size;
+
+                      info.update();
+                      info.update(0, 0, new_contents);
+
+                      info.move(0);
+                 });
+\endcode
+
+on_field() installs a single callback that implements more granular control
+over changes to the input field. The callback gets invoked for every
+potential change to the contents of the input field, deletion and or
+insertion.
+
+on_field() receives an \ref input_field_filter_info "input_field_filter_info"
+object. It's \c starting_pos specifies the tentative deletion/insertion
+point. \c n_delete indicates the number of characters for a tentative deletion,
+and \c new_contents gives the new contents tentatively inserted into the
+input field.
+
+A non-0 \c n_delete and a non-empty \c new_contents specifies a change that
+simultaneously removes existing contents, and inserts new contents in its place.
+\c type provides some context for the reason for the change, and
+\c size gives the current number of characters in the input field, for
+informational purpose.
+
+Returning from the callback without taking any action results in no changes
+to the input field's contents. The tentative change gets ignored.
+
+update() with no parameters applies the tentative change. Alternatively,
+invoking update() with explicit parameter applies a specific change which
+may or may not have anything to do with the tentative change.
+
 \par Spin buttons
 
 \code
