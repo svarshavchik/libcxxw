@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef scrollbar_impl_h

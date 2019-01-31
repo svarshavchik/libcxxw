@@ -1,12 +1,13 @@
+0.17
+
 2019-01-29  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Input field on_filter() API.
 
 	* color_picker/color_picker.C: Fix bug in resetting the current
 	color shown if the popup is closed, in some circumstances.
 
 2019-01-26  Sam Varshavchik  <mrsam@courier-mta.com>
-
-	* editor_impl.C (editorObj::implObj::process_keypress): Backspace
-	deletes only the current selection, if there is one.
 
 	* richtext/richtext.C (richtextObj::redraw_whatsneeded): Fix
 	multi-line input field display bug.

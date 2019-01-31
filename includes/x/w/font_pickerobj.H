@@ -1,5 +1,5 @@
 /*
-** Copyright 2018 Double Precision, Inc.
+** Copyright 2018-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef x_w_font_pickerobj_h

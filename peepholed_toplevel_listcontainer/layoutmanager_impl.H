@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef custom_combobox_popup_layoutmanager_h

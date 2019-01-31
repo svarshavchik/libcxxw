@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2018 Double Precision, Inc.
+** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef x_w_impl_scratch_and_mask_buffer_draw_h
