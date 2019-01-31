@@ -146,6 +146,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 			    const std::u32string_view &str);
 
 	struct LIBCXX_HIDDEN input_field_filter_info_impl;
+	struct LIBCXX_HIDDEN input_field_filter_info_impl_change;
+	struct LIBCXX_HIDDEN input_field_filter_info_impl_move;
 
 	//! Apply filtered update.
 	void update_filtered_content(ONLY IN_THREAD,

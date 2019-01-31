@@ -394,20 +394,41 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 		 std::forward<new_value_functor>(new_value));
 }
 
+//! Identifies the kind of a filtering event
+
+//! \see input_field_filter_info
+
+enum class input_filter_type { inserting, deleting, replacing, move_only };
+
 //! Parameter to the input field filter callback.
 
+//! An input_field's on_filter() callback receives this parameter.
+//!
 //! A description of the change to the input field that results from a key
 //! press (or a cut/paste operation).
+//!
+//! \see input_field
 
 struct input_field_filter_info {
 
 	//! Type of the input change.
-	input_change_type type;
 
-	//! Starting character index.
+	//! - deleting: deleting characters in the input field.
+	//!
+	//! - inserting: adding characters to the input field.
+	//!
+	//! - replacing: replacing the contents of the input field in any
+	//! other way (such as by calling input_field's set() method).
+	//!
+	//! - move_only: the cursor is being moved, no changes to the input
+	//! field.
+
+	input_filter_type type;
+
+	//! Starting character index
 	size_t starting_pos;
 
-	//! Number of characters to be removed.
+	//! Number of characters to be removed
 	size_t n_delete;
 
 	//! New contents to be inserted at the starting position.
@@ -416,13 +437,24 @@ struct input_field_filter_info {
 	//! a portion of the input field and executing a paste operation sets
 	//! n_delete to the number of characters that are highlighted, and
 	//! new_contents to the pasted contents.
+
 	std::u32string_view new_contents;
 
 	//! Current number of characters in the input field.
 	size_t size;
 
+	//! Return the original position of the cursor in the input field
+
+	//! For type=move_only, starting_pos is the position where the cursor
+	//! is getting moved to, and this returns the original cursor
+	//! starting position; n_delete is 0, and new_contents is an empty
+	//! string.
+	//!
+	//! For all other types this returns the same value as starting_pos.
+	virtual size_t original_pos() const=0;
+
 	//! Constructor
-	input_field_filter_info(input_change_type type,
+	input_field_filter_info(input_filter_type type,
 				size_t starting_pos,
 				size_t n_delete,
 				const std::u32string_view &new_contents,

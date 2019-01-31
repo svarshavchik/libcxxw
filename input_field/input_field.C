@@ -614,6 +614,70 @@ void input_fieldObj::on_default_filter(const functionref<bool(char32_t)> &cb,
 			 auto starting_pos=s.starting_pos;
 			 auto n_delete=s.n_delete;
 
+			 if (s.type == input_filter_type::move_only)
+			 {
+				 // If moving to a valid input pos, we're
+				 // done here.
+				 if (std::find(immutable.begin(),
+					       immutable.end(),
+					       starting_pos)
+				     == immutable.end())
+					 return;
+
+				 // Now, depending upon where we started we'll
+				 // search for the next or the previous
+				 // valid input position, and set adjusted_pos.
+				 //
+				 // There are some subtle nuances that must
+				 // be paid attention to. if there are immutable
+				 // positions at the beginning of the input
+				 // field, and we're already there, we'll
+				 // return back to the original_pos(),
+				 // presumably it's valid.
+				 size_t adjusted_pos=s.original_pos();
+
+				 if (starting_pos < s.original_pos())
+				 {
+					 while (starting_pos > 0)
+					 {
+						 --starting_pos;
+
+						 if (std::find(immutable
+							       .begin(),
+							       immutable.end(),
+							       starting_pos)
+						     == immutable.end())
+						 {
+							 adjusted_pos=
+								 starting_pos;
+							 break;
+						 }
+					 }
+				 }
+				 else
+				 {
+					 for (;;)
+					 {
+						 ++starting_pos;
+
+						 if (std::find(immutable
+							       .begin(),
+							       immutable.end(),
+							       starting_pos)
+						     == immutable.end())
+						 {
+							 adjusted_pos=
+								 starting_pos;
+							 break;
+						 }
+					 }
+				 }
+
+				 if (adjusted_pos != s.starting_pos)
+					 s.move(adjusted_pos);
+				 return;
+			 }
+
 			 auto current_contents=input_lock{got}.get_unicode();
 
 			 // If the insertion point is in the middle of the

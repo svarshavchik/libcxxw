@@ -273,17 +273,7 @@ struct editorObj::implObj::moving_cursor :
 			in_selection=true;
 	}
 
-	~moving_cursor()
-	{
-		if (in_selection)
-		{
-			me.draw_between(IN_THREAD,
-					old_cursor,
-					me.cursor);
-		}
-
-		moved=old_cursor->compare(me.cursor) != 0;
-	}
+	~moving_cursor();
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -895,7 +885,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 }
 
 inline
-input_field_filter_info::input_field_filter_info(input_change_type type,
+input_field_filter_info::input_field_filter_info(input_filter_type type,
 						 size_t starting_pos,
 						 size_t n_delete,
 						 const std::u32string_view
@@ -920,14 +910,13 @@ struct editorObj::implObj::input_field_filter_info_impl
 	//! Constructor
 	inline input_field_filter_info_impl(ONLY IN_THREAD,
 					    implObj &me,
-					    input_change_type type,
+					    input_filter_type type,
 					    size_t starting_pos,
 					    size_t n_delete,
 					    const std::u32string_view
-					    &new_contents,
-					    size_t size)
+					    &new_contents)
 		: input_field_filter_info{type, starting_pos, n_delete,
-					  new_contents, size},
+					  new_contents, me.size()},
 		  IN_THREAD{IN_THREAD},
 		  me{me}
 	{
@@ -948,6 +937,97 @@ struct editorObj::implObj::input_field_filter_info_impl
 	}
 };
 
+// Implement original_pos(), for an input_field_filter_info, for modification.
+// original_pos() returns same value as starting_pos().
+
+struct editorObj::implObj::input_field_filter_info_impl_change
+	: public input_field_filter_info_impl {
+
+	inline input_field_filter_info_impl_change(ONLY IN_THREAD,
+						   implObj &me,
+						   modifying_text &modifying,
+						   size_t starting_pos,
+						   size_t n_delete,
+						   const std::u32string_view
+						   &new_contents)
+		: input_field_filter_info_impl
+		{
+		 IN_THREAD,
+		 me,
+		 modifying.change_type==input_change_type::inserted
+		 ? input_filter_type::inserting
+		 : modifying.change_type==input_change_type::deleted
+		 ? input_filter_type::deleting
+		 : input_filter_type::replacing,
+		 starting_pos,
+		 n_delete,
+		 new_contents
+		}
+	{
+	}
+
+	size_t original_pos() const override
+	{
+		return starting_pos;
+	}
+};
+
+// Implement original_pos(), for an input_field_filter_info, for cursor
+// movement.
+//
+// original_pos() retrieves the original cursor's pos().
+
+struct editorObj::implObj::input_field_filter_info_impl_move
+	: public input_field_filter_info_impl {
+
+	const richtextiterator &original;
+
+	inline input_field_filter_info_impl_move(ONLY IN_THREAD,
+						 implObj &me,
+						 const richtextiterator
+						 &original)
+		: input_field_filter_info_impl
+		{
+		 IN_THREAD,
+		 me,
+		 input_filter_type::move_only,
+		 me.cursor->pos(),
+		 0,
+		 U""
+		},
+		  original{original}
+	{
+	}
+
+	size_t original_pos() const override
+	{
+		return original->pos();
+	}
+};
+
+editorObj::implObj::moving_cursor::~moving_cursor()
+{
+	moved=old_cursor->compare(me.cursor) != 0;
+
+	if (moved && me.on_filter(IN_THREAD))
+	{
+		input_field_filter_info_impl_move impl{IN_THREAD,
+						       me,
+						       old_cursor};
+
+		try {
+			me.on_filter(IN_THREAD)(IN_THREAD, impl);
+		} CATCH_EXCEPTIONS(this);
+	}
+
+	if (in_selection)
+	{
+		me.draw_between(IN_THREAD,
+				old_cursor,
+				me.cursor);
+	}
+}
+
 void editorObj::implObj::update_content(ONLY IN_THREAD,
 					modifying_text &modifying,
 					size_t starting_pos,
@@ -956,13 +1036,12 @@ void editorObj::implObj::update_content(ONLY IN_THREAD,
 {
 	if (on_filter(IN_THREAD))
 	{
-		input_field_filter_info_impl impl{IN_THREAD,
-						  *this,
-						  modifying.change_type,
-						  starting_pos,
-						  n,
-						  str,
-						  size()};
+		input_field_filter_info_impl_change impl{IN_THREAD,
+							 *this,
+							 modifying,
+							 starting_pos,
+							 n,
+							 str};
 
 		try {
 			on_filter(IN_THREAD)(IN_THREAD, impl);

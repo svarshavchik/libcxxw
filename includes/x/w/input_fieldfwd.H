@@ -381,7 +381,7 @@ field->on_filter([]
                       size_t n_delete=info.n_delete;
                       std::u32string_view new_contents=info.new_contents;
 
-                      INSERT_LIBX_NAMESPACE::w::input_change_type type=info.type;
+                      INSERT_LIBX_NAMESPACE::w::input_filter_type type=info.type;
                       size_t size=info.size;
 
                       info.update();

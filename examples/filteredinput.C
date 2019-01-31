@@ -76,6 +76,29 @@ void create_mainwindow(const x::w::main_window &main_window,
 			 auto starting_pos=s.starting_pos;
 			 auto n_delete=s.n_delete;
 
+			 // If this is cursor movement only: if the cursor
+			 // is moved into a position where the dash is,
+			 // just keep moving.
+
+			 if (s.type == x::w::input_filter_type::move_only)
+			 {
+				 // Use original_pos() to find out where the
+				 // cursor used to be. This indicates in which
+				 // direction the cursor was moved, so we go
+				 // one notch in the same direction.
+				 switch (starting_pos) {
+				 case 3:
+					 s.move(s.original_pos() > 3
+						? 2:4);
+					 return;
+				 case 7:
+					 s.move(s.original_pos() > 7
+						? 6:8);
+					 return;
+				 }
+				 return;
+			 }
+
 			 auto current_contents=
 				 x::w::input_lock{me}.get_unicode();
 

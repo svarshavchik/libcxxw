@@ -171,6 +171,30 @@ See COPYING for distribution information.
       <varname>starting_pos</varname> and
       <varname>n_delete</varname> also count Unicode characters.
     </para>
+
+    <section id="movementfilter">
+      <title>Filtering cursor movements</title>
+
+      <para>
+	The <varname>type</varname> field gives further context as to the
+	nature of the tentative change. A <varname>type</varname>
+	of <ulink url="&link-enum-x--w-input-filter-type;"><literal>&ns;::w::input_filter_type::move_only</literal></ulink>
+	indicates that the tentative change consists only of moving
+	the cursor in the input field.
+	<filename>filteredinput.C</filename> uses this to skip over the dashes
+	that separate the groups of digits in the input field.
+      </para>
+
+      <note>
+	<para>
+	  Retrieving the contents of this input field returns the entire
+	  text in the input field, including the dashes. Similarly, using
+	  <methodname>set()</methodname> to update the contents of the
+	  input field requires that the new contents include everything,
+	  including the dashes.
+	</para>
+      </note>
+    </section>
   </section>
 
   <section id="ondefaultfilter">
