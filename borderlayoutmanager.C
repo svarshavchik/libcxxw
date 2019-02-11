@@ -72,7 +72,8 @@ container new_borderlayoutmanager::create(const container_impl &parent,
 
 	auto c_impl=ref<bordercontainer_elementObj<container_elementObj
 						   <child_elementObj>>>
-		::create(border,
+		::create(parent->get_window_handler(),
+			 border,
 			 border,
 			 border,
 			 border,

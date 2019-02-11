@@ -781,7 +781,8 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 		ref<always_visible_elementObj<
 			bordercontainer_elementObj<container_elementObj<
 				child_elementObj>>>>
-		::create(list_border, list_border,
+		::create(layout_container_impl->get_window_handler(),
+			 list_border, list_border,
 			 list_border, "empty",
 			 richtextptr{},
 			 0, 0, 0,
@@ -794,7 +795,8 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 		ref<always_visible_elementObj<
 			bordercontainer_elementObj<container_elementObj<
 				child_elementObj>>>>
-		::create(focusoff_border, focusoff_border,
+		::create(*header_border_container_impl,
+			 focusoff_border, focusoff_border,
 			 "empty", "empty", richtextptr{},
 			 0, 0, 0,
 			 header_border_container_impl);

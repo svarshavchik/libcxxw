@@ -27,6 +27,7 @@ focusframecontainer_elementObj(const border_arg &focusoff_border,
 	: superclass_t{focusoff_border,
 		       focuson_border,
 
+		       parent_container->get_window_handler(),
 		       focusoff_border, focusoff_border, focusoff_border, focusoff_border,
 		       richtextptr{},
 		       0,

@@ -70,17 +70,13 @@ class bordercontainer_implObj : virtual public obj {
 	//! border uses the element's default scratch buffer.
 	const scratch_buffer v_mask_buffer;
 
+public:
 	//! Constructor
-	bordercontainer_implObj(const container_impl &parent_container);
+	bordercontainer_implObj(generic_windowObj::handlerObj &h);
 
 private:
 	//! Internal constructor
-	bordercontainer_implObj(const container_impl &parent_container,
-				generic_windowObj::handlerObj &h);
-
-	//! Internal constructor
-	bordercontainer_implObj(const container_impl &parent_container,
-				const const_pictformat &my_pictformat,
+	bordercontainer_implObj(const const_pictformat &my_pictformat,
 				const const_pictformat &mask_pictformat,
 				const screen &s);
 public:

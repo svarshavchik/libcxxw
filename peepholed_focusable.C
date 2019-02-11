@@ -86,7 +86,8 @@ create_peepholed_focusable_with_frame_impl
 {
 	auto pfc_impl=ref<bordercontainer_elementObj<container_elementObj
 						     <child_elementObj>>>
-		::create(args.border,
+		::create(args.parent_container->get_window_handler(),
+			 args.border,
 			 args.border,
 			 args.border,
 			 args.border,

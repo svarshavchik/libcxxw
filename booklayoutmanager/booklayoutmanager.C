@@ -285,17 +285,20 @@ auto create_new_tab(const gridfactory &gridfactory,
 
 	border_arg book_tab_border{"book_tab_border"};
 
+	auto tab_parent_container=gridfactory->get_container_impl();
+
 	auto inner_tab_gridcontainer_impl=
 		ref<always_visibleObj<container_visible_elementObj<
 			bordercontainer_elementObj<
 				container_elementObj<child_elementObj>>>>>
-		::create(book_tab_border,
+		::create(tab_parent_container->get_window_handler(),
+			 book_tab_border,
 			 book_tab_border,
 			 book_tab_border,
 			 border_infomm{},
 			 richtextptr{},
 			 0, 0, 0,
-			 gridfactory->get_container_impl());
+			 tab_parent_container);
 
 	// Create the implementation object for the pagetab.
 

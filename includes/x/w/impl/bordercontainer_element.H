@@ -10,6 +10,7 @@
 #include <x/w/impl/themedim_element.H>
 #include <x/w/impl/themeborder_element.H>
 #include <x/w/impl/layoutmanager.H>
+#include <x/w/impl/child_element.H>
 #include <x/w/grid_map_infofwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -18,7 +19,8 @@ LIBCXXW_NAMESPACE_START
 template<typename element_impl>
 template<typename ...Args>
 bordercontainer_elementObj<element_impl>
-::bordercontainer_elementObj(const border_arg &left_border,
+::bordercontainer_elementObj(generic_windowObj::handlerObj &my_window,
+			     const border_arg &left_border,
 			     const border_arg &right_border,
 			     const border_arg &top_border,
 			     const border_arg &bottom_border,
@@ -33,8 +35,19 @@ bordercontainer_elementObj<element_impl>
 		       hpad, themedimaxis::width,
 		       vpad, themedimaxis::height,
 		       std::forward<Args>(args)...},
-	  bordercontainer_implObj{this->child_container},
+	  bordercontainer_implObj{my_window},
 	  title_thread_only{title}
+{
+}
+
+//! Constructor
+template<typename element_impl>
+template<typename ...Args>
+bordercontainer_elementObj<element_impl>
+::bordercontainer_elementObj(child_elementObj &parent_element,
+			     Args && ...args)
+	: bordercontainer_elementObj{parent_element.get_window_handler(),
+				     std::forward<Args>(args)...}
 {
 }
 

@@ -9,6 +9,7 @@
 #include <x/w/impl/current_border_implfwd.H>
 #include <x/w/impl/themedim_elementfwd.H>
 #include <x/w/impl/themeborder_elementfwd.H>
+#include <x/w/impl/child_elementfwd.H>
 #include <x/w/connection_threadfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -31,8 +32,15 @@ class LIBCXX_PUBLIC bordercontainer_elementObj;
 //! and two dims that specify additional padding between the border and the
 //! display element inside it.
 //!
-//! The first four parameters to the constructor are the four border_args
-//! that set the initial borders, the remaining two arguments are any
+//! \par Constructor parameters
+//!
+//! The first parameter is either a child_elementObj, presumable the parent
+//! element of this new display element, or its genericwindowObj::handlerObj,
+//! its top level element.
+//!
+//! The next four parameters to the constructor are the four border_args
+//! that set the initial borders, the next two parameters specify an optional
+//! title, for the border, the remaining two parameters are any
 //! additional padding, and the remaining parameters get forwarded
 //! to the superclass.
 
@@ -70,7 +78,8 @@ public:
 	THREAD_DATA_ONLY(title);
 
 	template<typename ...Args>
-	bordercontainer_elementObj(const border_arg &left_border,
+	bordercontainer_elementObj(generic_windowObj::handlerObj &my_window,
+				   const border_arg &left_border,
 				   const border_arg &right_border,
 				   const border_arg &top_border,
 				   const border_arg &bottom_border,
@@ -78,6 +87,10 @@ public:
 				   const dim_arg &title_indent,
 				   const dim_arg &hpad,
 				   const dim_arg &vpad,
+				   Args && ...args);
+
+	template<typename ...Args>
+	bordercontainer_elementObj(child_elementObj &parent_element,
 				   Args && ...args);
 
 	~bordercontainer_elementObj();

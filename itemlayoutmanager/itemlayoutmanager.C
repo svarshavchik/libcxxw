@@ -41,7 +41,9 @@ static auto create_new_itembutton(const ref<itemlayoutmanagerObj::implObj>
 	auto new_itembutton_impl=
 		ref<bordercontainer_elementObj<
 			itembuttonObj::implObj>>::create
-		(impl->button_border,
+		(impl->layout_container_impl
+		 ->containerObj::implObj::get_window_handler(),
+		 impl->button_border,
 		 impl->button_border,
 		 impl->button_border,
 		 impl->button_border,

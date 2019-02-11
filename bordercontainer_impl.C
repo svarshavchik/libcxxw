@@ -16,17 +16,8 @@
 LIBCXXW_NAMESPACE_START
 
 bordercontainer_implObj
-::bordercontainer_implObj(const container_impl &parent_container)
-	: bordercontainer_implObj{parent_container,
-				  parent_container->get_window_handler()}
-{
-}
-
-bordercontainer_implObj
-::bordercontainer_implObj(const container_impl &parent_container,
-			  generic_windowObj::handlerObj &handler)
-	: bordercontainer_implObj{parent_container,
-				  handler.drawable_pictformat,
+::bordercontainer_implObj(generic_windowObj::handlerObj &handler)
+	: bordercontainer_implObj{handler.drawable_pictformat,
 				  handler.get_screen()
 				  ->find_alpha_pictformat_by_depth(1),
 				  handler.get_screen()}
@@ -34,8 +25,7 @@ bordercontainer_implObj
 }
 
 bordercontainer_implObj
-::bordercontainer_implObj(const container_impl &parent_container,
-			  const const_pictformat &my_pictformat,
+::bordercontainer_implObj(const const_pictformat &my_pictformat,
 			  const const_pictformat &mask_pictformat,
 			  const screen &s)
 	// Same IDs as in straight_border_impl.C
