@@ -437,7 +437,7 @@ focusable_container new_custom_comboboxlayoutmanager
 				  init_params);
 		 },
 
-		 popup_handler,
+		 combobox_popup,
 
 		 popup_imagebutton_config{"combobox_border",
 				"combobox_background_color",

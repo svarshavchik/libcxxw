@@ -79,15 +79,7 @@ image_button_internal
 do_create_popup_imagebutton(const gridfactory &f,
 			    const function<popup_imagebutton_focusframe_factory>
 			    &ff_factory,
-			    const ref<popupObj::handlerObj> &my_popup_handler,
-			    const popup_imagebutton_config &config)
-	LIBCXX_HIDDEN;
-
-image_button_internal
-do_create_popup_imagebutton2(const gridfactory &f,
-			    const function<popup_imagebutton_focusframe_factory>
-			    &ff_factory,
-			     const popup &attached_popup,
+			    const popup &attached_popup,
 			    const popup_imagebutton_config &config)
 	LIBCXX_HIDDEN;
 
@@ -100,30 +92,10 @@ do_create_popup_imagebutton2(const gridfactory &f,
 //! manager. The combo-box element, or the date input field element, is in
 //! cell (0, 0) and this creates a button that goes into the cell next to it.
 
+
 template<typename focusframe_factory>
 image_button_internal
 create_popup_imagebutton(//! Factory for the grid cell with the popup button
-			 const gridfactory &f,
-
-			 //! A \ref popup_imagebutton_focusframe_factory "focus frame factory".
-			 focusframe_factory &&ff,
-
-			 //! Popup that gets shown or hidden.
-			 const ref<popupObj::handlerObj> &my_popup_handler,
-
-			 //! Visual appearance of the button.
-			 const popup_imagebutton_config &config)
-{
-	return do_create_popup_imagebutton
-		(f, make_function<popup_imagebutton_focusframe_factory>
-		 (std::forward<focusframe_factory>(ff)),
-		 my_popup_handler,
-		 config);
-}
-
-template<typename focusframe_factory>
-image_button_internal
-create_popup_imagebutton2(//! Factory for the grid cell with the popup button
 			 const gridfactory &f,
 
 			 //! A \ref popup_imagebutton_focusframe_factory "focus frame factory".
@@ -135,7 +107,7 @@ create_popup_imagebutton2(//! Factory for the grid cell with the popup button
 			 //! Visual appearance of the button.
 			 const popup_imagebutton_config &config)
 {
-	return do_create_popup_imagebutton2
+	return do_create_popup_imagebutton
 		(f, make_function<popup_imagebutton_focusframe_factory>
 		 (std::forward<focusframe_factory>(ff)),
 		 attached_popup,
