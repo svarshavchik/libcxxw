@@ -471,6 +471,10 @@ struct input_field_filter_info {
 
 	//! Move the cursor to the given position.
 	virtual void move(size_t pos) const LIBCXX_PUBLIC=0;
+
+	//! Move the cursor to select the entire contents of the input field.
+
+	virtual void select_all() const LIBCXX_PUBLIC=0;
 };
 
 LIBCXXW_NAMESPACE_END

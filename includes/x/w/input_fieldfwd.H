@@ -388,6 +388,7 @@ field->on_filter([]
                       info.update(0, 0, new_contents);
 
                       info.move(0);
+		      info.select_all();
                  });
 \endcode
 
@@ -416,6 +417,7 @@ invoking update() with explicit parameter applies a specific change which
 may or may not have anything to do with the tentative change.
 
 move() moves the cursor pointer to the indicated position in the input field.
+select_all() selects the entire contents of the input field.
 
 \par Spin buttons
 

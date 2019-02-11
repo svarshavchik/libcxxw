@@ -591,6 +591,23 @@ void testbutton()
 
 			 factory=layout->append_row();
 
+			 conf6.hint="\"a\"";
+
+			 factory->create_input_field("", conf6)
+				 ->on_filter
+				 ([]
+				  (ONLY IN_THREAD,
+				   const auto &info)
+				  {
+					  info.update();
+
+					  if (info.new_contents == U"a")
+						  info.select_all();
+				  });
+
+
+			 factory=layout->append_row();
+
 			 auto b=factory->create_special_button_with_label({"Ok"});
 			 b->on_activate([close_flag](THREAD_CALLBACK,
 						     const auto &,

@@ -906,6 +906,7 @@ struct editorObj::implObj::input_field_filter_info_impl
 
 	ONLY IN_THREAD;
 	implObj &me;
+	modifying_text &modifying;
 
 	//! Constructor
 	inline input_field_filter_info_impl(ONLY IN_THREAD,
@@ -914,11 +915,13 @@ struct editorObj::implObj::input_field_filter_info_impl
 					    size_t starting_pos,
 					    size_t n_delete,
 					    const std::u32string_view
-					    &new_contents)
+					    &new_contents,
+					    modifying_text &modifying)
 		: input_field_filter_info{type, starting_pos, n_delete,
 					  new_contents, me.size()},
 		  IN_THREAD{IN_THREAD},
-		  me{me}
+		  me{me},
+		  modifying{modifying}
 	{
 	}
 
@@ -934,6 +937,13 @@ struct editorObj::implObj::input_field_filter_info_impl
 	void move(size_t pos) const override
 	{
 		me.cursor->swap(me.cursor->pos(pos));
+	}
+
+	void select_all() const override
+	{
+		me.cursor->swap(me.cursor->end());
+		modifying.cursor_lock.cursor=me.cursor->begin();
+		me.schedule_full_redraw(IN_THREAD);
 	}
 };
 
@@ -961,7 +971,8 @@ struct editorObj::implObj::input_field_filter_info_impl_change
 		 : input_filter_type::replacing,
 		 starting_pos,
 		 n_delete,
-		 new_contents
+		 new_contents,
+		 modifying
 		}
 	{
 	}
@@ -985,7 +996,8 @@ struct editorObj::implObj::input_field_filter_info_impl_move
 	inline input_field_filter_info_impl_move(ONLY IN_THREAD,
 						 implObj &me,
 						 const richtextiterator
-						 &original)
+						 &original,
+						 modifying_text &modifying)
 		: input_field_filter_info_impl
 		{
 		 IN_THREAD,
@@ -993,7 +1005,8 @@ struct editorObj::implObj::input_field_filter_info_impl_move
 		 input_filter_type::move_only,
 		 me.cursor->pos(),
 		 0,
-		 U""
+		 U"",
+		 modifying
 		},
 		  original{original}
 	{
@@ -1013,7 +1026,8 @@ editorObj::implObj::moving_cursor::~moving_cursor()
 	{
 		input_field_filter_info_impl_move impl{IN_THREAD,
 						       me,
-						       old_cursor};
+						       old_cursor,
+						       *this};
 
 		try {
 			me.on_filter(IN_THREAD)(IN_THREAD, impl);
