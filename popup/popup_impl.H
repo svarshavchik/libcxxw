@@ -6,6 +6,7 @@
 #define popup_impl_h
 
 #include "popup/popup.H"
+#include "popup/popup_attachedto_handlerfwd.H"
 #include "windowobj.H"
 #include "generic_window.H"
 #include "x/w/connection_threadfwd.H"

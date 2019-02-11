@@ -6,7 +6,8 @@
 #include "screen.H"
 #include "connection_thread.H"
 #include "generic_window_handler.H"
-#include "popup/popup_handler.H"
+#include "popup/popup_attachedto_handler.H"
+#include "popup/popup_attachedto_info.H"
 #include "popup/popup_impl.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
@@ -15,7 +16,6 @@
 #include "x/w/tooltip.H"
 #include "x/w/pictformat.H"
 #include "gridlayoutmanager.H"
-#include "grabbed_pointer.H"
 #include "defaulttheme.H"
 #include "x/w/gridfactory.H"
 #include "x/w/impl/background_color.H"
@@ -31,73 +31,40 @@ namespace {
 }
 #endif
 
-//! Subclass popupObj::handlerObj for a tooltip window.
+//! Subclass popup_attachedto_handlerObj for a tooltip window.
 
-//! Implements recalculate_popup_position() by position the popup next to
-//! the pointer.
-
-class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
+class LIBCXX_HIDDEN tooltip_handlerObj :
+	public popup_attachedto_handlerObj {
 
 	//! typedef alias
-	typedef popupObj::handlerObj superclass_t;
+	typedef popup_attachedto_handlerObj superclass_t;
 
  public:
-	//! Original pointer coordinate that tooltip position is based on.
-	const coord_t pointer_x;
-
-	//! Original pointer coordinate that tooltip position is based on.
-	const coord_t pointer_y;
-
-	//! The pointer is actively grabbed while the tooltip is shown.
-	const ref<obj> grab;
-
 	//! Constructor
 	tooltip_handlerObj(ONLY IN_THREAD,
 			   const ref<generic_windowObj::handlerObj> &parent,
-			   const color_arg &background_color,
-			   const ref<obj> &grab,
 			   coord_t pointer_x,
 			   coord_t pointer_y);
 
 	//! Destructor
 	~tooltip_handlerObj();
 
-	//! Implement recalculate_popup_position()
-	popup_position_affinity recalculate_popup_position(ONLY IN_THREAD,
-							   rectangle &r,
-							   dim_t screen_width,
-							   dim_t screen_height)
-		override;
-
 	const char *label_theme_font() const override
 	{
 		return "tooltip";
-	}
-
-
-	//! Override default_wm_class_instance()
-
-	//! Returns "tooltip".
-
-	const char *default_wm_class_instance() const override
-	{
-		return "tooltip";
-	}
-
-	ref<obj> get_opened_mcguffin(ONLY IN_THREAD) override
-	{
-		return ref<obj>::create(); // Dummy stub.
-	}
-
-	void released_opened_mcguffin(ONLY IN_THREAD) override
-	{
-		// Dummy stub
 	}
 
 	void set_default_wm_hints(ONLY IN_THREAD,
 				  xcb_icccm_wm_hints_t &hints) override
 	{
 		// No default input flag.
+	}
+
+	// We will go away as soon as a key is pressed
+
+	bool popup_accepts_key_events(ONLY IN_THREAD) override
+	{
+		return false;
 	}
 
 #ifdef TOOLTIP_HANDLER_EXTRA_METHODS
@@ -108,58 +75,22 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 				       const ref<generic_windowObj::handlerObj>
 				       &parent,
-				       const color_arg &background_color,
-				       const ref<obj> &grab,
 				       coord_t pointer_x,
 				       coord_t pointer_y)
-	: superclass_t{IN_THREAD, parent, background_color, 0},
-	pointer_x(pointer_x),
-	pointer_y(pointer_y),
-	grab(grab)
+	: superclass_t{popup_attachedto_handler_args
+		       {
+			exclusive_popup_type,
+			"tooltip",
+			parent,
+			popup_attachedto_info::create
+			(rectangle{pointer_x, pointer_y, 0, 0},
+			 attached_to::above_or_below),
+			0}}
 {
 	wm_class_resource(IN_THREAD)=parent->wm_class_resource(IN_THREAD);
 }
 
 tooltip_handlerObj::~tooltip_handlerObj()=default;
-
-popup_position_affinity
-tooltip_handlerObj::recalculate_popup_position(ONLY IN_THREAD,
-					       rectangle &r,
-					       dim_t screen_width,
-					       dim_t screen_height)
-{
-	auto s=get_screen()->impl;
-
-	auto current_theme=s->current_theme.get();
-
-	dim_t offset_x=current_theme->get_theme_dim_t("tooltip_x_offset",
-						      themedimaxis::width);
-	dim_t offset_y=current_theme->get_theme_dim_t("tooltip_y_offset",
-						      themedimaxis::height);
-
-	coord_t x=coord_t::truncate(pointer_x+offset_x);
-
-	coord_t y=coord_t::truncate(coord_t{
-			coord_t::truncate(pointer_y-offset_y)
-				}-r.height);
-
-	if (y < 0)
-		y=coord_t::truncate(pointer_y+offset_y);
-
-	auto a=popup_position_affinity::right;
-
-	if (dim_t::truncate(x + r.width) > screen_width)
-	{
-		x=coord_t::truncate(coord_t{
-				coord_t::truncate(x - offset_x)
-					} - r.width);
-		a=popup_position_affinity::left;
-	}
-	r.x=x;
-	r.y=y;
-
-	return a;
-}
 
 class LIBCXX_HIDDEN tooltip_factory_impl : public tooltip_factory {
 
@@ -192,26 +123,29 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 	auto parent_element_absolute_location=
 		parent_element->get_absolute_location_on_screen(IN_THREAD);
 
-	// Actively grab the pointer before the tooltip is shown.
-	auto grab=parent_element->grab_pointer(IN_THREAD);
+	coord_t x{coord_t::truncate(parent_element->data(IN_THREAD)
+				    .last_motion_x
+				    + parent_element_absolute_location.x)};
+	coord_t y{coord_t::truncate(parent_element->data(IN_THREAD)
+				    .last_motion_y
+				    + parent_element_absolute_location.y)};
 
-	if (!grab)
-		return; // Didn't grab the pointer.
+	auto current_theme=
+		parent_window->get_screen()->impl->current_theme.get();
+
+	dim_t offset_x=current_theme->get_theme_dim_t("tooltip_x_offset",
+						      themedimaxis::width);
+	dim_t offset_y=current_theme->get_theme_dim_t("tooltip_y_offset",
+						      themedimaxis::height);
 
 	auto popup_handler=ref<tooltip_handlerObj>::create
-		(IN_THREAD, parent_window, "transparent",
-		 grab,
-		 coord_t::truncate(parent_element->data(IN_THREAD)
-				   .last_motion_x
-				   + parent_element_absolute_location.x),
-		 coord_t::truncate(parent_element->data(IN_THREAD)
-				   .last_motion_y
-				   + parent_element_absolute_location.y));
+		(IN_THREAD,
+		 parent_window,
+		 coord_t::truncate(x+offset_x),
+		 coord_t::truncate(y-offset_y));
 
 	auto popup_impl=ref<popupObj::implObj>::create(popup_handler,
 						       parent_window);
-
-
 
 	auto tooltip_popup=popup::create(popup_impl,
 					 new_gridlayoutmanager{}
@@ -234,10 +168,6 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 	parent_element->data(IN_THREAD).tooltip=tooltip_popup;
 
 	tooltip_popup->show_all();
-
-	// Now that the tooltip is visible, allow pointer events going
-	// forward.
-	grab->allow_events(IN_THREAD);
 }
 #if 0
 {
