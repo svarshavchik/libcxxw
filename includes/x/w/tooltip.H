@@ -38,6 +38,33 @@ public:
 			    const new_layoutmanager &layout_manager) const=0;
 };
 
+//! How a static tooltip, or a popup, gets attached to its element
+
+//! Specifies how a static tooltip gets positioned with respect to its
+//! element.
+//!
+//! below_or_above, above_or_below: the first preference if there's enough
+//! room between the element and the edge of the screen, else the other side.
+//! Furthermore, the popup's minimum width is set to be its element's width.
+//! This is the style used by combo-box popups.
+//!
+//! right_or_left: to the right of the element, else to the left of it. This
+//! is the style used by sub-menus.
+
+enum class attached_to
+	{
+	 below_or_above, //!< Below, if there's room, else above.
+	 above_or_below, //!< Above, if there's room, else below
+	 right_or_left, //!< To the right, if there's room else to the left.
+
+	 //! Tooltip displayed at pointer position.
+
+	 //! Used internally by regular tooltips. Do not specify when creating
+	 //! a static tooltip.
+
+	 tooltip,
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

@@ -9,9 +9,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! A factory that gets passed to the tooltip creator.
-
 class tooltip_factory;
+
+enum class attached_to;
+
+struct static_tooltip_config;
 
 LIBCXXW_NAMESPACE_END
 

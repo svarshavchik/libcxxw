@@ -9,6 +9,7 @@
 #include "x/w/screenfwd.H"
 #include "popup/popup_attachedto_infofwd.H"
 #include "x/w/connection_threadfwd.H"
+#include "x/w/tooltip.H"
 #include "x/w/impl/connection_threadfwd.H"
 #include <x/obj.H>
 

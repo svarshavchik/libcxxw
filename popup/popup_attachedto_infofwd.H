@@ -27,19 +27,6 @@ can reach, before scrollbars are necessary.
 */
 typedef ref<popup_attachedto_infoObj> popup_attachedto_info;
 
-//! How a popup gets attached to its attached-to element
-
-//! The popup can be displayed above or below the element (comboboxes, popup
-//! menus), or next to the element (submenu)
-
-enum class attached_to {
-	below_or_above, //!< Below, if there's room, else above.
-	above_or_below, //!< Above, if there's room, else below
-	right_or_left, //!< To the right, if there's room else to the left.
-
-	tooltip, //!< Tooltip displayed at pointer position.
-};
-
 LIBCXXW_NAMESPACE_END
 
 #endif
