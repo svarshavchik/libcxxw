@@ -84,22 +84,6 @@ Alternatively, borders and padding values get specified by name.
 This references border and padding definitions
 taken from the current theme. This is mostly for the library's internal use.
 
-\code
-gridfactory->rounded_border_and_padding("tooltip_border");
-\endcode
-
-rounded_border_and_padding() is mostly for the library's internal use.
-Equivalent to "border(argument); padding(0.0);" when the display supports
-alpha-blending. The argument is expected to specify a border with round
-corners. When the display does not support alpha-blending this converts
-the specified border by removing the rounded corners and adding additional
-padding to compensate. Rounded borders automatically add additional
-padding in order to provide room for the turning radius. Setting a rounded
-border using \c rounded_border_and_padding() removes the grid factory's
-default padding for new cells. The default padding gets adjusted to
-equivalent padding when a non-rounded border gets set by
-\c rounded_border_and_padding() due to lack of alpha-blending.
-
 \par Spanning and alignment
 
 \code

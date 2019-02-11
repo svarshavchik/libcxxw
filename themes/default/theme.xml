@@ -575,6 +575,8 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
     <hradius>1</hradius>
     <vradius>1</vradius>
   </border>
+  <dim id="tooltip_border_padding_h" axis="horiz">0</dim>
+  <dim id="tooltip_border_padding_v" axis="vert">0</dim>
 
   <!-- Border when an alpha channel is not available -->
 

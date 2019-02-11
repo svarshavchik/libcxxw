@@ -15,7 +15,9 @@
 #include "x/w/text_param.H"
 #include "x/w/tooltip.H"
 #include "x/w/pictformat.H"
-#include "gridlayoutmanager.H"
+#include "x/w/impl/bordercontainer_element.H"
+#include "x/w/impl/richtext/richtext.H"
+#include "x/w/impl/borderlayoutmanager.H"
 #include "defaulttheme.H"
 #include "x/w/gridfactory.H"
 #include "x/w/impl/background_color.H"
@@ -27,6 +29,30 @@ LIBCXXW_NAMESPACE_START
 static property::value<unsigned>
 tooltip_delay(LIBCXX_NAMESPACE_STR "::w::tooltip_delay", 2000);
 
+void tooltip_border::set_theme_border(const std::string &border)
+{
+	this->border=border;
+	this->hpad=border + "_padding_h";
+	this->vpad=border + "_padding_v";
+}
+
+tooltip_border tooltip_factory::default_alpha_border()
+{
+	tooltip_border b;
+
+	b.set_theme_border("tooltip_border");
+
+	return b;
+}
+
+tooltip_border tooltip_factory::default_nonalpha_border()
+{
+	tooltip_border b;
+
+	b.set_theme_border("tooltip_border_square");
+	return b;
+}
+
 namespace {
 #if 0
 }
@@ -35,14 +61,17 @@ namespace {
 //! Subclass popupObj::handlerObj for a tooltip window.
 
 class LIBCXX_HIDDEN tooltip_handlerObj :
-	public popupObj::handlerObj {
+	public bordercontainer_elementObj<popupObj::handlerObj> {
 
 	//! typedef alias
-	typedef popupObj::handlerObj superclass_t;
+	typedef bordercontainer_elementObj<popupObj::handlerObj> superclass_t;
 
  public:
 	//! Constructor
 	tooltip_handlerObj(ONLY IN_THREAD,
+			   const border_arg &tooltip_border,
+			   const dim_arg &tooltip_border_hpad,
+			   const dim_arg &tooltip_border_vpad,
 			   const ref<generic_windowObj::handlerObj> &parent,
 			   const rectangle &where,
 			   attached_to how);
@@ -80,11 +109,21 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
 };
 
 tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
+				       const border_arg &tooltip_border,
+				       const dim_arg &tooltip_border_hpad,
+				       const dim_arg &tooltip_border_vpad,
 				       const ref<generic_windowObj::handlerObj>
 				       &parent,
 				       const rectangle &where,
 				       attached_to how)
-	: superclass_t{popup_handler_args
+	: superclass_t{*parent,
+		       tooltip_border, tooltip_border,
+		       tooltip_border, tooltip_border,
+		       richtextptr{},
+		       0,
+		       tooltip_border_hpad,
+		       tooltip_border_vpad,
+		       popup_handler_args
 		       {
 			exclusive_popup_type,
 			"tooltip",
@@ -123,33 +162,46 @@ class LIBCXX_HIDDEN tooltip_factory_impl : public tooltip_factory {
 	~tooltip_factory_impl()=default;
 
 	void create(const function<void (const container &)> &creator,
-		    const new_layoutmanager &layout_manager) const override;
+		    const new_layoutmanager &layout_manager,
+		    const tooltip_border &alpha_border,
+		    const tooltip_border &nonalpha_border) const override;
 
 	virtual ref<tooltip_handlerObj>
 		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
-				       &parent_window) const=0;
+				       &parent_window,
+				       const border_arg &tooltip_border,
+				       const dim_arg &tooltip_border_hpad,
+				       const dim_arg &tooltip_border_vpad)
+		const=0;
 
 	virtual void created_popup(const popup &) const=0;
 };
 
 void tooltip_factory_impl::create(const function<void (const container &)>
 				  &creator,
-				  const new_layoutmanager &layout_manager)
+				  const new_layoutmanager &layout_manager,
+				  const tooltip_border &alpha_border,
+				  const tooltip_border &nonalpha_border)
 	const
 {
 	ref<generic_windowObj::handlerObj>
 		parent_window{&parent_element->get_window_handler()};
 
-	auto popup_handler=create_tooltip_handler(parent_window);
+	const auto &border=
+		parent_window->drawable_pictformat->alpha_depth > 0
+		? alpha_border:nonalpha_border;
+
+	auto popup_handler=create_tooltip_handler(parent_window,
+						  border.border,
+						  border.hpad,
+						  border.vpad);
 
 	auto popup_impl=ref<popupObj::implObj>::create(popup_handler,
 						       parent_window);
 
-	auto grid_layout_impl=new_gridlayoutmanager{}.create(popup_handler);
-
 	popupptr tooltip_popup;
 
-	auto c=layout_manager.create
+	layout_manager.create
 		(popup_handler,
 		 make_function<void (const container &c)>
 		 ([&]
@@ -158,21 +210,20 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 			  c->set_background_color("tooltip_background_color");
 			  auto real_container_impl=c->get_layout_impl();
 
+			  auto border_layout_impl=
+				  ref<borderlayoutmanagerObj::implObj>::create
+				  (popup_handler, popup_handler,
+				   c,
+				   halign::fill,
+				   valign::fill);
+
 			  auto p=popup::create(popup_impl,
-					       grid_layout_impl,
+					       border_layout_impl,
 					       real_container_impl);
 
 			  creator(p);
 			  tooltip_popup=p;
 		  }));
-
-	gridlayoutmanager glm=grid_layout_impl->create_public_object();
-
-	auto f=glm->append_row();
-
-	f->rounded_border_and_padding("tooltip_border");
-
-	f->created_internally(c);
 
 	created_popup(tooltip_popup);
 }
@@ -200,7 +251,11 @@ class LIBCXX_HIDDEN popup_tooltip_factory :
 
 	ref<tooltip_handlerObj>
 		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
-				       &parent_window) const override;
+				       &parent_window,
+				       const border_arg &tooltip_border,
+				       const dim_arg &tooltip_border_hpad,
+				       const dim_arg &tooltip_border_vpad)
+		const override;
 
 	void created_popup(const popup &tooltip_popup) const override
 	{
@@ -212,7 +267,10 @@ class LIBCXX_HIDDEN popup_tooltip_factory :
 
 ref<tooltip_handlerObj>
 popup_tooltip_factory::create_tooltip_handler
-(const ref<generic_windowObj::handlerObj> &parent_window) const
+(const ref<generic_windowObj::handlerObj> &parent_window,
+ const border_arg &tooltip_border,
+ const dim_arg &tooltip_border_hpad,
+ const dim_arg &tooltip_border_vpad) const
 {
 	// Compute the current pointer coordinates.
 
@@ -234,10 +292,14 @@ popup_tooltip_factory::create_tooltip_handler
 	dim_t offset_y=current_theme->get_theme_dim_t("tooltip_y_offset",
 						      themedimaxis::height);
 
+
 	// And construct an attached_to::tooltip tooltip_handlerObj,
 	// at these coordinates.
 	return ref<tooltip_handlerObj>::create
 		(IN_THREAD,
+		 tooltip_border,
+		 tooltip_border_hpad,
+		 tooltip_border_vpad,
 		 parent_window,
 		 rectangle{coord_t::truncate(x+offset_x),
 				coord_t::truncate(y-offset_y),

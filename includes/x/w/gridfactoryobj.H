@@ -130,14 +130,6 @@ class gridfactoryObj : public factoryObj {
 		return *this;
 	}
 
-	//! Set new element's rounded border and padding.
-
-	inline gridfactoryObj &rounded_border_and_padding(const border_arg &arg)
-	{
-		rounded_border_set(arg);
-		return *this;
-	}
-
 	//! Implement colspan().
 
 	void colspan_set(size_t s);
@@ -157,10 +149,6 @@ class gridfactoryObj : public factoryObj {
 	//! Implement border().
 
 	void border_set(const border_arg &arg);
-
-	//! Implement rounded_border_and_padding().
-
-	void rounded_border_set(const border_arg &arg);
 
 	//! Implement left_border().
 

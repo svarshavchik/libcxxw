@@ -8,9 +8,29 @@
 #include <x/w/tooltipfwd.H>
 #include <x/w/container.H>
 #include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/border_arg.H>
+#include <x/w/dim_arg.H>
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
+
+//! Configuration for a tooltip border
+
+//! A tooltip border, and inner padding
+
+struct tooltip_border {
+
+	border_arg border;
+	dim_arg hpad;
+	dim_arg vpad;
+
+	//! Initialize border, hpad, and vpad, using theme naming convention.
+
+	//! Set "border" to the parent, and the paddings to
+	//! "border_padding_h" and "border_padding_v";
+
+	void set_theme_border(const std::string &border);
+};
 
 //! A factory that gets passed to the tooltip creator.
 
@@ -18,24 +38,49 @@ class tooltip_factory {
 
 public:
 
+	//! Border for the new tooltip
+
+	//! Used when the display has an available alpha channel.
+	//! Typically a slightly rounded border.
+
+	static tooltip_border default_alpha_border();
+
+	//! Border for the new tooltip
+
+	//! Used when the display has an available alpha channel.
+	//! Typically a square border.
+
+	static tooltip_border default_nonalpha_border();
+
 	//! The tooltip creator's callback.
 
 	//! The tooltip creator calls this object, passing the
 	//! content creator and the layout manager for the tooltip.
+	//!
+	//! Two optional parameters specify a custom tooltip border.
+	//! The first parameter specifies the border for displays with
+	//! an alpha channel, and the second parameter specifies the border
+	//! for displays without an alpha channel.
 
 	template<typename functor>
 	void operator()(functor &&creator,
-			const new_layoutmanager &layout_manager) const
+			const new_layoutmanager &layout_manager,
+			const tooltip_border &alpha_border=
+			default_alpha_border(),
+			const tooltip_border &nonalpha_border=
+			default_nonalpha_border()) const
 	{
 		create(make_function<void (const container &)>
 		       (std::forward<functor>(creator)),
-		       layout_manager);
+		       layout_manager, alpha_border, nonalpha_border);
 	}
 
 	//! Create the tooltip
 
 	virtual void create(const function<void (const container &)> &creator,
-			    const new_layoutmanager &layout_manager) const=0;
+			    const new_layoutmanager &layout_manager,
+			    const tooltip_border &alpha_border,
+			    const tooltip_border &nonalpha_border) const=0;
 };
 
 //! How a static tooltip, or a popup, gets attached to its element
