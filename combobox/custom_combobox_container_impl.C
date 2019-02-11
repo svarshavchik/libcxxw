@@ -5,18 +5,27 @@
 #include "libcxxw_config.h"
 #include "combobox/custom_combobox_container_impl.H"
 #include "combobox/custom_combobox_popup_container_impl.H"
-#include "popup/popup_attachedto_handler_element.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
 
 LIBCXXW_NAMESPACE_START
 
+static inline child_element_init_params
+create_init_params(const popup &my_popup)
+{
+	child_element_init_params init_params;
+
+	init_params.attached_popup=my_popup;
+
+	return init_params;
+}
+
 custom_combobox_containerObj::implObj
 ::implObj(const container_impl &parent_container,
 	  const custom_combobox_popup_container &popup_container,
-	  const ref<popupObj::handlerObj> &attachedto_handler)
-	: superclass_t(attachedto_handler, parent_container),
-	  popup_container(popup_container)
+	  const popup &attached_popup)
+	: superclass_t{parent_container, create_init_params(attached_popup)},
+	  popup_container{popup_container}
 {
 }
 

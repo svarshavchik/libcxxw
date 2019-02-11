@@ -7,7 +7,6 @@
 
 #include "combobox/custom_combobox_container.H"
 #include "combobox/custom_combobox_popup_containerfwd.H"
-#include "popup/popup_attachedto_handler_elementfwd.H"
 #include "x/w/impl/popup/popupfwd.H"
 #include "x/w/impl/nonrecursive_visibilityfwd.H"
 #include "x/w/impl/container_elementfwd.H"
@@ -18,15 +17,13 @@ LIBCXXW_NAMESPACE_START
 //! Internal implementation object.
 
 class LIBCXX_HIDDEN custom_combobox_containerObj::implObj
-	: public popup_attachedto_handler_elementObj<
-	nonrecursive_visibilityObj<container_elementObj
-				   <child_elementObj>>> {
+	: public nonrecursive_visibilityObj<container_elementObj
+					    <child_elementObj>> {
 
 	//! Alias
 
-	typedef popup_attachedto_handler_elementObj
-		<nonrecursive_visibilityObj<container_elementObj
-					    <child_elementObj>>> superclass_t;
+	typedef nonrecursive_visibilityObj<container_elementObj
+					   <child_elementObj>> superclass_t;
 
  public:
 
@@ -39,7 +36,7 @@ class LIBCXX_HIDDEN custom_combobox_containerObj::implObj
 	//! Constructor
 	implObj(const container_impl &parent_container,
 		const custom_combobox_popup_container &popup_container,
-		const ref<popupObj::handlerObj> &attachedto_handler);
+		const popup &attached_popup);
 
 	//! Destructor
 	~implObj();

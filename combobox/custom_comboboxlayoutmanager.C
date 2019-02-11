@@ -387,7 +387,7 @@ focusable_container new_custom_comboboxlayoutmanager
 	auto combobox_container_impl=
 		ref<custom_combobox_containerObj::implObj>
 		::create(parent, popup_container,
-			 popup_handler);
+			 combobox_popup);
 
 	// And the layout manager.
 	auto lm=create_impl({combobox_container_impl});
