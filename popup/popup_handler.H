@@ -273,6 +273,15 @@ public:
 	//! the main window.
 	virtual bool popup_accepts_key_events(ONLY IN_THREAD);
 
+	//! Whether this popup accepts button events.
+
+	//! The default implementation returns requested_visibility.
+
+	//! When this popup is visible it accepts button and motion events
+	//! forwarded from the main window.
+
+	virtual bool popup_accepts_button_events(ONLY IN_THREAD);
+
  protected:
 	//! Override process_key_event()
 

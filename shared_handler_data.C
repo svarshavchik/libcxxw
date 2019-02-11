@@ -332,7 +332,7 @@ shared_handler_dataObj::find_popup_for_xy(ONLY IN_THREAD,
 
 		auto handler=exclusive_popup->handler.getptr();
 
-		if (handler && handler->data(IN_THREAD).requested_visibility)
+		if (handler && handler->popup_accepts_button_events(IN_THREAD))
 			return handler;
 		have_exclusive_popup=true;
 	}
@@ -352,7 +352,8 @@ shared_handler_dataObj::find_popup_for_xy(ONLY IN_THREAD,
 
 		auto handler=popup->handler.getptr();
 
-		if (!handler || !handler->data(IN_THREAD).requested_visibility)
+		if (!handler ||
+		    !handler->popup_accepts_button_events(IN_THREAD))
 			continue;
 
 		auto &h=*handler;
