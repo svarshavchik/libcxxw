@@ -27,6 +27,7 @@ dim_t popup_attachedto_infoObj
 	switch (how) {
 	case attached_to::above_or_below:
 	case attached_to::below_or_above:
+	case attached_to::tooltip:
 		break;
 
 	case attached_to::right_or_left:
@@ -71,6 +72,7 @@ dim_t popup_attachedto_infoObj
 		return screen_height;
 	case attached_to::above_or_below:
 	case attached_to::below_or_above:
+	case attached_to::tooltip:
 		break;
 	}
 	dim_t top_height=0;

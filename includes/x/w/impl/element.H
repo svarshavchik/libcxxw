@@ -262,8 +262,8 @@ class elementObj::implObj : public element_drawObj,
 		functionptr<void (THREAD_CALLBACK,
 				  const tooltip_factory &)> tooltip_factory;
 
-		//! This element's created tooltip
-		popupptr tooltip;
+		//! This element's attached popup.
+		popupptr attached_popup;
 
 		//! There's a popup attached to this element.
 

@@ -84,7 +84,7 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 			parent,
 			popup_attachedto_info::create
 			(rectangle{pointer_x, pointer_y, 0, 0},
-			 attached_to::above_or_below),
+			 attached_to::tooltip),
 			0}}
 {
 	wm_class_resource(IN_THREAD)=parent->wm_class_resource(IN_THREAD);
@@ -165,7 +165,7 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 				    creator(container);
 			    }, layout_manager);
 
-	parent_element->data(IN_THREAD).tooltip=tooltip_popup;
+	parent_element->data(IN_THREAD).attached_popup=tooltip_popup;
 
 	tooltip_popup->show_all();
 }
@@ -211,7 +211,7 @@ elementObj::implObj::hover_action_delay(ONLY IN_THREAD)
 		// No tooltip for this element.
 		return std::chrono::milliseconds{0};
 
-	if (d.tooltip)
+	if (d.attached_popup)
 		// Tooltip already created.
 		return std::chrono::milliseconds{0};
 
@@ -230,10 +230,11 @@ void elementObj::implObj::hover_action(ONLY IN_THREAD)
 
 void elementObj::implObj::hover_cancel(ONLY IN_THREAD)
 {
-	// Cancel the pending tooltip. If it's already shown, discard it.
-	// And discard the timer's mcguffin, if we were getting set to do it.
-
-	data(IN_THREAD).tooltip=nullptr;
+	if (!data(IN_THREAD).attached_popup ||
+	    data(IN_THREAD).attached_popup->impl->handler->attachedto_info->how
+	    != attached_to::tooltip)
+		return;
+	data(IN_THREAD).attached_popup=nullptr;
 
 }
 

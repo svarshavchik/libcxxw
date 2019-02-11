@@ -515,6 +515,7 @@ popup_position_affinity popupObj::handlerObj
 		break;
 
 	case attached_to::above_or_below:
+	case attached_to::tooltip:
 		// It'll be above or below, but start on the same x coordinate
 		// as the attached to element, but not to the right of max_x.
 

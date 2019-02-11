@@ -81,15 +81,13 @@ class LIBCXX_HIDDEN popupObj::handlerObj :
 	//! Alias
 	typedef generic_windowObj::handlerObj superclass_t;
 
- protected:
+public:
 	//! Popup attachedment information
 
 	const popup_attachedto_info attachedto_info;
 
 	//! When popup semantics this popup belongs to.
 	const popup_visibility_semantics &attachedto_type;
-
-public:
 
 	//! What WM_CLASS instance this is
 
