@@ -20,38 +20,12 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
- protected:
-	//! Override default_wm_class_instance()
-
-	//! Returns wm_class_instance.
-	const char *default_wm_class_instance() const override;
-
  public:
 	//! Constructor
 	popup_attachedto_handlerObj(const popup_attachedto_handler_args &);
 
 	//! Destructor
 	~popup_attachedto_handlerObj();
-
-	//! Report the updated position of the element we are attached to.
-
-	void update_attachedto_element_position(ONLY IN_THREAD,
-						const rectangle &new_position);
-
-	//! Implement recalculate_popup_position().
-
-	popup_position_affinity recalculate_popup_position(ONLY IN_THREAD,
-							   rectangle &r,
-							   dim_t screen_width,
-							   dim_t screen_height)
-		override;
-
- private:
-	//! Implement get_opened_mcguffin().
-	ref<obj> get_opened_mcguffin(ONLY IN_THREAD) override;
-
-	//! Implement released_opened_mcguffin().
-	void released_opened_mcguffin(ONLY IN_THREAD) override;
 };
 
 //! Arguments to \ref popup_attachedto_handler "attached popup handler"'s constructor.

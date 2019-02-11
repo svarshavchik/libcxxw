@@ -69,11 +69,11 @@ class LIBCXX_HIDDEN popupObj::handlerObj :
 	//! When popup semantics this popup belongs to.
 	const popup_visibility_semantics &attachedto_type;
 
+public:
+
 	//! What WM_CLASS instance this is
 
 	const char * const wm_class_instance;
-
-public:
 
 	//! Constructor
 	handlerObj(const popup_attachedto_handler_args &);
@@ -121,7 +121,7 @@ public:
 		recalculate_popup_position(ONLY IN_THREAD,
 					   rectangle &r,
 					   dim_t screen_width,
-					   dim_t screen_height)=0;
+					   dim_t screen_height);
 
  protected:
 
@@ -202,6 +202,10 @@ public:
 
 	std::string default_wm_class_resource(ONLY IN_THREAD) override;
 
+	//! Override wm_class_instance.
+
+	const char *default_wm_class_instance() const override;
+
 	//! Return the popup's parent main window.
 
 	ptr<generic_windowObj::handlerObj> get_popup_parent(ONLY IN_THREAD)
@@ -212,20 +216,6 @@ public:
 	//! This is returned by get_opened_mcguffin().
 
 	ptr<obj> opened_mcguffin;
-
-	//! Obtain a mcguffin for an opened, visible popup.
-
-	//! The subclass must implement it by invoking the appropriate
-	//! method in shared_handler_data, and returning the mcguffin.
-
-	virtual ref<obj> get_opened_mcguffin(ONLY IN_THREAD)=0;
-
-	//! We just released the opened_mcguffin
-
-	//! Because we're no longer visible.
-	//! The subclass must implement it by invoking the appropriate
-	//! method in shared_handler_data.
-	virtual void released_opened_mcguffin(ONLY IN_THREAD)=0;
 
  public:
 
@@ -265,12 +255,19 @@ public:
 	//! the main window.
 	virtual bool popup_accepts_key_events(ONLY IN_THREAD);
 
+ protected:
 	//! Override process_key_event()
 
 	//! If the ESC key is pressed, close the combo-box popup.
 
 	bool process_key_event(ONLY IN_THREAD, const key_event &ke)
 		override;
+
+ public:
+	//! Report the updated position of the element we are attached to.
+
+	void update_attachedto_element_position(ONLY IN_THREAD,
+						const rectangle &new_position);
 };
 
 LIBCXXW_NAMESPACE_END
