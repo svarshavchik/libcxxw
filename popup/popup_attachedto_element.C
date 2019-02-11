@@ -27,7 +27,7 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 
 	auto attachedto_info=
 		popup_attachedto_info::create(rectangle{},
-					      attached_to::submenu_next);
+					      attached_to::right_or_left);
 
 	// Our container implementation object, for the current color field and
 	// the popup button.

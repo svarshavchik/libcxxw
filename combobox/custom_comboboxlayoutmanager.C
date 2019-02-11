@@ -303,7 +303,7 @@ combobox_listcontainer_popup_args(const element_impl &parent_element,
 		"combobox_popup_border",
 
 		nesting_level,
-		attached_to::combobox_above_or_below,
+		attached_to::below_or_above,
 		exclusive_popup_type,
 		style,
 		"combobox_above_background_color",

@@ -85,19 +85,25 @@ popup_position_affinity popup_attachedto_handlerObj
 	if (r.height > max_peephole_height_value)
 		r.height=max_peephole_height_value;
 
-	popup_position_affinity a;
+	popup_position_affinity a=popup_position_affinity::right;
 
-	if (attachedto_info->how == attached_to::submenu_next)
-	{
-		// The popup cannot start to the right of max_x, without
-		// getting truncated.
-		coord_t max_x=coord_t::truncate(screen_width - r.width);
+	// The popup cannot start to the right of max_x, without
+	// getting truncated.
+	coord_t max_x=coord_t::truncate(screen_width - r.width);
+
+	// The popup cannot be below max_y.
+	coord_t max_y=coord_t::truncate(screen_height - r.height);
+
+	coord_t x=attachedto_element_position.x;
+	coord_t y=attachedto_element_position.y;
+
+	switch (attachedto_info->how) {
+	case attached_to::right_or_left:
 
 		// Here's where the popup will start.
-		coord_t x=coord_t::truncate(attachedto_element_position.x +
-					    attachedto_element_position.width);
+		x=coord_t::truncate(x+attachedto_element_position.width);
 
-		a=popup_position_affinity::right;
+		// a=popup_position_affinity::right;
 
 		if (x > max_x)
 		{
@@ -106,34 +112,23 @@ popup_position_affinity popup_attachedto_handlerObj
 			a=popup_position_affinity::left;
 		}
 
-		// The popup's y position is same as element's, but it
-		// cannot be below max_y.
-		coord_t max_y=coord_t::truncate(screen_height - r.height);
-		coord_t y=attachedto_element_position.y;
+		// The popup's y position is same as element's
 
 		if (y > max_y)
 			y=max_y;
 
-		r.x=x;
-		r.y=y;
-	}
-	else
-	{
+		break;
+
+	case attached_to::below_or_above:
 		// It'll be above or below, but start on the same x coordinate
 		// as the attached to element, but not to the right of max_x.
-
-		coord_t max_x=coord_t::truncate(screen_width - r.width);
-		coord_t x=attachedto_element_position.x;
 
 		if (x > max_x)
 			x=max_x;
 
 		// If the popup start above max_y, there's enough room for it.
 
-		coord_t max_y=coord_t::truncate(screen_height - r.height);
-		coord_t y=coord_t::truncate(attachedto_element_position.y +
-					    attachedto_element_position.height
-					    );
+		y=coord_t::truncate(y + attachedto_element_position.height);
 
 		a=popup_position_affinity::below;
 
@@ -143,14 +138,50 @@ popup_position_affinity popup_attachedto_handlerObj
 			y=coord_t::truncate(attachedto_element_position.y
 					    - r.height);
 		}
-		r.x=x;
-		r.y=y;
 
-		// The width shall be equal to the combobox's container.
+		// This positioning is being used for combo-boxes and menus.
+		// For combo-boxes we want the width to always be at least
+		// as wide as the display element we're attached to.
+		//
+		// Menu popups hitch along for this ride...
 
 		if (r.width < attachedto_element_position.width)
 			r.width=attachedto_element_position.width;
+		break;
+
+	case attached_to::above_or_below:
+		// It'll be above or below, but start on the same x coordinate
+		// as the attached to element, but not to the right of max_x.
+
+		if (x > max_x)
+			x=max_x;
+
+		// If the popup start above max_y, there's enough room for it.
+
+		y=coord_t::truncate(y - r.height);
+
+		a=popup_position_affinity::above;
+
+		if (y < 0)
+		{
+			a=popup_position_affinity::below;
+			y=coord_t::truncate(attachedto_element_position.y +
+					    attachedto_element_position.height);
+		}
+
+		// This positioning is being used for combo-boxes and menus.
+		// For combo-boxes we want the width to always be at least
+		// as wide as the display element we're attached to.
+		//
+		// Menu popups hitch along for this ride...
+
+		if (r.width < attachedto_element_position.width)
+			r.width=attachedto_element_position.width;
+		break;
 	}
+
+	r.x=x;
+	r.y=y;
 	return a;
 }
 

@@ -125,7 +125,7 @@ topmenu_popup(const element_impl &e,
 	      const function<void (const listlayoutmanager &)> &creator)
 {
 	return do_create_dropdown_menu(e, creator,
-				       attached_to::combobox_above_or_below,
+				       attached_to::below_or_above,
 				       "menu_above_background_color",
 				       "menu_below_background_color",
 				       make_function
@@ -139,7 +139,7 @@ submenu_popup(const element_impl &e,
 	      const function<void (const listlayoutmanager &)> &creator)
 {
 	return do_create_dropdown_menu(e, creator,
-				       attached_to::submenu_next,
+				       attached_to::right_or_left,
 				       "menu_left_background_color",
 				       "menu_right_background_color",
 				       make_function
@@ -215,7 +215,7 @@ contextmenu_popup(const element_impl &e,
 {
 	auto ret=do_create_dropdown_menu
 		(e, creator,
-		 attached_to::combobox_above_or_below,
+		 attached_to::below_or_above,
 		 "menu_above_background_color",
 		 "menu_below_background_color",
 

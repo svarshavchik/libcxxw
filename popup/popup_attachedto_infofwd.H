@@ -27,14 +27,15 @@ can reach, before scrollbars are necessary.
 */
 typedef ref<popup_attachedto_infoObj> popup_attachedto_info;
 
-//! How a popup gets attached to its atteched-to element
+//! How a popup gets attached to its attached-to element
 
-//! The popup can be displayed above or below the element (comboboxes), or
-//! next to the element (submenu)
+//! The popup can be displayed above or below the element (comboboxes, popup
+//! menus), or next to the element (submenu)
 
 enum class attached_to {
-	combobox_above_or_below,
-	submenu_next,
+	below_or_above, //!< Below, if there's room, else above.
+	above_or_below, //!< Above, if there's room, else below
+	right_or_left, //!< To the right, if there's room else to the left.
 };
 
 LIBCXXW_NAMESPACE_END

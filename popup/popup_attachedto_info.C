@@ -24,8 +24,13 @@ dim_t popup_attachedto_infoObj
 {
 	dim_t screen_width=screenref->impl->width_in_pixels();
 
-	if (how == attached_to::submenu_next)
-	{
+	switch (how) {
+	case attached_to::above_or_below:
+	case attached_to::below_or_above:
+		break;
+
+	case attached_to::right_or_left:
+
 		dim_t left_width=0;
 		dim_t right_width=0;
 
@@ -61,9 +66,13 @@ dim_t popup_attachedto_infoObj
 {
 	auto screen_height=screenref->impl->height_in_pixels();
 
-	if (how == attached_to::submenu_next)
+	switch (how) {
+	case attached_to::right_or_left:
 		return screen_height;
-
+	case attached_to::above_or_below:
+	case attached_to::below_or_above:
+		break;
+	}
 	dim_t top_height=0;
 	dim_t bottom_height=0;
 
