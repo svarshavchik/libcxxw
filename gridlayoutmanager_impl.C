@@ -145,10 +145,15 @@ gridfactory gridlayoutmanagerObj::implObj
 
 	auto f=create_gridfactory(public_object, row_number, col_number, true);
 
-	new_grid_element_info &existing_element_info=*row_at[col_number];
+	// Try to preserve the existing cell's properties.
+	existing_grid_element_info &existing_element_info=*row_at[col_number];
 
-	f->impl->new_grid_element=existing_element_info;
+	gridfactoryObj::implObj::new_grid_element_t::lock lock
+		{f->impl->new_grid_element};
 
+	existing_grid_element_info &new_existing_element_info=*lock;
+
+	new_existing_element_info=existing_element_info;
 	return f;
 }
 

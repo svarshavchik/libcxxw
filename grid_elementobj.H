@@ -20,17 +20,14 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct LIBCXX_HIDDEN new_grid_element_info;
+struct LIBCXX_HIDDEN existing_grid_element_info;
+
 //! Info about the new grid element
 
 //! A \ref grid_element is just a reference-counted subclass of this.
 
-struct new_grid_element_info {
-
-	//! New element's location
-	dim_t row;
-
-	//! New element's location
-	dim_t col;
+struct existing_grid_element_info {
 
 	//! New element's location.
 	dim_t width=1;
@@ -75,6 +72,17 @@ struct new_grid_element_info {
 
 	bool remove_when_hidden=false;
 
+	existing_grid_element_info();
+};
+
+struct new_grid_element_info : public existing_grid_element_info {
+
+	//! New element's location
+	dim_t row;
+
+	//! New element's location
+	dim_t col;
+
 	//! Constructor
 	new_grid_element_info(dim_t row,
 			      dim_t col,
@@ -90,7 +98,7 @@ struct new_grid_element_info {
 //! A \ref grid_element object.
 
 class LIBCXX_HIDDEN grid_elementObj
-	: public new_grid_element_info,
+	: public existing_grid_element_info,
 	  public metrics::pos_axis_padding,
 	  virtual public obj {
 

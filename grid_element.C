@@ -14,16 +14,20 @@
 
 LIBCXXW_NAMESPACE_START
 
+existing_grid_element_info::existing_grid_element_info()
+	: left_padding_set("grid_horiz_padding"),
+	  right_padding_set(left_padding_set),
+	  top_padding_set("grid_vert_padding"),
+	  bottom_padding_set(top_padding_set)
+{
+}
+
 new_grid_element_info
 ::new_grid_element_info(dim_t row,
 			dim_t col,
 			const ref<grid_map_infoObj> &grid_map)
 	: row(row),
-	  col(col),
-	  left_padding_set("grid_horiz_padding"),
-	  right_padding_set(left_padding_set),
-	  top_padding_set("grid_vert_padding"),
-	  bottom_padding_set(top_padding_set)
+	  col(col)
 {
 	auto row_default=grid_map->row_defaults
 		.find(metrics::grid_xy::truncate(row));
@@ -53,10 +57,10 @@ new_grid_element_info::~new_grid_element_info()=default;
 
 grid_elementObj::grid_elementObj(const new_grid_element_info &info,
 				 const element &grid_element)
-	: new_grid_element_info(info),
-	  grid_element(grid_element),
-	  pos(metrics::grid_pos::create()),
-	  initialized_thread_only(false)
+	: existing_grid_element_info{info},
+	  grid_element{grid_element},
+	  pos{metrics::grid_pos::create()},
+	  initialized_thread_only{false}
 {
 }
 
