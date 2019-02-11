@@ -20,6 +20,7 @@
 #include "x/w/gridfactory.H"
 #include "x/w/impl/background_color.H"
 #include <x/property_value.H>
+#include "messages.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -43,8 +44,8 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
 	//! Constructor
 	tooltip_handlerObj(ONLY IN_THREAD,
 			   const ref<generic_windowObj::handlerObj> &parent,
-			   coord_t pointer_x,
-			   coord_t pointer_y);
+			   const rectangle &where,
+			   attached_to how);
 
 	//! Destructor
 	~tooltip_handlerObj();
@@ -67,6 +68,12 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
 		return false;
 	}
 
+	void creating_focusable_element() override
+	{
+		throw EXCEPTION(_("Focusable display elements cannot "
+				  "be created in a tooltip"));
+	}
+
 #ifdef TOOLTIP_HANDLER_EXTRA_METHODS
 	TOOLTIP_HANDLER_EXTRA_METHODS
 #endif
@@ -75,16 +82,14 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
 tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 				       const ref<generic_windowObj::handlerObj>
 				       &parent,
-				       coord_t pointer_x,
-				       coord_t pointer_y)
+				       const rectangle &where,
+				       attached_to how)
 	: superclass_t{popup_handler_args
 		       {
 			exclusive_popup_type,
 			"tooltip",
 			parent,
-			popup_attachedto_info::create
-			(rectangle{pointer_x, pointer_y, 0, 0},
-			 attached_to::tooltip),
+			popup_attachedto_info::create(where, how),
 			0}}
 {
 	wm_class_resource(IN_THREAD)=parent->wm_class_resource(IN_THREAD);
@@ -92,24 +97,39 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 
 tooltip_handlerObj::~tooltip_handlerObj()=default;
 
+//! Implement tooltip_factory's create().
+
+//! Common logic shared by regular and static tooltip creators.
+//!
+//! A subclass is responsible for implementing create_tooltip_handler() to
+//! give us a popup handler object as a starting point, and implementing
+//! created_popup(), which gets called before create() returns.
+//!
+//! Regular and static tooltips construct the popup handler slightly
+//! differently. created_popup() is also responsible for installing
+//! the new popup into parent_element's data.attached_popup.
+
 class LIBCXX_HIDDEN tooltip_factory_impl : public tooltip_factory {
 
-	ONLY IN_THREAD;
-
+ protected:
 	const ref<elementObj::implObj> parent_element;
 
  public:
-	tooltip_factory_impl(ONLY IN_THREAD,
-			     const ref<elementObj::implObj> &parent_element)
-		: IN_THREAD(IN_THREAD),
-		parent_element(parent_element)
-		{
-		}
+	tooltip_factory_impl(const ref<elementObj::implObj> &parent_element)
+		: parent_element(parent_element)
+	{
+	}
 
 	~tooltip_factory_impl()=default;
 
 	void create(const function<void (const container &)> &creator,
 		    const new_layoutmanager &layout_manager) const override;
+
+	virtual ref<tooltip_handlerObj>
+		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
+				       &parent_window) const=0;
+
+	virtual void created_popup(const popup &) const=0;
 };
 
 void tooltip_factory_impl::create(const function<void (const container &)>
@@ -120,29 +140,7 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 	ref<generic_windowObj::handlerObj>
 		parent_window{&parent_element->get_window_handler()};
 
-	auto parent_element_absolute_location=
-		parent_element->get_absolute_location_on_screen(IN_THREAD);
-
-	coord_t x{coord_t::truncate(parent_element->data(IN_THREAD)
-				    .last_motion_x
-				    + parent_element_absolute_location.x)};
-	coord_t y{coord_t::truncate(parent_element->data(IN_THREAD)
-				    .last_motion_y
-				    + parent_element_absolute_location.y)};
-
-	auto current_theme=
-		parent_window->get_screen()->impl->current_theme.get();
-
-	dim_t offset_x=current_theme->get_theme_dim_t("tooltip_x_offset",
-						      themedimaxis::width);
-	dim_t offset_y=current_theme->get_theme_dim_t("tooltip_y_offset",
-						      themedimaxis::height);
-
-	auto popup_handler=ref<tooltip_handlerObj>::create
-		(IN_THREAD,
-		 parent_window,
-		 coord_t::truncate(x+offset_x),
-		 coord_t::truncate(y-offset_y));
+	auto popup_handler=create_tooltip_handler(parent_window);
 
 	auto popup_impl=ref<popupObj::implObj>::create(popup_handler,
 						       parent_window);
@@ -165,10 +163,77 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 				    creator(container);
 			    }, layout_manager);
 
-	parent_element->data(IN_THREAD).attached_popup=tooltip_popup;
-
-	tooltip_popup->show_all();
+	created_popup(tooltip_popup);
 }
+
+//! Implement tooltip_factory_impl for regular popups.
+
+//! Implements create_tooltip_handler() and created_popup() for regular
+//! popups.
+
+class LIBCXX_HIDDEN popup_tooltip_factory :
+	public tooltip_factory_impl {
+
+ protected:
+	ONLY IN_THREAD;
+
+ public:
+	popup_tooltip_factory(ONLY IN_THREAD,
+			      const ref<elementObj::implObj> &parent_element)
+		: tooltip_factory_impl{parent_element},
+		IN_THREAD{IN_THREAD}
+		{
+		}
+
+	 ~popup_tooltip_factory()=default;
+
+	ref<tooltip_handlerObj>
+		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
+				       &parent_window) const override;
+
+	void created_popup(const popup &tooltip_popup) const override
+	{
+		parent_element->data(IN_THREAD).attached_popup=tooltip_popup;
+
+		tooltip_popup->show_all();
+	}
+};
+
+ref<tooltip_handlerObj>
+popup_tooltip_factory::create_tooltip_handler
+(const ref<generic_windowObj::handlerObj> &parent_window) const
+{
+	// Compute the current pointer coordinates.
+
+	auto parent_element_absolute_location=
+		parent_element->get_absolute_location_on_screen(IN_THREAD);
+
+	coord_t x{coord_t::truncate(parent_element->data(IN_THREAD)
+				    .last_motion_x
+				    + parent_element_absolute_location.x)};
+	coord_t y{coord_t::truncate(parent_element->data(IN_THREAD)
+				    .last_motion_y
+				    + parent_element_absolute_location.y)};
+
+	auto current_theme=
+		parent_window->get_screen()->impl->current_theme.get();
+
+	dim_t offset_x=current_theme->get_theme_dim_t("tooltip_x_offset",
+						      themedimaxis::width);
+	dim_t offset_y=current_theme->get_theme_dim_t("tooltip_y_offset",
+						      themedimaxis::height);
+
+	// And construct an attached_to::tooltip tooltip_handlerObj,
+	// at these coordinates.
+	return ref<tooltip_handlerObj>::create
+		(IN_THREAD,
+		 parent_window,
+		 rectangle{coord_t::truncate(x+offset_x),
+				coord_t::truncate(y-offset_y),
+				   0, 0},
+		 attached_to::tooltip);
+}
+
 #if 0
 {
 #endif
@@ -223,7 +288,7 @@ void elementObj::implObj::hover_action(ONLY IN_THREAD)
 	if (!data(IN_THREAD).tooltip_factory)
 		return;
 
-	tooltip_factory_impl create_a_tooltip(IN_THREAD, ref(this));
+	popup_tooltip_factory create_a_tooltip(IN_THREAD, ref(this));
 
 	data(IN_THREAD).tooltip_factory(IN_THREAD, create_a_tooltip);
 }
