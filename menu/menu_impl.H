@@ -9,7 +9,7 @@
 #include "x/w/impl/nonrecursive_visibilityfwd.H"
 #include "x/w/impl/focus/focusframecontainer_elementfwd.H"
 #include "popup/popup_attachedto_handler_elementfwd.H"
-#include "popup/popupobj.H"
+#include "x/w/impl/popup/popupobj.H"
 #include "x/w/impl/popup/popupfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"

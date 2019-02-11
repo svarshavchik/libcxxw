@@ -11,6 +11,8 @@
 #include <x/w/impl/background_color_elementfwd.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/impl/focus/focusablefwd.H>
+#include <x/w/impl/popup/popupfwd.H>
+#include <x/w/impl/popup/popupobj.H>
 #include <x/w/metrics/axis.H>
 #include <x/w/picturefwd.H>
 #include <x/w/rgb.H>
@@ -29,6 +31,9 @@ struct child_element_init_params {
 
 	//! Element's background color
 	std::optional<color_arg> background_color;
+
+	//! Element's attached popup
+	popupptr attached_popup;
 };
 
 //! Tag for the background color

@@ -659,7 +659,6 @@ libcxxw_la_SOURCES=\
 	popup_imagebutton_implfwd.H		    \
 	popup/popup.C				    \
 	popup/popup.H				    \
-	popup/popupobj.H			    \
 	popup/popup_handler.C			    \
 	popup/popup_handler.H			    \
 	popup/popup_impl.C			    \

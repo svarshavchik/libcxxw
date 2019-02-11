@@ -15,7 +15,7 @@
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/always_visible.H"
 #include "x/w/impl/child_element.H"
-#include "popup/popupobj.H"
+#include "x/w/impl/popup/popupobj.H"
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START

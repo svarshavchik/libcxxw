@@ -14,6 +14,8 @@ class LIBCXX_PUBLIC child_elementObj;
 
 typedef ref<child_elementObj> child_element;
 
+struct LIBCXX_HIDDEN child_element_init_params;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

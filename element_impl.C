@@ -48,16 +48,7 @@ LIBCXXW_NAMESPACE_START
 
 elementObj::implObj::implObj(size_t nesting_level,
 			     const rectangle &initial_position,
-			     const screen &my_screen,
-			     const const_pictformat &my_pictformat,
-			     const std::string &scratch_buffer_id)
-	: implObj{nesting_level, initial_position, {{0,0,0},{0,0,0}},
-		  my_screen, my_pictformat, scratch_buffer_id}
-{
-}
-
-elementObj::implObj::implObj(size_t nesting_level,
-			     const rectangle &initial_position,
+			     const popupptr &attached_popup,
 			     const metrics::horizvert_axi &initial_metrics,
 			     const screen &my_screen,
 			     const const_pictformat &my_pictformat,
@@ -65,7 +56,7 @@ elementObj::implObj::implObj(size_t nesting_level,
 	: metrics::horizvertObj(initial_metrics),
 	data_thread_only
 	({
-		initial_position, initial_position
+	  initial_position, initial_position, attached_popup
 	}),
 	nesting_level(nesting_level),
 	element_scratch_buffer(my_screen->impl->create_scratch_buffer

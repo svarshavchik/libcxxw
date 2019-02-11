@@ -33,20 +33,21 @@ child_elementObj::child_elementObj(const container_impl &child_container,
 		// If no background color is given, create a placeholder
 		// black rgb color. is_mine_background_color will specify
 		// what the deal is.
-		.create_background_color(init_params.background_color
-					 ? *init_params.background_color
-					 : color_arg{rgb{}}),
-		child_container->container_element_impl()
-		.nesting_level+1,
-		rectangle{0, 0, 0, 0},
+		       .create_background_color(init_params.background_color
+						? *init_params.background_color
+						: color_arg{rgb{}}),
+		       child_container->container_element_impl()
+		       .nesting_level+1,
+		       rectangle{0, 0, 0, 0},
+		       init_params.attached_popup,
 		// The container will position me later
-		init_params.initial_metrics,
-			child_container->get_window_handler()
-			.get_screen(),
-			child_container->get_window_handler()
-			.drawable_pictformat,
-			(init_params.scratch_buffer_id.empty()
-			 ? "default@libcxx.com":init_params.scratch_buffer_id)},
+		       init_params.initial_metrics,
+		       child_container->get_window_handler()
+		       .get_screen(),
+		       child_container->get_window_handler()
+		       .drawable_pictformat,
+		       (init_params.scratch_buffer_id.empty()
+			? "default@libcxx.com":init_params.scratch_buffer_id)},
 	  is_mine_background_color{init_params.background_color ? true:false},
 	  child_container(child_container)
 {

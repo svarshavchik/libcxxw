@@ -5,9 +5,7 @@
 #ifndef x_w_popup_h
 #define x_w_popup_h
 
-#include "x/w/impl/popup/popupfwd.H"
-#include "popup/popupobj.H"
-#include <x/ref.H>
+#include "x/w/impl/popup/popup.H"
 #include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START

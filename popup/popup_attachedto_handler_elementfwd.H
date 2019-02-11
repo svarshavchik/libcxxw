@@ -5,7 +5,7 @@
 #ifndef popup_attachedto_handler_elementfwd_h
 #define popup_attachedto_handler_elementfwd_h
 
-#include "popup/popupobj.H"
+#include "x/w/impl/popup/popupobj.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/element.H"
 #include <x/ptrfwd.H>

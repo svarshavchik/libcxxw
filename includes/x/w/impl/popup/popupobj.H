@@ -2,8 +2,8 @@
 ** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef popupobj_h
-#define popupobj_h
+#ifndef x_w_impl_popup_popupobj_h
+#define x_w_impl_popup_popupobj_h
 
 #include "x/w/impl/popup/popupfwd.H"
 #include "x/w/generic_windowobj.H"

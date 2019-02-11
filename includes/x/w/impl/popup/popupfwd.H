@@ -2,8 +2,8 @@
 ** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef popupfwd_h
-#define popupfwd_h
+#ifndef x_w_impl_popup_popupfwd_h
+#define x_w_impl_popup_popupfwd_h
 
 #include <x/w/namespace.H>
 #include <x/ptrfwd.H>

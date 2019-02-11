@@ -132,6 +132,9 @@ class elementObj::implObj : public element_drawObj,
 
 		rectangle previous_position;
 
+		//! This element's attached popup.
+		popupptr attached_popup;
+
 		//! Cached draw_info
 
 		//! get_draw_info() retrieves the cached draw_info, or
@@ -262,9 +265,6 @@ class elementObj::implObj : public element_drawObj,
 		functionptr<void (THREAD_CALLBACK,
 				  const tooltip_factory &)> tooltip_factory;
 
-		//! This element's attached popup.
-		popupptr attached_popup;
-
 		//! There's a popup attached to this element.
 
 		//! This is used by combo-box code to attach the implementation
@@ -376,13 +376,7 @@ class elementObj::implObj : public element_drawObj,
 	//! Constructor
 	implObj(size_t nesting_level,
 		const rectangle &initial_position,
-		const screen &my_screen,
-		const const_pictformat &my_pictformat,
-		const std::string &scratch_buffer_id);
-
-	//! Constructor
-	implObj(size_t nesting_level,
-		const rectangle &initial_position,
+		const popupptr &attached_popup,
 		const metrics::horizvert_axi &initial_metrics,
 		const screen &my_screen,
 		const const_pictformat &my_pictformat,

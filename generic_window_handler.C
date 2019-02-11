@@ -22,6 +22,7 @@
 #include "xid_t.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/background_color_element.H"
+#include "x/w/impl/popup/popup.H"
 #include "cursor_pointer.H"
 #include "selection/current_selection_paste_handler.H"
 #include "x/w/impl/focus/focusable.H"
@@ -223,6 +224,8 @@ generic_windowObj::handlerObj
 					    .screenref)),
 	 params.nesting_level,
 	 element_position(params.window_handler_params.initial_position),
+	 popupptr{},
+	 metrics::horizvert_axi{{0,0,0},{0,0,0}},
 	 params.window_handler_params.screenref,
 	 params.drawable_pictformat,
 	 "background@libcxx.com"

@@ -7,7 +7,7 @@
 
 #include "x/w/impl/element.H"
 #include "x/w/hotspotfwd.H"
-#include "popup/popupobj.H"
+#include "x/w/impl/popup/popupobj.H"
 
 LIBCXXW_NAMESPACE_START
 
