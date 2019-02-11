@@ -25,7 +25,29 @@ public:
 
 	//! Constructor
 	popupObj(const ref<implObj> &impl,
-		 const layout_impl &layout) LIBCXX_HIDDEN;
+		 const layout_impl &layout,
+		 const layout_impl &content_layout) LIBCXX_HIDDEN;
+
+private:
+
+	//! Layout manager for the contents of the popup
+
+	const layout_impl content_layout;
+
+public:
+	//! Override get_layout_impl()
+
+	//! Returns the layout manager for the apparent contents of the popup.
+	//!
+	//! The popup container itself uses the border layout manager to draw
+	//! borders around the contents of the popup, a separate container
+	//! (for a small scrollbar-less popup, or the grid layout manager for
+	//! a potentially-scrollable popup).
+	//!
+	//! Override get_layout_impl() to return that container's layout
+	//! manager, so that its contents appear to be the contents of this
+	//! popup.
+	layout_impl get_layout_impl() const override;
 
 	//! Destructor
 	~popupObj() LIBCXX_HIDDEN;

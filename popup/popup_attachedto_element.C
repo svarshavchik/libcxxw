@@ -93,7 +93,8 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 			 return c;
 		 });
 
-	auto popup=popup::create(popup_impl, popup_lm->impl);
+	auto popup=popup::create(popup_impl, popup_lm->impl,
+				 popup_lm->impl);
 
 	// Create the current value element.
 

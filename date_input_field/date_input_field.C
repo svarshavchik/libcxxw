@@ -351,7 +351,8 @@ date_input_field factoryObj
 			 return new_date.format_date(preferred);
 		 });
 
-	auto date_picker_popup=popup::create(popup_impl, popup_lm->impl);
+	auto date_picker_popup=popup::create(popup_impl, popup_lm->impl,
+					     popup_lm->impl);
 
 	auto popup_imagebutton=create_standard_popup_imagebutton
 		(f, date_picker_popup,

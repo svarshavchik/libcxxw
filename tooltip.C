@@ -145,23 +145,34 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 	auto popup_impl=ref<popupObj::implObj>::create(popup_handler,
 						       parent_window);
 
-	auto tooltip_popup=popup::create(popup_impl,
-					 new_gridlayoutmanager{}
-					 .create(popup_handler));
+	auto grid_layout_impl=new_gridlayoutmanager{}.create(popup_handler);
 
-	gridlayoutmanager glm=tooltip_popup->get_layoutmanager();
+	popupptr tooltip_popup;
+
+	auto c=layout_manager.create
+		(popup_handler,
+		 make_function<void (const container &c)>
+		 ([&]
+		  (const container &c)
+		  {
+			  c->set_background_color("tooltip_background_color");
+			  auto real_container_impl=c->get_layout_impl();
+
+			  auto p=popup::create(popup_impl,
+					       grid_layout_impl,
+					       real_container_impl);
+
+			  creator(p);
+			  tooltip_popup=p;
+		  }));
+
+	gridlayoutmanager glm=grid_layout_impl->create_public_object();
 
 	auto f=glm->append_row();
 
 	f->rounded_border_and_padding("tooltip_border");
 
-	f->create_container([&, this]
-			    (const auto &container)
-			    {
-				    container->set_background_color
-					    ("tooltip_background_color");
-				    creator(container);
-			    }, layout_manager);
+	f->created_internally(c);
 
 	created_popup(tooltip_popup);
 }

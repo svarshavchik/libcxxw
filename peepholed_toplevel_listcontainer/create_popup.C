@@ -16,47 +16,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-namespace {
-#if 0
-}
-#endif
-
-//! Override get_layout_impl() in create_peepholed_toplevel_listcontainer_popup)_'s popup.
-
-//! The popup returned by create_peepholed_toplevel_listcontainer_popup()
-//! gets its get_layout_impl() overwritten to return the list layout manager
-//! of the popup's list container, rather than its actual top level manager,
-//! the one for the peephole.
-
-class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_popupObj
-	: public popupObj {
-
- public:
-
-	const layout_impl listlayout_impl;
-
-	peepholed_toplevel_listcontainer_popupObj
-		(const ref<implObj> &impl,
-		 const layout_impl &layout,
-		 const layout_impl &listlayout_impl)
-		: popupObj{impl, layout},
-		listlayout_impl{listlayout_impl}
-		{
-		}
-
-	~peepholed_toplevel_listcontainer_popupObj()=default;
-
-	layout_impl get_layout_impl() const override
-	{
-		return listlayout_impl;
-	}
-};
-
-#if 0
-{
-#endif
-}
-
 create_p_t_l_popup_ret_t
 do_create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
@@ -111,10 +70,9 @@ do_create_peepholed_toplevel_listcontainer_popup
 	auto popup_impl=ref<popupObj::implObj>::create(popup_handler,
 						       parent_handler);
 
-	auto p=ref<peepholed_toplevel_listcontainer_popupObj>
-		::create(popup_impl,
-			 popup_toplevel_layoutmanager->impl,
-			 popup_listlayoutmanagerptr);
+	auto p=popup::create(popup_impl,
+			     popup_toplevel_layoutmanager->impl,
+			     popup_listlayoutmanagerptr);
 
 	return { p, popup_impl->handler };
 }
