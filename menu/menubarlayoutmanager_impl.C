@@ -101,7 +101,6 @@ menu menubarlayoutmanagerObj::implObj
 		::create(menu_popup,
 			 "menu_inputfocusoff_border",
 			 "menu_inputfocuson_border",
-			 popup_handler,
 			 container_impl);
 
 	auto hotspot_impl=ref<menubar_hotspot_implObj>

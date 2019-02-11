@@ -8,7 +8,6 @@
 #include "x/w/menu.H"
 #include "x/w/impl/nonrecursive_visibilityfwd.H"
 #include "x/w/impl/focus/focusframecontainer_elementfwd.H"
-#include "popup/popup_attachedto_handler_elementfwd.H"
 #include "x/w/impl/popup/popupobj.H"
 #include "x/w/impl/popup/popupfwd.H"
 #include "x/w/impl/container_elementfwd.H"
@@ -19,15 +18,13 @@ LIBCXXW_NAMESPACE_START
 //! Internal implementation object.
 
 class LIBCXX_HIDDEN menuObj::implObj :
-	public nonrecursive_visibilityObj<popup_attachedto_handler_elementObj<
-						  focusframecontainer_elementObj
-						  <container_elementObj
-						   <child_elementObj>>>>
+	public nonrecursive_visibilityObj<focusframecontainer_elementObj
+					  <container_elementObj
+					   <child_elementObj>>>
 {
-	typedef nonrecursive_visibilityObj<popup_attachedto_handler_elementObj
-					   <focusframecontainer_elementObj
-					    <container_elementObj
-					     <child_elementObj>>>
+	typedef nonrecursive_visibilityObj<focusframecontainer_elementObj
+					   <container_elementObj
+					    <child_elementObj>>
 					   > superclass_t;
 
 	//! Whether the tabbing order of this new menu has been set.
@@ -44,7 +41,6 @@ class LIBCXX_HIDDEN menuObj::implObj :
 	implObj(const popup &menu_popup,
 		const border_arg &focusoff_border,
 		const border_arg &focuson_border,
-		const ref<popupObj::handlerObj> &attachedto_handler,
 		const container_impl &parent_container);
 
 	//! Destructor
