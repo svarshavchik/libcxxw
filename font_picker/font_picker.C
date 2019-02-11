@@ -407,7 +407,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 		 });
 
 	font_picker_impl_init_params init_params{
-		popup_imagebutton, font_picker_popup,
+		popup_imagebutton,
 			helper.current_font_shown,
 			helper,
 			config};

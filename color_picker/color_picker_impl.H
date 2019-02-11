@@ -46,10 +46,6 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 
 	const image_button_internal popup_button;
 
-	//! The popup itself.
-
-	const popup color_picker_popup;
-
 	//! Set this element's background color to the current color
 	const element current_color_element;
 
@@ -71,7 +67,6 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 	//! Constructor
 	implObj(const popup_attachedto_element_impl &handler,
 		const image_button_internal &popup_button,
-		const popup &color_picker_popup,
 		const element &current_color_element,
 
 		const color_picker_config &config,

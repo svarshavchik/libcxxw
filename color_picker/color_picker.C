@@ -769,7 +769,7 @@ color_picker factoryObj
 	// Capture the elements in the implementation object.
 
 	auto impl=ref<color_pickerObj::implObj>
-		::create(real_impl, popup_imagebutton, color_picker_popup,
+		::create(real_impl, popup_imagebutton,
 			 color_picker_current,
 
 			 config,

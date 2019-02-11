@@ -83,6 +83,13 @@ do_create_popup_imagebutton(const gridfactory &f,
 			    const popup_imagebutton_config &config)
 	LIBCXX_HIDDEN;
 
+image_button_internal
+do_create_popup_imagebutton2(const gridfactory &f,
+			    const function<popup_imagebutton_focusframe_factory>
+			    &ff_factory,
+			     const popup &attached_popup,
+			    const popup_imagebutton_config &config)
+	LIBCXX_HIDDEN;
 
 //! Create a popup image button.
 
@@ -114,15 +121,35 @@ create_popup_imagebutton(//! Factory for the grid cell with the popup button
 		 config);
 }
 
-//! Create a popup_imagebutton based on a ref<popupObj::handlerObj>_element.
+template<typename focusframe_factory>
+image_button_internal
+create_popup_imagebutton2(//! Factory for the grid cell with the popup button
+			 const gridfactory &f,
+
+			 //! A \ref popup_imagebutton_focusframe_factory "focus frame factory".
+			 focusframe_factory &&ff,
+
+			 //! Popup that gets shown or hidden.
+			 const popup &attached_popup,
+
+			 //! Visual appearance of the button.
+			 const popup_imagebutton_config &config)
+{
+	return do_create_popup_imagebutton2
+		(f, make_function<popup_imagebutton_focusframe_factory>
+		 (std::forward<focusframe_factory>(ff)),
+		 attached_popup,
+		 config);
+}
+
+//! Create a popup_imagebutton with a standard focus frame.
 
 //! This uses create_popup_imagebutton(), supplying a closure that constructs
-//! a \c ref<popupObj::handlerObj>_elementObj<popup_imagebutton_focusframe_implObj>.
+//! a \c popup_imagebutton_focusframe_implObj.
 
 image_button_internal
 create_standard_popup_imagebutton(const gridfactory &f,
-				  const ref<popupObj::handlerObj>
-				  &attachedto_handler,
+				  const popup &attachedto_popup,
 				  const popup_imagebutton_config &config)
 	LIBCXX_HIDDEN;
 

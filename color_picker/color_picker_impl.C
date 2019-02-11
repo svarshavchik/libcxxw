@@ -131,7 +131,6 @@ color_pickerObj::implObj::compute_hsv(const rgb &color)
 
 color_pickerObj::implObj::implObj(const popup_attachedto_element_impl &impl,
 				  const image_button_internal &popup_button,
-				  const popup &color_picker_popup,
 				  const element &current_color_element,
 
 				  const color_picker_config &config,
@@ -141,7 +140,6 @@ color_pickerObj::implObj::implObj(const popup_attachedto_element_impl &impl,
 				  const color_picker_square &variable_gradients,
 				  const label &error_message_field)
 	: impl{impl}, popup_button{popup_button},
-	  color_picker_popup{color_picker_popup},
 	  current_color_element{current_color_element},
 
 	  horiz_component_gradient{horiz_component_gradient},

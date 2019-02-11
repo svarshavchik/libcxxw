@@ -9,7 +9,6 @@
 #include "date_input_field/date_input_field_calendar.H"
 #include "popup/popup_attachedto_info.H"
 #include "popup/popup_handler.H"
-#include "popup/popup_attachedto_handler_element.H"
 #include "popup/popup_impl.H"
 #include "popup/popup.H"
 #include "popup_imagebutton.H"
@@ -355,7 +354,7 @@ date_input_field factoryObj
 	auto date_picker_popup=popup::create(popup_impl, popup_lm->impl);
 
 	auto popup_imagebutton=create_standard_popup_imagebutton
-		(f, attachedto_handler,
+		(f, date_picker_popup,
 		 {
 			 config.border,
 				 config.background_color,
@@ -367,7 +366,6 @@ date_input_field factoryObj
 
 	auto impl=ref<date_input_fieldObj::implObj>
 		::create(handler,
-			 date_picker_popup,
 			 calendar_containerptr,
 			 popup_imagebutton);
 

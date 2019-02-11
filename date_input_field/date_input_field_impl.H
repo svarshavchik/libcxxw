@@ -21,10 +21,6 @@ class LIBCXX_HIDDEN date_input_fieldObj::implObj : virtual public obj {
 
 	const ref<handlerObj> handler;
 
-	//! The popup for this date input field.
-
-	const popup calendar_popup;
-
 	//! The container in the popup, with the currently shown month.
 
 	const date_input_field_calendar calendar_container;
@@ -34,7 +30,6 @@ class LIBCXX_HIDDEN date_input_fieldObj::implObj : virtual public obj {
 
 	//! Constructor
 	implObj(const ref<handlerObj> &handler,
-		const popup &calendar_popup,
 		const date_input_field_calendar &calendar_container,
 		const image_button_internal &popup_imagebutton);
 

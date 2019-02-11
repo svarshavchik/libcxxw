@@ -482,12 +482,10 @@ static int reset_option_combobox(const standard_comboboxlayoutmanager &lm,
 
 font_picker_impl_init_params::
 font_picker_impl_init_params(const image_button_internal &popup_button,
-			     const popup &font_picker_popup,
 			     const label &current_font_shown,
 			     const font_picker_popup_fieldsptr &popup_fields,
 			     const font_picker_config &config)
 	: popup_button{popup_button},
-	  font_picker_popup{font_picker_popup},
 	  current_font_shown{current_font_shown},
 	  popup_fields{popup_fields},
 	  font_family_lm{popup_fields.font_family->get_layoutmanager()},
@@ -563,7 +561,6 @@ font_pickerObj::implObj::implObj(const font_picker_impl_init_params
 				 &init_params)
 	: families{init_params.families},
 	  popup_button{init_params.popup_button},
-	  font_picker_popup{init_params.font_picker_popup},
 	  popup_fields{init_params.popup_fields},
 	  selection_required{init_params.config.selection_required},
 	  foundry_required{init_params.config.foundry_required},

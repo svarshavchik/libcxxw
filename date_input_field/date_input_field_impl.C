@@ -13,11 +13,9 @@ LIBCXXW_NAMESPACE_START
 
 date_input_fieldObj::implObj
 ::implObj(const ref<handlerObj> &handler,
-	  const popup &calendar_popup,
 	  const date_input_field_calendar &calendar_container,
 	  const image_button_internal &popup_imagebutton)
 	: handler{handler},
-	  calendar_popup{calendar_popup},
 	  calendar_container{calendar_container},
 	  popup_imagebutton{popup_imagebutton}
 {

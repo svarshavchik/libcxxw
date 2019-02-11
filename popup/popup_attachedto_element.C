@@ -108,7 +108,7 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 	// element.
 
 	auto popup_imagebutton=create_standard_popup_imagebutton
-		(f, attachedto_handler,
+		(f, popup,
 		 {
 			 args.element_border,
 			 args.popup_background_color,

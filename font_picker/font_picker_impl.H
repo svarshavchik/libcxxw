@@ -46,9 +46,6 @@ class LIBCXX_HIDDEN font_pickerObj::implObj : virtual public obj {
 	//! The popup button in the font picker.
 	const image_button_internal popup_button;
 
-	//! The popup itself.
-	const popup font_picker_popup;
-
 	//! The fields in the popup
 	const font_picker_popup_fields popup_fields;
 
@@ -353,7 +350,6 @@ extern const font_picker_int_option_info font_picker_int_option_infos[3];
 struct LIBCXX_HIDDEN font_picker_impl_init_params {
 
 	const image_button_internal &popup_button;
-	const popup &font_picker_popup;
 	const label &current_font_shown;
 	const font_picker_popup_fieldsptr &popup_fields;
 	standard_comboboxlayoutmanager font_family_lm;
@@ -368,7 +364,6 @@ struct LIBCXX_HIDDEN font_picker_impl_init_params {
 	std::vector<font_picker_group_id> most_recently_used;
 
 	font_picker_impl_init_params(const image_button_internal &popup_button,
-				     const popup &font_picker_popup,
 				     const label &current_font_shown,
 				     const font_picker_popup_fieldsptr
 				     &popup_fields,
