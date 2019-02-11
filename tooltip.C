@@ -97,6 +97,13 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
 		return false;
 	}
 
+	// We will go away as soon as a key is pressed
+
+	bool popup_accepts_button_events(ONLY IN_THREAD) override
+	{
+		return false;
+	}
+
 	void creating_focusable_element() override
 	{
 		throw EXCEPTION(_("Focusable display elements cannot "
@@ -312,6 +319,8 @@ popup_tooltip_factory::create_tooltip_handler
 #endif
 }
 
+static_tooltip_config::~static_tooltip_config()=default;
+
 ///////////////////////////////////////////////////////////////////////////
 
 void elementObj::create_tooltip(const text_param &text)
@@ -374,6 +383,161 @@ void elementObj::implObj::hover_cancel(ONLY IN_THREAD)
 		return;
 	data(IN_THREAD).attached_popup=nullptr;
 
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+namespace {
+#if 0
+}
+#endif
+
+class LIBCXX_HIDDEN static_popup_tooltip_factory :
+	public tooltip_factory_impl {
+
+ public:
+	const static_tooltip_config &config;
+
+	const rectangle parent_element_position;
+
+	static_popup_tooltip_factory(const ref<elementObj::implObj>
+				     &parent_element,
+				     const static_tooltip_config &config,
+				     const rectangle &parent_element_position,
+				     popupptr &created_tooltip_popup);
+
+	ref<tooltip_handlerObj>
+		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
+				       &parent_window,
+				       const border_arg &tooltip_border,
+				       const dim_arg &tooltip_border_hpad,
+				       const dim_arg &tooltip_border_vpad)
+		const override;
+
+	popupptr &created_tooltip_popup;
+
+	void created_popup(const popup &tooltip_popup) const override
+	{
+		created_tooltip_popup=tooltip_popup;
+	}
+};
+
+static_popup_tooltip_factory::static_popup_tooltip_factory
+(const ref<elementObj::implObj> &parent_element,
+ const static_tooltip_config &config,
+ const rectangle &parent_element_position,
+ popupptr &created_tooltip_popup)
+	: tooltip_factory_impl{parent_element},
+	  config{config},
+	  parent_element_position{parent_element_position},
+	  created_tooltip_popup{created_tooltip_popup}
+{
+}
+
+ref<tooltip_handlerObj>
+static_popup_tooltip_factory
+::create_tooltip_handler(const ref<generic_windowObj::handlerObj>
+			 &parent_window,
+			 const border_arg &tooltip_border,
+			 const dim_arg &tooltip_border_hpad,
+			 const dim_arg &tooltip_border_vpad) const
+{
+	return ref<tooltip_handlerObj>::create
+		(parent_window->thread(),
+		 tooltip_border,
+		 tooltip_border_hpad,
+		 tooltip_border_vpad,
+		 parent_window,
+		 parent_element_position,
+		 config.affinity);
+}
+
+#if 0
+{
+#endif
+}
+
+container elementObj::do_create_static_tooltip(const function<void
+					       (const container &)> &creator)
+{
+	return do_create_static_tooltip(creator, new_gridlayoutmanager{});
+}
+
+container elementObj::do_create_static_tooltip(const function<void
+					       (const container &)> &creator,
+					       const new_layoutmanager &nlm)
+{
+	return do_create_static_tooltip(creator, nlm, {});
+}
+
+container elementObj::do_create_static_tooltip(const function<void
+					       (const container &)> &creator,
+					       const new_layoutmanager &nlm,
+					       const static_tooltip_config
+					       &config)
+{
+	popupptr created_tooltip_popup;
+
+	static_popup_tooltip_factory factory{impl, config,
+					     rectangle{},
+					     created_tooltip_popup};
+
+	factory.create(creator, nlm,
+		       config.alpha_border,
+		       config.nonalpha_border);
+
+	popup p{created_tooltip_popup};
+
+	impl->get_window_handler().thread()->run_as
+		([impl=this->impl, p]
+		 (ONLY IN_THREAD)
+		 {
+			 impl->data(IN_THREAD).attached_popup=p;
+			 impl->update_attachedto_info(IN_THREAD);
+		 });
+
+	return p;
+}
+
+container elementObj::do_create_static_tooltip(ONLY IN_THREAD,
+					       const function<void
+					       (const container &)> &creator)
+{
+	return do_create_static_tooltip(IN_THREAD, creator,
+					new_gridlayoutmanager{});
+}
+
+container elementObj::do_create_static_tooltip(ONLY IN_THREAD,
+					       const function<void
+					       (const container &)> &creator,
+					       const new_layoutmanager &nlm)
+{
+	return do_create_static_tooltip(IN_THREAD, creator, nlm, {});
+}
+
+container elementObj::do_create_static_tooltip(ONLY IN_THREAD,
+					       const function<void
+					       (const container &)> &creator,
+					       const new_layoutmanager &nlm,
+					       const static_tooltip_config
+					       &config)
+{
+	popupptr created_tooltip_popup;
+
+	static_popup_tooltip_factory
+		factory{impl, config,
+			impl->get_absolute_location_on_screen(IN_THREAD),
+			created_tooltip_popup};
+
+	factory.create(creator, nlm,
+		       config.alpha_border,
+		       config.nonalpha_border);
+
+	popup p{created_tooltip_popup};
+
+	impl->data(IN_THREAD).attached_popup=p;
+
+	return p;
 }
 
 LIBCXXW_NAMESPACE_END

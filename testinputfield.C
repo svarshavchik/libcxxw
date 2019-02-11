@@ -27,6 +27,8 @@
 #include "x/w/button.H"
 #include "x/w/itemlayoutmanager.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/focus.H"
+#include "x/w/tooltip.H"
 #include <x/weakcapture.H>
 #include <string>
 #include <iostream>
@@ -439,6 +441,45 @@ void testbutton()
 			 ("The quick brown fox jumped over "
 			  "the lazy dog's tail", conf2);
 
+			 fields.second->on_keyboard_focus
+				 ([me=make_weak_capture(fields.second),
+				   current_focus=false]
+				  (ONLY IN_THREAD,
+				   LIBCXX_NAMESPACE::w::focus_change change,
+				   const auto &trigger)
+				  mutable
+				  {
+					  auto got=me.get();
+
+					  if (!got)
+						  return;
+
+					  auto & [me]=*got;
+
+					  auto new_focus=in_focus(change);
+
+					  if (current_focus == new_focus)
+						  return;
+
+					  current_focus=new_focus;
+
+					  if (!current_focus)
+					  {
+						  me->remove_tooltip();
+						  return;
+					  }
+
+					  me->create_static_tooltip
+						  ([]
+						   (const auto &c)
+						   {
+							   LIBCXX_NAMESPACE::w::gridlayoutmanager glm
+								   =c->get_layoutmanager();
+
+							   auto f=glm->append_row();
+							   f->create_label("Hello world!");
+						   })->show_all();
+				  });
 			 factory=layout->append_row();
 
 			 auto n=factory->create_input_field("", {5});

@@ -22,11 +22,13 @@
 #include <x/w/focus.H>
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/shortcutfwd.H>
+#include <x/w/tooltipfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 #include <x/functionalrefptrfwd.H>
 #include <string_view>
 #include <functional>
+#include <utility>
 
 LIBCXXW_NAMESPACE_START
 
@@ -160,8 +162,83 @@ public:
 	(const functionref<void (THREAD_CALLBACK, const tooltip_factory &)>
 	 &tooltip_factory) const;
 
+	//! Create a static tooltip.
+
+	template<typename creator, typename ...Args,
+		 typename=decltype(std::declval<creator &&>()
+				   (std::declval<const container &>()))>
+	inline container create_static_tooltip(creator &&c,
+					       Args && ...args)
+	{
+		return do_create_static_tooltip(make_function<void
+						(const container &)>
+						(std::forward<creator>(c)),
+						std::forward<Args>(args)...);
+	}
+
+	container do_create_static_tooltip(const function<void
+					   (const container &)> &creator);
+
+	//! Create a static tooltip.
+
+	container do_create_static_tooltip(const function<void
+					   (const container &)> &creator,
+					   const new_layoutmanager &nlm);
+
+	//! Create a static tooltip.
+
+	container do_create_static_tooltip(const function<void
+					   (const container &)> &creator,
+					   const new_layoutmanager &nlm,
+					   const static_tooltip_config &config);
+
+	//! Create a static tooltip
+
+	template<typename creator, typename ...Args,
+		 typename=decltype(make_function<void
+				   (const container &)>
+				   (std::declval<creator &&>()))>
+	inline container create_static_tooltip(ONLY IN_THREAD,
+					       creator &&c,
+					       Args && ...args)
+	{
+		return do_create_static_tooltip(IN_THREAD,
+						make_function<void
+						(const container &)>
+						(std::forward<creator>(c)),
+						std::forward<Args>(args)...);
+	}
+
+	//! Create a static tooltip
+
+	container do_create_static_tooltip(ONLY IN_THREAD,
+					   const function<void
+					   (const container &)> &creator);
+
+	//! Create a static tooltip.
+
+	container do_create_static_tooltip(ONLY IN_THREAD,
+					   const function<void
+					   (const container &)> &creator,
+					   const new_layoutmanager &nlm);
+
+	//! Create a static tooltip.
+
+	container do_create_static_tooltip(ONLY IN_THREAD,
+					   const function<void
+					   (const container &)> &creator,
+					   const new_layoutmanager &nlm,
+					   const static_tooltip_config &config);
+
 	//! Remove the tooltip from this display element.
+
+	//! Removes a standard or a static tooltip.
 	void remove_tooltip() const;
+
+	//! Remove the tooltip from this display element.
+
+	//! Removes a standard or a static tooltip.
+	void remove_tooltip(ONLY IN_THREAD) const;
 
 	//! Create a popup context menu for this display element.
 

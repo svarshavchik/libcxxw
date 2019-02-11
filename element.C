@@ -252,11 +252,17 @@ void elementObj::create_custom_tooltip(const functionref<void
 void elementObj::remove_tooltip() const
 {
 	impl->THREAD->run_as
-		([impl=this->impl]
+		([me=const_ref{this}]
 		 (ONLY IN_THREAD)
 		 {
-			 impl->data(IN_THREAD).tooltip_factory=nullptr;
+			 me->remove_tooltip(IN_THREAD);
 		 });
+}
+
+void elementObj::remove_tooltip(ONLY IN_THREAD) const
+{
+	impl->data(IN_THREAD).tooltip_factory=nullptr;
+	impl->data(IN_THREAD).attached_popup=nullptr;
 }
 
 container elementObj

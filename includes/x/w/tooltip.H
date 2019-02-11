@@ -10,6 +10,7 @@
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/dim_arg.H>
+#include <x/w/rgb.H>
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
@@ -108,6 +109,20 @@ enum class attached_to
 	 //! a static tooltip.
 
 	 tooltip,
+};
+
+struct static_tooltip_config {
+	attached_to affinity=attached_to::right_or_left;
+
+	tooltip_border alpha_border=
+		tooltip_factory::default_alpha_border();
+
+	tooltip_border nonalpha_border=
+		tooltip_factory::default_nonalpha_border();
+
+	color_arg background_color="static_tooltip_background_color";
+
+	~static_tooltip_config();
 };
 
 LIBCXXW_NAMESPACE_END

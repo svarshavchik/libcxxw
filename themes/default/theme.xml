@@ -587,6 +587,17 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
   <dim id="tooltip_x_offset" axis="horiz">1</dim>
   <dim id="tooltip_y_offset" axis="vert">1</dim>
 
+  <!-- Static tooltips -->
+
+  <border id="static_tooltip_border" from="tooltip_border" />
+  <border id="static_tooltip_border_square" from="tooltip_border_square" />
+
+  <color id="static_tooltip_background_color"
+	 scale="tooltip_background_color" />
+
+  <color id="noshade:static_tooltip_background_color"
+	 scale="noshade:tooltip_background_color" />
+
   <!-- Selection lists -->
 
   <dim id="list_v_padding" axis="vert">.2</dim>
