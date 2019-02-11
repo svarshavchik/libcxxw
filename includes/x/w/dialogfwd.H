@@ -19,6 +19,7 @@
 #include <functional>
 #include <optional>
 #include <string_view>
+#include <variant>
 
 LIBCXXW_NAMESPACE_START
 

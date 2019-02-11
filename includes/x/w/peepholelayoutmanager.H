@@ -8,7 +8,7 @@
 #include <x/w/peepholelayoutmanagerfwd.H>
 #include <x/w/peepholelayoutmanagerobj.H>
 #include <x/w/layoutmanager.H>
-#include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/new_layoutmanager.H>
 #include <x/w/new_focusable_layoutmanagerfwd.H>
 #include <x/w/peephole_style.H>
 #include <x/w/scrollbar.H>

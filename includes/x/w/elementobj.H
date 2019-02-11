@@ -11,6 +11,7 @@
 #include <x/w/screenfwd.H>
 #include <x/w/focusablefwd.H>
 #include <x/w/tooltipfwd.H>
+#include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/element_statefwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/picturefwd.H>

@@ -7,7 +7,7 @@
 
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/gridlayoutmanagerobj.H>
-#include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/new_layoutmanager.H>
 #include <x/w/synchronized_axisfwd.H>
 #include <x/ref.H>
 #include <x/functionalrefptr.H>

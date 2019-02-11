@@ -6,6 +6,7 @@
 #include "x/w/impl/container.H"
 #include "x/w/container.H"
 #include "x/w/factory.H"
+#include "x/w/new_layoutmanager.H"
 #include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/child_element.H"

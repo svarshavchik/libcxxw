@@ -8,7 +8,7 @@
 #include <x/w/toolboxlayoutmanagerfwd.H>
 #include <x/w/toolboxlayoutmanagerobj.H>
 #include <x/w/layoutmanager.H>
-#include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/new_layoutmanager.H>
 
 LIBCXXW_NAMESPACE_START
 

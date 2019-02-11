@@ -7,7 +7,7 @@
 
 #include <x/w/borderlayoutmanagerfwd.H>
 #include <x/w/borderlayoutmanagerobj.H>
-#include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/new_layoutmanager.H>
 #include <x/w/text_param.H>
 #include <x/ref.H>
 #include <x/functionalrefptr.H>
