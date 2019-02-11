@@ -127,9 +127,7 @@ do_create_peepholed_toplevel_listcontainer_popup
 //! \ref popupObj::handlerObj "ref<popupObj::handlerObj>".
 //! create_peepholed_toplevel_listcontainer_popup() gets called to construct
 //! the popup before creating the element the popup gets attached to.
-//! The element's implementation object inherits from
-//! \ref popup_attachedto_handler_elementObj "popup_attachedto_handler_element",
-//! and the returned
+//! The returned
 //! \ref popupObj::handlerObj "ref<popupObj::handlerObj>" gets used
 //! to construct the element's implementation object.
 //!
