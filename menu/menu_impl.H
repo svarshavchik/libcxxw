@@ -9,6 +9,7 @@
 #include "x/w/impl/nonrecursive_visibilityfwd.H"
 #include "x/w/impl/focus/focusframecontainer_elementfwd.H"
 #include "popup/popup_attachedto_handler_elementfwd.H"
+#include "popup/popupobj.H"
 #include "x/w/impl/popup/popupfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
@@ -43,7 +44,7 @@ class LIBCXX_HIDDEN menuObj::implObj :
 	implObj(const popup &menu_popup,
 		const border_arg &focusoff_border,
 		const border_arg &focuson_border,
-		const ref<popup_attachedto_handlerObj> &attachedto_handler,
+		const ref<popupObj::handlerObj> &attachedto_handler,
 		const container_impl &parent_container);
 
 	//! Destructor

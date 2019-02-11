@@ -8,7 +8,6 @@
 #include "peepholed_toplevel_listcontainer/create_popupfwd.H"
 #include "popup/popup.H"
 #include "popup/popup_attachedto_info.H"
-#include "popup/popup_attachedto_handler.H"
 #include "x/w/impl/always_visible.H"
 #include "peepholed_toplevel_listcontainer/handler.H"
 #include "peepholed_toplevel_listcontainer/impl_element.H"
@@ -75,7 +74,7 @@ struct create_peepholed_toplevel_listcontainer_popup_args {
 
 //! Return value from create_peepholed_toplevel_listcontainer_popup().
 
-typedef std::tuple<popup, popup_attachedto_handler> create_p_t_l_popup_ret_t;
+typedef std::tuple<popup, ref<popupObj::handlerObj>> create_p_t_l_popup_ret_t;
 
 template<typename factory_t, typename handler_factory_t>
 create_p_t_l_popup_ret_t
@@ -125,13 +124,13 @@ do_create_peepholed_toplevel_listcontainer_popup
 //! the default implementation.
 //!
 //! Returns the new popup, and a
-//! \ref popup_attachedto_handlerObj "popup_attachedto_handler".
+//! \ref popupObj::handlerObj "ref<popupObj::handlerObj>".
 //! create_peepholed_toplevel_listcontainer_popup() gets called to construct
 //! the popup before creating the element the popup gets attached to.
 //! The element's implementation object inherits from
 //! \ref popup_attachedto_handler_elementObj "popup_attachedto_handler_element",
 //! and the returned
-//! \ref popup_attachedto_handlerObj "popup_attachedto_handler" gets used
+//! \ref popupObj::handlerObj "ref<popupObj::handlerObj>" gets used
 //! to construct the element's implementation object.
 //!
 //! A popup can only be attached to one element.

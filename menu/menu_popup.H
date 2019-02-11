@@ -6,7 +6,6 @@
 #define menu_popup_h
 
 #include "popup/popup.H"
-#include "popup/popup_attachedto_handler.H"
 #include "x/w/elementobj.H"
 #include "x/w/listlayoutmanager.H"
 #include <x/functional.H>
@@ -33,7 +32,7 @@ static inline auto create_menu_popup(const element_impl &e,
 
 //! Passed as a third parameter to create_menu_popup().
 
-std::tuple<popup, ref<popup_attachedto_handlerObj> >
+std::tuple<popup, ref<popupObj::handlerObj> >
 topmenu_popup(const element_impl &e,
 	      const function<void (const listlayoutmanager &)> &creator)
 	LIBCXX_HIDDEN;
@@ -42,7 +41,7 @@ topmenu_popup(const element_impl &e,
 
 //! Passed as a third parameter to create_menu_popup().
 
-std::tuple<popup, ref<popup_attachedto_handlerObj> >
+std::tuple<popup, ref<popupObj::handlerObj> >
 submenu_popup(const element_impl &e,
 	      const function<void (const listlayoutmanager &)>
 			&creator)

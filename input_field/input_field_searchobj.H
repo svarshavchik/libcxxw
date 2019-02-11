@@ -8,7 +8,6 @@
 #include "input_field/input_field_searchfwd.H"
 #include "input_field/input_field_search_popup_handlerfwd.H"
 #include "popup/popup_attachedto_handler_elementfwd.H"
-#include "popup/popup_attachedto_handlerfwd.H"
 #include "x/w/impl/popup/popupfwd.H"
 #include "peepholed_focusable.H"
 

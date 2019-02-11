@@ -6,10 +6,30 @@
 #include "libcxxw_config.h"
 
 #include <iostream>
+#include <string>
 #include <x/mpobj.H>
 #include <x/destroy_callback.H>
 
 #include "x/w/connection_threadfwd.H"
+
+#define x_w_text_param_H
+#define x_w_listlayoutmanager_h
+
+LIBCXXW_NAMESPACE_START
+
+class text_param : public std::string {
+
+public:
+	using std::string::string;
+};
+
+class list_item_param : public std::u32string {
+
+public:
+	list_item_param(const std::u32string &) {}
+};
+
+LIBCXXW_NAMESPACE_END
 
 #define ONLY int
 

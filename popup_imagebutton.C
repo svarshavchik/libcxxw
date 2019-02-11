@@ -15,7 +15,7 @@
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/child_element.H"
 #include "generic_window_handler.H"
-#include "popup/popup_attachedto_handler.H"
+#include "popup/popup_handler.H"
 #include "popup/popup_attachedto_handler_element.H"
 #include "icon.H"
 
@@ -23,7 +23,7 @@ LIBCXXW_NAMESPACE_START
 
 image_button_internal
 create_standard_popup_imagebutton(const gridfactory &f,
-				  const popup_attachedto_handler
+				  const ref<popupObj::handlerObj>
 				  &attachedto_handler,
 				  const popup_imagebutton_config &config)
 {
@@ -57,7 +57,7 @@ image_button_internal
 do_create_popup_imagebutton(const gridfactory &f,
 			    const function<popup_imagebutton_focusframe_factory>
 			    &ff_factory,
-			    const popup_attachedto_handler &my_popup_handler,
+			    const ref<popupObj::handlerObj> &my_popup_handler,
 			    const popup_imagebutton_config &config)
 {
 	// Visual appearance of the button.

@@ -8,7 +8,7 @@
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "popup/popup.H"
-#include "popup/popup_attachedto_handler.H"
+#include "popup/popup_handler.H"
 #include "shortcut/shortcut_activation_element_impl.H"
 #include "activated_in_thread.H"
 #include "generic_window_handler.H"

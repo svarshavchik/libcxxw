@@ -6,7 +6,6 @@
 #define popup_handler_h
 
 #include "popup/popup.H"
-#include "popup/popup_attachedto_handlerfwd.H"
 #include "popup/popup_attachedto_infofwd.H"
 #include "generic_window_handler.H"
 #include "x/w/connection_threadfwd.H"
@@ -18,6 +17,27 @@
 LIBCXXW_NAMESPACE_START
 
 struct popup_visibility_semantics;
+
+
+//! Arguments to \ref popupObj::handlerObj "popup handler"'s constructor.
+
+struct LIBCXX_HIDDEN popup_handler_args {
+
+	//! The new popup's semantics
+	const popup_visibility_semantics &attachedto_type;
+
+	//! What WM_CLASS instance this is
+	const char *wm_class_instance;
+
+	//! Parent top level display element
+	const ref<generic_windowObj::handlerObj> &parent;
+
+	//! Popup attachedment information
+	const popup_attachedto_info &attachedto_info;
+
+	//! Initial nesting level of the popup.
+	size_t nesting_level;
+};
 
 //! Menu popup semantics
 
@@ -76,7 +96,7 @@ public:
 	const char * const wm_class_instance;
 
 	//! Constructor
-	handlerObj(const popup_attachedto_handler_args &);
+	handlerObj(const popup_handler_args &);
 
 	//! Destructor
 	~handlerObj();

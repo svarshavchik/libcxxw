@@ -7,7 +7,7 @@
 
 #include "x/w/impl/element.H"
 #include "x/w/hotspotfwd.H"
-#include "popup/popup_attachedto_handlerfwd.H"
+#include "popup/popupobj.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -24,10 +24,10 @@ class popup_showhide_elementObj : public element_impl {
 
 public:
 	//! The handler of the popup that's attached to this element.
-	const popup_attachedto_handler my_popup_handler;
+	const ref<popupObj::handlerObj> my_popup_handler;
 
 	template<typename ...Args>
-	popup_showhide_elementObj(const popup_attachedto_handler
+	popup_showhide_elementObj(const ref<popupObj::handlerObj>
 				  &my_popup_handler,
 				  Args && ...args);
 

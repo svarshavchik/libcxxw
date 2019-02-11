@@ -11,7 +11,6 @@
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN popupObj;
-class LIBCXX_HIDDEN popup_attachedto_handlerObj;
 
 //! A popup.
 

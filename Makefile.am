@@ -667,10 +667,6 @@ libcxxw_la_SOURCES=\
 	popup/popup_attachedto_element.C	    \
 	popup/popup_attachedto_element.H	    \
 	popup/popup_attachedto_elementfwd.H	    \
-	popup/popup_attachedto_handler.C	    \
-	popup/popup_attachedto_handler.H	    \
-	popup/popup_attachedto_handlerfwd.H	    \
-	popup/popup_attachedto_handlerobj.H	    \
 	popup/popup_attachedto_handler_element.H    \
 	popup/popup_attachedto_handler_elementfwd.H \
 	popup/popup_attachedto_info.C		    \
@@ -1109,7 +1105,7 @@ testshowhide_SOURCES=testshowhide.C
 testshowhide_LDADD=libcxxw.la
 
 testsearch_SOURCES=testsearch.C
-testsearch_LDADD=libcxxw.la
+testsearch_LDADD=-lcxx
 testsearch_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testtextparam_SOURCES=testtextparam.C

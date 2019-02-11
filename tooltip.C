@@ -6,7 +6,7 @@
 #include "screen.H"
 #include "connection_thread.H"
 #include "generic_window_handler.H"
-#include "popup/popup_attachedto_handler.H"
+#include "popup/popup_handler.H"
 #include "popup/popup_attachedto_info.H"
 #include "popup/popup_impl.H"
 #include "x/w/gridlayoutmanager.H"
@@ -31,13 +31,13 @@ namespace {
 }
 #endif
 
-//! Subclass popup_attachedto_handlerObj for a tooltip window.
+//! Subclass popupObj::handlerObj for a tooltip window.
 
 class LIBCXX_HIDDEN tooltip_handlerObj :
-	public popup_attachedto_handlerObj {
+	public popupObj::handlerObj {
 
 	//! typedef alias
-	typedef popup_attachedto_handlerObj superclass_t;
+	typedef popupObj::handlerObj superclass_t;
 
  public:
 	//! Constructor
@@ -77,7 +77,7 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 				       &parent,
 				       coord_t pointer_x,
 				       coord_t pointer_y)
-	: superclass_t{popup_attachedto_handler_args
+	: superclass_t{popup_handler_args
 		       {
 			exclusive_popup_type,
 			"tooltip",

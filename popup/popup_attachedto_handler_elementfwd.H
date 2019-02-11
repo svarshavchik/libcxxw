@@ -5,7 +5,7 @@
 #ifndef popup_attachedto_handler_elementfwd_h
 #define popup_attachedto_handler_elementfwd_h
 
-#include "popup/popup_attachedto_handlerfwd.H"
+#include "popup/popupobj.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/element.H"
 #include <x/ptrfwd.H>
@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 //! There's a popup attached to this display element.
 //! The template parameter is a subclass of an element.
-//! The first parameter to the constructor is a popup_attachedto_handler
+//! The first parameter to the constructor is a ref<popupObj::handlerObj>
 //! object, the handler for the attached popup. The remaining parameters
 //! get forwarded to the superclass's constructor.
 
@@ -27,10 +27,10 @@ class LIBCXX_HIDDEN popup_attachedto_handler_elementObj : public element_impl {
 
 	//! The handler for the popup attached to this display element.
 
-	const popup_attachedto_handler attachedto_handler;
+	const ref<popupObj::handlerObj> popup_handler;
 
 	template<typename ...Args>
-		popup_attachedto_handler_elementObj(const popup_attachedto_handler &attachedto_handler, Args && ...args);
+		popup_attachedto_handler_elementObj(const ref<popupObj::handlerObj> &popup_handler, Args && ...args);
 
 	~popup_attachedto_handler_elementObj();
 

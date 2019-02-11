@@ -3,9 +3,10 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "popup/popup_attachedto_element.H"
+#include "popup/popup_attachedto_elementfwd.H"
+#include "popup/popup_handler.H"
 #include "popup/popup_impl.H"
-#include "popup/popup_attachedto_handler.H"
+#include "peephole/peepholed_attachedto_container_impl.H"
 #include "popup_imagebutton.H"
 #include "shared_handler_data.H"
 #include "peephole/peepholed_toplevel.H"
@@ -46,8 +47,8 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 	auto parent_handler=ref(&parent_container->get_window_handler());
 
 	auto attachedto_handler=
-		ref<popup_attachedto_handlerObj>::create
-		(popup_attachedto_handler_args{
+		ref<popupObj::handlerObj>::create
+		(popup_handler_args{
 			exclusive_popup_type,
 			"element_popup",
 			parent_handler,

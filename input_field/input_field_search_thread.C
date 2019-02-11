@@ -226,10 +226,10 @@ struct thread_exception_helper {
 			p->search_exception_message(e);
 	}
 
-	void stop_message(const text_param &t)
+	void stop_message(const char *msg)
 	{
 		if (p)
-			p->search_stop_message(t);
+			p->search_stop_message(msg);
 	}
 };
 

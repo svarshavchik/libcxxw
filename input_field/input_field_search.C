@@ -7,7 +7,6 @@
 #include "input_field/input_field_search_popup_handler.H"
 #include "popup/popup.H"
 #include "popup/popup_attachedto_handler_element.H"
-#include "popup/popup_attachedto_handler.H"
 
 LIBCXXW_NAMESPACE_START
 

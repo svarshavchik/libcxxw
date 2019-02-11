@@ -36,7 +36,7 @@ static const list_selection_type_cb_t menuitem_selected_type=
 								  mcguffin);
 };
 
-static std::tuple<popup, ref<popup_attachedto_handlerObj> >
+static std::tuple<popup, ref<popupObj::handlerObj> >
 do_create_menu_popup(const function<void (const listlayoutmanager &)> &creator,
 		     const new_listlayoutmanager &style,
 		     const create_peepholed_toplevel_listcontainer_popup_args
@@ -120,7 +120,7 @@ do_create_dropdown_menu(const element_impl &e,
 		 create_handler);
 }
 
-std::tuple<popup, ref<popup_attachedto_handlerObj> >
+std::tuple<popup, ref<popupObj::handlerObj> >
 topmenu_popup(const element_impl &e,
 	      const function<void (const listlayoutmanager &)> &creator)
 {
@@ -134,7 +134,7 @@ topmenu_popup(const element_impl &e,
 }
 
 
-std::tuple<popup, ref<popup_attachedto_handlerObj> >
+std::tuple<popup, ref<popupObj::handlerObj> >
 submenu_popup(const element_impl &e,
 	      const function<void (const listlayoutmanager &)> &creator)
 {

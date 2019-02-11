@@ -5,7 +5,6 @@
 #include "libcxxw_config.h"
 #include "popup/popup_impl.H"
 #include "popup/popup_handler.H"
-#include "popup/popup_attachedto_handler.H"
 #include "popup/popup_attachedto_info.H"
 #include "generic_window_handler.H"
 #include "inherited_visibility_info.H"
@@ -48,7 +47,7 @@ const popup_visibility_semantics menu_popup_type={
 	&shared_handler_dataObj::closing_menu_popup
 };
 
-popupObj::handlerObj::handlerObj(const popup_attachedto_handler_args &args)
+popupObj::handlerObj::handlerObj(const popup_handler_args &args)
 	: superclass_t{args.parent->thread(),
 		       args.parent->get_screen(),
 		       "transparent",

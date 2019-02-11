@@ -98,7 +98,7 @@ create_popup_contents_t(const popup_attachedto_info &,
 //!
 //! The first closure receives two parameters: a
 //! \ref container_impl "container implementation object", and a
-//! \ref child_element_init_params "child_element_init_params". The second
+//! \ref child_element_init_params "child_element_init_params". The first
 //! closure needs to create a
 //! \ref peepholed_attachedto_containerObj::implObj "peepholed_attachedto_containerObj::implObj"
 //! object, constructed using the two parameters, and return it. This is
@@ -107,7 +107,7 @@ create_popup_contents_t(const popup_attachedto_info &,
 //! The second closure gets called next, with a
 //! \ref popup_attachedto_info "popup_attachedto_info object",
 //! and a \ref gridlayoutmanagerObj::implObj "gridlayoutmanagerObj::implObj".
-//! The popup's contents use the grid layout manager. The third closure
+//! The popup's contents use the grid layout manager. The second closure
 //! must create and return a
 //! \ref peepholed_attachedto_container "peepholed_attachedto_container"
 //! that gets constructed using the object returned by the second closure

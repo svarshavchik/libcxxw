@@ -6,6 +6,7 @@
 #define listlayoutmanager_menuitem_h
 
 #include "x/w/impl/popup/popupfwd.H"
+#include "popup/popupobj.H"
 #include <variant>
 
 LIBCXXW_NAMESPACE_START
@@ -19,8 +20,8 @@ struct LIBCXX_HIDDEN menu_item_option {};
 //! This menu item is a submenu
 
 struct LIBCXX_HIDDEN menu_item_submenu {
-	popup                             submenu_popup;
-	ref<popup_attachedto_handlerObj>  submenu_popup_handler;
+	popup                           submenu_popup;
+	ref<popupObj::handlerObj>	submenu_popup_handler;
 };
 
 //! Menu item type.

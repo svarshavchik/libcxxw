@@ -16,7 +16,7 @@
 #include "listlayoutmanager/list_cell.H"
 #include "peephole/peephole_impl.H"
 #include "popup/popup.H"
-#include "popup/popup_attachedto_handler.H"
+#include "popup/popup_handler.H"
 #include "menu/menu_popup.H"
 #include "x/w/impl/richtext/richtextstring.H"
 #include "icon.H"

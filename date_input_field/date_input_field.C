@@ -8,7 +8,7 @@
 #include "date_input_field/date_input_field_handler.H"
 #include "date_input_field/date_input_field_calendar.H"
 #include "popup/popup_attachedto_info.H"
-#include "popup/popup_attachedto_handler.H"
+#include "popup/popup_handler.H"
 #include "popup/popup_attachedto_handler_element.H"
 #include "popup/popup_impl.H"
 #include "popup/popup.H"
@@ -159,8 +159,8 @@ date_input_field factoryObj
 	auto parent_handler=ref(&parent_container->get_window_handler());
 
 	auto attachedto_handler=
-		popup_attachedto_handler::create
-		(popup_attachedto_handler_args{
+		ref<popupObj::handlerObj>::create
+		(popup_handler_args{
 			exclusive_popup_type,
 			"date_input",
 			parent_handler,

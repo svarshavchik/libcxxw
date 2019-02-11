@@ -6,7 +6,7 @@
 #define peepholed_toplevel_listcontainer_handlerobj_h
 
 #include "peepholed_toplevel_listcontainer/handlerfwd.H"
-#include "popup/popup_attachedto_handlerobj.H"
+#include "popup/popup_handler.H"
 #include "x/w/impl/background_color.H"
 
 LIBCXXW_NAMESPACE_START
@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 struct LIBCXX_HIDDEN peepholed_toplevel_listcontainer_handler_args {
 	const color_arg &topleft_color;
 	const color_arg &bottomright_color;
-	const popup_attachedto_handler_args &popup_args;
+	const popup_handler_args &popup_args;
 };
 
 //! Implementation object.
@@ -24,9 +24,9 @@ struct LIBCXX_HIDDEN peepholed_toplevel_listcontainer_handler_args {
 //! \see peepholed_toplevel_listcontainer_handler
 
 class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_handlerObj
-	: public popup_attachedto_handlerObj {
+	: public popupObj::handlerObj {
 
-	typedef popup_attachedto_handlerObj superclass_t;
+	typedef popupObj::handlerObj superclass_t;
 
 	//! Which affinity is used to set the current list popup background
 

@@ -9,7 +9,6 @@
 #include "peepholed_toplevel_listcontainer/layoutmanager_impl.H"
 #include "peepholed_toplevel_listcontainer/handler.H"
 #include "generic_window_handler.H"
-#include "popup/popup_attachedto_handler.H"
 #include "popup/popup_impl.H"
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "shared_handler_data.H"

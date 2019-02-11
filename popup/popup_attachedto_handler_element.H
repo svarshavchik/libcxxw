@@ -6,7 +6,7 @@
 #define popup_attachedto_handler_element_h
 
 #include "popup/popup_attachedto_handler_elementfwd.H"
-#include "popup/popup_attachedto_handler.H"
+#include "popup/popup_handler.H"
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START
@@ -16,10 +16,10 @@ LIBCXXW_NAMESPACE_START
 template<typename element_impl>
 template<typename ...Args>
 popup_attachedto_handler_elementObj<element_impl>
-::popup_attachedto_handler_elementObj(const popup_attachedto_handler
-				      &attachedto_handler, Args && ...args)
-	: element_impl(std::forward<Args>(args)...),
-	  attachedto_handler(attachedto_handler)
+::popup_attachedto_handler_elementObj(const ref<popupObj::handlerObj>
+				      &popup_handler, Args && ...args)
+	: element_impl{std::forward<Args>(args)...},
+	  popup_handler{popup_handler}
 {
 }
 
@@ -72,7 +72,7 @@ template<typename element_impl>
 void popup_attachedto_handler_elementObj<element_impl>
 ::update_attachedto_info(ONLY IN_THREAD)
 {
-	attachedto_handler->update_attachedto_element_position
+	popup_handler->update_attachedto_element_position
 		(IN_THREAD,
 		 this->get_absolute_location_on_screen(IN_THREAD));
 }

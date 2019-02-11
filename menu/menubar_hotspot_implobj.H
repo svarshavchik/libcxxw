@@ -31,7 +31,7 @@ class LIBCXX_HIDDEN menubar_hotspot_implObj
 
 	//! Constructor
 	menubar_hotspot_implObj(const popup &menu_popup,
-				const popup_attachedto_handler &menu_popup_handler,
+				const ref<popupObj::handlerObj> &menu_popup_handler,
 				const background_color &bg_color,
 				const background_color &highlighted_color,
 				const background_color &clicked_color,
