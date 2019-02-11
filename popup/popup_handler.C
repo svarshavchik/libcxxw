@@ -5,6 +5,8 @@
 #include "libcxxw_config.h"
 #include "popup/popup_impl.H"
 #include "popup/popup_handler.H"
+#include "popup/popup_attachedto_handler.H"
+#include "popup/popup_attachedto_info.H"
 #include "generic_window_handler.H"
 #include "inherited_visibility_info.H"
 #include "screen.H"
@@ -22,18 +24,41 @@
 
 LIBCXXW_NAMESPACE_START
 
-popupObj::handlerObj::handlerObj(ONLY IN_THREAD,
-				 const ref<generic_windowObj::handlerObj>
-				 &parent,
-				 const color_arg &background_color,
-				 size_t nesting_level)
-	: superclass_t(IN_THREAD, parent->get_screen(),
-		       background_color,
-		       parent->handler_data,
-		       nesting_level),
-	popup_parent(parent)
+//! Specifies popup semantics.
+struct LIBCXX_HIDDEN popup_visibility_semantics {
+
+	//! Invoke this method when the popup becomes visible.
+
+	ref<obj> (shared_handler_dataObj::*opened_popup)
+		(ONLY IN_THREAD, const ref<popupObj::handlerObj> &);
+
+	//! Invoke this method when the popup is no longer visible.
+
+	void (shared_handler_dataObj::*closed_popup)
+		(ONLY IN_THREAD, const popupObj::handlerObj &);
+};
+
+const popup_visibility_semantics exclusive_popup_type={
+	&shared_handler_dataObj::opening_exclusive_popup,
+	&shared_handler_dataObj::closing_exclusive_popup
+};
+
+const popup_visibility_semantics menu_popup_type={
+	&shared_handler_dataObj::opening_menu_popup,
+	&shared_handler_dataObj::closing_menu_popup
+};
+
+popupObj::handlerObj::handlerObj(const popup_attachedto_handler_args &args)
+	: superclass_t{args.parent->thread(),
+		       args.parent->get_screen(),
+		       "transparent",
+		       args.parent->handler_data,
+		       args.nesting_level},
+	  attachedto_info{args.attachedto_info},
+	  attachedto_type{args.attachedto_type},
+	  wm_class_instance{args.wm_class_instance},
+	  popup_parent{args.parent}
 {
-	update_user_time(IN_THREAD);
 }
 
 popupObj::handlerObj::~handlerObj()=default;
@@ -251,6 +276,7 @@ void popupObj::handlerObj::do_button_event(ONLY IN_THREAD,
 
 void popupObj::handlerObj::set_inherited_visibility_mapped(ONLY IN_THREAD)
 {
+	update_user_time(IN_THREAD);
 	popup_opened(IN_THREAD);
 	opened_mcguffin=get_opened_mcguffin(IN_THREAD);
 	superclass_t::set_inherited_visibility_mapped(IN_THREAD);
@@ -384,5 +410,16 @@ bool popupObj::handlerObj
 	return false;
 }
 
+
+ref<obj> popup_attachedto_handlerObj::get_opened_mcguffin(ONLY IN_THREAD)
+{
+	return ((*handler_data).*(attachedto_type.opened_popup))
+		(IN_THREAD, ref<popupObj::handlerObj>(this));
+}
+
+void popup_attachedto_handlerObj::released_opened_mcguffin(ONLY IN_THREAD)
+{
+	((*handler_data).*(attachedto_type.closed_popup))(IN_THREAD, *this);
+}
 
 LIBCXXW_NAMESPACE_END

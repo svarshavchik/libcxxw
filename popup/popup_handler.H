@@ -6,6 +6,8 @@
 #define popup_handler_h
 
 #include "popup/popup.H"
+#include "popup/popup_attachedto_handlerfwd.H"
+#include "popup/popup_attachedto_infofwd.H"
 #include "generic_window_handler.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/grabbed_pointerfwd.H"
@@ -14,6 +16,22 @@
 #include <x/weakptr.H>
 
 LIBCXXW_NAMESPACE_START
+
+struct popup_visibility_semantics;
+
+//! Menu popup semantics
+
+//! Close any "exclusive" popup when this popup opens, and any other menu
+//! popups with a higher nesting level.
+
+extern const popup_visibility_semantics LIBCXX_HIDDEN menu_popup_type;
+
+//! "Exclusive" popup semantics.
+
+//! Close all menu popups when this "exclusive" popup opens, and any other
+//! exclusive popups at the same nesting level.
+
+extern const popup_visibility_semantics LIBCXX_HIDDEN exclusive_popup_type;
 
 //! Return value from recalculate_popup_position
 
@@ -43,13 +61,22 @@ class LIBCXX_HIDDEN popupObj::handlerObj :
 	//! Alias
 	typedef generic_windowObj::handlerObj superclass_t;
 
+ protected:
+	//! Popup attachedment information
+
+	const popup_attachedto_info attachedto_info;
+
+	//! When popup semantics this popup belongs to.
+	const popup_visibility_semantics &attachedto_type;
+
+	//! What WM_CLASS instance this is
+
+	const char * const wm_class_instance;
+
 public:
 
 	//! Constructor
-	handlerObj(ONLY IN_THREAD,
-		   const ref<generic_windowObj::handlerObj> &parent,
-		   const color_arg &background_color,
-		   size_t nesting_level);
+	handlerObj(const popup_attachedto_handler_args &);
 
 	//! Destructor
 	~handlerObj();

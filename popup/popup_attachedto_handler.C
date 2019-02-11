@@ -10,38 +10,9 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Specifies popup semantics.
-struct LIBCXX_HIDDEN popup_visibility_semantics {
-
-	//! Invoke this method when the popup becomes visible.
-
-	ref<obj> (shared_handler_dataObj::*opened_popup)
-		(ONLY IN_THREAD, const ref<popupObj::handlerObj> &);
-
-	//! Invoke this method when the popup is no longer visible.
-
-	void (shared_handler_dataObj::*closed_popup)
-		(ONLY IN_THREAD, const popupObj::handlerObj &);
-};
-
-const popup_visibility_semantics exclusive_popup_type={
-	&shared_handler_dataObj::opening_exclusive_popup,
-	&shared_handler_dataObj::closing_exclusive_popup
-};
-
-const popup_visibility_semantics menu_popup_type={
-	&shared_handler_dataObj::opening_menu_popup,
-	&shared_handler_dataObj::closing_menu_popup
-};
-
 popup_attachedto_handlerObj
 ::popup_attachedto_handlerObj(const popup_attachedto_handler_args &args)
-	: popupObj::handlerObj{args.parent->thread(), args.parent,
-		"transparent",
-		args.nesting_level},
-	attachedto_info{args.attachedto_info},
-	attachedto_type{args.attachedto_type},
-	wm_class_instance{args.wm_class_instance}
+	: popupObj::handlerObj{args}
 {
 }
 
@@ -183,17 +154,6 @@ popup_position_affinity popup_attachedto_handlerObj
 	r.x=x;
 	r.y=y;
 	return a;
-}
-
-ref<obj> popup_attachedto_handlerObj::get_opened_mcguffin(ONLY IN_THREAD)
-{
-	return ((*handler_data).*(attachedto_type.opened_popup))
-		(IN_THREAD, ref<popupObj::handlerObj>(this));
-}
-
-void popup_attachedto_handlerObj::released_opened_mcguffin(ONLY IN_THREAD)
-{
-	((*handler_data).*(attachedto_type.closed_popup))(IN_THREAD, *this);
 }
 
 LIBCXXW_NAMESPACE_END

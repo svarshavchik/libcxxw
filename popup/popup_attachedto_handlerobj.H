@@ -14,22 +14,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct popup_visibility_semantics;
-
-//! Menu popup semantics
-
-//! Close any "exclusive" popup when this popup opens, and any other menu
-//! popups with a higher nesting level.
-
-extern const popup_visibility_semantics LIBCXX_HIDDEN menu_popup_type;
-
-//! "Exclusive" popup semantics.
-
-//! Close all menu popups when this "exclusive" popup opens, and any other
-//! exclusive popups at the same nesting level.
-
-extern const popup_visibility_semantics LIBCXX_HIDDEN exclusive_popup_type;
-
 //! Implementation object
 
 //! \see popup_attachedto_handler
@@ -37,17 +21,6 @@ extern const popup_visibility_semantics LIBCXX_HIDDEN exclusive_popup_type;
 class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
  protected:
-	//! Popup attachedment information
-
-	const popup_attachedto_info attachedto_info;
-
-	//! When popup semantics this popup belongs to.
-	const popup_visibility_semantics &attachedto_type;
-
-	//! What WM_CLASS instance this is
-
-	const char * const wm_class_instance;
-
 	//! Override default_wm_class_instance()
 
 	//! Returns wm_class_instance.
