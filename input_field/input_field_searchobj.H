@@ -17,12 +17,10 @@ LIBCXXW_NAMESPACE_START
 
 //! \see input_field_search
 
-class input_field_searchObj :
-	public popup_attachedto_handler_elementObj<peepholed_container_impl_t> {
+class input_field_searchObj : public peepholed_container_impl_t {
 
 	//! Alias
-	typedef popup_attachedto_handler_elementObj<peepholed_container_impl_t>
-		superclass_t;
+	typedef peepholed_container_impl_t superclass_t;
 
  public:
 	//! Constructor
