@@ -154,10 +154,6 @@ void spininputs(const options &opts)
 
 	auto close_flag=close_flag_ref::create();
 
-	x::w::validated_input_fieldptr<char> char_input;
-
-	x::w::validated_input_fieldptr<int> int_input;
-
 	auto main_window=x::w::main_window::create
 		([&]
 		 (const auto &main_window)

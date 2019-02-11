@@ -36,6 +36,7 @@ noinst_PROGRAMS=\
 	searchinputfield			\
 	singleton				\
 	spininput				\
+	statictooltip				\
 	table					\
 	table2				        \
 	toolboxlayoutmanager			\
@@ -158,6 +159,9 @@ singleton_LDADD=-lcxxw -lcxx
 $(call OPTIONS_GEN,spininput.H,spininput.xml)
 spininput_SOURCES=spininput.C close_flag.H
 spininput_LDADD=-lcxxw -lcxx
+
+statictooltip_SOURCES=statictooltip.C close_flag.H
+statictooltip_LDADD=-lcxxw -lcxx
 
 table_SOURCES=table.C close_flag.H
 table_LDADD=-lcxxw -lcxx
