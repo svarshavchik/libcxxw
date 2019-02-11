@@ -1559,6 +1559,16 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual bool drag_response(ONLY IN_THREAD,
 				   const xcb_client_message_event_t *event);
+
+
+private:
+
+	//! Update the attached_popup.
+
+	//! Invoked from initialize(), process_updated_position(), and
+	//! absolute_location_updated() in order to keep the attached popup
+	//! positioned accordingly.
+	void update_attachedto_info(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -30,6 +30,9 @@
 #include "x/w/impl/fonts/fontcollection.H"
 #include "xim/ximclient.H"
 #include "popup/popup.H"
+#include "popup/popup_impl.H"
+#include "popup/popup_handler.H"
+#include "popup/popup_attachedto_info.H"
 #include "catch_exceptions.H"
 #include <x/logger.H>
 #include <x/weakcapture.H>
@@ -659,6 +662,7 @@ void elementObj::implObj
 			       e->impl->absolute_location_updated(IN_THREAD,
 								  reason);
 		       });
+	update_attachedto_info(IN_THREAD);
 }
 
 std::string elementObj::implObj::element_name()
@@ -711,6 +715,8 @@ void elementObj::implObj::process_updated_position(ONLY IN_THREAD)
 	invalidate_cached_draw_info(IN_THREAD,
 				    draw_info_invalidation_reason
 				    ::something_changed);
+
+	update_attachedto_info(IN_THREAD);
 }
 
 void elementObj::implObj::process_same_position(ONLY IN_THREAD)
@@ -1147,6 +1153,7 @@ void elementObj::implObj::initialize_or_log_exception(ONLY IN_THREAD)
 
 void elementObj::implObj::initialize(ONLY IN_THREAD)
 {
+	update_attachedto_info(IN_THREAD);
 }
 
 void elementObj::implObj::do_for_each_child(ONLY IN_THREAD,
@@ -1570,6 +1577,28 @@ void elementObj::implObj::remove_cursor_pointer(ONLY IN_THREAD)
 cursor_pointerptr elementObj::implObj::get_cursor_pointer(ONLY IN_THREAD)
 {
 	return data(IN_THREAD).pointer;
+}
+
+void elementObj::implObj::update_attachedto_info(ONLY IN_THREAD)
+{
+	if (!data(IN_THREAD).initialized || !data(IN_THREAD).attached_popup)
+		return;
+
+	auto h=data(IN_THREAD).attached_popup->impl->handler;
+
+	switch (h->attachedto_info->how) {
+	case attached_to::tooltip:
+		return;
+
+	case attached_to::below_or_above:
+	case attached_to::above_or_below:
+	case attached_to::right_or_left:
+		break;
+	}
+
+	h->update_attachedto_element_position
+		(IN_THREAD,
+		 get_absolute_location_on_screen(IN_THREAD));
 }
 
 LIBCXXW_NAMESPACE_END
