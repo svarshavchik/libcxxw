@@ -340,6 +340,10 @@ grabbed_pointerptr popupObj::handlerObj::grab_pointer(ONLY IN_THREAD,
 
 void popupObj::handlerObj::popup_opened(ONLY IN_THREAD)
 {
+	// Tooltips ignore button events and don't need the pointer grab.
+	if (!popup_accepts_button_events(IN_THREAD))
+		return;
+
 	auto p=get_popup_parent(IN_THREAD);
 
 	if (p)
