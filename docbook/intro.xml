@@ -104,9 +104,9 @@ See COPYING for distribution information.
       <para>
 	&app;'s basic functionality is complete, and it's source
 	<link linkend="INSTALL">is available for downloading</link>.
-	The most recent build of &app; adds an
-	<link linkend="filteredinput">input field filter API</link> for
-	creating input fields with custom internal formatting, and behavior.
+	The most recent build of &app; implements
+	<link linkend="statictooltips">static tooltips</link> for
+	display elements.
       </para>
     </section>
   </section>

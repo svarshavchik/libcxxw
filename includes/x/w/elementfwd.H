@@ -332,6 +332,112 @@ after all other activity gets processed; after processing any X
 display server messages, and updating the display with any
 unprocessed changes.
 
+\par Tooltips
+
+\code
+element->create_tooltip("Enter text here");
+
+element->create_custom_tooltip([]
+                               (ONLY IN_THREAD,
+                                const INSERT_LIBX_NAMESPACE::w::tooltip_factory &f)
+                               {
+                                    f([]
+                                      (const INSERT_LIBX_NAMESPACE::w::container &c)
+                                      {
+                                          INSERT_LIBX_NAMESPACE::w::grid_layoutmanager glm=c->get_layoutmanager();
+
+                                          // ...
+                                      },
+                                      INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager{});
+
+                               });
+
+INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager nglm;
+
+INSERT_LIBX_NAMESPACE::w::static_tooltip_config stc;
+
+INSERT_LIBX_NAMESPACE::w::container tooltip=element->create_static_tooltip(
+          []
+          (const INSERT_LIBX_NAMESPACE::w::container &c)
+          {
+               // ...
+          },
+          nglm,
+          stc);
+
+INSERT_LIBX_NAMESPACE::w::container tooltip=element->create_static_tooltip(
+          ONLY IN_THREAD,
+          []
+          (const INSERT_LIBX_NAMESPACE::w::container &c)
+          {
+               // ...
+          },
+          nglm,
+          stc);
+
+tooltip->show_all();
+
+element->remove_tooltip();
+element->remove_tooltip(IN_THREAD)
+\endcode
+
+A display element has an optional regular tooltip or a static tooltip.
+
+A regular tooltip is a popup that appears when the mouse pointer hovers over
+a display element, with the tooltip's visibility automatically controlled.
+create_tooltip() creates a default tooltip from a text label (which is a
+\ref text_param "INSERT_LIBX_NAMESPACE::w::text_param" that can specify
+custom fonts), and an optional
+ \ref label_config "INSERT_LIBX_NAMESPACE::w::label_config". The resulting
+tooltip appears automatically when the pointer pauses over the display
+element, and disappears with the next pointer movement.
+
+create_custom_tooltip() provides the means of creating a custom regular
+tooltip. Its parameter is a callable object that gets invoked whenever
+the tooltip gets slated to appear, and receives a
+\ref tooltip_factory "INSERT_LIBX_NAMESPACE::w::tooltip_factory" object.
+This is a callable object that takes a creator lambda, and
+an object specifying the new tooltip's layout manager. Invoking the tooltip
+factory creates a container that gets passed to the creator lambda, which
+is responsible for creating the contents of the container.
+
+In this manner, the tooltip's contents get specified each time the tooltip
+becomes visible and may vary each time.
+
+\note
+It is not necessary for the creator lambda to show() the new container. The
+new container gets automatically show_all()ed and the tooltip becomes visible
+when the creator returns.
+
+A static tooltip appears next to the display element, instead of directly
+next to the pointer's position, and the application controls the tooltip's
+visibility, with some restrictions:
+
+- the tooltip should be show()n only directly in response to some keyboard
+or pointer activity in the display element
+
+- the tooltip should be hide()n when the display element no longer receives
+keyboard or pointer focus
+
+Static tooltips get typically used only with
+\ref focusable "focusable display elements"; and get typically show()n and
+hide()n by the focusable element's on_keyboard_focus() callbacks, becoming
+visible when the display element has keyboard focus.
+
+create_static_tooltip() has one required parameter, a creator lambda that's
+responsible for creating the contents of the tooltip, and two optional
+parameters: an object that specifies the new tooltip's layout manager
+(defaulting to the grid layout manager), and a
+\ref static_tooltip_config "INSERT_LIBX_NAMESPACE::w::static_tooltip_config"
+that specifies a few optional settings.
+
+A static tooltip gets created in advance. show() or show_all() makes it
+visible, hide() or hide_all() hides it.
+
+A tooltip is considered to be a child element of the display element it's
+attached to, for the purpose of the object reference hierarchy.
+
+remove_tooltip() removes a regular or a static tooltip.
 
 */
 

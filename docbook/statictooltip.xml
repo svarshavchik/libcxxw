@@ -1,0 +1,193 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="statictooltips">
+  <title>Static tooltips</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="statictooltip.png" format="PNG"
+		 contentwidth="362px" contentdepth="217px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Static tooltips
+      </phrase>
+    </textobject>
+  </mediaobject>
+
+  <para>
+    A regular tooltip appears automatically when the pointer hovers over
+    a display element. The tooltip appears next to the pointer position.
+    See <xref linkend="tooltips" /> for a brief example.
+    &appshort; automatically shows and hides regular tooltips, by itself.
+  </para>
+
+  <para>
+    A static tooltip differs from regular tooltips in a few ways:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	A static tooltip gets explicitly <methodname>show</methodname>() and
+	<methodname>hide</methodname>()n by the application.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	A static tooltip appears next to the display element and not near the
+	current pointer position.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	In order for static tooltip to be meaningfully visible, they are
+	typically used only with <link linkend="focusable">focusable
+	  display elements</link>. The static tooltip gets shown
+	only when its display element has keyboard focus, and hidden when
+	the display element loses keyboard focus.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    <filename>statictooltip.C</filename> shows how to use static tooltips
+    to implement a numeric input field with a simple, built-in four-function
+    calculator function.
+    A <link linkend="filteredinput">custom input filter</link> in this
+    input field accepts only a numeric value for
+    input, and rounds it to two decimal places.
+    The custom input field also accepts a numeric value
+    followed by <quote><keycap>+</keycap></quote>,
+     <quote><keycap>-</keycap></quote>,
+     <quote><keycap>*</keycap></quote>,
+     <quote><keycap>/</keycap></quote>.
+     The filter clears the input field for the next
+     numeric value. Entering the second numeric value followed by a
+     <quote><keycap>=</keycap></quote> computes the mathematical operation,
+     and places the end result into the input field.
+  </para>
+
+  <para>
+    Multiple mathematical operation get changed together. Typing
+    <quote><literal>10+2*4=</literal></quote> results in a
+    <quote><literal>48</literal></quote> (there is no operator precedence,
+    the expression are evaluated left-to-right, adding 10 and 2, then
+    multiplying the result by 4).
+  </para>
+
+  <para>
+    The first mathematical operation opens a static tooltip popup above the
+    input field, that records the initial value and the entered mathematical
+    operation. Any subsequent values and operations get added to the tooltip,
+    resulting in something that resembles a ticket tape.
+    <quote><keycap>=</keycap></quote> closes the tooltip together with
+    producing the final result.
+    Tabbing out of the input field also closes the tooltip (and aborts
+    the calculation at that point).
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/statictooltip.C">statictooltip.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/statictooltip.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="statictooltipcreate">
+    <title>Creating and destroying static tooltips</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+x::w::static_tooltip_config config;
+
+config.affinity=x::w::attached_to::above_or_below;
+
+x::w::container tooltip=
+    element->create_static_tooltip([&amp;]
+                                   (const x::w::container &amp;c)
+                                   {
+                                       x::w::gridlayoutmanager glm=
+                                           c->get_layoutmanager();
+
+                                       // ...
+                                   },
+                                   x::w::new_gridlayoutmanager{},
+                                   config);
+
+// ...
+
+tooltip->show_all();
+
+// ...
+
+element->remove_tooltip();</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      It is necessary to explicitly create
+      static tooltips, represented as generic &container;s, before making
+      them visible.
+      A display element's
+      <methodname>create_static_tooltip</methodname>() method creates a
+      static tooltip for the display element.
+    </para>
+
+    <note>
+      <para>
+	A display element can have only one regular tooltip or one static
+	tooltip, but not both. Creating either kind of a tooltip replaces
+	the display element's existing tooltip, if any.
+      </para>
+    </note>
+
+    <para>
+      <methodname>create_static_tooltip</methodname>()'s first parameter
+      is the tooltip's &creator;.
+      The optional second parameter specifies the tooltip container's
+      &layoutmanager; (defaulting to the
+      <link linkend="gridlayoutmanager">grid layout manager</link>), and the
+      third parameter specifies the
+      <ulink url="&link-x--w--static-tooltip-config;"><classname>&ns;::w::static_tooltip_config</classname></ulink>.
+    </para>
+
+    <para>
+      Using <methodname>show</methodname> or <methodname>show_all</methodname>()
+      makes the tooltip visible. Static tooltips appear next to their display
+      element, on their immediate right by default
+      (or to the left if there's no room on the
+      right). This behavior is adjusted by setting
+      <classname>&ns;::w::static_tooltip_config</classname>'s
+      <varname>affinity</varname>.
+    </para>
+
+    <note>
+      <para>
+	Display elements own an internal reference to their tooltips.
+	This must be taken into consideration in order
+	to <link linkend="containerrefs">avoid circular references</link>.
+	This is why <filename>statictooltip.C</filename> uses weak references,
+	since its callbacks strongly capture the object that carries the
+	data shared by the callbacks, including a weak pointer
+	to their input field. See
+	<xref linkend="callbackrefs" /> for more information.
+      </para>
+    </note>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

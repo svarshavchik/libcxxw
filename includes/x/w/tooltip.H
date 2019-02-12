@@ -41,14 +41,14 @@ public:
 
 	//! Border for the new tooltip
 
-	//! Used when the display has an available alpha channel.
+	//! Used when the display has an alpha channel.
 	//! Typically a slightly rounded border.
 
 	static tooltip_border default_alpha_border();
 
 	//! Border for the new tooltip
 
-	//! Used when the display has an available alpha channel.
+	//! Used when the display does not have an alpha channel.
 	//! Typically a square border.
 
 	static tooltip_border default_nonalpha_border();
@@ -111,15 +111,31 @@ enum class attached_to
 	 tooltip,
 };
 
+//! Optional settings for a static tooltip.
+
+//! \see element
+
 struct static_tooltip_config {
+
+	//! Static tooltip's position
 	attached_to affinity=attached_to::right_or_left;
+
+	//! Tooltip's border on displays with an alpha channel.
+
+	//! Used when the display has an alpha channel.
+	//! Typically a slightly rounded border.
 
 	tooltip_border alpha_border=
 		tooltip_factory::default_alpha_border();
 
+	//! Tooltip's border on displays without an alpha channel
+
+	//! Used when the display does not have an alpha channel.
+	//! Typically a square border.
 	tooltip_border nonalpha_border=
 		tooltip_factory::default_nonalpha_border();
 
+	//! Tooltip's background color.
 	color_arg background_color="static_tooltip_background_color";
 
 	~static_tooltip_config();
