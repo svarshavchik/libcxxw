@@ -203,10 +203,11 @@ bool shared_handler_dataObj
 void shared_handler_dataObj
 ::reporting_pointer_xy_to(ONLY IN_THREAD,
 			  const ref<generic_windowObj::handlerObj> &from,
-			  const ref<generic_windowObj::handlerObj> &to)
+			  const ref<generic_windowObj::handlerObj> &to,
+			  const callback_trigger_t &trigger)
 {
 	if (from != to)
-		from->pointer_focus_lost(IN_THREAD);
+		from->pointer_focus_lost(IN_THREAD, trigger);
 
 	for (auto &b:*opened_menu_popups)
 	{
@@ -224,7 +225,7 @@ void shared_handler_dataObj
 		if (handler == to)
 			continue;
 
-		handler->pointer_focus_lost(IN_THREAD);
+		handler->pointer_focus_lost(IN_THREAD, trigger);
 	}
 
 	for (auto &b:*opened_exclusive_popups)
@@ -243,7 +244,7 @@ void shared_handler_dataObj
 		if (handler == to)
 			continue;
 
-		handler->pointer_focus_lost(IN_THREAD);
+		handler->pointer_focus_lost(IN_THREAD, trigger);
 	}
 }
 

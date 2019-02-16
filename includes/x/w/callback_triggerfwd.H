@@ -8,6 +8,7 @@
 #include <x/w/namespace.H>
 #include <x/w/button_eventfwd.H>
 #include <x/w/key_eventfwd.H>
+#include <x/w/motion_eventfwd.H>
 
 #include <functional>
 #include <variant>
@@ -51,23 +52,36 @@ struct callback_trigger_is_not_copyable {
 typedef std::variant<std::monostate,
 		     const key_event *,
 		     const button_event *,
+		     const motion_event *,
 		     initial,
 		     prev_key,
 		     next_key,
 		     callback_trigger_is_not_copyable
 		     > callback_trigger_t;
 
-//! \ref callback_trigger_t "callback_trigger_t" has a \ref key_event "const INSERT_LIBX_NAMESPACE::w::key_event &".
+//! \ref callback_trigger_t "callback_trigger_t" has a \ref key_event "const INSERT_LIBX_NAMESPACE::w::key_event *".
 
 //! std::variant index where one might find a \ref key_event "key_event".
 
+//! \note The key event is not copyable, and gets destroyed when the
+//! callback returns.
 constexpr size_t callback_trigger_key_event=1;
 
-//! \ref callback_trigger_t "callback_trigger_t" has a \ref button_event "const INSERT_LIBX_NAMESPACE::w::button_event &".
+//! \ref callback_trigger_t "callback_trigger_t" has a \ref button_event "const INSERT_LIBX_NAMESPACE::w::button_event *".
 
 //! std::variant index where one might find a \ref button_event "button_event".
 
+//! \note The button event is not copyable, and gets destroyed when the
+//! callback returns.
+
 constexpr size_t callback_trigger_button_event=2;
+
+//! std::variant index where one might find a \ref motion_event "motion_event".
+
+//! \note The motion event is not copyable, and gets destroyed when the
+//! callback returns.
+
+constexpr size_t callback_trigger_motion_event=3;
 
 //! \ref callback_trigger_t "callback_trigger_t" initial invocation.
 
@@ -83,21 +97,21 @@ constexpr size_t callback_trigger_button_event=2;
 //!
 //! - initial invocation from date_input_field's on_change().
 
-constexpr size_t callback_trigger_initial=3;
+constexpr size_t callback_trigger_initial=4;
 
 //! \ref callback_trigger_t "callback_trigger_t" has a \ref prev_key "const INSERT_LIBX_NAMESPACE::w::prev_key &".
 
 //! The callback is getting invoked because \c SHIFT-TAB or \c BACK button
 //! was pressed
 
-constexpr size_t callback_trigger_prev=4;
+constexpr size_t callback_trigger_prev=5;
 
 //! \ref callback_trigger_t "callback_trigger_t" has a \ref next_key "const INSERT_LIBX_NAMESPACE::w::next_key &".
 
 //! The callback is getting invoked because \c TAB or \c NEXT button
 //! was pressed.
 
-constexpr size_t callback_trigger_next=5;
+constexpr size_t callback_trigger_next=6;
 
 LIBCXXW_NAMESPACE_END
 

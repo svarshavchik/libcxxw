@@ -8,6 +8,7 @@
 #include <x/w/callback_triggerfwd.H>
 #include <x/w/button_event.H>
 #include <x/w/key_event.H>
+#include <x/w/motion_event.H>
 
 LIBCXXW_NAMESPACE_START
 

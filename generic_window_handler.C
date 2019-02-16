@@ -1726,7 +1726,7 @@ void generic_windowObj::handlerObj
 ::leave_notify_event(ONLY IN_THREAD,
 		     const xcb_leave_notify_event_t *event)
 {
-	pointer_focus_lost(IN_THREAD);
+	pointer_focus_lost(IN_THREAD, {});
 }
 
 void generic_windowObj::handlerObj
@@ -1786,7 +1786,8 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 			handler_data->reporting_pointer_xy_to
 				(IN_THREAD,
 				 ref{this},
-				 grabbed_element_window);
+				 grabbed_element_window,
+				 &me);
 
 			grabbed_element_window
 				->report_pointer_xy_to_this_handler
@@ -1826,7 +1827,8 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 				handler_data->reporting_pointer_xy_to
 					(IN_THREAD,
 					 ref{this},
-					 popup);
+					 popup,
+					 &me);
 				popup->report_pointer_xy_to_this_handler
 					(IN_THREAD,
 					 pg,
@@ -1846,7 +1848,8 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 			handler_data->reporting_pointer_xy_to
 				(IN_THREAD,
 				 ref{this},
-				 new_popup);
+				 new_popup,
+				 &me);
 
 			new_popup->report_pointer_xy_to_this_handler
 				(IN_THREAD, pg, me, was_grabbed);
@@ -1872,7 +1875,7 @@ void generic_windowObj::handlerObj
 
 	if (is_input_busy())
 	{
-		pointer_focus_lost(IN_THREAD);
+		pointer_focus_lost(IN_THREAD, &me);
 		return;
 	}
 
@@ -1955,7 +1958,7 @@ void generic_windowObj::handlerObj
 
 	if (e->data(IN_THREAD).removed)
 	{
-		pointer_focus_lost(IN_THREAD);
+		pointer_focus_lost(IN_THREAD, {});
 		return;
 	}
 
@@ -1978,11 +1981,13 @@ void generic_windowObj::handlerObj
 	if (most_recent_element_with_pointer(IN_THREAD) == ei)
 	{
 		ungrab(IN_THREAD);
-		pointer_focus_lost(IN_THREAD);
+		pointer_focus_lost(IN_THREAD, {});
 	}
 }
 
-void generic_windowObj::handlerObj::pointer_focus_lost(ONLY IN_THREAD)
+void generic_windowObj::handlerObj::pointer_focus_lost(ONLY IN_THREAD,
+						       const callback_trigger_t
+						       &trigger)
 {
 	if (grab_locked(IN_THREAD))
 		return;
@@ -1996,7 +2001,7 @@ void generic_windowObj::handlerObj::pointer_focus_lost(ONLY IN_THREAD)
 	update_displayed_cursor_pointer(IN_THREAD);
 	cpy->lose_focus(IN_THREAD,
 			&elementObj::implObj::report_pointer_focus,
-			{});
+			trigger);
 }
 
 void generic_windowObj::handlerObj::update_frame_extents(ONLY IN_THREAD)

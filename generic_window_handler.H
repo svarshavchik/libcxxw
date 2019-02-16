@@ -567,7 +567,8 @@ public:
 	//! The element with the pointer focus is being removed, or the
 	//! pointer has left the window. Report lossage of pointer focus.
 
-	void pointer_focus_lost(ONLY IN_THREAD);
+	void pointer_focus_lost(ONLY IN_THREAD,
+				const callback_trigger_t &trigger);
  public:
 
 	////////////////////////////////////////////////////////////////////

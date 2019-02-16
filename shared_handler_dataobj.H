@@ -126,7 +126,8 @@ public:
 	void reporting_pointer_xy_to
 		(ONLY IN_THREAD,
 		 const ref<generic_windowObj::handlerObj> &from,
-		 const ref<generic_windowObj::handlerObj> &to);
+		 const ref<generic_windowObj::handlerObj> &to,
+		 const callback_trigger_t &trigger);
 
  private:
 
