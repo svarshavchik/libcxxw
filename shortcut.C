@@ -47,6 +47,25 @@ shortcut::shortcut(char32_t unicode) : unicode(unicode), keysym(0)
 {
 }
 
+uint32_t shortcut::shortcut_keysym(uint32_t n)
+{
+	switch (n) {
+	case XK_KP_Left:   return XK_Left;
+	case XK_KP_Right:  return XK_Right;
+	case XK_KP_Up:     return XK_Up;
+	case XK_KP_Down:   return XK_Down;
+	case XK_KP_Delete: return XK_Delete;
+	case XK_KP_Page_Up:return XK_Page_Up;
+	case XK_KP_Page_Down:return XK_Page_Down;
+	case XK_KP_Home:   return XK_Home;
+	case XK_KP_End:    return XK_End;
+	case XK_KP_Insert: return XK_Insert;
+	default:
+		break;
+	}
+	return n;
+}
+
 shortcut::operator bool() const { return unicode != 0 || keysym != 0; }
 
 shortcut::shortcut(const std::string_view &modifier,

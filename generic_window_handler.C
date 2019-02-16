@@ -1005,6 +1005,34 @@ bool generic_windowObj::handlerObj::handle_key_event(ONLY IN_THREAD,
 	if (!activate_for(ke))
 		return false;
 
+	installed_shortcutptr best_shortcut=lookup_shortcut(IN_THREAD, ke);
+
+	if (!best_shortcut)
+	{
+		auto std_keysym=shortcut::shortcut_keysym(ke.keysym);
+
+		if (std_keysym != ke.keysym)
+		{
+			auto copy_ke=ke;
+
+			copy_ke.keysym=std_keysym;
+			best_shortcut=lookup_shortcut(IN_THREAD, ke);
+		}
+	}
+
+	if (!best_shortcut)
+		return false;
+
+	try {
+		best_shortcut->activated(IN_THREAD, &ke);
+	} REPORT_EXCEPTIONS(this);
+	return true;
+}
+
+installed_shortcutptr
+generic_windowObj::handlerObj::lookup_shortcut(ONLY IN_THREAD,
+					       const key_event &ke)
+{
 	installed_shortcutptr best_shortcut;
 	int best_ordinal=0;
 
@@ -1066,13 +1094,7 @@ bool generic_windowObj::handlerObj::handle_key_event(ONLY IN_THREAD,
 		}
 	}
 
-	if (!best_shortcut)
-		return false;
-
-	try {
-		best_shortcut->activated(IN_THREAD, &ke);
-	} REPORT_EXCEPTIONS(this);
-	return true;
+	return best_shortcut;
 }
 
 void generic_windowObj::handlerObj

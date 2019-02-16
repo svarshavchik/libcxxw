@@ -458,6 +458,12 @@ class generic_windowObj::handlerObj
 
 	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;
 
+private:
+	//! process_key_event() searches for a suitable shortcut.
+	installed_shortcutptr lookup_shortcut(ONLY IN_THREAD,
+					      const key_event &ke);
+public:
+
 	//! Set default input focus.
 
 	//! If no element currently has keyboard focus, set it to the first

@@ -79,6 +79,13 @@ public:
 
 	shortcut(const std::string_view &string);
 
+	//! Standard shortcut keysym
+
+	//! If the parameter is one of the Kp_ keysyms mentioned by the
+	//! constructor, return the garden-variety keysym, otherwise return
+	//! the parameter.
+
+	static uint32_t shortcut_keysym(uint32_t);
 private:
 	//! Internal constructor
 
