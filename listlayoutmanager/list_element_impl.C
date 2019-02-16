@@ -308,8 +308,8 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 						       .list_font)},
 	  itemshortcut_meta{create_background_color("label_foreground_color"),
 			    create_current_fontcollection(theme_font
-			  {"menu_shortcut"})}
-
+			  {"menu_shortcut"})},
+	  current_list_item_changed{init_args.style.current_list_item_changed}
 {
 	for (auto &info:requested_col_widths)
 	{
@@ -354,6 +354,19 @@ void list_elementObj::implObj::removed_from_container(ONLY IN_THREAD)
 	// list that this list's column widths get synchronized to.
 
 	synchronized_info.removed_from_container(IN_THREAD);
+}
+
+void list_elementObj::implObj
+::report_new_current_element(ONLY IN_THREAD,
+			     const std::optional<size_t> &item,
+			     const callback_trigger_t &trigger)
+{
+	if (!current_list_item_changed)
+		return;
+
+	try {
+		current_list_item_changed(IN_THREAD, item, trigger);
+	} REPORT_EXCEPTIONS(this);
 }
 
 void list_elementObj::implObj::remove_rows(ONLY IN_THREAD,
@@ -477,11 +490,14 @@ void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
 	// If a current element was selected on or after the insertion point,
 	// update it accordingly.
 	if (current_element(lock) && current_element(lock).value()>=row_number)
-		++*current_element(lock);
+	{
+		current_element(IN_THREAD, lock, *current_element(lock) + rows,
+				std::monostate{});
+	}
 
 	if (current_keyed_element(lock) &&
 	    current_keyed_element(lock).value()>=row_number)
-		++*current_keyed_element(lock);
+		*current_keyed_element(lock) += rows;
 }
 
 void list_elementObj::implObj::replace_rows(ONLY IN_THREAD,
@@ -582,7 +598,9 @@ void list_elementObj::implObj
 
 	listimpl_info_t::lock &lock=ll;
 
-	current_element(lock)={};
+	if (current_element(lock))
+		current_element(IN_THREAD, lock, std::nullopt,
+				std::monostate{});
 	current_keyed_element(lock)={};
 
 	// Clear out everything, then use insert_rows().
@@ -602,7 +620,9 @@ void list_elementObj::implObj
 	list_lock ll{lm};
 	listimpl_info_t::lock &lock=ll;
 
-	current_element(lock)={};
+	if (current_element(lock))
+		current_element(IN_THREAD, lock, std::nullopt,
+				std::monostate{});
 	current_keyed_element(lock)={};
 
 	lock->row_infos.modified=true; // We don't do anything that gets flagged
@@ -675,17 +695,32 @@ void list_elementObj::implObj
 
 	// If the current element is in the selected range, unselect it.
 
-	if (current_element(lock) && current_element(lock).value() >= row &&
-	    current_element(lock).value() < row+count)
+	if (current_element(lock) && current_element(lock).value() >= row)
 	{
-		is_key_or_button_down=false;
-		current_element(lock)={};
+		if (current_element(lock).value() < row+count)
+		{
+			is_key_or_button_down=false;
+			current_element(IN_THREAD, lock, std::nullopt,
+					std::monostate{});
+		}
+		else
+		{
+			current_element(IN_THREAD, lock,
+					*current_element(lock)-count,
+					std::monostate{});
+		}
 	}
 
 	if (current_keyed_element(lock) &&
-	    current_keyed_element(lock).value() >= row &&
-	    current_keyed_element(lock).value() < row+count)
-		current_keyed_element(lock)={};
+	    current_keyed_element(lock).value() >= row)
+	{
+		if (current_keyed_element(lock).value() < row+count)
+			current_keyed_element(lock)={};
+		else
+		{
+			*current_keyed_element(lock) -= count;
+		}
+	}
 
 	// Unlink the rows being removed from column_widths.
 
@@ -1574,9 +1609,10 @@ void list_elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 	if (me.y >= iter->y &&
 	    me.y < coord_t::truncate(iter->y+iter->height) &&
 	    iter->extra->enabled())
-		set_current_element(IN_THREAD, lock, iter-b, false);
+		set_current_element(IN_THREAD, lock, iter-b, false,
+				    std::monostate{});
 	else
-		unset_current_element(IN_THREAD, lock);
+		unset_current_element(IN_THREAD, lock, std::monostate{});
 }
 
 bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
@@ -1695,7 +1731,7 @@ bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
 		return false;
 	}
 
-	set_current_element(IN_THREAD, lock, next_row, true);
+	set_current_element(IN_THREAD, lock, next_row, true, &ke);
 	current_keyed_element(lock)=next_row;
 
 	return true;
@@ -1808,7 +1844,7 @@ void list_elementObj::implObj::pointer_focus(ONLY IN_THREAD,
 
 	if (!current_pointer_focus(IN_THREAD))
 	{
-		unset_current_element(IN_THREAD, lock);
+		unset_current_element(IN_THREAD, lock, trigger);
 		current_keyed_element(lock).reset();
 	}
 }
@@ -1822,13 +1858,15 @@ void list_elementObj::implObj::keyboard_focus(ONLY IN_THREAD,
 
 	if (!current_keyboard_focus(IN_THREAD))
 	{
-		unset_current_element(IN_THREAD, lock);
+		unset_current_element(IN_THREAD, lock, trigger);
 		current_keyed_element(lock).reset();
 	}
 }
 
-void list_elementObj::implObj::unset_current_element(ONLY IN_THREAD,
-						     listimpl_info_t::lock &lock)
+void list_elementObj::implObj
+::unset_current_element(ONLY IN_THREAD,
+			listimpl_info_t::lock &lock,
+			const callback_trigger_t &trigger)
 {
 	if (!current_element(lock))
 		return;
@@ -1837,7 +1875,7 @@ void list_elementObj::implObj::unset_current_element(ONLY IN_THREAD,
 
 	// Reset some things.
 	is_key_or_button_down=false;
-	current_element(lock)={};
+	current_element(IN_THREAD, lock, std::nullopt, trigger);
 	redraw_rows(IN_THREAD, lock, row_number);
 }
 
@@ -1845,14 +1883,15 @@ void list_elementObj::implObj
 ::set_current_element(ONLY IN_THREAD,
 		      listimpl_info_t::lock &lock,
 		      size_t row_number,
-		      bool make_sure_row_is_visible)
+		      bool make_sure_row_is_visible,
+		      const callback_trigger_t &trigger)
 {
 	size_t row_number1=row_number;
 
 	if (current_element(lock))
 		row_number1=current_element(lock).value();
 
-	current_element(lock)=row_number;
+	current_element(IN_THREAD, lock, row_number, trigger);
 
 	// Reset some things.
 	is_key_or_button_down=false;

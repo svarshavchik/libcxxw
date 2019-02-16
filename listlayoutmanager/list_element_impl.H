@@ -585,6 +585,9 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Default metadata for list element.
 	const richtextmeta itemshortcut_meta;
 
+	//! Callback when the current list item changes.
+	const current_list_item_callback_t current_list_item_changed;
+
  private:
 	//! Return the vertical padding of each row.
 	dim_t list_v_padding(ONLY IN_THREAD) const;
@@ -605,10 +608,25 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Whether the enter/space key or button 1 is down.
 	bool is_key_or_button_down=false;
 
+ public:
 	//! This can be accessed only while holding the lock.
-	inline auto &current_element(const listimpl_info_t::lock &lock)
+	inline const auto &current_element(const listimpl_info_t::lock &lock)
 	{
 		return current_element_under_lock;
+	}
+
+	//! This can be accessed only while holding the lock.
+	template<typename V>
+		inline void current_element(ONLY IN_THREAD,
+					    const listimpl_info_t::lock &lock,
+					    V &&v,
+					    const callback_trigger_t &trigger)
+	{
+		current_element_under_lock=std::forward<V>(v);
+
+		report_new_current_element(IN_THREAD,
+					   current_element_under_lock,
+					   trigger);
 	}
 
 	//! This can be accessed only while holding the lock.
@@ -616,6 +634,12 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	{
 		return current_keyed_element_under_lock;
 	}
+ private:
+	//! Currently highlighted list item changed.
+
+	void report_new_current_element(ONLY IN_THREAD,
+					const std::optional<size_t> &item,
+					const callback_trigger_t &trigger);
 
 	//! Insert rows.
 	void insert_rows(ONLY IN_THREAD,
@@ -705,14 +729,16 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Unset current_element.
 
 	void unset_current_element(ONLY IN_THREAD,
-				   listimpl_info_t::lock &lock);
+				   listimpl_info_t::lock &lock,
+				   const callback_trigger_t &trigger);
 
 	//! Set current element.
 
 	void set_current_element(ONLY IN_THREAD,
 				 listimpl_info_t::lock &lock,
 				 size_t row_number,
-				 bool make_sure_row_is_visible);
+				 bool make_sure_row_is_visible,
+				 const callback_trigger_t &trigger);
 
 	//! Process keyboard event.
 

@@ -118,6 +118,9 @@ public:
 	void selected(ONLY IN_THREAD, size_t i, bool selected_flag,
 		      const callback_trigger_t &trigger);
 
+	//! Which element is currently under cursor
+	std::optional<size_t> current_list_item() const;
+
 	//! As if item \#i was clicked on.
 
 	void autoselect(ONLY IN_THREAD,

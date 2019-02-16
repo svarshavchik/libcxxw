@@ -177,6 +177,15 @@ std::vector<size_t> listlayoutmanagerObj::all_selected() const
 	return impl->list_element_singleton->impl->all_selected();
 }
 
+std::optional<size_t> listlayoutmanagerObj::current_list_item() const
+{
+	auto lei=impl->list_element_singleton->impl;
+
+	listimpl_info_t::lock lock{lei->textlist_info};
+
+	return lei->current_element(lock);
+}
+
 void listlayoutmanagerObj::selected(size_t i, bool selected_flag)
 {
 	impl->run_as([me=ref(this), i, selected_flag]

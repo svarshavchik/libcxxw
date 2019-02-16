@@ -17,6 +17,7 @@
 #include <x/mpobj.H>
 
 #include <variant>
+#include <optional>
 #include <type_traits>
 
 LIBCXXW_NAMESPACE_START
@@ -62,6 +63,12 @@ bool flag=l->selected(item_number);
 
 l->selected(item_number, true);
 
+std::optional<size_t> n=l->selected();
+
+std::vector<size_t> v=l->all_selected();
+
+std::optional<size_t> n=l->current_list_item();
+
 l->autoselect(item_number);
 
 l->unselect();
@@ -69,7 +76,14 @@ l->unselect();
 \endcode
 
 size() returns the number of elements in the list. selected(item_number)
-indicates whether list item \#item_number is currently selected.
+indicates whether list item \#item_number is currently selected. An
+overloaded selected() returns an optional size_t indicating which list
+item is currently selected (or none). For list items that allow more than
+one item to be selected, all_selected() indicates which items are selected.
+Similarly, current_list_item() returns which list item is currently highlighted,
+by the mouse pointer, or via keyboard navigation. This is meaningful only
+if invoked from the connection thread; the list of selected items, and the
+currently highlighted list item, can change at any time.
 
 autoselect(item_number) produces the same results as if the given item
 number was clicked on with a pointer or the keyboard,
@@ -605,6 +619,11 @@ typedef void list_item_status_change_callback_t(THREAD_CALLBACK,
 
 typedef functionref<list_item_status_change_callback_t
 		      > list_item_status_change_callback;
+
+//! Type-erased current item callback
+typedef functionptr<void (THREAD_CALLBACK, const std::optional<size_t> &,
+			  const callback_trigger_t &)
+		    > current_list_item_callback_t;
 
 //! SFINAE template for overloading a list_item_status_change_callback_t parameter.
 
