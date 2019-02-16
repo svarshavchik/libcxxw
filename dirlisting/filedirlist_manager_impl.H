@@ -67,6 +67,10 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	struct info_t {
 
+		//! Whether the directory is writable
+
+		bool writable=false;
+
 		//! The actual name of the directory.
 		std::string directory;
 
@@ -218,9 +222,6 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 	//! Semantics of access permissions
 
 	const file_dialog_type type;
-
-	//! Whether the directory is writable
-	const bool writable;
 
 	//! Constructor, phase 2.
 

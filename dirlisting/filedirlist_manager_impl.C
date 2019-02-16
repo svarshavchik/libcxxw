@@ -39,7 +39,6 @@ filedirlist_managerObj::implObj::current_selected_callbackObj
 // subdirectories and files.
 
 static inline auto create_filedir_list(const factory &f,
-				       const std::string &initial_directory,
 				       const ref<filedirlist_managerObj
 				       ::implObj::current_selected_callbackObj>
 				       &current_selected)
@@ -134,12 +133,11 @@ filedirlist_managerObj::implObj
 	  const std::string &initial_directory,
 	  file_dialog_type type)
 	: current_selected(ref<current_selected_callbackObj>::create()),
-	  filedir_list(create_filedir_list(f, initial_directory,
-					   current_selected)),
-	  info(info_t{initial_directory, pcre::create("."),
-				  ref<obj>::create()}),
-	  type(type),
-	  writable(access(initial_directory.c_str(), W_OK) == 0)
+	  filedir_list(create_filedir_list(f, current_selected)),
+	  info(info_t{access(initial_directory.c_str(), W_OK) == 0,
+		      initial_directory, pcre::create("."),
+		      ref<obj>::create()}),
+	  type(type)
 {
 }
 
@@ -340,7 +338,7 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 						enabled=false;
 					break;
 				case file_dialog_type::create_file:
-					enabled=writable;
+					enabled=lock->writable;
 					break;
 				}
 			}
@@ -405,6 +403,7 @@ void filedirlist_managerObj::implObj::chdir(const std::string &directory)
 	if (!lock->current_filedircontents)
 		// The element is not visible, just update the directory.
 	{
+		lock->writable=access(directory.c_str(), W_OK) == 0;
 		lock->directory=directory;
 		return;
 	}
@@ -418,6 +417,7 @@ void filedirlist_managerObj::implObj::chdir(const std::string &directory)
 	      [directory]
 	      (auto &lock)
 	      {
+		      lock->writable=access(directory.c_str(), W_OK) == 0;
 		      lock->directory=directory;
 	      });
 
