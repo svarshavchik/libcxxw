@@ -14,6 +14,7 @@
 #include "x/w/button_event.H"
 #include "x/w/panefactory.H"
 #include "x/w/focusable_container.H"
+#include "messages.H"
 #include <x/weakcapture.H>
 #include <x/fileattr.H>
 #include <x/ymdhms.H>
@@ -34,16 +35,170 @@ filedirlist_managerObj::implObj::current_selected_callbackObj
 {
 }
 
+// Parameters to the delegated constructor.
+
+struct filedirlist_managerObj::implObj::init_args {
+
+	ref<current_selected_callbackObj> current_selected;
+
+	focusable_container filedir_list;
+	container dir_popup;
+	container file_popup;
+};
+
+// Update the subdirectory list's right context popup menu to reflect
+// the current directory open and the currently selected directory entry.
+
+static void set_dir_popup_contents(const ref<filedirlist_managerObj::implObj
+				   ::current_selected_callbackObj>
+				   &current_selected,
+				   const listlayoutmanager &lm,
+				   const std::string &current_directory,
+				   bool writable,
+				   const std::optional<std::string> &subdir)
+{
+
+	// Set fullpath if there's a selected subdirectory.
+
+	std::string fullpath;
+
+	if (subdir && !current_directory.empty())
+	{
+		fullpath.reserve(current_directory.size() + 1 + subdir->size());
+
+
+		fullpath += current_directory;
+
+		if (fullpath != "/")
+			fullpath += "/";
+
+		fullpath += *subdir;
+	}
+
+	lm->replace_all_items
+		({
+		  [current_selected,
+		   current_directory]
+		  (ONLY IN_THREAD,
+		   const auto &ignore)
+		  {
+		  },
+		  shortcut{"ALT-C"},
+		  _("Create subdirectory"),
+		  [current_selected,
+		   fullpath]
+		  (ONLY IN_THREAD,
+		   const auto &ignore)
+		  {
+		  },
+		  shortcut{"ALT-R"},
+		  _("Rename subdirectory"),
+		  [current_selected,
+		   fullpath]
+		  (ONLY IN_THREAD,
+		   const auto &ignore)
+		  {
+		  },
+		  shortcut{"DEL"},
+		  _("Delete subdirectory")
+		});
+
+	// If the current directory is not writable, or there is no current
+	// directory in the first place (popup is closed, the "Create
+	// subdirectory" link is disabled.
+
+	if (!writable || current_directory.empty())
+		lm->enabled(0, false);
+
+	// If the current directory is not writable, or no sudirectory is
+	// picked/highlighted in the list, the rename/delete subdirectory links
+	// are disabled.
+
+	if (!writable || fullpath.empty())
+	{
+		lm->enabled(1, false);
+		lm->enabled(2, false);
+	}
+}
+
+// Update the file list's right context popup menu to reflect the currently
+// selected file.
+
+static void set_file_popup_contents(const ref<filedirlist_managerObj::implObj
+				    ::current_selected_callbackObj>
+				    &current_selected,
+				    const listlayoutmanager &lm,
+				    const std::string &current_directory,
+				    bool writable,
+				    const std::optional<std::string> &filename)
+{
+	std::string fullpath;
+
+	if (writable && !current_directory.empty() && filename)
+	{
+		fullpath.reserve(current_directory.size() + 1 +
+				 filename->size());
+
+		fullpath += current_directory;
+
+		if (fullpath != "/")
+			fullpath += "/";
+
+		fullpath += *filename;
+	}
+
+	// Even though the same shortcuts are used here, our logic
+	// carefully makes sure that only one of the shortcuts is enabled
+	// and the same time.
+
+	lm->replace_all_items
+		({
+		  [current_selected,
+		   fullpath]
+		  (ONLY IN_THREAD,
+		   const auto &ignore)
+		  {
+			  std::cout << "Rename "
+				    << fullpath
+				    << std::endl;
+		  },
+		  shortcut{"ALT-R"},
+		  _("Rename file"),
+		  [current_selected,
+		   fullpath]
+		  (ONLY IN_THREAD,
+		   const auto &ignore)
+		  {
+			  std::cout << "Delete "
+				    << fullpath
+				    << std::endl;
+		  },
+		  shortcut{"DEL"},
+		  _("Delete file")
+		});
+
+	// If nothing is selected, the rename/delete links are disabled.
+
+	if (fullpath.empty())
+	{
+		lm->enabled(0, false);
+		lm->enabled(1, false);
+	}
+}
+
 // Create an internal display element that shows the contents of a directory.
 
 // This is a focusable container with a pane layout manager, and two panes:
 // subdirectories and files.
 
-static inline auto create_filedir_list(const factory &f,
-				       const ref<filedirlist_managerObj
-				       ::implObj::current_selected_callbackObj>
-				       &current_selected)
+static inline filedirlist_managerObj::implObj::init_args
+create_init_args(const factory &f,
+		 const std::string &initial_directory)
 {
+	auto current_selected=
+		ref<filedirlist_managerObj::implObj
+		    ::current_selected_callbackObj>::create();
+
 	new_panelayoutmanager nplm{{100}};
 
 	auto pane_container=f->create_focusable_container([]
@@ -104,18 +259,66 @@ static inline auto create_filedir_list(const factory &f,
 					    nlm);
 	dc->show();
 
+	// Report keyboard focus status changes on the directory list
+	// container.
 	dc->on_keyboard_focus
 		([current_selected]
 		 (ONLY IN_THREAD,
 		  focus_change fc,
 		  const auto &trigger)
 		 {
-			current_selected->current_callback.get()
-				(IN_THREAD,
-				 filedirlist_focus{
+			 current_selected->current_callback.get()
+				 (IN_THREAD,
+				  filedirlist_focus{
+					 filedirlist_entry_id::dir_section,
+						 in_focus(fc)},
+				  trigger);
+		 });
+
+	// Create the directory list's right mouse button popup contents.
+
+	auto dir_popup=dc->create_popup_menu
+		([&]
+		 (const listlayoutmanager &llm)
+		 {
+			 // Initial contents of the popup
+
+			 set_dir_popup_contents(current_selected,
+						llm, "",
+						false,
+						std::nullopt);
+		 });
+
+	// Report the visibility state of the directory context popup.
+
+	dir_popup->on_state_update
+		([current_selected]
+		 (ONLY IN_THREAD,
+		  const auto &new_state,
+		  const auto &ignore)
+		 {
+			 current_selected->current_callback.get()
+				 (IN_THREAD,
+				  filedirlist_contextpopup{
 					filedirlist_entry_id::dir_section,
-						in_focus(fc)},
-				 trigger);
+						new_state.shown},
+				 callback_trigger_t{});
+		 });
+
+	// The directory context popup menu gets created here, in advance,
+	// and install_contextpopup_callback() merely shows it.
+	//
+	// This results in the context popup's keyboard shortcuts being
+	// active right away.
+
+	dc->install_contextpopup_callback
+		([dir_popup]
+		 (ONLY IN_THREAD,
+		  const auto &element,
+		  const auto &trigger,
+		  const auto &busy)
+		 {
+			 dir_popup->show_all();
 		 });
 
 	nlm.selection_type=[current_selected]
@@ -155,20 +358,74 @@ static inline auto create_filedir_list(const factory &f,
 					    },
 					    nlm);
 	fc->show();
+
+	// Report keyboard focus status changes on the file list
+	// container.
+
 	fc->on_keyboard_focus
 		([current_selected]
 		 (ONLY IN_THREAD,
 		  focus_change fc,
 		  const callback_trigger_t &trigger)
 		 {
-			current_selected->current_callback.get()
-				(IN_THREAD,
-				 filedirlist_focus{
-					filedirlist_entry_id::file_section,
-						in_focus(fc)},
-				 trigger);
+			 current_selected->current_callback.get()
+				 (IN_THREAD,
+				  filedirlist_focus{
+					 filedirlist_entry_id::file_section,
+						 in_focus(fc)},
+				  trigger);
 		 });
-	return pane_container;
+
+	// Create the file list's right mouse button popup contents.
+
+	auto file_popup=fc->create_popup_menu
+		([&]
+		 (const listlayoutmanager &llm)
+		 {
+			 // Initial contents of the popup
+			 set_file_popup_contents(current_selected,
+						 llm, initial_directory, false,
+						 std::nullopt);
+		 });
+
+	// Report the visibility state of the file context popup.
+
+	file_popup->on_state_update
+		([current_selected]
+		 (ONLY IN_THREAD,
+		  const auto &new_state,
+		  const auto &ignore)
+		 {
+			 current_selected->current_callback.get()
+				 (IN_THREAD,
+				  filedirlist_contextpopup{
+					filedirlist_entry_id::file_section,
+						new_state.shown},
+				 callback_trigger_t{});
+		 });
+
+	// The file context popup menu gets created here, in advance,
+	// and install_contextpopup_callback() merely shows it.
+	//
+	// This results in the context popup's keyboard shortcuts being
+	// active right away.
+
+	fc->install_contextpopup_callback
+		([file_popup]
+		 (ONLY IN_THREAD,
+		  const auto &element,
+		  const auto &trigger,
+		  const auto &busy)
+		 {
+			 file_popup->show_all();
+		 });
+
+	return {
+		current_selected,
+		pane_container,
+		dir_popup,
+		file_popup,
+	};
 }
 
 listlayoutmanager filedirlist_managerObj::implObj::protected_info_t
@@ -191,12 +448,22 @@ filedirlist_managerObj::implObj
 ::implObj(const factory &f,
 	  const std::string &initial_directory,
 	  file_dialog_type type)
-	: current_selected(ref<current_selected_callbackObj>::create()),
-	  filedir_list(create_filedir_list(f, current_selected)),
-	  info(info_t{access(initial_directory.c_str(), W_OK) == 0,
+	: implObj{create_init_args(f, initial_directory),
+		  initial_directory, type}
+{
+}
+
+filedirlist_managerObj::implObj::implObj(const init_args &args,
+					 const std::string &initial_directory,
+					 file_dialog_type type)
+	: current_selected{args.current_selected},
+	  filedir_list{args.filedir_list},
+	  dir_popup{args.dir_popup},
+	  file_popup{args.file_popup},
+	  info{info_t{access(initial_directory.c_str(), W_OK) == 0,
 		      initial_directory, pcre::create("."),
-		      ref<obj>::create()}),
-	  type(type)
+		      ref<obj>::create()}},
+	  type{type}
 {
 }
 
@@ -593,6 +860,10 @@ void filedirlist_managerObj::implObj::stop(protected_info_t::lock &lock)
 
 	lock->subdirectories.clear();
 	lock->files.clear();
+
+	// Update the context popup menus.
+	update_directory_popup_status(lock, std::nullopt);
+	update_file_popup_status(lock, std::nullopt);
 }
 
 void filedirlist_managerObj::implObj::start_new(protected_info_t::lock &lock)
@@ -619,6 +890,10 @@ void filedirlist_managerObj::implObj::start_new(protected_info_t::lock &lock)
 				 me->update(f);
 			 }
 		 });
+
+	// Update the context popup menus.
+	update_directory_popup_status(lock, std::nullopt);
+	update_file_popup_status(lock, std::nullopt);
 }
 
 filedirlist_entry filedirlist_managerObj::implObj
@@ -637,6 +912,71 @@ filedirlist_entry filedirlist_managerObj::implObj
 
 	e.name=d+e.name;
 	return e;
+}
+
+void filedirlist_managerObj::implObj
+::update_popup_status(ONLY IN_THREAD,
+		      int section,
+		      const std::optional<size_t> &n)
+{
+	protected_info_t::lock lock{*this};
+
+	if (section == filedirlist_entry_id::dir_section)
+		update_directory_popup_status(lock, n);
+	else
+		update_file_popup_status(lock, n);
+}
+
+void filedirlist_managerObj::implObj
+::update_directory_popup_status(protected_info_t::lock &lock,
+				const std::optional<size_t> &n)
+{
+	std::string directory;
+	bool writable=false;
+	std::optional<std::string> subdir;
+
+	if (lock->current_filedircontents)
+		// Execution thread is running. Otherwise, the entire popup
+		// must be closed.
+	{
+		directory=lock->directory;
+		writable=lock->writable;
+
+		if (n)
+			subdir=lock->subdirectories.at(*n).name;
+	}
+
+	set_dir_popup_contents(current_selected,
+			       dir_popup->get_layoutmanager(),
+			       directory,
+			       writable,
+			       subdir);
+}
+
+void filedirlist_managerObj::implObj
+::update_file_popup_status(protected_info_t::lock &lock,
+			   const std::optional<size_t> &n)
+{
+	std::string directory;
+	bool writable=false;
+	std::optional<std::string> file;
+
+	if (lock->current_filedircontents)
+		// Execution thread is running. Otherwise, the entire popup
+		// must be closed.
+	{
+		directory=lock->directory;
+		writable=lock->writable;
+
+		if (n)
+			file=lock->files.at(*n).name;
+	}
+
+	set_file_popup_contents(current_selected,
+				file_popup->get_layoutmanager(),
+				directory,
+				writable,
+				file);
 }
 
 LIBCXXW_NAMESPACE_END

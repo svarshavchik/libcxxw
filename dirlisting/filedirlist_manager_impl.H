@@ -55,6 +55,14 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	const focusable_container filedir_list;
 
+	//! The context popup for the directory list.
+
+	const container dir_popup;
+
+	//! The context popup for file list.
+
+	const container file_popup;
+
 	//! Return filedir_list's layout manager.
 
 	inline panelayoutmanager get_layoutmanager()
@@ -219,6 +227,15 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 		const std::string &initial_directory,
 		file_dialog_type type);
 
+	struct init_args;
+
+ private:
+
+	//! Delegated constructor
+	implObj(const init_args &args,
+		const std::string &initial_directory,
+		file_dialog_type type);
+ public:
 	//! Semantics of access permissions
 
 	const file_dialog_type type;
@@ -254,6 +271,22 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 	//! Return the current directory.
 	std::string pwd();
 
+	//! Update popup status
+
+	//! Installed callbacks on the directory list and file list containers
+	//! eventually end up here. The callbacks get installed on these
+	//! elements in the filedir_list, and employ the current_selected
+	//! callback to take a brief detour to file_dialogObj's code, where,
+	//! via a weak reference and some slight logic, they end up here.
+	//!
+	//! This specifies that the given filedirlist_entry_id::section's
+	//! currently selected item is as specified (or nothing is selected,
+	//! if null).
+
+	void update_popup_status(ONLY IN_THREAD,
+				 int section,
+				 const std::optional<size_t> &status);
+
  private:
 
 	//! Invoked by the internal execution thread. Updates the contents of the tracked directory.
@@ -286,6 +319,16 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	//! Start a new execution thread.
 	void start_new(protected_info_t::lock &lock);
+
+	//! Enable/disable items in the directory list's context popup menu.
+
+	void update_directory_popup_status(protected_info_t::lock &lock,
+					   const std::optional<size_t> &n);
+
+	//! Enable/disable items in the file list's context popup menu.
+
+	void update_file_popup_status(protected_info_t::lock &lock,
+				      const std::optional<size_t> &n);
 };
 
 LIBCXXW_NAMESPACE_END

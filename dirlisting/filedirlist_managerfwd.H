@@ -62,6 +62,7 @@ struct LIBCXX_HIDDEN filedirlist_entry_id;
 struct LIBCXX_HIDDEN filedirlist_selected;
 struct LIBCXX_HIDDEN filedirlist_focus;
 struct LIBCXX_HIDDEN filedirlist_selection;
+struct LIBCXX_HIDDEN popup_visibility;
 
 //! Specifies an entry in the directory or the file list section.
 
@@ -109,11 +110,24 @@ struct filedirlist_current_list_item {
 	const std::optional<size_t> &n;
 };
 
+//! The parameter passed to a filedirlist_selected_callback_t
+
+//! This parameter reports when one of the popups becomes visible, or is
+//! hidden.
+
+struct filedirlist_contextpopup {
+
+	int section; //!< See filedirlist_entry_id
+
+	bool visible; //!< Whether it's visible
+};
+
 //! The parameter to a \ref filedirlist_selected_callback_t
 
 typedef std::variant<filedirlist_selected,
 		     filedirlist_focus,
-		     filedirlist_current_list_item
+		     filedirlist_current_list_item,
+		     filedirlist_contextpopup
 		     > filedirlist_selected_callback_arg_t;
 
 //! Callback that gets invoked when a file directory entry is selected.

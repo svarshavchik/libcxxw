@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "file_dialog/file_dialog_impl.H"
-#include "dirlisting/filedirlist_manager.H"
+#include "dirlisting/filedirlist_manager_impl.H"
 #include "main_window.H"
 #include "dialog.H"
 #include "gridtemplate.H"
@@ -25,6 +25,7 @@
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/impl/layoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
+#include "x/w/callback_trigger.H"
 #include "drag_destination_element.H"
 #include "connection_info.H"
 #include "selection/current_selection_handler.H"
@@ -48,6 +49,93 @@
 
 LIBCXXW_NAMESPACE_START
 
+namespace {
+#if 0
+}
+#endif
+
+// After the right context popup is visible, motion events may still
+// occur on the underlying file/directory list, they're ignored.
+//
+// The directory and file list's popup visibility status is tracked
+// separately.
+
+class popup_menu_visibility_statusObj : virtual public obj {
+
+public:
+	bool is_visible=false;
+};
+
+typedef ref<popup_menu_visibility_statusObj> popup_menu_visibility_status;
+
+// And the individual context popup's status.
+
+class popup_menu_status_infoObj : virtual public obj {
+
+	std::optional<size_t> current_list_item;
+	std::optional<size_t> current_list_item_before_popup_was_shown;
+
+	// Both the dile and the directory context popup status object
+	// knows if either one or the other is visible.
+
+	const popup_menu_visibility_status file_status_visibility;
+	const popup_menu_visibility_status dir_status_visibility;
+
+	// And this is one of these two.
+
+	const popup_menu_visibility_status my_visibility;
+
+	void set_list_item_before_popup_was_shown()
+	{
+		if (!file_status_visibility->is_visible &&
+		    !dir_status_visibility->is_visible)
+			current_list_item_before_popup_was_shown=
+				current_list_item;
+	}
+public:
+
+	popup_menu_status_infoObj(const popup_menu_visibility_status
+				  &file_status_visibility,
+				  const popup_menu_visibility_status
+				  &dir_status_visibility,
+				  const popup_menu_visibility_status
+				  &my_visibility)
+		: file_status_visibility{file_status_visibility},
+		  dir_status_visibility{dir_status_visibility},
+		  my_visibility{my_visibility}
+	{
+	}
+
+	bool in_focus=false;
+
+	// New item is reported.
+	inline void new_list_item(const std::optional<size_t> &item)
+	{
+		current_list_item=item;
+		set_list_item_before_popup_was_shown();
+	}
+
+	inline void popup_visible(bool visible)
+	{
+		my_visibility->is_visible=visible;
+		set_list_item_before_popup_was_shown();
+	}
+
+	// Must have keyboard focus to make current_list_item official.
+
+	inline std::optional<size_t> item() const
+	{
+		if (in_focus)
+			return current_list_item_before_popup_was_shown;
+
+		return std::nullopt;
+	}
+};
+
+#if 0
+{
+#endif
+}
 
 file_dialogObj::implObj
 ::implObj(const focusable_label &directory_field,
@@ -884,8 +972,19 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 
 	// Set up the clicked() callback, clicking on a directory entry.
 
+	auto file_status_visibility=popup_menu_visibility_status::create();
+	auto dir_status_visibility=popup_menu_visibility_status::create();
+
 	impl->directory_contents_list->set_selected_callback
-		([impl=make_weak_capture(impl)]
+		([impl=make_weak_capture(impl),
+		  dir_status=ref<popup_menu_status_infoObj>
+		  ::create(file_status_visibility,
+			   dir_status_visibility,
+			   dir_status_visibility),
+		  file_status=ref<popup_menu_status_infoObj>
+		  ::create(file_status_visibility,
+			   dir_status_visibility,
+			   file_status_visibility)]
 		 (ONLY IN_THREAD,
 		  const auto &arg,
 		  const callback_trigger_t &trigger)
@@ -896,6 +995,39 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 				 return;
 
 			 auto &[impl]=*got;
+
+			 // We want to ignore events reported on button release
+			 // events that get directed to a popup, and thus
+			 // release input focus/selection on the underlying
+			 // list.
+			 //
+			 // Right mouse button press opens the popup menu.
+			 //
+			 // When the mouse button gets released, this causes
+			 // the list to lose keyboard focus, which gets
+			 // reported.
+			 //
+			 // This would normally result in us deactivated
+			 // the relevant menu items.
+			 //
+			 // Simply ignore button release events, here.
+
+			 bool is_button_release=false;
+
+			 auto prev_dir_status=dir_status->item();
+			 auto prev_file_status=file_status->item();
+
+			 std::visit
+				 (visitor
+				  {[&](const motion_event *mev)
+				   {
+					   if (mev->type ==
+					       motion_event_type::button_event)
+						   is_button_release=true;
+				   },
+				   [&](const auto &ignore)
+				   {
+				   }}, trigger);
 
 			 std::visit
 				 (visitor
@@ -908,12 +1040,78 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 				   },
 				   [&](const filedirlist_focus &focus)
 				   {
+					   if (is_button_release)
+						   return;
+					   auto status=focus.section ==
+						   filedirlist_entry_id
+						   ::dir_section
+						   ? dir_status
+						   : file_status;
+
+					   status->in_focus=focus.in_focus;
 				   },
 				   [&](const filedirlist_current_list_item
 				       &item)
 				   {
+					   if (is_button_release)
+						   return;
+					   // If we get an update here, this
+					   // section must be in focus, and
+					   // the other section not.
+					   //
+					   // This logically conflates keyboard
+					   // and pointer focus.
+					   //
+					   // So, if the pointer is moved over
+					   // the file listing, we will consider
+					   // the file listing have logical
+					   // focus even if the keyboard focus
+					   // is in the directory listing
+					   // portion.
+
+					   auto status=item.section ==
+						   filedirlist_entry_id
+						   ::dir_section
+						   ? dir_status
+						   : file_status;
+
+					   file_status->in_focus=false;
+					   dir_status->in_focus=false;
+					   status->in_focus=true;
+
+					   status->new_list_item(item.n);
+				   },
+				   [&](const filedirlist_contextpopup
+				       &popup_status)
+				   {
+					   auto status=popup_status.section ==
+						   filedirlist_entry_id
+						   ::dir_section
+						   ? dir_status
+						   : file_status;
+
+					   status->popup_visible
+						   (popup_status.visible);
 				   }},
 				 arg);
+
+			 auto new_dir_status=dir_status->item();
+			 auto new_file_status=file_status->item();
+
+			 if (new_dir_status != prev_dir_status)
+				 impl->directory_contents_list->impl
+					 ->update_popup_status
+					 (IN_THREAD,
+					  filedirlist_entry_id::dir_section,
+					  new_dir_status);
+
+			 if (new_file_status != prev_file_status)
+				 impl->directory_contents_list->impl
+					 ->update_popup_status
+					 (IN_THREAD,
+					  filedirlist_entry_id::file_section,
+					  new_file_status);
+
 		 });
 
 	// Set up a callback that invokes enter().
