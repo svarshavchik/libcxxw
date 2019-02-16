@@ -13,6 +13,7 @@
 #include "x/w/label.H"
 #include "x/w/button_event.H"
 #include "x/w/panefactory.H"
+#include "x/w/focusable_container.H"
 #include <x/weakcapture.H>
 #include <x/fileattr.H>
 #include <x/ymdhms.H>
@@ -25,9 +26,9 @@ LIBCXXW_NAMESPACE_START
 filedirlist_managerObj::implObj::current_selected_callbackObj
 ::current_selected_callbackObj()
 	: current_callback([]
-			   (THREAD_CALLBACK, const filedirlist_entry_id &,
-			    const callback_trigger_t &,
-			    const busy &)
+			   (THREAD_CALLBACK,
+			    const filedirlist_selected_callback_arg_t &,
+			    const callback_trigger_t &)
 			   {
 			   })
 {
@@ -66,6 +67,20 @@ static inline auto create_filedir_list(const factory &f,
 	// The rightmost column, file size, is right-aligned.
 	nlm.col_alignments.emplace(2, halign::right);
 
+	nlm.current_list_item_changed=
+		[current_selected]
+		(ONLY IN_THREAD,
+		 const std::optional<size_t> &selected,
+		 const auto &trigger)
+		{
+			current_selected->current_callback.get()
+				(IN_THREAD,
+				 filedirlist_current_list_item{
+					filedirlist_entry_id::dir_section,
+						selected},
+				 trigger);
+		};
+
 	nlm.selection_type=[current_selected]
 		(ONLY IN_THREAD,
 		 const listlayoutmanager &ignore,
@@ -74,18 +89,34 @@ static inline auto create_filedir_list(const factory &f,
 		 const busy &mcguffin)
 		{
 			current_selected->current_callback.get()
-			(IN_THREAD,
-			filedirlist_entry_id{filedirlist_entry_id::dir_section,
-					n}, trigger,
-			 mcguffin);
+				(IN_THREAD,
+				 filedirlist_selected{
+					filedirlist_entry_id::dir_section, n,
+						mcguffin},
+				 trigger);
 		};
 
-	pf->set_initial_size(30)
+	auto dc=pf->set_initial_size(30)
 		.create_focusable_container([]
 					    (const auto &ignore)
 					    {
 					    },
-					    nlm)->show();
+					    nlm);
+	dc->show();
+
+	dc->on_keyboard_focus
+		([current_selected]
+		 (ONLY IN_THREAD,
+		  focus_change fc,
+		  const auto &trigger)
+		 {
+			current_selected->current_callback.get()
+				(IN_THREAD,
+				 filedirlist_focus{
+					filedirlist_entry_id::dir_section,
+						in_focus(fc)},
+				 trigger);
+		 });
 
 	nlm.selection_type=[current_selected]
 		(ONLY IN_THREAD,
@@ -95,20 +126,48 @@ static inline auto create_filedir_list(const factory &f,
 		 const busy &mcguffin)
 		{
 			current_selected->current_callback.get()
-			(IN_THREAD,
-			filedirlist_entry_id{
-				filedirlist_entry_id::file_section, n}, trigger,
-			 mcguffin);
+				(IN_THREAD,
+				 filedirlist_selected{
+					filedirlist_entry_id::file_section, n,
+						mcguffin},
+				 trigger);
 		};
 
+	nlm.current_list_item_changed=
+		[current_selected]
+		(ONLY IN_THREAD,
+		 const std::optional<size_t> &selected,
+		 const auto &trigger)
+		{
+			current_selected->current_callback.get()
+				(IN_THREAD,
+				 filedirlist_current_list_item{
+					filedirlist_entry_id::file_section,
+						selected},
+				 trigger);
+		};
 	pf->configure_new_list(nlm, true);
 
-	pf->set_initial_size(50)
+	auto fc=pf->set_initial_size(50)
 		.create_focusable_container([]
 					    (const auto &ignore)
 					    {
 					    },
-					    nlm)->show();
+					    nlm);
+	fc->show();
+	fc->on_keyboard_focus
+		([current_selected]
+		 (ONLY IN_THREAD,
+		  focus_change fc,
+		  const callback_trigger_t &trigger)
+		 {
+			current_selected->current_callback.get()
+				(IN_THREAD,
+				 filedirlist_focus{
+					filedirlist_entry_id::file_section,
+						in_focus(fc)},
+				 trigger);
+		 });
 	return pane_container;
 }
 

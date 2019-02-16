@@ -39,6 +39,7 @@
 #include <x/weakcapture.H>
 #include <x/strtok.H>
 #include <x/uriimpl.H>
+#include <x/visitor.H>
 #include <courier-unicode.h>
 #include <algorithm>
 #include <vector>
@@ -886,19 +887,33 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 	impl->directory_contents_list->set_selected_callback
 		([impl=make_weak_capture(impl)]
 		 (ONLY IN_THREAD,
-		  const filedirlist_entry_id &id,
-		  const callback_trigger_t &trigger,
-		  const busy &mcguffin)
+		  const auto &arg,
+		  const callback_trigger_t &trigger)
 		 {
 			 auto got=impl.get();
 
-			 if (got)
-			 {
-				 auto &[impl]=*got;
+			 if (!got)
+				 return;
 
-				 impl->clicked(IN_THREAD,
-					       id, trigger, mcguffin);
-			 }
+			 auto &[impl]=*got;
+
+			 std::visit
+				 (visitor
+				  {
+				   [&](const filedirlist_selected &what)
+				   {
+					   impl->clicked(IN_THREAD,
+							 what, trigger,
+							 what.mcguffin);
+				   },
+				   [&](const filedirlist_focus &focus)
+				   {
+				   },
+				   [&](const filedirlist_current_list_item
+				       &item)
+				   {
+				   }},
+				 arg);
 		 });
 
 	// Set up a callback that invokes enter().

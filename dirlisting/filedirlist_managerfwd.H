@@ -11,6 +11,7 @@
 #include "x/w/connection_threadfwd.H"
 #include <x/ptrfwd.H>
 #include <string>
+#include <optional>
 #include <sys/stat.h>
 
 LIBCXXW_NAMESPACE_START
@@ -57,11 +58,14 @@ typedef ptr<filedirlist_managerObj> filedirlist_managerptr;
 
 typedef const_ptr<filedirlist_managerObj> const_filedirlist_managerptr;
 
-//! The parameter passed to a filedirlist_selected_callback_t
+struct LIBCXX_HIDDEN filedirlist_entry_id;
+struct LIBCXX_HIDDEN filedirlist_selected;
+struct LIBCXX_HIDDEN filedirlist_focus;
+struct LIBCXX_HIDDEN filedirlist_selection;
 
-//! This parameter specifies which subdirectory or file was clicked on.
+//! Specifies an entry in the directory or the file list section.
 
-struct LIBCXX_HIDDEN filedirlist_entry_id {
+struct filedirlist_entry_id {
 
 	static constexpr int dir_section=0;
 
@@ -72,14 +76,54 @@ struct LIBCXX_HIDDEN filedirlist_entry_id {
 	size_t n;
 };
 
+//! The parameter passed to a filedirlist_selected_callback_t
+
+//! This parameter specifies that an entry was clicked on.
+
+struct filedirlist_selected : public filedirlist_entry_id {
+
+	const busy &mcguffin;
+};
+
+//! The parameter passed to a filedirlist_selected_callback_t
+
+//! This parameter reports whether the directory or the file section gained
+//! or lost focus.
+
+struct filedirlist_focus {
+
+	int section; //!< See filedirlits_entry_id
+
+	bool in_focus;
+};
+
+//! The parameter passed to a filedirlist_selected_callback_t
+
+//! This parameter reports whether which entry in the directory or the file
+//! section is currently highlighted/under cursor.
+
+struct filedirlist_current_list_item {
+
+	int section; //!< See filedirlist_entry_id
+
+	const std::optional<size_t> &n;
+};
+
+//! The parameter to a \ref filedirlist_selected_callback_t
+
+typedef std::variant<filedirlist_selected,
+		     filedirlist_focus,
+		     filedirlist_current_list_item
+		     > filedirlist_selected_callback_arg_t;
+
 //! Callback that gets invoked when a file directory entry is selected.
 
 //! The file directory list is locked at this point, and the id of the
 //! clicked on entry is passed here.
-typedef void filedirlist_selected_callback_t(THREAD_CALLBACK,
-					     filedirlist_entry_id,
-					     const callback_trigger_t &,
-					     const busy &);
+typedef void filedirlist_selected_callback_t
+(THREAD_CALLBACK,
+ const filedirlist_selected_callback_arg_t &,
+ const callback_trigger_t &);
 
 //! An entry in the directory being monitored.
 
