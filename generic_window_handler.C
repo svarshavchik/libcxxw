@@ -124,15 +124,18 @@ static auto compute_background_pixel(ONLY IN_THREAD,
 
 //////////////////////////////////////////////////////////////////////////
 
-static inline generic_windowObj::handlerObj::constructor_params
-create_constructor_params(const screen &parent_screen,
-			  const color_arg &background_color,
-			  size_t nesting_level)
+static inline generic_windowObj::handlerObj::extra_constructor_params
+create_extra_constructor_params(const main_window_handler_constructor_params
+				&main_params,
+				size_t nesting_level)
 {
 	rectangle dimensions={0, 0, 0, 0};
 
+	const auto &parent_screen=main_params.parent_screen;
+
 	auto background_color_obj=
-		default_background_color(parent_screen, background_color);
+		default_background_color(parent_screen,
+					 main_params.background_color);
 
 	values_and_mask vm
 		{
@@ -165,33 +168,29 @@ create_constructor_params(const screen &parent_screen,
 		},
 		parent_screen->impl->toplevelwindow_pictformat,
 		nesting_level,
-		background_color,
+		main_params.background_color,
 		background_color_obj,
 	};
 }
 
 generic_windowObj::handlerObj
-::handlerObj(const screen &parent_screen,
-	     const color_arg &background_color,
+::handlerObj(const main_window_handler_constructor_params &params,
 	     const shared_handler_data &handler_data,
-	     const char *window_type,
-	     const char *window_state,
 	     size_t nesting_level)
 	: handlerObj{// Constructor is single-threaded, so we pick IN_THREAD
 		     // from here.
-		     parent_screen->impl->thread,
+		     params.parent_screen->impl->thread,
 		     handler_data,
-		     create_constructor_params(parent_screen, background_color,
-					       nesting_level)}
+		     create_extra_constructor_params(params, nesting_level)}
 {
-	set_window_type_in_constructor(window_type);
-	set_window_state_in_constructor(window_state);
+	set_window_type_in_constructor(params.window_type);
+	set_window_state_in_constructor(params.window_state);
 }
 
 generic_windowObj::handlerObj
 ::handlerObj(ONLY IN_THREAD,
 	     const shared_handler_data &handler_data,
-	     const constructor_params &params)
+	     const extra_constructor_params &params)
 	// This sets up the xcb_window_t
 	: window_handlerObj
 	{

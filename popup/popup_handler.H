@@ -101,6 +101,11 @@ public:
 	//! Constructor
 	handlerObj(const popup_handler_args &);
 
+ private:
+	//! Delegated constructor
+	handlerObj(const popup_handler_args &,
+		   const main_window_handler_constructor_params &);
+ public:
 	//! Destructor
 	~handlerObj();
 

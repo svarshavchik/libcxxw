@@ -7,6 +7,7 @@
 
 #include "window_handler.H"
 #include "generic_window.H"
+#include "window_handler_constructor_params.H"
 #include "shared_handler_datafwd.H"
 #include "drawable.H"
 #include "picture.H"
@@ -302,7 +303,7 @@ class generic_windowObj::handlerObj
 
 	//! What my constructor needs
 
-	struct constructor_params {
+	struct extra_constructor_params {
 
 		//! Parameters for window_handler's constructor.
 
@@ -327,18 +328,15 @@ class generic_windowObj::handlerObj
 	};
 
 	//! Public constructor
-	handlerObj(const screen &me,
-		   const color_arg &background_color,
+	handlerObj(const main_window_handler_constructor_params &params,
 		   const shared_handler_data &handler_data,
-		   const char *window_type,
-		   const char *window_state,
 		   size_t nesting_level);
  protected:
 
 	//! Internal constructor
 	handlerObj(ONLY IN_THREAD,
 		   const shared_handler_data &handler_data,
-		   const constructor_params &params);
+		   const extra_constructor_params &params);
  public:
 	//! Destructor
 	~handlerObj();
