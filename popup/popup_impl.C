@@ -45,15 +45,6 @@ popupObj::implObj::implObj(const ref<handlerObj> &handler,
 {
 	set_parent_window_of(handler, parent->id());
 
-	values_and_mask vm(XCB_CW_OVERRIDE_REDIRECT, 1);
-
-	auto c=handler->screenref->get_connection()->impl->info->conn;
-
-	xcb_change_window_attributes(c,
-				     handler->id(),
-				     vm.mask(),
-				     vm.values().data());
-
 }
 
 popupObj::implObj::~implObj()

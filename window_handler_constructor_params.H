@@ -53,6 +53,9 @@ struct generic_window_handler_constructor_params {
 	//! elements this gets set based on the nesting level of the
 	//! display element the popup is attached to.
 	size_t nesting_level;
+
+	//! Create this window with the override-redirect flag
+	bool override_redirect;
 };
 
 

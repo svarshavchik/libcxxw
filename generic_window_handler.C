@@ -156,6 +156,9 @@ create_extra_constructor_params(const generic_window_handler_constructor_params
 					  dimensions)
 		};
 
+	if (params.override_redirect)
+		vm.m[XCB_CW_OVERRIDE_REDIRECT]=1;
+
 	return {
 		{
 		 parent_screen,
