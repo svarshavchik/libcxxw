@@ -1,3 +1,12 @@
+2019-02-25  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* main_window.H: main_window_config stores the main
+	window's application label and saved screen positions, and replaces
+	these two parameters to the overloaded create_mainwindow().
+
+	Add background_color to main_window_config, to set an initial custom
+	main window background color.
+
 2019-02-17  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Add right pointer button context popups to the file dialog, with

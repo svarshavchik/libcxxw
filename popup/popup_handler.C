@@ -48,8 +48,7 @@ const popup_visibility_semantics menu_popup_type={
 };
 
 popupObj::handlerObj::handlerObj(const popup_handler_args &args)
-	: superclass_t{args.parent->thread(),
-		       args.parent->get_screen(),
+	: superclass_t{args.parent->get_screen(),
 		       "transparent",
 		       args.parent->handler_data,
 		       args.window_type,

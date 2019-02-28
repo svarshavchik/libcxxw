@@ -229,9 +229,13 @@ void testimagebuttons()
 
 	auto close_flag=close_flag_ref::create();
 
+	LIBCXX_NAMESPACE::w::main_window_config config;
+
+	config.screen_position(pos, "main");
+
 	auto main_window=LIBCXX_NAMESPACE::w::screen::create()
 		->create_mainwindow
-		(pos, "main",
+		(config,
 		 []
 		 (const auto &main_window)
 		 {

@@ -217,13 +217,14 @@ ntlm.maximum_table_width=500;</programlisting>
       <title>Preserving table columns' widths</title>
 
       <para>
-	It's natural to expect that reopening an application preserves a
-	table's appearance, and
+	It's natural to expect that reopening an application opens the
+	table and its columns using their original size, and
 	<xref linkend="screen_positions" /> describes how to preserve the
 	position and the size of the main application window. But this
 	only preserves size and the position of the main window itself.
-	Any adjustments to a table's columns' width does not get preserved,
-	and the reopened table's columns' widths get reset to their defaults.
+	Any resizing of a table's columns' width does not get preserved;
+	the reopened table's columns' widths get reset to their default
+	sizes.
       </para>
 
       <para>
@@ -248,7 +249,7 @@ pos.save(configfile);</programlisting>
 
       <para>
 	A necessary prerequisite for preserving table column widths is that
-	the table's main application window's size also has to be preserved;
+	the table's main application window's size also gets preserved;
 	so <filename>table2.C</filename> <methodname>save</methodname>()s
 	its main window's size (and position), first, just like the
 	<link linkend="wordwraplabel">word wrap label example</link>.

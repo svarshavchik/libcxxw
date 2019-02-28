@@ -15,6 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC main_windowObj;
 class LIBCXX_PUBLIC main_windowBase;
+class LIBCXX_PUBLIC main_window_config;
 
 /*! Top level application window.
 

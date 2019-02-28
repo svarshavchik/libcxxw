@@ -56,7 +56,11 @@ and specifies the new main window's layout manager.
 INSERT_LIBX_NAMESPACE::w::screen_positions_t screen_positions=
     INSERT_LIBX_NAMESPACE::w::load_screen_positions(INSERT_LIBX_NAMESPACE::configdir("app@example.com") + "/windows");
 
-INSERT_LIBX_NAMESPACE::w::main_window main_window=s->create(screen_positions, "main",
+INSERT_LIBX_NAMESPACE::w::main_window_config config;
+
+config.screen_position(screen_positions, "main");
+
+INSERT_LIBX_NAMESPACE::w::main_window main_window=s->create(config,
      []
      (const INSERT_LIBX_NAMESPACE::w::main_window &new_main_window)
      {
@@ -67,6 +71,9 @@ INSERT_LIBX_NAMESPACE::w::main_window main_window=s->create(screen_positions, "m
 The main window's former's position can be saved, loaded with
 load_screen_positions(), then passed in order to reopen the main window
 in the same location.
+
+This is done by constructing a \ref main_window_config "main_window_config"
+and using its screen_position() method.
 
 \note
 If the saved position includes a screen number, the window will really be

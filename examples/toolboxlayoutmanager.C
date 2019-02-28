@@ -353,8 +353,12 @@ new_app create_app(const x::w::screen_positions &pos)
 {
 	x::w::dialogptr toolbox_dialog;
 
+	x::w::main_window_config config;
+
+	config.screen_position(pos, "main");
+
 	auto main_window=x::w::main_window
-		::create(pos, "main",
+		::create(config,
 			 [&]
 			 (const auto &main_window)
 			 {

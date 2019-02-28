@@ -210,8 +210,12 @@ void testlabel(const testwordwrappablelabel_options &options)
 		LIBCXX_NAMESPACE::w::screen_positions{}:
 	LIBCXX_NAMESPACE::w::screen_positions{configfile};
 
+	LIBCXX_NAMESPACE::w::main_window_config config;
+
+	config.screen_position(pos, "main");
+
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create(pos, "main",
+		::create(config,
 			 [&]
 			 (const auto &main_window)
 			 {

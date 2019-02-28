@@ -327,8 +327,7 @@ class generic_windowObj::handlerObj
 	};
 
 	//! Public constructor
-	handlerObj(ONLY IN_THREAD,
-		   const screen &me,
+	handlerObj(const screen &me,
 		   const color_arg &background_color,
 		   const shared_handler_data &handler_data,
 		   const char *window_type,

@@ -121,7 +121,7 @@ private:
 	layout_impl get_layout_impl() const override;
 
 public:
-	//! Creator for create_mainwindow()
+	//! Creator for create_dialog()
 
 	typedef dialog external_dialog_creator_t(const dialog_args &);
 

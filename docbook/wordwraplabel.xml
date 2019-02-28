@@ -56,6 +56,10 @@ See COPYING for distribution information.
 	<link linkend="creator"><classname>&ns;::w::main_window</classname>
 	  creator lambda</link> is factored out, in this example, into
 	a separate function, for clarity.
+	Setting <varname>background_color</varname> in the
+	<classname>&ns;::w::main_window_config</classname> and using it to
+	create the main window (see <xref linkend="screen_positions" />
+	for more information) with
 	<function>create_mainwindow</function>() sets the main window's
 	background to light yellow, then just like
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
@@ -204,8 +208,12 @@ pos->save(configfile);</programlisting>
 	<programlisting>
 &ns;::w::screen_positions pos{configfile};
 
+&ns;::w::main_window_config config;
+
+config.screen_position(pos, "main");
+
 auto main_window=
-    &ns;::w::main_window::create(pos, "main",
+    &ns;::w::main_window::create(config,
                               [&amp;]
                               (const &ns;::w::main_window)
                               {
@@ -214,7 +222,7 @@ auto main_window=
     </blockquote>
 
     <para>
-      Reopening a window in the same position is a two-step process:
+      Reopening a window in the same position involves a three-step process:
     </para>
 
     <itemizedlist>
@@ -229,18 +237,27 @@ auto main_window=
 
       <listitem>
 	<para>
+	  The <ulink url="&link-x--w--main-window-config;"><classname>&ns;::w::main_window_config</classname></ulink>
+	  objects is a helper object that sets optional main window settings.
+	  It gets constructed before the main window gets created, and
+	  its <methodname>screen_position</methodname>() method specifies
+	  and the application-assigned label for the new main window,
+	  and the loaded
+	  <classname>&ns;::w::screen_positions</classname> object.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
 	  The <classname>&ns;::w::screen_positions</classname> object
-	  and the application-assigned label for the
-	  main window gets passed to the overloaded main window
+	  gets passed to the overloaded main window
 	  <function>create</function>()or.
-	  The above example passes <quote>main</quote> for the label.
 	</para>
       </listitem>
     </itemizedlist>
 
     <para>
       The named window's position that was saved the last time
-      <filename>wordwraplabel</filename> ran, the same position and size
+      <filename>wordwraplabel</filename> ran, that same position and size
       gets set for the new window. The same label gets used to
       record the window's position, by its <methodname>save</methodname>()
       method.
@@ -255,6 +272,18 @@ auto main_window=
 	requested window position gets ignored by the window manager, and
 	the application window still opens in some other location
 	on the screen.
+      </para>
+    </note>
+
+    <note>
+      <para>
+	The <classname>&ns;::w::screen_position</classname> object, after
+	it's passed to <methodname>screen_position</methodname>() must remain
+	in scope and not get destroyed until the main window gets created.
+	Typically the object sticks around until the main window gets closed,
+	and the main window's then-current position and size gets recorded
+	and saved using the same
+	<classname>&ns;::w::screen_position</classname> object.
       </para>
     </note>
 

@@ -98,6 +98,14 @@ void main_windowObj::install_window_theme_icon(const std::vector<std::tuple
 	impl->handler->install_window_theme_icon(a);
 }
 
+void main_window_config::screen_position(const screen_positions &pos,
+					 const std::string_view &name)
+{
+	saved_position.emplace(name, std::ref(pos));
+}
+
+main_window_config::~main_window_config()=default;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Create a default main window
@@ -122,7 +130,7 @@ struct LIBCXX_HIDDEN screenObj::pos_info {
 	pos_info() {}
 
 	pos_info(const screen_positions &pos,
-		 const std::string_view &name)
+		 const std::string &name)
 		: name{name}, info{pos.find(name)}
 	{
 	}
@@ -143,22 +151,30 @@ struct LIBCXX_HIDDEN screenObj::pos_info {
 	}
 };
 
-main_window main_windowBase::do_create(const screen_positions &pos,
-				       const std::string_view &name,
+main_window main_windowBase::do_create(const main_window_config &config,
 				       const function<main_window_creator_t> &f)
 {
-	return do_create(pos, name, f, new_gridlayoutmanager{});
+	return do_create(config, f, new_gridlayoutmanager{});
 }
 
-main_window main_windowBase::do_create(const screen_positions &pos,
-				       const std::string_view &name,
+main_window main_windowBase::do_create(const main_window_config &config,
 				       const function<main_window_creator_t> &f,
 				       const new_layoutmanager &factory)
 {
+	if (!config.saved_position)
+	{
+		screenObj::pos_info loaded_pos;
+
+		return loaded_pos.find_screen()
+			->do_create_mainwindow(loaded_pos, config, f, factory);
+	}
+
+	auto &[name, pos] = *config.saved_position;
+
 	screenObj::pos_info loaded_pos{pos, name};
 
 	return loaded_pos.find_screen()
-		->do_create_mainwindow(loaded_pos, f, factory);
+		->do_create_mainwindow(loaded_pos, config, f, factory);
 }
 
 main_window screenObj
@@ -168,11 +184,10 @@ main_window screenObj
 }
 
 main_window screenObj
-::do_create_mainwindow(const screen_positions &pos,
-		       const std::string_view &name,
+::do_create_mainwindow(const main_window_config &config,
 		       const function<main_window_creator_t> &f)
 {
-	return do_create_mainwindow(pos, name, f, new_gridlayoutmanager{});
+	return do_create_mainwindow(config, f, new_gridlayoutmanager{});
 }
 
 class LIBCXX_HIDDEN app_container_implObj :
@@ -313,25 +328,34 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 }
 
 main_window screenObj
-::do_create_mainwindow(const screen_positions &pos,
-		       const std::string_view &name,
+::do_create_mainwindow(const main_window_config &config,
 		       const function<main_window_creator_t> &f,
 		       const new_layoutmanager &factory)
 {
-	pos_info loaded_pos{pos, name};
+	if (config.saved_position)
+	{
+		auto &[name, pos] = *config.saved_position;
 
-	return do_create_mainwindow(loaded_pos, f, factory);
+		pos_info loaded_pos{pos, name};
+
+		return do_create_mainwindow(loaded_pos, config, f, factory);
+	}
+
+	pos_info pos;
+
+	return do_create_mainwindow(pos, config, f, factory);
 }
 
 main_window screenObj
 ::do_create_mainwindow(const function<main_window_creator_t> &f,
 		       const new_layoutmanager &layout_factory)
 {
-	return do_create_mainwindow(pos_info{}, f, layout_factory);
+	return do_create_mainwindow(main_window_config{}, f, layout_factory);
 }
 
 main_window screenObj
 ::do_create_mainwindow(const pos_info &pos,
+		       const main_window_config &config,
 		       const function<main_window_creator_t> &f,
 		       const new_layoutmanager &layout_factory)
 {
@@ -348,12 +372,12 @@ main_window screenObj
 	auto queue=connref->impl->thread->get_batch_queue();
 
 	auto handler=ref<main_windowObj::handlerObj>
-		::create(connref->impl->thread, ref{this},
+		::create(ref{this},
 			 suggested_position,
 			 pos.name,
 			 "normal",
 			 "",
-			 "mainwindow_background");
+			 config.background_color);
 
 	auto [window_impl, lm]=create_main_window_impl
 		(handler, std::nullopt, layout_factory,

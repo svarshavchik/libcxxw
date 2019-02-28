@@ -24,8 +24,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-main_windowObj::handlerObj::handlerObj(ONLY IN_THREAD,
-				       const screen &parent_screen,
+main_windowObj::handlerObj::handlerObj(const screen &parent_screen,
 				       const std::optional<rectangle>
 				       &suggested_position,
 				       const std::string &window_id,
@@ -33,7 +32,7 @@ main_windowObj::handlerObj::handlerObj(ONLY IN_THREAD,
 				       const char *window_state,
 				       const color_arg &background_color)
 	: superclass_t({},
-		       IN_THREAD, parent_screen,
+		       parent_screen,
 		       background_color,
 		       shared_handler_data::create(),
 		       window_type,
@@ -41,10 +40,16 @@ main_windowObj::handlerObj::handlerObj(ONLY IN_THREAD,
 		       0),
 	  on_delete_callback_thread_only([](THREAD_CALLBACK,
 					    const auto &ignore) {}),
-	  net_wm_sync_request_counter{IN_THREAD},
+	  net_wm_sync_request_counter{parent_screen->impl->thread},
 	  suggested_position_thread_only{suggested_position},
 	  window_id{window_id}
 {
+}
+
+void main_windowObj::handlerObj::installed(ONLY IN_THREAD)
+{
+	superclass_t::installed(IN_THREAD);
+
 	// Set WM_PROTOCOLS to WM_DELETE_WINDOW -- we handle the window
 	// close request ourselves.
 
@@ -56,7 +61,7 @@ main_windowObj::handlerObj::handlerObj(ONLY IN_THREAD,
 
 	{
 		mpobj<ewmh>::lock lock{screenref->get_connection()
-				->impl->ewmh_info};
+				       ->impl->ewmh_info};
 
 		if (lock->ewmh_available)
 		{

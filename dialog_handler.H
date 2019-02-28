@@ -48,8 +48,7 @@ class dialogObj::handlerObj : public main_windowObj::handlerObj {
 
 	//! Constructor
 
-	handlerObj(ONLY IN_THREAD,
-		   const ref<main_windowObj::handlerObj> &parent_handler,
+	handlerObj(const ref<main_windowObj::handlerObj> &parent_handler,
 		   const std::variant<dialog_position, rectangle> &position,
 		   const std::string &window_id,
 		   const color_arg &background_color,

@@ -13,10 +13,38 @@
 #include <x/w/text_param.H>
 #include <x/w/stop_message.H>
 #include <x/w/alert_message.H>
+#include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/functionalrefptrfwd.H>
+#include <functional>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
+
+//! Optional configuration of a \ref main_window "main application window".
+
+class main_window_config {
+
+
+public:
+
+	//! Specify optional position on the screen.
+
+	void screen_position(const screen_positions &,
+			     const std::string_view &);
+
+	//! Loaded screen position.
+
+	std::optional<std::tuple<std::string,
+				 std::reference_wrapper<const screen_positions>>
+		      > saved_position;
+
+	//! Main window's background color;
+	color_arg background_color="mainwindow_background";
+
+	//! Destructor
+	~main_window_config();
+};
 
 //! Base class for \ref main_window "main application window"s.
 
@@ -62,23 +90,21 @@ public:
 
 	template<typename functor,
 		 typename =is_main_window_creator<functor>>
-	static main_window create(const screen_positions &pos,
-				  const std::string_view &name,
+	static main_window create(const main_window_config &config,
 				  functor &&f)
 	{
-		return do_create(pos, name,
+		return do_create(config,
 				 make_function<main_window_creator_t>
 				 (std::forward<functor>(f)));
 	}
 
 	//! Create a new top level window using a custom layout manager.
 	template<typename functor>
-	static main_window create(const screen_positions &pos,
-				  const std::string_view &name,
+	static main_window create(const main_window_config &config,
 				  functor &&f,
 				  const new_layoutmanager &layout_factory)
 	{
-		return do_create(pos, name,
+		return do_create(config,
 				 make_function<main_window_creator_t>
 				 (std::forward<functor>(f)),
 				 layout_factory);
@@ -97,15 +123,13 @@ public:
 
 	//! create() implementation.
 
-	static main_window do_create(const screen_positions &pos,
-				     const std::string_view &name,
+	static main_window do_create(const main_window_config &config,
 				     const function<main_window_creator_t> &f)
 		LIBCXX_PUBLIC;
 
 	//! create() implementation.
 
-	static main_window do_create(const screen_positions &pos,
-				     const std::string_view &name,
+	static main_window do_create(const main_window_config &config,
 				     const function<main_window_creator_t> &f,
 				     const new_layoutmanager &factory)
 		LIBCXX_PUBLIC;

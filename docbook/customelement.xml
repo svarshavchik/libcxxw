@@ -69,8 +69,8 @@ See COPYING for distribution information.
     in several ways: it's a custom subclass of
     <classname>&ns;::w::element</classname>; the custom display element's
     size is initially 50x50 pixels, and a button toggles its size between 50x50
-    and 100x100 pixels; the window's background color is set to white, also
-    independent of the current display theme; and the circle gets drawn
+    and 100x100 pixels; the window's background color is set to white,
+    overriding the current display theme's default; and the circle gets drawn
     using a fixed gradient color, going from black to light grey, also
     independent of the current display theme.
   </para>

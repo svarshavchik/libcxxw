@@ -59,7 +59,7 @@ public:
 	THREAD_DATA_ONLY(wm_icon_set);
 
 	//! Constructor
-	handlerObj(ONLY IN_THREAD, const screen &parent_screen,
+	handlerObj(const screen &parent_screen,
 		   const std::optional<rectangle> &suggested_position,
 		   const std::string &window_id,
 		   const char *window_type,
@@ -68,6 +68,10 @@ public:
 
 	//! Destructor
 	~handlerObj();
+
+	//! Override installed().
+
+	void installed(ONLY IN_THREAD) override;
 
 	//! Weak pointer to our public object. Initialized during construction.
 

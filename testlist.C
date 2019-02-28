@@ -634,8 +634,11 @@ void testlist(const testlistoptions &options)
 
 	auto default_screen=LIBCXX_NAMESPACE::w::screen::create();
 
+	LIBCXX_NAMESPACE::w::main_window_config config;
+
+	config.screen_position(pos, "name");
 	auto main_window=default_screen->create_mainwindow
-		(pos, "main",
+		(config,
 		 [&]
 		 (const auto &main_window)
 		 {

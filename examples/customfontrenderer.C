@@ -347,14 +347,17 @@ void testfontrenderer()
 
 	auto close_flag=close_flag_ref::create();
 
+	x::w::main_window_config config;
+
+	// White background color.
+
+	config.background_color=x::w::white;
+
 	auto main_window=x::w::main_window::create
-		([&]
+		(config,
+		 [&]
 		 (const auto &main_window)
 		 {
-			 // White background color.
-
-			 main_window->set_background_color(x::w::white);
-
 			 x::w::gridlayoutmanager layout{
 				 main_window->get_layoutmanager()
 			 };

@@ -1362,8 +1362,11 @@ void cxxwtheme()
 
 	w::containerptr options_containerptr;
 
+	w::main_window_config config;
+
+	config.screen_position(pos, "main");
 	auto main_window=default_screen->create_mainwindow
-		(pos, "main",
+		(config,
 		 [&]
 		 (const auto &main_window)
 		 {

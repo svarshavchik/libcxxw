@@ -25,17 +25,6 @@
 
 void create_mainwindow(const x::w::main_window &main_window)
 {
-	x::w::rgb light_yellow{
-		x::w::rgb::maximum,
-		x::w::rgb::maximum,
-		(x::w::rgb_component_t)(x::w::rgb::maximum * .75)},
-
-		blue{0, 0, x::w::rgb::maximum},
-
-		black{};
-
-	main_window->set_background_color(light_yellow);
-
 	x::w::gridlayoutmanager
 		layout=main_window->get_layoutmanager();
 
@@ -48,33 +37,39 @@ void create_mainwindow(const x::w::main_window &main_window)
 	// Optional parameter, alignment:
 	config.alignment=x::w::halign::center;
 
-	factory->create_label({
-		 blue,
-		"underline"_decoration,
+	factory->create_label
+		(
+		 {
+		  // x::w::rgb values specify the color of the following
+		  // text. <x/w/rgb.h> declares several constants for standard
+		  // HTML 3.2 colors, like x::w::blue:
 
-		 // "name"_font - string literal
-		"liberation serif; point_size=24; weight=bold"_font,
+		  x::w::blue,
+		  "underline"_decoration,
 
-	        "Lorem ipsum\n",
+		  // "name"_font - string literal
+		  "liberation serif; point_size=24; weight=bold"_font,
 
-		"no"_decoration,
+		  "Lorem ipsum\n",
 
-		 // "name"_theme_font - font specified by the current theme/
-		 //
-		 // The "label" font is used for ordinary labels
-		"label; point_size=12"_theme_font,
-		black,
+		  "no"_decoration,
 
-		"dolor sit amet, consectetur adipisicing elit, "
-		"sed do eiusmod tempor incididunt ut labore et dolore mana "
-		"aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
-		"ullamco laboris nisi ut aliquip ex ea commodo consequat. "
-		"Duis aute irure dolor in reprehenderit in voluptate velit "
-		"esse cillum dolore eu fugiat nulla pariatur. "
-		"Excepteur sint occaecat cupidatat non proident, "
-		"sunt in culpa qui officia deserunt mollit anim id est "
-		"laborum."
-	  }, config);
+		  // "name"_theme_font - font specified by the current theme/
+		  //
+		  // The "label" font is used for ordinary labels
+		  "label; point_size=12"_theme_font,
+		  x::w::black,
+
+		  "dolor sit amet, consectetur adipisicing elit, "
+		  "sed do eiusmod tempor incididunt ut labore et dolore mana "
+		  "aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
+		  "ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+		  "Duis aute irure dolor in reprehenderit in voluptate velit "
+		  "esse cillum dolore eu fugiat nulla pariatur. "
+		  "Excepteur sint occaecat cupidatat non proident, "
+		  "sunt in culpa qui officia deserunt mollit anim id est "
+		  "laborum."
+		 }, config);
 }
 
 void wordwrap()
@@ -108,9 +103,36 @@ void wordwrap()
 	// This has no effect if no memorized position was loaded from the
 	// the configuration (which includes the situation where the
 	// configuration file does not exist).
+	//
+	// Passing an optional x::w::main_window_config as the first parameter
+	// to main_window's constructor specifies optional main window settings.
+
+	x::w::main_window_config config;
+
+	// set_name_and_position() sets the main window's unique label, and
+	// restores it from the specified x::w::screen_positions, if one was
+	// saved
+	//
+	// NOTE: the screen_positions parameter that gets passed in here must
+	// remain in scope and not get destroyed until the main window's
+	// constructor returns.
+
+	config.screen_position(pos, "main");
+
+	// main_window_config's background_color sets the main window's
+	// background color.
+
+	x::w::rgb light_yellow
+		{
+		 x::w::rgb::maximum,
+		 x::w::rgb::maximum,
+		 (x::w::rgb_component_t)(x::w::rgb::maximum * .75)
+		};
+
+	config.background_color=light_yellow;
 
 	auto main_window=
-		x::w::main_window::create(pos, "main", create_mainwindow);
+		x::w::main_window::create(config, create_mainwindow);
 
 	main_window->on_disconnect([]
 				   {

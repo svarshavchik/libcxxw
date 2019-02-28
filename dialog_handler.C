@@ -13,8 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-dialogObj::handlerObj::handlerObj(ONLY IN_THREAD,
-				  const ref<main_windowObj::handlerObj>
+dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 				  &parent_handler,
 				  const std::variant<dialog_position,
 				  rectangle> &position,
@@ -24,7 +23,7 @@ dialogObj::handlerObj::handlerObj(ONLY IN_THREAD,
 				  bool modal,
 				  bool urgent,
 				  bool grab_input_focus)
-	: superclass_t{IN_THREAD, parent_handler->get_screen(),
+	: superclass_t{parent_handler->get_screen(),
 
 		       std::visit(visitor{[&](const rectangle &r)
 					  -> std::optional<rectangle>

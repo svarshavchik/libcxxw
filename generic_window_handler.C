@@ -171,16 +171,18 @@ create_constructor_params(const screen &parent_screen,
 }
 
 generic_windowObj::handlerObj
-::handlerObj(ONLY IN_THREAD,
-	     const screen &parent_screen,
+::handlerObj(const screen &parent_screen,
 	     const color_arg &background_color,
 	     const shared_handler_data &handler_data,
 	     const char *window_type,
 	     const char *window_state,
 	     size_t nesting_level)
-	: handlerObj(IN_THREAD, handler_data,
+	: handlerObj{// Constructor is single-threaded, so we pick IN_THREAD
+		     // from here.
+		     parent_screen->impl->thread,
+		     handler_data,
 		     create_constructor_params(parent_screen, background_color,
-					       nesting_level))
+					       nesting_level)}
 {
 	set_window_type_in_constructor(window_type);
 	set_window_state_in_constructor(window_state);

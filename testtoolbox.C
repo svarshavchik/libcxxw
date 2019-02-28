@@ -322,8 +322,12 @@ new_app create_app(const testtoolboxoptions &options,
 {
 	LIBCXX_NAMESPACE::w::dialogptr toolbox_dialog;
 
+	LIBCXX_NAMESPACE::w::main_window_config config;
+
+	config.screen_position(pos, "main");
+
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create(pos, "main",
+		::create(config,
 			 [&]
 			 (const auto &main_window)
 			 {

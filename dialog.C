@@ -115,8 +115,7 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 	auto queue=s->connref->impl->thread->get_batch_queue();
 
 	auto handler=ref<dialogObj::handlerObj>
-		::create(s->connref->impl->thread,
-			 impl->handler,
+		::create(impl->handler,
 			 args.position,
 			 args.window_id,
 			 "dialog_background",

@@ -537,6 +537,10 @@ void create_help_about(const x::w::main_window &main_window)
 			 std::cout << "Help/About closed!" << std::endl;
 		 });
 
+	// dialog_window gives access to the underlying dialog's
+	// x::w::main_window. Use that to set a custom background color
+	// and the dialog window's title.
+
 	auto w=d->dialog_window;
 
 	w->set_background_color(light_yellow);

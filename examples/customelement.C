@@ -201,18 +201,17 @@ void testcustomelement()
 
 	auto close_flag=close_flag_ref::create();
 
+	// White background color.
+	x::w::main_window_config config;
+
+	config.background_color=x::w::white;
+
 	auto main_window=x::w::main_window::create
-		([&]
+		(config,
+		 [&]
 		 (const auto &main_window)
 		 {
-			 // White background color.
-
-			 main_window->set_background_color(x::w::rgb{
-					 x::w::rgb::maximum,
-					 x::w::rgb::maximum,
-					 x::w::rgb::maximum
-						 });
-
+			 main_window->remove_background_color();
 			 x::w::gridlayoutmanager layout{
 				 main_window->get_layoutmanager()
 			 };

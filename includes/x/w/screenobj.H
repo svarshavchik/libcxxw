@@ -167,25 +167,23 @@ public:
 
 	template<typename functor,
 		 typename =is_main_window_creator<functor>>
-	main_window create_mainwindow(const screen_positions &pos,
-				      const std::string_view &name,
+	main_window create_mainwindow(const main_window_config &config,
 				      functor &&f)
 	{
 		return do_create_mainwindow
-			(pos, name, make_function<main_window_creator_t>
+			(config, make_function<main_window_creator_t>
 			 (std::forward<functor>(f)));
 	}
 
 	//! Create a new top level window using a custom layout manager.
 	template<typename functor,
 		 typename =is_main_window_creator<functor>>
-	main_window create_mainwindow(const screen_positions &pos,
-				      const std::string_view &name,
+	main_window create_mainwindow(const main_window_config &config,
 				      functor &&f,
 				      const new_layoutmanager &layout_factory)
 	{
 		return do_create_mainwindow
-			(pos, name, make_function<main_window_creator_t>
+			(config, make_function<main_window_creator_t>
 			 (std::forward<functor>(f)),
 			 layout_factory);
 	}
@@ -204,15 +202,13 @@ public:
 
 	//! create_mainwindow() implementation.
 
-	main_window do_create_mainwindow(const screen_positions &pos,
-					 const std::string_view &name,
+	main_window do_create_mainwindow(const main_window_config &config,
 					 const function<main_window_creator_t>
 					 &f);
 
 	//! create_mainwindow() implementation.
 
-	main_window do_create_mainwindow(const screen_positions &pos,
-					 const std::string_view &name,
+	main_window do_create_mainwindow(const main_window_config &config,
 					 const function<main_window_creator_t>
 					 &f,
 					 const new_layoutmanager &factory)
@@ -222,6 +218,7 @@ public:
 
 	//! create_mainwindow() implementation.
 	main_window do_create_mainwindow(const pos_info &pos,
+					 const main_window_config &config,
 					 const function<main_window_creator_t>
 					 &f,
 					 const new_layoutmanager &factory)
