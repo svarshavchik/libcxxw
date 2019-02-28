@@ -620,10 +620,10 @@ typedef void list_item_status_change_callback_t(THREAD_CALLBACK,
 typedef functionref<list_item_status_change_callback_t
 		      > list_item_status_change_callback;
 
-//! Type-erased current item callback
-typedef functionptr<void (THREAD_CALLBACK, const std::optional<size_t> &,
-			  const callback_trigger_t &)
-		    > current_list_item_callback_t;
+//! Type-erased list_item_status_change_callback_t.
+
+typedef functionptr<list_item_status_change_callback_t
+		    > list_item_status_change_callbackptr;
 
 //! SFINAE template for overloading a list_item_status_change_callback_t parameter.
 

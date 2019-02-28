@@ -141,6 +141,22 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			std::cout << std::endl;
 		};
 
+	// An optional callback that gets invoked whenever a list item is
+	// highlighted, not necessary selected. This can be used to provide
+	// some feedback elsewhere.
+	new_list.current_list_item_changed=
+		[]
+		(ONLY IN_THREAD,
+		 const x::w::list_item_status_info_t &info)
+		{
+			std::cout << "Item #" << info.item_number << " was ";
+
+			std::cout << (info.selected ? "highlighted"
+				      : "unhighlighted");
+
+			std::cout << std::endl;
+		};
+
 	x::w::focusable_container list_container=
 		factory->create_focusable_container
 		([&]

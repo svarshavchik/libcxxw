@@ -112,8 +112,12 @@ class new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	list_selection_changed_cb_t selection_changed;
 
-	//! Callback when current highlighted list item changes.
-	current_list_item_callback_t current_list_item_changed;
+	//! Callback when currently highlighted list item changes.
+
+	//! This callback cannot strongly capture the list display element
+	//! or any of its parent display elements.
+
+	list_item_status_change_callbackptr current_list_item_changed;
 
 private:
 	//! The height of the list.

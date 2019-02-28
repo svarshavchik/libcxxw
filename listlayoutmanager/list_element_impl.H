@@ -586,7 +586,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	const richtextmeta itemshortcut_meta;
 
 	//! Callback when the current list item changes.
-	const current_list_item_callback_t current_list_item_changed;
+	const list_item_status_change_callbackptr current_list_item_changed;
 
  private:
 	//! Return the vertical padding of each row.
@@ -622,9 +622,13 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 					    V &&v,
 					    const callback_trigger_t &trigger)
 	{
+		auto previous=current_element_under_lock;
+
 		current_element_under_lock=std::forward<V>(v);
 
 		report_new_current_element(IN_THREAD,
+					   lock,
+					   previous,
 					   current_element_under_lock,
 					   trigger);
 	}
@@ -638,7 +642,9 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Currently highlighted list item changed.
 
 	void report_new_current_element(ONLY IN_THREAD,
-					const std::optional<size_t> &item,
+					const listimpl_info_t::lock &lock,
+					const std::optional<size_t> &original,
+					const std::optional<size_t> &current,
 					const callback_trigger_t &trigger);
 
 	//! Insert rows.

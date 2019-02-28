@@ -92,10 +92,13 @@ class popup_menu_status_infoObj : virtual public obj {
 	void set_list_item_before_popup_was_shown()
 	{
 		if (!file_status_visibility->is_visible &&
-		    !dir_status_visibility->is_visible)
+		    !dir_status_visibility->is_visible && in_focus)
 			current_list_item_before_popup_was_shown=
 				current_list_item;
 	}
+
+	bool in_focus=false;
+
 public:
 
 	popup_menu_status_infoObj(const popup_menu_visibility_status
@@ -110,7 +113,16 @@ public:
 	{
 	}
 
-	bool in_focus=false;
+	// Focus change is reported.
+
+	inline void new_focus(bool flag)
+	{
+		in_focus=flag;
+		if (!in_focus)
+			current_list_item.reset();
+
+		set_list_item_before_popup_was_shown();
+	}
 
 	// New item is reported.
 	inline void new_list_item(const std::optional<size_t> &item)
@@ -129,10 +141,7 @@ public:
 
 	inline std::optional<size_t> item() const
 	{
-		if (in_focus)
-			return current_list_item_before_popup_was_shown;
-
-		return std::nullopt;
+		return current_list_item_before_popup_was_shown;
 	}
 };
 
@@ -1271,7 +1280,7 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 						   ? dir_status
 						   : file_status;
 
-					   status->in_focus=focus.in_focus;
+					   status->new_focus(focus.in_focus);
 				   },
 				   [&](const filedirlist_current_list_item
 				       &item)
@@ -1298,9 +1307,9 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 						   ? dir_status
 						   : file_status;
 
-					   file_status->in_focus=false;
-					   dir_status->in_focus=false;
-					   status->in_focus=true;
+					   file_status->new_focus(false);
+					   dir_status->new_focus(false);
+					   status->new_focus(true);
 
 					   status->new_list_item(item.n);
 				   },

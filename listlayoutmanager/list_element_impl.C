@@ -358,15 +358,59 @@ void list_elementObj::implObj::removed_from_container(ONLY IN_THREAD)
 
 void list_elementObj::implObj
 ::report_new_current_element(ONLY IN_THREAD,
-			     const std::optional<size_t> &item,
+			     const listimpl_info_t::lock &lock,
+			     const std::optional<size_t> &original,
+			     const std::optional<size_t> &current,
 			     const callback_trigger_t &trigger)
 {
 	if (!current_list_item_changed)
 		return;
 
-	try {
-		current_list_item_changed(IN_THREAD, item, trigger);
-	} REPORT_EXCEPTIONS(this);
+	ptr<listlayoutmanagerObj::implObj> llm_impl;
+
+	textlist_container->invoke_layoutmanager
+		([&, this]
+		 (const auto &lm)
+		 {
+			 llm_impl=lm;
+		 });
+
+	if (!llm_impl)
+		return;
+
+	listlayoutmanager llm=llm_impl->create_public_object();
+	list_lock llock{llm};
+	busy_impl yes_i_am{*this};
+
+	list_item_status_info_t info
+		{
+		 llm,
+		 llock,
+		 0,
+		 false,
+		 trigger,
+		 yes_i_am,
+		};
+
+	if (original)
+	{
+		info.item_number=*original;
+
+		try {
+			current_list_item_changed(IN_THREAD, info);
+		} REPORT_EXCEPTIONS(this);
+
+	}
+
+	if (current)
+	{
+		info.item_number=*current;
+		info.selected=true;
+
+		try {
+			current_list_item_changed(IN_THREAD, info);
+		} REPORT_EXCEPTIONS(this);
+	}
 }
 
 void list_elementObj::implObj::remove_rows(ONLY IN_THREAD,

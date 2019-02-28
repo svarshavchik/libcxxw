@@ -184,6 +184,12 @@ new_list.selection_changed=[]
         const &ns;::w::list_item_status_info_t &amp;info)
        {
        };
+
+new_list.current_list_item_changed=[]
+       (ONLY IN_THREAD,
+        const &ns;::w::list_item_status_info_t &amp;info)
+       {
+       };
 	</programlisting>
       </informalexample>
     </blockquote>
@@ -259,6 +265,15 @@ new_list.selection_changed=[]
 	and cannot be accessed by other execution threads.
       </para>
     </note>
+
+    <para>
+      <varname>current_list_item</varname> is a similar optional
+      <link linkend="callbacks">callback</link> that reports the current list
+      item highlighted by the pointer or the keyboard.
+      This callback reports, basically, each time a list item gets highlighted
+      or has its highlight removed; irrespective of whether the list item
+      is formally selected or not.
+    </para>
 
     <blockquote>
       <informalexample>

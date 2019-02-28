@@ -244,15 +244,19 @@ create_init_args(const factory &f,
 	nlm.current_list_item_changed=
 		[current_selected]
 		(ONLY IN_THREAD,
-		 const std::optional<size_t> &selected,
-		 const auto &trigger)
+		 const auto &info)
 		{
+			std::optional<size_t> selected;
+
+			if (info.selected)
+				selected=info.item_number;
+
 			current_selected->current_callback.get()
 				(IN_THREAD,
 				 filedirlist_current_list_item{
 					filedirlist_entry_id::dir_section,
 						selected},
-				 trigger);
+				 info.trigger);
 		};
 
 	nlm.selection_type=[current_selected]
@@ -358,15 +362,19 @@ create_init_args(const factory &f,
 	nlm.current_list_item_changed=
 		[current_selected]
 		(ONLY IN_THREAD,
-		 const std::optional<size_t> &selected,
-		 const auto &trigger)
+		 const auto &info)
 		{
+			std::optional<size_t> selected;
+
+			if (info.selected)
+				selected=info.item_number;
+
 			current_selected->current_callback.get()
 				(IN_THREAD,
 				 filedirlist_current_list_item{
 					filedirlist_entry_id::file_section,
 						selected},
-				 trigger);
+				 info.trigger);
 		};
 	pf->configure_new_list(nlm, true);
 
