@@ -48,6 +48,7 @@
 #include <algorithm>
 #include <vector>
 #include <errno.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 
 LIBCXXW_NAMESPACE_START
@@ -903,6 +904,228 @@ static inline auto create_pcre_filters(const
 	return filters;
 }
 
+static std::u32string base_filename(const std::string &filename)
+{
+	if (filename == "/")
+		return U"/";
+
+	auto p=filename.rfind('/');
+
+	auto ustr=unicode::iconvert::tou::convert(filename.substr(p+1),
+						  unicode::utf_8).first;
+
+	if (ustr.size() < 40)
+		return ustr;
+
+	return ustr.substr(0, 40) + U"\u2026";
+}
+
+// Filename field in dialogs: does not accept '/' characters.
+
+static void no_slashes(const input_field &f)
+{
+	f->on_filter([]
+		     (ONLY IN_THREAD,
+		      const input_field_filter_info &info)
+		     {
+			     auto p=info.new_contents.rfind('/');
+
+			     info.update(info.starting_pos,
+					 info.n_delete,
+					 info.new_contents.substr(++p));
+		     });
+}
+
+static void filename_required(const input_field &filename,
+			      const button &ok_button)
+{
+	// The "Ok" button is initially disabled.
+	//
+	// Enable it when the filename_field is not empty.
+
+	ok_button->set_enabled(false);
+
+	filename->on_change([ok_button]
+			    (THREAD_CALLBACK,
+			     const auto &info)
+			    {
+				    ok_button->set_enabled(info.size > 0);
+			    });
+}
+
+// mkdir dialog, factored out for readability.
+
+static inline void popup_mkdir_dialog(const main_window &w,
+				      const std::string &filename,
+				      const ref<file_dialogObj::implObj> &impl)
+{
+	auto autodestroy=w->destroy_when_closed("mkdir@libcxx.com");
+
+	auto d=w->create_input_dialog
+		({"mkdir@libcxx.com", true},
+		 "question",
+		 [&]
+		 (const auto &f)
+		 {
+			 f->create_label({_("New subdirectory in "),
+					  base_filename(filename),
+					  U":"},
+				 {halign::left, 100});;
+		 },
+		 "",
+		 input_field_config{40},
+		 [filename, impl, autodestroy]
+		 (ONLY IN_THREAD,
+		  const auto &args)
+		 {
+			 input_lock lock{args.dialog_input_field};
+
+			 auto dir=filename + "/" + lock.get();
+
+			 if (mkdir(dir.c_str(), 0777) < 0)
+			 {
+				 args.dialog_main_window->stop_message
+					 (strerror(errno));
+				 return;
+			 }
+			 else
+			 {
+				 // Open this directory.
+				 impl->chdir(dir);
+			 }
+			 autodestroy(IN_THREAD, args);
+		 },
+		 autodestroy,
+		 _("Create subdirectory"),
+		 _("Cancel"));
+
+	no_slashes(d->input_dialog_field);
+	filename_required(d->input_dialog_field,
+			  d->input_dialog_ok);
+	d->dialog_window->show_all();
+}
+
+// rmdir dialog, factored out for readability.
+
+static inline void popup_rmdir_dialog(const main_window &w,
+				      const std::string &filename)
+{
+	auto autodestroy=w->destroy_when_closed("rmdir@libcxx.com");
+
+	auto d=w->create_ok_cancel_dialog
+		({"rmdir@libcxx.com", true},
+		 "question",
+		 [&]
+		 (const auto &f)
+		 {
+			 f->create_label({_("Delete "),
+					  base_filename(filename), "?"},
+				 {halign::left, 100});;
+		 },
+		 [filename, autodestroy]
+		 (ONLY IN_THREAD,
+		  const auto &args)
+		 {
+			 if (rmdir(filename.c_str()) < 0)
+			 {
+				 args.dialog_main_window->stop_message
+					 (strerror(errno));
+				 return;
+			 }
+			 autodestroy(IN_THREAD, args);
+		 },
+		 autodestroy,
+		 _("Delete subdirectory"),
+		 _("Cancel"));
+
+	d->dialog_window->show_all();
+}
+
+// rename dialog, factored out for readability.
+
+static inline void popup_rename_dialog(const main_window &w,
+				       const std::string &filename)
+{
+	auto autodestroy=w->destroy_when_closed("rename@libcxx.com");
+
+	auto d=w->create_input_dialog
+		({"rename@libcxx.com", true},
+		 "question",
+		 [&]
+		 (const auto &f)
+		 {
+			 f->create_label({_("Rename "),
+					  base_filename(filename),
+					  U":"},
+				 {halign::left, 100});
+		 },
+		 "",
+		 input_field_config{40},
+		 [filename, autodestroy]
+		 (ONLY IN_THREAD,
+		  const auto &args)
+		 {
+			 input_lock lock{args.dialog_input_field};
+
+			 auto new_filename=
+				 filename.substr(0, filename.rfind('/')+1)
+				 + lock.get();
+
+			 if (rename(filename.c_str(),
+				    new_filename.c_str()) < 0)
+			 {
+				 args.dialog_main_window->stop_message
+					 (strerror(errno));
+				 return;
+			 }
+			 autodestroy(IN_THREAD, args);
+		 },
+		 autodestroy,
+		 _("Rename"),
+		 _("Cancel"));
+
+	no_slashes(d->input_dialog_field);
+	filename_required(d->input_dialog_field,
+			  d->input_dialog_ok);
+	d->dialog_window->show_all();
+}
+
+// unlink dialog, factored out for readability.
+
+static inline void popup_unlink_dialog(const main_window &w,
+				       const std::string &filename)
+{
+	auto autodestroy=w->destroy_when_closed("unlink@libcxx.com");
+
+	auto d=w->create_ok_cancel_dialog
+		({"unlink@libcxx.com", true},
+		 "question",
+		 [&]
+		 (const auto &f)
+		 {
+			 f->create_label({_("Delete "),
+					  base_filename(filename), "?"},
+				 {halign::left, 100});;
+		 },
+		 [filename, autodestroy]
+		 (ONLY IN_THREAD,
+		  const auto &args)
+		 {
+			 if (unlink(filename.c_str()) < 0)
+			 {
+				 args.dialog_main_window->stop_message
+					 (strerror(errno));
+				 return;
+			 }
+			 autodestroy(IN_THREAD, args);
+		 },
+		 autodestroy,
+		 _("Delete file"),
+		 _("Cancel"));
+
+	d->dialog_window->show_all();
+}
+
 // Phase 2 of the constructor. Set up all the callbacks.
 void file_dialogObj::constructor(const dialog_args &d_args,
 				 const file_dialog_config &conf,
@@ -934,18 +1157,7 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 					    cancel_action(IN_THREAD, busy);
 				    });
 
-	// The "Ok" button is initially disabled.
-	//
-	// Enable it when the filename_field is not empty.
-	impl->ok_button->set_enabled(false);
-
-	impl->filename_field
-		->on_change([ok_button=impl->ok_button]
-			    (THREAD_CALLBACK,
-			     const auto &info)
-			    {
-				    ok_button->set_enabled(info.size > 0);
-			    });
+	filename_required(impl->filename_field, impl->ok_button);
 
 	// Set up the callback to reread the directory when the field
 	// combo-box changes.
@@ -1103,6 +1315,28 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 
 					   status->popup_visible
 						   (popup_status.visible);
+				   },
+				   [&](const filedirlist_mkdir &what)
+				   {
+					   popup_mkdir_dialog
+						   (dialog_window,
+						    what.filename,
+						    impl);
+				   },
+				   [&](const filedirlist_rmdir &what)
+				   {
+					   popup_rmdir_dialog(dialog_window,
+							      what.filename);
+				   },
+				   [&](const filedirlist_rename &what)
+				   {
+					   popup_rename_dialog(dialog_window,
+							       what.filename);
+				   },
+				   [&](const filedirlist_unlink &what)
+				   {
+					   popup_unlink_dialog(dialog_window,
+							       what.filename);
 				   }},
 				 arg);
 

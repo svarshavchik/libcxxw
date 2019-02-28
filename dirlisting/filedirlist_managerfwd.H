@@ -63,6 +63,10 @@ struct LIBCXX_HIDDEN filedirlist_selected;
 struct LIBCXX_HIDDEN filedirlist_focus;
 struct LIBCXX_HIDDEN filedirlist_selection;
 struct LIBCXX_HIDDEN popup_visibility;
+struct LIBCXX_HIDDEN filedirlist_mkdir;
+struct LIBCXX_HIDDEN filedirlist_rmdir;
+struct LIBCXX_HIDDEN filedirlist_rename;
+struct LIBCXX_HIDDEN filedirlist_unlink;
 
 //! Specifies an entry in the directory or the file list section.
 
@@ -122,12 +126,38 @@ struct filedirlist_contextpopup {
 	bool visible; //!< Whether it's visible
 };
 
-//! The parameter to a \ref filedirlist_selected_callback_t
+//! The parameter passed to a filedirlist_selected_callback_t
+
+//! This parameter specifies that "Create subdirectory" was selected.
+
+struct filedirlist_mkdir { std::string filename; };
+
+//! The parameter passed to a filedirlist_selected_callback_t
+
+//! This parameter specifies that "Remove subdirectory" was selected.
+
+struct filedirlist_rmdir { std::string filename; };
+
+//! The parameter passed to a filedirlist_selected_callback_t
+
+//! This parameter specifies that "Rename" was selected.
+
+struct filedirlist_rename { std::string filename; };
+
+//! The parameter passed to a filedirlist_selected_callback_t
+
+//! This parameter specifies that "Remove subdirectory" was selected.
+
+struct filedirlist_unlink { std::string filename; };
 
 typedef std::variant<filedirlist_selected,
 		     filedirlist_focus,
 		     filedirlist_current_list_item,
-		     filedirlist_contextpopup
+		     filedirlist_contextpopup,
+		     filedirlist_mkdir,
+		     filedirlist_rmdir,
+		     filedirlist_rename,
+		     filedirlist_unlink
 		     > filedirlist_selected_callback_arg_t;
 
 //! Callback that gets invoked when a file directory entry is selected.

@@ -1708,7 +1708,7 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
   <layout type="grid" id="label-and-input-container">
     <valign>
       <row>0</row>
-      <valign>top</valign>
+      <valign>middle</valign>
     </valign>
 
     <append_row>

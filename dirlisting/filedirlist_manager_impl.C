@@ -80,24 +80,39 @@ static void set_dir_popup_contents(const ref<filedirlist_managerObj::implObj
 		  [current_selected,
 		   current_directory]
 		  (ONLY IN_THREAD,
-		   const auto &ignore)
+		   const auto &info)
 		  {
+			  if (!current_directory.empty())
+				  current_selected->current_callback.get()
+					  (IN_THREAD,
+					   filedirlist_mkdir{current_directory},
+					   info.trigger);
 		  },
 		  shortcut{"ALT-C"},
 		  _("Create subdirectory"),
 		  [current_selected,
 		   fullpath]
 		  (ONLY IN_THREAD,
-		   const auto &ignore)
+		   const auto &info)
 		  {
+			  if (!fullpath.empty())
+				  current_selected->current_callback.get()
+					  (IN_THREAD,
+					   filedirlist_rename{fullpath},
+					   info.trigger);
 		  },
 		  shortcut{"ALT-R"},
 		  _("Rename subdirectory"),
 		  [current_selected,
 		   fullpath]
 		  (ONLY IN_THREAD,
-		   const auto &ignore)
+		   const auto &info)
 		  {
+			  if (!fullpath.empty())
+				  current_selected->current_callback.get()
+					  (IN_THREAD,
+					   filedirlist_rmdir{fullpath},
+					   info.trigger);
 		  },
 		  shortcut{"DEL"},
 		  _("Delete subdirectory")
@@ -156,22 +171,26 @@ static void set_file_popup_contents(const ref<filedirlist_managerObj::implObj
 		  [current_selected,
 		   fullpath]
 		  (ONLY IN_THREAD,
-		   const auto &ignore)
+		   const auto &info)
 		  {
-			  std::cout << "Rename "
-				    << fullpath
-				    << std::endl;
+			  if (!fullpath.empty())
+				  current_selected->current_callback.get()
+					  (IN_THREAD,
+					   filedirlist_rename{fullpath},
+					   info.trigger);
 		  },
 		  shortcut{"ALT-R"},
 		  _("Rename file"),
 		  [current_selected,
 		   fullpath]
 		  (ONLY IN_THREAD,
-		   const auto &ignore)
+		   const auto &info)
 		  {
-			  std::cout << "Delete "
-				    << fullpath
-				    << std::endl;
+			  if (!fullpath.empty())
+				  current_selected->current_callback.get()
+					  (IN_THREAD,
+					   filedirlist_unlink{fullpath},
+					   info.trigger);
 		  },
 		  shortcut{"DEL"},
 		  _("Delete file")
