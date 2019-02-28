@@ -60,9 +60,9 @@ popupObj::handlerObj::handlerObj(const popup_handler_args &args)
 popupObj::handlerObj::handlerObj(const popup_handler_args &args,
 				 const main_window_handler_constructor_params
 				 &main_params)
-	: superclass_t{main_params,
-		       args.parent->handler_data,
-		       args.nesting_level},
+	: superclass_t{{main_params,
+			args.parent->handler_data,
+			args.nesting_level}},
 	  attachedto_info{args.attachedto_info},
 	  attachedto_type{args.attachedto_type},
 	  wm_class_instance{args.wm_class_instance},

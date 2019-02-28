@@ -31,6 +31,31 @@ struct main_window_handler_constructor_params {
 	const color_arg &background_color;
 };
 
+struct LIBCXX_HIDDEN generic_window_handler_constructor_params;
+
+//! Parameters to generic_windowObj::handlerObj's constructor.
+
+//! The parameters include the parameters to its subclass, main_window_params,
+//! or a reasonable facsimile for other subclasses.
+
+struct generic_window_handler_constructor_params {
+
+	//! Parent screen, background color, and window manager stuff.
+
+	const main_window_handler_constructor_params &main_window_params;
+
+	//! Shared data between popups and their main application window.
+	shared_handler_data handler_data;
+
+	//! Relative nesting level of this top-level window.
+
+	//! 0 for main application windows. For popups attached to display
+	//! elements this gets set based on the nesting level of the
+	//! display element the popup is attached to.
+	size_t nesting_level;
+};
+
+
 LIBCXXW_NAMESPACE_END
 
 #endif

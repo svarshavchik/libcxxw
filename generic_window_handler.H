@@ -328,9 +328,7 @@ class generic_windowObj::handlerObj
 	};
 
 	//! Public constructor
-	handlerObj(const main_window_handler_constructor_params &params,
-		   const shared_handler_data &handler_data,
-		   size_t nesting_level);
+	handlerObj(const generic_window_handler_constructor_params &params);
  protected:
 
 	//! Internal constructor

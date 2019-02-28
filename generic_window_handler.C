@@ -125,10 +125,11 @@ static auto compute_background_pixel(ONLY IN_THREAD,
 //////////////////////////////////////////////////////////////////////////
 
 static inline generic_windowObj::handlerObj::extra_constructor_params
-create_extra_constructor_params(const main_window_handler_constructor_params
-				&main_params,
-				size_t nesting_level)
+create_extra_constructor_params(const generic_window_handler_constructor_params
+				&params)
 {
+	const auto &main_params=params.main_window_params;
+
 	rectangle dimensions={0, 0, 0, 0};
 
 	const auto &parent_screen=main_params.parent_screen;
@@ -167,24 +168,22 @@ create_extra_constructor_params(const main_window_handler_constructor_params
 		 vm, // events_and_mask
 		},
 		parent_screen->impl->toplevelwindow_pictformat,
-		nesting_level,
+		params.nesting_level,
 		main_params.background_color,
 		background_color_obj,
 	};
 }
 
 generic_windowObj::handlerObj
-::handlerObj(const main_window_handler_constructor_params &params,
-	     const shared_handler_data &handler_data,
-	     size_t nesting_level)
+::handlerObj(const generic_window_handler_constructor_params &params)
 	: handlerObj{// Constructor is single-threaded, so we pick IN_THREAD
 		     // from here.
-		     params.parent_screen->impl->thread,
-		     handler_data,
-		     create_extra_constructor_params(params, nesting_level)}
+		     params.main_window_params.parent_screen->impl->thread,
+		     params.handler_data,
+		     create_extra_constructor_params(params)}
 {
-	set_window_type_in_constructor(params.window_type);
-	set_window_state_in_constructor(params.window_state);
+	set_window_type_in_constructor(params.main_window_params.window_type);
+	set_window_state_in_constructor(params.main_window_params.window_state);
 }
 
 generic_windowObj::handlerObj
