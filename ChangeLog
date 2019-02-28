@@ -1,5 +1,7 @@
 2019-02-16  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* editor_impl.C: Blink the cursor only when window has focus.
+
 	* file_dialog/file_dialog_impl.C: Add a right context popup menu
 	in the file dialog (both the directory and the file section), that
 	implement basic file operations.

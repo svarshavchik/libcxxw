@@ -616,7 +616,8 @@ void editorObj::implObj::window_focus_change(ONLY IN_THREAD, bool flag)
 
 void editorObj::implObj::blink_if_has_focus(ONLY IN_THREAD)
 {
-	if (current_keyboard_focus(IN_THREAD))
+	if (current_keyboard_focus(IN_THREAD) &&
+	    get_window_handler().has_focus(IN_THREAD))
 	{
 		if (!blinking)
 			blink(IN_THREAD);
