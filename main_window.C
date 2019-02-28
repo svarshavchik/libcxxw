@@ -266,6 +266,7 @@ init_containers(const container_impl &parent,
 
 create_main_window_impl_ret_t
 do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
+			   const std::optional<border_arg> &border,
 			   const new_layoutmanager &layout_factory,
 			   const function<make_window_impl_factory_t> &factory)
 {
@@ -289,7 +290,7 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 
 	auto lm=create_peephole_toplevel
 		(handler,
-		 std::nullopt,
+		 border,
 		 std::nullopt,
 		 std::nullopt,
 		 main_window_peephole_style,
@@ -355,7 +356,7 @@ main_window screenObj
 			 "mainwindow_background");
 
 	auto [window_impl, lm]=create_main_window_impl
-		(handler, layout_factory,
+		(handler, std::nullopt, layout_factory,
 		 [](const auto &args)
 		 {
 			 return ref<main_windowObj::implObj>::create(args);

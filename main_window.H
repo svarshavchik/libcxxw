@@ -106,16 +106,19 @@ struct create_main_window_impl_ret_t {
 //! The requested layout manager for the top level window actually gets
 //! shoved into the main window's peephole that gets created. Returns
 //! the real layout manager for the top level window.
-
+//!
+//! Regular main windows have no explicit border. A border gets provided
+//! for splash windows.
 
 template<typename functor>
 inline create_main_window_impl_ret_t
 create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
+			const std::optional<border_arg> &border,
 			const new_layoutmanager &layout_factory,
 			functor &&f)
 {
 	return do_create_main_window_impl
-		(handler, layout_factory,
+		(handler, border, layout_factory,
 		 make_function<make_window_impl_factory_t>
 		 (std::forward<functor>(f)));
 }
@@ -124,6 +127,7 @@ create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 
 create_main_window_impl_ret_t
 do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
+			   const std::optional<border_arg> &border,
 			   const new_layoutmanager &layout_factory,
 			   const function<make_window_impl_factory_t> &factory)
 	LIBCXX_HIDDEN;
