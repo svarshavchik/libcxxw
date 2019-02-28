@@ -62,6 +62,8 @@ public:
 	handlerObj(ONLY IN_THREAD, const screen &parent_screen,
 		   const std::optional<rectangle> &suggested_position,
 		   const std::string &window_id,
+		   const char *window_type,
+		   const char *window_state,
 		   const color_arg &background_color);
 
 	//! Destructor

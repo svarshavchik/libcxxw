@@ -7,6 +7,8 @@
 #include "connection_thread.H"
 #include "inherited_visibility_info.H"
 #include "shared_handler_data.H"
+#include "screen.H"
+#include "connection.H"
 #include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
@@ -18,6 +20,7 @@ dialogObj::handlerObj::handlerObj(ONLY IN_THREAD,
 				  rectangle> &position,
 				  const std::string &window_id,
 				  const color_arg &background_color,
+				  const char *window_type,
 				  bool modal,
 				  bool urgent,
 				  bool grab_input_focus)
@@ -34,6 +37,8 @@ dialogObj::handlerObj::handlerObj(ONLY IN_THREAD,
 					   return std::nullopt;
 					  }}, position),
 		       window_id,
+		       window_type,
+		       modal ? "MODAL":"",
 		       background_color},
 	  my_position_thread_only
 	{

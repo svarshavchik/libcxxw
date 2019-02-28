@@ -175,11 +175,15 @@ generic_windowObj::handlerObj
 	     const screen &parent_screen,
 	     const color_arg &background_color,
 	     const shared_handler_data &handler_data,
+	     const char *window_type,
+	     const char *window_state,
 	     size_t nesting_level)
 	: handlerObj(IN_THREAD, handler_data,
 		     create_constructor_params(parent_screen, background_color,
 					       nesting_level))
 {
+	set_window_type_in_constructor(window_type);
+	set_window_state_in_constructor(window_state);
 }
 
 generic_windowObj::handlerObj
@@ -2035,21 +2039,40 @@ void generic_windowObj::handlerObj::frame_extents_updated(ONLY IN_THREAD)
 {
 }
 
-void generic_windowObj::handlerObj::set_window_type(const std::string &s)
+void generic_windowObj::handlerObj
+::set_window_type_in_constructor(const std::string_view &type)
+{
+	mpobj<ewmh>::lock lock{screenref->get_connection()->impl->ewmh_info};
+
+	lock->set_window_type(id(), type);
+}
+
+void generic_windowObj::handlerObj
+::set_window_state_in_constructor(const std::string_view &state)
+{
+	mpobj<ewmh>::lock lock(screenref->get_connection()->impl->ewmh_info);
+
+	lock->set_state(id(), state);
+}
+
+void generic_windowObj::handlerObj
+::set_window_type(const std::string_view &s)
 {
 	// This is done in the connection thread in order to ensure a
 	// flush.
 
-	thread()->run_as
-		([s,
-		  connection_impl=screenref->get_connection()->impl,
-		  me=ref<generic_windowObj::handlerObj>(this)]
-		 (ONLY IN_THREAD)
-		 {
-			 mpobj<ewmh>::lock lock(connection_impl->ewmh_info);
+	thread()->run_as([s=std::string{s.begin(), s.end()},
+			  me=ref<generic_windowObj::handlerObj>(this)]
+			 (ONLY IN_THREAD)
+			 {
+				 me->set_window_type(IN_THREAD, s);
+			 });
+}
 
-			 lock->set_window_type(me->id(), s);
-		 });
+void generic_windowObj::handlerObj
+::set_window_type(ONLY IN_THREAD, const std::string_view &s)
+{
+	set_window_type_in_constructor(s);
 }
 
 void generic_windowObj::handlerObj

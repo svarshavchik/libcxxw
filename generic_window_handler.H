@@ -331,6 +331,8 @@ class generic_windowObj::handlerObj
 		   const screen &me,
 		   const color_arg &background_color,
 		   const shared_handler_data &handler_data,
+		   const char *window_type,
+		   const char *window_state,
 		   size_t nesting_level);
  protected:
 
@@ -811,7 +813,22 @@ public:
 
 	//! Set extended window manage hints for this window's type.
 
-	void set_window_type(const std::string &s);
+	void set_window_type(const std::string_view &s);
+
+	//! Set extended window manage hints for this window's type.
+	void set_window_type(ONLY IN_THREAD, const std::string_view &s);
+
+	//! Set extended window manager hints for this window's type.
+
+	//! This is invoked from the constructor, so it's not necessary
+	//! to flush the connection, something else will flush it.
+	void set_window_type_in_constructor(const std::string_view &);
+
+	//! Set extended window manager hints for this window's state.
+
+	//! This is invoked from the constructor, so it's not necessary
+	//! to flush the connection, something else will flush it.
+	void set_window_state_in_constructor(const std::string_view &);
 
 	////////////////////////////////////////////////////////////////////
 	//

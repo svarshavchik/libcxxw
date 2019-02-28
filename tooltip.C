@@ -136,7 +136,10 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 			"tooltip",
 			parent,
 			popup_attachedto_info::create(where, how),
-			0}}
+			0,
+			"tooltip,popup_menu,dropdown_menu",
+			"",
+		       }}
 {
 	wm_class_resource(IN_THREAD)=parent->wm_class_resource(IN_THREAD);
 }

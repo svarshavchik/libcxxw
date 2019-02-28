@@ -52,6 +52,8 @@ popupObj::handlerObj::handlerObj(const popup_handler_args &args)
 		       args.parent->get_screen(),
 		       "transparent",
 		       args.parent->handler_data,
+		       args.window_type,
+		       args.window_state,
 		       args.nesting_level},
 	  attachedto_info{args.attachedto_info},
 	  attachedto_type{args.attachedto_type},

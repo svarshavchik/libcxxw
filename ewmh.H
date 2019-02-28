@@ -67,9 +67,13 @@ class LIBCXX_HIDDEN ewmh : public xcb_ewmh_connection_t {
 	void set_wm_icon(xcb_window_t wid,
 			 const std::vector<uint32_t> &raw_data);
 
-	//! Set window type.
+	//! Set window type. (_NET_WM_WINDOW_TYPE)
 	void set_window_type(xcb_window_t wid,
-			     const std::string &type);
+			     const std::string_view &type);
+
+	//! Set window state (_NET_WM_STATE)
+	void set_state(xcb_window_t wid,
+		       const std::string_view &state);
 
 	//! Set window name
 	void set_window_name(xcb_window_t wid,

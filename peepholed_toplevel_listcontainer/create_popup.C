@@ -39,9 +39,10 @@ do_create_peepholed_toplevel_listcontainer_popup
 				attachedto_info,
 				args.parent_element
 				->nesting_level+
-				args.extra_nesting_level}});
-
-	popup_handler->set_window_type(args.popup_window_type);
+				args.extra_nesting_level,
+				args.popup_window_type,
+				"",
+			}});
 
 	layout_implptr popup_listlayoutmanagerptr;
 

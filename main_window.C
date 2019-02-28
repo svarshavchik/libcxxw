@@ -350,9 +350,9 @@ main_window screenObj
 		::create(connref->impl->thread, ref{this},
 			 suggested_position,
 			 pos.name,
+			 "normal",
+			 "",
 			 "mainwindow_background");
-
-	handler->set_window_type("normal");
 
 	auto [window_impl, lm]=create_main_window_impl
 		(handler, layout_factory,

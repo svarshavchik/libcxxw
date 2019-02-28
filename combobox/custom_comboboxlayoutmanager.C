@@ -298,7 +298,7 @@ combobox_listcontainer_popup_args(const element_impl &parent_element,
 	return {
 		parent_element,
 
-		"combo,popup_menu,dropdown_menu",
+		"combo,dropdown_menu,popup_menu",
 		"combobox",
 		"combobox_popup_border",
 

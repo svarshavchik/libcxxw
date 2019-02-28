@@ -18,7 +18,6 @@ LIBCXXW_NAMESPACE_START
 
 struct popup_visibility_semantics;
 
-
 //! Arguments to \ref popupObj::handlerObj "popup handler"'s constructor.
 
 struct LIBCXX_HIDDEN popup_handler_args {
@@ -37,6 +36,12 @@ struct LIBCXX_HIDDEN popup_handler_args {
 
 	//! Initial nesting level of the popup.
 	size_t nesting_level;
+
+	//! Window type for this popup.
+	const char *window_type;
+
+	//! Window type for this popup.
+	const char *window_state;
 };
 
 //! Menu popup semantics

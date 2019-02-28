@@ -1,5 +1,7 @@
 2019-02-16  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* dialog_handler.C: Modal dialogs set _NET_WM_STATE to modal.
+
 	* editor_impl.C: Blink the cursor only when window has focus.
 
 	* file_dialog/file_dialog_impl.C: Add a right context popup menu

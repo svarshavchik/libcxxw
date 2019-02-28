@@ -165,9 +165,10 @@ date_input_field factoryObj
 			parent_handler,
 			attachedto_info,
 			parent_container->container_element_impl()
-				.nesting_level+2});
-
-	attachedto_handler->set_window_type("popup_menu,dropdown_menu");
+			.nesting_level+2,
+			"popup_menu,dropdown_menu",
+			"",
+		});
 
 	auto popup_impl=ref<popupObj::implObj>::create(attachedto_handler,
 						       parent_handler);

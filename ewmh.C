@@ -185,10 +185,17 @@ void ewmh::set_wm_icon(xcb_window_t wid,
 			     const_cast<uint32_t *>(&raw_data[0]));
 }
 
-static const struct {
+namespace {
+#if 0
+}
+#endif
+
+struct atom_list {
 	const char *n;
 	xcb_atom_t xcb_ewmh_connection_t::*atom;
-} window_type_atoms[]={
+};
+
+static const atom_list window_type_atoms[]={
 	{"desktop", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DESKTOP},
 	{"dock", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DOCK},
 	{"toolbar", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_TOOLBAR},
@@ -207,32 +214,76 @@ static const struct {
 	{"normal", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_NORMAL},
 };
 
+static const atom_list window_state_atoms[]=
+	{
+	 {"modal", &xcb_ewmh_connection_t::_NET_WM_STATE_MODAL},
+	 {"sticky", &xcb_ewmh_connection_t::_NET_WM_STATE_STICKY},
+	 {"maximized_vert",
+	  &xcb_ewmh_connection_t::_NET_WM_STATE_MAXIMIZED_VERT},
+	 {"maximized_horz",
+	  &xcb_ewmh_connection_t::_NET_WM_STATE_MAXIMIZED_HORZ},
+	 {"shaded", &xcb_ewmh_connection_t::_NET_WM_STATE_SHADED},
+	 {"skip_taskbar", &xcb_ewmh_connection_t::_NET_WM_STATE_SKIP_TASKBAR},
+	 {"skip_pager", &xcb_ewmh_connection_t::_NET_WM_STATE_SKIP_PAGER},
+	 {"hidden", &xcb_ewmh_connection_t::_NET_WM_STATE_HIDDEN},
+	 {"fullscreen", &xcb_ewmh_connection_t::_NET_WM_STATE_FULLSCREEN},
+	 {"above", &xcb_ewmh_connection_t::_NET_WM_STATE_ABOVE},
+	 {"below", &xcb_ewmh_connection_t::_NET_WM_STATE_BELOW},
+	 {"demands_attention",
+	  &xcb_ewmh_connection_t::_NET_WM_STATE_DEMANDS_ATTENTION},
+	};
+
+static void do_parse_atoms(ewmh *me,
+			   const atom_list *list,
+			   size_t n_atoms,
+			   const std::string_view &type,
+			   std::vector<xcb_atom_t> &atoms)
+{
+	std::list<std::string> words;
+
+	strtok_str(type, ", \t\r\n", words);
+
+	atoms.reserve(words.size());
+	for (auto &w:words)
+	{
+		std::transform(w.begin(), w.end(), w.begin(),
+			       chrcasecmp::tolower);
+
+		for (const auto *b=list, *e=list+n_atoms; b != e; ++b)
+		{
+			if (w == b->n)
+			{
+				atoms.push_back(me->*(b->atom));
+				break;
+			}
+		}
+	}
+}
+
+template<size_t n>
+static void parse_atoms(ewmh *me,
+			const atom_list (&list)[n],
+			const std::string_view &type,
+			std::vector<xcb_atom_t> &atoms)
+{
+	do_parse_atoms(me, &list[0], n, type, atoms);
+}
+
+#if 0
+{
+#else
+}
+#endif
+
 void ewmh::set_window_type(xcb_window_t wid,
-			   const std::string &type)
+			   const std::string_view &type)
 {
 	if (!ewmh_available)
 		return;
 
 	std::vector<xcb_atom_t> atoms;
 
-	std::list<std::string> words;
-
-	strtok_str(type, ", \t\r\n", words);
-
-	for (auto &w:words)
-	{
-		std::transform(w.begin(), w.end(), w.begin(),
-			       chrcasecmp::tolower);
-
-		for (auto &a:window_type_atoms)
-		{
-			if (w == a.n)
-			{
-				atoms.push_back(this->*a.atom);
-				break;
-			}
-		}
-	}
+	parse_atoms(this, window_type_atoms, type, atoms);
 
 	if (atoms.empty())
 		return;
@@ -319,6 +370,22 @@ bool ewmh::client_message(ONLY IN_THREAD,
 		return true;
 	}
 	return false;
+}
+
+void ewmh::set_state(xcb_window_t wid,
+		     const std::string_view &state)
+{
+	if (!ewmh_available)
+		return;
+
+	std::vector<xcb_atom_t> atoms;
+
+	parse_atoms(this, window_state_atoms, state, atoms);
+
+	if (atoms.empty())
+		xcb_ewmh_set_wm_state(this, wid, 0, 0);
+	else
+		xcb_ewmh_set_wm_state(this, wid, atoms.size(), &atoms[0]);
 }
 
 LIBCXXW_NAMESPACE_END
