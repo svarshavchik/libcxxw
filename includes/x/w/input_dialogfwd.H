@@ -10,6 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct input_dialog_ok_args;
+
 class LIBCXX_PUBLIC input_dialogObj;
 
 /*! A dialog with an input field.

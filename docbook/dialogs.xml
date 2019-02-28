@@ -171,7 +171,7 @@ const &ns;::w::main_window dialog_window;</programlisting>
                                              },
                                              []
                                              (ONLY IN_THREAD,
-                                              const &ns;::w::busy &amp;)
+                                              const &ns;::w::ok_cancel_callback_args &amp;)
                                              {
                                                  // ...
                                              });</programlisting>
@@ -196,7 +196,7 @@ const &ns;::w::main_window dialog_window;</programlisting>
                                              },
                                              []
                                              (ONLY IN_THREAD,
-                                              const &ns;::w::busy &amp;)
+                                              const &ns;::w::ok_cancel_callback_args &amp;)
                                              {
                                                  // ...
                                              });</programlisting>
@@ -220,7 +220,7 @@ const &ns;::w::main_window dialog_window;</programlisting>
                                              },
                                              []
                                              (ONLY IN_THREAD,
-                                              const &ns;::w::busy &amp;f)
+                                              const &ns;::w::ok_cancel_callback_args &amp;args)
                                              {
                                                  // ...
                                              });</programlisting>
@@ -272,9 +272,6 @@ const &ns;::w::main_window dialog_window;</programlisting>
 	<para>
 	  &callback;s that get invoked when <quote>Ok</quote> or
 	  <quote>Cancel</quote> buttons are pressed.
-	  <methodname>create_input_field</methodname>()'s
-	  <quote>Ok</quote> callback receives an additional parameter with
-	  the <classname>&ns;::input_field</classname>.
 	</para>
       </listitem>
 
@@ -300,6 +297,38 @@ const &ns;::w::main_window dialog_window;</programlisting>
     </itemizedlist>
   </section>
 
+  <section id="dialog_callbacks">
+    <title>Standard dialog callbacks</title>
+
+    <para>
+      Parameters to
+      <methodname>create_ok_dialog</methodname>(),
+      <methodname>create_ok_cancel_dialog</methodname>(),
+      and other standard dialog creation functions include one or two
+      &callback;s that get invoked whenever the dialog gets closed.
+      In addition to
+      the <link linkend="callbacks"><literal>IN_THREAD</literal> or
+	<literal>THREAD_CALLBACK</literal> calling convention</link>
+      the callbacks also receive an
+      <ulink url="&link-x--w--ok-cancel-callback-args;"><classname>&ns;::w::ok_cancel_callback_args</classname></ulink>
+      parameter that provides a possibly <methodname>null</methodname>()
+      pointer reference to the dialog's
+      parent window, and the
+      <link linkend="busy"><classname>&ns;::w::busy</classname></link>
+      mcguffin factory.
+    </para>
+
+    <para>
+      The
+      <ulink url="&link-typedef-x--w-input-dialog;"><classname>&ns;::w::input_dialog</classname></ulink>'s
+      callback receives a
+      <ulink url="&link-x--w--input-dialog-ok-args;"><classname>&ns;::w::input_dialog_ok_args</classname></ulink>
+      parameter, that inherits from
+      <classname>&ns;::w::ok_cancel_callback_args</classname>
+      and has an additional <varname>dialog_input_field</varname> class
+      member.
+    </para>
+  </section>
   <section id="filedialog">
     <title>File dialogs</title>
 
@@ -341,7 +370,7 @@ const &ns;::w::main_window dialog_window;</programlisting>
                fd->dialog_window->hide();
             },
             [](ONLY IN_THREAD,
-               const &ns;::w::busy &amp;mcguffin)
+               const &ns;::w::ok_cancel_callback_args &amp;args)
             {
             },
             &ns;::w::file_dialog_type::create_file

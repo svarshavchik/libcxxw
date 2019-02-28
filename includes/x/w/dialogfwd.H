@@ -6,11 +6,14 @@
 #define x_w_dialogfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/main_windowfwd.H>
+#include <x/w/busyfwd.H>
 #include <x/w/factoryfwd.H>
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/rectangle.H>
 #include <x/w/screen_positionsfwd.H>
+#include <x/w/connection_threadfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/ptrfwd.H>
 
@@ -24,6 +27,32 @@
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC dialogObj;
+
+//! Parameters passed to the ok/cancel callback of a standard dialog.
+
+//! Callbacks from a standard dialog created by
+//! \ref main_window "main window's" create_ok_dialog(),
+//! create_ok_cancel_dialog(), et. al., receive this parameter.
+
+struct ok_cancel_callback_args {
+
+	//! The dialog's parent window
+
+	//! \note
+	//! This may be a null ptr if the main window gets destroyed without
+	//! destroying the dialog, first.
+
+	main_windowptr dialog_main_window;
+
+	//! The busy mcguffin is available to the callback.
+	const busy &mcguffin;
+};
+
+//! Signature of an ok or cancel callback.
+
+typedef functionref<void(THREAD_CALLBACK,
+			 const ok_cancel_callback_args &)
+		    > ok_cancel_dialog_callback_t;
 
 //! Position of a new dialog with respect to its parent window
 

@@ -7,6 +7,7 @@
 
 #include <x/w/file_dialog_configfwd.H>
 #include <x/w/file_dialogfwd.H>
+#include <x/w/dialogfwd.H>
 #include <x/w/text_param.H>
 #include <x/w/busy.H>
 #include <x/functionalrefptr.H>
@@ -54,7 +55,7 @@ struct file_dialog_config {
 
 	//! The cancel button takes care of hiding the dialog, before
 	//! executing this callback.
-	functionref<void (THREAD_CALLBACK, const busy &)> cancel_action;
+	ok_cancel_dialog_callback_t cancel_action;
 
 	//! File dialog's semantics.
 	file_dialog_type type=file_dialog_type::existing_file;
@@ -64,9 +65,7 @@ struct file_dialog_config {
 						   const file_dialog &d,
 						   const std::string &,
 						   const busy &)> &ok_action,
-			   const functionref<void (THREAD_CALLBACK,
-						   const busy &)
-			   > &cancel_action,
+			   const ok_cancel_dialog_callback_t &cancel_action,
 			   file_dialog_type type=file_dialog_type::existing_file
 			   );
 

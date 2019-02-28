@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "x/w/dialog.H"
+#include "dialog.H"
 #include "x/w/element_state.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/container.H"
@@ -176,24 +176,17 @@ void main_windowObj::remove_dialog(const std::string_view &dialog_id)
 		lock->erase(p);
 }
 
-functionref<void (THREAD_CALLBACK, const busy &)
-	      > main_windowObj::destroy_when_closed(const std::string_view
-						    &dialog_id)
+ok_cancel_dialog_callback_t
+main_windowObj::destroy_when_closed(const std::string_view &dialog_id)
 {
-	return [me=make_weak_capture(ref(this)),
-		dialog_id=std::string{dialog_id.begin(),
+	return [dialog_id=std::string{dialog_id.begin(),
 				      dialog_id.end()}]
-		(THREAD_CALLBACK, const busy &)
-	{
-		auto got=me.get();
-
-		if (got)
-		{
-			auto &[me]=*got;
-
-			me->remove_dialog(dialog_id);
-		}
-	};
+		(THREAD_CALLBACK, const auto &args)
+	       {
+		       if (args.dialog_main_window)
+			       args.dialog_main_window->remove_dialog
+				       (dialog_id);
+	       };
 }
 
 dialogptr main_windowObj::get_dialog(const std::string_view &dialog_id)

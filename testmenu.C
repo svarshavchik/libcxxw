@@ -145,10 +145,10 @@ app_dialogsObj::create_help_question(const LIBCXX_NAMESPACE::w::main_window &mai
 		 "", // Initial text
 		 {}, // input_field_config
 		 []
-		 (THREAD_CALLBACK,
-		  const auto &input_field, const auto &ignore)
+		 (THREAD_CALLBACK, const auto &info)
 		 {
-			 LIBCXX_NAMESPACE::w::input_lock lock{input_field};
+			 LIBCXX_NAMESPACE::w::input_lock
+				 lock{info.dialog_input_field};
 
 			 std::cout << "Your name is " << lock.get()<< std::endl;
 		 },

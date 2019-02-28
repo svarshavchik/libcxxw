@@ -12,6 +12,14 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Parameter passed to \ref main_window "standard input dialog's" ok callback.
+
+struct input_dialog_ok_args : public ok_cancel_callback_args {
+
+	//! The dialog's input field.
+	input_field dialog_input_field;
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

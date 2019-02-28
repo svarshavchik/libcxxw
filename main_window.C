@@ -443,56 +443,69 @@ functionref<void (const factory &)> dialog_filler()
 // Hide a theme-generated dialog, then invoke a callback action.
 
 static void hide_and_invoke(ONLY IN_THREAD,
-			    const captured_dialog_t &d,
-			    const functionref<void (THREAD_CALLBACK,
-						    const busy &)> &action)
+			    const main_windowptr &parent_window,
+			    const main_windowptr &dialog_window,
+			    const ref<generic_windowObj::handlerObj>
+			    &parent_handler,
+			    const ok_cancel_dialog_callback_t &action)
 {
-	auto got=d.get();
+	if (dialog_window)
+		dialog_window->hide();
 
-	if (got)
-	{
-		auto &[d]=*got;
+	// Make sure that the callback gets the parent display
+	// element's main window.
 
-		d->dialog_window->hide();
+	busy_impl yes_i_am{parent_handler};
 
-		// Make sure that the callback gets the parent display
-		// element's main window.
-
-		busy_impl yes_i_am{d->impl->handler->parent_handler};
-
-		action(IN_THREAD, yes_i_am);
-	}
+	action(IN_THREAD, ok_cancel_callback_args{parent_window, yes_i_am});
 }
 
 // When a theme dialog's button is pressed, hide and invoke the callback.
 
-void hide_and_invoke_when_activated(const dialog &d,
+void hide_and_invoke_when_activated(const main_window &parent_window,
+				    const dialog &d,
 				    const hotspot &button,
-				    const functionref<void (THREAD_CALLBACK,
-							    const busy &)>
-				    &action)
+				    const ok_cancel_dialog_callback_t &action)
 {
-	button->on_activate([d=make_weak_capture(d), action]
+	button->on_activate([parent_window=weakptr<main_windowptr>
+			{parent_window},
+			     dialog_window=weakptr<main_windowptr>
+			{d->dialog_window},
+			     parent_handler=parent_window->impl->handler,
+			     action]
 			    (ONLY IN_THREAD,
 			     const auto &ignore, const busy &yes_i_am)
 			    {
-				    hide_and_invoke(IN_THREAD, d, action);
+				    hide_and_invoke(IN_THREAD,
+						    parent_window.getptr(),
+						    dialog_window.getptr(),
+						    parent_handler,
+						    action);
 			    });
 }
 
 // When a theme dialog's close button is pressed, hide and invoke the callback.
 
-void hide_and_invoke_when_closed(const dialog &d,
-				 const functionref
-				 <void (THREAD_CALLBACK,
-					const busy &)> &action)
+void hide_and_invoke_when_closed(const main_window &parent_window,
+				 const dialog &d,
+				 const ok_cancel_dialog_callback_t &action)
 {
-	d->dialog_window->on_delete([d=make_weak_capture(d), action]
+	d->dialog_window->on_delete([parent_window=weakptr<main_windowptr>
+			{parent_window},
+				     dialog_window=weakptr<main_windowptr>
+			{d->dialog_window},
+				     parent_handler=
+				     parent_window->impl->handler,
+				     action]
 				    (ONLY IN_THREAD,
 				     const busy &yes_i_am)
 				    {
-					    hide_and_invoke(IN_THREAD,
-							    d, action);
+					    hide_and_invoke
+						    (IN_THREAD,
+						     parent_window.getptr(),
+						     dialog_window.getptr(),
+						     parent_handler,
+						     action);
 				    });
 }
 
@@ -501,9 +514,7 @@ dialog main_windowObj
 		   const std::string &icon,
 		   const functionref<void (const factory &)>
 		   &content_factory,
-		   const functionref<void (THREAD_CALLBACK,
-					   const busy &)>
-		   &ok_action)
+		   const ok_cancel_dialog_callback_t &ok_action)
 {
 	return create_ok_dialog(args,
 				icon, content_factory, ok_action,
@@ -515,9 +526,7 @@ dialog main_windowObj
 		   const std::string &icon,
 		   const functionref<void (const factory &)>
 		   &content_factory,
-		   const functionref<void (THREAD_CALLBACK,
-					   const busy &)>
-		   &ok_action,
+		   const ok_cancel_dialog_callback_t &ok_action,
 		   const text_param &ok_label)
 {
 	buttonptr ok_button;
@@ -560,8 +569,10 @@ dialog main_windowObj
 	// the popup.
 
 	ok_button->autofocus(true);
-	hide_and_invoke_when_activated(d, ok_button, ok_action);
-	hide_and_invoke_when_closed(d, ok_action);
+
+	auto me=ref{this};
+	hide_and_invoke_when_activated(me, d, ok_button, ok_action);
+	hide_and_invoke_when_closed(me, d, ok_action);
 
 	return d;
 }
@@ -607,9 +618,9 @@ void main_windowObj::stop_message(const text_param &msg,
 					f->create_label(msg, lconfig);
 				},
 				[autodestroy, cb=config.acknowledged_callback]
-				(ONLY IN_THREAD, const auto &ignore)
+				(ONLY IN_THREAD, const auto &args)
 				{
-					autodestroy(IN_THREAD, ignore);
+					autodestroy(IN_THREAD, args);
 					if (cb)
 						cb(IN_THREAD);
 				},
@@ -660,9 +671,9 @@ void main_windowObj::alert_message(const text_param &msg,
 					f->create_label(msg);
 				},
 				[autodestroy, cb=config.acknowledged_callback]
-				(ONLY IN_THREAD, const auto &ignore)
+				(ONLY IN_THREAD, const auto &args)
 				{
-					autodestroy(IN_THREAD, ignore);
+					autodestroy(IN_THREAD, args);
 					if (cb)
 						cb(IN_THREAD);
 				},
@@ -700,12 +711,8 @@ dialog main_windowObj
 			  const std::string &icon,
 			  const functionref<void (const factory &)>
 			  &content_factory,
-			  const functionref<void (THREAD_CALLBACK,
-						  const busy &)>
-			  &ok_action,
-			  const functionref<void (THREAD_CALLBACK,
-						  const busy &)>
-			  &cancel_action)
+			  const ok_cancel_dialog_callback_t &ok_action,
+			  const ok_cancel_dialog_callback_t &cancel_action)
 {
 	return create_ok_cancel_dialog(args,
 				       icon, content_factory, ok_action,
@@ -719,12 +726,8 @@ dialog main_windowObj
 			  const std::string &icon,
 			  const functionref<void (const factory &)>
 			  &content_factory,
-			  const functionref<void (THREAD_CALLBACK,
-						  const busy &)>
-			  &ok_action,
-			  const functionref<void (THREAD_CALLBACK,
-						  const busy &)>
-			  &cancel_action,
+			  const ok_cancel_dialog_callback_t &ok_action,
+			  const ok_cancel_dialog_callback_t &cancel_action,
 			  const text_param &ok_label,
 			  const text_param &cancel_label)
 {
@@ -754,9 +757,11 @@ dialog main_windowObj
 			 ("ok-cancel-dialog", tmpl);
 		 });
 
-	hide_and_invoke_when_activated(d, ok_button, ok_action);
-	hide_and_invoke_when_activated(d, cancel_button, cancel_action);
-	hide_and_invoke_when_closed(d, cancel_action);
+	auto me=ref{this};
+
+	hide_and_invoke_when_activated(me, d, ok_button, ok_action);
+	hide_and_invoke_when_activated(me, d, cancel_button, cancel_action);
+	hide_and_invoke_when_closed(me, d, cancel_action);
 
 	return d;
 }
@@ -769,12 +774,9 @@ input_dialog main_windowObj
 		      const text_param &initial_text,
 		      const input_field_config &config,
 		      const functionref<void (THREAD_CALLBACK,
-					      const input_field &,
-					      const busy &)>
+					      const input_dialog_ok_args &)>
 		      &ok_action,
-		      const functionref<void (THREAD_CALLBACK,
-					      const busy &)>
-		      &cancel_action)
+		      const ok_cancel_dialog_callback_t &cancel_action)
 {
 	return create_input_dialog(args,
 				   icon, label_factory,
@@ -793,10 +795,9 @@ input_dialog main_windowObj
 		      const text_param &initial_text,
 		      const input_field_config &config,
 		      const functionref<void (THREAD_CALLBACK,
-					      const input_field &,
-					      const busy &)> &ok_action,
-		      const functionref<void (THREAD_CALLBACK,
-					      const busy &)> &cancel_action,
+					      const input_dialog_ok_args &)>
+		      &ok_action,
+		      const ok_cancel_dialog_callback_t &cancel_action,
 		      const text_param &ok_label,
 		      const text_param &cancel_label)
 {
@@ -805,6 +806,8 @@ input_dialog main_windowObj
 	input_fieldptr field;
 
 	input_dialogptr new_input_dialog;
+
+	auto me=ref{this};
 
 	auto d=create_custom_dialog
 		(create_dialog_args{args},
@@ -835,7 +838,7 @@ input_dialog main_windowObj
 			 args.dialog_window->initialize_theme_dialog
 			 ("input-dialog", tmpl);
 
-			 auto id=input_dialog::create(args, field);
+			 auto id=input_dialog::create(args, field, ok_button);
 
 			 new_input_dialog=id;
 
@@ -844,15 +847,39 @@ input_dialog main_windowObj
 		 });
 
 	hide_and_invoke_when_activated
-		(d, ok_button,
-		 [field=input_field{field}, ok_action]
+		(me, d, ok_button,
+
+		 // Although the input field can be officially captured
+		 // strongly here, this creates an internal strong reference
+		 // that might interfere with any additional references
+		 // our user may want to create.
+		 //
+		 // The file dialog, for example, creates an on_change()
+		 // callback on the input field that captures the "ok"
+		 // button, and enables or disables it accordingly. That
+		 // would create a circular reference with this one.
+		 //
+		 // So, we'll capture the input field weakly, here.
+
+		 [field=weakptr<input_fieldptr>{field}, ok_action,
+		  cancel_action]
 		 (ONLY IN_THREAD,
-		  const auto &busy)
+		  const auto &args)
 		 {
-			 ok_action(IN_THREAD, field, busy);
+			 // We expect the weakly-captured input field to
+			 // still exist. But, if not, we'll just interpret
+			 // this as a "cancel" action, instead.
+
+			 auto f=field.getptr();
+
+			 if (!f)
+				 cancel_action(IN_THREAD, args);
+			 else
+				 ok_action(IN_THREAD, input_dialog_ok_args{
+						 args, f});
 		 });
-	hide_and_invoke_when_activated(d, cancel_button, cancel_action);
-	hide_and_invoke_when_closed(d, cancel_action);
+	hide_and_invoke_when_activated(me, d, cancel_button, cancel_action);
+	hide_and_invoke_when_closed(me, d, cancel_action);
 
 	return new_input_dialog;
 }

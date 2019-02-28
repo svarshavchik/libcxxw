@@ -532,7 +532,7 @@ void create_help_about(const x::w::main_window &main_window)
 						 config);
 		 },
 		 []
-		 (ONLY IN_THREAD, const x::w::busy &)
+		 (ONLY IN_THREAD, const x::w::ok_cancel_callback_args &)
 		 {
 			 std::cout << "Help/About closed!" << std::endl;
 		 });
@@ -593,15 +593,14 @@ void create_help_question(const x::w::main_window &main_window)
 		 {},
 		 []
 		 (ONLY IN_THREAD,
-		  const x::w::input_field &f,
-		  const x::w::busy &)
+		  const x::w::input_dialog_ok_args &args)
 		 {
-			 x::w::input_lock lock{f};
+			 x::w::input_lock lock{args.dialog_input_field};
 
 			 std::cout << "Your name: " << lock.get() << std::endl;
 		 },
 		 []
-		 (ONLY IN_THREAD, const x::w::busy &)
+		 (ONLY IN_THREAD, const x::w::ok_cancel_callback_args &)
 		 {
 			 std::cout << "How rude..." << std::endl;
 		 });
@@ -659,7 +658,7 @@ void create_file_open(const x::w::main_window &main_window)
 
 			fd->dialog_window->hide();
 		},
-		[](ONLY IN_THREAD, const x::w::busy &mcguffin)
+		[](ONLY IN_THREAD, const x::w::ok_cancel_callback_args &)
 		{
 			std::cout << "File->Open: closed" << std::endl;
 		},
@@ -689,7 +688,7 @@ void create_file_new(const x::w::main_window &main_window)
 
 			fd->dialog_window->hide();
 		},
-		[](ONLY IN_THREAD, const x::w::busy &mcguffin)
+		[](ONLY IN_THREAD, const x::w::ok_cancel_callback_args &)
 		{
 			std::cout << "File->New: closed" << std::endl;
 		},

@@ -18,25 +18,21 @@
 
 LIBCXXW_NAMESPACE_START
 
-typedef decltype(make_weak_capture(std::declval<dialog &&>())
-		 ) captured_dialog_t;
+//! Parameters to \ref dialogObj "dialog public object's constructor".
 
+struct dialog_args {
+	ref<dialogObj::implObj> impl;
+	main_window dialog_window;
+};
 
-void hide_and_invoke(const captured_dialog_t &d,
-		     const busy &yes_i_am,
-		     const functionref<void (THREAD_CALLBACK,
-					     const busy &)>  &action);
-
-void hide_and_invoke_when_activated(const dialog &d,
+void hide_and_invoke_when_activated(const main_window &parent_window,
+				    const dialog &d,
 				    const hotspot &button,
-				    const functionref
-				    <void (THREAD_CALLBACK,
-					   const busy &)> &action);
+				    const ok_cancel_dialog_callback_t &action);
 
-void hide_and_invoke_when_closed(const dialog &d,
-				 const functionref
-				 <void (THREAD_CALLBACK,
-					const busy &)> &action);
+void hide_and_invoke_when_closed(const main_window &parent_window,
+				 const dialog &d,
+				 const ok_cancel_dialog_callback_t &action);
 
 functionref<void (const factory &)>
 dialog_ok_button(const text_param &label,

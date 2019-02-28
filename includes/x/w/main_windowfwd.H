@@ -218,7 +218,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_dialog(
     // The callback when the dialog gets closed.
     []
     (ONLY IN_THREAD,
-     const INSERT_LIBX_NAMESPACE::w::busy &ignore)
+     const INSERT_LIBX_NAMESPACE::w::ok_cancel_callback_args &args)
     {
          // ...
     });
@@ -237,12 +237,12 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
          factory->create_label("Lorem ipsum");
    },
     (ONLY IN_THREAD,
-     const INSERT_LIBX_NAMESPACE::w::busy &ignore)
+     const INSERT_LIBX_NAMESPACE::w::ok_cancel_callback_args &args)
     {
          // Ok action.
     },
     (ONLY IN_THREAD,
-     const INSERT_LIBX_NAMESPACE::w::busy &ignore)
+     const INSERT_LIBX_NAMESPACE::w::ok_cancel_callback_args &args)
     {
          // Cancel action.
     });
@@ -286,10 +286,9 @@ INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog
        // the callback may obtain the entered text.
        []
        (ONLY IN_THREAD,
-        const INSERT_LIBX_NAMESPACE::w::input_field &f,
-        const INSERT_LIBX_NAMESPACE::w::busy &)
+        const INSERT_LIBX_NAMESPACE::w::input_dialog_ok_args &info)
        {
-           INSERT_LIBX_NAMESPACE::w::input_lock lock{f};
+           INSERT_LIBX_NAMESPACE::w::input_lock lock{info.dialog_input_field};
 
            std::cout << "Your name is: " << lock.get() << std::endl;
        },
@@ -300,7 +299,7 @@ INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog
 
        []
        (ONLY IN_THREAD,
-        const INSERT_LIBX_NAMESPACE::w::busy &)
+        const INSERT_LIBX_NAMESPACE::w::ok_cancel_callback_args &args)
        {
            std::cout << "How rude..." << std::endl;
        });
@@ -360,7 +359,8 @@ INSERT_LIBX_NAMESPACE::w::file_dialog_config config{
 
           // ...
      },
-     [](ONLY IN_THREAD, const INSERT_LIBX_NAMESPACE::w::busy &busy_mcguffin)
+     [](ONLY IN_THREAD,
+        const INSERT_LIBX_NAMESPACE::w::ok_cancel_callback_args &args)
      {
 
      }};

@@ -16,9 +16,7 @@ file_dialog_config
 					     const file_dialog &,
 					     const std::string &,
 					     const busy &)> &ok_action,
-		     const functionref<void (THREAD_CALLBACK,
-					     const busy &)
-		     > &cancel_action,
+		     const ok_cancel_dialog_callback_t &cancel_action,
 		     file_dialog_type type)
 	: ok_action{ok_action},
 	  cancel_action{cancel_action},

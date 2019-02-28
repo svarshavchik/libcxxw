@@ -14,6 +14,7 @@
 #include "messages.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_lock.H"
+#include "x/w/input_dialog.H"
 #include "x/w/file_dialog_config.H"
 #include "x/w/label.H"
 #include "x/w/focusable_label.H"
@@ -26,6 +27,8 @@
 #include "x/w/impl/layoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/callback_trigger.H"
+#include "x/w/dialog.H"
+#include "x/w/input_dialog.H"
 #include "drag_destination_element.H"
 #include "connection_info.H"
 #include "selection/current_selection_handler.H"
@@ -549,10 +552,13 @@ struct LIBCXX_HIDDEN file_dialogObj::init_args {
 	buttonptr ok_button;
 	buttonptr cancel_button;
 
+	main_window parent_window;
 	std::string directory;
 
-	init_args(const std::string &directory)
-		: directory{fd::base::realpath(directory)}
+	init_args(const main_window &parent_window,
+		  const std::string &directory)
+		: parent_window{parent_window},
+		directory{fd::base::realpath(directory)}
 	{
 	}
 
@@ -813,11 +819,14 @@ file_dialog main_windowObj
 {
 	return create_custom_dialog
 		(create_dialog_args{args},
-		 [&]
+		 [&, this]
 		 (const dialog_args &args)
 		 {
-			 file_dialogObj::init_args init_args{
-				 conf.initial_directory};
+			 file_dialogObj::init_args init_args
+				 {
+				  ref{this},
+				  conf.initial_directory
+				 };
 
 			 gridtemplate tmpl{
 				 init_args.create_elements(conf)
@@ -905,17 +914,19 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 
 	impl->the_file_dialog=d;
 
+	auto me=ref{this};
 	// The cancel button, and the window close button, invokes the
 	// cancel_action, as usual.
-	hide_and_invoke_when_activated(d, impl->cancel_button,
+	hide_and_invoke_when_activated(args.parent_window, d,
+				       impl->cancel_button,
 				       [cancel_action=conf.cancel_action]
 				       (ONLY IN_THREAD,
-					const auto &busy)
+					const auto &args)
 				       {
-					       cancel_action(IN_THREAD, busy);
+					       cancel_action(IN_THREAD, args);
 				       });
 
-	hide_and_invoke_when_closed(d,
+	hide_and_invoke_when_closed(args.parent_window, d,
 				    [cancel_action=conf.cancel_action]
 				    (ONLY IN_THREAD,
 				     const auto &busy)
@@ -976,7 +987,7 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 	auto dir_status_visibility=popup_menu_visibility_status::create();
 
 	impl->directory_contents_list->set_selected_callback
-		([impl=make_weak_capture(impl),
+		([impl=make_weak_capture(impl, dialog_window),
 		  dir_status=ref<popup_menu_status_infoObj>
 		  ::create(file_status_visibility,
 			   dir_status_visibility,
@@ -994,7 +1005,7 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 			 if (!got)
 				 return;
 
-			 auto &[impl]=*got;
+			 auto &[impl, dialog_window]=*got;
 
 			 // We want to ignore events reported on button release
 			 // events that get directed to a popup, and thus

@@ -715,7 +715,7 @@ static void file_menu(const w::main_window &mw,
 		{
 		},
 		[](ONLY IN_THREAD,
-		   const w::busy &) {},
+		   const auto &ignore) {},
 
 		w::file_dialog_type::create_file};
 
@@ -755,7 +755,7 @@ static void file_menu(const w::main_window &mw,
 		 "",
 		 {},
 		 []
-		 (THREAD_CALLBACK, const auto &ignore1, const auto &ignore2)
+		 (THREAD_CALLBACK, const auto &ignore)
 		 {
 		 },
 		 []
@@ -821,7 +821,7 @@ static void help_menu(const w::main_window &mw,
 			 f->create_label("LibCXXW version " VERSION);
 		 },
 		 []
-		 (THREAD_CALLBACK, const w::busy &)
+		 (THREAD_CALLBACK, const auto &)
 		 {
 		 });
 
@@ -831,7 +831,7 @@ static void help_menu(const w::main_window &mw,
 			{
 				help_about->dialog_window->show_all();
 			},
-				"About"});
+			"About"});
 }
 
 

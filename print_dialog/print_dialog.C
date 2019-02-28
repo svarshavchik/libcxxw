@@ -496,11 +496,13 @@ print_dialog main_windowObj
 		{
 		}};
 
-	hide_and_invoke_when_activated(d, d->impl->fields.ok_button,
+	auto me=ref{this};
+	hide_and_invoke_when_activated(me,
+				       d, d->impl->fields.ok_button,
 				       [what=make_weak_capture(d, ref(this)),
 					callback=print_callback_impl]
 				       (ONLY IN_THREAD,
-					const busy &mcguffin)
+					const auto &ignore)
 				       {
 					       auto got=what.get();
 
@@ -512,18 +514,18 @@ print_dialog main_windowObj
 					       d->impl->print(mw, callback);
 				       });
 
-	hide_and_invoke_when_activated(d, d->impl->fields.cancel_button,
+	hide_and_invoke_when_activated(me, d, d->impl->fields.cancel_button,
 				       [cancel_callback_impl]
 				       (ONLY IN_THREAD,
-					const busy &mcguffin)
+					const auto &ignore)
 				       {
 					       cancel_callback_impl(IN_THREAD);
 				       });
 
-	hide_and_invoke_when_closed(d,
+	hide_and_invoke_when_closed(me, d,
 				    [cancel_callback_impl]
 				    (ONLY IN_THREAD,
-				     const busy &mcguffin)
+				     const auto &ignore)
 				    {
 					    cancel_callback_impl(IN_THREAD);
 				    });

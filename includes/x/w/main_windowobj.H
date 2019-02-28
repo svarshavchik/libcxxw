@@ -189,8 +189,7 @@ public:
 				const std::string &icon,
 				const functionref<void (const factory &)>
 				&content_factory,
-				const functionref<void (THREAD_CALLBACK,
-							const busy &)>
+				const ok_cancel_dialog_callback_t
 				&ok_action);
 
 	//! Create an OK dialog
@@ -199,8 +198,7 @@ public:
 				const std::string &icon,
 				const functionref<void (const factory &)>
 				&content_factory,
-				const functionref<void (THREAD_CALLBACK,
-							const busy &)>
+				const ok_cancel_dialog_callback_t
 				&ok_action,
 				const text_param &ok_label);
 
@@ -238,11 +236,9 @@ public:
 				const std::string &icon,
 				const functionref<void (const factory &)>
 				&content_factory,
-				const functionref<void (THREAD_CALLBACK,
-							const busy &)>
+				const ok_cancel_dialog_callback_t
 				&ok_action,
-				const functionref<void (THREAD_CALLBACK,
-							const busy &)>
+				const ok_cancel_dialog_callback_t
 				&cancel_action);
 
 	//! Create an OK or CANCEL dialog
@@ -252,11 +248,9 @@ public:
 				const std::string &icon,
 				const functionref<void (const factory &)>
 				&content_factory,
-				const functionref<void (THREAD_CALLBACK,
-							const busy &)>
+				const ok_cancel_dialog_callback_t
 				&ok_action,
-				const functionref<void (THREAD_CALLBACK,
-							const busy &)>
+				const ok_cancel_dialog_callback_t
 				&cancel_action,
 				const text_param &ok_label,
 				const text_param &cancel_label);
@@ -270,12 +264,9 @@ public:
 			    &label_factory,
 			    const text_param &initial_text,
 			    const input_field_config &config,
-			    const functionref<void (THREAD_CALLBACK,
-						    const input_field &,
-						    const busy &)>
-			    &ok_action,
-			    const functionref<void (THREAD_CALLBACK,
-						    const busy &)>
+			    const functionref<void (THREAD_CALLBACK,						    const input_dialog_ok_args
+						    &)> &ok_action,
+			    const ok_cancel_dialog_callback_t
 			    &cancel_action);
 
 	//! Create a dialog with an input field.
@@ -288,11 +279,9 @@ public:
 			    const text_param &initial_text,
 			    const input_field_config &config,
 			    const functionref<void (THREAD_CALLBACK,
-						    const input_field &,
-						    const busy &)>
-			    &ok_action,
-			    const functionref<void (THREAD_CALLBACK,
-						    const busy &)>
+						    const input_dialog_ok_args
+						    &)> &ok_action,
+			    const ok_cancel_dialog_callback_t
 			    &cancel_action,
 			    const text_param &ok_label,
 			    const text_param &cancel_label);
@@ -315,8 +304,8 @@ public:
 	//! in order to remove the dialog
 	//! automatically after it's closed.
 
-	functionref<void (THREAD_CALLBACK, const busy &)
-		    > destroy_when_closed(const std::string_view &);
+	ok_cancel_dialog_callback_t destroy_when_closed(const
+							std::string_view &);
 
 	//! Save the main window's current position and size.
 

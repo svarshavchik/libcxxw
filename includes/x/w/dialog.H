@@ -14,13 +14,6 @@ LIBCXXW_NAMESPACE_START
 
 struct LIBCXX_HIDDEN dialog_args;
 
-//! Parameters to \ref dialogObj "dialog public object's constructor".
-
-struct dialog_args {
-	ref<dialogObj::implObj> impl;
-	main_window dialog_window;
-};
-
 LIBCXXW_NAMESPACE_END
 
 #endif
