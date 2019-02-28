@@ -24,23 +24,20 @@
 
 LIBCXXW_NAMESPACE_START
 
-main_windowObj::handlerObj::handlerObj(const screen &parent_screen,
+main_windowObj::handlerObj::handlerObj(const constructor_params &params,
 				       const std::optional<rectangle>
 				       &suggested_position,
-				       const std::string &window_id,
-				       const char *window_type,
-				       const char *window_state,
-				       const color_arg &background_color)
+				       const std::string &window_id)
 	: superclass_t({},
-		       parent_screen,
-		       background_color,
+		       params.parent_screen,
+		       params.background_color,
 		       shared_handler_data::create(),
-		       window_type,
-		       window_state,
+		       params.window_type,
+		       params.window_state,
 		       0),
 	  on_delete_callback_thread_only([](THREAD_CALLBACK,
 					    const auto &ignore) {}),
-	  net_wm_sync_request_counter{parent_screen->impl->thread},
+	  net_wm_sync_request_counter{params.parent_screen->impl->thread},
 	  suggested_position_thread_only{suggested_position},
 	  window_id{window_id}
 {

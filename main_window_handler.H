@@ -7,6 +7,7 @@
 
 #include "generic_window_handler.H"
 #include "main_window.H"
+#include "window_handler_constructor_params.H"
 #include "x/w/connection_threadfwd.H"
 #include "icon_images_vector_elementfwd.H"
 #include "x/w/busyfwd.H"
@@ -58,13 +59,13 @@ public:
 	THREAD_DATA_ONLY(on_delete_callback);
 	THREAD_DATA_ONLY(wm_icon_set);
 
+	//! Alias
+	typedef main_window_handler_constructor_params constructor_params;
+
 	//! Constructor
-	handlerObj(const screen &parent_screen,
+	handlerObj(const constructor_params &params,
 		   const std::optional<rectangle> &suggested_position,
-		   const std::string &window_id,
-		   const char *window_type,
-		   const char *window_state,
-		   const color_arg &background_color);
+		   const std::string &window_id);
 
 	//! Destructor
 	~handlerObj();

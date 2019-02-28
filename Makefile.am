@@ -843,6 +843,7 @@ libcxxw_la_SOURCES=\
 	window_handler.C			    \
 	window_handler.H			    \
 	window_handlerfwd.H			    \
+	window_handler_constructor_params.H	    \
 	xid_t.C					    \
 	xid_t.H					    \
 	xid_t_connection_thread.H		    \

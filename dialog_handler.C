@@ -23,8 +23,10 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 				  bool modal,
 				  bool urgent,
 				  bool grab_input_focus)
-	: superclass_t{parent_handler->get_screen(),
-
+	: superclass_t{{parent_handler->screenref,
+			window_type,
+			modal ? "MODAL":"",
+			background_color},
 		       std::visit(visitor{[&](const rectangle &r)
 					  -> std::optional<rectangle>
 					  {
@@ -35,10 +37,7 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 					  {
 					   return std::nullopt;
 					  }}, position),
-		       window_id,
-		       window_type,
-		       modal ? "MODAL":"",
-		       background_color},
+		       window_id},
 	  my_position_thread_only
 	{
 	 std::visit(visitor{[&](const dialog_position &pos)

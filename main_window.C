@@ -371,13 +371,15 @@ main_window screenObj
 
 	auto queue=connref->impl->thread->get_batch_queue();
 
+	auto me=ref{this};
+
+	main_window_handler_constructor_params
+		main_params{me, "normal", "", config.background_color};
+
 	auto handler=ref<main_windowObj::handlerObj>
-		::create(ref{this},
+		::create(main_params,
 			 suggested_position,
-			 pos.name,
-			 "normal",
-			 "",
-			 config.background_color);
+			 pos.name);
 
 	auto [window_impl, lm]=create_main_window_impl
 		(handler, std::nullopt, layout_factory,
