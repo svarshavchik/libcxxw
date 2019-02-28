@@ -1,5 +1,7 @@
 2019-02-16  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* dirlisting/filedirlist_manager_impl.C: Bug fix.
+
 	* includes/x/w/main_windowobj.H: Redefine the parameters passed to
 	standard dialogs' "Ok" and "Cancel" callbacks. Other dialog API
 	tweaks and cleanups.

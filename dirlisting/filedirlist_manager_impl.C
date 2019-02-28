@@ -571,7 +571,7 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 			{
 				lock.files_lm()
 					->remove_item(iter-lock->files.begin());
-				lock->subdirectories.erase(iter);
+				lock->files.erase(iter);
 			}
 			else
 			{
