@@ -58,9 +58,9 @@ extern const popup_visibility_semantics LIBCXX_HIDDEN menu_popup_type;
 
 extern const popup_visibility_semantics LIBCXX_HIDDEN exclusive_popup_type;
 
-//! Return value from recalculate_popup_position
+//! Return value from recalculate_attached_popup_position
 
-//! Indicates where recalculate_popup_position() placed the popup in relation
+//! Indicates where recalculate_attached_popup_position() placed the popup in relation
 //! to its attached display element.
 //!
 //! \see popup
@@ -75,7 +75,7 @@ enum class popup_position_affinity {
 //! Popup handler implementation object.
 
 //! Subclass generic_window's handler. Implement metrics methods to
-//! invoke recalculate_popup_position(), then proceeds and sets the
+//! invoke recalculate_attached_popup_position(), then proceeds and sets the
 //! top level display element's position accordingly.
 //!
 //! \see popup
@@ -146,16 +146,16 @@ public:
 	//! then sets the popup position.
 
 	virtual popup_position_affinity
-		recalculate_popup_position(ONLY IN_THREAD,
+		recalculate_attached_popup_position(ONLY IN_THREAD,
 					   rectangle &r,
 					   dim_t screen_width,
 					   dim_t screen_height);
 
  protected:
 
-	//! Call recalculate_popup_position(), then xcb_configure_window().
+	//! Call recalculate_attached_popup_position(), then xcb_configure_window().
 
-	//! Assemble all the information that recalculate_popup_position()
+	//! Assemble all the information that recalculate_attached_popup_position()
 	//! needs to base its logic on, call it, then use the adjusted
 	//! rectangle to xcb_configure_window().
 
@@ -178,7 +178,7 @@ public:
 
 	//! Override update_resizing_timeout().
 
-	//! recalculate_popup_position() may end up adjusting our position
+	//! recalculate_attached_popup_position() may end up adjusting our position
 	//! outside of the requested metrics.
 
 	void update_resizing_timeout(ONLY IN_THREAD) override;

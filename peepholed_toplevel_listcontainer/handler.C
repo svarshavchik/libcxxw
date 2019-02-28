@@ -22,14 +22,14 @@ peepholed_toplevel_listcontainer_handlerObj
 
 popup_position_affinity
 peepholed_toplevel_listcontainer_handlerObj
-::recalculate_popup_position(ONLY IN_THREAD,
+::recalculate_attached_popup_position(ONLY IN_THREAD,
 			     rectangle &r,
 			     dim_t screen_width,
 			     dim_t screen_height)
 {
 	auto adjusted_current_affinity=current_affinity;
 
-	current_affinity=superclass_t::recalculate_popup_position
+	current_affinity=superclass_t::recalculate_attached_popup_position
 		(IN_THREAD, r,
 		 screen_width,
 		 screen_height);

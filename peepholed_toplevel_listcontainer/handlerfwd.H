@@ -19,7 +19,7 @@ struct LIBCXX_HIDDEN peepholed_toplevel_listcontainer_handler_args;
 //! list popup is above and below, or to the left or the right, of the
 //! attached_to element.
 //!
-//! Overrides recalculate_popup_position, and captures the newly-calculated
+//! Overrides recalculate_attached_popup_position, and captures the newly-calculated
 //! popup_position_affinity, that determines which background color to set
 //! for the list popup's background, which gets updated accordingly.
 

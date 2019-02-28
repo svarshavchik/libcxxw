@@ -149,12 +149,12 @@ void popupObj::handlerObj::set_popup_position(ONLY IN_THREAD)
 	auto screen_width=screenref->impl->width_in_pixels();
 	auto screen_height=screenref->impl->height_in_pixels();
 
-	recalculate_popup_position(IN_THREAD,
+	recalculate_attached_popup_position(IN_THREAD,
 				   r,
 				   screen_width,
 				   screen_height);
 
-	// Whatever recalculate_popup_position() wanted, adjust the popup
+	// Whatever recalculate_attached_popup_position() wanted, adjust the popup
 	// so that it fits on the screen.
 
 	if (r.width > screen_width)
@@ -452,10 +452,10 @@ void popupObj::handlerObj
 }
 
 popup_position_affinity popupObj::handlerObj
-::recalculate_popup_position(ONLY IN_THREAD,
-			     rectangle &r,
-			     dim_t screen_width,
-			     dim_t screen_height)
+::recalculate_attached_popup_position(ONLY IN_THREAD,
+				      rectangle &r,
+				      dim_t screen_width,
+				      dim_t screen_height)
 {
 	auto max_peephole_width_value=
 		attachedto_info->max_peephole_width(IN_THREAD, screenref);

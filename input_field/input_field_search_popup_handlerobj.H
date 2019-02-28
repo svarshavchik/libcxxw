@@ -55,12 +55,12 @@ public:
 
 	void set_inherited_visibility_unmapped(ONLY IN_THREAD) override;
 
-	//! Override recalculate_popup_position()
+	//! Override recalculate_attached_popup_position()
 
 	//! Force popup width to be always equal to the main input field
 	//! element's width.
 
-	popup_position_affinity recalculate_popup_position(ONLY IN_THREAD,
+	popup_position_affinity recalculate_attached_popup_position(ONLY IN_THREAD,
 							   rectangle &r,
 							   dim_t screen_width,
 							   dim_t screen_height)

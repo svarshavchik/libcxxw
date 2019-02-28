@@ -19,7 +19,7 @@ input_field_search_popup_handlerObj::~input_field_search_popup_handlerObj()
 }
 
 popup_position_affinity input_field_search_popup_handlerObj
-::recalculate_popup_position(ONLY IN_THREAD,
+::recalculate_attached_popup_position(ONLY IN_THREAD,
 			     rectangle &r,
 			     dim_t screen_width,
 			     dim_t screen_height)
@@ -28,7 +28,7 @@ popup_position_affinity input_field_search_popup_handlerObj
 		attachedto_info->attachedto_element_position(IN_THREAD);
 
 	r.width=attachedto_element_position.width;
-	return superclass_t::recalculate_popup_position(IN_THREAD, r,
+	return superclass_t::recalculate_attached_popup_position(IN_THREAD, r,
 							screen_width,
 							screen_height);
 }
