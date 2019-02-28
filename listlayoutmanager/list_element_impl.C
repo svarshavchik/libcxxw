@@ -1851,13 +1851,9 @@ bool list_elementObj::implObj::process_button_event(ONLY IN_THREAD,
 						    const button_event &be,
 						    xcb_timestamp_t timestamp)
 {
-	// Forward the event to the parent class first. This is so that the
-	// button click propagates to the focusable element, and set the
-	// input focus to this element.
+	bool flag=false;
 
-	bool flag=superclass_t::process_button_event(IN_THREAD, be, timestamp);
-
-	if (be.button == 1)
+	if (be.button == 1 || be.button == 3)
 	{
 		textlist_info_lock lock{IN_THREAD, *this};
 
@@ -1876,6 +1872,13 @@ bool list_elementObj::implObj::process_button_event(ONLY IN_THREAD,
 			flag=true;
 		}
 	}
+
+	// Also forward the event to the parent class, so that button click
+	// also moves the input focus here.
+
+	if (superclass_t::process_button_event(IN_THREAD, be, timestamp))
+		flag=true;
+
 	return flag;
 }
 

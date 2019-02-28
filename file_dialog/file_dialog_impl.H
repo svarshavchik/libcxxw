@@ -15,6 +15,7 @@
 #include "x/w/callback_triggerfwd.H"
 #include "x/w/button_eventfwd.H"
 #include "x/w/text_paramfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 
 #include "dirlisting/filedirlist_managerfwd.H"
 
@@ -29,6 +30,33 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 
+	class popup_menu_status {
+
+		std::optional<size_t> current_list_item;
+
+	public:
+
+		inline void new_focus(bool flag)
+		{
+			if (!flag)
+				current_list_item.reset();
+		}
+
+		// New item is reported.
+		inline void new_list_item(const std::optional<size_t> &item)
+		{
+			current_list_item=item;
+		}
+
+		// Must have keyboard focus to make current_list_item official.
+
+		inline std::optional<size_t> item() const
+		{
+			return current_list_item;
+		}
+	};
+
+	class update_popup_menu_status;
 
  public:
 
@@ -59,6 +87,16 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 
 	//! The semantics of this file dialog.
 	const file_dialog_type type;
+
+ private:
+	//! Current status of the directory list right context popup
+	popup_menu_status dir_status_thread_only;
+
+	//! Current status of the file list right context popup
+	popup_menu_status file_status_thread_only;
+ public:
+	THREAD_DATA_ONLY(dir_status);
+	THREAD_DATA_ONLY(file_status);
 
 	//! Message shown when access to the file is denied.
 	const std::string access_denied_message;
@@ -93,6 +131,13 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 		     const filedirlist_entry_id &id,
 		     const callback_trigger_t &trigger,
 		     const busy &mcguffin);
+
+	// A list item was selected, for the purposes of updating the
+	// right context popup menu items' status.
+
+	void file_or_dir_selection(ONLY IN_THREAD,
+				   int section,
+				   const std::optional<size_t> &n);
 
 	// We take action whenever button 1 gets clicked.
 
@@ -143,7 +188,8 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 	//! or unhighlighted replacement text, for the hotspot. Invokes
 	//! chdir() for an actual click.
 
-	text_param hotspot_activated(const text_event_t &event,
+	text_param hotspot_activated(ONLY IN_THREAD,
+				     const text_event_t &event,
 				     const std::string &name,
 				     const std::string &path);
  public:
@@ -152,7 +198,7 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 	//! Notifies the file directory manager. Updates the
 	//! directory_field.
 
-	void chdir(const std::string &path);
+	void chdir(ONLY IN_THREAD, const std::string &path);
  private:
 	//! Switch to another filter.
 	void chfilter(const pcre &filter);

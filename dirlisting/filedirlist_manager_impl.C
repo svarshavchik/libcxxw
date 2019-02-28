@@ -282,22 +282,6 @@ create_init_args(const factory &f,
 					    nlm);
 	dc->show();
 
-	// Report keyboard focus status changes on the directory list
-	// container.
-	dc->on_keyboard_focus
-		([current_selected]
-		 (ONLY IN_THREAD,
-		  focus_change fc,
-		  const auto &trigger)
-		 {
-			 current_selected->current_callback.get()
-				 (IN_THREAD,
-				  filedirlist_focus{
-					 filedirlist_entry_id::dir_section,
-						 in_focus(fc)},
-				  trigger);
-		 });
-
 	// Create the directory list's right mouse button popup contents.
 
 	auto dir_popup=dc->create_popup_menu
@@ -310,22 +294,6 @@ create_init_args(const factory &f,
 						llm, "",
 						false,
 						std::nullopt);
-		 });
-
-	// Report the visibility state of the directory context popup.
-
-	dir_popup->on_state_update
-		([current_selected]
-		 (ONLY IN_THREAD,
-		  const auto &new_state,
-		  const auto &ignore)
-		 {
-			 current_selected->current_callback.get()
-				 (IN_THREAD,
-				  filedirlist_contextpopup{
-					filedirlist_entry_id::dir_section,
-						new_state.shown},
-				 callback_trigger_t{});
 		 });
 
 	// The directory context popup menu gets created here, in advance,
@@ -386,23 +354,6 @@ create_init_args(const factory &f,
 					    nlm);
 	fc->show();
 
-	// Report keyboard focus status changes on the file list
-	// container.
-
-	fc->on_keyboard_focus
-		([current_selected]
-		 (ONLY IN_THREAD,
-		  focus_change fc,
-		  const callback_trigger_t &trigger)
-		 {
-			 current_selected->current_callback.get()
-				 (IN_THREAD,
-				  filedirlist_focus{
-					 filedirlist_entry_id::file_section,
-						 in_focus(fc)},
-				  trigger);
-		 });
-
 	// Create the file list's right mouse button popup contents.
 
 	auto file_popup=fc->create_popup_menu
@@ -413,22 +364,6 @@ create_init_args(const factory &f,
 			 set_file_popup_contents(current_selected,
 						 llm, initial_directory, false,
 						 std::nullopt);
-		 });
-
-	// Report the visibility state of the file context popup.
-
-	file_popup->on_state_update
-		([current_selected]
-		 (ONLY IN_THREAD,
-		  const auto &new_state,
-		  const auto &ignore)
-		 {
-			 current_selected->current_callback.get()
-				 (IN_THREAD,
-				  filedirlist_contextpopup{
-					filedirlist_entry_id::file_section,
-						new_state.shown},
-				 callback_trigger_t{});
 		 });
 
 	// The file context popup menu gets created here, in advance,

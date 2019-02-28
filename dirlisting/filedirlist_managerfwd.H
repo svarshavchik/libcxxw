@@ -60,7 +60,6 @@ typedef const_ptr<filedirlist_managerObj> const_filedirlist_managerptr;
 
 struct LIBCXX_HIDDEN filedirlist_entry_id;
 struct LIBCXX_HIDDEN filedirlist_selected;
-struct LIBCXX_HIDDEN filedirlist_focus;
 struct LIBCXX_HIDDEN filedirlist_selection;
 struct LIBCXX_HIDDEN popup_visibility;
 struct LIBCXX_HIDDEN filedirlist_mkdir;
@@ -92,18 +91,6 @@ struct filedirlist_selected : public filedirlist_entry_id {
 
 //! The parameter passed to a filedirlist_selected_callback_t
 
-//! This parameter reports whether the directory or the file section gained
-//! or lost focus.
-
-struct filedirlist_focus {
-
-	int section; //!< See filedirlits_entry_id
-
-	bool in_focus;
-};
-
-//! The parameter passed to a filedirlist_selected_callback_t
-
 //! This parameter reports whether which entry in the directory or the file
 //! section is currently highlighted/under cursor.
 
@@ -112,18 +99,6 @@ struct filedirlist_current_list_item {
 	int section; //!< See filedirlist_entry_id
 
 	const std::optional<size_t> &n;
-};
-
-//! The parameter passed to a filedirlist_selected_callback_t
-
-//! This parameter reports when one of the popups becomes visible, or is
-//! hidden.
-
-struct filedirlist_contextpopup {
-
-	int section; //!< See filedirlist_entry_id
-
-	bool visible; //!< Whether it's visible
 };
 
 //! The parameter passed to a filedirlist_selected_callback_t
@@ -151,9 +126,7 @@ struct filedirlist_rename { std::string filename; };
 struct filedirlist_unlink { std::string filename; };
 
 typedef std::variant<filedirlist_selected,
-		     filedirlist_focus,
 		     filedirlist_current_list_item,
-		     filedirlist_contextpopup,
 		     filedirlist_mkdir,
 		     filedirlist_rmdir,
 		     filedirlist_rename,

@@ -53,102 +53,45 @@
 
 LIBCXXW_NAMESPACE_START
 
-namespace {
-#if 0
-}
-#endif
+// Capture the current state of the popups, before something might change
+// above either one of them. Then, update() checks if they changed, and
+// invokes update_popup_status() if needed.
 
-// After the right context popup is visible, motion events may still
-// occur on the underlying file/directory list, they're ignored.
-//
-// The directory and file list's popup visibility status is tracked
-// separately.
-
-class popup_menu_visibility_statusObj : virtual public obj {
-
-public:
-	bool is_visible=false;
-};
-
-typedef ref<popup_menu_visibility_statusObj> popup_menu_visibility_status;
-
-// And the individual context popup's status.
-
-class popup_menu_status_infoObj : virtual public obj {
-
-	std::optional<size_t> current_list_item;
-	std::optional<size_t> current_list_item_before_popup_was_shown;
-
-	// Both the dile and the directory context popup status object
-	// knows if either one or the other is visible.
-
-	const popup_menu_visibility_status file_status_visibility;
-	const popup_menu_visibility_status dir_status_visibility;
-
-	// And this is one of these two.
-
-	const popup_menu_visibility_status my_visibility;
-
-	void set_list_item_before_popup_was_shown()
-	{
-		if (!file_status_visibility->is_visible &&
-		    !dir_status_visibility->is_visible && in_focus)
-			current_list_item_before_popup_was_shown=
-				current_list_item;
-	}
-
-	bool in_focus=false;
+class file_dialogObj::implObj::update_popup_menu_status {
 
 public:
 
-	popup_menu_status_infoObj(const popup_menu_visibility_status
-				  &file_status_visibility,
-				  const popup_menu_visibility_status
-				  &dir_status_visibility,
-				  const popup_menu_visibility_status
-				  &my_visibility)
-		: file_status_visibility{file_status_visibility},
-		  dir_status_visibility{dir_status_visibility},
-		  my_visibility{my_visibility}
+	implObj &me;
+
+	const std::optional<size_t> prev_dir_status;
+	const std::optional<size_t> prev_file_status;
+
+	update_popup_menu_status(ONLY IN_THREAD, implObj &me)
+		: me {me},
+		  prev_dir_status{me.dir_status(IN_THREAD).item()},
+		  prev_file_status{me.file_status(IN_THREAD).item()}
 	{
 	}
 
-	// Focus change is reported.
 
-	inline void new_focus(bool flag)
+	void update(ONLY IN_THREAD)
 	{
-		in_focus=flag;
-		if (!in_focus)
-			current_list_item.reset();
+		auto new_dir_status=me.dir_status(IN_THREAD).item();
+		auto new_file_status=me.file_status(IN_THREAD).item();
 
-		set_list_item_before_popup_was_shown();
-	}
+		if (new_dir_status != prev_dir_status)
+			me.directory_contents_list->impl->update_popup_status
+				(IN_THREAD,
+				 filedirlist_entry_id::dir_section,
+				 new_dir_status);
 
-	// New item is reported.
-	inline void new_list_item(const std::optional<size_t> &item)
-	{
-		current_list_item=item;
-		set_list_item_before_popup_was_shown();
-	}
-
-	inline void popup_visible(bool visible)
-	{
-		my_visibility->is_visible=visible;
-		set_list_item_before_popup_was_shown();
-	}
-
-	// Must have keyboard focus to make current_list_item official.
-
-	inline std::optional<size_t> item() const
-	{
-		return current_list_item_before_popup_was_shown;
+		if (new_file_status != prev_file_status)
+			me.directory_contents_list->impl->update_popup_status
+				 (IN_THREAD,
+				  filedirlist_entry_id::file_section,
+				  new_file_status);
 	}
 };
-
-#if 0
-{
-#endif
-}
 
 file_dialogObj::implObj
 ::implObj(const focusable_label &directory_field,
@@ -179,11 +122,34 @@ file_dialogObj::implObj
 
 file_dialogObj::implObj::~implObj()=default;
 
+void file_dialogObj::implObj
+::file_or_dir_selection(ONLY IN_THREAD,
+			int section,
+			const std::optional<size_t> &n)
+{
+	update_popup_menu_status update{IN_THREAD, *this};
+
+	auto &status=section == filedirlist_entry_id::dir_section
+		? dir_status(IN_THREAD) : file_status(IN_THREAD);
+
+	dir_status(IN_THREAD).new_focus(false);
+	file_status(IN_THREAD).new_focus(false);
+
+	if (n)
+	{
+		status.new_focus(true);
+		status.new_list_item(*n);
+	}
+	update.update(IN_THREAD);
+}
+
 void file_dialogObj::implObj::clicked(ONLY IN_THREAD,
 				      const filedirlist_entry_id &id,
 				      const callback_trigger_t &trigger,
 				      const busy &mcguffin)
 {
+	file_or_dir_selection(IN_THREAD, id.section, id.n);
+
 	auto e=directory_contents_list->at(id);
 
 	bool autoselect_file=true;
@@ -215,7 +181,7 @@ void file_dialogObj::implObj::clicked(ONLY IN_THREAD,
 
 	if (S_ISDIR(e.st.st_mode))
 	{
-		chdir(e.name);
+		chdir(IN_THREAD, e.name);
 	}
 	else
 	{
@@ -260,7 +226,7 @@ void file_dialogObj::implObj::process_filename(ONLY IN_THREAD,
 	{
 		if (access(filename.c_str(), (R_OK|X_OK)) == 0)
 		{
-			chdir(filename);
+			chdir(IN_THREAD, filename);
 		}
 	}
 	else
@@ -399,7 +365,7 @@ void file_dialogObj::implObj::create_hotspot(text_param &t,
 	t(text_hotspot::create
 	  ([name, path,
 	    me=make_weak_capture(ref(this))]
-	   (THREAD_CALLBACK,
+	   (ONLY IN_THREAD,
 	    const text_event_t &event)
 	   {
 		   text_param t;
@@ -410,7 +376,8 @@ void file_dialogObj::implObj::create_hotspot(text_param &t,
 		   {
 			   auto &[me]=*got;
 
-			   t=me->hotspot_activated(event, name, path);
+			   t=me->hotspot_activated(IN_THREAD,
+						   event, name, path);
 		   }
 		   return t;
 	   }));
@@ -422,7 +389,8 @@ void file_dialogObj::implObj::create_hotspot(text_param &t,
 // course of action.
 
 text_param file_dialogObj::implObj
-::hotspot_activated(const text_event_t &event,
+::hotspot_activated(ONLY IN_THREAD,
+		    const text_event_t &event,
 		    const std::string &name,
 		    const std::string &path)
 {
@@ -444,23 +412,30 @@ text_param file_dialogObj::implObj
 			[&, this](const button_event *b)
 			{
 				if (button_clicked(*b))
-					this->chdir(path);
+					this->chdir(IN_THREAD, path);
 				return text_param{};
 			},
 			[&, this](const key_event *)
 			{
-				this->chdir(path);
+				this->chdir(IN_THREAD, path);
 				return text_param{};
 			}},
 		event);
 }
 
-void file_dialogObj::implObj::chdir(const std::string &path)
+void file_dialogObj::implObj::chdir(ONLY IN_THREAD, const std::string &path)
 {
 	auto realpath=fd::base::realpath(path);
 	filename_field->set("");
 	directory_field->update(create_dirlabel(realpath));
 	directory_contents_list->chdir(realpath);
+
+	update_popup_menu_status update{IN_THREAD, *this};
+
+	dir_status(IN_THREAD).new_focus(false);
+	file_status(IN_THREAD).new_focus(false);
+
+	update.update(IN_THREAD);
 }
 
 void file_dialogObj::implObj::chfilter(const pcre &filter)
@@ -1000,7 +975,7 @@ static inline void popup_mkdir_dialog(const main_window &w,
 			 else
 			 {
 				 // Open this directory.
-				 impl->chdir(dir);
+				 impl->chdir(IN_THREAD, dir);
 			 }
 			 autodestroy(IN_THREAD, args);
 		 },
@@ -1202,21 +1177,8 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 		lm->autoselect(conf.initial_filename_filter);
 	}
 
-	// Set up the clicked() callback, clicking on a directory entry.
-
-	auto file_status_visibility=popup_menu_visibility_status::create();
-	auto dir_status_visibility=popup_menu_visibility_status::create();
-
 	impl->directory_contents_list->set_selected_callback
-		([impl=make_weak_capture(impl, dialog_window),
-		  dir_status=ref<popup_menu_status_infoObj>
-		  ::create(file_status_visibility,
-			   dir_status_visibility,
-			   dir_status_visibility),
-		  file_status=ref<popup_menu_status_infoObj>
-		  ::create(file_status_visibility,
-			   dir_status_visibility,
-			   file_status_visibility)]
+		([impl=make_weak_capture(impl, dialog_window)]
 		 (ONLY IN_THREAD,
 		  const auto &arg,
 		  const callback_trigger_t &trigger)
@@ -1244,23 +1206,6 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 			 //
 			 // Simply ignore button release events, here.
 
-			 bool is_button_release=false;
-
-			 auto prev_dir_status=dir_status->item();
-			 auto prev_file_status=file_status->item();
-
-			 std::visit
-				 (visitor
-				  {[&](const motion_event *mev)
-				   {
-					   if (mev->type ==
-					       motion_event_type::button_event)
-						   is_button_release=true;
-				   },
-				   [&](const auto &ignore)
-				   {
-				   }}, trigger);
-
 			 std::visit
 				 (visitor
 				  {
@@ -1270,60 +1215,22 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 							 what, trigger,
 							 what.mcguffin);
 				   },
-				   [&](const filedirlist_focus &focus)
-				   {
-					   if (is_button_release)
-						   return;
-					   auto status=focus.section ==
-						   filedirlist_entry_id
-						   ::dir_section
-						   ? dir_status
-						   : file_status;
-
-					   status->new_focus(focus.in_focus);
-				   },
 				   [&](const filedirlist_current_list_item
 				       &item)
 				   {
-					   if (is_button_release)
+					   // If the item change occured
+					   // because of keyboard activity,
+					   // treat it as a selection for the
+					   // purposes of the right context
+					   // popup menus' status.
+
+					   if (!std::holds_alternative
+					       <const key_event *>(trigger))
 						   return;
-					   // If we get an update here, this
-					   // section must be in focus, and
-					   // the other section not.
-					   //
-					   // This logically conflates keyboard
-					   // and pointer focus.
-					   //
-					   // So, if the pointer is moved over
-					   // the file listing, we will consider
-					   // the file listing have logical
-					   // focus even if the keyboard focus
-					   // is in the directory listing
-					   // portion.
 
-					   auto status=item.section ==
-						   filedirlist_entry_id
-						   ::dir_section
-						   ? dir_status
-						   : file_status;
-
-					   file_status->new_focus(false);
-					   dir_status->new_focus(false);
-					   status->new_focus(true);
-
-					   status->new_list_item(item.n);
-				   },
-				   [&](const filedirlist_contextpopup
-				       &popup_status)
-				   {
-					   auto status=popup_status.section ==
-						   filedirlist_entry_id
-						   ::dir_section
-						   ? dir_status
-						   : file_status;
-
-					   status->popup_visible
-						   (popup_status.visible);
+					   impl->file_or_dir_selection
+						   (IN_THREAD, item.section,
+						    item.n);
 				   },
 				   [&](const filedirlist_mkdir &what)
 				   {
@@ -1348,24 +1255,6 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 							       what.filename);
 				   }},
 				 arg);
-
-			 auto new_dir_status=dir_status->item();
-			 auto new_file_status=file_status->item();
-
-			 if (new_dir_status != prev_dir_status)
-				 impl->directory_contents_list->impl
-					 ->update_popup_status
-					 (IN_THREAD,
-					  filedirlist_entry_id::dir_section,
-					  new_dir_status);
-
-			 if (new_file_status != prev_file_status)
-				 impl->directory_contents_list->impl
-					 ->update_popup_status
-					 (IN_THREAD,
-					  filedirlist_entry_id::file_section,
-					  new_file_status);
-
 		 });
 
 	// Set up a callback that invokes enter().
@@ -1430,7 +1319,11 @@ file_dialogObj::~file_dialogObj()=default;
 
 void file_dialogObj::chdir(const std::string &path)
 {
-	impl->chdir(path);
+	dialog_window->in_thread([path, impl=impl]
+				 (ONLY IN_THREAD)
+				 {
+					 impl->chdir(IN_THREAD, path);
+				 });
 }
 
 LIBCXXW_NAMESPACE_END
