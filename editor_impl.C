@@ -890,9 +890,10 @@ input_field_filter_info::input_field_filter_info(input_filter_type type,
 						 size_t n_delete,
 						 const std::u32string_view
 						 &new_contents,
-						 size_t size)
+						 size_t size,
+						 size_t maximum_size)
 	: type{type}, starting_pos{starting_pos}, n_delete{n_delete},
-	  new_contents{new_contents}, size{size}
+	  new_contents{new_contents}, size{size}, maximum_size{maximum_size}
 {
 }
 
@@ -918,7 +919,8 @@ struct editorObj::implObj::input_field_filter_info_impl
 					    &new_contents,
 					    modifying_text &modifying)
 		: input_field_filter_info{type, starting_pos, n_delete,
-					  new_contents, me.size()},
+					  new_contents, me.size(),
+					  me.config.maximum_size},
 		  IN_THREAD{IN_THREAD},
 		  me{me},
 		  modifying{modifying}
@@ -1031,7 +1033,7 @@ editorObj::implObj::moving_cursor::~moving_cursor()
 
 		try {
 			me.on_filter(IN_THREAD)(IN_THREAD, impl);
-		} CATCH_EXCEPTIONS(this);
+		} REPORT_EXCEPTIONS((&me));
 	}
 
 	if (in_selection)
@@ -1059,7 +1061,7 @@ void editorObj::implObj::update_content(ONLY IN_THREAD,
 
 		try {
 			on_filter(IN_THREAD)(IN_THREAD, impl);
-		} CATCH_EXCEPTIONS(this);
+		} REPORT_EXCEPTIONS(this);
 		return;
 	}
 	update_filtered_content(IN_THREAD, starting_pos, n, str);

@@ -611,6 +611,9 @@ void input_fieldObj::on_default_filter(const functionref<bool(char32_t)> &cb,
 			 if (!got)
 				 return;
 
+			 if (s.size != s.maximum_size)
+				 throw EXCEPTION("Internal error: on_default_filter() requires its input field "
+						 "set to its maximum size.");
 			 auto starting_pos=s.starting_pos;
 			 auto n_delete=s.n_delete;
 

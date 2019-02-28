@@ -443,6 +443,9 @@ struct input_field_filter_info {
 	//! Current number of characters in the input field.
 	size_t size;
 
+	//! Maximum size of the input field. Originally from input_field_config.
+	size_t maximum_size;
+
 	//! Return the original position of the cursor in the input field
 
 	//! For type=move_only, starting_pos is the position where the cursor
@@ -458,7 +461,8 @@ struct input_field_filter_info {
 				size_t starting_pos,
 				size_t n_delete,
 				const std::u32string_view &new_contents,
-				size_t size);
+				size_t size,
+				size_t maximum_size);
 
 	//! Apply this change.
 	void update() const LIBCXX_PUBLIC;
