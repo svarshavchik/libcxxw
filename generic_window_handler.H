@@ -780,13 +780,30 @@ public:
  public:
 	//! Implement configure_notify_received().
 
+	//! The default implementation calls do_configure_notify_received().
+	//! override_redirectObj overrides it and does nothing, and
+	//! calls do_configure_notify_received() from set_popup_position().
+
 	void configure_notify_received(ONLY IN_THREAD, const rectangle &r)
 		override;
 
 	//! Implement process_configure_notify().
 
+	//! The default implementation calls do_process_configure_notify().
+	//! override_redirectObj overrides it and does nothing, and
+	//! calls do_process_configure_notify() from set_popup_position().
 	void process_configure_notify(ONLY IN_THREAD) override;
 
+protected:
+
+	//! Actual configure_notify_received() processing.
+
+	void do_configure_notify_received(ONLY IN_THREAD, const rectangle &r);
+
+	//! Actual process_configure_notify() processing.
+	void do_process_configure_notify(ONLY IN_THREAD);
+
+public:
 	//! Implement process_map_notify_event().
 	void process_map_notify_event(ONLY IN_THREAD) override;
 

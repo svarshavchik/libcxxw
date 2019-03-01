@@ -1299,6 +1299,13 @@ void generic_windowObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
 							      const rectangle
 							      &r)
 {
+	do_configure_notify_received(IN_THREAD, r);
+}
+
+void generic_windowObj::handlerObj
+::do_configure_notify_received(ONLY IN_THREAD,
+			       const rectangle &r)
+{
 	// We can get a bunch of these in a row. Save them, and process them
 	// when the dust settles, in process_configure_notify().
 
@@ -1344,6 +1351,11 @@ void generic_windowObj::handlerObj::lower(ONLY IN_THREAD)
 }
 
 void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD)
+{
+	do_process_configure_notify(IN_THREAD);
+}
+
+void generic_windowObj::handlerObj::do_process_configure_notify(ONLY IN_THREAD)
 {
 	returned_pointer<xcb_generic_error_t *> error;
 

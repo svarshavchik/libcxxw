@@ -222,11 +222,10 @@ void popupObj::handlerObj::set_popup_position(ONLY IN_THREAD)
 	// Do not wait for the ConfigureNotify event, take the bull by the
 	// horns. When it arrives it'll be ignored.
 
-	generic_windowObj::handlerObj
-		::configure_notify_received(IN_THREAD,
-					    most_recent_configuration);
-	generic_windowObj::handlerObj
-		::process_configure_notify(IN_THREAD);
+	do_configure_notify_received(IN_THREAD,
+				     most_recent_configuration);
+
+	do_process_configure_notify(IN_THREAD);
 
 }
 void popupObj::handlerObj::process_configure_notify(ONLY IN_THREAD)
