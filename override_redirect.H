@@ -47,6 +47,88 @@ public:
 	{
 		return *this;
 	}
+
+	//! Override frame_extends_updated()
+
+	//! We might need to set_override_redirected_window_position().
+
+	void frame_extents_updated(ONLY IN_THREAD) override
+	{
+		element_impl::frame_extents_updated(IN_THREAD);
+		this->set_override_redirected_window_position(IN_THREAD);
+	}
+
+	//! Override horizvert_updated()
+
+	//! We might need to set_override_redirected_window_position().
+
+	void horizvert_updated(ONLY IN_THREAD) override
+	{
+		element_impl::horizvert_updated(IN_THREAD);
+		this->set_override_redirected_window_position(IN_THREAD);
+	}
+
+	//! Override
+
+	//! We might need to set_override_redirected_window_position().
+	void theme_updated(ONLY IN_THREAD,
+			   const defaulttheme &new_theme) override
+	{
+		element_impl::theme_updated(IN_THREAD, new_theme);
+
+		this->set_override_redirected_window_position(IN_THREAD);
+	}
+
+	//! Override request_visibility()
+
+	//! We actually set_override_redirected_window_position()
+	//! only when we're visible.
+	//!
+	//! This optimizes recalculations that might occur several times
+	//! when the popup is being created.
+	//!
+	//! This means that when requested visibility changes, we need
+	//! to set_override_redirected_window_position(), for real.
+
+	void request_visibility(ONLY IN_THREAD, bool flag) override
+	{
+		element_impl::request_visibility(IN_THREAD, flag);
+		this->set_override_redirected_window_position(IN_THREAD);
+	}
+
+	//! Override process_configure_notify()
+
+	//! We set_override_redirected-window_position() and manage
+	//! our own size, so we will ignore ConfigureNotify messages
+	//! from the server.
+
+	void process_configure_notify(ONLY IN_THREAD) override
+	{
+		// Ignoring the ConfigureNotify event, see?
+	}
+
+	//! Override configure_notify_received()
+
+	//! We set_override_redirected-window_position() and manage
+	//! our own size, so we will ignore ConfigureNotify messages
+	//! from the server.
+
+	void configure_notify_received(ONLY IN_THREAD, const rectangle &)
+		override
+	{
+		// Ignoring the ConfigureNotify event, see?
+	}
+
+	//! Override update_resizing_timeout().
+
+	//! set_override_redirected-window_position() may end up
+	//! adjusting our position outside of the requested metrics.
+
+	void update_resizing_timeout(ONLY IN_THREAD) override
+	{
+		this->resizing(IN_THREAD)=
+			!this->data(IN_THREAD).requested_visibility;
+	}
 };
 
 LIBCXXW_NAMESPACE_END

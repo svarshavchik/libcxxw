@@ -5,7 +5,6 @@
 #ifndef connection_thread_h
 #define connection_thread_h
 
-#include "connection_infofwd.H"
 #include "window_handlerfwd.H"
 #include "xid_t_fwd.H"
 #include "x/w/connection_threadfwd.H"

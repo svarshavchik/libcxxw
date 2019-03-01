@@ -110,7 +110,7 @@ testtooltip_info_t testtooltip_info;
 			  << std::endl;					\
 	} while (0)
 
-#include "popup/popup_handler.C"
+#include "override_redirect.C"
 
 void testtooltip(int width)
 {

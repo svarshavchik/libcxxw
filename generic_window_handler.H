@@ -7,6 +7,7 @@
 
 #include "window_handler.H"
 #include "generic_window.H"
+#include "override_redirectfwd.H"
 #include "window_handler_constructor_params.H"
 #include "shared_handler_datafwd.H"
 #include "drawable.H"
@@ -778,6 +779,8 @@ public:
 	virtual void set_inherited_visibility_unmapped(ONLY IN_THREAD);
 
  public:
+	friend class override_redirectObj;
+
 	//! Implement configure_notify_received().
 
 	//! The default implementation calls do_configure_notify_received().

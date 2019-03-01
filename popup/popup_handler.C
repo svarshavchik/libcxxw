@@ -96,153 +96,11 @@ main_windowptr popupObj::handlerObj::get_main_window()
 	return p;
 }
 
-void popupObj::handlerObj::frame_extents_updated(ONLY IN_THREAD)
-{
-	set_popup_position(IN_THREAD);
-}
-
-void popupObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
-{
-	set_popup_position(IN_THREAD);
-}
-
-void popupObj::handlerObj::theme_updated(ONLY IN_THREAD,
-					 const defaulttheme &new_theme)
-{
-	generic_windowObj::handlerObj::theme_updated(IN_THREAD, new_theme);
-
-	set_popup_position(IN_THREAD);
-}
-
 void popupObj::handlerObj::set_default_wm_hints(ONLY IN_THREAD,
 						xcb_icccm_wm_hints_t &hints)
 {
 	hints.flags=XCB_ICCCM_WM_HINT_INPUT;
 	hints.input=1;
-}
-
-void popupObj::handlerObj::request_visibility(ONLY IN_THREAD, bool flag)
-{
-	superclass_t::request_visibility(IN_THREAD, flag);
-	set_popup_position(IN_THREAD);
-}
-
-void popupObj::handlerObj::set_popup_position(ONLY IN_THREAD)
-{
-	// Wait until we're becoming visible, before moving us.
-	//
-	// request_visibility() will call us, when we are, and that's when
-	// the show starts.
-
-	if (!data(IN_THREAD).requested_visibility)
-		return;
-
-	auto hv=get_horizvert(IN_THREAD);
-
-	rectangle r=*mpobj<rectangle>::lock{current_position};
-
-	// Opening bid: our preferred size.
-
-	r.width=hv->horiz.preferred();
-	r.height=hv->vert.preferred();
-
-	auto screen_width=screenref->impl->width_in_pixels();
-	auto screen_height=screenref->impl->height_in_pixels();
-
-	recalculate_attached_popup_position(IN_THREAD,
-				   r,
-				   screen_width,
-				   screen_height);
-
-	// Whatever recalculate_attached_popup_position() wanted, adjust the popup
-	// so that it fits on the screen.
-
-	if (r.width > screen_width)
-		r.width=screen_width;
-
-	if (r.height > screen_height)
-		r.height=screen_height;
-
-	coord_t max_x=coord_t::truncate(screen_width-r.width);
-	coord_t max_y=coord_t::truncate(screen_height-r.height);
-
-	if (r.x < 0)
-		r.x=0;
-	if (r.y < 0)
-		r.y=0;
-
-	if (r.x > max_x)
-		r.x=max_x;
-	if (r.y > max_y)
-		r.y=max_y;
-
-	{
-		mpobj<rectangle>::lock lock{current_position};
-
-		if (r == *lock)
-			return; // No change
-	}
-
-	auto w=r.width;
-	auto h=r.height;
-
-	// ConfigureWindow() does not like width and height of 0.
-	if (w == 0 || h == 0)
-		w=h=1;
-
-	values_and_mask configure_window_vals
-		(XCB_CONFIG_WINDOW_WIDTH,
-		 (dim_t::value_type)w,
-
-		 XCB_CONFIG_WINDOW_HEIGHT,
-		 (dim_t::value_type)h,
-
-		 XCB_CONFIG_WINDOW_X,
-		 (coord_t::value_type)r.x,
-
-		 XCB_CONFIG_WINDOW_Y,
-		 (coord_t::value_type)r.y);
-
-	xcb_configure_window(IN_THREAD->info->conn, id(),
-			     configure_window_vals.mask(),
-			     configure_window_vals.values().data());
-
-#ifdef POPUP_SIZE_SET
-	POPUP_SIZE_SET();
-#endif
-
-	most_recent_configuration=r;
-
-	{
-		mpobj<rectangle>::lock lock(current_position);
-
-		if (*lock == most_recent_configuration)
-			return;
-	}
-	// Do not wait for the ConfigureNotify event, take the bull by the
-	// horns. When it arrives it'll be ignored.
-
-	do_configure_notify_received(IN_THREAD,
-				     most_recent_configuration);
-
-	do_process_configure_notify(IN_THREAD);
-
-}
-void popupObj::handlerObj::process_configure_notify(ONLY IN_THREAD)
-{
-	// Ignoring the ConfigureNotify event, see?
-}
-
-void popupObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
-						     const rectangle &)
-{
-	// Ignoring the ConfigureNotify event, see?
-}
-
-void popupObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
-{
-	resizing(IN_THREAD)=
-		!data(IN_THREAD).requested_visibility;
 }
 
 void popupObj::handlerObj
@@ -447,7 +305,20 @@ void popupObj::handlerObj
 		return;
 
 	existing=new_position;
-	set_popup_position(IN_THREAD);
+
+	// Need to recalculate out position, because it is based on the
+	// attached_to element position.
+	set_override_redirected_window_position(IN_THREAD);
+}
+
+void popupObj::handlerObj::recalculate_window_position(ONLY IN_THREAD,
+						       rectangle &r,
+						       dim_t screen_width,
+						       dim_t screen_height)
+{
+	recalculate_attached_popup_position(IN_THREAD, r,
+					    screen_width,
+					    screen_height);
 }
 
 popup_position_affinity popupObj::handlerObj

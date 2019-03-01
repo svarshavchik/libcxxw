@@ -10,7 +10,6 @@
 #include "override_redirect.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/grabbed_pointerfwd.H"
-#include "x/w/rectangle.H"
 
 #include <x/weakptr.H>
 
@@ -117,72 +116,35 @@ public:
 
 	main_windowptr get_main_window() override;
 
-	//! Override frame_extends_updated()
-
-	//! This means we need to set_popup_position().
-
-	void frame_extents_updated(ONLY IN_THREAD) override;
-
-	//! Override horizvert_updated()
-
-	//! This means we need to set_popup_position().
-
-	void horizvert_updated(ONLY IN_THREAD) override;
-
-	//! Implement theme_updated()
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
-		override;
 
 	//! Override set_default_wm_hints
 
 	void set_default_wm_hints(ONLY IN_THREAD,
 				  xcb_icccm_wm_hints_t &hints) override;
 
-	//! Recalculate what my position should be.
+	//! Implement recalculate_popup_position().
 
-	//! r is set to the default popup position, which the subclass can
-	//! inspect and make the necessary adjustments.
-	//!
-	//! The end result gets adjusted to make sure it fits on the screen,
-	//! then sets the popup position.
+	//! Implements the callback from override_redirectObj by invoking
+	//! recalculate_attached_popup_position().
+
+	void recalculate_window_position(ONLY IN_THREAD,
+					 rectangle &r,
+					 dim_t screen_width,
+					 dim_t screen_height) override;
+
+	//! Implement recalculate_window_position()
+
+	//! Implement based on the location of the attached-to element, and
+	//! also indicate how the window was positioned with respect to the
+	//! element.
 
 	virtual popup_position_affinity
 		recalculate_attached_popup_position(ONLY IN_THREAD,
-					   rectangle &r,
-					   dim_t screen_width,
-					   dim_t screen_height);
-
- protected:
-
-	//! Call recalculate_attached_popup_position(), then xcb_configure_window().
-
-	//! Assemble all the information that recalculate_attached_popup_position()
-	//! needs to base its logic on, call it, then use the adjusted
-	//! rectangle to xcb_configure_window().
-
-	void set_popup_position(ONLY IN_THREAD);
+						    rectangle &r,
+						    dim_t screen_width,
+						    dim_t screen_height);
 
  public:
-
-	//! Override process_configure_notify()
-
-	//! We manage our own size, and ignore ConfigureNotify messages
-	//! from the server.
-	void process_configure_notify(ONLY IN_THREAD) override;
-
-	//! Override configure_notify_received()
-
-	//! We manage our own size, and ignore ConfigureNotify messages
-	//! from the server.
-	void configure_notify_received(ONLY IN_THREAD,
-				      const rectangle &) override;
-
-	//! Override update_resizing_timeout().
-
-	//! recalculate_attached_popup_position() may end up adjusting our position
-	//! outside of the requested metrics.
-
-	void update_resizing_timeout(ONLY IN_THREAD) override;
 
 	//! Override button_press_event
 
@@ -198,14 +160,6 @@ public:
 	//! Perform any needed grab/pointer processing due to visibility change.
 	void set_inherited_visibility_unmapped(ONLY IN_THREAD) override;
 
-	//! Override request_visibility()
-
-	//! We resize/reposition ourselves only when we're visible.
-	//! This optimizes recalculations that might occur several times
-	//! when the popup is being created.
-	//!
-	//! Calls update_my_configuration().
-	void request_visibility(ONLY IN_THREAD, bool flag) override;
 
 	//! Override absolute_location_updated
 
@@ -214,9 +168,6 @@ public:
 		override;
 
  private:
-
-	//! Our intended size.
-	rectangle most_recent_configuration;
 
 	//! The pointer is grabbed while the popup is open.
 	ptr<obj> current_grab;
