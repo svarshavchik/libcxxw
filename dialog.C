@@ -128,7 +128,7 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 	std::optional<new_gridlayoutmanager> default_lm;
 
 	auto [ignored, lm]=create_main_window_impl
-		(handler, std::nullopt,
+		(handler, std::nullopt, std::nullopt, std::nullopt,
 		 args.dialog_layout ? args.dialog_layout->get()
 		 : static_cast<const new_layoutmanager &>
 		 (default_lm.emplace()),

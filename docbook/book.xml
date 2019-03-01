@@ -51,6 +51,7 @@
 <!ENTITY borderlayoutmanager SYSTEM "borderlayoutmanager.xml">
 <!ENTITY list SYSTEM "list.xml">
 <!ENTITY toolbox SYSTEM "toolboxlayoutmanager.xml">
+<!ENTITY splash SYSTEM "splash.xml">
 <!ENTITY hierlist SYSTEM "hierlist.xml">
 <!ENTITY table SYSTEM "table.xml">
 <!ENTITY combobox SYSTEM "combobox.xml">
@@ -135,6 +136,7 @@ See COPYING for distribution information.
     &scrollbar;
     &fontcolorpickers;
     &toolbox;
+    &splash;
   </part>
 
   <part id="custom">

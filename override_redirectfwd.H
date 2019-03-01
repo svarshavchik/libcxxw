@@ -16,6 +16,13 @@ class LIBCXX_HIDDEN override_redirectObj;
 template<typename element_impl>
 class LIBCXX_HIDDEN override_redirect_elementObj;
 
+//! An override-redirected display element.
+
+//! A mixin that the
+//! \ref override_redirect_elementObj "override_redirect_elementObj"
+//! combines with a window handler. The window handler must be constructed
+//! with the override-redirect flag set.
+
 typedef ref<override_redirectObj> override_redirect;
 
 //! A constant \ref override_redirect "override-redirected element".

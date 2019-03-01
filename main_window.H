@@ -114,11 +114,18 @@ template<typename functor>
 inline create_main_window_impl_ret_t
 create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			const std::optional<border_arg> &border,
+			const std::optional<color_arg>
+			&peephole_background_color,
+			const std::optional<color_arg>
+			&scrollbars_background_color,
 			const new_layoutmanager &layout_factory,
 			functor &&f)
 {
 	return do_create_main_window_impl
-		(handler, border, layout_factory,
+		(handler, border,
+		 peephole_background_color,
+		 scrollbars_background_color,
+		 layout_factory,
 		 make_function<make_window_impl_factory_t>
 		 (std::forward<functor>(f)));
 }
@@ -128,6 +135,10 @@ create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 create_main_window_impl_ret_t
 do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			   const std::optional<border_arg> &border,
+			   const std::optional<color_arg>
+			   &peephole_background_color,
+			   const std::optional<color_arg>
+			   &scrollbars_background_color,
 			   const new_layoutmanager &layout_factory,
 			   const function<make_window_impl_factory_t> &factory)
 	LIBCXX_HIDDEN;

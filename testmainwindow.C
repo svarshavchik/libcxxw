@@ -9,6 +9,8 @@
 #include <iostream>
 #include <unordered_set>
 #include "x/w/rectangle.H"
+#include "x/w/text_param_literals.H"
+#include "x/w/label.H"
 
 struct sausage_factory {
 
@@ -841,6 +843,40 @@ void testflashwiththeme(const testmainwindowoptions &options)
 	verify_clears(options);
 }
 
+static void initialize_splash_window(const LIBCXX_NAMESPACE::w::main_window &w)
+{
+	LIBCXX_NAMESPACE::w::gridlayoutmanager glm=w->get_layoutmanager();
+
+	auto f=glm->append_row();
+
+	auto l=f->create_label({
+				"serif; point_size=48"_theme_font,
+				"Loading..."
+		});
+}
+
+void testsplash(bool rounded)
+{
+	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
+
+	auto main_window=rounded
+		? LIBCXX_NAMESPACE::w::main_window::create
+		(LIBCXX_NAMESPACE::w::transparent_splash_window_config{},
+		 initialize_splash_window)
+		: LIBCXX_NAMESPACE::w::main_window::create
+		(LIBCXX_NAMESPACE::w::splash_window_config{},
+		 initialize_splash_window);
+
+	main_window->on_disconnect([]
+				   {
+					   _exit(1);
+				   });
+	guard(main_window->connection_mcguffin());
+
+	main_window->show_all();
+	sleep(5);
+}
+
 int main(int argc, char **argv)
 {
 	testmainwindowoptions options;
@@ -864,6 +900,10 @@ int main(int argc, char **argv)
 		else if (options.themescale->value)
 		{
 			testthemescale(options);
+		}
+		else if (options.splashtest->value)
+		{
+			testsplash(options.splashtransparent->value);
 		}
 		else
 		{

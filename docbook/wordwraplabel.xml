@@ -128,7 +128,11 @@ See COPYING for distribution information.
 	parameter sets the color for the following text. A second
 	<classname>&ns;::w::rgb</classname> parameter in a row sets the
 	text's background color.
+	The <filename>rgb.H</filename> header file defines
+	<link linkend="html32colors">standard HTML 3.2 colors</link> as
+	<classname>&ns;::w::rgb</classname>s, for convenience.
       </para>
+
     </listitem>
 
     <listitem>
@@ -248,7 +252,7 @@ auto main_window=
       </listitem>
       <listitem>
 	<para>
-	  The <classname>&ns;::w::screen_positions</classname> object
+	  The <classname>&ns;::w::main_window_config</classname> parameter
 	  gets passed to the overloaded main window
 	  <function>create</function>()or.
 	</para>

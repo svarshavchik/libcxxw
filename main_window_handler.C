@@ -27,13 +27,14 @@ LIBCXXW_NAMESPACE_START
 main_windowObj::handlerObj::handlerObj(const constructor_params &params,
 				       const std::optional<rectangle>
 				       &suggested_position,
-				       const std::string &window_id)
+				       const std::string &window_id,
+				       bool override_redirect)
 	: superclass_t{{},
 		       generic_window_handler_constructor_params
 		       {params,
 			shared_handler_data::create(),
 			0,
-			false}},
+			override_redirect}},
 	  on_delete_callback_thread_only([](THREAD_CALLBACK,
 					    const auto &ignore) {}),
 	  net_wm_sync_request_counter{params.parent_screen->impl->thread},

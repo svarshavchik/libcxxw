@@ -1,0 +1,10 @@
+<optclass name="options">
+  <option>
+    <name>square</name>
+    <type>bool</type>
+    <opt>s</opt>
+    <longopt>square</longopt>
+    <descr>Use a square border for the splash window</descr>
+  </option>
+  <defaultoptions />
+</optclass>

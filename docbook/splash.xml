@@ -1,0 +1,239 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="splash">
+  <title>Splash windows</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="splash.png" format="PNG"
+		 contentwidth="299px" contentdepth="116px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Splash windows.
+      </phrase>
+    </textobject>
+  </mediaobject>
+
+  <para>
+    A splash window has no title, no decorations, and no window manager
+    borders around it. It's not draggable and it does not
+    have a close button.
+    A splash window usually appears quickly when launching a large
+    application. Large applications that loads many shared libraries and
+    create complicated windows usually take a while to get
+    ready and make their main window visible. A splash window provides
+    immediate feedback when launching the application.
+  </para>
+
+  <para>
+    The usual approach is to have the application launched indirectly. The
+    initial loader is a small program that quickly shows the splash window,
+    and does nothing else;
+    then starts another process which runs and initializes the main
+    application. The launcher process terminates, and the splash window
+    disappears, when
+    the main application window opens for business.
+  </para>
+
+  <para>
+    <filename>splash.C</filename> shows a basic splash window containing
+    nothing but a simple <quote>Loading...</quote>  message, with a gradient
+    background. <filename>splash.C</filename> pauses for two seconds, to
+    simulate a large application getting loaded, then starts another example
+    program:
+    <filename>table2.C</filename> from <xref linkend="adjustabletables" />.
+  </para>
+
+  <para>
+    <filename>splash.C</filename> creates a pipe and attaches it to
+    <filename>table2.C</filename>'s file descriptor 3.
+    <filename>table2.C</filename> closes its file descriptor 3 after it
+    finishes creating and showing its main window.
+    <filename>splash.C</filename> waits for the pipe to close, then
+    terminates itself, closing its splash window.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/splash.C">splash.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/splash.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="creatingsplashwindows">
+    <title>Creating splash windows</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+auto main_window=&ns;::w::main_window::create(
+    &ns;::w::splash_window_config{},
+    [&amp;]
+    (const &ns;::w::main_window &amp;mw)
+    {
+          // ...
+    });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>'s
+      <methodname>create</methodname>() has an optional parameter
+      that precedes the &creator;.
+      Passing an
+      <ulink url="&link-x--w--main-window-config;"><classname>&ns;::w::main_window_config</classname></ulink>
+      parameter (the default parameter if not specified)
+      creates a normal application window.
+      Passing an
+      <ulink url="&link-x--w--transparent-splash-window-config;"><classname>&ns;::w::transparent_splash_window_config</classname></ulink>
+      creates a splash window instead of a normal application window.
+    </para>
+
+    <para>
+      The created <classname>&ns;::w::main_window</classname> behaves
+      normally, except for the following differences:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <para>
+	    No title, dragging, or normal window manager decorations
+	  </para>
+	</term>
+	<listitem>
+	  <para>
+	    Splash windows use &xproto;'s override-redirect flag to shed
+	    the title bar and the close button from the display's window
+	    manager.
+	    The <link linkend="callbacks">on_delete() callback</link> that
+	    normally responds to the close button will never get called, so
+	    there's no purpose to installing it.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <para>
+	    Position and appearance
+	  </para>
+	</term>
+	<listitem>
+	  <para>
+	    Splash windows appear above other windows (with most window
+	    managers), and always appear centered on the display.
+	  </para>
+
+	  <para>
+	    <classname>&ns;::w::splash_window_config</classname> creates
+	    a plain, rectangular splash window with a custom border.
+	    <classname>&ns;::w::transparent_splash_window_config</classname>
+	    creates a splash window with a transparent background.
+	    This provides the means for drawing a rounded border around the
+	    contents of the splash window.
+	  </para>
+
+	  <para>
+	    <classname>&ns;::w::transparent_splash_window_config</classname>
+	    inherits from
+	    <classname>&ns;::w::splash_window_config</classname>, and uses it
+	    to create a plain rectangular splash window if the display
+	    server does not provide an alpha channel for transparent windows.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <para>
+	    Default splash window background and border
+	  </para>
+	</term>
+	<listitem>
+	  <para>
+	    Both
+	    <classname>&ns;::w::splash_window_config</classname>
+	    and
+	    <classname>&ns;::w::transparent_splash_window_config</classname>
+	    contain
+	    several fields that control the splash window's appearance.
+	    The <varname>background_color</varname> field sets the splash
+	    window's background color.
+	    Both
+	    <classname>&ns;::w::splash_window_config</classname>
+	    and
+	    <classname>&ns;::w::transparent_splash_window_config</classname>
+	    contain a <varname>border</varname> that sets the splash window's
+	    border; with
+	    <classname>&ns;::w::transparent_splash_window_config</classname>
+	    default theme border being typically a rounded border, and
+	    <classname>&ns;::w::splash_window_config</classname>
+	    having a plain border; and in this manner displays that do not
+	    have a non-alpha channel will also have
+	    <classname>&ns;::w::splash_window_config</classname>'s border
+	    also, due to
+	    <classname>&ns;::w::transparent_splash_window_config</classname>
+	    inheriting from it.
+	  </para>
+
+	  <para>
+	    <classname>&ns;::w::transparent_splash_window_config</classname>
+	    also uses <classname>&ns;::w::splash_window_config</classname>'s
+	    <varname>background_color</varname>
+	    to draw the default background inside its border.
+	    A transparent splash window's background gets set to the transparent
+	    color, by definition, for the benefit of its rounded border.
+	    For this reason, a splash window should not have its background
+	    color modified with <methodname>set_background_color</methodname>,
+	    after its creation.
+	    Always set the splash window's background color in the
+	    <classname>&ns;::w::splash_window_config</classname> when
+	    creating the splash window.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section id="html32colors">
+    <title>Using the standard HTML 3.2 color palette</title>
+
+    <para>
+      <link linkend="splash"><filename>splash.C</filename></link> creates
+      a splash window with custom, non-theme colors, and gives an example
+      of using standard HTML 3.2 color values, as
+      <ulink url="&link-x--w--rgb;"><classname>&ns;::w::rgb</classname></ulink>
+      values, defined in <filename>rgb.H</filename>, for convenience:
+    </para>
+
+    <para>
+      <ulink url="&link-variable-x--w-black;"><varname>&ns;::w::black</varname></ulink>,
+      <ulink url="&link-variable-x--w-gray;"><varname>&ns;::w::gray</varname></ulink>,
+      <ulink url="&link-variable-x--w-silver;"><varname>&ns;::w::silver</varname></ulink>,
+      <ulink url="&link-variable-x--w-white;"><varname>&ns;::w::white</varname></ulink>,
+      <ulink url="&link-variable-x--w-maroon;"><varname>&ns;::w::maroon</varname></ulink>,
+      <ulink url="&link-variable-x--w-red;"><varname>&ns;::w::red</varname></ulink>,
+      <ulink url="&link-variable-x--w-olive;"><varname>&ns;::w::olive</varname></ulink>,
+      <ulink url="&link-variable-x--w-yellow;"><varname>&ns;::w::yellow</varname></ulink>,
+      <ulink url="&link-variable-x--w-green;"><varname>&ns;::w::green</varname></ulink>,
+      <ulink url="&link-variable-x--w-lime;"><varname>&ns;::w::lime</varname></ulink>,
+      <ulink url="&link-variable-x--w-teal;"><varname>&ns;::w::teal</varname></ulink>,
+      <ulink url="&link-variable-x--w-aqua;"><varname>&ns;::w::aqua</varname></ulink>,
+      <ulink url="&link-variable-x--w-navy;"><varname>&ns;::w::navy</varname></ulink>,
+      <ulink url="&link-variable-x--w-blue;"><varname>&ns;::w::blue</varname></ulink>,
+      <ulink url="&link-variable-x--w-fuchsia;"><varname>&ns;::w::fuchsia</varname></ulink>, and
+      <ulink url="&link-variable-x--w-purple;"><varname>&ns;::w::purple</varname></ulink>.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

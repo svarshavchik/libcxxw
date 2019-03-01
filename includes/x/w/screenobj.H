@@ -167,7 +167,7 @@ public:
 
 	template<typename functor,
 		 typename =is_main_window_creator<functor>>
-	main_window create_mainwindow(const main_window_config &config,
+	main_window create_mainwindow(const main_window_config_t &config,
 				      functor &&f)
 	{
 		return do_create_mainwindow
@@ -178,7 +178,7 @@ public:
 	//! Create a new top level window using a custom layout manager.
 	template<typename functor,
 		 typename =is_main_window_creator<functor>>
-	main_window create_mainwindow(const main_window_config &config,
+	main_window create_mainwindow(const main_window_config_t &config,
 				      functor &&f,
 				      const new_layoutmanager &layout_factory)
 	{
@@ -202,13 +202,13 @@ public:
 
 	//! create_mainwindow() implementation.
 
-	main_window do_create_mainwindow(const main_window_config &config,
+	main_window do_create_mainwindow(const main_window_config_t &config,
 					 const function<main_window_creator_t>
 					 &f);
 
 	//! create_mainwindow() implementation.
 
-	main_window do_create_mainwindow(const main_window_config &config,
+	main_window do_create_mainwindow(const main_window_config_t &config,
 					 const function<main_window_creator_t>
 					 &f,
 					 const new_layoutmanager &factory)
@@ -218,7 +218,7 @@ public:
 
 	//! create_mainwindow() implementation.
 	main_window do_create_mainwindow(const pos_info &pos,
-					 const main_window_config &config,
+					 const main_window_config_t &config,
 					 const function<main_window_creator_t>
 					 &f,
 					 const new_layoutmanager &factory)

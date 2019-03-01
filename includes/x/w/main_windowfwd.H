@@ -10,12 +10,18 @@
 
 #include <unordered_map>
 #include <string>
+#include <variant>
 
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC main_windowObj;
 class LIBCXX_PUBLIC main_windowBase;
 class LIBCXX_PUBLIC main_window_config;
+class LIBCXX_PUBLIC splash_window_config;
+class LIBCXX_PUBLIC transparent_splash_window_config;
+typedef std::variant<main_window_config,
+		     splash_window_config,
+		     transparent_splash_window_config> main_window_config_t;
 
 /*! Top level application window.
 

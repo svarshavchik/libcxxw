@@ -598,6 +598,11 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
   <color id="noshade:static_tooltip_background_color"
 	 scale="noshade:tooltip_background_color" />
 
+  <!-- Border for a splash window -->
+  <border id="splash_border" from="tooltip_border" />
+
+  <border id="splash_border_square" from="tooltip_border_square" />
+
   <!-- Selection lists -->
 
   <dim id="list_v_padding" axis="vert">.2</dim>

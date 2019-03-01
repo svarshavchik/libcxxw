@@ -19,6 +19,10 @@
 
 #include "close_flag.H"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 struct mondata {
 	std::string process;
 	int cpu;
@@ -158,6 +162,14 @@ auto create_process_table(const x::w::main_window &mw,
 
 void testlist()
 {
+	struct stat stat_buf;
+
+	// If there's a file descriptor #3 when this program starts, this
+	// means this program was started by another example, splash.C,
+	// see below.
+
+	bool has_launcher=fstat(3, &stat_buf) == 0;
+
 	x::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
@@ -210,6 +222,18 @@ void testlist()
 		 });
 
 	main_window->show_all();
+
+	// The following is used by another example, splash.C, which display
+	// a splash window then runs this example. splash.C attaches a pipe
+	// on file descriptor 3. Schedule an idle callback that the connection
+	// thread runs after it finishes showing the main window. THe
+	// idle callback closes file descriptor 3
+	if (has_launcher)
+		main_window->in_thread_idle([]
+					    (ONLY IN_THREAD)
+					    {
+						    close(3);
+					    });
 
 	close_flag->wait();
 

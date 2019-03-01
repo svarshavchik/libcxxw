@@ -37,7 +37,8 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 					  {
 					   return std::nullopt;
 					  }}, position),
-		       window_id},
+		       window_id,
+		       false},
 	  my_position_thread_only
 	{
 	 std::visit(visitor{[&](const dialog_position &pos)

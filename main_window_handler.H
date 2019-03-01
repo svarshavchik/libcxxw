@@ -65,7 +65,8 @@ public:
 	//! Constructor
 	handlerObj(const constructor_params &params,
 		   const std::optional<rectangle> &suggested_position,
-		   const std::string &window_id);
+		   const std::string &window_id,
+		   bool override_redirect);
 
 	//! Destructor
 	~handlerObj();

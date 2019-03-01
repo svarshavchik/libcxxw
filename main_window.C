@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "main_window.H"
 #include "main_window_handler.H"
+#include "override_redirect.H"
 #include "screen.H"
 #include "connection_thread.H"
 #include "batch_queue.H"
@@ -38,6 +39,7 @@
 #include "x/w/impl/always_visible.H"
 #include <x/weakcapture.H>
 #include <x/xml/doc.H>
+#include <x/visitor.H>
 #include <variant>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::main_windowObj);
@@ -106,6 +108,20 @@ void main_window_config::screen_position(const screen_positions &pos,
 
 main_window_config::~main_window_config()=default;
 
+border_arg splash_window_config::default_border()
+{
+	return "splash_border_square";
+}
+
+splash_window_config::~splash_window_config()=default;
+
+border_arg transparent_splash_window_config::default_border()
+{
+	return "splash_border";
+}
+
+transparent_splash_window_config::~transparent_splash_window_config()=default;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Create a default main window
@@ -151,30 +167,46 @@ struct LIBCXX_HIDDEN screenObj::pos_info {
 	}
 };
 
-main_window main_windowBase::do_create(const main_window_config &config,
+main_window main_windowBase::do_create(const main_window_config_t &config,
 				       const function<main_window_creator_t> &f)
 {
 	return do_create(config, f, new_gridlayoutmanager{});
 }
 
-main_window main_windowBase::do_create(const main_window_config &config,
+main_window main_windowBase::do_create(const main_window_config_t &config,
 				       const function<main_window_creator_t> &f,
 				       const new_layoutmanager &factory)
 {
-	if (!config.saved_position)
-	{
-		screenObj::pos_info loaded_pos;
+	return std::visit(visitor{
+			[&](const main_window_config &std_config)
+			{
+				if (!std_config.saved_position)
+				{
+					screenObj::pos_info loaded_pos;
 
-		return loaded_pos.find_screen()
-			->do_create_mainwindow(loaded_pos, config, f, factory);
-	}
+					return loaded_pos.find_screen()
+						->do_create_mainwindow
+						(loaded_pos, config, f,
+						 factory);
+				}
 
-	auto &[name, pos] = *config.saved_position;
+				auto &[name, pos] = *std_config.saved_position;
 
-	screenObj::pos_info loaded_pos{pos, name};
+				screenObj::pos_info loaded_pos{pos, name};
 
-	return loaded_pos.find_screen()
-		->do_create_mainwindow(loaded_pos, config, f, factory);
+				return loaded_pos.find_screen()
+					->do_create_mainwindow(loaded_pos,
+							       config, f,
+							       factory);
+			},
+			[&](const splash_window_config &splash_config)
+			{
+				screenObj::pos_info loaded_pos;
+
+				return loaded_pos.find_screen()
+					->do_create_mainwindow
+					(loaded_pos, config, f, factory);
+			}}, config);
 }
 
 main_window screenObj
@@ -184,7 +216,7 @@ main_window screenObj
 }
 
 main_window screenObj
-::do_create_mainwindow(const main_window_config &config,
+::do_create_mainwindow(const main_window_config_t &config,
 		       const function<main_window_creator_t> &f)
 {
 	return do_create_mainwindow(config, f, new_gridlayoutmanager{});
@@ -282,6 +314,10 @@ init_containers(const container_impl &parent,
 create_main_window_impl_ret_t
 do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			   const std::optional<border_arg> &border,
+			   const std::optional<color_arg>
+			   &peephole_background_color,
+			   const std::optional<color_arg>
+			   &scrollbars_background_color,
 			   const new_layoutmanager &layout_factory,
 			   const function<make_window_impl_factory_t> &factory)
 {
@@ -306,8 +342,8 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 	auto lm=create_peephole_toplevel
 		(handler,
 		 border,
-		 std::nullopt,
-		 std::nullopt,
+		 peephole_background_color,
+		 scrollbars_background_color,
 		 main_window_peephole_style,
 		 [&]
 		 (const container_impl &parent)
@@ -328,22 +364,38 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 }
 
 main_window screenObj
-::do_create_mainwindow(const main_window_config &config,
+::do_create_mainwindow(const main_window_config_t &config,
 		       const function<main_window_creator_t> &f,
 		       const new_layoutmanager &factory)
 {
-	if (config.saved_position)
-	{
-		auto &[name, pos] = *config.saved_position;
+	return std::visit(visitor{
+			[&](const main_window_config &std_config)
+			{
+				if (std_config.saved_position)
+				{
+					auto &[name, pos] =
+						*std_config.saved_position;
 
-		pos_info loaded_pos{pos, name};
+					pos_info loaded_pos{pos, name};
 
-		return do_create_mainwindow(loaded_pos, config, f, factory);
-	}
+					return do_create_mainwindow(loaded_pos,
+								    config, f,
+								    factory);
+				}
 
-	pos_info pos;
+				pos_info pos;
 
-	return do_create_mainwindow(pos, config, f, factory);
+				return do_create_mainwindow(pos, config, f,
+							    factory);
+			},
+			[&](const splash_window_config &splash_config)
+			{
+				pos_info pos;
+
+				return do_create_mainwindow(pos, config, f,
+							    factory);
+			}},
+		config);
 }
 
 main_window screenObj
@@ -353,9 +405,99 @@ main_window screenObj
 	return do_create_mainwindow(main_window_config{}, f, layout_factory);
 }
 
+///////////////////////////////////////////////////////////////////////////
+
+namespace {
+#if 0
+}
+#endif
+
+class LIBCXX_HIDDEN splash_window_handlerObj;
+
+//! An override-redirected main window handler.
+
+class splash_window_handlerObj
+	: public override_redirect_elementObj<main_windowObj::handlerObj> {
+
+	//! Alias.
+
+	typedef override_redirect_elementObj<main_windowObj::handlerObj
+					     > superclass_t;
+
+public:
+
+	using superclass_t::superclass_t;
+
+	void recalculate_window_position(ONLY IN_THREAD,
+					 rectangle &r,
+					 dim_t screen_width,
+					 dim_t screen_height) override
+	{
+		if (r.width > screen_width)
+			r.width=screen_width;
+
+		if (r.height > screen_height)
+			r.height=screen_height;
+
+		r.x=coord_t::truncate((screen_width-r.width)/2);
+		r.y=coord_t::truncate((screen_height-r.height)/2);
+	}
+};
+
+#if 0
+{
+#endif
+}
+
+static ref<main_windowObj::handlerObj>
+create_splash_window_handler(const screen &me,
+			     const splash_window_config &config,
+			     const color_arg &background_color,
+			     std::optional<border_arg> &main_window_border)
+{
+	main_window_handler_constructor_params
+		main_params{me, "splash,normal", "above",
+			    background_color};
+
+	main_window_border=config.border;
+
+	return ref<splash_window_handlerObj>::create(main_params,
+						     std::nullopt,
+						     "",
+						     true);
+}
+
+static ref<main_windowObj::handlerObj>
+create_splash_window_handler(const screen &me,
+			     const transparent_splash_window_config &config,
+			     std::optional<border_arg> &main_window_border,
+			     std::optional<color_arg> &inner_background_color)
+
+{
+	if (me->impl->toplevelwindow_pictformat->alpha_depth == 0)
+	{
+		const splash_window_config &nonalpha_config=config;
+
+		return create_splash_window_handler
+			(me, nonalpha_config,
+			 nonalpha_config.background_color,
+			 main_window_border);
+	}
+
+	auto handler=create_splash_window_handler(me, config, "transparent",
+						  main_window_border);
+
+	main_window_border=config.border;
+	inner_background_color=config.background_color;
+
+	return handler;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
 main_window screenObj
 ::do_create_mainwindow(const pos_info &pos,
-		       const main_window_config &config,
+		       const main_window_config_t &config,
 		       const function<main_window_creator_t> &f,
 		       const new_layoutmanager &layout_factory)
 {
@@ -373,16 +515,48 @@ main_window screenObj
 
 	auto me=ref{this};
 
-	main_window_handler_constructor_params
-		main_params{me, "normal", "", config.background_color};
+	std::optional<border_arg> main_window_border;
+	std::optional<color_arg> inner_background_color;
 
-	auto handler=ref<main_windowObj::handlerObj>
-		::create(main_params,
-			 suggested_position,
-			 pos.name);
+	auto handler=std::visit(visitor{
+			[&](const main_window_config &std_config)
+			{
+				main_window_handler_constructor_params
+					main_params{me, "normal", "",
+						    std_config
+						    .background_color};
+
+				return ref<main_windowObj::handlerObj>
+					::create(main_params,
+						 suggested_position,
+						 pos.name, false);
+			},
+			[&](const splash_window_config &splash_config)
+			{
+				auto ret=create_splash_window_handler
+					(me, splash_config,
+					 splash_config.background_color,
+					 main_window_border);
+
+				return ret;
+			},
+			[&](const transparent_splash_window_config
+			    &splash_config)
+			{
+				auto ret=create_splash_window_handler
+					(me, splash_config,
+					 main_window_border,
+					 inner_background_color);
+
+				return ret;
+			}},
+		config);
 
 	auto [window_impl, lm]=create_main_window_impl
-		(handler, std::nullopt, layout_factory,
+		(handler, main_window_border,
+		 inner_background_color,
+		 inner_background_color,
+		 layout_factory,
 		 [](const auto &args)
 		 {
 			 return ref<main_windowObj::implObj>::create(args);

@@ -39,11 +39,62 @@ public:
 				 std::reference_wrapper<const screen_positions>>
 		      > saved_position;
 
-	//! Main window's background color;
+	//! Main window's background color.
 	color_arg background_color="mainwindow_background";
 
 	//! Destructor
 	~main_window_config();
+};
+
+//! Create a splash window instead of a regular \ref main_window "main_window".
+
+//! Alternative optional configuration of a main_window that creates a splash
+//! window, with no title, automatically centered, and without a window
+//! title or any normal decorations.
+
+class splash_window_config {
+
+public:
+
+	//! Splash window's background color.
+
+	color_arg background_color="mainwindow_background";
+
+	//! Splash window's border.
+	border_arg border=default_border();
+
+	//! Destructor
+	~splash_window_config();
+
+	//! Default border for splash window.
+	static border_arg default_border();
+};
+
+//! Creates a splash window with a rounded border.
+
+//! An alternative to a \ref splash_window_config "splash_window_config" that
+//! uses a slightly rounded border, for a more modern appearance.
+//!
+//! Only works on displays that support alpha channels, otherwise this
+//! produces a regular splash window with square borders.
+//!
+//! The resulting main_window should not have its background set manually
+//! via set_background_color(). Instead, the background_color that's
+//! inherited from splash_window_config sets the initial background color
+//! inside the borders, and it should be left at that.
+
+class transparent_splash_window_config : public splash_window_config {
+
+public:
+
+	//! Border for the splash window.
+	border_arg border=default_border();
+
+	//! Destructor
+	~transparent_splash_window_config();
+
+	//! Default border.
+	static border_arg default_border();
 };
 
 //! Base class for \ref main_window "main application window"s.
@@ -90,7 +141,7 @@ public:
 
 	template<typename functor,
 		 typename =is_main_window_creator<functor>>
-	static main_window create(const main_window_config &config,
+	static main_window create(const main_window_config_t &config,
 				  functor &&f)
 	{
 		return do_create(config,
@@ -100,7 +151,7 @@ public:
 
 	//! Create a new top level window using a custom layout manager.
 	template<typename functor>
-	static main_window create(const main_window_config &config,
+	static main_window create(const main_window_config_t &config,
 				  functor &&f,
 				  const new_layoutmanager &layout_factory)
 	{
@@ -123,13 +174,13 @@ public:
 
 	//! create() implementation.
 
-	static main_window do_create(const main_window_config &config,
+	static main_window do_create(const main_window_config_t &config,
 				     const function<main_window_creator_t> &f)
 		LIBCXX_PUBLIC;
 
 	//! create() implementation.
 
-	static main_window do_create(const main_window_config &config,
+	static main_window do_create(const main_window_config_t &config,
 				     const function<main_window_creator_t> &f,
 				     const new_layoutmanager &factory)
 		LIBCXX_PUBLIC;

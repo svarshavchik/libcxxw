@@ -21,6 +21,17 @@ top level display element that has override redirect set.
 The template mixin implements additional handling of override-redirected
 window popups.
 
+The template parameter must be a generic_windowObj::handlerObj or a subclass
+of it.
+
+The subclass must implement recalculate_window_position() to compute the
+location of the window on the screen. recalculate_window_position() reiceves
+a rectangle whose width and height is set to the preferred size of the
+override-redirected window and the size of the screen.
+
+recalculate_window_position() must set the rectangle's x and y coordinates,
+and may also adjust the size, too.
+
 */
 
 template<typename element_impl>
