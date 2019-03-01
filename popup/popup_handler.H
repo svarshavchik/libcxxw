@@ -7,7 +7,7 @@
 
 #include "popup/popup.H"
 #include "popup/popup_attachedto_infofwd.H"
-#include "generic_window_handler.H"
+#include "override_redirect.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/grabbed_pointerfwd.H"
 #include "x/w/rectangle.H"
@@ -81,10 +81,11 @@ enum class popup_position_affinity {
 //! \see popup
 
 class LIBCXX_HIDDEN popupObj::handlerObj :
-	public generic_windowObj::handlerObj {
+	public override_redirect_elementObj<generic_windowObj::handlerObj> {
 
 	//! Alias
-	typedef generic_windowObj::handlerObj superclass_t;
+	typedef override_redirect_elementObj<generic_windowObj::handlerObj>
+		superclass_t;
 
 public:
 	//! Popup attachedment information

@@ -533,6 +533,10 @@ libcxxw_la_SOURCES=\
 	metrics_grid_posobj.H			    \
 	metrics_horizvert.C			    \
 	new_layoutmanager.C			    \
+	override_redirect.C			    \
+	override_redirect.H			    \
+	override_redirectfwd.H			    \
+	override_redirectobj.H			    \
 	panelayoutmanager/create_pane_info.H	    \
 	panelayoutmanager/create_pane_properties.C  \
 	panelayoutmanager/create_pane_properties.H  \
