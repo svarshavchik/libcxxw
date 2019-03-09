@@ -118,7 +118,7 @@ create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			&peephole_background_color,
 			const std::optional<color_arg>
 			&scrollbars_background_color,
-			const color_arg &menubar_background_color,
+			const main_window_config &config,
 			const new_layoutmanager &layout_factory,
 			functor &&f)
 {
@@ -126,7 +126,7 @@ create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 		(handler, border,
 		 peephole_background_color,
 		 scrollbars_background_color,
-		 menubar_background_color,
+		 config,
 		 layout_factory,
 		 make_function<make_window_impl_factory_t>
 		 (std::forward<functor>(f)));
@@ -141,7 +141,7 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			   &peephole_background_color,
 			   const std::optional<color_arg>
 			   &scrollbars_background_color,
-			   const color_arg &menubar_background_color,
+			   const main_window_config &config,
 			   const new_layoutmanager &layout_factory,
 			   const function<make_window_impl_factory_t> &factory)
 	LIBCXX_HIDDEN;

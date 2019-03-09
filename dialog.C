@@ -129,7 +129,7 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 
 	auto [ignored, lm]=create_main_window_impl
 		(handler, std::nullopt, std::nullopt, std::nullopt,
-		 "dialog_background",
+		 main_window_config{},
 		 args.dialog_layout ? args.dialog_layout->get()
 		 : static_cast<const new_layoutmanager &>
 		 (default_lm.emplace()),

@@ -13,6 +13,7 @@
 #include <x/w/text_param.H>
 #include <x/w/stop_message.H>
 #include <x/w/alert_message.H>
+#include <x/w/border_arg.H>
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/functionalrefptrfwd.H>
@@ -21,9 +22,41 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Main window appearance
+
+struct main_window_colors {
+
+	//! Main window's background color.
+	color_arg background_color="mainwindow_background";
+
+	//! Main window's menu bar's background color
+	color_arg menubar_background_color="menubar_background_color";
+};
+
+//! Menu bar appearance
+
+struct menu_button_colors {
+
+	//! Menu button has input or pointer focus.
+	color_arg menu_highlighted_color="menu_highlighted_color";
+
+	//! Menu button is clicked.
+	color_arg menu_clicked_color="menu_clicked_color";
+
+	//! Menu button does not have keyboard focus
+	border_arg menu_inputfocusoff_border="menu_inputfocusoff_border";
+
+	//! Menu button has keyboard focus
+	border_arg menu_inputfocuson_border="menu_inputfocuson_border";
+
+	//! Border between the menu bar and the main window.
+	border_arg menubar_border="menubar_border";
+};
+
 //! Optional configuration of a \ref main_window "main application window".
 
-class main_window_config {
+class main_window_config : public main_window_colors,
+			   public menu_button_colors {
 
 
 public:
@@ -39,12 +72,6 @@ public:
 				 std::reference_wrapper<const screen_positions>>
 		      > saved_position;
 
-	//! Main window's background color.
-	color_arg background_color="mainwindow_background";
-
-	//! Main window's menu bar's background color
-	color_arg menubar_background_color="menubar_background_color";
-
 	//! Destructor
 	~main_window_config();
 };
@@ -55,13 +82,9 @@ public:
 //! window, with no title, automatically centered, and without a window
 //! title or any normal decorations.
 
-class splash_window_config {
+class splash_window_config : public main_window_config {
 
 public:
-
-	//! Splash window's background color.
-
-	color_arg background_color="mainwindow_background";
 
 	//! Splash window's border.
 	border_arg border=default_border();

@@ -33,9 +33,11 @@ static property::value<unsigned>
 menupopup_delay(LIBCXX_NAMESPACE_STR "::w::menupopup_delay", 500);
 
 menubarlayoutmanagerObj::implObj::implObj(const ref<menubar_container_implObj>
-					  &container_impl)
+					  &container_impl,
+					  const menu_button_colors &colors)
 	: gridlayoutmanagerObj::implObj{container_impl, {}},
-	  container_impl{container_impl}
+	  container_impl{container_impl},
+	  colors{colors}
 {
 }
 
@@ -55,7 +57,8 @@ void menubarlayoutmanagerObj::implObj::check_if_borders_changed()
 	if (should_be_present != info(grid_lock).borders_present)
 	{
 		if (should_be_present)
-			default_row_border(grid_lock, 1, "menubar_border");
+			default_row_border(grid_lock, 1,
+					   colors.menubar_border);
 		else
 			(*grid_lock)->remove_all_defaults();
 	}
@@ -99,15 +102,15 @@ menu menubarlayoutmanagerObj::implObj
 
 	auto menu_impl=ref<menuObj::implObj>
 		::create(menu_popup,
-			 "menu_inputfocusoff_border",
-			 "menu_inputfocuson_border",
+			 colors.menu_inputfocusoff_border,
+			 colors.menu_inputfocuson_border,
 			 container_impl);
 
 	auto hotspot_impl=ref<menubar_hotspot_implObj>
 		::create(menu_popup,
 			 popup_handler,
-			 "menu_highlighted_color",
-			 "menu_clicked_color",
+			 colors.menu_highlighted_color,
+			 colors.menu_clicked_color,
 			 menu_impl);
 
 	auto hotspot=focusable_owner_container::create(hotspot_impl,

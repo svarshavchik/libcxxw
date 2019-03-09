@@ -9,6 +9,7 @@
 #include "x/w/menubarfactoryobj.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/gridfactoryfwd.H"
+#include "x/w/main_window.H"
 #include "gridlayoutmanager.H"
 #include "menu/menubar_container_implfwd.H"
 
@@ -27,6 +28,9 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 	//! My container
 
 	const ref<menubar_container_implObj> container_impl;
+
+	//! My colors
+	const menu_button_colors colors;
 
  private:
 	struct protected_info_t {
@@ -50,7 +54,9 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 	inline auto &info(const grid_map_t::lock &) { return protected_info; }
 
 	//! Constructor
-	implObj(const ref<menubar_container_implObj> &container_impl);
+	implObj(const ref<menubar_container_implObj> &container_impl,
+		const menu_button_colors &colors);
+
 
 	//! Destructor
 	~implObj();
