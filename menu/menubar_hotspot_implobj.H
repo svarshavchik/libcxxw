@@ -18,12 +18,13 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN menubar_hotspot_implObj
 	: public popup_showhide_elementObj<
-	hotspot_bgcolor_elementObj<container_elementObj
-				   <child_elementObj>>> {
+	hotspot_transparent_bgcolor_elementObj<container_elementObj
+					       <child_elementObj>>> {
 
 	typedef popup_showhide_elementObj<
-		hotspot_bgcolor_elementObj<container_elementObj
-					   <child_elementObj>>> superclass_t;
+		hotspot_transparent_bgcolor_elementObj<container_elementObj
+						       <child_elementObj>>
+		> superclass_t;
 
  public:
 	//! My popup
@@ -32,9 +33,8 @@ class LIBCXX_HIDDEN menubar_hotspot_implObj
 	//! Constructor
 	menubar_hotspot_implObj(const popup &menu_popup,
 				const ref<popupObj::handlerObj> &menu_popup_handler,
-				const background_color &bg_color,
-				const background_color &highlighted_color,
-				const background_color &clicked_color,
+				const color_arg &highlighted_color,
+				const color_arg &clicked_color,
 				const container_impl &container_impl
 				);
 	//! Destructor

@@ -33,7 +33,7 @@ class LIBCXX_HIDDEN hotspot_bgcolorObj::implObj : virtual public obj {
 
 	//! Get my cold color
 
-	virtual background_color cold_color(ONLY IN_THREAD)=0;
+	virtual std::optional<background_color> cold_color(ONLY IN_THREAD)=0;
 
 	//! Get my warm color
 	virtual background_color warm_color(ONLY IN_THREAD)=0;

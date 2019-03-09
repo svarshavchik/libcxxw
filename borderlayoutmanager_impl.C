@@ -157,14 +157,9 @@ void borderlayoutmanagerObj::implObj
 ::child_background_color_changed(ONLY IN_THREAD,
 				 const element_impl &child)
 {
-	// If the child has a background color we need to redraw the padding.
-
-	if (child->has_own_background_color(IN_THREAD))
-	{
-		bordercontainer_impl->get_container_impl()
-			.container_element_impl()
-			.schedule_full_redraw(IN_THREAD);
-	}
+	bordercontainer_impl->get_container_impl()
+		.container_element_impl()
+		.schedule_full_redraw(IN_THREAD);
 }
 
 void borderlayoutmanagerObj::implObj::theme_updated(ONLY IN_THREAD,

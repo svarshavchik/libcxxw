@@ -752,7 +752,39 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <!-- Menu bar -->
 
-  <color id="menubar_background_color" scale="80%" />
+  <color id="menubar_background_color" type="linear_gradient">
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>1</x2>
+    <y2>0</y2>
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>80%</color>
+    </gradient>
+  </color>
+
+  <color id="fixshade:menubar_background_color" type="linear_gradient">
+    <widthmm>10</widthmm>
+    <heightmm>10</heightmm>
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>1</x2>
+    <y2>0</y2>
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>80%</color>
+    </gradient>
+  </color>
+
+  <color id="noshade:menubar_background_color" scale="80%" />
 
   <border id="menubar_border" from="thin_0%">
     <color>0%</color>
@@ -760,7 +792,6 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
     <dash>.75</dash>
   </border>
 
-  <color id="menu_background_color" scale="80%" />
   <color id="menu_highlighted_color" scale="90%" />
   <color id="menu_clicked_color" scale="100%" />
 

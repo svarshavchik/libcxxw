@@ -42,6 +42,9 @@ public:
 	//! Main window's background color.
 	color_arg background_color="mainwindow_background";
 
+	//! Main window's menu bar's background color
+	color_arg menubar_background_color="menubar_background_color";
+
 	//! Destructor
 	~main_window_config();
 };

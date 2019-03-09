@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 //! RGB color, with an alpha channel
 
-//!
+//! \see transparent
 //! \see black
 //! \see gray
 //! \see silver
@@ -89,6 +89,9 @@ public:
 	//! Convert to a readable label
 	operator std::string() const;
 };
+
+//! Transparent color
+constexpr rgb transparent{0, 0, 0, 0};
 
 //! Standard HTML 3.2 color
 constexpr rgb black{0, 0, 0};

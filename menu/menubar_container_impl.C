@@ -12,9 +12,20 @@
 
 LIBCXXW_NAMESPACE_START
 
+static inline child_element_init_params menubar_init_params(const color_arg &c)
+{
+	child_element_init_params params;
+
+	params.background_color=c;
+
+	return params;
+}
+
 menubar_container_implObj
-::menubar_container_implObj(const container_impl &parent)
-	: menubar_container_superclass_impl_t(parent)
+::menubar_container_implObj(const container_impl &parent,
+			    const color_arg &background_color)
+	: menubar_container_superclass_impl_t
+	{parent, menubar_init_params(background_color)}
 {
 }
 

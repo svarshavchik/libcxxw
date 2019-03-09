@@ -28,7 +28,8 @@ class LIBCXX_HIDDEN menubar_container_implObj
  public:
 
 	//! Constructor
-	menubar_container_implObj(const container_impl &parent);
+	menubar_container_implObj(const container_impl &parent,
+				  const color_arg &background_color);
 
 	//! Destructor
 	~menubar_container_implObj();

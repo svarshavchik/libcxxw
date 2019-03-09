@@ -23,7 +23,16 @@ void hotspot_bgcolorObj::implObj::temperature_changed(ONLY IN_THREAD,
 
 	switch (hotspot_impl.hotspot_temperature(IN_THREAD)) {
 	case temperature::cold:
-		element.set_background_color(IN_THREAD, cold_color(IN_THREAD));
+		{
+			auto c=cold_color(IN_THREAD);
+
+			if (!c)
+			{
+				element.remove_background_color(IN_THREAD);
+				break;
+			}
+			element.set_background_color(IN_THREAD, *c);
+		}
 		break;
 	case temperature::warm:
 		element.set_background_color(IN_THREAD, warm_color(IN_THREAD));

@@ -237,6 +237,7 @@ static inline peepholed_toplevel
 init_containers(const container_impl &parent,
 		containerptr &menu_and_app_container,
 		containerptr &menubar_container,
+		const color_arg &menubar_background_color,
 		containerptr &app_container,
 		const new_layoutmanager &layout_factory)
 {
@@ -260,10 +261,8 @@ init_containers(const container_impl &parent,
 	f->halign(halign::fill);
 
 	auto menubar_impl=ref<menubar_container_implObj>
-		::create(menu_and_app_impl);
+		::create(menu_and_app_impl, menubar_background_color);
 
-	menubar_impl->elementObj::implObj
-		::set_background_color("menubar_background_color");
 	auto menubar=container::create(menubar_impl,
 				       ref<menubarlayoutmanagerObj::implObj>
 				       ::create(menubar_impl));
@@ -318,6 +317,7 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			   &peephole_background_color,
 			   const std::optional<color_arg>
 			   &scrollbars_background_color,
+			   const color_arg &menubar_background_color,
 			   const new_layoutmanager &layout_factory,
 			   const function<make_window_impl_factory_t> &factory)
 {
@@ -351,6 +351,7 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			 auto c=init_containers(parent,
 						menu_and_app_container,
 						menubar_container,
+						menubar_background_color,
 						app_container,
 						layout_factory);
 
@@ -484,7 +485,7 @@ create_splash_window_handler(const screen &me,
 			 main_window_border);
 	}
 
-	auto handler=create_splash_window_handler(me, config, "transparent",
+	auto handler=create_splash_window_handler(me, config, transparent,
 						  main_window_border);
 
 	main_window_border=config.border;
@@ -518,7 +519,8 @@ main_window screenObj
 	std::optional<border_arg> main_window_border;
 	std::optional<color_arg> inner_background_color;
 
-	auto handler=std::visit(visitor{
+	auto [handler, menubar_background_color]
+		=std::visit(visitor{
 			[&](const main_window_config &std_config)
 			{
 				main_window_handler_constructor_params
@@ -526,10 +528,13 @@ main_window screenObj
 						    std_config
 						    .background_color};
 
-				return ref<main_windowObj::handlerObj>
-					::create(main_params,
-						 suggested_position,
-						 pos.name, false);
+				return std::tuple
+				{ref<main_windowObj::handlerObj>
+						::create(main_params,
+							 suggested_position,
+							 pos.name, false),
+						std_config
+						.menubar_background_color};
 			},
 			[&](const splash_window_config &splash_config)
 			{
@@ -538,7 +543,8 @@ main_window screenObj
 					 splash_config.background_color,
 					 main_window_border);
 
-				return ret;
+				return std::tuple
+				{ret, splash_config.background_color};
 			},
 			[&](const transparent_splash_window_config
 			    &splash_config)
@@ -548,7 +554,8 @@ main_window screenObj
 					 main_window_border,
 					 inner_background_color);
 
-				return ret;
+				return std::tuple
+				{ret, splash_config.background_color};
 			}},
 		config);
 
@@ -556,6 +563,7 @@ main_window screenObj
 		(handler, main_window_border,
 		 inner_background_color,
 		 inner_background_color,
+		 menubar_background_color,
 		 layout_factory,
 		 [](const auto &args)
 		 {
