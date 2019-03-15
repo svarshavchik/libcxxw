@@ -52,6 +52,8 @@ class dialogObj::handlerObj : public main_windowObj::handlerObj {
 		   const std::variant<dialog_position, rectangle> &position,
 		   const std::string &window_id,
 		   const color_arg &background_color,
+		   const font_arg &default_label_font,
+		   const color_arg &default_label_color,
 		   const char *window_type,
 		   bool modal,
 		   bool urgent,

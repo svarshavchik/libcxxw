@@ -9,7 +9,6 @@
 #include "shared_handler_data.H"
 #include "screen.H"
 #include "connection.H"
-#include "x/w/text_param_literals.H"
 #include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
@@ -20,6 +19,8 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 				  rectangle> &position,
 				  const std::string &window_id,
 				  const color_arg &background_color,
+				  const font_arg &default_label_font,
+				  const color_arg &default_label_color,
 				  const char *window_type,
 				  bool modal,
 				  bool urgent,
@@ -28,9 +29,8 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 			window_type,
 			modal ? "MODAL":"",
 			background_color,
-
-			"label"_theme_font,
-			"label_foreground_color",
+			default_label_font,
+			default_label_color,
 			},
 		       std::visit(visitor{[&](const rectangle &r)
 					  -> std::optional<rectangle>

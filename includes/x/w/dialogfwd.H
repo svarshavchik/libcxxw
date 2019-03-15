@@ -12,6 +12,8 @@
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/rectangle.H>
+#include <x/w/rgb.H>
+#include <x/w/font_arg.H>
 #include <x/w/screen_positionsfwd.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/functionalrefptrfwd.H>
@@ -98,6 +100,15 @@ struct standard_dialog_args {
 
 	//! Whether the new dialog grabs input focus when it opens.
 	bool grab_input_focus=true;
+
+	//! Default background color
+	color_arg dialog_background="dialog_background";
+
+	//! Default font for labels
+	font_arg label_font=theme_font{"label"};
+
+	//! Default color (mostly for labels)
+	color_arg label_foreground_color="label_foreground_color";
 
 	//! Default dialog position.
 	void screen_position(dialog_position) LIBCXX_PUBLIC;
