@@ -15,6 +15,7 @@
 #include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/text_hotspot.H"
 #include <courier-unicode.h>
+#include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -90,7 +91,7 @@ text_param &text_param::operator()(const theme_font &f)
 	return *this;
 }
 
-text_param &text_param::operator()(const rgb &c)
+text_param &text_param::operator()(const text_color_arg &c)
 {
 	auto s=string.size();
 
@@ -100,22 +101,15 @@ text_param &text_param::operator()(const rgb &c)
 	{
 		if (background_colors.find(s) != background_colors.end())
 			throw EXCEPTION(gettextmsg("Duplicate color specification."));
-		background_colors.insert({s, c});
-	}
-	return *this;
-}
-
-text_param &text_param::operator()(const theme_color &c)
-{
-	auto s=string.size();
-
-	if (colors.find(s) == colors.end())
-		colors.insert({s, c.name});
-	else
-	{
-		if (background_colors.find(s) != background_colors.end())
-			throw EXCEPTION(gettextmsg("Duplicate color specification."));
-		background_colors.insert({s, c.name});
+		std::visit(visitor{
+				[&](const theme_color &c)
+				{
+					background_colors.insert({s, c.name});
+				},
+				[&](const rgb &c)
+				{
+					background_colors.insert({s, c});
+				}}, c);
 	}
 	return *this;
 }
@@ -238,9 +232,21 @@ richtextstring elementObj::implObj
 
 			if (iter != t.colors.end())
 			{
+				auto c=std::visit
+					(visitor{
+						[](const theme_color &c)
+							->color_arg
+						{
+							return c.name;
+						},
+						[](const rgb &c)
+							->color_arg
+						{
+							return c;
+						}}, iter->second);
+
 				font.textcolor=screen_impl
-					->create_background_color
-					(iter->second);
+					->create_background_color(c);
 				font.bg_color=background_colorptr();
 			}
 		}

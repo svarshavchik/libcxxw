@@ -11,6 +11,7 @@
 #include <x/w/rgb.H>
 #include <x/w/text_param.H>
 #include <x/w/date_input_field_configfwd.H>
+#include <x/w/input_field_config.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -22,13 +23,30 @@ struct date_input_field_popup_config {
 
 struct date_input_field_config : public date_input_field_popup_config {
 
+	//! Appearance of the input field element itself
+
+	//! The default input field appearance, except there's no bder
+	//! (the date input field provides it, and the date input field
+	//! has its own background color.
+
+	input_field_config_appearance input_field_appearance
+		{
+		 .border={},
+		 .background_color="dateedit_background_color",
+		};
+
+	//! Input field's font.
+	font_arg input_field_font=theme_font{"dateedit"};
+
+	//! Input field's font's color
+	text_color_arg input_field_font_color=theme_color
+		{
+		 "dateedit_foreground_color"
+		};
+
 	//! Border
 
 	border_arg border="dateedit_border";
-
-	//! Background color
-
-	color_arg background_color="dateedit_background_color";
 
 	//! Button focus border.
 	border_arg focusoff_border="dateeditbuttonfocusoff_border";

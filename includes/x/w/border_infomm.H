@@ -35,7 +35,7 @@ struct border_infomm {
 	~border_infomm();
 
 	//! Border color
-	color_arg color1;
+	color_arg color1=transparent;
 
 	//! Optional 2nd color, for dashed broders.
 	std::optional<color_arg> color2;

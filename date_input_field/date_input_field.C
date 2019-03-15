@@ -29,6 +29,7 @@
 #include <x/weakcapture.H>
 #include <x/strtok.H>
 #include <x/strftime.H>
+#include <x/visitor.H>
 #include <courier-unicode.h>
 #include <algorithm>
 
@@ -139,19 +140,23 @@ date_input_field factoryObj
 
 	auto date_format=ymd{}.format_date(preferred);
 
-	input_field_config input_conf{date_format.size()+1};
+	input_field_config input_conf{{date_format.size()+1},
+				      config.input_field_appearance};
 
 	input_conf.autoselect=true;
 	input_conf.maximum_size=date_format.size();
 
-	// ... and remove the border provided by the input field
-	input_conf.border="empty";
+	text_param initial;
 
-	input_conf.background_color=config.background_color;
+	std::visit(visitor{
+			[&](const auto &font)
+			{
+				initial(font);
+			}}, config.input_field_font);
 
-	auto text_input_field=f->create_input_field({"dateedit"_theme_font,
-				"dateedit_foreground_color"_color},
-		input_conf);
+	initial(config.input_field_font_color);
+
+	auto text_input_field=f->create_input_field(initial, input_conf);
 
 	text_input_field->show();
 
@@ -362,7 +367,7 @@ date_input_field factoryObj
 		(f, date_picker_popup,
 		 {
 			 config.border,
-				 config.background_color,
+				 config.input_field_appearance.background_color,
 				 "scroll-right1",
 				 "scroll-right2",
 				 config.focusoff_border,

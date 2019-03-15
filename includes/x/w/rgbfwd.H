@@ -11,6 +11,7 @@
 #define x_w_rgbfwd_H
 
 #include <x/w/namespace.H>
+#include <x/w/theme_color.H>
 #include <variant>
 #include <string>
 #include <cstdint>
@@ -48,6 +49,12 @@ struct radial_gradient;
 
 typedef std::variant<rgb, std::string, linear_gradient, radial_gradient
 		     > color_arg;
+
+//! Text label colors
+
+//! Text label colors can only be an explicit rgb value or a theme color
+
+typedef std::variant<theme_color, rgb> text_color_arg;
 
 LIBCXXW_NAMESPACE_END
 

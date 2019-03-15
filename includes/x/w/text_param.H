@@ -267,7 +267,7 @@ public:
 	//!
 	//! Do not touch, use \c operator() exclusively.
 
-	std::unordered_map<size_t, color_arg> colors;
+	std::unordered_map<size_t, text_color_arg> colors;
 
 	//! Colors for the text string being built.
 
@@ -360,10 +360,7 @@ public:
 	text_param &operator()(const theme_font &f);
 
 	//! Use this color for all text going forward.
-	text_param &operator()(const rgb &);
-
-	//! Use this color for all text going forward.
-	text_param &operator()(const theme_color &);
+	text_param &operator()(const text_color_arg &);
 
 	//! Use this decoration for all text going forward.
 	text_param &operator()(const text_decoration);

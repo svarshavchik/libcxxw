@@ -1148,7 +1148,31 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
   <dim id="dateedit_popup_border_square_padding_h" axis="horiz">1</dim>
   <dim id="dateedit_popup_border_square_padding_v" axis="vert">1</dim>
 
-  <color id="dateedit_popup_background_color" scale="100%" />
+  <color id="dateedit_popup_background_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+  <color id="fixshade:dateedit_popup_background_color" type="linear_gradient">
+    <widthmm>30</widthmm>
+    <heightmm>30</heightmm>
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+  <color id="noshade:dateedit_popup_background_color" scale="100%" />
 
   <dim id="dateedit_popup_yscroll_height" axis="vert">8</dim>
   <dim id="dateedit_popup_mscroll_height" axis="vert">6</dim>
