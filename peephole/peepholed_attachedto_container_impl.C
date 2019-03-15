@@ -13,8 +13,8 @@ LIBCXXW_NAMESPACE_START
 peepholed_attachedto_containerObj::implObj
 ::implObj(const container_impl &parent,
 	  const child_element_init_params &init_params)
-	: superclass_t{theme_font{ parent->container_element_impl()
-			.label_theme_font() },
+	: superclass_t{parent->container_element_impl()
+		       .label_theme_font(),
 		parent, init_params}
 {
 }

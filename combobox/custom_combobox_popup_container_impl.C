@@ -6,6 +6,7 @@
 #include "combobox/custom_combobox_popup_container_impl.H"
 #include "peepholed_toplevel_listcontainer/impl_element.H"
 #include "x/w/impl/always_visible.H"
+#include "x/w/text_param_literals.H"
 #include "image_button_internal.H"
 #include "run_as.H"
 
@@ -19,10 +20,10 @@ custom_combobox_popup_containerObj::implObj
 
 custom_combobox_popup_containerObj::implObj::~implObj()=default;
 
-const char *custom_combobox_popup_containerObj::implObj::label_theme_font()
+font_arg custom_combobox_popup_containerObj::implObj::label_theme_font()
 	const
 {
-	return "combobox";
+	return "combobox"_theme_font;
 }
 
 void custom_combobox_popup_containerObj::implObj

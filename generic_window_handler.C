@@ -174,6 +174,8 @@ create_extra_constructor_params(const generic_window_handler_constructor_params
 		params.nesting_level,
 		main_params.background_color,
 		background_color_obj,
+		main_params.default_label_font,
+		main_params.default_label_color,
 	};
 }
 
@@ -247,7 +249,9 @@ generic_windowObj::handlerObj
 	  frame_extents_thread_only{params.window_handler_params.screenref
 				    ->get_workarea()},
 	  current_theme_thread_only{params.window_handler_params.screenref
-				    ->impl->current_theme.get()}
+				    ->impl->current_theme.get()},
+	  default_label_font{params.default_label_font},
+	  default_label_color{params.default_label_color}
 {
 	top_level_always_visible();
 
@@ -2415,6 +2419,16 @@ void generic_windowObj::handlerObj
 				     id(),
 				     change_notify.mask(),
 				     change_notify.values().data());
+}
+
+font_arg generic_windowObj::handlerObj::label_theme_font() const
+{
+	return default_label_font;
+}
+
+color_arg generic_windowObj::handlerObj::label_theme_color() const
+{
+	return default_label_color;
 }
 
 LIBCXXW_NAMESPACE_END

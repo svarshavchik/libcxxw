@@ -15,6 +15,7 @@
 #include "x/w/text_param.H"
 #include "x/w/tooltip.H"
 #include "x/w/pictformat.H"
+#include "x/w/text_param_literals.H"
 #include "x/w/impl/bordercontainer_element.H"
 #include "x/w/impl/richtext/richtext.H"
 #include "x/w/impl/borderlayoutmanager.H"
@@ -79,9 +80,9 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
 	//! Destructor
 	~tooltip_handlerObj();
 
-	const char *label_theme_font() const override
+	font_arg label_theme_font() const override
 	{
-		return "tooltip";
+		return "tooltip"_theme_font;
 	}
 
 	void set_default_wm_hints(ONLY IN_THREAD,

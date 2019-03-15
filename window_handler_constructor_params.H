@@ -7,6 +7,7 @@
 
 #include "x/w/screenfwd.H"
 #include "x/w/rgb.H"
+#include "x/w/font_arg.H"
 #include "shared_handler_datafwd.H"
 
 LIBCXXW_NAMESPACE_START
@@ -29,6 +30,12 @@ struct main_window_handler_constructor_params {
 
 	//! New main window's background color.
 	const color_arg &background_color;
+
+	//! Default font
+	const font_arg &default_label_font;
+
+	//! Default color
+	const color_arg &default_label_color;
 };
 
 struct LIBCXX_HIDDEN generic_window_handler_constructor_params;

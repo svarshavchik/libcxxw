@@ -7,6 +7,7 @@
 #include "combobox/custom_combobox_popup_container_impl.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
+#include "x/w/text_param_literals.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -31,9 +32,9 @@ custom_combobox_containerObj::implObj
 
 custom_combobox_containerObj::implObj::~implObj()=default;
 
-const char *custom_combobox_containerObj::implObj::label_theme_font() const
+font_arg custom_combobox_containerObj::implObj::label_theme_font() const
 {
-	return "combobox";
+	return "combobox"_theme_font;
 }
 
 LIBCXXW_NAMESPACE_END

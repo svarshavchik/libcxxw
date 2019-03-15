@@ -14,6 +14,7 @@
 #include <x/w/stop_message.H>
 #include <x/w/alert_message.H>
 #include <x/w/border_arg.H>
+#include <x/w/font_arg.H>
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/functionalrefptrfwd.H>
@@ -31,6 +32,12 @@ struct main_window_colors {
 
 	//! Main window's menu bar's background color
 	color_arg menubar_background_color="menubar_background_color";
+
+	//! Default font for labels
+	font_arg label_font=theme_font{"label"};
+
+	//! Default color (mostly for labels)
+	color_arg label_foreground_color="label_foreground_color";
 };
 
 //! Menu bar appearance

@@ -417,7 +417,7 @@ void child_elementObj::creating_focusable_element()
 		.creating_focusable_element();
 }
 
-const char *child_elementObj::label_theme_font() const
+font_arg child_elementObj::label_theme_font() const
 {
 	return child_container->container_element_impl().label_theme_font();
 }

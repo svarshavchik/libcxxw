@@ -46,7 +46,7 @@ richtext ellipsiscacheObj::get(elementObj::implObj &parent_element)
 	// on the cached ellipsis objects.
 
 	auto cfc=parent_element.create_current_fontcollection
-		(theme_font{parent_element.label_theme_font()});
+		(parent_element.label_theme_font());
 	color_arg color{parent_element.label_theme_color()};
 
 	return cache->find_or_create

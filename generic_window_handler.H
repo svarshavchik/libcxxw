@@ -326,6 +326,12 @@ class generic_windowObj::handlerObj
 
 		//! The instantiated background_color
 		background_color background_color_obj;
+
+		//! Default font
+		const font_arg &default_label_font;
+
+		//! Default color
+		const color_arg &default_label_color;
 	};
 
 	//! Public constructor
@@ -1086,6 +1092,22 @@ public:
 	THREAD_DATA_ONLY(source_dnd_version);
 	THREAD_DATA_ONLY(source_dnd_formats);
 	THREAD_DATA_ONLY(dnd_drop_target);
+
+	//! Return the default label font in this window.
+
+	font_arg label_theme_font() const override;
+
+	//! Return the default foreground color for labels in this window.
+
+	color_arg label_theme_color() const override;
+
+	//! Default label_theme_font()
+
+	const font_arg default_label_font;
+
+	//! Default label_theme_color()
+
+	const color_arg default_label_color;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -989,19 +989,19 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Theme font for labels in this container.
 
-	//! The default implementation returns "label".
-	//!
 	//! Overridden in child_elementObj and forwarded to the container.
+	//!
+	//! Overridden in generic_windowObj::handlerObj.
 
-	virtual const char *label_theme_font() const;
+	virtual font_arg label_theme_font() const=0;
 
 	//! Foreground color for labels in this container.
 
-	//! The default implementation returns "label_foreground_color".
-	//!
 	//! Overridden in child_elementObj and forwarded to the container.
+	//!
+	//! Overridden in generic_windowObj::handlerObj.
 
-	virtual color_arg label_theme_color() const;
+	virtual color_arg label_theme_color() const=0;
 
 	//! Convert a font_arg into a current_fontcollection
 

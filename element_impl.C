@@ -1158,16 +1158,6 @@ size_t elementObj::implObj::num_children(ONLY IN_THREAD)
 	return 0;
 }
 
-const char *elementObj::implObj::label_theme_font() const
-{
-	return "label";
-}
-
-color_arg elementObj::implObj::label_theme_color() const
-{
-	return "label_foreground_color";
-}
-
 fontcollection elementObj::implObj::create_fontcollection(const font &f)
 {
 	auto &wh=get_window_handler();

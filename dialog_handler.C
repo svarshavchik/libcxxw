@@ -9,6 +9,7 @@
 #include "shared_handler_data.H"
 #include "screen.H"
 #include "connection.H"
+#include "x/w/text_param_literals.H"
 #include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
@@ -26,7 +27,11 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 	: superclass_t{{parent_handler->screenref,
 			window_type,
 			modal ? "MODAL":"",
-			background_color},
+			background_color,
+
+			"label"_theme_font,
+			"label_foreground_color",
+			},
 		       std::visit(visitor{[&](const rectangle &r)
 					  -> std::optional<rectangle>
 					  {

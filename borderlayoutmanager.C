@@ -63,7 +63,7 @@ container new_borderlayoutmanager::create(const container_impl &parent,
 			{
 			 e.create_background_color(e.label_theme_color()),
 			 e.create_current_fontcollection
-			 (theme_font{e.label_theme_font()})
+			 (e.label_theme_font())
 			};
 
 		auto string=e.create_richtextstring(meta, title);
@@ -128,7 +128,7 @@ void borderlayoutmanagerObj::update_title(ONLY IN_THREAD,
 			{
 			 e.create_background_color(e.label_theme_color()),
 			 e.create_current_fontcollection
-			 (theme_font{e.label_theme_font()})
+			 (e.label_theme_font())
 			};
 
 		auto string=e.create_richtextstring(meta, title);

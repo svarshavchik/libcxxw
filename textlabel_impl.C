@@ -60,7 +60,7 @@ textlabelObj::implObj::implObj(const text_param &text,
 		  {parent_element_impl.create_background_color
 		   (parent_element_impl.label_theme_color()),
 		   parent_element_impl.create_current_fontcollection
-		   (theme_font{parent_element_impl.label_theme_font()})},
+		   (parent_element_impl.label_theme_font())},
 		  config,
 		  parent_element_impl)
 {

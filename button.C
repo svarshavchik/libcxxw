@@ -9,6 +9,7 @@
 #include "x/w/factory.H"
 #include "x/w/label.H"
 #include "x/w/border_arg.H"
+#include "x/w/text_param_literals.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/container_visible_element.H"
 #include "x/w/impl/bordercontainer_element.H"
@@ -47,9 +48,9 @@ class LIBCXX_HIDDEN button_focusframeObj : public ff_impl_t {
 
 	// create_label() in this container will use an action_button font.
 
-	const char *label_theme_font() const override
+	font_arg label_theme_font() const override
 	{
-		return "button";
+		return "button"_theme_font;
 	}
 };
 

@@ -45,7 +45,7 @@ class progressbarObj::handlerObj
 
 	//! Override label_theme_font()
 
-	const char *label_theme_font() const override;
+	font_arg label_theme_font() const override;
 
 	//! Override label_theme_color()
 

@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "booklayoutmanager/pagetab_impl.H"
 #include "booklayoutmanager/pagetabgridcontainer_impl.H"
+#include "x/w/text_param_literals.H"
 #include "x/w/impl/always_visible.H"
 #include "hotspot_bgcolor_element.H"
 #include "x/w/impl/container_element.H"
@@ -30,9 +31,9 @@ pagetabObj::implObj
 
 pagetabObj::implObj::~implObj()=default;
 
-const char *pagetabObj::implObj::label_theme_font() const
+font_arg pagetabObj::implObj::label_theme_font() const
 {
-	return "book_tab_font";
+	return "book_tab_font"_theme_font;
 }
 
 void pagetabObj::implObj::set_active(ONLY IN_THREAD, bool flag)

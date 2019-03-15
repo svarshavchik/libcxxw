@@ -10,6 +10,7 @@
 #include "x/w/impl/container.H"
 #include "busy.H"
 #include <x/weakcapture.H>
+#include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -96,11 +97,17 @@ new_editable_comboboxlayoutmanager
 		   // do add its own.
 		   config.border="empty";
 
+		   text_param initial_contents;
+
+		   std::visit(visitor{
+				   [&](const auto &p)
+				   {
+					   initial_contents(p);
+				   }},
+			   f->get_element_impl().label_theme_font());
+
 		   auto input_field=f->create_input_field
-			   ({theme_font({f->get_element_impl()
-							   .label_theme_font()
-							   })
-					   }, config);
+			   (initial_contents, config);
 
 		   input_field->on_autocomplete
 			   ([container_impl=make_weak_capture(f->get_container_impl())]

@@ -53,7 +53,7 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
 	~implObj();
 
 	//! Set the default font for labels in the popup.
-	const char *label_theme_font() const override;
+	font_arg label_theme_font() const override;
 
 	//! Override horizvert_updated
 
