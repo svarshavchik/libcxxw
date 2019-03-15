@@ -22,13 +22,7 @@ LIBCXXW_NAMESPACE_START
 
 button do_create_button_with_explicit_borders
 (factoryObj &f,
- const border_arg &left_border,
- const border_arg &right_border,
- const border_arg &top_border,
- const border_arg &bottom_border,
- const color_arg &normal_color,
- const color_arg &selected_color,
- const color_arg &active_color,
+ const button_config &config,
  const function<factoryObj::factory_creator_t> &creator,
  const shortcut &shortcut_key,
  const child_element_init_params &init_params) LIBCXX_HIDDEN;
@@ -48,10 +42,7 @@ class LIBCXX_HIDDEN buttonObj::implObj
 
 	//! Constructor
 
-	implObj(const border_arg &left_border,
-		const border_arg &right_border,
-		const border_arg &top_border,
-		const border_arg &bottom_border,
+	implObj(const button_config &config,
 		const container_impl &container,
 		const child_element_init_params &init_params);
 

@@ -1,3 +1,8 @@
+2019-03-14  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* button.C: Refactor create_button*(), using optional_args from
+	libcxxbase.
+
 0.19.0
 
 2019-02-28  Sam Varshavchik  <mrsam@courier-mta.com>

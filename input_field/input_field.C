@@ -224,6 +224,23 @@ public:
 #endif
 }
 
+static button_config create_spinner_button_config()
+{
+	auto c=normal_button();
+	c.normal_color="button_spinner_normal_color";
+	c.selected_color="button_spinner_selected_color";
+	c.active_color="button_spinner_active_color";
+
+	return c;
+}
+
+static const button_config &spinner_button_config()
+{
+	static const button_config config=create_spinner_button_config();
+
+	return config;
+}
+
 input_field
 factoryObj::create_input_field(const text_param &text,
 			       const input_field_config &config)
@@ -313,12 +330,13 @@ factoryObj::create_input_field(const text_param &text,
 		init_params.background_color=x::w::rgb{x::w::rgb::maximum,
 						       0, 0};
 
+		auto b_config=spinner_button_config();
+
+		b_config.left_border=b_config.right_border=border_arg{};
+		b_config.top_border=b_config.bottom_border=config.border;
+
 		do_create_button_with_explicit_borders
-			(*f, "empty", "empty",
-			 config.border, config.border,
-			 "button_spinner_normal_color",
-			 "button_spinner_selected_color",
-			 "button_spinner_active_color",
+			(*f, b_config,
 			 make_function<factoryObj::factory_creator_t>
 			 ([c=std::get<0>(*config.spin_control_factories)]
 			  (const auto &f)
@@ -332,12 +350,10 @@ factoryObj::create_input_field(const text_param &text,
 		f->rowspan(2);
 		f->valign(valign::fill);
 
+		b_config.right_border=config.border;
+
 		do_create_button_with_explicit_borders
-			(*f, "empty", config.border,
-			 config.border, config.border,
-			 "button_spinner_normal_color",
-			 "button_spinner_selected_color",
-			 "button_spinner_active_color",
+			(*f, b_config,
 			 make_function<factoryObj::factory_creator_t>
 			 ([c=std::get<1>(*config.spin_control_factories)]
 			  (const auto &f)

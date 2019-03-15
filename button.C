@@ -29,17 +29,35 @@ LIBCXXW_NAMESPACE_START
 const button_config &normal_button()
 {
 	static const button_config config={
+		"button"_theme_font,
+		"button_normal_color",
+		"button_selected_color",
+		"button_active_color",
+
 		"normal_button_border",
+		"normal_button_border",
+		"normal_button_border",
+		"normal_button_border",
+
+		"inputfocusoff_border",
+		"inputfocuson_border",
 	};
 
 	return config;
 }
 
+static button_config modify_normal_to_default_button()
+{
+	auto c=normal_button();
+
+	c.left_border=c.right_border=c.top_border=c.bottom_border=
+		"default_button_border";
+	return c;
+}
+
 const button_config &default_button()
 {
-	static const button_config config={
-		"special_button_border",
-	};
+	static const button_config config=modify_normal_to_default_button();
 
 	return config;
 }
@@ -118,12 +136,7 @@ typedef factoryObj::factory_creator_t factory_creator_t;
 
 static inline buttonObj::internal_construction_info
 create_button_focusframe(const ref<buttonObj::implObj> &impl,
-			 const font_arg &button_theme_font,
-			 const color_arg &normal_color,
-			 const color_arg &selected_color,
-			 const color_arg &active_color,
-			 const border_arg &inputfocusoff_border,
-			 const border_arg &inputfocuson_border,
+			 const button_config &config,
 			 const function<factory_creator_t> &creator)
 {
 	// Now, create the focusframecontainer.
@@ -135,12 +148,12 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 	// the contents of the focusframecontainer.
 
 	auto ffi=button_focusframe
-		::create(button_theme_font,
-			 normal_color,
-			 selected_color,
-			 active_color,
-			 inputfocusoff_border,
-			 inputfocuson_border,
+		::create(config.button_font,
+			 config.normal_color,
+			 config.selected_color,
+			 config.active_color,
+			 config.inputfocusoff_border,
+			 config.inputfocuson_border,
 			 0,
 			 0,
 			 impl, impl,
@@ -195,30 +208,19 @@ focusable_impl buttonObj::get_impl() const
 
 button do_create_button_with_explicit_borders
 (factoryObj &f,
- const border_arg &left_border,
- const border_arg &right_border,
- const border_arg &top_border,
- const border_arg &bottom_border,
- const color_arg &normal_color,
- const color_arg &selected_color,
- const color_arg &active_color,
+ const button_config &config,
  const function<factory_creator_t> &creator,
  const shortcut &shortcut_key,
  const child_element_init_params &init_params)
 {
-	auto impl=ref<buttonObj::implObj>::create(left_border, right_border,
-						  top_border,
-						  bottom_border,
+	auto impl=ref<buttonObj::implObj>::create(config,
 						  f.get_container_impl(),
 						  init_params);
 
 	auto ab=button::create(impl,
 			       create_button_focusframe
 			       (impl,
-				"button"_theme_font,
-				normal_color, selected_color, active_color,
-				"inputfocusoff_border",
-				"inputfocuson_border",
+				config,
 				creator));
 
 	// Left to its own devices, the real focusable element is the internal
@@ -316,13 +318,8 @@ button factoryObj::do_create_button(const function<factory_creator_t> &creator,
 		? static_cast<const button_config &>(*specified_button_config)
 		: normal_button();
 
-	const auto &theme_border=opt_button_config.border;
-
 	return do_create_button_with_explicit_borders
-		(*this, theme_border, theme_border, theme_border, theme_border,
-		 "button_normal_color",
-		 "button_selected_color",
-		 "button_active_color",
+		(*this, opt_button_config,
 		 creator, opt_shortcut, {});
 }
 
