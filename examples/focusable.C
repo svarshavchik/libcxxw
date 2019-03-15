@@ -28,25 +28,25 @@ void create_mainwindow(const x::w::main_window &main_window)
 	layout->col_alignment(0, x::w::halign::center);
 
 	auto button1=layout->append_row()
-		->create_normal_button_with_label("Button 1");
+		->create_button("Button 1");
 
 	auto button2=layout->append_row()
-		->create_normal_button_with_label("Button 2: disable button 1");
+		->create_button("Button 2: disable button 1");
 
 	auto button3=layout->append_row()
-		->create_normal_button_with_label("Button 3: enable button 1");
+		->create_button("Button 3: enable button 1");
 
 	auto button4=layout->append_row()
-		->create_normal_button_with_label("Button 4: button 2 gets focus before button 1");
+		->create_button("Button 4: button 2 gets focus before button 1");
 
 	auto button5=layout->append_row()
-		->create_normal_button_with_label("Button 5: button 3 gets focus after button 2");
+		->create_button("Button 5: button 3 gets focus after button 2");
 
 	auto button6=layout->append_row()
-		->create_normal_button_with_label("Button 6: button 1 gets focus first");
+		->create_button("Button 6: button 1 gets focus first");
 
 	auto button7=layout->append_row()
-		->create_normal_button_with_label("Button 7: move focus to button 1");
+		->create_button("Button 7: move focus to button 1");
 
 	// Note - normally a callback cannot capture reference to its parent
 	// (or children) display elements, because this would create an

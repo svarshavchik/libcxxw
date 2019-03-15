@@ -169,7 +169,7 @@ void testcolorpicker(const testcolorpicker_options &options)
 
 			 auto b=layout->append_row()->colspan(2)
 			 .halign(halign::center)
-			 .padding(4).create_normal_button_with_label
+			 .padding(4).create_button
 			 ("Random color");
 
 			 b->on_activate([cp,
@@ -187,7 +187,7 @@ void testcolorpicker(const testcolorpicker_options &options)
 
 			 b=layout->append_row()->colspan(2)
 			 .halign(halign::center)
-			 .padding(4).create_normal_button_with_label
+			 .padding(4).create_button
 			 ("Normal font");
 
 			 b->on_activate([fp]
@@ -203,7 +203,7 @@ void testcolorpicker(const testcolorpicker_options &options)
 
 			 b=layout->append_row()->colspan(2)
 			 .halign(halign::center)
-			 .padding(4).create_normal_button_with_label
+			 .padding(4).create_button
 			 ("Title font");
 
 			 b->on_activate([fp]

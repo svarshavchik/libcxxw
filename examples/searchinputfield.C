@@ -260,7 +260,10 @@ void create_mainwindow(const x::w::main_window &main_window,
 	auto ok=factory->right_padding(10)
 		.top_padding(10)
 		.bottom_padding(10)
-		.create_special_button_with_label({"Ok"});
+		.create_button({"Ok"}, {
+				x::w::default_button(),
+				x::w::shortcut{'\n'},
+			});
 
 	ok->on_activate([close_flag]
 			(ONLY IN_THREAD,

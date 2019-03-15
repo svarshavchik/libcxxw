@@ -157,144 +157,44 @@ public:
 	focusable_label create_focusable_label(const text_param &text,
 					       const focusable_label_config &);
 
-	//! Create an button with a label, and a normal border.
-	button create_normal_button_with_label(const text_param &text);
+	//! Create a simple button with a text label.
+	button create_button(const text_param &text);
 
-	//! Create an button with a label, and a normal border.
+	//! Create a simple button with a text label.
+	button create_button(const text_param &text,
+			     const create_button_with_label_args_t &args);
 
-	//! \overload
-	button create_normal_button_with_label(const text_param &text,
-					       const label_config &config);
+	//! Create a button using a callback to populate its contents.
+	template<typename functor,
+		 typename=std::void_t<decltype(std::declval<functor &&>()
+					       (std::declval<const factory &>())
+					       )>>
 
-	//! Create an button with a label, and a normal border.
-
-	//! \overload
-	button create_normal_button_with_label(const text_param &text,
-					       const shortcut &key_shortcut);
-
-	//! Create an button with a label, and a normal border.
-
-	//! \overload
-	button create_normal_button_with_label(const text_param &text,
-					       const shortcut &key_shortcut,
-					       const label_config &config);
-
-	//! Create an button with a label, and a special border.
-	button create_special_button_with_label(const text_param &text);
-
-	//! Create an button with a label, and a special border.
-
-	//! \overload
-	button create_special_button_with_label(const text_param &text,
-						const label_config &config);
-
-	//! Create an button with a label, and a special border.
-
-	//! \overload
-	button create_special_button_with_label(const text_param &text,
-						const shortcut &key_shortcut);
-
-	//! Create an button with a label, and a special border.
-
-	//! \overload
-	button create_special_button_with_label(const text_param &text,
-						const shortcut &key_shortcut,
-						const label_config &config);
-
-	//! Create an button with custom contents and a normal border.
-	template<typename functor>
-	button create_normal_button(functor &&f)
+	button create_button(functor &&f)
 	{
-		return do_create_normal_button(make_function<factory_creator_t>
-					       (std::forward<functor>(f))
-					       );
-	}
-
-	//! Create an button with custom contents and a normal border.
-
-	//! \overload
-	template<typename functor>
-	button create_normal_button(functor &&f,
-				    const shortcut &shortcut_key)
-	{
-		return do_create_normal_button(make_function<factory_creator_t>
-					       (std::forward<functor>(f)),
-					       shortcut_key);
-	}
-
-	//! Create an button with custom contents and a special border.
-	template<typename functor>
-	button create_special_button(functor &&f)
-	{
-		return do_create_special_button(make_function<factory_creator_t>
-						(std::forward<functor>(f))
-						);
-	}
-
-	//! Create an button with custom contents and a special border.
-
-	//! \overload
-	template<typename functor>
-	button create_special_button(functor &&f,
-				     const shortcut &shortcut_key)
-	{
-		return do_create_special_button(make_function<factory_creator_t>
-						(std::forward<functor>(f)),
-						shortcut_key);
-	}
-
-	//! Create a button with a custom border.
-
-	template<typename functor>
-	button create_button(const border_arg &arg, functor &&f)
-	{
-		return do_create_button(arg, make_function<factory_creator_t>
+		return do_create_button(make_function<factory_creator_t>
 					(std::forward<functor>(f)));
 	}
-	//! Create a button with a custom border.
 
-	template<typename functor>
-	button create_button(const border_arg &arg, functor &&f,
-			     const shortcut &shortcut_key)
+	//! Create a button using a callback to populate its contents.
+	template<typename functor,
+		 typename=std::void_t<decltype(std::declval<functor &&>()
+					       (std::declval<const factory &>())
+					       )>>
+	button create_button(functor &&f,
+			     const create_button_args_t &args)
 	{
-		return do_create_button(arg, make_function<factory_creator_t>
+		return do_create_button(make_function<factory_creator_t>
 					(std::forward<functor>(f)),
-					shortcut_key);
+					args);
 	}
 
-	//! Helper for creating buttons.
-	button do_create_normal_button(const function<factory_creator_t> &);
+	//! Type-erased create_button()
+	button do_create_button(const function<factory_creator_t> &creator);
 
-	//! Helper for creating buttons.
-	button do_create_special_button(const function<factory_creator_t> &);
-
-	//! Helper for creating buttons.
-	button do_create_normal_button(const function<factory_creator_t> &,
-				       const shortcut &);
-
-	//! Helper for creating buttons.
-	button do_create_special_button(const function<factory_creator_t> &,
-					const shortcut &);
-
-	//! Helper for creating buttons.
-	button do_create_button(const border_arg &,
-				const function<factory_creator_t> &);
-
-	//! Helper for creating buttons.
-	button do_create_button(const border_arg &,
-				const function<factory_creator_t> &,
-				const shortcut &);
-
-	//! Helper for creating buttons.
-	button create_button_with_label(const border_arg &theme_border,
-					const text_param &text,
-					const shortcut &shortcut_key);
-
-	//! Helper for creating buttons.
-	button create_button_with_label(const border_arg &theme_border,
-					const text_param &text,
-					const shortcut &shortcut_key,
-					const label_config &config);
+	//! Type-erased create_button()
+	button do_create_button(const function<factory_creator_t> &creator,
+				const create_button_args_t &args);
 
 	//! Create a text input field
 

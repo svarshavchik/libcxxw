@@ -204,7 +204,7 @@ with a bordered cell results in the same appearance, but with more overhead.
 #include <INSERT_LIBX_NAMESPACE/w/button.H>
 
 INSERT_LIBX_NAMESPACE::w::button button=
-   factory->create_normal_button(
+   factory->create_button(
           []
           (const INSERT_LIBX_NAMESPACE::w::factory &f)
           {
@@ -212,44 +212,108 @@ INSERT_LIBX_NAMESPACE::w::button button=
           });
 
 INSERT_LIBX_NAMESPACE::w::button button=
-   factory->create_special_button(
+   factory->create_button(
           []
           (const INSERT_LIBX_NAMESPACE::w::factory &f)
           {
               f->create_label({"Ok"});
+          },
+          {
+               INSERT_LIBX_NAMESPACE::w::default_button()
           });
 
-INSERT_LIBX_NAMESPACE::w::button button=
-   factory->create_normal_button_with_label({"Cancel"});
+INSERT_LIBX_NAMESPACE::w::button button=factory->create_button(
+     "Cancel"
+);
 
-INSERT_LIBX_NAMESPACE::w::button button=
-   factory->create_special_button_with_label({"Cancel"});
+#include <INSERT_LIBX_NAMESPACE/w/text_param_literals.H>
+
+INSERT_LIBX_NAMESPACE::w::button button=factory->create_button(
+     {
+       "underline"_decoration,
+       "C",
+       "no"_decoration,
+       "ancel"
+     },
+     {
+         INSERT_LIBX_NAMESPACE::w::shortcut{"Alt", 'C'}
+     });
 \endcode
 
-These functions create buttons. Buttons have either normal borders, or
-"special" borders, that emphasize that the button is the default choice,
-in some fashion.
+A clickable button. This is a container with one element, with a border
+drawn around it.
+The first parameter to create_button() is a callable object or a lambda that
+gets invoked to create the contents of the button. The callable object must
+use the passed-in factory object to create exactly one display element. This
+is what the button looks like.
 
-\c create_normal_button()'s and \c create_special_button()'s
-parameter
-is an initializer lambda. The initializer lambda receives its own
-factory as a parameter. The initializer lambda must use the factory to
-create a single display element that servers as the contents of the
-button.
+As with all other display elements, it is necessary to show() the display
+element, at some point. The created display element can be a container with
+other, multiple, display elements.
 
-create_normal_button_with_label() and
-create_special_button_with_label() are short-cuts that use
-\c create_label() to create the contents of the button, a plain
-text label. They take the same parameters as create_label().
+For a typical button, the first parameter to create_button() can be
+a text string,
+or a \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param". This is equivalent
+to passing a factory that calls create_label(), and show()ing the resulting
+label.
+
+create_button() has an optional second parameter that sets the new button's
+options:
 
 \code
-INSERT_LIBX_NAMESPACE::w::button button=
-   factory->create_normal_button_with_label({"Cancel"}, {'\n'});
+#include <INSERT_LIBX_NAMESPACE/w/button.H>
+
+INSERT_LIBX_NAMESPACE::w::button button=create_button(
+    "Ok",
+    {
+       INSERT_LIBX_NAMESPACE::w::label_config{},
+       INSERT_LIBX_NAMESPACE::w::default_button(),
+       INSERT_LIBX_NAMESPACE::w::shortcut{'\n'}
+    });
 \endcode
 
-When creating a button, a \ref shortcut "INSERT_LIBX_NAMESPACE::w::shortcut"
-is an optional second parameter that defines a keyboard shortcut
-for activating the button even when it does not have keyboard input focus.
+The second optional parameter is a
+\ref create_button_with_label_args_t "INSERT_LIBX_NAMESPACE::w::create_button_with_label_args_t"
+when the first parameter is a \ref text_param "text_param", or a
+\ref create_button_args_t "INSERT_LIBX_NAMESPACE::w::create_button_args_t"
+if the first parameter is a callable object.
+
+These are templates designed to accomodate <a href="/optionalargs.html">optional
+function arguments</a>:
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/button.H>
+
+INSERT_LIBX_NAMESPACE::w::button button=create_button(
+    "Ok",
+    {
+       INSERT_LIBX_NAMESPACE::w::default_button(),
+    });
+
+INSERT_LIBX_NAMESPACE::w::button button=create_button(
+    "Ok",
+    {
+       INSERT_LIBX_NAMESPACE::w::shortcut{'\n'}
+    });
+\endcode
+
+Each argument is optional, but the arguments, if they appear, must be
+in the specified order:
+
+- the \ref label_config "INSERT_LIBX_NAMESPACE::w::label_config" parameter
+exists only in the \c create_button_with_label_args_t that's used when the
+first parameter is a \c text_param, and gets forwarded to create_label().
+
+- the \ref button_config "INSERT_LIBX_NAMESPACE::w::button_config" parameter
+controls the visual appearance of the new button, and defaults to the value
+returned by \ref normal_button "INSERT_LIBX_NAMESPACE::w::normal_button"(), the
+default button border and background color.
+\ref default_button "INSERT_LIBX_NAMESPACE::w::default_button"() returns the
+settings for a button with a thicker border, visually indicating the default
+button on a form.
+
+- the \ref shortcut "INSERT_LIBX_NAMESPACE::w::shortcut" parameter specifies
+an optional keyboard shortcut that activates the button.
 
 \par Input fields
 

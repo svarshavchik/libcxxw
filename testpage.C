@@ -232,10 +232,10 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 
 	gf=glm->append_row();
 
-	auto name_button=gf->create_normal_button_with_label("Name");
-	auto address_button=gf->create_normal_button_with_label("Address");
-	auto phone_button=gf->create_normal_button_with_label("Phone");
-	auto clear_button=gf->create_normal_button_with_label("Clear");
+	auto name_button=gf->create_button("Name");
+	auto address_button=gf->create_button("Address");
+	auto phone_button=gf->create_button("Phone");
+	auto clear_button=gf->create_button("Clear");
 
 	clear_button->get_focus_before_me({name_button, address_button,
 				phone_button});

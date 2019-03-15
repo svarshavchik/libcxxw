@@ -272,7 +272,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	// stashes it away, then five seconds later gets rid of it, which
 	// reenables input processing.
 
-	factory->create_normal_button_with_label
+	factory->create_button
 		({"Shade"})->on_activate
 		([mythread]
 		 (ONLY IN_THREAD,
@@ -283,7 +283,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	factory=layout->append_row();
 
-	factory->create_normal_button_with_label
+	factory->create_button
 		({"Pointer"})->on_activate
 		([mythread]
 		 (ONLY IN_THREAD,

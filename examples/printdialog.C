@@ -174,7 +174,7 @@ my_appObj::my_appObj(const x::w::main_window &main_window)
 static inline void initialize_mainwindow(const x::w::gridfactory &f)
 {
 	// The main window is just a button. With plenty of padding.
-	auto b=f->padding(20).create_normal_button_with_label
+	auto b=f->padding(20).create_button
 		({
 			x::w::text_decoration::underline,
 			"P",

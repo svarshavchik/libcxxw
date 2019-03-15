@@ -442,7 +442,7 @@ void listtest(const LIBCXX_NAMESPACE::w::screen &default_screen,
 
 	factory=layout->append_row();
 
-	auto b=factory->create_normal_button_with_label("Bigger/Smaller");
+	auto b=factory->create_button("Bigger/Smaller");
 
 	b->on_activate
 		([=]
@@ -462,7 +462,7 @@ void listtest(const LIBCXX_NAMESPACE::w::screen &default_screen,
 	factory->create_canvas();
 	factory=layout->append_row();
 
-	b=factory->create_normal_button_with_label("Reorder");
+	b=factory->create_button("Reorder");
 
 	b->on_activate
 		([l]
@@ -493,7 +493,7 @@ void listtest(const LIBCXX_NAMESPACE::w::screen &default_screen,
 	factory->create_canvas();
 
 	factory=layout->append_row();
-	b=factory->create_normal_button_with_label("Swap Header");
+	b=factory->create_button("Swap Header");
 
 	b->on_activate
 		([l, flag=false]

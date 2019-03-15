@@ -54,7 +54,7 @@ void create_peepholed_buttons(const container &c)
 
 		o << "Button " << (char)('A'+i);
 
-		f->create_normal_button_with_label(o.str())->show();
+		f->create_button(o.str())->show();
 	}
 }
 

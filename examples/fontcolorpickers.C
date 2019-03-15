@@ -203,7 +203,7 @@ auto create_mainwindow(const x::w::main_window &main_window,
 
 	factory=layout->append_row();
 	factory->colspan(2).halign(x::w::halign::center)
-		.create_normal_button_with_label("Normal Font")
+		.create_button("Normal Font")
 		->on_activate
 		([fp]
 		 (ONLY IN_THREAD,
@@ -225,7 +225,7 @@ auto create_mainwindow(const x::w::main_window &main_window,
 
 	factory=layout->append_row();
 	factory->colspan(2).halign(x::w::halign::center)
-		.create_normal_button_with_label("Bold Font")
+		.create_button("Bold Font")
 		->on_activate
 		([fp]
 		 (ONLY IN_THREAD,
@@ -240,7 +240,7 @@ auto create_mainwindow(const x::w::main_window &main_window,
 
 	factory=layout->append_row();
 	factory->colspan(2).halign(x::w::halign::center)
-		.create_normal_button_with_label("Heading Font")
+		.create_button("Heading Font")
 		->on_activate
 		([fp]
 		 (ONLY IN_THREAD,
@@ -259,7 +259,7 @@ auto create_mainwindow(const x::w::main_window &main_window,
 
 	factory=layout->append_row();
 	factory->colspan(2).halign(x::w::halign::center)
-		.create_normal_button_with_label("Random color")
+		.create_button("Random color")
 		->on_activate
 		([cp,
 		  random_color_generator=random_color_source::create()]

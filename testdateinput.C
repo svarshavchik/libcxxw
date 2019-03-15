@@ -73,7 +73,7 @@ void testdateinput()
 
 				 factory=layout->append_row();
 
-				 auto ed=factory->create_normal_button_with_label("Enable/Disable");
+				 auto ed=factory->create_button("Enable/Disable");
 
 				 ed->on_activate([di, flag=false]
 						 (THREAD_CALLBACK,

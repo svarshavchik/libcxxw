@@ -134,7 +134,7 @@ static inline void create_main_window(const LIBCXX_NAMESPACE::w::main_window &ma
 		layout=main_window->get_layoutmanager();
 	LIBCXX_NAMESPACE::w::gridfactory factory=layout->append_row();
 
-	factory->create_normal_button_with_label
+	factory->create_button
 		({"Shade"})->on_activate
 		([mythread]
 		 (THREAD_CALLBACK,
@@ -144,7 +144,7 @@ static inline void create_main_window(const LIBCXX_NAMESPACE::w::main_window &ma
 
 	factory=layout->append_row();
 
-	factory->create_normal_button_with_label
+	factory->create_button
 		({"Pointer"})->on_activate
 		([mythread]
 		 (THREAD_CALLBACK,

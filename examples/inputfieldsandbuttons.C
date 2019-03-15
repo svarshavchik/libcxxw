@@ -167,20 +167,27 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 			 // Cancel button, on the beginning of the row.
 
-			 auto cancel=factory->create_normal_button_with_label
+			 auto cancel=factory->create_button
 				 ({"Cancel"},
+
+				  // Button options:
+				  //
 				  // Esc key for a shortcut
-				  {'\e'});
+				  x::w::shortcut{'\e'});
 
 			 // Next to it is a "Reset" button, with an
 			 // underlined "R", with an "Alt"-R shortcut.
 			 // "R" can be specified in upper or lowercase.
 
-			 auto reset=factory->create_normal_button_with_label
+			 auto reset=factory->create_button
 				 ({"underline"_decoration,
 				   "R",
 				   "no"_decoration,
-				   "eset"}, {"Alt",'R'});
+				   "eset"},
+
+					 // Button options, keyboard shortcut.
+
+					 x::w::shortcut{"Alt",'R'});
 
 			 // Add empty space here, between the buttons.
 			 // By default, create_canvas() creates a canvas
@@ -201,10 +208,52 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 			 // The "Ok" button at the end of the row.
 
-			 auto ok=factory->create_special_button_with_label
-				 ({"Ok"},
-				  // Enter key for a shortcut
-				  {'\n'});
+			 // An alternative overload of create_button()
+			 // takes a generic callable object as the first
+			 // parameter instead of a label.
+
+			 auto ok=factory->create_button
+				 ([]
+				  (const x::w::factory &f)
+				  {
+					  // The callable object uses the
+					  // factory parameter that it
+					  // receives as its own parameter
+					  // (and not the factory that's
+					  // creating the button itself).
+					  //
+					  // The callable object uses this
+					  // factory to create the display
+					  // element that becomes the button's
+					  // contents. This can be a container
+					  // with many display elements.
+					  //
+					  // Using create_label() is equivalent
+					  // to using create_button() directly
+					  // with a text string:
+
+					  auto l=f->create_label("Ok");
+
+					  // As with any other display element,
+					  // it must be show()n to be visible.
+					  l->show();
+				  },
+				  // Two options for this button. The second
+				  // parameter to create_button() is an
+				  // variadic template for all needed options,
+				  // that must be passed in as a single
+				  // parameter, in the listed order, see the
+				  // documentation.
+				  //
+				  // Uniform initialization syntax is the
+				  // easiest way to go:
+				  {
+					  // Thicker border, visual indication
+					  // of a default button.
+					  x::w::default_button(),
+					  // Enter key for a shortcut
+					  x::w::shortcut{'\n'}
+				  });
 
 			 // Specify what happens when the buttons get
 			 // activated.

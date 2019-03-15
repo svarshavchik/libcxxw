@@ -55,17 +55,21 @@ void testbutton()
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				     layout->append_row();
 
-				 factory->create_normal_button_with_label
-				 ({"Hello"})->on_activate
-				 ([]
-				  (THREAD_CALLBACK,
-				   const auto &, const auto &) {
-					 std::cout << "Hello!" << std::endl;
-				 });
+				 factory->create_button
+					 ({"Hello"})->on_activate
+					 ([]
+					  (THREAD_CALLBACK,
+					   const auto &, const auto &) {
+						  std::cout << "Hello!"
+							    << std::endl;
+					  });
 
 
-				 factory->create_special_button_with_label
-				 ({"World"})->on_activate
+				 factory->create_button
+					 ({"World"},
+					  {
+						  LIBCXX_NAMESPACE::w::default_button()
+							  })->on_activate
 				 ([]
 				  (THREAD_CALLBACK,
 				   const auto &, const auto &) {

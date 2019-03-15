@@ -257,7 +257,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 
 	gf=glm->append_row();
 
-	auto b=gf->create_normal_button_with_label("Open 1st page");
+	auto b=gf->create_button("Open 1st page");
 
 	b->on_activate([c]
 		       (ONLY IN_THREAD,
@@ -271,7 +271,9 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 		       });
 	b->show();
 
-	b=gf->create_normal_button_with_label("Close");
+	b=gf->create_button("Close", {
+			LIBCXX_NAMESPACE::w::normal_button()
+				});
 
 	b->on_activate([c]
 		       (ONLY IN_THREAD,

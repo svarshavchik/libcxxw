@@ -608,14 +608,20 @@ void testbutton()
 
 			 factory=layout->append_row();
 
-			 auto b=factory->create_special_button_with_label({"Ok"});
+			 auto b=factory->create_button
+				 ("Ok",
+				  {
+					  LIBCXX_NAMESPACE::w::default_button()
+						  });
 			 b->on_activate([close_flag](THREAD_CALLBACK,
 						     const auto &,
 						     const auto &) {
 						close_flag->close();
 					});
 			 factory=layout->append_row();
-			 b=factory->create_special_button_with_label("Enable/Disable");
+			 b=factory->create_button("Enable/Disable", {
+					 LIBCXX_NAMESPACE::w::default_button(),
+						 });
 			 b->on_activate
 			 ([flag=true,
 			   mw=LIBCXX_NAMESPACE::make_weak_capture(main_window)]

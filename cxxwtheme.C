@@ -604,8 +604,10 @@ static w::container create_main_window(const w::main_window &mw)
 
 			 auto f=glm->append_row();
 
-			 f->create_normal_button_with_label
-				 ("Cancel", {'\e'})->on_activate
+			 f->create_button
+				 ("Cancel", { LIBCXX_NAMESPACE::w::shortcut
+					 {'\e'}
+				 })->on_activate
 				 ([]
 				  (THREAD_CALLBACK,
 				   const auto &ignore1,
@@ -619,7 +621,7 @@ static w::container create_main_window(const w::main_window &mw)
 					  appstate->close();
 				  });
 
-			 f->create_normal_button_with_label
+			 f->create_button
 				 ("Set")->on_activate
 				 ([conn]
 				  (THREAD_CALLBACK,
@@ -646,13 +648,17 @@ static w::container create_main_window(const w::main_window &mw)
 					  appstate->close();
 				  });
 
-			 f->create_special_button_with_label
+			 f->create_button
 				 ({
 					 "underline"_decoration,
-						 "S",
-						 "no"_decoration,
-						 "et and save"
-						 }, {"Alt", 's'})->on_activate
+					 "S",
+					 "no"_decoration,
+					 "et and save"
+				 }, {
+					 LIBCXX_NAMESPACE::w::default_button(),
+						 LIBCXX_NAMESPACE::w::shortcut
+					 {"Alt", 's'}
+				 })->on_activate
 				 ([conn]
 				  (THREAD_CALLBACK,
 				   const auto &ignore1,
@@ -1126,8 +1132,7 @@ static void demo_misc_column1(const w::gridlayoutmanager &lm)
 		 });
 
 	auto b=lm->append_row()->colspan(2).halign(w::halign::center)
-		.create_normal_button_with_label
-		("Busy pointer with a tooltip");
+		.create_button("Busy pointer with a tooltip");
 
 	b->create_tooltip("Click me to be busy for 5 seconds\n"
 			  "\n"

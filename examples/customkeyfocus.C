@@ -436,7 +436,7 @@ void testcustomfocus(const options &opts)
 
 			 factory=layout->append_row();
 
-			 auto b=factory->create_normal_button_with_label("Enable/Disable");
+			 auto b=factory->create_button("Enable/Disable");
 
 			 b->on_activate([c, status=true]
 					(ONLY IN_THREAD,

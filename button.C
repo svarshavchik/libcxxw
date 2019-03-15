@@ -7,6 +7,7 @@
 #include "gridlayoutmanager.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/factory.H"
+#include "x/w/button.H"
 #include "x/w/label.H"
 #include "x/w/border_arg.H"
 #include "x/w/text_param_literals.H"
@@ -24,6 +25,24 @@
 #include "connection_thread.H"
 
 LIBCXXW_NAMESPACE_START
+
+const button_config &normal_button()
+{
+	static const button_config config={
+		"normal_button_border",
+	};
+
+	return config;
+}
+
+const button_config &default_button()
+{
+	static const button_config config={
+		"special_button_border",
+	};
+
+	return config;
+}
 
 namespace {
 #if 0
@@ -174,46 +193,6 @@ focusable_impl buttonObj::get_impl() const
 	return ffc->get_impl();
 }
 
-button factoryObj::do_create_normal_button(const function<factory_creator_t> &f)
-{
-	return do_create_normal_button(f, {});
-}
-
-button factoryObj::do_create_normal_button(const function<factory_creator_t> &f,
-					   const shortcut &sk)
-{
-	return do_create_button("normal_button_border", f, sk);
-}
-
-button factoryObj::do_create_special_button(const function<factory_creator_t>&f)
-{
-	return do_create_special_button(f, {});
-}
-
-button factoryObj::do_create_special_button(const function<factory_creator_t>&f,
-					    const shortcut &sk)
-{
-	return do_create_button("special_button_border", f, sk);
-}
-
-button factoryObj::do_create_button(const border_arg &theme_border,
-				    const function<factory_creator_t> &f)
-{
-	return do_create_button(theme_border, f, {});
-}
-
-button factoryObj::do_create_button(const border_arg &theme_border,
-				    const function<factory_creator_t> &f,
-				    const shortcut &shortcut_key)
-{
-	return do_create_button_with_explicit_borders
-		(*this, theme_border, theme_border, theme_border, theme_border,
-		 "button_normal_color",
-		 "button_selected_color",
-		 "button_active_color",
-		 f, shortcut_key, {});
-}
-
 button do_create_button_with_explicit_borders
 (factoryObj &f,
  const border_arg &left_border,
@@ -256,93 +235,6 @@ button do_create_button_with_explicit_borders
 	return ab;
 }
 
-button
-factoryObj::create_normal_button_with_label(const text_param &text)
-{
-	return create_normal_button_with_label(text, label_config{});
-}
-
-button
-factoryObj::create_normal_button_with_label(const text_param &text,
-					    const label_config &config)
-{
-	return create_normal_button_with_label(text,
-					       {},
-					       config);
-}
-
-button
-factoryObj::create_normal_button_with_label(const text_param &text,
-					    const shortcut &shortcut_key)
-{
-	return create_normal_button_with_label(text, shortcut_key, {});
-}
-
-button
-factoryObj::create_normal_button_with_label(const text_param &text,
-					    const shortcut &shortcut_key,
-					    const label_config &config)
-{
-	return create_button_with_label("normal_button_border",
-					text, shortcut_key, config);
-}
-
-button
-factoryObj::create_special_button_with_label(const text_param &text)
-{
-	return create_special_button_with_label(text, label_config{});
-}
-
-button
-factoryObj::create_special_button_with_label(const text_param &text,
-					     const label_config &config)
-{
-	return create_special_button_with_label(text,
-						{},
-						config);
-}
-
-button
-factoryObj::create_special_button_with_label(const text_param &text,
-					     const shortcut &shortcut_key)
-{
-	return create_special_button_with_label(text, shortcut_key, {});
-}
-
-button
-factoryObj::create_special_button_with_label(const text_param &text,
-					     const shortcut &shortcut_key,
-					     const label_config &config)
-{
-	return create_button_with_label("special_button_border",
-					text, shortcut_key, config);
-}
-
-button
-factoryObj::create_button_with_label(const border_arg &theme_border,
-				     const text_param &text,
-				     const shortcut &shortcut_key)
-{
-	return create_button_with_label(theme_border, text, shortcut_key, {});
-}
-
-button
-factoryObj::create_button_with_label(const border_arg &theme_border,
-				     const text_param &text,
-				     const shortcut &shortcut_key,
-				     const label_config &config)
-{
-	return do_create_button
-		(theme_border,
-		 make_function<factory_creator_t>
-		 ([&]
-		  (const auto &f)
-		  {
-			  f->create_label(text, config)->show();
-		  }),
-		 shortcut_key);
-}
-
 layout_impl buttonObj::get_layout_impl() const
 {
 	layout_implptr l;
@@ -367,6 +259,71 @@ singletonlayoutmanager buttonObj::get_layoutmanager()
 const_singletonlayoutmanager buttonObj::get_layoutmanager() const
 {
 	return containerObj::get_layoutmanager();
+}
+
+button factoryObj::create_button(const text_param &text)
+{
+	return create_button(text, {});
+}
+
+button factoryObj::create_button(const text_param &text,
+				 const create_button_with_label_args_t &args)
+{
+	std::optional<label_config> default_label_config;
+
+	const auto &opt_label_config=
+		optional_arg_or<label_config>(args, default_label_config);
+
+	std::optional<shortcut> default_shortcut;
+
+	const auto &opt_shortcut=
+		optional_arg_or<shortcut>(args, default_shortcut);
+
+	const auto &specified_button_config=optional_arg<button_config>(args);
+
+	const button_config &opt_button_config=
+		specified_button_config
+		? static_cast<const button_config &>(*specified_button_config)
+		: normal_button();
+
+	return do_create_button
+		(make_function<factory_creator_t>
+		 ([&]
+		  (const auto &f)
+		  {
+			  f->create_label(text, opt_label_config)->show();
+		  }),
+		 {opt_button_config, opt_shortcut});
+}
+
+button factoryObj::do_create_button(const function<factory_creator_t> &creator)
+{
+	return do_create_button(creator, {});
+}
+
+button factoryObj::do_create_button(const function<factory_creator_t> &creator,
+				    const create_button_args_t &args)
+{
+	std::optional<shortcut> default_shortcut;
+
+	const auto &opt_shortcut=
+		optional_arg_or<shortcut>(args, default_shortcut);
+
+	const auto &specified_button_config=optional_arg<button_config>(args);
+
+	const button_config &opt_button_config=
+		specified_button_config
+		? static_cast<const button_config &>(*specified_button_config)
+		: normal_button();
+
+	const auto &theme_border=opt_button_config.border;
+
+	return do_create_button_with_explicit_borders
+		(*this, theme_border, theme_border, theme_border, theme_border,
+		 "button_normal_color",
+		 "button_selected_color",
+		 "button_active_color",
+		 creator, opt_shortcut, {});
 }
 
 LIBCXXW_NAMESPACE_END

@@ -228,16 +228,16 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 			 auto factory=layout->append_row();
 
 			 fields.insert_column=
-				 factory->create_normal_button_with_label("Insert column");
+				 factory->create_button("Insert column");
 
 			 fields.remove_column=
-				 factory->create_normal_button_with_label("Remove column");
+				 factory->create_button("Remove column");
 
 			 fields.insert_row=
-				 factory->create_normal_button_with_label("Insert row");
+				 factory->create_button("Insert row");
 
 			 fields.remove_row=
-				 factory->create_normal_button_with_label("Remove row");
+				 factory->create_button("Remove row");
 		 },
 		 x::w::new_gridlayoutmanager());
 

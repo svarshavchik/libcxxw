@@ -271,30 +271,30 @@ static void create_mainwindow(const x::w::main_window &mw)
 
 	gf=glm->append_row();
 
-	auto name_button=gf->create_normal_button_with_label
+	auto name_button=gf->create_button
 		({"underline"_decoration,
 				"N",
 				"no"_decoration,
 				"ame"},
-		 {"Alt", 'N'});
-	auto address_button=gf->create_normal_button_with_label
+			x::w::shortcut{"Alt", 'N'});
+	auto address_button=gf->create_button
 		({"underline"_decoration,
 				"A",
 				"no"_decoration,
 				"ddress"},
-		 {"Alt", 'A'});
-	auto phone_button=gf->create_normal_button_with_label
+			x::w::shortcut{"Alt", 'A'});
+	auto phone_button=gf->create_button
 		({"underline"_decoration,
 				"P",
 				"no"_decoration,
 				"hone"},
-		 {"Alt", 'P'});
-	auto clear_button=gf->create_normal_button_with_label
+			x::w::shortcut{"Alt", 'P'});
+	auto clear_button=gf->create_button
 		({"underline"_decoration,
 				"C",
 				"no"_decoration,
 				"lear"},
-		 {"Alt", 'C'});
+			x::w::shortcut{"Alt", 'C'});
 
 	/*
 	** The first three buttons open the corresponding page,

@@ -633,9 +633,14 @@ dialog_ok_button(const text_param &label,
 		 char32_t key)
 {
 	return [label, &ret, key](const factory &f)
-	{
-		ret=f->create_special_button_with_label(label, {key});
-	};
+	       {
+		       ret=f->create_button
+			       (label,
+				{
+					default_button(),
+						shortcut{key}
+				});
+	       };
 }
 
 functionref<void (const factory &)>
@@ -644,8 +649,13 @@ dialog_cancel_button(const text_param &label,
 		     char32_t key)
 {
 	return [label, &ret, key](const factory &f)
-	{
-		ret=f->create_normal_button_with_label(label, {key});
+	       {
+		       ret=f->create_button
+			       (label,
+				{
+				       normal_button(),
+					       shortcut{key}
+				});
 	};
 }
 

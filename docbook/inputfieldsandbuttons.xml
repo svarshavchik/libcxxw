@@ -418,27 +418,25 @@ text_field->create_tooltip("A brief message, a few lines long.", 30);</programli
       <link linkend="inputfieldsandbuttons"><filename>inputfieldsandbuttons.C</filename></link>
       creates three buttons at the bottom of the window,
       using a &factory;'s
-      <methodname>create_normal_button_with_label</methodname>() and
-      <methodname>create_special_button_with_label</methodname>() methods.
-      The only difference between normal and special buttons is the buttons'
-      border: a normal border, and a thick border. In all other respects, there
-      is no difference between a normal and a special
+      <methodname>create_button</methodname>() method which returns a new
       <ulink url="&link-typedef-x--w-button;"><classname>&ns;::w::button</classname></ulink>.
     </para>
 
     <para>
-      A &factory; also offers more generic
-      <methodname>create_normal_button</methodname>() and
-      <methodname>create_special_button</methodname>() methods.
-      <filename>inputfieldsandbuttons.C</filename> creates ordinary buttons
-      with a simple text label inside them, but a button's contents are
-      arbitrary:
+      <methodname>create_button</methodname>()'s first parameter is a
+      <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>
+      that's constructible from a plain text string, but also offers the means
+      of specifying fonts and colors.
+      <link linkend="inputfieldsandbuttons"><filename>inputfieldsandbuttons.C</filename></link>
+      demonstrates how to use
+      an alternative <methodname>create_button</methodname>() overload that
+      uses a &factory; to create the <quote>Ok</quote> button's content:
     </para>
 
     <blockquote>
       <informalexample>
 	<programlisting>
-factory->create_normal_button([]
+factory->create_button([]
      (const &ns;::w::factory &amp;f)
      {
 
@@ -447,8 +445,7 @@ factory->create_normal_button([]
     </blockquote>
 
     <para>
-      <methodname>create_normal_button</methodname>() and
-      <methodname>create_special_button</methodname>() take a single lambda
+      This overload takes a single lambda or a callable object
       as a parameter. The lambda receives another factory as its sole
       argument, and is expected to use that factory to create a single display
       element. This becomes the contents of the button. Like all display
@@ -457,18 +454,86 @@ factory->create_normal_button([]
     </para>
 
     <para>
-      <methodname>create_normal_button_with_label</methodname>() and
-      <methodname>create_special_button_with_label</methodname>() are simply
-      wrappers that <link linkend="labels">use
+      The
+      <methodname>create_button</methodname>() that takes a text string
+      parameter is just a wrapper that <link linkend="labels">uses
 	<methodname>create_label</methodname>()</link> to put the label into
-      the button, and <methodname>show</methodname>() it.
+      the button, and <methodname>show</methodname>() it, like demonstrated
+      by <filename>inputfieldsandbuttons.C</filename>.
     </para>
 
     <para>
-      An optional second parameter specifies the button's keyboard shortcut,
-      this is a
-      <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>
-      object.
+      <methodname>create_button</methodname>'s optional second parameter
+      specifies non-default button settings and configurations:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+factory->create_button("Ok",
+     {
+         &ns;::w::default_button(),
+         &ns;::w::shortcut{'\n'},
+     });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This second parameter is a template that takes a variadic list of
+      values, and
+      the simplest approach is to simply use the uniform initialization syntax
+      to construct the parameter object.
+      Multiple values must appear in the following order:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>
+	</term>
+	<listitem>
+	  <para>
+	    This value is only allowed as an option when
+	    <methodname>create_button</methodname>()'s first parameter is
+	    a <classname>&ns;::w::text_param</classname>. This value gets
+	    forwarded to <methodname>create_label</methodname> when creating
+	    the new button's label.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <ulink url="&link-x--w--button-config;"><classname>&ns;::w::button_config</classname></ulink>
+	</term>
+	<listitem>
+	  <para>
+	    This setting specifies the button's visual appearance. The default
+	    value for this setting gets returned by
+	    <ulink url="&link-function-x--w-normal-button;"><function>&ns;::w::normal_button</function></ulink>().
+	    This results in a regular button, with a normal border.
+	  </para>
+	  <para>
+	    <ulink url="&link-function-x--w-default-button;"><function>&ns;::w::default_button</function></ulink>()
+	    returns an alternative appearance with a thicker border;
+	    typically for a window's default button that gets activated
+	    by <keycap>Enter</keycap> key.
+
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>
+	</term>
+	<listitem>
+	  <para>
+	    A keyboard shortcut.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>
       There are several ways to activate a button:
     </para>
 

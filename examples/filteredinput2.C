@@ -62,7 +62,7 @@ create_mainwindow(const x::w::main_window &main_window,
 
 	factory->create_canvas();
 
-	factory->create_special_button_with_label("Ok")
+	factory->create_button("Ok", x::w::default_button() )
 		->on_activate([close_flag]
 			      (ONLY IN_THREAD,
 			       const auto &trigger,

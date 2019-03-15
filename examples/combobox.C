@@ -122,7 +122,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	// calls append_items().
 
 	auto button=layout->append_row()->colspan(2)
-		.create_special_button_with_label("Append row");
+		.create_button("Append row");
 
 	button->on_activate([=, counter=0]
 			    (ONLY IN_THREAD,
@@ -144,7 +144,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	// Same deal for insert_items().
 
 	button=layout->append_row()->colspan(2)
-		.create_special_button_with_label("Insert row");
+		.create_button("Insert row");
 
 	button->on_activate([=, counter=0]
 			    (ONLY IN_THREAD,
@@ -166,7 +166,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	// Same deal for replace_items(), delete_item(), and size():
 
 	button=layout->append_row()->colspan(2)
-		.create_special_button_with_label("Replace row");
+		.create_button("Replace row");
 
 	button->on_activate([=, counter=0]
 			    (ONLY IN_THREAD,
@@ -189,7 +189,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	button->show();
 
 	button=layout->append_row()->colspan(2)
-		.create_special_button_with_label("Delete row");
+		.create_button("Delete row");
 
 	button->on_activate([=, counter=0]
 			    (ONLY IN_THREAD,
@@ -208,7 +208,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	button->show();
 
 	button=layout->append_row()->colspan(2)
-		.create_special_button_with_label("Reset");
+		.create_button("Reset");
 
 	button->on_activate([=, counter=0]
 			    (ONLY IN_THREAD,

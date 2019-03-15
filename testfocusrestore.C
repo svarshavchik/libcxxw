@@ -86,7 +86,7 @@ void create_mainwindow(const main_window &mw)
 
 	f->create_input_field("", config);
 
-	f->create_normal_button_with_label("Ok");
+	f->create_button("Ok");
 }
 
 void testfocusrestore()

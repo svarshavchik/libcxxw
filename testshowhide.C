@@ -68,10 +68,10 @@ void testshowhide()
 
 			 auto factory=layout->append_row();
 
-			 factory->border(my_border).create_normal_button_with_label({"Show/Hide 1"});
+			 factory->border(my_border).create_button({"Show/Hide 1"});
 
-			 auto button1=factory->border(my_border).remove_when_hidden().create_normal_button_with_label({"Button 1"});
-			 auto button2=factory->border(my_border).create_normal_button_with_label({"Button 2"});
+			 auto button1=factory->border(my_border).remove_when_hidden().create_button({"Button 1"});
+			 auto button2=factory->border(my_border).create_button({"Button 2"});
 			 rgb yellow{rgb::maximum, rgb::maximum, 0};
 
 			 button1->set_background_color(yellow);
@@ -80,7 +80,7 @@ void testshowhide()
 			 buttons.button1=button1;
 			 buttons.button2=button2;
 
-			 factory->border(my_border).create_normal_button_with_label({"Show/Hide 2"});
+			 factory->border(my_border).create_button({"Show/Hide 2"});
 		 });
 
 	main_window->set_window_title("Hello world!");

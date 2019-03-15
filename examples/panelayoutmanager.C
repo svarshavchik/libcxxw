@@ -129,7 +129,7 @@ static void create_main_window(const x::w::main_window &mw,
 	factory=layout->append_row();
 
 	factory->halign(x::w::halign::left);
-	auto b=factory->create_normal_button_with_label("Insert");
+	auto b=factory->create_button("Insert");
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]
@@ -141,7 +141,7 @@ static void create_main_window(const x::w::main_window &mw,
 		       });
 
 	factory->halign(x::w::halign::right);
-	b=factory->create_normal_button_with_label("Append");
+	b=factory->create_button("Append");
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]
@@ -155,7 +155,7 @@ static void create_main_window(const x::w::main_window &mw,
 	factory=layout->append_row();
 
 	factory->halign(x::w::halign::left);
-	b=factory->create_normal_button_with_label("Remove 1st pane");
+	b=factory->create_button("Remove 1st pane");
 
 	b->show();
 	b->on_activate([pane]
@@ -166,7 +166,7 @@ static void create_main_window(const x::w::main_window &mw,
 		       });
 
 	factory->halign(x::w::halign::right);
-	b=factory->create_normal_button_with_label("Remove last pane");
+	b=factory->create_button("Remove last pane");
 
 	b->show();
 	b->on_activate([pane]
@@ -179,7 +179,7 @@ static void create_main_window(const x::w::main_window &mw,
 	factory=layout->append_row();
 
 	factory->halign(x::w::halign::left);
-	b=factory->create_normal_button_with_label("Replace 1st pane");
+	b=factory->create_button("Replace 1st pane");
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]
@@ -191,7 +191,7 @@ static void create_main_window(const x::w::main_window &mw,
 		       });
 
 	factory->halign(x::w::halign::right);
-	b=factory->create_normal_button_with_label("Remove all panes");
+	b=factory->create_button("Remove all panes");
 
 	b->show();
 	b->on_activate([pane]
@@ -217,7 +217,7 @@ static void create_main_window(const x::w::main_window &mw,
 	else
 	{
 		factory->halign(x::w::halign::left);
-		b=factory->create_normal_button_with_label("Insert list");
+		b=factory->create_button("Insert list");
 
 		b->show();
 		b->on_activate([pane]
@@ -229,7 +229,7 @@ static void create_main_window(const x::w::main_window &mw,
 	}
 	factory->halign(x::w::halign::right);
 
-	b=factory->create_normal_button_with_label("Replace All");
+	b=factory->create_button("Replace All");
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]

@@ -246,7 +246,7 @@ x::ref<my_appObj> create_mainwindow(const x::w::main_window &mw)
 		 });
 
 	// The "Ok" button doesn't do anything.
-	f->create_normal_button_with_label("Ok");
+	f->create_button("Ok");
 
 	return x::ref<my_appObj>::create(mw, file_menu, ifield);
 }

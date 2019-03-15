@@ -124,18 +124,18 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 
 			for (const auto &col:row)
 			{
-				auto b=f->create_normal_button
+				auto b=f->create_button
 					([&]
 					 (const auto &f)
 					 {
 						 f->create_canvas
-						 ([&]
-						  (const auto &c) {
-							 c->set_background_color
-							 (col);
-						 },
-					{"color_picker_basic_color_width"},
-					{"color_picker_basic_color_height"});
+							 ([&]
+							  (const auto &c) {
+								  c->set_background_color
+									  (col);
+							  },
+							  {"color_picker_basic_color_width"},
+							  {"color_picker_basic_color_height"});
 					 });
 
 				basic_colors.push_back(std::tuple{col, b});
@@ -152,26 +152,26 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 		{"filler", dialog_filler()},
 		{"h-button", [&](const auto &f)
 			{
-				h_button=f->create_normal_button
+				h_button=f->create_button
 					([&]
 					 (const auto &button_factory)
 					 {
 						 h_canvas=button_factory
-						 ->create_canvas
-						 ([] (const auto &){}, {
-						 }, {sh});
+							 ->create_canvas
+							 ([] (const auto &){}, {
+							 }, {sh});
 					 });
 			}},
 		{"v-button", [&](const auto &f)
 			{
-				v_button=f->create_normal_button
+				v_button=f->create_button
 					([&]
 					 (const auto &button_factory)
 					 {
 						 v_canvas=button_factory
-						 ->create_canvas
-						 ([](const auto &) {}, {
-							 sw}, {});
+							 ->create_canvas
+							 ([](const auto &) {}, {
+								 sw}, {});
 					 });
 			}},
 		{"h-button-spacing", [&](const auto &f)

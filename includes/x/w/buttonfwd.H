@@ -5,12 +5,25 @@
 #ifndef x_w_buttonfwd_h
 #define x_w_buttonfwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/labelfwd.H>
+#include <x/w/shortcutfwd.H>
+#include <x/optional_argsfwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC buttonObj;
+
+struct button_config;
+
+//! The options for a \ref factory "factory"'s create_button().
+
+typedef optional_argconstrefs<label_config, button_config,
+			      shortcut> create_button_with_label_args_t;
+
+//! The options for a \ref factory "factory"'s create_button().
+
+typedef optional_argconstrefs<button_config, shortcut> create_button_args_t;
 
 //! A clickable button.
 

@@ -38,7 +38,7 @@ void create_peepholed_buttons(const x::w::container &c)
 
 		o << "Button " << (char)('A'+i);
 
-		f->create_normal_button_with_label(o.str());
+		f->create_button(o.str());
 	}
 }
 
@@ -107,14 +107,16 @@ void create_peepholes(const x::w::main_window &mw)
 	f=glm->append_row();
 	auto flip_button=f->halign(x::w::halign::center)
 		.left_padding(20)
-		.create_special_button_with_label
+		.create_button
 		({
 		  "underline"_decoration,
 		  "F",
 		  "no"_decoration,
 		  "lip"
-		},
-			{"Alt", 'F'});
+		}, {
+			x::w::default_button(),
+			x::w::shortcut{"Alt", 'F'},
+		});
 
 	// The flip button is not a direct parent or child of the
 	// buttom_peephole, so its callback can safely capture it by value.

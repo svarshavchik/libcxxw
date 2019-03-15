@@ -215,8 +215,11 @@ void testcombobox(const testcombobox_options &options)
 			 factory=layout->append_row();
 
 			 factory->halign(halign::fill)
-				 .create_normal_button_with_label
-				 ({"Append"},{"Alt", 'A'})
+				 .create_button
+				 ({"Append"},{
+					 LIBCXX_NAMESPACE::w::shortcut{"Alt",
+							 'A'}
+				 })
 				 ->on_activate
 				 ([combobox, i=0](THREAD_CALLBACK,
 						  const auto &,
@@ -236,7 +239,7 @@ void testcombobox(const testcombobox_options &options)
 			 factory=layout->append_row();
 
 			 factory->halign(halign::fill)
-				 .create_normal_button_with_label("Delete")
+				 .create_button("Delete")
 				 ->on_activate
 				 ([combobox](THREAD_CALLBACK,
 					     const auto &,
@@ -254,7 +257,7 @@ void testcombobox(const testcombobox_options &options)
 			 factory=layout->append_row();
 
 			 factory->halign(halign::center)
-				 .create_normal_button_with_label
+				 .create_button
 				 ({"Append Separator"})
 				 ->on_activate
 				 ([combobox](THREAD_CALLBACK,
@@ -273,7 +276,7 @@ void testcombobox(const testcombobox_options &options)
 			 factory=layout->append_row();
 
 			 factory->halign(halign::center)
-				 .create_normal_button_with_label
+				 .create_button
 				 ({"Insert Separator"})
 				 ->on_activate
 				 ([combobox](THREAD_CALLBACK,
@@ -293,7 +296,7 @@ void testcombobox(const testcombobox_options &options)
 			 factory=layout->append_row();
 
 			 factory->halign(halign::center)
-				 .create_normal_button_with_label
+				 .create_button
 				 ({"Disable/Enable 1st item"})
 				 ->on_activate
 				 ([combobox](THREAD_CALLBACK,
@@ -307,7 +310,7 @@ void testcombobox(const testcombobox_options &options)
 			 factory=layout->append_row();
 
 			 auto resort=factory->halign(halign::center)
-				 .create_normal_button_with_label
+				 .create_button
 				 ({"Resort"});
 
 			 resort->on_activate

@@ -651,7 +651,10 @@ create_mainwindow(const x::w::main_window &main_window,
 
 	factory=layout->append_row();
 	factory->create_canvas();
-	auto ok=factory->create_special_button_with_label("Ok");
+	auto ok=factory->create_button("Ok", {
+			x::w::default_button(),
+			x::w::shortcut('\n'),
+		});
 
 	ok->on_activate([close_signal]
 			(ONLY IN_THREAD,

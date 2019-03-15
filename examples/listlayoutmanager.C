@@ -201,27 +201,27 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	auto insert_row=
 		factory->halign(x::w::halign::fill)
-		.create_special_button_with_label("Insert New Row");
+		.create_button("Insert New Row");
 
 	insert_row->show();
 
 	factory=layout->append_row();
 
 	auto append_row=factory->halign(x::w::halign::fill)
-		.create_special_button_with_label("Append New Row");
+		.create_button("Append New Row");
 
 	append_row->show();
 
 	factory=layout->append_row();
 	auto remove_row=factory->halign(x::w::halign::fill)
-		.create_special_button_with_label("Remove Row");
+		.create_button("Remove Row");
 
 	remove_row->show();
 
 	factory=layout->append_row();
 	auto replace_row=
 		factory->halign(x::w::halign::fill)
-		.create_special_button_with_label("Replace Row");
+		.create_button("Replace Row");
 
 	replace_row->show();
 
@@ -229,7 +229,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	auto reset=
 		factory->halign(x::w::halign::fill)
-		.create_special_button_with_label("Reset");
+		.create_button("Reset");
 
 	reset->show();
 
@@ -237,7 +237,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	auto show_me=
 		factory->halign(x::w::halign::fill)
-		.create_special_button_with_label("Show Selected Items");
+		.create_button("Show Selected Items");
 
 	show_me->show();
 

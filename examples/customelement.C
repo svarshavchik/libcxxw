@@ -178,7 +178,7 @@ typedef x::ref<my_elementObj> my_element;
 static void add_toggle_button(const my_element &e,
 			      const x::w::factory &f)
 {
-	auto b=f->create_special_button_with_label("+/-");
+	auto b=f->create_button("+/-", x::w::default_button());
 
 	b->on_activate([e, s=x::w::dim_t{50}]
 		       (ONLY IN_THREAD,

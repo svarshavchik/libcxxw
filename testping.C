@@ -55,7 +55,7 @@ void testbutton()
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				     layout->append_row();
 
-				 factory->create_normal_button_with_label
+				 factory->create_button
 				 ({"Close me"})->on_activate
 				 ([close_flag]
 				  (THREAD_CALLBACK,
