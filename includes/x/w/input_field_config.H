@@ -21,9 +21,53 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! The configuration of an \ref input_field "input field".
+//! The settings related to a visual appearance of an \ref input_field_config "input field".
 
-struct input_field_config {
+struct input_field_config_appearance {
+
+	//! The input field's border.
+
+	border_arg border="textedit_border";
+
+	//! Inner border when the input field does not have input focus
+
+	border_arg focusoff_border="texteditfocusoff_border";
+
+	//! Inner border when the input field has input focus
+
+	border_arg focuson_border="texteditfocuson_border";
+
+	//! Foreground color
+	color_arg foreground_color="textedit_foreground_color";
+
+	//! Background color
+	color_arg background_color="textedit_background_color";
+
+	//! Background color when the input field is disabled.
+
+	//! Typical disabled element shading is not sufficient to distingish
+	//! the visibility change.
+
+	color_arg disabled_background_color=
+		"textedit_disabled_background_color";
+
+	//! Optional hint
+
+	//! If specified, this is displayed in the field when it's empty and
+	//! and it does not have input focus.
+
+	text_param hint;
+
+	//! Hint's color
+	color_arg hint_color="textedit_hint_color";
+
+	//! Destructor
+	~input_field_config_appearance();
+};
+
+//! The settings not related to a visual appearance of an \ref input_field_config "input field".
+
+struct input_field_config_settings {
 
 	//! Number of columns
 	size_t columns=40;
@@ -86,42 +130,6 @@ struct input_field_config {
 	//! Single line input field.
 	constexpr bool oneline() const { return rows <= 1; }
 
-	//! The input field's border.
-
-	border_arg border="textedit_border";
-
-	//! Inner border when the input field does not have input focus
-
-	border_arg focusoff_border="texteditfocusoff_border";
-
-	//! Inner border when the input field has input focus
-
-	border_arg focuson_border="texteditfocuson_border";
-
-	//! Foreground color
-	color_arg foreground_color="textedit_foreground_color";
-
-	//! Background color
-	color_arg background_color="textedit_background_color";
-
-	//! Background color when the input field is disabled.
-
-	//! Typical disabled element shading is not sufficient to distingish
-	//! the visibility change.
-
-	color_arg disabled_background_color=
-		"textedit_disabled_background_color";
-
-	//! Optional hint
-
-	//! If specified, this is displayed in the field when it's empty and
-	//! and it does not have input focus.
-
-	text_param hint;
-
-	//! Hint's color
-	color_arg hint_color="textedit_hint_color";
-
 	//! Optional factories for the spin controls next to the input field.
 
 	std::optional<std::tuple<functionref<void(const factory &)>,
@@ -155,6 +163,17 @@ struct input_field_config {
 	functionptr<input_field_search_callback_t> input_field_search_callback;
 
 	//! Destructor
+
+	~input_field_config_settings();
+};
+
+//! The configuration of an \ref input_field "input field".
+
+//! Inherits from input_field_config_settings, so that the uniform
+//! initialization syntax initializes it first.
+
+struct input_field_config : public input_field_config_settings,
+			    public input_field_config_appearance {
 
 	~input_field_config();
 };

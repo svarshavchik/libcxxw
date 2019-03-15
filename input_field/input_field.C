@@ -54,14 +54,14 @@ input_fieldObj::input_fieldObj(const ref<implObj> &impl,
 
 input_fieldObj::~input_fieldObj()=default;
 
-void input_field_config
+void input_field_config_settings
 ::set_spin_control_factories(const functionref<void(const factory &)> &first,
 			     const functionref<void(const factory &)> &second)
 {
 	spin_control_factories.emplace(first, second);
 }
 
-void input_field_config
+void input_field_config_settings
 ::set_default_spin_control_factories()
 {
 	set_spin_control_factories
@@ -71,6 +71,10 @@ void input_field_config
 			factory->create_image("spin-increment");
 		});
 }
+
+input_field_config_settings::~input_field_config_settings()=default;
+
+input_field_config_appearance::~input_field_config_appearance()=default;
 
 input_field_config::~input_field_config()=default;
 
