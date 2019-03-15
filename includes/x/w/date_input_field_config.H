@@ -15,8 +15,39 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Custom colors and fonts in the \ref date_input_field_config "date input field's popup".
+
 struct date_input_field_popup_config {
 
+	//! Foreground color: day of month highlighted by pointer or keyboard.
+	text_color_arg day_highlight_fg=
+		theme_color{"dateedit_day_highlight_fg"};
+
+	//! Background color: day of month highlighted by pointer or keyboard.
+
+	text_color_arg day_highlight_bg=
+		theme_color{"dateedit_day_highlight_bg"};
+
+	//! Font for the current month's name (and year)
+	font_arg month_font=theme_font{"dateedit_popup_month"};
+
+	//! Font color for the current month's name (and year)
+	text_color_arg month_color=theme_color{"dateedit_popup_month"};
+
+	//! Font for the days of week column titles.
+
+	font_arg day_of_week_font=theme_font{"dateedit_day_of_week"};
+
+	//! Font color for the days of week column titles.
+
+	text_color_arg day_of_week_font_color=
+		theme_color{"dateedit_day_of_week"};
+
+	//! Height of buttons that advance the calendar by a year
+	dim_arg yscroll_height="dateedit_popup_yscroll_height";
+
+	//! Height of buttons that advance the calendar by a month
+	dim_arg mscroll_height="dateedit_popup_mscroll_height";
 };
 
 //! Custom visual appearance of a \ref date_input_field "date input field".

@@ -12,7 +12,6 @@
 #include "x/w/container.H"
 #include "x/w/label.H"
 #include "x/w/focusable_label.H"
-#include "x/w/text_param_literals.H"
 #include "x/w/text_hotspot.H"
 #include "x/w/input_field.H"
 #include "x/w/callback_trigger.H"
@@ -82,10 +81,12 @@ static inline text_param do_hotspot(ONLY IN_THREAD,
 	std::visit(visitor {
 			[&](focus_change e)
 			{
-				if (e==focus_change::gained)
+				auto me=link->weak_me.getptr();
+
+				if (me && e==focus_change::gained)
 				{
-					ret("dateedit_day_highlight_fg"_color);
-					ret("dateedit_day_highlight_bg"_color);
+					ret(me->config.day_highlight_fg);
+					ret(me->config.day_highlight_bg);
 				}
 
 				ret(label);
@@ -196,15 +197,15 @@ static void calendar_grid(const gridlayoutmanager &glm,
 	}
 }
 
-static text_param get_month_label(const const_locale &e,
+static text_param get_month_label(const date_input_field_calendarObj &me,
+				  const const_locale &e,
 				  const ymd &new_ym)
 {
 	// Format the "Month YYYY" label.
 
 	auto s=new_ym.format_date(U"%B %Y", e);
 
-	return {"dateedit_popup_month"_theme_font, "dateedit_popup_month"_color,
-			s};
+	return {me.config.month_font, me.config.month_color, s};
 }
 
 void date_input_field_calendarObj
@@ -262,7 +263,7 @@ void date_input_field_calendarObj
 						  (parent,
 						   "scroll-left1",
 						   "scroll-left2",
-						   "dateedit_popup_yscroll_height");
+						   this->config.yscroll_height);
 
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
@@ -295,7 +296,7 @@ void date_input_field_calendarObj
 						  (parent,
 						   "scroll-left1",
 						   "scroll-left2",
-						   "dateedit_popup_mscroll_height");
+						   this->config.mscroll_height);
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
 						   (ONLY IN_THREAD,
@@ -318,7 +319,7 @@ void date_input_field_calendarObj
 
 			 f->created_internally(b);
 
-			 f->create_label(get_month_label(e, current_ym))
+			 f->create_label(get_month_label(*this, e, current_ym))
 				 ->show();
 
 			 scroll_button_info.parent_container_impl=
@@ -333,7 +334,7 @@ void date_input_field_calendarObj
 						  (parent,
 						   "scroll-right1",
 						   "scroll-right2",
-						   "dateedit_popup_mscroll_height");
+						   this->config.mscroll_height);
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
 						   (ONLY IN_THREAD,
@@ -367,7 +368,7 @@ void date_input_field_calendarObj
 						  (parent,
 						   "scroll-right1",
 						   "scroll-right2",
-						   "dateedit_popup_yscroll_height");
+						   this->config.yscroll_height);
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
 						   (ONLY IN_THREAD,
@@ -418,10 +419,9 @@ void date_input_field_calendarObj
 				 auto day_of_week=sunday.format_date(U"%a", e);
 
 				 f->halign(halign::center).create_label
-					 ({"dateedit_day_of_week"_theme_font,
-						 "dateedit_day_of_week"_color,
-						 day_of_week})
-					 ->show();
+					 ({config.day_of_week_font,
+					   config.day_of_week_font_color,
+					   day_of_week})->show();
 				 ++sunday;
 			 }
 
@@ -530,7 +530,7 @@ void date_input_field_calendarObj::update_month(mpobj<ymd>::lock &lock)
 	// Rebuild the monthly calendar contents.
 
 	auto e=locale::base::global();
-	auto mon_yyyy=get_month_label(e, *lock);
+	auto mon_yyyy=get_month_label(*this, e, *lock);
 
 	impl->invoke_layoutmanager
 		([&, this]

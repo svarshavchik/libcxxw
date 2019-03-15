@@ -9,6 +9,7 @@
 #include <string>
 #include <x/w/font.H>
 #include <x/w/rgb.H>
+#include <x/w/font_arg.H>
 #include <x/w/theme_font.H>
 #include <x/w/theme_color.H>
 #include <x/w/screenfwd.H>
@@ -353,11 +354,28 @@ public:
 		inline explicit_font(const font &f) : f(f) {}
 	};
 
+	//! Helper class to avoid ambiguous resolution failures.
+
+	//! Allows passing a font_arg object into text_param. The variant's
+	//! inherited constructor would could also create an ambiguous overload,
+	//! this helps preventing it.
+
+	class explicit_font_arg {
+
+	public:
+		const font_arg &f;
+
+		inline explicit_font_arg(const font_arg &f) : f{f} {}
+	};
+
 	//! Use this font for all text going forward.
 	text_param &operator()(const explicit_font &f);
 
 	//! Use this font for all text going forward.
 	text_param &operator()(const theme_font &f);
+
+	//! Use this font for all text going forward.
+	text_param &operator()(const explicit_font_arg &f);
 
 	//! Use this color for all text going forward.
 	text_param &operator()(const text_color_arg &);

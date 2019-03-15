@@ -31,9 +31,9 @@ font::font() : font{DEFAULT_FONT, DEFAULT_FONT_POINT_SIZE}
 font::font(const std::string &family_arg)
 	: font(DEFAULT_FONT, DEFAULT_FONT_POINT_SIZE)
 {
-	size_t p=family.find(';');
+	size_t p=family_arg.find(';');
 
-	if (p == family.npos)
+	if (p == family_arg.npos)
 		family=family_arg;
 	else
 		operator+=(family_arg);

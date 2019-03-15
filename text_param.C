@@ -91,6 +91,17 @@ text_param &text_param::operator()(const theme_font &f)
 	return *this;
 }
 
+//! Use this font for all text going forward.
+text_param &text_param::operator()(const explicit_font_arg &f)
+{
+	std::visit(visitor{
+			[this](const auto &f)
+			{
+				this->operator()(f);
+			}}, f.f);
+	return *this;
+}
+
 text_param &text_param::operator()(const text_color_arg &c)
 {
 	auto s=string.size();
