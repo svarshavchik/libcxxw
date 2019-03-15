@@ -36,6 +36,7 @@ new_borderlayoutmanager::new_borderlayoutmanager(const functionref<void
 	  border{"frame_border"},
 	  title_indent{"frame_title_indent"},
 	  no_background{false},
+	  frame_background{"frame_background"},
 	  hpad{"frame_hpad"},
 	  vpad{"frame_vpad"}
 {
@@ -99,7 +100,7 @@ container new_borderlayoutmanager::create(const container_impl &parent,
 	auto new_container=container::create(c_impl, lm_impl);
 
 	if (!no_background && title.string.empty())
-		e->set_background_color("frame_background");
+		e->set_background_color(frame_background);
 
 	creator(new_container);
 

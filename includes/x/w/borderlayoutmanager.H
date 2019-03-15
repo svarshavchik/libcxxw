@@ -67,6 +67,11 @@ public:
 
 	bool no_background;
 
+	//! Frame background color
+
+	//! If no_background is not set, the frame's background.
+	color_arg frame_background;
+
 	//! Extra padding between the border and the element in the container
 
 	dim_arg hpad;
