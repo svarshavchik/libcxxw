@@ -6,6 +6,7 @@
 #define x_w_element_popup_config_h
 
 #include <x/w/border_arg.H>
+#include <x/w/font_arg.H>
 #include <x/w/rgb.H>
 
 LIBCXXW_NAMESPACE_START
@@ -31,6 +32,12 @@ struct element_popup_config {
 
 	//! Button focus border.
 	border_arg button_focuson_border="element_attached_popup_button_focuson_border";
+
+	//! Default popup label font
+	font_arg popup_label_font=theme_font{"label"};
+
+	//! Default popup label color
+	color_arg popup_label_color="label_foreground_color";
 
 	//! Popup button image
 	std::string button_image1="scroll-right1";

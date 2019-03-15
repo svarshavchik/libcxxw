@@ -18,7 +18,6 @@
 #include "x/w/motion_event.H"
 #include "x/w/key_event.H"
 #include "x/w/main_window.H"
-#include "x/w/text_param_literals.H"
 #include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/focus/focusable.H"
 
@@ -54,8 +53,8 @@ popupObj::handlerObj::handlerObj(const popup_handler_args &args)
 		      args.window_type,
 		      args.window_state,
 		      transparent,
-		      "label"_theme_font,
-		      "label_foreground_color",
+		      args.label_font,
+		      args.label_color,
 		     }}
 {
 }

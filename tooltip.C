@@ -80,11 +80,6 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
 	//! Destructor
 	~tooltip_handlerObj();
 
-	font_arg label_theme_font() const override
-	{
-		return "tooltip"_theme_font;
-	}
-
 	void set_default_wm_hints(ONLY IN_THREAD,
 				  xcb_icccm_wm_hints_t &hints) override
 	{
@@ -137,6 +132,8 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 			"tooltip",
 			parent,
 			popup_attachedto_info::create(where, how),
+			"tooltip"_theme_font,
+			"label_foreground_color",
 			0,
 			"tooltip,popup_menu,dropdown_menu",
 			"",

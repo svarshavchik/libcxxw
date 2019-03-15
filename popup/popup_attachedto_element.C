@@ -53,6 +53,8 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 			"element_popup",
 			parent_handler,
 			attachedto_info,
+			args.popup_label_font,
+			args.popup_label_color,
 			parent_container->container_element_impl()
 			.nesting_level+2,
 			"popup_menu,dropdown_menu",

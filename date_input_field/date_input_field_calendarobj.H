@@ -11,6 +11,7 @@
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/input_fieldfwd.H"
 #include "x/w/date_input_fieldfwd.H"
+#include "x/w/date_input_field_config.H"
 
 #include <x/ymd.H>
 #include <x/mpobj.H>
@@ -27,10 +28,13 @@ class date_input_field_calendarObj
 	: public peepholed_attachedto_containerObj {
 
  public:
+	//! This popup's custom configuration
+	const  date_input_field_popup_config config;
 
 	//! Constructor, phase 1.
 
 	date_input_field_calendarObj(const popup_attachedto_info &,
+				     const date_input_field_popup_config &c,
 				     const ref<implObj> &,
 				     const layout_impl &,
 				     const ymd &current_ym,
@@ -38,6 +42,7 @@ class date_input_field_calendarObj
 
 	//! Constructor, phase 2.
 	void constructor(const popup_attachedto_info &,
+			 const date_input_field_popup_config &config,
 			 const ref<implObj> &,
 			 const layout_impl &,
 			 const ymd &current_ym,

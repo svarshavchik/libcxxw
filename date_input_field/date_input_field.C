@@ -164,6 +164,8 @@ date_input_field factoryObj
 			"date_input",
 			parent_handler,
 			attachedto_info,
+			config.popup_font,
+			config.popup_font_color,
 			parent_container->container_element_impl()
 			.nesting_level+2,
 			"popup_menu,dropdown_menu",
@@ -204,6 +206,7 @@ date_input_field factoryObj
 
 			 auto container=date_input_field_calendar
 				 ::create(attachedto_info,
+					  config,
 					  container_impl,
 					  glm_impl,
 					  ymd{},

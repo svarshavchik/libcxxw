@@ -33,11 +33,13 @@ LIBCXXW_NAMESPACE_START
 
 date_input_field_calendarObj
 ::date_input_field_calendarObj(const popup_attachedto_info &attachedto_info,
+			       const date_input_field_popup_config &config,
 			       const ref<implObj> &impl,
 			       const layout_impl &lm_impl,
 			       const ymd &current_ym,
 			       const input_field &text_input_field)
 	: peepholed_attachedto_containerObj{attachedto_info, impl, lm_impl},
+	  config{config},
 	  text_input_field{text_input_field},
 	  current_ym{current_ym}
 {
@@ -80,16 +82,10 @@ static inline text_param do_hotspot(ONLY IN_THREAD,
 	std::visit(visitor {
 			[&](focus_change e)
 			{
-				ret("dateedit_day"_theme_font);
-
 				if (e==focus_change::gained)
 				{
 					ret("dateedit_day_highlight_fg"_color);
 					ret("dateedit_day_highlight_bg"_color);
-				}
-				else
-				{
-					ret("dateedit_day"_color);
 				}
 
 				ret(label);
@@ -150,9 +146,6 @@ static void calendar_grid(const gridlayoutmanager &glm,
 			focusable_label l=glm->get(row, day_of_week);
 
 			text_param day_label;
-
-			day_label("dateedit_day"_theme_font);
-			day_label("dateedit_day"_color);
 
 			// current_date starts on the first of the month.
 			//
@@ -216,6 +209,7 @@ static text_param get_month_label(const const_locale &e,
 
 void date_input_field_calendarObj
 ::constructor(const popup_attachedto_info &attachedto_info,
+	      const date_input_field_popup_config &config,
 	      const ref<implObj> &impl,
 	      const layout_impl &lm_impl,
 	      const ymd &current_ym,

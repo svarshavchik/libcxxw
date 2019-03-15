@@ -12,11 +12,13 @@
 
 #include "x/w/main_window.H"
 #include "x/w/date_input_field.H"
+#include "x/w/date_input_field_config.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 #include "x/w/button.H"
+#include "x/w/font_literals.H"
 #include <string>
 #include <iostream>
 
@@ -61,7 +63,10 @@ void testdateinput()
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				     layout->append_row();
 
-				 auto di=factory->create_date_input_field();
+				 LIBCXX_NAMESPACE::w::date_input_field_config
+					 difc;
+
+				 auto di=factory->create_date_input_field(difc);
 
 				 diptr=di;
 				 di->show();

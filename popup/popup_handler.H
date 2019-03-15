@@ -33,6 +33,12 @@ struct LIBCXX_HIDDEN popup_handler_args {
 	//! Popup attachedment information
 	const popup_attachedto_info &attachedto_info;
 
+	//! Default label font
+	const font_arg &label_font;
+
+	//! Default label color
+	const color_arg &label_color;
+
 	//! Initial nesting level of the popup.
 	size_t nesting_level;
 

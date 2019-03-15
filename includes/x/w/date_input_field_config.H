@@ -7,15 +7,20 @@
 
 #include <x/w/types.H>
 #include <x/w/border_arg.H>
+#include <x/w/font_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/text_param.H>
 #include <x/w/date_input_field_configfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
+struct date_input_field_popup_config {
+
+};
+
 //! Custom visual appearance of a \ref date_input_field "date input field".
 
-struct date_input_field_config {
+struct date_input_field_config : public date_input_field_popup_config {
 
 	//! Border
 
@@ -36,6 +41,14 @@ struct date_input_field_config {
 
 	//! Popup background color
 	color_arg popup_background_color="dateedit_popup_background_color";
+
+	//! Font used in the main date input field
+
+	//! Font for the calendar popup.
+	font_arg popup_font=theme_font{"dateedit_day"};
+
+	//! Label color for the calendar popup.
+	color_arg popup_font_color="dateedit_day";
 
 	//! Error message to show for invalid input.
 
