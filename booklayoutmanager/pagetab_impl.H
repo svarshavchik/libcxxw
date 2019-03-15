@@ -56,6 +56,7 @@ class LIBCXX_HIDDEN pagetabObj::implObj : public always_visibleObj<
 
 	implObj(const container_impl &parent_container,
 		const pagetabgridcontainer_impl &my_pagetabgridcontainer_impl,
+		const color_arg &cold_color,
 		const color_arg &warm_color,
 		const color_arg &hot_color);
 

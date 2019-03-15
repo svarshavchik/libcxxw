@@ -91,6 +91,8 @@ public:
 
 	~hotspot_bgcolor_elementObj();
 
+	void initialize(ONLY IN_THREAD) override;
+
 	std::optional<background_color> cold_color(ONLY IN_THREAD) override;
 };
 

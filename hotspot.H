@@ -159,7 +159,7 @@ class LIBCXX_HIDDEN hotspotObj::implObj
 
 	//! Set the keyboard shortcut for this hotspot.
 
-	void set_shortcut(ONLY IN_THREAD, const shortcut &);
+	void set_shortcut(const shortcut &);
 
 	virtual void install_shortcut(const shortcut &,
 				      const activated_in_thread &)=0;

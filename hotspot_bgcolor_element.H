@@ -25,6 +25,15 @@ hotspot_bgcolor_elementObj<element_impl>::cold_color(ONLY IN_THREAD)
 	return background_color_element<hotspot_cold_color>::get(IN_THREAD);
 }
 
+//! Initialize the hotspot background color.
+
+template<typename element_impl>
+void hotspot_bgcolor_elementObj<element_impl>::initialize(ONLY IN_THREAD)
+{
+	superclass_t::initialize(IN_THREAD);
+	hotspot_bgcolorObj::implObj::temperature_changed(IN_THREAD, {});
+}
+
 //! Destructor
 
 template<typename element_impl>

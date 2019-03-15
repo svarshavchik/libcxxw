@@ -25,6 +25,11 @@
 
 LIBCXXW_NAMESPACE_START
 
+namespace {
+#if 0
+}
+#endif
+
 // The implementation of the button is a mixin that combines
 //
 // A hotspot with background colors.
@@ -39,27 +44,46 @@ typedef hotspot_bgcolor_elementObj<always_visibleObj<
 		container_elementObj
 		<child_elementObj>>>> ff_impl_t;
 
-class LIBCXX_HIDDEN button_focusframeObj : public ff_impl_t {
+class LIBCXX_HIDDEN button_focusframeObj;
 
- public:
-	using ff_impl_t::ff_impl_t;
+class button_focusframeObj : public ff_impl_t {
+
+public:
+	template<typename ...Args>
+	button_focusframeObj(const font_arg &button_theme_font,
+			     Args && ...args)
+		: ff_impl_t{std::forward<Args>(args)...},
+		  button_theme_font{button_theme_font}
+	{
+	}
 
 	~button_focusframeObj()=default;
+
+	const font_arg button_theme_font;
 
 	// create_label() in this container will use an action_button font.
 
 	font_arg label_theme_font() const override
 	{
-		return "button"_theme_font;
+		return button_theme_font;
 	}
 };
+#if 0
+{
+#endif
+}
 
-struct LIBCXX_HIDDEN buttonObj::internal_construction_info {
+struct buttonObj::internal_construction_info {
 
 	ref<borderlayoutmanagerObj::implObj> blmi;
 
 	ref<ff_impl_t> ff_impl;
 };
+
+namespace {
+#if 0
+}
+#endif
 
 typedef ref<button_focusframeObj> button_focusframe;
 
@@ -73,11 +97,14 @@ typedef factoryObj::factory_creator_t factory_creator_t;
 //
 // Factory for creating the contents of the button.
 
-static buttonObj::internal_construction_info
+static inline buttonObj::internal_construction_info
 create_button_focusframe(const ref<buttonObj::implObj> &impl,
+			 const font_arg &button_theme_font,
 			 const color_arg &normal_color,
 			 const color_arg &selected_color,
 			 const color_arg &active_color,
+			 const border_arg &inputfocusoff_border,
+			 const border_arg &inputfocuson_border,
 			 const function<factory_creator_t> &creator)
 {
 	// Now, create the focusframecontainer.
@@ -89,11 +116,12 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 	// the contents of the focusframecontainer.
 
 	auto ffi=button_focusframe
-		::create(normal_color,
+		::create(button_theme_font,
+			 normal_color,
 			 selected_color,
 			 active_color,
-			 "inputfocusoff_border",
-			 "inputfocuson_border",
+			 inputfocusoff_border,
+			 inputfocuson_border,
 			 0,
 			 0,
 			 impl, impl,
@@ -116,6 +144,10 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 			 halign::fill, valign::fill);
 
 	return {blmi, ffi};
+}
+#if 0
+{
+#endif
 }
 
 buttonObj::buttonObj(const ref<implObj> &impl,
@@ -204,7 +236,10 @@ button do_create_button_with_explicit_borders
 	auto ab=button::create(impl,
 			       create_button_focusframe
 			       (impl,
+				"button"_theme_font,
 				normal_color, selected_color, active_color,
+				"inputfocusoff_border",
+				"inputfocuson_border",
 				creator));
 
 	// Left to its own devices, the real focusable element is the internal
@@ -215,14 +250,7 @@ button do_create_button_with_explicit_borders
 
 	ab->label_for(ab);
 
-	static_cast<elementObj::implObj &>(*impl)
-		.get_window_handler().thread()->run_as
-		([shortcut_key,
-		  hotspot_impl=ab->hotspotObj::impl]
-		 (ONLY IN_THREAD)
-		 {
-			 hotspot_impl->set_shortcut(IN_THREAD, shortcut_key);
-		 });
+	ab->hotspotObj::impl->set_shortcut(shortcut_key);
 
 	f.created_internally(ab);
 	return ab;

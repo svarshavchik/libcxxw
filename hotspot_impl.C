@@ -176,7 +176,7 @@ bool hotspotObj::implObj::enabled(ONLY IN_THREAD)
 	return get_hotspot_focusable().focusable_enabled(IN_THREAD);
 }
 
-void hotspotObj::implObj::set_shortcut(ONLY IN_THREAD, const shortcut &sc)
+void hotspotObj::implObj::set_shortcut(const shortcut &sc)
 {
 	if (sc)
 		install_shortcut(sc, activated_in_thread(this));

@@ -16,6 +16,7 @@ LIBCXXW_NAMESPACE_START
 pagetabObj::implObj
 ::implObj(const container_impl &parent_container,
 	  const pagetabgridcontainer_impl &my_pagetabgridcontainer_impl,
+	  const color_arg &cold_color,
 	  const color_arg &warm_color,
 	  const color_arg &hot_color)
 
@@ -23,7 +24,7 @@ pagetabObj::implObj
 	// create_new_tab() will take care of initializing the initial
 	// cold color, for us.
 
-	: superclass_t(warm_color, warm_color, hot_color,
+	: superclass_t(cold_color, warm_color, hot_color,
 		       parent_container),
 	  my_pagetabgridcontainer_impl{my_pagetabgridcontainer_impl}
 {

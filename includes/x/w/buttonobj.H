@@ -25,7 +25,7 @@ class buttonObj : public containerObj,
 public:
 	class LIBCXX_HIDDEN implObj;
 
-	struct internal_construction_info;
+	struct LIBCXX_HIDDEN internal_construction_info;
 
 	//! Internal implementation details.
 

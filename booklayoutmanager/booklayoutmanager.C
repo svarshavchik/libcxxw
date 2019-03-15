@@ -306,20 +306,14 @@ auto create_new_tab(const gridfactory &gridfactory,
 		::create(inner_tab_gridcontainer_impl,
 			 layout_manager->book_pagetabgridlayoutmanager
 			 ->impl->my_container,
+			 "book_tab_inactive_color",
 			 "book_tab_warm_color",
 			 "book_tab_hot_color");
 
-	// Finish initialize the impl in the connection thread.
-	//
-	// The initial background color needs
-	// to be set. Also, install the shortcut.
-	impl->get_element_impl().THREAD
-		->run_as([impl, sc]
-			 (ONLY IN_THREAD)
-			 {
-				 impl->set_active(IN_THREAD, false);
-				 impl->set_shortcut(IN_THREAD, sc);
-			 });
+	// Finish initializing the impl in the connection thread.
+	// Need to install the shortcut.
+
+	impl->set_shortcut(sc);
 
 	// Obtain the initial contents of the actual tab label.
 	auto tab_capture_factory=capturefactory::create(impl);
