@@ -9,6 +9,7 @@
 #include <x/w/gridlayoutmanagerobj.H>
 #include <x/w/new_layoutmanager.H>
 #include <x/w/synchronized_axisfwd.H>
+#include <x/w/dim_arg.H>
 #include <x/ref.H>
 #include <x/functionalrefptr.H>
 
@@ -31,6 +32,27 @@ public:
 	//! Destructor
 	~new_gridlayoutmanager() LIBCXX_PUBLIC;
 
+	//! Copy constructor
+	new_gridlayoutmanager(const new_gridlayoutmanager &) LIBCXX_PUBLIC;
+
+	//! Move constructor
+	new_gridlayoutmanager(new_gridlayoutmanager &&) LIBCXX_PUBLIC;
+
+	//! Assignment operator
+	new_gridlayoutmanager &operator=(const new_gridlayoutmanager &)
+		LIBCXX_PUBLIC;
+
+	//! Move operator
+	new_gridlayoutmanager &operator=(new_gridlayoutmanager &&)
+		LIBCXX_PUBLIC;
+
+	//! Default horizontal padding of new cells.
+	dim_arg col_padding{"grid_horiz_padding"};
+
+	//! Default vertical padding of new cells.
+	dim_arg row_padding{"grid_vert_padding"};
+
+	//! Defau
 	//! What other grid this grid's columns get synchronized with.
 
 	//! This is mostly for internal use. Using the same

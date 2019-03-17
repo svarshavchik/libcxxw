@@ -24,7 +24,7 @@ gridlayoutmanagerObj::implObj
 ::implObj(const container_impl &container_impl,
 	  const new_gridlayoutmanager &glm)
 	: layoutmanagerObj::implObj{container_impl},
-	  grid_map{ref<grid_map_infoObj>::create()},
+	  grid_map{ref<grid_map_infoObj>::create(glm)},
 	  grid_elements_thread_only{ref<elementsObj>::create(container_impl)},
 
 	  // elementsObj inherits from synchronized_axis_valueObj
@@ -41,6 +41,62 @@ void gridlayoutmanagerObj::implObj::uninstalling(ONLY IN_THREAD)
 	synchronized_columns.removed_from_container(IN_THREAD);
 }
 
+/*
+** Using insert_or_assign to retrieve or initialize grid_map_column_defaults
+** and grid_map_row_defaults. Helper objects to construct a new object only
+** when necessary.
+
+*/
+
+namespace {
+#if 0
+}
+#endif
+
+struct new_column_defaults {
+
+	grid_map_t::lock &grid_lock;
+
+	operator grid_map_column_defaults() const
+	{
+		return grid_map_column_defaults{
+			(*grid_lock)->grid_horiz_padding
+				};
+	}
+};
+
+struct new_row_defaults {
+
+	grid_map_t::lock &grid_lock;
+
+	operator grid_map_row_defaults() const
+	{
+		return grid_map_row_defaults{
+			(*grid_lock)->grid_vert_padding
+				};
+	}
+};
+#if 0
+{
+#endif
+}
+
+static grid_map_column_defaults &get_column_defaults(grid_map_t::lock &lock,
+						     size_t col)
+{
+	return (*lock)->column_defaults
+		.insert_or_assign(col, new_column_defaults{lock}).first
+		->second;
+}
+
+static grid_map_row_defaults &get_row_defaults(grid_map_t::lock &lock,
+					       size_t col)
+{
+	return (*lock)->row_defaults
+		.insert_or_assign(col, new_row_defaults{lock}).first
+		->second;
+}
+
 void gridlayoutmanagerObj::implObj
 ::requested_col_width(grid_map_t::lock &grid_lock, size_t col, int percentage)
 {
@@ -50,7 +106,7 @@ void gridlayoutmanagerObj::implObj
 	if (percentage > 100)
 		percentage=100;
 
-	(*grid_lock)->column_defaults[col].axis_size=percentage;
+	get_column_defaults(grid_lock, col).axis_size=percentage;
 	(*grid_lock)->padding_recalculated();
 }
 
@@ -63,7 +119,7 @@ void gridlayoutmanagerObj::implObj
 	if (percentage > 100)
 		percentage=100;
 
-	(*grid_lock)->row_defaults[row].axis_size=percentage;
+	get_row_defaults(grid_lock, row).axis_size=percentage;
 	(*grid_lock)->padding_recalculated();
 }
 
@@ -160,13 +216,13 @@ gridfactory gridlayoutmanagerObj::implObj
 void gridlayoutmanagerObj::implObj::row_alignment(grid_map_t::lock &grid_lock,
 						  size_t row, valign alignment)
 {
-	(*grid_lock)->row_defaults[row].vertical_alignment=alignment;
+	get_row_defaults(grid_lock, row).vertical_alignment=alignment;
 }
 
 void gridlayoutmanagerObj::implObj::col_alignment(grid_map_t::lock &grid_lock,
 						  size_t col, halign alignment)
 {
-	(*grid_lock)->column_defaults[col].horizontal_alignment=alignment;
+	get_column_defaults(grid_lock, col).horizontal_alignment=alignment;
 }
 
 void gridlayoutmanagerObj::implObj::row_top_padding_set(size_t row,
@@ -174,7 +230,7 @@ void gridlayoutmanagerObj::implObj::row_top_padding_set(size_t row,
 {
 	grid_map_t::lock lock{grid_map};
 
-	(*lock)->row_defaults[row].top_padding_set=padding;
+	get_row_defaults(lock, row).top_padding_set=padding;
 }
 
 void gridlayoutmanagerObj::implObj::row_bottom_padding_set(size_t row,
@@ -182,7 +238,7 @@ void gridlayoutmanagerObj::implObj::row_bottom_padding_set(size_t row,
 {
 	grid_map_t::lock lock{grid_map};
 
-	(*lock)->row_defaults[row].bottom_padding_set=padding;
+	get_row_defaults(lock, row).bottom_padding_set=padding;
 }
 
 void gridlayoutmanagerObj::implObj::col_left_padding_set(size_t col,
@@ -190,7 +246,7 @@ void gridlayoutmanagerObj::implObj::col_left_padding_set(size_t col,
 {
 	grid_map_t::lock lock{grid_map};
 
-	(*lock)->column_defaults[col].left_padding_set=padding;
+	get_column_defaults(lock, col).left_padding_set=padding;
 }
 
 void gridlayoutmanagerObj::implObj::col_right_padding_set(size_t col,
@@ -198,7 +254,7 @@ void gridlayoutmanagerObj::implObj::col_right_padding_set(size_t col,
 {
 	grid_map_t::lock lock{grid_map};
 
-	(*lock)->column_defaults[col].right_padding_set=padding;
+	get_column_defaults(lock, col).right_padding_set=padding;
 }
 
 gridfactory gridlayoutmanagerObj::implObj
@@ -412,7 +468,7 @@ void gridlayoutmanagerObj::implObj
 {
 	auto border_impl=get_current_border(arg);
 
-	(*lock)->row_defaults[row].default_border=border_impl;
+	get_row_defaults(lock, row).default_border=border_impl;
 	(*lock)->borders_changed();
 }
 
@@ -422,7 +478,7 @@ void gridlayoutmanagerObj::implObj
 {
 	auto border_impl=get_current_border(arg);
 
-	(*grid_lock)->column_defaults[col].default_border=border_impl;
+	get_column_defaults(grid_lock, col).default_border=border_impl;
 	(*grid_lock)->borders_changed();
 }
 

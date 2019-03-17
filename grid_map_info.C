@@ -7,11 +7,17 @@
 #include "grid_map_info.H"
 #include "x/w/impl/current_border_impl.H"
 #include "x/w/impl/element.H"
+#include "x/w/gridlayoutmanager.H"
 #include "messages.H"
 
 LIBCXXW_NAMESPACE_START
 
-grid_map_column_defaults::grid_map_column_defaults()=default;
+grid_map_column_defaults
+::grid_map_column_defaults(const dim_arg &grid_horiz_padding)
+	: left_padding_set{grid_horiz_padding},
+	  right_padding_set{grid_horiz_padding}
+{
+}
 
 grid_map_column_defaults::~grid_map_column_defaults()=default;
 
@@ -27,7 +33,11 @@ grid_map_column_defaults &grid_map_column_defaults
 grid_map_column_defaults &grid_map_column_defaults
 ::operator=(grid_map_column_defaults &&)=default;
 
-grid_map_row_defaults::grid_map_row_defaults()=default;
+grid_map_row_defaults::grid_map_row_defaults(const dim_arg &grid_vert_padding)
+	: top_padding_set{grid_vert_padding},
+	  bottom_padding_set{grid_vert_padding}
+{
+}
 
 grid_map_row_defaults::~grid_map_row_defaults()=default;
 
@@ -43,7 +53,11 @@ grid_map_row_defaults &grid_map_row_defaults
 grid_map_row_defaults &grid_map_row_defaults
 ::operator=(grid_map_row_defaults &&)=default;
 
-grid_map_infoObj::grid_map_infoObj()=default;
+grid_map_infoObj::grid_map_infoObj(const new_gridlayoutmanager &nglm)
+	: grid_horiz_padding{nglm.col_padding},
+	  grid_vert_padding{nglm.row_padding}
+{
+}
 
 grid_map_infoObj::~grid_map_infoObj()=default;
 

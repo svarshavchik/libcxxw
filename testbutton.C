@@ -40,6 +40,16 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
+static auto main_window_grid()
+{
+	LIBCXX_NAMESPACE::w::new_gridlayoutmanager nglm;
+
+	nglm.col_padding=20;
+	nglm.row_padding=20;
+
+	return nglm;
+}
+
 void testbutton()
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
@@ -75,7 +85,8 @@ void testbutton()
 				   const auto &, const auto &) {
 					 std::cout << "World!" << std::endl;
 				 });
-			 });
+			 },
+			 main_window_grid());
 
 	main_window->set_window_title("Hello world!");
 
@@ -106,9 +117,6 @@ void testbutton()
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::property
-			::load_property(LIBCXX_NAMESPACE_STR "::themes",
-					"themes", true, true);
 		testbutton();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{

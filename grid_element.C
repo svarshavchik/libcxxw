@@ -14,10 +14,12 @@
 
 LIBCXXW_NAMESPACE_START
 
-existing_grid_element_info::existing_grid_element_info()
-	: left_padding_set("grid_horiz_padding"),
+existing_grid_element_info
+::existing_grid_element_info(const dim_arg &grid_horiz_padding,
+			     const dim_arg &grid_vert_padding)
+	: left_padding_set(grid_horiz_padding),
 	  right_padding_set(left_padding_set),
-	  top_padding_set("grid_vert_padding"),
+	  top_padding_set(grid_vert_padding),
 	  bottom_padding_set(top_padding_set)
 {
 }
@@ -26,8 +28,10 @@ new_grid_element_info
 ::new_grid_element_info(dim_t row,
 			dim_t col,
 			const ref<grid_map_infoObj> &grid_map)
-	: row(row),
-	  col(col)
+	: existing_grid_element_info{grid_map->grid_horiz_padding,
+		grid_map->grid_vert_padding},
+	  row{row},
+	  col{col}
 {
 	auto row_default=grid_map->row_defaults
 		.find(metrics::grid_xy::truncate(row));

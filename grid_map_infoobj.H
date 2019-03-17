@@ -10,6 +10,7 @@
 #include "x/w/dim_arg.H"
 #include "x/w/elementfwd.H"
 #include "x/w/elementobj.H"
+#include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/impl/grid_elementfwd.H"
 #include "x/w/impl/current_border_implfwd.H"
 #include "metrics_grid_xy.H"
@@ -28,7 +29,7 @@ struct LIBCXX_HIDDEN grid_map_row_defaults;
 struct grid_map_column_defaults {
 
 	//! Constructor
-	grid_map_column_defaults();
+	grid_map_column_defaults(const dim_arg &grid_horiz_padding);
 
 	//! Destructor
 	~grid_map_column_defaults();
@@ -58,10 +59,10 @@ struct grid_map_column_defaults {
 	halign horizontal_alignment=halign::left;
 
 	//! Default column padding
-	dim_arg left_padding_set{"grid_horiz_padding"};
+	dim_arg left_padding_set;
 
 	//! Default column padding
-	dim_arg right_padding_set{"grid_horiz_padding"};
+	dim_arg right_padding_set;
 };
 
 //! Default grid column info
@@ -69,7 +70,7 @@ struct grid_map_column_defaults {
 struct grid_map_row_defaults {
 
 	//! Constructor
-	grid_map_row_defaults();
+	grid_map_row_defaults(const dim_arg &grid_vert_padding);
 
 	//! Destructor
 	~grid_map_row_defaults();
@@ -98,10 +99,10 @@ struct grid_map_row_defaults {
 	valign vertical_alignment=valign::top;
 
 	//! Default row padding
-	dim_arg top_padding_set{"grid_vert_padding"};
+	dim_arg top_padding_set;
 
 	//! Default row padding
-	dim_arg bottom_padding_set{"grid_vert_padding"};
+	dim_arg bottom_padding_set;
 };
 
 //! Mutex-protected container for elements in the grid.
@@ -174,6 +175,12 @@ public:
 
 	//! Additional border elements in the grid.
 	std::vector<element> border_elements;
+
+	//! Default horizontal padding
+	const dim_arg grid_horiz_padding;
+
+	//! Default vertical padding
+	const dim_arg grid_vert_padding;
 
 	//! Column defaults
 
@@ -258,7 +265,7 @@ public:
 	const lookup_t &get_lookup_table();
 
 	//! Constructor
-	grid_map_infoObj();
+	grid_map_infoObj(const new_gridlayoutmanager &nglm);
 
 	//! Destructor
 	~grid_map_infoObj();

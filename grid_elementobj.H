@@ -72,7 +72,8 @@ struct existing_grid_element_info {
 
 	bool remove_when_hidden=false;
 
-	existing_grid_element_info();
+	existing_grid_element_info(const dim_arg &grid_horiz_padding,
+				   const dim_arg &grid_vert_padding);
 };
 
 struct new_grid_element_info : public existing_grid_element_info {

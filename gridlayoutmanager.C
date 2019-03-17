@@ -24,6 +24,18 @@ new_gridlayoutmanager::new_gridlayoutmanager()
 
 new_gridlayoutmanager::~new_gridlayoutmanager()=default;
 
+new_gridlayoutmanager::new_gridlayoutmanager(const new_gridlayoutmanager &)
+=default;
+
+new_gridlayoutmanager::new_gridlayoutmanager(new_gridlayoutmanager &&)
+=default;
+
+new_gridlayoutmanager &new_gridlayoutmanager
+::operator=(const new_gridlayoutmanager &)=default;
+
+new_gridlayoutmanager &new_gridlayoutmanager
+::operator=(new_gridlayoutmanager &&)=default;
+
 layout_impl new_gridlayoutmanager::create(const container_impl &parent) const
 {
 	return ref<gridlayoutmanagerObj::implObj>::create(parent, *this);
