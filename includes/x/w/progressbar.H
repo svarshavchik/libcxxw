@@ -8,6 +8,8 @@
 #include <x/w/progressbarfwd.H>
 #include <x/w/progressbarobj.H>
 #include <x/w/dim_arg.H>
+#include <x/w/font_arg.H>
+#include <x/w/border_arg.H>
 #include <x/w/rgb.H>
 #include <x/ref.H>
 #include <x/functionalrefptr.H>
@@ -22,7 +24,7 @@ struct progressbar_config {
 
 	//! The border around the progress bar.
 
-	std::string border="progressbar";
+	border_arg border="progressbar";
 
 	//! The minimum width of the progress bar
 
@@ -35,6 +37,9 @@ struct progressbar_config {
 	//! Foreground color (default color for text labels)
 
 	color_arg foreground_color{"progressbar_foreground_color"};
+
+	//! Default text label font.
+	font_arg label_font{theme_font{"progressbar"}};
 
 	//! The progress bar's slider's color.
 

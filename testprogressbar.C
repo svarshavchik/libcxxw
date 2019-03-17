@@ -55,6 +55,11 @@ typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
 static auto initialize_progressbar(const LIBCXX_NAMESPACE::w::factory &f)
 {
+	LIBCXX_NAMESPACE::w::progressbar_config config;
+
+	config.foreground_color=LIBCXX_NAMESPACE::w::green;
+	config.label_font=LIBCXX_NAMESPACE::w::font{"liberation mono; point_size=24"};
+
 	auto pb=f->create_progressbar
 		([]
 		 (const LIBCXX_NAMESPACE::w::progressbar &pb)
@@ -65,7 +70,7 @@ static auto initialize_progressbar(const LIBCXX_NAMESPACE::w::factory &f)
 			 auto f=glm->append_row();
 			 f->halign(LIBCXX_NAMESPACE::w::halign::center);
 			 f->create_label("0%")->show();
-		 });
+		 }, config);
 
 	pb->show();
 

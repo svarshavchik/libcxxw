@@ -27,8 +27,12 @@ class progressbarObj::handlerObj
 	: public themedim_element_minoverrideObj<
 	container_elementObj<child_elementObj>> {
 
+	//! Returned by label-theme_font;
+	const font_arg label_font;
+
 	//! Returned by label_theme_color()
 	const color_arg foreground_color;
+
  public:
 
 	//! Alias

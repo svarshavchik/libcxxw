@@ -4,7 +4,6 @@
 */
 #include "libcxxw_config.h"
 #include "progressbar_impl.H"
-#include "x/w/text_param_literals.H"
 #include "x/w/impl/container_element.H"
 #include "themedim_element_minoverride.H"
 #include "x/w/impl/background_color.H"
@@ -18,6 +17,7 @@ progressbarObj::handlerObj::handlerObj(const container_impl
 	: superclass_t{config.minimum_width, 0,
 		parent_container,
 		child_element_init_params{"progressbar@libcxx.com"}},
+	  label_font{config.label_font},
 	  foreground_color{config.foreground_color}
 {
 }
@@ -26,7 +26,7 @@ progressbarObj::handlerObj::~handlerObj()=default;
 
 font_arg progressbarObj::handlerObj::label_theme_font() const
 {
-	return "progressbar"_theme_font;
+	return label_font;
 }
 
 color_arg progressbarObj::handlerObj::label_theme_color() const
