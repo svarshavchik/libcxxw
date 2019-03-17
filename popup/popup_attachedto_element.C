@@ -48,18 +48,18 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 
 	auto attachedto_handler=
 		ref<popupObj::handlerObj>::create
-		(popup_handler_args{
-			exclusive_popup_type,
-			"element_popup",
-			parent_handler,
-			attachedto_info,
-			args.popup_label_font,
-			args.popup_label_color,
-			parent_container->container_element_impl()
-			.nesting_level+2,
-			"popup_menu,dropdown_menu",
-			"",
-		});
+		(popup_handler_args{exclusive_popup_type,
+				"element_popup",
+				parent_handler,
+				attachedto_info,
+				args.popup_label_font,
+				args.popup_label_color,
+				args.popup_modal_shade_color,
+				parent_container->container_element_impl()
+				.nesting_level+2,
+				"popup_menu,dropdown_menu",
+				"",
+				});
 
 	auto popup_impl=ref<popupObj::implObj>::create(attachedto_handler,
 						       parent_handler);

@@ -176,6 +176,7 @@ create_extra_constructor_params(const generic_window_handler_constructor_params
 		background_color_obj,
 		main_params.default_label_font,
 		main_params.default_label_color,
+		main_params.modal_shade_color,
 	};
 }
 
@@ -219,7 +220,7 @@ generic_windowObj::handlerObj
 	{
 	 params.background_color_obj,
 	 default_background_color(params.window_handler_params.screenref,
-				  "modal_shade"),
+				  params.modal_shade_color),
 	 drawableObj::implObj::create_icon
 	 (create_icon_args_t
 		{

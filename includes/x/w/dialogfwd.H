@@ -110,6 +110,13 @@ struct standard_dialog_args {
 	//! Default color (mostly for labels)
 	color_arg label_foreground_color="label_foreground_color";
 
+	//! Dialog's shade color
+
+	//! The color the dialog gets shaded with, when it's blocked by
+	//! another modal dialog.
+
+	color_arg modal_shade_color="modal_shade";
+
 	//! Default dialog position.
 	void screen_position(dialog_position) LIBCXX_PUBLIC;
 

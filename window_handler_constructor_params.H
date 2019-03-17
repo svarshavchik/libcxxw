@@ -36,6 +36,9 @@ struct main_window_handler_constructor_params {
 
 	//! Default color
 	const color_arg &default_label_color;
+
+	//! Shaded color
+	const color_arg &modal_shade_color;
 };
 
 struct LIBCXX_HIDDEN generic_window_handler_constructor_params;

@@ -18,6 +18,7 @@
 #include "x/w/focusable_container.H"
 #include "x/w/key_event.H"
 #include "x/w/synchronized_axis.H"
+#include "x/w/text_param_literals.H"
 #include "busy.H"
 #include "capturefactory.H"
 #include "run_as.H"
@@ -307,7 +308,10 @@ combobox_listcontainer_popup_args(const element_impl &parent_element,
 		exclusive_popup_type,
 		style,
 		"combobox_above_background_color",
-		"combobox_below_background_color"
+		"combobox_below_background_color",
+		"label"_theme_font,
+		"label_foreground_color",
+		"modal_shade",
 	};
 }
 

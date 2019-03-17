@@ -66,6 +66,18 @@ struct create_peepholed_toplevel_listcontainer_popup_args {
 	//! Popup's background color when it's below/to the right of its element
 	color_arg bottomright_color;
 
+	//! Default font of text labels on the popup
+	font_arg label_font;
+
+	//! Default color of text labels on the popup
+	color_arg label_foreground_color;
+
+	//! Popup's shade color
+
+	//! The color the popup gets shaded with, when it's blocked by
+	//! a modal dialog (unlikely).
+	color_arg modal_shade_color;
+
 	//! Peephole style
 	peephole_style popup_peephole_style{peephole_algorithm::automatic,
 					    peephole_algorithm::automatic,

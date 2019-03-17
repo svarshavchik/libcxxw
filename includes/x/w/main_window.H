@@ -38,6 +38,12 @@ struct main_window_colors {
 
 	//! Default color (mostly for labels)
 	color_arg label_foreground_color="label_foreground_color";
+
+	//! Window's shade color
+
+	//! The color the window gets shaded with, when it's blocked by
+	//! a modal dialog.
+	color_arg modal_shade_color="modal_shade";
 };
 
 //! Menu bar appearance

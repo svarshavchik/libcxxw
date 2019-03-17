@@ -10,6 +10,7 @@
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "listlayoutmanager/list_element_impl.H"
 #include "activated_in_thread.H"
+#include "x/w/text_param_literals.H"
 #include <x/weakptr.H>
 
 LIBCXXW_NAMESPACE_START
@@ -115,7 +116,10 @@ do_create_dropdown_menu(const element_impl &e,
 				 menu_popup_type,
 				 style,
 				 above_color,
-				 below_color
+				 below_color,
+				 "label"_theme_font,
+				 "label_foreground_color",
+				 "modal_shade",
 				 },
 		 create_handler);
 }
@@ -218,7 +222,6 @@ contextmenu_popup(const element_impl &e,
 		 attached_to::below_or_above,
 		 "menu_above_background_color",
 		 "menu_below_background_color",
-
 		 make_function<create_p_t_l_handler_t>
 		 ([e]
 		  (const auto &args)

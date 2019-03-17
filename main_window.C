@@ -461,6 +461,7 @@ create_splash_window_handler(const screen &me,
 			    background_color,
 			    config.label_font,
 			    config.label_foreground_color,
+			    config.modal_shade_color,
 	};
 
 	main_window_border=config.border;
@@ -533,7 +534,11 @@ main_window screenObj
 						    std_config
 						    .label_font,
 						    std_config
-						    .label_foreground_color,};
+						    .label_foreground_color,
+						    std_config
+						    .modal_shade_color,
+
+				};
 
 				return std::tuple
 				{ref<main_windowObj::handlerObj>

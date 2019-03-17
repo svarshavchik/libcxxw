@@ -39,6 +39,12 @@ struct element_popup_config {
 	//! Default popup label color
 	color_arg popup_label_color="label_foreground_color";
 
+	//! Window's shade color
+
+	//! The color the popup gets shaded with, when it's blocked by
+	//! a modal dialog.
+	color_arg popup_modal_shade_color="modal_shade";
+
 	//! Popup button image
 	std::string button_image1="scroll-right1";
 

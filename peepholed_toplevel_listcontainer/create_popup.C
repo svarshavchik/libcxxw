@@ -4,7 +4,6 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/peephole_style.H"
-#include "x/w/text_param_literals.H"
 #include "peephole/peephole_toplevel.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "peepholed_toplevel_listcontainer/layoutmanager_impl.H"
@@ -38,8 +37,9 @@ do_create_peepholed_toplevel_listcontainer_popup
 				args.popup_wm_class_instance,
 				parent_handler,
 				attachedto_info,
-				"label"_theme_font,
-				"label_foreground_color",
+				args.label_font,
+				args.label_foreground_color,
+				args.modal_shade_color,
 				args.parent_element
 				->nesting_level+
 				args.extra_nesting_level,

@@ -48,14 +48,14 @@ const popup_visibility_semantics menu_popup_type={
 };
 
 popupObj::handlerObj::handlerObj(const popup_handler_args &args)
-	: handlerObj{args,
-		     {args.parent->screenref,
-		      args.window_type,
-		      args.window_state,
-		      transparent,
-		      args.label_font,
-		      args.label_color,
-		     }}
+	: handlerObj{args, {args.parent->screenref,
+			args.window_type,
+			args.window_state,
+			transparent,
+			args.label_font,
+			args.label_color,
+			args.modal_shade_color,
+			}}
 {
 }
 

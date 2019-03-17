@@ -121,6 +121,7 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 			 args.dialog_background,
 			 args.label_font,
 			 args.label_foreground_color,
+			 args.modal_shade_color,
 			 "dialog,normal",
 			 args.modal, args.urgent,
 			 args.grab_input_focus);

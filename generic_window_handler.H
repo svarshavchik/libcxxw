@@ -332,6 +332,9 @@ class generic_windowObj::handlerObj
 
 		//! Default color
 		const color_arg &default_label_color;
+
+		//! Shade color
+		const color_arg &modal_shade_color;
 	};
 
 	//! Public constructor

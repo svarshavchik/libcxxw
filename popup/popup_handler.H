@@ -39,6 +39,9 @@ struct LIBCXX_HIDDEN popup_handler_args {
 	//! Default label color
 	const color_arg &label_color;
 
+	//! Default modal shade color
+	const color_arg &modal_shade_color;
+
 	//! Initial nesting level of the popup.
 	size_t nesting_level;
 

@@ -99,6 +99,9 @@ struct date_input_field_config : public date_input_field_popup_config {
 	//! Label color for the calendar popup.
 	color_arg popup_font_color="dateedit_day";
 
+	//! Modal shade color for the popup (unlikely)
+	color_arg popup_modal_shade_color="modal_shade";
+
 	//! Error message to show for invalid input.
 
 	text_param invalid_input=default_invalid_input();

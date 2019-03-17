@@ -164,18 +164,18 @@ date_input_field factoryObj
 
 	auto attachedto_handler=
 		ref<popupObj::handlerObj>::create
-		(popup_handler_args{
-			exclusive_popup_type,
-			"date_input",
-			parent_handler,
-			attachedto_info,
-			config.popup_font,
-			config.popup_font_color,
-			parent_container->container_element_impl()
-			.nesting_level+2,
-			"popup_menu,dropdown_menu",
-			"",
-		});
+		(popup_handler_args{exclusive_popup_type,
+				"date_input",
+				parent_handler,
+				attachedto_info,
+				config.popup_font,
+				config.popup_font_color,
+				config.popup_modal_shade_color,
+				parent_container->container_element_impl()
+				.nesting_level+2,
+				"popup_menu,dropdown_menu",
+				"",
+				});
 
 	auto popup_impl=ref<popupObj::implObj>::create(attachedto_handler,
 						       parent_handler);

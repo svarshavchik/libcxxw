@@ -120,24 +120,25 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 				       const rectangle &where,
 				       attached_to how)
 	: superclass_t{*parent,
-		       tooltip_border, tooltip_border,
-		       tooltip_border, tooltip_border,
-		       richtextptr{},
-		       0,
-		       tooltip_border_hpad,
-		       tooltip_border_vpad,
-		       popup_handler_args
-		       {
-			exclusive_popup_type,
-			"tooltip",
-			parent,
-			popup_attachedto_info::create(where, how),
-			"tooltip"_theme_font,
-			"label_foreground_color",
-			0,
-			"tooltip,popup_menu,dropdown_menu",
-			"",
-		       }}
+		tooltip_border, tooltip_border,
+		tooltip_border, tooltip_border,
+		richtextptr{},
+		0,
+			tooltip_border_hpad,
+			tooltip_border_vpad,
+			popup_handler_args
+			{
+				exclusive_popup_type,
+					"tooltip",
+					parent,
+					popup_attachedto_info::create(where, how),
+					"tooltip"_theme_font,
+					"label_foreground_color",
+					"modal_shade",
+					0,
+					"tooltip,popup_menu,dropdown_menu",
+					"",
+					}}
 {
 	wm_class_resource(IN_THREAD)=parent->wm_class_resource(IN_THREAD);
 }
