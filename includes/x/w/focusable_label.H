@@ -23,17 +23,11 @@ LIBCXXW_NAMESPACE_START
 
 struct focusable_label_config : public label_config {
 
-	//! Default border when the focusable label does not have focus.
-	static const char LIBCXX_PUBLIC default_off_border[];
-
-	//! Default border when the focusable label has focus.
-	static const char LIBCXX_PUBLIC default_on_border[];
-
 	//! No focus border
-	border_arg off_border=default_off_border;
+	border_arg off_border="inputfocusoff_border";
 
 	//! Focus border
-	border_arg on_border=default_on_border;
+	border_arg on_border="inputfocuson_border";
 
 	//! Destructor
 	~focusable_label_config();

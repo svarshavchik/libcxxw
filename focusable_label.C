@@ -15,10 +15,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-const char focusable_label_config::default_off_border[]="inputfocusoff_border";
-
-const char focusable_label_config::default_on_border[]="inputfocuson_border";
-
 focusable_label_config::~focusable_label_config()=default;
 
 focusable_label factoryObj
