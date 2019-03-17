@@ -9,11 +9,12 @@
 
 LIBCXXW_NAMESPACE_START
 
-class tooltip_factory;
+class LIBCXX_HIDDEN tooltip_factory;
+struct LIBCXX_HIDDEN tooltip_appearance;
 
 enum class attached_to;
 
-struct static_tooltip_config;
+struct LIBCXX_PUBLIC static_tooltip_config;
 
 LIBCXXW_NAMESPACE_END
 

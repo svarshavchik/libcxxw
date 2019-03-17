@@ -469,6 +469,9 @@ void testbutton()
 						  return;
 					  }
 
+					  LIBCXX_NAMESPACE::w::static_tooltip_config stc;
+					  stc.alpha_border.border="thin_0%";
+					  stc.nonalpha_border.border="thin_0%";
 					  me->create_static_tooltip
 						  ([]
 						   (const auto &c)
@@ -478,6 +481,10 @@ void testbutton()
 
 							   auto f=glm->append_row();
 							   f->create_label("Hello world!");
+						   },
+						   {
+							   LIBCXX_NAMESPACE::w::new_gridlayoutmanager{},
+							   stc
 						   })->show_all();
 				  });
 			 factory=layout->append_row();

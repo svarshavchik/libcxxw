@@ -427,8 +427,17 @@ private:
 							  o.str(),
 						 });
 				 },
-				 x::w::new_gridlayoutmanager{},
-				 config);
+				 // Optional parameter, an (not really)
+				 // aggregate parameter than specifies the
+				 // tooltip's layout manager (defaults to
+				 // the grid layout manager, and the tooltip's
+				 // settings. Either one or the other
+				 // values may be left out of the fake
+				 // aggregate parameter.
+				 {
+					 x::w::new_gridlayoutmanager{},
+					 config
+				 });
 
 			tooltip->show_all();
 

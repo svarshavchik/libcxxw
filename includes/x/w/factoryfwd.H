@@ -278,8 +278,8 @@ when the first parameter is a \ref text_param "text_param", or a
 \ref create_button_args_t "INSERT_LIBX_NAMESPACE::w::create_button_args_t"
 if the first parameter is a callable object.
 
-These are templates designed to accomodate <a href="/optionalargs.html">optional
-function arguments</a>:
+These are templates that implement the following
+<a href="/optionalargs.html">optional function arguments</a>:
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/button.H>
@@ -297,8 +297,8 @@ INSERT_LIBX_NAMESPACE::w::button button=create_button(
     });
 \endcode
 
-Each argument is optional, but the arguments, if they appear, must be
-in the specified order:
+Each one of the following arguments is optional, but the arguments,
+if specified, must appear in the following order:
 
 - the \ref label_config "INSERT_LIBX_NAMESPACE::w::label_config" parameter
 exists only in the \c create_button_with_label_args_t that's used when the

@@ -10,8 +10,6 @@
 #include <x/w/main_windowfwd.H>
 #include <x/w/screenfwd.H>
 #include <x/w/focusablefwd.H>
-#include <x/w/tooltipfwd.H>
-#include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/element_statefwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/picturefwd.H>
@@ -164,71 +162,87 @@ public:
 
 	//! Create a static tooltip.
 
-	template<typename creator, typename ...Args,
+	template<typename creator,
+		 typename=decltype(std::declval<creator &&>()
+				   (std::declval<const container &>()))>
+	inline container create_static_tooltip(creator &&c)
+	{
+		return do_create_static_tooltip(make_function<void
+						(const container &)>
+						(std::forward<creator>(c)));
+	}
+
+	//! Create a static tooltip.
+
+	template<typename creator,
 		 typename=decltype(std::declval<creator &&>()
 				   (std::declval<const container &>()))>
 	inline container create_static_tooltip(creator &&c,
-					       Args && ...args)
+					       const
+					       create_static_tooltip_args_t
+					       &args)
 	{
 		return do_create_static_tooltip(make_function<void
 						(const container &)>
 						(std::forward<creator>(c)),
-						std::forward<Args>(args)...);
+						args);
 	}
 
+	//! Type-erased create_static_tooltip().
 	container do_create_static_tooltip(const function<void
 					   (const container &)> &creator);
 
-	//! Create a static tooltip.
-
+	//! Type-erased create_static_tooltip().
 	container do_create_static_tooltip(const function<void
 					   (const container &)> &creator,
-					   const new_layoutmanager &nlm);
-
-	//! Create a static tooltip.
-
-	container do_create_static_tooltip(const function<void
-					   (const container &)> &creator,
-					   const new_layoutmanager &nlm,
-					   const static_tooltip_config &config);
+					   const create_static_tooltip_args_t
+					   &args);
 
 	//! Create a static tooltip
 
-	template<typename creator, typename ...Args,
-		 typename=decltype(make_function<void
-				   (const container &)>
-				   (std::declval<creator &&>()))>
+	template<typename creator,
+		 typename=decltype(std::declval<creator &&>()
+				   (std::declval<const container &>()))>
+	inline container create_static_tooltip(ONLY IN_THREAD,
+					       creator &&c)
+	{
+		return do_create_static_tooltip(IN_THREAD,
+						make_function<void
+						(const container &)>
+						(std::forward<creator>(c)));
+	}
+
+	//! Create a static tooltip
+
+	template<typename creator,
+		 typename=decltype(std::declval<creator &&>()
+				   (std::declval<const container &>()))>
 	inline container create_static_tooltip(ONLY IN_THREAD,
 					       creator &&c,
-					       Args && ...args)
+					       const
+					       create_static_tooltip_args_t
+					       &args)
 	{
 		return do_create_static_tooltip(IN_THREAD,
 						make_function<void
 						(const container &)>
 						(std::forward<creator>(c)),
-						std::forward<Args>(args)...);
+						args);
 	}
 
-	//! Create a static tooltip
+	//! Type-erased create_static_tooltip().
 
 	container do_create_static_tooltip(ONLY IN_THREAD,
 					   const function<void
 					   (const container &)> &creator);
 
-	//! Create a static tooltip.
+	//! Type-erased create_static_tooltip().
 
 	container do_create_static_tooltip(ONLY IN_THREAD,
 					   const function<void
 					   (const container &)> &creator,
-					   const new_layoutmanager &nlm);
-
-	//! Create a static tooltip.
-
-	container do_create_static_tooltip(ONLY IN_THREAD,
-					   const function<void
-					   (const container &)> &creator,
-					   const new_layoutmanager &nlm,
-					   const static_tooltip_config &config);
+					   const
+					   create_static_tooltip_args_t &args);
 
 	//! Remove the tooltip from this display element.
 

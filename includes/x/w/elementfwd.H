@@ -10,6 +10,9 @@
 #include <x/w/connection_threadfwd.H>
 #include <x/w/metrics/axisfwd.H>
 #include <x/w/button_eventfwd.H>
+#include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/tooltipfwd.H>
+#include <x/optional_argsfwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -17,6 +20,12 @@ LIBCXXW_NAMESPACE_START
 typedef void metrics_update_callback_t(THREAD_CALLBACK,
 				       const metrics::axis &,
 				       const metrics::axis &);
+
+//! Optional parameters to \ref element "element's" create_static_tooltip().
+
+typedef optional_argconstrefs<new_layoutmanager,
+			      static_tooltip_config
+			      > create_static_tooltip_args_t;
 
 class LIBCXX_PUBLIC elementObj;
 
@@ -362,18 +371,22 @@ INSERT_LIBX_NAMESPACE::w::container tooltip=element->create_static_tooltip(
           {
                // ...
           },
-          nglm,
-          stc);
+          {
+               nglm,
+               stc
+          });
 
 INSERT_LIBX_NAMESPACE::w::container tooltip=element->create_static_tooltip(
-          ONLY IN_THREAD,
+          IN_THREAD,
           []
           (const INSERT_LIBX_NAMESPACE::w::container &c)
           {
                // ...
           },
-          nglm,
-          stc);
+          {
+              nglm,
+              stc
+          });
 
 tooltip->show_all();
 
@@ -384,7 +397,8 @@ element->remove_tooltip(IN_THREAD)
 A display element has an optional regular tooltip or a static tooltip.
 
 A regular tooltip is a popup that appears when the mouse pointer hovers over
-a display element, with the tooltip's visibility automatically controlled.
+a display element. The library automatically show()s and hide()s the tooltip,
+as needed.
 create_tooltip() creates a default tooltip from a text label (which is a
 \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param" that can specify
 custom fonts), and an optional
@@ -419,19 +433,30 @@ or pointer activity in the display element
 - the tooltip should be hide()n when the display element no longer receives
 keyboard or pointer focus
 
-Static tooltips get typically used only with
+Static tooltips should be used only with
 \ref focusable "focusable display elements"; and get typically show()n and
 hide()n by the focusable element's on_keyboard_focus() callbacks, becoming
 visible when the display element has keyboard focus.
 
 create_static_tooltip() has one required parameter, a creator lambda that's
-responsible for creating the contents of the tooltip, and two optional
-parameters: an object that specifies the new tooltip's layout manager
-(defaulting to the grid layout manager), and a
-\ref static_tooltip_config "INSERT_LIBX_NAMESPACE::w::static_tooltip_config"
-that specifies a few optional settings.
+responsible for creating the contents of the tooltip, and an optional
+parameter that specifies a pair of options.
 
-A static tooltip gets created in advance. show() or show_all() makes it
+create_static_tooltip()'s optional 2nd parameter is a
+\ref create_static_tooltip_args_t "INSERT_LIBX_NAMESPACE::w::create_static_tooltip_args_t".
+This implements the following
+<a href="/optionalargs.html">optional function arguments</a>.
+Each one of the following arguments is optional, but the arguments,
+if specified, must appear in the following order:
+
+- a \ref new_layoutmanager "INSERT_LIBX_NAMESPACE::new_layoutmanager" object
+that specifies the new tooltip's layout manager (defaulting to the grid
+layout manager)
+
+- a \ref static_tooltip_config "INSERT_LIBX_NAMESPACE::w::static_tooltip_config"
+that specifies the tooltip's appearance, and other general settings.
+
+The static tooltip gets created in advance. show() or show_all() makes it
 visible, hide() or hide_all() hides it.
 
 A tooltip is considered to be a child element of the display element it's
