@@ -152,7 +152,7 @@ class LIBCXX_HIDDEN header_container_implObj
 			ntlm.adjustable_header_highlight_color,
 			ntlm.table_width, themedimaxis::width,
 			ntlm.maximum_table_width, themedimaxis::width,
-			"drag_horiz_buffer", themedimaxis::width,
+			"drag_horiz_start", themedimaxis::width,
 			ntlm.adjustable_header_highlight_width,
 			themedimaxis::width,
 			parent_container->container_element_impl()

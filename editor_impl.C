@@ -54,8 +54,9 @@ create_default_meta(const container_impl &container,
 
 	auto bg_color=element.create_background_color(config.foreground_color);
 
-	auto font=element.create_current_fontcollection(theme_font{
-			config.password_char ? "password":"textedit"});
+	auto font=element.create_current_fontcollection
+		(config.password_char
+		 ? config.password_font:config.regular_font);
 
 	return {bg_color, font};
 }
@@ -444,6 +445,10 @@ editorObj::implObj::implObj(init_args &args)
 		       args.parent_peephole->container_element_impl()
 		       .get_window_handler()
 		       .create_icon({"cursor-dragging-wontdrop"})->create_cursor(),
+			  args.config.drag_horiz_start,
+			  themedimaxis::width,
+			  args.config.drag_vert_start,
+			  themedimaxis::height,
 		       // Capture the string's font.
 		       //
 		       // We are used by peepholed_fontelementObj, so we

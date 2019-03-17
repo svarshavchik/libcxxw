@@ -82,8 +82,8 @@
       to the dragging pointer.
   -->
 
-  <dim id="drag_horiz_buffer" axis="horiz">2</dim>
-  <dim id="drag_vert_buffer" axis="vert">2</dim>
+  <dim id="drag_horiz_start" axis="horiz">2</dim>
+  <dim id="drag_vert_start" axis="vert">2</dim>
 
   <!-- Stock borders -->
 

@@ -14,6 +14,7 @@
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/scrollbar.H>
 #include <x/w/border_arg.H>
+#include <x/w/font_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/factory.H>
 #include <x/functionalrefptr.H>
@@ -40,6 +41,12 @@ struct input_field_config_appearance {
 	//! Foreground color
 	color_arg foreground_color="textedit_foreground_color";
 
+	//! Font for normal input fields
+	font_arg regular_font=theme_font{"textedit"};
+
+	//! Font for password input fields
+	font_arg password_font=theme_font{"password"};
+
 	//! Background color
 	color_arg background_color="textedit_background_color";
 
@@ -60,6 +67,20 @@ struct input_field_config_appearance {
 
 	//! Hint's color
 	color_arg hint_color="textedit_hint_color";
+
+	//! Free-play before dragging operation commences
+
+	//! How far the pointer must move before drag operation starts.
+	//! Avoids overhead when a pointer button click slips
+
+	dim_arg drag_horiz_start="drag_horiz_start";
+
+	//! Free-play before dragging operation commences
+
+	//! How far the pointer must move before drag operation starts.
+	//! Avoids overhead when a pointer button click slips
+
+	dim_arg drag_vert_start="drag_vert_start";
 
 	//! Destructor
 	~input_field_config_appearance();

@@ -85,7 +85,9 @@ public:
 		    elementObj::implObj &dragging_element,
 		    const std::vector<xcb_atom_t> &source_formats,
 		    coord_t start_x,
-		    coord_t start_y);
+		    coord_t start_y,
+		    dim_t drag_start_horiz,
+		    dim_t drag_start_vert);
 
 private:
 
@@ -96,28 +98,9 @@ private:
 		    generic_windowObj::handlerObj &window_handler,
 		    const std::vector<xcb_atom_t> &source_formats,
 		    coord_t start_x,
-		    coord_t start_y);
-
-	//! Delegated constructor
-
-	drag_source(ONLY IN_THREAD,
-		    const rectangle &dragging_element_absolute_pos,
-		    generic_windowObj::handlerObj &window_handler,
-		    const screen &window_screen,
-		    const std::vector<xcb_atom_t> &source_formats,
-		    coord_t start_x,
-		    coord_t start_y);
-
-	//! Delegated constructor
-
-	drag_source(ONLY IN_THREAD,
-		    const rectangle &dragging_element_absolute_pos,
-		    generic_windowObj::handlerObj &window_handler,
-		    const screen &window_screen,
-		    const defaulttheme &current_theme,
-		    const std::vector<xcb_atom_t> &source_formats,
-		    coord_t start_x,
-		    coord_t start_y);
+		    coord_t start_y,
+		    dim_t drag_start_horiz,
+		    dim_t drag_start_vert);
 
 	//! Delegated constructor
 

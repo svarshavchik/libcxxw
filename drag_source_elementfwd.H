@@ -11,6 +11,7 @@
 #include "x/w/motion_eventfwd.H"
 #include "x/w/callback_triggerfwd.H"
 #include "x/w/impl/connection_threadfwd.H"
+#include "x/w/impl/themedim_elementfwd.H"
 #include <xcb/xproto.h>
 #include <x/obj.H>
 #include <optional>
@@ -19,6 +20,9 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN drag_source_element_baseObj;
 class LIBCXX_HIDDEN grab_inprogress_info;
+
+struct LIBCXX_HIDDEN drag_horiz_buffer;
+struct LIBCXX_HIDDEN drag_vert_buffer;
 
 class grab_inprogress_info : public drag_source {
 
@@ -39,7 +43,9 @@ class grab_inprogress_info : public drag_source {
 			     const std::vector<xcb_atom_t>
 			     &source_formats,
 			     coord_t start_x,
-			     coord_t start_y);
+			     coord_t start_y,
+			     dim_t start_start_horiz,
+			     dim_t drag_start_vert);
 
 	~grab_inprogress_info();
 
@@ -114,6 +120,20 @@ class drag_source_element_baseObj : virtual public obj {
 	//! Return my display element. Implemented by the mixin template.
 
 	virtual elementObj::implObj &get_dragging_element_impl()=0;
+
+	//! Return drag boundary start value.
+
+	//! How far the pointer must move before dragging commences.
+	//! Avoids the overhead if pointer press/release slips a bit.
+
+	virtual dim_t drag_start_horiz(ONLY IN_THREAD)=0;
+
+	//! Return drag boundary start value.
+
+	//! How far the pointer must move before dragging commences.
+	//! Avoids the overhead if pointer press/release slips a bit.
+
+	virtual dim_t drag_start_vert(ONLY IN_THREAD)=0;
 };
 
 template<typename element_impl>
@@ -155,11 +175,14 @@ class LIBCXX_HIDDEN drag_source_elementObj;
 //!
 template<typename element_impl>
 class drag_source_elementObj
-	: public element_impl,
+	: public themedim_elementObj<element_impl,
+				     drag_horiz_buffer, drag_vert_buffer>,
 	  public drag_source_element_baseObj {
 
  public:
-	typedef element_impl superclass_t;
+	typedef themedim_elementObj<element_impl,
+				    drag_horiz_buffer, drag_vert_buffer
+				    > superclass_t;
 
 	using superclass_t::superclass_t;
 
@@ -170,6 +193,10 @@ class drag_source_elementObj
 
 	bool drag_response(ONLY IN_THREAD,
 			   const xcb_client_message_event_t *event) override;
+
+	dim_t drag_start_horiz(ONLY IN_THREAD) override;
+
+	dim_t drag_start_vert(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

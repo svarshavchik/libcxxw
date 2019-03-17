@@ -6,6 +6,7 @@
 #define drag_source_element_H
 
 #include "drag_source_elementfwd.H"
+#include "x/w/impl/themedim_element.H"
 #include "selection/current_selection.H"
 
 LIBCXXW_NAMESPACE_START
@@ -47,6 +48,22 @@ void drag_source_elementObj<element_impl>
 
 	if (!this->current_pointer_focus(IN_THREAD))
 		this->abort_dragging(IN_THREAD);
+}
+
+//! Implement drag_start_horiz()
+
+template<typename element_impl>
+dim_t drag_source_elementObj<element_impl>::drag_start_horiz(ONLY IN_THREAD)
+{
+	return themedim_element<drag_horiz_buffer>::pixels(IN_THREAD);
+}
+
+//! Implement drag_start_ver()
+
+template<typename element_impl>
+dim_t drag_source_elementObj<element_impl>::drag_start_vert(ONLY IN_THREAD)
+{
+	return themedim_element<drag_horiz_buffer>::pixels(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

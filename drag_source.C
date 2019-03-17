@@ -31,7 +31,9 @@ void drag_source_element_baseObj
 					   *this,
 					   dnd_selection,
 					   source_formats,
-					   start_x, start_y);
+					   start_x, start_y,
+					   drag_start_horiz(IN_THREAD),
+					   drag_start_vert(IN_THREAD));
 
 	get_dragging_element_impl()
 		.get_window_handler()
@@ -119,12 +121,16 @@ grab_inprogress_info
 		       const current_selection &dnd_selection,
 		       const std::vector<xcb_atom_t> &source_formats,
 		       coord_t start_x,
-		       coord_t start_y)
+		       coord_t start_y,
+		       dim_t drag_start_horiz,
+		       dim_t drag_start_vert)
 	: drag_source{IN_THREAD,
-		      me.get_dragging_element_impl(),
-		      source_formats,
-		      start_x,
-		      start_y},
+		me.get_dragging_element_impl(),
+		source_formats,
+		start_x,
+		start_y,
+		drag_start_horiz,
+		drag_start_vert},
 	  dnd_selection{dnd_selection},
 	  me{me}
 {
@@ -150,14 +156,17 @@ drag_source::drag_source(ONLY IN_THREAD,
 			 elementObj::implObj &dragging_element,
 			 const std::vector<xcb_atom_t> &source_formats,
 			 coord_t start_x,
-			 coord_t start_y)
+			 coord_t start_y,
+			 dim_t drag_start_horiz,
+			 dim_t drag_start_vert)
 	: drag_source{IN_THREAD,
-		      dragging_element.get_absolute_location_on_screen
-		      (IN_THREAD),
-		      dragging_element.get_window_handler(),
-		      source_formats,
-		      start_x,
-		      start_y}
+		dragging_element.get_absolute_location_on_screen(IN_THREAD),
+		dragging_element.get_window_handler(),
+		source_formats,
+		start_x,
+		start_y,
+		drag_start_horiz,
+		drag_start_vert}
 {
 }
 
@@ -166,55 +175,19 @@ drag_source::drag_source(ONLY IN_THREAD,
 			 generic_windowObj::handlerObj &window_handler,
 			 const std::vector<xcb_atom_t> &source_formats,
 			 coord_t start_x,
-			 coord_t start_y)
+			 coord_t start_y,
+			 dim_t drag_start_horiz,
+			 dim_t drag_start_vert)
 	: drag_source{IN_THREAD,
-		      dragging_element_absolute_pos,
-		      window_handler,
-		      window_handler.get_screen(),
-		      source_formats,
-		      start_x,
-		      start_y}
-{
-}
-
-drag_source::drag_source(ONLY IN_THREAD,
-			 const rectangle &dragging_element_absolute_pos,
-			 generic_windowObj::handlerObj &window_handler,
-			 const screen &window_screen,
-			 const std::vector<xcb_atom_t> &source_formats,
-			 coord_t start_x,
-			 coord_t start_y)
-	: drag_source{IN_THREAD,
-		      dragging_element_absolute_pos,
-		      window_handler,
-		      window_screen,
-		      window_screen->impl->current_theme.get(),
-		      source_formats,
-		      start_x,
-		      start_y}
-{
-}
-
-drag_source::drag_source(ONLY IN_THREAD,
-			 const rectangle &dragging_element_absolute_pos,
-			 generic_windowObj::handlerObj &window_handler,
-			 const screen &window_screen,
-			 const defaulttheme &current_theme,
-			 const std::vector<xcb_atom_t> &source_formats,
-			 coord_t start_x,
-			 coord_t start_y)
-	: drag_source{IN_THREAD,
-		      window_handler.id(),
-		      window_screen,
-		      source_formats,
-		      dragging_element_absolute_pos.x,
-		      dragging_element_absolute_pos.y,
-		      start_x,
-		      start_y,
-		      current_theme->get_theme_dim_t("drag_horiz_buffer",
-						     themedimaxis::width),
-		      current_theme->get_theme_dim_t("drag_vert_buffer",
-						     themedimaxis::height)}
+		window_handler.id(),
+		window_handler.get_screen(),
+		source_formats,
+		dragging_element_absolute_pos.x,
+		dragging_element_absolute_pos.y,
+		start_x,
+		start_y,
+		drag_start_horiz,
+		drag_start_vert}
 {
 }
 
