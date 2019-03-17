@@ -1,3 +1,7 @@
+2019-03-17  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* booklayoutmanager: custom book tab appearance.
+
 2019-03-14  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* button.C: Refactor create_button*(), using optional_args from

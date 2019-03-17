@@ -26,8 +26,13 @@ class LIBCXX_HIDDEN bookgridlayoutmanagerObj
 			  const book_status_info_t &)> callback_under_lock;
 
  public:
+
+	//! Book layout manager appearance.
+	const booklayoutmanager_config config;
+
 	//! Constructor
-	bookgridlayoutmanagerObj(const container_impl &);
+	bookgridlayoutmanagerObj(const container_impl &,
+				 const booklayoutmanager_config &);
 
 	//! Destructor
 	~bookgridlayoutmanagerObj();

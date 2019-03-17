@@ -79,10 +79,8 @@ libcxxw_la_SOURCES=\
 	booklayoutmanager/pagetab_impl.H	    \
 	booklayoutmanager/pagetabfwd.H		    \
 	booklayoutmanager/pagetabobj.H		    \
-	booklayoutmanager/pagetabgridcontainer.C \
 	booklayoutmanager/pagetabgridcontainer_impl.H \
 	booklayoutmanager/pagetabgridcontainer_implfwd.H \
-	booklayoutmanager/pagetabgridcontainer_implobj.H \
 	booklayoutmanager/pagetabgridlayoutmanager.C \
 	booklayoutmanager/pagetabgridlayoutmanager.H \
 	booklayoutmanager/pagetabgridlayoutmanager_impl.C \

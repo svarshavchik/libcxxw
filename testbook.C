@@ -121,10 +121,24 @@ void phone_tab(const LIBCXX_NAMESPACE::w::gridlayoutmanager &glm)
 	f->create_input_field("", config);
 }
 
+static void prep(const LIBCXX_NAMESPACE::w::bookpagefactory &sf)
+{
+#if 0
+	sf->noncurrent_color=LIBCXX_NAMESPACE::w::lime;
+	sf->current_color=LIBCXX_NAMESPACE::w::aqua;
+	sf->warm_color=LIBCXX_NAMESPACE::w::yellow;
+	sf->active_color=LIBCXX_NAMESPACE::w::white;
+
+	sf->horiz_padding=4;
+	sf->label_font="mono"_theme_font;
+#endif
+}
+
 static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 {
 	LIBCXX_NAMESPACE::w::bookpagefactory sf=sl->append();
 
+	prep(sf);
 	sf->halign(LIBCXX_NAMESPACE::w::halign::left)
 		.valign(LIBCXX_NAMESPACE::w::valign::top);
 
@@ -164,7 +178,7 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 	LIBCXX_NAMESPACE::w::input_fieldptr firstname;
 
 	sf=sl->insert(0);
-
+	prep(sf);
 	sf->halign(LIBCXX_NAMESPACE::w::halign::left)
 		.valign(LIBCXX_NAMESPACE::w::valign::top);
 
@@ -184,6 +198,7 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 		});
 
 	sf=sl->append();
+	prep(sf);
 
 	for (int i=0; i<6; i++)
 	{
@@ -245,6 +260,11 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 
 	auto gf=glm->append_row();
 
+	LIBCXX_NAMESPACE::w::new_booklayoutmanager nblm;
+
+	nblm.tabs_background_color=LIBCXX_NAMESPACE::w::white;
+
+	// nblm.scroll_button_height=20;
 	auto c=gf->colspan(2).create_focusable_container
 		([&]
 		 (const auto &s)
@@ -253,7 +273,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 
 			 create_book(sl);
 		 },
-		 LIBCXX_NAMESPACE::w::new_booklayoutmanager{});
+		 nblm);
 
 	gf=glm->append_row();
 

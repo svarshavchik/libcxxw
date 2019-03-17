@@ -5,12 +5,18 @@
 #ifndef x_w_pagetabgridcontainer_implfwd_h
 #define x_w_pagetabgridcontainer_implfwd_h
 
-#include "x/w/namespace.H"
+#include "x/w/impl/always_visiblefwd.H"
+#include "x/w/impl/container_elementfwd.H"
+#include "x/w/impl/child_element.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN pagetabgridcontainer_implObj;
+//! The container for the book's page tabs.
+
+typedef always_visibleObj<
+	container_elementObj<child_elementObj>
+	> pagetabgridcontainer_implObj;
 
 /*! Container for \ref booklayoutmanager "booklayoutmanager"'s tab strip.
 

@@ -1100,6 +1100,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <point_size>12</point_size>
   </font>
 
+  <color id="book_tab_font_color" scale="label_foreground_color" />
+
   <!-- Panes -->
 
   <color id="pane_slider_background" scale="100%" />

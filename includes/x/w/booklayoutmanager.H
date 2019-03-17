@@ -13,10 +13,28 @@
 #include <x/w/grid_map_infofwd.H>
 #include <x/w/rgb.H>
 #include <x/w/border_arg.H>
+#include <x/w/dim_arg.H>
 #include <x/w/callback_triggerfwd.H>
 #include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
+
+//! Additional book layout manager configuration settings.
+
+struct booklayoutmanager_config {
+
+	//! Constructor
+	booklayoutmanager_config();
+
+	//! Destructor
+	~booklayoutmanager_config();
+
+	//! Border around the tabs.
+	border_arg book_tab_border;
+
+	//! How big the scroll buttons are.
+	dim_arg scroll_button_height;
+};
 
 //! Create a new container with a \ref booklayoutmanager "book layout manager".
 
@@ -26,7 +44,8 @@ LIBCXXW_NAMESPACE_START
 //! uses the book layout manager.
 
 class new_booklayoutmanager
-	: public new_focusable_layoutmanager {
+	: public new_focusable_layoutmanager,
+	  public booklayoutmanager_config {
  public:
 	//! Constructor
 	new_booklayoutmanager() LIBCXX_PUBLIC;
@@ -34,11 +53,14 @@ class new_booklayoutmanager
 	//! Destructor
 	~new_booklayoutmanager() LIBCXX_PUBLIC;
 
-	//! Page background color;
+	//! Background color around the currently visible page.
 	color_arg background_color;
 
-	//! Border
+	//! Border around the currently visible page.
 	border_arg border;
+
+	//! Tab strip background color
+	color_arg tabs_background_color;
 
 	//! Create a container with the book layout manager.
 

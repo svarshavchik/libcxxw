@@ -45,6 +45,14 @@
 
 LIBCXXW_NAMESPACE_START
 
+booklayoutmanager_config::booklayoutmanager_config()
+	: book_tab_border{"book_tab_border"},
+	  scroll_button_height{"book_scroll_height"}
+{
+}
+
+booklayoutmanager_config::~booklayoutmanager_config()=default;
+
 // The layoutmanagerObj base class gets a ref to the real layout manager
 // implementation object, and we store our impl.
 
@@ -267,13 +275,13 @@ static inline void tab_activate(ONLY IN_THREAD,
 // The caller is responsible for invoking gridfactory->created_internally()
 // for the returned element.
 
-static inline
-auto create_new_tab(const gridfactory &gridfactory,
-		    const booklayoutmanager &layout_manager,
-		    const pagefactory &book_pagefactory,
-		    const function<void (const factory &,
-					 const factory &)> &tab_factory,
-		    const shortcut &sc)
+static auto create_new_tab(const bookpagefactoryObj &my_factory,
+			   const gridfactory &gridfactory,
+			   const booklayoutmanager &layout_manager,
+			   const pagefactory &book_pagefactory,
+			   const function<void (const factory &,
+						const factory &)> &tab_factory,
+			   const shortcut &sc)
 {
 	// All elements in the tab strip have no padding, and take up the
 	// full height of the tab strip.
@@ -283,7 +291,8 @@ auto create_new_tab(const gridfactory &gridfactory,
 	// First-ly, an inner container with the border layout manager, for this
 	// new tab's individual borders.
 
-	border_arg book_tab_border{"book_tab_border"};
+	auto &book_tab_border=
+		layout_manager->impl->impl->config.book_tab_border;
 
 	auto tab_parent_container=gridfactory->get_container_impl();
 
@@ -306,9 +315,14 @@ auto create_new_tab(const gridfactory &gridfactory,
 		::create(inner_tab_gridcontainer_impl,
 			 layout_manager->book_pagetabgridlayoutmanager
 			 ->impl->my_container,
-			 "book_tab_inactive_color",
-			 "book_tab_warm_color",
-			 "book_tab_hot_color");
+			 my_factory.horiz_padding,
+			 my_factory.vert_padding,
+			 my_factory.current_color,
+			 my_factory.noncurrent_color,
+			 my_factory.warm_color,
+			 my_factory.active_color,
+			 my_factory.label_font,
+			 my_factory.label_foreground_color);
 
 	// Finish initializing the impl in the connection thread.
 	// Need to install the shortcut.
@@ -462,7 +476,7 @@ void append_bookpagefactoryObj
 	 const shortcut &sc)
 {
 	auto [tab_element, hotspot_element, page_element]=
-		create_new_tab(book_tabfactory,
+		create_new_tab(*this, book_tabfactory,
 			       layout_manager, book_pagefactory, f, sc);
 
 	install_activate_callback(layout_manager, hotspot_element,
@@ -482,7 +496,7 @@ void insert_bookpagefactoryObj
 	 const shortcut &sc)
 {
 	auto [tab_element, hotspot_element, page_element]=
-		create_new_tab(book_tabfactory,
+		create_new_tab(*this, book_tabfactory,
 			       layout_manager, book_pagefactory, f, sc);
 
 	install_activate_callback(layout_manager, hotspot_element,
@@ -554,7 +568,8 @@ class LIBCXX_HIDDEN book_focusable_containerObj
 
 new_booklayoutmanager::new_booklayoutmanager()
 	: background_color{"page_background"},
-	  border{"page_border"}
+	  border{"page_border"},
+	  tabs_background_color{"book_tab_background_color"}
 {
 }
 
@@ -571,7 +586,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	// Create the our gridlayoutmanager subclass, the real layout manager
 	// for this container.
 
-	auto grid=ref<bookgridlayoutmanagerObj>::create(c);
+	auto grid=ref<bookgridlayoutmanagerObj>::create(c, *this);
 
 	// Start building the contents of the grid.
 
@@ -615,7 +630,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 			 (container_impl,
 			  "scroll-left1",
 			  "scroll-left2",
-			  "book_scroll_height");
+			  scroll_button_height);
 
 			 left_scroll_impl=impl;
 
@@ -633,7 +648,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 
 	child_element_init_params peephole_impl_init_params;
 
-	peephole_impl_init_params.background_color="book_tab_background_color";
+	peephole_impl_init_params.background_color=tabs_background_color;
 
 	auto peephole_impl=
 		ref<always_visibleObj<peephole_impl_elementObj<
@@ -643,12 +658,8 @@ new_booklayoutmanager::create(const container_impl &parent) const
 
 	// And inside this peephole is the actual tab.
 
-	auto pagetab_gridcontainer=pagetabgridcontainer_impl::create
-		(peephole_impl,
-		 "book_tab_h_padding",
-		 "book_tab_v_padding",
-		 "book_tab_inactive_color",
-		 "book_tab_active_color");
+	auto pagetab_gridcontainer=
+		pagetabgridcontainer_impl::create(peephole_impl);
 
 	// And the layout manager for the pagetab_gridcontainer
 
@@ -698,7 +709,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 			 (container_impl,
 			  "scroll-right1",
 			  "scroll-right2",
-			  "book_scroll_height");
+			  scroll_button_height);
 
 			 right_scroll_impl=impl;
 

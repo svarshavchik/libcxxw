@@ -84,6 +84,32 @@ The closure must invoke both of the factories exactly once, using each
 factory to create one display element. The callable object is responsible
 for show()ing both new elements.
 
+\code
+factory->noncurrent_color=INSERT_LIBX_NAMESPACE::w::silver;
+
+factory->current_color=INSERT_LIBX_NAMESPACE::w::white;
+
+factory->warm_color=INSERT_LIBX_NAMESPACE::w::yellow;
+
+factory->active_color=INSERT_LIBX_NAMESPACE::w::aqua;
+
+factory->label_font=INSERT_LIBX_NAMESPACE::w::font{"liberation mono"};
+
+factory->active_color=INSERT_LIBX_NAMESPACE::w::black;
+
+factory->horiz_padding=2.0;
+factory->vert_padding=2.0;
+\endcode
+
+The factory initializes several (non thread-safe) members to the default
+appearance of each new tab, from the current display theme; which may be
+updated if needed.
+
+Since the default appearance is theme controlled, the best approach involves
+specifying all these theme-specified values (together with a few additional
+settings in the
+\ref new_booklayoutmanager "INSERT_LIBX_NAMESPACE::w::new_booklayoutmanager").
+
 \see booklayoutmanager
 
 */

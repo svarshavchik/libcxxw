@@ -12,6 +12,9 @@
 #include <x/w/shortcutfwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/alignment.H>
+#include <x/w/rgb.H>
+#include <x/w/font_arg.H>
+#include <x/w/dim_arg.H>
 #include <x/functional.H>
 #include <x/obj.H>
 
@@ -30,6 +33,30 @@ public:
 
 	//! Destructor
 	~bookpagefactoryObj() LIBCXX_HIDDEN;
+
+	//! Inactive tab color
+	color_arg noncurrent_color;
+
+	//! Active tab color
+	color_arg current_color;
+
+	//! Color of the tab when it has keyboard or pointer focus
+	color_arg warm_color;
+
+	//! Color of the tab when it's been activated.
+	color_arg active_color;
+
+	//! Default font for the tab
+	font_arg label_font;
+
+	//! Default font's color
+	color_arg label_foreground_color;
+
+	//! Tab padding.
+	dim_arg horiz_padding;
+
+	//! Padding for an individual tab.
+	dim_arg vert_padding;
 
 	//! Add another page to the book.
 

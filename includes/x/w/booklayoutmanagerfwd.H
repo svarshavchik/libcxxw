@@ -29,11 +29,12 @@ auto container=factory->create_focusable_container
 
           // ...
      },
-     INSERT_LIBX_NAMESPACE::w::new_booklayoutmanager
+     INSERT_LIBX_NAMESPACE::w::new_booklayoutmanager{});
 \endcode
 
 \ref new_booklayoutmanager "INSERT_LIBX_NAMESPACE::w::new_booklayoutmanager"
-creates a container with the book layoutmanager, which is an enhanced version
+creates a container that uses the book layoutmanager,
+which is an enhanced version
 of the \ref pagelayoutmanager "page layout manager". Like
 the \c pagelayoutmanager, the book layout manager arranges its elements
 in individual pages, with one page visible at a time. On top of that,

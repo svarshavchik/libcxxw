@@ -19,6 +19,8 @@ LIBCXXW_NAMESPACE_START
 //!
 //! Borders of adjacent elements get collapsed together, with the "better"
 //! border ending up on top, and ruling the roost.
+//!
+//! Other display elements also use borders, for various purposes.
 
 struct border_infomm {
 
@@ -37,7 +39,7 @@ struct border_infomm {
 	//! Border color
 	color_arg color1=transparent;
 
-	//! Optional 2nd color, for dashed broders.
+	//! Optional 2nd color, for dashed borders.
 	std::optional<color_arg> color2;
 
 	//! Border width in millimeters

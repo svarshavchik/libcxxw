@@ -8,12 +8,21 @@
 #include "booklayoutmanager/pagetab.H"
 #include "booklayoutmanager/pagetabgridcontainer_implfwd.H"
 #include "x/w/impl/always_visiblefwd.H"
+#include "x/w/impl/background_color_elementfwd.H"
+#include "x/w/impl/themedim_elementfwd.H"
 #include "hotspot_bgcolor_elementfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/elementfwd.H"
+#include "x/w/font_arg.H"
+#include "x/w/rgb.H"
 
 LIBCXXW_NAMESPACE_START
+
+struct h_padding_tag;
+struct v_padding_tag;
+struct current_color_tag;
+struct notcurrent_color_tag;
 
 //! Internal implementation object.
 
@@ -28,23 +37,38 @@ LIBCXXW_NAMESPACE_START
 //! The internal grid container's element is this element, which consists
 //! of:
 //!
-//! - alwaysvisibleObj - this element is always visible.
+//! - always_visibleObj - this element is always visible.
+//!
+//! - themedim_elementObj - the padding for this tab.
+//!
+//! - background_color_elementObj - the active and inactive "cold" colors
+//!   for the individual hotspots that make up the tab.
 //!
 //! - hotspot_bgcolorObj - a hotspot, highlighted with a background color.
-//!
-//! The cold colors for the hotspot come from the pagetabgridcontainer_impl.
 //!
 //! This container uses the singleton layout manager for the actual element
 //! that comprises the tab's label.
 
-class LIBCXX_HIDDEN pagetabObj::implObj : public always_visibleObj<
-	hotspot_bgcolor_elementObj<container_elementObj<child_elementObj>>> {
+class LIBCXX_HIDDEN pagetabObj::implObj
+	: public always_visibleObj<themedim_elementObj<
+					   background_color_elementObj<
+						   hotspot_bgcolor_elementObj
+						   <container_elementObj
+						    <child_elementObj>>,
+						   current_color_tag,
+						   notcurrent_color_tag>,
+					   h_padding_tag, v_padding_tag>>
+{
 
 	//! Alias.
 
 	typedef always_visibleObj<
-		hotspot_bgcolor_elementObj<container_elementObj
-					   <child_elementObj>>> superclass_t;
+		themedim_elementObj<
+			background_color_elementObj<
+				hotspot_bgcolor_elementObj<container_elementObj
+							   <child_elementObj>>,
+				current_color_tag, notcurrent_color_tag>,
+			h_padding_tag, v_padding_tag>> superclass_t;
 
  public:
 
@@ -52,22 +76,35 @@ class LIBCXX_HIDDEN pagetabObj::implObj : public always_visibleObj<
 
 	const pagetabgridcontainer_impl my_pagetabgridcontainer_impl;
 
+	//! Default font
+	const font_arg tab_font;
+
+	//! Default font color
+	const color_arg tab_font_color;
+
 	//! Constructor
 
 	implObj(const container_impl &parent_container,
 		const pagetabgridcontainer_impl &my_pagetabgridcontainer_impl,
-		const color_arg &cold_color,
+		const dim_arg &h_padding,
+		const dim_arg &v_padding,
+		const color_arg &current_color,
+		const color_arg &notcurrent_color,
 		const color_arg &warm_color,
-		const color_arg &hot_color);
+		const color_arg &hot_color,
+		const font_arg &tab_font,
+		const color_arg &tab_font_color);
 
 	//! Destructor
 	~implObj();
 
 	//! Override label_theme_font.
 
-	//! Default label font is "book_tab_font".
-
 	font_arg label_theme_font() const override;
+
+	//! Override label_theme_color.
+
+	color_arg label_theme_color() const override;
 
 	//! Set the inactive or the active background color.
 
