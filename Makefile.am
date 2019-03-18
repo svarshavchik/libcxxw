@@ -454,6 +454,7 @@ libcxxw_la_SOURCES=\
 	layoutmanager.C				    \
 	layoutmanager_impl.C			    \
 	list.C					    \
+	list_appearance.C			    \
 	listlayoutmanager/extra_list_row_info.C	    \
 	listlayoutmanager/extra_list_row_info.H	    \
 	listlayoutmanager/extra_list_row_infofwd.H  \
@@ -1047,7 +1048,7 @@ testlabel_LDFLAGS=-static $(STATICLINKFLAGS)
 $(call OPTIONS_GEN,testlistoptions.H,testlistoptions.xml)
 testlist_SOURCES=testlist.C
 testlist_LDADD=libcxxw.la
-testlist_LDFLAGS=$(TESTLINKTYPE)
+testlist_LDFLAGS=-static $(STATICLINKFLAGS)
 
 $(call OPTIONS_GEN,testmainwindowoptions.H,testmainwindowoptions.xml)
 

@@ -1,5 +1,9 @@
 2019-03-17  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* list_appearance: separate object with settings for a list's visual
+	appearance, used by the list layout manager, combo box layout manager,
+	menu layout manager, et al...
+
 	* booklayoutmanager: custom book tab appearance.
 
 2019-03-14  Sam Varshavchik  <mrsam@courier-mta.com>

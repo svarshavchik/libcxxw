@@ -691,7 +691,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <color>30%</color>
   </border>
 
-  <!-- "default" background color for the combobox's elements -->
+  <!-- "default" background color of the combobox's current value element -->
   <color id="combobox_background_color" scale="90%" />
 
   <!-- Background color for the popup when it's below the combobox -->

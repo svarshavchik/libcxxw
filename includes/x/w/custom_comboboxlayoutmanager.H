@@ -208,6 +208,10 @@ class new_custom_comboboxlayoutmanager
 
 	synchronized_axis synchronized_columns;
 
+	//! Appearance of the popuplist
+
+	const_list_appearance popup_list_appearance;
+
 	//! Create the focusable container.
 
 	//! \internal

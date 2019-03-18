@@ -554,10 +554,14 @@ void listhiertest(const LIBCXX_NAMESPACE::w::main_window &main_window)
 	LIBCXX_NAMESPACE::w::new_listlayoutmanager
 		nlm{LIBCXX_NAMESPACE::w::highlighted_list};
 
+	auto custom=nlm.appearance->clone();
+
+	nlm.appearance=custom;
+
 	nlm.columns=2;
 	nlm.requested_col_widths={{1, 100}};
 	nlm.row_alignments={{0, LIBCXX_NAMESPACE::w::valign::middle}};
-	nlm.h_padding=0;
+	custom->h_padding=0;
 	nlm.width(LIBCXX_NAMESPACE::w::dim_axis_arg{75});
 	nlm.height(LIBCXX_NAMESPACE::w::dim_axis_arg{100});
 

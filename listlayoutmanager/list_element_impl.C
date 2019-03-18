@@ -253,16 +253,16 @@ void list_elementObj::implObj
 list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 				  elementObj::implObj &container_element_impl,
 				  const screen &container_screen)
-	: superclass_t{init_args.style.selected_color,
-		       init_args.style.highlighted_color,
-		       init_args.style.current_color,
-		       init_args.style.h_padding,
+	: superclass_t{init_args.style.appearance->selected_color,
+		       init_args.style.appearance->highlighted_color,
+		       init_args.style.appearance->current_color,
+		       init_args.style.appearance->h_padding,
 		       themedimaxis::width,
-		       init_args.style.v_padding,
+		       init_args.style.appearance->v_padding,
 		       themedimaxis::height,
-		       init_args.style.indent,
+		       init_args.style.appearance->indent,
 		       themedimaxis::width,
-		       init_args.style.list_separator_border,
+		       init_args.style.appearance->list_separator_border,
 		       init_args.textlist_container},
 	  richtext_alteration_config{
 				     container_element_impl.get_window_handler()
@@ -304,8 +304,9 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 		  .create_icon({"bullet2"})},
 
 	  itemlabel_meta{create_background_color("label_foreground_color"),
-			 create_current_fontcollection(init_args.style
-						       .list_font)},
+			  create_current_fontcollection(init_args.style
+							.appearance->
+							list_font)},
 	  itemshortcut_meta{create_background_color("label_foreground_color"),
 			    create_current_fontcollection(theme_font
 			  {"menu_shortcut"})},

@@ -20,7 +20,8 @@ void panefactoryObj::configure_new_list(new_listlayoutmanager &nlm,
 					bool synchronized)
 {
 	nlm.variable_height();
-	nlm.list_border={};
+	nlm.appearance=list_appearance_base::pane_theme();
+
 	if (synchronized)
 		nlm.vertical_scrollbar=scrollbar_visibility::always;
 

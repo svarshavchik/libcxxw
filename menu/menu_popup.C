@@ -96,12 +96,15 @@ do_create_dropdown_menu(const element_impl &e,
 {
 	new_listlayoutmanager style{menu_list};
 
-	style.h_padding="menu_list_h_padding";
-	style.v_padding="menu_list_v_padding";
-	style.background_color="menu_popup_background_color";
-	style.current_color="menu_popup_highlighted_color";
-	style.highlighted_color="menu_popup_clicked_color";
-	style.list_font=theme_font{"menu_font"};
+	auto appearance=style.appearance->clone();
+
+	appearance->h_padding="menu_list_h_padding";
+	appearance->v_padding="menu_list_v_padding";
+	appearance->current_color="menu_popup_highlighted_color";
+	appearance->highlighted_color="menu_popup_clicked_color";
+	appearance->list_font=theme_font{"menu_font"};
+	style.appearance=appearance;
+
 	style.columns=1;
 	style.selection_type=menuitem_selected_type;
 

@@ -21,11 +21,11 @@ listcontainerObj::implObj::implObj(const container_impl &parent,
 
 	   // Initialize the background colors
 	   parent->container_element_impl()
-	   .create_background_color(style.selected_color),
+	   .create_background_color(style.appearance->selected_color),
 	   parent->container_element_impl()
-	   .create_background_color(style.highlighted_color),
+	   .create_background_color(style.appearance->highlighted_color),
 	   parent->container_element_impl()
-	   .create_background_color(style.current_color),
+	   .create_background_color(style.appearance->current_color),
 	   parent)
 {
 	if (style.columns < 1)

@@ -186,8 +186,12 @@ standard_dialog_elements_t print_dialog_init_helper
 								(info);
 						};
 
-					nlm.list_font=theme_font{
+					auto appearance=nlm.appearance->clone();
+
+					appearance->list_font=theme_font{
 						"printer_local_font"};
+					nlm.appearance=appearance;
+
 					nlm.height(4);
 
 					auto f=factory

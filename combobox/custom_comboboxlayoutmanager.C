@@ -242,7 +242,8 @@ new_custom_comboboxlayoutmanager
 	: selection_factory{selection_factory},
 	  selection_changed{noop_selection_changed},
 	  selection_search{noop_selection_search},
-	  synchronized_columns{synchronized_axis::create()}
+	  synchronized_columns{synchronized_axis::create()},
+	  popup_list_appearance{list_appearance::base::combobox_theme()}
 {
 }
 
@@ -254,14 +255,13 @@ new_custom_comboboxlayoutmanager::get_selection_changed() const
 	return selection_changed;
 }
 
-new_listlayoutmanager combobox_new_listlayoutmanager(bool selection_required)
+new_listlayoutmanager
+combobox_new_listlayoutmanager(bool selection_required,
+			       const const_list_appearance &app)
 {
 	new_listlayoutmanager style{combobox_list};
 
-	style.background_color="combobox_background_color";
-	style.selected_color="combobox_selected_color";
-	style.highlighted_color="combobox_highlighted_color";
-	style.current_color="combobox_current_color";
+	style.appearance=app;
 
 	if (!selection_required)
 		style.selection_type=single_optional_selection_type;
@@ -350,7 +350,8 @@ focusable_container new_custom_comboboxlayoutmanager
 	// Start by creating the popup first.
 
 	new_listlayoutmanager style=
-		combobox_new_listlayoutmanager(selection_required);
+		combobox_new_listlayoutmanager(selection_required,
+					       popup_list_appearance);
 	style.synchronized_columns=synchronized_columns;
 
 	custom_combobox_popup_containerptr popup_containerptr;

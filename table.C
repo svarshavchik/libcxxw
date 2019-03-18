@@ -700,7 +700,7 @@ new_tablelayoutmanager
 	  adjustable_header_highlight_width
 	{"list_adjustable_header_highlight_width"}
 {
-	visible_focusoff_border();
+	appearance=list_appearance_base::table_theme();
 }
 
 new_tablelayoutmanager::~new_tablelayoutmanager()=default;
@@ -782,8 +782,9 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 			bordercontainer_elementObj<container_elementObj<
 				child_elementObj>>>>
 		::create(layout_container_impl->get_window_handler(),
-			 list_border, list_border,
-			 list_border, border_arg{},
+			 appearance->list_border,
+			 appearance->list_border,
+			 appearance->list_border, border_arg{},
 			 richtextptr{},
 			 0, 0, 0,
 			 layout_container_impl,
@@ -796,7 +797,8 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 			bordercontainer_elementObj<container_elementObj<
 				child_elementObj>>>>
 		::create(*header_border_container_impl,
-			 focusoff_border, focusoff_border,
+			 appearance->focusoff_border,
+			 appearance->focusoff_border,
 			 border_arg{}, border_arg{}, richtextptr{},
 			 0, 0, 0,
 			 header_border_container_impl);
@@ -840,8 +842,8 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 
 		header_factory(cf, i);
 
-		auto left_padding=h_padding;
-		auto right_padding=h_padding;
+		auto left_padding=appearance->h_padding;
+		auto right_padding=appearance->h_padding;
 
 		auto lr_iter=lr_paddings.find(i);
 

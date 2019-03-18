@@ -120,7 +120,9 @@ create_input_field_impl_mixin(const container_impl &parent,
 	//
 	// We are going to borrow most of the combo-box popup's code for this.
 
-	new_listlayoutmanager style=combobox_new_listlayoutmanager(true);
+	new_listlayoutmanager style=combobox_new_listlayoutmanager
+		(true,
+		 config.input_field_search_appearance);
 
 	create_peepholed_toplevel_listcontainer_popup_args
 		popup_args=combobox_listcontainer_popup_args(parent, style, 1);

@@ -12,6 +12,7 @@
 #include <x/w/text_param.H>
 #include <x/w/input_field_configfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/list_appearance.H>
 #include <x/w/scrollbar.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
@@ -182,6 +183,11 @@ struct input_field_config_settings {
 	//! combo-box style popup below or above the input field.
 
 	functionptr<input_field_search_callback_t> input_field_search_callback;
+
+	//! Appearance of the list search popup.
+
+	const_list_appearance input_field_search_appearance=
+		list_appearance::base::theme();
 
 	//! Destructor
 

@@ -88,7 +88,19 @@ static inline void create_main_window(const x::w::main_window &main_window)
 	// list item, in column 1, so make the padding much smaller, .5
 	// millimeters (typically 1 pixel on the left and the right, for a
 	// 2 pixel padding).
-	nlm.h_padding=.5;
+	//
+	// "appearance" is an object that has various settings regarding
+	// the list's appearance. It is a constant, cached object, for
+	// optimization purposes. To make changes to it, we first clone it:
+
+	x::w::list_appearance custom_appearance=nlm.appearance->clone();
+
+	// Change our setting:
+	custom_appearance->h_padding=.5;
+
+	// And install it:
+
+	nlm.appearance=custom_appearance;
 
 	// The default selection type callback visually selects the list item
 	// when it's clicked on. Replace this with a custom callback. We

@@ -76,29 +76,13 @@ new_listlayoutmanager
 	  height_value{std::tuple<size_t, size_t>{4,4}},
 	  columns{1},
 	  synchronized_columns{synchronized_axis::create()},
-	  list_border{"list_border"},
-	  focusoff_border{"listfocusoff_border"},
-	  focuson_border{"listfocuson_border"},
-	  v_padding{"list_v_padding"},
-	  h_padding{"list_h_padding"},
-	  indent{"list_indent"},
 	  horizontal_scrollbar{scrollbar_visibility::automatic},
 	  vertical_scrollbar{scrollbar_visibility::automatic},
-	  background_color{"list_background_color"},
-	  selected_color{"list_selected_color"},
-	  highlighted_color{"list_highlighted_color"},
-	  current_color{"list_current_color"},
-	  list_font{theme_font{"list"}},
-	  list_separator_border{"list_separator_border"}
+	  appearance{list_appearance::base::theme()}
 {
 }
 
 new_listlayoutmanager::~new_listlayoutmanager()=default;
-
-void new_listlayoutmanager::visible_focusoff_border()
-{
-	focusoff_border="listvisiblefocusoff_border";
-}
 
 focusable_container
 new_listlayoutmanager::create(const container_impl &parent_container) const
@@ -189,11 +173,11 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 		height_value);
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
-		({list_border,
-		  focusoff_border,
-		  focuson_border,
+		({appearance->list_border,
+		  appearance->focusoff_border,
+		  appearance->focuson_border,
 		  0,
-		  background_color,
+		  appearance->background_color,
 		  focusable_container_impl,
 		  list_peephole_style,
 		  horizontal_scrollbar,

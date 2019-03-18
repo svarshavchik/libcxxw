@@ -16,8 +16,9 @@ LIBCXXW_NAMESPACE_START
 
 //! Create a new_listlayoutmanager for a combo-box dropdown list.
 
-new_listlayoutmanager combobox_new_listlayoutmanager(bool selection_required)
-	LIBCXX_HIDDEN;
+new_listlayoutmanager
+combobox_new_listlayoutmanager(bool selection_required,
+			       const const_list_appearance &) LIBCXX_HIDDEN;
 
 //! Create parameters for create_peepholed_toplevel_listcontainer_popup()
 
