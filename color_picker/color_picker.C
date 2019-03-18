@@ -84,36 +84,33 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 		input_fields_conf.set_default_spin_control_factories();
 	}
 
-	dim_arg bw{"color_picker_buffer_width"};
-	dim_arg bh{"color_picker_buffer_height"};
-
-	dim_arg sw{"color_picker_strip_width"};
-	dim_arg sh{"color_picker_strip_height"};
-
 	std::vector<std::tuple<rgb, button>> basic_colors;
 
 	inline void create_basic_colors(const gridlayoutmanager &glm)
 	{
-		static const rgb rgb_values[2][8]={
+		const struct {
+			rgb color;
+			const char *name;
+		} rgb_values[2][8]={
 			{
-				black,
-				gray,
-				silver,
-				white,
-				maroon,
-				red,
-				olive,
-				yellow,
+				{black, _("Black")},
+				{gray, _("Gray")},
+				{silver, _("Silver")},
+				{white, _("White")},
+				{maroon, _("Maroon")},
+				{red, _("Red")},
+				{olive, _("Olive")},
+				{yellow, _("Yellow")},
 			},
 			{
-				green,
-				lime,
-				teal,
-				aqua,
-				navy,
-				blue,
-				fuchsia,
-				purple,
+				{green, _("Green")},
+				{lime, _("Lime")},
+				{teal, _("Teal")},
+				{aqua, _("Aqua")},
+				{navy, _("Navy")},
+				{blue, _("Blue")},
+				{fuchsia, _("Fuchsia")},
+				{purple, _("Purple")},
 			}};
 
 		basic_colors.reserve(16);
@@ -132,13 +129,15 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 							 ([&]
 							  (const auto &c) {
 								  c->set_background_color
-									  (col);
+									  (col.color);
 							  },
-							  {"color_picker_basic_color_width"},
-							  {"color_picker_basic_color_height"});
+							  {config.basic_color_width},
+							  {config.basic_color_height});
 					 });
 
-				basic_colors.push_back(std::tuple{col, b});
+				b->create_tooltip(col.name);
+				basic_colors.push_back(std::tuple{col.color,
+							b});
 			}
 		}
 	}
@@ -159,7 +158,7 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 						 h_canvas=button_factory
 							 ->create_canvas
 							 ([] (const auto &){}, {
-							 }, {sh});
+							 }, {config.strip_height});
 					 });
 			}},
 		{"v-button", [&](const auto &f)
@@ -171,19 +170,19 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 						 v_canvas=button_factory
 							 ->create_canvas
 							 ([](const auto &) {}, {
-								 sw}, {});
+								 config.strip_width}, {});
 					 });
 			}},
 		{"h-button-spacing", [&](const auto &f)
 			{
 				f->create_canvas([](const auto &) {},
 						 {},
-						 {bh});
+						 {config.buffer_height});
 			}},
 		{"v-button-spacing", [&](const auto &f)
 			{
 				f->create_canvas([](const auto &) {},
-						 {bw},
+						 {config.buffer_width},
 						 {});
 			}},
 		{"fixed-canvas", [&](const auto &f)
@@ -191,7 +190,7 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 				fixed_canvas=f->create_canvas([]
 							      (const auto &){},
 							      {},
-							      {sh});
+							      {config.strip_height});
 
 			}},
 		{"square", [&](const auto &f)
@@ -224,8 +223,8 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 						 ::implObj
 						 ::initial_vert_component,
 						 canvas_init_params{
-							 {"color_picker_square_width"},
-							 {"color_picker_square_height"},
+							 {config.picker_width},
+							 {config.picker_height},
 								 "color_picker_square@libcxx.com"});
 
 				auto cps=color_picker_square::create(impl);
@@ -750,13 +749,10 @@ color_picker factoryObj
 			 // The current value element shows the current
 			 // color.
 
-			 dim_arg w{"color_picker_current_width"};
-			 dim_arg h{"color_picker_current_height"};
-
 			 color_picker_current=f->create_canvas
 			 ([&](const auto &c) {
 				 c->set_background_color(config.initial_color);
-			 }, {w}, {h});
+			 }, {config.width}, {config.height});
 
 			 color_picker_current->show();
 		 });
