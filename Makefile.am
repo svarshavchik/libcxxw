@@ -248,6 +248,7 @@ libcxxw_la_SOURCES=\
 	factory.C				    \
 	gc.C					    \
 	file_dialog/file_dialog.C		    \
+	file_dialog/file_dialog_appearance.C	    \
 	file_dialog/file_dialog_impl.C		    \
 	file_dialog/file_dialog_impl.H		    \
 	focusable_container.C			    \

@@ -104,6 +104,9 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 	//! Title of the access denied dialog.
 	const std::string access_denied_title;
 
+	//! Appearance settings.
+	const const_file_dialog_appearance appearance;
+
 	//! Constructor
 	implObj(const focusable_label &directory_field,
 		const input_field &filename_field,
@@ -117,7 +120,8 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 		> &ok_action,
 		file_dialog_type type,
 		const std::string &access_denied_message,
-		const std::string &access_denied_title);
+		const std::string &access_denied_title,
+		const const_file_dialog_appearance &appearance);
 
 	//! Destructor
 	~implObj();

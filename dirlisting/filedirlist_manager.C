@@ -10,8 +10,8 @@ LIBCXXW_NAMESPACE_START
 filedirlist_managerObj::filedirlist_managerObj(const factory &f,
 					       const std::string
 					       &initial_directory,
-					       file_dialog_type type)
-	: impl(ref<implObj>::create(f, initial_directory, type))
+					       const file_dialog_config &config)
+	: impl(ref<implObj>::create(f, initial_directory, config))
 {
 }
 

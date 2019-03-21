@@ -13,6 +13,8 @@ LIBCXXW_NAMESPACE_START
 
 //! Base class for a \ref list_appearance "list appearance object".
 
+//! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::list_appearance::base
+
 class list_appearance_base : public ptrref_base {
 
 public:

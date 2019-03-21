@@ -8,6 +8,7 @@
 #include <x/w/file_dialog_configfwd.H>
 #include <x/w/file_dialogfwd.H>
 #include <x/w/dialogfwd.H>
+#include <x/w/file_dialog_appearancefwd.H>
 #include <x/w/text_param.H>
 #include <x/w/busy.H>
 #include <x/functionalrefptr.H>
@@ -39,6 +40,10 @@ enum class file_dialog_type {
 	create_file };
 
 //! The configuration of a file dialog.
+
+//! Parameter to the
+//! \ref main_window "INSERT_LIBX_NAMESPACE::w::main_window"'s
+//! create_fialog_dialog() method.
 
 struct file_dialog_config {
 
@@ -91,8 +96,17 @@ struct file_dialog_config {
 	//! Title of the access denied dialog.
 	std::string access_denied_title;
 
+	//! Apperance of this dialog
+	const_file_dialog_appearance appearance;
+
 	//! Destructor
 	~file_dialog_config();
+
+	//! Copy constructor
+	file_dialog_config(const file_dialog_config &);
+
+	//! Assignment operator.
+	file_dialog_config &operator=(const file_dialog_config &);
 };
 
 LIBCXXW_NAMESPACE_END

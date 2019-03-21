@@ -16,6 +16,7 @@
 #include "x/w/input_field_lock.H"
 #include "x/w/input_dialog.H"
 #include "x/w/file_dialog_config.H"
+#include "x/w/file_dialog_appearance.H"
 #include "x/w/label.H"
 #include "x/w/focusable_label.H"
 #include "x/w/text_hotspot.H"
@@ -106,17 +107,19 @@ file_dialogObj::implObj
 	  > &ok_action,
 	  file_dialog_type type,
 	  const std::string &access_denied_message,
-	  const std::string &access_denied_title)
-	: directory_field(directory_field),
-	  filename_field(filename_field),
-	  filter_field(filter_field),
-	  directory_contents_list(directory_contents_list),
-	  ok_button(ok_button),
-	  cancel_button(cancel_button),
-	  ok_action(ok_action),
-	  type(type),
-	  access_denied_message(access_denied_message),
-	  access_denied_title(access_denied_title)
+	  const std::string &access_denied_title,
+	  const const_file_dialog_appearance &appearance)
+	: directory_field{directory_field},
+	  filename_field{filename_field},
+	  filter_field{filter_field},
+	  directory_contents_list{directory_contents_list},
+	  ok_button{ok_button},
+	  cancel_button{cancel_button},
+	  ok_action{ok_action},
+	  type{type},
+	  access_denied_message{access_denied_message},
+	  access_denied_title{access_denied_title},
+	  appearance{appearance}
 {
 }
 
@@ -286,7 +289,7 @@ text_param file_dialogObj::implObj::create_dirlabel(const std::string &s)
 {
 	text_param t;
 
-	t( "filedir_directoryfont"_theme_font );
+	t( appearance->filedir_directoryfont );
 
 	if (s.empty())
 		return t; // Shouldn't happen.
@@ -399,12 +402,12 @@ text_param file_dialogObj::implObj
 			{
 				text_param t;
 
-				t( "filedir_directoryfont"_theme_font );
+				t( appearance->filedir_directoryfont );
 
 				if (e==focus_change::gained)
 				{
-					t(theme_color{"filedir_highlight_fg"});
-					t(theme_color{"filedir_highlight_bg"});
+					t(appearance->filedir_highlight_fg);
+					t(appearance->filedir_highlight_bg);
 				}
 				t(name);
 				return t;
@@ -608,8 +611,7 @@ standard_dialog_elements_t file_dialogObj::init_args
 					directory_contents_list=
 						filedirlist_manager
 						::create(factory,
-							 directory,
-							 conf.type);
+							 directory, conf);
 				}},
 		{"ok", dialog_ok_button(_("Ok"), ok_button, 0)},
 		{"filler", dialog_filler()},
@@ -867,7 +869,8 @@ file_dialogObj::file_dialogObj(const dialog_args &d_args,
 				    conf.ok_action,
 				    conf.type,
 				    conf.access_denied_message,
-				    conf.access_denied_title))
+				    conf.access_denied_title,
+				    conf.appearance))
 {
 }
 

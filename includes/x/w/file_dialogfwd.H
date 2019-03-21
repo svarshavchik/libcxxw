@@ -45,6 +45,26 @@ methods, such as set_window_title() and show_all(). create_file_dialog()
 constructs the complete dialog and all of the individual display elements
 that make it up; requiring a call to show_all() to make all of that visible.
 
+\par Custom file dialog appearance.
+
+\code
+
+INSERT_LIBX_NAMESPACE::w::file_dialog_appearance custom=c.appearance->clone();
+
+// ...
+
+c.appearance=custom;
+\endcode
+
+\ref file_dialog_config "INSERT_LIBX_NAMESPACE::w::file_dialog_config"'s
+appearance member is a
+\ref file_dialog_appearance "INSERT_LIBX_NAMESPACE::w::file_dialog_appearance"
+object that contains many settings that control the visual appearance
+of the file dialog (fonts and colors).
+
+Customized file dialog properties are specified by using
+clone() to create a copy of the appearance member, modifying the custom
+copy, and then installing it as a new appearance member.
 
 */
 

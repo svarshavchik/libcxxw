@@ -27,6 +27,8 @@
 #include "x/w/input_dialog.H"
 #include "x/w/file_dialog.H"
 #include "x/w/file_dialog_config.H"
+#include "x/w/file_dialog_appearance.H"
+#include "x/w/list_appearance.H"
 #include "x/w/print_dialog.H"
 #include "x/w/print_dialog_config.H"
 #include "x/w/image.H"
@@ -219,6 +221,20 @@ app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_wi
 		("Image files", "\\.(gif|png|jpg)$");
 	config.initial_filename_filter=0;
 
+#if 0
+	auto custom=config.appearance->clone();
+
+	custom->filedir_filesize_font=custom->filedir_filename_font;
+
+	{
+		auto custom_dir=custom->dir_pane_appearance->clone();
+
+		custom_dir->background_color="70%";
+
+		custom->dir_pane_appearance=custom_dir;
+	}
+	config.appearance=custom;
+#endif
 	auto d=main_window->create_file_dialog({"file_open", true}, config);
 
 	return d;

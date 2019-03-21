@@ -225,7 +225,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	implObj(const factory &f,
 		const std::string &initial_directory,
-		file_dialog_type type);
+		const file_dialog_config &config);
 
 	struct init_args;
 
@@ -234,11 +234,14 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 	//! Delegated constructor
 	implObj(const init_args &args,
 		const std::string &initial_directory,
-		file_dialog_type type);
+		const file_dialog_config &config);
  public:
 	//! Semantics of access permissions
 
 	const file_dialog_type type;
+
+	//! Appearance
+	const const_file_dialog_appearance appearance;
 
 	//! Constructor, phase 2.
 
@@ -248,7 +251,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	void constructor(const factory &f,
 			 const std::string &,
-			 file_dialog_type type);
+			 const file_dialog_config &);
 
 	//! Destructor
 	~implObj();

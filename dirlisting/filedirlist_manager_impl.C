@@ -9,11 +9,13 @@
 #include "x/w/impl/container_element.H"
 #include "run_as.H"
 #include "batch_queue.H"
-#include "x/w/text_param_literals.H"
 #include "x/w/label.H"
 #include "x/w/button_event.H"
 #include "x/w/panefactory.H"
 #include "x/w/focusable_container.H"
+#include "x/w/file_dialog_config.H"
+#include "x/w/file_dialog_appearance.H"
+#include "x/w/pane_layout_appearance.H"
 #include "messages.H"
 #include <x/weakcapture.H>
 #include <x/fileattr.H>
@@ -212,13 +214,16 @@ static void set_file_popup_contents(const ref<filedirlist_managerObj::implObj
 
 static inline filedirlist_managerObj::implObj::init_args
 create_init_args(const factory &f,
-		 const std::string &initial_directory)
+		 const std::string &initial_directory,
+		 const file_dialog_config &config)
 {
 	auto current_selected=
 		ref<filedirlist_managerObj::implObj
 		    ::current_selected_callbackObj>::create();
 
 	new_panelayoutmanager nplm{{100}};
+
+	nplm.appearance=config.appearance->filedir_pane_appearance;
 
 	auto pane_container=f->create_focusable_container([]
 							  (const auto &ignore)
@@ -234,6 +239,8 @@ create_init_args(const factory &f,
 	nlm.columns=3;
 
 	pf->configure_new_list(nlm, true);
+
+	nlm.appearance=config.appearance->dir_pane_appearance;
 
 	// Give all space to the first column, with the filename.
 	nlm.requested_col_widths.emplace(0, 100);
@@ -346,6 +353,8 @@ create_init_args(const factory &f,
 		};
 	pf->configure_new_list(nlm, true);
 
+	nlm.appearance=config.appearance->file_pane_appearance;
+
 	auto fc=pf->set_initial_size(50)
 		.create_focusable_container([]
 					    (const auto &ignore)
@@ -409,15 +418,15 @@ listlayoutmanager filedirlist_managerObj::implObj::protected_info_t
 filedirlist_managerObj::implObj
 ::implObj(const factory &f,
 	  const std::string &initial_directory,
-	  file_dialog_type type)
-	: implObj{create_init_args(f, initial_directory),
-		  initial_directory, type}
+	  const file_dialog_config &config)
+	: implObj{create_init_args(f, initial_directory, config),
+		initial_directory, config}
 {
 }
 
 filedirlist_managerObj::implObj::implObj(const init_args &args,
 					 const std::string &initial_directory,
-					 file_dialog_type type)
+					 const file_dialog_config &config)
 	: current_selected{args.current_selected},
 	  filedir_list{args.filedir_list},
 	  dir_popup{args.dir_popup},
@@ -425,7 +434,8 @@ filedirlist_managerObj::implObj::implObj(const init_args &args,
 	  info{info_t{access(initial_directory.c_str(), W_OK) == 0,
 		      initial_directory, pcre::create("."),
 		      ref<obj>::create()}},
-	  type{type}
+	  type{config.type},
+	  appearance{config.appearance}
 {
 }
 
@@ -433,7 +443,7 @@ filedirlist_managerObj::implObj::~implObj()=default;
 
 void filedirlist_managerObj::implObj::constructor(const factory &,
 						  const std::string &,
-						  file_dialog_type)
+						  const file_dialog_config &)
 {
 	// When the list becomes visible, start the thread to populate
 	// its contents. When the list is no longer visible, stop the thread.
@@ -645,13 +655,15 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 			*p={f.name, st};
 
 		text_param filename{
-			"filedir_filename"_theme_font,
-				name_uc};
-		text_param filedate{ "filedir_filedate"_theme_font,
-				date_uc};
+			appearance->filedir_filename_font,
+			name_uc};
+		text_param filedate{
+			appearance->filedir_filedate_font,
+			date_uc};
 
-		text_param filesize{ "filedir_filesize"_theme_font,
-				size_uc};
+		text_param filesize{
+			appearance->filedir_filesize_font,
+			size_uc};
 
 		auto lm=is_directory ? lock.subdirectory_lm():lock.files_lm();
 

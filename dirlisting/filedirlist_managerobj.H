@@ -7,7 +7,7 @@
 
 #include "dirlisting/filedirlist_managerfwd.H"
 #include "x/w/factory.H"
-#include "x/w/file_dialog_config.H"
+#include "x/w/file_dialog_configfwd.H"
 #include <x/pcrefwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <string>
@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj : virtual public obj {
 
 	filedirlist_managerObj(const factory &f,
 			       const std::string &initial_directory,
-			       file_dialog_type type);
+			       const file_dialog_config &config);
 
 	//! Destructor
 	~filedirlist_managerObj();
