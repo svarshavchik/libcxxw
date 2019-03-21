@@ -18,6 +18,7 @@ list_appearance_properties::list_appearance_properties()
 	  selected_color{"list_selected_color"},
 	  highlighted_color{"list_highlighted_color"},
 	  current_color{"list_current_color"},
+	  list_foreground_color{"label_foreground_color"},
 	  list_font{theme_font{"list"}},
 	  list_separator_border{"list_separator_border"}
 {
@@ -49,25 +50,6 @@ list_appearance list_appearanceObj::clone() const
 const const_list_appearance &list_appearance_base::theme()
 {
 	static const const_list_appearance obj=list_appearance::create();
-
-	return obj;
-}
-
-static auto create_combobox_theme()
-{
-	auto c=list_appearance::base::theme()->clone();
-
-	c->background_color="combobox_background_color";
-	c->selected_color="combobox_selected_color";
-	c->highlighted_color="combobox_highlighted_color";
-	c->current_color="combobox_current_color";
-
-	return c;
-}
-
-const const_list_appearance &list_appearance_base::combobox_theme()
-{
-	static const const_list_appearance obj=create_combobox_theme();
 
 	return obj;
 }

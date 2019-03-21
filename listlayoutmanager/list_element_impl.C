@@ -303,10 +303,11 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 	  bullet2{container_element_impl.get_window_handler()
 		  .create_icon({"bullet2"})},
 
-	  itemlabel_meta{create_background_color("label_foreground_color"),
+	  itemlabel_meta{create_background_color(init_args.style.appearance
+						 ->list_foreground_color),
 			  create_current_fontcollection(init_args.style
-							.appearance->
-							list_font)},
+							.appearance
+							->list_font)},
 	  itemshortcut_meta{create_background_color("label_foreground_color"),
 			    create_current_fontcollection(theme_font
 			  {"menu_shortcut"})},

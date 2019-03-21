@@ -6,6 +6,7 @@
 #define x_w_custom_comboboxlayoutmanager_h
 
 #include <x/w/new_focusable_layoutmanagerfwd.H>
+#include <x/w/combobox_appearance.H>
 #include <x/w/custom_comboboxlayoutmanagerfwd.H>
 #include <x/w/custom_comboboxlayoutmanagerobj.H>
 #include <x/w/listlayoutmanager.H>
@@ -208,9 +209,9 @@ class new_custom_comboboxlayoutmanager
 
 	synchronized_axis synchronized_columns;
 
-	//! Appearance of the popuplist
+	//! Appearance of the combo-box
 
-	const_list_appearance popup_list_appearance;
+	const_combobox_appearance appearance;
 
 	//! Create the focusable container.
 

@@ -8,6 +8,7 @@
 #include "combobox/custom_combobox_popup_container.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "image_button_internalfwd.H"
+#include "x/w/popup_list_appearancefwd.H"
 #include "x/w/elementfwd.H"
 #include <x/weakptr.H>
 #include <functional>
@@ -47,10 +48,14 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
  public:
 
 	//! Constructor
-	implObj(const container_impl &parent);
+	implObj(const container_impl &parent,
+		const const_popup_list_appearance &appearance);
 
 	//! Destructor
 	~implObj();
+
+	//! Default theme for labels
+	const font_arg label_theme;
 
 	//! Set the default font for labels in the popup.
 	font_arg label_theme_font() const override;

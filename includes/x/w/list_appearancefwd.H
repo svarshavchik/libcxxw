@@ -59,7 +59,7 @@ INSERT_LIBX_NAMESPACE::w::list_appearance custom=INSERT_LIBX_NAMESPACE::w::list_
 
 combobox_theme() and pane_theme() similarly return the cached default list
 appearance themes for lists appearing in
-\ref new_comboboxlayoutmanager "combo-boxes" and
+\ref new_custom_comboboxlayoutmanager "combo-boxes" and
 \ref panelayoutmanager "pane containers".
 
 */

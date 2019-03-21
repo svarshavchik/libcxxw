@@ -95,7 +95,7 @@ new_editable_comboboxlayoutmanager
 
 		   // We have our own border, no need for the input field
 		   // do add its own.
-		   config.border="empty";
+		   config.border={};
 
 		   text_param initial_contents;
 

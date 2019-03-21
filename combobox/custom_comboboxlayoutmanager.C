@@ -243,7 +243,7 @@ new_custom_comboboxlayoutmanager
 	  selection_changed{noop_selection_changed},
 	  selection_search{noop_selection_search},
 	  synchronized_columns{synchronized_axis::create()},
-	  popup_list_appearance{list_appearance::base::combobox_theme()}
+	  appearance{combobox_appearance::base::theme()}
 {
 }
 
@@ -294,6 +294,8 @@ combobox_new_listlayoutmanager(bool selection_required,
 create_peepholed_toplevel_listcontainer_popup_args
 combobox_listcontainer_popup_args(const element_impl &parent_element,
 				  const new_listlayoutmanager &style,
+				  const const_popup_list_appearance &appearance,
+
 				  unsigned nesting_level)
 {
 	return {
@@ -301,17 +303,17 @@ combobox_listcontainer_popup_args(const element_impl &parent_element,
 
 		"combo,dropdown_menu,popup_menu",
 		"combobox",
-		"combobox_popup_border",
+		appearance->popup_border,
 
 		nesting_level,
 		attached_to::below_or_above,
 		exclusive_popup_type,
 		style,
-		"combobox_above_background_color",
-		"combobox_below_background_color",
-		"label"_theme_font,
-		"label_foreground_color",
-		"modal_shade",
+		appearance->topleft_color,
+		appearance->bottomright_color,
+		appearance->list_font,
+		appearance->list_foreground_color,
+		appearance->modal_shade_color
 	};
 }
 
@@ -319,10 +321,12 @@ create_popup_factory_ret_t
 combobox_create_list(const container_impl &peephole_container,
 		     const popup_attachedto_info &attachedto_info,
 		     const new_listlayoutmanager &style,
+		     const const_popup_list_appearance &appearance,
 		     custom_combobox_popup_containerptr &popup_containerptr)
 {
 	auto impl=ref<custom_combobox_popup_containerObj
-		      ::implObj>::create(peephole_container);
+		      ::implObj>::create(peephole_container,
+					 appearance);
 
 	auto textlist_impl=ref<list_elementObj::implObj>
 		::create(list_element_impl_init_args
@@ -351,7 +355,7 @@ focusable_container new_custom_comboboxlayoutmanager
 
 	new_listlayoutmanager style=
 		combobox_new_listlayoutmanager(selection_required,
-					       popup_list_appearance);
+					       appearance);
 	style.synchronized_columns=synchronized_columns;
 
 	custom_combobox_popup_containerptr popup_containerptr;
@@ -360,6 +364,7 @@ focusable_container new_custom_comboboxlayoutmanager
 		create_peepholed_toplevel_listcontainer_popup
 		(combobox_listcontainer_popup_args
 		 (ref(&parent->container_element_impl()), style,
+		  appearance,
 		  // We're about to create the combobox container,
 		  // with nesting_level of parent+1
 		  //
@@ -371,13 +376,14 @@ focusable_container new_custom_comboboxlayoutmanager
 		  // the popup gets recalculated.
 
 		  3),
-		 [&]
+		 [&, this]
 		(const auto &peephole_container,
 		 const popup_attachedto_info &attachedto_info)
 		 {
 			 return combobox_create_list(peephole_container,
 						     attachedto_info,
 						     style,
+						     this->appearance,
 						     popup_containerptr);
 		 },
 
@@ -391,7 +397,7 @@ focusable_container new_custom_comboboxlayoutmanager
 	// with the container where everything goes.
 	auto combobox_container_impl=
 		ref<custom_combobox_containerObj::implObj>
-		::create(parent, popup_container,
+		::create(parent, *this, popup_container,
 			 combobox_popup);
 
 	// And the layout manager.
@@ -414,12 +420,12 @@ focusable_container new_custom_comboboxlayoutmanager
 	auto current_selection=capture_current_selection->get();
 
 	current_selection->impl
-		->set_background_color("combobox_background_color");
+		->set_background_color(appearance->background_color);
 
 	current_selection->show_all();
 
 	f->padding(0);
-	f->border("combobox_border");
+	f->border(appearance->combobox_border);
 	f->valign(valign::middle);
 
 	f->created_internally(current_selection);
@@ -444,12 +450,12 @@ focusable_container new_custom_comboboxlayoutmanager
 
 		 combobox_popup,
 
-		 popup_imagebutton_config{"combobox_border",
-				"combobox_background_color",
-				"scroll-down1",
-				"scroll-down2",
-				"comboboxbuttonfocusoff_border",
-				"comboboxbuttonfocuson_border"
+		 popup_imagebutton_config{appearance->combobox_border,
+				 appearance->background_color,
+				 "scroll-down1",
+				 "scroll-down2",
+				 appearance->combobox_button_focusoff_border,
+				 appearance->combobox_button_focuson_border,
 		});
 
 	// Point the popup container to the current selection element and

@@ -35,11 +35,15 @@ class LIBCXX_HIDDEN custom_combobox_containerObj::implObj
 
 	//! Constructor
 	implObj(const container_impl &parent_container,
+		const new_custom_comboboxlayoutmanager &nlm,
 		const custom_combobox_popup_container &popup_container,
 		const popup &attached_popup);
 
 	//! Destructor
 	~implObj();
+
+	//! Font for labels
+	const font_arg label_font;
 
 	//! Override label_theme_font()
 

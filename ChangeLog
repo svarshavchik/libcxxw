@@ -1,3 +1,7 @@
+2019-03-19  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Customizable combo-box appearance.
+
 2019-03-17  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* list_appearance: separate object with settings for a list's visual

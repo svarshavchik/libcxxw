@@ -86,6 +86,9 @@ struct list_appearance_properties {
 	//! the button being pressed.
 	color_arg current_color;
 
+	//! Default list font color
+	color_arg list_foreground_color;
+
 	//! Default list font
 	font_arg list_font;
 

@@ -125,7 +125,8 @@ create_input_field_impl_mixin(const container_impl &parent,
 		 config.input_field_search_appearance);
 
 	create_peepholed_toplevel_listcontainer_popup_args
-		popup_args=combobox_listcontainer_popup_args(parent, style, 1);
+		popup_args=combobox_listcontainer_popup_args
+		(parent, style, config.input_field_search_appearance, 1);
 
 	popup_args.popup_peephole_style.width_algorithm=dim_axis_arg{};
 	popup_args.popup_peephole_style.width_truncate=true;
@@ -144,10 +145,12 @@ create_input_field_impl_mixin(const container_impl &parent,
 		 (const auto &peephole_container,
 		  const popup_attachedto_info &attachedto_info)
 		 {
-			 return combobox_create_list(peephole_container,
-						     attachedto_info,
-						     style,
-						     popup_containerptr);
+			 return combobox_create_list
+				 (peephole_container,
+				  attachedto_info,
+				  style,
+				  config.input_field_search_appearance,
+				  popup_containerptr);
 		 },
 		 [&]
 		 (const peepholed_toplevel_listcontainer_handler_args &args)

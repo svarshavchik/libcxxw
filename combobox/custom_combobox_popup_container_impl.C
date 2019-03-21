@@ -5,16 +5,18 @@
 #include "libcxxw_config.h"
 #include "combobox/custom_combobox_popup_container_impl.H"
 #include "peepholed_toplevel_listcontainer/impl_element.H"
+#include "x/w/popup_list_appearance.H"
 #include "x/w/impl/always_visible.H"
-#include "x/w/text_param_literals.H"
 #include "image_button_internal.H"
 #include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
 
 custom_combobox_popup_containerObj::implObj
-::implObj(const container_impl &parent)
-	: superclass_t{parent}
+::implObj(const container_impl &parent,
+	  const const_popup_list_appearance &appearance)
+	: superclass_t{parent},
+	  label_theme{appearance->list_font}
 {
 }
 
@@ -23,7 +25,7 @@ custom_combobox_popup_containerObj::implObj::~implObj()=default;
 font_arg custom_combobox_popup_containerObj::implObj::label_theme_font()
 	const
 {
-	return "combobox"_theme_font;
+	return label_theme;
 }
 
 void custom_combobox_popup_containerObj::implObj

@@ -29,6 +29,7 @@ combobox_new_listlayoutmanager(bool selection_required,
 create_peepholed_toplevel_listcontainer_popup_args
 combobox_listcontainer_popup_args(const element_impl &parent_element,
 				  const new_listlayoutmanager &style,
+				  const const_popup_list_appearance &appearance,
 				  unsigned nesting_level)
 	LIBCXX_HIDDEN;
 
@@ -51,6 +52,7 @@ create_popup_factory_ret_t
 combobox_create_list(const container_impl &peephole_container,
 		     const popup_attachedto_info &attachedto_info,
 		     const new_listlayoutmanager &style,
+		     const const_popup_list_appearance &appearance,
 		     custom_combobox_popup_containerptr &popup_containerptr)
 	LIBCXX_HIDDEN;
 

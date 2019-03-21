@@ -135,6 +135,7 @@ libcxxw_la_SOURCES=\
 	color_picker/color_picker_squareobj.H       \
 	color_picker/color_picker_square_impl.C     \
 	color_picker/color_picker_square_impl.H     \
+	combobox_appearance.C			    \
 	combobox/custom_comboboxlayoutmanager.C	    \
 	combobox/custom_comboboxlayoutmanager.H	    \
 	combobox/custom_comboboxlayoutmanager_impl.C \
@@ -660,6 +661,7 @@ libcxxw_la_SOURCES=\
 	popup_imagebutton_impl.C		    \
 	popup_imagebutton_impl.H		    \
 	popup_imagebutton_implfwd.H		    \
+	popup_list_appearance.C			    \
 	popup/popup.C				    \
 	popup/popup.H				    \
 	popup/popup_handler.C			    \

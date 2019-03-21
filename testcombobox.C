@@ -122,6 +122,10 @@ focusable_container create_editable_combobox(const factory &f)
 		}
 	};
 
+	//	auto c=ec.appearance->clone();
+	//
+	//	c->list_font=x::w::theme_font{"mono"};
+	//	ec.appearance=c;
 	return create_combobox(f, ec);
 }
 

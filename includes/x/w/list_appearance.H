@@ -21,10 +21,6 @@ public:
 
 	static const const_list_appearance &theme();
 
-	//! Return the default theme-specified list appearance in combo-boxes.
-
-	static const const_list_appearance &combobox_theme();
-
 	//! Return the default theme-specified list appearance in panes
 
 	static const const_list_appearance &pane_theme();
