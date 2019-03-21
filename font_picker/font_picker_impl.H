@@ -7,6 +7,7 @@
 
 #include "x/w/font_picker.H"
 #include "x/w/font_picker_configfwd.H"
+#include "x/w/font_picker_appearancefwd.H"
 #include "x/w/impl/popup/popupfwd.H"
 #include "x/w/container.H"
 #include "x/w/button.H"
@@ -82,6 +83,9 @@ class LIBCXX_HIDDEN font_pickerObj::implObj : virtual public obj {
  public:
 	THREAD_DATA_ONLY(current_font);
 	THREAD_DATA_ONLY(callback);
+
+	//! Appearance of this font picker
+	const const_font_picker_appearance appearance;
 
  private:
 	//! The contents of the combobox.

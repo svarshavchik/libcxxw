@@ -8,6 +8,7 @@
 #include "textlabel.H"
 #include "label_element.H"
 #include "x/w/font_picker_config.H"
+#include "x/w/font_picker_appearance.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/shortcut.H"
 #include "x/w/factory.H"
@@ -39,6 +40,20 @@
 #include <x/weakptr.H>
 #include <charconv>
 LIBCXXW_NAMESPACE_START
+
+font_picker_config_appearance::font_picker_config_appearance()
+	: appearance{font_picker_appearance::base::theme()}
+{
+}
+
+font_picker_config_appearance::~font_picker_config_appearance()=default;
+
+font_picker_config_appearance
+::font_picker_config_appearance(const font_picker_config_appearance &)=default;
+
+font_picker_config_appearance &
+font_picker_config_appearance::operator=(const font_picker_config_appearance &)
+=default;
 
 font_pickerObj::font_pickerObj(const ref<implObj> &impl,
 			       const ref<containerObj::implObj> &c_impl,
@@ -126,7 +141,7 @@ struct LIBCXX_HIDDEN font_picker_init_helper
 
 	ptr<current_font_placeholderObj> current_font_shown_impl;
 	labelptr current_font_shown;
-	standard_dialog_elements_t create_elements();
+	standard_dialog_elements_t create_elements(const font_picker_config &);
 };
 
 #if 0
@@ -134,7 +149,9 @@ struct LIBCXX_HIDDEN font_picker_init_helper
 #endif
 }
 
-static inline font_picker_preview create_preview_label(const factory &f)
+static inline font_picker_preview
+create_preview_label(const factory &f,
+		     const font_picker_config &config)
 {
 	// The font preview element is a peephole
 	// with a text label inside it.
@@ -179,8 +196,8 @@ static inline font_picker_preview create_preview_label(const factory &f)
 		::create
 		(preview_container_impl,
 		 canvas_init_params{
-			{"font_picker_preview_width"},
-			{"font_picker_preview_height"},
+			config.appearance->preview_width,
+				config.appearance->preview_height,
 				"font_picker_preview@libcxx.com"
 					});
 
@@ -229,7 +246,7 @@ static inline font_picker_preview create_preview_label(const factory &f)
 			 return {
 				 preview_peep_container,
 				 preview_peep_container,
-				 "font_picker_preview_border",
+				 config.appearance->preview_border,
 				 std::nullopt,
 				 {},
 			 };
@@ -259,40 +276,50 @@ static inline font_picker_preview create_preview_label(const factory &f)
 }
 
 standard_dialog_elements_t font_picker_init_helper
-::create_elements()
+::create_elements(const font_picker_config &config)
 {
 	auto same_width=synchronized_axis::create();
 
 	return {
-		{"ok", dialog_ok_button(_("Ok"), ok_button, '\n')},
+		{"ok", dialog_ok_button(config.appearance->ok_label,
+					ok_button, '\n')},
 		{"filler", dialog_filler()},
-		{"cancel", dialog_cancel_button(_("Cancel"),
+		{"cancel", dialog_cancel_button(config.appearance->cancel_label,
 						cancel_button,
 						'\e')},
 
 		{"font-family-label", [](const auto &f)
 			{
-				f->create_label("Font:");
+				f->create_label(_("Font:"));
 			}},
 
-		{"font-family-combobox", [&, this](const auto &f)
-			{
-				font_family=f->create_focusable_container
-					([](const auto &){},
-					 new_standard_comboboxlayoutmanager{});
-			}},
+		{"font-family-combobox",
+		 [&, this](const auto &f)
+		 {
+			 new_standard_comboboxlayoutmanager lm;
+
+			 lm.appearance=
+				 config.appearance->font_family_appearance;
+			 font_family=f->create_focusable_container
+				 ([](const auto &){},
+				  lm);
+		 }},
 
 		{"font-size-label", [](const auto &f)
 			{
-				f->create_label("Size:");
+				f->create_label(_("Size:"));
 			}},
 
-		{"font-size-combobox", [&, this](const auto &f)
-			{
-				font_size=f->create_focusable_container
-					([](const auto &){},
-					 new_editable_comboboxlayoutmanager{});
-			}},
+		{"font-size-combobox",
+		 [&, this](const auto &f)
+		 {
+			 new_editable_comboboxlayoutmanager lm;
+
+			 lm.appearance=
+				 config.appearance->font_size_appearance;
+			 font_size=f->create_focusable_container
+				 ([](const auto &){}, lm);
+		 }},
 
 		{"font-size-error", [&](const auto &f)
 			{
@@ -301,50 +328,59 @@ standard_dialog_elements_t font_picker_init_helper
 
 		{"font-weight-label", [](const auto &f)
 			{
-				f->create_label("Font Weight:");
+				f->create_label(_("Font Weight:"));
 			}},
 
-		{"font-weight-combobox", [&, same_width, this](const auto &f)
-			{
-				new_standard_comboboxlayoutmanager lm;
+		{"font-weight-combobox",
+		 [&, same_width, this](const auto &f)
+		 {
+			 new_standard_comboboxlayoutmanager lm;
 
-				lm.synchronized_columns=same_width;
+			 lm.synchronized_columns=same_width;
 
-				font_weight=f->create_focusable_container
-					([](const auto &){}, lm);
-			}},
+			 lm.appearance=
+				 config.appearance->font_weight_appearance;
+			 font_weight=f->create_focusable_container
+				 ([](const auto &){}, lm);
+		 }},
 
 		{"font-slant-label", [](const auto &f)
 			{
-				f->create_label("Font Slant:");
+				f->create_label(_("Font Slant:"));
 			}},
 
-		{"font-slant-combobox", [&, same_width, this](const auto &f)
-			{
-				new_standard_comboboxlayoutmanager lm;
+		{"font-slant-combobox",
+		 [&, same_width, this](const auto &f)
+		 {
+			 new_standard_comboboxlayoutmanager lm;
 
-				lm.synchronized_columns=same_width;
+			 lm.synchronized_columns=same_width;
+			 lm.appearance=
+				 config.appearance->font_slant_appearance;
 
-				font_slant=f->create_focusable_container
-					([](const auto &){}, lm);
-			}},
+			 font_slant=f->create_focusable_container
+				 ([](const auto &){}, lm);
+		 }},
 		{"font-width-label", [](const auto &f)
 			{
-				f->create_label("Font Width:");
+				f->create_label(_("Font Width:"));
 			}},
 
-		{"font-width-combobox", [&, same_width, this](const auto &f)
-			{
-				new_standard_comboboxlayoutmanager lm;
+		{"font-width-combobox",
+		 [&, same_width, this](const auto &f)
+		 {
+			 new_standard_comboboxlayoutmanager lm;
 
-				lm.synchronized_columns=same_width;
+			 lm.synchronized_columns=same_width;
+			 lm.appearance=
+				 config.appearance->font_width_appearance;
 
-				font_width=f->create_focusable_container
-					([](const auto &){}, lm);
-			}},
+			 font_width=f->create_focusable_container
+				 ([](const auto &){}, lm);
+		 }},
 		{"font-preview", [&, same_width, this](const auto &f)
 			{
-				preview_label=create_preview_label(f);
+				preview_label=create_preview_label(f, config);
 			}},
 	};
 }
@@ -362,7 +398,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	auto [real_impl, popup_imagebutton, glm, font_picker_popup]
 		=create_popup_attachedto_element
-		(*this, config.popup_config,
+		(*this, *config.appearance,
 
 		 [&](const container_impl &parent,
 		     const child_element_init_params &params)
@@ -380,7 +416,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 		 {
 			 auto glm=lm_impl->create_gridlayoutmanager();
 
-			 gridtemplate tmpl{helper.create_elements()};
+			 gridtemplate tmpl{helper.create_elements(config)};
 
 			 glm->create("font-picker-popup", tmpl);
 

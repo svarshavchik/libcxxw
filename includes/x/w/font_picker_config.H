@@ -8,7 +8,7 @@
 #include <x/w/font_picker_configfwd.H>
 #include <x/w/font_pickerfwd.H>
 #include <x/w/font.H>
-#include <x/w/element_popup_config.H>
+#include <x/w/font_picker_appearancefwd.H>
 #include <x/functionalrefptr.H>
 
 #include <optional>
@@ -17,11 +17,10 @@ LIBCXXW_NAMESPACE_START
 
 //! Initial font picker configuration
 
-//! An optional parameter to a \ref factory "factory"'s
-//! create_font_picker() setting the initial value and appearance of a
-//! \ref font_picker "INSERT_LIBX_NAMESPACE::w::font_picker".
-
-struct font_picker_config {
+//! Inherited by \ref font_picker_config "font_picker_config", to enable
+//! aggregate initialization of these parameters, but still provide
+//! a suitable default for the \c appearance class member.
+struct font_picker_config_settings {
 
 	//! Most recently used font families
 
@@ -73,10 +72,38 @@ struct font_picker_config {
 	//! font's foundry.
 
 	bool foundry_required=false;
-
-	//! Popup configuration
-	element_popup_config popup_config;
 };
+
+//! The \c appearance member inherited by \ref font_picker_config
+
+//! Provides a default constructor.
+
+struct font_picker_config_appearance {
+
+	//! Default constructor
+
+	font_picker_config_appearance();
+
+	//! Destructor
+	~font_picker_config_appearance();
+
+	//! Copy constructor
+	font_picker_config_appearance(const font_picker_config_appearance &);
+
+	//! Assignment operator
+	font_picker_config_appearance
+	&operator=(const font_picker_config_appearance &);
+
+	//! Appearance
+	const_font_picker_appearance appearance;
+};
+
+//! An optional parameter to a \ref factory "factory"'s
+//! create_font_picker() setting the initial value and appearance of a
+//! \ref font_picker "INSERT_LIBX_NAMESPACE::w::font_picker".
+
+struct font_picker_config : font_picker_config_settings,
+			    font_picker_config_appearance {};
 
 LIBCXXW_NAMESPACE_END
 

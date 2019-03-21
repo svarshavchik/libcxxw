@@ -18,6 +18,7 @@
 #include "busy.H"
 #include "catch_exceptions.H"
 #include "x/w/font_picker_config.H"
+#include "x/w/font_picker_appearance.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
@@ -331,16 +332,18 @@ initial_sorted_families(const std::vector<const_font_family_group_entry>
 	return list;
 }
 
-static void update_option_combobox(const standard_comboboxlayoutmanager &lm,
-				   const ref<screenObj::implObj> &screen,
-				   const function<font_pickerObj::implObj::
-				   update_font_properties_t> &set_func,
-				   const font::values_t &options,
-				   const const_font_family_group_entryptr
-				   &current_group,
-			   unsigned current_point_size,
-				   const char *property_name,
-				   const std::string &initial_option_label)
+static inline void update_option_combobox
+(const standard_comboboxlayoutmanager &lm,
+ const ref<screenObj::implObj> &screen,
+ const function<font_pickerObj::implObj::
+ update_font_properties_t> &set_func,
+ const font::values_t &options,
+ const const_font_family_group_entryptr
+ &current_group,
+ unsigned current_point_size,
+ const char *property_name,
+ const const_font_picker_appearance &appearance,
+ const std::string &initial_option_label)
 {
 	// If a font family and point size is specified, examine the
 	// current_group. Check each property_name in the current_group.
@@ -427,9 +430,7 @@ static void update_option_combobox(const standard_comboboxlayoutmanager &lm,
 		text_param option;
 
 		if (valid_options.find(opt.first) == valid_options.end())
-			option(theme_color{
-					"font_picker_unavailable_option_color"
-						});
+			option(appearance->unsupported_option_color);
 		option(opt.second);
 
 		item_options.emplace_back(option);
@@ -566,6 +567,7 @@ font_pickerObj::implObj::implObj(const font_picker_impl_init_params
 	  foundry_required{init_params.config.foundry_required},
 	  current_font_thread_only{init_params.initial_font},
 	  callback_thread_only{init_params.config.callback},
+	  appearance{init_params.config.appearance},
 	  sorted_families{init_params.sorted_families},
 	  official_font{init_params.initial_official_values},
 	  validated_most_recently_used{init_params.most_recently_used},
@@ -1015,6 +1017,7 @@ void font_pickerObj::implObj
 				       current_group,
 				       current_point_size,
 				       f.fontconfig_name,
+				       appearance,
 				       cxxwlibmsg(f.select_prompt));
 }
 

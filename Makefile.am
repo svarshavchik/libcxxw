@@ -275,6 +275,7 @@ libcxxw_la_SOURCES=\
 	focus/standard_focusframecontainer_element.C \
 	focus/standard_focusframecontainer_element_impl.C \
 	font_picker/font_picker.C		    \
+	font_picker/font_picker_appearance.C	    \
 	font_picker/font_picker_impl.C		    \
 	font_picker/font_picker_impl.H		    \
 	font_picker/font_family_group_entry.C	    \
