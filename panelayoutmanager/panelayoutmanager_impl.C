@@ -27,16 +27,18 @@
 #include "gridlayoutmanager_impl_elements.H"
 #include "calculate_borders.H"
 #include "messages.H"
+#include "x/w/pane_layout_appearance.H"
 #include "x/w/panefactory.H"
 
 LIBCXXW_NAMESPACE_START
 
 panelayoutmanagerObj::implObj::implObj(const ref<panecontainer_implObj>
 				       &pane_container_impl,
-				       const pane_style &style)
+				       const const_pane_layout_appearance
+				       &appearance)
 	: gridlayoutmanagerObj::implObj{pane_container_impl, {}},
 	  pane_container_impl{pane_container_impl},
-	  style{style}
+	  appearance{appearance}
 {
 }
 
@@ -90,7 +92,7 @@ void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
 {
 	// Create the implementation object for the slider element.
 	auto slider_border=pane_container_impl->container_element_impl()
-		.get_screen()->impl->get_cached_border(style.slider);
+		.get_screen()->impl->get_cached_border(appearance->slider);
 
 	// Start with a focus frame.
 
@@ -99,7 +101,7 @@ void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
 		 pane_container_impl->container_element_impl()
 		 .get_window_handler()
 		 .create_icon({slider_cursor()})->create_cursor(),
-		 style.slider_background_color);
+		 appearance->slider_background_color);
 
 
 	auto slider_impl=create_pane_slider_impl(ff, slider_border);
@@ -120,7 +122,7 @@ void panelayoutmanagerObj::implObj
 ::initialize_factory_for_slider(const gridfactory &f)
 {
 	f->padding(0);
-	f->border(style.border);
+	f->border(appearance->border);
 }
 
 create_pane_info_t panelayoutmanagerObj::implObj

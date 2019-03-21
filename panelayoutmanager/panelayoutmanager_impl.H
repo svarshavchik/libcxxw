@@ -101,9 +101,9 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! My container
 	const ref<panecontainer_implObj> pane_container_impl;
 
-	//! This pane's style
+	//! This pane's appearance
 
-	const pane_style style;
+	const const_pane_layout_appearance appearance;
 
 	class horizontal;
 	class vertical;
@@ -117,7 +117,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	//! Constructor
 	implObj(const ref<panecontainer_implObj> &pane_container_impl,
-		const pane_style &style);
+		const const_pane_layout_appearance &appearance);
 
 	//! Destructor
 	~implObj();

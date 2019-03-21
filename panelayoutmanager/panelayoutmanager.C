@@ -8,6 +8,7 @@
 #include "panelayoutmanager/panefactory_impl.H"
 #include "x/w/focusable_container.H"
 #include "x/w/panefactory.H"
+#include "x/w/pane_layout_appearance.H"
 #include "x/w/impl/focus/focusable.H"
 #include "x/w/impl/themedim_axis_element.H"
 #include "defaulttheme.H"
@@ -314,14 +315,19 @@ class LIBCXX_HIDDEN horizontal_adjusted_panecontainer_implObj
 
 new_panelayoutmanager::new_panelayoutmanager(const dim_axis_arg &size,
 					     orientation_t orientation)
-	: pane_style{"pane_border", "pane_slider",
-		"pane_slider_background"},
-	  orientation{orientation},
-	  size{size}
+	: orientation{orientation},
+	  size{size},
+	  appearance{pane_layout_appearance::base::theme()}
 {
 }
 
 new_panelayoutmanager::~new_panelayoutmanager()=default;
+
+new_panelayoutmanager::new_panelayoutmanager(const new_panelayoutmanager &)
+=default;
+
+new_panelayoutmanager &new_panelayoutmanager
+::operator=(const new_panelayoutmanager &)=default;
 
 // For optimal results, precompute the initial metrics of the pane container,
 // and construct it.
@@ -364,11 +370,11 @@ new_panelayoutmanager::create(const container_impl &parent)
 			ref<panelayoutmanagerObj::implObj>{
 			ref<panelayoutmanagerObj::implObj::orientation
 			<panelayoutmanagerObj::implObj::vertical>>
-			::create(impl, *this)}
+			::create(impl, appearance)}
 		: ref<panelayoutmanagerObj::implObj>{
 			ref<panelayoutmanagerObj::implObj::orientation
 			    <panelayoutmanagerObj::implObj::horizontal>>
-				::create(impl, *this)}
+				::create(impl, appearance)}
 	};
 
 	auto c=ref<panecontainerObj>::create(impl, lm_impl);
