@@ -14,14 +14,6 @@
 LIBCXXW_NAMESPACE_START
 
 always_visible_focusframe_ref_t
-create_always_visible_focusframe_impl(const container_impl &parent_container)
-{
-	return create_always_visible_focusframe_impl
-		(parent_container,
-		 "inputfocusoff_border", "inputfocuson_border", 0, 0);
-}
-
-always_visible_focusframe_ref_t
 create_always_visible_focusframe_impl(const container_impl &parent_container,
 				      const border_arg &focusoff_border,
 				      const border_arg &focuson_border,
@@ -41,15 +33,6 @@ create_always_visible_focusframe_impl(const container_impl &parent_container,
 					 bgcolor});
 
 	return e;
-}
-
-nonrecursive_visibility_focusframe_ref_t
-create_nonrecursive_visibility_focusframe_impl(const container_impl
-					       &parent_container)
-{
-	return create_nonrecursive_visibility_focusframe_impl
-		(parent_container,
-		 "inputfocusoff_border", "inputfocuson_border", 0, 0);
 }
 
 nonrecursive_visibility_focusframe_ref_t

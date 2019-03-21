@@ -51,11 +51,6 @@ typedef ref<nonrecursive_visibility_focusframe_t
 //! Create an always_visibleObj focus frame.
 
 always_visible_focusframe_ref_t
-create_always_visible_focusframe_impl(const container_impl &parent_container);
-
-//! Create an always_visibleObj focus frame.
-
-always_visible_focusframe_ref_t
 create_always_visible_focusframe_impl(const container_impl &parent_container,
 				      const border_arg &focusoff_border,
 				      const border_arg &focuson_border,
@@ -63,12 +58,6 @@ create_always_visible_focusframe_impl(const container_impl &parent_container,
 				      const dim_arg &vpad,
 				      const std::optional<color_arg> &bgcolor
 				      ={});
-
-//! Create an nonrecursive_visibilityObj focus frame.
-
-nonrecursive_visibility_focusframe_ref_t
-create_nonrecursive_visibility_focusframe_impl(const container_impl
-					       &parent_container);
 
 //! Create an nonrecursive_visibilityObj focus frame.
 
