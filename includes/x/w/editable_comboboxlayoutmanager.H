@@ -8,6 +8,7 @@
 #include <x/w/editable_comboboxlayoutmanagerfwd.H>
 #include <x/w/editable_comboboxlayoutmanagerobj.H>
 #include <x/w/standard_comboboxlayoutmanager.H>
+#include <x/w/input_field_appearancefwd.H>
 #include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
@@ -79,6 +80,14 @@ class new_editable_comboboxlayoutmanager
 	//! Destructor
 	~new_editable_comboboxlayoutmanager() LIBCXX_PUBLIC;
 
+	//! Copy constructor
+	new_editable_comboboxlayoutmanager
+	(const new_editable_comboboxlayoutmanager &) LIBCXX_PUBLIC;
+
+	//! Assignment operator
+	new_editable_comboboxlayoutmanager &operator=
+	(const new_editable_comboboxlayoutmanager &) LIBCXX_PUBLIC;
+
 	//! Implement selection_factory()
 	focusable selection_factory(const factory &) const override;
 
@@ -86,7 +95,10 @@ class new_editable_comboboxlayoutmanager
 
 	editable_combobox_selection_changed_t selection_changed;
 
- protected:
+	//! Appearance of the input field.
+	const_input_field_appearance input_appearance;
+
+protected:
 
 	//! Internal constructor
 

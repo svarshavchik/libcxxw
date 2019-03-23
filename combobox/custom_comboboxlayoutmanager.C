@@ -258,6 +258,14 @@ new_custom_comboboxlayoutmanager
 
 new_custom_comboboxlayoutmanager::~new_custom_comboboxlayoutmanager()=default;
 
+new_custom_comboboxlayoutmanager
+::new_custom_comboboxlayoutmanager(const new_custom_comboboxlayoutmanager &)
+=default;
+
+new_custom_comboboxlayoutmanager &
+new_custom_comboboxlayoutmanager::operator=
+(const new_custom_comboboxlayoutmanager &)=default;
+
 custom_combobox_selection_changed_t
 new_custom_comboboxlayoutmanager::get_selection_changed() const
 {

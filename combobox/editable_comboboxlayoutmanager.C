@@ -85,9 +85,19 @@ static const editable_combobox_selection_changed_t &noop_selection_changed()
 new_editable_comboboxlayoutmanager
 ::new_editable_comboboxlayoutmanager(const editable_combobox_selection_changed_t
 				     &selection_changed)
-	: selection_changed{ selection_changed }
+	: selection_changed{ selection_changed },
+	input_appearance{input_field_appearance::base
+			::editable_combobox_theme()}
 {
 }
+
+new_editable_comboboxlayoutmanager
+::new_editable_comboboxlayoutmanager(const new_editable_comboboxlayoutmanager &)
+=default;
+
+new_editable_comboboxlayoutmanager &
+new_editable_comboboxlayoutmanager::operator=
+(const new_editable_comboboxlayoutmanager &)=default;
 
 focusable new_editable_comboboxlayoutmanager
 ::selection_factory(const factory &f) const
@@ -107,8 +117,7 @@ focusable new_editable_comboboxlayoutmanager
 				  false	// do not update clipboards
 	};
 
-	config.appearance=input_field_appearance::base
-		::editable_combobox_theme();
+	config.appearance=input_appearance;
 
 	text_param initial_contents;
 

@@ -176,6 +176,14 @@ class new_custom_comboboxlayoutmanager
 	//! Destructor
 	~new_custom_comboboxlayoutmanager() LIBCXX_PUBLIC;
 
+	//! Copy constructor
+	new_custom_comboboxlayoutmanager(const new_custom_comboboxlayoutmanager
+					 &) LIBCXX_PUBLIC;
+
+	//! Assignment operator
+	new_custom_comboboxlayoutmanager &operator=
+	(const new_custom_comboboxlayoutmanager &) LIBCXX_PUBLIC;
+
 	//! Current selection element factory
 
 	//! The subclass must override and implement it.
