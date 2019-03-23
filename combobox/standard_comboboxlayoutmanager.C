@@ -491,61 +491,73 @@ void standard_comboboxlayoutmanagerObj
 // The standard combo-box uses a focusable_label to represent the current
 // selection.
 
-static standard_combobox_selection_changed_t
-standard_combobox_selection_changed_noop=
-	[]
-	(ONLY IN_THREAD,
-	 const standard_combobox_selection_changed_info_t &)
+static const standard_combobox_selection_changed_t &
+standard_combobox_selection_changed_noop()
 {
-};
+	static const standard_combobox_selection_changed_t config=
+		[]
+		(ONLY IN_THREAD,
+		 const standard_combobox_selection_changed_info_t &)
+		{
+		};
 
-static custom_combobox_selection_search_t standard_combobox_selection_search=
-	// Install callback to search items using whatever was typed into the
-	// current selection display element.
-	[]
-	(ONLY IN_THREAD,
-	 const auto &search_info)
+	return config;
+}
+
+static const custom_combobox_selection_search_t &
+standard_combobox_selection_search()
 {
-	standard_comboboxlayoutmanager lm=search_info.lm;
+	static const custom_combobox_selection_search_t config=
+		// Install callback to search items using whatever was typed into the
+		// current selection display element.
+		[]
+		(ONLY IN_THREAD,
+		 const auto &search_info)
+		{
+			standard_comboboxlayoutmanager lm=search_info.lm;
 
-	if (search_info.text.size() == 0)
-	{
-		if (!search_info.selection_required)
-			lm->unselect();
-		return;
-	}
+			if (search_info.text.size() == 0)
+			{
+				if (!search_info.selection_required)
+					lm->unselect();
+				return;
+			}
 
-	size_t found;
+			size_t found;
 
-	standard_combobox_lock lock{lm};
+			standard_combobox_lock lock{lm};
 
-	if (lock.search(search_info.starting_index,
-			search_info.text,
-			found, false))
-	{
-		if (!lm->selected(found))
-			lm->autoselect(found);
-	}
-};
+			if (lock.search(search_info.starting_index,
+					search_info.text,
+					found, false))
+			{
+				if (!lm->selected(found))
+					lm->autoselect(found);
+			}
+		};
+
+	return config;
+}
 
 new_standard_comboboxlayoutmanager::new_standard_comboboxlayoutmanager()
-	: new_custom_comboboxlayoutmanager
-	  ([]
-	   (const auto &f)
-	   {
-		   return f->create_focusable_label("");
-	   }),
-	  selection_changed{standard_combobox_selection_changed_noop}
+	: new_standard_comboboxlayoutmanager{
+	standard_combobox_selection_changed_noop()
+		}
 {
-	selection_search=standard_combobox_selection_search;
+}
+
+focusable new_standard_comboboxlayoutmanager
+::selection_factory(const factory &f) const
+{
+	return f->create_focusable_label("");
 }
 
 new_standard_comboboxlayoutmanager
 ::new_standard_comboboxlayoutmanager(const standard_combobox_selection_changed_t
 				     &selection_changed)
-	: new_standard_comboboxlayoutmanager()
+	: selection_changed{selection_changed}
 {
-	this->selection_changed=selection_changed;
+	selection_search=standard_combobox_selection_search();
 }
 
 new_standard_comboboxlayoutmanager

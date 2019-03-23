@@ -71,77 +71,79 @@ static inline bool autocomplete(ONLY IN_THREAD,
 	return false;
 }
 
+static const editable_combobox_selection_changed_t &noop_selection_changed()
+{
+	static const editable_combobox_selection_changed_t config=
+		[]
+		(THREAD_CALLBACK, const auto &ignore)
+		{
+		};
+
+	return config;
+}
+
 new_editable_comboboxlayoutmanager
 ::new_editable_comboboxlayoutmanager(const editable_combobox_selection_changed_t
 				     &selection_changed)
-	: new_custom_comboboxlayoutmanager
-	  ([]
-	   (const auto &f)
-	   {
-		   // Make sure input field's default font matches the
-		   // labels'.
-
-		   // The field gets automatically sized by the combobox
-		   // layout manager accoridng to the width of the combobox
-		   // items, so for the purpose of creating the input field
-		   // make it think it's only two columns wide;
-
-		   input_field_config config{2,
-				   1, // One row,
-				   true,	// autoselect
-				   true,	// autodeselect
-				   false	// do not update clipboards
-				   };
-
-		   config.appearance=
-			   input_field_appearance::base
-			   ::editable_combobox_theme();
-
-		   text_param initial_contents;
-
-		   std::visit(visitor{
-				   [&](const auto &p)
-				   {
-					   initial_contents(p);
-				   }},
-			   f->get_element_impl().label_theme_font());
-
-		   auto input_field=f->create_input_field
-			   (initial_contents, config);
-
-		   input_field->on_autocomplete
-			   ([container_impl=make_weak_capture(f->get_container_impl())]
-			    (ONLY IN_THREAD,
-			     auto &autocomplete_info) {
-
-				   bool flag=false;
-
-				   auto got=container_impl.get();
-
-				   if (got)
-				   {
-					   auto & [ci]=*got;
-					   flag=autocomplete(IN_THREAD,
-							     ci,
-							     autocomplete_info);
-				   }
-				   return flag;
-			   });
-
-		   return input_field;
-	   }),
-	  selection_changed{ selection_changed }
+	: selection_changed{ selection_changed }
 {
 }
 
-static editable_combobox_selection_changed_t noop_selection_changed=
-	[]
-	(THREAD_CALLBACK, const auto &ignore)
+focusable new_editable_comboboxlayoutmanager
+::selection_factory(const factory &f) const
 {
-};
+	// Make sure input field's default font matches the
+	// labels'.
+
+	// The field gets automatically sized by the combobox
+	// layout manager accoridng to the width of the combobox
+	// items, so for the purpose of creating the input field
+	// make it think it's only two columns wide;
+
+	input_field_config config{2,
+				  1, // One row,
+				  true,	// autoselect
+				  true,	// autodeselect
+				  false	// do not update clipboards
+	};
+
+	config.appearance=input_field_appearance::base
+		::editable_combobox_theme();
+
+	text_param initial_contents;
+
+	std::visit(visitor{
+			[&](const auto &p)
+			{
+				initial_contents(p);
+			}},
+		f->get_element_impl().label_theme_font());
+
+	auto input_field=f->create_input_field(initial_contents, config);
+
+	input_field->on_autocomplete
+		([container_impl=make_weak_capture(f->get_container_impl())]
+		 (ONLY IN_THREAD,
+		  auto &autocomplete_info) {
+
+			 bool flag=false;
+
+			 auto got=container_impl.get();
+
+			 if (got)
+			 {
+				 auto & [ci]=*got;
+				 flag=autocomplete(IN_THREAD,
+						   ci, autocomplete_info);
+			 }
+			 return flag;
+		 });
+
+	return input_field;
+}
 
 new_editable_comboboxlayoutmanager::new_editable_comboboxlayoutmanager()
-	: new_editable_comboboxlayoutmanager{noop_selection_changed}
+	: new_editable_comboboxlayoutmanager{noop_selection_changed()}
 {
 }
 

@@ -225,23 +225,32 @@ typedef ref<lookup_collectorObj> lookup_collector;
 
 /////////////////////////////////////////////////////////////////////////////
 
-static custom_combobox_selection_changed_t noop_selection_changed=
-	[]
-	(THREAD_CALLBACK, const auto &ignore) {
-};
-
-static custom_combobox_selection_search_t noop_selection_search=
-	[]
-	(THREAD_CALLBACK, const auto &ignore)
+static const custom_combobox_selection_changed_t &noop_selection_changed()
 {
-};
+	static const custom_combobox_selection_changed_t closure=
+		[]
+		(THREAD_CALLBACK, const auto &ignore)
+		{
+		};
+
+	return closure;
+}
+
+static const custom_combobox_selection_search_t &noop_selection_search()
+{
+	static const custom_combobox_selection_search_t closure=
+		[]
+		(THREAD_CALLBACK, const auto &ignore)
+		{
+		};
+
+	return closure;
+}
 
 new_custom_comboboxlayoutmanager
-::new_custom_comboboxlayoutmanager(const custom_combobox_selection_factory_t
-				   &selection_factory)
-	: selection_factory{selection_factory},
-	  selection_changed{noop_selection_changed},
-	  selection_search{noop_selection_search},
+::new_custom_comboboxlayoutmanager()
+	: selection_changed{noop_selection_changed()},
+	  selection_search{noop_selection_search()},
 	  synchronized_columns{synchronized_axis::create()},
 	  appearance{combobox_appearance::base::theme()}
 {

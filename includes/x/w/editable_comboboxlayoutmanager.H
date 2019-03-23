@@ -79,6 +79,9 @@ class new_editable_comboboxlayoutmanager
 	//! Destructor
 	~new_editable_comboboxlayoutmanager() LIBCXX_PUBLIC;
 
+	//! Implement selection_factory()
+	focusable selection_factory(const factory &) const override;
+
 	//! Callback that gets invoked when the combo-box selection changes.
 
 	editable_combobox_selection_changed_t selection_changed;

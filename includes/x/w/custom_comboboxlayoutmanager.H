@@ -22,11 +22,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Signature for a custom combo-box selection factory.
-
-typedef functionref<focusable (const factory &)
-		    > custom_combobox_selection_factory_t;
-
 //! Information passed to the \ref custom_combobox_selection_changed_t "custom combo-box selection changed callback".
 
 struct custom_combobox_selection_changed_info_t {
@@ -95,13 +90,15 @@ Passed to create_focusable_container() to create a focusable container
 with a \ref custom_comboboxlayoutmanager "custom combo-box layout manager".
 
 \code
-INSERT_LIBX_NAMESPACE::w::new_custom_comboboxlayoutmanager cclm{
-    []
-    (const INSERT_LIBX_NAMESPACE::w::factory &f)
+class my_combobox : public INSERT_LIBX_NAMESPACE::w::new_custom_comboboxlayoutmanager {
+
+    INSERT_LIBX_NAMESPACE::w::focusable selection_factory(const INSERT_LIBX_NAMESPACE::w::factory &f) override
     {
         return f->create_focusable_label("");
     }
 };
+
+my_combobox cclm;
 
 auto new_container=factory->create_focusable_container(
     []
@@ -115,7 +112,7 @@ The members/methods of this class are not thread-safe. It is intended that
 an execution thread constructs an instance of this class in automatic scope,
 then passes the class instance to create_focusable_container().
 
-The argument to the constructor is a factory for creating a display
+A subclass must override selection_factory() to create a display
 element that represents the current selection in the combo-box. The callback
 must use the factory that it receives as a parameter to create exactly one
 display element.
@@ -174,16 +171,15 @@ class new_custom_comboboxlayoutmanager
  public:
 
 	//! Constructor
-	new_custom_comboboxlayoutmanager(const
-					 custom_combobox_selection_factory_t
-					 &selection_factory) LIBCXX_PUBLIC;
+	new_custom_comboboxlayoutmanager() LIBCXX_PUBLIC;
 
 	//! Destructor
 	~new_custom_comboboxlayoutmanager() LIBCXX_PUBLIC;
 
 	//! Current selection element factory
 
-	custom_combobox_selection_factory_t selection_factory;
+	//! The subclass must override and implement it.
+	virtual focusable selection_factory(const factory &) const=0;
 
 	//! Callback that gets invoked when the combo-box selection changes.
 
