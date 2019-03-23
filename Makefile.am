@@ -184,6 +184,7 @@ libcxxw_la_SOURCES=\
 	cursor_pointer_element.H		    \
 	cursor_pointer_elementfwd.H		    \
 	date_input_field/date_input_field.C	    \
+	date_input_field/date_input_field_appearance.C \
 	date_input_field/date_input_field_filter.H  \
 	date_input_field/date_input_field_handler.C \
 	date_input_field/date_input_field_handler.H \
@@ -419,6 +420,7 @@ libcxxw_la_SOURCES=\
 	input_field/editor_search_implobj.H	    \
 	input_field/input_field.C		    \
 	input_field/input_field.H		    \
+	input_field/input_field_appearance.C	    \
 	input_field/input_field_impl.C		    \
 	input_field/input_field_search.C	    \
 	input_field/input_field_search.H	    \

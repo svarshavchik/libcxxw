@@ -22,6 +22,7 @@
 #include "x/w/text_param_literals.H"
 #include "x/w/stop_message.H"
 #include "x/w/main_window.H"
+#include "x/w/date_input_field_appearance.H"
 #include "run_as.H"
 #include "messages.H"
 
@@ -45,12 +46,18 @@ date_input_fieldObj
 
 date_input_fieldObj::~date_input_fieldObj()=default;
 
+date_input_field_config::date_input_field_config()
+	: appearance{date_input_field_appearance::base::theme()},
+	  invalid_input{_("Invalid date")}
+{
+}
 date_input_field_config::~date_input_field_config()=default;
 
-text_param date_input_field_config::default_invalid_input() noexcept
-{
-	return _("Invalid date");
-}
+date_input_field_config
+::date_input_field_config(const date_input_field_config &)=default;
+
+date_input_field_config &
+date_input_field_config::operator=(const date_input_field_config &)=default;
 
 focusable_impl date_input_fieldObj::get_impl() const
 {
@@ -129,7 +136,7 @@ date_input_field factoryObj
 	// (config.border)...
 	auto f=glm->append_row();
 	f->padding(0);
-	f->border(config.border);
+	f->border(config.appearance->border);
 
 	// Investigate the current locale date format:
 	auto preferred=strftime::upreferred();
@@ -140,8 +147,9 @@ date_input_field factoryObj
 
 	auto date_format=ymd{}.format_date(preferred);
 
-	input_field_config input_conf{{date_format.size()+1},
-				      config.input_field_appearance};
+	input_field_config input_conf{date_format.size()+1};
+
+	input_conf.appearance=config.appearance->input_appearance;
 
 	input_conf.autoselect=true;
 	input_conf.maximum_size=date_format.size();
@@ -152,9 +160,9 @@ date_input_field factoryObj
 			[&](const auto &font)
 			{
 				initial(font);
-			}}, config.input_field_font);
+			}}, config.appearance->input_field_font);
 
-	initial(config.input_field_font_color);
+	initial(config.appearance->input_field_font_color);
 
 	auto text_input_field=f->create_input_field(initial, input_conf);
 
@@ -168,9 +176,9 @@ date_input_field factoryObj
 				"date_input",
 				parent_handler,
 				attachedto_info,
-				config.popup_font,
-				config.popup_font_color,
-				config.popup_modal_shade_color,
+				config.appearance->popup_font,
+				config.appearance->popup_font_color,
+				config.appearance->popup_modal_shade_color,
 				parent_container->container_element_impl()
 				.nesting_level+2,
 				"popup_menu,dropdown_menu",
@@ -188,9 +196,9 @@ date_input_field factoryObj
 
 	auto popup_lm=create_peephole_toplevel
 		(attachedto_handler,
-		 config.popup_border,
-		 config.popup_background_color,
-		 config.popup_background_color,
+		 config.appearance->popup_border,
+		 config.appearance->popup_background_color,
+		 config.appearance->popup_background_color,
 		 popup_peephole_style,
 		 [&]
 		 (const container_impl &parent)
@@ -198,7 +206,7 @@ date_input_field factoryObj
 			 child_element_init_params init_params;
 
 			 init_params.background_color=
-			 config.popup_background_color;
+			 config.appearance->popup_background_color;
 
 			 auto container_impl=ref<date_input_field_calendarObj
 						 ::implObj>::create
@@ -211,7 +219,7 @@ date_input_field factoryObj
 
 			 auto container=date_input_field_calendar
 				 ::create(attachedto_info,
-					  config,
+					  config.appearance,
 					  container_impl,
 					  glm_impl,
 					  ymd{},
@@ -366,12 +374,13 @@ date_input_field factoryObj
 	auto popup_imagebutton=create_standard_popup_imagebutton
 		(f, date_picker_popup,
 		 {
-			 config.border,
-				 config.input_field_appearance.background_color,
+			 config.appearance->border,
+				 config.appearance->input_appearance
+				 ->background_color,
 				 "scroll-right1",
 				 "scroll-right2",
-				 config.focusoff_border,
-				 config.focuson_border
+				 config.appearance->focusoff_border,
+				 config.appearance->focuson_border
 		 });
 
 	auto impl=ref<date_input_fieldObj::implObj>

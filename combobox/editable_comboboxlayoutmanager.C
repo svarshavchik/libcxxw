@@ -93,9 +93,9 @@ new_editable_comboboxlayoutmanager
 				   false	// do not update clipboards
 				   };
 
-		   // We have our own border, no need for the input field
-		   // do add its own.
-		   config.border={};
+		   config.appearance=
+			   input_field_appearance::base
+			   ::editable_combobox_theme();
 
 		   text_param initial_contents;
 

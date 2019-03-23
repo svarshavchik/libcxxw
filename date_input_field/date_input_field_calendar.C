@@ -8,6 +8,8 @@
 #include "popup/popup_attachedto_info.H"
 #include "x/w/impl/container.H"
 #include "x/w/date_input_field.H"
+#include "x/w/date_input_field_config.H"
+#include "x/w/date_input_field_appearance.H"
 #include "x/w/gridfactory.H"
 #include "x/w/container.H"
 #include "x/w/label.H"
@@ -32,13 +34,14 @@ LIBCXXW_NAMESPACE_START
 
 date_input_field_calendarObj
 ::date_input_field_calendarObj(const popup_attachedto_info &attachedto_info,
-			       const date_input_field_popup_config &config,
+			       const const_date_input_field_appearance
+			       &appearance,
 			       const ref<implObj> &impl,
 			       const layout_impl &lm_impl,
 			       const ymd &current_ym,
 			       const input_field &text_input_field)
 	: peepholed_attachedto_containerObj{attachedto_info, impl, lm_impl},
-	  config{config},
+	  appearance{appearance},
 	  text_input_field{text_input_field},
 	  current_ym{current_ym}
 {
@@ -85,8 +88,8 @@ static inline text_param do_hotspot(ONLY IN_THREAD,
 
 				if (me && e==focus_change::gained)
 				{
-					ret(me->config.day_highlight_fg);
-					ret(me->config.day_highlight_bg);
+					ret(me->appearance->day_highlight_fg);
+					ret(me->appearance->day_highlight_bg);
 				}
 
 				ret(label);
@@ -205,12 +208,12 @@ static text_param get_month_label(const date_input_field_calendarObj &me,
 
 	auto s=new_ym.format_date(U"%B %Y", e);
 
-	return {me.config.month_font, me.config.month_color, s};
+	return {me.appearance->month_font, me.appearance->month_color, s};
 }
 
 void date_input_field_calendarObj
 ::constructor(const popup_attachedto_info &attachedto_info,
-	      const date_input_field_popup_config &config,
+	      const const_date_input_field_appearance &appearance,
 	      const ref<implObj> &impl,
 	      const layout_impl &lm_impl,
 	      const ymd &current_ym,
@@ -263,7 +266,8 @@ void date_input_field_calendarObj
 						  (parent,
 						   "scroll-left1",
 						   "scroll-left2",
-						   this->config.yscroll_height);
+						   this->appearance
+						   ->yscroll_height);
 
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
@@ -296,7 +300,8 @@ void date_input_field_calendarObj
 						  (parent,
 						   "scroll-left1",
 						   "scroll-left2",
-						   this->config.mscroll_height);
+						   this->appearance
+						   ->mscroll_height);
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
 						   (ONLY IN_THREAD,
@@ -334,7 +339,8 @@ void date_input_field_calendarObj
 						  (parent,
 						   "scroll-right1",
 						   "scroll-right2",
-						   this->config.mscroll_height);
+						   this->appearance
+						   ->mscroll_height);
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
 						   (ONLY IN_THREAD,
@@ -368,7 +374,8 @@ void date_input_field_calendarObj
 						  (parent,
 						   "scroll-right1",
 						   "scroll-right2",
-						   this->config.yscroll_height);
+						   this->appearance
+						   ->yscroll_height);
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
 						   (ONLY IN_THREAD,
@@ -419,8 +426,8 @@ void date_input_field_calendarObj
 				 auto day_of_week=sunday.format_date(U"%a", e);
 
 				 f->halign(halign::center).create_label
-					 ({config.day_of_week_font,
-					   config.day_of_week_font_color,
+					 ({appearance->day_of_week_font,
+					   appearance->day_of_week_font_color,
 					   day_of_week})->show();
 				 ++sunday;
 			 }

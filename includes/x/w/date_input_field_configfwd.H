@@ -10,7 +10,6 @@
 LIBCXXW_NAMESPACE_START
 
 struct date_input_field_config;
-struct date_input_field_popup_config;
 
 LIBCXXW_NAMESPACE_END
 

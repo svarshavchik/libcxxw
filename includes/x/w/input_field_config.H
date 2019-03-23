@@ -9,87 +9,20 @@
 
 #include <x/w/types.H>
 #include <x/w/alignment.H>
-#include <x/w/text_param.H>
 #include <x/w/input_field_configfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
-#include <x/w/combobox_appearance.H>
+#include <x/w/input_field_appearance.H>
+#include <x/w/text_param.H>
 #include <x/w/scrollbar.H>
-#include <x/w/border_arg.H>
-#include <x/w/font_arg.H>
-#include <x/w/rgb.H>
 #include <x/w/factory.H>
 #include <x/functionalrefptr.H>
 #include <optional>
 
 LIBCXXW_NAMESPACE_START
 
-//! The settings related to a visual appearance of an \ref input_field_config "input field".
+//! The configuration of an \ref input_field "input field".
 
-struct input_field_config_appearance {
-
-	//! The input field's border.
-
-	border_arg border="textedit_border";
-
-	//! Inner border when the input field does not have input focus
-
-	border_arg focusoff_border="texteditfocusoff_border";
-
-	//! Inner border when the input field has input focus
-
-	border_arg focuson_border="texteditfocuson_border";
-
-	//! Foreground color
-	color_arg foreground_color="textedit_foreground_color";
-
-	//! Font for normal input fields
-	font_arg regular_font=theme_font{"textedit"};
-
-	//! Font for password input fields
-	font_arg password_font=theme_font{"password"};
-
-	//! Background color
-	color_arg background_color="textedit_background_color";
-
-	//! Background color when the input field is disabled.
-
-	//! Typical disabled element shading is not sufficient to distingish
-	//! the visibility change.
-
-	color_arg disabled_background_color=
-		"textedit_disabled_background_color";
-
-	//! Optional hint
-
-	//! If specified, this is displayed in the field when it's empty and
-	//! and it does not have input focus.
-
-	text_param hint;
-
-	//! Hint's color
-	color_arg hint_color="textedit_hint_color";
-
-	//! Free-play before dragging operation commences
-
-	//! How far the pointer must move before drag operation starts.
-	//! Avoids overhead when a pointer button click slips
-
-	dim_arg drag_horiz_start="drag_horiz_start";
-
-	//! Free-play before dragging operation commences
-
-	//! How far the pointer must move before drag operation starts.
-	//! Avoids overhead when a pointer button click slips
-
-	dim_arg drag_vert_start="drag_vert_start";
-
-	//! Destructor
-	~input_field_config_appearance();
-};
-
-//! The settings not related to a visual appearance of an \ref input_field_config "input field".
-
-struct input_field_config_settings {
+struct input_field_config {
 
 	//! Number of columns
 	size_t columns=40;
@@ -120,6 +53,13 @@ struct input_field_config_settings {
 	//! the given character.
 
 	char32_t password_char=0;
+
+	//! Optional hint
+
+	//! If specified, this is displayed in the field when it's empty and
+	//! and it does not have input focus.
+
+	text_param hint;
 
 	//! Set the typical settings for a password field.
 
@@ -184,23 +124,11 @@ struct input_field_config_settings {
 
 	functionptr<input_field_search_callback_t> input_field_search_callback;
 
-	//! Appearance of the list search popup.
-
-	const_popup_list_appearance input_field_search_appearance=
-		combobox_appearance::base::theme();
+	//! The input field's appearance
+	const_input_field_appearance appearance=
+		input_field_appearance::base::theme();
 
 	//! Destructor
-
-	~input_field_config_settings();
-};
-
-//! The configuration of an \ref input_field "input field".
-
-//! Inherits from input_field_config_settings, so that the uniform
-//! initialization syntax initializes it first.
-
-struct input_field_config : public input_field_config_settings,
-			    public input_field_config_appearance {
 
 	~input_field_config();
 };

@@ -9,6 +9,7 @@
 #include "drag_source_element.H"
 #include "drag_destination_element.H"
 #include "x/w/input_field.H"
+#include "x/w/input_field_appearance.H"
 #include "x/w/impl/theme_font_element.H"
 #include "x/w/impl/background_color_element.H"
 #include "screen.H"
@@ -52,11 +53,13 @@ create_default_meta(const container_impl &container,
 {
 	auto &element=container->container_element_impl();
 
-	auto bg_color=element.create_background_color(config.foreground_color);
+	auto bg_color=element.create_background_color
+		(config.appearance->foreground_color);
 
 	auto font=element.create_current_fontcollection
 		(config.password_char
-		 ? config.password_font:config.regular_font);
+		 ? config.appearance->password_font
+		 : config.appearance->regular_font);
 
 	return {bg_color, font};
 }
@@ -93,7 +96,7 @@ editorObj::implObj::init_args
 
 	// Initial background_color
 	textlabel_config_args.child_element_init
-		.background_color=config.background_color;
+		.background_color=config.appearance->background_color;
 }
 
 editorObj::implObj::init_args::~init_args()=default;
@@ -117,7 +120,7 @@ create_initial_string(editorObj::implObj::init_args &args,
 	// font, just need to update its color.
 	args.hint_meta=string.get_meta().begin()->second;
 	args.hint_meta.textcolor=element.create_background_color
-		(args.config.hint_color);
+		(args.config.appearance->hint_color);
 
 	// We get called from editorObj::implObj's constructor.
 	// password_info is the superclass, which is already fully
@@ -428,8 +431,9 @@ editorObj::implObj::editor_config::editor_config(const input_field_config &c)
 
 editorObj::implObj::implObj(init_args &args)
 	: richtext_password_info{args.config},
-	  superclass_t{args.config.background_color,	// Background colors
-		       args.config.disabled_background_color,
+	  superclass_t{args.config.appearance->background_color,
+			  // Background colors
+		       args.config.appearance->disabled_background_color,
 
 		       // Invisible pointer cursor
 		       args.parent_peephole->container_element_impl()
@@ -445,9 +449,9 @@ editorObj::implObj::implObj(init_args &args)
 		       args.parent_peephole->container_element_impl()
 		       .get_window_handler()
 		       .create_icon({"cursor-dragging-wontdrop"})->create_cursor(),
-			  args.config.drag_horiz_start,
+			  args.config.appearance->drag_horiz_start,
 			  themedimaxis::width,
-			  args.config.drag_vert_start,
+			  args.config.appearance->drag_vert_start,
 			  themedimaxis::height,
 		       // Capture the string's font.
 		       //

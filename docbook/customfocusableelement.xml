@@ -447,7 +447,7 @@ See COPYING for distribution information.
 	This makes the resulting container behave similar to a monolithic
 	display element. Otherwise, a
 	<methodname>hide_all</methodname>() followed by
-	<methodname>show</methodname>() tresults
+	<methodname>show</methodname>() results
 	in the container being visible, but none of the container's
 	elements being visible. This is because
 	<methodname>hide_all</methodname>() hid everything, but

@@ -27,6 +27,7 @@
 #include "xid_t.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_config.H"
+#include "x/w/input_field_appearance.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/text_param.H"
 #include "x/w/scrollbar.H"
@@ -54,14 +55,14 @@ input_fieldObj::input_fieldObj(const ref<implObj> &impl,
 
 input_fieldObj::~input_fieldObj()=default;
 
-void input_field_config_settings
+void input_field_config
 ::set_spin_control_factories(const functionref<void(const factory &)> &first,
 			     const functionref<void(const factory &)> &second)
 {
 	spin_control_factories.emplace(first, second);
 }
 
-void input_field_config_settings
+void input_field_config
 ::set_default_spin_control_factories()
 {
 	set_spin_control_factories
@@ -71,10 +72,6 @@ void input_field_config_settings
 			factory->create_image("spin-increment");
 		});
 }
-
-input_field_config_settings::~input_field_config_settings()=default;
-
-input_field_config_appearance::~input_field_config_appearance()=default;
 
 input_field_config::~input_field_config()=default;
 
@@ -122,11 +119,11 @@ create_input_field_impl_mixin(const container_impl &parent,
 
 	new_listlayoutmanager style=combobox_new_listlayoutmanager
 		(true,
-		 config.input_field_search_appearance);
+		 config.appearance->search_popup_appearance);
 
 	create_peepholed_toplevel_listcontainer_popup_args
 		popup_args=combobox_listcontainer_popup_args
-		(parent, style, config.input_field_search_appearance, 1);
+		(parent, style, config.appearance->search_popup_appearance, 1);
 
 	popup_args.popup_peephole_style.width_algorithm=dim_axis_arg{};
 	popup_args.popup_peephole_style.width_truncate=true;
@@ -149,7 +146,7 @@ create_input_field_impl_mixin(const container_impl &parent,
 				 (peephole_container,
 				  attachedto_info,
 				  style,
-				  config.input_field_search_appearance,
+				  config.appearance->search_popup_appearance,
 				  popup_containerptr);
 		 },
 		 [&]
@@ -229,23 +226,6 @@ public:
 #endif
 }
 
-static button_config create_spinner_button_config()
-{
-	auto c=normal_button();
-	c.normal_color="button_spinner_normal_color";
-	c.selected_color="button_spinner_selected_color";
-	c.active_color="button_spinner_active_color";
-
-	return c;
-}
-
-static const button_config &spinner_button_config()
-{
-	static const button_config config=create_spinner_button_config();
-
-	return config;
-}
-
 input_field
 factoryObj::create_input_field(const text_param &text,
 			       const input_field_config &config)
@@ -268,11 +248,11 @@ factoryObj::create_input_field(const text_param &text,
 						  halign::fill, valign::fill};
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
-		({config.border,
-		  config.focusoff_border,
-		  config.focuson_border,
+		({config.appearance->border,
+		  config.appearance->focusoff_border,
+		  config.appearance->focuson_border,
 		  .2,
-		  config.background_color,
+		  config.appearance->background_color,
 		  impl_mixin,
 		  input_field_peephole_style,
 		  scrollbar_visibility::never,
@@ -305,7 +285,7 @@ factoryObj::create_input_field(const text_param &text,
 
 			   e->show();
 
-			   return std::make_tuple(peephole_impl, e, e, e->impl);
+			   return std::tuple{peephole_impl, e, e, e->impl};
 		   });
 
 	auto impl=ref<input_fieldObj::implObj>
@@ -335,10 +315,11 @@ factoryObj::create_input_field(const text_param &text,
 		init_params.background_color=x::w::rgb{x::w::rgb::maximum,
 						       0, 0};
 
-		auto b_config=spinner_button_config();
+		auto b_config=config.appearance->spinner_button_config;
 
 		b_config.left_border=b_config.right_border=border_arg{};
-		b_config.top_border=b_config.bottom_border=config.border;
+		b_config.top_border=b_config.bottom_border=
+			config.appearance->border;
 
 		do_create_button_with_explicit_borders
 			(*f, b_config,
@@ -355,7 +336,7 @@ factoryObj::create_input_field(const text_param &text,
 		f->rowspan(2);
 		f->valign(valign::fill);
 
-		b_config.right_border=config.border;
+		b_config.right_border=config.appearance->border;
 
 		do_create_button_with_explicit_borders
 			(*f, b_config,

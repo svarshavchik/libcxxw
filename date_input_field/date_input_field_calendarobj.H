@@ -28,13 +28,13 @@ class date_input_field_calendarObj
 	: public peepholed_attachedto_containerObj {
 
  public:
-	//! This popup's custom configuration
-	const  date_input_field_popup_config config;
+	//! This popup's custom appearance
+	const  const_date_input_field_appearance appearance;
 
 	//! Constructor, phase 1.
 
 	date_input_field_calendarObj(const popup_attachedto_info &,
-				     const date_input_field_popup_config &c,
+				     const const_date_input_field_appearance &,
 				     const ref<implObj> &,
 				     const layout_impl &,
 				     const ymd &current_ym,
@@ -42,7 +42,7 @@ class date_input_field_calendarObj
 
 	//! Constructor, phase 2.
 	void constructor(const popup_attachedto_info &,
-			 const date_input_field_popup_config &config,
+			 const const_date_input_field_appearance &,
 			 const ref<implObj> &,
 			 const layout_impl &,
 			 const ymd &current_ym,

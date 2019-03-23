@@ -326,21 +326,23 @@ my_element create_with_focusframe(const x::w::factory &f,
 
 	// Make our custom border
 
+	x::w::border_arg focusoff_border{custom_focusoff_border};
+	x::w::border_arg focuson_border{custom_focuson_border};
+
+	if (!custom)
+	{
+		// Use standard theme borders.
+
+		const x::w::button_config &config=x::w::normal_button();
+
+		focusoff_border=config.inputfocusoff_border;
+		focuson_border=config.inputfocuson_border;
+	}
 	auto focus_frame_container_impl=
-
-		!custom ?
-
-		// Default input focus frame:
-		x::w::create_nonrecursive_visibility_focusframe_impl(f_c_impl)
-
-		:
-
-		// Or our custom input focus frame:
-
 		x::w::create_nonrecursive_visibility_focusframe_impl
 		(f_c_impl,
-		 custom_focusoff_border,
-		 custom_focuson_border,
+		 focusoff_border,
+		 focuson_border,
 
 		 // Additional padding between the focus frame and the
 		 // display element.
