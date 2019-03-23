@@ -4,6 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/itemlayoutmanager.H"
+#include "x/w/item_layout_appearance.H"
+#include "x/w/item_button_appearance.H"
 #include "itemlayoutmanager/itembutton_impl.H"
 #include "itemlayoutmanager/itemlayoutmanager_impl.H"
 #include "itemlayoutmanager/peepholed_item_container_impl.H"
@@ -36,28 +38,30 @@ itemlayoutmanagerObj::~itemlayoutmanagerObj()=default;
 static auto create_new_itembutton(const ref<itemlayoutmanagerObj::implObj>
 				  &impl,
 				  const function<void (const factory &)>
-				  &callback)
+				  &callback,
+				  const const_item_button_appearance
+				  &appearance)
 {
 	auto new_itembutton_impl=
 		ref<bordercontainer_elementObj<
 			itembuttonObj::implObj>>::create
 		(impl->layout_container_impl
 		 ->containerObj::implObj::get_window_handler(),
-		 impl->button_border,
-		 impl->button_border,
-		 impl->button_border,
-		 impl->button_border,
+		 appearance->button_border,
+		 appearance->button_border,
+		 appearance->button_border,
+		 appearance->button_border,
 		 richtextptr{},
 		 0,
-		 impl->itembutton_h_padding,
-		 impl->itembutton_v_padding,
+		 appearance->itembutton_h_padding,
+		 appearance->itembutton_v_padding,
 		 impl->layout_container_impl,
 		 child_element_init_params{"background@libcxx.com"});
 
 	image_button_config i_config;
 	create_image_button_info cibi{new_itembutton_impl, true, i_config};
 
-	cibi.button_background_color=impl->itembutton_background_color;
+	cibi.button_background_color=appearance->itembutton_background_color;
 	cibi.click_anywhere=false;
 
 	auto b=create_image_button
@@ -87,14 +91,31 @@ static auto create_new_itembutton(const ref<itemlayoutmanagerObj::implObj>
 void itemlayoutmanagerObj::do_append(const function<void (const factory &)>
 				     &callback)
 {
-	impl->append(create_new_itembutton(impl, callback));
+	do_append(callback, item_button_appearance::base::theme());
+}
+
+void itemlayoutmanagerObj::do_append(const function<void (const factory &)>
+				     &callback,
+				     const const_item_button_appearance
+				     &appearance)
+{
+	impl->append(create_new_itembutton(impl, callback, appearance));
 }
 
 void itemlayoutmanagerObj::do_insert(size_t i,
 				     const function<void (const factory &)>
 				     &callback)
 {
-	impl->insert(create_new_itembutton(impl, callback), i);
+	do_insert(i, callback, item_button_appearance::base::theme());
+}
+
+void itemlayoutmanagerObj::do_insert(size_t i,
+				     const function<void (const factory &)>
+				     &callback,
+				     const const_item_button_appearance
+				     &appearance)
+{
+	impl->insert(create_new_itembutton(impl, callback, appearance), i);
 }
 
 size_t itemlayoutmanagerObj::size() const
@@ -143,15 +164,16 @@ new_itemlayoutmanager::new_itemlayoutmanager()
 new_itemlayoutmanager::new_itemlayoutmanager(const itemlayout_callback_t
 					     &callback)
 	: callback{callback},
-	  button_border{"itembutton_border"},
-	  itembutton_h_padding{"itembutton-h-padding"},
-	  itembutton_v_padding{"itembutton-v-padding"},
-	  itemlayout_h_padding{"itemlayout-h-padding"},
-	  itemlayout_v_padding{"itemlayout-v-padding"},
-	  itembutton_background_color{"itembutton_background_color"}
+	  appearance{item_layout_appearance::base::theme()}
 {
 }
 
+new_itemlayoutmanager::new_itemlayoutmanager(const new_itemlayoutmanager &)
+=default;
+
+new_itemlayoutmanager
+&new_itemlayoutmanager::operator=(const new_itemlayoutmanager &)
+=default;
 new_itemlayoutmanager::~new_itemlayoutmanager()=default;
 
 namespace {

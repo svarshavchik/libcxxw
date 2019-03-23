@@ -28,10 +28,7 @@ itemlayoutmanagerObj::implObj::implObj(const ref<peepholed_item_containerObj
 				       const new_itemlayoutmanager &config)
 	: layoutmanagerObj::implObj{layout_container_impl},
 	  layout_container_impl{layout_container_impl},
-	  button_border{config.button_border},
-	  itembutton_h_padding{config.itembutton_h_padding},
-	  itembutton_v_padding{config.itembutton_v_padding},
-	  itembutton_background_color{config.itembutton_background_color},
+	  appearance{config.appearance},
 	  item_info{config.callback}
 {
 }

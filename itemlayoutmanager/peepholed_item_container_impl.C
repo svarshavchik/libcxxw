@@ -9,6 +9,7 @@
 #include "x/w/impl/always_visible_element.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/itemlayoutmanager.H"
+#include "x/w/item_layout_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -18,8 +19,10 @@ peepholed_item_containerObj::implObj
 	  const focusable &vertical_scrollbar,
 	  const new_itemlayoutmanager &config)
 	: superclass_t{theme_font{"label"},
-		       config.itemlayout_h_padding, themedimaxis::width,
-		       config.itemlayout_v_padding, themedimaxis::height,
+		config.appearance->itemlayout_h_padding,
+			themedimaxis::width,
+			config.appearance->itemlayout_v_padding,
+			themedimaxis::height,
 		       parent,
 		       child_element_init_params
 		       {

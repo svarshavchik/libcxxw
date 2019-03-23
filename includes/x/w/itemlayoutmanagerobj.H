@@ -6,6 +6,7 @@
 #define x_w_itemlayoutmanagerobj_h
 
 #include <x/w/itemlayoutmanagerfwd.H>
+#include <x/w/item_button_appearancefwd.H>
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/factoryfwd.H>
 #include <x/w/elementfwd.H>
@@ -42,27 +43,38 @@ public:
 	element get_item(size_t) const;
 
 	//! Add a new item
-	template<typename F>
-	inline void append_item(F &&f)
+	template<typename F, typename ...Args>
+	inline void append_item(F &&f, Args && ...args)
 	{
 		do_append(make_function<void (const factory &)>
-			  (std::forward<F>(f)));
+			  (std::forward<F>(f)),
+			  std::forward<Args>(args)...);
 	}
 
 	//! Type-erased append_item().
 	void do_append(const function<void (const factory &)> &callback);
 
+	//! Type-erased append_item().
+	void do_append(const function<void (const factory &)> &callback,
+		       const const_item_button_appearance &appearance);
+
 	//! Insert a new item
-	template<typename F>
-	inline void insert_item(size_t i, F &&f)
+	template<typename F, typename ...Args>
+	inline void insert_item(size_t i, F &&f, Args && ...args)
 	{
 		do_insert(i, make_function<void (const factory &)>
-			  (std::forward<F>(f)));
+			  (std::forward<F>(f)),
+			  std::forward<Args>(args)...);
 	}
 
 	//! Type-erased insert_item().
 	void do_insert(size_t i,
 		       const function<void (const factory &)> &callback);
+
+	//! Type-erased insert_item().
+	void do_insert(size_t i,
+		       const function<void (const factory &)> &callback,
+		       const const_item_button_appearance &appearance);
 
 	//! Install a new callback
 

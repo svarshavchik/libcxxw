@@ -7,6 +7,7 @@
 
 #include "x/w/itemlayoutmanager.H"
 #include "x/w/impl/layoutmanager.H"
+#include "x/w/item_layout_appearance.H"
 #include "itemlayoutmanager/peepholed_item_containerobj.H"
 #include "itemlayoutmanager/itembuttonfwd.H"
 
@@ -20,20 +21,7 @@ class itemlayoutmanagerObj::implObj : public layoutmanagerObj::implObj {
 	//! My container
 	const ref<peepholed_item_containerObj::implObj> layout_container_impl;
 
-	//! Border for the new button.
-	const border_arg button_border;
-
-	//! Padding between the border and the button's label
-
-	const dim_arg itembutton_h_padding;
-
-	//! Padding between the border and the button's label
-
-	const dim_arg itembutton_v_padding;
-
-	//! Button background color
-
-	const color_arg itembutton_background_color;
+	const const_item_layout_appearance appearance;
 
 	//! Constructor
 	implObj(const ref<peepholed_item_containerObj::implObj>

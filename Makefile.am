@@ -441,9 +441,11 @@ libcxxw_la_SOURCES=\
 	itemlayoutmanager/itembuttonobj.H	    \
 	itemlayoutmanager/itembutton_impl.C	    \
 	itemlayoutmanager/itembutton_impl.H	    \
+	itemlayoutmanager/item_button_appearance.C  \
 	itemlayoutmanager/itemlayoutmanager.C	    \
 	itemlayoutmanager/itemlayoutmanager_impl.C  \
 	itemlayoutmanager/itemlayoutmanager_impl.H  \
+	itemlayoutmanager/item_layout_appearance.C  \
 	itemlayoutmanager/peepholed_item_container.C \
 	itemlayoutmanager/peepholed_item_container.H \
 	itemlayoutmanager/peepholed_item_containerfwd.H \

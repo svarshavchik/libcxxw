@@ -7,11 +7,9 @@
 
 #include <x/w/itemlayoutmanagerfwd.H>
 #include <x/w/itemlayoutmanagerobj.H>
+#include <x/w/item_layout_appearancefwd.H>
 #include <x/w/layoutmanager.H>
 #include <x/w/new_focusable_layoutmanagerfwd.H>
-#include <x/w/border_arg.H>
-#include <x/w/dim_arg.H>
-#include <x/w/rgb.H>
 #include <x/ref.H>
 #include <x/functionalrefptr.H>
 
@@ -37,30 +35,17 @@ public:
 	//! Destructor
 	~new_itemlayoutmanager() LIBCXX_PUBLIC;
 
+	//! Copy constructor
+	new_itemlayoutmanager(const new_itemlayoutmanager &);
+
+	//! Assignment operator
+	new_itemlayoutmanager &operator=(const new_itemlayoutmanager &);
+
 	//! Callback that gets invoked when the close button is clicked.
 	itemlayout_callback_t callback;
 
-	//! Border around buttons
-
-	border_arg button_border;
-
-	//! Padding between the border and the button's label
-
-	dim_arg itembutton_h_padding;
-
-	//! Padding between the border and the button's label
-
-	dim_arg itembutton_v_padding;
-
-	//! Padding between individual items.
-	dim_arg itemlayout_h_padding;
-
-	//! Padding between individual items.
-	dim_arg itemlayout_v_padding;
-
-	//! Button background color
-
-	color_arg itembutton_background_color;
+	//! Visual appearance of the item layout manager.
+	const_item_layout_appearance appearance;
 
 	//! Create a new container that uses the item layout manager
 
