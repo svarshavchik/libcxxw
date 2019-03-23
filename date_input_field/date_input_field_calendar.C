@@ -7,6 +7,7 @@
 #include "peephole/peepholed_attachedto_container_impl.H"
 #include "popup/popup_attachedto_info.H"
 #include "x/w/impl/container.H"
+#include "x/w/image_button_appearance.H"
 #include "x/w/date_input_field.H"
 #include "x/w/date_input_field_config.H"
 #include "x/w/date_input_field_appearance.H"
@@ -249,23 +250,20 @@ void date_input_field_calendarObj
 
 			 auto f=row0_lm->append_row();
 
-			 image_button_config i_config;
-
-			 i_config.alignment=valign::bottom;
+			 auto i_appearance=appearance->previous_year_appearance;
 
 			 create_image_button_info scroll_button_info
-				 {f->get_container_impl(), true, i_config,
+				 {f->get_container_impl(), true, i_appearance,
 				  true};
 
 			 auto b=create_image_button
 				 (scroll_button_info,
-				  [this]
+				  [&, this]
 				  (const auto &parent)
 				  {
 					  auto b=scroll_imagebutton_specific_height
 						  (parent,
-						   "scroll-left1",
-						   "scroll-left2",
+						   i_appearance->images,
 						   this->appearance
 						   ->yscroll_height);
 
@@ -291,15 +289,15 @@ void date_input_field_calendarObj
 
 			 scroll_button_info.parent_container_impl=
 				 f->get_container_impl();
+			 i_appearance=appearance->previous_month_appearance;
 			 b=create_image_button
 				 (scroll_button_info,
-				  [this]
+				  [&, this]
 				  (const auto &parent)
 				  {
 					  auto b=scroll_imagebutton_specific_height
 						  (parent,
-						   "scroll-left1",
-						   "scroll-left2",
+						   i_appearance->images,
 						   this->appearance
 						   ->mscroll_height);
 					  b->on_activate
@@ -329,16 +327,16 @@ void date_input_field_calendarObj
 
 			 scroll_button_info.parent_container_impl=
 				 f->get_container_impl();
+			 i_appearance=appearance->next_month_appearance;
 
 			 b=create_image_button
 				 (scroll_button_info,
-				  [this]
+				  [&, this]
 				  (const auto &parent)
 				  {
 					  auto b=scroll_imagebutton_specific_height
 						  (parent,
-						   "scroll-right1",
-						   "scroll-right2",
+						   i_appearance->images,
 						   this->appearance
 						   ->mscroll_height);
 					  b->on_activate
@@ -365,15 +363,15 @@ void date_input_field_calendarObj
 
 			 scroll_button_info.parent_container_impl=
 				 f->get_container_impl();
+			 i_appearance=appearance->next_year_appearance;
 			 b=create_image_button
 				 (scroll_button_info,
-				  [this]
+				  [&, this]
 				  (const auto &parent)
 				  {
 					  auto b=scroll_imagebutton_specific_height
 						  (parent,
-						   "scroll-right1",
-						   "scroll-right2",
+						   i_appearance->images,
 						   this->appearance
 						   ->yscroll_height);
 					  b->on_activate

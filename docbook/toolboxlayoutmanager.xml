@@ -209,30 +209,33 @@ main_window->on_stabilized
       have all the needed functionality to implement the individual toolbox
       tools: choosing a new icon automatically deselects the previous icon.
       This is stock radio button functionality: selecting one radio button
-      deselects the previous one.
+      deselects the previous one. All that's needed is to use custom images:
     </para>
 
     <blockquote>
       <informalexample>
 	<programlisting>
-&ns;::w::radio_config config;
-config.images={icon_set[0], icon_set[1]};
+x::w::image_button_appearance custom=
+    x::w::image_button_appearance::base::radio_theme()->clone();
 
-config.visible_focusoff_border();
+custom->set_distinct_focusoff_border();
+
+custom->images={icon_set[0], icon_set[1]};
+
 auto b=f->create_radio(rg,
                        [](const auto &amp;f) {},
-                       config);</programlisting>
+                       custom);</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
+      This is an example of
+      <link linkend="customcheckboxlabels">customizing a radio button's
+	appearance</link>.
       A &factory;'s <methodname>create_radio</methodname>() method takes
-      an optional
-      <ulink url="&link-x--w--radio-config;"><classname>&ns;::w::radio_config</classname></ulink>
-      parameter that specifies a custom configuration for the new radio button
-      (<methodname>create_checkbox</methodname>() has an optional
-      <ulink url="&link-x--w--checkbox-config;"><classname>&ns;::w::checkbox_config</classname></ulink> parameter).
-      The <varname>images</varname> member is a vector of custom images for
+      an optional custom appearance object parameter that controls the radio
+      button's visual look.
+      Its <varname>images</varname> member is a vector of custom images for
       the radio button: typically two filenames, the normal and the selected
       radio button image.
     </para>

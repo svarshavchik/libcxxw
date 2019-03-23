@@ -23,6 +23,7 @@
 #include "x/w/input_field_config.H"
 #include "x/w/canvas.H"
 #include "x/w/text_param_literals.H"
+#include "x/w/book_appearance.H"
 #include "x/w/font.H"
 
 #include <iostream>
@@ -262,7 +263,11 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 
 	LIBCXX_NAMESPACE::w::new_booklayoutmanager nblm;
 
-	nblm.tabs_background_color=LIBCXX_NAMESPACE::w::white;
+	auto custom=nblm.appearance->clone();
+
+	nblm.appearance=custom;
+
+	custom->tabs_background_color=LIBCXX_NAMESPACE::w::white;
 
 	// nblm.scroll_button_height=20;
 	auto c=gf->colspan(2).create_focusable_container

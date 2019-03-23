@@ -11,7 +11,10 @@ item_button_appearance_properties::item_button_appearance_properties()
 	: button_border{"itembutton_border"},
 	  itembutton_h_padding{"itembutton-h-padding"},
 	  itembutton_v_padding{"itembutton-v-padding"},
-	  itembutton_background_color{"itembutton_background_color"}
+	  itembutton_background_color{"itembutton_background_color"},
+	  item_image_button_appearance{image_button_appearance::base
+			  ::item_theme()}
+
 {
 }
 

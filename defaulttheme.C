@@ -18,6 +18,7 @@
 #include "x/w/gridfactory.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
+#include "x/w/book_appearance.H"
 #include "x/w/shortcut.H"
 #include "gridtemplate.H"
 #include <x/property_value.H>
@@ -2011,12 +2012,19 @@ void defaultthemeObj::layout_book_container(const factory &f,
 {
 	new_booklayoutmanager nblm;
 
-	if (!background_color.empty())
-		nblm.background_color=background_color;
+	if (!background_color.empty() ||
+	    !border.empty())
+	{
+		auto appearance=nblm.appearance->clone();
 
-	if (!border.empty())
-		nblm.border=border;
+		if (!background_color.empty())
+			appearance->background_color=background_color;
 
+		if (!border.empty())
+			appearance->border=border;
+
+		nblm.appearance=appearance;
+	}
 	f->create_focusable_container
 		([&, this]
 		 (const auto &new_container)

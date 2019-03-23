@@ -35,6 +35,8 @@
 #include "x/w/pagefactory.H"
 #include "x/w/container.H"
 #include "x/w/element.H"
+#include "x/w/book_appearance.H"
+#include "x/w/image_button_appearance.H"
 #include "x/w/bookpagefactory.H"
 #include "x/w/canvas.H"
 #include "x/w/callback_trigger.H"
@@ -44,14 +46,6 @@
 #include <vector>
 
 LIBCXXW_NAMESPACE_START
-
-booklayoutmanager_config::booklayoutmanager_config()
-	: book_tab_border{"book_tab_border"},
-	  scroll_button_height{"book_scroll_height"}
-{
-}
-
-booklayoutmanager_config::~booklayoutmanager_config()=default;
 
 // The layoutmanagerObj base class gets a ref to the real layout manager
 // implementation object, and we store our impl.
@@ -292,7 +286,7 @@ static auto create_new_tab(const bookpagefactoryObj &my_factory,
 	// new tab's individual borders.
 
 	auto &book_tab_border=
-		layout_manager->impl->impl->config.book_tab_border;
+		layout_manager->impl->impl->appearance->tab_border;
 
 	auto tab_parent_container=gridfactory->get_container_impl();
 
@@ -567,13 +561,16 @@ class LIBCXX_HIDDEN book_focusable_containerObj
 };
 
 new_booklayoutmanager::new_booklayoutmanager()
-	: background_color{"page_background"},
-	  border{"page_border"},
-	  tabs_background_color{"book_tab_background_color"}
+	: appearance{book_appearance::base::theme()}
 {
 }
 
 new_booklayoutmanager::~new_booklayoutmanager()=default;
+new_booklayoutmanager::new_booklayoutmanager(const new_booklayoutmanager &)
+=default;
+
+new_booklayoutmanager &new_booklayoutmanager
+::operator=(const new_booklayoutmanager &)=default;
 
 focusable_container
 new_booklayoutmanager::create(const container_impl &parent) const
@@ -586,7 +583,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	// Create the our gridlayoutmanager subclass, the real layout manager
 	// for this container.
 
-	auto grid=ref<bookgridlayoutmanagerObj>::create(c, *this);
+	auto grid=ref<bookgridlayoutmanagerObj>::create(c, appearance);
 
 	// Start building the contents of the grid.
 
@@ -606,17 +603,10 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	ptr<image_button_internalObj::implObj> left_scroll_impl,
 		right_scroll_impl;
 
-	image_button_config i_config;
-
-	// Scroll buttons, just above the main page area. Align the scroll
-	// buttons to the bottom, where the page area is. Use a visible
-	// focusoff border, to avoid ugly empty separation between the page
-	// border and the visible button, when it does not have input focus.
-	i_config.alignment=valign::bottom;
-	i_config.visible_focusoff_border();
+	auto button_appearance=appearance->left_scroll_button;
 
 	create_image_button_info scroll_button_info
-		{factory->get_container_impl(), true, i_config, true};
+		{factory->get_container_impl(), true, button_appearance, true};
 
 	auto left_scroll=create_image_button
 		(scroll_button_info,
@@ -627,10 +617,9 @@ new_booklayoutmanager::create(const container_impl &parent) const
 			 // book_scroll_height tall.
 
 			 auto impl=scroll_imagebutton_specific_height
-			 (container_impl,
-			  "scroll-left1",
-			  "scroll-left2",
-			  scroll_button_height);
+				 (container_impl,
+				  button_appearance->images,
+				  appearance->scroll_button_height);
 
 			 left_scroll_impl=impl;
 
@@ -644,11 +633,12 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	//
 	// The page tab element is, first and foremost, a peephole.
 
-	factory->padding(0).halign(halign::fill).border(border);
+	factory->padding(0).halign(halign::fill).border(appearance->border);
 
 	child_element_init_params peephole_impl_init_params;
 
-	peephole_impl_init_params.background_color=tabs_background_color;
+	peephole_impl_init_params.background_color=
+		appearance->tabs_background_color;
 
 	auto peephole_impl=
 		ref<always_visibleObj<peephole_impl_elementObj<
@@ -699,6 +689,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 
 	factory->padding(0);
 
+	button_appearance=appearance->right_scroll_button;
 	scroll_button_info.parent_container_impl=factory->get_container_impl();
 	auto right_scroll=create_image_button
 		(scroll_button_info,
@@ -706,10 +697,9 @@ new_booklayoutmanager::create(const container_impl &parent) const
 		 (const auto &container_impl)
 		 {
 			 auto impl=scroll_imagebutton_specific_height
-			 (container_impl,
-			  "scroll-right1",
-			  "scroll-right2",
-			  scroll_button_height);
+				 (container_impl,
+				  button_appearance->images,
+				  appearance->scroll_button_height);
 
 			 right_scroll_impl=impl;
 
@@ -821,9 +811,14 @@ new_booklayoutmanager::create(const container_impl &parent) const
 
 	factory=gridlm->append_row();
 
+	child_element_init_params current_page_container_init_params;
+
+	current_page_container_init_params.background_color=
+		appearance->background_color;
+
 	auto current_page_container_impl=
 		ref<always_visibleObj<container_elementObj<child_elementObj>>>
-		::create(c);
+		::create(c, current_page_container_init_params);
 
 	auto page_lm_impl=new_pagelayoutmanager{}
 	    .create(current_page_container_impl);
@@ -833,9 +828,8 @@ new_booklayoutmanager::create(const container_impl &parent) const
 				  page_lm_impl);
 
 	factory->colspan(3);
-	factory->border(border);
+	factory->border(appearance->border);
 	factory->created_internally(current_page_container);
-	current_page_container->set_background_color(background_color);
 
 	return ref<book_focusable_containerObj>::create(c, grid);
 }

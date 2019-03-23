@@ -22,6 +22,7 @@
 #include <x/w/input_fieldfwd.H>
 #include <x/w/imagefwd.H>
 #include <x/w/image_buttonfwd.H>
+#include <x/w/image_button_appearancefwd.H>
 #include <x/w/radio_groupfwd.H>
 #include <x/w/focusable_containerfwd.H>
 #include <x/w/progressbarfwd.H>
@@ -35,7 +36,7 @@
 #include <x/w/font_picker_configfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
-
+#include <x/optional_args.H>
 #include <utility>
 
 LIBCXXW_NAMESPACE_START
@@ -227,47 +228,35 @@ public:
 			   const dim_arg &width,
 			   const dim_arg &height);
 
+	//! Optional arguments to create_checkbox() and create_radio().
+
+	typedef optional_args<functionref<factory_creator_t>,
+			      const_image_button_appearance
+			      > image_button_args_t;
+
 	//! Create a checkbox
-	image_button create_checkbox(const checkbox_config &config={});
-
-	//! Create a checkbox with a label factory
-	template<typename functor,
-		 typename sfinae=decltype(std::declval<functor &&>()
-					  (std::declval<const factory &>()))>
-	image_button create_checkbox(functor &&f,
-				     const checkbox_config &config={})
+	template<typename ...Args>
+	inline image_button create_checkbox(Args && ...args)
 	{
-		return do_create_checkbox(make_function<factory_creator_t>
-					  (std::forward<functor>(f)),
-					  config);
-	}
-
-	//! Create a radio button
-	image_button create_radio(const radio_group &group,
-				  const radio_config &config={});
-
-	//! Create a radio button with a label factory
-	template<typename functor,
-		 typename sfinae=decltype(std::declval<functor &&>()
-					  (std::declval<const factory &>()))>
-	image_button create_radio(const radio_group &group,
-				  functor &&f,
-				  const radio_config &config={})
-	{
-		return do_create_radio(group,
-				       make_function<factory_creator_t>
-				       (std::forward<functor>(f)),
-				       config);
+		return do_create_checkbox({std::forward<Args>(args)...});
 	}
 
 	//! Type-erased create_checkbox().
-	image_button do_create_checkbox(const function<factory_creator_t>&,
-					const checkbox_config &config);
 
-	//! Type-erased create_radio().
-	image_button do_create_radio(const radio_group &,
-				     const function<factory_creator_t>&,
-				     const radio_config &);
+	image_button do_create_checkbox(const image_button_args_t &args);
+
+	//! Create a radio button
+	template<typename ...Args>
+	inline image_button create_radio(const radio_group &group,
+					 Args && ...args)
+	{
+		return do_create_radio(group,
+				       { std::forward<Args>(args)...});
+	}
+
+	//! Create a radio button
+	image_button do_create_radio(const radio_group &group,
+				     const image_button_args_t &args);
 
 	//! Create a focusable container.
 

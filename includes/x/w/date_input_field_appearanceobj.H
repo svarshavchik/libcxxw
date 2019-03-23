@@ -7,6 +7,7 @@
 
 #include <x/w/date_input_field_appearancefwd.H>
 #include <x/w/input_field_appearancefwd.H>
+#include <x/w/image_button_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>
@@ -45,6 +46,18 @@ struct date_input_field_appearance_properties {
 	//! Font color for the days of week column titles.
 
 	text_color_arg day_of_week_font_color;
+
+	//! Appearance of the button on the date popup.
+	const_image_button_appearance previous_year_appearance;
+
+	//! Appearance of the button on the date popup.
+	const_image_button_appearance previous_month_appearance;
+
+	//! Appearance of the button on the date popup.
+	const_image_button_appearance next_month_appearance;
+
+	//! Appearance of the button on the date popup.
+	const_image_button_appearance next_year_appearance;
 
 	//! Height of buttons that advance the calendar by a year
 	dim_arg yscroll_height;

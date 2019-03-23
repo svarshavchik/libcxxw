@@ -58,8 +58,8 @@ static auto create_new_itembutton(const ref<itemlayoutmanagerObj::implObj>
 		 impl->layout_container_impl,
 		 child_element_init_params{"background@libcxx.com"});
 
-	image_button_config i_config;
-	create_image_button_info cibi{new_itembutton_impl, true, i_config};
+	create_image_button_info cibi{new_itembutton_impl, true,
+				      appearance->item_image_button_appearance};
 
 	cibi.button_background_color=appearance->itembutton_background_color;
 	cibi.click_anywhere=false;
@@ -71,8 +71,8 @@ static auto create_new_itembutton(const ref<itemlayoutmanagerObj::implObj>
 		 {
 			 return scroll_imagebutton_specific_height
 				 (parent_container,
-				  "itemdelete1",
-				  "itemdelete2",
+				  appearance->item_image_button_appearance
+				  ->images,
 				  0);
 		 },
 		 [&]

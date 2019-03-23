@@ -28,11 +28,11 @@ class LIBCXX_HIDDEN bookgridlayoutmanagerObj
  public:
 
 	//! Book layout manager appearance.
-	const booklayoutmanager_config config;
+	const const_book_appearance appearance;
 
 	//! Constructor
 	bookgridlayoutmanagerObj(const container_impl &,
-				 const booklayoutmanager_config &);
+				 const const_book_appearance &);
 
 	//! Destructor
 	~bookgridlayoutmanagerObj();

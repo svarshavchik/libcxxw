@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/date_input_field_appearance.H"
+#include "x/w/image_button_appearance.H"
 #include "x/w/input_field_appearance.H"
 
 LIBCXXW_NAMESPACE_START
@@ -31,6 +32,14 @@ date_input_field_appearance_properties::date_input_field_appearance_properties()
 	  month_color{theme_color{"dateedit_popup_month"}},
 	  day_of_week_font{theme_font{"dateedit_day_of_week"}},
 	  day_of_week_font_color{theme_color{"dateedit_day_of_week"}},
+	  previous_year_appearance{image_button_appearance::base
+			  ::date_popup_left_theme()},
+	  previous_month_appearance{image_button_appearance::base
+			  ::date_popup_left_theme()},
+	  next_month_appearance{image_button_appearance::base
+			  ::date_popup_right_theme()},
+	  next_year_appearance{image_button_appearance::base
+			  ::date_popup_right_theme()},
 	  yscroll_height{"dateedit_popup_yscroll_height"},
 	  mscroll_height{"dateedit_popup_mscroll_height"},
 	  input_appearance{default_date_input_field_appearance()},

@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/booklayoutmanager.H"
+#include "x/w/book_appearance.H"
 #include "booklayoutmanager/bookgridlayoutmanager.H"
 #include "booklayoutmanager/booklayoutmanager_impl.H"
 
@@ -11,9 +12,9 @@ LIBCXXW_NAMESPACE_START
 
 bookgridlayoutmanagerObj
 ::bookgridlayoutmanagerObj(const container_impl &container,
-			   const booklayoutmanager_config &config)
+			   const const_book_appearance &appearance)
 	: gridlayoutmanagerObj::implObj{container, {}},
-	  config{config}
+	  appearance{appearance}
 {
 }
 

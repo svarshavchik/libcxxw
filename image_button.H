@@ -14,6 +14,8 @@
 #include "image_button_internalobj.H"
 
 #include <optional>
+#include <string_view>
+
 LIBCXXW_NAMESPACE_START
 
 typedef ref<image_button_internalObj::implObj>
@@ -40,8 +42,8 @@ struct create_image_button_info {
 	//! display element. This employs the always_visible_elementObj mixin.
 	const bool always_visible;
 
-	//! Factory-specific configuration
-	const image_button_config &config;
+	//! Visual appearance details
+	const const_image_button_appearance &appearance;
 
 	//! Whether non-recursive visiblity is enabled.
 
@@ -71,7 +73,7 @@ image_button
 do_create_image_button(const create_image_button_info &info,
 		       const function<image_button_internal_factory_t>
 		       &img_impl_factory,
-		       const function<void (const factory &)> &label_factory)
+		       const functionref<void (const factory &)> &label_factory)
 	LIBCXX_HIDDEN;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -85,7 +87,7 @@ template<typename functor1>
 image_button
 create_image_button_with_label_factory(const create_image_button_info &info,
 				       functor1 &&creator,
-				       const function<void (const factory &)>
+				       const functionref<void (const factory &)>
 				       &label_factory)
 	LIBCXX_HIDDEN;
 
@@ -93,7 +95,7 @@ template<typename functor1>
 image_button
 create_image_button_with_label_factory(const create_image_button_info &info,
 				       functor1 &&creator,
-				       const function<void (const factory &)>
+				       const functionref<void (const factory &)>
 				       &label_factory)
 {
 	return do_create_image_button(info,
@@ -152,13 +154,12 @@ create_image_button(const create_image_button_info &info,
 
 //! This is used to implement the creator() parameter of create_image_button().
 //!
-//! Creates an image button of specific height, from image1 and image2.
+//! Creates an image button of specific height, using the given images.
 
 ref<image_button_internalObj::implObj>
 scroll_imagebutton_specific_height(const container_impl
 				   &parent_container,
-				   const std::string &image1,
-				   const std::string &image2,
+				   const std::vector<std::string> &images,
 				   const dim_arg &height) LIBCXX_HIDDEN;
 
 //! Implementation object for the image button display element.

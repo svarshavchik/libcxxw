@@ -7,6 +7,7 @@
 
 #include <x/w/booklayoutmanagerfwd.H>
 #include <x/w/booklayoutmanagerobj.H>
+#include <x/w/book_appearancefwd.H>
 #include <x/w/new_focusable_layoutmanagerfwd.H>
 #include <x/w/layoutmanager.H>
 #include <x/w/element.H>
@@ -19,23 +20,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Additional book layout manager configuration settings.
-
-struct booklayoutmanager_config {
-
-	//! Constructor
-	booklayoutmanager_config();
-
-	//! Destructor
-	~booklayoutmanager_config();
-
-	//! Border around the tabs.
-	border_arg book_tab_border;
-
-	//! How big the scroll buttons are.
-	dim_arg scroll_button_height;
-};
-
 //! Create a new container with a \ref booklayoutmanager "book layout manager".
 
 //! This parameter gets passed to a \ref factory "factory"'s
@@ -44,8 +28,7 @@ struct booklayoutmanager_config {
 //! uses the book layout manager.
 
 class new_booklayoutmanager
-	: public new_focusable_layoutmanager,
-	  public booklayoutmanager_config {
+	: public new_focusable_layoutmanager {
  public:
 	//! Constructor
 	new_booklayoutmanager() LIBCXX_PUBLIC;
@@ -53,14 +36,16 @@ class new_booklayoutmanager
 	//! Destructor
 	~new_booklayoutmanager() LIBCXX_PUBLIC;
 
-	//! Background color around the currently visible page.
-	color_arg background_color;
+	//! Copy constructor
 
-	//! Border around the currently visible page.
-	border_arg border;
+	new_booklayoutmanager(const new_booklayoutmanager &) LIBCXX_PUBLIC;
 
-	//! Tab strip background color
-	color_arg tabs_background_color;
+	//! Assignment operator
+	new_booklayoutmanager &operator=(const new_booklayoutmanager &)
+		LIBCXX_PUBLIC;
+
+	//! Default appearance
+	const_book_appearance appearance;
 
 	//! Create a container with the book layout manager.
 

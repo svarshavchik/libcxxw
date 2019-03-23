@@ -67,6 +67,7 @@ libcxxw_la_SOURCES=\
 	batch_queue.C				    \
 	batch_queue.H				    \
 	batch_queueobj.H			    \
+	booklayoutmanager/book_appearance.C	    \
 	booklayoutmanager/bookgridlayoutmanager.C   \
 	booklayoutmanager/bookgridlayoutmanager.H   \
 	booklayoutmanager/booklayoutmanager.C       \
@@ -404,6 +405,7 @@ libcxxw_la_SOURCES=\
 	image_impl.C				    \
 	image_button.C				    \
 	image_button.H				    \
+	image_button_appearance.C		    \
 	image_button_impl.C			    \
 	image_button_internal.C			    \
 	image_button_internal.H			    \

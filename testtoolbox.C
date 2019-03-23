@@ -158,14 +158,18 @@ static void create_toolbox_contents(const LIBCXX_NAMESPACE::w::toolboxlayoutmana
 				    (sizeof(icons)/
 				     sizeof(icons[0]))];
 
-		LIBCXX_NAMESPACE::w::radio_config config;
-		config.images=
+		auto custom_button=
+			LIBCXX_NAMESPACE::w::image_button_appearance
+			::base::radio_theme()->clone();
+
+		custom_button->images=
 			{icon_set[0], icon_set[1]};
 
-		config.visible_focusoff_border();
+		custom_button->set_distinct_focusoff_border();
+
 		auto b=f->create_radio(rg,
 				       [](const auto &f) {},
-				       config);
+				       custom_button);
 		b->on_activate
 			([i]
 			 (THREAD_CALLBACK, size_t,

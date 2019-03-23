@@ -25,35 +25,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-image_button_config::image_button_config()
-	: alignment{valign::middle},
-	  focusoff_border{"thin_inputfocusoff_border"},
-	  focuson_border{"thin_inputfocuson_border"}
-
-{
-}
-
-image_button_config::~image_button_config()=default;
-
-void image_button_config::visible_focusoff_border()
-{
-	focusoff_border="thin_inputfocusoff_border_color2";
-}
-
-checkbox_config::checkbox_config()
-	: images{"checkbox1", "checkbox2", "checkbox3"}
-{
-}
-
-checkbox_config::~checkbox_config()=default;
-
-radio_config::radio_config()
-	: images{"radio1", "radio2"}
-{
-}
-
-radio_config::~radio_config()=default;
-
 create_image_button_info::~create_image_button_info()=default;
 
 image_buttonObj::image_buttonObj(const ref<implObj> &impl,
@@ -164,22 +135,26 @@ class LIBCXX_HIDDEN scroll_imagebuttonObj
 }
 
 ref<image_button_internalObj::implObj>
-scroll_imagebutton_specific_height(const container_impl
-				   &parent_container,
-				   const std::string &image1,
-				   const std::string &image2,
+scroll_imagebutton_specific_height(const container_impl &parent_container,
+				   const std::vector<std::string> &images,
 				   const dim_arg &height_arg)
 {
 	auto &wh=parent_container->get_window_handler();
 
+	std::vector<icon> icon_images;
+	icon_images.reserve(images.size());
+
+	for (const auto &image : images)
+		icon_images.push_back(wh.create_icon({image,
+						      render_repeat::none, 0,
+						      height_arg}));
+
 	image_button_internal_impl_init_params init_params
 		{
-		 parent_container,
-		 {
-		  wh.create_icon({image1, render_repeat::none, 0, height_arg}),
-		  wh.create_icon({image2, render_repeat::none, 0, height_arg}),
-		 }
+			parent_container,
+			icon_images,
 		};
+
 
 	return ref<scroll_imagebuttonObj>::create(init_params);
 }
@@ -260,7 +235,7 @@ image_button
 do_create_image_button(const create_image_button_info &info,
 		       const function<image_button_internal_factory_t>
 		       &img_impl_factory,
-		       const function<void (const factory &)> &label_factory)
+		       const functionref<void (const factory &)> &label_factory)
 {
 	// Create an image_button_containerObj, a container with a grid
 	// layout manager.
@@ -285,7 +260,7 @@ do_create_image_button(const create_image_button_info &info,
 
 	auto glm=image_button_outer_container_layout->create_gridlayoutmanager();
 
-	glm->row_alignment(0, info.config.alignment);
+	glm->row_alignment(0, info.appearance->alignment);
 
 	// If there's going to be a label, it gets all extra space.
 	glm->requested_col_width(1, 100);
@@ -295,8 +270,8 @@ do_create_image_button(const create_image_button_info &info,
 	auto focus_frame_impl=
 		create_always_visible_focusframe_impl
 		(image_button_outer_container_impl,
-		 info.config.focusoff_border,
-		 info.config.focuson_border, 0, 0);
+		 info.appearance->focusoff_border,
+		 info.appearance->focuson_border, 0, 0);
 
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.
@@ -347,23 +322,38 @@ do_create_image_button(const create_image_button_info &info,
 	return b;
 }
 
-image_button factoryObj::create_checkbox(const checkbox_config &config)
+static const functionref<void (const factory &)> &default_factory()
 {
-	return create_checkbox([](const auto &) {}, config);
+	static const functionref<void (const factory &)> value=
+		[](const factory &){};
+
+	return value;
 }
 
-image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
-					    &label_factory,
-					    const checkbox_config &config)
+image_button factoryObj::do_create_checkbox(const image_button_args_t &args)
 {
+	std::optional<functionref<factory_creator_t>
+		      > default_label_factory;
+
+	const auto &label_factory=
+		optional_arg_or<functionref<factory_creator_t>>
+		(args, default_label_factory, default_factory());
+
+	std::optional<const_image_button_appearance> default_appearance;
+
+	const auto &appearance=
+		optional_arg_or<const_image_button_appearance>
+		(args, default_appearance, image_button_appearance::base
+		 ::checkbox_theme());
+
 	auto icons=get_element_impl().get_window_handler()
-		.create_icon_vector(config.images);
+		.create_icon_vector(appearance->images);
 
 	if (icons.empty())
 		throw EXCEPTION(_("Attempt to create a checkbox without any images."));
 
 	auto im=create_image_button_with_label_factory
-		({get_container_impl(), false, config},
+		({get_container_impl(), false, appearance},
 		 [&]
 		 (const auto &container)
 		 {
@@ -373,33 +363,39 @@ image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
 	return im;
 }
 
-image_button factoryObj::create_radio(const radio_group &group,
-				      const radio_config &config)
-{
-	return create_radio(group, [](const auto &){}, config);
-}
-
 image_button factoryObj::do_create_radio(const radio_group &group,
-					 const function<factory_creator_t>
-					 &label_creator,
-					 const radio_config &config)
+					 const image_button_args_t &args)
 {
+	std::optional<functionref<factory_creator_t>
+		      > default_label_factory;
+
+	const auto &label_factory=
+		optional_arg_or<functionref<factory_creator_t>>
+		(args, default_label_factory, default_factory());
+
+	std::optional<const_image_button_appearance> default_appearance;
+
+	const auto &appearance=
+		optional_arg_or<const_image_button_appearance>
+		(args, default_appearance, image_button_appearance::base
+		 ::radio_theme());
+
 	auto icons=get_element_impl().get_window_handler()
-		.create_icon_vector(config.images);
+		.create_icon_vector(appearance->images);
 
 	if (icons.empty())
 		throw EXCEPTION(_("Attempt to create a radio button without any images."));
 
 
 	auto b=create_image_button_with_label_factory
-		({get_container_impl(), false, config},
+		({get_container_impl(), false, appearance},
 		 [&]
 		 (const auto &container)
 		 {
 			 return create_radio_impl(group,
 						  container,
 						  icons);
-		 }, label_creator);
+		 }, label_factory);
 	created_internally(b);
 	return b;
 }

@@ -6,6 +6,7 @@
 #define x_w_item_button_appearanceobj_h
 
 #include <x/w/item_button_appearancefwd.H>
+#include <x/w/image_button_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>
@@ -39,6 +40,9 @@ struct item_button_appearance_properties {
 	//! Button background color
 
 	color_arg itembutton_background_color;
+
+	//! Close image button appearance.
+	const_image_button_appearance item_image_button_appearance;
 };
 
 //! Implementation object.

@@ -126,15 +126,57 @@ train->update_label([selected]
       </para>
 
       <para>
-	The last optional paramater
+	The last optional parameter to
 	<methodname>create_checkbox</methodname>() and
 	<methodname>create_radio</methodname>()
-	is a
-	<ulink url="&link-x--w--checkbox-config;"><classname>&ns;::w::checkbox_config</classname></ulink>
-	or a
-	<ulink url="&link-x--w--radio-config;"><classname>&ns;::w::radio_config</classname></ulink>
-	object.
-	Their <varname>alignment</varname> member
+	is an
+	<ulink url="&link-typedef-x--w-image-button-appearance;"><classname>&ns;::w::image_button_appearance</classname></ulink> object, a
+	<link linkend="refobjelements">reference-counted</link> object.
+	Actually it's an
+	<ulink url="&link-typedef-x--w-const-image-button-appearance;"><classname>&ns;::w::const_image_button_appearance</classname></ulink>
+	that represents a <literal>const</literal> object.
+      </para>
+
+      <para>
+	This is a common &appshort; design pattern: an
+	<quote>appearance</quote> object.
+	This object specifies various appearance-related properties of
+	a display element.
+	The default appearance object is cached, which is why it is a constant
+	object. An appearance object's <methodname>clone</methodname>() creates
+	a duplicate copy of an object which can then be modified without
+	impacting the cached copy.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+#include &lt;&ns;/w/image_button_appearance.H&gt;
+
+&ns;::w::const_image_button_appearance default_appearance=
+    &ns;::w::const_image_button_appearance::base::checkbox_theme();
+
+&ns;::w::image_button_appearance custom_appearance=default_appearance->clone();
+
+custom_appearance->alignment=&ns;::w::valign::bottom;
+
+factory->create_checkbox([]
+                         (const &ns;::w::factory &amp;label_factory)
+                         {
+                             // ...
+                         },
+                         custom_appearance);</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	<methodname>checkbox_theme</methodname>() and
+	<methodname>radio_theme</methodname>() return the default appearance
+	objects for checkboxes and radio buttons.
+	This example takes the default <methodname>checkbox_theme</methodname>()
+	and <methodname>clone</methodname>()s in.
+	This appearance object's
+	<varname>alignment</varname> member
 	adjusts the
 	<ulink url="&link-enum-x--w-valign;">vertical alignment</ulink>
 	of the label display element with respect to the checkbox or the
@@ -155,6 +197,20 @@ train->update_label([selected]
       </para>
 
       <para>
+	The appearance object is also an optional parameter that overrides
+	the <methodname>checkbox_theme</methodname>() or
+	<methodname>radio_theme</methodname>() parameter.
+	Both the factory and the appearance object parameters are
+	individually optional. If both parameters get specified, it's required
+	to specify them in this order.
+      </para>
+
+      <para>
+	Normally only the small checkbox or radio button itself responds
+	to pointer clicks, but it's expected that clicking on its associated
+	label also activated the checkbox or the radio button. This is done
+	by using <methodname>label_for</methodname>() to link a display
+	element to the actual checkbox or a radio button it triggers.
 	Only <quote>inert</quote> display elements that do not directly
 	respond to pointer clicks on their own can have their
 	<methodname>label_for</methodname>() method used, and the parameter
@@ -217,11 +273,9 @@ bottom_label->label_for(train);</programlisting>
       </para>
 
       <para>
-	Setting <varname>images</varname> in a
-	<ulink url="&link-x--w--checkbox-config;"><classname>&ns;::w::checkbox_config</classname></ulink>
-	or a
-	<ulink url="&link-x--w--radio-config;"><classname>&ns;::w::radio_config</classname></ulink>
-	parameter loads custom checkbox or radio button images.
+	Finally, setting a (cloned) appearance object's
+	<varname>images</varname> setting
+	loads custom checkbox or radio button images.
 	See <xref linkend="iconimages" /> for more information.
       </para>
     </section>

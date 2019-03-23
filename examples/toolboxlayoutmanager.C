@@ -154,15 +154,31 @@ static void create_toolbox_contents(const x::w::toolboxlayoutmanager &tlm)
 
 		auto icon_set=icons[i % (sizeof(icons)/sizeof(icons[0]))];
 
-		// Create a radio button with custom icons.
-		x::w::radio_config config;
-		config.images={icon_set[0], icon_set[1]};
+		// Make a copy of the theme for radio buttons.
+		//
+		// radio_theme() returns a constant, cached object of the
+		// appearance scheme for radio buttons. Use clone() to make
+		// a copy of the theme object.
 
-		// A visible focus-off border looks better.
-		config.visible_focusoff_border();
+		x::w::image_button_appearance custom=
+			x::w::image_button_appearance::base::radio_theme()
+			->clone();
+
+		// Bonus for image_button_appearance-s only: replace the
+		// invisible border when there's no focus with one that's
+		// visually visible.
+
+		custom->set_distinct_focusoff_border();
+
+		// And replace the images with our custom ones:
+		custom->images={icon_set[0], icon_set[1]};
+
+		// And pass the custom appearance as an additional parameter
+		// to create_radio().
+
 		auto b=f->create_radio(rg,
 				       [](const auto &f) {},
-				       config);
+				       custom);
 
 		// Install a callback that just prints a message on the
 		// console, when the radio button gets selected.
