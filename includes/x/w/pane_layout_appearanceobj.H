@@ -31,6 +31,12 @@ struct pane_layout_appearance_properties {
 
 	//! Slider's background color
 	color_arg slider_background_color;
+
+	//! Slider's focusoff border
+	border_arg slider_focusoff_border;
+
+	//! Slider's focuson border.
+	border_arg slider_focuson_border;
 };
 
 //! Implementation object.

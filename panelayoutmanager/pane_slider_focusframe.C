@@ -14,23 +14,24 @@
 #include "x/w/button_event.H"
 #include "x/w/key_event.H"
 #include "x/w/motion_event.H"
+#include "x/w/pane_layout_appearance.H"
 #include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
 
 pane_slider_focusframeObj
 ::pane_slider_focusframeObj(const container_impl &parent,
-			    const cursor_pointer &custom_pointer,
-			    const color_arg &background_color)
+			    const const_pane_layout_appearance &appearance,
+			    const cursor_pointer &custom_pointer)
 	: superclass_t{custom_pointer,
-		"pane_slider_focusoff_border",
-		"pane_slider_focuson_border",
+		appearance->slider_focusoff_border,
+		appearance->slider_focuson_border,
 		0,
 		0,
 		parent,
 		parent,
 		child_element_init_params{FOCUSFRAME_SCRATCH_BUFFER_ID, {},
-			background_color}}
+			appearance->slider_background_color}}
 {
 }
 

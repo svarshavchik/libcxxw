@@ -8,6 +8,7 @@
 #include "x/w/impl/focus/standard_focusframecontainer_element_impl.H"
 #include "cursor_pointer_elementfwd.H"
 #include "panelayoutmanager/pane_slider_original_sizes.H"
+#include "x/w/pane_layout_appearancefwd.H"
 #include "x/w/rgb.H"
 #include <optional>
 
@@ -39,8 +40,9 @@ class LIBCXX_HIDDEN pane_slider_focusframeObj
 
  public:
 	pane_slider_focusframeObj(const container_impl &parent,
-				  const cursor_pointer &custom_pointer,
-				  const color_arg &background_color);
+				  const const_pane_layout_appearance
+				  &appearance,
+				  const cursor_pointer &custom_pointer);
 
 	~pane_slider_focusframeObj();
 

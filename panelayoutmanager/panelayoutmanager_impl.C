@@ -98,10 +98,10 @@ void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
 
 	auto ff=ref<pane_slider_focusframeObj>::create
 		(f->get_container_impl(),
+		 appearance,
 		 pane_container_impl->container_element_impl()
 		 .get_window_handler()
-		 .create_icon({slider_cursor()})->create_cursor(),
-		 appearance->slider_background_color);
+		 .create_icon({slider_cursor()})->create_cursor());
 
 
 	auto slider_impl=create_pane_slider_impl(ff, slider_border);
