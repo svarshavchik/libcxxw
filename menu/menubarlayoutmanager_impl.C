@@ -87,6 +87,7 @@ menu menubarlayoutmanagerObj::implObj
       const function<menubarfactoryObj::menu_creator_t> &creator,
       const function<menubarfactoryObj::menu_content_creator_t>
       &content_creator,
+      const const_popup_list_appearance &new_popup_list_appearance,
       menubar_lock &lock)
 {
 	// Start by creating the popup first.
@@ -94,11 +95,13 @@ menu menubarlayoutmanagerObj::implObj
 	auto &e=container_impl->get_element_impl();
 
 	auto [menu_popup, popup_handler]=
-		create_menu_popup(ref(&e), [&]
+		create_menu_popup(ref{&e}, [&]
 				  (const auto &l)
 				  {
 					  content_creator(l);
-				  }, topmenu_popup);
+				  },
+				  new_popup_list_appearance,
+				  topmenu_popup);
 
 	auto menu_impl=ref<menuObj::implObj>
 		::create(menu_popup,

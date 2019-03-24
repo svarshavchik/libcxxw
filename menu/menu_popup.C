@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
+#include "x/w/popup_list_appearance.H"
 #include "menu/menu_popup.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
@@ -90,19 +91,11 @@ do_create_dropdown_menu(const element_impl &e,
 			const function<void (const listlayoutmanager &)>
 			&creator,
 			attached_to attached_to_how,
-			const char *above_color,
-			const char *below_color,
+			const const_popup_list_appearance &appearance,
 			const function<create_p_t_l_handler_t> &create_handler)
 {
 	new_listlayoutmanager style{menu_list};
 
-	auto appearance=style.appearance->clone();
-
-	appearance->h_padding="menu_list_h_padding";
-	appearance->v_padding="menu_list_v_padding";
-	appearance->current_color="menu_popup_highlighted_color";
-	appearance->highlighted_color="menu_popup_clicked_color";
-	appearance->list_font=theme_font{"menu_font"};
 	style.appearance=appearance;
 
 	style.columns=1;
@@ -113,28 +106,28 @@ do_create_dropdown_menu(const element_impl &e,
 		 {
 			 e, "dropdown_menu,popup_menu",
 				 "menu",
-				 "menu_popup_border",
+				 appearance->popup_border,
 				 2,
 				 attached_to_how,
 				 menu_popup_type,
 				 style,
-				 above_color,
-				 below_color,
-				 "label"_theme_font,
-				 "label_foreground_color",
-				 "modal_shade",
+				 appearance->topleft_color,
+				 appearance->bottomright_color,
+				 appearance->list_font,
+				 appearance->list_foreground_color,
+				 appearance->modal_shade_color,
 				 },
 		 create_handler);
 }
 
 std::tuple<popup, ref<popupObj::handlerObj> >
 topmenu_popup(const element_impl &e,
+	      const const_popup_list_appearance &appearance,
 	      const function<void (const listlayoutmanager &)> &creator)
 {
 	return do_create_dropdown_menu(e, creator,
 				       attached_to::below_or_above,
-				       "menu_above_background_color",
-				       "menu_below_background_color",
+				       appearance,
 				       make_function
 				       <create_p_t_l_handler_t>
 				       (create_p_t_l_handler));
@@ -143,12 +136,12 @@ topmenu_popup(const element_impl &e,
 
 std::tuple<popup, ref<popupObj::handlerObj> >
 submenu_popup(const element_impl &e,
+	      const const_popup_list_appearance &appearance,
 	      const function<void (const listlayoutmanager &)> &creator)
 {
 	return do_create_dropdown_menu(e, creator,
 				       attached_to::right_or_left,
-				       "menu_left_background_color",
-				       "menu_right_background_color",
+				       appearance,
 				       make_function
 				       <create_p_t_l_handler_t>
 				       (create_p_t_l_handler));
@@ -218,13 +211,13 @@ class LIBCXX_HIDDEN contextmenu_popup_handlerObj
 
 container
 contextmenu_popup(const element_impl &e,
+		  const const_popup_list_appearance &appearance,
 		  const function<void (const listlayoutmanager &)> &creator)
 {
 	auto ret=do_create_dropdown_menu
 		(e, creator,
 		 attached_to::below_or_above,
-		 "menu_above_background_color",
-		 "menu_below_background_color",
+		 appearance,
 		 make_function<create_p_t_l_handler_t>
 		 ([e]
 		  (const auto &args)

@@ -29,6 +29,7 @@
 #include "x/w/file_dialog_config.H"
 #include "x/w/file_dialog_appearance.H"
 #include "x/w/list_appearance.H"
+#include "x/w/popup_list_appearance.H"
 #include "x/w/print_dialog.H"
 #include "x/w/print_dialog_config.H"
 #include "x/w/image.H"
@@ -427,7 +428,10 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 								}, LIBCXX_NAMESPACE::w::list_item_param{
 							 s}});
 					}
-				}},
+				},
+				LIBCXX_NAMESPACE::w::popup_list_appearance
+				::base::submenu_theme(),
+			},
 			"Recent",
 			[=](THREAD_CALLBACK, const auto &ignore)
 			{

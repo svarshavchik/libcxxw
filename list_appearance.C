@@ -87,4 +87,5 @@ const const_list_appearance &list_appearance_base::table_theme()
 
 	return obj;
 }
+
 LIBCXXW_NAMESPACE_END

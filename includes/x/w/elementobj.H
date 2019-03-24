@@ -19,6 +19,7 @@
 #include <x/w/types.H>
 #include <x/w/focus.H>
 #include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/popup_list_appearancefwd.H>
 #include <x/w/shortcutfwd.H>
 #include <x/w/tooltipfwd.H>
 #include <x/obj.H>
@@ -256,12 +257,15 @@ public:
 
 	//! Create a popup context menu for this display element.
 
-	template<typename functor>
-	inline container create_popup_menu(functor &&f) const
+	template<typename functor,
+		 typename ...Args>
+	inline container create_popup_menu(functor &&f,
+					   Args && ...args) const
 	{
 		return do_create_popup_menu(make_function
 					    <void (const listlayoutmanager &)>
-					    (std::forward<functor>(f)));
+					    (std::forward<functor>(f)),
+					    std::forward<Args>(args)...);
 	}
 
 	//! Forwarded to stop_message() in my main_window.
@@ -275,6 +279,13 @@ public:
 	//! Type-erased create_popup_menu().
 	container do_create_popup_menu(const function
 				       <void (const listlayoutmanager&)> &)
+		const;
+
+	//! Type-erased create_popup_menu().
+	container do_create_popup_menu(const function
+				       <void (const listlayoutmanager&)> &,
+				       const const_popup_list_appearance
+				       &appearance)
 		const;
 
 	//! Install a context popup callback.

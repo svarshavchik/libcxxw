@@ -82,10 +82,12 @@ class LIBCXX_HIDDEN menubarfactory_implObj : public menubarfactoryObj {
 	add_impl_t impl;
 
 	menu do_add(const function<menu_creator_t> &callback,
-		    const function<menu_content_creator_t> &content_callback)
+		    const function<menu_content_creator_t> &content_callback,
+		    const const_popup_list_appearance &appearance)
 		override
 	{
-		return impl(this->layout, callback, content_callback);
+		return impl(this->layout, callback, content_callback,
+			    appearance);
 	}
 };
 
@@ -107,7 +109,8 @@ menubarfactory menubarlayoutmanagerObj::append_menus()
 		 []
 		 (const menubarlayoutmanager &lm,
 		  const auto &creator,
-		  const auto &content_creator)
+		  const auto &content_creator,
+		  const const_popup_list_appearance &appearance)
 		 {
 			 menubar_lock lock{lm};
 
@@ -118,6 +121,7 @@ menubarfactory menubarlayoutmanagerObj::append_menus()
 						.divider_pos),
 					       creator,
 					       content_creator,
+					       appearance,
 					       lock);
 
 			 ++lm->impl->info(lock.manager->grid_lock).divider_pos;
@@ -132,7 +136,8 @@ menubarfactory menubarlayoutmanagerObj::insert_menus(size_t pos)
 		 [pos]
 		 (const menubarlayoutmanager &lm,
 		  const auto &creator,
-		  const auto &content_creator)
+		  const auto &content_creator,
+		  const const_popup_list_appearance &appearance)
 		 mutable
 		 {
 			 menubar_lock lock{lm};
@@ -144,7 +149,8 @@ menubarfactory menubarlayoutmanagerObj::insert_menus(size_t pos)
 			 auto mb=lm->impl->add(&*lm,
 					       lm->impl->insert_columns(&*lm,
 									0, pos),
-					       creator, content_creator, lock);
+					       creator, content_creator,
+					       appearance, lock);
 
 			 ++lm->impl->info(lock.manager->grid_lock).divider_pos;
 			 ++pos;
@@ -160,14 +166,16 @@ menubarfactory menubarlayoutmanagerObj::append_right_menus()
 		 []
 		 (const menubarlayoutmanager &lm,
 		  const auto &creator,
-		  const auto &content_creator)
+		  const auto &content_creator,
+		  const const_popup_list_appearance &appearance)
 		 {
 			 menubar_lock lock{lm};
 
 			 return lm->impl->add(&*lm,
 					      lm->impl->append_columns(&*lm,
 								       0),
-					      creator, content_creator, lock);
+					      creator, content_creator,
+					      appearance, lock);
 		 });
 }
 
@@ -178,7 +186,8 @@ menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
 		 [pos]
 		 (const menubarlayoutmanager &lm,
 		  const auto &creator,
-		  const auto &content_creator)
+		  const auto &content_creator,
+		  const const_popup_list_appearance &appearance)
 		 mutable
 		 {
 			 menubar_lock lock{lm};
@@ -193,7 +202,8 @@ menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
 						lm->impl->info(lock.manager
 							       ->grid_lock)
 						.divider_pos+1+pos),
-					       creator, content_creator, lock);
+					       creator, content_creator,
+					       appearance, lock);
 			 ++pos;
 			 return mb;
 		 });

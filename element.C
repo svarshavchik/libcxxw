@@ -15,6 +15,7 @@
 #include "x/w/picture.H"
 #include "x/w/main_window.H"
 #include "x/w/container.H"
+#include "x/w/popup_list_appearance.H"
 #include "shortcut/independent_shortcut_activation.H"
 #include "activated_in_thread.H"
 #include "run_as.H"
@@ -270,7 +271,18 @@ container elementObj
 		       &creator)
 	const
 {
-	return contextmenu_popup(impl, creator);
+	return do_create_popup_menu
+		(creator,
+		 popup_list_appearance::base::contextmenu_theme());
+}
+
+container elementObj
+::do_create_popup_menu(const function<void (const listlayoutmanager &)>
+		       &creator,
+		       const const_popup_list_appearance &appearance)
+	const
+{
+	return contextmenu_popup(impl, appearance, creator);
 }
 
 void elementObj::install_contextpopup_callback

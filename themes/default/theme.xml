@@ -880,6 +880,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   <color id="noshade:menu_right_background_color"
 	 scale="menu_popup_background_color" />
 
+  <color id="menu_popup_foreground_color" scale="10%" />
+  <color id="menu_popup_selected_color" scale="80%" />
   <color id="menu_popup_highlighted_color" scale="50%" />
   <color id="menu_popup_clicked_color" scale="100%" />
 

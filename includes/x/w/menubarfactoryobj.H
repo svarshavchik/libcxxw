@@ -8,6 +8,7 @@
 #include <x/w/menubarfactoryfwd.H>
 #include <x/w/menubarlayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/popup_list_appearancefwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/menufwd.H>
 #include <x/functional.H>
@@ -49,32 +50,47 @@ public:
 	//! that receives a \ref listlayoutmanager "list layout manager"
 	//! as its parameter.
 
-	template<typename functor, typename content_functor>
-	menu add(functor &&f, content_functor &&cf)
+	template<typename functor, typename content_functor,
+		 typename ...Args>
+	menu add(functor &&f, content_functor &&cf, Args && ...args)
 	{
 		return do_add(make_function<menu_creator_t>
 			      (std::forward<functor>(f)),
 			      make_function<menu_content_creator_t>
-			      (std::forward<content_functor>(cf)));
+			      (std::forward<content_functor>(cf)),
+			      std::forward<Args>(args)...);
 	}
 
 	//! Add a menu bar item that's plain text.
-	template<typename content_functor>
-	menu add_text(const text_param &t, content_functor &&cf)
+	template<typename content_functor, typename ...Args>
+	menu add_text(const text_param &t, content_functor &&cf,
+		      Args && ...args)
 	{
 		return do_add_text(t,
 				   make_function<menu_content_creator_t>
-				   (std::forward<content_functor>(cf)));
+				   (std::forward<content_functor>(cf)),
+				   std::forward<Args>(args)...);
 	}
 
-	//! Add a menu bar item that's plain text.
+	//! Type-erased add_text().
 	menu do_add_text(const text_param &t,
 			 const function<menu_content_creator_t> &cf);
 
-	//! Add a menu bar item.
+	//! Type-erased add_text().
+	menu do_add_text(const text_param &t,
+			 const function<menu_content_creator_t> &cf,
+			 const const_popup_list_appearance &appearance);
+
+	//! Type-erased add()
+
+	menu do_add(const function<menu_creator_t> &,
+		    const function<menu_content_creator_t> &);
+
+	//! Type-erased add()
 
 	virtual menu do_add(const function<menu_creator_t> &,
-			    const function<menu_content_creator_t> &)=0;
+			    const function<menu_content_creator_t> &,
+			    const const_popup_list_appearance &)=0;
 };
 
 LIBCXXW_NAMESPACE_END

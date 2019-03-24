@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/popup_list_appearance.H"
 #include "x/w/focusable_container.H"
 #include "x/w/peepholed_focusableobj.H"
 #include "x/w/rgb.H"
@@ -68,6 +69,25 @@ class LIBCXX_HIDDEN listObj : public peepholed_focusableObj {
 }
 
 ///////////////////////////////////////////////////////////
+
+submenu_appearance::submenu_appearance()
+	: submenu_appearance{popup_list_appearance::base::submenu_theme()}
+{
+}
+
+submenu_appearance::submenu_appearance(const const_popup_list_appearance
+				       &appearance)
+	: appearance{appearance}
+{
+}
+
+submenu_appearance::submenu_appearance(const submenu_appearance &appearance)
+=default;
+
+submenu_appearance &submenu_appearance
+::operator=(const submenu_appearance &appearance)=default;
+
+submenu_appearance::~submenu_appearance()=default;
 
 new_listlayoutmanager
 ::new_listlayoutmanager(const listlayoutstyle_impl &list_style)

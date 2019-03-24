@@ -363,14 +363,16 @@ void listlayoutstyle_impl::do_process_list_item_param
 			   [&](const submenu &sm)
 			   {
 				   next_rowinfo.setting_menu_item();
-				   auto ret=create_menu_popup
+				   const auto &[popup, popup_handler]
+					   =create_menu_popup
 					   (element_impl(&textlist_element),
 					    sm.creator,
+					    sm.appearance,
 					    submenu_popup);
 
 				   next_rowinfo.menu_item=menu_item_submenu{
-					   std::get<0>(ret),
-					   std::get<1>(ret)
+					   popup,
+					   popup_handler
 				   };
 			   },
 			   [&](const text_param &s)

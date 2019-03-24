@@ -269,10 +269,14 @@ An optional keyboard shortcut also makes the popup visible if its display
 element is visible.
 
 create_popup_menu() creates a context popup as a \ref menubarfactory "menu".
-It's parameter is a creator that gets invoked with a
+Its parameter is a creator that gets invoked with a
 \ref listlayoutmanager "list layout manager", and is expected to create
 the popup menu's items. create_popup_menu() returns a \ref container "container"
 object representing the popup menu.
+
+create_popup_menu()'s optional second parameter is
+an \ref popup_list_appearance "INSERT_LIBX_NAMESPACE::w::popup_list_appearance"
+that specifies custom visual appearance of the popup menu.
 
 The popup menu always appears next to the pointer. The expected way
 to make the popup menu appear is to install a context popup callback.
