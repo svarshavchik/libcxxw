@@ -92,6 +92,12 @@ struct list_appearance_properties {
 	//! Default list font
 	font_arg list_font;
 
+	//! Default shortcut font color
+	color_arg shortcut_foreground_color;
+
+	//! Default shortcut font
+	font_arg shortcut_font;
+
 	//! Horizontal separator line
 	border_arg list_separator_border;
 };

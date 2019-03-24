@@ -308,9 +308,11 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 			  create_current_fontcollection(init_args.style
 							.appearance
 							->list_font)},
-	  itemshortcut_meta{create_background_color("label_foreground_color"),
-			    create_current_fontcollection(theme_font
-			  {"menu_shortcut"})},
+	  itemshortcut_meta{create_background_color
+			  (init_args.style.appearance
+			   ->shortcut_foreground_color),
+			  create_current_fontcollection
+			  (init_args.style.appearance->shortcut_font)},
 	  current_list_item_changed{init_args.style.current_list_item_changed}
 {
 	for (auto &info:requested_col_widths)

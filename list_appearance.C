@@ -20,6 +20,8 @@ list_appearance_properties::list_appearance_properties()
 	  current_color{"list_current_color"},
 	  list_foreground_color{"label_foreground_color"},
 	  list_font{theme_font{"list"}},
+	  shortcut_foreground_color{"label_foreground_color"},
+	  shortcut_font{theme_font{"menu_shortcut"}},
 	  list_separator_border{"list_separator_border"}
 {
 }
