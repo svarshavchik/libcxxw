@@ -257,7 +257,9 @@ factoryObj::create_input_field(const text_param &text,
 		  input_field_peephole_style,
 		  scrollbar_visibility::never,
 		  config.oneline() ? scrollbar_visibility::never
-		  : config.vertical_scrollbar
+		  : config.vertical_scrollbar,
+		  config.appearance->horizontal_scrollbar,
+		  config.appearance->vertical_scrollbar
 		},
 			[&]
 			(const auto &parent_container_impl,

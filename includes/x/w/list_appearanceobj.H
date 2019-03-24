@@ -10,6 +10,7 @@
 #include <x/w/font_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/dim_arg.H>
+#include <x/w/scrollbar_appearancefwd.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -100,6 +101,12 @@ struct list_appearance_properties {
 
 	//! Horizontal separator line
 	border_arg list_separator_border;
+
+	//! Horizontal scrollbar appearance
+	const_scrollbar_appearance horizontal_scrollbar;
+
+	//! Vertical scrollbar appearance
+	const_scrollbar_appearance vertical_scrollbar;
 };
 
 //! Implementation object.

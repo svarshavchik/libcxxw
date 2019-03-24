@@ -13,6 +13,7 @@
 #include <x/config.H>
 
 #include "x/w/main_window.H"
+#include "x/w/main_window_appearance.H"
 #include "x/w/screen_positions.H"
 #include "x/w/image_button.H"
 #include "x/w/gridlayoutmanager.H"
@@ -234,7 +235,11 @@ void testimagebuttons()
 
 	config.screen_position(pos, "main");
 
-	config.label_font="liberation mono"_font;
+	auto custom=config.appearance->clone();
+
+	config.appearance=custom;
+
+	custom->label_font="liberation mono"_font;
 
 	auto main_window=LIBCXX_NAMESPACE::w::screen::create()
 		->create_mainwindow

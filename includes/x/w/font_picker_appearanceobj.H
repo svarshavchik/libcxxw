@@ -6,6 +6,7 @@
 #define x_w_font_picker_appearanceobj_h
 
 #include <x/w/font_picker_appearancefwd.H>
+#include <x/w/scrollbar_appearancefwd.H>
 #include <x/w/combobox_appearancefwd.H>
 #include <x/w/element_popup_config.H>
 #include <x/w/border_arg.H>
@@ -59,6 +60,12 @@ struct font_picker_appearance_properties {
 
 	//! Color for an unsupported font option, in one of the combo-boxes.
 	text_color_arg unsupported_option_color;
+
+	//! Horizontal scrollbar appearance around the font preview
+	const_scrollbar_appearance preview_horizontal_scrollbar;
+
+	//! Vertical scrollbar appearance around the font preview
+	const_scrollbar_appearance preview_vertical_scrollbar;
 };
 
 //! Implementation object.

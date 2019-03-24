@@ -323,11 +323,13 @@ focusable_container new_itemlayoutmanager::create(const container_impl &parent)
 		 },
 		 create_peephole_gridlayoutmanager,
 		 {
-		  impl,
-		  std::nullopt,
-		  p_style,
-		  scrollbar_visibility::automatic,
-		  scrollbar_visibility::never,
+			 impl,
+				 std::nullopt,
+				 p_style,
+				 scrollbar_visibility::automatic,
+				 scrollbar_visibility::never,
+				 appearance->horizontal_scrollbar,
+				 appearance->vertical_scrollbar
 		 });
 
 	return ref<item_containerObj>::create(impl, grid_impl, itemlm_implptr);

@@ -508,6 +508,7 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/menu_item.H		    \
 	main_window.C				    \
 	main_window.H				    \
+	main_window_appearance.C		    \
 	main_window_handler.C			    \
 	main_window_handler.H			    \
 	main_window_impl.C			    \
@@ -584,6 +585,7 @@ libcxxw_la_SOURCES=\
 	peephole/peephole.C			    \
 	peephole/peepholefwd.H			    \
 	peephole/peepholeobj.H			    \
+	peephole/peephole_appearance.C		    \
 	peephole/peephole_gridlayoutmanager.C	    \
 	peephole/peephole_gridlayoutmanagerobj.H    \
 	peephole/peephole_impl.C		    \
@@ -756,6 +758,7 @@ libcxxw_la_SOURCES=\
 	screen_positions.C			    \
 	screen_update_current_theme.C		    \
 	scrollbar/scrollbar.C			    \
+	scrollbar/scrollbar_appearance.C	    \
 	scrollbar/scrollbar_icon_set.H		    \
 	scrollbar/scrollbar_impl.C		    \
 	scrollbar/scrollbar_impl.H		    \

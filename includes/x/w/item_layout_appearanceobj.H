@@ -6,6 +6,7 @@
 #define x_w_item_layout_appearanceobj_h
 
 #include <x/w/item_layout_appearancefwd.H>
+#include <x/w/scrollbar_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
@@ -28,6 +29,12 @@ struct item_layout_appearance_properties {
 
 	//! Padding between individual items.
 	dim_arg itemlayout_v_padding;
+
+	//! Horizontal scrollbar appearance around the items
+	const_scrollbar_appearance horizontal_scrollbar;
+
+	//! Vertical scrollbar appearance around the items
+	const_scrollbar_appearance vertical_scrollbar;
 };
 
 //! Implementation object.

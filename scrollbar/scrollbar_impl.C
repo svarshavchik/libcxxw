@@ -87,11 +87,14 @@ const scrollbar_orientation vertical_scrollbar={
 	true,
 };
 
-static child_element_init_params create_c_e_init_params(const std::string &id)
+static child_element_init_params
+create_c_e_init_params(const std::string &id,
+		       const const_scrollbar_appearance &appearance)
 {
 	child_element_init_params params{id};
 
-	params.background_color="scrollbar_background_color";
+	params.background_color=appearance->background_color;
+
 	return params;
 }
 
@@ -104,7 +107,8 @@ scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
 		scrollbar_icon_tuple_t_get(init_params.icons),
 		init_params.container,
 		create_c_e_init_params(init_params.orientation
-				       .scratch_buffer_id)},
+				       .scratch_buffer_id,
+				       init_params.conf.appearance)},
 	  orientation{init_params.orientation},
 	  state_thread_only{init_params.conf},
 	  updated_value_thread_only{init_params.callback},

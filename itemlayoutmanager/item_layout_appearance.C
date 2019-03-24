@@ -4,12 +4,15 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/item_layout_appearance.H"
+#include "x/w/scrollbar_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
 item_layout_appearance_properties::item_layout_appearance_properties()
 	: itemlayout_h_padding{"itemlayout-h-padding"},
-	  itemlayout_v_padding{"itemlayout-v-padding"}
+	  itemlayout_v_padding{"itemlayout-v-padding"},
+	  horizontal_scrollbar{scrollbar_appearance::base::theme()},
+	  vertical_scrollbar{scrollbar_appearance::base::theme()}
 {
 }
 

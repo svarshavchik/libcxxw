@@ -7,6 +7,7 @@
 
 #include <x/w/scrollbarfwd.H>
 #include <x/w/scrollbarobj.H>
+#include <x/w/scrollbar_appearance.H>
 #include <x/w/containerobj.H>
 #include <x/w/callback_triggerfwd.H>
 #include <x/w/busyfwd.H>
@@ -85,6 +86,11 @@ struct scrollbar_config {
 			value == o.value &&
 			increment == o.increment;
 	}
+
+	//! Scrollbar's appearance
+
+	const_scrollbar_appearance appearance=
+		scrollbar_appearance::base::theme();
 };
 
 //! Specify when a scroll-bar is visible.

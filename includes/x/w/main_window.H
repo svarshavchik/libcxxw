@@ -7,6 +7,7 @@
 
 #include <x/w/main_windowfwd.H>
 #include <x/w/main_windowobj.H>
+#include <x/w/main_window_appearancefwd.H>
 #include <x/w/screen_positionsfwd.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/generic_window.H>
@@ -23,56 +24,23 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Main window appearance
-
-struct main_window_colors {
-
-	//! Main window's background color.
-	color_arg background_color="mainwindow_background";
-
-	//! Main window's menu bar's background color
-	color_arg menubar_background_color="menubar_background_color";
-
-	//! Default font for labels
-	font_arg label_font=theme_font{"label"};
-
-	//! Default color (mostly for labels)
-	color_arg label_foreground_color="label_foreground_color";
-
-	//! Window's shade color
-
-	//! The color the window gets shaded with, when it's blocked by
-	//! a modal dialog.
-	color_arg modal_shade_color="modal_shade";
-};
-
-//! Menu bar appearance
-
-struct menu_button_colors {
-
-	//! Menu button has input or pointer focus.
-	color_arg menu_highlighted_color="menu_highlighted_color";
-
-	//! Menu button is clicked.
-	color_arg menu_clicked_color="menu_clicked_color";
-
-	//! Menu button does not have keyboard focus
-	border_arg menu_inputfocusoff_border="menu_inputfocusoff_border";
-
-	//! Menu button has keyboard focus
-	border_arg menu_inputfocuson_border="menu_inputfocuson_border";
-
-	//! Border between the menu bar and the main window.
-	border_arg menubar_border="menubar_border";
-};
-
 //! Optional configuration of a \ref main_window "main application window".
 
-class main_window_config : public main_window_colors,
-			   public menu_button_colors {
+class main_window_config {
 
 
 public:
+	//! Constructor
+	main_window_config();
+
+	//! Copy constructor
+	main_window_config(const main_window_config &);
+
+	//! Assignment operator
+	main_window_config &operator=(const main_window_config &);
+
+	//! Appearance
+	const_main_window_appearance appearance;
 
 	//! Specify optional position on the screen.
 

@@ -8,6 +8,7 @@
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/rgb.H>
+#include <x/w/scrollbar_appearance.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -50,6 +51,14 @@ struct element_popup_config {
 
 	//! Popup button image
 	std::string button_image2="scroll-right2";
+
+	//! Horizontal scrollbar appearance
+	const_scrollbar_appearance horizontal_scrollbar=
+		scrollbar_appearance::base::theme();
+
+	//! Vertical scrollbar appearance
+	const_scrollbar_appearance vertical_scrollbar=
+		scrollbar_appearance::base::theme();
 };
 
 LIBCXXW_NAMESPACE_END

@@ -330,7 +330,9 @@ combobox_listcontainer_popup_args(const element_impl &parent_element,
 		appearance->bottomright_color,
 		appearance->list_font,
 		appearance->list_foreground_color,
-		appearance->modal_shade_color
+		appearance->modal_shade_color,
+		appearance->horizontal_scrollbar,
+		appearance->vertical_scrollbar
 	};
 }
 

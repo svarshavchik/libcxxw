@@ -78,6 +78,12 @@ struct create_peepholed_toplevel_listcontainer_popup_args {
 	//! a modal dialog (unlikely).
 	color_arg modal_shade_color;
 
+	//! Scrollbar appearance
+	const const_scrollbar_appearance &horizontal_scrollbar;
+
+	//! Scrollbar appearance
+	const const_scrollbar_appearance &vertical_scrollbar;
+
 	//! Peephole style
 	peephole_style popup_peephole_style{peephole_algorithm::automatic,
 					    peephole_algorithm::automatic,

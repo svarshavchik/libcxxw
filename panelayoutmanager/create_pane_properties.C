@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "panelayoutmanager/create_pane_properties.H"
+#include "x/w/scrollbar_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -12,7 +13,9 @@ create_pane_properties_t::create_pane_properties_t()
 	  left_padding_set("grid_horiz_padding"),
 	  right_padding_set(left_padding_set),
 	  top_padding_set("grid_vert_padding"),
-	  bottom_padding_set(top_padding_set)
+	  bottom_padding_set(top_padding_set),
+	  horizontal_scrollbar{scrollbar_appearance::base::theme()},
+	  vertical_scrollbar{scrollbar_appearance::base::theme()}
 {
 }
 

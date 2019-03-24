@@ -141,6 +141,8 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 			      &peephole_background_color,
 			      const std::optional<color_arg>
 			      &scrollbars_background_color,
+			      const const_scrollbar_appearance &h_appearance,
+			      const const_scrollbar_appearance &v_appearance,
 			      const peephole_style &style,
 			      const function<create_peepholed_element_t>
 			      &factory)
@@ -219,13 +221,15 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 				 ::create(args);
 		 },
 		 {
-		  toplevel,
-		  scrollbars_background_color,
-		  style,
-		  // Opening bid: do not show the
-		  // scrollbars.
-		  scrollbar_visibility::never,
-		  scrollbar_visibility::never,
+			 toplevel,
+				 scrollbars_background_color,
+				 style,
+				 // Opening bid: do not show the
+				 // scrollbars.
+				 scrollbar_visibility::never,
+				 scrollbar_visibility::never,
+				 h_appearance,
+				 v_appearance
 		 });
 
 	return grid;

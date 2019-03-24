@@ -17,6 +17,7 @@
 #include "x/w/canvas.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/menubarfactoryobj.H"
+#include "x/w/main_window_appearance.H"
 #include "focus/focusframelayoutimpl.H"
 #include "x/w/impl/background_color.H"
 #include "focusable_owner_container.H"
@@ -34,10 +35,11 @@ menupopup_delay(LIBCXX_NAMESPACE_STR "::w::menupopup_delay", 500);
 
 menubarlayoutmanagerObj::implObj::implObj(const ref<menubar_container_implObj>
 					  &container_impl,
-					  const menu_button_colors &colors)
+					  const const_main_window_appearance
+					  &appearance)
 	: gridlayoutmanagerObj::implObj{container_impl, {}},
 	  container_impl{container_impl},
-	  colors{colors}
+	  appearance{appearance}
 {
 }
 
@@ -58,7 +60,7 @@ void menubarlayoutmanagerObj::implObj::check_if_borders_changed()
 	{
 		if (should_be_present)
 			default_row_border(grid_lock, 1,
-					   colors.menubar_border);
+					   appearance->menubar_border);
 		else
 			(*grid_lock)->remove_all_defaults();
 	}
@@ -105,15 +107,15 @@ menu menubarlayoutmanagerObj::implObj
 
 	auto menu_impl=ref<menuObj::implObj>
 		::create(menu_popup,
-			 colors.menu_inputfocusoff_border,
-			 colors.menu_inputfocuson_border,
+			 appearance->menu_inputfocusoff_border,
+			 appearance->menu_inputfocuson_border,
 			 container_impl);
 
 	auto hotspot_impl=ref<menubar_hotspot_implObj>
 		::create(menu_popup,
 			 popup_handler,
-			 colors.menu_highlighted_color,
-			 colors.menu_clicked_color,
+			 appearance->menu_highlighted_color,
+			 appearance->menu_clicked_color,
 			 menu_impl);
 
 	auto hotspot=focusable_owner_container::create(hotspot_impl,

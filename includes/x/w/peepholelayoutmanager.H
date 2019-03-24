@@ -7,6 +7,7 @@
 
 #include <x/w/peepholelayoutmanagerfwd.H>
 #include <x/w/peepholelayoutmanagerobj.H>
+#include <x/w/peephole_appearancefwd.H>
 #include <x/w/layoutmanager.H>
 #include <x/w/new_layoutmanager.H>
 #include <x/w/new_focusable_layoutmanagerfwd.H>
@@ -94,8 +95,15 @@ public:
 	//! Destructor
 	~new_scrollable_peepholelayoutmanager();
 
-	//! Optional border
-	std::optional<border_arg> peephole_border;
+	//! Copy constructor
+
+	new_scrollable_peepholelayoutmanager
+	(const new_scrollable_peepholelayoutmanager &);
+
+	//! Assignment operator
+
+	new_scrollable_peepholelayoutmanager &
+	operator=(const new_scrollable_peepholelayoutmanager &);
 
 	//! Horizontal scroll-bar visibility
 	scrollbar_visibility horizontal_scrollbar=
@@ -105,21 +113,9 @@ public:
 	scrollbar_visibility vertical_scrollbar=
 		scrollbar_visibility::automatic;
 
-	//! Extra padding for the element in the peephole.
+	//! Appearance of the scrollable peephole
 
-	dim_arg left_padding=0;
-
-	//! Extra padding for the element in the peephole.
-
-	dim_arg right_padding=0;
-
-	//! Extra padding for the element in the peephole.
-
-	dim_arg top_padding=0;
-
-	//! Extra padding for the element in the peephole.
-
-	dim_arg bottom_padding=0;
+	const_peephole_appearance appearance;
 
 private:
 	//! Internal implementation

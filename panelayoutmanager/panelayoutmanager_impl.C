@@ -287,6 +287,8 @@ pane_peephole_container panelayoutmanagerObj::implObj
 		  style,
 		  horizontal_scrollbar_visibility,
 		  vertical_scrollbar_visibility,
+		  properties.horizontal_scrollbar,
+		  properties.vertical_scrollbar,
 		 });
 
 	// Ok, we can now create the container.

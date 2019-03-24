@@ -9,6 +9,7 @@
 #include "x/w/rgb.H"
 #include "x/w/alignment.H"
 #include "x/w/scrollbar.H"
+#include "x/w/scrollbar_appearancefwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -45,6 +46,12 @@ struct LIBCXX_HIDDEN create_pane_properties_t {
 	//! Scrollbar visibility
 	scrollbar_visibility pane_scrollbar_visibility=
 		scrollbar_visibility::automatic_reserved;
+
+	//! Scrollbar appearance
+	const_scrollbar_appearance horizontal_scrollbar;
+
+	//! Scrollbar appearance
+	const_scrollbar_appearance vertical_scrollbar;
 
 	//! Constructor
 	create_pane_properties_t();

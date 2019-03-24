@@ -57,6 +57,8 @@ do_create_peepholed_toplevel_listcontainer_popup
 		 args.topleft_color,
 		 args.list_style.appearance->background_color,
 		 args.popup_peephole_style,
+		 args.horizontal_scrollbar,
+		 args.vertical_scrollbar,
 		[&]
 		 (const auto &peephole_container)
 		 {

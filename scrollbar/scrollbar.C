@@ -104,8 +104,8 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 	auto ffcontainer_impl=
 		create_nonrecursive_visibility_focusframe_impl
 		(parent_container,
-		 "scrollbarfocusoff_border",
-		 "inputfocuson_border", 0, 0, background_color);
+		 conf.appearance->focusoff_border,
+		 conf.appearance->focuson_border, 0, 0, background_color);
 
 	// The focus frame will manage the actual scrollbar element. Create
 	// the implementation object. Since the focus-framed element will
@@ -122,7 +122,7 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 					conf,
 					minimum_size});
 
-	// We need to tell the focus frame that we, supposedly, created
+	// We need to tell the focu sframe that we, supposedly, created
 	// an element for it. Create a plain element that owns the
 	// scrollbar implementation object, install it in the focus frame,
 	// and make it visible.

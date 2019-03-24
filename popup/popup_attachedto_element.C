@@ -76,6 +76,8 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 		 args.popup_background_color,
 		 args.popup_scrollbars_background_color,
 		 popup_peephole_style,
+		 args.horizontal_scrollbar,
+		 args.vertical_scrollbar,
 		 [&]
 		 (const container_impl &parent)
 		 {

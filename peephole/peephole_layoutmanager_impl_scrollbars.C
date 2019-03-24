@@ -77,7 +77,9 @@ public:
 
 static inline peephole_scrollbars
 create_peephole_scrollbars(const container_impl &container,
-			   const std::optional<color_arg> &background_color)
+			   const std::optional<color_arg> &background_color,
+			   const const_scrollbar_appearance &happearance,
+			   const const_scrollbar_appearance &vappearance)
 {
 
 	auto horizontal_impl=
@@ -90,8 +92,12 @@ create_peephole_scrollbars(const container_impl &container,
 		::create(&scrollbarsObj
 			 ::update_vertical_scroll);
 
+	scrollbar_config sc;
+
+	sc.appearance=happearance;
+
 	auto horizontal=do_create_h_scrollbar
-		(container, background_color, scrollbar_config{},
+		(container, background_color, sc,
 		 0,
 		 [=]
 		 (ONLY IN_THREAD, const auto &config)
@@ -99,8 +105,9 @@ create_peephole_scrollbars(const container_impl &container,
 			 horizontal_impl->updated_value(IN_THREAD, config);
 		 });
 
+	sc.appearance=vappearance;
 	auto vertical=do_create_v_scrollbar
-		(container, background_color, scrollbar_config{},
+		(container, background_color, sc,
 		 0,
 		 [=]
 		 (ONLY IN_THREAD, const auto &config)
@@ -353,7 +360,9 @@ create_peephole_with_scrollbars_ret_t do_create_peephole_with_scrollbars
 {
 	auto scrollbars=
 		create_peephole_scrollbars(info.grid_container_impl,
-					   info.background_color);
+					   info.background_color,
+					   info.horizontal_appearance,
+					   info.vertical_appearance);
 
 	auto layout_impl=lm_factory(info, scrollbars);
 

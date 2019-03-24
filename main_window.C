@@ -16,6 +16,7 @@
 #include "x/w/screen.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/menubarlayoutmanager.H"
+#include "x/w/main_window_appearance.H"
 #include "dialog.H"
 #include "x/w/image.H"
 #include "x/w/button.H"
@@ -105,6 +106,16 @@ void main_window_config::screen_position(const screen_positions &pos,
 {
 	saved_position.emplace(name, std::ref(pos));
 }
+
+main_window_config::main_window_config()
+	: appearance{main_window_appearance::base::theme()}
+{
+}
+
+main_window_config::main_window_config(const main_window_config &)=default;
+
+main_window_config &main_window_config::operator=(const main_window_config &)
+=default;
 
 main_window_config::~main_window_config()=default;
 
@@ -261,11 +272,13 @@ init_containers(const container_impl &parent,
 	f->halign(halign::fill);
 
 	auto menubar_impl=ref<menubar_container_implObj>
-		::create(menu_and_app_impl, config.menubar_background_color);
+		::create(menu_and_app_impl, config.appearance
+			 ->menubar_background_color);
 
 	auto menubar=container::create(menubar_impl,
 				       ref<menubarlayoutmanagerObj::implObj>
-				       ::create(menubar_impl, config));
+				       ::create(menubar_impl,
+						config.appearance));
 	f->remove_when_hidden(true);
 
 	menubarlayoutmanager mblm=menubar->get_layoutmanager();
@@ -345,6 +358,8 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 		 peephole_background_color,
 		 scrollbars_background_color,
 		 main_window_peephole_style,
+		 config.appearance->horizontal_scrollbar,
+		 config.appearance->vertical_scrollbar,
 		 [&]
 		 (const container_impl &parent)
 		 {
@@ -459,9 +474,9 @@ create_splash_window_handler(const screen &me,
 	main_window_handler_constructor_params
 		main_params{me, "splash,normal", "above",
 			    background_color,
-			    config.label_font,
-			    config.label_foreground_color,
-			    config.modal_shade_color,
+			    config.appearance->label_font,
+			    config.appearance->label_foreground_color,
+			    config.appearance->modal_shade_color,
 	};
 
 	main_window_border=config.border;
@@ -485,7 +500,7 @@ create_splash_window_handler(const screen &me,
 
 		return create_splash_window_handler
 			(me, nonalpha_config,
-			 nonalpha_config.background_color,
+			 nonalpha_config.appearance->background_color,
 			 main_window_border);
 	}
 
@@ -493,7 +508,7 @@ create_splash_window_handler(const screen &me,
 						  main_window_border);
 
 	main_window_border=config.border;
-	inner_background_color=config.background_color;
+	inner_background_color=config.appearance->background_color;
 
 	return handler;
 }
@@ -529,14 +544,14 @@ main_window screenObj
 			{
 				main_window_handler_constructor_params
 					main_params{me, "normal", "",
-						    std_config
-						    .background_color,
-						    std_config
-						    .label_font,
-						    std_config
-						    .label_foreground_color,
-						    std_config
-						    .modal_shade_color,
+						    std_config.appearance
+						    ->background_color,
+						    std_config.appearance
+						    ->label_font,
+						    std_config.appearance
+						    ->label_foreground_color,
+						    std_config.appearance
+						    ->modal_shade_color,
 
 				};
 
@@ -551,7 +566,8 @@ main_window screenObj
 			{
 				auto ret=create_splash_window_handler
 					(me, splash_config,
-					 splash_config.background_color,
+					 splash_config.appearance
+					 ->background_color,
 					 main_window_border);
 
 				return std::tuple

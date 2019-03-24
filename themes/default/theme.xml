@@ -551,6 +551,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   <color id="noshade:scrollbar_vert_dragging_color"
 	 scale="scrollbar_dragging_color" />
 
+  <border id="scrollbarfocuson_border" from="inputfocuson_border" />
   <border id="scrollbarfocusoff_border" from="inputfocusoff_border">
     <color>10%</color>
   </border>

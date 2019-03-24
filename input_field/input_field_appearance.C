@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/input_field_appearance.H"
 #include "x/w/combobox_appearance.H"
+#include "x/w/scrollbar_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -31,7 +32,9 @@ input_field_appearance_properties::input_field_appearance_properties()
 	  drag_horiz_start{"drag_horiz_start"},
 	  drag_vert_start{"drag_vert_start"},
 	  spinner_button_config{create_spinner_button_config()},
-	  search_popup_appearance{combobox_appearance::base::theme()}
+	  search_popup_appearance{combobox_appearance::base::theme()},
+	  horizontal_scrollbar{scrollbar_appearance::base::theme()},
+	  vertical_scrollbar{scrollbar_appearance::base::theme()}
 {
 }
 

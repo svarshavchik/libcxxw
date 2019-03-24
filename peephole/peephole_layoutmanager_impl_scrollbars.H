@@ -15,6 +15,7 @@
 #include "x/w/border_arg.H"
 #include "x/w/alignment.H"
 #include "x/w/dim_arg.H"
+#include "x/w/scrollbar_appearancefwd.H"
 
 #include <optional>
 #include <x/functional.H>
@@ -217,6 +218,12 @@ struct peephole_with_scrollbars_info {
 
 	//! Vertical scroll-bar visibility
 	scrollbar_visibility vertical_visibility;
+
+	//! Horizontal scrollbar appearance
+	const const_scrollbar_appearance &horizontal_appearance;
+
+	//! Horizontal scrollbar appearance
+	const const_scrollbar_appearance &vertical_appearance;
 };
 
 //! Return values from create_peephole_with_scrollbars()

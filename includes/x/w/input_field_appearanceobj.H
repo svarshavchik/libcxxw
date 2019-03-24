@@ -7,6 +7,7 @@
 
 #include <x/w/input_field_appearancefwd.H>
 #include <x/w/popup_list_appearancefwd.H>
+#include <x/w/scrollbar_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>
@@ -84,6 +85,12 @@ struct input_field_appearance_properties {
 	//! Appearance of the list search popup.
 
 	const_popup_list_appearance search_popup_appearance;
+
+	//! Horizontal scrollbar appearance
+	const_scrollbar_appearance horizontal_scrollbar;
+
+	//! Vertical scrollbar appearance
+	const_scrollbar_appearance vertical_scrollbar;
 };
 
 //! Implementation object.

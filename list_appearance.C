@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/list_appearance.H"
+#include "x/w/scrollbar_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -22,7 +23,9 @@ list_appearance_properties::list_appearance_properties()
 	  list_font{theme_font{"list"}},
 	  shortcut_foreground_color{"label_foreground_color"},
 	  shortcut_font{theme_font{"menu_shortcut"}},
-	  list_separator_border{"list_separator_border"}
+	  list_separator_border{"list_separator_border"},
+	  horizontal_scrollbar{scrollbar_appearance::base::theme()},
+	  vertical_scrollbar{scrollbar_appearance::base::theme()}
 {
 }
 

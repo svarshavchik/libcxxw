@@ -7,6 +7,7 @@
 #include "peephole/peephole_impl_element.H"
 #include "x/w/font_arg.H"
 #include "x/w/focusable_container.H"
+#include "x/w/peephole_appearance.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/always_visible_element.H"
 #include "x/w/impl/child_element.H"
@@ -34,11 +35,17 @@ new_scrollable_peepholelayoutmanager
 ::new_scrollable_peepholelayoutmanager(const functionref<void (const factory &)>
 				       &peepholed_factory)
 	: peepholed_factory{peepholed_factory},
-	  peephole_border{"peephole_border"}
+	  appearance{peephole_appearance::base::theme()}
 {
 }
 
 new_scrollable_peepholelayoutmanager::~new_scrollable_peepholelayoutmanager()=default;
+
+new_scrollable_peepholelayoutmanager::new_scrollable_peepholelayoutmanager
+(const new_scrollable_peepholelayoutmanager &)=default;
+
+new_scrollable_peepholelayoutmanager &new_scrollable_peepholelayoutmanager
+::operator=(const new_scrollable_peepholelayoutmanager &)=default;
 
 new_peepholelayoutmanager
 ::new_peepholelayoutmanager(const functionref<void (const factory &)>
@@ -211,22 +218,24 @@ new_scrollable_peepholelayoutmanager::create(const container_impl &parent) const
 
 			 return {peephole_container,
 				 peephole_container,
-				 peephole_border,
-				 peephole_border,
+				 appearance->peephole_border,
+				 appearance->peephole_border,
 				 {},
-				 left_padding,
-				 right_padding,
-				 top_padding,
-				 bottom_padding,
+				 appearance->left_padding,
+				 appearance->right_padding,
+				 appearance->top_padding,
+				 appearance->bottom_padding,
 			 };
 		 },
 		 create_peephole_gridlayoutmanager,
 		 {
-		  grid_container_impl,
-		  std::nullopt,
-		  *this,
-		  this->horizontal_scrollbar,
-		  this->vertical_scrollbar
+			 grid_container_impl,
+				 std::nullopt,
+				 *this,
+				 this->horizontal_scrollbar,
+				 this->vertical_scrollbar,
+				 appearance->horizontal_scrollbar,
+				 appearance->vertical_scrollbar
 		 });
 
 	return ref<peephole_focusable_containerObj>

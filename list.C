@@ -201,7 +201,9 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 		  focusable_container_impl,
 		  list_peephole_style,
 		  horizontal_scrollbar,
-		  vertical_scrollbar_value
+		  vertical_scrollbar_value,
+		  appearance->horizontal_scrollbar,
+		  appearance->vertical_scrollbar
 		}, [&, this]
 			(const container_impl &peepholed_parent,
 			 const container_impl &layout_container_impl)

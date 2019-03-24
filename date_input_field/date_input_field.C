@@ -23,6 +23,7 @@
 #include "x/w/stop_message.H"
 #include "x/w/main_window.H"
 #include "x/w/date_input_field_appearance.H"
+#include "x/w/input_field_appearance.H"
 #include "run_as.H"
 #include "messages.H"
 
@@ -200,6 +201,12 @@ date_input_field factoryObj
 		 config.appearance->popup_background_color,
 		 config.appearance->popup_background_color,
 		 popup_peephole_style,
+
+		 // Borrow input field's scrollbars for the popup's
+		 // scrollbars
+		 config.appearance->input_appearance->horizontal_scrollbar,
+		 config.appearance->input_appearance->vertical_scrollbar,
+
 		 [&]
 		 (const container_impl &parent)
 		 {

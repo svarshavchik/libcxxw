@@ -259,6 +259,8 @@ create_preview_label(const factory &f,
 		  pstyle,
 		  scrollbar_visibility::automatic_reserved,
 		  scrollbar_visibility::automatic_reserved,
+		  config.appearance->preview_horizontal_scrollbar,
+		  config.appearance->preview_vertical_scrollbar,
 		 });
 
 	// And, finally, we can create the container

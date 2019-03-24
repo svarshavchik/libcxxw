@@ -10,6 +10,7 @@
 #include "x/w/layoutmanagerfwd.H"
 #include "x/w/border_arg.H"
 #include "x/w/peephole_style.H"
+#include "x/w/scrollbar_appearancefwd.H"
 #include "peephole/peepholed_toplevelfwd.H"
 
 #include <x/functional.H>
@@ -31,18 +32,22 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 			      &peephole_background_color,
 			      const std::optional<color_arg>
 			      &scrollbars_background_color,
+			      const const_scrollbar_appearance &h_appearance,
+			      const const_scrollbar_appearance &v_appearance,
 			      const peephole_style &style,
 			      const function<create_peepholed_element_t>
 			      &factory) LIBCXX_HIDDEN;
 
 template<typename create_peepholed_element_factory_t>
 auto create_peephole_toplevel(const container_impl &toplevel,
-			      const peephole_style &style,
 			      const std::optional<border_arg> &border,
 			      const std::optional<color_arg>
 			      &peephole_background_color,
 			      const std::optional<color_arg>
 			      &scrollbars_background_color,
+			      const peephole_style &style,
+			      const const_scrollbar_appearance &h_appearance,
+			      const const_scrollbar_appearance &v_appearance,
 			      create_peepholed_element_factory_t
 			      &&element_factory)
 	LIBCXX_HIDDEN;
@@ -100,6 +105,8 @@ auto create_peephole_toplevel(const container_impl &toplevel,
 			      const std::optional<color_arg>
 			      &scrollbars_background_color,
 			      const peephole_style &style,
+			      const const_scrollbar_appearance &h_appearance,
+			      const const_scrollbar_appearance &v_appearance,
 			      create_peepholed_element_factory_t
 			      &&element_factory)
 {
@@ -108,6 +115,8 @@ auto create_peephole_toplevel(const container_impl &toplevel,
 		 border,
 		 peephole_background_color,
 		 scrollbars_background_color,
+		 h_appearance,
+		 v_appearance,
 		 style,
 		 make_function<create_peepholed_element_t>
 		 (std::forward<create_peepholed_element_factory_t>

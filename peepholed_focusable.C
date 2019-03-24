@@ -184,11 +184,13 @@ create_peepholed_focusable_with_frame_impl
 		 },
 		 create_peephole_gridlayoutmanager,
 		 {
-		  args.parent_container,
-		  std::nullopt,
-		  args.style,
-		  args.horizontal_visibility,
-		  args.vertical_visibility,
+			 args.parent_container,
+			  std::nullopt,
+			  args.style,
+			  args.horizontal_visibility,
+			  args.vertical_visibility,
+			  args.horizontal_appearance,
+			  args.vertical_appearance
 		 });
 
 	return {ref<peepholed_focusableObj::implObj>

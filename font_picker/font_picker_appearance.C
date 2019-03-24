@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/font_picker_appearance.H"
 #include "x/w/combobox_appearance.H"
+#include "x/w/scrollbar_appearance.H"
 #include "messages.H"
 
 LIBCXXW_NAMESPACE_START
@@ -22,7 +23,9 @@ font_picker_appearance_properties::font_picker_appearance_properties()
 	  font_width_appearance{combobox_appearance::base::theme()},
 	  unsupported_option_color{theme_color{
 			  "font_picker_unavailable_option_color"
-				  }}
+				  }},
+	  preview_horizontal_scrollbar{scrollbar_appearance::base::theme()},
+	  preview_vertical_scrollbar{scrollbar_appearance::base::theme()}
 {
 }
 

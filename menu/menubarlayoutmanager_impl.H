@@ -29,8 +29,8 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 
 	const ref<menubar_container_implObj> container_impl;
 
-	//! My colors
-	const menu_button_colors colors;
+	//! Main window/menu bar appearance.
+	const const_main_window_appearance appearance;
 
  private:
 	struct protected_info_t {
@@ -55,8 +55,7 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 
 	//! Constructor
 	implObj(const ref<menubar_container_implObj> &container_impl,
-		const menu_button_colors &colors);
-
+		const const_main_window_appearance &appearance);
 
 	//! Destructor
 	~implObj();

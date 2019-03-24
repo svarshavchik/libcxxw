@@ -11,6 +11,7 @@
 #include "x/w/scrollbarfwd.H"
 #include "x/w/border_arg.H"
 #include "x/w/peephole_style.H"
+#include "x/w/scrollbar_appearancefwd.H"
 #include "peephole/peepholefwd.H"
 #include "peephole/peepholedfwd.H"
 #include "peephole/peepholeobj.H"
@@ -69,6 +70,12 @@ struct LIBCXX_HIDDEN create_peepholed_focusable_args_t {
 
 	//! Initial scrollbar visibility.
 	scrollbar_visibility vertical_visibility;
+
+	//! Horizontal scrollbar appearance
+	const const_scrollbar_appearance &horizontal_appearance;
+
+	//! Horizontal scrollbar appearance
+	const const_scrollbar_appearance &vertical_appearance;
 };
 
 //! Type-erased implementation of \ref create_peepholed_focusable_with_frame "create_peepholed_focusable_with_frame()".
