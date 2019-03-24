@@ -18,7 +18,11 @@ peepholed_item_containerObj::implObj
 	  const focusable &horizontal_scrollbar,
 	  const focusable &vertical_scrollbar,
 	  const new_itemlayoutmanager &config)
-	: superclass_t{theme_font{"label"},
+	: superclass_t{
+	// Use parent's default label font as a refernece font.
+
+	parent->container_element_impl().label_theme_font(),
+
 		config.appearance->itemlayout_h_padding,
 			themedimaxis::width,
 			config.appearance->itemlayout_v_padding,
