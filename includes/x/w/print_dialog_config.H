@@ -6,6 +6,7 @@
 #define x_w_print_dialog_config_h
 
 #include <x/w/print_dialog_configfwd.H>
+#include <x/w/print_dialog_appearancefwd.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/busy.H>
 #include <x/cups/job.H>
@@ -36,11 +37,13 @@ struct print_callback_info {
 
 typedef void print_callback_t(const print_callback_info &);
 
-//! The configuration of a print dialog.
+//! Print dialog configuration's basic settings.
 
-//! \see print_dialog.
+//! Inherited by \ref print_dialog_config "print_dialog_config", making
+//! it possible to use aggregate initialization with default initialization
+//! of the print dialog's appearance object.
 
-struct print_dialog_config {
+struct print_dialog_config_settings {
 
 	//! Callback, "Print" selected, dialog closed
 
@@ -50,8 +53,46 @@ struct print_dialog_config {
 	functionptr<void (THREAD_CALLBACK)> cancel_callback;
 
 	//! Destructor
-	~print_dialog_config();
+	~print_dialog_config_settings();
 };
+
+//! Wrapper for the print dialog's appearance.
+
+//! Inherited by \ref print_dialog_config "print_dialog_config", with an
+//! option of default initialization without pulling in the entire
+//! print dialog appearance object.
+
+struct print_dialog_config_appearance {
+
+	//! The print dialog's appearance.
+
+	const_print_dialog_appearance appearance;
+
+	//! Default constructor
+	print_dialog_config_appearance();
+
+	//! Constructor
+	print_dialog_config_appearance(const const_print_dialog_appearance &);
+
+	//! Copy constructor
+	print_dialog_config_appearance(const print_dialog_config_appearance &);
+
+	//! Assignment operator
+	print_dialog_config_appearance &operator=
+	(const print_dialog_config_appearance &);
+
+	~print_dialog_config_appearance();
+};
+
+//! The configuration of a print dialog.
+
+//! \see print_dialog.
+
+struct print_dialog_config : print_dialog_config_settings,
+			     print_dialog_config_appearance
+{
+};
+
 
 LIBCXXW_NAMESPACE_END
 

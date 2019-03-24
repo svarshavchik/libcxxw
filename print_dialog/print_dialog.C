@@ -9,6 +9,11 @@
 #include "print_dialog/print_dialog_impl.H"
 #include "gridtemplate.H"
 #include "x/w/print_dialog_config.H"
+#include "x/w/print_dialog_appearance.H"
+#include "x/w/list_appearance.H"
+#include "x/w/image_button_appearance.H"
+#include "x/w/input_field_appearance.H"
+#include "x/w/combobox_appearance.H"
 #include "x/w/input_field.H"
 #include "x/w/button.H"
 #include "x/w/image_button.H"
@@ -34,7 +39,28 @@ print_dialogObj::print_dialogObj(const print_dialog_args &args)
 
 print_dialogObj::~print_dialogObj()=default;
 
-print_dialog_config::~print_dialog_config()=default;
+print_dialog_config_settings::~print_dialog_config_settings()=default;
+
+print_dialog_config_appearance::print_dialog_config_appearance()
+	: appearance{print_dialog_appearance::base::theme()}
+{
+}
+
+print_dialog_config_appearance
+::print_dialog_config_appearance(const const_print_dialog_appearance
+				 &appearance)
+	: appearance{appearance}
+{
+}
+
+print_dialog_config_appearance
+::print_dialog_config_appearance(const print_dialog_config_appearance &)
+=default;
+
+print_dialog_config_appearance &print_dialog_config_appearance::operator=
+(const print_dialog_config_appearance &)=default;
+
+print_dialog_config_appearance::~print_dialog_config_appearance()=default;
 
 namespace {
 #if 0
@@ -186,11 +212,8 @@ standard_dialog_elements_t print_dialog_init_helper
 								(info);
 						};
 
-					auto appearance=nlm.appearance->clone();
-
-					appearance->list_font=theme_font{
-						"printer_local_font"};
-					nlm.appearance=appearance;
+					nlm.appearance=conf.appearance
+						->printer_field_appearance;
 
 					nlm.height(4);
 
@@ -219,12 +242,14 @@ standard_dialog_elements_t print_dialog_init_helper
 				[&, this]
 				(const auto &factory)
 				{
-					input_field_config conf{4, 1, true};
+					input_field_config iconf{4, 1, true};
 
-					conf.set_default_spin_control_factories
+					iconf.appearance=conf.appearance
+						->number_of_copies_appearance;
+					iconf.set_default_spin_control_factories
 						();
 					auto f=factory->create_input_field
-						("", conf);
+						("", iconf);
 					f->autofocus(false);
 					fields.number_of_copies=f;
 				}},
@@ -239,7 +264,9 @@ standard_dialog_elements_t print_dialog_init_helper
 						 {
 							 factory->create_label
 							 (_("All pages"));
-						 });
+						 },
+						 conf.appearance
+						 ->print_all_pages_appearance);
 					fields.all_pages_radio_button=f;
 				}},
 		{"page-range-radio-button",
@@ -253,16 +280,22 @@ standard_dialog_elements_t print_dialog_init_helper
 						 {
 							 factory->create_label
 							 (_("Pages: "));
-						 });
+						 },
+						 conf.appearance
+						 ->print_page_range_appearance);
 					fields.page_range_radio_button=f;
 				}},
 		{"page-range-field",
 				[&, this]
 				(const auto &factory)
 				{
-					input_field_config conf{8, 1, true};
+					input_field_config iconf{8, 1, true};
+
+					iconf.appearance=conf.appearance
+						->page_range_appearance;
+
 					auto f=factory->create_input_field
-						("", conf);
+						("", iconf);
 					f->autofocus(false);
 					fields.page_range=f;
 				}},
@@ -280,6 +313,8 @@ standard_dialog_elements_t print_dialog_init_helper
 					new_standard_comboboxlayoutmanager nlm;
 
 					nlm.selection_required=false;
+					nlm.appearance=conf.appearance
+						->orientation_appearance;
 					auto f=factory
 						->create_focusable_container
 						([](const auto &){}, nlm);
@@ -298,6 +333,8 @@ standard_dialog_elements_t print_dialog_init_helper
 					new_standard_comboboxlayoutmanager nlm;
 
 					nlm.selection_required=false;
+					nlm.appearance=conf.appearance
+						->duplex_appearance;
 					auto f=factory
 						->create_focusable_container
 						([](const auto &){}, nlm);
@@ -317,6 +354,8 @@ standard_dialog_elements_t print_dialog_init_helper
 					new_standard_comboboxlayoutmanager nlm;
 
 					nlm.selection_required=false;
+					nlm.appearance=conf.appearance
+						->pages_per_side_appearance;
 					auto f=factory
 						->create_focusable_container
 						([](const auto &){}, nlm);
@@ -336,6 +375,8 @@ standard_dialog_elements_t print_dialog_init_helper
 					new_standard_comboboxlayoutmanager nlm;
 
 					nlm.selection_required=false;
+					nlm.appearance=conf.appearance
+						->page_size_appearance;
 
 					auto f=factory
 						->create_focusable_container
@@ -356,6 +397,8 @@ standard_dialog_elements_t print_dialog_init_helper
 					new_standard_comboboxlayoutmanager nlm;
 
 					nlm.selection_required=false;
+					nlm.appearance=conf.appearance
+						->finishings_appearance;
 					auto f=factory
 						->create_focusable_container
 						([](const auto &){}, nlm);
@@ -375,6 +418,8 @@ standard_dialog_elements_t print_dialog_init_helper
 					new_standard_comboboxlayoutmanager nlm;
 
 					nlm.selection_required=false;
+					nlm.appearance=conf.appearance
+						->print_color_mode_appearance;
 					auto f=factory
 						->create_focusable_container
 						([](const auto &){}, nlm);
@@ -394,6 +439,8 @@ standard_dialog_elements_t print_dialog_init_helper
 					new_standard_comboboxlayoutmanager nlm;
 
 					nlm.selection_required=false;
+					nlm.appearance=conf.appearance
+						->print_quality_appearance;
 					auto f=factory
 						->create_focusable_container
 						([](const auto &){}, nlm);
@@ -413,6 +460,8 @@ standard_dialog_elements_t print_dialog_init_helper
 					new_standard_comboboxlayoutmanager nlm;
 
 					nlm.selection_required=false;
+					nlm.appearance=conf.appearance
+						->printer_resolution_appearance;
 					auto f=factory
 						->create_focusable_container
 						([](const auto &){}, nlm);
@@ -477,7 +526,8 @@ print_dialog main_windowObj
 			 helper.fields.options_book=iter->second;
 
 			 auto impl=ref<print_dialogObj::implObj>
-				 ::create(ref(this),
+				 ::create(ref{this},
+					  conf.appearance,
 					  cancel_callback_impl,
 					  helper.fields);
 

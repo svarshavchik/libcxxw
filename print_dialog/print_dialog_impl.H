@@ -101,6 +101,9 @@ class LIBCXX_HIDDEN print_dialogObj::implObj : virtual public obj {
 	//! The dialog's parent.
 	const weakptr<main_windowptr> parent_window;
 
+	//! Our appearance
+	const const_print_dialog_appearance appearance;
+
 	//! The dialog's cancel callback.
 
 	const functionref<void (THREAD_CALLBACK)> cancel_callback;
@@ -118,6 +121,7 @@ class LIBCXX_HIDDEN print_dialogObj::implObj : virtual public obj {
 
 	//! Constructor
 	implObj(const main_window &parent_window,
+		const const_print_dialog_appearance &appearance,
 		const functionref<void (THREAD_CALLBACK)> &cancel_callback,
 		const print_dialog_fieldsptr &fields);
 

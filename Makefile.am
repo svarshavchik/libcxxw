@@ -897,6 +897,7 @@ libcxxwcups_la_LIBADD=libcxxw.la -lcxxcups -lcxx -lcourier-unicode
 libcxxwcups_la_LDFLAGS=$(STATICLINKFLAGS) -version-info @VERSION_INFO@
 libcxxwcups_la_SOURCES=\
 	print_dialog/print_dialog.C		    \
+	print_dialog/print_dialog_appearance.C	    \
 	print_dialog/print_dialog_impl.C	    \
 	print_dialog/print_dialog_impl.H	    \
         #

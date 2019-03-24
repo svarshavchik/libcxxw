@@ -4,13 +4,13 @@
 */
 #include "libcxxw_config.h"
 #include "print_dialog/print_dialog_impl.H"
+#include "x/w/print_dialog_appearance.H"
 #include "x/w/main_window.H"
 #include "x/w/button.H"
 #include "x/w/image_button.H"
 #include "x/w/input_field.H"
 #include "x/w/label.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
-#include "x/w/text_param_literals.H"
 #include "x/w/text_param.H"
 #include "x/w/busy.H"
 #include "messages.H"
@@ -33,11 +33,14 @@
 LIBCXXW_NAMESPACE_START
 
 print_dialogObj::implObj::implObj(const main_window &parent_window,
+				  const const_print_dialog_appearance
+				  &appearance,
 				  const functionref<void (THREAD_CALLBACK)>
 				  &cancel_callback,
 				  const print_dialog_fieldsptr &fields)
 	: printer_info{ref<printer_infoObj>::create()},
 	  parent_window{parent_window},
+	  appearance{appearance},
 	  cancel_callback{cancel_callback},
 	  fields{fields},
 	  number_of_copies_value{
@@ -210,11 +213,10 @@ void print_dialogObj::implObj::enumerate_printers()
 			.first;
 
 		printer_list.emplace_back(text_param{
-				theme_font{ printer->is_discovered()
-						? "printer_remote_font"
-						: "printer_local_font" },
-				ustr
-					});
+				(printer->is_discovered()
+				 ? appearance->printer_remote_font
+				 : appearance->printer_local_font),
+					ustr});
 	}
 
 	listlayoutmanager selected_printer_list=
@@ -664,7 +666,7 @@ void print_dialogObj::implObj::show_printer(printer_info_lock &lock,
 
 	text_param printer_info;
 
-	printer_info("printer_make_and_model"_theme_font);
+	printer_info(appearance->printer_make_and_model_font);
 
 	auto iter=options.find("printer-make-and-model");
 
@@ -680,7 +682,7 @@ void print_dialogObj::implObj::show_printer(printer_info_lock &lock,
 
 	iter=options.find("printer-location");
 
-	printer_info("printer_location"_theme_font);
+	printer_info(appearance->printer_location_font);
 
 	if (iter != options.end() && iter->second.size())
 	{
@@ -692,7 +694,7 @@ void print_dialogObj::implObj::show_printer(printer_info_lock &lock,
 	}
 	printer_info("\n");
 
-	printer_info("printer_status"_theme_font);
+	printer_info(appearance->printer_status_font);
 
 	iter=options.find("printer-is-accepting-jobs");
 
