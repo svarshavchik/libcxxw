@@ -68,7 +68,7 @@ image_button_appearance_base::item_theme()
 {
 	static const const_image_button_appearance config=
 		const_image_button_appearance::create
-		(std::vector<std::string>{"delete1", "delete2"});
+		(std::vector<std::string>{"itemdelete1", "itemdelete2"});
 
 	return config;
 }
