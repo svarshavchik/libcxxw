@@ -178,7 +178,8 @@ new_scrollable_peepholelayoutmanager::create(const container_impl &parent) const
 			peephole_impl_elementObj<
 				container_elementObj
 				<child_elementObj>>>>
-			       >::create(theme_font{"label"},
+			       >::create(parent->container_element_impl().
+					 label_theme_font(),
 					 grid_container_impl);
 
 	new_peephole_info peephole_info{peephole_impl, peephole_impl,
@@ -250,7 +251,9 @@ container new_peepholelayoutmanager::create(const container_impl &parent,
 		peephole_impl_elementObj<
 			container_elementObj
 			<child_elementObj>>>
-			       >::create(theme_font{"label"}, parent);
+			       >::create(parent->container_element_impl().
+					 label_theme_font(),
+					 parent);
 
 	new_peephole_info peephole_info{peephole_impl, peephole_impl,
 					peepholed_factory};
