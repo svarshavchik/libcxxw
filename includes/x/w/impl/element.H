@@ -125,10 +125,10 @@ class elementObj::implObj : public element_drawObj,
 		//! reposition its child elements.
 		//!
 		//! This is the element's previous position. If its
-		//! current_position really changes, when we're about to
-		//! call process_updated_position() this will be its previous
-		//! position, we update it, and invoke it. If it's the same
-		//! we call process_same_position() instead.
+		//! current_position really changes, we call process_updated
+		//! position() and update it afte process_updated_position()
+		//! returns. If it's the same we call process_same_position()
+		//! instead.
 
 		rectangle previous_position;
 
@@ -455,8 +455,8 @@ class elementObj::implObj : public element_drawObj,
 	//! position, update it, and call notify_updated_position()
 	//! and current_position_updated().
 
-	virtual void update_current_position(ONLY IN_THREAD,
-					     const rectangle &r);
+	void update_current_position(ONLY IN_THREAD,
+				     const rectangle &r);
 
 	//! The parent container is scrolling us.
 

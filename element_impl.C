@@ -593,17 +593,6 @@ void elementObj::implObj::update_current_position(ONLY IN_THREAD,
 	if (r == current_data.current_position)
 		return;
 
-	if (r.width == current_data.current_position.width &&
-	    r.height == current_data.current_position.height)
-	{
-		current_data.current_position=r;
-		notify_updated_position(IN_THREAD);
-		absolute_location_updated(IN_THREAD,
-					  absolute_location_update_reason
-					  ::internal);
-		return;
-	}
-
 	current_data.current_position=r;
 
 	notify_updated_position(IN_THREAD);
@@ -708,6 +697,27 @@ void elementObj::implObj::process_updated_position(ONLY IN_THREAD)
 				    ::something_changed);
 
 	update_attachedto_info(IN_THREAD);
+
+	// If our position relative to our parent container has changed,
+	// we need to notify any child element of this container, if tihs
+	// element is a container, that their absolute_location_updated().
+
+	if (data(IN_THREAD).previous_position.x !=
+	    data(IN_THREAD).current_position.x ||
+	    data(IN_THREAD).previous_position.y !=
+	    data(IN_THREAD).current_position.y)
+	{
+		for_each_child
+			(IN_THREAD,
+			 [&]
+			 (const element &e)
+			 {
+				 e->impl->absolute_location_updated
+					 (IN_THREAD,
+					  absolute_location_update_reason
+					  ::internal);
+			 });
+	}
 }
 
 void elementObj::implObj::process_same_position(ONLY IN_THREAD)

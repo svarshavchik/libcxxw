@@ -235,9 +235,15 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 				 if (data.current_position !=
 				     data.previous_position)
 				 {
-					 data.previous_position=
+					 // Make sure that previous_position
+					 // gets what current_position is,
+					 // *right now*.
+
+					 auto new_position=
 						 data.current_position;
 					 e->process_updated_position(IN_THREAD);
+					 data.previous_position=
+						 new_position;
 				 }
 				 else
 				 {
