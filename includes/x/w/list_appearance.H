@@ -25,11 +25,15 @@ public:
 
 	//! Return the default theme-specified list appearance in panes
 
-	static const const_list_appearance &pane_theme();
+	static const const_list_appearance &list_pane_theme();
 
 	//! Return the default theme-specified list appearance in tables
 
 	static const const_list_appearance &table_theme();
+
+	//! Return the default theme-specified table appearance in panes
+
+	static const const_list_appearance &table_pane_theme();
 };
 
 LIBCXXW_NAMESPACE_END

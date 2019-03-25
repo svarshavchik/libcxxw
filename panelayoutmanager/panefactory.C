@@ -6,11 +6,13 @@
 #include "x/w/panefactory.H"
 #include "x/w/panelayoutmanager.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/pane_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
 panefactoryObj::panefactoryObj(const panelayoutmanager &layout)
-	: layout{layout}
+	: layout{layout},
+	  appearance{pane_appearance::base::theme()}
 {
 }
 
@@ -20,15 +22,12 @@ void panefactoryObj::configure_new_list(new_listlayoutmanager &nlm,
 					bool synchronized)
 {
 	nlm.variable_height();
-	nlm.appearance=list_appearance_base::pane_theme();
+	nlm.set_pane_theme();
 
 	if (synchronized)
 		nlm.vertical_scrollbar=scrollbar_visibility::always;
 
-	set_scrollbar_visibility(scrollbar_visibility::never);
-	padding(0);
-	halign(halign::fill);
-	valign(valign::fill);
+	appearance=pane_appearance_base::focusable_list();
 }
 
 LIBCXXW_NAMESPACE_END

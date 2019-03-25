@@ -7,6 +7,7 @@
 
 #include <x/w/file_dialog_appearancefwd.H>
 #include <x/w/pane_layout_appearancefwd.H>
+#include <x/w/pane_appearancefwd.H>
 #include <x/w/list_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
@@ -25,16 +26,22 @@ struct file_dialog_appearance_properties {
 	//! Destructor
 	~file_dialog_appearance_properties();
 
-	//! Appearance of the directory/file pane container
+	//! Custom appearance of the directory/file pane container
 	const_pane_layout_appearance filedir_pane_appearance;
 
 	//! Custom appearance of the directory pane
-
-	const_list_appearance dir_pane_appearance;
+	const_pane_appearance dir_pane_appearance;
 
 	//! Custom appearance of the file pane
+	const_pane_appearance file_pane_appearance;
 
-	const_list_appearance file_pane_appearance;
+	//! Custom appearance of the directory pane's list
+
+	const_list_appearance dir_pane_list_appearance;
+
+	//! Custom appearance of the file pane's list
+
+	const_list_appearance file_pane_list_appearance;
 
 	//! Font used for filenames
 	font_arg filedir_filename_font;

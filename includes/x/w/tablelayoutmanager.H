@@ -52,6 +52,11 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 	//! Destructor
 	~new_tablelayoutmanager() LIBCXX_PUBLIC;
 
+	//! Override set_pane_theme
+
+	//! Sets the appearance to list_appearance::base::table_pane_theme.
+	void set_pane_theme() override LIBCXX_HIDDEN;
+
 	//! The header factory that was passed to the constructor.
 
 	functionref<void (const factory &, size_t)> header_factory;

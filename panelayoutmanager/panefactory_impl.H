@@ -8,7 +8,6 @@
 #include "x/w/panefactoryobj.H"
 #include "grid_map_info.H"
 #include "panelayoutmanager/create_pane_info.H"
-#include "panelayoutmanager/create_pane_properties.H"
 #include "panelayoutmanager/pane_peephole_containerfwd.H"
 #include <optional>
 
@@ -30,12 +29,6 @@ class LIBCXX_HIDDEN panefactory_implObj : public panefactoryObj {
 	//! New pane element's containers
 	new_pane_info_t new_pane_info;
 
-	//! Properties for the next pane.
-	typedef mpobj<create_pane_properties_t> new_pane_properties_t;
-
-	//! New pane's properties
-	new_pane_properties_t new_pane_properties;
-
 	//! The new pane that was just created.
 	mpobj<pane_peephole_containerptr> created_pane_peephole;
 
@@ -44,36 +37,6 @@ class LIBCXX_HIDDEN panefactory_implObj : public panefactoryObj {
 
 	//! Destructor
 	~panefactory_implObj();
-
-	//! Implement set_initial_size_set().
-	void set_initial_size_set(const dim_arg &arg) override;
-
-	//! Implement set_scrollbar_visibility_set.
-	void set_scrollbar_visibility_set(scrollbar_visibility v) override;
-
-	//! Implement set_background_color_set().
-	void set_background_color_set(const color_arg &arg) override;
-
-	//! Implement left_padding_set().
-	void left_padding_set(const dim_arg &) override;
-
-	//! Implement right_padding_set().
-	void right_padding_set(const dim_arg &) override;
-
-	//! Implement top_padding_set().
-	void top_padding_set(const dim_arg &) override;
-
-	//! Implement bottom_padding_set().
-	void bottom_padding_set(const dim_arg &) override;
-
-	//! Implement padding_set().
-	void padding_set(const dim_arg &) override;
-
-	//! Implement halign_set().
-	void halign_set(LIBCXXW_NAMESPACE::halign) override;
-
-	//! Implement valign_set().
-	void valign_set(LIBCXXW_NAMESPACE::valign) override;
 
 	//! Begin creating a new element.
 

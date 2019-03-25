@@ -547,8 +547,6 @@ libcxxw_la_SOURCES=\
 	override_redirectfwd.H			    \
 	override_redirectobj.H			    \
 	panelayoutmanager/create_pane_info.H	    \
-	panelayoutmanager/create_pane_properties.C  \
-	panelayoutmanager/create_pane_properties.H  \
 	panelayoutmanager/panecontainer_impl.C	    \
 	panelayoutmanager/panecontainer_impl.H	    \
 	panelayoutmanager/panefactory.C		    \
@@ -557,6 +555,7 @@ libcxxw_la_SOURCES=\
 	panelayoutmanager/panelayoutmanager.C	    \
 	panelayoutmanager/panelayoutmanager_impl.C  \
 	panelayoutmanager/panelayoutmanager_impl.H  \
+	panelayoutmanager/pane_appearance.C         \
 	panelayoutmanager/pane_layout_appearance.C  \
 	panelayoutmanager/pane_peephole.C	    \
 	panelayoutmanager/pane_peephole.H	    \

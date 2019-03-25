@@ -6,13 +6,16 @@
 #include "x/w/file_dialog_appearance.H"
 #include "x/w/pane_layout_appearance.H"
 #include "x/w/list_appearance.H"
+#include "x/w/pane_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
 file_dialog_appearance_properties::file_dialog_appearance_properties()
 	: filedir_pane_appearance{pane_layout_appearance::base::theme()},
-	  dir_pane_appearance{list_appearance::base::pane_theme()},
-	  file_pane_appearance{list_appearance::base::pane_theme()},
+	  dir_pane_appearance{pane_appearance::base::file_dialog_dir()},
+	  file_pane_appearance{pane_appearance::base::file_dialog_file()},
+	  dir_pane_list_appearance{list_appearance::base::list_pane_theme()},
+	  file_pane_list_appearance{list_appearance::base::list_pane_theme()},
 	  filedir_filename_font{theme_font{"filedir_filename"}},
 	  filedir_filedate_font{theme_font{"filedir_filedate"}},
 	  filedir_filesize_font{theme_font{"filedir_filesize"}},

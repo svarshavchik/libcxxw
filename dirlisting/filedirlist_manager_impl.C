@@ -16,6 +16,7 @@
 #include "x/w/file_dialog_config.H"
 #include "x/w/file_dialog_appearance.H"
 #include "x/w/pane_layout_appearance.H"
+#include "x/w/pane_appearance.H"
 #include "messages.H"
 #include <x/weakcapture.H>
 #include <x/fileattr.H>
@@ -240,7 +241,7 @@ create_init_args(const factory &f,
 
 	pf->configure_new_list(nlm, true);
 
-	nlm.appearance=config.appearance->dir_pane_appearance;
+	nlm.appearance=config.appearance->dir_pane_list_appearance;
 
 	// Give all space to the first column, with the filename.
 	nlm.requested_col_widths.emplace(0, 100);
@@ -281,12 +282,12 @@ create_init_args(const factory &f,
 				 trigger);
 		};
 
-	auto dc=pf->set_initial_size(30)
-		.create_focusable_container([]
-					    (const auto &ignore)
-					    {
-					    },
-					    nlm);
+	pf->appearance=config.appearance->dir_pane_appearance;
+	auto dc=pf->create_focusable_container([]
+					       (const auto &ignore)
+					       {
+					       },
+					       nlm);
 	dc->show();
 
 	// Create the directory list's right mouse button popup contents.
@@ -353,14 +354,15 @@ create_init_args(const factory &f,
 		};
 	pf->configure_new_list(nlm, true);
 
-	nlm.appearance=config.appearance->file_pane_appearance;
+	nlm.appearance=config.appearance->file_pane_list_appearance;
 
-	auto fc=pf->set_initial_size(50)
-		.create_focusable_container([]
-					    (const auto &ignore)
-					    {
-					    },
-					    nlm);
+	pf->appearance=config.appearance->file_pane_appearance;
+
+	auto fc=pf->create_focusable_container([]
+					       (const auto &ignore)
+					       {
+					       },
+					       nlm);
 	fc->show();
 
 	// Create the file list's right mouse button popup contents.

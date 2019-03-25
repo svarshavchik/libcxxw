@@ -104,6 +104,11 @@ new_listlayoutmanager
 
 new_listlayoutmanager::~new_listlayoutmanager()=default;
 
+void new_listlayoutmanager::set_pane_theme()
+{
+	appearance=list_appearance_base::list_pane_theme();
+}
+
 focusable_container
 new_listlayoutmanager::create(const container_impl &parent_container) const
 {

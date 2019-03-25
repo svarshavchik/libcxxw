@@ -705,6 +705,11 @@ new_tablelayoutmanager
 
 new_tablelayoutmanager::~new_tablelayoutmanager()=default;
 
+void new_tablelayoutmanager::set_pane_theme()
+{
+	appearance=list_appearance_base::table_pane_theme();
+}
+
 // A table uses its own internal synchronized axis.
 //
 // Override create(), and pass through an opaque table_create_info pointer

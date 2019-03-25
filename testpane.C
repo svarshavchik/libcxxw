@@ -15,6 +15,7 @@
 #include "x/w/focusable_container.H"
 #include "x/w/panelayoutmanager.H"
 #include "x/w/panefactory.H"
+#include "x/w/pane_appearance.H"
 #include "x/w/button.H"
 #include "x/w/label.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
@@ -58,17 +59,22 @@ static void insert(const LIBCXX_NAMESPACE::w::container &c,
 
 	LIBCXX_NAMESPACE::w::panefactory f=lm->insert_panes(0);
 
-	f->set_initial_size(20)
-		.set_scrollbar_visibility(v)
-		.create_label("Lorem ipsum\n"
-			      "dolor sit amet\n"
-			      "consectetur\n"
-			      "adipisicing elit sed\n"
-			      "do eiusmod\n"
-			      "tempor incididunt ut\n"
-			      "labore et\n"
-			      "dolore magna\n"
-			      "aliqua")->show();
+	auto appearance=f->appearance->clone();
+
+	f->appearance=appearance;
+
+	appearance->size=20;
+	appearance->pane_scrollbar_visibility=v;
+
+	f->create_label("Lorem ipsum\n"
+			"dolor sit amet\n"
+			"consectetur\n"
+			"adipisicing elit sed\n"
+			"do eiusmod\n"
+			"tempor incididunt ut\n"
+			"labore et\n"
+			"dolore magna\n"
+			"aliqua")->show();
 
 	LIBCXX_NAMESPACE::w::label l=lm->get(0);
 }
@@ -80,9 +86,14 @@ static void append(const LIBCXX_NAMESPACE::w::container &c,
 
 	LIBCXX_NAMESPACE::w::panefactory f=lm->append_panes();
 
-	f->set_background_color("100%")
-		.padding(2.0)
-		.set_scrollbar_visibility(v);
+	auto appearance=f->appearance->clone();
+
+	appearance->background_color="100%";
+	appearance->left_padding=appearance->right_padding=
+		appearance->top_padding=appearance->bottom_padding=2;
+	appearance->pane_scrollbar_visibility=v;
+
+	f->appearance=appearance;
 
 	f->create_label("Lorem ipsum "
 			"dolor sit amet\n"
@@ -120,10 +131,15 @@ static void replace_first(const LIBCXX_NAMESPACE::w::container &c,
 
 	LIBCXX_NAMESPACE::w::panefactory f=lm->replace_panes(0);
 
-	f->set_background_color("100%")
-		.padding(2.0)
-		.set_scrollbar_visibility(v)
-		.valign(LIBCXX_NAMESPACE::w::valign::bottom);
+	auto appearance=f->appearance->clone();
+
+	appearance->background_color="100%";
+	appearance->left_padding=appearance->right_padding=
+		appearance->top_padding=appearance->bottom_padding=2;
+	appearance->pane_scrollbar_visibility=v;
+	appearance->vertical_alignment=LIBCXX_NAMESPACE::w::valign::bottom;
+
+	f->appearance=appearance;
 
 	f->create_label("Lorem ipsum "
 			"dolor sit amet\n"
@@ -146,8 +162,13 @@ static void insert_list(const LIBCXX_NAMESPACE::w::container &c)
 
 	f->configure_new_list(nlm);
 
-	f->set_initial_size(20)
-		.create_focusable_container
+	auto appearance=f->appearance->clone();
+
+	appearance->size=20;
+
+	f->appearance=appearance;
+
+	f->create_focusable_container
 		([]
 		 (const auto &container)
 		 {
@@ -395,8 +416,13 @@ void initialize_adjustable_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager
 	{
 		f->configure_new_list(ntlm);
 
-		f->set_initial_size(50)
-			.create_focusable_container
+		auto appearance=f->appearance->clone();
+
+		appearance->size=50;
+
+		f->appearance=appearance;
+
+		f->create_focusable_container
 			([]
 			 (const auto &table_container)
 			 {

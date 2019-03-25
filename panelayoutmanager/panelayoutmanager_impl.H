@@ -10,7 +10,6 @@
 #include "x/w/gridfactoryfwd.H"
 #include "x/w/scrollbar.H"
 #include "panelayoutmanager/create_pane_info.H"
-#include "panelayoutmanager/create_pane_properties.H"
 #include "panelayoutmanager/pane_sliderobj.H"
 #include "panelayoutmanager/pane_slider_original_sizes.H"
 #include "panelayoutmanager/pane_peephole_containerfwd.H"
@@ -237,7 +236,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	pane_peephole_container
 		created_pane_peephole(const panelayoutmanager &public_object,
 				      const create_pane_info_t &info,
-				      const create_pane_properties_t &properties,
+				      const const_pane_appearance &appearance,
 				      panefactoryObj &factory,
 				      const element &e,
 				      size_t position,

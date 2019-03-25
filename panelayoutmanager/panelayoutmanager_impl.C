@@ -27,6 +27,7 @@
 #include "gridlayoutmanager_impl_elements.H"
 #include "calculate_borders.H"
 #include "messages.H"
+#include "x/w/pane_appearance.H"
 #include "x/w/pane_layout_appearance.H"
 #include "x/w/panefactory.H"
 
@@ -128,22 +129,20 @@ void panelayoutmanagerObj::implObj
 create_pane_info_t panelayoutmanagerObj::implObj
 ::create_pane_peephole(panefactory_implObj &factory)
 {
-	panefactory_implObj::new_pane_properties_t::lock
-		lock{factory.new_pane_properties};
-
 	// Container for the peephole and its scrollbar.
 
 	auto peephole_container_impl=ref<pane_peephole_containerObj::implObj>
 		::create(pane_container_impl,
 			 child_element_init_params
-			 {{}, {}, lock->background_color});
+			 {{}, {}, factory.appearance->background_color});
 
 	// The peephole element.
 
 	auto peephole_impl=ref<pane_peepholeObj::implObj>
 		::create(peephole_container_impl,
 			 child_element_init_params
-			 {{}, initial_peephole_metrics(lock->dimension)});
+			 {{}, initial_peephole_metrics(factory.appearance
+						       ->size)});
 
 	return {peephole_container_impl, peephole_impl};
 }
@@ -206,7 +205,7 @@ class LIBCXX_HIDDEN pane_peepholed_elementObj : public peepholedObj {
 pane_peephole_container panelayoutmanagerObj::implObj
 ::created_pane_peephole(const panelayoutmanager &public_object,
 			const create_pane_info_t &pane_info,
-			const create_pane_properties_t &properties,
+			const const_pane_appearance &appearance,
 			panefactoryObj &pfactory,
 			const element &e,
 			size_t position,
@@ -241,10 +240,10 @@ pane_peephole_container panelayoutmanagerObj::implObj
 
 	auto [style, horizontal_scrollbar_visibility,
 	      vertical_scrollbar_visibility]=
-		pane_peephole_style(properties.pane_scrollbar_visibility);
+		pane_peephole_style(appearance->pane_scrollbar_visibility);
 
-	style.horizontal_alignment=properties.horizontal_alignment;
-	style.vertical_alignment=properties.vertical_alignment;
+	style.horizontal_alignment=appearance->horizontal_alignment;
+	style.vertical_alignment=appearance->vertical_alignment;
 
 	auto peepholed_element=ref<pane_peepholed_elementObj>
 		::create(e, pane_info.peephole_impl);
@@ -274,10 +273,10 @@ pane_peephole_container panelayoutmanagerObj::implObj
 				 std::nullopt,
 				 std::nullopt,
 				 {},
-				 properties.left_padding_set,
-				 properties.right_padding_set,
-				 properties.top_padding_set,
-				 properties.bottom_padding_set,
+				 appearance->left_padding,
+				 appearance->right_padding,
+				 appearance->top_padding,
+				 appearance->bottom_padding,
 			 };
 		 },
 		 create_peephole_gridlayoutmanager,
@@ -287,8 +286,8 @@ pane_peephole_container panelayoutmanagerObj::implObj
 		  style,
 		  horizontal_scrollbar_visibility,
 		  vertical_scrollbar_visibility,
-		  properties.horizontal_scrollbar,
-		  properties.vertical_scrollbar,
+		  appearance->horizontal_scrollbar,
+		  appearance->vertical_scrollbar,
 		 });
 
 	// Ok, we can now create the container.

@@ -21,10 +21,26 @@ f->create_label("Hello world!")->show();
 New elements get created as individual panes with adjustable sizes.
 
 \code
-f->set_initial_size(10.0).padding(2).create_label("Hello world!")->show();
+#include <INSERT_LIBX_NAMESPACE/w/pane_appearance.H>
+
+INSERT_LIBX_NAMESPACE::w::pane_appearance custom=f->appearance->clone();
+
+custom->size=10.0;
+custom->left_padding=custom->right_padding=custom->bottom_padding=2;
+
+f->appearance=custom;
+
+f->create_label("Hello world!")->show();
 \endcode
 
-set_initial_size() sets the initial size of the next pane.
+The \c appearance member specifies the appearance of the next new pane.
+\c appearance is a reference to a constant object. A custom appearance for
+the next new pane gets specified by using clone() to create a new object,
+modifying it accordingly, and replacing \c appearance.
+
+Each time a new pane gets create, the \c appearance member gets reset back
+to the default theme-specified appearance.
+
 Pane sizes get specified in
 \ref dim_arg "millimeters or theme-specified dimensions".
 Rather than
@@ -41,28 +57,28 @@ container overall space gets divided between all of its panes.
 \note
 Each new pane's element needs to get show()n to be visible.
 
-\par Miscellaneous pane properties
-
-Use these \c panefactory methods before creating a new pane element.
-This specifies the new pane's custom properties.
+\par Miscellaneous pane appearance properties.
 
 \code
-f->set_initial_size(10.0)
-  .set_background_color(INSERT_LIBX_NAMESPACE::w::rgb{0, 0, INSERT_LIBX_NAMESPACE::w::rgb::maximum()})
-  .halign(INSERT_LIBX_NAMESPACE::w::halign::centered)
-  .valign(INSERT_LIBX_NAMESPACE::w::valign::middle);
-  .set_scrollbar_visibility(INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::always)
-  .create_label("Hello world")->show();
+INSERT_LIBX_NAMESPACE::w::pane_appearance custom=f->appearance->clone();
+
+custom->size=10.0;
+custom->left_padding=custom->right_padding=custom->bottom_padding=2;
+custom->background_color=INSERT_LIBX_NAMESPACE::w::blue;
+custom->horizontal_alignment=INSERT_LIBX_NAMESPACE::w::halign::centered;
+custom->vertical_alignment=INSERT_LIBX_NAMESPACE::w::valign::middle;
+custom->pane_scrollbar_visibility=INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::always;
 
 \endcode
 
-set_background_color() sets a custom background color for the next pane.
+\c background_color sets the new pane's custom background color.
 
 The individual panes may be expanded beyond their elements' initial size.
-halign() and valign() sets the position alignment of the next pane's
+\c horizontal_alignment and \c vertical_alignment
+sets the position alignment of the next pane's
 element when its smaller than its pane.
 
-set_scrollbar_visibility() controls the visibility of the new pane's
+\c pane_scrollbar_visibility controls the visibility of the new pane's
 scroll-bar. Each pane's scroll-bar provides an alternative to using the
 nearby sliders to make the pane bigger. The default
 \ref scrollbar_visibility "scrollbar visibility"
@@ -70,10 +86,12 @@ is \c INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::automatic_reserved.
 
 \note
 Using the factory to create multiple display elements places each individual
-element into a new pane. The custom properties are not persistent.
-For example, set_background_color() sets only the next new display element's
+element into a new pane, and resets the pane appearance to the default
+theme-specified appearance. Creating multiple panes with a custom background
+color, for example, requires taking the pane appearance objec from the
+factory, using clone(), and setting its background_color to the same
 pane's background color. Call set_background_color() again to use the same
-(or different) background color before creating the netx display element.
+(or different) background color before creating the next display element.
 
 \par Panes with selection lists and tables
 
@@ -82,8 +100,13 @@ INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager nlm;
 
 pane_f->configure_new_list(nlm);
 
-pane_f->set_initial_size(20)
-    .create_focusable_container(
+auto custom=pane_f->appearance->clone();
+
+custom->size=20;
+
+pane_f->appearance=custom;
+
+pane_f->create_focusable_container(
          []
          (const auto &container)
          {
@@ -109,7 +132,8 @@ Passing a
 \ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager"
 or
 \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
-to configure_new_list() adjusts several settings for an intuitive interface
+to configure_new_list() installs a modified pane appearance object that
+adjusts several settings for an intuitive interface
 consisting of a vertical pane with a \ref listlayoutmanager "selection list"
 or a
 \ref tablelayoutmanager "table."
@@ -118,8 +142,9 @@ Ordinary selection lists have a fixed height specified as the number of
 rows in the list, and the selection list provides a scroll-bar for longer
 lists. Tables also have a fixed height by default.
 
-configure_new_list() adjusts the new pane element's padding and positions,
-and disables the scrollbar, and adjusts the new table or list to have
+configure_new_list() installs a new appearance object with
+adjusted padding and position, settings
+and disables the scrollbar; and adjusts the new table or list to have
 an adjustable height, and no borders. The pane layout manager-provided borders
 are sufficient.
 
@@ -158,6 +183,10 @@ get created as individual panes, and does not affect any other focusable
 elements, that get created either directly as panes, or as individual
 elements of non-focusable container panes. Those focusable elements continue
 to have independently-adjustable tabbing order.
+
+\note
+configure_new_list() installs a new, default appearance object. Any
+custom settings for the new pane must be done after configure_new_list().
 
 */
 

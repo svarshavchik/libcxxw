@@ -296,6 +296,14 @@ public:
 	//! This list's appearance.
 	const_list_appearance appearance;
 
+	//! Set appearance of this list in a pane.
+
+	//! Installs list_appearance_base::list_pane_theme().
+	//! Overridden by the table layout manager, that sets a slightly
+	//! different theme.
+
+	virtual void set_pane_theme() LIBCXX_HIDDEN;
+
 	//! Constructor
 	new_listlayoutmanager(const listlayoutstyle_impl &list_style
 			      =highlighted_list)

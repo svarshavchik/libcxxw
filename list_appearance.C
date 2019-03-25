@@ -59,7 +59,7 @@ const const_list_appearance &list_appearance_base::theme()
 	return obj;
 }
 
-static auto create_pane_theme()
+static auto create_list_pane_theme()
 {
 	auto c=list_appearance::base::theme()->clone();
 
@@ -68,9 +68,9 @@ static auto create_pane_theme()
 	return c;
 }
 
-const const_list_appearance &list_appearance_base::pane_theme()
+const const_list_appearance &list_appearance_base::list_pane_theme()
 {
-	static const const_list_appearance obj=create_pane_theme();
+	static const const_list_appearance obj=create_list_pane_theme();
 
 	return obj;
 }
@@ -87,6 +87,22 @@ static auto create_table_theme()
 const const_list_appearance &list_appearance_base::table_theme()
 {
 	static const const_list_appearance obj=create_table_theme();
+
+	return obj;
+}
+
+static auto create_table_pane_theme()
+{
+	auto c=list_appearance::base::list_pane_theme()->clone();
+
+	c->visible_focusoff_border();
+
+	return c;
+}
+
+const const_list_appearance &list_appearance_base::table_pane_theme()
+{
+	static const const_list_appearance obj=create_table_pane_theme();
 
 	return obj;
 }
