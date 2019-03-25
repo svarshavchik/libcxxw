@@ -11,6 +11,7 @@
 #include <x/obj.H>
 
 #include <x/w/main_window.H>
+#include <x/w/main_window_appearance.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
 #include <x/w/element.H>
@@ -445,7 +446,11 @@ void testfontrenderer()
 
 	x::w::main_window_config config;
 
-	config.background_color=x::w::white;
+	x::w::main_window_appearance appearance=config.appearance->clone();
+
+	appearance->background_color=x::w::white;
+
+	config.appearance=appearance;
 
 	auto main_window=x::w::main_window::create
 		(config,

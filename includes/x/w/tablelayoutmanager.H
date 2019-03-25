@@ -54,7 +54,8 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 
 	//! Override set_pane_theme
 
-	//! Sets the appearance to list_appearance::base::table_pane_theme.
+	//! Installs INSERT_LIBX_NAMESPACE::w::list_appearance::base::table_pane_theme().
+
 	void set_pane_theme() override LIBCXX_HIDDEN;
 
 	//! The header factory that was passed to the constructor.

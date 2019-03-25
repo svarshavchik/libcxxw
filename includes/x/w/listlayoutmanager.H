@@ -298,7 +298,7 @@ public:
 
 	//! Set appearance of this list in a pane.
 
-	//! Installs list_appearance_base::list_pane_theme().
+	//! Installs INSERT_LIBX_NAMESPACE::w::list_appearance::base::list_pane_theme().
 	//! Overridden by the table layout manager, that sets a slightly
 	//! different theme.
 

@@ -11,6 +11,7 @@
 #include <x/config.H>
 
 #include <x/w/main_window.H>
+#include <x/w/main_window_appearance.H>
 #include <x/w/screen_positions.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
@@ -119,6 +120,15 @@ void wordwrap()
 
 	config.screen_position(pos, "main");
 
+	// Obtain main window's appearance
+
+	x::w::const_main_window_appearance appearance=config.appearance;
+
+	// This is an x::ref to a cached, constant object. Make a copy
+	// of the cached constant appearance object.
+
+	x::w::main_window_appearance custom_appearance=appearance->clone();
+
 	// main_window_config's background_color sets the main window's
 	// background color.
 
@@ -129,7 +139,11 @@ void wordwrap()
 		 (x::w::rgb_component_t)(x::w::rgb::maximum * .75)
 		};
 
-	config.background_color=light_yellow;
+	custom_appearance->background_color=light_yellow;
+
+	// And then place it back into the main_window_config.
+
+	config.appearance=custom_appearance;
 
 	auto main_window=
 		x::w::main_window::create(config, create_mainwindow);

@@ -299,6 +299,85 @@ auto main_window=
       for an example.
     </para>
   </section>
+
+  <section id="appearance">
+    <title>Customizing visual appearance of display elements</title>
+
+    <para>
+      <link linkend="wordwraplabel"><filename>wordwraplabel.C</filename></link>
+      gives an example of using so-called <quote>appearance objects</quote>
+      to adjust a display element's visual appearance. The normal appearance
+      of &appshort;'s display elements gets set by the
+      current <link linkend="cxxwtheme.1">display theme</link>.
+      <filename>wordwraplabel.C</filename> overrides the default window
+      background color to light yellow, in order to display text
+      in blue and black colors.
+    </para>
+
+    <section id="appearanceclone">
+      <title>Cloning an appearance object</title>
+
+      <para>
+	An appearance object is a
+	<link linkend="refobjelements">reference-counted object</link>
+	accessed using &libcxx;'s
+	<ulink url="&refobj;">smart pointers</ulink>.
+	Each &appshort;'s class that's used to create a display element
+	has an appearance object attached to it.
+      </para>
+
+      <para>
+	A new main window gets created using a
+	<ulink url="&link-x--w--main-window-config;"><classname>&ns;::w::main_window_config</classname></ulink>
+	whose <varname>appearance</varname> members specifies the main window's
+	default visual appearance. This is a design pattern that's universally
+	shared by all display elements.
+	For example,
+	an <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>'s
+	<varname>appearance</varname> object specifies the visual appearance
+	of a new list.
+      </para>
+
+      <para>
+	The <varname>appearance</varname> is always a
+	<classname>&ns;::const_ref</classname>.
+	It gets dereferenced to a constant object that cannot be modified.
+	The initial, default <varname>appearance</varname> is always a
+	cached, constant object that sets the visual appearance from the
+	current display theme.
+	Implementing a custom appearance involves using the appearance
+	object's <methodname>clone</methodname>() to create a modifiable copy
+	of itself. The resulting object gets modified, and placed back into
+	the original object where the appearance came from:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+#include &lt;&ns;/w/main_window_appearance&gt;
+#include &lt;&ns;/w/rgb.H&gt;
+
+&ns;::w::main_window_config config;
+
+&ns;::w::main_window_appearance appearance=config.appearance->clone();
+
+appearance->background_color=&ns;::w::white;
+
+config.appearance=appearance;</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	<classname>&ns;::w::main_window_config</classname>'s default
+	constructor installs the default, cached, <varname>appearance</varname>
+	obtain from the current display theme.
+	After <methodname>clone</methodname>() it, the background color
+	value gets set to white, then the modified appearance object
+	replaces
+	<classname>&ns;::w::main_window_config</classname>'s original one.
+      </para>
+    </section>
+  </section>
 </chapter>
 <!--
 Local Variables:

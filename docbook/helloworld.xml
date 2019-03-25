@@ -76,10 +76,17 @@ make</programlisting>
 	&appshort; does not use C++ library's
 	<classname>std::shared_ptr</classname>,
 	but &libcxx;'s own
-	<ulink url="/ref.html"><classname>&ns;::ref</classname></ulink>
-	which works in a similar way (but has additional features).
+	<ulink url="/ref.html"><classname>&ns;::ref</classname>
+	  (non-<literal>nullptr</literal> smart pointer),
+	  <classname>&ns;::const_ref</classname> (a ref to a constant object),
+	  <classname>&ns;::ptr</classname> (a nullable smart pointer),
+	  and
+	  <classname>&ns;::const_ptr</classname> (a constant ptr)
+	</ulink>,
+	which work in similar ways (but has additional features).
 	This documentation uses the term <quote>reference</quote> to
-	refer to &libcxx;'s <classname>&ns;::ref</classname> smart
+	refer to &libcxx;'s <classname>&ns;::ref</classname> family
+	of smart
 	pointers.
       </para>
 

@@ -1207,9 +1207,12 @@ DOCS_SRC = $(shell find includes -name '*.H' -print)
 
 $(foreach f,$(patsubst html/%,%,$(ALL_DOCS)),$(eval $(call install_docimage,$(f))))
 
-html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.xsl
+html/index.html: html/ref/index.html $(wildcard docbook/*.xml docbook/xmllinks*.xsl)
 	mkdir -p docbook
-	xsltproc $(srcdir)/docbook/xmllinks.xsl xml/index.xml >docbook/entities
+	xsltproc $(srcdir)/docbook/xmllinks-extract.xsl xml/index.xml >docbook/entities.tmp
+	xsltproc $(srcdir)/docbook/xmllinks-dedupe.xsl docbook/entities.tmp >docbook/entities.tmp2
+	xsltproc $(srcdir)/docbook/xmllinks-generate.xsl docbook/entities.tmp2 >docbook/entities
+	rm -f docbook/entities.tmp docbook/entities.tmp2
 	rm -rf html.tmp
 	mkdir -p html.tmp
 	xsltproc --nonet -o html.tmp/ --xinclude \

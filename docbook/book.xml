@@ -72,6 +72,8 @@
 <!ENTITY customintro SYSTEM "customintro.xml">
 <!ENTITY customcanvas SYSTEM "customcanvas.xml">
 <!ENTITY customelement SYSTEM "customelement.xml">
+
+<!ENTITY appearance_object "<link linkend='appearance'>appearance object</link>">
 <!ENTITY implementation_class "<link linkend='pubimpl'>implementation object class</link>">
 <!ENTITY public_class "<link linkend='pubimpl'>public object class</link>">
 <!ENTITY implementation_object "<link linkend='pubimpl'>implementation object</link>">

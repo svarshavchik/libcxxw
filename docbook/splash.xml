@@ -24,18 +24,19 @@ See COPYING for distribution information.
     A splash window has no title, no decorations, and no window manager
     borders around it. It's not draggable and it does not
     have a close button.
-    A splash window usually appears quickly when launching a large
-    application. Large applications that loads many shared libraries and
+    Large applications that loads many shared libraries and
     create complicated windows usually take a while to get
-    ready and make their main window visible. A splash window provides
+    ready and prepare their main window, so the
+    <quote>splash window</quote> with just the application's name, in
+    pretty colors, appears quickly, up front. A splash window provides
     immediate feedback when launching the application.
   </para>
 
   <para>
-    The usual approach is to have the application launched indirectly. The
-    initial loader is a small program that quickly shows the splash window,
-    and does nothing else;
-    then starts another process which runs and initializes the main
+    The usual approach involves launching the application launched indirectly.
+    The initial loader is a small program that quickly shows the splash window,
+    and does nothing else except starting
+    another process that runs and initializes the main
     application. The launcher process terminates, and the splash window
     disappears, when
     the main application window opens for business.
@@ -163,9 +164,15 @@ auto main_window=&ns;::w::main_window::create(
 	    <classname>&ns;::w::transparent_splash_window_config</classname>
 	    contain
 	    several fields that control the splash window's appearance.
-	    The <varname>background_color</varname> field sets the splash
+
+	    They inherit from <classname>&ns;::w::main_window_config</classname>,
+	    including its
+	    &appearance_object;, whose
+	    <varname>background_color</varname> field sets the splash
 	    window's background color.
-	    Both
+
+	    Supplementing the appearance object,
+	    both
 	    <classname>&ns;::w::splash_window_config</classname>
 	    and
 	    <classname>&ns;::w::transparent_splash_window_config</classname>
@@ -184,16 +191,17 @@ auto main_window=&ns;::w::main_window::create(
 
 	  <para>
 	    <classname>&ns;::w::transparent_splash_window_config</classname>
-	    also uses <classname>&ns;::w::splash_window_config</classname>'s
+	    also uses the
 	    <varname>background_color</varname>
+	    from the &appearance_object;
 	    to draw the default background inside its border.
 	    A transparent splash window's background gets set to the transparent
 	    color, by definition, for the benefit of its rounded border.
 	    For this reason, a splash window should not have its background
 	    color modified with <methodname>set_background_color</methodname>,
 	    after its creation.
-	    Always set the splash window's background color in the
-	    <classname>&ns;::w::splash_window_config</classname> when
+	    Set the splash window's background color only using a custom
+	    &appearance_object; when
 	    creating the splash window.
 	  </para>
 	</listitem>

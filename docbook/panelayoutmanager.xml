@@ -112,8 +112,26 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      The factory's <methodname>set_initial_size</methodname>() sets the
-      new element's initial size(). This is just a suggestion, since the
+      Individual properties related to each new pane come from the
+      pane factory's &appearance_object;:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::pane_appearance custom=f->appearance->clone();
+
+custom->size=20.0;
+
+// ...
+
+f->appearance=custom;</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The <varname>size</varname> sets the
+      new element's initial size. This is just a suggestion, since the
       pane container, with all of its elements, always gets constrained by
       its <link linkend="creatingpanes">specified size</link>.
     </para>
@@ -133,10 +151,18 @@ factory->create_focusable_container(
 
           &ns;::w::panefactory f=plm->append_panes();
 
-          f->set_initial_size(20); // 20 millimeters (almost)
+          &ns;::w::pane_appearance custom=f->appearance->clone();
+
+          custom->size=20.0; // 20 millimeters (almost)
+
+          f->appearance=custom;
           f->create_label("Lorem Ipsum")->show();
 
-          f->set_initial_size(20); // Ditto
+          // The pane factory automatically resets itself to the default
+          // pane appearance for each new pane, so we simply reinstall
+          // the custom appearance requesting a 20mm pane:
+
+          f->appearance=custom;
           f->create_label("Lorem Ipsum")->show();
      }, npl);
 </programlisting>
@@ -145,7 +171,8 @@ factory->create_focusable_container(
 
     <para>
       This example creates a 40 millimeter-long container, with two initial
-      panes. Each pane's size gets set to 20 millimeters, so the pane
+      panes. A custom pane &appearance_object; specifies a 20 millimeter size,
+      so the pane
       container's alloted 40 millimeter size gets evenly divided between them.
     </para>
 
@@ -261,8 +288,13 @@ auto pf=plm->append_panes();
 nlm.columns=3;
 pf->configure_new_list(nlm);
 
-pf->set_initial_size(30)
-   .create_focusable_container([]
+&ns;::w::pane_appearance custom=pf->appearance->clone();
+
+custom->size=30.0;
+
+pf->size=custom;
+
+pf->create_focusable_container([]
                    (const auto &amp;creator)
                    {
                        // ...
@@ -291,11 +323,13 @@ pf->set_initial_size(30)
       </para>
 
       <para>
-	<methodname>configure_new_list</methodname>() adjusts the pane
+	<methodname>configure_new_list</methodname>() install new
+	&appearance_object;s in both the pane
 	factory's and the passed-in
 	<classname>&ns;::w::new_listlayoutmanager</classname>
 	or
-	<classname>&ns;::w::new_tablelayoutmanager</classname>
+	<classname>&ns;::w::new_tablelayoutmanager</classname>.
+	These appearance objects are adjusted
 	with optimal settings:
       </para>
 
@@ -342,6 +376,12 @@ pf->set_initial_size(30)
 	  </para>
 	</listitem>
       </itemizedlist>
+
+      <para>
+	Since <methodname>configure_new_list</methodname>() installs new
+	appearance objects, any customizations to them must occur after
+	<methodname>configure_new_list</methodname>().
+      </para>
     </section>
 
     <section id="panesynclists">
@@ -357,8 +397,13 @@ auto pf=plm->append_panes();
 nlm.columns=3;
 pf->configure_new_list(nlm);
 
-pf->set_initial_size(30)
-   .create_focusable_container([]
+auto custom=pf->appearance.clone();
+
+custom->size=30;
+
+pf->appearance=custom;
+
+pf->create_focusable_container([]
                    (const auto &amp;creator)
                    {
                        // ...
@@ -366,8 +411,14 @@ pf->set_initial_size(30)
                    nlm)->show();
 
 pf->configure_new_list(nlm);
-pf->set_initial_size(50)
-   .create_focusable_container([]
+
+custom=pf->appearance.clone();
+
+custom->size=50;
+
+pf->appearance=custom;
+
+pf->create_focusable_container([]
                    (const auto &amp;creator)
                    {
                        // ...

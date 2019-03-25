@@ -15,6 +15,7 @@
 #include <x/w/focusable_container.H>
 #include <x/w/panelayoutmanager.H>
 #include <x/w/panefactory.H>
+#include <x/w/pane_appearance.H>
 #include <x/w/button.H>
 #include <x/w/label.H>
 #include <x/w/standard_comboboxlayoutmanager.H>
@@ -252,10 +253,14 @@ static void insert(const x::w::container &c,
 	// pane.
 	x::w::panefactory f=lm->insert_panes(0);
 
+	// Custom pane appearance. Set the pane's initial size.
+
+	x::w::pane_appearance custom=f->appearance->clone();
+
 	// The factory's set_initial_size() specifies the new element's
 	// "virtual" size, in millimeters:
 
-	f->set_initial_size(20);
+	custom->size=20.0;
 
 	// The actual size of the pane container gets set when the pane
 	// layout manager's container gets created. It's given as the
@@ -274,8 +279,8 @@ static void insert(const x::w::container &c,
 	// size is limited to 20 mm total.
 
 
-	// The factory's set_initial_size() sets the initial size of the
-	// new page. set_scrollbar_visibility() specifies when and how the
+	// The pane's appearance's size setting sets the initial size of the
+	// new page. pane_scrollbar_visibility specifies when and how the
 	// pane's scroll-bar is visible. This, and other, options get set
 	// before creating a new display element, which then becomes the
 	// new pane.
@@ -285,16 +290,19 @@ static void insert(const x::w::container &c,
 	// properties get reset back to their default values, and must be
 	// explicitly set before creating each new pane.
 
-	f->set_scrollbar_visibility(v)
-		.create_label("Lorem ipsum\n"
-			      "dolor sit amet\n"
-			      "consectetur\n"
-			      "adipisicing elit sed\n"
-			      "do eiusmod\n"
-			      "tempor incididunt ut\n"
-			      "labore et\n"
-			      "dolore magna\n"
-			      "aliqua");
+	custom->pane_scrollbar_visibility=v;
+
+	f->appearance=custom;
+
+	f->create_label("Lorem ipsum\n"
+			"dolor sit amet\n"
+			"consectetur\n"
+			"adipisicing elit sed\n"
+			"do eiusmod\n"
+			"tempor incididunt ut\n"
+			"labore et\n"
+			"dolore magna\n"
+			"aliqua");
 
 	// We know that the label is element #0. get() returns the existing
 	// element in the pane container. size(), see below, returns the number
@@ -318,17 +326,23 @@ static void append(const x::w::container &c,
 
 	// append_factory() returns a factory that adds a new pane after all
 	// existing panes, if any.
+
 	x::w::panefactory f=lm->append_panes();
 
-	// The set_background_color() uses a new background color for the
+	x::w::pane_appearance custom=f->appearance->clone();
+
+	// pane_appearance's background_color is a new background color for the
 	// new pane, either an explicit x::w::rgb value, or a name of a theme-
 	// specified color.
 	//
-	// padding() uses non-default padding for the new pane.
+	// padding settings specify non-default padding for the new pane.
 
-	f->set_background_color("100%")
-		.padding(2.0)
-		.set_scrollbar_visibility(v);
+	custom->background_color="100%";
+	custom->left_padding=custom->right_padding=
+		custom->top_padding=custom->bottom_padding=2.0;
+	custom->pane_scrollbar_visibility=v;
+
+	f->appearance=custom;
 
 	f->create_label("Lorem ipsum "
 			"dolor sit amet\n"
@@ -379,15 +393,21 @@ static void replace_first(const x::w::container &c,
 	// of a horizontal pane) gets sized to accomodate the widest/tallest
 	// pane.
 	//
-	// valign() and halign() controls the position of the new element in
-	// its pane, when there's extra space for it.
+	// horizontal_alignment and vertical_alignment control the position
+	// of the new element in its pane, when there's extra space for it.
 
 	x::w::panefactory f=lm->replace_panes(0);
 
-	f->set_background_color("100%")
-		.padding(2.0)
-		.set_scrollbar_visibility(v)
-		.valign(x::w::valign::bottom);
+	x::w::pane_appearance custom=f->appearance->clone();
+
+	custom->background_color="100%";
+	custom->left_padding=custom->right_padding=
+		custom->top_padding=custom->bottom_padding=2.0;
+	custom->pane_scrollbar_visibility=v;
+
+	custom->vertical_alignment=x::w::valign::bottom;
+
+	f->appearance=custom;
 
 	f->create_label("Lorem ipsum "
 			"dolor sit amet\n"
@@ -401,7 +421,7 @@ static void replace_first(const x::w::container &c,
 }
 
 static void replace_all(const x::w::container &c,
-			  x::w::scrollbar_visibility v)
+			x::w::scrollbar_visibility v)
 {
 	x::w::panelayoutmanager lm=c->get_layoutmanager();
 
@@ -411,20 +431,42 @@ static void replace_all(const x::w::container &c,
 
 	x::w::panefactory f=lm->replace_all_panes();
 
+	// Custom appearance for new panes:
+
+	x::w::pane_appearance custom=f->appearance->clone();
+
+	custom->background_color="100%";
+	custom->left_padding=custom->right_padding=
+		custom->top_padding=custom->bottom_padding=2.0;
+	custom->pane_scrollbar_visibility=v;
+
+	// It's possible to use the same factory to create multiple panes,
+	// which we do in the following loop.
+	//
+	// After each new pane gets created, the factory's appearance gets
+	// reset to the default appearance, so that's why on each iteration
+	// of the loop it's necessary to explicitly set f->appearance to our
+	// custom appearance.
+	//
+	// This is a basic example of caching appearance object. It's good
+	// practice to create stock appearance objects in advance and cache
+	// them, then use them each time creating a display element that uses
+	// that appearance, instead of creating a new appearance object
+	// each time.
+
 	for (int i=0; i<2; ++i)
 	{
-		f->set_background_color("100%")
-			.padding(2.0)
-			.set_scrollbar_visibility(v)
-			.create_label("Lorem ipsum "
-				      "dolor sit amet\n"
-				      "consectetur "
-				      "adipisicing elit sed\n"
-				      "do eiusmod "
-				      "tempor incididunt ut\n"
-				      "labore et "
-				      "dolore magna\n"
-				      "aliqua")->show();
+		f->appearance=custom;
+
+		f->create_label("Lorem ipsum "
+				"dolor sit amet\n"
+				"consectetur "
+				"adipisicing elit sed\n"
+				"do eiusmod "
+				"tempor incididunt ut\n"
+				"labore et "
+				"dolore magna\n"
+				"aliqua")->show();
 	}
 
 }
@@ -457,8 +499,28 @@ static void insert_list(const x::w::container &c)
 
 	f->configure_new_list(nlm);
 
-	f->set_initial_size(20)
-		.create_focusable_container
+	// configure_new_list() installs new appearance objects for the
+	// both the new pane, and the list.
+	//
+	// The pane factory's appearance object gets set to
+	// x::w::pane_appearance::base::focusable_list().
+	//
+	// The new layout manager's appearance object gets set to either
+	// x::w::list_appearance::base::list_pane_theme() or
+	// x::w::list_appearance::base::table_pane_theme().
+	// Any existing appearance objects in the pane factory and the
+	// x::w::new_listlayoutmanager, they get replaced.
+	//
+	// Therefore we must create a custom appearance object only after
+	// we configure_new_list().
+
+	x::w::pane_appearance custom=f->appearance->clone();
+
+	custom->size=20.0;
+
+	f->appearance=custom;
+
+	f->create_focusable_container
 		([]
 		 (const auto &container)
 		 {
