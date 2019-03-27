@@ -14,19 +14,20 @@
 #include "defaulttheme.H"
 #include "x/w/pixmap.H"
 #include "x/w/picture.H"
+#include "x/w/progressbar_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
 progressbar_sliderObj
 ::progressbar_sliderObj(const container_impl &parent,
-			const progressbar_config &config)
+			const const_progressbar_appearance &appearance)
 	// We temporary initialize the slider to 'color', and because
 	// new_gradient_required we will make sure to create the gradient
 	// in the connection thread.
-	: superclass_t{config.background_color,
-		config.slider_color,
+	: superclass_t{appearance->background_color,
+		appearance->slider_color,
 		parent, child_element_init_params
-	{{}, {}, config.background_color}}
+	{{}, {}, appearance->background_color}}
 {
 }
 

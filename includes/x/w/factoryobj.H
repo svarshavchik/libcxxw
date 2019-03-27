@@ -285,35 +285,42 @@ public:
 	template<typename functor>
 	inline progressbar create_progressbar(functor &&creator)
 	{
-		return create_progressbar(std::forward<functor>(creator), {});
+		return do_create_progressbar(make_function<void
+					     (const progressbar &)>
+					     (std::forward<functor>(creator)));
 	}
 
+	//! Option argument to create_progressbar().
+
+	typedef optional_argconstrefs<progressbar_config,
+				      new_layoutmanager
+				      > create_progressbar_args_t;
 	//! Create a progress bar
 
-	template<typename functor, typename ...Args>
+	template<typename functor, typename Arg, typename ...Args>
 	inline progressbar create_progressbar(functor &&creator,
-					      const progressbar_config &config,
+					      Arg &&arg,
 					      Args && ...args)
 	{
 		return do_create_progressbar(make_function<void
 					     (const progressbar &)>
 					     (creator),
-					     config,
-					     std::forward<Args>(args)...);
+					     {
+					      std::forward<Arg>(arg),
+					      std::forward<Args>(args)...
+					     });
 	}
 
-	//! Create a progress bar
+	//! Type-erased create_progressbar()
 	progressbar do_create_progressbar(const function<void
-					  (const progressbar &)> &,
-					  const progressbar_config &config)
+					  (const progressbar &)> &)
 		LIBCXX_PUBLIC;
 
-	//! Create a progress bar
+	//! Type-erased create_progressbar()
 	progressbar do_create_progressbar(const function<void
 					  (const progressbar &)> &,
-					  const progressbar_config &config,
-					  const new_layoutmanager
-					  &layout_manager) LIBCXX_PUBLIC;
+					  const create_progressbar_args_t &)
+		LIBCXX_PUBLIC;
 
 	//! Create a horizontal scrollbar
 	scrollbar create_horizontal_scrollbar(const scrollbar_config &config,

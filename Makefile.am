@@ -72,6 +72,7 @@ libcxxw_la_SOURCES=\
 	appearance/pane_appearance.C		    \
 	appearance/pane_layout_appearance.C	    \
 	appearance/peephole_appearance.C	    \
+	appearance/progressbar_appearance.C	    \
 	appearance/popup_list_appearance.C	    \
 	appearance/scrollbar_appearance.C	    \
 	assert_or_throw.C			    \

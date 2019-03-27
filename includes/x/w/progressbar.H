@@ -7,10 +7,7 @@
 
 #include <x/w/progressbarfwd.H>
 #include <x/w/progressbarobj.H>
-#include <x/w/dim_arg.H>
-#include <x/w/font_arg.H>
-#include <x/w/border_arg.H>
-#include <x/w/rgb.H>
+#include <x/w/progressbar_appearancefwd.H>
 #include <x/ref.H>
 #include <x/functionalrefptr.H>
 
@@ -22,28 +19,25 @@ LIBCXXW_NAMESPACE_START
 
 struct progressbar_config {
 
-	//! The border around the progress bar.
+	//! The appearance of the new progress bar
 
-	border_arg border="progressbar";
+	const_progressbar_appearance appearance;
 
-	//! The minimum width of the progress bar
+	//! Default constructor
 
-	dim_arg minimum_width{"progressbar"};
+	progressbar_config();
 
-	//! Background color
+	//! Destructor
 
-	color_arg background_color{"progressbar_background_color"};
+	~progressbar_config();
 
-	//! Foreground color (default color for text labels)
+	//! Copy constructor
 
-	color_arg foreground_color{"progressbar_foreground_color"};
+	progressbar_config(const progressbar_config &);
 
-	//! Default text label font.
-	font_arg label_font{theme_font{"progressbar"}};
+	//! Assignment operator
 
-	//! The progress bar's slider's color.
-
-	color_arg slider_color{"progressbar"};
+	progressbar_config &operator=(const progressbar_config &);
 };
 
 LIBCXXW_NAMESPACE_END

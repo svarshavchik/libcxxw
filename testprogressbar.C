@@ -53,12 +53,43 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
+void test_progressbar(const LIBCXX_NAMESPACE::w::factory &f)
+{
+	LIBCXX_NAMESPACE::w::progressbar_config config;
+	LIBCXX_NAMESPACE::w::new_gridlayoutmanager nglm;
+
+	auto creator=
+		[](const LIBCXX_NAMESPACE::w::progressbar &pb)
+		{
+		};
+
+	f->create_progressbar(creator);
+	f->create_progressbar(creator, config);
+	f->create_progressbar(creator, nglm);
+	f->create_progressbar(creator, config, nglm);
+	f->create_progressbar(creator,
+			      LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
+	f->create_progressbar(creator, config,
+			      LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
+	f->create_progressbar(creator,
+			      LIBCXX_NAMESPACE::w::progressbar_config{},
+			      LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
+}
+
 static auto initialize_progressbar(const LIBCXX_NAMESPACE::w::factory &f)
 {
 	LIBCXX_NAMESPACE::w::progressbar_config config;
 
-	config.foreground_color=LIBCXX_NAMESPACE::w::green;
-	config.label_font=LIBCXX_NAMESPACE::w::font{"liberation mono; point_size=24"};
+	config.appearance=config.appearance
+		->modify([]
+			 (const auto &appearance)
+			 {
+				 appearance->foreground_color=
+					 LIBCXX_NAMESPACE::w::green;
+				 appearance->label_font=
+					 LIBCXX_NAMESPACE::w::font
+					 {"liberation mono; point_size=24"};
+			 });
 
 	auto pb=f->create_progressbar
 		([]

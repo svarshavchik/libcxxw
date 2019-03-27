@@ -22,11 +22,11 @@ See COPYING for distribution information.
       <para>
 	An
 	<ulink url="&link-typedef-x--w-progressbar;"><classname>&ns;::w::progressbar</classname></ulink>
-	is a special-purpose &container; with a &layoutmanager;, the
+	is a specialized &container; with a &layoutmanager;, the
 	<link linkend="gridlayoutmanager">grid layout manager</link> by default.
-	It is expected that the contents of this display element report
+	It's expected that the contents of this display element report
 	an outgoing progress of some sort of a multi-step process; typically
-	with a brief, compact <link linkend="labels">label</link>.
+	using a descriptive <link linkend="labels">label</link>.
       </para>
 
       <para>

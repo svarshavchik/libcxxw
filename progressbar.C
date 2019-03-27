@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "progressbar_impl.H"
 #include "progressbar_slider.H"
+#include "x/w/progressbar_appearance.H"
 #include "x/w/impl/layoutmanager.H"
 #include "gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
@@ -13,6 +14,18 @@
 #include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
+
+progressbar_config::progressbar_config()
+	: appearance{progressbar_appearance::base::theme()}
+{
+}
+
+progressbar_config::~progressbar_config()=default;
+
+progressbar_config::progressbar_config(const progressbar_config &)=default;
+
+progressbar_config &progressbar_config::operator=(const progressbar_config &)
+=default;
 
 progressbarObj::progressbarObj(const ref<implObj> &impl,
 			       const layout_impl &container_layout_impl)
@@ -57,24 +70,30 @@ void progressbarObj::update(size_t value, size_t maximum_value,
 //////////////////////////////////////////////////////////////////////////
 
 progressbar factoryObj
-::do_create_progressbar(const function<void (const progressbar &)> &creator,
-			const progressbar_config &config)
+::do_create_progressbar(const function<void (const progressbar &)> &creator)
 {
-	return do_create_progressbar(creator, config,
-				     new_gridlayoutmanager{});
+	return do_create_progressbar(creator, {});
 }
 
 progressbar factoryObj
 ::do_create_progressbar(const function<void (const progressbar &)> &creator,
-			const progressbar_config &config,
-			const new_layoutmanager &layout_manager)
+			const create_progressbar_args_t &args)
 {
+	std::optional<progressbar_config> default_config;
+	std::optional<new_gridlayoutmanager> default_layoutmanager;
+
+	const progressbar_config &config=
+		optional_arg_or<progressbar_config>
+		(args, default_config);
+	const new_layoutmanager &layout_manager=
+		optional_arg_or<new_layoutmanager>(args, default_layoutmanager);
+
 	// Creating element:
 	//
 	// progressbar_handler -> progressbar_lm -> pb
 
 	auto progressbar_handler=ref<progressbarObj::handlerObj>
-		::create(get_container_impl(), config);
+		::create(get_container_impl(), config.appearance);
 
 	ref<gridlayoutmanagerObj::implObj> progressbar_lm=
 		new_gridlayoutmanager{}.create(progressbar_handler);
@@ -85,13 +104,14 @@ progressbar factoryObj
 
 	auto f=glm->append_row();
 
-	f->border(config.border);
+	f->border(config.appearance->border);
 	f->halign(halign::fill);
 	f->padding(0);
 
 	// The slider in the progress bar.
 
-	auto slider=progressbar_slider::create(progressbar_handler, config);
+	auto slider=progressbar_slider::create(progressbar_handler,
+					       config.appearance);
 
 	// Use the passed-in layout manager to create the layout manager
 	// for slider.

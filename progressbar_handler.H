@@ -6,6 +6,7 @@
 #define progressbar_handler_h
 
 #include "x/w/progressbar.H"
+#include "x/w/progressbar_appearancefwd.H"
 #include "x/w/dim_arg.H"
 #include "x/w/rgbfwd.H"
 #include "x/w/impl/container_elementfwd.H"
@@ -42,7 +43,7 @@ class progressbarObj::handlerObj
 
 	//! Constructor
 	handlerObj(const container_impl &parent_container,
-		   const progressbar_config &config);
+		   const const_progressbar_appearance &appearance);
 
 	//! Destructor
 	~handlerObj();

@@ -6,6 +6,7 @@
 #define progressbar_slider_h
 
 #include "x/w/progressbar.H"
+#include "x/w/progressbar_appearancefwd.H"
 #include "x/w/rgb.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "background_color_element_recalculatedfwd.H"
@@ -56,7 +57,7 @@ class LIBCXX_HIDDEN progressbar_sliderObj : public progressbar_slider_base_t {
 
 	//! Constructor
 	progressbar_sliderObj(const container_impl &parent,
-			      const progressbar_config &config);
+			      const const_progressbar_appearance &appearance);
 
 	//! Destructor
 	~progressbar_sliderObj();

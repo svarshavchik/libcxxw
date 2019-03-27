@@ -7,18 +7,20 @@
 #include "x/w/impl/container_element.H"
 #include "themedim_element_minoverride.H"
 #include "x/w/impl/background_color.H"
+#include "x/w/progressbar_appearance.H"
 #include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START
 
 progressbarObj::handlerObj::handlerObj(const container_impl
 				       &parent_container,
-				       const progressbar_config &config)
-	: superclass_t{config.minimum_width, 0,
+				       const const_progressbar_appearance
+				       &appearance)
+	: superclass_t{appearance->minimum_width, 0,
 		parent_container,
 		child_element_init_params{"progressbar@libcxx.com"}},
-	  label_font{config.label_font},
-	  foreground_color{config.foreground_color}
+	  label_font{appearance->label_font},
+	  foreground_color{appearance->foreground_color}
 {
 }
 

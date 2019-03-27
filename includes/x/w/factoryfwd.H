@@ -422,29 +422,42 @@ INSERT_LIBX_NAMESPACE::w::progressbar pb=factory->create_progressbar(
     {
         INSERT_LIBX_NAMESPACE::w::gridlayoutmanager glm=pb->get_layoutmanager();
 
-        // ...
+        INSERT_LIBX_NAMESPACE::w::gridfactory f=glm->append_row();
+        f->halign(INSERT_LIBX_NAMESPACE::w::halign::center);
+
+        glm->create_label("0%");
     },
     config,
     INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager{});
+
+pb->show_all();
+
 \endcode
 
 create_progressbar() creates an
 \ref progressbar "INSERT_LIBX_NAMESPACE::w::progressbar"
-which is a horizontal swath that's meant to visually indicate the
+which is a horizontal swath that  visually indicates the
 progress of an ongoing process. The horizontal swath has a colored
-striped that moves from its left margin to its right margin, to indicate
+stripe that moves from its left margin to its right margin, to indicate
 the progress of an operation.
 
-The progress bar is a container with a layout manager, that's meant to
-position an additional descriptive label inside the progress bar.
-The first parameter is an initializer lambda that creates the contents
-of the progress bar. The remaining parameters are optional:
+The progress bar is a container with a layout manager, a
+\ref gridlayoutmanager "grid layout manager" by default.
+create_progressbar()'s
+first parameter is a creator lambda that creates the contents
+of the progress bar. Each one of the remaining parameters are optional.
+If both are specified they must appear in the following order:
 
 - an \ref progressbar_config "INSERT_LIBX_NAMESPACE::w::progressbar_config"
 for customizing the progress bar's appearance.
 
-- the third parameter sets the progress bar's layout manager, and defaults
+- the new progress bar's layout manager, this defaults
 to \ref new_gridlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager".
+
+The description inside the progress bar is typically just a
+centered label, but can
+be any arbitrary display element. The creator lambda  constructs
+a single label for the initial status of the progress bar.
 
 \par Scroll bars
 
