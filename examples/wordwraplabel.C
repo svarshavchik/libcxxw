@@ -124,14 +124,6 @@ void wordwrap()
 
 	x::w::const_main_window_appearance appearance=config.appearance;
 
-	// This is an x::ref to a cached, constant object. Make a copy
-	// of the cached constant appearance object.
-
-	x::w::main_window_appearance custom_appearance=appearance->clone();
-
-	// main_window_config's background_color sets the main window's
-	// background color.
-
 	x::w::rgb light_yellow
 		{
 		 x::w::rgb::maximum,
@@ -139,11 +131,28 @@ void wordwrap()
 		 (x::w::rgb_component_t)(x::w::rgb::maximum * .75)
 		};
 
-	custom_appearance->background_color=light_yellow;
+	// const_main_window_appearance is a cached constant object. It
+	// remains referenced by the new main window, and the connection
+	// thread can access it at any time.
+	//
+	// Thread safety is ensured by contract, because it is a constant
+	// object. Modifying an appearance object involves invoking it's
+	// modify() and passing it a closure, or a callable object.
+	//
+	// modify() makes a new copy of the appearance object and invokes
+	// the closure with the new, temporarily-modifiable object
+	// as its parameter. The closure can then modify its members.
+	//
+	// modify() returns a new modified appearance object, a
+	// const_main_window_appearance once again, that, now safely constant
+	// again, can replace the original config.appearance.
 
-	// And then place it back into the main_window_config.
-
-	config.appearance=custom_appearance;
+	config.appearance=appearance->modify
+		([&]
+		 (const x::w::main_window_appearance &custom_appearance)
+		 {
+			 custom_appearance->background_color=light_yellow;
+		 });
 
 	auto main_window=
 		x::w::main_window::create(config, create_mainwindow);

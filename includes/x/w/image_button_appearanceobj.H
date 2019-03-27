@@ -8,6 +8,7 @@
 #include <x/w/image_button_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/alignment.H>
+#include <x/functional.H>
 #include <x/obj.H>
 #include <vector>
 #include <string>
@@ -74,7 +75,18 @@ public:
 	image_button_appearanceObj(const image_button_appearanceObj &);
 
 	//! Create a copy of this object.
-	image_button_appearance clone() const;
+	template<typename F> inline const_image_button_appearance modify(F &&f)
+		const
+	{
+		return do_modify(make_function
+				 <void(const image_button_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_image_button_appearance
+	do_modify(const function<void(const image_button_appearance &)> &)
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

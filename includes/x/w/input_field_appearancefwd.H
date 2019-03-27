@@ -23,7 +23,12 @@ INSERT_LIBX_NAMESPACE::w::input_field_config config{
     // ...
 };
 
-INSERT_LIBX_NAMESPACE::w::input_field_appearance custom=INSERT_LIBX_NAMESPACE::w::input_field_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_input_field_appearance custom=INSERT_LIBX_NAMESPACE::w::input_field_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::input_field_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 config.appearance=custom;
 \endcode

@@ -35,9 +35,12 @@ pane_appearanceObj::pane_appearanceObj
 {
 }
 
-pane_appearance pane_appearanceObj::clone() const
+const_pane_appearance pane_appearanceObj
+::do_modify(const function<void (const pane_appearance &)> &closure) const
 {
-	return pane_appearance::create(*this);
+	auto copy=pane_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_pane_appearance &pane_appearance_base::theme()
@@ -50,16 +53,19 @@ const const_pane_appearance &pane_appearance_base::theme()
 
 static const_pane_appearance create_focusable_list()
 {
-	auto appearance=pane_appearance::base::theme()->clone();
-
-	appearance->pane_scrollbar_visibility=scrollbar_visibility::never;
-	appearance->left_padding=
-		appearance->right_padding=
-		appearance->top_padding=
-		appearance->bottom_padding=0;
-	appearance->horizontal_alignment=halign::fill;
-	appearance->vertical_alignment=valign::fill;
-
+	auto appearance=pane_appearance::base::theme()->modify
+		([]
+		 (const auto &appearance)
+		 {
+			 appearance->pane_scrollbar_visibility=
+				 scrollbar_visibility::never;
+			 appearance->left_padding=
+				 appearance->right_padding=
+				 appearance->top_padding=
+				 appearance->bottom_padding=0;
+			 appearance->horizontal_alignment=halign::fill;
+			 appearance->vertical_alignment=valign::fill;
+		 });
 	return appearance;
 }
 
@@ -72,18 +78,24 @@ const const_pane_appearance &pane_appearance_base::focusable_list()
 
 static const_pane_appearance create_file_dialog_dir()
 {
-	auto appearance=pane_appearance_base::focusable_list()->clone();
-
-	appearance->size=30;
+	auto appearance=pane_appearance_base::focusable_list()->modify
+		([]
+		 (const auto &appearance)
+		 {
+			 appearance->size=30;
+		 });
 
 	return appearance;
 }
 
 static const_pane_appearance create_file_dialog_file()
 {
-	auto appearance=pane_appearance_base::focusable_list()->clone();
-
-	appearance->size=50;
+	auto appearance=pane_appearance_base::focusable_list()->modify
+		([]
+		 (const auto &appearance)
+		 {
+			 appearance->size=50;
+		 });
 
 	return appearance;
 }

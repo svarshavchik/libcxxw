@@ -59,12 +59,15 @@ static void insert(const LIBCXX_NAMESPACE::w::container &c,
 
 	LIBCXX_NAMESPACE::w::panefactory f=lm->insert_panes(0);
 
-	auto appearance=f->appearance->clone();
+	auto appearance=f->appearance->modify
+		([v]
+		 (const auto &appearance)
+		 {
+			 appearance->size=20;
+			 appearance->pane_scrollbar_visibility=v;
+		 });
 
 	f->appearance=appearance;
-
-	appearance->size=20;
-	appearance->pane_scrollbar_visibility=v;
 
 	f->create_label("Lorem ipsum\n"
 			"dolor sit amet\n"
@@ -86,12 +89,16 @@ static void append(const LIBCXX_NAMESPACE::w::container &c,
 
 	LIBCXX_NAMESPACE::w::panefactory f=lm->append_panes();
 
-	auto appearance=f->appearance->clone();
-
-	appearance->background_color="100%";
-	appearance->left_padding=appearance->right_padding=
-		appearance->top_padding=appearance->bottom_padding=2;
-	appearance->pane_scrollbar_visibility=v;
+	auto appearance=f->appearance->modify
+		([v]
+		 (const auto &appearance)
+		 {
+			 appearance->background_color="100%";
+			 appearance->left_padding=appearance->right_padding=
+				 appearance->top_padding=
+				 appearance->bottom_padding=2;
+			 appearance->pane_scrollbar_visibility=v;
+		 });
 
 	f->appearance=appearance;
 
@@ -131,13 +138,18 @@ static void replace_first(const LIBCXX_NAMESPACE::w::container &c,
 
 	LIBCXX_NAMESPACE::w::panefactory f=lm->replace_panes(0);
 
-	auto appearance=f->appearance->clone();
-
-	appearance->background_color="100%";
-	appearance->left_padding=appearance->right_padding=
-		appearance->top_padding=appearance->bottom_padding=2;
-	appearance->pane_scrollbar_visibility=v;
-	appearance->vertical_alignment=LIBCXX_NAMESPACE::w::valign::bottom;
+	auto appearance=f->appearance->modify
+		([v]
+		 (const auto &appearance)
+		 {
+			 appearance->background_color="100%";
+			 appearance->left_padding=appearance->right_padding=
+				 appearance->top_padding=
+				 appearance->bottom_padding=2;
+			 appearance->pane_scrollbar_visibility=v;
+			 appearance->vertical_alignment=
+				 LIBCXX_NAMESPACE::w::valign::bottom;
+		 });
 
 	f->appearance=appearance;
 
@@ -162,9 +174,12 @@ static void insert_list(const LIBCXX_NAMESPACE::w::container &c)
 
 	f->configure_new_list(nlm);
 
-	auto appearance=f->appearance->clone();
-
-	appearance->size=20;
+	auto appearance=f->appearance->modify
+		([]
+		 (const auto &appearance)
+		 {
+			 appearance->size=20;
+		 });
 
 	f->appearance=appearance;
 
@@ -416,9 +431,12 @@ void initialize_adjustable_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager
 	{
 		f->configure_new_list(ntlm);
 
-		auto appearance=f->appearance->clone();
-
-		appearance->size=50;
+		auto appearance=f->appearance->modify
+			([]
+			 (const auto &appearance)
+			 {
+				 appearance->size=50;
+			 });
 
 		f->appearance=appearance;
 

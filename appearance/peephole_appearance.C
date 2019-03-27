@@ -32,9 +32,12 @@ peephole_appearanceObj::peephole_appearanceObj
 {
 }
 
-peephole_appearance peephole_appearanceObj::clone() const
+const_peephole_appearance peephole_appearanceObj
+::do_modify(const function<void (const peephole_appearance &)> &closure) const
 {
-	return peephole_appearance::create(*this);
+	auto copy=peephole_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_peephole_appearance &peephole_appearance_base::theme()

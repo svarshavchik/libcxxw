@@ -8,6 +8,7 @@
 #include <x/w/scrollbar_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
+#include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -50,7 +51,17 @@ public:
 	scrollbar_appearanceObj(const scrollbar_appearanceObj &);
 
 	//! Create a copy of this object.
-	scrollbar_appearance clone() const;
+	template<typename F> inline const_scrollbar_appearance modify(F &&f)
+		const
+	{
+		return do_modify(make_function
+				 <void(const scrollbar_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_scrollbar_appearance
+	do_modify(const function<void(const scrollbar_appearance &)> &) const;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -26,9 +26,12 @@ combobox_appearanceObj::combobox_appearanceObj(const combobox_appearanceObj &o)
 {
 }
 
-combobox_appearance combobox_appearanceObj::clone() const
+const_combobox_appearance combobox_appearanceObj
+::do_modify(const function<void (const combobox_appearance &)> &closure) const
 {
-	return combobox_appearance::create(*this);
+	auto copy=combobox_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_combobox_appearance &combobox_appearance_base::theme()

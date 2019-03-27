@@ -10,6 +10,7 @@
 #include <x/w/border_arg.H>
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
+#include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -55,7 +56,18 @@ public:
 	item_layout_appearanceObj(const item_layout_appearanceObj &);
 
 	//! Create a copy of this object.
-	item_layout_appearance clone() const;
+
+	template<typename F> inline const_item_layout_appearance modify(F &&f)
+		const
+	{
+		return do_modify(make_function
+				 <void(const item_layout_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_item_layout_appearance
+	do_modify(const function<void(const item_layout_appearance &)> &) const;
 };
 
 LIBCXXW_NAMESPACE_END

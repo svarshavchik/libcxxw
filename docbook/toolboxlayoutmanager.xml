@@ -215,12 +215,14 @@ main_window->on_stabilized
     <blockquote>
       <informalexample>
 	<programlisting>
-x::w::image_button_appearance custom=
-    x::w::image_button_appearance::base::radio_theme()->clone();
-
-custom->set_distinct_focusoff_border();
-
-custom->images={icon_set[0], icon_set[1]};
+&ns;::w::const_image_button_appearance custom=
+    &ns;::w::image_button_appearance::base::radio_theme()->modify
+        ([&amp;]
+         (const &ns;::w::image_button_appearance &amp;appearance)
+         {
+             appearance->set_distinct_focusoff_border();
+             appearance->images={icon_set[0], icon_set[1]};
+         });
 
 auto b=f->create_radio(rg,
                        [](const auto &amp;f) {},
@@ -233,7 +235,7 @@ auto b=f->create_radio(rg,
       <link linkend="customcheckboxlabels">customizing a radio button's
 	appearance</link>.
       A &factory;'s <methodname>create_radio</methodname>() method takes
-      an optional custom appearance object parameter that controls the radio
+      an optional custom &appearance_object; parameter that controls the radio
       button's visual look.
       Its <varname>images</varname> member is a vector of custom images for
       the radio button: typically two filenames, the normal and the selected

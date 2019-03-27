@@ -28,9 +28,13 @@ pane_layout_appearanceObj::pane_layout_appearanceObj
 {
 }
 
-pane_layout_appearance pane_layout_appearanceObj::clone() const
+const_pane_layout_appearance pane_layout_appearanceObj
+::do_modify(const function<void (const pane_layout_appearance &)> &closure)
+	const
 {
-	return pane_layout_appearance::create(*this);
+	auto copy=pane_layout_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_pane_layout_appearance &pane_layout_appearance_base::theme()

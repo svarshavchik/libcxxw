@@ -48,23 +48,30 @@ that make it up; requiring a call to show_all() to make all of that visible.
 \par Custom file dialog appearance.
 
 \code
-
-INSERT_LIBX_NAMESPACE::w::file_dialog_appearance custom=c.appearance->clone();
-
-// ...
-
-c.appearance=custom;
+c.appearance=c.appearance->modify([]
+                                  (const INSERT_LIBX_NAMESPACE::w::file_dialog_appearance &custom)
+                                  {
+                                      // ...
+                                  });
 \endcode
 
 \ref file_dialog_config "INSERT_LIBX_NAMESPACE::w::file_dialog_config"'s
-appearance member is a
+appearance member is a const
 \ref file_dialog_appearance "INSERT_LIBX_NAMESPACE::w::file_dialog_appearance"
-object that contains many settings that control the visual appearance
+object (actually a \c const_file_dialog_appearance),
+that contains many settings that control the visual appearance
 of the file dialog (fonts and colors).
 
 Customized file dialog properties are specified by using
-clone() to create a copy of the appearance member, modifying the custom
-copy, and then installing it as a new appearance member.
+modify() to create a copy of the appearance member, and invoke the passed-in
+callable object or a closure that can access the temporarily
+modifiable appearance object, and then replacing the original constant
+appearance object.
+
+This calling convention ensures thread-safety by contract: while running,
+an existing file dialog safely accesses the constant appearance object that
+created it, and any subsequent changes to the file dialog appearance always
+use a new, modified appearance object.
 
 */
 

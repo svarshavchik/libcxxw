@@ -306,25 +306,44 @@ auto main_window=
     <para>
       <link linkend="wordwraplabel"><filename>wordwraplabel.C</filename></link>
       gives an example of using so-called <quote>appearance objects</quote>
-      to adjust a display element's visual appearance. The normal appearance
-      of &appshort;'s display elements gets set by the
+      to adjust a display element's visual appearance. The visual appearance
+      of &appshort;'s display elements defaults to the
       current <link linkend="cxxwtheme.1">display theme</link>.
       <filename>wordwraplabel.C</filename> overrides the default window
-      background color to light yellow, in order to display text
+      background color to light yellow for showing text
       in blue and black colors.
     </para>
 
-    <section id="appearanceclone">
-      <title>Cloning an appearance object</title>
+
+    <para>
+      An appearance object is a
+      <link linkend="refobjelements">reference-counted object</link>
+      accessed using &libcxx;'s
+      <ulink url="&refobj;">smart pointers</ulink>.
+      The appearance objects are constant objects, and their smart pointer
+      handles follow the default &libcxx; naming conventions. A main window's
+      appearance object handle is named
+      <classname>&ns;::w::const_main_window_appearance</classname>.
+      Each &appshort;'s class that gets used to create a display element
+      has an appearance object attached to it, and the appearance object
+      remains attached to the display element for the duration of its
+      existence.
+    </para>
+
+    <section id="appearancemodify">
+      <title>Modifying an appearance object</title>
 
       <para>
-	An appearance object is a
-	<link linkend="refobjelements">reference-counted object</link>
-	accessed using &libcxx;'s
-	<ulink url="&refobj;">smart pointers</ulink>.
-	Each &appshort;'s class that's used to create a display element
-	has an appearance object attached to it.
+	The &connection_thread; uses appearance objects for rendering.
+	The appearance objects are thread-safe by the virtue of them being
+	constant objects.
+	An existing appearance object never gets modified directly.
+	Each appearance object's <methodname>modify</methodname>() method
+	creates a duplicate copy of the
+	original appearance object which then gets
+	modified, and <methodname>modify</methodname>() returns a new, constant, appearance object.
       </para>
+
 
       <para>
 	A new main window gets created using a
@@ -346,7 +365,7 @@ auto main_window=
 	cached, constant object that sets the visual appearance from the
 	current display theme.
 	Implementing a custom appearance involves using the appearance
-	object's <methodname>clone</methodname>() to create a modifiable copy
+	object's <methodname>modify</methodname>() to create a modifiable copy
 	of itself. The resulting object gets modified, and placed back into
 	the original object where the appearance came from:
       </para>
@@ -359,9 +378,14 @@ auto main_window=
 
 &ns;::w::main_window_config config;
 
-&ns;::w::main_window_appearance appearance=config.appearance->clone();
+&ns;::w::const_main_window_appearance appearance=config.appearance;
 
-appearance->background_color=&ns;::w::white;
+appearance=appearance->modify
+    ([]
+     (const &ns;::w::main_window_appearance &amp;appearance)
+     {
+         appearance->background_color=&ns;::w::white;
+     });
 
 config.appearance=appearance;</programlisting>
 	</informalexample>
@@ -370,11 +394,32 @@ config.appearance=appearance;</programlisting>
       <para>
 	<classname>&ns;::w::main_window_config</classname>'s default
 	constructor installs the default, cached, <varname>appearance</varname>
-	obtain from the current display theme.
-	After <methodname>clone</methodname>() it, the background color
-	value gets set to white, then the modified appearance object
-	replaces
+	reflecting the current display theme.
+        Its handle name is
+	<classname>&ns;::w::const_main_window_appearance</classname>
+	reflecting that it's a reference to a <literal>const</literal> object.
+      </para>
+
+      <para>
+	An appearance object's <methodname>modify</methodname>() method takes
+	a callable object, or a closure, as its parameter. The closure
+	receives a modifiable copy of the original appearance object,
+	an
+	<ulink url="&link-typedef-x--w-main-window-appearance;"><classname>&ns;::w::main_window_appearance</classname></ulink>.
+	The closure makes changes to the appearance object, and
+	<methodname>modify</methodname>() returns a new constant
+	appearance object that replaces
 	<classname>&ns;::w::main_window_config</classname>'s original one.
+      </para>
+
+      <para>
+	Appearance-objects, like all other library objects, are
+	<link linkend="refobjelements">reference-counted objects</link>. This
+	convention ensures by contract that appearance objects referenced
+	by active display elements are always constant and thread-safe.
+	This approach makes appearance objects modifiable only after they're
+	copied from an existing constant object, and the modified appearance
+	objects remain constant thereafter.
       </para>
     </section>
   </section>

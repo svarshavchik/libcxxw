@@ -13,6 +13,7 @@
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/button_config.H>
+#include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -111,7 +112,17 @@ public:
 	input_field_appearanceObj(const input_field_appearanceObj &);
 
 	//! Create a copy of this object.
-	input_field_appearance clone() const;
+	template<typename F> inline const_input_field_appearance modify(F &&f)
+		const
+	{
+		return do_modify(make_function
+				 <void(const input_field_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_input_field_appearance
+	do_modify(const function<void(const input_field_appearance &)> &) const;
 };
 
 LIBCXXW_NAMESPACE_END

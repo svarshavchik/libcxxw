@@ -23,7 +23,12 @@ INSERT_LIBX_NAMESPACE::w::print_dialog_config config{
     // ...
 };
 
-INSERT_LIBX_NAMESPACE::w::print_dialog_appearance custom=INSERT_LIBX_NAMESPACE::w::print_dialog_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_print_dialog_appearance custom=INSERT_LIBX_NAMESPACE::w::print_dialog_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::print_dialog_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 config.appearance=custom;
 \endcode

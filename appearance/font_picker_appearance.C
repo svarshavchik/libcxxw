@@ -42,9 +42,13 @@ font_picker_appearanceObj::font_picker_appearanceObj
 {
 }
 
-font_picker_appearance font_picker_appearanceObj::clone() const
+const_font_picker_appearance font_picker_appearanceObj
+::do_modify(const function<void (const font_picker_appearance &)> &closure)
+	const
 {
-	return font_picker_appearance::create(*this);
+	auto copy=font_picker_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_font_picker_appearance &font_picker_appearance_base::theme()

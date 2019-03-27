@@ -10,6 +10,7 @@
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/font_arg.H>
+#include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -83,7 +84,17 @@ public:
 	main_window_appearanceObj(const main_window_appearanceObj &);
 
 	//! Create a copy of this object.
-	main_window_appearance clone() const;
+	template<typename F> inline const_main_window_appearance modify(F &&f)
+		const
+	{
+		return do_modify(make_function<void
+				 (const main_window_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_main_window_appearance
+	do_modify(const function<void(const main_window_appearance &)> &) const;
 };
 
 LIBCXXW_NAMESPACE_END

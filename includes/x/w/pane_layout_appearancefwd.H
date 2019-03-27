@@ -23,7 +23,12 @@ INSERT_LIBX_NAMESPACE::w::new_panelayoutmanager config{
     // ...
 };
 
-INSERT_LIBX_NAMESPACE::w::pane_layout_appearance custom=INSERT_LIBX_NAMESPACE::w::pane_layout_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_pane_layout_appearance custom=INSERT_LIBX_NAMESPACE::w::pane_layout_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::pane_layout_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 config.appearance=custom;
 \endcode

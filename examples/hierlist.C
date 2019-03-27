@@ -91,16 +91,19 @@ static inline void create_main_window(const x::w::main_window &main_window)
 	//
 	// "appearance" is an object that has various settings regarding
 	// the list's appearance. It is a constant, cached object, for
-	// optimization purposes. To make changes to it, we first clone it:
+	// optimization purposes, an x::w::const_list_appearance.
+	// To make changes to it, we use modify() to make a copy of it,
+	// and adjust the temporarily-modifiable copy of the object,
+	// in the closure. modify() returns a new const_list_appearance
+	// that replaces the original one.
 
-	x::w::list_appearance custom_appearance=nlm.appearance->clone();
-
-	// Change our setting:
-	custom_appearance->h_padding=.5;
-
-	// And install it:
-
-	nlm.appearance=custom_appearance;
+	nlm.appearance=nlm.appearance->modify
+		([]
+		 (const x::w::list_appearance &custom_appearance)
+		 {
+			 // Change our setting:
+			 custom_appearance->h_padding=.5;
+		 });
 
 	// The default selection type callback visually selects the list item
 	// when it's clicked on. Replace this with a custom callback. We

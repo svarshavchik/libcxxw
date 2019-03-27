@@ -235,11 +235,12 @@ void testimagebuttons()
 
 	config.screen_position(pos, "main");
 
-	auto custom=config.appearance->clone();
-
-	config.appearance=custom;
-
-	custom->label_font="liberation mono"_font;
+	config.appearance=config.appearance->modify
+		([]
+		 (const auto &custom)
+		 {
+			 custom->label_font="liberation mono"_font;
+		 });
 
 	auto main_window=LIBCXX_NAMESPACE::w::screen::create()
 		->create_mainwindow

@@ -76,19 +76,25 @@ x::w::main_window create_mainwindow(const options &options)
 	// specify the apparent background color of the splash window in the
 	// splash_config.
 
-	x::w::main_window_appearance custom_appearance=
-		splash_config.appearance->clone();
+	splash_config.appearance=splash_config.appearance->modify
+		([]
+		 (const x::w::main_window_appearance &custom_appearance)
+		 {
+			 custom_appearance->background_color=
+				 x::w::linear_gradient{0, 0, 0, 1,
+						       0, 0,
+						       {
+							{0, x::w::silver},
+							{1, x::w::white},
+							{2, x::w::silver}
+						       }};
+		 });
 
-	custom_appearance->background_color=
-		x::w::linear_gradient{0, 0, 0, 1,
-				      0, 0,
-				      {
-				       {0, x::w::silver},
-				       {1, x::w::white},
-				       {2, x::w::silver}
-				      }};
 	// splash_window_config's border member specifies an ordinary, non-
 	// rounded border.
+	//
+	// This is an extra field in the splash_window_config that's not a
+	// part of its appearance object.
 
 	x::w::border_infomm square_border;
 
@@ -108,8 +114,6 @@ x::w::main_window create_mainwindow(const options &options)
 	rounded_border.radius=1;
 
 	transparent_splash_config.border=rounded_border;
-
-	splash_config.appearance=custom_appearance;
 
 	// After passing either an x::w::splash_window_config or a
 	// x::w::transparent_splash_window_config to main_window's create(),

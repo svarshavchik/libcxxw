@@ -22,7 +22,12 @@ Derived from
 which sets the visual appearance of the combo-box popup.
 
 \code
-INSERT_LIBX_NAMESPACE::w::const_combobox_appearance custom=INSERT_LIBX_NAMESPACE::w::combobox_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_combobox_appearance custom=INSERT_LIBX_NAMESPACE::w::combobox_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::combobox_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 \endcode
 
 The default popup appearance properties for combo-boxes
@@ -33,8 +38,9 @@ reason why it's constant.
 Like \ref list_appearance "INSERT_LIBX_NAMESPACE::w::list_appearance",
 and
 \ref popup_list_appearance "INSERT_LIBX_NAMESPACE::w::popup_list_appearance",
-clone() creates a copy of the appearance object, which can be modified
-further.
+use modify() creates a copy of the appearance object, which can be modified
+further by the callable object, before returning a new constant appearance
+object that can be safely accessed by the connection thread.
 
 */
 

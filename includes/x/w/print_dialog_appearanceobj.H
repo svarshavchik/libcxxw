@@ -14,6 +14,7 @@
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
+#include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -101,7 +102,17 @@ public:
 	print_dialog_appearanceObj(const print_dialog_appearanceObj &);
 
 	//! Create a copy of this object.
-	print_dialog_appearance clone() const;
+	template<typename F> inline const_print_dialog_appearance modify(F &&f)
+		const
+	{
+		return do_modify(make_function<void(const print_dialog_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_print_dialog_appearance
+	do_modify(const function<void(const print_dialog_appearance &)> &)
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

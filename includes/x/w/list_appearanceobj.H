@@ -11,6 +11,7 @@
 #include <x/w/rgb.H>
 #include <x/w/dim_arg.H>
 #include <x/w/scrollbar_appearancefwd.H>
+#include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -124,10 +125,19 @@ public:
 	~list_appearanceObj();
 
 	//! Copy constructor
-	list_appearanceObj(const list_appearance_properties &);
+	list_appearanceObj(const list_appearanceObj &);
 
 	//! Clone this object.
-	list_appearance clone() const;
+
+	template<typename F> inline const_list_appearance modify(F &&f) const
+	{
+		return do_modify(make_function<void(const list_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_list_appearance
+	do_modify(const function<void(const list_appearance &)> &) const;
 };
 
 LIBCXXW_NAMESPACE_END

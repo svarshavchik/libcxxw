@@ -26,9 +26,12 @@ scrollbar_appearanceObj::scrollbar_appearanceObj
 {
 }
 
-scrollbar_appearance scrollbar_appearanceObj::clone() const
+const_scrollbar_appearance scrollbar_appearanceObj
+::do_modify(const function<void (const scrollbar_appearance &)> &closure) const
 {
-	return scrollbar_appearance::create(*this);
+	auto copy=scrollbar_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_scrollbar_appearance &scrollbar_appearance_base::theme()

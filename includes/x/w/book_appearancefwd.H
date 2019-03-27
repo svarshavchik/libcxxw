@@ -22,16 +22,19 @@ set by the current display theme.
 \code
 INSERT_LIBX_NAMESPACE::w::new_booklayoutmanager nblm;
 
-INSERT_LIBX_NAMESPACE::w::book_appearance custom=nblm.appearance->clone();
+INSERT_LIBX_NAMESPACE::w::const_book_appearance custom=nblm.appearance
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::book_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 nblm.appearance=custom;
 \endcode
 
 The default properties are set by the current display theme, and are
-cached for speed.
-\c INSERT_LIBX_NAMESPACE::w::book_appearance::base::theme() returns
-a cached default theme appearance, the default appearance initialized
-for the \ref new_booklayoutmanager "book layout manager".
+cached for speed. Use modify() to make a copy of an existing constant
+appearance object, and pass it to a closure to customize it.
 
 */
 

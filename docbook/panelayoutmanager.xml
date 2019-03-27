@@ -119,13 +119,12 @@ See COPYING for distribution information.
     <blockquote>
       <informalexample>
 	<programlisting>
-&ns;::w::pane_appearance custom=f->appearance->clone();
-
-custom->size=20.0;
-
-// ...
-
-f->appearance=custom;</programlisting>
+f->appearance=f->appearance->modify
+    ([]
+     (const auto &amp;appearance)
+     {
+         appearance->size=20.0;
+     });</programlisting>
       </informalexample>
     </blockquote>
 
@@ -151,11 +150,15 @@ factory->create_focusable_container(
 
           &ns;::w::panefactory f=plm->append_panes();
 
-          &ns;::w::pane_appearance custom=f->appearance->clone();
-
-          custom->size=20.0; // 20 millimeters (almost)
+          auto custom=f->appearance->modify
+              ([]
+               (const auto &amp;appearance)
+               {
+                   custom->size=20.0; // 20 millimeters (almost)
+               });
 
           f->appearance=custom;
+
           f->create_label("Lorem Ipsum")->show();
 
           // The pane factory automatically resets itself to the default
@@ -181,11 +184,11 @@ factory->create_focusable_container(
       20 millimeters. The draggable divider between the two panes takes
       up some space too, and it has to fit within its container's 40 millimeter
       size. The two new panes' sizes get slightly adjusted, in order to leave
-      sufficient space for the dividers.
+      sufficient space for the dividers (and the drawn borders).
     </para>
 
     <para>
-      The sizes set by <methodname>set_initial_size</methodname>(), in this
+      The sizes set in the appearance objects, in this
       manner, are just guidelines, or hints, and the actual size of each new
       element gets proportionately adjusted, together with the sizes of any
       existing panes, so that the entire container stays within its bounds.
@@ -288,9 +291,12 @@ auto pf=plm->append_panes();
 nlm.columns=3;
 pf->configure_new_list(nlm);
 
-&ns;::w::pane_appearance custom=pf->appearance->clone();
-
-custom->size=30.0;
+&ns;::w::const_pane_appearance custom=pf->appearance->modify
+    ([]
+     (const &ns;::w::pane_appearance &amp;appearance)
+     {
+         appearance->size=30.0;
+     });
 
 pf->size=custom;
 
@@ -323,13 +329,13 @@ pf->create_focusable_container([]
       </para>
 
       <para>
-	<methodname>configure_new_list</methodname>() install new
+	<methodname>configure_new_list</methodname>() installs new
 	&appearance_object;s in both the pane
 	factory's and the passed-in
 	<classname>&ns;::w::new_listlayoutmanager</classname>
 	or
-	<classname>&ns;::w::new_tablelayoutmanager</classname>.
-	These appearance objects are adjusted
+	<classname>&ns;::w::new_tablelayoutmanager</classname>;
+	which also get adjusted for these alternative appearance objects
 	with optimal settings:
       </para>
 
@@ -345,7 +351,8 @@ pf->create_focusable_container([]
 
 	<listitem>
 	  <para>
-	    Eliminating the selection list/table element's drawn border, because
+	    The list's or table's &appearance_object; does not specify a
+	    drawn border for the list or the table, because
 	    the pane layout manager provides a border for all of its panes,
 	    already.
 	  </para>
@@ -355,7 +362,7 @@ pf->create_focusable_container([]
 	  <para>
 	    Disabling the pane's scroll-bar. The selection list or table
 	    provides its
-	    own scroll-bar, when needed.
+	    own scroll-bar, as needed,
 	    in the list.
 	  </para>
 	</listitem>
@@ -397,10 +404,12 @@ auto pf=plm->append_panes();
 nlm.columns=3;
 pf->configure_new_list(nlm);
 
-auto custom=pf->appearance.clone();
-
-custom->size=30;
-
+auto custom=pf->appearance->modify
+    ([]
+     (const auto &amp;appearance)
+     {
+          appearance->size=30;
+     });
 pf->appearance=custom;
 
 pf->create_focusable_container([]
@@ -412,9 +421,12 @@ pf->create_focusable_container([]
 
 pf->configure_new_list(nlm);
 
-custom=pf->appearance.clone();
-
-custom->size=50;
+custom=pf->appearance->modify
+    ([]
+     (const auto &amp;appearance)
+     {
+          appearance->size=50;
+     });
 
 pf->appearance=custom;
 

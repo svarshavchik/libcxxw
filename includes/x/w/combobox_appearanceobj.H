@@ -55,7 +55,17 @@ public:
 	combobox_appearanceObj(const combobox_appearanceObj &);
 
 	//! Clone this object
-	combobox_appearance clone() const;
+	template<typename F> inline const_combobox_appearance modify(F &&f)
+		const
+	{
+		return do_modify(make_function<void(const combobox_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_combobox_appearance do_modify(const function
+					    <void(const combobox_appearance &)>
+					    &) const;
 };
 
 LIBCXXW_NAMESPACE_END

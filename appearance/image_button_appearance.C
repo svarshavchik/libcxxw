@@ -37,9 +37,12 @@ image_button_appearanceObj::image_button_appearanceObj
 {
 }
 
-image_button_appearance image_button_appearanceObj::clone() const
+const_image_button_appearance image_button_appearanceObj
+::do_modify(const function<void (const image_button_appearance &)> &closure) const
 {
-	return image_button_appearance::create(*this);
+	auto copy=image_button_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_image_button_appearance &

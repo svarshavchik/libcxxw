@@ -12,6 +12,7 @@
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
+#include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -126,7 +127,18 @@ public:
 	date_input_field_appearanceObj(const date_input_field_appearanceObj &);
 
 	//! Create a copy of this object.
-	date_input_field_appearance clone() const;
+
+	template<typename F>
+	inline const_date_input_field_appearance modify(F &&f) const
+	{
+		return do_modify(make_function<void(const date_input_field_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_date_input_field_appearance
+	do_modify(const function<void(const date_input_field_appearance &)> &)
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

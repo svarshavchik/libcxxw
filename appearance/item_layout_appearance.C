@@ -28,9 +28,12 @@ item_layout_appearanceObj::item_layout_appearanceObj
 {
 }
 
-item_layout_appearance item_layout_appearanceObj::clone() const
+const_item_layout_appearance item_layout_appearanceObj
+::do_modify(const function<void (const item_layout_appearance &)> &closure) const
 {
-	return item_layout_appearance::create(*this);
+	auto copy=item_layout_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_item_layout_appearance &item_layout_appearance_base::theme()

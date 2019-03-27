@@ -354,11 +354,12 @@ void testfontrenderer()
 	//
 	// White background color.
 
-	x::w::main_window_appearance appearance=config.appearance->clone();
-
-	appearance->background_color=x::w::white;
-
-	config.appearance=appearance;
+	config.appearance=config.appearance->modify
+		([]
+		 (const x::w::main_window_appearance &appearance)
+		 {
+			 appearance->background_color=x::w::white;
+		 });
 
 	auto main_window=x::w::main_window::create
 		(config,

@@ -23,7 +23,12 @@ INSERT_LIBX_NAMESPACE::w::file_dialog_config config{
     // ...
 };
 
-INSERT_LIBX_NAMESPACE::w::file_dialog_appearance custom=INSERT_LIBX_NAMESPACE::w::file_dialog_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_file_dialog_appearance custom=INSERT_LIBX_NAMESPACE::w::file_dialog_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::file_dialog_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 config.appearance=custom;
 \endcode

@@ -58,6 +58,22 @@ libcxxw_la_SOURCES=\
 	activated_in_thread.H			    \
 	activated_in_threadfwd.H		    \
 	activated_in_threadobj.H		    \
+	appearance/book_appearance.C		    \
+	appearance/combobox_appearance.C	    \
+	appearance/date_input_field_appearance.C    \
+	appearance/file_dialog_appearance.C	    \
+	appearance/font_picker_appearance.C	    \
+	appearance/image_button_appearance.C	    \
+	appearance/input_field_appearance.C	    \
+	appearance/item_button_appearance.C	    \
+	appearance/item_layout_appearance.C	    \
+	appearance/list_appearance.C		    \
+	appearance/main_window_appearance.C	    \
+	appearance/pane_appearance.C		    \
+	appearance/pane_layout_appearance.C	    \
+	appearance/peephole_appearance.C	    \
+	appearance/popup_list_appearance.C	    \
+	appearance/scrollbar_appearance.C	    \
 	assert_or_throw.C			    \
 	assert_or_throw.H			    \
 	background_color.C			    \
@@ -67,7 +83,6 @@ libcxxw_la_SOURCES=\
 	batch_queue.C				    \
 	batch_queue.H				    \
 	batch_queueobj.H			    \
-	booklayoutmanager/book_appearance.C	    \
 	booklayoutmanager/bookgridlayoutmanager.C   \
 	booklayoutmanager/bookgridlayoutmanager.H   \
 	booklayoutmanager/booklayoutmanager.C       \
@@ -136,7 +151,6 @@ libcxxw_la_SOURCES=\
 	color_picker/color_picker_squareobj.H       \
 	color_picker/color_picker_square_impl.C     \
 	color_picker/color_picker_square_impl.H     \
-	combobox_appearance.C			    \
 	combobox/custom_comboboxlayoutmanager.C	    \
 	combobox/custom_comboboxlayoutmanager.H	    \
 	combobox/custom_comboboxlayoutmanager_impl.C \
@@ -185,7 +199,6 @@ libcxxw_la_SOURCES=\
 	cursor_pointer_element.H		    \
 	cursor_pointer_elementfwd.H		    \
 	date_input_field/date_input_field.C	    \
-	date_input_field/date_input_field_appearance.C \
 	date_input_field/date_input_field_filter.H  \
 	date_input_field/date_input_field_handler.C \
 	date_input_field/date_input_field_handler.H \
@@ -250,7 +263,6 @@ libcxxw_la_SOURCES=\
 	factory.C				    \
 	gc.C					    \
 	file_dialog/file_dialog.C		    \
-	file_dialog/file_dialog_appearance.C	    \
 	file_dialog/file_dialog_impl.C		    \
 	file_dialog/file_dialog_impl.H		    \
 	focusable_container.C			    \
@@ -277,7 +289,6 @@ libcxxw_la_SOURCES=\
 	focus/standard_focusframecontainer_element.C \
 	focus/standard_focusframecontainer_element_impl.C \
 	font_picker/font_picker.C		    \
-	font_picker/font_picker_appearance.C	    \
 	font_picker/font_picker_impl.C		    \
 	font_picker/font_picker_impl.H		    \
 	font_picker/font_family_group_entry.C	    \
@@ -405,7 +416,6 @@ libcxxw_la_SOURCES=\
 	image_impl.C				    \
 	image_button.C				    \
 	image_button.H				    \
-	image_button_appearance.C		    \
 	image_button_impl.C			    \
 	image_button_internal.C			    \
 	image_button_internal.H			    \
@@ -422,7 +432,6 @@ libcxxw_la_SOURCES=\
 	input_field/editor_search_implobj.H	    \
 	input_field/input_field.C		    \
 	input_field/input_field.H		    \
-	input_field/input_field_appearance.C	    \
 	input_field/input_field_impl.C		    \
 	input_field/input_field_search.C	    \
 	input_field/input_field_search.H	    \
@@ -443,11 +452,9 @@ libcxxw_la_SOURCES=\
 	itemlayoutmanager/itembuttonobj.H	    \
 	itemlayoutmanager/itembutton_impl.C	    \
 	itemlayoutmanager/itembutton_impl.H	    \
-	itemlayoutmanager/item_button_appearance.C  \
 	itemlayoutmanager/itemlayoutmanager.C	    \
 	itemlayoutmanager/itemlayoutmanager_impl.C  \
 	itemlayoutmanager/itemlayoutmanager_impl.H  \
-	itemlayoutmanager/item_layout_appearance.C  \
 	itemlayoutmanager/peepholed_item_container.C \
 	itemlayoutmanager/peepholed_item_container.H \
 	itemlayoutmanager/peepholed_item_containerfwd.H \
@@ -463,7 +470,6 @@ libcxxw_la_SOURCES=\
 	layoutmanager.C				    \
 	layoutmanager_impl.C			    \
 	list.C					    \
-	list_appearance.C			    \
 	listlayoutmanager/extra_list_row_info.C	    \
 	listlayoutmanager/extra_list_row_info.H	    \
 	listlayoutmanager/extra_list_row_infofwd.H  \
@@ -508,7 +514,6 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/menu_item.H		    \
 	main_window.C				    \
 	main_window.H				    \
-	main_window_appearance.C		    \
 	main_window_handler.C			    \
 	main_window_handler.H			    \
 	main_window_impl.C			    \
@@ -555,8 +560,6 @@ libcxxw_la_SOURCES=\
 	panelayoutmanager/panelayoutmanager.C	    \
 	panelayoutmanager/panelayoutmanager_impl.C  \
 	panelayoutmanager/panelayoutmanager_impl.H  \
-	panelayoutmanager/pane_appearance.C         \
-	panelayoutmanager/pane_layout_appearance.C  \
 	panelayoutmanager/pane_peephole.C	    \
 	panelayoutmanager/pane_peephole.H	    \
 	panelayoutmanager/pane_peepholefwd.H	    \
@@ -584,7 +587,6 @@ libcxxw_la_SOURCES=\
 	peephole/peephole.C			    \
 	peephole/peepholefwd.H			    \
 	peephole/peepholeobj.H			    \
-	peephole/peephole_appearance.C		    \
 	peephole/peephole_gridlayoutmanager.C	    \
 	peephole/peephole_gridlayoutmanagerobj.H    \
 	peephole/peephole_impl.C		    \
@@ -671,7 +673,6 @@ libcxxw_la_SOURCES=\
 	popup_imagebutton_impl.C		    \
 	popup_imagebutton_impl.H		    \
 	popup_imagebutton_implfwd.H		    \
-	popup_list_appearance.C			    \
 	popup/popup.C				    \
 	popup/popup.H				    \
 	popup/popup_handler.C			    \
@@ -757,7 +758,6 @@ libcxxw_la_SOURCES=\
 	screen_positions.C			    \
 	screen_update_current_theme.C		    \
 	scrollbar/scrollbar.C			    \
-	scrollbar/scrollbar_appearance.C	    \
 	scrollbar/scrollbar_icon_set.H		    \
 	scrollbar/scrollbar_impl.C		    \
 	scrollbar/scrollbar_impl.H		    \
@@ -898,8 +898,8 @@ $(call REFCOLLECTION_GEN,font_picker/font_picker.inc.H, \
 libcxxwcups_la_LIBADD=libcxxw.la -lcxxcups -lcxx -lcourier-unicode
 libcxxwcups_la_LDFLAGS=$(STATICLINKFLAGS) -version-info @VERSION_INFO@
 libcxxwcups_la_SOURCES=\
+	appearance/print_dialog_appearance.C	    \
 	print_dialog/print_dialog.C		    \
-	print_dialog/print_dialog_appearance.C	    \
 	print_dialog/print_dialog_impl.C	    \
 	print_dialog/print_dialog_impl.H	    \
         #

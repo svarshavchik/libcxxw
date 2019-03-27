@@ -47,9 +47,12 @@ print_dialog_appearanceObj::print_dialog_appearanceObj
 {
 }
 
-print_dialog_appearance print_dialog_appearanceObj::clone() const
+const_print_dialog_appearance print_dialog_appearanceObj
+::do_modify(const function<void (const print_dialog_appearance &)> &closure) const
 {
-	return print_dialog_appearance::create(*this);
+	auto copy=print_dialog_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_print_dialog_appearance &print_dialog_appearance_base::theme()

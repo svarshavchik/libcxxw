@@ -32,15 +32,17 @@ popup_list_appearanceObj::~popup_list_appearanceObj()=default;
 
 popup_list_appearanceObj
 ::popup_list_appearanceObj(const popup_list_appearanceObj &c)
-	: list_appearanceObj{static_cast<const list_appearance_properties &>
-		(c)},
+	: list_appearanceObj{c},
 	  popup_list_appearance_properties{c}
 {
 }
 
-popup_list_appearance popup_list_appearanceObj::clone() const
+const_popup_list_appearance popup_list_appearanceObj
+::do_modify(const function<void (const popup_list_appearance &)> &closure) const
 {
-	return popup_list_appearance::create(*this);
+	auto copy=popup_list_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 static popup_list_appearance create_menu_theme()

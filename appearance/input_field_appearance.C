@@ -50,9 +50,13 @@ input_field_appearanceObj::input_field_appearanceObj
 {
 }
 
-input_field_appearance input_field_appearanceObj::clone() const
+const_input_field_appearance input_field_appearanceObj
+::do_modify(const function<void (const input_field_appearance &)> &closure)
+	const
 {
-	return input_field_appearance::create(*this);
+	auto copy=input_field_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_input_field_appearance &input_field_appearance_base::theme()
@@ -65,7 +69,7 @@ const const_input_field_appearance &input_field_appearance_base::theme()
 
 static const_input_field_appearance create_editable_combobox_theme()
 {
-	auto custom=input_field_appearance::base::theme()->clone();
+	auto custom=input_field_appearance::create();
 
 	// The editable combo-box has its own border, no need for the
 	// input field to add its own.

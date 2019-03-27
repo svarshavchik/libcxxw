@@ -13,6 +13,7 @@
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/alignment.H>
+#include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -81,7 +82,16 @@ public:
 	pane_appearanceObj(const pane_appearanceObj &);
 
 	//! Create a copy of this object.
-	pane_appearance clone() const;
+	template<typename F> inline const_pane_appearance modify(F &&f) const
+	{
+		return do_modify(make_function<void(const pane_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_pane_appearance do_modify(const function
+					<void(const pane_appearance &)> &)
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

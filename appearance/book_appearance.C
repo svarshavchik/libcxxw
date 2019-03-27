@@ -30,9 +30,12 @@ book_appearanceObj::book_appearanceObj(const book_appearanceObj &o)
 {
 }
 
-book_appearance book_appearanceObj::clone() const
+const_book_appearance book_appearanceObj
+::do_modify(const function<void (const book_appearance &)> &closure) const
 {
-	return book_appearance::create(*this);
+	auto copy=book_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_book_appearance &book_appearance_base::theme()

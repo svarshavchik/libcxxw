@@ -21,8 +21,10 @@ Basicaly a subclass of \ref list_appearance "list appearance" with some
 additional properties.
 
 Like \ref list_appearance "INSERT_LIBX_NAMESPACE::w::list_appearance",
-clone() creates a copy of the appearance object, which can be modified
-further.
+use modify() to make a copy of an existing
+\c INSERT_LIBX_NAMESPACE::const_popup_list_appearance constant object,
+using a closure to customize a new
+\c INSERT_LIBX_NAMESPACE::popup_list_appearance object.
 
 */
 

@@ -20,7 +20,12 @@ set by the current display theme.
 
 \code
 
-INSERT_LIBX_NAMESPACE::w::image_button_appearance custom=INSERT_LIBX_NAMESPACE::w::image_button_appearance::base::checkbox_theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_image_button_appearance custom=INSERT_LIBX_NAMESPACE::w::image_button_appearance::base::checkbox_theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::image_button_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 factory->create_checkbox(custom);
 \endcode

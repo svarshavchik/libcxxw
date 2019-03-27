@@ -21,7 +21,12 @@ set by the current display theme.
 \code
 INSERT_LIBX_NAMESPACE::w::panefactory f;
 
-INSERT_LIBX_NAMESPACE::w::pane_appearance custom=INSERT_LIBX_NAMESPACE::w::pane_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_pane_appearance custom=INSERT_LIBX_NAMESPACE::w::pane_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::pane_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 f->appearance=custom;
 \endcode
@@ -36,21 +41,21 @@ a cached default theme appearance.
 typedef ref<pane_appearanceObj,
 	    pane_appearance_base> pane_appearance;
 
-//! Constant \ref pane_appearance "WHATITIS".
+//! Constant \ref pane_appearance "pane appearance".
 
 //! \see pane_appearance
 
 typedef const_ref<pane_appearanceObj,
 		  pane_appearance_base> const_pane_appearance;
 
-//! A nullable pointer reference to a \ref pane_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref pane_appearance "pane appearance".
 
 //! \see pane_appearance
 
 typedef ptr<pane_appearanceObj,
 	    pane_appearance_base> pane_appearanceptr;
 
-//! A nullable pointer reference to a const \ref pane_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref pane_appearance "pane appearance".
 
 //! \see pane_appearance
 

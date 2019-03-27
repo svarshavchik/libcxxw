@@ -36,9 +36,12 @@ main_window_appearanceObj::main_window_appearanceObj
 {
 }
 
-main_window_appearance main_window_appearanceObj::clone() const
+const_main_window_appearance main_window_appearanceObj
+::do_modify(const function<void (const main_window_appearance &)> &closure) const
 {
-	return main_window_appearance::create(*this);
+	auto copy=main_window_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_main_window_appearance &main_window_appearance_base::theme()

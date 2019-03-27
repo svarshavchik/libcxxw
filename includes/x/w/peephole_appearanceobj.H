@@ -9,6 +9,7 @@
 #include <x/w/scrollbar_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/dim_arg.H>
+#include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -28,19 +29,19 @@ struct peephole_appearance_properties {
 
 	//! Extra padding for the element in the peephole.
 
-	dim_arg left_padding=0;
+	dim_arg left_padding;
 
 	//! Extra padding for the element in the peephole.
 
-	dim_arg right_padding=0;
+	dim_arg right_padding;
 
 	//! Extra padding for the element in the peephole.
 
-	dim_arg top_padding=0;
+	dim_arg top_padding;
 
 	//! Extra padding for the element in the peephole.
 
-	dim_arg bottom_padding=0;
+	dim_arg bottom_padding;
 
 	//! Horizontal scrollbar appearance
 	const_scrollbar_appearance horizontal_scrollbar;
@@ -67,7 +68,17 @@ public:
 	peephole_appearanceObj(const peephole_appearanceObj &);
 
 	//! Create a copy of this object.
-	peephole_appearance clone() const;
+	template<typename F> inline const_peephole_appearance modify(F &&f)
+		const
+	{
+		return do_modify(make_function
+				 <void(const peephole_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_peephole_appearance
+	do_modify(const function<void(const peephole_appearance &)> &) const;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -30,9 +30,12 @@ item_button_appearanceObj::item_button_appearanceObj
 {
 }
 
-item_button_appearance item_button_appearanceObj::clone() const
+const_item_button_appearance item_button_appearanceObj
+::do_modify(const function<void (const item_button_appearance &)> &closure) const
 {
-	return item_button_appearance::create(*this);
+	auto copy=item_button_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_item_button_appearance &item_button_appearance_base::theme()

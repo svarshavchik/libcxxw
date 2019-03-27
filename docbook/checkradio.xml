@@ -134,17 +134,18 @@ train->update_label([selected]
 	<link linkend="refobjelements">reference-counted</link> object.
 	Actually it's an
 	<ulink url="&link-typedef-x--w-const-image-button-appearance;"><classname>&ns;::w::const_image_button_appearance</classname></ulink>
-	that represents a <literal>const</literal> object.
+	that references a <literal>const</literal> object.
       </para>
 
       <para>
 	This is a common &appshort; design pattern: an
-	<quote>appearance</quote> object.
+	<quote>&appearance_object;</quote>.
 	This object specifies various appearance-related properties of
 	a display element.
 	The default appearance object is cached, which is why it is a constant
-	object. An appearance object's <methodname>clone</methodname>() creates
-	a duplicate copy of an object which can then be modified without
+	object. An appearance object's <methodname>modify</methodname>() creates
+	a duplicate copy of the appearance object,
+	which can then be modified without
 	impacting the cached copy.
       </para>
 
@@ -156,9 +157,12 @@ train->update_label([selected]
 &ns;::w::const_image_button_appearance default_appearance=
     &ns;::w::const_image_button_appearance::base::checkbox_theme();
 
-&ns;::w::image_button_appearance custom_appearance=default_appearance->clone();
-
-custom_appearance->alignment=&ns;::w::valign::bottom;
+&ns;::w::const_image_button_appearance custom_appearance=
+    default_appearance->modify([]
+                               (const &ns;::w::image_button_appearance &amp;appearance)
+                               {
+                                   appearance->alignment=&ns;::w::valign::bottom;
+                               });
 
 factory->create_checkbox([]
                          (const &ns;::w::factory &amp;label_factory)
@@ -174,7 +178,7 @@ factory->create_checkbox([]
 	<methodname>radio_theme</methodname>() return the default appearance
 	objects for checkboxes and radio buttons.
 	This example takes the default <methodname>checkbox_theme</methodname>()
-	and <methodname>clone</methodname>()s in.
+	and <methodname>modify</methodname>()s it.
 	This appearance object's
 	<varname>alignment</varname> member
 	adjusts the
@@ -273,7 +277,7 @@ bottom_label->label_for(train);</programlisting>
       </para>
 
       <para>
-	Finally, setting a (cloned) appearance object's
+	Finally, setting a (modified) appearance object's
 	<varname>images</varname> setting
 	loads custom checkbox or radio button images.
 	See <xref linkend="iconimages" /> for more information.

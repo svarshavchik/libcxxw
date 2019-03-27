@@ -35,9 +35,12 @@ reason why it's constant.
 \code
 INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager nlm;
 
-INSERT_LIBX_NAMESPACE::w::list_appearance custom=nlm.appearance->clone();
-
-INSERT_LIBX_NAMESPACE::w::list_appearance custom=INSERT_LIBX_NAMESPACE::w::list_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_list_appearance custom=INSERT_LIBX_NAMESPACE::w::list_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::list_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 custom->border={};
 
@@ -45,16 +48,27 @@ nlm.appearance=custom;
 
 \endcode
 
-Use clone() to clone the existing appearance object, modify it, and replace
-the \c appearance class member with the custom one.
+Use modify() to make a copy of an existing constant appearance object.
+The passed-in closure receives a temporarily modifiable copy of the original
+constant appearance object.
 
 \c INSERT_LIBX_NAMESPACE::w::list_appearance::base::theme() returns the
-default, cached, list appearance object.
+default, cached, constant list appearance object.
 
 \code
-INSERT_LIBX_NAMESPACE::w::list_appearance custom=INSERT_LIBX_NAMESPACE::w::list_appearance::base::combobox_theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_list_appearance custom=INSERT_LIBX_NAMESPACE::w::list_appearance::base::combobox_theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::list_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
-INSERT_LIBX_NAMESPACE::w::list_appearance custom=INSERT_LIBX_NAMESPACE::w::list_appearance::base::pane_theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_list_appearance custom=INSERT_LIBX_NAMESPACE::w::list_appearance::base::pane_theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::list_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 \endcode
 
 combobox_theme() and pane_theme() similarly return the cached default list

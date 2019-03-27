@@ -38,18 +38,19 @@ void list_appearance_properties::visible_focusoff_border()
 
 list_appearanceObj::list_appearanceObj()=default;
 
-list_appearanceObj::list_appearanceObj(const list_appearance_properties &orig)
+list_appearanceObj::list_appearanceObj(const list_appearanceObj &orig)
 	: list_appearance_properties{orig}
 {
 }
 
 list_appearanceObj::~list_appearanceObj()=default;
 
-list_appearance list_appearanceObj::clone() const
+const_list_appearance list_appearanceObj
+::do_modify(const function<void (const list_appearance &)> &closure) const
 {
-	const list_appearance_properties &me=*this;
-
-	return list_appearance::create(me);
+	auto copy=list_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_list_appearance &list_appearance_base::theme()
@@ -61,9 +62,12 @@ const const_list_appearance &list_appearance_base::theme()
 
 static auto create_list_pane_theme()
 {
-	auto c=list_appearance::base::theme()->clone();
-
-	c->list_border={};
+	auto c=list_appearance::base::theme()
+		->modify([]
+			 (const auto &c)
+			 {
+				 c->list_border={};
+			 });
 
 	return c;
 }
@@ -77,9 +81,12 @@ const const_list_appearance &list_appearance_base::list_pane_theme()
 
 static auto create_table_theme()
 {
-	auto c=list_appearance::base::theme()->clone();
-
-	c->visible_focusoff_border();
+	auto c=list_appearance::base::theme()
+		->modify([]
+			 (const auto &c)
+			 {
+				 c->visible_focusoff_border();
+			 });
 
 	return c;
 }
@@ -93,9 +100,12 @@ const const_list_appearance &list_appearance_base::table_theme()
 
 static auto create_table_pane_theme()
 {
-	auto c=list_appearance::base::list_pane_theme()->clone();
-
-	c->visible_focusoff_border();
+	auto c=list_appearance::base::list_pane_theme()
+		->modify([]
+			 (const auto &c)
+			 {
+				 c->visible_focusoff_border();
+			 });
 
 	return c;
 }

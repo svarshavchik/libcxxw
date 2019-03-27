@@ -2015,13 +2015,18 @@ void defaultthemeObj::layout_book_container(const factory &f,
 	if (!background_color.empty() ||
 	    !border.empty())
 	{
-		auto appearance=nblm.appearance->clone();
+		auto appearance=
+			nblm.appearance->modify
+			([&]
+			 (const auto &appearance)
+			 {
+				 if (!background_color.empty())
+					 appearance->background_color=
+						 background_color;
 
-		if (!background_color.empty())
-			appearance->background_color=background_color;
-
-		if (!border.empty())
-			appearance->border=border;
+				 if (!border.empty())
+					 appearance->border=border;
+			 });
 
 		nblm.appearance=appearance;
 	}

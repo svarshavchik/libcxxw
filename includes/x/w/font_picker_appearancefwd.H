@@ -23,7 +23,12 @@ INSERT_LIBX_NAMESPACE::w::font_picker_config config{
     // ...
 };
 
-INSERT_LIBX_NAMESPACE::w::font_picker_appearance custom=INSERT_LIBX_NAMESPACE::w::font_picker_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_font_picker_appearance custom=INSERT_LIBX_NAMESPACE::w::font_picker_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::font_picker_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 config.appearance=custom;
 \endcode

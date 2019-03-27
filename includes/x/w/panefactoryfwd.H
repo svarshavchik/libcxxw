@@ -23,20 +23,32 @@ New elements get created as individual panes with adjustable sizes.
 \code
 #include <INSERT_LIBX_NAMESPACE/w/pane_appearance.H>
 
-INSERT_LIBX_NAMESPACE::w::pane_appearance custom=f->appearance->clone();
+f->appearance=f->appearance->modify([]
+                                    (const INSERT_LIBX_NAMESPACE::w::pane_appearance &custom)
+                                    {
+                                        custom->size=10.0;
+                                        custom->left_padding=
+                                            custom->right_padding=
+                                            custom->bottom_padding=2;
+                                    });
 
-custom->size=10.0;
-custom->left_padding=custom->right_padding=custom->bottom_padding=2;
-
-f->appearance=custom;
 
 f->create_label("Hello world!")->show();
 \endcode
 
 The \c appearance member specifies the appearance of the next new pane.
-\c appearance is a reference to a constant object. A custom appearance for
-the next new pane gets specified by using clone() to create a new object,
-modifying it accordingly, and replacing \c appearance.
+\c appearance is a reference to a constant object. The default appearance
+comes from the current display theme. A custom appearance for
+the next new pane gets created by using an existing appearance object's
+modify(). This invokes the passed in closure that receives a modifiable
+copy of the appearance object. modify() returns the new constant appearance
+object.
+
+The panes maintain a reference on their appearance object, and the connection
+thread may access the panes' appearance objects at any time, and this
+convention ensures, by contract, that the appearance objects are constant and
+thread safe, and the only time the appearance objects exist is when they
+get created as a copy of an original constant appearance object.
 
 Each time a new pane gets create, the \c appearance member gets reset back
 to the default theme-specified appearance.
@@ -60,14 +72,19 @@ Each new pane's element needs to get show()n to be visible.
 \par Miscellaneous pane appearance properties.
 
 \code
-INSERT_LIBX_NAMESPACE::w::pane_appearance custom=f->appearance->clone();
+f->appearance=f->appearance->modify([]
+                                    (const INSERT_LIBX_NAMESPACE::w::pane_appearance &custom)
+                                    {
+                                        custom->size=10.0;
+                                        custom->left_padding=
+                                            custom->right_padding=
+                                            custom->bottom_padding=2;
+                                        custom->background_color=INSERT_LIBX_NAMESPACE::w::blue;
+                                        custom->horizontal_alignment=INSERT_LIBX_NAMESPACE::w::halign::centered;
+                                        custom->vertical_alignment=INSERT_LIBX_NAMESPACE::w::valign::middle;
+                                        custom->pane_scrollbar_visibility=INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::always;
 
-custom->size=10.0;
-custom->left_padding=custom->right_padding=custom->bottom_padding=2;
-custom->background_color=INSERT_LIBX_NAMESPACE::w::blue;
-custom->horizontal_alignment=INSERT_LIBX_NAMESPACE::w::halign::centered;
-custom->vertical_alignment=INSERT_LIBX_NAMESPACE::w::valign::middle;
-custom->pane_scrollbar_visibility=INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::always;
+                                    });
 
 \endcode
 
@@ -88,8 +105,8 @@ is \c INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::automatic_reserved.
 Using the factory to create multiple display elements places each individual
 element into a new pane, and resets the pane appearance to the default
 theme-specified appearance. Creating multiple panes with a custom background
-color, for example, requires taking the pane appearance objec from the
-factory, using clone(), and setting its background_color to the same
+color, for example, requires taking the pane appearance object from the
+factory, using modify(), and setting its background_color to the same
 pane's background color. Call set_background_color() again to use the same
 (or different) background color before creating the next display element.
 
@@ -100,11 +117,11 @@ INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager nlm;
 
 pane_f->configure_new_list(nlm);
 
-auto custom=pane_f->appearance->clone();
-
-custom->size=20;
-
-pane_f->appearance=custom;
+pane_f->appearance=pane_f->appearance->modify([]
+                                              (const auto &custom)
+                                              {
+                                                  custom->size=20;
+                                              });
 
 pane_f->create_focusable_container(
          []

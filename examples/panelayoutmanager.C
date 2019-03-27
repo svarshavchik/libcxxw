@@ -255,42 +255,53 @@ static void insert(const x::w::container &c,
 
 	// Custom pane appearance. Set the pane's initial size.
 
-	x::w::pane_appearance custom=f->appearance->clone();
+	x::w::const_pane_appearance custom=f->appearance->modify
+		([v]
+		 (const x::w::pane_appearance &custom)
+		 {
+			 // "size" specifies the new element's
+			 // "virtual" size, in millimeters:
 
-	// The factory's set_initial_size() specifies the new element's
-	// "virtual" size, in millimeters:
+			 custom->size=20.0;
 
-	custom->size=20.0;
+			 // The actual size of the pane container gets set
+			 // when the pane layout manager's container gets
+			 // created. It's given as the parameter to
+			 // x::w::new_panelayoutmanager's constructor, and the
+			 // size of the container does not vary outside of
+			 // this preset size.
+			 //
+			 // Adding a new element to the container only
+			 // expands the container up to its maximum size. If
+			 // it exceeds it, all existing elements in the pane
+			 // container get resized proportionately to their
+			 // existing size and the size specified by
+			 // set_initial_size().
+			 //
+			 // So, for example, if the pane container is full
+			 // and its already at its maximum size of 20
+			 // millimeters, and this new element's 20 millimeter
+			 // makes the new total size of 40, and all elements,
+			 // including the new element's size gets cut in half
+			 // since the pane's size is limited to 20 mm total.
 
-	// The actual size of the pane container gets set when the pane
-	// layout manager's container gets created. It's given as the
-	// parameter to x::w::new_panelayoutmanager's constructor, and the
-	// size of the container does not vary outside of this preset size.
-	//
-	// Adding a new element to the container only expands the container
-	// up to its maximum size. If it exceeds it, all existing elements
-	// in the pane container get resized proportionately to their existing
-	// size and the size specified by set_initial_size().
-	//
-	// So, for example, if the pane container is full and its already
-	// at its maximum size of 20 millimeters, and this new element's
-	// 20 millimeter makes the new total size of 40, and all elements,
-	// including the new element's size gets cut in half since the pane's
-	// size is limited to 20 mm total.
 
+			 // The pane's appearance's size setting sets the
+			 // initial size of the new page.
+			 // pane_scrollbar_visibility specifies when and how
+			 // the pane's scroll-bar is visible. This, and other,
+			 // appearance properties get set before creating a
+			 // new display element, which then becomes the
+			 // new pane.
+			 //
+			 // Repeatedly using the same factory to create
+			 // multiple display elements creates a new pane
+			 // for each one; however all pane  properties get
+			 // reset back to their default values, and must be
+			 // explicitly set before creating each new pane.
 
-	// The pane's appearance's size setting sets the initial size of the
-	// new page. pane_scrollbar_visibility specifies when and how the
-	// pane's scroll-bar is visible. This, and other, options get set
-	// before creating a new display element, which then becomes the
-	// new pane.
-	//
-	// Repeatedly using the same factory to create multiple display
-	// elements creates a new pane for each one; however all pane
-	// properties get reset back to their default values, and must be
-	// explicitly set before creating each new pane.
-
-	custom->pane_scrollbar_visibility=v;
+			 custom->pane_scrollbar_visibility=v;
+		 });
 
 	f->appearance=custom;
 
@@ -329,20 +340,21 @@ static void append(const x::w::container &c,
 
 	x::w::panefactory f=lm->append_panes();
 
-	x::w::pane_appearance custom=f->appearance->clone();
-
 	// pane_appearance's background_color is a new background color for the
 	// new pane, either an explicit x::w::rgb value, or a name of a theme-
 	// specified color.
 	//
 	// padding settings specify non-default padding for the new pane.
 
-	custom->background_color="100%";
-	custom->left_padding=custom->right_padding=
-		custom->top_padding=custom->bottom_padding=2.0;
-	custom->pane_scrollbar_visibility=v;
-
-	f->appearance=custom;
+	f->appearance=f->appearance->modify
+		([v]
+		 (const auto &custom)
+		 {
+			 custom->background_color="100%";
+			 custom->left_padding=custom->right_padding=
+				 custom->top_padding=custom->bottom_padding=2.0;
+			 custom->pane_scrollbar_visibility=v;
+		 });
 
 	f->create_label("Lorem ipsum "
 			"dolor sit amet\n"
@@ -398,16 +410,17 @@ static void replace_first(const x::w::container &c,
 
 	x::w::panefactory f=lm->replace_panes(0);
 
-	x::w::pane_appearance custom=f->appearance->clone();
+	f->appearance=f->appearance->modify
+		([v]
+		 (const auto &custom)
+		 {
+			 custom->background_color="100%";
+			 custom->left_padding=custom->right_padding=
+				 custom->top_padding=custom->bottom_padding=2.0;
+			 custom->pane_scrollbar_visibility=v;
 
-	custom->background_color="100%";
-	custom->left_padding=custom->right_padding=
-		custom->top_padding=custom->bottom_padding=2.0;
-	custom->pane_scrollbar_visibility=v;
-
-	custom->vertical_alignment=x::w::valign::bottom;
-
-	f->appearance=custom;
+			 custom->vertical_alignment=x::w::valign::bottom;
+		 });
 
 	f->create_label("Lorem ipsum "
 			"dolor sit amet\n"
@@ -433,12 +446,15 @@ static void replace_all(const x::w::container &c,
 
 	// Custom appearance for new panes:
 
-	x::w::pane_appearance custom=f->appearance->clone();
-
-	custom->background_color="100%";
-	custom->left_padding=custom->right_padding=
-		custom->top_padding=custom->bottom_padding=2.0;
-	custom->pane_scrollbar_visibility=v;
+	auto custom=f->appearance->modify
+		([v]
+		 (const auto &custom)
+		 {
+			 custom->background_color="100%";
+			 custom->left_padding=custom->right_padding=
+				 custom->top_padding=custom->bottom_padding=2.0;
+			 custom->pane_scrollbar_visibility=v;
+		 });
 
 	// It's possible to use the same factory to create multiple panes,
 	// which we do in the following loop.
@@ -448,7 +464,7 @@ static void replace_all(const x::w::container &c,
 	// of the loop it's necessary to explicitly set f->appearance to our
 	// custom appearance.
 	//
-	// This is a basic example of caching appearance object. It's good
+	// This is a basic example of caching an appearance object. It's good
 	// practice to create stock appearance objects in advance and cache
 	// them, then use them each time creating a display element that uses
 	// that appearance, instead of creating a new appearance object
@@ -511,14 +527,15 @@ static void insert_list(const x::w::container &c)
 	// Any existing appearance objects in the pane factory and the
 	// x::w::new_listlayoutmanager, they get replaced.
 	//
-	// Therefore we must create a custom appearance object only after
+	// Therefore we must modify() a custom appearance object only after
 	// we configure_new_list().
 
-	x::w::pane_appearance custom=f->appearance->clone();
-
-	custom->size=20.0;
-
-	f->appearance=custom;
+	f->appearance=f->appearance->modify
+		([]
+		 (const auto &custom)
+		 {
+			 custom->size=20.0;
+		 });
 
 	f->create_focusable_container
 		([]

@@ -21,7 +21,12 @@ set by the current display theme.
 \code
 INSERT_LIBX_NAMESPACE::w::itemlayoutmanager lm;
 
-INSERT_LIBX_NAMESPACE::w::item_button_appearance custom=INSERT_LIBX_NAMESPACE::w::item_button_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_item_button_appearance custom=INSERT_LIBX_NAMESPACE::w::item_button_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::item_button_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 // ...
 

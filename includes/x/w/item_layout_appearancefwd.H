@@ -24,7 +24,12 @@ INSERT_LIBX_NAMESPACE::w::new_item_layoutmanager nlm{
     // ...
 };
 
-INSERT_LIBX_NAMESPACE::w::item_layout_appearance custom=INSERT_LIBX_NAMESPACE::w::item_layout_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_item_layout_appearance custom=INSERT_LIBX_NAMESPACE::w::item_layout_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::item_layout_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 nlm.appearance=custom;
 \endcode

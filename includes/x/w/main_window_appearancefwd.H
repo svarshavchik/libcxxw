@@ -23,7 +23,12 @@ INSERT_LIBX_NAMESPACE::w::main_window_config config{
     // ...
 };
 
-INSERT_LIBX_NAMESPACE::w::main_window_appearance custom=INSERT_LIBX_NAMESPACE::w::main_window_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_main_window_appearance custom=INSERT_LIBX_NAMESPACE::w::main_window_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::main_window_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 config.appearance=custom;
 \endcode

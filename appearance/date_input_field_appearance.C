@@ -11,10 +11,14 @@ LIBCXXW_NAMESPACE_START
 
 static const_input_field_appearance create_date_input_field_appearance()
 {
-	auto custom=input_field_appearance::base::theme()->clone();
-
-	custom->border={};
-	custom->background_color="dateedit_background_color";
+	auto custom=input_field_appearance::base::theme()
+		->modify([]
+			 (const auto &custom)
+			 {
+				 custom->border={};
+				 custom->background_color=
+					 "dateedit_background_color";
+			 });
 	return custom;
 }
 
@@ -68,9 +72,12 @@ date_input_field_appearanceObj::date_input_field_appearanceObj
 {
 }
 
-date_input_field_appearance date_input_field_appearanceObj::clone() const
+const_date_input_field_appearance date_input_field_appearanceObj
+::do_modify(const function<void (const date_input_field_appearance &)> &closure) const
 {
-	return date_input_field_appearance::create(*this);
+	auto copy=date_input_field_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_date_input_field_appearance &date_input_field_appearance_base::theme()

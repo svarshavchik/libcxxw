@@ -446,11 +446,12 @@ void testfontrenderer()
 
 	x::w::main_window_config config;
 
-	x::w::main_window_appearance appearance=config.appearance->clone();
-
-	appearance->background_color=x::w::white;
-
-	config.appearance=appearance;
+	config.appearance=config.appearance->modify
+		([]
+		 (const x::w::main_window_appearance &appearance)
+		 {
+			 appearance->background_color=x::w::white;
+		 });
 
 	auto main_window=x::w::main_window::create
 		(config,

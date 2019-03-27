@@ -14,6 +14,7 @@
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/text_param.H>
+#include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -87,7 +88,18 @@ public:
 	font_picker_appearanceObj(const font_picker_appearanceObj &);
 
 	//! Create a copy of this object.
-	font_picker_appearance clone() const;
+
+	template<typename F> inline const_font_picker_appearance modify(F &&f)
+		const
+	{
+		return do_modify(make_function<
+				 void(const font_picker_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_font_picker_appearance
+	do_modify(const function<void(const font_picker_appearance &)> &) const;
 };
 
 LIBCXXW_NAMESPACE_END

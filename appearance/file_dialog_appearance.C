@@ -37,9 +37,13 @@ file_dialog_appearanceObj::file_dialog_appearanceObj
 {
 }
 
-file_dialog_appearance file_dialog_appearanceObj::clone() const
+const_file_dialog_appearance file_dialog_appearanceObj
+::do_modify(const function<void (const file_dialog_appearance &)> &closure)
+	const
 {
-	return file_dialog_appearance::create(*this);
+	auto copy=file_dialog_appearance::create(*this);
+	closure(copy);
+        return copy;
 }
 
 const const_file_dialog_appearance &file_dialog_appearance_base::theme()

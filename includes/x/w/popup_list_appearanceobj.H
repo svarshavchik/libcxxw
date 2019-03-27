@@ -73,7 +73,17 @@ public:
 	popup_list_appearanceObj(const popup_list_appearanceObj &);
 
 	//! Clone this object.
-	popup_list_appearance clone() const;
+	template<typename F> inline const_popup_list_appearance modify(F &&f)
+		const
+	{
+		return do_modify(make_function
+				 <void(const popup_list_appearance &)>
+				 (std::forward<F>(f)));
+	}
+
+	//! Type-erased modify().
+	const_popup_list_appearance
+	do_modify(const function<void(const popup_list_appearance &)> &) const;
 };
 
 LIBCXXW_NAMESPACE_END

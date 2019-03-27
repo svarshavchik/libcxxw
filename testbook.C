@@ -263,11 +263,16 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 
 	LIBCXX_NAMESPACE::w::new_booklayoutmanager nblm;
 
-	auto custom=nblm.appearance->clone();
+	auto custom=nblm.appearance->modify
+		([]
+		 (const auto &custom)
+		 {
+			 custom->tabs_background_color=
+				 LIBCXX_NAMESPACE::w::white;
+
+		 });
 
 	nblm.appearance=custom;
-
-	custom->tabs_background_color=LIBCXX_NAMESPACE::w::white;
 
 	// nblm.scroll_button_height=20;
 	auto c=gf->colspan(2).create_focusable_container

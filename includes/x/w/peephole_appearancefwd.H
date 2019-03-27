@@ -23,7 +23,12 @@ INSERT_LIBX_NAMESPACE::w::new_scrollable_peepholelayoutmanager lm{
     // ...
 };
 
-INSERT_LIBX_NAMESPACE::w::peephole_appearance custom=INSERT_LIBX_NAMESPACE::w::peephole_appearance::base::theme()->clone();
+INSERT_LIBX_NAMESPACE::w::const_peephole_appearance custom=INSERT_LIBX_NAMESPACE::w::peephole_appearance::base::theme()
+    ->modify([]
+             (const INSERT_LIBX_NAMESPACE::w::peephole_appearance &custom)
+             {
+                    // Modify custom->...
+             });
 
 lm.appearance=custom;
 \endcode
