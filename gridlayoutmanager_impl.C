@@ -310,7 +310,7 @@ void gridlayoutmanagerObj::implObj::remove_rows(size_t row, size_t n)
 
 	if (row < (*lock)->elements.size())
 	{
-		size_t max_n=(*lock)->elements.size()-n;
+		size_t max_n=(*lock)->elements.size()-row;
 
 		if (max_n < n)
 			n=max_n;

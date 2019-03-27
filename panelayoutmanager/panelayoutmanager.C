@@ -127,7 +127,7 @@ void panelayoutmanagerObj::remove_all_panes()
 	// [pane]
 	// [slider]
 
-	impl->remove_elements(grid_lock, 2, impl->total_size(grid_lock)-3);
+	impl->remove_elements(grid_lock, 2, impl->total_size(grid_lock)-2);
 	impl->remove_element(grid_lock, 0);
 }
 
