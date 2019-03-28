@@ -13,6 +13,7 @@
 #include "hotspot_bgcolor_elementfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
+#include "x/w/bookpage_appearancefwd.H"
 #include "x/w/elementfwd.H"
 #include "x/w/font_arg.H"
 #include "x/w/rgb.H"
@@ -86,14 +87,7 @@ class LIBCXX_HIDDEN pagetabObj::implObj
 
 	implObj(const container_impl &parent_container,
 		const pagetabgridcontainer_impl &my_pagetabgridcontainer_impl,
-		const dim_arg &h_padding,
-		const dim_arg &v_padding,
-		const color_arg &current_color,
-		const color_arg &notcurrent_color,
-		const color_arg &warm_color,
-		const color_arg &hot_color,
-		const font_arg &tab_font,
-		const color_arg &tab_font_color);
+		const const_bookpage_appearance &appearance);
 
 	//! Destructor
 	~implObj();

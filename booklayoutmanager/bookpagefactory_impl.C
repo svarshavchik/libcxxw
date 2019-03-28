@@ -7,18 +7,12 @@
 #include "x/w/shortcut.H"
 #include "x/w/factory.H"
 #include "x/w/label.H"
+#include "x/w/bookpage_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
 bookpagefactoryObj::bookpagefactoryObj()
-	: noncurrent_color{"book_tab_inactive_color"},
-	  current_color{"book_tab_active_color"},
-	  warm_color{"book_tab_warm_color"},
-	  active_color{"book_tab_hot_color"},
-	  label_font{theme_font{"book_tab_font"}},
-	  label_foreground_color{"book_tab_font_color"},
-	  horiz_padding{"book_tab_h_padding"},
-	  vert_padding{"book_tab_v_padding"}
+	: appearance{bookpage_appearance::base::theme()}
 {
 }
 

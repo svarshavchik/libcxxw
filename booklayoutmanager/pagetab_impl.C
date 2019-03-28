@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "booklayoutmanager/pagetab_impl.H"
 #include "booklayoutmanager/pagetabgridcontainer_impl.H"
+#include "x/w/bookpage_appearance.H"
 #include "x/w/impl/always_visible.H"
 #include "hotspot_bgcolor_element.H"
 #include "x/w/impl/container_element.H"
@@ -17,28 +18,24 @@ LIBCXXW_NAMESPACE_START
 pagetabObj::implObj
 ::implObj(const container_impl &parent_container,
 	  const pagetabgridcontainer_impl &my_pagetabgridcontainer_impl,
-	  const dim_arg &h_padding,
-	  const dim_arg &v_padding,
-	  const color_arg &current_color,
-	  const color_arg &notcurrent_color,
-	  const color_arg &warm_color,
-	  const color_arg &hot_color,
-	  const font_arg &tab_font,
-	  const color_arg &tab_font_color)
+	  const const_bookpage_appearance &appearance)
 
 // Use warm_color for the cold_color temporarily.
 // create_new_tab() will take care of initializing the initial
 // cold color, for us.
 
-: superclass_t{
-	h_padding, themedimaxis::width,
-		v_padding, themedimaxis::height,
-		current_color, notcurrent_color,
-		notcurrent_color, warm_color, hot_color,
-		parent_container},
-  my_pagetabgridcontainer_impl{my_pagetabgridcontainer_impl},
-  tab_font{tab_font},
-  tab_font_color{tab_font_color}
+	: superclass_t{
+		       appearance->horiz_padding, themedimaxis::width,
+		       appearance->vert_padding, themedimaxis::height,
+		       appearance->current_color,
+		       appearance->noncurrent_color,
+		       appearance->noncurrent_color,
+		       appearance->warm_color,
+		       appearance->active_color,
+		       parent_container},
+	  my_pagetabgridcontainer_impl{my_pagetabgridcontainer_impl},
+	  tab_font{appearance->label_font},
+	  tab_font_color{appearance->label_foreground_color}
 {
 }
 

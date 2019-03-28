@@ -309,14 +309,7 @@ static auto create_new_tab(const bookpagefactoryObj &my_factory,
 		::create(inner_tab_gridcontainer_impl,
 			 layout_manager->book_pagetabgridlayoutmanager
 			 ->impl->my_container,
-			 my_factory.horiz_padding,
-			 my_factory.vert_padding,
-			 my_factory.current_color,
-			 my_factory.noncurrent_color,
-			 my_factory.warm_color,
-			 my_factory.active_color,
-			 my_factory.label_font,
-			 my_factory.label_foreground_color);
+			 my_factory.appearance);
 
 	// Finish initializing the impl in the connection thread.
 	// Need to install the shortcut.
