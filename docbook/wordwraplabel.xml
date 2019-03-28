@@ -422,6 +422,71 @@ config.appearance=appearance;</programlisting>
 	objects remain constant thereafter.
       </para>
     </section>
+
+    <section id="appearancecache">
+      <title>Caching appearance objects</title>
+
+      <para>
+	Each call to an existing appearance object's
+	<methodname>modify</methodname>() creates a new object. It is more
+	efficient to use the same appearance object with multiple display
+	elements that should have the same visual appearance.
+      </para>
+
+      <para>
+	If all display elements with the same appearance get created together,
+	it's simple enough to create their common appearance object and use
+	them when creating each one. When display elements get created in
+	different places, taking advantage of static local function scope
+	is a basic, thread-safe singleton implementation:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+#include &lt;&ns;/w/progressbar_appearance.H&gt;
+
+static &ns;::w::const_progressbar_appearance create_custom_appearance()
+{
+    return &ns;::w::progressbar_appearance::base::theme()->modify
+        ([]
+         (const auto &amp;appearance)
+         {
+             appearance->label_font=&ns;::w::font{"liberation mono; point_size=24"};
+         });
+}
+
+static &ns;::w::const_progressbar_appearance &amp;custom_progressbar()
+{
+    static const &ns;::w::const_progressbar_appearance obj=
+        create_custom_appearance();
+
+    return obj;
+}
+
+// ...
+
+&ns;::w::progressbar_config config;
+
+    config.appearance=custom_progressbar();
+
+    factory->create_progressbar
+        ([]
+         (const LIBCXX_NAMESPACE::w::progressbar &amp;container)
+         {
+              // ...
+         },
+         config);</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	<function>custom_progressbar</function>() returns a native reference
+	to the same appearance object, that gets automatically constructed
+	in a thread-safe manner. All <link linkend="progressbar">progress
+	  bar</link>s will share, efficiently, the same appearance object.
+      </para>
+    </section>
   </section>
 </chapter>
 <!--
