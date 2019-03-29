@@ -12,6 +12,7 @@
 #include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/borderlayoutmanager.H"
+#include "x/w/frame_appearance.H"
 #include "x/w/factory.H"
 #include "x/w/container.H"
 #include "x/w/font_arg.H"
@@ -33,12 +34,8 @@ new_borderlayoutmanager::new_borderlayoutmanager(const functionref<void
 						 (const factory &)>
 						 &element_factory)
 	: element_factory{element_factory},
-	  border{"frame_border"},
-	  title_indent{"frame_title_indent"},
-	  no_background{false},
-	  frame_background{"frame_background"},
-	  hpad{"frame_hpad"},
-	  vpad{"frame_vpad"}
+	  appearance{frame_appearance::base::theme()},
+	  no_background{false}
 {
 }
 
@@ -74,13 +71,14 @@ container new_borderlayoutmanager::create(const container_impl &parent,
 	auto c_impl=ref<bordercontainer_elementObj<container_elementObj
 						   <child_elementObj>>>
 		::create(parent->get_window_handler(),
-			 border,
-			 border,
-			 border,
-			 border,
+			 appearance->border,
+			 appearance->border,
+			 appearance->border,
+			 appearance->border,
 			 richtext_title,
-			 title_indent,
-			 hpad, vpad,
+			 appearance->title_indent,
+			 appearance->hpad,
+			 appearance->vpad,
 			 parent);
 
 	// Invoke the creator to set the element for which we're providing
@@ -100,7 +98,7 @@ container new_borderlayoutmanager::create(const container_impl &parent,
 	auto new_container=container::create(c_impl, lm_impl);
 
 	if (!no_background && title.string.empty())
-		e->set_background_color(frame_background);
+		e->set_background_color(appearance->frame_background);
 
 	creator(new_container);
 

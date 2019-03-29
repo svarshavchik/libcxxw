@@ -17,6 +17,7 @@
 #include "x/w/input_field_lock.H"
 #include "x/w/label.H"
 #include "x/w/borderlayoutmanager.H"
+#include "x/w/frame_appearance.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/text_param.H"
@@ -181,10 +182,14 @@ void testbutton()
 					  l->show();
 				  }};
 
-			 neb.border=my_border;
-			 neb.hpad=3;
-			 neb.vpad=3;
-
+			 neb.appearance=neb.appearance->modify
+				 ([&]
+				  (const auto &appearance)
+				  {
+					  appearance->border=my_border;
+					  appearance->hpad=3;
+					  appearance->vpad=3;
+				  });
 			 factory->create_container
 				 ([&]
 				  (const auto &c)

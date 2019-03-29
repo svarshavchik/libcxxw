@@ -7,6 +7,7 @@
 
 #include <x/w/borderlayoutmanagerfwd.H>
 #include <x/w/borderlayoutmanagerobj.H>
+#include <x/w/frame_appearancefwd.H>
 #include <x/w/new_layoutmanager.H>
 #include <x/w/text_param.H>
 #include <x/ref.H>
@@ -43,18 +44,13 @@ public:
 
 	functionref<void (const factory &)> element_factory;
 
-	//! The border itself.
+	//! The new border and frame's appearance
 
-	border_arg border;
+	const_frame_appearance appearance;
 
 	//! Optional title. Results in a visible frame.
 
 	text_param title;
-
-	//! Title indentation
-	dim_arg title_indent;
-
-	//! Disable automatic background.
 
 	//! If no title is set, automatically sets the element's background
 	//! color to the theme default. Borders with titles are not visually
@@ -66,18 +62,6 @@ public:
 	//! set, even if there's no title.
 
 	bool no_background;
-
-	//! Frame background color
-
-	//! If no_background is not set, the frame's background.
-	color_arg frame_background;
-
-	//! Extra padding between the border and the element in the container
-
-	dim_arg hpad;
-
-	//! Extra padding between the border and the element in the container
-	dim_arg vpad;
 
 private:
 	//! Implement create()

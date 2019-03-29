@@ -13,6 +13,7 @@
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
 #include <x/w/borderlayoutmanager.H>
+#include <x/w/frame_appearance.H>
 #include <x/w/label.H>
 
 #include <string>
@@ -48,8 +49,13 @@ static void create_main_window(const x::w::main_window &mw)
 	// have a label. Change the default padding between the border and
 	// its element to 10 millimeters. This makes the container bigger,
 	// for demo purposes.
-	nblm.hpad=10;
-	nblm.vpad=10;
+	nblm.appearance=nblm.appearance->modify
+		([]
+		 (const auto &appearance)
+		 {
+			 appearance->hpad=10;
+			 appearance->vpad=10;
+		 });
 
 	f->create_container([](const auto &){}, nblm);
 
