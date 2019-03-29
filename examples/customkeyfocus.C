@@ -11,6 +11,7 @@
 #include <x/obj.H>
 
 #include <x/w/main_window.H>
+#include <x/w/button_appearance.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
 #include <x/w/element.H>
@@ -331,12 +332,13 @@ my_element create_with_focusframe(const x::w::factory &f,
 
 	if (!custom)
 	{
-		// Use standard theme borders.
+		// Use standard theme borders. Hijack them from the buttons'
+		// appearance objects.
 
 		const x::w::button_config &config=x::w::normal_button();
 
-		focusoff_border=config.inputfocusoff_border;
-		focuson_border=config.inputfocuson_border;
+		focusoff_border=config.appearance->inputfocusoff_border;
+		focuson_border=config.appearance->inputfocuson_border;
 	}
 	auto focus_frame_container_impl=
 		x::w::create_nonrecursive_visibility_focusframe_impl

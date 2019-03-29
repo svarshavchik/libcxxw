@@ -8,9 +8,9 @@
 #include "x/w/impl/background_color.H"
 #include "x/w/factory.H"
 #include "x/w/button.H"
+#include "x/w/button_appearance.H"
 #include "x/w/label.H"
 #include "x/w/border_arg.H"
-#include "x/w/text_param_literals.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/container_visible_element.H"
 #include "x/w/impl/bordercontainer_element.H"
@@ -26,38 +26,33 @@
 
 LIBCXXW_NAMESPACE_START
 
+button_config::button_config()
+	: button_config{button_appearance::base::normal_theme()}
+{
+}
+
+button_config::button_config(const const_button_appearance &appearance)
+	: appearance{appearance}
+{
+}
+
+button_config::button_config(const button_config &)=default;
+
+button_config &button_config::operator=(const button_config &)=default;
+
+button_config::~button_config()=default;
+
 const button_config &normal_button()
 {
-	static const button_config config={
-		"button"_theme_font,
-		"button_normal_color",
-		"button_selected_color",
-		"button_active_color",
-
-		"normal_button_border",
-		"normal_button_border",
-		"normal_button_border",
-		"normal_button_border",
-
-		"inputfocusoff_border",
-		"inputfocuson_border",
-	};
+	static const button_config config;
 
 	return config;
 }
 
-static button_config modify_normal_to_default_button()
-{
-	auto c=normal_button();
-
-	c.left_border=c.right_border=c.top_border=c.bottom_border=
-		"default_button_border";
-	return c;
-}
-
 const button_config &default_button()
 {
-	static const button_config config=modify_normal_to_default_button();
+	static const button_config
+		config{button_appearance::base::default_theme()};
 
 	return config;
 }
@@ -148,12 +143,12 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 	// the contents of the focusframecontainer.
 
 	auto ffi=button_focusframe
-		::create(config.button_font,
-			 config.normal_color,
-			 config.selected_color,
-			 config.active_color,
-			 config.inputfocusoff_border,
-			 config.inputfocuson_border,
+		::create(config.appearance->button_font,
+			 config.appearance->normal_color,
+			 config.appearance->selected_color,
+			 config.appearance->active_color,
+			 config.appearance->inputfocusoff_border,
+			 config.appearance->inputfocuson_border,
 			 0,
 			 0,
 			 impl, impl,

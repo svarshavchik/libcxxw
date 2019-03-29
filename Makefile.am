@@ -60,6 +60,7 @@ libcxxw_la_SOURCES=\
 	activated_in_threadobj.H		    \
 	appearance/book_appearance.C		    \
 	appearance/bookpage_appearance.C	    \
+	appearance/button_appearance.C		    \
 	appearance/combobox_appearance.C	    \
 	appearance/date_input_field_appearance.C    \
 	appearance/file_dialog_appearance.C	    \

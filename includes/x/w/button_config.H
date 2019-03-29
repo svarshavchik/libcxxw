@@ -6,45 +6,33 @@
 #define x_w_button_config_h
 
 #include <x/w/buttonfwd.H>
-#include <x/w/border_arg.H>
-#include <x/w/font_arg.H>
-#include <x/w/rgb.H>
+#include <x/w/button_appearancefwd.H>
 
 LIBCXXW_NAMESPACE_START
 
-//! The visual appearance of a \ref button "button".
+//! \ref button "Button" configuration.
 
 struct button_config {
 
-	//! Default font for any text in the button
-	font_arg button_font;
+	//! Visual appearance
 
-	//! Normal button background color
-	color_arg normal_color;
+	const_button_appearance appearance;
 
-	//! Background color when the button has input focus.
-	color_arg selected_color;
+	//! Default constructor
+	button_config();
 
-	//! Background color when the button is activated
-	color_arg active_color;
+	//! Constructor
+	button_config(const const_button_appearance &);
 
-	//! Button's border.
-	border_arg left_border;
+	//! Copy constructor
+	button_config(const button_config &);
 
-	//! Button's border.
-	border_arg right_border;
+	//! Assignment operator
 
-	//! Button's border.
-	border_arg top_border;
+	button_config &operator=(const button_config &);
 
-	//! Button's border.
-	border_arg bottom_border;
-
-	//! Inner border when the button does not have input focus
-	border_arg inputfocusoff_border;
-
-	//! Inner border when the button has input focus
-	border_arg inputfocuson_border;
+	//! Destructor
+	~button_config();
 };
 
 //! Returns default appearance of a normal \ref button "button".

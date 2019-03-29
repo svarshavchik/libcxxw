@@ -3,21 +3,62 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "x/w/button_appearance.H"
 #include "x/w/input_field_appearance.H"
 #include "x/w/combobox_appearance.H"
 #include "x/w/scrollbar_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
-static button_config create_spinner_button_config()
+static button_config create_left_spinner_button_config(const border_arg &border)
 {
 	auto c=normal_button();
-	c.normal_color="button_spinner_normal_color";
-	c.selected_color="button_spinner_selected_color";
-	c.active_color="button_spinner_active_color";
+
+	c.appearance=c.appearance->modify
+		([&]
+		 (const auto &appearance)
+		 {
+			 appearance->normal_color=
+				 "button_spinner_normal_color";
+			 appearance->selected_color=
+				 "button_spinner_selected_color";
+			 appearance->active_color=
+				 "button_spinner_active_color";
+
+
+			 appearance->left_border=
+				 appearance->right_border=border_arg{};
+			 appearance->top_border=appearance->bottom_border=
+				 border;
+		 });
 
 	return c;
 }
+
+static button_config create_right_spinner_button_config(const border_arg &border)
+{
+	auto c=normal_button();
+
+	c.appearance=c.appearance->modify
+		([&]
+		 (const auto &appearance)
+		 {
+			 appearance->normal_color=
+				 "button_spinner_normal_color";
+			 appearance->selected_color=
+				 "button_spinner_selected_color";
+			 appearance->active_color=
+				 "button_spinner_active_color";
+
+			 appearance->left_border={};
+			 appearance->right_border=
+				 appearance->top_border=
+				 appearance->bottom_border=border;
+		 });
+
+	return c;
+}
+
 
 input_field_appearance_properties::input_field_appearance_properties()
 	: border{"textedit_border"},
@@ -31,11 +72,19 @@ input_field_appearance_properties::input_field_appearance_properties()
 	  hint_color{"textedit_hint_color"},
 	  drag_horiz_start{"drag_horiz_start"},
 	  drag_vert_start{"drag_vert_start"},
-	  spinner_button_config{create_spinner_button_config()},
+	  left_spinner_button_config{create_left_spinner_button_config(border)},
+	  right_spinner_button_config{create_right_spinner_button_config
+				      (border)},
 	  search_popup_appearance{combobox_appearance::base::theme()},
 	  horizontal_scrollbar{scrollbar_appearance::base::theme()},
 	  vertical_scrollbar{scrollbar_appearance::base::theme()}
 {
+}
+
+void input_field_appearance_properties::update_spinner_buttons()
+{
+	left_spinner_button_config=create_left_spinner_button_config(border);
+	right_spinner_button_config=create_right_spinner_button_config(border);
 }
 
 input_field_appearance_properties::~input_field_appearance_properties()=default;

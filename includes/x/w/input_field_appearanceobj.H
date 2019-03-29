@@ -79,9 +79,24 @@ struct input_field_appearance_properties {
 	//! Appearance of spinner buttons
 
 	//! \note
-	//! The spinner buttons' border comes from the border setting, and
-	//! not here.
-	button_config spinner_button_config;
+	//! The spinner buttons' borders should be based on our border.
+	//! Use update_spinner_buttons() to install a new appearance object,
+	//! that comes from the default button appearance them, with our
+	//! borders.
+
+	button_config left_spinner_button_config;
+
+	//! Appearance of spinner buttons
+
+	//! \note
+	//! The spinner buttons' borders should be based on our border.
+	//! Use update_spinner_buttons() to install a new appearance object,
+	//! that comes from the default button appearance them, with our
+	//! borders.
+	button_config right_spinner_button_config;
+
+	//! Update spinner button appearances.
+	void update_spinner_buttons();
 
 	//! Appearance of the list search popup.
 

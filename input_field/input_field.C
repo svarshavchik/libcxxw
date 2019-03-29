@@ -317,14 +317,8 @@ factoryObj::create_input_field(const text_param &text,
 		init_params.background_color=x::w::rgb{x::w::rgb::maximum,
 						       0, 0};
 
-		auto b_config=config.appearance->spinner_button_config;
-
-		b_config.left_border=b_config.right_border=border_arg{};
-		b_config.top_border=b_config.bottom_border=
-			config.appearance->border;
-
 		do_create_button_with_explicit_borders
-			(*f, b_config,
+			(*f, config.appearance->left_spinner_button_config,
 			 make_function<factoryObj::factory_creator_t>
 			 ([c=std::get<0>(*config.spin_control_factories)]
 			  (const auto &f)
@@ -338,10 +332,8 @@ factoryObj::create_input_field(const text_param &text,
 		f->rowspan(2);
 		f->valign(valign::fill);
 
-		b_config.right_border=config.appearance->border;
-
 		do_create_button_with_explicit_borders
-			(*f, b_config,
+			(*f, config.appearance->right_spinner_button_config,
 			 make_function<factoryObj::factory_creator_t>
 			 ([c=std::get<1>(*config.spin_control_factories)]
 			  (const auto &f)
