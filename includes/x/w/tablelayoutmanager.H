@@ -7,6 +7,7 @@
 
 #include <x/w/tablelayoutmanagerfwd.H>
 #include <x/w/tablelayoutmanagerobj.H>
+#include <x/w/table_appearancefwd.H>
 #include <x/w/listlayoutmanager.H>
 #include <cmath>
 #include <string_view>
@@ -62,31 +63,9 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 
 	functionref<void (const factory &, size_t)> header_factory;
 
-	//! Background color for the header row.
-	color_arg header_color;
+	//! Header appearance.
 
-	//! Background color for the header row being adjusted.
-
-	//! Header row's temporary background color when a border is being
-	//! dragged, when adjustable_column_widths is set.
-	color_arg adjustable_header_color;
-
-	//! Highlighted backround color for the border being adjusted.
-
-	color_arg adjustable_header_highlight_color;
-
-	//! Width of the adjustable_header_highlight_color.
-
-	//! This must agree with whatever went into
-	//! adjustable_header_highlight_color. The highlight_color gets
-	//! composited on top of the header_color in a one-pixel tall
-	//! pixmap that spans the width of the header row. The highlight_color
-	//! gets positioned behind the border being dragged. In order for
-	//! the calculations to work out, this must correspond to the
-	//! highlight_color (i.e. if the highlight_color is a 4mm wide
-	//! gradient, this must be "4".
-
-	dim_arg adjustable_header_highlight_width;
+	const_table_appearance extra_table_appearance;
 
 	//! A non-default table size, in millimeters.
 

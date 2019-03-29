@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/tablelayoutmanager.H"
+#include "x/w/table_appearance.H"
 #include "x/w/canvas.H"
 #include "x/w/synchronized_axis.H"
 #include "x/w/motion_event.H"
@@ -147,13 +148,16 @@ class LIBCXX_HIDDEN header_container_implObj
 				 const table_synchronized_axis &axis,
 				 const container_impl &parent_container,
 				 const child_element_init_params &init_params)
-		: superclass_t{ntlm.header_color,
-			ntlm.adjustable_header_color,
-			ntlm.adjustable_header_highlight_color,
+		: superclass_t{ntlm.extra_table_appearance->header_color,
+			ntlm.extra_table_appearance->adjustable_header_color,
+			ntlm.extra_table_appearance
+			->adjustable_header_highlight_color,
 			ntlm.table_width, themedimaxis::width,
 			ntlm.maximum_table_width, themedimaxis::width,
-			"drag_horiz_start", themedimaxis::width,
-			ntlm.adjustable_header_highlight_width,
+			ntlm.extra_table_appearance->drag_horiz_start,
+			themedimaxis::width,
+			ntlm.extra_table_appearance
+			->adjustable_header_highlight_width,
 			themedimaxis::width,
 			parent_container->container_element_impl()
 			.get_window_handler()
@@ -693,12 +697,7 @@ new_tablelayoutmanager
 			 const listlayoutstyle_impl &list_style)
 	: new_listlayoutmanager{list_style},
 	  header_factory{header_factory},
-	  header_color{"list_header_color"},
-	  adjustable_header_color{"list_adjustable_header_color"},
-	  adjustable_header_highlight_color
-	{"list_adjustable_header_highlight_color"},
-	  adjustable_header_highlight_width
-	{"list_adjustable_header_highlight_width"}
+	  extra_table_appearance{table_appearance::base::theme()}
 {
 	appearance=list_appearance_base::table_theme();
 }
@@ -780,7 +779,8 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 {
 	// Create a replica list border.
 	child_element_init_params header_init_params;
-	header_init_params.background_color=header_color;
+	header_init_params.background_color=
+		extra_table_appearance->header_color;
 
 	auto header_border_container_impl=
 		ref<always_visible_elementObj<

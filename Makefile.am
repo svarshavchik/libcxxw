@@ -78,6 +78,7 @@ libcxxw_la_SOURCES=\
 	appearance/progressbar_appearance.C	    \
 	appearance/popup_list_appearance.C	    \
 	appearance/scrollbar_appearance.C	    \
+	appearance/table_appearance.C		    \
 	assert_or_throw.C			    \
 	assert_or_throw.H			    \
 	background_color.C			    \
