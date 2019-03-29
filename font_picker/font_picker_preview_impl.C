@@ -115,6 +115,7 @@ void font_picker_previewObj::implObj::update_preview(ONLY IN_THREAD,
 
 void font_picker_previewObj::implObj::initialize(ONLY IN_THREAD)
 {
+	superclass_t::initialize(IN_THREAD);
 	auto theme=get_screen()->impl->current_theme.get();
 
 	if (theme == current_theme)
@@ -128,6 +129,7 @@ void font_picker_previewObj::implObj::theme_updated(ONLY IN_THREAD,
 						    const defaulttheme
 						    &new_theme)
 {
+	superclass_t::theme_updated(IN_THREAD, new_theme);
 	current_theme=new_theme;
 	refresh_preview(IN_THREAD);
 }
