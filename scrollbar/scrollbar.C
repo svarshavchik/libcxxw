@@ -148,23 +148,14 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 
 static auto
 create_scrollbar_icon_set(drawableObj::implObj &drawable,
-			  const char *scroll_low,
-			  const char *scroll_high,
-			  const char *start,
-			  const char *handle,
-			  const char *end,
-			  const char *suffix)
+			  const scrollbar_images &images)
 {
-	std::string scroll{"scroll-"};
-	std::string scrollbar{"scrollbar-"};
-	std::string knob{"scrollbar-knob-"};
-
 	return std::tuple{
-		drawable.create_icon({scroll + scroll_low + suffix}),
-			drawable.create_icon({scroll + scroll_high + suffix}),
-			drawable.create_icon({knob + start + suffix}),
-			drawable.create_icon({scrollbar + handle + suffix}),
-			drawable.create_icon({knob + end + suffix}),
+		drawable.create_icon({images.scroll_low}),
+			drawable.create_icon({images.scroll_high}),
+			drawable.create_icon({images.knob_start}),
+			drawable.create_icon({images.knob_handle}),
+			drawable.create_icon({images.knob_end}),
 			};
 }
 
@@ -181,12 +172,10 @@ do_create_h_scrollbar(const container_impl &parent_container,
 				horizontal_scrollbar,
 				create_scrollbar_icon_set
 				(window_handler,
-				 "left", "right",
-				 "left", "horiz", "right", "1"),
+				 conf.appearance->horizontal1),
 				create_scrollbar_icon_set
 				(window_handler,
-				 "left", "right",
-				 "left", "horiz", "right", "2"),
+				 conf.appearance->horizontal2),
 				minimum_size,
 				callback);
 }
@@ -204,12 +193,10 @@ do_create_v_scrollbar(const container_impl &parent_container,
 				vertical_scrollbar,
 				create_scrollbar_icon_set
 				(window_handler,
-				 "up", "down",
-				 "top", "vert", "bottom", "1"),
+				 conf.appearance->vertical1),
 				create_scrollbar_icon_set
 				(window_handler,
-				 "up", "down",
-				 "top", "vert", "bottom", "2"),
+				 conf.appearance->vertical2),
 				minimum_size,
 				callback);
 }

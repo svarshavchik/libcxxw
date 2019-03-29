@@ -10,7 +10,9 @@ LIBCXXW_NAMESPACE_START
 combobox_appearance_properties::combobox_appearance_properties()
 	: combobox_border{"combobox_border"},
 	  combobox_button_focusoff_border{"comboboxbuttonfocusoff_border"},
-	  combobox_button_focuson_border{"comboboxbuttonfocuson_border"}
+	  combobox_button_focuson_border{"comboboxbuttonfocuson_border"},
+	  combobox_button_image1{"scroll-down1"},
+	  combobox_button_image2{"scroll-down2"}
 {
 }
 

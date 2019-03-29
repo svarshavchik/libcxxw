@@ -469,12 +469,13 @@ focusable_container new_custom_comboboxlayoutmanager
 
 		 combobox_popup,
 
-		 popup_imagebutton_config{appearance->combobox_border,
-				 appearance->background_color,
-				 "scroll-down1",
-				 "scroll-down2",
-				 appearance->combobox_button_focusoff_border,
-				 appearance->combobox_button_focuson_border,
+		 popup_imagebutton_config
+		 {appearance->combobox_border,
+			  appearance->background_color,
+			  appearance->combobox_button_image1,
+			  appearance->combobox_button_image2,
+			  appearance->combobox_button_focusoff_border,
+			  appearance->combobox_button_focuson_border,
 		});
 
 	// Point the popup container to the current selection element and
