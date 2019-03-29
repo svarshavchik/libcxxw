@@ -79,6 +79,7 @@ libcxxw_la_SOURCES=\
 	appearance/popup_list_appearance.C	    \
 	appearance/scrollbar_appearance.C	    \
 	appearance/table_appearance.C		    \
+	appearance/tooltip_appearance.C		    \
 	assert_or_throw.C			    \
 	assert_or_throw.H			    \
 	background_color.C			    \

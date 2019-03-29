@@ -10,7 +10,6 @@
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN tooltip_factory;
-struct LIBCXX_HIDDEN tooltip_appearance;
 
 enum class attached_to;
 

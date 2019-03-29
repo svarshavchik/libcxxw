@@ -376,8 +376,11 @@ factory->create_input_field("", password_conf);</programlisting>
 subject_field->create_tooltip("A brief title");
 
 // ...
+INSERT_LIBX_NAMESPACE::w::label_config config;
 
-text_field->create_tooltip("A brief message, a few lines long.", 30);</programlisting>
+config.widthmm=30;
+
+text_field->create_tooltip("A brief message, a few lines long.", config);</programlisting>
       </informalexample>
     </blockquote>
 

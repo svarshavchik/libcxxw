@@ -14,8 +14,8 @@
 #include "x/w/label.H"
 #include "x/w/text_param.H"
 #include "x/w/tooltip.H"
+#include "x/w/tooltip_appearance.H"
 #include "x/w/pictformat.H"
-#include "x/w/text_param_literals.H"
 #include "x/w/impl/bordercontainer_element.H"
 #include "x/w/impl/richtext/richtext.H"
 #include "x/w/impl/borderlayoutmanager.H"
@@ -30,45 +30,10 @@ LIBCXXW_NAMESPACE_START
 static property::value<unsigned>
 tooltip_delay(LIBCXX_NAMESPACE_STR "::w::tooltip_delay", 2000);
 
-void tooltip_border::set_theme_border(const std::string &border)
-{
-	this->border=border;
-	this->hpad=border + "_padding_h";
-	this->vpad=border + "_padding_v";
-}
-
-static inline tooltip_border default_alpha_border()
-{
-	tooltip_border b;
-
-	b.set_theme_border("tooltip_border");
-
-	return b;
-}
-
-static inline tooltip_border default_nonalpha_border()
-{
-	tooltip_border b;
-
-	b.set_theme_border("tooltip_border_square");
-	return b;
-}
-
-tooltip_appearance::tooltip_appearance()
-	: alpha_border{default_alpha_border()},
-	  nonalpha_border{default_nonalpha_border()},
-	  tooltip_background_color{"tooltip_background_color"},
-	  label_font{"tooltip"_theme_font},
-	  label_foreground_color{"label_foreground_color"},
-	  modal_shade_color{"modal_shade"},
-	  tooltip_x_offset{"tooltip_x_offset"},
-	  tooltip_y_offset{"tooltip_y_offset"}
+tooltip_factory::tooltip_factory()
+	: appearance{tooltip_appearance::base::tooltip_theme()}
 {
 }
-
-tooltip_appearance::~tooltip_appearance()=default;
-
-tooltip_factory::tooltip_factory()=default;
 
 tooltip_factory::~tooltip_factory()=default;
 namespace {
@@ -87,7 +52,7 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
  public:
 	//! Constructor
 	tooltip_handlerObj(const ref<generic_windowObj::handlerObj> &parent,
-			   const tooltip_appearance &config,
+			   const const_tooltip_appearance &appearance,
 			   const rectangle &where,
 			   attached_to how);
  private:
@@ -95,7 +60,7 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
 	tooltip_handlerObj(ONLY IN_THREAD,
 			   const ref<generic_windowObj::handlerObj> &parent,
 			   const tooltip_border &tooltip_border,
-			   const tooltip_appearance &config,
+			   const const_tooltip_appearance &appearance,
 			   const rectangle &where,
 			   attached_to how);
  public:
@@ -135,14 +100,14 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
 
 tooltip_handlerObj
 ::tooltip_handlerObj(const ref<generic_windowObj::handlerObj> &parent,
-		     const tooltip_appearance &config,
+		     const const_tooltip_appearance &appearance,
 		     const rectangle &where,
 		     attached_to how)
 	: tooltip_handlerObj{parent->thread(),
 		parent,
 		(parent->drawable_pictformat->alpha_depth > 0
-		 ? config.alpha_border:config.nonalpha_border),
-		config,
+		 ? appearance->alpha_border:appearance->nonalpha_border),
+		appearance,
 		where,
 		how}
 {
@@ -152,7 +117,8 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 				       const ref<generic_windowObj::handlerObj>
 				       &parent,
 				       const tooltip_border &tooltip_border,
-				       const tooltip_appearance &config,
+				       const const_tooltip_appearance
+				       &appearance,
 				       const rectangle &where,
 				       attached_to how)
 	: superclass_t{*parent,
@@ -168,9 +134,9 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 					"tooltip",
 					parent,
 					popup_attachedto_info::create(where, how),
-					config.label_font,
-					config.label_foreground_color,
-					config.modal_shade_color,
+					appearance->label_font,
+					appearance->label_foreground_color,
+					appearance->modal_shade_color,
 					0,
 					"tooltip,popup_menu,dropdown_menu",
 					"",
@@ -210,13 +176,14 @@ class LIBCXX_HIDDEN tooltip_factory_impl : public tooltip_factory {
 		    const new_layoutmanager &layout_manager) const override;
 
 	void create(const function<void (const container &)> &creator,
-		    const tooltip_appearance &config,
+		    const const_tooltip_appearance &appearance,
 		    const new_layoutmanager &layout_manager) const;
 
 	virtual ref<tooltip_handlerObj>
 		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
 				       &parent_window,
-				       const tooltip_appearance &config)
+				       const const_tooltip_appearance
+				       &appearance)
 		const=0;
 
 	virtual void created_popup(const popup &) const=0;
@@ -227,12 +194,12 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 				  const new_layoutmanager &layout_manager)
 	const
 {
-	create(creator, *this, layout_manager);
+	create(creator, appearance, layout_manager);
 }
 
 void tooltip_factory_impl::create(const function<void (const container &)>
 				  &creator,
-				  const tooltip_appearance &config,
+				  const const_tooltip_appearance &appearance,
 				  const new_layoutmanager &layout_manager)
 	const
 {
@@ -240,7 +207,7 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 		parent_window{&parent_element->get_window_handler()};
 
 	auto popup_handler=create_tooltip_handler(parent_window,
-						  config);
+						  appearance);
 
 	auto popup_impl=ref<popupObj::implObj>::create(popup_handler,
 						       parent_window);
@@ -253,8 +220,8 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 		 ([&]
 		  (const container &c)
 		  {
-			  c->set_background_color(config
-						  .tooltip_background_color);
+			  c->set_background_color(appearance
+						  ->tooltip_background_color);
 			  auto real_container_impl=c->get_layout_impl();
 
 			  auto border_layout_impl=
@@ -299,7 +266,8 @@ class LIBCXX_HIDDEN popup_tooltip_factory :
 	ref<tooltip_handlerObj>
 		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
 				       &parent_window,
-				       const tooltip_appearance &config)
+				       const const_tooltip_appearance
+				       &appearance)
 		const override;
 
 	void created_popup(const popup &tooltip_popup) const override
@@ -313,7 +281,7 @@ class LIBCXX_HIDDEN popup_tooltip_factory :
 ref<tooltip_handlerObj>
 popup_tooltip_factory::create_tooltip_handler
 (const ref<generic_windowObj::handlerObj> &parent_window,
- const tooltip_appearance &config) const
+ const const_tooltip_appearance &appearance) const
 {
 	// Compute the current pointer coordinates.
 
@@ -330,17 +298,19 @@ popup_tooltip_factory::create_tooltip_handler
 	auto current_theme=
 		parent_window->get_screen()->impl->current_theme.get();
 
-	dim_t offset_x=current_theme->get_theme_dim_t(config.tooltip_x_offset,
-						      themedimaxis::width);
-	dim_t offset_y=current_theme->get_theme_dim_t(config.tooltip_y_offset,
-						      themedimaxis::height);
+	dim_t offset_x=current_theme->get_theme_dim_t
+		(appearance->tooltip_x_offset,
+		 themedimaxis::width);
+	dim_t offset_y=current_theme->get_theme_dim_t
+		(appearance->tooltip_y_offset,
+		 themedimaxis::height);
 
 
 	// And construct an attached_to::tooltip tooltip_handlerObj,
 	// at these coordinates.
 	return ref<tooltip_handlerObj>::create
 		(parent_window,
-		 config,
+		 appearance,
 		 rectangle{coord_t::truncate(x+offset_x),
 				coord_t::truncate(y-offset_y),
 				   0, 0},
@@ -352,9 +322,18 @@ popup_tooltip_factory::create_tooltip_handler
 #endif
 }
 
-static_tooltip_config::static_tooltip_config()=default;
+static_tooltip_config::static_tooltip_config()
+	: appearance{tooltip_appearance::base::static_tooltip_theme()}
+{
+}
 
 static_tooltip_config::~static_tooltip_config()=default;
+
+static_tooltip_config::static_tooltip_config(const static_tooltip_config &)
+=default;
+
+static_tooltip_config &static_tooltip_config
+::operator=(const static_tooltip_config &)=default;
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -444,7 +423,8 @@ class LIBCXX_HIDDEN static_popup_tooltip_factory :
 	ref<tooltip_handlerObj>
 		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
 				       &parent_window,
-				       const tooltip_appearance &config)
+				       const const_tooltip_appearance
+				       &appearance)
 		const override;
 
 	popupptr &created_tooltip_popup;
@@ -471,13 +451,13 @@ ref<tooltip_handlerObj>
 static_popup_tooltip_factory
 ::create_tooltip_handler(const ref<generic_windowObj::handlerObj>
 			 &parent_window,
-			 const tooltip_appearance &config) const
+			 const const_tooltip_appearance &appearance) const
 {
 	return ref<tooltip_handlerObj>::create
 		(parent_window,
-		 config,
+		 appearance,
 		 parent_element_position,
-		 this->config.affinity);
+		 config.affinity);
 }
 
 #if 0
@@ -519,7 +499,7 @@ container elementObj::do_create_static_tooltip(const function<void
 					     rectangle{},
 					     created_tooltip_popup};
 
-	factory.create(creator, config, nlm);
+	factory.create(creator, config.appearance, nlm);
 
 	popup p{created_tooltip_popup};
 
@@ -565,7 +545,7 @@ container elementObj::do_create_static_tooltip(ONLY IN_THREAD,
 			impl->get_absolute_location_on_screen(IN_THREAD),
 			created_tooltip_popup};
 
-	factory.create(creator, config, nlm);
+	factory.create(creator, config.appearance, nlm);
 
 	popup p{created_tooltip_popup};
 

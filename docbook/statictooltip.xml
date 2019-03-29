@@ -28,7 +28,7 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    A static tooltip differs from regular tooltips in a few ways:
+    A static tooltip behaves differently in several ways:
   </para>
 
   <itemizedlist>
@@ -41,8 +41,8 @@ See COPYING for distribution information.
 
     <listitem>
       <para>
-	A static tooltip appears next to the display element and not near the
-	current pointer position.
+	A static tooltip appears next to the display element, off to one of
+	its sides, and not near the current pointer position.
       </para>
     </listitem>
 
@@ -53,13 +53,15 @@ See COPYING for distribution information.
 	  display elements</link>. The static tooltip gets shown
 	only when its display element has keyboard focus, and hidden when
 	the display element loses keyboard focus.
+	This functionality employs the
+	<methodname>on_keyboard_focus</methodname>() &callback;.
       </para>
     </listitem>
   </itemizedlist>
 
   <para>
     <filename>statictooltip.C</filename> shows how to use static tooltips
-    to implement a numeric input field with a simple, built-in four-function
+    to implement a numeric input field with a basic four-function
     calculator function.
     A <link linkend="filteredinput">custom input filter</link> in this
     input field accepts only a numeric value for
@@ -76,7 +78,7 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    Multiple mathematical operation get changed together. Typing
+    Multiple mathematical operation get chained together. Typing
     <quote><literal>10+2*4=</literal></quote> results in a
     <quote><literal>48</literal></quote> (there is no operator precedence,
     the expression are evaluated left-to-right, adding 10 and 2, then
@@ -121,8 +123,10 @@ x::w::container tooltip=
 
                                        // ...
                                    },
-                                   x::w::new_gridlayoutmanager{},
-                                   config);
+                                   {
+                                       x::w::new_gridlayoutmanager{},
+                                       config
+                                   });
 
 // ...
 
@@ -145,7 +149,7 @@ element->remove_tooltip();</programlisting>
 
     <note>
       <para>
-	A display element can have only one regular tooltip or one static
+	A display element has either a regular tooltip or a static
 	tooltip, but not both. Creating either kind of a tooltip replaces
 	the display element's existing tooltip, if any.
       </para>
@@ -154,11 +158,26 @@ element->remove_tooltip();</programlisting>
     <para>
       <methodname>create_static_tooltip</methodname>()'s first parameter
       is the tooltip's &creator;.
-      The optional second parameter specifies the tooltip container's
-      &layoutmanager; (defaulting to the
-      <link linkend="gridlayoutmanager">grid layout manager</link>), and the
-      third parameter specifies the
-      <ulink url="&link-x--w--static-tooltip-config;"><classname>&ns;::w::static_tooltip_config</classname></ulink>.
+      The optional second parameter is a variadic template object that
+      specifies several options using uniform initialization syntax. Both
+      of them are optional, but if both exist they must appear in the
+      following order:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The new tooltip container's
+	  &layoutmanager; (defaulting to the
+	  <link linkend="gridlayoutmanager">grid layout manager</link>).
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  A <ulink url="&link-x--w--static-tooltip-config;"><classname>&ns;::w::static_tooltip_config</classname></ulink>
+	  with the static tooltip container configuration settings.
+	</para>
+      </listitem>
     </para>
 
     <para>

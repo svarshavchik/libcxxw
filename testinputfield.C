@@ -30,6 +30,7 @@
 #include "x/w/listlayoutmanager.H"
 #include "x/w/focus.H"
 #include "x/w/tooltip.H"
+#include "x/w/tooltip_appearance.H"
 #include <x/weakcapture.H>
 #include <string>
 #include <iostream>
@@ -475,8 +476,14 @@ void testbutton()
 					  }
 
 					  LIBCXX_NAMESPACE::w::static_tooltip_config stc;
-					  stc.alpha_border.border="thin_0%";
-					  stc.nonalpha_border.border="thin_0%";
+					  stc.appearance=stc.appearance
+						  ->modify
+						  ([]
+						   (const auto &appearance)
+						   {
+							   appearance->alpha_border.border="thin_0%";
+							   appearance->nonalpha_border.border="thin_0%";
+						   });
 					  me->create_static_tooltip
 						  ([]
 						   (const auto &c)

@@ -408,7 +408,7 @@ create_tooltip() creates a default tooltip from a text label (which is a
 custom fonts), and an optional
  \ref label_config "INSERT_LIBX_NAMESPACE::w::label_config". The resulting
 tooltip appears automatically when the pointer pauses over the display
-element, and disappears with the next pointer movement.
+element, and disappears when it moves again.
 
 create_custom_tooltip() provides the means of creating a custom regular
 tooltip. Its parameter is a callable object that gets invoked whenever
@@ -419,8 +419,8 @@ an object specifying the new tooltip's layout manager. Invoking the tooltip
 factory creates a container that gets passed to the creator lambda, which
 is responsible for creating the contents of the container.
 
-In this manner, the tooltip's contents get specified each time the tooltip
-becomes visible and may vary each time.
+In this manner, the tooltip's contents get created each time the tooltip
+becomes visible, and may show something different each time.
 
 \note
 It is not necessary for the creator lambda to show() the new container. The

@@ -8,93 +8,19 @@
 #include <x/w/tooltipfwd.H>
 #include <x/w/container.H>
 #include <x/w/new_layoutmanagerfwd.H>
-#include <x/w/border_arg.H>
-#include <x/w/dim_arg.H>
-#include <x/w/font_arg.H>
-#include <x/w/rgb.H>
+#include <x/w/tooltip_appearancefwd.H>
 #include <x/functional.H>
 #include <x/optional_args.H>
 
 LIBCXXW_NAMESPACE_START
 
-//! Configuration for a tooltip border
+//! A factory used by a custom tooltip creator.
 
-//! A tooltip border, and inner padding
+//! An \ref element "element"'s create_custom_tooltip() arranges for its
+//! callback to get invoked and receive this factory for creating the actual
+//! tooltip.
 
-struct tooltip_border {
-
-	//! Border
-	border_arg border;
-
-	//! Additional padding
-	dim_arg hpad;
-
-	//! Additional padding
-	dim_arg vpad;
-
-	//! Initialize border, hpad, and vpad, using theme naming convention.
-
-	//! Mostly used internally by the library.
-	//! Sets "border", and the paddings to
-	//! "border_padding_h" and "border_padding_v";
-
-	void set_theme_border(const std::string &border);
-};
-
-//! Appearance of tooltip popups.
-
-struct tooltip_appearance {
-
-public:
-	//! Border for the new tooltip
-
-	//! Used when the display has an alpha channel.
-	//! Typically a slightly rounded border.
-
-	tooltip_border alpha_border;
-
-	//! Border for the new tooltip
-
-	//! Used when the display does not have an alpha channel.
-	//! Typically a square border.
-
-	tooltip_border nonalpha_border;
-
-	//! Background color
-	color_arg tooltip_background_color;
-
-	//! Default font for the tooltip text
-	font_arg label_font;
-
-	//! Default color for the tooltip text
-	color_arg label_foreground_color;
-
-	//! Tooltip's shade color
-
-	//! The color the tooltip gets shaded with, when it's blocked by
-	//! a modal dialog (unlikely).
-	color_arg modal_shade_color;
-
-	//! Tooltip location, to the right of the pointer position.
-
-	//! Regular tooltips only, ignored for static tooltips
-	dim_arg tooltip_x_offset;
-
-	//! Tooltip location, above the pointer position.
-
-	//! Regular tooltips only, ignored for static tooltips
-	dim_arg tooltip_y_offset;
-
-	//! Constructor
-	tooltip_appearance();
-
-	//! Destructor
-	~tooltip_appearance();
-};
-
-//! A factory that gets passed to the tooltip creator.
-
-class tooltip_factory : public tooltip_appearance {
+class tooltip_factory {
 
 public:
 
@@ -104,15 +30,13 @@ public:
 	//! Constructor
 	~tooltip_factory();
 
+	//! Appearance
+	const_tooltip_appearance appearance;
+
 	//! The tooltip creator's callback.
 
 	//! The tooltip creator calls this object, passing the
 	//! content creator and the layout manager for the tooltip.
-	//!
-	//! Two optional parameters specify a custom tooltip border.
-	//! The first parameter specifies the border for displays with
-	//! an alpha channel, and the second parameter specifies the border
-	//! for displays without an alpha channel.
 
 	template<typename functor>
 	inline void operator()(functor &&creator,
@@ -161,19 +85,25 @@ enum class attached_to
 
 //! \see element
 
-struct static_tooltip_config : public tooltip_appearance {
+struct static_tooltip_config {
+
+	//! Appearance
+	const_tooltip_appearance appearance;
 
 	//! Static tooltip's position
 	attached_to affinity=attached_to::right_or_left;
-
-	//! Tooltip's background color.
-	color_arg background_color="static_tooltip_background_color";
 
 	//! Constructor
 	static_tooltip_config();
 
 	//! Destructor
 	~static_tooltip_config();
+
+	//! Copy constructor
+	static_tooltip_config(const static_tooltip_config &);
+
+	//! Assignment operator
+	static_tooltip_config &operator=(const static_tooltip_config &);
 };
 
 LIBCXXW_NAMESPACE_END
