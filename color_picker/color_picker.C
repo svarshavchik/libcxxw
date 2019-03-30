@@ -725,7 +725,7 @@ color_picker factoryObj
 
 	auto [real_impl, popup_imagebutton, glm, color_picker_popup]
 		=create_popup_attachedto_element
-		(*this, config.popup_config,
+		(*this, config.attached_popup_appearance,
 
 		 [&](const container_impl &parent,
 		     const child_element_init_params &init_params)

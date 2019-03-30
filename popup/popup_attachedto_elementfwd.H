@@ -17,7 +17,7 @@
 #include "x/w/rgb.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/gridlayoutmanagerobj.H"
-#include "x/w/element_popup_config.H"
+#include "x/w/element_popup_appearancefwd.H"
 
 #include "popup/popup_attachedto_infofwd.H"
 #include "popup/popup_impl.H"
@@ -94,7 +94,8 @@ create_popup_contents_t(const popup_attachedto_info &,
 //! opens a popup.
 //!
 //! Receives a reference to the factory object that's creating it,
-//! an \ref element_popup_config "element_popup_config", and three closures.
+//! an \ref element_popup_appearance "element_popup_appearance", and
+//! three closures.
 //!
 //! The first closure receives two parameters: a
 //! \ref container_impl "container implementation object", and a
@@ -151,13 +152,14 @@ template<typename current_value_t,
 	 typename popup_contents_impl_t,
 	 typename popup_contents_t> create_attachedto_element_ret_t
 create_popup_attachedto_element(factoryObj &parent_factory,
-				const element_popup_config &args,
+				const const_element_popup_appearance
+				&appearance,
 				popup_contents_impl_t &&popup_contents_impl,
 				popup_contents_t &&popup_contents,
 				current_value_t &&current_value)
 {
 	return create_popup_attachedto_element_impl
-		(parent_factory, args,
+		(parent_factory, appearance,
 		 make_function<create_popup_contents_impl_t>
 		 (std::forward<popup_contents_impl_t>(popup_contents_impl)),
 		 make_function<create_popup_contents_t>
@@ -171,7 +173,8 @@ create_popup_attachedto_element(factoryObj &parent_factory,
 
 create_attachedto_element_ret_t
 create_popup_attachedto_element_impl(factoryObj &parent_factory,
-				     const element_popup_config &args,
+				     const const_element_popup_appearance
+				     &appearance,
 				     const function<create_popup_contents_impl_t
 				     > &popup_contents_impl_factory,
 				     const function<create_popup_contents_t

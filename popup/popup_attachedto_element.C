@@ -11,12 +11,14 @@
 #include "shared_handler_data.H"
 #include "peephole/peepholed_toplevel.H"
 #include "gridlayoutmanager.H"
+#include "x/w/element_popup_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
 create_attachedto_element_ret_t
 create_popup_attachedto_element_impl(factoryObj &parent_factory,
-				     const element_popup_config &args,
+				     const const_element_popup_appearance
+				     &appearance,
 				     const function<create_popup_contents_impl_t
 				     > &popup_contents_impl_factory,
 				     const function<create_popup_contents_t
@@ -52,7 +54,7 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 				    "element_popup",
 				    parent_handler,
 				    attachedto_info,
-				    args.toplevel_appearance,
+				    appearance->toplevel_appearance,
 				    parent_container->container_element_impl()
 				    .nesting_level+2,
 				    "popup_menu,dropdown_menu",
@@ -70,18 +72,19 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 
 	auto popup_lm=create_peephole_toplevel
 		(attachedto_handler,
-		 args.popup_border,
-		 args.popup_background_color,
-		 args.popup_scrollbars_background_color,
+		 appearance->popup_border,
+		 appearance->popup_background_color,
+		 appearance->popup_scrollbars_background_color,
 		 popup_peephole_style,
-		 args.horizontal_scrollbar,
-		 args.vertical_scrollbar,
+		 appearance->horizontal_scrollbar,
+		 appearance->vertical_scrollbar,
 		 [&]
 		 (const container_impl &parent)
 		 {
 			 child_element_init_params c_params;
 
-			 c_params.background_color=args.popup_background_color;
+			 c_params.background_color=
+				 appearance->popup_background_color;
 
 			 auto impl=popup_contents_impl_factory(parent,
 							       c_params);
@@ -106,7 +109,7 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 	// (config.border)...
 	auto f=glm->append_row();
 	f->padding(0);
-	f->border(args.element_border);
+	f->border(appearance->element_border);
 	current_value_factory(f);
 
 	// We can now create the popup button next to the current color
@@ -115,12 +118,12 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 	auto popup_imagebutton=create_standard_popup_imagebutton
 		(f, popup,
 		 {
-			 args.element_border,
-			 args.popup_background_color,
-			 args.button_image1,
-			 args.button_image2,
-			 args.button_focusoff_border,
-			 args.button_focuson_border
+			 appearance->element_border,
+			 appearance->popup_background_color,
+			 appearance->button_image1,
+			 appearance->button_image2,
+			 appearance->button_focusoff_border,
+			 appearance->button_focuson_border
 		 });
 
 	return {real_impl, popup_imagebutton, glm, popup};

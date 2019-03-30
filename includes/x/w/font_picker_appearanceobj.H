@@ -8,7 +8,7 @@
 #include <x/w/font_picker_appearancefwd.H>
 #include <x/w/scrollbar_appearancefwd.H>
 #include <x/w/combobox_appearancefwd.H>
-#include <x/w/element_popup_config.H>
+#include <x/w/element_popup_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>
@@ -67,6 +67,9 @@ struct font_picker_appearance_properties {
 
 	//! Vertical scrollbar appearance around the font preview
 	const_scrollbar_appearance preview_vertical_scrollbar;
+
+	//! Generic popup configuration
+	const_element_popup_appearance attached_popup_appearance;
 };
 
 //! Implementation object.
@@ -74,7 +77,6 @@ struct font_picker_appearance_properties {
 //! \see font_picker_appearance
 
 class font_picker_appearanceObj: public font_picker_appearance_properties,
-				 public element_popup_config,
 				 virtual public obj {
 
 public:

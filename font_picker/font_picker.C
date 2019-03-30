@@ -9,6 +9,7 @@
 #include "label_element.H"
 #include "x/w/font_picker_config.H"
 #include "x/w/font_picker_appearance.H"
+#include "x/w/element_popup_appearance.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/shortcut.H"
 #include "x/w/factory.H"
@@ -400,7 +401,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	auto [real_impl, popup_imagebutton, glm, font_picker_popup]
 		=create_popup_attachedto_element
-		(*this, *config.appearance,
+		(*this, config.appearance->attached_popup_appearance,
 
 		 [&](const container_impl &parent,
 		     const child_element_init_params &params)

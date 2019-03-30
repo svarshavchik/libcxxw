@@ -7,7 +7,7 @@
 
 #include <x/w/color_picker_configfwd.H>
 #include <x/w/color_pickerfwd.H>
-#include <x/w/element_popup_config.H>
+#include <x/w/element_popup_appearance.H>
 #include <x/w/dim_arg.H>
 #include <x/functionalrefptr.H>
 
@@ -40,7 +40,8 @@ struct color_picker_config {
 	dim_arg height="color_picker_current_height";
 
 	//! Generic popup configuration
-	element_popup_config popup_config;
+	const_element_popup_appearance attached_popup_appearance=
+		const_element_popup_appearance::base::theme();
 
 	//! The size of the top and bottom red/green/blue strips.
 	dim_arg strip_width="color_picker_strip_width";

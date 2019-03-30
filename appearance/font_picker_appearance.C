@@ -6,6 +6,7 @@
 #include "x/w/font_picker_appearance.H"
 #include "x/w/combobox_appearance.H"
 #include "x/w/scrollbar_appearance.H"
+#include "x/w/element_popup_appearance.H"
 #include "messages.H"
 
 LIBCXXW_NAMESPACE_START
@@ -25,7 +26,10 @@ font_picker_appearance_properties::font_picker_appearance_properties()
 			  "font_picker_unavailable_option_color"
 				  }},
 	  preview_horizontal_scrollbar{scrollbar_appearance::base::theme()},
-	  preview_vertical_scrollbar{scrollbar_appearance::base::theme()}
+	  preview_vertical_scrollbar{scrollbar_appearance::base::theme()},
+	  attached_popup_appearance{const_element_popup_appearance::base
+				    ::theme()}
+
 {
 }
 
@@ -37,8 +41,7 @@ font_picker_appearanceObj::~font_picker_appearanceObj()=default;
 
 font_picker_appearanceObj::font_picker_appearanceObj
 (const font_picker_appearanceObj &o)
-	: font_picker_appearance_properties{o},
-	  element_popup_config{o}
+	: font_picker_appearance_properties{o}
 {
 }
 
