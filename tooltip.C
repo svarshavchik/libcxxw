@@ -131,16 +131,14 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 			popup_handler_args
 			{
 				exclusive_popup_type,
-					"tooltip",
-					parent,
-					popup_attachedto_info::create(where, how),
-					appearance->label_font,
-					appearance->label_foreground_color,
-					appearance->modal_shade_color,
-					0,
-					"tooltip,popup_menu,dropdown_menu",
-					"",
-					}}
+				"tooltip",
+				parent,
+				popup_attachedto_info::create(where, how),
+				appearance->toplevel_appearance,
+				0,
+				"tooltip,popup_menu,dropdown_menu",
+				"",
+			}}
 {
 	wm_class_resource(IN_THREAD)=parent->wm_class_resource(IN_THREAD);
 }

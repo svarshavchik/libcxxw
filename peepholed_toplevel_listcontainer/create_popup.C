@@ -37,9 +37,7 @@ do_create_peepholed_toplevel_listcontainer_popup
 				args.popup_wm_class_instance,
 				parent_handler,
 				attachedto_info,
-				args.label_font,
-				args.label_foreground_color,
-				args.modal_shade_color,
+				args.appearance,
 				args.parent_element
 				->nesting_level+
 				args.extra_nesting_level,

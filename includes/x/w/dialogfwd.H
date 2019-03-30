@@ -22,9 +22,6 @@
 #include <unordered_map>
 #include <string>
 #include <functional>
-#include <optional>
-#include <string_view>
-#include <variant>
 
 LIBCXXW_NAMESPACE_START
 
@@ -69,93 +66,6 @@ enum class dialog_position
 
 struct LIBCXX_PUBLIC standard_dialog_args;
 struct LIBCXX_PUBLIC create_dialog_args;
-
-//! Parameters for a new dialog.
-
-//! Passed to \ref main_window "main window"'s methods that create new
-//! dialogs, specifies the new dialog's configuration and parameters.
-
-struct standard_dialog_args {
-
-	//! Unique dialog ID.
-
-	//! Cannot be set to a temporary object, this is a \c std::string_view.
-	std::string_view dialog_id;
-
-	//! Whether the new dialog is a modal dialog.
-	bool modal=false;
-
-	//! Window ID
-	std::string window_id;
-
-	//! Default dialog position
-	std::variant<dialog_position, rectangle> position=
-		dialog_position::default_position;
-
-	//! Set the urgent flag on the dialog.
-
-	//! Some window managers draw attention, in some way, to urgent
-	//! dialogs. This sets the urgent flag on the new dialog.
-	bool urgent=false;
-
-	//! Whether the new dialog grabs input focus when it opens.
-	bool grab_input_focus=true;
-
-	//! Default background color
-	color_arg dialog_background="dialog_background";
-
-	//! Default font for labels
-	font_arg label_font=theme_font{"label"};
-
-	//! Default color (mostly for labels)
-	color_arg label_foreground_color="label_foreground_color";
-
-	//! Dialog's shade color
-
-	//! The color the dialog gets shaded with, when it's blocked by
-	//! another modal dialog.
-
-	color_arg modal_shade_color="modal_shade";
-
-	//! Default dialog position.
-	void screen_position(dialog_position) LIBCXX_PUBLIC;
-
-	//! Restore the dialog's previous screen position.
-	void screen_position(const screen_positions &) LIBCXX_PUBLIC;
-
-	//! Restore the dialog's previous screen position.
-	void screen_position(const screen_positions &,
-			     const std::string_view &) LIBCXX_PUBLIC;
-};
-
-//! An additional parameter for create_dialog() and create_custom_dialog().
-
-//! Passed to \ref main_window "main window"'s create_dialog() or
-//! create_custom_dialog(), setting the new dialog's parameters.
-//!
-//! A subclass of \ref standard_dialog_args "INSERT_LIBX_NAMESPACE::w::standard_dialog_args"
-//! that adds an optional \c dialog_layout, the layout manager for the new
-//! dialog.
-
-struct create_dialog_args : public standard_dialog_args {
-
-	//! New dialog's layout manager.
-
-	//! \code
-	//! INSERT_LIBX_NAMESPACE::w::create_dialog_args args{"example@example.com"};
-	//!
-	//! INSERT_LIBX_NAMESPACE::w::new_toolboxlayoutmanager ntlm;
-	//!
-	//! args.dialog_layout=ntlm;
-	//! \endcode
-	//!
-	//! The new layout manager object cannot be a temporary object, and
-	//! the object must exist until create_dialog() or
-	//! create_custom_dialog() returns.
-
-	std::optional<std::reference_wrapper<const new_layoutmanager>
-		      > dialog_layout;
-};
 
 /*! A dialog pop-up from another main window (or of a parent dialog).
 

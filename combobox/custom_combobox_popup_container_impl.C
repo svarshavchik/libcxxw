@@ -6,6 +6,7 @@
 #include "combobox/custom_combobox_popup_container_impl.H"
 #include "peepholed_toplevel_listcontainer/impl_element.H"
 #include "x/w/popup_list_appearance.H"
+#include "x/w/generic_window_appearance.H"
 #include "x/w/impl/always_visible.H"
 #include "image_button_internal.H"
 #include "run_as.H"
@@ -16,7 +17,7 @@ custom_combobox_popup_containerObj::implObj
 ::implObj(const container_impl &parent,
 	  const const_popup_list_appearance &appearance)
 	: superclass_t{parent},
-	  label_theme{appearance->list_font}
+	  label_theme{appearance->contents_appearance->label_font}
 {
 }
 

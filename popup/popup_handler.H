@@ -9,6 +9,7 @@
 #include "popup/popup_attachedto_infofwd.H"
 #include "override_redirect.H"
 #include "x/w/connection_threadfwd.H"
+#include "x/w/generic_window_appearancefwd.H"
 #include "x/w/impl/grabbed_pointerfwd.H"
 
 #include <x/weakptr.H>
@@ -33,14 +34,8 @@ struct LIBCXX_HIDDEN popup_handler_args {
 	//! Popup attachedment information
 	const popup_attachedto_info &attachedto_info;
 
-	//! Default label font
-	const font_arg &label_font;
-
-	//! Default label color
-	const color_arg &label_color;
-
-	//! Default modal shade color
-	const color_arg &modal_shade_color;
+	//! Appearance
+	const const_generic_window_appearance &appearance;
 
 	//! Initial nesting level of the popup.
 	size_t nesting_level;

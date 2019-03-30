@@ -328,9 +328,7 @@ combobox_listcontainer_popup_args(const element_impl &parent_element,
 		style,
 		appearance->topleft_color,
 		appearance->bottomright_color,
-		appearance->list_font,
-		appearance->list_foreground_color,
-		appearance->modal_shade_color,
+		appearance->contents_appearance,
 		appearance->horizontal_scrollbar,
 		appearance->vertical_scrollbar
 	};

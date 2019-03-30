@@ -9,6 +9,7 @@
 #include <x/w/font_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/scrollbar_appearance.H>
+#include <x/w/generic_window_appearance.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,17 +35,8 @@ struct element_popup_config {
 	//! Button focus border.
 	border_arg button_focuson_border="element_attached_popup_button_focuson_border";
 
-	//! Default popup label font
-	font_arg popup_label_font=theme_font{"label"};
-
-	//! Default popup label color
-	color_arg popup_label_color="label_foreground_color";
-
-	//! Window's shade color
-
-	//! The color the popup gets shaded with, when it's blocked by
-	//! a modal dialog.
-	color_arg popup_modal_shade_color="modal_shade";
+	const_generic_window_appearance toplevel_appearance=
+		generic_window_appearance::base::main_window_theme();
 
 	//! Popup button image
 	std::string button_image1="scroll-right1";

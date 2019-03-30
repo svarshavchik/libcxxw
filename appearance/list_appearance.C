@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/list_appearance.H"
+#include "x/w/generic_window_appearance.H"
 #include "x/w/scrollbar_appearance.H"
 
 LIBCXXW_NAMESPACE_START
@@ -19,8 +20,7 @@ list_appearance_properties::list_appearance_properties()
 	  selected_color{"list_selected_color"},
 	  highlighted_color{"list_highlighted_color"},
 	  current_color{"list_current_color"},
-	  list_foreground_color{"label_foreground_color"},
-	  list_font{theme_font{"list"}},
+	  contents_appearance{generic_window_appearance::base::list_contents_theme()},
 	  shortcut_foreground_color{"label_foreground_color"},
 	  shortcut_font{theme_font{"menu_shortcut"}},
 	  list_separator_border{"list_separator_border"},

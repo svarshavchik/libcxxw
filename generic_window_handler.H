@@ -30,6 +30,7 @@
 #include "x/w/busy.H"
 #include "x/w/rgb.H"
 #include "x/w/main_windowfwd.H"
+#include "x/w/generic_window_appearancefwd.H"
 #include "x/w/impl/focus/focusablefwd.H"
 #include "x/w/impl/dnd.H"
 #include "x/w/fontfwd.H"
@@ -327,14 +328,8 @@ class generic_windowObj::handlerObj
 		//! The instantiated background_color
 		background_color background_color_obj;
 
-		//! Default font
-		const font_arg &default_label_font;
-
-		//! Default color
-		const color_arg &default_label_color;
-
-		//! Shade color
-		const color_arg &modal_shade_color;
+		//! Appearance
+		const const_generic_window_appearance &appearance;
 	};
 
 	//! Public constructor
@@ -1104,13 +1099,8 @@ public:
 
 	color_arg label_theme_color() const override;
 
-	//! Default label_theme_font()
-
-	const font_arg default_label_font;
-
-	//! Default label_theme_color()
-
-	const color_arg default_label_color;
+	//! The appearance object that created me.
+	const const_generic_window_appearance appearance;
 };
 
 LIBCXXW_NAMESPACE_END

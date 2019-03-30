@@ -6,6 +6,7 @@
 #define x_w_tooltip_appearanceobj_h
 
 #include <x/w/tooltip_appearancefwd.H>
+#include <x/w/generic_window_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>
@@ -69,17 +70,8 @@ struct tooltip_appearance_properties {
 	//! Background color
 	color_arg tooltip_background_color;
 
-	//! Default font for the tooltip text
-	font_arg label_font;
-
-	//! Default color for the tooltip text
-	color_arg label_foreground_color;
-
-	//! Tooltip's shade color
-
-	//! The color the tooltip gets shaded with, when it's blocked by
-	//! a modal dialog (unlikely).
-	color_arg modal_shade_color;
+	//! Generic appearance of a top level window
+	const_generic_window_appearance toplevel_appearance;
 
 	//! Tooltip location, to the right of the pointer position.
 

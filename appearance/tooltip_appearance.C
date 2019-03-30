@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/tooltip_appearance.H"
+#include "x/w/generic_window_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -35,9 +36,7 @@ tooltip_appearance_properties::tooltip_appearance_properties()
 	: alpha_border{default_alpha_border()},
 	  nonalpha_border{default_nonalpha_border()},
 	  tooltip_background_color{"tooltip_background_color"},
-	  label_font{theme_font{"tooltip"}},
-	  label_foreground_color{"label_foreground_color"},
-	  modal_shade_color{"modal_shade"},
+	  toplevel_appearance{generic_window_appearance::base::tooltip_theme()},
 	  tooltip_x_offset{"tooltip_x_offset"},
 	  tooltip_y_offset{"tooltip_y_offset"}
 {

@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/main_window_appearance.H"
 #include "x/w/scrollbar_appearance.H"
+#include "x/w/generic_window_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -13,9 +14,8 @@ main_window_appearance_properties::main_window_appearance_properties()
 	  vertical_scrollbar{scrollbar_appearance::base::theme()},
 	  background_color{"mainwindow_background"},
 	  menubar_background_color{"menubar_background_color"},
-	  label_font{theme_font{"label"}},
-	  label_foreground_color{"label_foreground_color"},
-	  modal_shade_color{"modal_shade"},
+	  toplevel_appearance{generic_window_appearance::base
+			      ::main_window_theme()},
 	  menu_highlighted_color{"menu_highlighted_color"},
 	  menu_clicked_color{"menu_clicked_color"},
 	  menu_inputfocusoff_border{"menu_inputfocusoff_border"},

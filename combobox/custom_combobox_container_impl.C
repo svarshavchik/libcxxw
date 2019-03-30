@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "combobox/custom_combobox_container_impl.H"
 #include "combobox/custom_combobox_popup_container_impl.H"
+#include "x/w/generic_window_appearance.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
 #include "x/w/custom_comboboxlayoutmanager.H"
@@ -28,7 +29,7 @@ custom_combobox_containerObj::implObj
 	  const popup &attached_popup)
 	: superclass_t{parent_container, create_init_params(attached_popup)},
 	  popup_container{popup_container},
-	  label_font{nlm.appearance->list_font}
+	  label_font{nlm.appearance->contents_appearance->label_font}
 {
 }
 

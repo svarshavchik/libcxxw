@@ -178,7 +178,7 @@ element->remove_tooltip();</programlisting>
 	  with the static tooltip container configuration settings.
 	</para>
       </listitem>
-    </para>
+    </itemizedlist>
 
     <para>
       Using <methodname>show</methodname> or <methodname>show_all</methodname>()

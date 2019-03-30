@@ -19,9 +19,8 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 				  rectangle> &position,
 				  const std::string &window_id,
 				  const color_arg &background_color,
-				  const font_arg &default_label_font,
-				  const color_arg &default_label_color,
-				  const color_arg &modal_shade_color,
+				  const const_generic_window_appearance
+				  &appearance,
 				  const char *window_type,
 				  bool modal,
 				  bool urgent,
@@ -30,9 +29,7 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 			window_type,
 			modal ? "MODAL":"",
 			background_color,
-			default_label_font,
-			default_label_color,
-			modal_shade_color,
+			appearance,
 			},
 		       std::visit(visitor{[&](const rectangle &r)
 					  -> std::optional<rectangle>

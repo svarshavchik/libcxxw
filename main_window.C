@@ -474,9 +474,7 @@ create_splash_window_handler(const screen &me,
 	main_window_handler_constructor_params
 		main_params{me, "splash,normal", "above",
 			    background_color,
-			    config.appearance->label_font,
-			    config.appearance->label_foreground_color,
-			    config.appearance->modal_shade_color,
+			    config.appearance->toplevel_appearance,
 	};
 
 	main_window_border=config.border;
@@ -547,12 +545,7 @@ main_window screenObj
 						    std_config.appearance
 						    ->background_color,
 						    std_config.appearance
-						    ->label_font,
-						    std_config.appearance
-						    ->label_foreground_color,
-						    std_config.appearance
-						    ->modal_shade_color,
-
+						    ->toplevel_appearance,
 				};
 
 				return std::tuple

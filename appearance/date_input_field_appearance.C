@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/date_input_field_appearance.H"
+#include "x/w/generic_window_appearance.H"
 #include "x/w/image_button_appearance.H"
 #include "x/w/input_field_appearance.H"
 
@@ -56,9 +57,8 @@ date_input_field_appearance_properties::date_input_field_appearance_properties()
 	  focuson_border{"dateeditbuttonfocuson_border"},
 	  popup_border{"dateedit_popup_border"},
 	  popup_background_color{"dateedit_popup_background_color"},
-	  popup_font{theme_font{"dateedit_day"}},
-	  popup_font_color{"dateedit_day"},
-	  popup_modal_shade_color{"modal_shade"}
+	  toplevel_appearance{generic_window_appearance::base
+			      ::date_input_field_theme()}
 {
 }
 

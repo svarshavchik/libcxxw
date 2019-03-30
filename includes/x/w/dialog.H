@@ -7,12 +7,11 @@
 
 #include <x/w/dialogfwd.H>
 #include <x/w/dialogobj.H>
+#include <x/w/dialog_args.H>
 #include <x/w/main_window.H>
 #include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
-
-struct LIBCXX_HIDDEN dialog_args;
 
 LIBCXXW_NAMESPACE_END
 

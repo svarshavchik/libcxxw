@@ -6,6 +6,7 @@
 #define x_w_list_appearanceobj_h
 
 #include <x/w/list_appearancefwd.H>
+#include <x/w/generic_window_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/rgb.H>
@@ -88,11 +89,13 @@ struct list_appearance_properties {
 	//! the button being pressed.
 	color_arg current_color;
 
-	//! Default list font color
-	color_arg list_foreground_color;
+	//! List contents appearance
 
-	//! Default list font
-	font_arg list_font;
+	//! The label_font and label_color control the default font and color
+	//! of the items in the list. Coincidentally, in combo-boxes this
+	//! also controls the popup window's appearance.
+
+	const_generic_window_appearance contents_appearance;
 
 	//! Default shortcut font color
 	color_arg shortcut_foreground_color;

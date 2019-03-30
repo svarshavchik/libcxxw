@@ -47,12 +47,6 @@ struct popup_list_appearance_properties {
 	//! for context popup menus.
 
 	color_arg topleft_color;
-
-	//! Popup's shade color
-
-	//! The color the popup gets shaded with, when it's blocked by
-	//! a modal dialog (unlikely).
-	color_arg modal_shade_color;
 };
 
 //! Implementation object.

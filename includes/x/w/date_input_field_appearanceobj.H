@@ -8,6 +8,7 @@
 #include <x/w/date_input_field_appearancefwd.H>
 #include <x/w/input_field_appearancefwd.H>
 #include <x/w/image_button_appearancefwd.H>
+#include <x/w/generic_window_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>
@@ -102,16 +103,8 @@ struct date_input_field_appearance_properties {
 	//! Popup background color
 	color_arg popup_background_color;
 
-	//! Font used in the main date input field
-
-	//! Font for the calendar popup.
-	font_arg popup_font;
-
-	//! Label color for the calendar popup.
-	color_arg popup_font_color;
-
-	//! Modal shade color for the popup (unlikely)
-	color_arg popup_modal_shade_color;
+	//! Generic top level window appearance properties
+	const_generic_window_appearance toplevel_appearance;
 };
 
 //! Implementation object.

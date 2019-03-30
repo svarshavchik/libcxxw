@@ -7,6 +7,7 @@
 
 #include <x/w/main_window_appearancefwd.H>
 #include <x/w/scrollbar_appearancefwd.H>
+#include <x/w/generic_window_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/font_arg.H>
@@ -37,17 +38,8 @@ struct main_window_appearance_properties {
 	//! Main window's menu bar's background color
 	color_arg menubar_background_color;
 
-	//! Default font for labels
-	font_arg label_font;
-
-	//! Default color (mostly for labels)
-	color_arg label_foreground_color;
-
-	//! Window's shade color
-
-	//! The color the window gets shaded with, when it's blocked by
-	//! a modal dialog.
-	color_arg modal_shade_color;
+	//! Generic top level window appearance
+	const_generic_window_appearance toplevel_appearance;
 
 	//! Menu button has input or pointer focus.
 	color_arg menu_highlighted_color;

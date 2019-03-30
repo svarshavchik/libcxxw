@@ -8,7 +8,7 @@
 
 #include <x/w/stop_messagefwd.H>
 #include <x/w/connection_threadfwd.H>
-#include <x/w/dialogfwd.H>
+#include <x/w/dialog_args.H>
 #include <string>
 #include <x/functionalrefptr.H>
 

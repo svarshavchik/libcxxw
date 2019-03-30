@@ -14,6 +14,7 @@
 
 #include "x/w/main_window.H"
 #include "x/w/main_window_appearance.H"
+#include "x/w/generic_window_appearance.H"
 #include "x/w/screen_positions.H"
 #include "x/w/image_button.H"
 #include "x/w/gridlayoutmanager.H"
@@ -239,7 +240,14 @@ void testimagebuttons()
 		([]
 		 (const auto &custom)
 		 {
-			 custom->label_font="liberation mono"_font;
+			 custom->toplevel_appearance=
+				 custom->toplevel_appearance->modify
+				 ([]
+				  (const auto &custom)
+				  {
+					  custom->label_font=
+						  "liberation mono"_font;
+				  });
 		 });
 
 	auto main_window=LIBCXX_NAMESPACE::w::screen::create()

@@ -10,6 +10,7 @@
 #include "listlayoutmanager/extra_list_row_info.H"
 #include "popup/popup.H"
 #include "shared_handler_data.H"
+#include "x/w/generic_window_appearance.H"
 #include "x/w/impl/focus/focusable_element.H"
 #include "x/w/impl/background_color_element.H"
 #include "x/w/impl/themedim_element.H"
@@ -304,10 +305,12 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 		  .create_icon({"bullet2"})},
 
 	  itemlabel_meta{create_background_color(init_args.style.appearance
-						 ->list_foreground_color),
+						 ->contents_appearance
+						 ->label_color),
 			  create_current_fontcollection(init_args.style
 							.appearance
-							->list_font)},
+							->contents_appearance
+							->label_font)},
 	  itemshortcut_meta{create_background_color
 			  (init_args.style.appearance
 			   ->shortcut_foreground_color),

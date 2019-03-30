@@ -34,6 +34,7 @@
 #include "x/w/values_and_mask.H"
 #include "x/w/callback_triggerfwd.H"
 #include "x/w/main_window.H"
+#include "x/w/generic_window_appearance.H"
 #include "x/w/impl/child_element.H"
 #include "inherited_visibility_info.H"
 #include "hotspot.H"
@@ -174,9 +175,7 @@ create_extra_constructor_params(const generic_window_handler_constructor_params
 		params.nesting_level,
 		main_params.background_color,
 		background_color_obj,
-		main_params.default_label_font,
-		main_params.default_label_color,
-		main_params.modal_shade_color,
+		main_params.appearance,
 	};
 }
 
@@ -220,18 +219,19 @@ generic_windowObj::handlerObj
 	{
 	 params.background_color_obj,
 	 default_background_color(params.window_handler_params.screenref,
-				  params.modal_shade_color),
+				  params.appearance->modal_shade_color),
 	 drawableObj::implObj::create_icon
 	 (create_icon_args_t
 		{
-		 "disabled_mask",
+		 params.appearance->disabled_mask,
 		 render_repeat::normal
 		},
 	  params.window_handler_params.screenref),
 	 cursor_pointer::create
-	 (drawableObj::implObj::create_icon(create_icon_args_t{"cursor-wait"},
-					    params.window_handler_params
-					    .screenref)),
+	 (drawableObj::implObj::create_icon(create_icon_args_t{
+			 params.appearance->wait_cursor
+		 },
+		 params.window_handler_params.screenref)),
 	 params.nesting_level,
 	 element_position(params.window_handler_params.initial_position),
 	 popupptr{},
@@ -251,8 +251,7 @@ generic_windowObj::handlerObj
 				    ->get_workarea()},
 	  current_theme_thread_only{params.window_handler_params.screenref
 				    ->impl->current_theme.get()},
-	  default_label_font{params.default_label_font},
-	  default_label_color{params.default_label_color}
+	  appearance{params.appearance}
 {
 	top_level_always_visible();
 
@@ -2424,12 +2423,12 @@ void generic_windowObj::handlerObj
 
 font_arg generic_windowObj::handlerObj::label_theme_font() const
 {
-	return default_label_font;
+	return appearance->label_font;
 }
 
 color_arg generic_windowObj::handlerObj::label_theme_color() const
 {
-	return default_label_color;
+	return appearance->label_color;
 }
 
 LIBCXXW_NAMESPACE_END

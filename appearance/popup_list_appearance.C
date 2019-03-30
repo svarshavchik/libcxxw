@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/popup_list_appearance.H"
+#include "x/w/generic_window_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -12,8 +13,7 @@ LIBCXXW_NAMESPACE_START
 popup_list_appearance_properties::popup_list_appearance_properties()
 	: popup_border{"combobox_popup_border"},
 	  bottomright_color{"combobox_below_background_color"},
-	  topleft_color{"combobox_above_background_color"},
-	  modal_shade_color{"modal_shade"}
+	  topleft_color{"combobox_above_background_color"}
 {
 }
 
@@ -25,7 +25,8 @@ popup_list_appearanceObj::popup_list_appearanceObj()
 	selected_color="combobox_selected_color";
 	highlighted_color="combobox_highlighted_color";
 	current_color="combobox_current_color";
-	list_font=theme_font{"combobox"};
+
+	contents_appearance=generic_window_appearance::base::combobox_theme();
 }
 
 popup_list_appearanceObj::~popup_list_appearanceObj()=default;
@@ -55,11 +56,17 @@ static popup_list_appearance create_menu_theme()
 
 	appearance->h_padding="menu_list_h_padding";
 	appearance->v_padding="menu_list_v_padding";
-	appearance->list_foreground_color="menu_popup_foreground_color";
+	appearance->contents_appearance=appearance->contents_appearance
+		->modify([]
+			 (const auto &custom)
+			 {
+				 custom->label_color=
+					 "menu_popup_foreground_color";
+				 custom->label_font=theme_font{"menu_font"};
+			 });
 	appearance->selected_color="menu_popup_selected_color";
 	appearance->current_color="menu_popup_highlighted_color";
 	appearance->highlighted_color="menu_popup_clicked_color";
-	appearance->list_font=theme_font{"menu_font"};
 
 	return appearance;
 }
