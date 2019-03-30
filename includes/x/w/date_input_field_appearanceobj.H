@@ -27,6 +27,12 @@ struct date_input_field_appearance_properties {
 	//! Destructor
 	~date_input_field_appearance_properties();
 
+	//! Button image
+	std::string popup_button_image1;
+
+	//! Pressed button image
+	std::string popup_button_image2;
+
 	//! Foreground color: day of month highlighted by pointer or keyboard.
 	text_color_arg day_highlight_fg;
 

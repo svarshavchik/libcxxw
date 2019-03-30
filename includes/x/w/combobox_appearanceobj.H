@@ -37,10 +37,10 @@ struct combobox_appearance_properties {
 	border_arg combobox_button_focuson_border;
 
 	//! Button image
-	std::string combobox_button_image1;
+	std::string popup_button_image1;
 
 	//! Pressed button image
-	std::string combobox_button_image2;
+	std::string popup_button_image2;
 };
 
 //! Implementation object.

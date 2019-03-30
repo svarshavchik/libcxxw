@@ -472,8 +472,8 @@ focusable_container new_custom_comboboxlayoutmanager
 		 popup_imagebutton_config
 		 {appearance->combobox_border,
 			  appearance->background_color,
-			  appearance->combobox_button_image1,
-			  appearance->combobox_button_image2,
+			  appearance->popup_button_image1,
+			  appearance->popup_button_image2,
 			  appearance->combobox_button_focusoff_border,
 			  appearance->combobox_button_focuson_border,
 		});

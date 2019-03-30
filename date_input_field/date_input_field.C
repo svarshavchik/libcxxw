@@ -381,13 +381,12 @@ date_input_field factoryObj
 	auto popup_imagebutton=create_standard_popup_imagebutton
 		(f, date_picker_popup,
 		 {
-			 config.appearance->border,
-				 config.appearance->input_appearance
-				 ->background_color,
-				 "scroll-right1",
-				 "scroll-right2",
-				 config.appearance->focusoff_border,
-				 config.appearance->focuson_border
+		  config.appearance->border,
+		  config.appearance->input_appearance->background_color,
+		  config.appearance->popup_button_image1,
+		  config.appearance->popup_button_image2,
+		  config.appearance->focusoff_border,
+		  config.appearance->focuson_border
 		 });
 
 	auto impl=ref<date_input_fieldObj::implObj>

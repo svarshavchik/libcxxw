@@ -30,7 +30,9 @@ static const_input_field_appearance &default_date_input_field_appearance()
 }
 
 date_input_field_appearance_properties::date_input_field_appearance_properties()
-	: day_highlight_fg{theme_color{"dateedit_day_highlight_fg"}},
+	: popup_button_image1{"scroll-right1"},
+	  popup_button_image2{"scroll-right2"},
+	  day_highlight_fg{theme_color{"dateedit_day_highlight_fg"}},
 	  day_highlight_bg{theme_color{"dateedit_day_highlight_bg"}},
 	  month_font{theme_font{"dateedit_popup_month"}},
 	  month_color{theme_color{"dateedit_popup_month"}},
