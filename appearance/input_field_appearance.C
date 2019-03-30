@@ -80,7 +80,9 @@ input_field_appearance_properties::input_field_appearance_properties()
 				      (border)},
 	  search_popup_appearance{combobox_appearance::base::theme()},
 	  horizontal_scrollbar{scrollbar_appearance::base::theme()},
-	  vertical_scrollbar{scrollbar_appearance::base::theme()}
+	  vertical_scrollbar{scrollbar_appearance::base::theme()},
+	  spin_decrement{"spin-decrement"},
+	  spin_increment{"spin-increment"}
 {
 }
 

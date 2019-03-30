@@ -66,12 +66,25 @@ void input_field_config
 ::set_default_spin_control_factories()
 {
 	set_spin_control_factories
-		([](const auto &factory) {
-			factory->create_image("spin-decrement");
-		},[](const auto &factory) {
-			factory->create_image("spin-increment");
+		([appearance=this->appearance](const auto &factory) {
+			 factory->create_image(appearance->spin_decrement);
+		},[appearance=this->appearance](const auto &factory) {
+			factory->create_image(appearance->spin_increment);
 		});
 }
+
+input_field_config_appearance::input_field_config_appearance()
+	: const_input_field_appearance{input_field_appearance::base::theme()}
+{
+}
+
+input_field_config_appearance::~input_field_config_appearance()=default;
+
+input_field_config_appearance::input_field_config_appearance
+(const input_field_config_appearance &)=default;
+
+input_field_config_appearance &input_field_config_appearance
+::operator=(const input_field_config_appearance &)=default;
 
 input_field_config::~input_field_config()=default;
 

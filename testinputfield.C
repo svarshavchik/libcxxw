@@ -15,6 +15,7 @@
 #include "x/w/main_window.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_lock.H"
+#include "x/w/input_field_appearance.H"
 #include "x/w/label.H"
 #include "x/w/borderlayoutmanager.H"
 #include "x/w/frame_appearance.H"
@@ -540,6 +541,9 @@ void testbutton()
 			 factory=layout->append_row();
 
 			 LIBCXX_NAMESPACE::w::input_field_config conf4{5};
+
+			 conf4.appearance=
+				 conf4.appearance->modify([](const auto &){});
 
 			 conf4.set_default_spin_control_factories();
 

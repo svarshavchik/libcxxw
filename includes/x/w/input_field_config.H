@@ -11,7 +11,7 @@
 #include <x/w/alignment.H>
 #include <x/w/input_field_configfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
-#include <x/w/input_field_appearance.H>
+#include <x/w/input_field_appearancefwd.H>
 #include <x/w/text_param.H>
 #include <x/w/scrollbar.H>
 #include <x/w/factory.H>
@@ -19,6 +19,41 @@
 #include <optional>
 
 LIBCXXW_NAMESPACE_START
+
+//! Wrapper for input field appearance.
+
+//! Separately inherited by \ref input_field_config "input_field_config"
+//! to avoid the need to fully declare \ref input_field_appearance "appearance"
+//! and pull in all of its header file dependencies.
+
+struct input_field_config_appearance : const_input_field_appearance {
+
+	//! Visual appearance of the input field
+
+
+	//! Constructor
+	input_field_config_appearance();
+
+	//! Constructor
+
+	using const_input_field_appearance::const_input_field_appearance;
+
+	//! Destructor
+	~input_field_config_appearance();
+
+	//! Copy constructor
+	input_field_config_appearance(const input_field_config_appearance &);
+
+	//! Assignment operator
+	input_field_config_appearance &operator=
+	(const input_field_config_appearance &);
+
+	using const_input_field_appearance::operator=;
+
+	using const_input_field_appearance::operator*;
+
+	using const_input_field_appearance::operator->;
+};
 
 //! The configuration of an \ref input_field "input field".
 
@@ -110,9 +145,12 @@ struct input_field_config {
 					const functionref<void(const factory
 							       &)> &);
 
-	//! Enable spin buttons, with a default appearance.
+	//! Enable spin buttons, using the default appearance.
 
 	//! Enables two spin buttons next to the input field.
+	//!
+	//! \note
+	//! Any custom appearance must be set before calling this.
 	void set_default_spin_control_factories();
 
 	//! Search callback
@@ -124,9 +162,9 @@ struct input_field_config {
 
 	functionptr<input_field_search_callback_t> input_field_search_callback;
 
-	//! The input field's appearance
-	const_input_field_appearance appearance=
-		input_field_appearance::base::theme();
+	//! Visual appearance of the input field
+
+	input_field_config_appearance appearance;
 
 	//! Destructor
 

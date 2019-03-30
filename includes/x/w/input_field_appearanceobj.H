@@ -116,6 +116,14 @@ struct input_field_appearance_properties {
 
 	//! Vertical scrollbar appearance
 	const_scrollbar_appearance vertical_scrollbar;
+
+	//! Image icon for the "decrement" spin control button.
+
+	std::string spin_decrement;
+
+	//! Image icon for the "increment" spin control button.
+
+	std::string spin_increment;
 };
 
 //! Implementation object.
