@@ -7,11 +7,44 @@
 
 #include <x/w/color_picker_configfwd.H>
 #include <x/w/color_pickerfwd.H>
-#include <x/w/element_popup_appearance.H>
-#include <x/w/dim_arg.H>
+#include <x/w/color_picker_appearancefwd.H>
+#include <x/w/rgb.H>
 #include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
+
+//! Wrapper for input field appearance.
+
+//! Separately inherited by \ref color_picker_config "color_picker_config"
+//! to avoid the need to fully declare \ref color_picker_appearance "appearance"
+//! and pull in all of its header file dependencies.
+
+struct color_picker_config_appearance : const_color_picker_appearance {
+
+	//! Constructor
+	color_picker_config_appearance();
+
+	//! Constructor
+
+	using const_color_picker_appearance::const_color_picker_appearance;
+
+	//! Destructor
+	~color_picker_config_appearance();
+
+	//! Copy constructor
+	color_picker_config_appearance(const color_picker_config_appearance &);
+
+	//! Assignment operator
+	color_picker_config_appearance &operator=
+	(const color_picker_config_appearance &);
+
+	using const_color_picker_appearance::operator=;
+
+	using const_color_picker_appearance::operator*;
+
+	using const_color_picker_appearance::operator->;
+};
+
 
 //! Initial color picker configuration
 
@@ -25,48 +58,11 @@ struct color_picker_config {
 	functionptr<color_picker_callback_t> initial_callback;
 
 	//! Initial color
-	rgb initial_color=rgb{rgb::maximum, rgb::maximum, rgb::maximum};
 
-	//! Size of the current color swatch
+	rgb initial_color=white;
 
-	//! The size of the actual display element that shows the currently
-	//! picked color.
-	dim_arg width="color_picker_current_width";
-
-	//! Size of the current color swatch
-
-	//! The size of the actual display element that shows the currently
-	//! picked color.
-	dim_arg height="color_picker_current_height";
-
-	//! Generic popup configuration
-	const_element_popup_appearance attached_popup_appearance=
-		const_element_popup_appearance::base::theme();
-
-	//! The size of the top and bottom red/green/blue strips.
-	dim_arg strip_width="color_picker_strip_width";
-
-	//! The size of the left red/green/blue strip.
-	dim_arg strip_height="color_picker_strip_height";
-
-	//! Additional space between the component strips and the picker.
-	dim_arg buffer_width="color_picker_buffer_width";
-
-	//! Additional space between the component strips and the picker.
-	dim_arg buffer_height="color_picker_buffer_height";
-
-	//! Size of the picker gradient element.
-	dim_arg picker_width="color_picker_square_width";
-
-	//! Size of the picker gradient element.
-	dim_arg picker_height="color_picker_square_height";
-
-	//! Size of the buttons showing the basic colors
-	dim_arg basic_color_width="color_picker_basic_color_width";
-
-	//! Size of the buttons showing the basic colors
-	dim_arg basic_color_height="color_picker_basic_color_height";
-
+	//! Visual appearance
+	color_picker_config_appearance appearance;
 };
 
 LIBCXXW_NAMESPACE_END

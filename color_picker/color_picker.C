@@ -4,6 +4,9 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/color_picker_config.H"
+#include "x/w/color_picker_appearance.H"
+#include "x/w/input_field_appearance.H"
+#include "x/w/button_appearance.H"
 #include "x/w/canvas.H"
 #include "x/w/button.H"
 #include "x/w/button_event.H"
@@ -35,6 +38,19 @@
 #include <algorithm>
 
 LIBCXXW_NAMESPACE_START
+
+color_picker_config_appearance::color_picker_config_appearance()
+	: const_color_picker_appearance{color_picker_appearance::base::theme()}
+{
+}
+
+color_picker_config_appearance::~color_picker_config_appearance()=default;
+
+color_picker_config_appearance::color_picker_config_appearance
+(const color_picker_config_appearance &)=default;
+
+color_picker_config_appearance &color_picker_config_appearance
+::operator=(const color_picker_config_appearance &)=default;
 
 color_pickerObj::color_pickerObj(const ref<implObj> &impl,
 				 const layout_impl &container_layoutmanager)
@@ -119,6 +135,11 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 		{
 			auto f=glm->append_row();
 
+			auto b_config=normal_button();
+
+			b_config.appearance=config.appearance
+				->basic_colors_button_appearance;
+
 			for (const auto &col:row)
 			{
 				auto b=f->create_button
@@ -131,9 +152,13 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 								  c->set_background_color
 									  (col.color);
 							  },
-							  {config.basic_color_width},
-							  {config.basic_color_height});
-					 });
+							  {config.appearance
+							   ->basic_color_width},
+							  {config.appearance
+							   ->basic_color_height
+							  });
+					 },
+					 b_config);
 
 				b->create_tooltip(col.name);
 				basic_colors.push_back(std::tuple{col.color,
@@ -151,6 +176,10 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 		{"filler", dialog_filler()},
 		{"h-button", [&](const auto &f)
 			{
+				auto b_conf=normal_button();
+				b_conf.appearance=config.appearance
+					->h_button_appearance;
+
 				h_button=f->create_button
 					([&]
 					 (const auto &button_factory)
@@ -158,11 +187,17 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 						 h_canvas=button_factory
 							 ->create_canvas
 							 ([] (const auto &){}, {
-							 }, {config.strip_height});
-					 });
+							 }, {config.appearance
+							     ->strip_height});
+					 },
+					 b_conf);
 			}},
 		{"v-button", [&](const auto &f)
 			{
+				auto b_conf=normal_button();
+				b_conf.appearance=config.appearance
+					->h_button_appearance;
+
 				v_button=f->create_button
 					([&]
 					 (const auto &button_factory)
@@ -170,19 +205,25 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 						 v_canvas=button_factory
 							 ->create_canvas
 							 ([](const auto &) {}, {
-								 config.strip_width}, {});
-					 });
+								 config
+								 .appearance
+								 ->strip_width},
+								 {});
+					 },
+					 b_conf);
 			}},
 		{"h-button-spacing", [&](const auto &f)
 			{
 				f->create_canvas([](const auto &) {},
 						 {},
-						 {config.buffer_height});
+						 {config.appearance
+						  ->buffer_height});
 			}},
 		{"v-button-spacing", [&](const auto &f)
 			{
 				f->create_canvas([](const auto &) {},
-						 {config.buffer_width},
+						 {config.appearance
+						  ->buffer_width},
 						 {});
 			}},
 		{"fixed-canvas", [&](const auto &f)
@@ -190,7 +231,9 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 				fixed_canvas=f->create_canvas([]
 							      (const auto &){},
 							      {},
-							      {config.strip_height});
+							      {config
+							       .appearance
+							       ->strip_height});
 
 			}},
 		{"square", [&](const auto &f)
@@ -223,8 +266,8 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 						 ::implObj
 						 ::initial_vert_component,
 						 canvas_init_params{
-							 {config.picker_width},
-							 {config.picker_height},
+							 {config.appearance->picker_width},
+							 {config.appearance->picker_height},
 								 "color_picker_square@libcxx.com"});
 
 				auto cps=color_picker_square::create(impl);
@@ -259,31 +302,43 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 
 		{"r-input-field", [&](const auto &f)
 			{
+				input_fields_conf.appearance=
+					config.appearance->r_appearance;
 				r_input_field=f->create_input_field
 					("", input_fields_conf);
 			}},
 		{"g-input-field", [&](const auto &f)
 			{
+				input_fields_conf.appearance=
+					config.appearance->g_appearance;
 				g_input_field=f->create_input_field
 					("", input_fields_conf);
 			}},
 		{"b-input-field", [&](const auto &f)
 			{
+				input_fields_conf.appearance=
+					config.appearance->b_appearance;
 				b_input_field=f->create_input_field
 					("", input_fields_conf);
 			}},
 		{"h-input-field", [&](const auto &f)
 			{
+				input_fields_conf.appearance=
+					config.appearance->h_appearance;
 				h_input_field=f->create_input_field
 					("", input_fields_conf);
 			}},
 		{"s-input-field", [&](const auto &f)
 			{
+				input_fields_conf.appearance=
+					config.appearance->s_appearance;
 				s_input_field=f->create_input_field
 					("", input_fields_conf);
 			}},
 		{"v-input-field", [&](const auto &f)
 			{
+				input_fields_conf.appearance=
+					config.appearance->v_appearance;
 				v_input_field=f->create_input_field
 					("", input_fields_conf);
 			}},
@@ -725,7 +780,7 @@ color_picker factoryObj
 
 	auto [real_impl, popup_imagebutton, glm, color_picker_popup]
 		=create_popup_attachedto_element
-		(*this, config.attached_popup_appearance,
+		(*this, config.appearance->attached_popup_appearance,
 
 		 [&](const container_impl &parent,
 		     const child_element_init_params &init_params)
@@ -752,7 +807,7 @@ color_picker factoryObj
 			 color_picker_current=f->create_canvas
 			 ([&](const auto &c) {
 				 c->set_background_color(config.initial_color);
-			 }, {config.width}, {config.height});
+			 }, {config.appearance->width}, {config.appearance->height});
 
 			 color_picker_current->show();
 		 });
