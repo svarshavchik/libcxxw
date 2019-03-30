@@ -28,6 +28,15 @@ struct input_field_appearance_properties {
 	//! Destructor
 	~input_field_appearance_properties();
 
+	//! Pointer image while typing, invisible pointer.
+	std::string invisible_pointer;
+
+	//! Pointer image while dragging
+	std::string dragging_pointer;
+
+	//! Pointer image while dragging non-droppable text
+	std::string dragging_nodrop_pointer;
+
 	//! The input field's border.
 
 	border_arg border;

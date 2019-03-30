@@ -61,7 +61,10 @@ static button_config create_right_spinner_button_config(const border_arg &border
 
 
 input_field_appearance_properties::input_field_appearance_properties()
-	: border{"textedit_border"},
+	: invisible_pointer{"cursor-invisible"},
+	  dragging_pointer{"cursor-dragging"},
+	  dragging_nodrop_pointer{"cursor-dragging-wontdrop"},
+	  border{"textedit_border"},
 	  focusoff_border{"texteditfocusoff_border"},
 	  focuson_border{"texteditfocuson_border"},
 	  foreground_color{"textedit_foreground_color"},

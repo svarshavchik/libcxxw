@@ -438,17 +438,21 @@ editorObj::implObj::implObj(init_args &args)
 		       // Invisible pointer cursor
 		       args.parent_peephole->container_element_impl()
 		       .get_window_handler()
-		       .create_icon({"cursor-invisible"})->create_cursor(),
+		       .create_icon({args.config.appearance
+				     ->invisible_pointer})->create_cursor(),
 
 		       // Dragging cursor pointer
 		       args.parent_peephole->container_element_impl()
 		       .get_window_handler()
-		       .create_icon({"cursor-dragging"})->create_cursor(),
+		       .create_icon({args.config.appearance
+				     ->dragging_pointer})->create_cursor(),
 
 		       // Dragging cursor pointer
 		       args.parent_peephole->container_element_impl()
 		       .get_window_handler()
-		       .create_icon({"cursor-dragging-wontdrop"})->create_cursor(),
+		       .create_icon({args.config.appearance
+				     ->dragging_nodrop_pointer})
+		       ->create_cursor(),
 			  args.config.appearance->drag_horiz_start,
 			  themedimaxis::width,
 			  args.config.appearance->drag_vert_start,
