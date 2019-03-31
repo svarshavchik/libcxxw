@@ -144,6 +144,10 @@ public:
 
 	void on_button_event(const functionref<button_event_callback_t> &);
 
+	//! Install a motion event callback
+
+	void on_motion_event(const functionref<motion_event_callback_t> &);
+
 	//! Create a standard tooltip consisting of an unwrapped label.
 
 	void create_tooltip(const text_param &text);

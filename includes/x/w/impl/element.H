@@ -246,6 +246,10 @@ class elementObj::implObj : public element_drawObj,
 
 		functionptr<button_event_callback_t> on_button_event_callback;
 
+		//! Callback for reporting motion events.
+
+		functionptr<motion_event_callback_t> on_motion_event_callback;
+
 		//! Whether this element is a label for some focusable.
 
 		label_forptr label_for;

@@ -1404,6 +1404,13 @@ void elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 		if (me.mask.ordinal(true) == 0)
 			schedule_hover_action(IN_THREAD);
 	}
+
+	if (data(IN_THREAD).on_motion_event_callback)
+	{
+		try {
+			data(IN_THREAD).on_motion_event_callback(IN_THREAD, me);
+		} REPORT_EXCEPTIONS(this);
+	}
 }
 
 void elementObj::implObj::schedule_hover_action(ONLY IN_THREAD)

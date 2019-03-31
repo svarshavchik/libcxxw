@@ -10,6 +10,7 @@
 #include "x/w/canvas.H"
 #include "x/w/button.H"
 #include "x/w/button_event.H"
+#include "x/w/motion_event.H"
 #include "popup/popup_attachedto_element.H"
 #include "color_picker/color_picker_impl.H"
 #include "color_picker/color_picker_selector_impl.H"
@@ -442,6 +443,10 @@ static rgb_component_t compute_from_click(const element &e,
 					  dim_t s)
 {
 	auto xc=(coord_t::value_type)x;
+
+	if (s > 0)
+		--s; // If 's' is 10, our coordinates will range 0-9.
+
 	auto sc=coord_t::truncate(s);
 
 	if (xc < 0)
@@ -1029,6 +1034,32 @@ color_picker factoryObj
 				 (IN_THREAD, v, &be);
 
 			 return true;
+		 });
+
+	contents.fixed_canvas->on_motion_event
+		([get=make_weak_capture(impl, contents.fixed_canvas)]
+		 (ONLY IN_THREAD,
+		  const auto &me)
+		 {
+			 if (me.type != motion_event_type::real_motion ||
+			     !(me.mask.buttons & 1))
+				 return; // Dragging with button 1 pressed
+
+			 auto got=get.get();
+
+			 if (!got)
+				 return;
+
+			 auto &[color_picker_impl, square]=*got;
+
+			 auto &data=square->impl->data(IN_THREAD);
+			 auto v=compute_from_click
+				 (square,
+				  me.x,
+				  data.current_position.width);
+
+			 color_picker_impl->update_fixed_component
+				 (IN_THREAD, v, &me);
 		 });
 
 	///////////////////////////////////////////////////////////////////

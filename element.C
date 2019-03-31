@@ -236,6 +236,15 @@ void elementObj::on_button_event(const functionref<button_event_callback_t> &cb)
 		  });
 }
 
+void elementObj::on_motion_event(const functionref<motion_event_callback_t> &cb)
+{
+	in_thread([cb, impl=this->impl]
+		  (ONLY IN_THREAD)
+		  {
+			  impl->data(IN_THREAD).on_motion_event_callback=cb;
+		  });
+}
+
 void elementObj::create_custom_tooltip(const functionref<void
 				       (THREAD_CALLBACK,
 					const tooltip_factory &)>

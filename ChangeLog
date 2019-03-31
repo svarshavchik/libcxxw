@@ -1,3 +1,8 @@
+2019-03-30  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* element: implement an on_motion_event() callback. Use this in
+	the color picker popup, on the fixed color strip.
+
 2019-03-25  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* panelayoutmanager, gridlayoutmanager: bug fixes here, and in the

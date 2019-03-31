@@ -10,6 +10,7 @@
 #include <x/w/connection_threadfwd.H>
 #include <x/w/metrics/axisfwd.H>
 #include <x/w/button_eventfwd.H>
+#include <x/w/motion_eventfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/tooltipfwd.H>
 #include <x/optional_argsfwd.H>
@@ -168,6 +169,7 @@ must be used.
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/button_event.H>
+#include <INSERT_LIBX_NAMESPACE/w/motion_event.H>
 
 element->on_button_event([]
                         (ONLY IN_THREAD,
@@ -178,13 +180,23 @@ element->on_button_event([]
                              if (activated && e.button == 1)
                                  // ...
                          });
+
+element->on_motion_event([]
+                        (ONLY IN_THREAD,
+                         const INSERT_LIBX_NAMESPACE::w::motion_event &e)
+                        {
+                        });
+
 \endcode
 
-Installs a callback that gets invoked whenever a pointer button gets
-pressed or released with the pointer inside the element.
+on_button_event() installs a callback that gets invoked whenever a
+pointer button gets pressed or released with the pointer inside the element.
 
 The callback gets invoked only if no other action occurs in response to the
 button event.
+
+on_motion_event() installs a callback that gets invoked each time the
+mouse pointer moves inside the display element.
 
 \note
 The callback cannot capture references to its display element, any of its
@@ -509,6 +521,14 @@ typedef bool button_event_callback_t(THREAD_CALLBACK,
 				     const button_event &,
 				     bool,
 				     const busy &);
+
+//! Signature of a motion event callback
+
+//! A busy mcguffin factory is not provided. Acquiring a busy mcguffin
+//! as a result of a motion event is rather rude.
+
+typedef void motion_event_callback_t(THREAD_CALLBACK,
+				     const motion_event &);
 
 LIBCXXW_NAMESPACE_END
 
