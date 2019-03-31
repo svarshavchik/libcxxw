@@ -105,14 +105,10 @@ See COPYING for distribution information.
 	&app;'s core functionality is complete, with minor
 	improvements and enhancements ongoing, and it's source
 	<link linkend="INSTALL">is available for downloading</link>.
-	The most recent build of &app; implements
-	<link linkend="splash">splash windows</link>,
-	contains internal improvements
-	to the window manager hints for <link linkend="dialogs">dialog
-	  windows</link>, and adds right pointer button popup menus to the
-	<link linkend="filedialog">file dialog</link> that makes it
-	possible to execute basic file operations (rename/delete) in the
-	file dialog.
+	The most recent build of &app; implements the ability to
+	customize the default theme-specified
+	<link linkend="appearance">visual appearance</link> of
+	various display elements.
       </para>
     </section>
   </section>
