@@ -668,12 +668,8 @@ class LIBCXX_HIDDEN menu_list_style_impl
 	{
 		if (std::holds_alternative<menu_item_submenu>(info.menu_item))
 		{
-			auto i=textlist_element
-				.get_window_handler()
-				.create_icon({"submenu"});
-
 			return list_cellimage::create
-				(std::vector<icon>{i},
+				(std::vector<icon>{textlist_element.submenu},
 				 halign::left,
 				 valign::middle);
 		}

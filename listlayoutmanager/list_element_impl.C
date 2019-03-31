@@ -300,9 +300,11 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 				      container_screen
 				      ->find_alpha_pictformat_by_depth(1))},
 	  bullet1{container_element_impl.get_window_handler()
-		  .create_icon({"bullet1"})},
+		  .create_icon({init_args.style.appearance->unmarked_icon})},
 	  bullet2{container_element_impl.get_window_handler()
-		  .create_icon({"bullet2"})},
+		  .create_icon({init_args.style.appearance->marked_icon})},
+	  submenu{container_element_impl.get_window_handler()
+		  .create_icon({init_args.style.appearance->submenu_icon})},
 
 	  itemlabel_meta{create_background_color(init_args.style.appearance
 						 ->contents_appearance

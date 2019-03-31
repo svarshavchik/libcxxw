@@ -89,6 +89,24 @@ struct list_appearance_properties {
 	//! the button being pressed.
 	color_arg current_color;
 
+	//! Unmarked list icon
+
+	//! In a bulleted list, the icon next to an unmarked item. This
+	//! should be a transparent image that's the same size as the
+	//! marked icon
+
+	std::string unmarked_icon;
+
+	//! Marked list icon
+
+	//! Indicates that the item is selected, in a bulleted list.
+	std::string marked_icon;
+
+	//! Submenu indication icon
+
+	//! Indicates that the menu item opens a submenu
+	std::string submenu_icon;
+
 	//! List contents appearance
 
 	//! The label_font and label_color control the default font and color

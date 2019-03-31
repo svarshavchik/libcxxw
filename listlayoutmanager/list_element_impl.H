@@ -579,6 +579,9 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Precreate an icon that we might need.
 	const icon bullet2;
 
+	//! Precreate an icon that we might need.
+	const icon submenu;
+
 	//! Default label metadata for list item element.
 	const richtextmeta itemlabel_meta;
 
