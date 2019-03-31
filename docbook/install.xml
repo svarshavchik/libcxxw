@@ -76,7 +76,7 @@ See COPYING for distribution information.
     installable the &app; package on platforms other than Fedora.
   </para>
 
-  <simplesect>
+  <simplesect id='reqandprereq'>
     <title>Requirements and prerequisites</title>
 
     <itemizedlist>
@@ -133,7 +133,7 @@ See COPYING for distribution information.
     </note>
   </simplesect>
 
-  <simplesect>
+  <simplesect id="configbuild">
     <title>Configuring and building</title>
 
     <para>

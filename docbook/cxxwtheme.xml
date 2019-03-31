@@ -27,12 +27,12 @@ See COPYING for distribution information.
   </refnamediv>
 
   <refsynopsisdiv>
-    <cmdsynopsis>
+    <cmdsynopsis id="cxxwthemecmd">
       <command>cxxwtheme</command>
     </cmdsynopsis>
   </refsynopsisdiv>
 
-  <refsect1>
+  <refsect1 id="cxxthemedesc">
     <title>Description</title>
 
     <para>
@@ -61,7 +61,7 @@ See COPYING for distribution information.
     </para>
   </refsect1>
 
-  <refsect1>
+  <refsect1 id="cxxwthemefiles">
     <title>Files</title>
 
     <variablelist>

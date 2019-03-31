@@ -44,7 +44,7 @@ See COPYING for distribution information.
     </informalexample>
   </blockquote>
 
-  <section title="createfontcolorpicker">
+  <section id="createfontcolorpicker">
     <title>Creating font and color pickers</title>
 
     <para>

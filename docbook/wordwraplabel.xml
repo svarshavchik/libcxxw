@@ -373,7 +373,7 @@ auto main_window=
       <blockquote>
 	<informalexample>
 	  <programlisting>
-#include &lt;&ns;/w/main_window_appearance&gt;
+#include &lt;&ns;/w/main_window_appearance.H&gt;
 #include &lt;&ns;/w/rgb.H&gt;
 
 &ns;::w::main_window_config config;
