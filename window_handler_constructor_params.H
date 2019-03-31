@@ -32,7 +32,7 @@ struct main_window_handler_constructor_params {
 	//! New main window's background color.
 	const color_arg &background_color;
 
-	//! Apperance
+	//! Appearance
 	const const_generic_window_appearance &appearance;
 };
 

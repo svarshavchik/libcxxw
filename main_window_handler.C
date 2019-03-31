@@ -183,11 +183,15 @@ static std::vector<icon> create_icons(drawableObj::implObj &me,
 	v.reserve(icons.size());
 
 	for (const auto &i:icons)
-		v.push_back(me.create_icon_pixels(std::get<0>(i),
+	{
+		const auto &[name, width, height]=i;
+
+		v.push_back(me.create_icon_pixels(name,
 						  render_repeat::none,
-						  std::get<1>(i),
-						  std::get<2>(i),
+						  width,
+						  height,
 						  icon_scale::nomore));
+	}
 	return v;
 }
 
@@ -204,12 +208,7 @@ void main_windowObj::handlerObj
 				install_window_theme_icon
 					(IN_THREAD,
 					 create_icons
-					 (*this, {
-						 {"mainwindow-icon", 16, 16},
-						 {"mainwindow-icon", 24, 24},
-						 {"mainwindow-icon", 32, 32},
-						 {"mainwindow-icon", 48, 48}
-					 }));
+					 (*this, appearance->icons));
 			} CATCH_EXCEPTIONS;
 #ifdef MAINWINDOW_HINTS_DEBUG3
 		MAINWINDOW_HINTS_DEBUG3();

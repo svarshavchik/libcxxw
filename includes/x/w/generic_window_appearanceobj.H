@@ -10,8 +10,12 @@
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
+#include <x/w/types.H>
 #include <x/functional.H>
 #include <x/obj.H>
+#include <vector>
+#include <tuple>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -43,6 +47,12 @@ struct generic_window_appearance_properties {
 
 	//! "Wait" cursor image
 	std::string wait_cursor;
+
+	//! Default window titlebar icons.
+
+	//! Tuples of name, width, height
+
+	std::vector<std::tuple<std::string, dim_t, dim_t>> icons;
 };
 
 //! Implementation object.
