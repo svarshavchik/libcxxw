@@ -12,7 +12,9 @@ pane_layout_appearance_properties::pane_layout_appearance_properties()
 	  slider{"pane_slider"},
 	  slider_background_color{"pane_slider_background"},
 	  slider_focusoff_border{"pane_slider_focusoff_border"},
-	  slider_focuson_border{"pane_slider_focuson_border"}
+	  slider_focuson_border{"pane_slider_focuson_border"},
+	  slider_horiz{"slider-horiz"},
+	  slider_vert{"slider-vert"}
 {
 }
 

@@ -777,10 +777,10 @@ gridfactory panelayoutmanagerObj::implObj::orientation<vertical>
 }
 
 template<>
-const char *panelayoutmanagerObj::implObj::orientation<vertical>
+const std::string &panelayoutmanagerObj::implObj::orientation<vertical>
 ::slider_cursor() const
 {
-	return "slider-vert";
+	return appearance->slider_vert;
 }
 
 template<>
@@ -992,10 +992,10 @@ gridfactory panelayoutmanagerObj::implObj::orientation<horizontal>
 }
 
 template<>
-const char *panelayoutmanagerObj::implObj::orientation<horizontal>
+const std::string &panelayoutmanagerObj::implObj::orientation<horizontal>
 ::slider_cursor() const
 {
-	return "slider-horiz";
+	return appearance->slider_horiz;
 }
 
 template<>

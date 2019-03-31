@@ -295,7 +295,9 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	//! Which pointer to use for the slider.
 
-	virtual const char *slider_cursor() const=0;
+	//! Returns a ref to slider_horiz or slider_vert in the
+	//! appearance object.
+	virtual const std::string &slider_cursor() const=0;
 
 	//! Set factory for creating a new slider element.
 
@@ -453,7 +455,7 @@ class panelayoutmanagerObj::implObj::orientation
 
 	//! Which pointer to use for the slider.
 
-	const char *slider_cursor() const override;
+	const std::string &slider_cursor() const override;
 
 	//! Implement initial_peephole_metrics().
 

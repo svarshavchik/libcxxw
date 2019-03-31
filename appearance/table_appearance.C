@@ -14,7 +14,8 @@ table_appearance_properties::table_appearance_properties()
 	{"list_adjustable_header_highlight_color"},
 	  adjustable_header_highlight_width
 	{"list_adjustable_header_highlight_width"},
-	  drag_horiz_start{"drag_horiz_start"}
+	  drag_horiz_start{"drag_horiz_start"},
+	  adjust_cursor{"slider-horiz"}
 {
 }
 

@@ -38,6 +38,12 @@ struct pane_layout_appearance_properties {
 
 	//! Slider's focuson border.
 	border_arg slider_focuson_border;
+
+	//! Cursor pointer when hovering over a horizontal slider
+	std::string slider_horiz;
+
+	//! Cursor pointer when hovering over a horizontal slider
+	std::string slider_vert;
 };
 
 //! Implementation object.

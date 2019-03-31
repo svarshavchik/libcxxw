@@ -161,7 +161,9 @@ class LIBCXX_HIDDEN header_container_implObj
 			themedimaxis::width,
 			parent_container->container_element_impl()
 			.get_window_handler()
-			.create_icon({"slider-horiz"})->create_cursor(),
+			.create_icon({ntlm.extra_table_appearance
+						->adjust_cursor})
+			->create_cursor(),
 			parent_container, init_params},
 		preferred_override{ntlm.table_width != 0},
 			header_container_element{header_container_element},

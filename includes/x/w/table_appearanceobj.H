@@ -53,6 +53,10 @@ struct table_appearance_properties {
 
 	//! Avoids quick errant clicks from dragging columns.
 	dim_arg drag_horiz_start;
+
+	//! Pointer image on top of an adjustable column divider.
+
+	std::string adjust_cursor;
 };
 
 //! Implementation object.
