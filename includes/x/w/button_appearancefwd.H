@@ -43,21 +43,21 @@ return a cached default theme appearance.
 typedef ref<button_appearanceObj,
 	    button_appearance_base> button_appearance;
 
-//! Constant \ref button_appearance "WHATITIS".
+//! Constant \ref button_appearance "button appearance".
 
 //! \see button_appearance
 
 typedef const_ref<button_appearanceObj,
 		  button_appearance_base> const_button_appearance;
 
-//! A nullable pointer reference to a \ref button_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref button_appearance "button appearance".
 
 //! \see button_appearance
 
 typedef ptr<button_appearanceObj,
 	    button_appearance_base> button_appearanceptr;
 
-//! A nullable pointer reference to a const \ref button_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref button_appearance "button appearance".
 
 //! \see button_appearance
 

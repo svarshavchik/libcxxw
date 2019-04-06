@@ -43,21 +43,21 @@ a cached default theme appearance.
 typedef ref<peephole_appearanceObj,
 	    peephole_appearance_base> peephole_appearance;
 
-//! Constant \ref peephole_appearance "WHATITIS".
+//! Constant \ref peephole_appearance "peephole appearance".
 
 //! \see peephole_appearance
 
 typedef const_ref<peephole_appearanceObj,
 		  peephole_appearance_base> const_peephole_appearance;
 
-//! A nullable pointer reference to a \ref peephole_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref peephole_appearance "peephole appearance".
 
 //! \see peephole_appearance
 
 typedef ptr<peephole_appearanceObj,
 	    peephole_appearance_base> peephole_appearanceptr;
 
-//! A nullable pointer reference to a const \ref peephole_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref peephole_appearance "peephole appearance".
 
 //! \see peephole_appearance
 

@@ -43,21 +43,21 @@ a cached default theme appearance.
 typedef ref<date_input_field_appearanceObj,
 	    date_input_field_appearance_base> date_input_field_appearance;
 
-//! Constant \ref date_input_field_appearance "WHATITIS".
+//! Constant \ref date_input_field_appearance "date input field appearance".
 
 //! \see date_input_field_appearance
 
 typedef const_ref<date_input_field_appearanceObj,
 		  date_input_field_appearance_base> const_date_input_field_appearance;
 
-//! A nullable pointer reference to a \ref date_input_field_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref date_input_field_appearance "date input field appearance".
 
 //! \see date_input_field_appearance
 
 typedef ptr<date_input_field_appearanceObj,
 	    date_input_field_appearance_base> date_input_field_appearanceptr;
 
-//! A nullable pointer reference to a const \ref date_input_field_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref date_input_field_appearance "date input field appearance".
 
 //! \see date_input_field_appearance
 

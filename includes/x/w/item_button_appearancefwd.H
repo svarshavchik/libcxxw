@@ -50,21 +50,21 @@ parameter that specifies custom properties for the new button.
 typedef ref<item_button_appearanceObj,
 	    item_button_appearance_base> item_button_appearance;
 
-//! Constant \ref item_button_appearance "WHATITIS".
+//! Constant \ref item_button_appearance "item button appearance".
 
 //! \see item_button_appearance
 
 typedef const_ref<item_button_appearanceObj,
 		  item_button_appearance_base> const_item_button_appearance;
 
-//! A nullable pointer reference to a \ref item_button_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref item_button_appearance "item button appearance".
 
 //! \see item_button_appearance
 
 typedef ptr<item_button_appearanceObj,
 	    item_button_appearance_base> item_button_appearanceptr;
 
-//! A nullable pointer reference to a const \ref item_button_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref item_button_appearance "item button appearance".
 
 //! \see item_button_appearance
 

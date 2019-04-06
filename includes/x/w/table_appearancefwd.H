@@ -51,21 +51,21 @@ a cached default theme appearance.
 typedef ref<table_appearanceObj,
 	    table_appearance_base> table_appearance;
 
-//! Constant \ref table_appearance "WHATITIS".
+//! Constant \ref table_appearance "table header row appearance".
 
 //! \see table_appearance
 
 typedef const_ref<table_appearanceObj,
 		  table_appearance_base> const_table_appearance;
 
-//! A nullable pointer reference to a \ref table_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref table_appearance "table header row appearance".
 
 //! \see table_appearance
 
 typedef ptr<table_appearanceObj,
 	    table_appearance_base> table_appearanceptr;
 
-//! A nullable pointer reference to a const \ref table_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref table_appearance "table header row appearance".
 
 //! \see table_appearance
 

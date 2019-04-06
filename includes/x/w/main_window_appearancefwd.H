@@ -43,21 +43,21 @@ a cached default theme appearance.
 typedef ref<main_window_appearanceObj,
 	    main_window_appearance_base> main_window_appearance;
 
-//! Constant \ref main_window_appearance "WHATITIS".
+//! Constant \ref main_window_appearance "main window appearance".
 
 //! \see main_window_appearance
 
 typedef const_ref<main_window_appearanceObj,
 		  main_window_appearance_base> const_main_window_appearance;
 
-//! A nullable pointer reference to a \ref main_window_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref main_window_appearance "main window appearance".
 
 //! \see main_window_appearance
 
 typedef ptr<main_window_appearanceObj,
 	    main_window_appearance_base> main_window_appearanceptr;
 
-//! A nullable pointer reference to a const \ref main_window_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref main_window_appearance "main window appearance".
 
 //! \see main_window_appearance
 

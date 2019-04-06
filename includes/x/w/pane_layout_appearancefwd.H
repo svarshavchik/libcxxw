@@ -43,21 +43,21 @@ a cached default theme appearance.
 typedef ref<pane_layout_appearanceObj,
 	    pane_layout_appearance_base> pane_layout_appearance;
 
-//! Constant \ref pane_layout_appearance "WHATITIS".
+//! Constant \ref pane_layout_appearance "pane layout appearance".
 
 //! \see pane_layout_appearance
 
 typedef const_ref<pane_layout_appearanceObj,
 		  pane_layout_appearance_base> const_pane_layout_appearance;
 
-//! A nullable pointer reference to a \ref pane_layout_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref pane_layout_appearance "pane layout appearance".
 
 //! \see pane_layout_appearance
 
 typedef ptr<pane_layout_appearanceObj,
 	    pane_layout_appearance_base> pane_layout_appearanceptr;
 
-//! A nullable pointer reference to a const \ref pane_layout_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref pane_layout_appearance "pane layout appearance".
 
 //! \see pane_layout_appearance
 

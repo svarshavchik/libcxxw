@@ -60,21 +60,21 @@ returns a cached default theme appearance for a static tooltip.
 typedef ref<tooltip_appearanceObj,
 	    tooltip_appearance_base> tooltip_appearance;
 
-//! Constant \ref tooltip_appearance "WHATITIS".
+//! Constant \ref tooltip_appearance "tooltip appearance".
 
 //! \see tooltip_appearance
 
 typedef const_ref<tooltip_appearanceObj,
 		  tooltip_appearance_base> const_tooltip_appearance;
 
-//! A nullable pointer reference to a \ref tooltip_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref tooltip_appearance "tooltip appearance".
 
 //! \see tooltip_appearance
 
 typedef ptr<tooltip_appearanceObj,
 	    tooltip_appearance_base> tooltip_appearanceptr;
 
-//! A nullable pointer reference to a const \ref tooltip_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref tooltip_appearance "tooltip appearance".
 
 //! \see tooltip_appearance
 

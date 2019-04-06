@@ -41,21 +41,21 @@ a cached default theme appearance.
 typedef ref<bookpage_appearanceObj,
 	    bookpage_appearance_base> bookpage_appearance;
 
-//! Constant \ref bookpage_appearance "WHATITIS".
+//! Constant \ref bookpage_appearance "book page tab appearance".
 
 //! \see bookpage_appearance
 
 typedef const_ref<bookpage_appearanceObj,
 		  bookpage_appearance_base> const_bookpage_appearance;
 
-//! A nullable pointer reference to a \ref bookpage_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref bookpage_appearance "book page tab appearance".
 
 //! \see bookpage_appearance
 
 typedef ptr<bookpage_appearanceObj,
 	    bookpage_appearance_base> bookpage_appearanceptr;
 
-//! A nullable pointer reference to a const \ref bookpage_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref bookpage_appearance "book page tab appearance".
 
 //! \see bookpage_appearance
 

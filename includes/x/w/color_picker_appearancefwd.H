@@ -43,21 +43,21 @@ a cached default theme appearance.
 typedef ref<color_picker_appearanceObj,
 	    color_picker_appearance_base> color_picker_appearance;
 
-//! Constant \ref color_picker_appearance "WHATITIS".
+//! Constant \ref color_picker_appearance "color picker appearance".
 
 //! \see color_picker_appearance
 
 typedef const_ref<color_picker_appearanceObj,
 		  color_picker_appearance_base> const_color_picker_appearance;
 
-//! A nullable pointer reference to a \ref color_picker_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref color_picker_appearance "color picker appearance".
 
 //! \see color_picker_appearance
 
 typedef ptr<color_picker_appearanceObj,
 	    color_picker_appearance_base> color_picker_appearanceptr;
 
-//! A nullable pointer reference to a const \ref color_picker_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref color_picker_appearance "color picker appearance".
 
 //! \see color_picker_appearance
 

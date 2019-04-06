@@ -43,21 +43,21 @@ a cached default theme appearance.
 typedef ref<font_picker_appearanceObj,
 	    font_picker_appearance_base> font_picker_appearance;
 
-//! Constant \ref font_picker_appearance "WHATITIS".
+//! Constant \ref font_picker_appearance "font picker appearance".
 
 //! \see font_picker_appearance
 
 typedef const_ref<font_picker_appearanceObj,
 		  font_picker_appearance_base> const_font_picker_appearance;
 
-//! A nullable pointer reference to a \ref font_picker_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref font_picker_appearance "font picker appearance".
 
 //! \see font_picker_appearance
 
 typedef ptr<font_picker_appearanceObj,
 	    font_picker_appearance_base> font_picker_appearanceptr;
 
-//! A nullable pointer reference to a const \ref font_picker_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref font_picker_appearance "font picker appearance".
 
 //! \see font_picker_appearance
 

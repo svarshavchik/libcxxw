@@ -60,21 +60,21 @@ and tooltip_theme().
 typedef ref<generic_window_appearanceObj,
 	    generic_window_appearance_base> generic_window_appearance;
 
-//! Constant \ref generic_window_appearance "WHATITIS".
+//! Constant \ref generic_window_appearance "top level window appearance".
 
 //! \see generic_window_appearance
 
 typedef const_ref<generic_window_appearanceObj,
 		  generic_window_appearance_base> const_generic_window_appearance;
 
-//! A nullable pointer reference to a \ref generic_window_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref generic_window_appearance "top level window appearance".
 
 //! \see generic_window_appearance
 
 typedef ptr<generic_window_appearanceObj,
 	    generic_window_appearance_base> generic_window_appearanceptr;
 
-//! A nullable pointer reference to a const \ref generic_window_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref generic_window_appearance "top level window appearance".
 
 //! \see generic_window_appearance
 

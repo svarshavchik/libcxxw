@@ -43,21 +43,21 @@ a cached default theme appearance.
 typedef ref<scrollbar_appearanceObj,
 	    scrollbar_appearance_base> scrollbar_appearance;
 
-//! Constant \ref scrollbar_appearance "WHATITIS".
+//! Constant \ref scrollbar_appearance "scrollbar appearance".
 
 //! \see scrollbar_appearance
 
 typedef const_ref<scrollbar_appearanceObj,
 		  scrollbar_appearance_base> const_scrollbar_appearance;
 
-//! A nullable pointer reference to a \ref scrollbar_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref scrollbar_appearance "scrollbar appearance".
 
 //! \see scrollbar_appearance
 
 typedef ptr<scrollbar_appearanceObj,
 	    scrollbar_appearance_base> scrollbar_appearanceptr;
 
-//! A nullable pointer reference to a const \ref scrollbar_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref scrollbar_appearance "scrollbar appearance".
 
 //! \see scrollbar_appearance
 

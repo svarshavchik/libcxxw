@@ -50,21 +50,21 @@ a cached default theme appearance.
 typedef ref<progressbar_appearanceObj,
 	    progressbar_appearance_base> progressbar_appearance;
 
-//! Constant \ref progressbar_appearance "WHATITIS".
+//! Constant \ref progressbar_appearance "progressbar appearance".
 
 //! \see progressbar_appearance
 
 typedef const_ref<progressbar_appearanceObj,
 		  progressbar_appearance_base> const_progressbar_appearance;
 
-//! A nullable pointer reference to a \ref progressbar_appearance "WHATITIS".
+//! A nullable pointer reference to a \ref progressbar_appearance "progressbar appearance".
 
 //! \see progressbar_appearance
 
 typedef ptr<progressbar_appearanceObj,
 	    progressbar_appearance_base> progressbar_appearanceptr;
 
-//! A nullable pointer reference to a const \ref progressbar_appearance "WHATITIS".
+//! A nullable pointer reference to a const \ref progressbar_appearance "progressbar appearance".
 
 //! \see progressbar_appearance
 
