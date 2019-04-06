@@ -499,6 +499,13 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	void enabled(ONLY IN_THREAD, size_t i, bool flag);
 
+	//! Enable or disable the list item.
+
+	void enabled(ONLY IN_THREAD,
+		     listimpl_info_t::lock &lock,
+		     const extra_list_row_info &extra,
+		     bool flag);
+
  private:
 	struct textlist_info_lock;
 

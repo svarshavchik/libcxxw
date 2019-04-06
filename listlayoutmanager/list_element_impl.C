@@ -2142,7 +2142,15 @@ void list_elementObj::implObj::enabled(ONLY IN_THREAD, size_t i, bool flag)
 	if (i >= lock->row_infos.size())
 		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"), i));
 
-	auto &r=lock->row_infos.at(i).extra->data(lock);
+	enabled(IN_THREAD, lock, lock->row_infos.at(i).extra, flag);
+}
+
+void list_elementObj::implObj::enabled(ONLY IN_THREAD,
+				       listimpl_info_t::lock &lock,
+				       const extra_list_row_info &extra,
+				       bool flag)
+{
+	auto &r=extra->data(lock);
 
 	if (r.row_type != list_row_type_t::enabled &&
 	    r.row_type != list_row_type_t::disabled)

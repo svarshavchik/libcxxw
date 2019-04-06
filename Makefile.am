@@ -514,12 +514,15 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/listcontainer_pseudo_impl.C \
 	listlayoutmanager/listcontainer_pseudo_impl.H \
 	listlayoutmanager/listcontainer_pseudo_implfwd.H \
-	listlayoutmanager/listlayoutmanager.C \
-	listlayoutmanager/listlayoutmanager_impl.C \
-	listlayoutmanager/listlayoutmanager_impl.H \
-	listlayoutmanager/listlayoutstyle_impl.H \
+	listlayoutmanager/listitemhandle.C	    \
+	listlayoutmanager/listitemhandle_impl.C	    \
+	listlayoutmanager/listitemhandle_impl.H	    \
+	listlayoutmanager/listlayoutmanager.C       \
+	listlayoutmanager/listlayoutmanager_impl.C  \
+	listlayoutmanager/listlayoutmanager_impl.H  \
+	listlayoutmanager/listlayoutstyle_impl.H    \
 	listlayoutmanager/listlayoutstyle_implfwd.H \
-	listlayoutmanager/listlayoutstyle.C \
+	listlayoutmanager/listlayoutstyle.C         \
 	listlayoutmanager/menu_item.H		    \
 	main_window.C				    \
 	main_window.H				    \
