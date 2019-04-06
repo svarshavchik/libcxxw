@@ -40,6 +40,25 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	//! This get updated in recalculate().
 	size_t current_row_number_thread_only;
 
+	//! Information about this row.
+
+	struct protected_data {
+		//! Needs to be redrawn.
+
+		//! This is set after enabled or selected is changed
+		bool redraw_needed=false;
+
+		//! Row type
+		list_row_type_t row_type=list_row_type_t::enabled;
+
+		//! Row is selected
+		bool selected=false;
+	};
+
+	//! This information requires a list lock for access.
+
+	protected_data data_under_lock;
+
  public:
 	THREAD_DATA_ONLY(current_row_number);
 
@@ -49,14 +68,20 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	//! Destructor
 	~extra_list_row_infoObj();
 
-	//! Row type
-	list_row_type_t row_type=list_row_type_t::enabled;
+	//! Access locked data.
+	inline auto &data(listimpl_info_t::lock &)
+	{
+		return data_under_lock;
+	}
 
-	//! Row is selected
-	bool selected=false;
+	//! Access locked data.
+	inline const auto &data(listimpl_info_t::lock &) const
+	{
+		return data_under_lock;
+	}
 
 	//! This item can be selected via keyboard or pointer
-	bool enabled() const;
+	bool enabled(listimpl_info_t::lock &) const;
 
 	//! Initialize this row's metadata.
 

@@ -738,7 +738,7 @@ void list_elementObj::implObj
 
 		auto &r=lock->row_infos.at(row+i);
 
-		if (r.extra->selected)
+		if (r.extra->data(lock).selected)
 			selected(IN_THREAD, lm, row+i, false, {});
 	}
 
@@ -991,7 +991,8 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 			{
 				// This row becomes a separator line.
 
-				row->extra->row_type=list_row_type_t::separator;
+				row->extra->data(lock).row_type=
+					list_row_type_t::separator;
 				row->height=current_border(IN_THREAD)->border(IN_THREAD)
 					->calculated_border_height;
 			}
@@ -1296,7 +1297,7 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 
 			if (only_whats_needed)
 			{
-				if (!iter->redraw_needed)
+				if (!iter->extra->data(lock).redraw_needed)
 					continue;
 			}
 
@@ -1383,9 +1384,9 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 
 	auto &r=lock->row_infos.at(row_number);
 
-	r.redraw_needed=false;
+	r.extra->data(lock).redraw_needed=false;
 
-	if (r.extra->row_type == list_row_type_t::separator)
+	if (r.extra->data(lock).row_type == list_row_type_t::separator)
 	{
 		rectangle border_rect{
 			0, r.y, di.absolute_location.width,
@@ -1453,7 +1454,7 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 				   make_sure_row_is_visible);
 	}
 
-	if (r.extra->selected)
+	if (r.extra->data(lock).selected)
 	{
 		auto cpy=di;
 
@@ -1546,7 +1547,8 @@ rectangle list_elementObj::implObj
 		drawn_columns.push_back(rc);
 
 		(*cell)->cell_redraw(IN_THREAD, *this, di, clipped,
-				     r.extra->row_type == list_row_type_t::disabled,
+				     r.extra->data(lock).row_type
+				     == list_row_type_t::disabled,
 				     bounds);
 
 		++cell;
@@ -1661,7 +1663,7 @@ void list_elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 
 	if (me.y >= iter->y &&
 	    me.y < coord_t::truncate(iter->y+iter->height) &&
-	    iter->extra->enabled())
+	    iter->extra->enabled(lock))
 		set_current_element(IN_THREAD, lock, iter-b, false,
 				    std::monostate{});
 	else
@@ -1818,7 +1820,7 @@ list_elementObj::implObj::move_up_by(listimpl_info_t::lock &lock,
 		if (moved_by > howmuch && move_to)
 			break;
 
-		if (!info.extra->enabled())
+		if (!info.extra->enabled(lock))
 			continue;
 
 		move_to=next_row;
@@ -1849,7 +1851,7 @@ list_elementObj::implObj::move_down_by(listimpl_info_t::lock &lock,
 		if (moved_by > howmuch && move_to)
 			break;
 
-		if (info.extra->enabled())
+		if (info.extra->enabled(lock))
 			move_to=next_row;
 		++next_row;
 	}
@@ -2038,13 +2040,13 @@ void list_elementObj::implObj
 	if (row.extra->is_option())
 	{
 		selected_common(IN_THREAD, lm, ll, lock, i,
-				!row.extra->selected,
+				!row.extra->data(lock).selected,
 				trigger);
 	}
 	else
 	{
 		notify_callbacks(IN_THREAD,
-				 lm, ll, row, i, row.extra->selected,
+				 lm, ll, row, i, row.extra->data(lock).selected,
 				 trigger, mcguffin);
 	}
 
@@ -2066,11 +2068,11 @@ void list_elementObj::implObj
 {
 	auto &r=lock->row_infos.at(i);
 
-	if (r.extra->selected == selected_flag)
+	if (r.extra->data(lock).selected == selected_flag)
 		return;
 
-	r.extra->selected=selected_flag;
-	r.redraw_needed=true;
+	r.extra->data(lock).selected=selected_flag;
+	r.extra->data(lock).redraw_needed=true;
 
 	try {
 		list_style.selected_changed(&lock->cells.at(i*columns),
@@ -2130,7 +2132,7 @@ bool list_elementObj::implObj::enabled(size_t i)
 	if (i >= lock->row_infos.size())
 		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"), i));
 
-	return lock->row_infos.at(i).extra->enabled();
+	return lock->row_infos.at(i).extra->enabled(lock);
 }
 
 void list_elementObj::implObj::enabled(ONLY IN_THREAD, size_t i, bool flag)
@@ -2140,18 +2142,18 @@ void list_elementObj::implObj::enabled(ONLY IN_THREAD, size_t i, bool flag)
 	if (i >= lock->row_infos.size())
 		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"), i));
 
-	auto &r=lock->row_infos.at(i);
+	auto &r=lock->row_infos.at(i).extra->data(lock);
 
-	if (r.extra->row_type != list_row_type_t::enabled &&
-	    r.extra->row_type != list_row_type_t::disabled)
+	if (r.row_type != list_row_type_t::enabled &&
+	    r.row_type != list_row_type_t::disabled)
 		return; // Don't touch separators.
 
 	auto new_type=flag ? list_row_type_t::enabled:list_row_type_t::disabled;
 
-	if (r.extra->row_type == new_type)
+	if (r.row_type == new_type)
 		return;
 
-	r.extra->row_type=new_type;
+	r.row_type=new_type;
 	r.redraw_needed=true;
 
 	schedule_row_redraw(lock);
@@ -2183,7 +2185,7 @@ bool list_elementObj::implObj::selected(size_t i)
 	listimpl_info_t::lock lock{textlist_info};
 
 	return i < lock->row_infos.size() &&
-		lock->row_infos.at(i).extra->selected;
+		lock->row_infos.at(i).extra->data(lock).selected;
 }
 
 size_t list_elementObj::implObj::hierindent(size_t i)
@@ -2201,7 +2203,7 @@ std::optional<size_t> list_elementObj::implObj::selected()
 
 	for (const auto &r:lock->row_infos)
 	{
-		if (r.extra->selected)
+		if (r.extra->data(lock).selected)
 			return i;
 		++i;
 	}
@@ -2219,7 +2221,7 @@ std::vector<size_t> list_elementObj::implObj::all_selected()
 
 	for (const auto &r:lock->row_infos)
 	{
-		if (r.extra->selected)
+		if (r.extra->data(lock).selected)
 			all.push_back(i);
 		++i;
 	}
@@ -2254,10 +2256,10 @@ bool list_elementObj::implObj::unselect(ONLY IN_THREAD,
 	{
 		auto &r=lock->row_infos.at(i);
 
-		if (r.extra->selected)
+		if (r.extra->data(lock).selected)
 		{
-			r.extra->selected=false;
-			r.redraw_needed=true;
+			r.extra->data(lock).selected=false;
+			r.extra->data(lock).redraw_needed=true;
 
 			try {
 				list_style.selected_changed

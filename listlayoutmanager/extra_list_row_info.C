@@ -88,7 +88,7 @@ public:
 				 auto p=extra_ptr.getptr();
 
 				 if (p)
-					 enabled=p->enabled();
+					 enabled=p->enabled(lock);
 			 });
 
 		return enabled;
@@ -145,9 +145,9 @@ extra_list_row_infoObj::~extra_list_row_infoObj()
 		current_shortcut->uninstall_shortcut();
 }
 
-bool extra_list_row_infoObj::enabled() const
+bool extra_list_row_infoObj::enabled(listimpl_info_t::lock &lock) const
 {
-	return row_type == list_row_type_t::enabled;
+	return data(lock).row_type == list_row_type_t::enabled;
 }
 
 void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,

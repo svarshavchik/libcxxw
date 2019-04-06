@@ -89,11 +89,6 @@ struct list_row_info_t {
 	//! This also indicates whether column_iterator was initialized.
 	bool size_computed=false;
 
-	//! Needs to be redrawn.
-
-	//! This is set after enabled or selected is changed
-	bool redraw_needed=false;
-
 	//! This item's indentation level
 	size_t indent=0;
 
