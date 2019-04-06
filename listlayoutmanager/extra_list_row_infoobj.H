@@ -31,10 +31,6 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 
 	typedef ptr<shortcut_implObj> shortcut_implptr;
 
-	//! An optional, installed shortcut for this list item.
-
-	shortcut_implptr current_shortcut;
-
 	//! My row number.
 
 	//! This get updated in recalculate().
@@ -53,6 +49,17 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 
 		//! Row is selected
 		bool selected=false;
+
+		//! This item's status change callback.
+
+		list_item_status_change_callbackptr status_change_callback;
+
+		//! Optional information associated with a menu_item.
+		menu_item_t menu_item;
+
+		//! An optional, installed shortcut for this list item.
+
+		shortcut_implptr current_shortcut;
 	};
 
 	//! This information requires a list lock for access.
@@ -87,32 +94,23 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 
 	void set_meta(const listlayoutmanager &lm,
 		      list_row_info_t &row_info,
+		      listimpl_info_t::lock &lock,
 		      const textlist_rowinfo &meta);
-
-	//! This item's status change callback.
-
-	functionptr<list_item_status_change_callback_t
-		    > status_change_callback;
-
- private:
-
-	//! Optional information associated with a menu_item.
-	menu_item_t menu_item;
-
- public:
 
 	//! Whether this list item has a popup.
 
-	bool has_submenu() const
+	bool has_submenu(listimpl_info_t::lock &lock) const
 	{
-		return std::holds_alternative<menu_item_submenu>(menu_item);
+		return std::holds_alternative<menu_item_submenu>
+			(data(lock).menu_item);
 	}
 
 	//! Whether this list item is an option
 
-	bool is_option() const
+	bool is_option(listimpl_info_t::lock &lock) const
 	{
-		return std::holds_alternative<menu_item_option>(menu_item);
+		return std::holds_alternative<menu_item_option>
+			(data(lock).menu_item);
 	}
 
 	//! Display the popup.
@@ -123,17 +121,21 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	//! Invokes current_popup_attachedto_handler's
 	//! update_attachedto_element_position(), then show_alls() the popup.
 
-	void show_submenu(ONLY IN_THREAD, const rectangle &);
+	void show_submenu(ONLY IN_THREAD,
+			  listimpl_info_t::lock &lock,
+			  const rectangle &);
 
 	//! Hide or display the popup
 
 	//! Like show_submenu(), but toggles the visibility.
 
-	void toggle_submenu(ONLY IN_THREAD, const rectangle &);
+	void toggle_submenu(ONLY IN_THREAD,
+			    listimpl_info_t::lock &lock,
+			    const rectangle &);
 
 	//! Return the submenu's layoutmanager.
 
-	listlayoutmanager submenu_layoutmanager();
+	listlayoutmanager submenu_layoutmanager(listimpl_info_t::lock &lock);
 };
 
 LIBCXXW_NAMESPACE_END

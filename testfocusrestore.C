@@ -71,7 +71,7 @@ void create_mainwindow(const main_window &mw)
 			 if (es.state_update != es.before_showing)
 				 return;
 
-			 ccp->update(0);
+			 ccp->update();
 		 });
 	mw->get_menubar()->show();
 	gridlayoutmanager layout=mw->get_layoutmanager();

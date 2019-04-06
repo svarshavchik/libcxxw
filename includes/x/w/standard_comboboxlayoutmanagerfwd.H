@@ -55,8 +55,10 @@ These methods are inherited from the underlying
 and the parameters are actually
 \ref list_item_param "list_item_param" variants, however the only permissible
 items in a standard combo-box item are text labels,
-\c INSERT_LIBX_NAMESPACE::w::separator, or a
-list item status change callback.
+\c INSERT_LIBX_NAMESPACE::w::separator, a
+list item status change callback, or using
+an \c x::w::new_items to obtain a \ref listitemhandle "handle" to the
+new list items.
 
 \code
 size_t n=lm->size();

@@ -19,6 +19,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 #include "close_flag.H"
 #include "combobox.H"
@@ -118,8 +119,29 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	combobox->show();
 
 	// Combo-box layout manager inherits methods from the underlying
-	// list layout manager, like append_items(). Create a button that
-	// calls append_items().
+	// list layout manager, like append_items().
+	//
+	// Create buttons on the rows below, with each button demonstrating
+	// each combo-box operation. The combo-box layout manager inherits
+	// append_items(), insert_items(), et. al., from the underlying
+	// list layout manager.
+	//
+	// The buttons' callbacks get invoked by the connection thread and
+	// receive the IN_THREAD handle; as such the callbacks can use
+	// the append_items(), insert_items(), et. al., overloads that
+	// take an IN_THREAD parameter.
+	//
+	// Like a selection list, the combo-box's contents get updated
+	// by the connection thread. Calling the IN_THREAD overloads reflects
+	// the changes in the combo-box's contents immediately. A main
+	// execution thread invoking the non-IN_THREAD overloads results in
+	// a message getting set to the connection thread, and the overloaded
+	// methods returning immediately. This means that, for example,
+	// calling insert_items() or append_items() from a non-IN_THREAD
+	// contents, followed by size(), will likely report the combo-box's
+	// size apparently unchanged. This is because the new items will
+	// actually get inserted by the connection thread when it processes
+	// the message. Caveat emptor.
 
 	auto button=layout->append_row()->colspan(2)
 		.create_button("Append row");
@@ -137,7 +159,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				    x::w::standard_comboboxlayoutmanager lm=
 					    combobox->get_layoutmanager();
 
-				    lm->append_items({o.str()});
+				    lm->append_items(IN_THREAD, {o.str()});
 			    });
 	button->show();
 
@@ -159,11 +181,12 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				    x::w::standard_comboboxlayoutmanager lm=
 					    combobox->get_layoutmanager();
 
-				    lm->insert_items(0, {o.str()});
+				    lm->insert_items(IN_THREAD, 0, {o.str()});
 			    });
 	button->show();
 
-	// Same deal for replace_items(), delete_item(), and size():
+	// Same deal for replace_items(), delete_item(), size(), and
+	// replace_all_items().
 
 	button=layout->append_row()->colspan(2)
 		.create_button("Replace row");
@@ -177,6 +200,23 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				    x::w::standard_comboboxlayoutmanager lm=
 					    combobox->get_layoutmanager();
 
+				    // Instantiating a standard_combo_box
+				    // blocks all other execution threads from
+				    // accessing the contents of the combo-box.
+				    //
+				    // After we check size(), below, it is
+				    // theoretically possible for another thread
+				    // to modify it.
+				    //
+				    // This is not really needed here, this
+				    // is for demonstration purposes only.
+				    // This example modifies the contents of
+				    // the combo-box only IN_THREAD, so this
+				    // doesn't really do anything.
+
+				    x::w::standard_combobox_lock
+					    lock{lm};
+
 				    if (lm->size() == 0)
 					    return;
 
@@ -184,18 +224,24 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 				    o << "Replace " << ++counter << std::endl;
 
-				    lm->replace_items(0, {o.str()});
+				    // For convenience, all modification
+				    // functions are also implemented by
+				    // standard_combobox_lock. The following
+				    // is equivalent to:
+				    //
+				    // lock.replace_items( ... )
+
+				    lm->replace_items(IN_THREAD, 0, {o.str()});
 			    });
 	button->show();
 
 	button=layout->append_row()->colspan(2)
 		.create_button("Delete row");
 
-	button->on_activate([=, counter=0]
+	button->on_activate([combobox]
 			    (ONLY IN_THREAD,
 			     const x::w::callback_trigger_t &trigger,
 			     const x::w::busy &ignore)
-			    mutable
 			    {
 				    x::w::standard_comboboxlayoutmanager lm=
 					    combobox->get_layoutmanager();
@@ -203,26 +249,56 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				    if (lm->size() == 0)
 					    return;
 
-				    lm->remove_item(0);
+				    lm->remove_item(IN_THREAD, 0);
 			    });
 	button->show();
 
 	button=layout->append_row()->colspan(2)
 		.create_button("Reset");
 
-	button->on_activate([=, counter=0]
+	button->on_activate([combobox]
 			    (ONLY IN_THREAD,
 			     const x::w::callback_trigger_t &trigger,
 			     const x::w::busy &ignore)
-			    mutable
 			    {
 				    x::w::standard_comboboxlayoutmanager lm=
 					    combobox->get_layoutmanager();
 
-				    lm->replace_all_items(days_of_week());
+				    lm->replace_all_items(IN_THREAD,
+							  days_of_week());
 			    });
 	button->show();
 
+	// Use resort_items() to randomly shuffle the list items.
+
+	button=layout->append_row()->colspan(2)
+		.create_button("Shuffle");
+
+	button->on_activate([combobox]
+			    (ONLY IN_THREAD,
+			     const x::w::callback_trigger_t &trigger,
+			     const x::w::busy &ignore)
+			    {
+				    x::w::standard_comboboxlayoutmanager lm=
+					    combobox->get_layoutmanager();
+
+				    std::vector<size_t> n;
+
+				    n.resize(lm->size());
+
+				    std::generate(n.begin(), n.end(),
+						  [n=0]
+						  ()
+						  mutable
+						  {
+							  return n++;
+						  });
+
+				    std::random_shuffle(n.begin(), n.end());
+
+				    lm->resort_items(IN_THREAD, n);
+			    });
+	button->show();
 	// Stash the combobox in main_window's appdata.
 
 	main_window->appdata=combobox;

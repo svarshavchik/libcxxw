@@ -380,8 +380,7 @@ factoryObj::create_input_field(const text_param &text,
 					  {
 						  llm->append_copy_cut_paste
 							  (IN_THREAD, me)
-							  ->update
-							  (IN_THREAD, 0);
+							  ->update(IN_THREAD);
 					  });
 
 				 new_popup_menu->show_all(IN_THREAD);

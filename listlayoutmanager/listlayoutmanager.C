@@ -5,6 +5,11 @@
 #include "libcxxw_config.h"
 #include "listlayoutmanager/list_element_impl.H"
 #include "listlayoutmanager/listitemhandle_impl.H"
+#include "listlayoutmanager/listlayoutstyle_impl.H"
+#include "listlayoutmanager/list_cell.H"
+#include "listlayoutmanager/extra_list_row_info.H"
+#include "listlayoutmanager/in_thread_new_cells_info.H"
+#include "popup/popup_handler.H"
 #include <type_traits>
 
 LIBCXXW_NAMESPACE_START
@@ -33,10 +38,14 @@ void listlayoutmanagerObj::remove_item(size_t item_number)
 void listlayoutmanagerObj::remove_items(size_t item_number,
 					size_t n_items)
 {
-	impl->run_as([me=ref(this), item_number, n_items]
+	impl->run_as([me=ref{this}, item_number, n_items]
 		     (ONLY IN_THREAD)
 		     {
-			     me->remove_items(IN_THREAD, item_number, n_items);
+			     me->impl->list_element_singleton->impl
+				     ->remove_rows(IN_THREAD,
+						   me,
+						   item_number,
+						   n_items);
 		     });
 }
 
@@ -49,7 +58,7 @@ void listlayoutmanagerObj::remove_items(ONLY IN_THREAD, size_t item_number,
 					size_t n_items)
 {
 	impl->list_element_singleton->impl->remove_rows(IN_THREAD,
-							ref(this),
+							ref{this},
 							item_number,
 							n_items);
 }
@@ -57,10 +66,13 @@ void listlayoutmanagerObj::remove_items(ONLY IN_THREAD, size_t item_number,
 void listlayoutmanagerObj::append_items(const std::vector<list_item_param>
 					&items)
 {
-	impl->run_as([items, me=ref(this)]
+	auto cells=in_thread_new_cells_info::create(ref{this}, items);
+
+	impl->run_as([cells, me=ref{this}]
 		     (ONLY IN_THREAD)
 		     {
-			     me->append_items(IN_THREAD, items);
+			     me->impl->list_element_singleton->impl
+				     ->append_rows(IN_THREAD, me, cells->info);
 		     });
 }
 
@@ -68,18 +80,27 @@ void listlayoutmanagerObj::append_items(ONLY IN_THREAD,
 					const std::vector<list_item_param>
 					&items)
 {
-	impl->list_element_singleton->impl->append_rows(IN_THREAD,
-							ref(this), items);
+	auto list_impl=impl->list_element_singleton->impl;
+
+	new_cells_info info;
+
+	list_impl->list_style.create_cells(items, impl, info);
+
+	list_impl->append_rows(IN_THREAD, ref{this}, info);
 }
 
 void listlayoutmanagerObj::insert_items(size_t item_number,
-				       const std::vector<list_item_param>
-				       &items)
+					const std::vector<list_item_param>
+					&items)
 {
-	impl->run_as([me=ref(this), item_number, items]
+	auto cells=in_thread_new_cells_info::create(ref{this}, items);
+
+	impl->run_as([me=ref{this}, item_number, cells]
 		     (ONLY IN_THREAD)
 		     {
-			     me->insert_items(IN_THREAD, item_number, items);
+			     me->impl->list_element_singleton->impl
+				     ->insert_rows(IN_THREAD, me, item_number,
+						   cells->info);
 		     });
 }
 
@@ -88,18 +109,28 @@ void listlayoutmanagerObj::insert_items(ONLY IN_THREAD,
 					const std::vector<list_item_param>
 					&items)
 {
-	impl->list_element_singleton->impl->insert_rows(IN_THREAD, ref(this),
-							item_number, items);
+	auto list_impl=impl->list_element_singleton->impl;
+
+	new_cells_info info;
+
+	list_impl->list_style.create_cells(items, impl, info);
+
+	list_impl->insert_rows(IN_THREAD, ref{this}, item_number, info);
 }
 
 void listlayoutmanagerObj::replace_items(size_t item_number,
 					 const std::vector<list_item_param>
 					 &items)
 {
-	impl->run_as([me=ref(this), item_number, items]
+	auto cells=in_thread_new_cells_info::create(ref{this}, items);
+
+	impl->run_as([me=ref{this}, item_number, cells]
 		     (ONLY IN_THREAD)
 		     {
-			     me->replace_items(IN_THREAD, item_number, items);
+			     me->impl->list_element_singleton->impl
+				     ->replace_rows(IN_THREAD, me,
+						    item_number,
+						    cells->info);
 		     });
 }
 
@@ -108,18 +139,27 @@ void listlayoutmanagerObj::replace_items(ONLY IN_THREAD,
 					 const std::vector<list_item_param>
 					 &items)
 {
-	impl->list_element_singleton->impl->replace_rows(IN_THREAD, ref(this),
-							 item_number, items);
+	auto list_impl=impl->list_element_singleton->impl;
+
+	new_cells_info info;
+
+	list_impl->list_style.create_cells(items, impl, info);
+
+	list_impl->replace_rows(IN_THREAD, ref{this}, item_number, info);
 }
 
 void listlayoutmanagerObj::replace_all_items(const
 					     std::vector<list_item_param>
 					     &items)
 {
-	impl->run_as([items, me=ref(this)]
+	auto cells=in_thread_new_cells_info::create(ref{this}, items);
+
+	impl->run_as([cells, me=ref{this}]
 		     (ONLY IN_THREAD)
 		     {
-			     me->replace_all_items(IN_THREAD, items);
+			     me->impl->list_element_singleton->impl
+				     ->replace_all_rows(IN_THREAD, me,
+							cells->info);
 		     });
 }
 
@@ -128,9 +168,13 @@ void listlayoutmanagerObj::replace_all_items(ONLY IN_THREAD,
 					     std::vector<list_item_param>
 					     &items)
 {
-	impl->list_element_singleton->impl->replace_all_rows(IN_THREAD,
-							     ref(this),
-							     items);
+	auto list_impl=impl->list_element_singleton->impl;
+
+	new_cells_info info;
+
+	list_impl->list_style.create_cells(items, impl, info);
+
+	list_impl->replace_all_rows(IN_THREAD, ref{this}, info);
 }
 
 void listlayoutmanagerObj::resort_items(const std::vector<size_t> &indexes)

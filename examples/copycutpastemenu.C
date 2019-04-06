@@ -128,12 +128,8 @@ static void create_context_menu(ONLY IN_THREAD,
 				 // install_contextpopup_callback(), and
 				 // we're about to show_all(), so just
 				 // call update() immediately.
-				 //
-				 // Since there are no other items, the item
-				 // index is 0. If some custom menu items get
-				 // added beforehand, first, this needs to
-				 // get adjusted accordingly.
-				 ->update(IN_THREAD, 0);
+
+				 ->update(IN_THREAD);
 
 			 // Or, any custom menu items can be added here,
 			 // after the Copy/Cut/Paste items.
@@ -215,7 +211,7 @@ x::ref<my_appObj> create_mainwindow(const x::w::main_window &mw)
 			 if (es.state_update != es.before_showing)
 				 return;
 
-			 ccp->update(IN_THREAD, 0);
+			 ccp->update(IN_THREAD);
 		 });
 
 	mw->get_menubar()->show();

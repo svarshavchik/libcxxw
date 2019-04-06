@@ -12,6 +12,7 @@
 #include <x/w/callback_triggerfwd.H>
 #include <x/w/popup_list_appearancefwd.H>
 #include <x/w/connection_threadfwd.H>
+#include <x/w/listitemhandlefwd.H>
 #include <x/w/busyfwd.H>
 #include <x/ptrfwd.H>
 #include <x/functionalrefptrfwd.H>
@@ -20,6 +21,8 @@
 #include <variant>
 #include <optional>
 #include <type_traits>
+#include <functional>
+#include <vector>
 
 LIBCXXW_NAMESPACE_START
 
@@ -222,6 +225,14 @@ All metadata parameters apply to the immediately following list item, and
 therefore cannot appear at the end of the vector. Two or more metadata
 parameters for a single list item can appear in any relative order, as long
 as they appear before the single list item.
+
+\note
+All changes to the context of the list get executed by the connection thread.
+Using size() immediately after append_items(), for example, may still return
+the previous list size; until the contents of list get updated by the
+connection thread. As explained below, the IN_THREAD overloads are invocable
+from the connection thread itself, most likely from another callback, and
+they take effect immediately.
 
 \par Text label items
 
@@ -451,7 +462,7 @@ f->create_focusable_container
      {
          INSERT_LIBX_NAMESPACE::w::listlayoutmanager l=c->get_layoutmanager();
 
-         auto f=l->append_items(
+         l->append_items(
                {
                    // First list item
 		   []
@@ -491,6 +502,7 @@ specified by itself, as a single value.
 
 remove_item(), append_items(), insert_items(), replace_items(),
 replace_all_items(),
+resort_items(),
 autoselect(),
 unselect(),
 selected(),
@@ -500,6 +512,34 @@ of each method. The first version sends a message to the internal
 library connection thread that implements this method. The \c IN_THREAD
 version of each message is the implemention method that executes the
 operation.
+
+\par Creating handles for new list items
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/listitemhandle.H>
+
+std::vector<INSERT_LIBX_NAMESPACE::w::listitemhandle> handles;
+
+auto f=l->append_items(
+          {
+                  "Lorem ipsum",
+                  "dolor sit amet",
+                  "consectetur",
+
+                   INSERT_LIBX_NAMESPACE::w::new_items{handles}
+          });
+\endcode
+
+The \c std::vector of \ref list_item_param "list_item_param" variant may
+contain an \c INSERT_LIBX_NAMESPACE::w::new_items as its last value.
+This value, if specified, must be the last value in the vector when creating
+new items with append_items(), or other methods that create items.
+
+A std::vector of \ref listitemhandle "INSERT_LIBX_NAMESPACE::w::listitemhandle"s
+gets specified in this manner, and a handle for each new list item gets
+appended to the vector by append_items(), or other methods that create the
+items. A new handle gets created for each logical item in lists with multiple
+columns.
 
 \par Standard Copy/Cut/Paste menu items
 
@@ -650,6 +690,14 @@ struct LIBCXX_PUBLIC list_item_status_info_t {
 	const busy &mcguffin;
 };
 
+struct LIBCXX_PUBLIC new_items;
+
+//! Save handles for new items.
+
+struct new_items {
+	std::reference_wrapper<std::vector<listitemhandle>> handles;
+};
+
 //! List item callback's signature
 
 //! \see listlayoutmanager
@@ -687,7 +735,8 @@ typedef std::variant<text_param, image_param, separator, shortcut,
 		     inactive_shortcut,
 		     hierindent,
 		     menuoption, submenu,
-		     list_item_status_change_callback> list_item_param_base;
+		     list_item_status_change_callback,
+		     new_items> list_item_param_base;
 
 //! The list highlights items to indicate they're selected
 

@@ -7,6 +7,7 @@
 #include "x/w/focusable.H"
 #include "x/w/impl/focus/focusable.H"
 #include "x/w/main_window.H"
+#include "x/w/listitemhandle.H"
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "generic_window_handler.H"
 #include "messages.H"
@@ -24,46 +25,99 @@ namespace {
 }
 #endif
 
-// Implement the copy_cut_paste_menu_item object.
+//! Implementation object.
+
+//! \see target_element
+
+class weak_target_elementObj : virtual public obj {
+
+public:
+
+	weakptr<element_implptr> e_implptr;
+
+	// Weakly capture the parent element and the list layout manager.
+
+	weak_target_elementObj(const element_impl &e_impl)
+		: e_implptr{e_impl}
+	{
+	}
+
+	~weak_target_elementObj()=default;
+
+	element_implptr get_element_impl()
+	{
+		return e_implptr.getptr();
+	}
+};
+
+//! Weak reference to cut/copy/paste display element.
+
+//! Both the copy_cut_paste_menu_items object itself, and the callbacks
+//! for the menu items, share this object, whose only purpose is to stash
+//! away a weak reference to display element.
+//!
+//! The menu items callback recover the strong reference, and execute the
+//! operation.
+//!
+//! update() recover the strong reference, and use that to determine whether
+//! the menu items should be enabled, or not.
+
+typedef ref<weak_target_elementObj> weak_target_element;
+
+//! Implement the copy_cut_paste_menu_item object.
 
 class copy_cut_paste_implObj : public copy_cut_paste_menu_itemsObj {
 
 public:
 
-	// Weakly capture the parent element and the list layout manager.
+	//! The targeted display element
+	const weak_target_element target_element;
 
-	copy_cut_paste_implObj(const element_impl &e_impl,
-			       const ref<listlayoutmanagerObj::implObj>
-			       &lm_impl)
-		: e_implptr{e_impl}, lm_implptr{lm_impl}
+	//! Handle for the menu item.
+	const listitemhandle copy_handle;
+
+	//! Handle for the menu item.
+	const listitemhandle cut_handle;
+
+	//! Handle for the menu item.
+	const listitemhandle paste_handle;
+
+	// This is constructed after the copy/cut/paste items are added
+	// to the menu list. Save their handles.
+
+	copy_cut_paste_implObj(const weak_target_element &target_element,
+			       const std::vector<listitemhandle> &handles)
+		: target_element{target_element},
+		  copy_handle{handles.at(0)},
+		  cut_handle{handles.at(1)},
+		  paste_handle{handles.at(2)}
 	{
 	}
 
-	weakptr<element_implptr> e_implptr;
-	weakptr<ptr<listlayoutmanagerObj::implObj>> lm_implptr;
+	//! Return value from get_status().
 
-	// get_status() recovers strong references to our objects. If
-	// successfull, get_status() returns:
-	//
-	// - The list layout manager, with the menu items.
-	//
-	// - The parent display element.
-	//
-	// - A flag indicating whether "Paste" should be enabled. The
-	//   status of "Copy" and "Cut" depends upon whether this is
-	//   called IN_THREAD, or not.
+	//! get_status() recovers strong references to our objects. If
+	//! successfull, get_status() returns:
+	//!
+	//! - The list layout manager, with the menu items.
+	//!
+	//! - The target display element.
+	//!
+	//! - A flag indicating whether "Paste" should be enabled. The
+	//!   determination of whether "Copy" and "Cut" uses IN_THREAD and
+	//!   non-IN_THREAD overloads.
 
-	typedef std::optional<std::tuple<listlayoutmanager,
-					 element_impl, bool>> get_status_t;
+	typedef std::optional<std::tuple<element_impl, bool>> get_status_t;
+
+	//! Tell update() what's going on.
 
 	get_status_t get_status()
 	{
 		get_status_t ret;
 
-		auto lm_impl=lm_implptr.getptr();
-		auto e_impl=e_implptr.getptr();
+		auto e_impl=target_element->get_element_impl();
 
-		if (lm_impl && e_impl)
+		if (e_impl)
 		{
 			auto mw=e_impl->get_window_handler().get_main_window();
 
@@ -71,11 +125,7 @@ public:
 			{
 				auto s=e_impl->get_screen();
 
-				listlayoutmanager l=
-					lm_impl->create_public_object();
-
-				ret.emplace(l,
-					    e_impl,
+				ret.emplace(e_impl,
 					    s->selection_has_owner()
 					    && mw->selection_can_be_received());
 			}
@@ -86,47 +136,44 @@ public:
 
 	// Implement update().
 
-	void update(size_t n) override
+	void update() override
 	{
 		auto s=get_status();
 
 		if (!s)
 			return;
 
-		auto &[l, e_impl, pastable]=*s;
+		auto &[e_impl, pastable]=*s;
 
 		auto cut_or_copy=e_impl->get_window_handler()
 			.cut_or_copy_selection
 			(cut_or_copy_op::available,
 			 e_impl->default_cut_paste_selection());
 
-		l->enabled(n, cut_or_copy);
-		l->enabled(n+1, cut_or_copy);
-		l->enabled(n+2, pastable);
+		copy_handle->enabled(cut_or_copy);
+		cut_handle->enabled(cut_or_copy);
+		paste_handle->enabled(pastable);
 	}
 
-	void update(ONLY IN_THREAD, size_t n) override
+	//! Implement update()
+
+	void update(ONLY IN_THREAD) override
 	{
 		auto s=get_status();
 
 		if (!s)
 			return;
 
-		auto &[l, e_impl, pastable]=*s;
+		auto &[e_impl, pastable]=*s;
 
 		auto cut_or_copy=e_impl->get_window_handler()
 			.cut_or_copy_selection
 			(IN_THREAD, cut_or_copy_op::available,
 			 e_impl->default_cut_paste_selection());
 
-		l->enabled(IN_THREAD, n, cut_or_copy);
-		l->enabled(IN_THREAD, n+1, cut_or_copy);
-		l->enabled(IN_THREAD, n+2, pastable);
-	}
-
-	element_implptr get_element_impl()
-	{
-		return e_implptr.getptr();
+		copy_handle->enabled(IN_THREAD, cut_or_copy);
+		cut_handle->enabled(IN_THREAD, cut_or_copy);
+		paste_handle->enabled(IN_THREAD, pastable);
 	}
 };
 
@@ -136,7 +183,8 @@ public:
 // so we specify that their shorcuts are inactive_shortcut.
 
 static std::vector<list_item_param>
-get_copy_cut_paste_popup_menu_items(const ref<copy_cut_paste_implObj> &me)
+get_copy_cut_paste_popup_menu_items(const weak_target_element &me,
+				    std::vector<listitemhandle> &handles)
 {
 	return {
 		[me]
@@ -197,6 +245,8 @@ get_copy_cut_paste_popup_menu_items(const ref<copy_cut_paste_implObj> &me)
 		},
 		inactive_shortcut{"Shift-Ins"},
 		{_("Paste")},
+
+		new_items{handles}
 	};
 }
 
@@ -208,22 +258,37 @@ get_copy_cut_paste_popup_menu_items(const ref<copy_cut_paste_implObj> &me)
 copy_cut_paste_menu_items
 listlayoutmanagerObj::append_copy_cut_paste(const element &parent)
 {
-	auto me=ref<copy_cut_paste_implObj>::create(parent->impl, impl);
+	auto me=ref{this};
 
-	append_items(get_copy_cut_paste_popup_menu_items(me));
+	list_lock lock{me};
 
-	return me;
+	auto target_element=weak_target_element::create(parent->impl);
+
+	std::vector<listitemhandle> handles;
+
+	append_items(get_copy_cut_paste_popup_menu_items(target_element,
+							 handles));
+
+	return ref<copy_cut_paste_implObj>::create(target_element, handles);
 }
 
 copy_cut_paste_menu_items
 listlayoutmanagerObj::append_copy_cut_paste(ONLY IN_THREAD,
 					    const element &parent)
 {
-	auto me=ref<copy_cut_paste_implObj>::create(parent->impl, impl);
+	auto me=ref{this};
 
-	append_items(IN_THREAD, get_copy_cut_paste_popup_menu_items(me));
+	list_lock lock{me};
 
-	return me;
+	auto target_element=weak_target_element::create(parent->impl);
+
+	std::vector<listitemhandle> handles;
+
+	append_items(IN_THREAD,
+		     get_copy_cut_paste_popup_menu_items(target_element,
+							 handles));
+
+	return ref<copy_cut_paste_implObj>::create(target_element, handles);
 }
 
 LIBCXXW_NAMESPACE_END

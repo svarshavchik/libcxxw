@@ -251,6 +251,30 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	// duration of the installed callback. The correct approach is to
 	// capture the container and then construct the layout manager when
 	// needed.
+	//
+	// Each list method that modifies the list, such as insert_items() and
+	// append_items(), is overloaded. When invoked from a callback that
+	// receives the IN_THREAD handle, the overloaded methods that take
+	// an IN_THREAD parameter update the list item.
+	//
+	// Each method also has an overloaded version without an IN_THREAD
+	// parameter, allowing the application's main execution thread to modify
+	// the list too. They end up sending a message to the library's
+	// connection thread to effect the change. The library's internal
+	// connection thread is responsible for updating the visual appearance
+	// of the display element.
+	//
+	// This means that, for example, invoking the non-IN_THREAD overload
+	// of append_items() and then calling size() immediately will probably
+	// return the same size of the list. size() won't reflect the new
+	// list items until the connection thread processes the message.
+	//
+	// In general, the initial contents of the list get inserted or appended
+	// when the new list container gets created, and all further changes
+	// or updates to the list get carried out IN_THREAD. The main execution
+	// thread can see some general information about the list, such as
+	// it's size(), and acquire a list_lock (see below), to block
+	// other execution threads from accessing the list.
 
 	insert_row->on_activate
 		([list_container, counter=0]
@@ -274,7 +298,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 // new list items that get created here.
 			 //
 			 l->insert_items
-				 (0, {
+				 (IN_THREAD,
+				  0, {
 					 [counter]
 					 (ONLY IN_THREAD,
 					  const x::w::list_item_status_info_t
@@ -314,7 +339,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 //
 			 // A plain const char pointer will work as well.
 
-			 l->append_items({next_lorem_ipsum()});
+			 l->append_items(IN_THREAD, {next_lorem_ipsum()});
 		 });
 
 	remove_row->on_activate
@@ -331,7 +356,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 			 if (l->size() == 0)
 				 return;
-			 l->remove_item(0);
+			 l->remove_item(IN_THREAD, 0);
 		 });
 
 	replace_row->on_activate
@@ -349,7 +374,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 // replace_items() works like insert_items(), except
 			 // that the existing item gets removed.
 
-			 l->replace_items(0, {next_lorem_ipsum()});
+			 l->replace_items(IN_THREAD, 0, {next_lorem_ipsum()});
 		 });
 
 	reset->on_activate
@@ -368,7 +393,9 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 //
 			 // This effectively sets the new list of items.
 			 //
-			 l->replace_all_items({ next_lorem_ipsum(), next_lorem_ipsum()});
+			 l->replace_all_items(IN_THREAD,
+					      { next_lorem_ipsum(),
+						next_lorem_ipsum()});
 		 });
 
 	show_me->on_activate

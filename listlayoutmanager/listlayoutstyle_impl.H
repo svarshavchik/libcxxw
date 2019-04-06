@@ -10,6 +10,9 @@
 #include "listlayoutmanager/list_element_impl.H"
 #include "listlayoutmanager/listcontainer_pseudo_implfwd.H"
 #include "listlayoutmanager/extra_list_row_infofwd.H"
+#include "listlayoutmanager/extra_list_row_infoobj.H"
+#include "listlayoutmanager/list_cellfwd.H"
+#include "listlayoutmanager/list_cellobj.H"
 #include "peephole/peepholedfwd.H"
 #include "peephole/peepholeobj.H"
 #include "x/w/impl/draw_infofwd.H"
@@ -28,8 +31,8 @@ LIBCXXW_NAMESPACE_START
 //! Metadata for each list item returned by \ref listlayoutstyle_impl "create_newcell()
 
 struct textlist_rowinfo {
-	const shortcut                         *listitem_shortcut=nullptr;
-	const list_item_status_change_callback *listitem_callback=nullptr;
+	std::optional<shortcut>			listitem_shortcut;
+	list_item_status_change_callbackptr	listitem_callback;
 
 	size_t indent_level=0;
 
@@ -38,6 +41,17 @@ struct textlist_rowinfo {
 	menu_item_t menu_item;
 
 	void setting_menu_item();
+};
+
+//! Populated by create_cells().
+
+struct new_cells_info {
+
+	//! New list cell contents.
+	std::vector<list_cell> newcells;
+
+	//! New list rows.
+	std::vector<std::tuple<extra_list_row_info, textlist_rowinfo>> rowmeta;
 };
 
 //! Specifies the style of the list created by a \ref new_listlayoutmanager.
@@ -132,10 +146,8 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 	//!
 
 	void create_cells(const std::vector<list_item_param> &t,
-			  list_elementObj::implObj &textlist_element,
-
-			  std::vector<list_cell> &newcells,
-			  std::vector<textlist_rowinfo> &rowmeta)
+			  const ref<listlayoutmanagerObj::implObj> &lilm,
+			  new_cells_info &new_info)
 		const;
 
 	//! Callback indicating that a list item has changed.

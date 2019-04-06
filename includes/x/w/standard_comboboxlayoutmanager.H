@@ -121,11 +121,11 @@ class new_standard_comboboxlayoutmanager
 
 class const_standard_combobox_lock : public const_list_lock {
 
-protected:
+public:
 	// For internal use.
 
-	std::vector<text_param> &text_items() const;
-public:
+	std::vector<text_param> &text_items() const LIBCXX_HIDDEN;
+
 
 	friend class standard_comboboxlayoutmanagerObj;
 	friend class standard_comboboxlayoutmanagerObj::implObj;
@@ -223,6 +223,7 @@ public:
 		    const std::u32string &text,
 		    size_t &found,
 		    bool shortest_match) const LIBCXX_HIDDEN;
+
 };
 
 LIBCXXW_NAMESPACE_END

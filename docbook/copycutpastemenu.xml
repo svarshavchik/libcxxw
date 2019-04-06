@@ -110,10 +110,6 @@ See COPYING for distribution information.
       <quote>Copy</quote>, <quote>Cut</quote>, and
       <quote>Paste</quote> application menu options, or an input field element
       when creating its context popup menu.
-      <methodname>update</methodname>()'s parameter is the starting index
-      of the menu items that it enables or disables, basically what
-      <methodname>size</methodname>() returns just before
-      <methodname>append_copy_cut_paste</methodname>() returns.
     </para>
 
     <para>
@@ -140,7 +136,6 @@ auto mbf=mblm->append_menus();
 // The application's "Edit" menu:
 
 x::w::copy_cut_paste_menu_itemsptr ccp;
-size_t n_copy_cut_paste;
 
 x::w::menu edit_menu=
         mbf->add([]
@@ -153,7 +148,6 @@ x::w::menu edit_menu=
              {
                  //! Other "Edit" menu items.
 
-                 n_copy_cut_paste=lm->size();
                  ccp=lm->append_copy_cut_paste(mw);
              });
 
@@ -166,21 +160,21 @@ edit_menu->on_popup_state_update
              if (es.state_update != es.before_showing)
                  return;
 
-             ccp->update(IN_THREAD, n_copy_cut_paste);
+             ccp->update(IN_THREAD);
          });</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
       <ulink url="&link-typedef-x--w-menu;"><classname>&ns;::w::menu</classname></ulink>'s
-      <methodname>on_popup_state_update</methodname>() callback gets installed
+      <methodname>on_popup_state_update</methodname>() &callback; gets installed
       in order to check and set the status of the options in the application's
       menu. <filename>copycutpastemenu.C</filename> installs this &callback;
       for its only <quote>File</quote> menu.
     </para>
 
     <para>
-      This generic callback gets invoked whenever the popup menu gets shown
+      This callback gets invoked whenever the popup menu gets shown
       or hidden, or its size or location changes. For this application, it's
       only necessary to carry out a specific action before the popup menu
       becomes visible. The callback receives an
@@ -233,10 +227,8 @@ ifield->install_contextpopup_callback
                {
                    // ...
 
-                   size_t n=llm->size();
-
                    ifield->append_copy_cut_paste(IN_THREAD, ifield)
-                           ->update(IN_THREAD, n);
+                           ->update(IN_THREAD);
                });
        });</programlisting>
       </informalexample>

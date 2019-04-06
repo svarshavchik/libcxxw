@@ -8,6 +8,7 @@
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/list_cell.H"
 #include "listlayoutmanager/extra_list_row_info.H"
+#include "listlayoutmanager/listitemhandle_impl.H"
 #include "popup/popup.H"
 #include "shared_handler_data.H"
 #include "x/w/generic_window_appearance.H"
@@ -147,10 +148,12 @@ static inline auto create_column_borders(elementObj::implObj &e,
 	return column_borders;
 }
 
-list_row_info_t::list_row_info_t()
-	: extra{extra_list_row_info::create()}
+list_row_info_t::list_row_info_t(const std::tuple<extra_list_row_info,
+				 textlist_rowinfo> &rowmeta)
+	: extra{std::get<0>(rowmeta)}
 {
 }
+
 
 list_row_info_t::~list_row_info_t()=default;
 
@@ -434,68 +437,36 @@ void list_elementObj::implObj::remove_rows(ONLY IN_THREAD,
 	remove_rows(IN_THREAD, lm, l, row_number, n_rows);
 }
 
-void list_elementObj::implObj::append_rows(ONLY IN_THREAD,
-					   const listlayoutmanager &lm,
-					   const std::vector<list_item_param>
-					   &items)
-{
-	std::vector<list_cell> texts;
-	std::vector<textlist_rowinfo> meta;
-
-	list_style.create_cells(items, *this, texts, meta);
-
-	append_rows(IN_THREAD, lm, texts, meta);
-}
-
-void list_elementObj::implObj::append_rows(ONLY IN_THREAD,
-					   const listlayoutmanager &lm,
-					   const std::vector<list_cell> &texts,
-					   const std::vector<textlist_rowinfo> &meta
-					   )
+void list_elementObj::implObj
+::append_rows(ONLY IN_THREAD,
+	      const listlayoutmanager &lm,
+	      new_cells_info &info)
 {
 	list_lock lock{lm};
 
 	listimpl_info_t::lock &l{lock};
 
 	// Implement by calling insert at the end of the list.
-	insert_rows(IN_THREAD, lm, lock, l->row_infos.size(), texts, meta);
+	insert_rows(IN_THREAD, lm, lock, l->row_infos.size(), info);
 }
 
-void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
-					   const listlayoutmanager &lm,
-					   size_t row_number,
-					   const std::vector<list_item_param>
-					   &items)
-{
-	std::vector<list_cell> texts;
-	std::vector<textlist_rowinfo> meta;
-
-	list_style.create_cells(items, *this, texts, meta);
-
-	insert_rows(IN_THREAD, lm, row_number, texts, meta);
-}
-
-void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
-					   const listlayoutmanager &lm,
-					   size_t row_number,
-					   const std::vector<list_cell> &texts,
-					   const std::vector<textlist_rowinfo>
-					   &meta)
+void list_elementObj::implObj
+::insert_rows(ONLY IN_THREAD,
+	      const listlayoutmanager &lm,
+	      size_t row_number,
+	      new_cells_info &info)
 {
 	list_lock lock{lm};
 
-	insert_rows(IN_THREAD,
-		    lm, lock, row_number, texts, meta);
+	insert_rows(IN_THREAD, lm, lock, row_number, info);
 }
 
-void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
-					   const listlayoutmanager &lm,
-					   list_lock &ll,
-					   size_t row_number,
-					   const std::vector<list_cell>
-					   &texts,
-					   const std::vector<textlist_rowinfo>
-					   &meta)
+void list_elementObj::implObj
+::insert_rows(ONLY IN_THREAD,
+	      const listlayoutmanager &lm,
+	      list_lock &ll,
+	      size_t row_number,
+	      new_cells_info &info)
 {
 	listimpl_info_t::lock &lock=ll;
 
@@ -503,7 +474,10 @@ void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
 		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"),
 					   row_number));
 
-	size_t rows=texts.size() / columns;
+	size_t rows=info.newcells.size() / columns;
+
+	if (rows != info.rowmeta.size())
+		throw EXCEPTION("Internal error, wrong number of row items");
 
 	// Size the arrays in advance.
 
@@ -512,9 +486,9 @@ void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
 
 	// We can now insert them.
 	lock->row_infos.insert(lock->row_infos.begin() + row_number,
-			       rows, list_row_info_t{});
+			       info.rowmeta.begin(),
+			       info.rowmeta.end());
 
-	bool first_one=true;
 	size_t row_num=0;
 
 	std::for_each(lock->row_infos.begin() + row_number,
@@ -522,19 +496,15 @@ void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
 		      [&]
 		      (auto &iter)
 		      {
-			      // Each insert()ed list_row_info points to the
-			      // the same extra object, we can fix this here.
-
-			      if (!first_one)
-				      iter.extra=extra_list_row_info::create();
-			      first_one=false;
-
 			      iter.extra->set_meta(lm, iter,
-						   meta.at(row_num++));
+						   lock,
+						   std::get<1>
+						   (info.rowmeta.at(row_num++))
+						   );
 		      });
 
 	lock->cells.insert(lock->cells.begin() + row_number * columns,
-			   texts.begin(), texts.end());
+			   info.newcells.begin(), info.newcells.end());
 
 	// Everything must be recalculated and redrawn.
 
@@ -553,33 +523,17 @@ void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
 		*current_keyed_element(lock) += rows;
 }
 
-void list_elementObj::implObj::replace_rows(ONLY IN_THREAD,
-					    const listlayoutmanager &lm,
-					    size_t row_number,
-					    const std::vector<list_item_param>
-					    &items)
-{
-	std::vector<list_cell> texts;
-	std::vector<textlist_rowinfo> meta;
-
-	list_style.create_cells(items, *this, texts, meta);
-
-	replace_rows(IN_THREAD, lm, row_number, texts, meta);
-}
-
-void list_elementObj::implObj::replace_rows(ONLY IN_THREAD,
-					    const listlayoutmanager &lm,
-					    size_t row_number,
-					    const std::vector<list_cell>
-					    &texts,
-					    const std::vector<textlist_rowinfo>
-					    &meta)
+void list_elementObj::implObj
+::replace_rows(ONLY IN_THREAD,
+	       const listlayoutmanager &lm,
+	       size_t row_number,
+	       new_cells_info &info)
 {
 	list_lock ll{lm};
 
 	listimpl_info_t::lock &lock=ll;
 
-	size_t n=texts.size() / columns;
+	size_t n=info.newcells.size() / columns;
 
 	if (row_number > lock->row_infos.size())
 		removing_rows(IN_THREAD, lm, lock, row_number, n); // Throw the exception
@@ -591,7 +545,7 @@ void list_elementObj::implObj::replace_rows(ONLY IN_THREAD,
 
 		remove_rows(IN_THREAD, lm, lock, row_number,
 			    lock->row_infos.size()-row_number);
-		insert_rows(IN_THREAD, lm, ll, lock->row_infos.size(), texts, meta);
+		insert_rows(IN_THREAD, lm, ll, lock->row_infos.size(), info);
 		return;
 	}
 
@@ -607,9 +561,13 @@ void list_elementObj::implObj::replace_rows(ONLY IN_THREAD,
 		      lock->row_infos.begin()+row_number+n,
 		      [&]
 		      {
-			      list_row_info_t r;
+			      auto &meta=info.rowmeta.at(row_num++);
 
-			      r.extra->set_meta(lm, r, meta.at(row_num++));
+			      list_row_info_t r{meta};
+
+			      r.extra->set_meta(lm, r,
+						lock,
+						std::get<1>(meta));
 
 			      return r;
 		      });
@@ -618,7 +576,7 @@ void list_elementObj::implObj::replace_rows(ONLY IN_THREAD,
 	// to bypass our carefully drafted contract.
 	lock->row_infos.modified=true;
 
-	std::copy(texts.begin(), texts.end(),
+	std::copy(info.newcells.begin(), info.newcells.end(),
 		  lock->cells.begin()+row_number*columns);
 
 	// Recalculate and redraw everything.
@@ -629,21 +587,7 @@ void list_elementObj::implObj::replace_rows(ONLY IN_THREAD,
 void list_elementObj::implObj
 ::replace_all_rows(ONLY IN_THREAD,
 		   const listlayoutmanager &lm,
-		   const std::vector<list_item_param> &items)
-{
-	std::vector<list_cell> texts;
-	std::vector<textlist_rowinfo> meta;
-
-	list_style.create_cells(items, *this, texts, meta);
-
-	replace_all_rows(IN_THREAD, lm, texts, meta);
-}
-
-void list_elementObj::implObj
-::replace_all_rows(ONLY IN_THREAD,
-		   const listlayoutmanager &lm,
-		   const std::vector<list_cell> &texts,
-		   const std::vector<textlist_rowinfo> &meta)
+		   new_cells_info &info)
 {
 	list_lock ll{lm};
 
@@ -662,7 +606,7 @@ void list_elementObj::implObj
 	lock->cells.clear();
 	for (auto &column_widths:lock->list_column_widths)
 		column_widths.clear();
-	insert_rows(IN_THREAD, lm, ll, 0, texts, meta);
+	insert_rows(IN_THREAD, lm, ll, 0, info);
 }
 
 void list_elementObj::implObj
@@ -817,6 +761,21 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD)
 			schedule_full_redraw(IN_THREAD);
 		}
 	}
+
+	should_be_current_element_actually_is(IN_THREAD, lock);
+}
+
+void list_elementObj::implObj
+::should_be_current_element_actually_is(ONLY IN_THREAD,
+					const listimpl_info_t::lock &lock)
+
+{
+	if (should_be_current_element(lock) == current_element(lock))
+		return;
+
+	current_element(IN_THREAD, lock,
+			should_be_current_element(lock),
+			std::monostate{});
 }
 
 void list_elementObj::implObj::update_metrics(ONLY IN_THREAD,
@@ -2020,7 +1979,7 @@ void list_elementObj::implObj
 
 	auto &row=lock->row_infos.at(i);
 
-	if (row.extra->has_submenu())
+	if (row.extra->has_submenu(lock))
 	{
 		auto y=row.y;
 		auto height=row.height;
@@ -2033,11 +1992,11 @@ void list_elementObj::implObj
 		get_window_handler().get_absolute_location_on_screen
 			(IN_THREAD, r);
 
-		row.extra->toggle_submenu(IN_THREAD, r);
+		row.extra->toggle_submenu(IN_THREAD, lock, r);
 		return;
 	}
 
-	if (row.extra->is_option())
+	if (row.extra->is_option(lock))
 	{
 		selected_common(IN_THREAD, lm, ll, lock, i,
 				!row.extra->data(lock).selected,
@@ -2114,9 +2073,10 @@ void list_elementObj::implObj
 	list_item_status_info_t info{
 		lm, ll, i, selected_flag, trigger, mcguffin};
 
-	if (r.extra->status_change_callback)
+	if (r.extra->data(lock).status_change_callback)
 		try {
-			r.extra->status_change_callback(IN_THREAD, info);
+			r.extra->data(lock)
+				.status_change_callback(IN_THREAD, info);
 		} REPORT_EXCEPTIONS(this);
 
 	if (lock->selection_changed)
@@ -2292,7 +2252,7 @@ std::chrono::milliseconds list_elementObj::implObj
 	{
 		auto &row=lock->row_infos.at(current_element(lock).value());
 
-		if (row.extra->has_submenu())
+		if (row.extra->has_submenu(lock))
 			return std::chrono::milliseconds(listitempopup_delay
 							 .get());
 	}
@@ -2314,7 +2274,7 @@ void list_elementObj::implObj::hover_action(ONLY IN_THREAD)
 	r.height=row.height;
 
 	get_window_handler().get_absolute_location_on_screen(IN_THREAD, r);
-	row.extra->show_submenu(IN_THREAD, r);
+	row.extra->show_submenu(IN_THREAD, lock, r);
 }
 
 listlayoutmanagerptr list_elementObj::implObj
@@ -2328,8 +2288,8 @@ listlayoutmanagerptr list_elementObj::implObj
 	{
 		auto extra=lock->row_infos.at(i).extra;
 
-		if (extra->has_submenu())
-			ptr=extra->submenu_layoutmanager();
+		if (extra->has_submenu(lock))
+			ptr=extra->submenu_layoutmanager(lock);
 	}
 
 	return ptr;

@@ -26,10 +26,10 @@ public:
 	~copy_cut_paste_menu_itemsObj() LIBCXX_HIDDEN;
 
 	//! Update menu items' status.
-	virtual void update(size_t n)=0;
+	virtual void update()=0;
 
 	//! Update menu items' status.
-	virtual void update(ONLY IN_THREAD, size_t n)=0;
+	virtual void update(ONLY IN_THREAD)=0;
 };
 
 LIBCXXW_NAMESPACE_END

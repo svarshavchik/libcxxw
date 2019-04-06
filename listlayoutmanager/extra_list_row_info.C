@@ -141,8 +141,9 @@ extra_list_row_infoObj::~extra_list_row_infoObj()
 {
 	// Must explicitly do this.
 
-	if (current_shortcut)
-		current_shortcut->uninstall_shortcut();
+	// No need for locking any more. This is the destructor.
+	if (data_under_lock.current_shortcut)
+		data_under_lock.current_shortcut->uninstall_shortcut();
 }
 
 bool extra_list_row_infoObj::enabled(listimpl_info_t::lock &lock) const
@@ -152,58 +153,61 @@ bool extra_list_row_infoObj::enabled(listimpl_info_t::lock &lock) const
 
 void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 				      list_row_info_t &row_info,
+				      listimpl_info_t::lock &lock,
 				      const textlist_rowinfo &meta)
 {
-	if (meta.listitem_callback)
-		status_change_callback= *meta.listitem_callback;
-	else
-		status_change_callback=nullptr;
+	data(lock).status_change_callback=meta.listitem_callback;
 
-	menu_item=meta.menu_item;
+	data(lock).menu_item=meta.menu_item;
 	row_info.indent=meta.indent_level;
 
 	if (meta.inactive_shortcut ||
 	    !meta.listitem_shortcut || !*meta.listitem_shortcut)
 	{
-		if (current_shortcut)
+		if (data(lock).current_shortcut)
 		{
-			current_shortcut->uninstall_shortcut();
-			current_shortcut=nullptr;
+			data(lock).current_shortcut->uninstall_shortcut();
+			data(lock).current_shortcut=nullptr;
 		}
 		return;
 	}
 
-	auto extra=ref(this);
+	auto extra=ref{this};
 
-	if (!current_shortcut)
-		current_shortcut=shortcut_impl::create(lm, extra);
+	if (!data(lock).current_shortcut)
+		data(lock).current_shortcut=shortcut_impl::create(lm, extra);
 
 	// Our destructor explicitly calls uninstall_shortcut().
 
 	// Install a global shortcut. This must be a shortcut for a
 	// menu item.
-	current_shortcut->install_shortcut(*meta.listitem_shortcut,
-					   current_shortcut, true);
+	data(lock).current_shortcut
+		->install_shortcut(*meta.listitem_shortcut,
+				   data(lock).current_shortcut, true);
 }
 
-void extra_list_row_infoObj::show_submenu(ONLY IN_THREAD, const rectangle &r)
+void extra_list_row_infoObj::show_submenu(ONLY IN_THREAD,
+					  listimpl_info_t::lock &lock,
+					  const rectangle &r)
 {
-	if (!has_submenu())
+	if (!has_submenu(lock))
 		return;
 
-	auto &popup=std::get<menu_item_submenu>(menu_item);
+	auto &popup=std::get<menu_item_submenu>(data(lock).menu_item);
 
 	popup.submenu_popup_handler
 		->update_attachedto_element_position(IN_THREAD, r);
 	popup.submenu_popup->show_all();
 }
 
-void extra_list_row_infoObj::toggle_submenu(ONLY IN_THREAD, const rectangle &r)
+void extra_list_row_infoObj::toggle_submenu(ONLY IN_THREAD,
+					    listimpl_info_t::lock &lock,
+					    const rectangle &r)
 {
-	if (!has_submenu())
+	if (!has_submenu(lock))
 		return;
 
-	auto &popup=std::get<menu_item_submenu>(menu_item);
+	auto &popup=std::get<menu_item_submenu>(data(lock).menu_item);
 
 	popup.submenu_popup_handler
 		->update_attachedto_element_position(IN_THREAD, r);
@@ -217,9 +221,10 @@ void extra_list_row_infoObj::toggle_submenu(ONLY IN_THREAD, const rectangle &r)
 			->request_visibility_recursive(IN_THREAD, true);
 }
 
-listlayoutmanager extra_list_row_infoObj::submenu_layoutmanager()
+listlayoutmanager extra_list_row_infoObj
+::submenu_layoutmanager(listimpl_info_t::lock &lock)
 {
-	return std::get<menu_item_submenu>(menu_item).submenu_popup
+	return std::get<menu_item_submenu>(data(lock).menu_item).submenu_popup
 		->get_layoutmanager();
 }
 

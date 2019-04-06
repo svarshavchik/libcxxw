@@ -424,7 +424,7 @@ auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 	return c;
 }
 
-void listtest(const LIBCXX_NAMESPACE::w::screen &default_screen,
+void listtable(const LIBCXX_NAMESPACE::w::screen &default_screen,
 	      const LIBCXX_NAMESPACE::w::main_window &main_window,
 	      const LIBCXX_NAMESPACE::w::screen_positions &pos,
 	      const testlistoptions &options)
@@ -531,16 +531,17 @@ static const char * const lorem_ipsum[]=
 	 "aliqua"
 	};
 
+static size_t lorem_ipsum_idx=(size_t)-1;
+
+
 static std::string next_lorem_ipsum()
 {
-	static size_t counter=0;
+	size_t i=lorem_ipsum_idx;
 
-	size_t i=counter;
-
-	if (++i > sizeof(lorem_ipsum)/sizeof(lorem_ipsum)[0])
+	if (++i >= sizeof(lorem_ipsum)/sizeof(lorem_ipsum)[0])
 		i=0;
 
-	counter=i;
+	lorem_ipsum_idx=i;
 
 	return lorem_ipsum[i];
 }
@@ -625,6 +626,287 @@ void listhiertest(const LIBCXX_NAMESPACE::w::main_window &main_window)
 		 nlm);
 }
 
+static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
+			      &main_window,
+			      const testlistoptions &opts)
+{
+	LIBCXX_NAMESPACE::w::gridlayoutmanager
+		layout=main_window->get_layoutmanager();
+
+	LIBCXX_NAMESPACE::w::gridfactory factory=layout->append_row();
+
+	factory->rowspan(6);
+
+	LIBCXX_NAMESPACE::w::new_listlayoutmanager
+		new_list{opts.bullets->value
+			 ? LIBCXX_NAMESPACE::w::bulleted_list
+			 : LIBCXX_NAMESPACE::w::highlighted_list};
+
+
+	if (opts.multiple->value)
+		new_list.selection_type=
+			LIBCXX_NAMESPACE::w::multiple_selection_type;
+
+	if (opts.rows->isSet())
+	{
+		size_t min=opts.rows->value, max=min;
+
+		if (opts.maxrows->isSet())
+		{
+			max=opts.maxrows->value;
+		}
+
+		new_list.height(min, max);
+	}
+	else if (opts.maxrows->isSet())
+	{
+		auto v=opts.maxrows->value;
+		new_list.height(v); //
+	}
+	else if (opts.height->isSet())
+	{
+		auto v=opts.height->value;
+		new_list.height(LIBCXX_NAMESPACE::w::dim_axis_arg{v});
+	}
+
+	new_list.selection_changed=
+		[]
+		(ONLY IN_THREAD,
+		 const LIBCXX_NAMESPACE::w::list_item_status_info_t &info)
+		{
+			std::cout << "Item #" << info.item_number << " was ";
+
+			std::cout << (info.selected ? "selected":"unselected");
+
+			std::cout << std::endl;
+		};
+
+	new_list.current_list_item_changed=
+		[]
+		(ONLY IN_THREAD,
+		 const LIBCXX_NAMESPACE::w::list_item_status_info_t &info)
+		{
+			std::cout << "Item #" << info.item_number << " was ";
+
+			std::cout << (info.selected ? "highlighted"
+				      : "unhighlighted");
+
+			std::cout << std::endl;
+		};
+
+	LIBCXX_NAMESPACE::w::focusable_container list_container=
+		factory->create_focusable_container
+		([&]
+		 (const auto &list_container)
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager
+				 l=list_container->get_layoutmanager();
+
+			 l->append_items({next_lorem_ipsum()});
+
+			 l->append_items({
+					  LIBCXX_NAMESPACE::w::text_param
+					  {next_lorem_ipsum()}
+				 });
+		 },
+		 new_list);
+	list_container->show();
+
+	auto insert_row=
+		factory->halign(LIBCXX_NAMESPACE::w::halign::fill)
+		.create_button("Insert New Row");
+
+	insert_row->show();
+
+	factory=layout->append_row();
+
+	auto append_row=factory->halign(LIBCXX_NAMESPACE::w::halign::fill)
+		.create_button("Append New Row");
+
+	append_row->show();
+
+	factory=layout->append_row();
+	auto remove_row=factory->halign(LIBCXX_NAMESPACE::w::halign::fill)
+		.create_button("Remove Row");
+
+	remove_row->show();
+
+	factory=layout->append_row();
+	auto replace_row=
+		factory->halign(LIBCXX_NAMESPACE::w::halign::fill)
+		.create_button("Replace Row");
+
+	replace_row->show();
+
+	factory=layout->append_row();
+
+	auto reset=
+		factory->halign(LIBCXX_NAMESPACE::w::halign::fill)
+		.create_button("Reset");
+
+	reset->show();
+
+	factory=layout->append_row();
+
+	auto show_me=
+		factory->halign(LIBCXX_NAMESPACE::w::halign::fill)
+		.create_button("Show Selected Items");
+
+	show_me->show();
+
+	insert_row->on_activate
+		([list_container, counter=0]
+		 (ONLY IN_THREAD,
+		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
+		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
+		 mutable
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
+				 list_container->get_layoutmanager();
+
+			 l->insert_items
+				 (0, {
+					 [counter]
+					 (ONLY IN_THREAD,
+					  const LIBCXX_NAMESPACE::w
+					  ::list_item_status_info_t
+					  &info)
+					 {
+						 std::cout << "Item factory: "
+							 "item #"
+							   << counter
+							   << (info.selected ?
+							       " is":
+							       " is not")
+							   << " selected at"
+							   << " position "
+							   << info.item_number
+							   << std::endl;
+					 },
+
+					 next_lorem_ipsum()
+				 });
+		 });
+
+	append_row->on_activate
+		([list_container]
+		 (ONLY IN_THREAD,
+		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
+		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
+				 list_container->get_layoutmanager();
+
+			 // insert_items() and append_items() take
+			 // a std::vector of list_item_param-s as parameters.
+			 //
+			 // Each list_item_param is constructible with either
+			 // an explicit LIBCXX_NAMESPACE::w::text_param, or with a
+			 // std::string (UTF-8) or std::u32string (unicode).
+			 //
+			 // A plain const char pointer will work as well.
+
+			 l->append_items({next_lorem_ipsum()});
+		 });
+
+	remove_row->on_activate
+		([list_container]
+		 (ONLY IN_THREAD,
+		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
+		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
+				 list_container->get_layoutmanager();
+
+			 // If the list is non-empty, remove the first list
+			 // item.
+
+			 if (l->size() == 0)
+				 return;
+			 l->remove_item(0);
+		 });
+
+	replace_row->on_activate
+		([list_container]
+		 (ONLY IN_THREAD,
+		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
+		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
+				 list_container->get_layoutmanager();
+
+			 if (l->size() == 0)
+				 return;
+
+			 // replace_items() works like insert_items(), except
+			 // that the existing item gets removed.
+
+			 l->replace_items(0, {next_lorem_ipsum()});
+		 });
+
+	reset->on_activate
+		([list_container]
+		 (ONLY IN_THREAD,
+		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
+		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
+				 list_container->get_layoutmanager();
+
+			 lorem_ipsum_idx=(size_t)-1;
+
+			 // replace_all_items() is equivalent to removing
+			 // all items from the list, then append_items().
+			 //
+			 // This effectively sets the new list of items.
+			 //
+			 l->replace_all_items({ next_lorem_ipsum(),
+						next_lorem_ipsum()});
+		 });
+
+	show_me->on_activate
+		([list_container]
+		 (ONLY IN_THREAD,
+		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
+		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
+				 list_container->get_layoutmanager();
+
+			 // This callback gets executed by the library's
+			 // internal connection thread, so this lock is
+			 // not really necessary, since only the connection
+			 // thread modifies the list.
+			 //
+			 // Acquiring a list_lock blocks other execution
+			 // threads from accessing the list. The lock freezes
+			 // the list state, so that the list's contents can
+			 // be examined and modified, with the list's contents
+			 // remaining consistent.
+
+			 LIBCXX_NAMESPACE::w::list_lock lock{l};
+
+			 auto s=l->size();
+			 size_t n=0;
+
+			 for (size_t i=0; i<s; ++i)
+				 if (l->selected(i))
+				 {
+					 ++n;
+					 std::cout << "Item #"
+						   << i << " is selected."
+						   << std::endl;
+
+				 }
+
+			 std::cout << "Total # of selected items: " << n
+				   << std::endl;
+		 });
+}
+
+
+
+
 void testlist(const testlistoptions &options)
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
@@ -650,9 +932,11 @@ void testlist(const testlistoptions &options)
 		 {
 			 if (options.hier->value)
 				 listhiertest(main_window);
+			 else if (options.table->value)
+				 listtable(default_screen, main_window, pos,
+					   options);
 			 else
-				 listtest(default_screen, main_window, pos,
-					  options);
+				 plain_list(main_window, options);
 		 });
 
 	guard(main_window->connection_mcguffin());

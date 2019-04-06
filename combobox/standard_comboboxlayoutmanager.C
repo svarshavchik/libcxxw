@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "combobox/standard_comboboxlayoutmanager.H"
+#include "listlayoutmanager/in_thread_new_cells_info.H"
 #include "x/w/focusable_label.H"
 #include "x/w/label.H"
 #include "busy.H"
@@ -60,28 +61,6 @@ standard_combobox_lock::~standard_combobox_lock()=default;
 // Only text_params, and separators are acceptable. That's why this is the
 // standard combo-box.
 
-static void check_text_param(const std::vector<list_item_param> &items)
-{
-	for (const list_item_param::variant_t &i:items)
-		std::visit
-			(visitor
-			 {
-				 [&](const text_param &t)
-				 {
-				 },
-				 [&](const separator &s)
-				 {
-				 },
-				 [](const list_item_status_change_callback &)
-				 {
-				 },
-				 [](const auto &s)
-				 {
-					 throw EXCEPTION(_("This combo-box cannot contain this item."));
-				 }
-			 }, i);
-}
-
 static std::vector<text_param> to_text_param(const std::vector<list_item_param>
 					     &items)
 {
@@ -116,37 +95,480 @@ void standard_combobox_lock::append_items(const list_item_param &item)
 	append_items({item});
 }
 
+namespace {
+#if 0
+}
+#endif
+
+//! Convert new items for a standard combo-box into text_params.
+
+//! This is inherited by one of the two inherited helper objects.
+//! The subclass's constructor receives a vector of list_item_params by
+//! value, and passes a reference to its copy of the vector to this
+//! constructor.
+//!
+//! This constructor converts the vector to_text_param() as the first
+//! order of business. Afterword, update_items_if_needed() in the vector.
+//!
+//! This completes new_text_param's construction. The subclass then proceeds
+//! and makes arrangement to use the now potentially-updated vector to
+//! create_cells().
+
+struct new_text_params_wrapper {
+
+	//! The text_param equivalent of new list_item_params
+
+	const std::vector<text_param> new_text_params;
+
+	new_text_params_wrapper(std::vector<list_item_param>
+				&updated_items,
+				standard_combobox_lock &lock)
+		: new_text_params{to_text_param(updated_items)}
+	{
+		lock.locked_layoutmanager->impl->
+			update_items_if_needed(updated_items);
+	}
+
+	~new_text_params_wrapper()=default;
+};
+
+//! Shared logic used by non-in_thread modifiers.
+
+//! Non-IN_THREAD methods create this object. The updated_items
+//! parameter is intentionally passed by value, in order to make a copy
+//! of it, before constructing the new_text_params_wrapper superclass, first.
+//!
+//! new_text_params_wrapper is inherited first, and gets constructed first.
+//! Afterwards, the in_thread_new_cells_infoObj gets constructed, passing
+//! it the same vector to its constructor, in order to create_cells().
+//!
+//! This object then gets tossed over the fence, IN_THREAD. Once IN_THREAD,
+//! lock() recovers the relevant key details.
+
+class noninthread_update_helperObj : public new_text_params_wrapper,
+				     public in_thread_new_cells_infoObj {
+
+public:
+
+	//! The layout manager for this.
+
+	const ref<standard_comboboxlayoutmanagerObj::implObj> impl;
+
+	//! Constructor
+	noninthread_update_helperObj(standard_combobox_lock &lock,
+				     std::vector<list_item_param>
+				     updated_items)
+		: new_text_params_wrapper{updated_items, lock},
+		  in_thread_new_cells_infoObj{lock.locked_layoutmanager,
+					      updated_items},
+		  impl{lock.locked_layoutmanager->impl}
+	{
+	}
+
+	//! Destructor
+	~noninthread_update_helperObj()=default;
+
+	//! What we need to restart things, now IN_THREAD.
+
+	struct relocked {
+		//! The IN_THREAD lock on the combo-box.
+		standard_combobox_lock lock;
+
+		//! The implementation objects, whose methods we invoke.
+		ref<list_elementObj::implObj> list_impl;
+	};
+
+	//! Restore relocked environment, now IN_THREAD.
+
+	//! The IN_THREAD code now wants to relock the combo-box, and get
+	//! the impl object.
+	auto lock() const
+	{
+		standard_comboboxlayoutmanager lm{impl->create_public_object()};
+
+		return relocked{ lm, lm->listlayoutmanagerObj::impl
+				->list_element_singleton->impl };
+	}
+};
+
+typedef ref<noninthread_update_helperObj> noninthread_update_helper;
+
+//! Alternative helper for IN_THREAD methods.
+
+//! Inherit from new_text_params_wrapper, also intentionally making a copy
+//! of the updated_items vector, passing it to new_text_params_wrapper's
+//! constructor.
+//!
+//! Once that's done, we call create_cells() ourselves.
+
+struct inthread_update_helper : new_text_params_wrapper {
+
+	//! What the list implementation object's methods need.
+
+	new_cells_info info;
+
+	//! The implementation object.
+	const ref<list_elementObj::implObj> list_impl;
+
+	//! Constructor
+	inthread_update_helper(standard_combobox_lock &lock,
+			       std::vector<list_item_param> updated_items)
+		: new_text_params_wrapper{updated_items, lock},
+		  list_impl{lock.locked_layoutmanager
+			    ->listlayoutmanagerObj::impl
+			    ->list_element_singleton->impl}
+	{
+		list_impl->list_style.create_cells(updated_items,
+						   lock.locked_layoutmanager
+						   ->listlayoutmanagerObj::impl,
+						   info);
+	}
+
+	//! Destructor.
+	~inthread_update_helper()=default;
+};
+
+//! Shared logic used when appending, appending, or replacing items.
+
+//! The modifiers all end up, sooner or later, with a standard_combobox_lock,
+//! IN_THREAD, and new list items as a vector of text_params. All of these
+//! exist somewhere, and we capture refs to them.
+
+struct update_helper {
+
+	//! Existing text_params in the combo-box, that we retrieve.
+
+	std::vector<text_param> &existing_text_params;
+
+	//! New list items.
+	const std::vector<text_param> &new_text_params;
+
+	//! Our lock.
+	standard_combobox_lock &lock;
+
+	//! Constructor.
+	update_helper(standard_combobox_lock &lock,
+		      const std::vector<text_param> &new_text_params)
+		: existing_text_params{lock.text_items()},
+		  new_text_params{new_text_params},
+		  lock{lock}
+	{
+	}
+};
+
+//! Shared logic used to append_rows().
+
+//! The non-IN_THREAD and IN_THREAD overloads set things up differently, but
+//! use this shared logic.
+//!
+//! start() gets called immediately after this is constructed.
+//! finish() gets called after append_rows() returns.
+//!
+//! start() appends the text_params version of new combo-box items.
+//!
+//! If the destructor sees started=true, it unwinds what start() did.
+//!
+//! We hold a combo-box lock, ensuring no other changes to its contents.
+
+struct append_helper : update_helper {
+
+	using update_helper::update_helper;
+
+	bool started=false;
+
+	//! Start appending. We append the text_params to existing_text_params.
+
+	void start()
+	{
+		existing_text_params.insert(existing_text_params.end(),
+					    new_text_params.begin(),
+					    new_text_params.end());
+		started=true;
+	}
+
+	//! We called append_items().
+
+	void finish()
+	{
+		started=false;
+	}
+
+	//! Unwind the append, if an exception was thrown.
+
+	~append_helper()
+	{
+		if (started)
+		{
+			auto e=existing_text_params.end();
+
+			existing_text_params.erase(e-new_text_params.size(),
+						   e);
+		}
+	}
+};
+
+//! Shared logic used to insert_rows().
+
+//! The non-IN_THREAD and IN_THREAD overloads set things up differently, but
+//! use this shared logic.
+//!
+//! start() gets called immediately after this is constructed.
+//! finish() gets called after insert_rows() returns.
+//!
+//! start() inserts the text_params version of new combo-box items.
+//!
+//! If the destructor sees started=true, it unwinds what start() did.
+//!
+//! We hold a combo-box lock, ensuring no other changes to its contents.
+
+struct insert_helper : update_helper {
+
+	using update_helper::update_helper;
+
+	bool started=false;
+
+	size_t i;
+
+	//! Start the insert.
+
+	void start(size_t i)
+	{
+		this->i=i;
+
+		if (existing_text_params.size() < i)
+			nosuchitem(i);
+
+		existing_text_params.insert(existing_text_params.begin()+i,
+					    new_text_params.begin(),
+					    new_text_params.end());
+		started=true;
+	}
+
+	// We called insert_items()
+
+	void finish()
+	{
+		started=false;
+	}
+
+	// Unwind the insert, if an exception was thrown.
+
+	~insert_helper()
+	{
+		if (started)
+		{
+			auto iter=existing_text_params.begin()+i;
+
+			existing_text_params.erase(iter,
+						   iter+new_text_params.size());
+		}
+	}
+};
+
+//! Shared logic used to replace_rows().
+
+//! The non-IN_THREAD and IN_THREAD overloads set things up differently, but
+//! use this shared logic.
+//!
+//! start() gets called immediately this is constructed. finish() gets called
+//! after replace_rows() returns.
+//!
+//! finish() replaces the existing text_params, now that the underlying
+//! combo-box items were successfully replaced.
+//!
+//! We hold a combo-box lock, ensuring no other changes to its contents.
+
+struct replace_helper : update_helper {
+
+	using update_helper::update_helper;
+
+	size_t i;
+
+	//! Start replacing the items.
+
+	void start(size_t i)
+	{
+		this->i=i;
+		auto n=existing_text_params.size();
+
+		if (n < i)
+			nosuchitem(i);
+
+		if (n-i < new_text_params.size())
+			nosuchitem(n);
+	}
+
+	// All the items were replaced.
+
+	void finish()
+	{
+		std::copy(new_text_params.begin(),
+			  new_text_params.end(),
+			  existing_text_params.begin()+i);
+	}
+};
+
+//! Shared logic used to remove_items().
+
+//! Although the non-IN_THREAD version does not need to implement remove_items()
+//! itself, and delegates to the IN_THREAD version, for consistency's sake
+//! we take the same approach as with other changes to the combo-box, and
+//! use a helper object.
+//!
+//! removed() gets called if remove_items() succesfully returns.
+//!
+//! finish() replaces the existing text_params, now that the underlying
+//! combo-box items were successfully replaced.
+//!
+//! We hold a combo-box lock, ensuring no other changes to its contents.
+
+struct remove_helper {
+
+	//! Lock.
+	standard_combobox_lock &lock;
+
+	//! Starting position
+	const size_t i;
+
+	//! Number of items
+	const size_t n;
+
+	//! Existing text_params in the combo-box.
+	std::vector<text_param> &existing_text_params;
+
+	//! Sanity check the removal range.
+	remove_helper(standard_combobox_lock &lock,
+		      size_t i,
+		      size_t n)
+		: lock{lock}, i{i}, n{n},
+		  existing_text_params{lock.text_items()}
+	{
+
+		size_t s=existing_text_params.size();
+
+		if (s < i)
+			nosuchitem(i);
+
+		auto m=s-i;
+
+		if (m < n)
+			nosuchitem(s);
+	}
+
+	//! Removal complete.
+	void removed()
+	{
+		auto iter=existing_text_params.begin()+i;
+		existing_text_params.erase(iter, iter+n);
+	}
+};
+
+//! Shared logic used to replace_all_rows().
+
+//! The non-IN_THREAD and IN_THREAD overloads set things up differently, but
+//! use this shared logic.
+//!
+//! start() gets called immediately after this is constructed.
+//! finish() gets called
+//! after replace_all_rows() returns.
+//!
+//! finish() replaces the existing text_params, now that the underlying
+//! combo-box items were successfully replaced.
+//!
+//! The destructor makes sure that the job was finish()ed. If not, the combo-box
+//! is in an indeterminant state, so we recover by removing everything from the
+//! underlying list, and the text_params version of it.
+//!
+//! We hold a combo-box lock, ensuring no other changes to its contents.
+
+struct replace_all_helper : public update_helper {
+
+	bool started=false;
+
+	ONLY IN_THREAD;
+
+	replace_all_helper(ONLY IN_THREAD,
+			   standard_combobox_lock &lock,
+			   const std::vector<text_param> &new_text_params)
+		: update_helper{lock, new_text_params},
+		  IN_THREAD{IN_THREAD}
+	{
+	}
+
+	//! Starting the replace
+	void start()
+	{
+		started=true;
+	}
+
+	//! Ended the replace. Update the text param representation.
+	void finish()
+	{
+		existing_text_params=new_text_params;
+		started=false;
+	}
+
+	//! Destructor
+
+	//! If an exception gets thrown in a middle of replace, the
+	//! combo-box is in an indeterminant state. Clean it up by
+	//! removing everything.
+
+	~replace_all_helper()
+	{
+		if (started)
+		{
+			existing_text_params.clear();
+			lock.locked_layoutmanager
+				->superclass_t::replace_all_items
+				(IN_THREAD, std::vector<list_item_param>{});
+		}
+	}
+
+};
+
+#if 0
+{
+#endif
+}
+
 void standard_combobox_lock::append_items(const std::vector<list_item_param>
 					  &items)
 {
-	check_text_param(items);
-	locked_layoutmanager->superclass_t::append_items(items);
+	auto helper=noninthread_update_helper::create(*this, items);
+
+	locked_layoutmanager->impl->run_as
+		([helper]
+		 (ONLY IN_THREAD)
+		 {
+			 auto [lock, list_impl]=helper->lock();
+
+			 append_helper doit{lock,
+					    helper->new_text_params};
+
+			 doit.start();
+			 list_impl->append_rows(IN_THREAD,
+						lock.locked_layoutmanager,
+						helper->info);
+
+			 doit.finish();
+		 });
 }
 
 void standard_combobox_lock::append_items(ONLY IN_THREAD,
 					  const std::vector<list_item_param>
 					  &items)
 {
-	auto t=to_text_param(items);
+	inthread_update_helper helper{*this, items};
 
-	auto &ti=text_items();
+	append_helper doit{*this, helper.new_text_params};
 
-	// Try to do the right thing when an exception gets thrown.
+	doit.start();
 
-	auto s=make_sentry
-		([&, this, s=ti.size()]
-		 {
-			 ti.erase(ti.begin()+s, ti.end());
-		 });
-	ti.insert(ti.end(), t.begin(), t.end());
-
-	auto updated_items=items;
-	locked_layoutmanager->impl->update_items_if_needed(updated_items);
-
-	s.guard();
-	locked_layoutmanager->superclass_t::append_items(IN_THREAD,
-							 updated_items);
-	s.unguard();
+	helper.list_impl->append_rows(IN_THREAD,
+				      locked_layoutmanager,
+				      helper.info);
+	doit.finish();
 }
 
 void standard_combobox_lock::insert_items(size_t i, const list_item_param &item)
@@ -158,8 +580,23 @@ void standard_combobox_lock::insert_items(size_t i,
 					  const std::vector<list_item_param>
 					  &items)
 {
-	check_text_param(items);
-	locked_layoutmanager->superclass_t::insert_items(i, items);
+	auto helper=noninthread_update_helper::create(*this, items);
+
+	locked_layoutmanager->impl->run_as
+		([helper, i]
+		 (ONLY IN_THREAD)
+		 {
+			 auto [lock, list_impl]=helper->lock();
+
+			 insert_helper doit{lock, helper->new_text_params};
+
+			 doit.start(i);
+			 list_impl->insert_rows(IN_THREAD,
+						lock.locked_layoutmanager,
+						i,
+						helper->info);
+			 doit.finish();
+		 });
 }
 
 void standard_combobox_lock::insert_items(ONLY IN_THREAD,
@@ -167,26 +604,17 @@ void standard_combobox_lock::insert_items(ONLY IN_THREAD,
 					  const std::vector<list_item_param>
 					  &items)
 {
-	auto t=to_text_param(items);
-	auto &ti=text_items();
+	inthread_update_helper helper{*this, items};
 
-	if (ti.size() < i)
-		nosuchitem(i);
+	insert_helper doit{*this, helper.new_text_params};
 
-	auto s=make_sentry
-		([&, this]
-		 {
-			 ti.erase(ti.begin()+i,ti.begin()+t.size());
-		 });
+	doit.start(i);
 
-	ti.insert(ti.begin()+i, t.begin(), t.end());
-
-	auto updated_items=items;
-	locked_layoutmanager->impl->update_items_if_needed(updated_items);
-	s.guard();
-	locked_layoutmanager->superclass_t::insert_items(IN_THREAD, i,
-							 updated_items);
-	s.unguard();
+	helper.list_impl->insert_rows(IN_THREAD,
+				      locked_layoutmanager,
+				      i,
+				      helper.info);
+	doit.finish();
 }
 
 void standard_combobox_lock::replace_items(size_t i,
@@ -199,8 +627,23 @@ void standard_combobox_lock::replace_items(size_t i,
 					   const std::vector<list_item_param>
 					   &items)
 {
-	check_text_param(items);
-	locked_layoutmanager->superclass_t::replace_items(i, items);
+	auto helper=noninthread_update_helper::create(*this, items);
+
+	locked_layoutmanager->impl->run_as
+		([helper, i]
+		 (ONLY IN_THREAD)
+		 {
+			 auto [lock, list_impl]=helper->lock();
+
+			 replace_helper doit{lock, helper->new_text_params};
+
+			 doit.start(i);
+			 list_impl->replace_rows(IN_THREAD,
+						 lock.locked_layoutmanager,
+						 i,
+						 helper->info);
+			 doit.finish();
+		 });
 }
 
 void standard_combobox_lock::replace_items(ONLY IN_THREAD,
@@ -208,19 +651,17 @@ void standard_combobox_lock::replace_items(ONLY IN_THREAD,
 					   const std::vector<list_item_param>
 					   &items)
 {
-	auto t=to_text_param(items);
+	inthread_update_helper helper{*this, items};
 
-	auto &ti=text_items();
+	replace_helper doit{*this, helper.new_text_params};
 
-	if (ti.size() < i || ti.size()-i < t.size())
-		nosuchitem(i);
+	doit.start(i);
 
-	auto updated_items=items;
-	locked_layoutmanager->impl->update_items_if_needed(updated_items);
-	locked_layoutmanager->superclass_t::replace_items(IN_THREAD, i,
-							  updated_items);
-
-	std::copy(t.begin(), t.end(), ti.begin()+i);
+	helper.list_impl->replace_rows(IN_THREAD,
+				       locked_layoutmanager,
+				       i,
+				       helper.info);
+	doit.finish();
 }
 
 void standard_combobox_lock::remove_item(size_t i)
@@ -230,7 +671,18 @@ void standard_combobox_lock::remove_item(size_t i)
 
 void standard_combobox_lock::remove_items(size_t i, size_t n)
 {
-	locked_layoutmanager->remove_items(i, n);
+	// For consistency:
+	auto helper=noninthread_update_helper
+		::create(*this, std::vector<list_item_param>{});
+
+	locked_layoutmanager->impl->run_as
+		([helper, i, n]
+		 (ONLY IN_THREAD)
+		 {
+			 auto [lock, list_impl]=helper->lock();
+
+			 lock.remove_items(IN_THREAD, i, n);
+		 });
 }
 
 void standard_combobox_lock::remove_item(ONLY IN_THREAD, size_t i)
@@ -240,60 +692,67 @@ void standard_combobox_lock::remove_item(ONLY IN_THREAD, size_t i)
 
 void standard_combobox_lock::remove_items(ONLY IN_THREAD, size_t i, size_t n)
 {
-	auto &ti=text_items();
-
-	size_t s=ti.size();
-
-	if (s <= i)
-		nosuchitem(i);
-
-	auto m=s-i;
-
-	if (m < n)
-		nosuchitem(i+m);
+	remove_helper doit{*this, i, n};
 
 	locked_layoutmanager->superclass_t::remove_items(IN_THREAD, i, n);
-	ti.erase(ti.begin()+i, ti.begin()+i+n);
+	doit.removed();
 }
 
 void standard_combobox_lock::replace_all_items(const std::vector<list_item_param>
 					       &items)
 {
-	check_text_param(items);
-	locked_layoutmanager->superclass_t::replace_all_items(items);
+	auto helper=noninthread_update_helper::create(*this, items);
+
+	locked_layoutmanager->impl->run_as
+		([helper]
+		 (ONLY IN_THREAD)
+		 {
+			 auto [lock, list_impl]=helper->lock();
+
+			 replace_all_helper doit{IN_THREAD,
+						 lock,
+						 helper->new_text_params};
+
+			 doit.start();
+			 list_impl->replace_all_rows(IN_THREAD,
+						     lock.locked_layoutmanager,
+						     helper->info);
+			 doit.finish();
+		 });
 }
 
 void standard_combobox_lock::replace_all_items(ONLY IN_THREAD,
-					       const std::vector<list_item_param>
-					       &items)
+					       const std::vector<list_item_param
+					       > &items)
 {
-	auto t=to_text_param(items);
+	inthread_update_helper helper{*this, items};
 
-	// Try to do the right thing when an exception gets thrown.
+	replace_all_helper doit{IN_THREAD, *this, helper.new_text_params};
 
-	auto s=make_sentry
-		([&, this]
-		 {
-			 this->locked_layoutmanager
-				 ->superclass_t::replace_all_items(IN_THREAD,
-								   std::vector<list_item_param>{});
-			 text_items().clear();
-		 });
 
-	auto updated_items=items;
-	locked_layoutmanager->impl->update_items_if_needed(updated_items);
-
-	s.guard();
-	locked_layoutmanager->superclass_t::replace_all_items(IN_THREAD,
-							      updated_items);
-
-	text_items()=t;
-	s.unguard();
+	doit.start();
+	locked_layoutmanager->listlayoutmanagerObj::impl
+		->list_element_singleton->impl
+		->replace_all_rows(IN_THREAD,
+				   locked_layoutmanager,
+				   helper.info);
+	doit.finish();
 }
 
 void standard_combobox_lock::resort_items(const std::vector<size_t> &indexes)
 {
-	locked_layoutmanager->resort_items(indexes);
+	// For consistency:
+	auto helper=noninthread_update_helper
+		::create(*this, std::vector<list_item_param>{});
+
+	locked_layoutmanager->impl->run_as
+		([helper, indexes]
+		 (ONLY IN_THREAD)
+		 {
+			 auto [lock, list_impl]=helper->lock();
+
+			 lock.resort_items(IN_THREAD, indexes);
+		 });
 }
 
 void standard_combobox_lock::resort_items(ONLY IN_THREAD,

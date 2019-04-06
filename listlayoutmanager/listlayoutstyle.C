@@ -14,6 +14,8 @@
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "listlayoutmanager/list_cell.H"
+#include "listlayoutmanager/extra_list_row_info.H"
+#include "listlayoutmanager/listitemhandle_impl.H"
 #include "peephole/peephole_impl.H"
 #include "popup/popup.H"
 #include "popup/popup_handler.H"
@@ -78,11 +80,14 @@ listlayoutstyle_impl
 
 void
 listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
-				   list_elementObj::implObj &textlist_element,
-				   std::vector<list_cell> &newcells,
-				   std::vector<textlist_rowinfo> &rowmeta)
+				   const ref<listlayoutmanagerObj::implObj>
+				   &lilm,
+				   new_cells_info &info)
 	const
 {
+	list_elementObj::implObj &textlist_element=
+		*lilm->list_element_singleton->impl;
+
 	const size_t extra_leading=extra_leading_columns();
 	const size_t extra_trailing=extra_trailing_columns();
 	const size_t extra=extra_leading+extra_trailing;
@@ -94,8 +99,13 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 	const size_t real_columns=textlist_element.columns-extra;
 
+	const new_items *seen_new_items=nullptr;
+
 	for (const auto &item:t)
 	{
+		if (seen_new_items)
+			throw EXCEPTION("new_items to be returned must be specified last");
+
 		std::visit(visitor{
 				[&](const shortcut &sc)
 				{
@@ -131,6 +141,10 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 				[&](const image_param &)
 				{
 					++n_real_elements;
+				},
+				[&](const new_items &arg)
+				{
+					seen_new_items=&arg;
 				}},
 			static_cast<const list_item_param::variant_t &>(item));
 	}
@@ -144,9 +158,9 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 	// Since its evenly divisible, compute the number of rows, then
 	// multiply by the number of columns for each item, to figure out how
 	// much space to reserve.
-	newcells.reserve(n_real_elements / real_columns
-			 * textlist_element.columns);
-	rowmeta.reserve(n_real_elements / real_columns);
+	info.newcells.reserve(n_real_elements / real_columns
+			      * textlist_element.columns);
+	info.rowmeta.reserve(n_real_elements / real_columns);
 
 	size_t c=0;
 
@@ -155,6 +169,9 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 	for (const auto &s:t)
 	{
+		if (std::holds_alternative<new_items>(s))
+			continue; // Checks that this is kosher here, above.
+
 		halign halignment=halign::left;
 		valign valignment=valign::bottom;
 
@@ -209,7 +226,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 					 for (size_t i=0; i<extra_leading; ++i)
 					 {
-						 newcells.push_back
+						 info.newcells.push_back
 							 (create_leading_column
 							  (textlist_element,
 							   i));
@@ -217,7 +234,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 					 }
 				 }
 
-				 newcells.push_back(new_cell);
+				 info.newcells.push_back(new_cell);
 				 created_cell=true;
 			 },
 			 [&]
@@ -248,11 +265,14 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 				 for (size_t i=0; i<textlist_element.columns;
 				      ++i)
-					 newcells.push_back
+					 info.newcells.push_back
 						 (list_cellseparator::create());
 
 				 // next_rowinfo should be clean
-				 rowmeta.push_back(next_rowinfo);
+				 info.rowmeta.emplace_back
+					 (extra_list_row_info::create(),
+					  next_rowinfo);
+
 				 c += textlist_element.columns;
 				 created_separator=true;
 			 });
@@ -274,7 +294,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 				for (size_t i=0; i<extra_trailing; ++i)
 				{
-					newcells.push_back
+					info.newcells.push_back
 						(create_trailing_column
 						 (textlist_element, i,
 						  next_rowinfo));
@@ -284,7 +304,9 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 			if ((c % textlist_element.columns) == 0)
 			{
-				rowmeta.push_back(next_rowinfo);
+				info.rowmeta.emplace_back
+					(extra_list_row_info::create(),
+					 next_rowinfo);
 				next_rowinfo={};
 				havemeta=false;
 			}
@@ -306,8 +328,24 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 		throw EXCEPTION(_("Row metadata must be specified before "
 				  "the row data."));
 
-	if (rowmeta.size() * textlist_element.columns != newcells.size())
+	if (info.rowmeta.size() * textlist_element.columns
+	    != info.newcells.size())
 		throw EXCEPTION(_("I suck at logic."));
+
+	if (seen_new_items)
+	{
+		auto &handles=seen_new_items->handles.get();
+
+		handles.reserve(handles.size() + info.rowmeta.size());
+
+		for (const auto &meta:info.rowmeta)
+		{
+			handles.push_back(ref<listitemhandleObj::implObj>
+					  ::create(lilm,
+						   std::get<extra_list_row_info>
+						   (meta)));
+		}
+	}
 }
 
 void listlayoutstyle_impl::do_process_list_item_param
@@ -329,7 +367,7 @@ void listlayoutstyle_impl::do_process_list_item_param
 						      "shorcuts for list items")
 						    );
 
-				   next_rowinfo.listitem_shortcut=&sc;
+				   next_rowinfo.listitem_shortcut=sc;
 			   },
 			   [&](const inactive_shortcut &sc)
 			   {
@@ -339,7 +377,7 @@ void listlayoutstyle_impl::do_process_list_item_param
 						      "shorcuts for list items")
 						    );
 
-				   next_rowinfo.listitem_shortcut=&sc;
+				   next_rowinfo.listitem_shortcut=sc;
 				   next_rowinfo.inactive_shortcut=true;
 			   },
 			   [&](const list_item_status_change_callback &cb)
@@ -349,7 +387,7 @@ void listlayoutstyle_impl::do_process_list_item_param
 						   (_("Cannot specify multiple "
 						      "callbacks for list "
 						      "items"));
-				   next_rowinfo.listitem_callback=&cb;
+				   next_rowinfo.listitem_callback=cb;
 			   },
 			   [&](const hierindent &i)
 			   {
@@ -403,6 +441,9 @@ void listlayoutstyle_impl::do_process_list_item_param
 			   [&](const separator &)
 			   {
 				   separator_callback();
+			   },
+			   [&](const new_items &)
+			   {
 			   }
 		   }, item);
 }

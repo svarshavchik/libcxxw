@@ -36,6 +36,7 @@
 #include <vector>
 #include <optional>
 #include <utility>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -69,8 +70,8 @@ typedef std::multiset<dim_t, std::greater<dim_t>> list_column_widths_t;
 struct list_row_info_t {
 
 	//! Constructor
-	list_row_info_t();
-
+	list_row_info_t(const std::tuple<extra_list_row_info,
+			textlist_rowinfo> &rowmeta);
 	//! Destructor
 	~list_row_info_t();
 
@@ -336,51 +337,25 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Add rows to the end.
 	void append_rows(ONLY IN_THREAD,
-			 const listlayoutmanager &ll,
-			 const std::vector<list_item_param> &items);
-
-	//! Add rows to the end.
-	void append_rows(ONLY IN_THREAD,
 			 const listlayoutmanager &lm,
-			 const std::vector<list_cell> &texts,
-			 const std::vector<textlist_rowinfo> &meta);
+			 new_cells_info &info);
 
 	//! Insert rows.
 	void insert_rows(ONLY IN_THREAD,
 			 const listlayoutmanager &ll,
 			 size_t row_number,
-			 const std::vector<list_item_param> &items);
-
-	//! Insert rows.
-	void insert_rows(ONLY IN_THREAD,
-			 const listlayoutmanager &ll,
-			 size_t row_number,
-			 const std::vector<list_cell> &texts,
-			 const std::vector<textlist_rowinfo> &meta);
+			 new_cells_info &info);
 
 	//! Replace rows.
 	void replace_rows(ONLY IN_THREAD,
 			  const listlayoutmanager &ll,
 			  size_t row_number,
-			  const std::vector<list_item_param> &items);
-
-	//! Replace rows.
-	void replace_rows(ONLY IN_THREAD,
-			  const listlayoutmanager &ll,
-			  size_t row_number,
-			  const std::vector<list_cell> &texts,
-			  const std::vector<textlist_rowinfo> &meta);
+			  new_cells_info &info);
 
 	//! Replace all rows.
 	void replace_all_rows(ONLY IN_THREAD,
 			      const listlayoutmanager &ll,
-			      const std::vector<list_item_param> &items);
-
-	//! Replace all rows.
-	void replace_all_rows(ONLY IN_THREAD,
-			      const listlayoutmanager &ll,
-			      const std::vector<list_cell> &texts,
-			      const std::vector<textlist_rowinfo> &meta);
+			      new_cells_info &info);
 
 	//! Resort rows.
 	void resort_rows(ONLY IN_THREAD,
@@ -607,6 +582,12 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Current list element (element under pointer, or tabbed to)
 	std::optional<size_t> current_element_under_lock;
 
+	//! What the current list element should be.
+
+	//! In cases where the current element is updated not IN_THREAD,
+	//! only this is set, and recalculate() will double-check this.
+	std::optional<size_t> should_be_current_element_under_lock;
+
 	//! Current list element that was navigated to via keyboard
 	std::optional<size_t> current_keyed_element_under_lock;
 
@@ -621,6 +602,20 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	}
 
 	//! This can be accessed only while holding the lock.
+	inline auto &should_be_current_element
+		(const listimpl_info_t::lock &lock)
+	{
+		return should_be_current_element_under_lock;
+	}
+
+	//! Check whether should_be_current_element() actually is.
+
+	//! If not, invoke current_element().
+	void should_be_current_element_actually_is(ONLY IN_THREAD,
+						   const listimpl_info_t::lock
+						   &lock);
+
+	//! This can be accessed only while holding the lock.
 	template<typename V>
 		inline void current_element(ONLY IN_THREAD,
 					    const listimpl_info_t::lock &lock,
@@ -629,7 +624,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	{
 		auto previous=current_element_under_lock;
 
-		current_element_under_lock=std::forward<V>(v);
+		should_be_current_element_under_lock=
+			current_element_under_lock=std::forward<V>(v);
 
 		report_new_current_element(IN_THREAD,
 					   lock,
@@ -657,8 +653,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			 const listlayoutmanager &ll,
 			 list_lock &lock,
 			 size_t row_number,
-			 const std::vector<list_cell> &texts,
-			 const std::vector<textlist_rowinfo> &meta);
+			 new_cells_info &info);
 
 	//! Remove the given rows.
 

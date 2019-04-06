@@ -45,7 +45,7 @@ file_menu->on_popup_state_update
              if (es.state_update != es.before_showing)
                  return;
 
-             ccp->update(IN_THREAD, 0);
+             ccp->update(IN_THREAD);
          });
 \endcode
 
@@ -58,14 +58,15 @@ operation is possible (there's an available selection). This is done by
 taking the return object and calling its update() method. update()
 enables or disables these menu items, accordingly.
 
-update()'s parameter is the starting index of the "Cut", "Copy", and "Paste"
-menu items. This makes it possible to add additional items to the same menu.
-The starting index is obviously 0, as in this example, if there's nothing
-else in the menu. This is, basically, what the list layout manager's
-size() reports before append_copy_cut_paste().
-
 The typical approach is to take the object that append_copy_paste() returns,
-and call its update() just before their menu becomes visible.
+and call its update() just before the menu becomes visible, using
+\ref menu "on_popup_state_update()".
+
+A \c copy_cut_paste_menu_items does maintain strong references to the
+created "Cut", "Copy", and "Paste" menu items, only weak references.
+The weak references follow these items in their menu, if other menu items
+get added or delete from the menu. update() does nothing
+if its menu items, or their entire menu, get removed.
 
 */
 

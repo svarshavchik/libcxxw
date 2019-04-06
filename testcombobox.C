@@ -225,7 +225,7 @@ void testcombobox(const testcombobox_options &options)
 							 'A'}
 				 })
 				 ->on_activate
-				 ([combobox, i=0](THREAD_CALLBACK,
+				 ([combobox, i=0](ONLY IN_THREAD,
 						  const auto &,
 						  const auto &)
 				  mutable
@@ -283,7 +283,7 @@ void testcombobox(const testcombobox_options &options)
 				 .create_button
 				 ({"Insert Separator"})
 				 ->on_activate
-				 ([combobox](THREAD_CALLBACK,
+				 ([combobox](ONLY IN_THREAD,
 					     const auto &,
 					     const auto &)
 				  {
@@ -309,6 +309,52 @@ void testcombobox(const testcombobox_options &options)
 						  combobox->get_layoutmanager();
 
 					  lm->enabled(0, !lm->enabled(0));
+				  });
+
+			 factory=layout->append_row();
+
+			 factory->halign(halign::center)
+				 .create_button
+				 ({"Replace First"})
+				 ->on_activate
+				 ([combobox](ONLY IN_THREAD,
+					     const auto &,
+					     const auto &)
+				  {
+					  standard_comboboxlayoutmanager lm=
+						  combobox->get_layoutmanager();
+
+					  if (lm->size() == 0)
+						  return;
+
+					  lm->replace_items(0,
+							    {"1st item"});
+				  });
+
+			 factory=layout->append_row();
+
+			 factory->halign(halign::center)
+				 .create_button
+				 ({"Replace All"})
+				 ->on_activate
+				 ([combobox](ONLY IN_THREAD,
+					     const auto &,
+					     const auto &)
+				  {
+					  standard_comboboxlayoutmanager lm=
+						  combobox->get_layoutmanager();
+
+					  lm->replace_all_items
+						  ({
+						    {"Lorem ipsum"},
+						    {"dolor sit"},
+						    {"ament"},
+						    {"consectetur"},
+						    {"adipisicing"},
+						    {"elid set"},
+						    {"do"},
+						    {"eiusmod tempor"},
+						  });
 				  });
 
 			 factory=layout->append_row();
