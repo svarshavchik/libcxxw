@@ -57,6 +57,7 @@ const_pictformat connectionObj::find_alpha_pictformat_by_depth(depth_t d) const
 }
 
 void connectionObj::in_thread(const functionref<void (THREAD_CALLBACK)> &cb)
+	const
 {
 	impl->thread->run_as([cb]
 			     (ONLY IN_THREAD)
@@ -67,6 +68,7 @@ void connectionObj::in_thread(const functionref<void (THREAD_CALLBACK)> &cb)
 
 void connectionObj::in_thread_idle(const functionref<void (THREAD_CALLBACK)>
 				   &cb)
+	const
 {
 	impl->thread->run_as([cb]
 			     (ONLY IN_THREAD)

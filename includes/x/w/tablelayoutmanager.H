@@ -87,8 +87,18 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 
 	//! Restore previously save()d columns widths.
 
+	//! The 2nd parameter is a unique identifier/label for this table.
+	//! All tables should have unique identifiers. This label also gets
+	//! used when save()ing window's position.
 	void restore(const const_screen_positions &,
 		     const std::string_view &) LIBCXX_PUBLIC;
+
+	//! Table's name
+
+	//! \internal
+	//!
+	//! The name that was passed to restore().
+	std::string name;
 
 	//! Restored widths.
 

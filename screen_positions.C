@@ -20,6 +20,11 @@ screen_positionsObj::screen_positionsObj(const std::string &filename)
 
 void screen_positionsObj::save(const std::string &filename) const
 {
+	// Make sure to wait for the connection thread to finish saving
+	// individual window data.
+
+	auto lock=impl->create_unique();
+
 	impl->save(filename);
 }
 

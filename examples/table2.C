@@ -107,7 +107,6 @@ auto create_process_table(const x::w::main_window &mw,
 	ntlm.maximum_table_width=500;
 
 	// Restore this table's prior column widths.
-
 	ntlm.restore(saved_positions, "main_table");
 
 	auto c=f->create_focusable_container
@@ -246,8 +245,6 @@ void testlist()
 	my_appdata appdata=main_window->appdata;
 
 	x::w::tablelayoutmanager tlm=appdata->main_table->get_layoutmanager();
-
-	tlm->save("main_table", pos);
 
 	pos->save(configfile);
 }

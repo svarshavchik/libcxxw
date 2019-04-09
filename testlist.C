@@ -963,11 +963,6 @@ void testlist(const testlistoptions &options)
 	{
 		main_window->save(pos);
 
-		LIBCXX_NAMESPACE::w::tablelayoutmanager tlm=
-			LIBCXX_NAMESPACE::w::focusable_container(main_window->appdata)
-			->get_layoutmanager();
-		tlm->save("list", pos);
-
 		pos->save(configfile);
 	}
 }

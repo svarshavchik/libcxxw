@@ -24,18 +24,26 @@ class LIBCXX_HIDDEN tablelayoutmanagerObj::implObj
 	//! The grid layout manager for the header row.
 	const ref<gridlayoutmanagerObj::implObj> header_layoutmanager_impl;
 
+	//! This table's name
+	const std::string name;
+
 	//! Constructor
 	implObj(const ref<listcontainer_pseudo_implObj> &container_impl,
 		const ref<gridlayoutmanagerObj::implObj
 		> &header_layoutmanager_impl,
 		const list_element &list_element_singleton,
-		const table_synchronized_axis &axis_impl);
+		const table_synchronized_axis &axis_impl,
+		const std::string &name);
 
 	//! Override create_public_object
 	layoutmanager create_public_object() override;
 
 	//! Destructor
 	~implObj();
+
+	//! Implement save().
+
+	void save(ONLY IN_THREAD, const screen_positions &pos) override;
 };
 
 LIBCXXW_NAMESPACE_END

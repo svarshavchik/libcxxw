@@ -508,14 +508,17 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 }
 
 
-void tablelayoutmanagerObj::save(const std::string &name,
-				 const const_screen_positions &pos) const
+void tablelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
+					  const screen_positions &pos)
 {
+	if (name.empty())
+		return;
+
 	auto writelock=pos->impl->create_writelock_for_saving("table", name);
 
 	table_synchronized_axisObj::dragged_scaled_axis_t::lock lock
 		{
-		 impl->axis_impl->dragged_scaled_axis
+		 axis_impl->dragged_scaled_axis
 		};
 
 	if (!*lock)
@@ -539,16 +542,18 @@ LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::new_tablelayoutmanager_restore,
 		    restore_log);
 
 void new_tablelayoutmanager::restore(const const_screen_positions &pos,
-				     const std::string_view &name)
+				     const std::string_view &name_arg)
 {
 	LOG_FUNC_SCOPE(restore_log);
+
+	name=name_arg;
 
 	auto lock=pos->impl->data->readlock();
 
 	if (!lock->get_root())
 	    return;
 
-	auto xpath=lock->get_xpath(saved_element_to_xpath("table", name));
+	auto xpath=lock->get_xpath(saved_element_to_xpath("table", name_arg));
 
 	if (xpath->count() != 1)
 		return;

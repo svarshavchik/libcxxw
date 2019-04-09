@@ -8,6 +8,7 @@
 #include "screen.H"
 #include "catch_exceptions.H"
 #include "messages.H"
+#include "x/w/dialog.H"
 #include <x/xml/doc.H>
 #include <x/exception.H>
 #include <x/logger.H>
@@ -25,7 +26,7 @@ preserve_screen_number_prop(LIBCXX_NAMESPACE_STR "::w::preserve_screen_number",
 			    true);
 
 screen_positionsObj::implObj::implObj()
-	 : data{xml::doc::create()}
+	: data{xml::doc::create()}
 {
 }
 
@@ -117,7 +118,24 @@ screen_positionsObj::implObj
 	return lock;
 }
 
-void main_windowObj::save(const const_screen_positions &pos) const
+void main_windowObj::save(const screen_positions &pos) const
+{
+	auto handler=impl->handler;
+
+	if (handler->window_id.empty())
+		throw EXCEPTION(_("Window label was not set."));
+
+	in_thread([me=const_ref{this},
+		   pos,
+		   lock=pos->impl->create_shared()]
+		  (ONLY IN_THREAD)
+		  {
+			  me->save(IN_THREAD, pos);
+		  });
+}
+
+void main_windowObj::save(ONLY IN_THREAD,
+			  const screen_positions &pos) const
 {
 	auto handler=impl->handler;
 
@@ -128,33 +146,63 @@ void main_windowObj::save(const const_screen_positions &pos) const
 
 	auto r=handler->current_position.get();
 
-	auto lock=pos->impl->create_writelock_for_saving("window",
-							 handler->window_id);
-
-	std::ostringstream x, y, width, height;
-
-	x << wx;
-	y << wy;
-	width << r.width;
-	height << r.height;
-
-	auto window=lock->create_child()->element({"x"})->text(x.str());
-	window=window->parent()->create_next_sibling()->element({"y"})
-		->create_child()->text(y.str());
-	window=window->parent()->create_next_sibling()
-		->element({"width"})->create_child()->text(width.str());
-	window->parent()->create_next_sibling()->element({"height"})
-		->create_child()->text(height.str());
-
-	if (preserve_screen_number_prop.get())
 	{
-		std::ostringstream screen_number;
+		auto lock=pos->impl
+			->create_writelock_for_saving("window",
+						      handler->window_id);
 
-		screen_number << get_screen()->impl->screen_number;
+		std::ostringstream x, y, width, height;
 
+		x << wx;
+		y << wy;
+		width << r.width;
+		height << r.height;
+
+		auto window=lock->create_child()->element({"x"})->text(x.str());
+		window=window->parent()->create_next_sibling()->element({"y"})
+			->create_child()->text(y.str());
 		window=window->parent()->create_next_sibling()
-			->element({"screen"})
-			->create_child()->text(screen_number.str());
+			->element({"width"})->create_child()->text(width.str());
+		window->parent()->create_next_sibling()->element({"height"})
+			->create_child()->text(height.str());
+
+		if (preserve_screen_number_prop.get())
+		{
+			std::ostringstream screen_number;
+
+			screen_number << get_screen()->impl->screen_number;
+
+			window=window->parent()->create_next_sibling()
+				->element({"screen"})
+				->create_child()->text(screen_number.str());
+		}
+	}
+
+	std::vector<dialog> all_dialogs;
+
+	{
+		implObj::all_dialogs_t::lock lock{impl->all_dialogs};
+
+		all_dialogs.reserve(lock->size());
+
+		for (const auto &dialogs:*lock)
+			all_dialogs.push_back(dialogs.second);
+	}
+
+	// Recursively invoke save() of all containers/elements in the window
+
+	handler->save(IN_THREAD, pos);
+
+	// Recursively save all dialog positions.
+
+	for (const auto &d:all_dialogs)
+	{
+		auto handler=d->dialog_window->impl->handler;
+
+		if (handler->window_id.empty())
+			continue;
+
+		d->dialog_window->save(IN_THREAD, pos);
 	}
 }
 

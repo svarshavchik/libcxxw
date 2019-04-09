@@ -322,11 +322,12 @@ public:
 
 	//! Invoke the callback in the execution thread.
 
-	void in_thread(const functionref<void (THREAD_CALLBACK)> &cb);
+	void in_thread(const functionref<void (THREAD_CALLBACK)> &cb) const;
 
 	//! Invoke the callback in the execution thread, after all other callbacks.
 
-	void in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb);
+	void in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb)
+		const;
 
 	//! Whether the current theme's default selection is available.
 

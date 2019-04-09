@@ -9,6 +9,8 @@
 #include "x/w/rectangle.H"
 
 #include <x/xml/doc.H>
+#include <x/sharedlock.H>
+
 #include <optional>
 #include <string_view>
 
@@ -16,7 +18,13 @@ LIBCXXW_NAMESPACE_START
 
 //! Internal implementation object.
 
-class screen_positionsObj::implObj : virtual public obj {
+//! Inherits from sharedlockObj.
+//!
+//! A non-IN_THREAD window save() acquires a shared lock before
+//! invoking the IN_THREAD version. A screen_positions save() acquires
+//! an unique lock.
+
+class screen_positionsObj::implObj : public sharedlockObj {
 
  public:
 

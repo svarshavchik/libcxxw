@@ -756,7 +756,7 @@ new_tablelayoutmanager::create(const container_impl &parent_container) const
 		make_function< ref<listlayoutmanagerObj::implObj>
 			       (const ref<listcontainer_pseudo_implObj> &,
 				const list_element &)>
-		([&]
+		([&, name=this->name]
 		 (const ref<listcontainer_pseudo_implObj> &container_impl,
 		  const list_element &list_element_singleton)
 		 {
@@ -764,7 +764,8 @@ new_tablelayoutmanager::create(const container_impl &parent_container) const
 				 ::create(container_impl,
 					  tci.gridlayoutmanager_impl,
 					  list_element_singleton,
-					  axis_impl);
+					  axis_impl,
+					  name);
 		 });
 
 	list_create_info lci{create_list_element_impl,

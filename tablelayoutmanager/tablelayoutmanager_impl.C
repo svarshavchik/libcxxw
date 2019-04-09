@@ -13,11 +13,13 @@ tablelayoutmanagerObj::implObj
 ::implObj(const ref<listcontainer_pseudo_implObj> &container_impl,
 	  const ref<gridlayoutmanagerObj::implObj> &header_layoutmanager_impl,
 	  const list_element &list_element_singleton,
-	  const table_synchronized_axis &axis_impl)
+	  const table_synchronized_axis &axis_impl,
+	  const std::string &name)
 	: listlayoutmanagerObj::implObj{container_impl,
 					list_element_singleton},
 	  axis_impl{axis_impl},
-	  header_layoutmanager_impl{header_layoutmanager_impl}
+	  header_layoutmanager_impl{header_layoutmanager_impl},
+	  name{name}
 {
 }
 

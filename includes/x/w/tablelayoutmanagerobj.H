@@ -41,11 +41,6 @@ public:
 	//! Return the element representing the column header;
 
 	element header(size_t column) const;
-
-	//! Save current adjusted size of the columns in the tables.
-
-	//! For adjustable tables, to be restored next time.
-	void save(const std::string &, const const_screen_positions &) const;
 };
 
 LIBCXXW_NAMESPACE_END

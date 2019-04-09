@@ -316,7 +316,17 @@ public:
 	//! identifier, if it exists.
 	//!
 	//! \see screen_positions
-	void save(const const_screen_positions &pos) const;
+
+	void save(ONLY IN_THREAD, const screen_positions &pos) const;
+
+	//! Save the main window's current position and size.
+
+	//! This overload sends a message to the connection thread to invoke
+	//! this main window's save() method, IN_THREAD.
+	//!
+	//! A callback that's executed IN_THREAD must use the IN_THREAD
+	//! overload, instead of this function.
+	void save(const screen_positions &pos) const;
 };
 
 LIBCXXW_NAMESPACE_END

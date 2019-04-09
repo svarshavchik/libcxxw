@@ -453,11 +453,13 @@ ref<elementObj::implObj> elementObj::get_minimum_override_element_impl()
 }
 
 void elementObj::in_thread(const functionref<void (THREAD_CALLBACK)> &cb)
+	const
 {
 	get_screen()->get_connection()->in_thread(cb);
 }
 
 void elementObj::in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb)
+	const
 {
 	get_screen()->get_connection()->in_thread_idle(cb);
 }
