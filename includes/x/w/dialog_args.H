@@ -60,10 +60,10 @@ struct standard_dialog_args {
 	void screen_position(dialog_position) LIBCXX_PUBLIC;
 
 	//! Restore the dialog's previous screen position.
-	void screen_position(const screen_positions &) LIBCXX_PUBLIC;
+	void screen_position(const const_screen_positions &) LIBCXX_PUBLIC;
 
 	//! Restore the dialog's previous screen position.
-	void screen_position(const screen_positions &,
+	void screen_position(const const_screen_positions &,
 			     const std::string_view &) LIBCXX_PUBLIC;
 };
 

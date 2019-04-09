@@ -87,7 +87,7 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 
 	//! Restore previously save()d columns widths.
 
-	void restore(const screen_positions &,
+	void restore(const const_screen_positions &,
 		     const std::string_view &) LIBCXX_PUBLIC;
 
 	//! Restored widths.

@@ -189,7 +189,7 @@ void container_elementObj<element_impl>
 //! Forward save() to the layout manager
 template<typename element_impl>
 void container_elementObj<element_impl>
-::save(ONLY IN_THREAD, screen_positions &pos)
+::save(ONLY IN_THREAD, const screen_positions &pos)
 {
 	containerObj::implObj::save(IN_THREAD, pos);
 	element_impl::save(IN_THREAD, pos);

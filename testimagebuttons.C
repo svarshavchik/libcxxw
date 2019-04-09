@@ -226,7 +226,7 @@ void testimagebuttons()
 	auto configfile=
 		LIBCXX_NAMESPACE::configdir("testimagebuttons@libcxx.com")
 		+ "/windows";
-	LIBCXX_NAMESPACE::w::screen_positions pos{configfile};
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
 
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
@@ -299,7 +299,7 @@ void testimagebuttons()
 	}
 #endif
 	main_window->save(pos);
-	pos.save(configfile);
+	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

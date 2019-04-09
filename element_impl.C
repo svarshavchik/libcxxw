@@ -1599,7 +1599,7 @@ void elementObj::implObj::update_attachedto_info(ONLY IN_THREAD)
 		 get_absolute_location_on_screen(IN_THREAD));
 }
 
-void elementObj::implObj::save(ONLY IN_THREAD, screen_positions &pos)
+void elementObj::implObj::save(ONLY IN_THREAD, const screen_positions &pos)
 {
 	for_each_child(IN_THREAD,
 		       [&]

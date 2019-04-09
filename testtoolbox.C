@@ -362,8 +362,8 @@ void testtoolbox(const testtoolboxoptions &options)
 
 	new_app my_app=create_app(options,
 				  options.norestore->value ?
-				  LIBCXX_NAMESPACE::w::screen_positions{} :
-				  LIBCXX_NAMESPACE::w::screen_positions{configfile});
+				  LIBCXX_NAMESPACE::w::screen_positions::create() :
+				  LIBCXX_NAMESPACE::w::screen_positions::create(configfile));
 
 	guard(my_app->main_window->connection_mcguffin());
 
@@ -442,12 +442,12 @@ void testtoolbox(const testtoolboxoptions &options)
 	{
 		lock.wait([&] { return *lock; });
 	}
-	LIBCXX_NAMESPACE::w::screen_positions pos;
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create();
 
 	my_app->main_window->save(pos);
 	my_app->toolbox_dialog->dialog_window->save(pos);
 
-	pos.save(configfile);
+	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

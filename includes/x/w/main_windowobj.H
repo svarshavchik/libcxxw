@@ -316,7 +316,7 @@ public:
 	//! identifier, if it exists.
 	//!
 	//! \see screen_positions
-	void save(screen_positions &pos) const;
+	void save(const const_screen_positions &pos) const;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -8,7 +8,7 @@
 #include <x/w/main_windowfwd.H>
 #include <x/w/main_windowobj.H>
 #include <x/w/main_window_appearancefwd.H>
-#include <x/w/screen_positionsfwd.H>
+#include <x/w/screen_positions.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/generic_window.H>
 #include <x/w/text_param.H>
@@ -44,13 +44,12 @@ public:
 
 	//! Specify optional position on the screen.
 
-	void screen_position(const screen_positions &,
+	void screen_position(const const_screen_positions &,
 			     const std::string_view &);
 
 	//! Loaded screen position.
 
-	std::optional<std::tuple<std::string,
-				 std::reference_wrapper<const screen_positions>>
+	std::optional<std::tuple<std::string, const_screen_positions>
 		      > saved_position;
 
 	//! Destructor

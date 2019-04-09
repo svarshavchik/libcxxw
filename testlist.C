@@ -918,7 +918,7 @@ void testlist(const testlistoptions &options)
 	auto configfile=
 		LIBCXX_NAMESPACE::configdir("testlist@libcxx.com") + "/windows";
 
-	LIBCXX_NAMESPACE::w::screen_positions pos{configfile};
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
 
 	auto default_screen=LIBCXX_NAMESPACE::w::screen::create();
 
@@ -968,7 +968,7 @@ void testlist(const testlistoptions &options)
 			->get_layoutmanager();
 		tlm->save("list", pos);
 
-		pos.save(configfile);
+		pos->save(configfile);
 	}
 }
 

@@ -207,8 +207,8 @@ void testlabel(const testwordwrappablelabel_options &options)
 
 	LIBCXX_NAMESPACE::w::screen_positions pos=
 		options.testmetrics->value ?
-		LIBCXX_NAMESPACE::w::screen_positions{}:
-	LIBCXX_NAMESPACE::w::screen_positions{configfile};
+		LIBCXX_NAMESPACE::w::screen_positions::create() :
+		LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
 
 	LIBCXX_NAMESPACE::w::main_window_config config;
 
@@ -288,7 +288,7 @@ void testlabel(const testwordwrappablelabel_options &options)
 	if (!options.testmetrics->value)
 	{
 		main_window->save(pos);
-		pos.save(configfile);
+		pos->save(configfile);
 	}
 }
 

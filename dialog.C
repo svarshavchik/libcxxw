@@ -7,7 +7,7 @@
 #include "x/w/element_state.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/container.H"
-#include "x/w/screen_positions.H"
+#include "screen_positions_impl.H"
 #include "main_window.H"
 #include "dialog_impl.H"
 #include "dialog_handler.H"
@@ -69,17 +69,17 @@ void standard_dialog_args::screen_position(dialog_position my_position)
 	position=my_position;
 }
 
-void standard_dialog_args::screen_position(const screen_positions &pos)
+void standard_dialog_args::screen_position(const const_screen_positions &pos)
 {
 	screen_position(pos, dialog_id);
 }
 
-void standard_dialog_args::screen_position(const screen_positions &pos,
+void standard_dialog_args::screen_position(const const_screen_positions &pos,
 					   const std::string_view &name)
 {
 	window_id=name;
 
-	auto window_pos=pos.find(window_id);
+	auto window_pos=pos->impl->find(window_id);
 
 	if (window_pos)
 		position=window_pos->coordinates;

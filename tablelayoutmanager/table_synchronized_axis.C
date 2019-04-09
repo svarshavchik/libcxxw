@@ -6,7 +6,7 @@
 #include "tablelayoutmanager/table_synchronized_axis.H"
 #include "tablelayoutmanager/tablelayoutmanager_impl.H"
 #include "calculate_borders.H"
-#include "x/w/screen_positions.H"
+#include "screen_positions_impl.H"
 #include "catch_exceptions.H"
 #include <x/exception.H>
 #include <algorithm>
@@ -509,9 +509,9 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 
 
 void tablelayoutmanagerObj::save(const std::string &name,
-				 screen_positions &pos) const
+				 const const_screen_positions &pos) const
 {
-	auto writelock=pos.create_writelock_for_saving("table", name);
+	auto writelock=pos->impl->create_writelock_for_saving("table", name);
 
 	table_synchronized_axisObj::dragged_scaled_axis_t::lock lock
 		{
@@ -538,12 +538,12 @@ void tablelayoutmanagerObj::save(const std::string &name,
 LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::new_tablelayoutmanager_restore,
 		    restore_log);
 
-void new_tablelayoutmanager::restore(const screen_positions &pos,
+void new_tablelayoutmanager::restore(const const_screen_positions &pos,
 				     const std::string_view &name)
 {
 	LOG_FUNC_SCOPE(restore_log);
 
-	auto lock=pos.data->readlock();
+	auto lock=pos->impl->data->readlock();
 
 	if (!lock->get_root())
 	    return;

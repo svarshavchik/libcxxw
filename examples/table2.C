@@ -179,7 +179,7 @@ void testlist()
 	auto configfile=
 		x::configdir("table2@examples.w.libcxx.com") + "/windows";
 
-	x::w::screen_positions pos{configfile};
+	auto pos=x::w::screen_positions::create(configfile);
 
 	x::w::main_window_config config;
 
@@ -249,7 +249,7 @@ void testlist()
 
 	tlm->save("main_table", pos);
 
-	pos.save(configfile);
+	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

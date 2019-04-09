@@ -404,7 +404,7 @@ void testtoolbox()
 		x::configdir("toolboxlayoutmanager@examples.w.libcxx.com")
 		+ "/windows";
 
-	new_app my_app=create_app(x::w::screen_positions{configfile});
+	new_app my_app=create_app(x::w::screen_positions::create(configfile));
 
 	guard(my_app->main_window->connection_mcguffin());
 
@@ -433,11 +433,11 @@ void testtoolbox()
 
 	lock.wait([&] { return *lock; });
 
-	x::w::screen_positions pos;
+	auto pos=x::w::screen_positions::create();
 
 	my_app->main_window->save(pos);
 	my_app->toolbox_dialog->dialog_window->save(pos);
-	pos.save(configfile);
+	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

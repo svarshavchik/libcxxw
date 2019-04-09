@@ -327,7 +327,7 @@ void testbook()
 	auto configfile=
 		LIBCXX_NAMESPACE::configdir("testbook@libcxx.com") + "/windows";
 
-	LIBCXX_NAMESPACE::w::screen_positions pos{configfile};
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
 
 	LIBCXX_NAMESPACE::w::main_window_config config;
 
@@ -361,7 +361,7 @@ void testbook()
 
 	lock.wait([&] { return *lock; });
 	mw->save(pos);
-	pos.save(configfile);
+	pos->save(configfile);
 
 }
 

@@ -11,7 +11,7 @@
 #include "batch_queue.H"
 #include "busy.H"
 #include "messages.H"
-#include "x/w/screen_positions.H"
+#include "screen_positions_impl.H"
 #include "x/w/picture.H"
 #include "x/w/screen.H"
 #include "x/w/gridlayoutmanager.H"
@@ -101,10 +101,10 @@ void main_windowObj::install_window_theme_icon(const std::vector<std::tuple
 	impl->handler->install_window_theme_icon(a);
 }
 
-void main_window_config::screen_position(const screen_positions &pos,
+void main_window_config::screen_position(const const_screen_positions &pos,
 					 const std::string_view &name)
 {
-	saved_position.emplace(name, std::ref(pos));
+	saved_position.emplace(name, pos);
 }
 
 main_window_config::main_window_config()
@@ -152,13 +152,13 @@ struct LIBCXX_HIDDEN screenObj::pos_info {
 
 	std::string name;
 
-	std::optional<screen_positions::window_info> info;
+	std::optional<screen_positionsObj::implObj::window_info> info;
 
 	pos_info() {}
 
-	pos_info(const screen_positions &pos,
+	pos_info(const const_screen_positions &pos,
 		 const std::string &name)
-		: name{name}, info{pos.find(name)}
+		: name{name}, info{pos->impl->find(name)}
 	{
 	}
 

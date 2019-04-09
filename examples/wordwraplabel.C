@@ -91,7 +91,7 @@ void wordwrap()
 	// main_windows. If the configuration file exists, the previously
 	// captured positions and sizes of main_windows get loaded. Nothing
 	// happens if the file does not exist.
-	x::w::screen_positions pos{configfile};
+	auto pos=x::w::screen_positions::create(configfile);
 
 	// It's possible to capture more than one main_window's position and
 	// size, and save it. Each main_window must have a unique label, that
@@ -195,7 +195,7 @@ void wordwrap()
 	// Finally, the screen_positions gets save()d into the configuration
 	// file, for next time:
 
-	pos.save(configfile);
+	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

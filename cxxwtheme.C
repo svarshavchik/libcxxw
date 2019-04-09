@@ -1356,7 +1356,8 @@ void cxxwtheme()
 {
 	w::preserve_screen_number(false);
 	auto configfile=configdir("cxxwtheme@w.libcxx.com")+"/windows";
-	w::screen_positions pos{configfile};
+
+	auto pos=w::screen_positions::create(configfile);
 
 	destroy_callback::base::guard guard;
 
@@ -1441,7 +1442,7 @@ void cxxwtheme()
 	lock.wait([&] { return *lock; });
 
 	main_window->save(pos);
-	pos.save(configfile);
+	pos->save(configfile);
 }
 
 class args_retObj : virtual public x::obj {

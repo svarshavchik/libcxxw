@@ -45,7 +45,7 @@ public:
 	//! Save current adjusted size of the columns in the tables.
 
 	//! For adjustable tables, to be restored next time.
-	void save(const std::string &, screen_positions &) const;
+	void save(const std::string &, const const_screen_positions &) const;
 };
 
 LIBCXXW_NAMESPACE_END

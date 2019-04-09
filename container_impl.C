@@ -465,7 +465,7 @@ void containerObj::implObj
 }
 
 void containerObj::implObj
-::save(ONLY IN_THREAD, screen_positions &pos)
+::save(ONLY IN_THREAD, const screen_positions &pos)
 {
 	invoke_layoutmanager([&]
 			     (const auto &manager)
