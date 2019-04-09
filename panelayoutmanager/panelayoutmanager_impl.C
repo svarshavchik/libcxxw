@@ -456,14 +456,14 @@ panelayoutmanagerObj::implObj::start_sliding(ONLY IN_THREAD,
 	// new reference sizes.
 	reference_size_set(grid_lock)=false;
 
-	auto ret=find_panes(grid_lock, which_slider);
+	auto ret=find_pane_peephole_containers(grid_lock, which_slider);
 
 	if (ret)
 	{
 		auto &[before, after] = *ret;
 
-		return { element_size(IN_THREAD, before->impl),
-			 element_size(IN_THREAD, after->impl) };
+		return { element_size(IN_THREAD, before->get_peephole()->impl),
+			 element_size(IN_THREAD, after->get_peephole()->impl) };
 	}
 
 	return {};
@@ -503,9 +503,9 @@ void panelayoutmanagerObj::implObj::slide_end(ONLY IN_THREAD,
 		reference_height, reference_height);
 }
 
-std::optional<std::tuple<element, element>>
-panelayoutmanagerObj::implObj::find_panes(grid_map_t::lock &grid_lock,
-					  const ref<elementObj::implObj> &s)
+std::optional<std::tuple<pane_peephole_container, pane_peephole_container>>
+panelayoutmanagerObj::implObj::find_pane_peephole_containers(grid_map_t::lock &grid_lock,
+							     const ref<elementObj::implObj> &s)
 {
 	std::optional<std::tuple<element, element>> ret;
 
@@ -527,8 +527,7 @@ panelayoutmanagerObj::implObj::find_panes(grid_map_t::lock &grid_lock,
 			pane_peephole_container below=
 				get_element(grid_lock, (*res)+1);
 
-			ret.emplace(above->get_peephole(),
-				    below->get_peephole());
+			ret.emplace(above, below);
 		}
 	}
 	return ret;
@@ -752,7 +751,7 @@ void panelayoutmanagerObj::implObj
 		dim_t ps=dim_t::truncate(nominator /
 					 total_reference_size);
 
-		resize_peephole_to(IN_THREAD, ppc->get_peephole(), ps);
+		resize_peephole_to(IN_THREAD, ppc, ps);
 
 		nominator = dim_t::truncate(nominator % total_reference_size);
 	}
@@ -879,9 +878,10 @@ dim_t panelayoutmanagerObj::implObj::orientation<vertical>
 
 template<>
 void panelayoutmanagerObj::implObj::orientation<vertical>
-::resize_peephole_to(ONLY IN_THREAD, const element &peephole, dim_t s)
+::resize_peephole_to(ONLY IN_THREAD, const pane_peephole_container &ppc,
+		     dim_t s)
 {
-	auto hv=peephole->impl->get_horizvert(IN_THREAD);
+	auto hv=ppc->get_peephole()->elementObj::impl->get_horizvert(IN_THREAD);
 
 	hv->set_element_metrics(IN_THREAD, hv->horiz, {s, s, s});
 }
@@ -901,7 +901,7 @@ void panelayoutmanagerObj::implObj::orientation<vertical>
 {
 	// Figure out how to resize the panes.
 
-	auto ret=find_panes(grid_lock, which_slider);
+	auto ret=find_pane_peephole_containers(grid_lock, which_slider);
 
 	if (!ret)
 		return;
@@ -1094,9 +1094,10 @@ dim_t panelayoutmanagerObj::implObj::orientation<horizontal>
 
 template<>
 void panelayoutmanagerObj::implObj::orientation<horizontal>
-::resize_peephole_to(ONLY IN_THREAD, const element &peephole, dim_t s)
+::resize_peephole_to(ONLY IN_THREAD, const pane_peephole_container &ppc,
+		     dim_t s)
 {
-	auto hv=peephole->impl->get_horizvert(IN_THREAD);
+	auto hv=ppc->get_peephole()->elementObj::impl->get_horizvert(IN_THREAD);
 
 	hv->set_element_metrics(IN_THREAD, {s, s, s}, hv->vert);
 }
@@ -1116,7 +1117,7 @@ void panelayoutmanagerObj::implObj::orientation<horizontal>
 {
 	// Figure out how to resize the panes.
 
-	auto ret=find_panes(grid_lock, which_slider);
+	auto ret=find_pane_peephole_containers(grid_lock, which_slider);
 
 	if (!ret)
 		return;

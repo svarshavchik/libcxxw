@@ -267,7 +267,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! sliding() and adjust_panes_for_current_size() pass in a peephole
 	//! and its designates size.
 	virtual void resize_peephole_to(ONLY IN_THREAD,
-					const element &peephole,
+					const pane_peephole_container &ppc,
 					dim_t s)=0;
 
 	//! Key up/left
@@ -324,9 +324,11 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	//! Given a slider element, find for me the two panes next to it.
 
-	std::optional<std::tuple<element, element>
-		      > find_panes(grid_map_t::lock &grid_lock,
-				   const ref<elementObj::implObj> &slider);
+	std::optional<std::tuple<pane_peephole_container,
+				 pane_peephole_container>
+		      > find_pane_peephole_containers
+		(grid_map_t::lock &grid_lock,
+		 const ref<elementObj::implObj> &slider);
 
 	//! Return the size of the pane, or slider.
 
@@ -505,7 +507,7 @@ class panelayoutmanagerObj::implObj::orientation
 
 	//! Implement resize_peephole_to().
 	void resize_peephole_to(ONLY IN_THREAD,
-				const element &peephole,
+				const pane_peephole_container &ppc,
 				dim_t s) override;
 
 	//! Implement border_overhead().
