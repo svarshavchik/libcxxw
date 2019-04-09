@@ -331,7 +331,7 @@ void testbook()
 
 	LIBCXX_NAMESPACE::w::main_window_config config;
 
-	config.screen_position(pos, "main");
+	config.restore(pos, "main");
 	auto mw=LIBCXX_NAMESPACE::w::main_window::create(config,
 							 []
 							 (const auto &mw)

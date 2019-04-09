@@ -214,16 +214,6 @@ public:
 					 const new_layoutmanager &factory)
 		LIBCXX_PUBLIC;
 
-	struct pos_info;
-
-	//! create_mainwindow() implementation.
-	main_window do_create_mainwindow(const pos_info &pos,
-					 const main_window_config_t &config,
-					 const function<main_window_creator_t>
-					 &f,
-					 const new_layoutmanager &factory)
-		LIBCXX_HIDDEN;
-
 	//! Shortcut to render data.
 
 	const_pictformat find_alpha_pictformat_by_depth(depth_t d) const;

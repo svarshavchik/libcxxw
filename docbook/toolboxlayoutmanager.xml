@@ -105,14 +105,14 @@ See COPYING for distribution information.
 	settings</link>.
 
       <link linkend="toolbox"><filename>toolboxlayoutmanager.C</filename></link>
-      uses an overloaded <methodname>screen_position</methodname>()
+      uses a <methodname>screen_position</methodname>()
       method to explicitly specify where the new dialog opens:
     </para>
 
     <blockquote>
       <informalexample>
 	<programlisting>
-args.screen_position(&ns;::w::dialog_position::on_the_left);</programlisting>
+args.restore(&ns;::w::dialog_position::on_the_left);</programlisting>
       </informalexample>
     </blockquote>
 
@@ -133,7 +133,7 @@ args.screen_position(&ns;::w::dialog_position::on_the_left);</programlisting>
     <blockquote>
       <informalexample>
 	<programlisting>
-args.screen_position(pos, "toolbox");</programlisting>
+args.restore(pos, "toolbox");</programlisting>
       </informalexample>
     </blockquote>
 
@@ -144,7 +144,7 @@ args.screen_position(pos, "toolbox");</programlisting>
       <link linkend="toolbox"><filename>toolboxlayoutmanager.C</filename></link>
       first sets the dialog to open next to the main window's left border,
       then attempts to restore its prior position. If there was no
-      previously saved position, the dialog's initial position on the
+      previously saved position, the dialog's default position on the
       left border remains in place.
     </para>
 

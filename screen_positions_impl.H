@@ -6,7 +6,7 @@
 #define screen_positions_impl_h
 
 #include "x/w/screen_positions.H"
-#include "x/w/rectangle.H"
+#include "x/w/main_window.H"
 
 #include <x/xml/doc.H>
 #include <x/sharedlock.H>
@@ -45,19 +45,11 @@ class screen_positionsObj::implObj : public sharedlockObj {
 	implObj(const std::string &filename);
 
 
-	//! Internal structure
-
-	//! \internal
-	struct LIBCXX_HIDDEN window_info {
-		xml::doc::base::readlock config;
-		std::optional<size_t> screen_number;
-		rectangle coordinates;
-	};
-
 	//! Find a memorized position.
 
 	//! \internal
-	std::optional<window_info> find(const std::string_view &identifier)
+	std::optional<main_window_config::window_info_t
+		      > find(const std::string_view &identifier)
 		const LIBCXX_HIDDEN;
 
 	//! Create a new node when saving something.

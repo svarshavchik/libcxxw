@@ -22,17 +22,19 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    The pane layout manager places the display elements
-    in its container in one vertical
+    The pane layout manager controls the display elements in its container
+    by placing them in one vertical
     column, or one horizontal row. Each display element becomes a
     <quote>pane</quote>. Draggable dividers separate the
     panes. The dividers look like
     thick dashed lines.
-    These dividers drag and slide in both directions. dragging
+    These dividers drag and slide in both directions. Dragging
     the dividing sliders visually adjusts the relative sizes of
     the panes on either
     side of the divider, accordingly. A pane on one side gets smaller,
-    and the other pane gets larger.
+    and the other pane gets larger. The panes effectively share the same
+    visual area, with dividers giving individual panes larger by borrowing
+    the visual real estate from neighboring panes.
   </para>
 
   <para>
@@ -132,7 +134,7 @@ f->appearance=f->appearance->modify
       The <varname>size</varname> sets the
       new element's initial size. This is just a suggestion, since the
       pane container, with all of its elements, always gets constrained by
-      its <link linkend="creatingpanes">specified size</link>.
+      its specified size.
     </para>
 
     <blockquote>
@@ -192,6 +194,9 @@ factory->create_focusable_container(
       manner, are just guidelines, or hints, and the actual size of each new
       element gets proportionately adjusted, together with the sizes of any
       existing panes, so that the entire container stays within its bounds.
+      It is also possible to <link linkend="preservepanesizes">preserve
+	the previous size of panes</link> when creating them the next time
+      the application runs.
     </para>
   </section>
 
@@ -551,6 +556,103 @@ pf->create_focusable_container([]
 	</listitem>
       </itemizedlist>
     </section>
+  </section>
+
+  <section id="preservepanesizes">
+    <title>Preserving and restoring pane sizes</title>
+
+    <para>
+      It is possible to preserve the sizes of the individual panes, and
+      restore their previous sizes the next time the application runs and
+      opens its window.
+      This is done as by preserving the entire window size and position
+      in the <classname>&ns;::w::screen_positions</classname> object and
+      then saving it, as described in
+      <xref linkend="screen_positions" />:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+auto pos=&ns;::w::screen_positions::create(configfile);
+
+&ns;::w::main_window_config config;
+
+config.restore(pos, "main");
+
+auto main_window=&ns;::w::main_window::create
+    (config,
+     [&amp;]
+     (const auto &amp;main_window)
+     {
+         // ...
+     });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The application's main window's previous position and screen size gets
+      <methodname>restore</methodname>()d first, if the configuration file
+      with previously-saved position and screen size exists.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::new_panelayoutmanager npl{{10,50,100}};
+
+npl.restore(pos, "main_pane");
+
+factory->create_focusable_container
+    ([&amp;]
+     (const auto &amp;pane_container)
+     {
+          &ns;::w::panelayoutmanager lm=pane_container->get_layoutmanager();
+
+          // Create panes here.
+
+     }, npl);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Each container that uses the pane layout manager
+      has a label. <filename>panelayoutmanager.C</filename>
+      labels its sole pane container with <quote>main_pane</quote>. All
+      pane containers' labels must be unique.
+      This label gets used to preserve the size of the container's panes.
+      <methodname>restore</methodname>() loads the panes sizes from the
+      configuration file, if they exist.
+    </para>
+
+    <note>
+      <para>
+	In order for the panes to get correctly restored to their original size,
+	the &creator; must create the same number of panes in the new
+	container.
+	<filename>panelayoutmanager.C</filename> is a demonstration program
+	that creates random panes for demonstration purposes only.
+	<filename>panelayoutmanager.C</filename> checks how many pane sizes
+	got <methodname>restore</methodname>(), and automatically creates
+	the same number of sample panes in its &creator;.
+      </para>
+    </note>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+main_window->save(pos);
+pos->save(configfile);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <filename>panelayoutmanager.C</filename> <methodname>save</methodname>()s
+      its window's position and size before it terminates. This automatically
+      saves the pane container's size as well, which gets
+      <methodname>restore</methodname>() the next time the program runs.
+      See <xref linkend="screen_positions" /> for more information.
+    </para>
   </section>
 </chapter>
 <!--

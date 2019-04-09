@@ -165,7 +165,7 @@ void testbusy()
 
 	LIBCXX_NAMESPACE::w::main_window_config config;
 
-	config.screen_position(pos, "main");
+	config.restore(pos, "main");
 	auto main_window=LIBCXX_NAMESPACE::w::screen::create()
 		->create_mainwindow
 		(config,

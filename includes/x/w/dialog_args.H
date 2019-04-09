@@ -32,8 +32,8 @@ struct standard_dialog_args {
 	//! Whether the new dialog is a modal dialog.
 	bool modal=false;
 
-	//! Window ID
-	std::string window_id;
+	//! Window name
+	std::string name;
 
 	//! Default dialog position
 	std::variant<dialog_position, rectangle> position=
@@ -57,14 +57,14 @@ struct standard_dialog_args {
 		generic_window_appearance::base::main_window_theme();
 
 	//! Default dialog position.
-	void screen_position(dialog_position) LIBCXX_PUBLIC;
+	void restore(dialog_position) LIBCXX_PUBLIC;
+
+	//! Default dialog position.
+	void restore(dialog_position, const std::string_view &) LIBCXX_PUBLIC;
 
 	//! Restore the dialog's previous screen position.
-	void screen_position(const const_screen_positions &) LIBCXX_PUBLIC;
-
-	//! Restore the dialog's previous screen position.
-	void screen_position(const const_screen_positions &,
-			     const std::string_view &) LIBCXX_PUBLIC;
+	void restore(const const_screen_positions &,
+		     const std::string_view &) LIBCXX_PUBLIC;
 };
 
 //! An additional parameter for create_dialog() and create_custom_dialog().

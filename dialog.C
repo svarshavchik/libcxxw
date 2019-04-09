@@ -64,22 +64,24 @@ void dialogObj::set_dialog_position(dialog_position pos)
 		 });
 }
 
-void standard_dialog_args::screen_position(dialog_position my_position)
+void standard_dialog_args::restore(dialog_position my_position,
+				   const std::string_view &name_arg)
+{
+	name=name_arg;
+	position=my_position;
+}
+
+void standard_dialog_args::restore(dialog_position my_position)
 {
 	position=my_position;
 }
 
-void standard_dialog_args::screen_position(const const_screen_positions &pos)
+void standard_dialog_args::restore(const const_screen_positions &pos,
+				   const std::string_view &name_arg)
 {
-	screen_position(pos, dialog_id);
-}
+	name=name_arg;
 
-void standard_dialog_args::screen_position(const const_screen_positions &pos,
-					   const std::string_view &name)
-{
-	window_id=name;
-
-	auto window_pos=pos->impl->find(window_id);
+	auto window_pos=pos->impl->find(name_arg);
 
 	if (window_pos)
 		position=window_pos->coordinates;
@@ -117,7 +119,7 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 	auto handler=ref<dialogObj::handlerObj>
 		::create(impl->handler,
 			 args.position,
-			 args.window_id,
+			 args.name,
 			 args.dialog_background,
 			 args.appearance,
 			 "dialog,normal",

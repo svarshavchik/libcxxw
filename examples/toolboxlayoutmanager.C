@@ -229,10 +229,10 @@ static void create_main_window(const x::w::main_window &mw,
 		args{"toolbox_dialog1@examples.w.libcxx.com"};
 
 	// Initial position of this dialog is to the left of the main window.
-	args.screen_position(x::w::dialog_position::on_the_left);
+	args.restore(x::w::dialog_position::on_the_left);
 
 	// But if we saved the previous dialog position, load it.
-	args.screen_position(pos, "toolbox");
+	args.restore(pos, "toolbox");
 
 	// The new dialog's layout manager is th etoolbox layout manager.
 	args.dialog_layout=dialog_lm;
@@ -374,7 +374,7 @@ new_app create_app(const x::w::screen_positions &pos)
 
 	x::w::main_window_config config;
 
-	config.screen_position(pos, "main");
+	config.restore(pos, "main");
 
 	auto main_window=x::w::main_window
 		::create(config,

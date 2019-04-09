@@ -228,21 +228,29 @@ ntlm.maximum_table_width=500;</programlisting>
       </para>
 
       <para>
-	<ulink url="examples/table.C">table2.C</ulink> shows what additional
+	<ulink url="examples/table2.C">table2.C</ulink> shows what additional
 	steps are necessary for taking care of this last detail:
       </para>
 
       <blockquote>
 	<informalexample>
 	  <programlisting>
+&ns;::w::new_tablelayoutmanager ntlm{
+                    // ...
+    };
+
+ntlm.restore(saved_positions, "main_table");
+
+f->create_focusable_container
+    ([&amp;]
+     (const &ns;::w::focusable_container &amp;)
+     {
+         // ...
+     }, ntlm);
+
+// ...
+
 main_window->save("main", pos);
-
-my_appdata appdata=main_window->appdata;
-
-&ns;::w::tablelayoutmanager tlm=appdata->main_table->get_layoutmanager();
-
-tlm->save("main_table", pos);
-
 pos.save(configfile);</programlisting>
 	</informalexample>
       </blockquote>
@@ -251,35 +259,18 @@ pos.save(configfile);</programlisting>
 	A necessary prerequisite for preserving table column widths is that
 	the table's main application window's size also gets preserved;
 	so <filename>table2.C</filename> <methodname>save</methodname>()s
-	its main window's size (and position), first, just like the
+	its main window's size (and position), just like the
 	<link linkend="wordwraplabel">word wrap label example</link>.
       </para>
 
       <para>
-	The table layout manager's <methodname>save</methodname>() takes the
-	table's column widths and puts it into the
-	<ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>
-	object together with the window's size and position, before
-	<classname>&ns;::w::screen_positions</classname>'s
-	<methodname>save</methodname>() saves all of its contents into the
-	application's configuration file.
-      </para>
-
-      <para>
-	It is necessary to use a unique identifier for
-	each table's (across all windows) saved information.
+	Each preserved table has a unique identifier.
 	<filename>table2.C</filename> calls its sole table, unimaginatively,
 	<quote>main_table</quote>.
       </para>
 
-      <blockquote>
-	<informalexample>
-	  <programlisting>
-ntlm.restore(saved_positions, "main_table");</programlisting>
-	</informalexample>
-      </blockquote>
-
       <para>
+	Before creating the pane container
 	<filename>table2.C</filename> reads the
 	<varname>saved_positions</varname> from its configuration file,
 	the next time it runs, and restores its main window's position and
@@ -287,11 +278,19 @@ ntlm.restore(saved_positions, "main_table");</programlisting>
 	Then
 	<classname>&ns;::w::new_tablelayoutmanager</classname>'s
 	<methodname>restore()</methodname> reads the saved column widths
-	called <quote>main_table</quote>, which coincidently references the
-	previous column widths of this new table.
+	called <quote>main_table</quote>. This has no effect if the
+	configuration does not have previously saved table column sizes,
+	otherwise they get restored.
 	If everything goes according to plan,
 	<filename>table2.C</filename>'s window and table reappear just as
 	it was the last time it ran.
+      </para>
+
+      <para>
+	When the main window <methodname>save</methodname>()s its
+	position and size, the table's then column widths get automatically
+	saved together with it, to be <methodname>restore</methodname>()d
+	the next time.
       </para>
     </section>
   </section>

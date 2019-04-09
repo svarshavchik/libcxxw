@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/config.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
@@ -19,6 +20,7 @@
 #include <x/w/button.H>
 #include <x/w/label.H>
 #include <x/w/standard_comboboxlayoutmanager.H>
+#include <x/w/screen_positions.H>
 #include <x/w/listlayoutmanager.H>
 #include <x/w/canvas.H>
 
@@ -65,7 +67,8 @@ get_scrollbar_visibility(const x::w::container &container)
 }
 
 static void create_main_window(const x::w::main_window &mw,
-			       const options &opts)
+			       const options &opts,
+			       const x::w::screen_positions &pos)
 {
 	// Create a container that uses the pane layout manager.
 	//
@@ -77,6 +80,10 @@ static void create_main_window(const x::w::main_window &mw,
 
 	x::w::new_panelayoutmanager npl{{10,50,100}};
 
+	// Restore the previous panes, if there were any.
+
+	npl.restore(pos, "main_pane");
+
 	if (opts.horizontal->value)
 		npl.horizontal();
 
@@ -86,12 +93,26 @@ static void create_main_window(const x::w::main_window &mw,
 	auto pane=factory->colspan(2)
 		.halign(x::w::halign::fill)
 		.create_focusable_container
-		([]
+		([&]
 		 (const auto &pane_container) {
 			 // Initially empty
 			 //
 			 // In most cases the panes are predetermined, and
 			 // they'll get initialized here.
+
+			 // For demonstration purposes, if there were any
+			 // previously-saved panes, we'll create the same
+			 // number of panes here.
+			 //
+			 // In order for restore() to work correctly, the
+			 // same number of panes that were saved must be
+			 // created in the new pane container's creator
+			 // lambda, so we do this here.
+
+			 for (size_t i=0; i<npl.restored_sizes.size(); ++i)
+				 append(pane_container,
+					x::w::scrollbar_visibility
+					::automatic_reserved);
 		}, npl);
 
 	pane->show();
@@ -564,11 +585,24 @@ void testpane(const options &opts)
 
 	auto close_flag=close_flag_ref::create();
 
+	// Restore previous window position and size.
+
+	auto configfile=
+		x::configdir("panelayoutmanager@examples.w.libcxx.com")
+		+ "/windows";
+
+	auto pos=x::w::screen_positions::create(configfile);
+
+	x::w::main_window_config config;
+
+	config.restore(pos, "main");
+
 	auto main_window=x::w::main_window
-		::create([&]
+		::create(config,
+			 [&]
 			 (const auto &mw)
 			 {
-				 create_main_window(mw, opts);
+				 create_main_window(mw, opts, pos);
 			 });
 
 	main_window->set_window_title("Panes!");
@@ -593,6 +627,11 @@ void testpane(const options &opts)
 
 	x::mpcobj<bool>::lock lock{close_flag->flag};
 	lock.wait([&] { return *lock; });
+
+	// Save window position and size.
+
+	main_window->save(pos);
+	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

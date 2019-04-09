@@ -207,14 +207,14 @@ void main_windowObj::save(ONLY IN_THREAD,
 }
 
 
-std::optional<screen_positionsObj::implObj::window_info>
+std::optional<main_window_config::window_info_t>
 screen_positionsObj::implObj::find(const std::string_view &window_name) const
 {
 	LOG_FUNC_SCOPE(load_log);
 
 	auto lock=data->readlock();
 
-	std::optional<window_info> info;
+	std::optional<main_window_config::window_info_t> info;
 
 	if (!lock->get_root())
 		return info;
@@ -229,7 +229,7 @@ screen_positionsObj::implObj::find(const std::string_view &window_name) const
 		xpath->to_node();
 
 		try {
-			info={lock};
+			info.emplace();
 
 			auto value=lock->clone();
 

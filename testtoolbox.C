@@ -211,8 +211,8 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 	LIBCXX_NAMESPACE::w::create_dialog_args
 		args{"toolbox_dialog1@examples.w.libcxx.com"};
 
-	args.screen_position(LIBCXX_NAMESPACE::w::dialog_position::on_the_left);
-	args.screen_position(pos, "toolbox");
+	args.restore(LIBCXX_NAMESPACE::w::dialog_position::on_the_left);
+	args.restore(pos, "toolbox");
 
 	args.dialog_layout=dialog_lm;
 	args.grab_input_focus=false;
@@ -332,7 +332,7 @@ new_app create_app(const testtoolboxoptions &options,
 
 	LIBCXX_NAMESPACE::w::main_window_config config;
 
-	config.screen_position(pos, "main");
+	config.restore(pos, "main");
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create(config,

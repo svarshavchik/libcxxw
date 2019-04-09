@@ -924,7 +924,7 @@ void testlist(const testlistoptions &options)
 
 	LIBCXX_NAMESPACE::w::main_window_config config;
 
-	config.screen_position(pos, "name");
+	config.restore(pos, "name");
 	auto main_window=default_screen->create_mainwindow
 		(config,
 		 [&]

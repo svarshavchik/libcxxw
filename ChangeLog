@@ -1,3 +1,14 @@
+2019-04-08  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* No longer necessary to explicitly save() adjustable table column
+	widths, so that they can be restored() the next time. They'll get
+	save()d automatically.
+
+	* Save and restore pane container sizes.
+
+	* Make saving and restoring of dialog positions consistent with
+	main windows' by renaming screen_position() to restore().
+
 0.20
 
 2019-03-31  Sam Varshavchik  <mrsam@courier-mta.com>

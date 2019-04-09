@@ -159,7 +159,7 @@ See COPYING for distribution information.
       <link linkend="wordwraplabel"><filename>wordwraplabel.C</filename></link>
       again
       should open its window in the same position where it was previously,
-      This stickiness needs some additional coding, and the actual behavior may
+      This stickiness needs some additional coding, and the actual behavior can
       vary depending upon the display screen's window manager, the ultimate
       judge where new windows open and how big they are.
     </para>
@@ -174,7 +174,7 @@ std::string configfile=
    &ns;::configdir("wordwraplabel@examples.w.libcxx.com")
 		+ "/windows";
 
-&ns;::w::screen_positions pos;
+&ns;::w::screen_positions pos=&ns;::w::screen_positions::create();
 
 // ...
 
@@ -188,16 +188,61 @@ pos->save(configfile);</programlisting>
       <methodname>save</methodname>() gets called before
       the program ends. This records the window's last known position on
       the screen in the
-      <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>.
+      <ulink url="&link-typedef-x--w-screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>.
+    </para>
+
+    <note>
+      <para>
+	It is possible to invoke <methodname>save</methodname>() from
+	a &callback;, directly in response to a <quote>Quit</quote> menu
+	option or in the window's <methodname>on_delete</methodname>() callback.
+	A callback must forward its <literal>IN_THREAD</literal> handle,
+	to an overloaded <methodname>save</methodname>() with an
+	<link linkend="callback_signatures"><literal>IN_THREAD</literal>
+	  signature</link>,
+	otherwise the thread will deadlock:
+      </para>
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+main_window->save(IN_THREAD, pos);
+pos->save(configfile);</programlisting>
+	</informalexample>
+      </blockquote>
+    </note>
+    <para>
+      <classname>&ns;::w::screen_positions</classname> object
+      records the window's position, together with
+      the sizes and properties of all adjustable
+      containers and display elements:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <link linkend="preservetablecolumnwidths">Tables with adjustable
+	    columns</link>
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <link linkend="preservepanesizes">Pane containers</link>
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
       More than one window's position may be recorded, and a unique label
-      associaties each position with its window. Each main window that gets
-      created by the application (if there's more than one) has a unique
+      identifies each window with a recorded position. Each main window
+      that gets
+      created by the application (if there's more than one) needs a unique
       identifying label which serves as the window's identifier.
-      The application may put more
-      than one
-      window's position in the container, by using a unique identifier for each
-      window.
-      <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>'s
+    </para>
+
+    <para>
+      After recording each window's positions,
+      <ulink url="&link-typedef-x--w-screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>'s
       <methodname>save</methodname>() saves all positions
       in a file.
       This example program uses &libcxx;'s base library's
@@ -210,11 +255,11 @@ pos->save(configfile);</programlisting>
     <blockquote>
       <informalexample>
 	<programlisting>
-&ns;::w::screen_positions pos{configfile};
+&ns;::w::screen_positions pos=&ns;::w::screen_positions::create(configfile);
 
 &ns;::w::main_window_config config;
 
-config.screen_position(pos, "main");
+config.restore(pos, "main");
 
 auto main_window=
     &ns;::w::main_window::create(config,
@@ -226,16 +271,19 @@ auto main_window=
     </blockquote>
 
     <para>
-      Reopening a window in the same position involves a three-step process:
+      Reopening a window in the same position is a three-step process:
     </para>
 
     <itemizedlist>
       <listitem>
 	<para>
-	  Passing a filename to
-	  <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>'s
-	  constructor
-	  reads the previously saved positions from the file, if the file exists.
+	  Specifying a filename when
+	  <methodname>create</methodname>() a new
+	  <ulink url="&link-typedef-x--w-screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>
+	  object.
+	  This
+	  reads the previously saved positions from the file, if the file
+	  exists.
 	</para>
       </listitem>
 
@@ -244,7 +292,7 @@ auto main_window=
 	  The <ulink url="&link-x--w--main-window-config;"><classname>&ns;::w::main_window_config</classname></ulink>
 	  objects is a helper object that sets optional main window settings.
 	  It gets constructed before the main window gets created, and
-	  its <methodname>screen_position</methodname>() method specifies
+	  its <methodname>restore</methodname>() method specifies
 	  and the application-assigned label for the new main window,
 	  and the loaded
 	  <classname>&ns;::w::screen_positions</classname> object.
@@ -260,6 +308,15 @@ auto main_window=
     </itemizedlist>
 
     <para>
+      If the window had any <methodname>save</methodname>()d containers
+      or display elements
+      they have to be individually restored, as they get constructed by
+      the &creator;. All memorizable containers and display elements
+      get automatically <methodname>save</methodname>()d together with
+      their main window; but they need individual restoration.
+    </para>
+
+    <para>
       The named window's position that was saved the last time
       <filename>wordwraplabel</filename> ran, that same position and size
       gets set for the new window. The same label gets used to
@@ -269,7 +326,7 @@ auto main_window=
 
     <note>
       <para>
-	It's possible that application windows will open in their last known
+	It's possible that application windows still open in their last known
 	position even without explicitly saving them this way. Some
 	window managers try to remember application windows, and open them
 	in the same location. It's also possible that an application's
@@ -278,26 +335,6 @@ auto main_window=
 	on the screen.
       </para>
     </note>
-
-    <note>
-      <para>
-	The <classname>&ns;::w::screen_position</classname> object, after
-	it's passed to <methodname>screen_position</methodname>() must remain
-	in scope and not get destroyed until the main window gets created.
-	Typically the object sticks around until the main window gets closed,
-	and the main window's then-current position and size gets recorded
-	and saved using the same
-	<classname>&ns;::w::screen_position</classname> object.
-      </para>
-    </note>
-
-    <para>
-      Some display elements also use a
-      <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>
-      to save and restore their appearance.
-      See <xref linkend="preservetablecolumnwidths" />
-      for an example.
-    </para>
   </section>
 
   <section id="appearance">

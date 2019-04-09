@@ -118,7 +118,7 @@ void wordwrap()
 	// remain in scope and not get destroyed until the main window's
 	// constructor returns.
 
-	config.screen_position(pos, "main");
+	config.restore(pos, "main");
 
 	// Obtain main window's appearance
 

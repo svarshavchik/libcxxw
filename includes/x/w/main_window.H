@@ -17,6 +17,7 @@
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/rgb.H>
+#include "x/w/rectangle.H"
 #include <x/functional.H>
 #include <x/functionalrefptrfwd.H>
 #include <functional>
@@ -44,13 +45,20 @@ public:
 
 	//! Specify optional position on the screen.
 
-	void screen_position(const const_screen_positions &,
-			     const std::string_view &);
+	void restore(const const_screen_positions &,
+		     const std::string_view &) LIBCXX_PUBLIC;
 
-	//! Loaded screen position.
+	//! The name that was passed to restore().
+	std::string name;
 
-	std::optional<std::tuple<std::string, const_screen_positions>
-		      > saved_position;
+	//! Restored window position.
+	struct window_info_t {
+		std::optional<size_t> screen_number;
+		rectangle coordinates;
+	};
+
+	//! Successfully restore()d position.
+	std::optional<window_info_t> window_info;
 
 	//! Destructor
 	~main_window_config();

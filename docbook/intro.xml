@@ -106,9 +106,9 @@ See COPYING for distribution information.
 	improvements and enhancements ongoing, and it's source
 	<link linkend="INSTALL">is available for downloading</link>.
 	The most recent build of &app; implements the ability to
-	customize the default theme-specified
-	<link linkend="appearance">visual appearance</link> of
-	various display elements.
+	automatically <link linkend="screen_positions">preserve the
+	  size and appearance of user-adjustable display elements</link>
+	and restore them the next time the application runs.
       </para>
     </section>
   </section>
