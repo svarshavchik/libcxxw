@@ -538,14 +538,9 @@ void tablelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
 	}
 }
 
-LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::new_tablelayoutmanager_restore,
-		    restore_log);
-
 void new_tablelayoutmanager::restore(const const_screen_positions &pos,
 				     const std::string_view &name_arg)
 {
-	LOG_FUNC_SCOPE(restore_log);
-
 	name=name_arg;
 
 	auto lock=pos->impl->data->readlock();
@@ -567,31 +562,28 @@ void new_tablelayoutmanager::restore(const const_screen_positions &pos,
 	restored_widths.reserve(n);
 
 	try {
-		try {
-			for (size_t i=1; i <= n; ++i)
-			{
-				xpath->to_node(i);
-
-				std::istringstream w{lock->get_text()};
-
-				dim_t n;
-
-				if (!(w >> n))
-					throw EXCEPTION("Invalid saved value.");
-
-				restored_widths.push_back(n);
-			}
-			return;
-		} catch (const exception &e)
+		for (size_t i=1; i <= n; ++i)
 		{
-			std::stringstream o;
+			xpath->to_node(i);
 
-			o << "Error restoring table \""
-			  << name << "\": " << e;
+			std::istringstream w{lock->get_text()};
 
-			throw EXCEPTION(e);
+			dim_t n;
+
+			if (!(w >> n))
+				throw EXCEPTION("Invalid saved value.");
+
+			restored_widths.push_back(n);
 		}
-	} CATCH_EXCEPTIONS;
+		return;
+	} catch (const exception &e)
+	{
+		auto ee=EXCEPTION( "Error restoring table \""
+				   << name << "\": " << e );
+
+		ee->log();
+	}
+
 
 	restored_widths.clear();
 }

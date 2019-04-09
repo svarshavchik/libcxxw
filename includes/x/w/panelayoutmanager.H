@@ -13,6 +13,7 @@
 #include <x/w/grid_map_infofwd.H>
 #include <x/w/dim_axis_arg.H>
 #include <x/w/pane_layout_appearancefwd.H>
+#include <x/w/screen_positionsfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -60,6 +61,29 @@ public:
 
 	//! Default appearance.
 	const_pane_layout_appearance appearance;
+
+	//! Restore previously save()d pane sizes
+
+	//! The 2nd parameter is a unique identifier/label for this pane
+	//! containers. All pane container should have unique identifiers.
+	//! This label also gets used when save()ing window's position.
+
+	void restore(const const_screen_positions &,
+		     const std::string_view &) LIBCXX_PUBLIC;
+
+	//! Pane's name
+
+	//! \internal
+	//!
+	//! The name that was passed to restore().
+	std::string name;
+
+	//! Restored pane sizes
+
+	//! \internal
+	//!
+	//! Use restore() to populate this.
+	std::vector<dim_t> restored_sizes;
 
 	//! Create a container with the pane layout manager.
 

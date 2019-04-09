@@ -6,6 +6,7 @@
 #include "panelayoutmanager/panelayoutmanager_impl.H"
 #include "panelayoutmanager/panecontainer_impl.H"
 #include "panelayoutmanager/panefactory_impl.H"
+#include "screen_positions_impl.H"
 #include "x/w/focusable_container.H"
 #include "x/w/panefactory.H"
 #include "x/w/pane_layout_appearance.H"
@@ -34,7 +35,12 @@ elementptr panelayoutmanagerObj::get(size_t n) const
 	return impl->get_pane_element(grid_lock, n);
 }
 
-class LIBCXX_HIDDEN append_panefactoryObj : public panefactory_implObj {
+namespace {
+#if 0
+}
+#endif
+
+class append_panefactoryObj : public panefactory_implObj {
 
  public:
 
@@ -50,6 +56,10 @@ class LIBCXX_HIDDEN append_panefactoryObj : public panefactory_implObj {
 
 	~append_panefactoryObj()=default;
 };
+#if 0
+{
+#endif
+}
 
 panefactory panelayoutmanagerObj::append_panes()
 {
@@ -61,7 +71,12 @@ void panelayoutmanagerObj::remove_pane(size_t pane_number)
 	impl->remove_pane(ref{this}, pane_number, grid_lock);
 }
 
-class LIBCXX_HIDDEN insert_panefactoryObj : public panefactory_implObj {
+namespace {
+#if 0
+}
+#endif
+
+class insert_panefactoryObj : public panefactory_implObj {
 
  public:
 
@@ -80,13 +95,22 @@ class LIBCXX_HIDDEN insert_panefactoryObj : public panefactory_implObj {
 
 	~insert_panefactoryObj()=default;
 };
+#if 0
+{
+#endif
+}
 
 panefactory panelayoutmanagerObj::insert_panes(size_t position)
 {
 	return ref<insert_panefactoryObj>::create(ref(this), position);
 }
 
-class LIBCXX_HIDDEN replace_panefactoryObj : public panefactory_implObj {
+namespace {
+#if 0
+}
+#endif
+
+class replace_panefactoryObj : public panefactory_implObj {
 
  public:
 
@@ -111,7 +135,10 @@ class LIBCXX_HIDDEN replace_panefactoryObj : public panefactory_implObj {
 
 	~replace_panefactoryObj()=default;
 };
-
+#if 0
+{
+#endif
+}
 panefactory panelayoutmanagerObj::replace_panes(size_t position)
 {
 	return ref<replace_panefactoryObj>::create(ref(this), position);
@@ -147,7 +174,7 @@ namespace {
 }
 #endif
 
-class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
+class panecontainerObj : public focusable_containerObj {
 
  public:
 
@@ -215,7 +242,7 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 
 //! The vertical pane container's height is specified by explicit dimensions.
 
-class LIBCXX_HIDDEN vertical_adjusted_panecontainer_implObj
+class vertical_adjusted_panecontainer_implObj
 	: public themedim_axis_heightObj<panecontainer_implObj> {
 
 	typedef themedim_axis_heightObj<panecontainer_implObj> superclass_t;
@@ -226,7 +253,7 @@ class LIBCXX_HIDDEN vertical_adjusted_panecontainer_implObj
 		(const container_impl &parent,
 		 const dim_axis_arg &axis,
 		 const child_element_init_params &init_params)
-		: superclass_t{axis, parent, init_params}
+			: superclass_t{axis, parent, init_params}
 	{
 	}
 
@@ -263,7 +290,7 @@ class LIBCXX_HIDDEN vertical_adjusted_panecontainer_implObj
 
 //! The horizontal pane container's width is specified by explicit dimensions.
 
-class LIBCXX_HIDDEN horizontal_adjusted_panecontainer_implObj
+class horizontal_adjusted_panecontainer_implObj
 	: public themedim_axis_widthObj<panecontainer_implObj> {
 
 	typedef themedim_axis_widthObj<panecontainer_implObj> superclass_t;
@@ -274,7 +301,7 @@ class LIBCXX_HIDDEN horizontal_adjusted_panecontainer_implObj
 		(const container_impl &parent,
 		 const dim_axis_arg &axis,
 		 const child_element_init_params &init_params)
-		: superclass_t{axis, parent, init_params}
+			: superclass_t{axis, parent, init_params}
 	{
 	}
 
@@ -329,6 +356,55 @@ new_panelayoutmanager::new_panelayoutmanager(const new_panelayoutmanager &)
 new_panelayoutmanager &new_panelayoutmanager
 ::operator=(const new_panelayoutmanager &)=default;
 
+void new_panelayoutmanager::restore(const const_screen_positions &pos,
+				    const std::string_view &name_arg)
+{
+	name=name_arg;
+
+	auto lock=pos->impl->data->readlock();
+
+	if (!lock->get_root())
+	    return;
+
+	auto xpath=lock->get_xpath(saved_element_to_xpath("pane", name_arg));
+
+	if (xpath->count() != 1)
+		return;
+	xpath->to_node();
+
+	xpath=lock->get_xpath("size");
+
+	size_t n=xpath->count();
+
+	restored_sizes.clear();
+	restored_sizes.reserve(n);
+
+	try {
+		for (size_t i=1; i <= n; ++i)
+		{
+			xpath->to_node(i);
+
+			std::istringstream w{lock->get_text()};
+
+			dim_t n;
+
+			if (!(w >> n))
+				throw EXCEPTION("Invalid saved value.");
+
+			restored_sizes.push_back(n);
+		}
+		return;
+	} catch (const exception &e)
+	{
+		auto ee=EXCEPTION( "Error restoring pane \""
+				   << name << "\": " << e );
+
+		ee->log();
+	}
+
+	restored_sizes.clear();
+}
+
 // For optimal results, precompute the initial metrics of the pane container,
 // and construct it.
 
@@ -370,11 +446,13 @@ new_panelayoutmanager::create(const container_impl &parent)
 			ref<panelayoutmanagerObj::implObj>{
 			ref<panelayoutmanagerObj::implObj::orientation
 			<panelayoutmanagerObj::implObj::vertical>>
-			::create(impl, appearance)}
+			::create(impl, appearance, name,
+				 restored_sizes)}
 		: ref<panelayoutmanagerObj::implObj>{
 			ref<panelayoutmanagerObj::implObj::orientation
 			    <panelayoutmanagerObj::implObj::horizontal>>
-				::create(impl, appearance)}
+			::create(impl, appearance, name,
+				 restored_sizes)}
 	};
 
 	auto c=ref<panecontainerObj>::create(impl, lm_impl);

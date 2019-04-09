@@ -9,7 +9,9 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/config.H>
 #include "x/w/main_window.H"
+#include "x/w/screen_positions.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/focusable_container.H"
@@ -48,8 +50,23 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
-static void create_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager &lm)
+static void create_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager &lm,
+			const LIBCXX_NAMESPACE::w::new_panelayoutmanager &nplm)
 {
+	LIBCXX_NAMESPACE::w::panefactory f=lm->append_panes();
+
+	for (size_t i=0; i<nplm.restored_sizes.size(); ++i)
+	{
+		f->create_label("Lorem ipsum "
+				"dolor sit amet\n"
+				"consectetur "
+				"adipisicing elit sed\n"
+				"do eiusmod "
+				"tempor incididunt ut\n"
+				"labore et "
+				"dolore magna\n"
+				"aliqua")->show();
+	}
 }
 
 static void insert(const LIBCXX_NAMESPACE::w::container &c,
@@ -225,10 +242,13 @@ get_scrollbar_visibility(const LIBCXX_NAMESPACE::w::container &container)
 }
 
 static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
-			       const testpaneoptions &options)
+			       const testpaneoptions &options,
+			       const LIBCXX_NAMESPACE::w::screen_positions
+			       &pos)
 {
 	LIBCXX_NAMESPACE::w::new_panelayoutmanager npl{{20, 100, 200}};
 
+	npl.restore(pos, "main");
 	if (options.horizontal->value)
 		npl.horizontal();
 
@@ -236,9 +256,9 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 	auto factory=layout->append_row();
 
 	auto pane=factory->colspan(2).create_focusable_container
-		([]
+		([&]
 		 (const auto &pane_container) {
-			create_pane(pane_container->get_layoutmanager());
+			 create_pane(pane_container->get_layoutmanager(), npl);
 		}, npl);
 
 	pane->show();
@@ -488,9 +508,13 @@ void initialize_adjustable_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager
 }
 
 static void create_adjustable_pane(const LIBCXX_NAMESPACE::w::main_window &mw,
-				   const testpaneoptions &options)
+				   const testpaneoptions &options,
+				   const LIBCXX_NAMESPACE::w::screen_positions
+				   &pos)
 {
 	LIBCXX_NAMESPACE::w::new_panelayoutmanager npl{{0, 100}};
+
+	npl.restore(pos, "main");
 
 	if (options.horizontal->value)
 		npl.horizontal();
@@ -499,10 +523,12 @@ static void create_adjustable_pane(const LIBCXX_NAMESPACE::w::main_window &mw,
 	auto factory=layout->append_row();
 
 	auto pane=factory->create_focusable_container
-		([]
+		([&]
 		 (const auto &pane_container) {
-			 initialize_adjustable_pane
-				 (pane_container->get_layoutmanager());
+			 auto lm=pane_container->get_layoutmanager();
+
+			 create_pane(lm, npl);
+			 initialize_adjustable_pane(lm);
 		 }, npl);
 
 	pane->show();
@@ -514,16 +540,28 @@ void testpane(const testpaneoptions &options)
 
 	auto close_flag=close_flag_ref::create();
 
+	auto configfile=
+		LIBCXX_NAMESPACE::configdir("testpane@libcxx.com") + "/windows";
+
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
+
+	LIBCXX_NAMESPACE::w::main_window_config config;
+
+	config.screen_position(pos, "main");
+
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([&]
+		::create(config,
+			 [&]
 			 (const auto &mw)
 			 {
 				 if (options.adjustable->value)
 				 {
-					 create_adjustable_pane(mw, options);
+					 create_adjustable_pane(mw, options,
+								pos);
 				 }
 				 else
-					 create_main_window(mw, options);
+					 create_main_window(mw, options,
+							    pos);
 			 });
 
 	main_window->set_window_title("Panes!");
@@ -548,6 +586,9 @@ void testpane(const testpaneoptions &options)
 
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 	lock.wait([&] { return *lock; });
+
+	main_window->save(pos);
+	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

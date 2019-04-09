@@ -104,6 +104,14 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	const const_pane_layout_appearance appearance;
 
+	//! This pane's name
+	const std::string name;
+
+ private:
+	std::vector<dim_t> restored_sizes_thread_only;
+ public:
+	THREAD_DATA_ONLY(restored_sizes);
+
 	class horizontal;
 	class vertical;
 
@@ -116,7 +124,9 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	//! Constructor
 	implObj(const ref<panecontainer_implObj> &pane_container_impl,
-		const const_pane_layout_appearance &appearance);
+		const const_pane_layout_appearance &appearance,
+		const std::string &name,
+		const std::vector<dim_t> &restored_sizes);
 
 	//! Destructor
 	~implObj();
@@ -365,6 +375,9 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 				       const rectangle &position,
 				       grid_map_t::lock &grid_lock) override;
 
+	//! Implement save()
+
+	void save(ONLY IN_THREAD, const screen_positions &) override;
  private:
 
 	//! Recalculate the size of each individual pane.

@@ -13,6 +13,7 @@
 #include "x/w/impl/focus/standard_focusframecontainer_element.H"
 #include "x/w/impl/current_border_impl.H"
 #include "screen.H"
+#include "screen_positions_impl.H"
 #include "straight_border_impl.H"
 #include "generic_window_handler.H"
 #include "icon.H"
@@ -36,10 +37,13 @@ LIBCXXW_NAMESPACE_START
 panelayoutmanagerObj::implObj::implObj(const ref<panecontainer_implObj>
 				       &pane_container_impl,
 				       const const_pane_layout_appearance
-				       &appearance)
+				       &appearance,
+				       const std::string &name,
+				       const std::vector<dim_t> &restored_sizes)
 	: gridlayoutmanagerObj::implObj{pane_container_impl, {}},
 	  pane_container_impl{pane_container_impl},
-	  appearance{appearance}
+	  appearance{appearance}, name{name},
+	  restored_sizes_thread_only{restored_sizes}
 {
 }
 
@@ -649,6 +653,30 @@ void panelayoutmanagerObj::implObj
 	    reference_size_is_set_now)
 		return;
 
+	// If we restored previous pane sizes, we'll install them as
+	// existing reference sizes.
+	if (!name.empty())
+	{
+		size_t n=size(grid_lock);
+
+		if (n > 0)
+		{
+			if (n == restored_sizes(IN_THREAD).size())
+			{
+				for (size_t i=0; i<n; ++i)
+				{
+					pane_peephole_container pp=
+						get_element(grid_lock, i*2);
+
+					pp->reference_size(IN_THREAD)=
+						restored_sizes(IN_THREAD)[i];
+				}
+			}
+			reference_size_is_set_now=true;
+			restored_sizes(IN_THREAD).clear();
+		}
+	}
+
 	std::vector<pane_peephole_container> pane_peephole_containers;
 	dim_squared_t fixed_overhead{0};
 
@@ -756,6 +784,31 @@ void panelayoutmanagerObj::implObj
 		nominator = dim_t::truncate(nominator % total_reference_size);
 	}
 	most_recent_pane_size=pane_size;
+}
+
+void panelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
+					 const screen_positions &pos)
+{
+	if (name.empty())
+		return;
+
+	grid_map_t::lock grid_lock{grid_map};
+
+	auto writelock=pos->impl->create_writelock_for_saving("pane", name);
+
+	size_t s=size(grid_lock);
+
+	for (size_t i=0; i<s; ++i)
+	{
+		pane_peephole_container container=get_element(grid_lock, i*2);
+
+		std::ostringstream o;
+
+		o << container->peephole_size.get();
+
+		writelock->create_child()->element({"size"})->text(o.str())
+			->parent()->parent();
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -884,6 +937,7 @@ void panelayoutmanagerObj::implObj::orientation<vertical>
 	auto hv=ppc->get_peephole()->elementObj::impl->get_horizvert(IN_THREAD);
 
 	hv->set_element_metrics(IN_THREAD, hv->horiz, {s, s, s});
+	ppc->peephole_size=s;
 }
 
 template<>
@@ -1100,6 +1154,7 @@ void panelayoutmanagerObj::implObj::orientation<horizontal>
 	auto hv=ppc->get_peephole()->elementObj::impl->get_horizvert(IN_THREAD);
 
 	hv->set_element_metrics(IN_THREAD, {s, s, s}, hv->vert);
+	ppc->peephole_size=s;
 }
 
 template<>

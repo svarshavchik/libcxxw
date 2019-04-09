@@ -64,6 +64,12 @@ public:
 	//! The focusable object in this pane, if it's a focusable object.
 
 	mutable mpobj<focusableptr> focusable_element;
+
+	//! Most recently set peephole size.
+
+	//! Peephole gets resized IN_THREAD. This gets saved here, so that
+	//! the current pane metrics can be saved and restore.
+	mpobj<dim_t> peephole_size;
 };
 
 LIBCXXW_NAMESPACE_END
