@@ -223,6 +223,11 @@ class layoutmanagerObj::implObj : virtual public obj {
 
 	//! Convenient shortcut
 	void run_as(const functionref<void (ONLY IN_THREAD)> &f);
+
+	//! Save this container's current state, if supported.
+
+	//! The default implementation does nothing.
+	virtual void save(ONLY IN_THREAD, screen_positions &);
 };
 
 LIBCXXW_NAMESPACE_END

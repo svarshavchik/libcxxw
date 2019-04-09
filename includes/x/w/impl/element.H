@@ -43,6 +43,7 @@
 #include <x/w/key_eventfwd.H>
 #include <x/w/fontfwd.H>
 #include <x/w/tooltipfwd.H>
+#include <x/w/screen_positionsfwd.H>
 #include <x/obj.H>
 #include <x/logger.H>
 #include <x/functional.H>
@@ -1564,6 +1565,11 @@ class elementObj::implObj : public element_drawObj,
 	//! absolute_location_updated() in order to keep the attached popup
 	//! positioned accordingly.
 	void update_attachedto_info(ONLY IN_THREAD);
+
+	//! Save the element's status
+
+	//! The default implementation forwards this call for_each_child().
+	virtual void save(ONLY IN_THREAD, screen_positions &);
 };
 
 LIBCXXW_NAMESPACE_END

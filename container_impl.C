@@ -464,4 +464,14 @@ void containerObj::implObj
 				});
 }
 
+void containerObj::implObj
+::save(ONLY IN_THREAD, screen_positions &pos)
+{
+	invoke_layoutmanager([&]
+			     (const auto &manager)
+			     {
+				     manager->save(IN_THREAD, pos);
+			     });
+}
+
 LIBCXXW_NAMESPACE_END

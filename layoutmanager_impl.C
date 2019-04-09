@@ -158,4 +158,8 @@ void layoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 		 });
 }
 
+void layoutmanagerObj::implObj::save(ONLY IN_THREAD, screen_positions &pos)
+{
+}
+
 LIBCXXW_NAMESPACE_END

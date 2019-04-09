@@ -509,7 +509,7 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 
 
 void tablelayoutmanagerObj::save(const std::string &name,
-				 screen_positions &pos)
+				 screen_positions &pos) const
 {
 	auto writelock=pos.create_writelock_for_saving("table", name);
 

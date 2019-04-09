@@ -11,6 +11,7 @@
 #include <x/w/rectangle.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/defaultthemefwd.H>
+#include <x/w/screen_positionsfwd.H>
 #include <x/w/impl/draw_infofwd.H>
 #include <x/w/impl/inherited_visibility_infofwd.H>
 #include <x/w/impl/get_window_handler.H>
@@ -284,6 +285,9 @@ public:
 	virtual void ensured_visibility_of_child_element(ONLY IN_THREAD,
 							 elementObj::implObj &e,
 							 const rectangle &r);
+
+	//! Forward save() to the layout manager.
+	void save(ONLY IN_THREAD, screen_positions &);
 };
 
 // The connection thread maintains a map of all containers that need to
