@@ -7,6 +7,7 @@
 #include "font_picker/font_picker_preview_impl.H"
 #include "textlabel.H"
 #include "label_element.H"
+#include "screen_positions_impl.H"
 #include "x/w/font_picker_config.H"
 #include "x/w/font_picker_appearance.H"
 #include "x/w/element_popup_appearance.H"
@@ -15,6 +16,7 @@
 #include "x/w/factory.H"
 #include "x/w/input_field.H"
 #include "x/w/impl/container.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/dialogfwd.H"
 #include "x/w/font.H"
@@ -71,6 +73,88 @@ focusable_impl font_pickerObj::get_impl() const
 	return impl->popup_button->get_impl();
 }
 
+void font_picker_config::restore(const const_screen_positions &pos,
+				 const std::string_view &name_arg)
+{
+	name=name_arg;
+
+	if (name.empty())
+		return;
+
+	try
+	{
+		auto lock=pos->impl->data->readlock();
+
+		if (!lock->get_root())
+			return;
+
+		auto xpath=lock->get_xpath(saved_element_to_xpath("font",
+								  name_arg));
+
+		if (xpath->count() != 1)
+			return;
+		xpath->to_node();
+
+		{
+			auto font=lock->clone();
+
+			auto xpath2=font->get_xpath("font");
+
+			if (xpath2->count() == 1)
+			{
+				xpath2->to_node();
+
+				initial_font=font->get_text();
+			}
+		}
+
+		xpath=lock->get_xpath("recent");
+
+		size_t n=xpath->count();
+		most_recently_used.clear();
+		most_recently_used.reserve(n);
+
+		for (size_t i=1; i <= n; ++i)
+		{
+			xpath->to_node(i);
+
+			auto value=lock->clone();
+
+			auto xpath2=value->get_xpath("family");
+
+			font_picker_group_id mru;
+
+			if (xpath2->count() == 1)
+			{
+				xpath2->to_node();
+
+				mru.family=value->get_text();
+
+				value=lock->clone();
+
+				xpath2=value->get_xpath("foundry");
+
+				if (xpath2->count() == 1)
+				{
+					xpath2->to_node();
+					mru.foundry=value->get_text();
+				}
+			}
+			most_recently_used.push_back(mru);
+		}
+		return;
+	} catch (const exception &e)
+	{
+		auto ee=EXCEPTION( "Error restoring font \""
+				   << name << "\": " << e );
+
+		ee->caught();
+	}
+
+	initial_font.reset();
+	most_recently_used.clear();
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 namespace {
@@ -108,6 +192,9 @@ class LIBCXX_HIDDEN weak_implObj : virtual public obj {
 //!
 //! And as long as we have to override everything, here, might as well
 //! take care of the initial visible with always_visible_elementObj.
+//!
+//! This is also a convenient place to store the font picker's name,
+//! and implement save().
 
 class LIBCXX_HIDDEN current_font_placeholderObj :
 	public always_visible_elementObj<label_elementObj<child_elementObj>> {
@@ -118,7 +205,22 @@ class LIBCXX_HIDDEN current_font_placeholderObj :
  public:
 	mpobj<std::pair<metrics::axis, metrics::axis>> overridden_metrics;
 
-	using superclass_t::superclass_t;
+	const std::string name;
+	const font_pickerObj::implObj::current_state state;
+
+	current_font_placeholderObj(const container_impl &parent_container,
+				    textlabel_config &label_config,
+				    const font_picker_config &config,
+				    const font_pickerObj::implObj
+				    ::current_state &state)
+		: superclass_t{parent_container, "", label_config},
+		name{config.name}, state{state}
+	{
+	}
+
+	~current_font_placeholderObj()=default;
+
+	void save(ONLY IN_THREAD, const screen_positions &) override;
 
  protected:
 	//! Override calculate_current_metrics
@@ -130,6 +232,32 @@ class LIBCXX_HIDDEN current_font_placeholderObj :
 	}
 };
 
+void current_font_placeholderObj::save(ONLY IN_THREAD,
+				       const screen_positions &pos)
+{
+	superclass_t::save(IN_THREAD, pos);
+
+	if (name.empty())
+		return;
+
+	auto writelock=pos->impl->create_writelock_for_saving("font", name);
+
+	writelock->create_child()->element({"font"})
+		->text(state->official_font.get().official_font)
+		->parent()->parent();
+
+	mpobj<std::vector<font_picker_group_id>>::lock
+		lock{state->validated_most_recently_used};
+
+	for (const auto &font:*lock)
+	{
+		writelock->create_child()->element({"recent"})
+			->element({"family"})->text(font.family)
+			->parent()->parent()
+			->element({"foundry"})->text(font.foundry)
+			->parent()->parent()->parent();
+	}
+}
 
 //! Helper object for creating the font picker.
 
@@ -430,15 +558,16 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 		 },
 		 [&](const auto &f)
 		 {
-			 label_config config;
+			 label_config l_config;
 
-			 config.alignment=halign::center;
+			 l_config.alignment=halign::center;
 
-			 textlabel_config internal_config{config};
+			 textlabel_config internal_config{l_config};
 
 			 auto label_impl=ref<current_font_placeholderObj>
-				 ::create(f->get_container_impl(), "",
-					  internal_config);
+				 ::create(f->get_container_impl(),
+					  internal_config,
+					  config, initial_state);
 
 			 auto l=label::create(label_impl, label_impl);
 
@@ -507,6 +636,10 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 		  const metrics::axis &h,
 		  const metrics::axis &v)
 		 {
+			 current_selection_placeholder
+				 ->text->minimum_width_override(IN_THREAD,
+								h.minimum());
+
 			 current_selection_placeholder->overridden_metrics=
 				 std::make_pair(h, v);
 

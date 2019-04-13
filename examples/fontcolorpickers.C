@@ -60,7 +60,7 @@ struct random_color_sourceObj : virtual public x::obj {
 typedef x::ref<random_color_sourceObj> random_color_source;
 
 auto create_mainwindow(const x::w::main_window &main_window,
-		       const std::vector<x::w::font_picker_group_id> &mru)
+		       const x::w::screen_positions &pos)
 {
 	x::w::gridlayoutmanager
 		layout=main_window->get_layoutmanager();
@@ -75,7 +75,14 @@ auto create_mainwindow(const x::w::main_window &main_window,
 	factory->create_label("Pick a font:");
 
 	// create_font_picker()'s optional font_picker_config parameter.
-	//
+
+
+	x::w::font_picker_config fp_config;
+
+	// Restore previous font picker font, and most recently used fonts.
+
+	fp_config.restore(pos, "main_font");
+
 	// Use this to set the font picker's callback that gets invoked
 	// whenever a new font gets selected.
 	//
@@ -88,12 +95,7 @@ auto create_mainwindow(const x::w::main_window &main_window,
 	// callback invocation gives the means of retrieving the font picker's
 	// finalized most recently used list.
 
-	x::w::font_picker_config fp_config{
-
-		// Most recently used fonts. Show them first, in the font
-		// family combo-box.
-		mru,
-
+	fp_config.callback=
 		[](ONLY IN_THREAD,
 		   // The new font selected in the font picker
 		   const x::w::font &new_font,
@@ -169,8 +171,7 @@ auto create_mainwindow(const x::w::main_window &main_window,
 			// Since we're IN_THREAD, we can use this one.
 			myself->most_recently_used(IN_THREAD, new_list);
 
-		}
-	};
+		};
 
 	x::w::font_picker fp=factory->create_font_picker(fp_config);
 
@@ -196,6 +197,9 @@ auto create_mainwindow(const x::w::main_window &main_window,
 			std::cout << "Color picker: " << new_color
 				  << std::endl;
 		}};
+
+	// Restore saved color picker's color.
+	cp_config.restore(pos, "main_color");
 
 	x::w::color_picker cp=factory->create_color_picker(cp_config);
 
@@ -282,11 +286,13 @@ auto create_mainwindow(const x::w::main_window &main_window,
 
 void fontcolorpickers()
 {
-	// Preserve the list of most recently used fonts.
+	// My configuration file.
 
-	std::string configfilename=
+	auto configfilename=
 		x::configdir("fontcolorpickers@examples.w.libcxx.com")
-		+ "/fonts";
+		+ "/windows";
+
+	auto pos=x::w::screen_positions::create(configfilename);
 
 	x::destroy_callback::base::guard guard;
 
@@ -295,38 +301,18 @@ void fontcolorpickers()
 	x::w::font_pickerptr font_picker;
 	x::w::color_pickerptr color_picker;
 
+	x::w::main_window_config config;
+
+	// Restore previous window positions
+	config.restore(pos, "main");
+
 	auto main_window=x::w::main_window::create
-		([&]
+		(config,
+		 [&]
 		 (const auto &main_window)
 		 {
-			 // Base LibCXX library's serialization API is designed
-			 // for reference-counted objects. font_picker_group_id
-			 // is just a plain struct. But this is good enough
-
-			 std::ifstream f{configfilename};
-			 std::vector<x::w::font_picker_group_id> mru;
-
-			 if (f)
-			 {
-				 x::w::font_picker_group_id g;
-
-				 auto fake_iterator=
-					 [&]
-					 (auto &field)
-					 {
-						 std::getline(f, field);
-					 };
-
-				 while (g.serialize(fake_iterator), f.good())
-				 {
-					 mru.push_back(g);
-					 g={};
-				 }
-			 }
-
-			 std::tie(font_picker,
-				  color_picker)=create_mainwindow(main_window,
-								  mru);
+			 std::tie(font_picker, color_picker)=
+				 create_mainwindow(main_window, pos);
 		 });
 
 	main_window->on_disconnect([]
@@ -356,31 +342,14 @@ void fontcolorpickers()
 	std::cout << "Final font: " << font_picker->current_font()
 		  << std::endl;
 
-	// Font picker's most_recently_used() returns the list of most
-	// recently used fonts that are listed first in the font family
-	// combo-box.
-
-
 	// Color picker's current_color() returns the most recently
 	// saved color.
 
 	std::cout << "Final color: " << color_picker->current_color()
 		  << std::endl;
 
-	// Save the final most recently used font list
-	{
-		std::ofstream of{configfilename};
-		auto mru=font_picker->most_recently_used();
-
-		auto iter=[&]
-			(const auto &field)
-			{
-				of << field << std::endl;
-			};
-
-		for (auto &f:mru)
-			f.serialize(iter);
-	}
+	main_window->save(pos);
+	pos->save(configfilename);
 }
 
 int main(int argc, char **argv)

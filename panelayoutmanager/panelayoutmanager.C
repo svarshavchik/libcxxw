@@ -399,7 +399,7 @@ void new_panelayoutmanager::restore(const const_screen_positions &pos,
 		auto ee=EXCEPTION( "Error restoring pane \""
 				   << name << "\": " << e );
 
-		ee->log();
+		ee->caught();
 	}
 
 	restored_sizes.clear();

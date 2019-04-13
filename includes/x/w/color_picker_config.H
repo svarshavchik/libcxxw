@@ -9,7 +9,11 @@
 #include <x/w/color_pickerfwd.H>
 #include <x/w/color_picker_appearancefwd.H>
 #include <x/w/rgb.H>
+#include <x/w/screen_positionsfwd.H>
 #include <x/functionalrefptr.H>
+
+#include <string>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -60,6 +64,18 @@ struct color_picker_config {
 	//! Initial color
 
 	rgb initial_color=white;
+
+	//! This color picker's label
+
+	//! Set by restore().
+	std::string name;
+
+	//! Restore previously-saved color picker configuration.
+
+	//! This resets initial_color
+
+	void restore(const const_screen_positions &,
+		     const std::string_view &);
 
 	//! Visual appearance
 	color_picker_config_appearance appearance;

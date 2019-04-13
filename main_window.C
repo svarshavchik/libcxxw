@@ -116,7 +116,7 @@ void main_window_config::restore(const const_screen_positions &pos,
 		auto ee=EXCEPTION( "Error restoring window \""
 				   << name << "\": " << e );
 
-		ee->log();
+		ee->caught();
 	}
 }
 

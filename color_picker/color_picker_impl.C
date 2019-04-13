@@ -134,6 +134,7 @@ color_pickerObj::implObj::implObj(const popup_attachedto_element_impl &impl,
 				  const element &current_color_element,
 
 				  const color_picker_config &config,
+				  const official_color &initial_color,
 				  const element &horiz_component_gradient,
 				  const element &vert_component_gradient,
 				  const element &fixed_component_gradient,
@@ -149,7 +150,7 @@ color_pickerObj::implObj::implObj(const popup_attachedto_element_impl &impl,
 	  error_message_field{error_message_field},
 	  callback_thread_only{config.initial_callback},
 	  current_color_thread_only{config.initial_color},
-	  official_color{config.initial_color}
+	  current_official_color{initial_color}
 {
 	update_gradients(horiz_component_gradient,
 			 initial_horiz_component,
@@ -418,7 +419,7 @@ void color_pickerObj::implObj::reformat_values(ONLY IN_THREAD)
 void color_pickerObj::implObj::set_official_color(ONLY IN_THREAD)
 {
 	{
-		mpobj<rgb>::lock lock{official_color};
+		mpobj<rgb>::lock lock{current_official_color->official_color};
 
 		if (*lock == current_color(IN_THREAD))
 			return; // Not really.
@@ -434,7 +435,7 @@ void color_pickerObj::implObj::popup_closed(ONLY IN_THREAD)
 	auto &c=current_color(IN_THREAD);
 
 	{
-		mpobj<rgb>::lock lock{official_color};
+		mpobj<rgb>::lock lock{current_official_color->official_color};
 
 		if (*lock == current_color(IN_THREAD))
 			return;
@@ -457,7 +458,7 @@ void color_pickerObj::implObj
 	if (!callback(IN_THREAD))
 		return;
 
-	auto c=official_color.get();
+	auto c=current_official_color->official_color.get();
 
 	auto e_impl=current_color_element->impl;
 

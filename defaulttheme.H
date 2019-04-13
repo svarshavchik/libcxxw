@@ -11,6 +11,10 @@
 
 LIBCXXW_NAMESPACE_START
 
+extern const char * const rgb_channels[4] LIBCXX_HIDDEN;
+
+extern rgb_component_t rgb::* const rgb_fields[4] LIBCXX_HIDDEN;
+
 //! Base class for loaded themes
 
 //! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::defaulttheme::base

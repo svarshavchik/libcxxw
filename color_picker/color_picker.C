@@ -7,10 +7,11 @@
 #include "x/w/color_picker_appearance.H"
 #include "x/w/input_field_appearance.H"
 #include "x/w/button_appearance.H"
-#include "x/w/canvas.H"
+#include "x/w/impl/canvas.H"
 #include "x/w/button.H"
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
+#include "screen_positions_impl.H"
 #include "popup/popup_attachedto_element.H"
 #include "color_picker/color_picker_impl.H"
 #include "color_picker/color_picker_selector_impl.H"
@@ -27,6 +28,7 @@
 #include "messages.H"
 #include "dialog.H"
 #include "gridtemplate.H"
+#include "defaulttheme.H"
 
 #include <x/chrcasecmp.H>
 #include <x/weakcapture.H>
@@ -52,6 +54,42 @@ color_picker_config_appearance::color_picker_config_appearance
 
 color_picker_config_appearance &color_picker_config_appearance
 ::operator=(const color_picker_config_appearance &)=default;
+
+void color_picker_config::restore(const const_screen_positions &pos,
+				  const std::string_view &name_arg)
+{
+	name=name_arg;
+
+	if (name.empty())
+		return;
+
+	auto lock=pos->impl->data->readlock();
+
+	if (!lock->get_root())
+	    return;
+
+	auto xpath=lock->get_xpath(saved_element_to_xpath("color", name_arg));
+
+	if (xpath->count() != 1)
+		return;
+	xpath->to_node();
+
+	for (size_t i=0; i<4; i++)
+	{
+		auto lock2=lock->clone();
+
+		xpath=lock2->get_xpath(rgb_channels[i]);
+
+		if (xpath->count() == 1)
+		{
+			xpath->to_node();
+
+			std::istringstream ii{lock2->get_text()};
+
+			ii >> initial_color.*(rgb_fields[i]);
+		}
+	}
+}
 
 color_pickerObj::color_pickerObj(const ref<implObj> &impl,
 				 const layout_impl &container_layoutmanager)
@@ -387,6 +425,85 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 				(_("Cancel"),
 				 cancel_button, 0)},
 			};
+}
+
+//! Implementation object for the color picker's current color canvas.
+
+//! Use the canvas object that shows the currently picked color to implement
+//! save().
+
+class color_picker_current_canvas_implObj : public canvasObj::implObj {
+
+
+
+public:
+	color_picker_current_canvas_implObj(const container_impl &container,
+					    const std::string name,
+					    const color_pickerObj::implObj
+					    ::official_color &initial_color,
+					    const canvas_init_params &params)
+		: canvasObj::implObj{container, params},
+		  name{name},
+		  current_official_color{initial_color}
+	{
+	}
+
+	~color_picker_current_canvas_implObj()=default;
+
+	//! Name of this restore color picker
+	const std::string name;
+
+	//! This color picker's current official color.
+	const color_pickerObj::implObj::official_color current_official_color;
+
+	//! Implement save()
+	void save(ONLY IN_THREAD, const screen_positions &pos) override;
+
+};
+
+void color_picker_current_canvas_implObj::save(ONLY IN_THREAD,
+					       const screen_positions &pos)
+{
+	if (name.empty())
+		return;
+
+	auto writelock=pos->impl->create_writelock_for_saving("color", name);
+
+	auto color=current_official_color->official_color.get();
+
+	for (size_t i=0; i<4; ++i)
+	{
+		std::ostringstream o;
+
+		// Temporary hack, until to_chars() is added elsewhere.
+		o << number<rgb_component_t, void>{color.*(rgb_fields[i])};
+
+		writelock->create_child()
+			->element({rgb_channels[i]})->text(o.str())
+			->parent()->parent();
+	}
+}
+
+static inline canvas
+create_color_picker_canvas(const factory &f,
+			   const color_picker_config &config,
+			   const color_pickerObj::implObj
+			   ::official_color &initial_color)
+{
+	canvas_init_params ciparams{{config.appearance->width},
+				    {config.appearance->height}};
+
+	ciparams.background_color=config.initial_color;
+
+	auto impl=ref<color_picker_current_canvas_implObj>
+		::create(f->get_container_impl(), config.name, initial_color,
+			 ciparams);
+
+	auto canvas=canvas::create(impl);
+
+	f->created_internally(canvas);
+
+	return canvas;
 }
 
 #pragma GCC visibility pop
@@ -783,6 +900,9 @@ color_picker factoryObj
 
 	color_picker_layout_helper helper{config};
 
+	auto initial_color=color_pickerObj::implObj::official_color
+		::create(config.initial_color);
+
 	auto [real_impl, popup_imagebutton, glm, color_picker_popup]
 		=create_popup_attachedto_element
 		(*this, config.appearance->attached_popup_appearance,
@@ -791,7 +911,7 @@ color_picker factoryObj
 		     const child_element_init_params &init_params)
 		 {
 			 auto impl=ref<color_picker_selectorObj::implObj>
-			 ::create(parent, init_params);
+				 ::create(parent, init_params);
 			 color_picker_selector_impl=impl;
 
 			 return impl;
@@ -809,11 +929,9 @@ color_picker factoryObj
 			 // The current value element shows the current
 			 // color.
 
-			 color_picker_current=f->create_canvas
-			 ([&](const auto &c) {
-				 c->set_background_color(config.initial_color);
-			 }, {config.appearance->width}, {config.appearance->height});
-
+			 color_picker_current=
+				 create_color_picker_canvas(f, config,
+							    initial_color);
 			 color_picker_current->show();
 		 });
 
@@ -829,6 +947,7 @@ color_picker factoryObj
 			 color_picker_current,
 
 			 config,
+			 initial_color,
 			 contents.h_canvas,
 			 contents.v_canvas,
 			 contents.fixed_canvas,
@@ -1154,7 +1273,7 @@ void color_pickerObj::on_color_update(const functionref<color_picker_callback_t>
 
 rgb color_pickerObj::current_color() const
 {
-	return impl->official_color.get();
+	return impl->current_official_color->official_color.get();
 }
 
 void color_pickerObj::current_color(const rgb &c)
@@ -1168,7 +1287,7 @@ void color_pickerObj::current_color(const rgb &c)
 
 void color_pickerObj::current_color(ONLY IN_THREAD, const rgb &c)
 {
-	impl->official_color=c;
+	impl->current_official_color->official_color=c;
 	impl->set_color(IN_THREAD, c);
 	impl->official_color_updated(IN_THREAD, {});
 }

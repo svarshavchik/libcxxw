@@ -752,6 +752,18 @@ void defaultthemeObj::load_dims(const theme_parser_lock &root_lock)
 
 // Parse colors
 
+const char * const rgb_channels[]={"r",
+				   "g",
+				   "b",
+				   "a"};
+
+rgb_component_t rgb::* const rgb_fields[]=
+	{
+	 &rgb::r,
+	 &rgb::g,
+	 &rgb::b,
+	 &rgb::a};
+
 static inline bool scale_theme_color(theme_parser_lock &lock,
 				     const std::string &id,
 				     const std::string &scale,
@@ -759,17 +771,6 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 				     std::unordered_map<std::string,
 				     theme_color_t> &parsed_colors)
 {
-	static const char * const channels[]={"r",
-					      "g",
-					      "b",
-					      "a"};
-
-	static rgb_component_t rgb::* const fields[]={
-		&rgb::r,
-		&rgb::g,
-		&rgb::b,
-		&rgb::a};
-
 	std::istringstream s;
 
 	imbue<std::istringstream> imbue{lock.c_locale, s};
@@ -778,7 +779,7 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 	{
 		auto attribute=lock.clone();
 
-		auto xpath=attribute->get_xpath(channels[i]);
+		auto xpath=attribute->get_xpath(rgb_channels[i]);
 
 		if (xpath->count() == 0)
 			continue;
@@ -809,14 +810,14 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 		}
 		else
 		{
-			v *= color.*(fields[i]);
+			v *= color.*(rgb_fields[i]);
 
 			if (v > rgb::maximum)
 				v=rgb::maximum;
 			c=v;
 		}
 
-		color.*(fields[i])=c;
+		color.*(rgb_fields[i])=c;
 	}
 
 	return true;

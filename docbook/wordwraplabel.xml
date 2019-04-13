@@ -230,6 +230,12 @@ pos->save(configfile);</programlisting>
 	  <link linkend="preservepanesizes">Pane containers</link>
 	</para>
       </listitem>
+
+      <listitem>
+	<para>
+	  <link linkend="fontcolorpickers">Font and color pickers</link>
+	</para>
+      </listitem>
     </itemizedlist>
 
     <para>

@@ -26,6 +26,33 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 
  public:
 
+	//! The color picker's official color.
+
+	//! The official color changes only after choosing a color and
+	//! closing the popup in the affirmative.
+	//!
+	//! Stored in a separate object. The official color is owned by
+	//! this implementation object, and also referenced by a display
+	//! element that save()s it, to be restore()d later.
+
+	class official_colorObj : virtual public obj {
+
+	public:
+		//! Official color
+
+		//! Pressing "Ok" moves current_color to official_color
+
+		mpobj<rgb> official_color;
+
+		official_colorObj(const rgb &initial_color)
+			: official_color{initial_color}
+		{
+		}
+	};
+
+	//! Alias
+	typedef ref<official_colorObj> official_color;
+
 	//! The initial horizontal component shown by the color_picker_square
 	static inline constexpr rgb_component_t rgb::*initial_horiz_component=
 		&rgb::r;
@@ -70,6 +97,7 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 		const element &current_color_element,
 
 		const color_picker_config &config,
+		const official_color &initial_color,
 		const element &horiz_component_gradient,
 		const element &vert_component_gradient,
 		const element &fixed_component_gradient,
@@ -122,11 +150,7 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 
 	THREAD_DATA_ONLY(current_color);
 
-	//! Official color
-
-	//! Pressing "Ok" moves current_color to official_color
-
-	mpobj<rgb> official_color;
+	const official_color current_official_color;
 
 	THREAD_DATA_ONLY(callback);
 

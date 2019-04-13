@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/config.H>
 
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
@@ -18,9 +19,11 @@
 #include "x/w/label.H"
 #include "x/w/button.H"
 #include "x/w/color_picker.H"
+#include "x/w/color_picker_config.H"
 #include "x/w/font_picker.H"
 #include "x/w/font_picker_config.H"
 #include "x/w/canvas.H"
+#include "x/w/screen_positions.H"
 #include <string>
 #include <list>
 #include <iostream>
@@ -72,10 +75,21 @@ void testcolorpicker(const testcolorpicker_options &options)
 
 	auto close_flag=close_flag_ref::create();
 
+	auto configfile=
+		LIBCXX_NAMESPACE::configdir("testcolorpicker@libcxx.com")
+		+ "/windows";
+
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
+
 	color_pickerptr cpp;
 
+	LIBCXX_NAMESPACE::w::main_window_config config;
+
+	config.restore(pos, "main");
+
 	auto main_window=main_window::create
-		([&]
+		(config,
+		 [&]
 		 (const auto &main_window)
 		 {
 			 gridlayoutmanager layout{
@@ -88,7 +102,12 @@ void testcolorpicker(const testcolorpicker_options &options)
 			 auto factory=layout->append_row();
 
 			 factory->create_label("Color:")->show();
-			 auto cp=factory->create_color_picker();
+
+			 LIBCXX_NAMESPACE::w::color_picker_config cconfig;
+
+			 cconfig.restore(pos, "main_color");
+
+			 auto cp=factory->create_color_picker(cconfig);
 
 			 cp->on_color_update([]
 					     (ONLY IN_THREAD,
@@ -109,6 +128,7 @@ void testcolorpicker(const testcolorpicker_options &options)
 			 font_picker_config config;
 
 			 config.selection_required=options.required->value;
+			 config.restore(pos, "main_font");
 
 			 font f;
 
@@ -138,7 +158,8 @@ void testcolorpicker(const testcolorpicker_options &options)
 			 auto fp=factory->create_font_picker(config);
 
 			 fp->on_font_update([mru=std::list<font_picker_group_id>
-					     {}]
+					 {config.most_recently_used.begin(),
+					  config.most_recently_used.end()}]
 					    (THREAD_CALLBACK,
 					     const font &new_font,
 					     const font_picker_group_id *new_font_group,
@@ -242,6 +263,9 @@ void testcolorpicker(const testcolorpicker_options &options)
 
 	lock.wait([&] { return *lock; });
 
+	main_window->save(pos);
+
+	pos->save(configfile);
 	std::cout << "Final color: " << cpp->current_color()
 		  << std::endl;
 }

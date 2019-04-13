@@ -35,7 +35,7 @@ struct LIBCXX_HIDDEN font_picker_int_option_info;
 
 //! Internal implementation object.
 
-class LIBCXX_HIDDEN font_pickerObj::implObj : virtual public obj {
+class font_pickerObj::implObj : virtual public obj {
 
  public:
 	struct current_stateObj;

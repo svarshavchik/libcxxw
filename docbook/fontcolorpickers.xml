@@ -15,7 +15,7 @@ See COPYING for distribution information.
 	  <para>
 	    A &factory;'s <methodname>create_font_picker()</methodname> and
 	    <methodname>create_color_picker()</methodname> methods create
-	    display elements that implement interactive popups for entering
+	    interactive popups for entering
 	    the values of an
 	    <ulink url="&link-x--w--font;"><classname>&ns;::w::font</classname></ulink>
 	    and
@@ -23,8 +23,7 @@ See COPYING for distribution information.
 	  </para>
 
 	  <para>
-	    Font and color pickers appear as innocuously small display
-	    elements. The font picker appears as a name of some a system
+	    The font picker appears as a name of a system font, the current
 	    font. The color picker appears as a small colored rectangle.
 	    A button next to the picker opens a popup with more details.
 	  </para>
@@ -50,13 +49,13 @@ See COPYING for distribution information.
     <para>
       A &factory;'s <methodname>create_font_picker</methodname>() takes a
       <ulink url="&link-x--w--font-picker-config;"><classname>&ns;::w::font_picker_config</classname></ulink>
-      parameter that sets the property of the new font picker,
+      parameter that sets the properties of the new font picker,
       returning a new
       <ulink url="&link-typedef-x--w-font-picker;"><classname>&ns;::w::font_picker</classname></ulink>
       display element.
       <methodname>create_color_picker</methodname>() takes a
       <ulink url="&link-x--w--color-picker-config;"><classname>&ns;::w::color_picker_config</classname></ulink>
-      parameter that sets the property of the new color picker,
+      parameter that sets the properties of the new color picker,
       returning a new
       <ulink url="&link-typedef-x--w-color-picker;"><classname>&ns;::w::color_picker</classname></ulink>
       display element.
@@ -101,27 +100,55 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      The initial list of most recently used fonts gets specified in
-      the <ulink url="&link-x--w--color-picker-config;"><classname>&ns;::w::color_picker_config</classname></ulink>
-      when creating the font picker.
-      The font picker element's overloaded
-      <methodname>most_recently_used</methodname>() method either returns
-      the current list of most recently used fonts, or sets the new list,
-      updating the font picker popup accordingly.
-    </para>
-
-    <para>
-      The font picker itself does not modify the vector of most recently used
-      fonts. One of the parameters to the
-      <methodname>on_font_update</methodname>() &callback; is the picked
+      The most recently used font list requires the application to install
+      an <methodname>on_font_update</methodname>() &callback;. The callback
+      controls how many most recently used fonts appear first. This callback
+      can be installed after creating the font picker, or by setting it in the
+      <classname>&ns;::w::font_picker_config</classname>.
+      The first two parameters to the callback are the picked
       <ulink url="&link-x--w--font-picker-group-id;"><classname>&ns;::w::font_picker_group_id</classname></ulink>,
       in addition to the picked <classname>&ns;::w::font</classname>.
       The application has complete control over the most recently used
       vector, and how big it is. As
       <link linkend="fontcolorpickers"><filename>fontcolorpickers.C</filename></link>
-      demonstrates, the callback updates the most recently used vector,
-      and uses font picker element's
-      <methodname>most_recently_used</methodname>() method.
+      demonstrates, the callback retrieves the vector of the most recently used
+      fonts from the font picker, updates it, and installs the updated
+      <methodname>most_recently_used</methodname>() vector.
+    </para>
+
+    <para>
+      The initial list of most recently used fonts gets specified in
+      the <ulink url="&link-x--w--font-picker-config;"><classname>&ns;::w::font_picker_config</classname></ulink>
+      when creating the font picker.
+      The font picker element's overloaded
+      <methodname>most_recently_used</methodname>() method either returns
+      the current list of most recently used fonts, or sets the new list,
+      updating the font picker popup accordingly.
+      An application can be responsible for saving and restoring the list of
+      fonts each time it runs, but it's easier to use the
+      existing support for <link linkend="screen_positions">preserving the
+	position and size of windows and display elements</link>.
+    </para>
+
+    <para>
+      A necessary prerequisite for preserving the most recently used fonts
+      is that
+      the table's main application window's size also gets preserved;
+      so <filename>fontcolorpickers.C</filename>
+      <methodname>save</methodname>()s
+      its main window's size (and position), just like the
+      <link linkend="wordwraplabel">word wrap label example</link>.
+    </para>
+
+    <para>
+      Each font picker has a unique identifier, or a label.
+      <classname>&ns;::w::font_picker_config</classname>'s
+      <methodname>restore</methodname>() method sets the new font picker's
+      label and restores the font picker's most recently used fonts, together
+      with the font picker's current font, if they were previously
+      <methodname>save</methodname>().
+
+      All font pickers created by the application must have unique labels.
     </para>
   </section>
 
@@ -153,6 +180,16 @@ See COPYING for distribution information.
       values that are specified in
       <ulink url="&link-x--w--color-picker-config;"><classname>&ns;::w::color_picker_config</classname></ulink>
       when creating the color picker.
+    </para>
+
+    <para>
+      The same approach that gets used to save and restore the font picker's
+      setting also gets used with the color picker.
+      Each color picker has a unique identifier, or a label.
+      <classname>&ns;::w::color_picker_config</classname>'s
+      <methodname>restore</methodname>() method sets the new color picker's
+      label and restores the color picker's saved color, if there is one.
+      All color pickers created by the application must have unique labels.
     </para>
   </section>
 </chapter>

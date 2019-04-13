@@ -9,9 +9,12 @@
 #include <x/w/font_pickerfwd.H>
 #include <x/w/font.H>
 #include <x/w/font_picker_appearancefwd.H>
+#include <x/w/screen_positionsfwd.H>
 #include <x/functionalrefptr.H>
 
 #include <optional>
+#include <string>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -45,6 +48,11 @@ struct font_picker_config_settings {
 	//! The default library font is used if not specified.
 
 	std::optional<font> initial_font;
+
+	//! This font picker's label
+
+	//! Set by restore().
+	std::string name;
 
 	//! Whether a font family+group must be specified
 
@@ -103,7 +111,16 @@ struct font_picker_config_appearance {
 //! \ref font_picker "INSERT_LIBX_NAMESPACE::w::font_picker".
 
 struct font_picker_config : font_picker_config_settings,
-			    font_picker_config_appearance {};
+			    font_picker_config_appearance
+{
+	//! Restore previously-saved font picker configuration.
+
+	//! This resets initial_font, most_recently_used, and name,
+
+	void restore(const const_screen_positions &,
+		     const std::string_view &);
+
+};
 
 LIBCXXW_NAMESPACE_END
 

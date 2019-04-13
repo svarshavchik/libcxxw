@@ -376,7 +376,7 @@ font::operator std::string() const
 				return;
 
 			o << sep << name << "=" << v;
-			sep=", ";
+			sep="; ";
 		},
 		[&](const char *name, int v)
 		{

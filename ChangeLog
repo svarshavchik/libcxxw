@@ -1,5 +1,7 @@
 2019-04-09  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* font and color picker: implement save() and restore().
+
 	* editor_impl.C rewrap_due_to_updated_position: fix scrolling
 	of centered input fields.
 

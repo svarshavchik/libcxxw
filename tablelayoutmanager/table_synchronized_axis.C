@@ -581,7 +581,7 @@ void new_tablelayoutmanager::restore(const const_screen_positions &pos,
 		auto ee=EXCEPTION( "Error restoring table \""
 				   << name << "\": " << e );
 
-		ee->log();
+		ee->caught();
 	}
 
 
