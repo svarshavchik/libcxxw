@@ -485,12 +485,17 @@ font_picker_impl_init_params::
 font_picker_impl_init_params(const image_button_internal &popup_button,
 			     const label &current_font_shown,
 			     const font_picker_popup_fieldsptr &popup_fields,
-			     const font_picker_config &config)
+			     const font_picker_config &config,
+			     const font_pickerObj::implObj::current_state
+			     &initial_state)
 	: popup_button{popup_button},
 	  current_font_shown{current_font_shown},
 	  popup_fields{popup_fields},
 	  font_family_lm{popup_fields.font_family->get_layoutmanager()},
 	  config{config},
+
+	  initial_state{initial_state},
+
 	  initial_font{config.initial_font ?
 			  *config.initial_font:font{}},
 	  families{create_families(config)}
@@ -537,10 +542,18 @@ font_picker_impl_init_params(const image_button_internal &popup_button,
 		initial_font.*(f.font_field)=*p;
 	}
 
+	mpobj<std::vector<font_picker_group_id>>::lock mru_lock{
+		initial_state->validated_most_recently_used
+			};
+
+	font_pickerObj::implObj::official_font_t::lock font_lock{
+		initial_state->official_font
+			};
+
 	sorted_families=initial_sorted_families
 		(families,
 		 config.most_recently_used,
-		 most_recently_used,
+		 *mru_lock,
 		 font_family_lm,
 		 current_font_shown,
 		 // Update the initial
@@ -554,8 +567,7 @@ font_picker_impl_init_params(const image_button_internal &popup_button,
 		 config,
 		 // initial_sorted_families()
 		 // populates this.
-		 initial_official_values);
-
+		 *font_lock);
 }
 
 font_pickerObj::implObj::implObj(const font_picker_impl_init_params
@@ -569,12 +581,13 @@ font_pickerObj::implObj::implObj(const font_picker_impl_init_params
 	  callback_thread_only{init_params.config.callback},
 	  appearance{init_params.config.appearance},
 	  sorted_families{init_params.sorted_families},
-	  official_font{init_params.initial_official_values},
-	  validated_most_recently_used{init_params.most_recently_used},
+
+	  state{init_params.initial_state},
+
 	  current_font_shown{init_params.current_font_shown}
 {
 	// Initialize the placeholder font family name label element.
-	update_font_properties(init_params.initial_official_values
+	update_font_properties(init_params.initial_state->official_font.get()
 			       .saved_font_group,
 			       (init_params.config.initial_font ||
 				init_params.config.selection_required)
@@ -618,7 +631,8 @@ void font_pickerObj::implObj
 		([impl=ref(this)]
 		 (ONLY IN_THREAD)
 		 {
-			 auto official_font_value=impl->official_font.get();
+			 auto official_font_value=
+				 impl->state->official_font.get();
 
 			 impl->invoke_callback(IN_THREAD, official_font_value,
 					       initial{});
@@ -671,7 +685,7 @@ void font_pickerObj::implObj
 	{
 		mpobj<std::vector<font_picker_group_id>>
 			::lock validated_most_recently_used_lock{
-			validated_most_recently_used
+			state->validated_most_recently_used
 				};
 
 		auto new_sorted_families=compute_font_family_combobox_items
@@ -1048,7 +1062,7 @@ void font_pickerObj::implObj
 void font_pickerObj::implObj::set_font(ONLY IN_THREAD,
 				       const font &f)
 {
-	official_values_t new_values=official_font.get();
+	official_values_t new_values=state->official_font.get();
 
 	// Set the official font, but make sure that the point size is not
 	// crazy.
@@ -1107,7 +1121,7 @@ void font_pickerObj::implObj::set_font(ONLY IN_THREAD,
 	}
 
 	// This is now good to go.
-	official_font=new_values;
+	state->official_font=new_values;
 	current_font(IN_THREAD)=new_values.official_font;
 
 	set_official_font(IN_THREAD, {});
@@ -1123,7 +1137,7 @@ void font_pickerObj::implObj::popup_closed(ONLY IN_THREAD)
 {
 	// Put everything back where we found it.
 
-	auto official_font_value=official_font.get();
+	auto official_font_value=state->official_font.get();
 
 	// There are a few more details to do, besides resetting current_font
 	current_font(IN_THREAD)=official_font_value.official_font;
@@ -1180,7 +1194,7 @@ void font_pickerObj::implObj::set_official_font(ONLY IN_THREAD,
 						&trigger)
 {
 	{
-		official_font_t::lock lock{official_font};
+		official_font_t::lock lock{state->official_font};
 
 		lock->official_font=current_font(IN_THREAD);
 
@@ -1201,7 +1215,7 @@ void font_pickerObj::implObj::set_official_font(ONLY IN_THREAD,
 		lock->saved_font_size=v ? *v:0;
 	}
 
-	auto official_font_value=official_font.get();
+	auto official_font_value=state->official_font.get();
 
 	current_font_shown->label_impl
 		->update(IN_THREAD,

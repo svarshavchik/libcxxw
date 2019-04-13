@@ -399,6 +399,8 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	font_picker_init_helper helper;
 
+	auto initial_state=font_pickerObj::implObj::current_state::create();
+
 	auto [real_impl, popup_imagebutton, glm, font_picker_popup]
 		=create_popup_attachedto_element
 		(*this, config.appearance->attached_popup_appearance,
@@ -447,9 +449,10 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	font_picker_impl_init_params init_params{
 		popup_imagebutton,
-			helper.current_font_shown,
-			helper,
-			config};
+		helper.current_font_shown,
+		helper,
+		config,
+		initial_state};
 
 	auto font_picker_impl=ref<font_pickerObj::implObj>::create(init_params);
 
@@ -592,7 +595,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	// Need the initial point size shown?
 	if (config.selection_required || config.initial_font)
-		font_size_validator->set(font_picker_impl->official_font
+		font_size_validator->set(initial_state->official_font
 					 .get().saved_font_size);
 
 	font_picker_impl->finish_initialization(fp, font_size_validator);
@@ -700,7 +703,8 @@ void font_pickerObj::on_font_update(const functionref<font_picker_callback_t>
 		  {
 			  impl->callback(IN_THREAD)=cb;
 
-			  auto official_font_value=impl->official_font.get();
+			  auto official_font_value=impl->state
+				  ->official_font.get();
 
 			  impl->invoke_callback(IN_THREAD,
 						official_font_value,
@@ -710,7 +714,7 @@ void font_pickerObj::on_font_update(const functionref<font_picker_callback_t>
 
 font font_pickerObj::current_font() const
 {
-	auto official_font_value=impl->official_font.get();
+	auto official_font_value=impl->state->official_font.get();
 
 	impl->adjust_font_for_callback(official_font_value);
 
@@ -751,7 +755,7 @@ void font_pickerObj::font_pickerObj
 std::vector<font_picker_group_id> font_pickerObj::font_pickerObj
 ::most_recently_used() const
 {
-	return impl->validated_most_recently_used.get();
+	return impl->state->validated_most_recently_used.get();
 }
 
 LIBCXXW_NAMESPACE_END

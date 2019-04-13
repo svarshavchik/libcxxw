@@ -38,6 +38,10 @@ struct LIBCXX_HIDDEN font_picker_int_option_info;
 class LIBCXX_HIDDEN font_pickerObj::implObj : virtual public obj {
 
  public:
+	struct current_stateObj;
+
+	typedef ref<current_stateObj> current_state;
+
 	//! Available font family groups.
 
 	//! This vector is sorted by entry->id.
@@ -307,15 +311,27 @@ class LIBCXX_HIDDEN font_pickerObj::implObj : virtual public obj {
 	void most_recently_used(ONLY IN_THREAD,
 				const std::vector<font_picker_group_id> &mru);
 
+	//! Current official font and most recently used fonts.
+	const current_state state;
+
 	//! The mutex-protected container for official_values_t
 
 	typedef mpobj<official_values_t> official_font_t;
 
-	//! The official, saved font.
-	official_font_t official_font;
+	//! A separate object for the value produced by the font picker.
 
-	//! Validated most recently used vector
-	mpobj<std::vector<font_picker_group_id>> validated_most_recently_used;
+	//! The current official font, and the most recently picked fonts,
+	//! are kept in a separate object.
+
+	struct current_stateObj : virtual public obj {
+
+		//! The official, saved font.
+		official_font_t official_font;
+
+		//! Validated most recently used vector
+		mpobj<std::vector<font_picker_group_id>
+		      > validated_most_recently_used;
+	};
 
 	//! The label display element, that shows the name of the currnt font.
 	const label current_font_shown;
@@ -358,20 +374,21 @@ struct LIBCXX_HIDDEN font_picker_impl_init_params {
 	const font_picker_popup_fieldsptr &popup_fields;
 	standard_comboboxlayoutmanager font_family_lm;
 	const font_picker_config &config;
-	font_pickerObj::implObj::official_values_t initial_official_values;
+
+	font_pickerObj::implObj::current_state initial_state;
 
 	font initial_font;
 
 	std::vector<const_font_family_group_entry> families;
 	std::vector<const_font_family_group_entryptr> sorted_families;
 
-	std::vector<font_picker_group_id> most_recently_used;
-
 	font_picker_impl_init_params(const image_button_internal &popup_button,
 				     const label &current_font_shown,
 				     const font_picker_popup_fieldsptr
 				     &popup_fields,
-				     const font_picker_config &config);
+				     const font_picker_config &config,
+				     const font_pickerObj::implObj
+				     ::current_state &initial_state);
 };
 
 LIBCXXW_NAMESPACE_END
