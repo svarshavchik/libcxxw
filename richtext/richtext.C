@@ -174,6 +174,16 @@ void richtextObj::text_width(const std::optional<dim_t> &s)
 		       });
 }
 
+void richtextObj::minimum_width_override(ONLY IN_THREAD, dim_t width)
+{
+	thread_lock(IN_THREAD,
+		    [width]
+		    (ONLY IN_THREAD, const auto &impl)
+		    {
+			    (*impl)->minimum_width_override=width;
+		    });
+}
+
 void richtextObj::redraw_between(ONLY IN_THREAD,
 				 element_drawObj &element,
 				 const richtextiterator &a,

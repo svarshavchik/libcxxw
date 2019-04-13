@@ -171,6 +171,11 @@ class richtextObj : virtual public obj {
 
 	void text_width(const std::optional<dim_t> &s);
 
+	//! The minimum width override is slightly different semantics
+
+	//! The minimum width override sets the minimum width of the computed
+	//! text.
+	void minimum_width_override(ONLY IN_THREAD, dim_t);
  private:
 
 	//! Most recently rendered height.

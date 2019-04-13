@@ -546,25 +546,14 @@ void editorObj::implObj::set_minimum_override(ONLY IN_THREAD,
 void editorObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 {
 	initialize_if_needed(IN_THREAD);
-	text->thread_lock(IN_THREAD,
-			  [&, this]
-			  (ONLY IN_THREAD, const auto &impl)
-			  {
-				  (*impl)->minimum_width_override=
-					  data(IN_THREAD).current_position
-					  .width;
-			  });
+
+	dim_t minimum=parent_peephole->data(IN_THREAD).current_position
+		.width;
+
+	text->minimum_width_override(IN_THREAD, minimum);
 
 	if (hint)
-		hint->thread_lock(IN_THREAD,
-				  [&, this]
-				  (ONLY IN_THREAD, const auto &impl)
-				  {
-					  (*impl)->minimum_width_override=
-						  data(IN_THREAD)
-						  .current_position
-						  .width;
-				  });
+		hint->minimum_width_override(IN_THREAD, minimum);
 
 	// text->rewrap(preferred_width);
 }
