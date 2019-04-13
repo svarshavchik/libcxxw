@@ -711,7 +711,7 @@ class LIBCXX_HIDDEN text_uri_selection_handlerObj
 				return;
 			}
 
-			auto authority=u.getAuthority().toString();
+			auto authority=u.getAuthority().to_string();
 
 			if (!authority.empty() && authority != "localhost")
 			{

@@ -750,7 +750,7 @@ void print_dialogObj::implObj::show_printer(printer_info_lock &lock,
 
 				auto fmt=right_now.short_format();
 
-				fmt.toString(std::back_insert_iterator{state},
+				fmt.to_string(std::back_insert_iterator{state},
 					      l);
 				valid=true;
 			}
