@@ -10,6 +10,7 @@
 #include "popup/popup.H"
 #include "peephole/peepholed_attachedto_container_impl.H"
 #include "x/w/gridlayoutmanager.H"
+#include "x/w/gridfactory.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
 #include "image_button_internal.H"

@@ -12,6 +12,7 @@
 #include "x/w/impl/popup/popupfwd.H"
 
 #include "x/w/elementfwd.H"
+#include "x/w/gridfactoryfwd.H"
 #include "x/w/factoryfwd.H"
 #include "x/w/border_arg.H"
 #include "x/w/rgb.H"
@@ -164,7 +165,7 @@ create_popup_attachedto_element(factoryObj &parent_factory,
 		 (std::forward<popup_contents_impl_t>(popup_contents_impl)),
 		 make_function<create_popup_contents_t>
 		 (std::forward<popup_contents_t>(popup_contents)),
-		 make_function<void (const factory &)>
+		 make_function<void (const gridfactory &)>
 		 (std::forward<current_value_t>(current_value)));
 
 }
@@ -179,7 +180,7 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 				     > &popup_contents_impl_factory,
 				     const function<create_popup_contents_t
 				     > &popup_contents_factory,
-				     const function<void (const factory &)
+				     const function<void (const gridfactory &)
 				     > &current_value_factory)
 	LIBCXX_HIDDEN;
 

@@ -23,7 +23,7 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 				     > &popup_contents_impl_factory,
 				     const function<create_popup_contents_t
 				     > &popup_contents_factory,
-				     const function<void (const factory &)
+				     const function<void (const gridfactory &)
 				     > &current_value_factory)
 {
 	auto parent_container=parent_factory.get_container_impl();
