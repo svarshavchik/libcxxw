@@ -1,5 +1,7 @@
 @LIBCXX_AM@
 
+EXTRA_DIST=
+
 noinst_PROGRAMS=\
 	booklayoutmanager			\
 	borderlayoutmanager			\
@@ -41,6 +43,7 @@ noinst_PROGRAMS=\
 	table					\
 	table2				        \
 	toolboxlayoutmanager			\
+	uigenerator1				\
 	validatedinput				\
 	wordwraplabel
 
@@ -176,6 +179,10 @@ table2_LDADD=-lcxxw -lcxx
 
 toolboxlayoutmanager_SOURCES=toolboxlayoutmanager.C close_flag.H
 toolboxlayoutmanager_LDADD=-lcxxw -lcxx
+
+uigenerator1_SOURCES=uigenerator1.C close_flag.H
+uigenerator1_LDADD=-lcxxw -lcxx
+EXTRA_DIST += uigenerator1.xml
 
 validatedinput_SOURCES=validatedinput.C close_flag.H
 validatedinput_LDADD=-lcxxw -lcxx

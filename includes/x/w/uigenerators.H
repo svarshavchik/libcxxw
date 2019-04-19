@@ -10,8 +10,39 @@
 #include <x/functionalrefptr.H>
 #include <x/vector.H>
 #include <x/ref.H>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
+
+//! Base class for \ref uigenerators "parsed UI generators".
+
+//! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::generators::base
+
+class uigeneratorsBase {
+
+public:
+
+	//! Load template from file.
+	static const_uigenerators create(const std::string_view &filename);
+
+	//! Factory for objects.
+
+	//! Implements custom create().
+	template<typename T> class objfactory {
+
+	public:
+
+		//! create() for uigenerators
+
+		//! Always return a const_uigenerators handle.
+
+		static inline const_uigenerators
+		create(const std::string_view &filename)
+		{
+			return uigeneratorsBase::create(filename);
+		}
+	};
+};
 
 LIBCXXW_NAMESPACE_END
 

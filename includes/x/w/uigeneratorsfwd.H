@@ -40,7 +40,8 @@ typedef functionref<void (const booklayoutmanager &, uielements &)
 typedef functionref<void (const bookpagefactory &, uielements &)
 		    > bookpagefactory_generator;
 
-class LIBCXX_HIDDEN uigeneratorsObj;
+class LIBCXX_PUBLIC uigeneratorsObj;
+class LIBCXX_PUBLIC uigeneratorsBase;
 
 /*! Loaded and parsed generators
 
@@ -49,25 +50,25 @@ generate() the contents of supported layout manager (and factories).
 
 */
 
-typedef ref<uigeneratorsObj> uigenerators;
+typedef ref<uigeneratorsObj, uigeneratorsBase> uigenerators;
 
 //! Constant \ref uigenerators "compiled display element generators".
 
 //! \see uigenerators
 
-typedef const_ref<uigeneratorsObj> const_uigenerators;
+typedef const_ref<uigeneratorsObj, uigeneratorsBase> const_uigenerators;
 
 //! A nullable pointer reference to \ref uigenerators "compiled display element generators".
 
 //! \see uigenerators
 
-typedef ptr<uigeneratorsObj> uigeneratorsptr;
+typedef ptr<uigeneratorsObj, uigeneratorsBase> uigeneratorsptr;
 
 //! A nullable pointer reference to const \ref uigenerators "compiled display element generators".
 
 //! \see uigenerators
 
-typedef const_ptr<uigeneratorsObj> const_uigeneratorsptr;
+typedef const_ptr<uigeneratorsObj, uigeneratorsBase> const_uigeneratorsptr;
 
 LIBCXXW_NAMESPACE_END
 

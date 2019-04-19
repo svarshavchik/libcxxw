@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<theme version="1"
+       xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <layout type="grid" id="main-window-grid">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>main-window-combobox-row</name>
+    </append_row>
+
+    <append_row>
+      <name>main-window-append-row-button</name>
+    </append_row>
+
+    <append_row>
+      <name>main-window-insert-row-button</name>
+    </append_row>
+
+    <append_row>
+      <name>main-window-replace-row-button</name>
+    </append_row>
+
+    <append_row>
+      <name>main-window-delete-row-button</name>
+    </append_row>
+
+    <append_row>
+      <name>main-window-reset-button</name>
+    </append_row>
+
+    <append_row>
+      <name>main-window-shuffle-button</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="main-window-combobox-row">
+    <element>
+      <name>combobox-label</name>
+    </element>
+    <element>
+      <name>combobox-element</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="main-window-append-row-button">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <name>append-row-button</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="main-window-insert-row-button">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <name>insert-row-button</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="main-window-replace-row-button">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <name>replace-row-button</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="main-window-delete-row-button">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <name>delete-row-button</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="main-window-reset-button">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <name>reset-button</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="main-window-shuffle-button">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <name>shuffle-button</name>
+    </element>
+  </factory>
+</theme>
