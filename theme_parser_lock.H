@@ -7,8 +7,7 @@
 
 #include <x/xml/doc.H>
 #include <x/locale.H>
-
-#include "x/w/namespace.H"
+#include "theme_parser_lockfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -25,9 +24,11 @@ public:
 	const_locale c_locale;
 
 	//! Constructor
+	theme_parser_lock(const xml::doc::base::readlock &l);
+
+	//! Constructor
 	theme_parser_lock(const xml::doc::base::readlock &l,
 			  const const_locale &c_locale);
-
 	//! Destructor
 	~theme_parser_lock();
 

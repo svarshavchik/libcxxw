@@ -30,7 +30,7 @@
 #include "x/w/impl/themedimfwd.H"
 #include "x/w/impl/border_implfwd.H"
 #include "gridtemplatefwd.H"
-#include "theme_parser_lock.H"
+#include "theme_parser_lockfwd.H"
 
 #include <string>
 #include <unordered_map>

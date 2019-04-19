@@ -865,6 +865,7 @@ libcxxw_la_SOURCES=\
 	themeicon.C				    \
 	themeiconpixmapobj.H			    \
 	themeiconpixmap.C			    \
+	theme_parser_lockfwd.H			    \
 	theme_parser_lock.H			    \
 	theme_parser_lock.C			    \
 	toolboxlayoutmanager/toolboxfactory.C       \

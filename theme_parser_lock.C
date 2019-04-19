@@ -7,6 +7,11 @@
 
 LIBCXXW_NAMESPACE_START
 
+theme_parser_lock::theme_parser_lock(const xml::doc::base::readlock &l)
+	: xml::doc::base::readlock{l}, c_locale{locale::create("C")}
+{
+}
+
 theme_parser_lock::theme_parser_lock(const xml::doc::base::readlock &l,
 				     const const_locale &c_locale)
 	: xml::doc::base::readlock{l}, c_locale{c_locale}

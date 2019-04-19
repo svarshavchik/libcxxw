@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "defaulttheme.H"
+#include "theme_parser_lock.H"
 #include "configfile.H"
 #include "x/w/rgb.H"
 #include "connection.H"
@@ -316,8 +317,7 @@ parse_available_theme_options(const xml::doc &theme_configfile)
 {
 	std::vector<theme_option> opts;
 
-	theme_parser_lock lock{theme_configfile->readlock(),
-				locale::create("C")};
+	theme_parser_lock lock{theme_configfile->readlock()};
 
 	if (lock->get_root())
 	{
@@ -509,7 +509,7 @@ void defaultthemeObj::load(const xml::doc &config,
 			   const ref<screenObj::implObj> &screen)
 {
 	try {
-		theme_parser_lock lock{config->readlock(), locale::create("C")};
+		theme_parser_lock lock{config->readlock()};
 
 		load_dims(lock);
 		load_colors(lock);
@@ -907,13 +907,6 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 
 	return flag;
 }
-
-static std::string lowercase_single_value(const theme_parser_lock &lock,
-					  const char *element,
-					  const char *xpath);
-
-static bool single_value_exists(const theme_parser_lock &lock,
-				const char *element);
 
 static inline bool scale_theme_color(theme_parser_lock &lock,
 				     const std::string &id,
@@ -1701,9 +1694,9 @@ font defaultthemeObj::get_theme_font(const std::string &id)
 //////////////////////////////////////////////////////////////////////////////
 
 
-static std::string single_value(const theme_parser_lock &lock,
-				const char *element,
-				const char *parent)
+std::string single_value(const theme_parser_lock &lock,
+			 const char *element,
+			 const char *parent)
 {
 	auto v=lock.clone();
 
@@ -1717,9 +1710,9 @@ static std::string single_value(const theme_parser_lock &lock,
 	return v->get_text();
 }
 
-static std::string optional_value(const theme_parser_lock &lock,
-				  const char *element,
-				  const char *parent)
+std::string optional_value(const theme_parser_lock &lock,
+			   const char *element,
+			   const char *parent)
 {
 	auto v=lock.clone();
 
@@ -1737,9 +1730,9 @@ static std::string optional_value(const theme_parser_lock &lock,
 	return v->get_text();
 }
 
-static std::string lowercase_single_value(const theme_parser_lock &lock,
-					  const char *element,
-					  const char *xpath)
+std::string lowercase_single_value(const theme_parser_lock &lock,
+				   const char *element,
+				   const char *xpath)
 {
 	std::string s=single_value(lock, element, xpath);
 
@@ -1748,8 +1741,8 @@ static std::string lowercase_single_value(const theme_parser_lock &lock,
 	return s;
 }
 
-static bool single_value_exists(const theme_parser_lock &lock,
-				const char *element)
+bool single_value_exists(const theme_parser_lock &lock,
+			 const char *element)
 {
 	auto v=lock.clone();
 
@@ -1777,22 +1770,22 @@ static to_value_t to_value(const theme_parser_lock &lock,
 	return v;
 }
 
-inline static dim_t to_dim_t(const theme_parser_lock &lock,
-			     const char *element, const char *parent)
+dim_t to_dim_t(const theme_parser_lock &lock,
+	       const char *element, const char *parent)
 {
 	return to_value<dim_t>(lock,
 			       single_value(lock, element, parent), element);
 }
 
-inline static size_t to_size_t(const theme_parser_lock &lock,
-			       const char *element, const char *parent)
+size_t to_size_t(const theme_parser_lock &lock,
+		 const char *element, const char *parent)
 {
 	return to_value<size_t>(lock,
 				single_value(lock, element, parent), element);
 }
 
-inline static int to_percentage_t(const theme_parser_lock &lock,
-				  const char *element, const char *parent)
+int to_percentage_t(const theme_parser_lock &lock,
+		    const char *element, const char *parent)
 {
 	int v=to_value<int>(lock,
 			    single_value(lock, element, parent), element);
@@ -1804,8 +1797,8 @@ inline static int to_percentage_t(const theme_parser_lock &lock,
 	return v;
 }
 
-static halign to_halign_value(const theme_parser_lock &lock,
-			      const char *element, const char *parent)
+halign to_halign_value(const theme_parser_lock &lock,
+		       const char *element, const char *parent)
 {
 	auto value=single_value(lock, element, parent);
 
@@ -1837,8 +1830,8 @@ static halign to_halign_value(const theme_parser_lock &lock,
 	return v;
 }
 
-static valign to_valign_value(const theme_parser_lock &lock,
-			      const char *element, const char *parent)
+valign to_valign_value(const theme_parser_lock &lock,
+		       const char *element, const char *parent)
 {
 	auto value=single_value(lock, element, parent);
 
