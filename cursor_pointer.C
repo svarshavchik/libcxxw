@@ -51,7 +51,7 @@ cursor_pointer cursor_pointerObj::initialize(ONLY IN_THREAD)
 }
 
 cursor_pointer cursor_pointerObj::theme_updated(ONLY IN_THREAD,
-						const defaulttheme &new_theme)
+						const const_defaulttheme &new_theme)
 {
 	return cursor_pointer_icon->image->impl->screenref->impl
 		->cursor_pointercaches

@@ -99,7 +99,7 @@ void background_color_1elementObj<element_impl, tag>::initialize(ONLY IN_THREAD)
 
 template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>
-::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
 	background_color_element<tag>::theme_updated(IN_THREAD, new_theme,
 						     *this);

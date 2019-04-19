@@ -75,7 +75,7 @@ class LIBCXX_HIDDEN current_themefontcollectionObj
 	current_themefontcollectionObj(const screen &font_screen,
 				       depth_t depth,
 				       const std::string &font_name,
-				       const defaulttheme &font_theme)
+				       const const_defaulttheme &font_theme)
 		: current_fontcollectionObj{font_screen, depth,
 			font_theme->get_theme_font(font_name),
 			font_theme},
@@ -88,7 +88,8 @@ class LIBCXX_HIDDEN current_themefontcollectionObj
 	// Update the font specs.
 
 	void current_theme_updated(ONLY IN_THREAD,
-				   const defaulttheme &font_theme) override
+				   const const_defaulttheme &font_theme)
+		override
 	{
 		font_spec(IN_THREAD)=
 			font_theme->get_theme_font(font_name);

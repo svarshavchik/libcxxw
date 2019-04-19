@@ -34,11 +34,12 @@ public:
 
 	//! Implement cell_initialize().
 	void cell_initialize(ONLY IN_THREAD,
-			     const defaulttheme &initial_theme) override;
+			     const const_defaulttheme &initial_theme) override;
 
 	//! Implement cell_theme_updated().
 	void cell_theme_updated(ONLY IN_THREAD,
-				const defaulttheme &initial_theme) override;
+				const const_defaulttheme &initial_theme)
+		override;
 
 	//! Implement cell_is_separator().
 	bool cell_is_separator() override;

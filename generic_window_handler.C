@@ -738,11 +738,12 @@ void generic_windowObj::handlerObj::theme_updated_event(ONLY IN_THREAD)
 }
 
 void generic_windowObj::handlerObj::theme_updated(ONLY IN_THREAD,
-						  const defaulttheme &th)
+						  const const_defaulttheme
+						  &new_theme)
 {
 	auto b=current_background_color(IN_THREAD);
 
-	superclass_t::theme_updated(IN_THREAD, th);
+	superclass_t::theme_updated(IN_THREAD, new_theme);
 
 	if (b == current_background_color(IN_THREAD))
 		return;

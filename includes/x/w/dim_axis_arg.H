@@ -76,7 +76,7 @@ struct dim_axis_arg {
 
 	//! Mostly for internal use.
 
-	metrics::axis compute(const defaulttheme &theme,
+	metrics::axis compute(const const_defaulttheme &theme,
 			      themedimaxis wh) const;
 };
 

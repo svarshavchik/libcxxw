@@ -15,13 +15,8 @@
 #include "x/w/impl/border_impl.H"
 #include "picture.H"
 #include "x/w/impl/background_color.H"
-#include "x/w/gridlayoutmanager.H"
-#include "x/w/gridfactory.H"
-#include "x/w/booklayoutmanager.H"
-#include "x/w/bookpagefactory.H"
-#include "x/w/book_appearance.H"
-#include "x/w/shortcut.H"
-#include "gridtemplate.H"
+#include "x/w/uigenerators.H"
+#include "uicompiler.H"
 #include <x/property_value.H>
 #include <x/chrcasecmp.H>
 #include <x/strtok.H>
@@ -486,7 +481,7 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 {
 }
 
-bool defaultthemeObj::is_different_theme(const defaulttheme &t) const
+bool defaultthemeObj::is_different_theme(const const_defaulttheme &t) const
 {
 	if (themename != t->themename ||
 	    themescale != t->themescale ||
@@ -515,8 +510,11 @@ void defaultthemeObj::load(const xml::doc &config,
 		load_colors(lock);
 		load_borders(lock, screen);
 		load_fonts(lock);
-		load_layouts(lock);
-		load_factories(lock);
+
+		if (lock->get_root())
+		{
+			uicompiler compiler{lock, *this};
+		}
 	} catch (const exception &e)
 	{
 		throw EXCEPTION("An error occured while parsing the "
@@ -1396,6 +1394,7 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 /////////////////////////////////////////////////////////////////////////////
 
 dim_t defaultthemeObj::get_theme_dim_t(const dim_arg &id, themedimaxis wh)
+	const
 {
 	return std::visit(visitor{
 			[this, wh](double v)
@@ -1416,7 +1415,7 @@ dim_t defaultthemeObj::get_theme_dim_t(const dim_arg &id, themedimaxis wh)
 			}}, id);
 }
 
-dim_t defaultthemeObj::compute_width(double millimeters)
+dim_t defaultthemeObj::compute_width(double millimeters) const
 {
 	if (std::isnan(millimeters))
 		return dim_t::infinite();
@@ -1441,7 +1440,7 @@ dim_t defaultthemeObj::compute_width(double millimeters)
 	return dim_t::value_type(scaled);
 }
 
-dim_t defaultthemeObj::compute_height(double millimeters)
+dim_t defaultthemeObj::compute_height(double millimeters) const
 {
 	if (std::isnan(millimeters))
 		return dim_t::infinite();
@@ -1498,7 +1497,7 @@ theme_color_t defaultthemeObj::get_theme_color(const std::string_view &id) const
 
 
 const_border_impl
-defaultthemeObj::get_theme_border(const std::string_view &id)
+defaultthemeObj::get_theme_border(const std::string_view &id) const
 {
 	auto iter=borders.find(std::string(id));
 
@@ -1541,6 +1540,7 @@ void defaultthemeObj::do_load_fonts(const theme_parser_lock &lock,
 				    &install,
 				    const function<bool (const std::string &,
 							 font &)> &lookup)
+	const
 {
 	size_t count=xpath->count();
 
@@ -1669,7 +1669,7 @@ void defaultthemeObj::do_load_fonts(const theme_parser_lock &lock,
 	}
 }
 
-font defaultthemeObj::get_theme_font(const std::string &id)
+font defaultthemeObj::get_theme_font(const std::string &id) const
 {
 	auto semicolon=id.find(';');
 
@@ -1861,262 +1861,6 @@ valign to_valign_value(const theme_parser_lock &lock,
 					   value, element));
 
 	return v;
-}
-
-#include "gridlayoutapi.inc.C"
-
-void defaultthemeObj::load_layouts(const theme_parser_lock &root_lock)
-{
-	auto lock=root_lock.clone();
-
-	if (!lock->get_root())
-		return;
-
-	auto xpath=lock->get_xpath("/theme/layout");
-
-	size_t count=xpath->count();
-
-	for (size_t i=0; i<count; ++i)
-	{
-		xpath->to_node(i+1);
-
-		auto id=lock->get_any_attribute("id");
-
-		if (id.empty())
-			throw EXCEPTION(_("no id specified for layout"));
-
-		if (gridlayouts.find(id) != gridlayouts.end())
-			continue;
-
-		if (booklayouts.find(id) != booklayouts.end())
-			continue;
-
-		auto type=lock->get_any_attribute("type");
-
-		if (type == "book")
-		{
-			booklayout_parseconfig(lock, booklayouts[id]);
-		}
-		else if (type == "grid")
-		{
-			gridlayout_parseconfig(lock, gridlayouts[id]);
-		}
-		else
-		{
-			throw EXCEPTION("Unknown type="
-					<< type
-					<< "for layout id=" << id);
-		}
-	}
-}
-
-void defaultthemeObj::load_factories(const theme_parser_lock &root_lock)
-{
-	auto lock=root_lock.clone();
-
-	if (!lock->get_root())
-		return;
-
-	auto xpath=lock->get_xpath("/theme/factory");
-
-	size_t count=xpath->count();
-
-	for (size_t i=0; i<count; ++i)
-	{
-		xpath->to_node(i+1);
-
-		auto id=lock->get_any_attribute("id");
-
-		if (id.empty())
-			throw EXCEPTION(_("no id specified for factory"));
-
-		if (gridfactories.find(id) != gridfactories.end())
-			continue;
-
-		if (bookpagefactories.find(id) != bookpagefactories.end())
-			continue;
-
-		auto type=lock->get_any_attribute("type");
-
-		if (type == "book")
-		{
-			bookpagefactory_parseconfig(lock,
-						    bookpagefactories[id]);
-		}
-		else if (type == "grid")
-		{
-			gridfactory_parseconfig(lock, gridfactories[id]);
-		}
-		else
-		{
-			throw EXCEPTION("Unknown type="
-					<< type
-					<< "for factory id=" << id);
-		}
-	}
-}
-
-void defaultthemeObj::layout_append_row(const gridlayoutmanager &glm,
-					const gridtemplateptr &elements,
-					const std::string &name)
-{
-	auto iter=gridfactories.find(name);
-
-	if (iter == gridfactories.end())
-		throw EXCEPTION
-			(gettextmsg
-			 (_("Did not find definition of \"%1%\" in the theme"),
-			  name));
-
-	auto f=glm->append_row();
-	auto me=defaulttheme(this);
-
-	for (const auto &c:iter->second)
-		c(f, elements, me);
-}
-
-void defaultthemeObj::layout_insert(const factory &f,
-				    gridtemplate *elements,
-				    const std::string &name,
-				    const std::string &background_color)
-{
-	f->create_container([&, this]
-			    (const auto &new_container)
-			    {
-				    gridlayoutmanager glm=
-					    new_container->get_layoutmanager();
-				    if (!background_color.empty())
-					    new_container->set_background_color
-						    (background_color);
-
-				    elements->new_layouts
-					    .emplace(name,
-						     new_container);
-
-				    this->layout_insert(glm, elements, name);
-			    },
-			    new_gridlayoutmanager{});
-}
-
-void defaultthemeObj::layout_book_container(const factory &f,
-					    const gridtemplateptr &elements,
-					    const std::string &name,
-					    const std::string &background_color,
-					    const std::string &border)
-{
-	new_booklayoutmanager nblm;
-
-	if (!background_color.empty() ||
-	    !border.empty())
-	{
-		auto appearance=
-			nblm.appearance->modify
-			([&]
-			 (const auto &appearance)
-			 {
-				 if (!background_color.empty())
-					 appearance->background_color=
-						 background_color;
-
-				 if (!border.empty())
-					 appearance->border=border;
-			 });
-
-		nblm.appearance=appearance;
-	}
-	f->create_focusable_container
-		([&, this]
-		 (const auto &new_container)
-		 {
-			 elements->new_layouts.emplace(name,
-						       new_container);
-			 booklayoutmanager blm=
-				 new_container->get_layoutmanager();
-
-			 this->layout_book_container(blm, elements,
-						     name);
-		 },
-		 nblm);
-}
-
-void defaultthemeObj::layout_insert(const gridlayoutmanager &glm,
-				    gridtemplate *elements,
-				    const std::string &name)
-{
-	auto iter=gridlayouts.find(name);
-
-	if (iter == gridlayouts.end())
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-
-	auto me=defaulttheme(this);
-
-	for (const auto &c:iter->second)
-		c(glm, elements, me);
-}
-
-
-void defaultthemeObj::layout_book_container(const booklayoutmanager &blm,
-					    const gridtemplateptr &elements,
-					    const std::string &name)
-{
-	auto iter=booklayouts.find(name);
-
-	if (iter == booklayouts.end())
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-
-	auto me=defaulttheme(this);
-
-	for (const auto &c:iter->second)
-		c(blm, elements, me);
-}
-
-void defaultthemeObj::layout_append_pages(const booklayoutmanager &blm,
-					  const gridtemplateptr &elements,
-					  const std::string &name)
-{
-	auto f=blm->append();
-
-	auto iter=bookpagefactories.find(name);
-
-	if (iter == bookpagefactories.end())
-		throw EXCEPTION(gettextmsg(_("Book factory %1% not defined."),
-					   name));
-
-	auto me=defaulttheme(this);
-
-	for (const auto &c:iter->second)
-		c(f, elements, me);
-}
-
-void defaultthemeObj::layout_add_page(const bookpagefactory &f,
-				      const gridtemplateptr &elements,
-				      const std::string &label,
-				      const std::string &sc,
-				      const std::string &name)
-{
-	auto shortcut_iter=elements->shortcuts.find(sc);
-
-	f->add([&, this]
-	       (const auto &label_factory,
-		const auto &page_factory)
-	       {
-		       elements->generate(label_factory, label);
-
-		       page_factory->create_container
-			       ([&]
-				(const auto &container)
-				{
-					gridlayoutmanager glm=
-						container->get_layoutmanager();
-
-					layout_insert(glm, elements, name);
-				},
-				new_gridlayoutmanager{});
-	       },
-	       shortcut_iter == elements->shortcuts.end()
-	       ? shortcut{}:shortcut_iter->second);
 }
 
 const char *defaultthemeObj::default_cut_paste_selection() const

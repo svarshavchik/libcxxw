@@ -584,7 +584,7 @@ void panelayoutmanagerObj::implObj
 }
 
 void panelayoutmanagerObj::implObj
-::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
 	{
 		grid_map_t::lock grid_lock{grid_map};

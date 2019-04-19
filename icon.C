@@ -26,7 +26,7 @@ icon iconObj::initialize(ONLY IN_THREAD)
 }
 
 icon iconObj::theme_updated(ONLY IN_THREAD,
-			    const defaulttheme &new_theme)
+			    const const_defaulttheme &new_theme)
 {
 	return icon(this);
 }

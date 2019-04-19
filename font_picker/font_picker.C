@@ -37,7 +37,7 @@
 #include "popup/popup_attachedto_element.H"
 #include "messages.H"
 #include "dialog.H"
-#include "gridtemplate.H"
+#include "x/w/uielements.H"
 #include "gridlayoutmanager.H"
 #include <fontconfig/fontconfig.h>
 #include <x/weakptr.H>
@@ -549,9 +549,9 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 		 {
 			 auto glm=lm_impl->create_gridlayoutmanager();
 
-			 gridtemplate tmpl{helper.create_elements(config)};
+			 uielements tmpl{helper.create_elements(config)};
 
-			 glm->create("font-picker-popup", tmpl);
+			 glm->generate("font-picker-popup", tmpl);
 
 			 return peepholed_attachedto_container
 			 ::create(info, popup_container_impl, lm_impl);

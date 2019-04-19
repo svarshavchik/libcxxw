@@ -24,7 +24,7 @@ void icon_images_vector::initialize(ONLY IN_THREAD)
 }
 
 void icon_images_vector::theme_updated(ONLY IN_THREAD,
-				       const defaulttheme &new_theme)
+				       const const_defaulttheme &new_theme)
 {
 	for (auto &i:icon_images(IN_THREAD))
 	{

@@ -27,7 +27,7 @@ void background_color_element_implObj::do_update(ONLY IN_THREAD,
 }
 
 void background_color_element_implObj::theme_updated(ONLY IN_THREAD,
-						     const defaulttheme
+						     const const_defaulttheme
 						     &new_theme,
 						     elementObj::implObj &e)
 {

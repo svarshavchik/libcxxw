@@ -36,7 +36,7 @@
 #include "x/w/label.H"
 #include "dialog_impl.H"
 #include "dialog_handler.H"
-#include "gridtemplate.H"
+#include "x/w/uielements.H"
 #include "x/w/impl/always_visible.H"
 #include <x/weakcapture.H>
 #include <x/xml/doc.H>
@@ -711,31 +711,30 @@ dialog main_windowObj
 		 [&]
 		 (const dialog &d)
 		 {
-			 gridtemplate tmpl{
+			 uielements tmpl
 				 {
-					 {"icon", icon_element(icon)},
-					 {"message", content_factory},
+				  {
+				   {"icon", icon_element(icon)},
+				   {"message", content_factory},
 
-					 // Still need to add a filler
-					 // element to the container
-					 // row, so that the container's
-					 // horizontal metrics are
-					 // open-ended.
-					 //
-					 // Otherwise the fixed
-					 // container row metrics
-					 // will constrain the width
-					 // of wrappable labels used
-					 // for the message.
+				   // Still need to add a filler
+				   // element to the container
+				   // row, so that the container's
+				   // horizontal metrics are
+				   // open-ended.
+				   //
+				   // Otherwise the fixed
+				   // container row metrics
+				   // will constrain the width
+				   // of wrappable labels used
+				   // for the message.
 
-					 {"filler", dialog_filler()},
-					 {"ok", dialog_ok_button(ok_label,
-								 ok_button,
-								 '\e')}
-				 }};
+				   {"filler", dialog_filler()},
+				   {"ok", dialog_ok_button(ok_label,
+							   ok_button, '\e')}
+				  }};
 
-			 d->dialog_window->initialize_theme_dialog
-			 ("ok-dialog", tmpl);
+			 d->dialog_window->generate("ok-dialog", tmpl);
 		 });
 
 	// Ok button's shortcut is ESC. autofocus() th einput on the Ok
@@ -914,22 +913,22 @@ dialog main_windowObj
 		 [&]
 		 (const dialog &d)
 		 {
-			 gridtemplate tmpl{
+			 uielements tmpl
 				 {
-					 {"icon", icon_element(icon)},
-					 {"message", content_factory},
-					 {"ok", dialog_ok_button(ok_label,
-								 ok_button,
-								 '\n')},
-					 {"filler", dialog_filler()},
-					 {"cancel", dialog_cancel_button
-					  (cancel_label,
-					   cancel_button, '\e')}
-				 }
-			 };
+				  {
+				   {"icon", icon_element(icon)},
+				   {"message", content_factory},
+				   {"ok", dialog_ok_button(ok_label,
+							   ok_button,
+							   '\n')},
+				   {"filler", dialog_filler()},
+				   {"cancel", dialog_cancel_button
+				    (cancel_label,
+				     cancel_button, '\e')}
+				  }
+				 };
 
-			 d->dialog_window->initialize_theme_dialog
-			 ("ok-cancel-dialog", tmpl);
+			 d->dialog_window->generate("ok-cancel-dialog", tmpl);
 		 });
 
 	auto me=ref{this};
@@ -989,29 +988,29 @@ input_dialog main_windowObj
 		 [&]
 		 (const auto &args)
 		 {
-			 gridtemplate tmpl{
+			 uielements tmpl
 				 {
-					 {"icon", icon_element(icon)},
-					 {"label", label_factory},
-					 {"input", [&](const auto &factory)
-					  {
-						  field=factory
-						  ->create_input_field
-						  (initial_text,
-						   config);
-					  }},
-					 {"ok", dialog_ok_button(ok_label,
-								 ok_button,
-								 '\n')},
-					 {"filler", dialog_filler()},
-					 {"cancel", dialog_cancel_button
-					  (cancel_label,
-					   cancel_button, '\e')}
-				 }
-			 };
+				  {
+				   {"icon", icon_element(icon)},
+				   {"label", label_factory},
+				   {"input",
+				    [&](const auto &factory)
+				    {
+					    field=factory->create_input_field
+						    (initial_text,
+						     config);
+				    }},
+				   {"ok", dialog_ok_button(ok_label,
+							   ok_button,
+							   '\n')},
+				   {"filler", dialog_filler()},
+				   {"cancel", dialog_cancel_button
+				    (cancel_label,
+				     cancel_button, '\e')}
+				  }
+				 };
 
-			 args.dialog_window->initialize_theme_dialog
-			 ("input-dialog", tmpl);
+			 args.dialog_window->generate("input-dialog", tmpl);
 
 			 auto id=input_dialog::create(args, field, ok_button);
 

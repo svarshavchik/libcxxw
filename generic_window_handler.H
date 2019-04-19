@@ -260,7 +260,7 @@ class generic_windowObj::handlerObj
 	frame_extents_t frame_extents_thread_only;
 
 	//! The current theme in effect for this window.
-	defaulttheme current_theme_thread_only;
+	const_defaulttheme current_theme_thread_only;
 
 	//! The current pointer grab.
 
@@ -589,7 +589,8 @@ public:
 	void theme_updated_event(ONLY IN_THREAD) override;
 
 	//! Override theme_updated
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &) override;
+	void theme_updated(ONLY IN_THREAD,
+			   const const_defaulttheme &) override;
 
 	//! Key press event
 	void key_press_event(ONLY IN_THREAD,

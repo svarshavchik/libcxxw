@@ -81,26 +81,26 @@ void grid_elementObj::initialize(ONLY IN_THREAD)
 	theme_updated(theme);
 }
 
-void grid_elementObj::theme_updated(const defaulttheme &theme)
+void grid_elementObj::theme_updated(const const_defaulttheme &new_theme)
 {
-	left_padding=theme->get_theme_dim_t(left_padding_set,
-					    themedimaxis::width);
+	left_padding=new_theme->get_theme_dim_t(left_padding_set,
+						themedimaxis::width);
 	dim_t total=
-		dim_t::truncate(left_padding+
-				theme->get_theme_dim_t(right_padding_set,
-						       themedimaxis::width));
+		dim_t::truncate(left_padding+new_theme
+				->get_theme_dim_t(right_padding_set,
+						  themedimaxis::width));
 
 	if (total == dim_t::infinite())
 		--total;
 
 	total_horiz_padding=total;
 
-	top_padding=theme->get_theme_dim_t(top_padding_set,
-					   themedimaxis::height);
+	top_padding=new_theme->get_theme_dim_t(top_padding_set,
+					       themedimaxis::height);
 
 	total=dim_t::truncate(top_padding+
-			      theme->get_theme_dim_t(bottom_padding_set,
-						     themedimaxis::height));
+			      new_theme->get_theme_dim_t(bottom_padding_set,
+							 themedimaxis::height));
 
 	if (total == dim_t::infinite())
 		--total;

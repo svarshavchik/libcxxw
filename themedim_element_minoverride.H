@@ -50,7 +50,7 @@ void themedim_element_minoverrideObj<element_impl>
 template<typename element_impl>
 void themedim_element_minoverrideObj<element_impl>
 ::theme_updated(ONLY IN_THREAD,
-		const defaulttheme &new_theme)
+		const const_defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	compute_minimum_override(IN_THREAD);

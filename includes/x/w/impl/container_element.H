@@ -149,7 +149,7 @@ void container_elementObj<element_impl>::initialize(ONLY IN_THREAD)
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
 	element_impl::theme_updated(IN_THREAD, new_theme);
 	containerObj::implObj::theme_updated(IN_THREAD, new_theme);

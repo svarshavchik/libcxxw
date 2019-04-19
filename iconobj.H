@@ -48,7 +48,7 @@ public:
 
 	//! The default implementation returns the same object.
 	virtual icon theme_updated(ONLY IN_THREAD,
-				   const defaulttheme &new_theme);
+				   const const_defaulttheme &new_theme);
 
 	//! Resize this icon, if this is a resizable icon.
 	virtual icon resizemm(ONLY IN_THREAD,

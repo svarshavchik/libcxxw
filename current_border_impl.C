@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 static inline border_info
 convert_to_border_info(const ref<screenObj::implObj> &s,
-		       const defaulttheme &theme,
+		       const const_defaulttheme &theme,
 		       const border_infomm &mm)
 {
 	border_info info{s->create_background_color(mm.color1)};
@@ -91,7 +91,7 @@ convert_to_border_info(const ref<screenObj::implObj> &s,
 static const_border_impl
 border_impl_from_arg(const ref<screenObj::implObj> &screen,
 		     const border_arg &arg,
-		     const defaulttheme &theme)
+		     const const_defaulttheme &theme)
 {
 	return std::visit(visitor{
 			[&]
@@ -124,7 +124,7 @@ current_border_implObj
 ::~current_border_implObj()=default;
 
 void current_border_implObj
-::current_theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+::current_theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
 	border(IN_THREAD)=border_impl_from_arg(screen, arg, new_theme);
 }

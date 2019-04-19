@@ -7,7 +7,7 @@
 #include "dialog.H"
 #include "catch_exceptions.H"
 #include "print_dialog/print_dialog_impl.H"
-#include "gridtemplate.H"
+#include "x/w/uielements.H"
 #include "x/w/print_dialog_config.H"
 #include "x/w/print_dialog_appearance.H"
 #include "x/w/list_appearance.H"
@@ -509,15 +509,14 @@ print_dialog main_windowObj
 		 [&]
 		 (const dialog_args &args)
 		 {
-			 gridtemplate tmpl{
-				 helper.create_elements(conf, future_parent)
+			 uielements tmpl{helper.create_elements(conf,
+								future_parent)
 			 };
 
-			 args.dialog_window->initialize_theme_dialog
-				 ("print-dialog", tmpl);
+			 args.dialog_window->generate("print-dialog", tmpl);
 
 			 auto iter=tmpl.new_layouts
-			 .find("print-dialog-options");
+				 .find("print-dialog-options");
 
 			 if (iter == tmpl.new_layouts.end())
 				 throw EXCEPTION("Internal error: dialog "

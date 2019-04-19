@@ -74,7 +74,7 @@ public:
 				      const rectangle &position) override;
 
 	//! Override theme_updated().
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 		override;
 private:
 	void process_updated_position(ONLY IN_THREAD,

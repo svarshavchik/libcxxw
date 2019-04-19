@@ -28,7 +28,7 @@ class LIBCXX_HIDDEN themeiconObj : public iconObj {
 	const std::string name;
 
 	//! Current theme
-	const defaulttheme theme;
+	const const_defaulttheme theme;
 
 	//! Original requested width
 	const dim_type width;
@@ -42,7 +42,7 @@ class LIBCXX_HIDDEN themeiconObj : public iconObj {
 
 	//! Constructor
 	themeiconObj(const std::string &name,
-		     const defaulttheme &theme,
+		     const const_defaulttheme &theme,
 		     const dim_type &width,
 		     const dim_type &height,
 		     icon_scale scale,
@@ -57,7 +57,7 @@ class LIBCXX_HIDDEN themeiconObj : public iconObj {
 	//! Override theme_updated.
 
 	icon theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme) override;
+			   const const_defaulttheme &new_theme) override;
 };
 
 LIBCXXW_NAMESPACE_END

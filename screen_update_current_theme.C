@@ -22,7 +22,7 @@
 LIBCXXW_NAMESPACE_START
 
 void screenObj::implObj::update_current_theme(ONLY IN_THREAD,
-					      const defaulttheme &new_theme)
+					      const const_defaulttheme &new_theme)
 {
 	// cxxwtheme set the CXXWTHEME property, this makes it
 	// back to us, typically, before cxxwtheme gets around

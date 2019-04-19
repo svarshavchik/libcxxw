@@ -101,7 +101,8 @@ public:
 	void initialize(ONLY IN_THREAD) override;
 
 	//! theme_updated().
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &theme) override;
+	void theme_updated(ONLY IN_THREAD,
+			   const const_defaulttheme &new_theme) override;
 
 private:
 
@@ -118,7 +119,7 @@ private:
 	//! Recompute explicit horizontal and vertical metrics.
 
 	void recompute_hv_metrics(ONLY IN_THREAD,
-				  const defaulttheme &theme);
+				  const const_defaulttheme &theme);
 
 	//! Implement recalculate()
 

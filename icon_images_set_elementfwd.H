@@ -30,7 +30,7 @@ class icon_1tag {
 
 	icon_1tag(const icon &i);
 	void initialize(ONLY IN_THREAD);
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme);
 	void resize(ONLY IN_THREAD, dim_t w, dim_t h, icon_scale scale);
 };
 
@@ -73,7 +73,7 @@ struct icon_images_set_element_implObj<element_impl, Tag1,
 	void initialize(ONLY IN_THREAD) override;
 
 	void theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme) override;
+			   const const_defaulttheme &new_theme) override;
 };
 
 //! A tagged set alternative to an icon_image_vector

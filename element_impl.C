@@ -1129,7 +1129,7 @@ void elementObj::implObj::background_color_changed(ONLY IN_THREAD)
 }
 
 void elementObj::implObj::theme_updated(ONLY IN_THREAD,
-					const defaulttheme &new_theme)
+					const const_defaulttheme &new_theme)
 {
 	invalidate_cached_draw_info(IN_THREAD,
 				    draw_info_invalidation_reason

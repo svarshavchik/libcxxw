@@ -392,9 +392,6 @@ libcxxw_la_SOURCES=\
 	gridlayoutmanager_impl.C		    \
 	gridlayoutmanager_impl_elements.C	    \
 	gridlayoutmanager_impl_elements.H	    \
-	gridtemplate.C			            \
-	gridtemplate.H				    \
-	gridtemplatefwd.H			    \
 	hash.C					    \
 	hotspot.C				    \
 	hotspot.H				    \
@@ -873,6 +870,11 @@ libcxxw_la_SOURCES=\
 	toolboxlayoutmanager/toolboxlayoutmanager_impl.C \
 	toolboxlayoutmanager/toolboxlayoutmanager_impl.H \
 	tooltip.C				    \
+	uicompilerfwd.H				    \
+	uicompiler.H				    \
+	uicompiler.C				    \
+	uigenerators.C				    \
+	uielements.C				    \
 	windowobj.C				    \
 	windowobj.H				    \
 	window_handler.C			    \
@@ -941,7 +943,7 @@ man_MANS=cxxwtheme.1
 
 EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 	pic_constants.xml gc_constants.xml constants.xsl \
-	parseapiconfig.xsl gridlayoutapi.xml \
+	parseuicompiler.xsl uicompiler.xml \
 	xim/xim.xml xim/xim.xsl \
 	cxxwtheme.desktop \
 	packaging/fedora/libcxxw.spec \
@@ -1168,10 +1170,10 @@ testwordwrappablelabel_LDFLAGS=-static $(STATICLINKFLAGS)
 
 BUILT_SOURCES=includes/x/w/constants_inc.H \
 	$(XIM_AUTOGEN) \
-	gridlayoutapi.inc.C \
+	uicompiler.inc.C \
 	gc_constants.inc.C pic_constants.inc.C
 
-CLEANFILES += gridlayoutapi.inc.C \
+CLEANFILES += uicompiler.inc.C \
 	gc_constants.inc.C pic_constants.inc.C \
         $(XIM_AUTOGEN)
 
@@ -1199,9 +1201,9 @@ xim/ximclient2.inc.C: xim/xim.xml xim/xim.xsl
 	xsltproc --stringparam mode received-switch $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient2.inc.C.tmp
 	mv -f xim/ximclient2.inc.C.tmp xim/ximclient2.inc.C
 
-gridlayoutapi.inc.C: gridlayoutapi.xml parseapiconfig.xsl
-	xsltproc $(srcdir)/parseapiconfig.xsl $(srcdir)/gridlayoutapi.xml >gridlayoutapi.inc.C.tmp
-	mv -f gridlayoutapi.inc.C.tmp gridlayoutapi.inc.C
+uicompiler.inc.C: uicompiler.xml parseuicompiler.xsl
+	xsltproc $(srcdir)/parseuicompiler.xsl $(srcdir)/uicompiler.xml >uicompiler.inc.C.tmp
+	mv -f uicompiler.inc.C.tmp uicompiler.inc.C
 
 genconstants_SOURCES=genconstants.C
 

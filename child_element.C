@@ -261,11 +261,12 @@ void child_elementObj::set_background_color(ONLY IN_THREAD,
 						  (this));
 }
 
-void child_elementObj::theme_updated(ONLY IN_THREAD, const defaulttheme &th)
+void child_elementObj::theme_updated(ONLY IN_THREAD,
+				     const const_defaulttheme &new_theme)
 {
 	if (!is_mine_background_color)
 	{
-		superclass_t::theme_updated(IN_THREAD, th);
+		superclass_t::theme_updated(IN_THREAD, new_theme);
 		return;
 	}
 
@@ -273,7 +274,7 @@ void child_elementObj::theme_updated(ONLY IN_THREAD, const defaulttheme &th)
 
 	auto b=background_color_element_implObj::get(IN_THREAD);
 
-	superclass_t::theme_updated(IN_THREAD, th);
+	superclass_t::theme_updated(IN_THREAD, new_theme);
 
 	if (b == background_color_element_implObj::get(IN_THREAD))
 		return;

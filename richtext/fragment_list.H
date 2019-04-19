@@ -86,7 +86,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 		      richtextparagraphObj &paragraphArg);
 
 	void theme_was_updated(ONLY IN_THREAD,
-			       const defaulttheme &new_theme);
+			       const const_defaulttheme &new_theme);
 
 	//! Destructor
 

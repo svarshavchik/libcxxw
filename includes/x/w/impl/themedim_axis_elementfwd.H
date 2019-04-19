@@ -55,7 +55,7 @@ public:
 
 	void update_width_axis(ONLY IN_THREAD,
 			       const dim_axis_arg &arg,
-			       const defaulttheme &current_theme);
+			       const const_defaulttheme &current_theme);
 };
 
 //! Vertical metrics axis specification mixin.
@@ -91,7 +91,7 @@ public:
 
 	void update_height_axis(ONLY IN_THREAD,
 				const dim_axis_arg &arg,
-				const defaulttheme &current_theme);
+				const const_defaulttheme &current_theme);
 };
 
 LIBCXXW_NAMESPACE_END

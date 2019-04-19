@@ -183,7 +183,7 @@ class layoutmanagerObj::implObj : virtual public obj {
 
 	//! The theme has changed
 
-	virtual void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
+	virtual void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme);
 
  protected:
 

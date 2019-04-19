@@ -41,7 +41,7 @@ public:
 	//! Note that the textlabel_config gets passed by reference.
 	label_elementObj(const container_impl &container,
 			 textlabel_config &config,
-			 const defaulttheme &theme,
+			 const const_defaulttheme &theme,
 			 richtextstring &&string);
 
 	//! Destructor
@@ -61,7 +61,7 @@ public:
 	//! Invoke the underlying text object's theme_updated().
 
 	//! When done, recalculate() our updated size.
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme) override;
 
 	//! Invoke the underlying text object's do_draw().
 

@@ -117,7 +117,8 @@ public:
 	//! changed by the theme we pretend that set_background_color()
 	//! has happened.
 
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &th) override;
+	void theme_updated(ONLY IN_THREAD,
+			   const const_defaulttheme &new_theme) override;
 
 	//! Override schedule_hover_action
 

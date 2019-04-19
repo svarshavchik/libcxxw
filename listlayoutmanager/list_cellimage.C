@@ -102,13 +102,13 @@ void list_cellimageObj::cell_redraw(ONLY IN_THREAD,
 }
 
 void list_cellimageObj::cell_initialize(ONLY IN_THREAD,
-					    const defaulttheme &initial_theme)
+					const const_defaulttheme &initial_theme)
 {
 	initialize(IN_THREAD);
 }
 
 void list_cellimageObj::cell_theme_updated(ONLY IN_THREAD,
-					       const defaulttheme &new_theme)
+					   const const_defaulttheme &new_theme)
 {
 	theme_updated(IN_THREAD, new_theme);
 }

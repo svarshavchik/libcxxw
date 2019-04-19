@@ -106,7 +106,7 @@ void gridlayoutmanagerObj::implObj
 }
 
 void gridlayoutmanagerObj::implObj::theme_updated(ONLY IN_THREAD,
-						  const defaulttheme &new_theme)
+						  const const_defaulttheme &new_theme)
 {
 	grid_map_t::lock lock(grid_map);
 

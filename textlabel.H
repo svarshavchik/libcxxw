@@ -109,11 +109,11 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 
 	//! Cached current theme
 
-	defaulttheme current_theme;
+	const_defaulttheme current_theme;
 
 	//! Compute preferred_width
 
-	void compute_preferred_width(const defaulttheme &theme,
+	void compute_preferred_width(const const_defaulttheme &theme,
 				     double widthmm,
 				     const fontcollection &fc);
 
@@ -187,7 +187,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 	//! Internal constructor
 	implObj(textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
-		const defaulttheme &initial_theme,
+		const const_defaulttheme &initial_theme,
 		richtextstring &&string,
 		const richtextmeta &default_meta);
 
@@ -196,7 +196,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 
 	implObj(textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
-		const defaulttheme &initial_theme,
+		const const_defaulttheme &initial_theme,
 		richtextstring &&string);
 
  private:
@@ -204,7 +204,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 
 	implObj(textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
-		const defaulttheme &initial_theme,
+		const const_defaulttheme &initial_theme,
 		richtextstring &&string,
 		const richtext &text,
 		const richtextmeta &default_meta);
@@ -241,7 +241,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 	//! Invoke the underlying text object's theme_updated().
 
 	//! When done, recalculate() our updated size.
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme);
 
 	//! Invoke the underlying text object's do_draw().
 

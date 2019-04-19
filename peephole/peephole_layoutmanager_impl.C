@@ -241,7 +241,7 @@ void peepholelayoutmanagerObj::implObj::initialize(ONLY IN_THREAD)
 
 void peepholelayoutmanagerObj::implObj
 ::theme_updated(ONLY IN_THREAD,
-		const defaulttheme &theme)
+		const const_defaulttheme &theme)
 {
 	superclass_t::theme_updated(IN_THREAD, theme);
 	recompute_hv_metrics(IN_THREAD, theme);
@@ -249,7 +249,7 @@ void peepholelayoutmanagerObj::implObj
 
 void peepholelayoutmanagerObj::implObj
 ::recompute_hv_metrics(ONLY IN_THREAD,
-			     const defaulttheme &theme)
+		       const const_defaulttheme &theme)
 {
 	std::visit(visitor
 		 {

@@ -27,7 +27,7 @@
 #include "gridlayoutmanager.H"
 #include "messages.H"
 #include "dialog.H"
-#include "gridtemplate.H"
+#include "x/w/uielements.H"
 #include "defaulttheme.H"
 
 #include <x/chrcasecmp.H>
@@ -531,9 +531,9 @@ create_contents(const ref<color_picker_selectorObj::implObj>
 {
 	auto glm=lm_impl->create_gridlayoutmanager();
 
-	gridtemplate tmpl{helper.elements()};
+	uielements tmpl{helper.elements()};
 
-	glm->create("color-picker-popup", tmpl);
+	glm->generate("color-picker-popup", tmpl);
 
 	auto p=color_picker_selector::create(attachedto_info,
 					     contents_container_impl,

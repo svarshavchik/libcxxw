@@ -18,6 +18,7 @@
 #include <x/w/dim_arg.H>
 #include <x/w/shortcutfwd.H>
 #include <x/w/containerfwd.H>
+#include <x/w/uielementsfwd.H>
 #include <x/refptr_hash.H>
 #include <x/functionalrefptrfwd.H>
 
@@ -27,8 +28,6 @@
 #include <string>
 
 LIBCXXW_NAMESPACE_START
-
-class gridtemplate;
 
 //! The grid layout manager
 
@@ -194,12 +193,15 @@ public:
 	//! Remove all custom column defaults.
 	void remove_col_defaults(size_t col);
 
-	//! Create the contents from a predefined theme template.
+	//! Implement generate()
 
-	//! This is used by create_standard_dialog().
+	//! \see uigenerators
 
-	void create(const std::string_view &name,
-		    gridtemplate &);
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements) override;
+
+	using layoutmanagerObj::generate;
 };
 
 LIBCXXW_NAMESPACE_END

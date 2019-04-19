@@ -24,12 +24,12 @@ LIBCXXW_NAMESPACE_START
 // we get something other than an rvalue ref, delegate this to the proper
 // constructor.
 
-void main_windowObj::initialize_theme_dialog(const std::string_view &name,
-					     gridtemplate &info)
+void main_windowObj::generate(const std::string_view &name,
+			      uielements &info)
 {
 	gridlayoutmanager glm=get_layoutmanager();
 
-	glm->create(name, info);
+	glm->generate(name, info);
 }
 
 dialogObj::dialogObj(const dialog_args &args)

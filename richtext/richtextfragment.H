@@ -183,7 +183,7 @@ public:
 
 	//! Current theme was updated. Fonts have been changed.
 	void theme_updated_called_by_fragment_list(ONLY IN_THREAD,
-						   const defaulttheme
+						   const const_defaulttheme
 						   &new_theme);
 
  private:

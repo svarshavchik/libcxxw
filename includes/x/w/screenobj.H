@@ -241,7 +241,8 @@ public:
 	//! fonts for rendering text.
 	fontcollection create_fontcollection(const font &font_spec,
 					     const depth_t depth,
-					     const defaulttheme &font_theme);
+					     const const_defaulttheme
+					     &font_theme);
 
 	//! Whether a selection is available.
 

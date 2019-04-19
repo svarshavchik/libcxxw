@@ -29,12 +29,14 @@ void list_cellseparatorObj::cell_redraw(ONLY IN_THREAD,
 }
 
 void list_cellseparatorObj::cell_initialize(ONLY IN_THREAD,
-					   const defaulttheme &initial_theme)
+					   const const_defaulttheme
+					    &initial_theme)
 {
 }
 
 void list_cellseparatorObj::cell_theme_updated(ONLY IN_THREAD,
-					      const defaulttheme &initial_theme)
+					      const const_defaulttheme
+					       &initial_theme)
 {
 }
 

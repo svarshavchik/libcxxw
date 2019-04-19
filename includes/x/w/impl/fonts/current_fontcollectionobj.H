@@ -45,7 +45,7 @@ public:
 	//! Create the new font collection
 
 	fontcollection create_fc(const font &font_spec,
-				 const defaulttheme &font_theme);
+				 const const_defaulttheme &font_theme);
 
  public:
 
@@ -63,7 +63,8 @@ public:
 	current_fontcollectionObj(const screen &font_screen,
 				  depth_t depth,
 				  const font &font_spec,
-				  const defaulttheme &font_theme) LIBCXX_HIDDEN;
+				  const const_defaulttheme &font_theme)
+		LIBCXX_HIDDEN;
 
  public:
 	//! Destructor
@@ -73,7 +74,7 @@ public:
 
 	//! This is invoked from update_current_theme().
 	virtual void current_theme_updated(ONLY IN_THREAD,
-					   const defaulttheme &new_theme)
+					   const const_defaulttheme &new_theme)
 		LIBCXX_HIDDEN;
 };
 

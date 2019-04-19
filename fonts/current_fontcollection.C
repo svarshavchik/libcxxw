@@ -20,7 +20,7 @@ current_fontcollectionObj
 ::current_fontcollectionObj(const screen &font_screen,
 			    depth_t depth,
 			    const font &font_spec,
-			    const defaulttheme &font_theme)
+			    const const_defaulttheme &font_theme)
 	: font_spec_thread_only{font_spec},
 	  font_screen{font_screen},
 	  depth{depth},
@@ -33,14 +33,14 @@ current_fontcollectionObj::~current_fontcollectionObj()=default;
 
 void current_fontcollectionObj
 ::current_theme_updated(ONLY IN_THREAD,
-			const defaulttheme &new_theme)
+			const const_defaulttheme &new_theme)
 {
 	fc_public=fc(IN_THREAD)=create_fc(font_spec(IN_THREAD),
 					  new_theme);
 }
 
 fontcollection current_fontcollectionObj::create_fc(const font &font_spec,
-						    const defaulttheme
+						    const const_defaulttheme
 						    &font_theme)
 {
 	return font_screen->create_fontcollection(font_spec,
@@ -59,7 +59,7 @@ fontcollection screenObj
 fontcollection screenObj
 ::create_fontcollection(const font &font_spec,
 			const depth_t depth,
-			const defaulttheme &font_theme)
+			const const_defaulttheme &font_theme)
 {
 	auto dpi_scaled=
 		std::round(dim_t::value_type

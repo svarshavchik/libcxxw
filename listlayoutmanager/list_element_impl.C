@@ -193,7 +193,7 @@ validate_col_widths(std::unordered_map<size_t,
 
 static auto initial_minimum_column_width_pixels
 (const std::unordered_map<size_t, double> &initial_minimum_column_width,
- const defaulttheme &theme)
+ const const_defaulttheme &theme)
 {
 	std::unordered_map<size_t, std::tuple<double, dim_t>> m;
 
@@ -232,7 +232,7 @@ std::tuple<dim_t, dim_t> list_elementObj::implObj
 
 void list_elementObj::implObj
 ::recalculate_minimum_column_width_pixels(ONLY IN_THREAD,
-					  const defaulttheme &theme)
+					  const const_defaulttheme &theme)
 {
 	// First, recompute padding pixels
 	for (const auto &dim_args:lr_paddings)
@@ -829,7 +829,7 @@ void list_elementObj::implObj::initialize(ONLY IN_THREAD)
 }
 
 void list_elementObj::implObj::theme_updated(ONLY IN_THREAD,
-					     const defaulttheme &new_theme)
+					     const const_defaulttheme &new_theme)
 {
 	recalculate_minimum_column_width_pixels(IN_THREAD,
 						get_screen()->impl

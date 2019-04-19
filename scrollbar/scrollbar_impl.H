@@ -271,7 +271,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! theme_updated() all icons. Invoke recalculate_metrics().
 
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme) override;
 
 	//! Scrollbar's size has been updated.
 

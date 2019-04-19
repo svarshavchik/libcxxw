@@ -45,13 +45,14 @@ void list_celltextObj::cell_redraw(ONLY IN_THREAD,
 }
 
 void list_celltextObj::cell_initialize(ONLY IN_THREAD,
-				       const defaulttheme &initial_theme)
+				       const const_defaulttheme &initial_theme)
 {
 	theme_updated(IN_THREAD, initial_theme);
 }
 
 void list_celltextObj::cell_theme_updated(ONLY IN_THREAD,
-					  const defaulttheme &initial_theme)
+					  const const_defaulttheme
+					  &initial_theme)
 {
 	theme_updated(IN_THREAD, initial_theme);
 }

@@ -73,7 +73,7 @@ public:
 
 	//! Recalculate the dimension, after a theme change.
 	void theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme) override;
+			   const const_defaulttheme &new_theme) override;
 };
 
 //! Helper template used by themedim_elementObj

@@ -55,7 +55,7 @@ template<typename base>
 void themedim_axis_widthObj<base>
 ::update_width_axis(ONLY IN_THREAD,
 		    const dim_axis_arg &arg,
-		    const defaulttheme &current_theme)
+		    const const_defaulttheme &current_theme)
 {
 	themedim_element<themedim_width_min>::update(IN_THREAD, arg.minimum,
 						     current_theme);
@@ -109,7 +109,7 @@ template<typename base>
 void themedim_axis_heightObj<base>
 ::update_height_axis(ONLY IN_THREAD,
 		     const dim_axis_arg &arg,
-		     const defaulttheme &current_theme)
+		     const const_defaulttheme &current_theme)
 {
 	themedim_element<themedim_height_min>::update(IN_THREAD, arg.minimum,
 						     current_theme);

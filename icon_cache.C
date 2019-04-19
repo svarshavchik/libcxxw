@@ -43,7 +43,7 @@ typedef ref<pixmapObj::implObj
 			     const cached_filename_info &filename,
 			     const screen &screenref,
 			     const const_pictformat &drawable_pictformat,
-			     const defaulttheme &theme,
+			     const const_defaulttheme &theme,
 			     const dim_arg &width_arg,
 			     const dim_arg &height_arg);
 
@@ -52,7 +52,7 @@ typedef ref<pixmapObj::implObj
 			   const cached_filename_info &filename,
 			   const screen &screenref,
 			   const const_pictformat &drawable_pictformat,
-			   const defaulttheme &theme,
+			   const const_defaulttheme &theme,
 			   dim_t w, dim_t h, icon_scale scale);
 
 struct LIBCXX_HIDDEN extension_info{
@@ -108,7 +108,7 @@ public:
 
 struct icon_cacheObj::extension_cache_key_t {
 	std::string name;
-	defaulttheme theme;
+	const_defaulttheme theme;
 
 	inline bool operator==(const extension_cache_key_t &o) const noexcept
 	{
@@ -118,13 +118,13 @@ struct icon_cacheObj::extension_cache_key_t {
 
 struct icon_cacheObj::extension_cache_key_t_hash
 	: public std::hash<std::string>,
-	  public std::hash<defaulttheme> {
+	  public std::hash<const_defaulttheme> {
 
 	size_t operator()(const icon_cacheObj::extension_cache_key_t &k)
 		const noexcept
 	{
 		return std::hash<std::string>::operator()(k.name) +
-			std::hash<defaulttheme>::operator()(k.theme);
+			std::hash<const_defaulttheme>::operator()(k.theme);
 	};
 };
 
@@ -132,7 +132,7 @@ struct icon_cacheObj::extension_cache_key_t_hash
 // Verify that the given file exists.
 
 static bool search_file(std::string &filename,
-			const defaulttheme &theme)
+			const const_defaulttheme &theme)
 {
 	struct stat stat_buf;
 
@@ -172,7 +172,7 @@ static bool search_file(std::string &filename,
 // is given, try each extension we know about.
 
 static inline auto search_extension(const std::string_view &name,
-				    const defaulttheme &theme)
+				    const const_defaulttheme &theme)
 {
 	size_t p=name.rfind('/');
 
@@ -223,7 +223,7 @@ static inline auto search_extension(const std::string_view &name,
 
 static auto search_extension_cached(const screen &s,
 				    const std::string &name,
-				    const defaulttheme &theme)
+				    const const_defaulttheme &theme)
 {
 	return s->impl->iconcaches->extension_cache->find_or_create
 		({name, theme},
@@ -423,7 +423,7 @@ struct icon_cacheObj::pixmap_icon_cache_key_t_hash
 
 template<typename dim_type>
 static icon get_cached_icon(const std::string &name,
-			    const defaulttheme &theme,
+			    const const_defaulttheme &theme,
 			    const pixmap_with_picture &cached_p_with_p,
 			    const dim_type &width,
 			    const dim_type &height,
@@ -707,7 +707,7 @@ create_sxg_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
 			      const screen &screenref,
 			      const const_pictformat &drawable_pictformat,
-			      const defaulttheme &theme,
+			      const const_defaulttheme &theme,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
@@ -729,7 +729,7 @@ create_sxg_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
 				     const screen &screenref,
 				     const const_pictformat &drawable_pictformat,
-				     const defaulttheme &theme,
+				     const const_defaulttheme &theme,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
@@ -1138,7 +1138,7 @@ create_jpg_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
 				     const screen &screenref,
 				     const const_pictformat &drawable_pictformat,
-				     const defaulttheme &theme,
+				     const const_defaulttheme &theme,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
@@ -1151,7 +1151,7 @@ create_jpg_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
 			      const screen &screenref,
 			      const const_pictformat &drawable_pictformat,
-			      const defaulttheme &theme,
+			      const const_defaulttheme &theme,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
@@ -1166,7 +1166,7 @@ create_gif_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
 				     const screen &screenref,
 				     const const_pictformat &drawable_pictformat,
-				     const defaulttheme &theme,
+				     const const_defaulttheme &theme,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
@@ -1179,7 +1179,7 @@ create_gif_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
 			      const screen &screenref,
 			      const const_pictformat &drawable_pictformat,
-			      const defaulttheme &theme,
+			      const const_defaulttheme &theme,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
@@ -1194,7 +1194,7 @@ create_png_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
 				     const screen &screenref,
 				     const const_pictformat &drawable_pictformat,
-				     const defaulttheme &theme,
+				     const const_defaulttheme &theme,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
@@ -1207,7 +1207,7 @@ create_png_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
 			      const screen &screenref,
 			      const const_pictformat &drawable_pictformat,
-			      const defaulttheme &theme,
+			      const const_defaulttheme &theme,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
@@ -1238,7 +1238,8 @@ icon drawableObj::implObj::create_icon(const create_icon_args_t &args,
 {
 	auto theme=screenref->impl->current_theme.get();
 
-	auto cached_filename=search_extension_cached(screenref, args.name, theme);
+	auto cached_filename=
+		search_extension_cached(screenref, args.name, theme);
 
 	auto pixmap_impl=(*cached_filename->info.create)
 		(args.name, cached_filename, screenref, drawable_pictformat,

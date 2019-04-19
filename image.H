@@ -55,7 +55,7 @@ public:
 		     const draw_info &di,
 		     const rectarea &areas) override;
 
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme) override;
 
 	///////////////////////////////////////////////////////
 

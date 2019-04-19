@@ -50,12 +50,12 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 	//! The theme this SXG image is based on.
 
-	const defaulttheme theme;
+	const const_defaulttheme theme;
 
 	//! Constructor
 	sxg_parserObj(const std::string &filename,
 		      const screen &screenref,
-		      const defaulttheme &theme);
+		      const const_defaulttheme &theme);
 
 	//! Destructor
 	~sxg_parserObj();
@@ -240,7 +240,7 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 		const_picture get_color(dim_t width,
 					dim_t height,
 					const ref<screenObj::implObj> &s,
-					const defaulttheme &theme) const;
+					const const_defaulttheme &theme) const;
 
 	private:
 

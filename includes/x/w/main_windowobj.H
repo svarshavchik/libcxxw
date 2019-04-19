@@ -14,6 +14,7 @@
 #include <x/w/gridlayoutmanagerobj.H>
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/dialogfwd.H>
+#include <x/w/uielementsfwd.H>
 #include <x/w/shortcutfwd.H>
 #include <x/w/input_dialogfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
@@ -91,8 +92,8 @@ public:
 	//! Constructor for a standard theme-specified dialog.
 
 	//! \internal
-	void initialize_theme_dialog(const std::string_view &,
-				     gridtemplate &info);
+	void generate(const std::string_view &,
+		      uielements &info);
 
 	//! Return the layout manager for the menu bar.
 

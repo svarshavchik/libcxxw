@@ -282,7 +282,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Override theme_updated()
 	void theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme) override;
+			   const const_defaulttheme &new_theme) override;
 
 	//! Which list style we're supposed to use.
 
@@ -324,7 +324,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Recalculate minimum_column_width_pixels
 
 	void recalculate_minimum_column_width_pixels(ONLY IN_THREAD,
-						     const defaulttheme &);
+						     const const_defaulttheme &)
+		;
 
  public:
 	THREAD_DATA_ONLY(minimum_column_widths);

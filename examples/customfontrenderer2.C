@@ -198,7 +198,7 @@ public:
 	void initialize(ONLY IN_THREAD) override;
 
 	void theme_updated(ONLY IN_THREAD,
-			   const x::w::defaulttheme &current_theme)
+			   const x::w::const_defaulttheme &current_theme)
 		override;
 
 private:
@@ -239,7 +239,7 @@ void my_font_renderer_implObj::initialize(ONLY IN_THREAD)
 // theme_updated() first.
 
 void my_font_renderer_implObj::theme_updated(ONLY IN_THREAD,
-					     const x::w::defaulttheme
+					     const x::w::const_defaulttheme
 					     &current_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, current_theme);

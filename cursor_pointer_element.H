@@ -33,7 +33,7 @@ inline void cursor_pointer_1tag<C>::initialize(ONLY IN_THREAD)
 //! Reload all cursors after theme_updated().
 template<typename C>
 inline void cursor_pointer_1tag<C>::theme_updated(ONLY IN_THREAD,
-						  const defaulttheme &new_theme)
+						  const const_defaulttheme &new_theme)
 {
 	tagged_cursor_pointer(IN_THREAD)=
 		tagged_cursor_pointer(IN_THREAD)->theme_updated(IN_THREAD,
@@ -69,7 +69,7 @@ inline void cursor_pointer_element_implObj<element_impl, Tag1, Tags...>
 
 template<typename element_impl, typename Tag1, typename ...Tags>
 inline void cursor_pointer_element_implObj<element_impl, Tag1, Tags...>
-::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	cursor_pointer_1tag<Tag1>::theme_updated(IN_THREAD, new_theme);

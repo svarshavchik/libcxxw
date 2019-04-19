@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN font_picker_previewObj::implObj
 	font current_font_thread_only;
 
 	//! The current theme used for previewing fonts.
-	defaulttheme current_theme;
+	const_defaulttheme current_theme;
 
 	//! The current preview's fontcollection
 
@@ -69,7 +69,7 @@ class LIBCXX_HIDDEN font_picker_previewObj::implObj
 	//! Override theme_updated
 
 	//! Saved current_theme, and calls refresh_preview().
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 		override;
  private:
 

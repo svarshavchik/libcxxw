@@ -260,23 +260,23 @@ class vertical_adjusted_panecontainer_implObj
 	//! Re-verify our metrics, once we're initialized.
 	void initialize(ONLY IN_THREAD) override
 	{
-		reset(IN_THREAD,
-		      get_screen()->impl->current_theme.get());
 		superclass_t::initialize(IN_THREAD);
+		reset(IN_THREAD);
 	}
 
 	//! Theme was updated.
 
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &theme) override
+	void theme_updated(ONLY IN_THREAD,
+			   const const_defaulttheme &new_theme) override
 	{
-		reset(IN_THREAD, theme);
-		superclass_t::theme_updated(IN_THREAD, theme);
+		superclass_t::theme_updated(IN_THREAD, new_theme);
+		reset(IN_THREAD);
 	}
 
  private:
 
 	//! Reset only the vertical metrics.
-	void reset(ONLY IN_THREAD, const defaulttheme &theme)
+	void reset(ONLY IN_THREAD)
 	{
 		auto hv=get_horizvert(IN_THREAD);
 
@@ -309,23 +309,23 @@ class horizontal_adjusted_panecontainer_implObj
 
 	void initialize(ONLY IN_THREAD) override
 	{
-		reset(IN_THREAD, get_screen()->impl->current_theme.get());
-
 		superclass_t::initialize(IN_THREAD);
+		reset(IN_THREAD);
 	}
 
 	//! Theme was updated.
 
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &theme) override
+	void theme_updated(ONLY IN_THREAD,
+			   const const_defaulttheme &new_theme) override
 	{
-		reset(IN_THREAD, theme);
-		superclass_t::theme_updated(IN_THREAD, theme);
+		superclass_t::theme_updated(IN_THREAD, new_theme);
+		reset(IN_THREAD);
 	}
 
  private:
 
 	//! Reset only the horizontal metrics.
-	void reset(ONLY IN_THREAD, const defaulttheme &theme)
+	void reset(ONLY IN_THREAD)
 	{
 		auto hv=get_horizvert(IN_THREAD);
 

@@ -228,7 +228,7 @@ void richtextstring::compute_width(richtextstring *previous_string,
 }
 
 void richtextstring::theme_updated(ONLY IN_THREAD,
-				   const defaulttheme &new_theme)
+				   const const_defaulttheme &new_theme)
 {
 	// This is mostly to clear the cached resolved fonts:
 	modified();

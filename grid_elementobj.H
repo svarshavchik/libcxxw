@@ -136,7 +136,7 @@ class LIBCXX_HIDDEN grid_elementObj
 	//! at grid_element's axises, and the only thing that the grid
 	//! calculation cares about is the total padding in each axis).
 
-	void theme_updated(const defaulttheme &theme);
+	void theme_updated(const const_defaulttheme &new_theme);
 
 	//! Return true if the element is visible, or if its space is reserved.
 

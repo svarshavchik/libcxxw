@@ -36,7 +36,7 @@ dim_axis_arg::dim_axis_arg(const dim_arg &minimum,
 
 dim_axis_arg::~dim_axis_arg()=default;
 
-metrics::axis dim_axis_arg::compute(const defaulttheme &theme,
+metrics::axis dim_axis_arg::compute(const const_defaulttheme &theme,
 				    themedimaxis wh) const
 {
 	auto min=theme->get_theme_dim_t(minimum, wh);

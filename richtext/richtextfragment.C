@@ -177,7 +177,7 @@ richtextfragmentObj::find_y_position(size_t y_position_requested)
 
 void richtextfragmentObj
 ::theme_updated_called_by_fragment_list(ONLY IN_THREAD,
-					const defaulttheme &new_theme)
+					const const_defaulttheme &new_theme)
 {
 	string.theme_updated(IN_THREAD, new_theme);
 	load_glyphs_widths_kernings();

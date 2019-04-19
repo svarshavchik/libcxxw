@@ -7,7 +7,7 @@
 #include "dirlisting/filedirlist_manager_impl.H"
 #include "main_window.H"
 #include "dialog.H"
-#include "gridtemplate.H"
+#include "x/w/uielements.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/child_element.H"
@@ -815,9 +815,7 @@ file_dialog main_windowObj
 				  conf.initial_directory
 				 };
 
-			 gridtemplate tmpl{
-				 init_args.create_elements(conf)
-					 };
+			 uielements tmpl{init_args.create_elements(conf)};
 
 			 gridlayoutmanager glm=
 				 args.dialog_window->get_layoutmanager();
@@ -835,7 +833,7 @@ file_dialog main_windowObj
 
 			 gridlayoutmanager inner_glm=c->get_layoutmanager();
 
-			 inner_glm->create("file-dialog", tmpl);
+			 inner_glm->generate("file-dialog", tmpl);
 			 f->created_internally(c);
 
 			 auto fd=file_dialog::create(args,

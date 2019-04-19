@@ -56,7 +56,7 @@ public:
 
 	//! Update the background color
 	void theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme,
+			   const const_defaulttheme &new_theme,
 			   elementObj::implObj &);
 
 	//! The size of the background color's element.
@@ -142,7 +142,7 @@ class background_color_1elementObj
 	//! If the display element is visible, call
 	//! set_background_color_for_element().
 
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 		override;
 
 	//! Override process_updated_position.

@@ -354,7 +354,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! Override theme_updated().
 
 	//! reference_size_set is no longer. It's a brand new world.
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 		override;
 
 	//! Override  rebuild_elements_and_update_metrics().

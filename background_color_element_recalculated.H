@@ -26,7 +26,7 @@ void background_color_element_recalculatedObj<element_impl>
 
 template<typename element_impl>
 void background_color_element_recalculatedObj<element_impl>
-::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
 	recalculated_flag=false;
 	element_impl::theme_updated(IN_THREAD, new_theme);

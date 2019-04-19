@@ -163,7 +163,7 @@ void borderlayoutmanagerObj::implObj
 }
 
 void borderlayoutmanagerObj::implObj::theme_updated(ONLY IN_THREAD,
-						    const defaulttheme &new_theme)
+						    const const_defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 

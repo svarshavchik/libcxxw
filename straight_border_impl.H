@@ -67,7 +67,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 	//! The screen's theme has been updated.
 
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 		override
 	{
 		straight_borderObj::implObj::theme_updated(IN_THREAD,

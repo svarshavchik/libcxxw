@@ -50,12 +50,12 @@ class themedimObj : virtual public obj {
 
 	//! Recalculate the size in pixels.
 	void theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme);
+			   const const_defaulttheme &new_theme);
 
 	//! Update the dimension.
 	void update(ONLY IN_THREAD,
 		    const dim_arg &new_dimname,
-		    const defaulttheme &current_theme);
+		    const const_defaulttheme &current_theme);
 };
 
 

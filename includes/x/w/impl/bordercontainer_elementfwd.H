@@ -115,7 +115,7 @@ public:
 	dim_t get_border_vpad(ONLY IN_THREAD) const override;
 	void initialize(ONLY IN_THREAD) override;
 	void theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme) override;
+			   const const_defaulttheme &new_theme) override;
 };
 
 

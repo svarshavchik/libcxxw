@@ -1086,7 +1086,8 @@ const_picture sxg_parserObj::color_info::get_color(dim_t width,
 						   dim_t height,
 						   const ref<screenObj
 						   ::implObj> &s,
-						   const defaulttheme &theme)
+						   const const_defaulttheme
+						   &theme)
 	const
 {
 	if (theme_color.empty())
@@ -3190,7 +3191,7 @@ pixmap_points_of_interest_t sxg_parserObj::render_points(dim_t w, dim_t h,
 
 sxg_parserObj::sxg_parserObj(const std::string &filename,
 			     const screen &screenref,
-			     const defaulttheme &theme)
+			     const const_defaulttheme &theme)
 	: screenref(screenref), theme(theme)
 {
 #ifdef SXG_PARSER_CONSTRUCTOR_TEST

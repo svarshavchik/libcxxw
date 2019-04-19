@@ -91,7 +91,7 @@ public:
 	//! Invoke all paragraphs's fragments' theme_updated().
 
 	//! Takes care of updating the Y position of everything.
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END

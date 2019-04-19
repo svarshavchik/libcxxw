@@ -36,6 +36,14 @@ typedef ref<defaultthemeObj, defaultthemeBase> defaulttheme;
 
 typedef ptr<defaultthemeObj, defaultthemeBase> defaultthemeptr;
 
+//! A constant loaded application theme.
+
+typedef const_ref<defaultthemeObj, defaultthemeBase> const_defaulttheme;
+
+//! A constant nullable pointer reference to a loaded application theme.
+
+typedef const_ptr<defaultthemeObj, defaultthemeBase> const_defaultthemeptr;
+
 //! Current theme, mutex protected.
 
 //! The current theme must be consulted when constructing new
@@ -43,7 +51,7 @@ typedef ptr<defaultthemeObj, defaultthemeBase> defaultthemeptr;
 //! as well.
 
 
-typedef mpobj<defaulttheme, std::recursive_mutex> current_theme_t;
+typedef mpobj<const_defaulttheme, std::recursive_mutex> current_theme_t;
 
 LIBCXXW_NAMESPACE_END
 

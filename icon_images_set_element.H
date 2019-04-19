@@ -32,7 +32,7 @@ inline void icon_1tag<C>::initialize(ONLY IN_THREAD)
 
 //! Reload all images after theme_updated().
 template<typename C>
-inline void icon_1tag<C>::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+inline void icon_1tag<C>::theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
 	tagged_icon(IN_THREAD)=
 		tagged_icon(IN_THREAD)->theme_updated(IN_THREAD,
@@ -77,7 +77,7 @@ inline void icon_images_set_element_implObj<element_impl, Tag1, Tags...>
 
 template<typename element_impl, typename Tag1, typename ...Tags>
 inline void icon_images_set_element_implObj<element_impl, Tag1, Tags...>
-::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	icon_1tag<Tag1>::theme_updated(IN_THREAD, new_theme);

@@ -504,7 +504,7 @@ void editorObj::implObj::initialize(ONLY IN_THREAD)
 }
 
 void editorObj::implObj::theme_updated(ONLY IN_THREAD,
-				       const defaulttheme &new_theme)
+				       const const_defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	parent_peephole->recalculate(IN_THREAD, *this);

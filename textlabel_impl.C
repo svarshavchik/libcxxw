@@ -127,7 +127,7 @@ textlabelObj::implObj::implObj(const text_param &text,
 
 textlabelObj::implObj::implObj(textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
-			       const defaulttheme &initial_theme,
+			       const const_defaulttheme &initial_theme,
 			       richtextstring &&string,
 			       const richtextmeta &default_meta)
 	: implObj{config, parent_element_impl,
@@ -140,7 +140,7 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 
 textlabelObj::implObj::implObj(textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
-			       const defaulttheme &initial_theme,
+			       const const_defaulttheme &initial_theme,
 			       richtextstring &&string)
 	: implObj{config,
 		  parent_element_impl,
@@ -153,7 +153,7 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 
 textlabelObj::implObj::implObj(textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
-			       const defaulttheme &initial_theme,
+			       const const_defaulttheme &initial_theme,
 			       richtextstring &&string,
 			       const richtext &text,
 			       const richtextmeta &default_meta)
@@ -228,9 +228,10 @@ void textlabelObj::implObj::set_minimum_override(ONLY IN_THREAD,
 	min_vert_override=vert_override;
 }
 
-void textlabelObj::implObj::compute_preferred_width(const defaulttheme &theme,
-						    double widthmm,
-						    const fontcollection &fc)
+void textlabelObj::implObj
+::compute_preferred_width(const const_defaulttheme &theme,
+			  double widthmm,
+			  const fontcollection &fc)
 {
 	preferred_width=theme->compute_width(widthmm);
 
@@ -285,7 +286,7 @@ void textlabelObj::implObj::updated(ONLY IN_THREAD)
 }
 
 void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
-					  const defaulttheme &new_theme)
+					  const const_defaulttheme &new_theme)
 {
 	current_theme=new_theme;
 

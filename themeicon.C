@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 template<typename dim_type>
 themeiconObj<dim_type>::themeiconObj(const std::string &name,
-				     const defaulttheme &theme,
+				     const const_defaulttheme &theme,
 				     const dim_type &width,
 				     const dim_type &height,
 				     icon_scale scale,
@@ -46,7 +46,7 @@ icon themeiconObj<dim_arg>::initialize(ONLY IN_THREAD)
 
 template<>
 icon themeiconObj<dim_arg>::theme_updated(ONLY IN_THREAD,
-					  const defaulttheme &new_theme)
+					  const const_defaulttheme &new_theme)
 {
 	if (new_theme == theme)
 		return icon(this);
@@ -70,7 +70,7 @@ icon themeiconObj<dim_t>::initialize(ONLY IN_THREAD)
 
 template<>
 icon themeiconObj<dim_t>::theme_updated(ONLY IN_THREAD,
-					const defaulttheme &new_theme)
+					const const_defaulttheme &new_theme)
 {
 	if (new_theme == theme)
 		return icon(this);

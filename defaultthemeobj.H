@@ -7,7 +7,6 @@
 
 #include <x/xml/doc.H>
 #include <x/functional.H>
-#include <x/functionalrefptrfwd.H>
 
 #include "x/w/drawablefwd.H"
 #include "x/w/rgb.H"
@@ -16,20 +15,14 @@
 #include "x/w/screenfwd.H"
 #include "x/w/screenobj.H"
 #include "x/w/pictformatfwd.H"
-#include "x/w/gridlayoutmanagerfwd.H"
-#include "x/w/booklayoutmanagerfwd.H"
-#include "x/w/factoryfwd.H"
-#include "x/w/gridfactoryfwd.H"
-#include "x/w/bookpagefactoryfwd.H"
 #include "x/w/text_paramfwd.H"
-#include "x/w/shortcutfwd.H"
 #include "x/w/dim_arg.H"
 #include "x/w/connectionfwd.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/defaultthemefwd.H"
 #include "x/w/impl/themedimfwd.H"
 #include "x/w/impl/border_implfwd.H"
-#include "gridtemplatefwd.H"
+#include "x/w/uigeneratorsobj.H"
 #include "theme_parser_lockfwd.H"
 
 #include <string>
@@ -58,7 +51,7 @@ void load_cxxwtheme_property(const xcb_screen_t *screen_0,
 //
 // The window theme
 
-class LIBCXX_HIDDEN defaultthemeObj : virtual public obj {
+class LIBCXX_HIDDEN defaultthemeObj : public uigeneratorsObj {
 
 public:
 	//! Name of this theme
@@ -84,7 +77,7 @@ public:
 	//! set theme is the same one that's already set in its window, so
 	//! this provides the means of detecting it.
 
-	bool is_different_theme(const defaulttheme &t) const;
+	bool is_different_theme(const const_defaulttheme &t) const;
 
 	const std::string themedir;
 
@@ -113,52 +106,6 @@ public:
 	//! Fonts
 	std::unordered_map<std::string, font> fonts;
 
-	//! Type-erased grid layout generator.
-
-	typedef functionref<void (const gridlayoutmanager &,
-				  const gridtemplateptr &,
-				  const defaulttheme &)
-			    > gridlayout_generator_t;
-
-	//! Type-erased book layout generator.
-
-	typedef functionref<void (const booklayoutmanager &,
-				  const gridtemplateptr &,
-				  const defaulttheme &)
-			      > booklayout_generator_t;
-
-	//! Grid layouts
-
-	std::unordered_map<std::string, std::vector<gridlayout_generator_t>
-			   > gridlayouts;
-
-	//! Book layouts
-	std::unordered_map<std::string, std::vector<booklayout_generator_t>
-			   > booklayouts;
-
-	//! Type-erased factory generator.
-
-	typedef functionref<void (const gridfactory &,
-				    const gridtemplateptr &,
-				    const defaulttheme &)
-			      > gridfactory_generator_t;
-
-	//! Type-erased factory generator.
-
-	typedef functionref<void (const bookpagefactory &,
-				  const gridtemplateptr &,
-				  const defaulttheme &)
-			    > bookpagefactory_generator_t;
-
-	//! Grid layout manager factories
-	std::unordered_map<std::string,
-			   std::vector<gridfactory_generator_t>> gridfactories;
-
-	//! Book-page layout manager factories
-	std::unordered_map<std::string,
-			   std::vector<bookpagefactory_generator_t>
-			   > bookpagefactories;
-
 	//! Parse dimensions from the configuration file.
 	void load_dims(const theme_parser_lock &root_lock);
 
@@ -172,51 +119,7 @@ public:
 	//! Parse fonts from the configuration file
 	void load_fonts(const theme_parser_lock &root_lock);
 
-	//! Parse layouts from the configuration file
-	void load_layouts(const theme_parser_lock &root_lock);
-
-	//! Parse elements from the configuration file
-	void load_factories(const theme_parser_lock &root_lock);
-
-	//! Stylesheet-generated parsing code.
-	static gridlayout_generator_t
-		gridlayout_parser(const theme_parser_lock &lock);
-
-	//! Stylesheet-generated parsing code.
-	static void
-		gridlayout_parseconfig(const theme_parser_lock &lock,
-				       std::vector<gridlayout_generator_t> &);
-
-	//! Stylesheet-generated parsing code.
-	static gridfactory_generator_t
-		gridfactory_parser(const theme_parser_lock &lock);
-
-	//! Stylesheet-generated parsing code.
-	static void
-		gridfactory_parseconfig(const theme_parser_lock &lock,
-					std::vector<gridfactory_generator_t> &);
-
-	//! Stylesheet-generated parsing code.
-	static booklayout_generator_t
-		booklayout_parser(const theme_parser_lock &lock);
-
-	//! Stylesheet-generated parsing code.
-	static void
-		booklayout_parseconfig(const theme_parser_lock &lock,
-				       std::vector<booklayout_generator_t> &);
-
-	//! Stylesheet-generated parsing code.
-	static bookpagefactory_generator_t
-		bookpagefactory_parser(const theme_parser_lock &lock);
-
-	//! Stylesheet-generated parsing code.
-	static void
-		bookpagefactory_parseconfig(const theme_parser_lock &lock,
-					    std::vector<
-					    bookpagefactory_generator_t> &);
-
  public:
-
 	//! Load font definitions.
 
 	//! This is also used by the SXG file parser.
@@ -227,7 +130,7 @@ public:
 		void load_fonts(const theme_parser_lock &lock,
 				const xml::doc::base::xpath &xpath,
 				install_functor &&install,
-				lookup_functor &&lookup)
+				lookup_functor &&lookup) const
 	{
 		do_load_fonts(lock,
 			      xpath,
@@ -245,7 +148,7 @@ public:
 			   const function<void (const std::string &,
 						const font &)> &install,
 			   const function<bool (const std::string &,font &)>
-			   &lookup);
+			   &lookup) const;
 
 	//! Retrieve theme dimension
 
@@ -254,25 +157,26 @@ public:
 	//! which is interpreted as millimeters; in which case themedimaxis
 	//! specifies whether this is a horizontal or a vertical dimension.
 
-	dim_t get_theme_dim_t(const dim_arg &id, themedimaxis wh);
+	dim_t get_theme_dim_t(const dim_arg &id, themedimaxis wh) const;
 
 	//! Compute # of pixels from millimeters, for width
 
-	dim_t compute_width(double millimeters);
+	dim_t compute_width(double millimeters) const;
 
 	//! Compute # of pixels from millimeters, for height
 
-	dim_t compute_height(double millimeters);
+	dim_t compute_height(double millimeters) const;
 
 	//! Retrieve theme color
 	theme_color_t get_theme_color(const std::string_view &theme_color)
 		const;
 
 	//! Retrieve a theme border.
-	const_border_impl get_theme_border(const std::string_view &id);
+	const_border_impl get_theme_border(const std::string_view &id)
+		const;
 
 	//! Retrieve a theme font.
-	font get_theme_font(const std::string &id);
+	font get_theme_font(const std::string &id) const;
 
 	/////////////////////////////////////////////////////////////////////
 	//
@@ -315,52 +219,6 @@ public:
 		  const ref<screenObj::implObj> &screen);
 
 	~defaultthemeObj();
-
- private:
-
-	//! Add a new row to the grid layout manager.
-	void layout_append_row(const gridlayoutmanager &,
-			       const gridtemplateptr &,
-			       const std::string &);
-
-	//! Insert another template
-
-	void layout_insert(const factory &,
-			   gridtemplate *,
-			   const std::string &,
-			   const std::string &);
-
-	//! Insert a book container
-
-	void layout_book_container(const factory &,
-				   const gridtemplateptr &,
-				   const std::string &,
-				   const std::string &,
-				   const std::string &);
-
-	//! Insert a book container
-	void layout_book_container(const booklayoutmanager &,
-				   const gridtemplateptr &,
-				   const std::string &);
-
-	//! Add a new page to the book layout manager.
-	void layout_append_pages(const booklayoutmanager &,
-				 const gridtemplateptr &,
-				 const std::string &);
-
-	//! Add a new page.
-
-	void layout_add_page(const bookpagefactory &,
-			     const gridtemplateptr &,
-			     const std::string &label,
-			     const std::string &shortcut,
-			     const std::string &);
-
- public:
-	//! Insert a theme template
-	void layout_insert(const gridlayoutmanager &glm,
-			   gridtemplate *elements,
-			   const std::string &name);
 
 	//! Default cut/paste selection
 	const char *default_cut_paste_selection() const;

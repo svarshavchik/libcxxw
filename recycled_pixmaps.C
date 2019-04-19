@@ -115,7 +115,7 @@ public:
 	//! Always a no-op
 
 	void current_theme_updated(ONLY IN_THREAD,
-				   const defaulttheme &new_theme)
+				   const const_defaulttheme &new_theme)
 		override
 	{
 	}
@@ -231,7 +231,7 @@ public:
 	}
 
 	void current_theme_updated(ONLY IN_THREAD,
-				   const defaulttheme &new_theme)
+				   const const_defaulttheme &new_theme)
 		override
 	{
 	}
@@ -387,7 +387,7 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 
 	theme_background_colorObj(const std::string &theme_color,
 				  const ref<screenObj::implObj> &screen,
-				  const defaulttheme &current_theme)
+				  const const_defaulttheme &current_theme)
 		: nontheme_background_colorObj{
 		std::visit([&](const auto &c)
 			   {
@@ -402,7 +402,7 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 	~theme_background_colorObj()=default;
 
 	void current_theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme) override
+			   const const_defaulttheme &new_theme) override
 	{
 		std::visit([&, this]
 			   (const auto &c)

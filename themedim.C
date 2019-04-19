@@ -61,14 +61,14 @@ void themedimObj::initialize(ONLY IN_THREAD,
 
 void themedimObj::update(ONLY IN_THREAD,
 			 const dim_arg &new_dimname,
-			 const defaulttheme &current_theme)
+			 const const_defaulttheme &current_theme)
 {
 	dimname=new_dimname;
 	theme_updated(IN_THREAD, current_theme);
 }
 
 void themedimObj::theme_updated(ONLY IN_THREAD,
-				const defaulttheme &new_theme)
+				const const_defaulttheme &new_theme)
 {
 	pixels(IN_THREAD)=new_theme->get_theme_dim_t(dimname, width_or_height);
 }

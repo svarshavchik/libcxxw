@@ -45,11 +45,12 @@ struct list_cellObj : virtual public obj {
 
 	//! Initialize this cell, in the connection thread.
 	virtual void cell_initialize(ONLY IN_THREAD,
-				     const defaulttheme &initial_theme)=0;
+				     const const_defaulttheme &initial_theme)=0;
 
 	//! Update this cell to a new theme.
 	virtual void cell_theme_updated(ONLY IN_THREAD,
-					const defaulttheme &initial_theme)=0;
+					const const_defaulttheme &initial_theme)
+	=0;
 
 	//! Whether this cell is considered "empty".
 

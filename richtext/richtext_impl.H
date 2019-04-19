@@ -324,7 +324,7 @@ public:
 	richtextstring get_as_richtext() const;
 
 	//! Theme was updated.
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme);
 
 	//! Return the rich text string's metrics.
 	std::pair<metrics::axis, metrics::axis>

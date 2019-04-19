@@ -248,7 +248,7 @@ class richtextstring {
 
 	//! Invoke all fonts' theme_updated().
 	void theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme);
+			   const const_defaulttheme &new_theme);
 
 	//! Modify rich text meta.
 

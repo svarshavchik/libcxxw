@@ -387,7 +387,7 @@ void containerObj::implObj::initialize(ONLY IN_THREAD)
 }
 
 void containerObj::implObj::theme_updated(ONLY IN_THREAD,
-					  const defaulttheme &new_theme)
+					  const const_defaulttheme &new_theme)
 {
 	invoke_layoutmanager([&](const auto &manager)
 			     {

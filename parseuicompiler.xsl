@@ -2,7 +2,7 @@
 
 <!--
 
-Copyright 2017 Double Precision, Inc.
+Copyright 2017-2019 Double Precision, Inc.
 See COPYING for distribution information.
 
 Stylesheet for transforming the XML in gridlayoutapi.xml
@@ -44,6 +44,31 @@ Generates:
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+
+  <!--
+      Declare parameters.
+
+Called from a for-each loop over <parameter>s. Generate parameter list.
+
+  -->
+
+  <xsl:template name="declare-parameter">
+    <xsl:if test="position() &gt; 1">
+      <xsl:text>, </xsl:text>
+    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="@mutable='1'">
+	<xsl:text> </xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:text>const </xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:value-of select="type" />
+    <xsl:text> &amp;</xsl:text>
+    <xsl:value-of select="name" />
+  </xsl:template>
+
 
   <!-- <function> generates:
 
@@ -87,30 +112,12 @@ Generates:
 </xsl:for-each>
         return [=]
             (<xsl:for-each select="../parameter">
-	    <xsl:if test="position() &gt; 1">
-	      <xsl:text>, </xsl:text>
-	    </xsl:if>
-	    <xsl:text>const </xsl:text>
-	    <xsl:value-of select="type" />
-	    <xsl:text> &amp;</xsl:text>
-	    <xsl:value-of select="name" />
+	    <xsl:call-template name="declare-parameter" />
 	  </xsl:for-each>)
 	    {
                 <xsl:if test="object">
 	            <xsl:value-of select="object"/>-&gt;</xsl:if>
-		<xsl:value-of select="invoke" />(<xsl:for-each select="../forward">
-		  <xsl:if test="position() &gt; 1">
-		    <xsl:text>, </xsl:text>
-		  </xsl:if>
-		  <xsl:value-of select="node()" />
-		</xsl:for-each>
-		<xsl:for-each select="parameter">
-		  <xsl:if test="position() = 1">
-		    <xsl:if test="../../forward">
-		      <xsl:text>, </xsl:text>
-		    </xsl:if>
-		  </xsl:if>
-
+		<xsl:value-of select="invoke" />(<xsl:for-each select="parameter">
 		  <xsl:if test="position() &gt; 1">
 		    <xsl:text>, </xsl:text>
 		  </xsl:if>
@@ -136,7 +143,7 @@ Maybe we should use a <scalar>?
 
 <!-- <parser> generates:
 
-functionref<void, ...parameters> {name}_parser(const theme_parser_lock &lock)
+functionref<void, ...parameters> {name}_parser()
 {
     auto name=lock->name();
 
@@ -148,14 +155,7 @@ Throws an exception
 
   <xsl:template name="make-parser">
 functionref&lt;void (<xsl:for-each select="parameter">
-<xsl:if test="position() &gt; 1">,
-                </xsl:if><xsl:text>
-                const </xsl:text><xsl:value-of select="type" />&#32;&amp;</xsl:for-each>)&gt;&#10;      <xsl:value-of select="objectname" />_parser(const theme_parser_lock &amp;lock<xsl:for-each select="other_parameter">
-		<xsl:text>,&#10;                      </xsl:text>
-		<xsl:value-of select="type" />
-		<xsl:text> </xsl:text>
-		<xsl:value-of select="name" />
-		</xsl:for-each>)
+<xsl:call-template name="declare-parameter" /></xsl:for-each>)&gt;&#10;      uicompiler::<xsl:value-of select="name" />_parser(const theme_parser_lock &amp;lock)
 {
     auto name=lock->name();
 <xsl:for-each select="function">
@@ -165,26 +165,21 @@ functionref&lt;void (<xsl:for-each select="parameter">
     throw EXCEPTION(gettextmsg(_("&lt;%1%&gt;: unknown element"), name));
 }
 
-void <xsl:value-of select="objectname" />_parseconfig(const theme_parser_lock &amp;lock,
-    std::vector&lt;functionref&lt;void (<xsl:for-each select="parameter">
-    <xsl:if test="position()&gt; 1">,
-                          </xsl:if>const <xsl:value-of select="type" />&#32;&amp;</xsl:for-each>)&gt;&gt; &amp;config<xsl:for-each select="other_parameter">
-			  <xsl:text>,&#10;                          </xsl:text>
-			  <xsl:value-of select="type" />
-			  <xsl:text> </xsl:text>
-			  <xsl:value-of select="name" />
-			  </xsl:for-each>)
+vector&lt;functionref&lt;void (<xsl:for-each select="parameter">
+<xsl:call-template name="declare-parameter" /></xsl:for-each>)&gt;&gt;
+uicompiler::<xsl:value-of select="name" />_parseconfig(const theme_parser_lock &amp;lock)
 {
-    config.reserve(config.size()+lock-&gt;get_child_element_count());
+    auto config=vector&lt;functionref&lt;void (<xsl:for-each select="parameter">
+<xsl:call-template name="declare-parameter" /></xsl:for-each>)&gt;&gt;
+        ::create();
+    config->reserve(lock-&gt;get_child_element_count());
 
     if (lock-&gt;get_first_element_child())
         do
 	{
-	    config.push_back(<xsl:value-of select="objectname" />_parser(lock<xsl:for-each select="other_parameter">
-		<xsl:text>, </xsl:text>
-		<xsl:value-of select="name" />
-		</xsl:for-each>));
+	    config->push_back(<xsl:value-of select="name" />_parser(lock));
 	} while (lock->get_next_element_sibling());
+    return config;
 }
 
 </xsl:template>

@@ -1,44 +1,56 @@
 <!--
 
-Copyright 2017 Double Precision, Inc.
+Copyright 2017-2019 Double Precision, Inc.
 See COPYING for distribution information.
 
 XML-based definition of a template-driven object initialization,
 used mostly to generate predefined grid layouts.
 
-Transformed by the "parseapiconfig.xsl" stylesheet.
+Transformed by the "parseuicompiler.xsl" stylesheet.
 
 The top level element is <api>.
 
 <api> contains a list of <parser>s.
 
-Each <parser>'s <objectname> robo-generates a
+Each <parser>'s <name> robo-generates a
 
-[objectname]_parser()
+uicompiler::<name>_parser()
 
 [objectname]_parser()'s first parameter is
 
-const xml::doc::base::readlock &lock
+const theme_parser_lock &lock
 
-It's second parameter is a reference to a std::vector of
-
+Each <parser> element contains a list of <parameter> elements.
+[objectname]_parser() returns a
 functionref<void (const [parameter]/[type] &)>, using each <parameter>'s
-<type>.
+<type>. An @mutable attribute leaves off the "const" part.
 
-If there are any <other_parameter>'s, each one gives any additional parameter's
-declared as <other_parameter>'s
-<type> <name>
 
-The body of the function iterates over lock's child elements, and for each
+Additionally, a parseconfig wrapper also gets robogenerated:
+
+vector<functionref< ...>>
+ <name>_parseconfig(const theme_parser_lock &lock)
+{
+    auto config=vector<functionref< ... >>::create();
+
+    config->reserve(lock->get_child_element_count());
+
+    if (lock->get_first_element_child())
+        do
+        {
+            config.push_back([objectname]_parser(lock));
+        } while (lock->get_next_element_sibling());
+}
+
+The parseconfig lock's child elements, and for each
 child element, a new value is appended to the vector that's passed as the
 second argument.
 
-The new value is obtained by calling
+The contents of <name>_parser() gets generated from the <parser>'s
+<function> elements.
 
-<objectname>_parser()
-
-which is also robo-generated. Its robo-generated code checks each element's
-name against:
+The <name>_parser() finds a matching <function> for the current element
+as follows:
 
 1. Each <function>'s <name>:
 
@@ -73,8 +85,6 @@ Otherwise
          });
 }
 
-If the <function> has <noforward>, the forward list is omitted.
-
 If the <function>'s <parameter> has a <scalar>, instead of the auto value,
 which was not declared, the substitute text in <scalar>
 
@@ -106,41 +116,20 @@ List of values:
 
       The list of the auto values that were declared.
 
-Additionally, a parseconfig wrapper also gets robogenerated:
-
-static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
-             std::vector<callback type> &config,
-             [list of each other_parameter/type other_parameter/name]
-	     )
-{
-    config.reserve(config.size()+lock->get_child_element_count());
-
-    if (lock->get_first_element_child())
-        do
-        {
-            config.push_back([objectname]_parser(lock, [other_parameters]));
-        } while (lock->get_next_element_sibling());
-}
-
 -->
 
 <api>
   <parser>
-    <objectname>defaultthemeObj::gridlayout</objectname>
+    <name>gridlayout</name>
 
     <parameter>
       <type>gridlayoutmanager</type>
       <name>layout</name>
     </parameter>
 
-    <parameter>
-      <type>gridtemplateptr</type>
+    <parameter mutable="1">
+      <type>uielements</type>
       <name>elements</name>
-    </parameter>
-
-    <parameter>
-      <type>defaulttheme</type>
-      <name>theme</name>
     </parameter>
 
     <!-- grid_halign -->
@@ -353,8 +342,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
 
     <function>
       <name>append_row</name>
-      <invoke>layout_append_row</invoke>
-      <object>theme</object>
+      <invoke>gridlayout_append_row</invoke>
 
       <parameter>
 	<scalar>layout</scalar>
@@ -366,27 +354,22 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
 
       <parameter>
 	<name>name</name>
-	<type>single_value</type>
+	<type>lookup_gridfactory_generators</type>
       </parameter>
     </function>
   </parser>
 
   <parser>
-    <objectname>defaultthemeObj::gridfactory</objectname>
+    <name>gridfactory</name>
 
     <parameter>
       <type>gridfactory</type>
       <name>factory</name>
     </parameter>
 
-    <parameter>
-      <type>gridtemplateptr</type>
+    <parameter mutable="1">
+      <type>uielements</type>
       <name>elements</name>
-    </parameter>
-
-    <parameter>
-      <type>defaulttheme</type>
-      <name>theme</name>
     </parameter>
 
     <!-- halign -->
@@ -590,10 +573,12 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
 
       <invoke>generate</invoke>
 
-      <object>elements</object>
-
       <parameter>
 	<scalar>factory</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
       </parameter>
 
       <parameter>
@@ -606,9 +591,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
     <function>
       <name>book</name>
 
-      <invoke>layout_book_container</invoke>
-
-      <object>theme</object>
+      <invoke>container_booklayoutmanager</invoke>
 
       <parameter>
 	<scalar>factory</scalar>
@@ -620,7 +603,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
 
       <parameter>
 	<name>name</name>
-	<type>single_value</type>
+	<type>lookup_booklayoutmanager_generators</type>
       </parameter>
 
       <parameter>
@@ -638,8 +621,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
 
     <function>
       <name>include</name>
-      <invoke>layout_insert</invoke>
-      <object>theme</object>
+      <invoke>container_gridlayoutmanager</invoke>
 
       <parameter>
 	<scalar>factory</scalar>
@@ -650,7 +632,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
       </parameter>
 
       <parameter>
-	<type>single_value</type>
+	<type>lookup_gridlayoutmanager_generators</type>
 	<name>name</name>
       </parameter>
 
@@ -664,27 +646,21 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
   <!-- book layout manager parser -->
 
   <parser>
-    <objectname>defaultthemeObj::booklayout</objectname>
+    <name>booklayout</name>
 
     <parameter>
       <type>booklayoutmanager</type>
       <name>layout</name>
     </parameter>
 
-    <parameter>
-      <type>gridtemplateptr</type>
+    <parameter mutable="1">
+      <type>uielements</type>
       <name>elements</name>
-    </parameter>
-
-    <parameter>
-      <type>defaulttheme</type>
-      <name>theme</name>
     </parameter>
 
     <function>
       <name>append_pages</name>
-      <invoke>layout_append_pages</invoke>
-      <object>theme</object>
+      <invoke>booklayout_append_pages</invoke>
 
       <parameter>
 	<scalar>layout</scalar>
@@ -696,7 +672,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
 
       <parameter>
 	<name>name</name>
-	<type>single_value</type>
+	<type>lookup_bookpagefactory_generators</type>
       </parameter>
     </function>
 
@@ -715,21 +691,16 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
   <!-- book page factory -->
 
   <parser>
-    <objectname>defaultthemeObj::bookpagefactory</objectname>
+    <name>bookpagefactory</name>
 
     <parameter>
       <type>bookpagefactory</type>
       <name>factory</name>
     </parameter>
 
-    <parameter>
-      <type>gridtemplateptr</type>
+    <parameter mutable="1">
+      <type>uielements</type>
       <name>elements</name>
-    </parameter>
-
-    <parameter>
-      <type>defaulttheme</type>
-      <name>theme</name>
     </parameter>
 
     <!-- halign -->
@@ -762,8 +733,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
 
     <function>
       <name>add</name>
-      <invoke>layout_add_page</invoke>
-      <object>theme</object>
+      <invoke>container_addbookpage</invoke>
 
       <parameter>
 	<scalar>factory</scalar>
@@ -785,7 +755,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
 
       <parameter>
 	<name>layout</name>
-	<type>single_value</type>
+	<type>lookup_gridlayoutmanager_generators</type>
       </parameter>
     </function>
   </parser>
