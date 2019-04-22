@@ -93,14 +93,8 @@ public:
 	//! My screen
 	const xcb_screen_t *screen;
 
-	//! Parsed dimensions
-	std::unordered_map<std::string, dim_t> dims;
-
 	//! Fonts
 	std::unordered_map<std::string, font> fonts;
-
-	//! Parse dimensions from the configuration file.
-	void load_dims(const theme_parser_lock &root_lock);
 
 	//! Parse fonts from the configuration file
 	void load_fonts(const theme_parser_lock &root_lock);

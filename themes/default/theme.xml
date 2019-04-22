@@ -6,7 +6,7 @@
   <option id="noshade">Disable shading</option>
   <option id="fixshade">Fixed shading (faster)</option>
 
-  <dim id="no-padding" axis="pixels">0</dim>
+  <dim id="no-padding">0</dim>
 
   <color id="transparent">
     <a>0</a>
@@ -82,8 +82,8 @@
       to the dragging pointer.
   -->
 
-  <dim id="drag_horiz_start" axis="horiz">2</dim>
-  <dim id="drag_vert_start" axis="vert">2</dim>
+  <dim id="drag_horiz_start">2</dim>
+  <dim id="drag_vert_start">2</dim>
 
   <!-- Stock borders -->
 
@@ -176,8 +176,8 @@
 
   <!-- grid padding -->
 
-  <dim id="grid_horiz_padding" axis="horiz">.5</dim>
-  <dim id="grid_vert_padding" axis="vert">.5</dim>
+  <dim id="grid_horiz_padding">.5</dim>
+  <dim id="grid_vert_padding">.5</dim>
 
   <!--
       Button borders are size in units based on
@@ -189,16 +189,16 @@ units width/height.
 Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   -->
-  <dim id="button_base_horiz" axis="horiz">.2</dim>
-  <dim id="button_base_vert"  axis="vert">.2</dim>
+  <dim id="button_base_horiz">.2</dim>
+  <dim id="button_base_vert" >.2</dim>
 
   <border id="normal_button_border">
     <width scale="button_base_horiz">1</width>
     <height scale="button_base_vert">1</height>
     <hradius scale="button_base_horiz">3</hradius>
     <vradius scale="button_base_vert">3</vradius>
-    <dash axis="horiz">.5</dash>
-    <dash axis="vert">.5</dash>
+    <dash>.5</dash>
+    <dash>.5</dash>
     <color>action_color1</color>
     <color2>action_color2</color2>
   </border>
@@ -576,17 +576,17 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <hradius>1</hradius>
     <vradius>1</vradius>
   </border>
-  <dim id="tooltip_border_padding_h" axis="horiz">0</dim>
-  <dim id="tooltip_border_padding_v" axis="vert">0</dim>
+  <dim id="tooltip_border_padding_h">0</dim>
+  <dim id="tooltip_border_padding_v">0</dim>
 
   <!-- Border when an alpha channel is not available -->
 
   <border id="tooltip_border_square" from="thin_0%" />
-  <dim id="tooltip_border_square_padding_h" axis="horiz">1</dim>
-  <dim id="tooltip_border_square_padding_v" axis="vert">1</dim>
+  <dim id="tooltip_border_square_padding_h">1</dim>
+  <dim id="tooltip_border_square_padding_v">1</dim>
 
-  <dim id="tooltip_x_offset" axis="horiz">1</dim>
-  <dim id="tooltip_y_offset" axis="vert">1</dim>
+  <dim id="tooltip_x_offset">1</dim>
+  <dim id="tooltip_y_offset">1</dim>
 
   <!-- Static tooltips -->
 
@@ -606,9 +606,9 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <!-- Selection lists -->
 
-  <dim id="list_v_padding" axis="vert">.2</dim>
-  <dim id="list_h_padding" axis="horiz">2</dim>
-  <dim id="list_indent" axis="horiz">6</dim>
+  <dim id="list_v_padding">.2</dim>
+  <dim id="list_h_padding">2</dim>
+  <dim id="list_indent">6</dim>
 
   <border id="list_border" from="thin_0%" />
 
@@ -620,7 +620,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   <border id="list_separator_border" from="thin_0%">
     <color>0%</color>
     <color2>50%</color2>
-    <dash axis="horiz">1</dash>
+    <dash>1</dash>
   </border>
 
   <color id="list_label_color" scale="10%" />
@@ -661,7 +661,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <color id="list_adjustable_header_color" scale="50%" />
 
-  <dim id="list_adjustable_header_highlight_width" axis="horiz">4</dim>
+  <dim id="list_adjustable_header_highlight_width">4</dim>
 
   <color id="list_adjustable_header_highlight_color" type="linear_gradient">
     <x1>0</x1>
@@ -886,8 +886,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   <color id="menu_popup_highlighted_color" scale="50%" />
   <color id="menu_popup_clicked_color" scale="100%" />
 
-  <dim id="menu_list_v_padding" axis="vert">.2</dim>
-  <dim id="menu_list_h_padding" axis="horiz">.5</dim>
+  <dim id="menu_list_v_padding">.2</dim>
+  <dim id="menu_list_h_padding">.5</dim>
 
   <border id="menu_inputfocusoff_border">
     <color>transparent</color>
@@ -919,7 +919,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <vradius>.1</vradius>
   </border>
 
-  <dim id="progressbar" axis="horiz">100</dim>
+  <dim id="progressbar">100</dim>
 
   <font id="progressbar" from="serif">
     <point_size>16</point_size>
@@ -959,8 +959,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <!-- Books -->
 
-  <dim id="book_tab_h_padding" axis="horiz">1</dim>
-  <dim id="book_tab_v_padding" axis="horiz">1</dim>
+  <dim id="book_tab_h_padding">1</dim>
+  <dim id="book_tab_v_padding">1</dim>
 
   <color id="book_tab_inactive_color" type="linear_gradient">
     <gradient>
@@ -1097,7 +1097,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <color id="noshade:book_tab_background_color" scale="50%" />
 
-  <dim id="book_scroll_height" axis="vert">8</dim>
+  <dim id="book_scroll_height">8</dim>
 
   <font id="book_tab_font" from="serif">
     <point_size>12</point_size>
@@ -1150,8 +1150,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   <!-- Border when an alpha channel is not available -->
 
   <border id="dateedit_popup_border_square" from="thin_0%" />
-  <dim id="dateedit_popup_border_square_padding_h" axis="horiz">1</dim>
-  <dim id="dateedit_popup_border_square_padding_v" axis="vert">1</dim>
+  <dim id="dateedit_popup_border_square_padding_h">1</dim>
+  <dim id="dateedit_popup_border_square_padding_v">1</dim>
 
   <color id="dateedit_popup_background_color" type="linear_gradient">
     <gradient>
@@ -1179,8 +1179,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <color id="noshade:dateedit_popup_background_color" scale="100%" />
 
-  <dim id="dateedit_popup_yscroll_height" axis="vert">8</dim>
-  <dim id="dateedit_popup_mscroll_height" axis="vert">6</dim>
+  <dim id="dateedit_popup_yscroll_height">8</dim>
+  <dim id="dateedit_popup_mscroll_height">6</dim>
 
   <font id="dateedit_popup_month" from="serif">
     <point_size>14</point_size>
@@ -1222,8 +1222,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   <!-- Border when an alpha channel is not available -->
 
   <border id="element_attached_popup_border_square" from="thin_0%" />
-  <dim id="element_attached_popup_border_square_padding_h" axis="horiz">1</dim>
-  <dim id="element_attached_popup_border_square_padding_v" axis="vert">1</dim>
+  <dim id="element_attached_popup_border_square_padding_h">1</dim>
+  <dim id="element_attached_popup_border_square_padding_v">1</dim>
 
   <color id="element_attached_popup_background_color" type="linear_gradient">
     <gradient>
@@ -1247,14 +1247,14 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <!-- Size of the element showing the current color -->
 
-  <dim id="color_picker_current_width" axis="horiz">10</dim>
-  <dim id="color_picker_current_height" axis="vert">6</dim>
+  <dim id="color_picker_current_width">10</dim>
+  <dim id="color_picker_current_height">6</dim>
 
   <!--
       In the color picker popup, the dimensions of the gradient square.
   -->
 
-  <dim id="color_picker_square_width" axis="horiz">50</dim>
+  <dim id="color_picker_square_width">50</dim>
   <dim id="color_picker_square_height" axis="vert\">50</dim>
 
   <!--
@@ -1262,20 +1262,20 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       component strips.
   -->
 
-  <dim id="color_picker_buffer_width" axis="horiz">4</dim>
-  <dim id="color_picker_buffer_height" axis="vert">4</dim>
+  <dim id="color_picker_buffer_width">4</dim>
+  <dim id="color_picker_buffer_height">4</dim>
 
   <!-- In the color picker, the width/height of the component strips. -->
 
-  <dim id="color_picker_strip_width" axis="horiz">6</dim>
-  <dim id="color_picker_strip_height" axis="vert">6</dim>
+  <dim id="color_picker_strip_width">6</dim>
+  <dim id="color_picker_strip_height">6</dim>
 
   <!--
       In the color picker popup, the dimensions of each basic color button
   -->
 
-  <dim id="color_picker_basic_color_width" axis="horiz">5</dim>
-  <dim id="color_picker_basic_color_height" axis="vert">5</dim>
+  <dim id="color_picker_basic_color_width">5</dim>
+  <dim id="color_picker_basic_color_height">5</dim>
 
   <!-- Border around the gradient square -->
 
@@ -1301,10 +1301,10 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <vradius>.5</vradius>
   </border>
 
-  <dim id="itembutton-h-padding" axis="vert">0</dim>
-  <dim id="itembutton-v-padding" axis="vert">0</dim>
-  <dim id="itemlayout-h-padding" axis="vert">0</dim>
-  <dim id="itemlayout-v-padding" axis="vert">0</dim>
+  <dim id="itembutton-h-padding">0</dim>
+  <dim id="itembutton-v-padding">0</dim>
+  <dim id="itemlayout-h-padding">0</dim>
+  <dim id="itemlayout-v-padding">0</dim>
 
   <color id="itembutton_background_color" type="linear_gradient">
     <gradient>
@@ -1340,11 +1340,11 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <vradius>.5</vradius>
   </border>
 
-  <dim id="frame_title_indent" axis="horiz">2</dim>
+  <dim id="frame_title_indent">2</dim>
 
-  <dim id="frame_hpad" axis="horiz">1</dim>
+  <dim id="frame_hpad">1</dim>
 
-  <dim id="frame_vpad" axis="vert">1</dim>
+  <dim id="frame_vpad">1</dim>
 
   <!--
       If a frame does not have a title, the frame's element can have this
@@ -1384,8 +1384,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <!-- A dialog with a single "Ok" button -->
 
-  <dim id="dialog-v-padding" axis="vert">4</dim>
-  <dim id="dialog-h-padding" axis="vert">4</dim>
+  <dim id="dialog-v-padding">4</dim>
+  <dim id="dialog-h-padding">4</dim>
 
   <color id="button-row-color" type="linear_gradient">
     <gradient>
@@ -2951,8 +2951,8 @@ first column, to make the labels line up with their input fields.
     </append_row>
   </layout>
 
-  <dim id="font_picker_preview_width" axis="horiz">40</dim>
-  <dim id="font_picker_preview_height" axis="vert">40</dim>
+  <dim id="font_picker_preview_width">40</dim>
+  <dim id="font_picker_preview_height">40</dim>
 
   <!--
       Foreground color for font options that are not available with

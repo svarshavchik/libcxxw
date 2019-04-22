@@ -401,6 +401,16 @@ get_color(const theme_parser_lock &lock,
 			  iter->second);
 }
 
+static void unknown_dim(const char *element, const std::string &id)
+       __attribute__((noreturn));
+
+static void unknown_dim(const char *element, const std::string &id)
+{
+       throw EXCEPTION(gettextmsg(_("circular or non-existent dependency of dim %1%=%2%"),
+                                  element,
+                                  id));
+}
+
 // Look up a dimension, when parsing something else.
 
 static void update_dim_if_given(const theme_parser_lock &lock,
@@ -409,7 +419,8 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 				unsigned &scale,
 				const char *descr,
 				const std::string &id,
-				bool allowthemerefs) // TODO
+				std::unordered_map<std::string, double> &dims,
+				bool allowthemerefs)
 {
 	auto node=lock.clone();
 
@@ -420,7 +431,9 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 
 	xpath->to_node();
 
-	std::istringstream i{node->get_text()};
+	auto t=node->get_text();
+
+	std::istringstream i{t};
 
 	imbue<std::istringstream> imbue{lock.c_locale, i};
 
@@ -428,13 +441,41 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 
 	if (!s.empty())
 	{
-		size=s;
-
+		// The contents of this node must be a scaling factor.
 		i >> scale;
 
 		if (i.fail())
 			throw EXCEPTION(gettextmsg(_("Cannot parse %1% (%2%)"),
 						   descr, id));
+
+		auto iter=dims.find(s);
+
+		if (iter != dims.end())
+		{
+			size=iter->second;
+		}
+		else
+		{
+			if (!allowthemerefs)
+			{
+				throw EXCEPTION(gettextmsg
+						(_("dim %1% (%2%) not found"),
+						 descr, id));
+			}
+			size=s;
+		}
+		size=s;
+
+		return;
+	}
+
+	auto iter=dims.find(t);
+
+	scale=1;
+
+	if (iter != dims.end())
+	{
+		size=iter->second;
 		return;
 	}
 
@@ -442,12 +483,74 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 
 	i >> v;
 
-	if (i.fail())
-		throw EXCEPTION(gettextmsg(_("Cannot parse %1% (%2%)"),
-					   descr, id));
+	if (!i.fail())
+	{
+		size=v;
+		return;
+	}
 
-	size=v;
-	scale=1;
+	if (allowthemerefs)
+	{
+		size=t;
+		return;
+	}
+	unknown_dim(descr, id);
+}
+
+
+// Parse the dims in the config file
+
+static inline std::optional<double>
+parse_dim(const theme_parser_lock &lock,
+	  const std::unordered_map<std::string, double> &existing_dims,
+	  const char *descr,
+	  const std::string &id)
+{
+	auto scale=lock->get_any_attribute("scale");
+
+	double v;
+
+	{
+		auto t=lock->get_text();
+
+		if (t == "inf")
+		{
+			return NAN;
+		}
+
+		std::istringstream i(lock->get_text());
+
+		imbue<std::istringstream> imbue{lock.c_locale, i};
+
+		i >> v;
+
+		if (i.fail())
+			throw EXCEPTION(gettextmsg(_("could not parse %1% id=%2%"),
+						   descr,
+						   id));
+
+		if (v < 0)
+			throw EXCEPTION(gettextmsg(_("%1% id=%2% cannot be negative"),
+						   descr,
+						   id));
+
+		char p=0;
+
+		if (i >> p && p == 'p')
+			v= -v;
+	}
+
+	if (!scale.empty())
+	{
+		auto iter=existing_dims.find(scale);
+
+		if (iter == existing_dims.end())
+			return std::nullopt; // Not yet.
+
+		v *= iter->second;
+	}
+
+	return v;
 }
 
 
@@ -557,6 +660,51 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 	lock=root_lock.clone();
 
+	xpath=lock->get_xpath("/theme/dim");
+
+	count=xpath->count();
+
+	// Repeatedly pass over all dims, parsing the ones that are not based
+	// on unparsed dims.
+	do
+	{
+		parsed=false;
+
+		for (size_t i=0; i<count; ++i)
+		{
+			xpath->to_node(i+1);
+
+			auto id=lock->get_any_attribute("id");
+
+			if (id.empty())
+				throw EXCEPTION(_("no id specified for dim"));
+
+			if (generators.dims.find(id) != generators.dims.end())
+				continue; // Did this one already.
+
+			auto value=parse_dim(lock,
+					     generators.dims, "dim", id);
+
+			if (!value)
+				continue;
+
+			generators.dims.insert({id, *value});
+			parsed=true;
+		}
+	} while (parsed);
+
+	for (size_t i=0; i<count; ++i)
+	{
+		xpath->to_node(i+1);
+
+		auto id=lock->get_any_attribute("id");
+
+		if (generators.dims.find(id) == generators.dims.end())
+			unknown_dim("dim", id);
+	}
+
+	lock=root_lock.clone();
+
 	xpath=lock->get_xpath("/theme/border");
 
 	count=xpath->count();
@@ -622,12 +770,16 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			update_dim_if_given(lock, "width",
 					    new_border.width,
 					    new_border.width_scale,
-					    "border", id, allowthemerefs);
+					    "border", id,
+					    generators.dims,
+					    allowthemerefs);
 
 			update_dim_if_given(lock, "height",
 					    new_border.height,
 					    new_border.height_scale,
-					    "border", id, allowthemerefs);
+					    "border", id,
+					    generators.dims,
+					    allowthemerefs);
 
 			// <rounded> sets the radii both to 1.
 
@@ -645,12 +797,16 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			update_dim_if_given(lock, "hradius",
 					    new_border.hradius,
 					    new_border.hradius_scale,
-					    "border", id, allowthemerefs);
+					    "border", id,
+					    generators.dims,
+					    allowthemerefs);
 
 			update_dim_if_given(lock, "vradius",
 					    new_border.vradius,
 					    new_border.vradius_scale,
-					    "border", id, allowthemerefs);
+					    "border", id,
+					    generators.dims,
+					    allowthemerefs);
 
 			{
 				auto dash_nodes=lock.clone();

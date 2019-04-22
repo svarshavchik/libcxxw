@@ -484,8 +484,6 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 		theme_parser_lock
 			lock{theme_config.theme_configfile->readlock()};
 
-		load_dims(lock);
-
 		{
 			uicompiler compiler{lock, *this, false};
 		}
@@ -546,161 +544,33 @@ static dim_t dim_scale(dim_type &&orig, double scale)
 	return (dim_t::value_type)res;
 }
 
-// Parse the dims in the config file
-
-static bool parse_dim(const theme_parser_lock &lock,
-		      const std::unordered_map<std::string, dim_t>
-		      &existing_dims,
-		      dim_t h1mm, dim_t v1mm, dim_t &mm,
-		      const char *descr,
-		      const std::string &id)
-{
-	auto scale=lock->get_any_attribute("scale");
-
-	double v;
-
-	{
-		auto t=lock->get_text();
-
-		if (t == "inf")
-		{
-			mm=dim_t::infinite();
-			return true;
-		}
-
-		std::istringstream i(lock->get_text());
-
-		imbue<std::istringstream> imbue{lock.c_locale, i};
-
-		i >> v;
-
-		if (i.fail())
-			throw EXCEPTION(gettextmsg(_("could not parse %1% id=%2%"),
-						   descr,
-						   id));
-
-		if (v < 0)
-			throw EXCEPTION(gettextmsg(_("%1% id=%2% cannot be negative"),
-						   descr,
-						   id));
-
-	}
-
-	if (!scale.empty())
-	{
-		auto iter=existing_dims.find(scale);
-
-		if (iter == existing_dims.end())
-			return false; // Not yet.
-
-		mm=dim_scale(iter->second, v);
-	}
-	else
-	{
-		auto axis=lock->get_any_attribute("axis");
-
-		switch (chrcasecmp::tolower(*axis.c_str())) {
-		case 'h':
-			mm=dim_scale(h1mm, v);
-			break;
-		case 'v':
-			mm=dim_scale(v1mm, v);
-			break;
-		case 'p':
-			mm=dim_scale(dim_t{1}, v);
-			break;
-		default:
-			mm=dim_scale(h1mm+v1mm, v/2);
-			break;
-		}
-	}
-
-	return true;
-}
-
-static void unknown_dim(const char *element, const std::string &id)
-	__attribute__((noreturn));
-
-static void unknown_dim(const char *element, const std::string &id)
-{
-	throw EXCEPTION(gettextmsg(_("circular or non-existent dependency of dim %1%=%2%"),
-				   element,
-				   id));
-}
-
-void defaultthemeObj::load_dims(const theme_parser_lock &root_lock)
-{
-	auto lock=root_lock.clone();
-
-	if (!lock->get_root())
-		return;
-
-	auto xpath=lock->get_xpath("/theme/dim");
-
-	size_t count=xpath->count();
-
-	bool parsed;
-
-	// Repeatedly pass over all dims, parsing the ones that are not based
-	// on unparsed dims.
-	do
-	{
-		parsed=false;
-
-		for (size_t i=0; i<count; ++i)
-		{
-			xpath->to_node(i+1);
-
-			auto id=lock->get_any_attribute("id");
-
-			if (id.empty())
-				throw EXCEPTION(_("no id specified for dim"));
-
-			if (dims.find(id) != dims.end())
-				continue; // Did this one already.
-
-			dim_t mm;
-
-			if (!parse_dim(lock, dims, h1mm, v1mm, mm, "dim", id))
-				continue;
-			dims.insert({id, mm});
-			parsed=true;
-		}
-	} while (parsed);
-
-	for (size_t i=0; i<count; ++i)
-	{
-		xpath->to_node(i+1);
-
-		auto id=lock->get_any_attribute("id");
-
-		if (dims.find(id) == dims.end())
-			unknown_dim("dim", id);
-	}
-}
-
 /////////////////////////////////////////////////////////////////////////////
 
 dim_t defaultthemeObj::get_theme_dim_t(const dim_arg &id, themedimaxis wh)
 	const
 {
-	return std::visit(visitor{
-			[this, wh](double v)
-			{
-				return wh == themedimaxis::width
-					? compute_width(v):compute_height(v);
-			},
-			[&](const std::string &id)
-			{
-				auto iter=dims.find(id);
+	auto v=std::visit(visitor{
+				  [](double v)
+				  {
+					  return v;
+				  },
+				  [&](const std::string &id)
+				  {
+					  auto iter=dims.find(id);
 
-				if (iter == dims.end())
-					throw EXCEPTION
-						(gettextmsg
-						 (_("Size %1% does not exist"),
-						  id));
-				return iter->second;
-			}}, id);
+					  if (iter == dims.end())
+						  throw EXCEPTION
+							  (gettextmsg
+							   (_("Size %1% does"
+							      " not exist"),
+							    id));
+
+					  return iter->second;
+				  }
+		}, id);
+
+	return wh == themedimaxis::width
+		? compute_width(v):compute_height(v);
 }
 
 dim_t defaultthemeObj::compute_width(double millimeters) const
@@ -709,7 +579,7 @@ dim_t defaultthemeObj::compute_width(double millimeters) const
 		return dim_t::infinite();
 
 	if (millimeters < 0)
-		millimeters= -millimeters;
+		return dim_t::truncate(-millimeters); // Pixels.
 
 	auto scaled=std::round(themescale * millimeters *
 			       screen->width_in_pixels /

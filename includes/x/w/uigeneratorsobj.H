@@ -29,6 +29,10 @@ public:
 	//! Destructor
 	~uigeneratorsObj() LIBCXX_HIDDEN;
 
+	//! Parsed dimensions
+
+	std::unordered_map<std::string, double> dims;
+
 	//! Custom colors loaded from this layout.
 
 	std::unordered_map<std::string, theme_color_t> colors;
