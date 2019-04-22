@@ -35,7 +35,8 @@ class LIBCXX_HIDDEN gridfactoryObj::implObj : virtual public obj {
 
 	//! Constructor
 	implObj(dim_t row, dim_t col, const ref<grid_map_infoObj> &grid_map,
-		bool replacing=false);
+		const container_impl &parent_container,
+		bool replacing);
 
 	//! Destructor
 	~implObj();

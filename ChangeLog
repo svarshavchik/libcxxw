@@ -1,5 +1,9 @@
 2019-04-20  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* grid_element.C: Use themedim_elementObj for holding individual
+	grid cells paddings. This throws an exception immediately if a
+	non-existent theme padding value was set.
+
 	* main_window_handler.C: fix handling of edge case when an error
 	creates a main window with no size.
 

@@ -8,30 +8,27 @@
 #include "x/w/impl/current_border_impl.H"
 #include "metrics_grid_pos.H"
 #include "x/w/impl/element.H"
+#include "x/w/impl/themedim_element.H"
 #include "screen.H"
 #include "defaulttheme.H"
 #include "grid_map_info.H"
+#include "x/w/impl/container.H"
 
 LIBCXXW_NAMESPACE_START
-
-existing_grid_element_info
-::existing_grid_element_info(const dim_arg &grid_horiz_padding,
-			     const dim_arg &grid_vert_padding)
-	: left_padding_set(grid_horiz_padding),
-	  right_padding_set(left_padding_set),
-	  top_padding_set(grid_vert_padding),
-	  bottom_padding_set(top_padding_set)
-{
-}
 
 new_grid_element_info
 ::new_grid_element_info(dim_t row,
 			dim_t col,
+			const container_impl &parent_container,
 			const ref<grid_map_infoObj> &grid_map)
-	: existing_grid_element_info{grid_map->grid_horiz_padding,
-		grid_map->grid_vert_padding},
+	: left_padding_set{grid_map->grid_horiz_padding},
+	  right_padding_set{grid_map->grid_horiz_padding},
+	  top_padding_set{grid_map->grid_vert_padding},
+	  bottom_padding_set{grid_map->grid_vert_padding},
 	  row{row},
-	  col{col}
+	  col{col},
+	  screen_impl{parent_container->container_element_impl()
+		      .get_screen()->impl}
 {
 	auto row_default=grid_map->row_defaults
 		.find(metrics::grid_xy::truncate(row));
@@ -62,6 +59,18 @@ new_grid_element_info::~new_grid_element_info()=default;
 grid_elementObj::grid_elementObj(const new_grid_element_info &info,
 				 const element &grid_element)
 	: existing_grid_element_info{info},
+	  themedim_element<left_padding_tag>{info.left_padding_set,
+			  info.screen_impl,
+			  themedimaxis::width},
+	  themedim_element<right_padding_tag>{info.right_padding_set,
+			  info.screen_impl,
+			  themedimaxis::width},
+	  themedim_element<top_padding_tag>{info.top_padding_set,
+			  info.screen_impl,
+			  themedimaxis::width},
+	  themedim_element<bottom_padding_tag>{info.bottom_padding_set,
+			  info.screen_impl,
+			  themedimaxis::width},
 	  grid_element{grid_element},
 	  pos{metrics::grid_pos::create()},
 	  initialized_thread_only{false}
@@ -70,37 +79,48 @@ grid_elementObj::grid_elementObj(const new_grid_element_info &info,
 
 grid_elementObj::~grid_elementObj()=default;
 
-void grid_elementObj::initialize(ONLY IN_THREAD)
+void grid_elementObj::initialize(ONLY IN_THREAD,
+				 const ref<screenObj::implObj> &screen_impl)
 {
 	initialized(IN_THREAD)=true;
-
-	auto theme=*current_theme_t::lock{
-		grid_element->get_screen()->impl->current_theme
-	};
-
-	theme_updated(theme);
+	themedim_element<left_padding_tag>::initialize(IN_THREAD, screen_impl);
+	themedim_element<right_padding_tag>::initialize(IN_THREAD, screen_impl);
+	themedim_element<top_padding_tag>::initialize(IN_THREAD, screen_impl);
+	themedim_element<bottom_padding_tag>::initialize(IN_THREAD,
+							 screen_impl);
+	recalculate_padding(IN_THREAD);
 }
 
-void grid_elementObj::theme_updated(const const_defaulttheme &new_theme)
+void grid_elementObj::theme_updated(ONLY IN_THREAD,
+				    const const_defaulttheme &new_theme)
 {
-	left_padding=new_theme->get_theme_dim_t(left_padding_set,
-						themedimaxis::width);
+	themedim_element<left_padding_tag>::theme_updated(IN_THREAD, new_theme);
+	themedim_element<right_padding_tag>::theme_updated(IN_THREAD,
+							   new_theme);
+	themedim_element<top_padding_tag>::theme_updated(IN_THREAD, new_theme);
+	themedim_element<bottom_padding_tag>::theme_updated(IN_THREAD,
+							    new_theme);
+	recalculate_padding(IN_THREAD);
+}
+
+void grid_elementObj::recalculate_padding(ONLY IN_THREAD)
+{
+	left_padding=themedim_element<left_padding_tag>::pixels(IN_THREAD);
 	dim_t total=
-		dim_t::truncate(left_padding+new_theme
-				->get_theme_dim_t(right_padding_set,
-						  themedimaxis::width));
+		dim_t::truncate(left_padding+
+				themedim_element<right_padding_tag>
+				::pixels(IN_THREAD));
 
 	if (total == dim_t::infinite())
 		--total;
 
 	total_horiz_padding=total;
 
-	top_padding=new_theme->get_theme_dim_t(top_padding_set,
-					       themedimaxis::height);
+	top_padding=themedim_element<top_padding_tag>::pixels(IN_THREAD);
 
 	total=dim_t::truncate(top_padding+
-			      new_theme->get_theme_dim_t(bottom_padding_set,
-							 themedimaxis::height));
+			      themedim_element<bottom_padding_tag>
+			      ::pixels(IN_THREAD));
 
 	if (total == dim_t::infinite())
 		--total;

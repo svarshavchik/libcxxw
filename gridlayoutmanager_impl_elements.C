@@ -13,6 +13,7 @@
 #include "x/w/impl/current_border_impl.H"
 #include "synchronized_axis_impl.H"
 #include "container_impl.H"
+#include "screen.H"
 #include "connection_thread.H"
 #include <x/number_hash.H>
 
@@ -556,11 +557,14 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD,
 	(*lock)->border_elements.reserve(ge->straight_borders.size()+
 					 ge->corner_borders.size());
 
+	auto screen_impl=layout_container_impl->container_element_impl()
+		.get_screen()->impl;
+
 	for (const auto &row:(*lock)->elements)
 		for (const auto &col:row)
 		{
 			if (!col->initialized(IN_THREAD))
-				col->initialize(IN_THREAD);
+				col->initialize(IN_THREAD, screen_impl);
 
 			// We don't care about the keys. col is:
 			//

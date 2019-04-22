@@ -7,6 +7,7 @@
 
 #include "x/w/impl/grid_elementfwd.H"
 #include "x/w/impl/current_border_implfwd.H"
+#include "x/w/impl/themedim_elementfwd.H"
 #include "metrics_grid_posfwd.H"
 #include "metrics_grid.H"
 #include "x/w/defaultthemefwd.H"
@@ -15,6 +16,8 @@
 #include "x/w/types.H"
 #include "x/w/grid_map_infofwd.H"
 #include "x/w/dim_arg.H"
+#include "x/w/containerobj.H"
+#include "x/w/screenobj.H"
 
 #include <x/obj.H>
 
@@ -47,18 +50,6 @@ struct existing_grid_element_info {
 	//! New element's border
 	current_border_implptr bottom_border;
 
-	//! Padding
-	dim_arg left_padding_set;
-
-	//! Padding
-	dim_arg right_padding_set;
-
-	//! Padding
-	dim_arg top_padding_set;
-
-	//! Padding
-	dim_arg bottom_padding_set;
-
 	//! Horizontal alignment
 	halign horizontal_alignment=halign::left;
 
@@ -71,12 +62,21 @@ struct existing_grid_element_info {
 	//! calculating the grid layout.
 
 	bool remove_when_hidden=false;
-
-	existing_grid_element_info(const dim_arg &grid_horiz_padding,
-				   const dim_arg &grid_vert_padding);
 };
 
 struct new_grid_element_info : public existing_grid_element_info {
+
+	//! Padding
+	dim_arg left_padding_set;
+
+	//! Padding
+	dim_arg right_padding_set;
+
+	//! Padding
+	dim_arg top_padding_set;
+
+	//! Padding
+	dim_arg bottom_padding_set;
 
 	//! New element's location
 	dim_t row;
@@ -84,9 +84,13 @@ struct new_grid_element_info : public existing_grid_element_info {
 	//! New element's location
 	dim_t col;
 
+	//! My screen
+	ref<screenObj::implObj> screen_impl;
+
 	//! Constructor
 	new_grid_element_info(dim_t row,
 			      dim_t col,
+			      const container_impl &parent_container,
 			      const ref<grid_map_infoObj> &grid_map);
 
 	//! Copy constructor
@@ -96,11 +100,20 @@ struct new_grid_element_info : public existing_grid_element_info {
 	~new_grid_element_info();
 };
 
+struct LIBCXX_HIDDEN left_padding_tag;
+struct LIBCXX_HIDDEN right_padding_tag;
+struct LIBCXX_HIDDEN top_padding_tag;
+struct LIBCXX_HIDDEN bottom_padding_tag;
+
 //! A \ref grid_element object.
 
-class LIBCXX_HIDDEN grid_elementObj
+class grid_elementObj
 	: public existing_grid_element_info,
 	  public metrics::pos_axis_padding,
+	  public themedim_element<left_padding_tag>,
+	  public themedim_element<right_padding_tag>,
+	  public themedim_element<top_padding_tag>,
+	  public themedim_element<bottom_padding_tag>,
 	  virtual public obj {
 
  public:
@@ -114,7 +127,8 @@ class LIBCXX_HIDDEN grid_elementObj
 	~grid_elementObj();
 
 	//! Initialize this grid element in the connection thread.
-	void initialize(ONLY IN_THREAD);
+	void initialize(ONLY IN_THREAD,
+			const ref<screenObj::implObj> &screen_impl);
 
 	//! The element
 	const element grid_element;
@@ -127,7 +141,7 @@ class LIBCXX_HIDDEN grid_elementObj
 	//! Whether this grid element has been initialized in the connection thread.
 	bool initialized_thread_only;
 
- public:
+ private:
 	//! Calculate this grid element's padding.
 
 	//! Converts _paddingmm to pixels. Sets left_padding and
@@ -135,8 +149,13 @@ class LIBCXX_HIDDEN grid_elementObj
 	//! in grid_element picking up the slack (the grid calculations look
 	//! at grid_element's axises, and the only thing that the grid
 	//! calculation cares about is the total padding in each axis).
+	void recalculate_padding(ONLY IN_THREAD);
 
-	void theme_updated(const const_defaulttheme &new_theme);
+public:
+	//! Call recalculate_padding().
+
+	void theme_updated(ONLY IN_THREAD,
+			   const const_defaulttheme &new_theme);
 
 	//! Return true if the element is visible, or if its space is reserved.
 

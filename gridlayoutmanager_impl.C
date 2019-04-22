@@ -131,6 +131,8 @@ gridfactory gridlayoutmanagerObj::implObj
 				   public_object->impl,
 				   ref<gridfactoryObj::implObj>::create
 				   (row, col, *public_object->grid_lock,
+				    public_object->impl
+				    ->layout_container_impl,
 				    replace_existing));
 }
 
@@ -460,7 +462,9 @@ void gridlayoutmanagerObj::implObj
 				   elem);
 
 		// Reset the next element to defaults.
-		info=new_grid_element_info{info.row, info.col+1, *lock};
+		info=new_grid_element_info{info.row, info.col+1,
+					   layout_container_impl,
+					   *lock};
 	}
 	(*lock)->elements_have_been_modified();
 }
