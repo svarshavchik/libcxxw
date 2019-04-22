@@ -10,7 +10,6 @@
 
 #include "x/w/drawablefwd.H"
 #include "x/w/rgb.H"
-#include "x/w/border_infomm.H"
 #include "x/w/font.H"
 #include "x/w/picturefwd.H"
 #include "x/w/screenfwd.H"
@@ -97,17 +96,11 @@ public:
 	//! Parsed dimensions
 	std::unordered_map<std::string, dim_t> dims;
 
-	//! Borders
-	std::unordered_map<std::string, border_infomm> borders;
-
 	//! Fonts
 	std::unordered_map<std::string, font> fonts;
 
 	//! Parse dimensions from the configuration file.
 	void load_dims(const theme_parser_lock &root_lock);
-
-	//! Parse boders from the configuration file.
-	void load_borders(const theme_parser_lock &root_lock);
 
 	//! Parse fonts from the configuration file
 	void load_fonts(const theme_parser_lock &root_lock);

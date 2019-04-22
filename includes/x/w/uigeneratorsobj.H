@@ -7,6 +7,7 @@
 
 #include <x/w/uigeneratorsfwd.H>
 #include <x/w/rgb.H>
+#include <x/w/border_infomm.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
@@ -31,6 +32,10 @@ public:
 	//! Custom colors loaded from this layout.
 
 	std::unordered_map<std::string, theme_color_t> colors;
+
+	//! Borders
+
+	std::unordered_map<std::string, border_infomm> borders;
 
 	//! Generators used by the grid layout manager
 

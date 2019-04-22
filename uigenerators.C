@@ -21,7 +21,7 @@ const_uigenerators uigeneratorsBase::create(const std::string_view &filename)
 
 	if (lock->get_root())
 	{
-		uicompiler compiler{lock, *g};
+		uicompiler compiler{lock, *g, true};
 	}
 
 	return g;

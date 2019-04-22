@@ -366,8 +366,94 @@ static bool parse_gradients(theme_parser_lock &lock,
 	return true;
 }
 
+
+static std::optional<color_arg>
+get_color(const theme_parser_lock &lock,
+	  const char *xpath_name,
+	  const std::unordered_map<std::string, theme_color_t> &colors,
+	  bool allowthemerefs)
+{
+	auto color_node=lock.clone();
+
+	auto xpath=color_node->get_xpath(xpath_name);
+
+	if (xpath->count() == 0)
+		return std::nullopt;
+
+	xpath->to_node();
+
+	auto name=color_node->get_text();
+
+	auto iter=colors.find(name);
+
+	if (iter == colors.end())
+	{
+		if (!allowthemerefs)
+			throw EXCEPTION(_("Color %1% was not found"));
+
+		return name; // Must be theme color
+	}
+	return std::visit([&]
+			  (const auto &c) -> color_arg
+			  {
+				  return c;
+			  },
+			  iter->second);
+}
+
+// Look up a dimension, when parsing something else.
+
+static void update_dim_if_given(const theme_parser_lock &lock,
+				const char *xpath_node,
+				dim_arg &size,
+				unsigned &scale,
+				const char *descr,
+				const std::string &id,
+				bool allowthemerefs) // TODO
+{
+	auto node=lock.clone();
+
+	auto xpath=node->get_xpath(xpath_node);
+
+	if (xpath->count() == 0)
+		return;
+
+	xpath->to_node();
+
+	std::istringstream i{node->get_text()};
+
+	imbue<std::istringstream> imbue{lock.c_locale, i};
+
+	auto s=node->get_any_attribute("scale");
+
+	if (!s.empty())
+	{
+		size=s;
+
+		i >> scale;
+
+		if (i.fail())
+			throw EXCEPTION(gettextmsg(_("Cannot parse %1% (%2%)"),
+						   descr, id));
+		return;
+	}
+
+	double v;
+
+	i >> v;
+
+	if (i.fail())
+		throw EXCEPTION(gettextmsg(_("Cannot parse %1% (%2%)"),
+					   descr, id));
+
+	size=v;
+	scale=1;
+}
+
+
 uicompiler::uicompiler(const theme_parser_lock &root_lock,
-		       uigeneratorsObj &generators)
+		       uigeneratorsObj &generators,
+		       bool allowthemerefs)
 	: generators{generators}
 {
 	if (!root_lock->get_root())
@@ -463,6 +549,166 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 		throw EXCEPTION(gettextmsg
 				(_("Color %1% is based on another"
+				   " color which was not found"
+				   " (this can be because of a circular"
+				   " reference)"),
+				 id));
+	}
+
+	lock=root_lock.clone();
+
+	xpath=lock->get_xpath("/theme/border");
+
+	count=xpath->count();
+
+	// Repeatedly pass over all borders, parsing the ones that are not based
+	// on unparsed borders.
+
+	do
+	{
+		parsed=false;
+
+		for (size_t i=0; i<count; ++i)
+		{
+			xpath->to_node(i+1);
+
+			auto id=lock->get_any_attribute("id");
+
+			if (id.empty())
+				throw EXCEPTION(_("no id specified for border"));
+
+			if (generators.borders.find(id) != generators.borders.end())
+				continue; // Did this one already.
+
+			border_infomm new_border;
+
+			auto from=lock->get_any_attribute("from");
+
+			bool created_border=true;
+
+			if (!from.empty())
+			{
+				auto iter=generators.borders.find(from);
+
+				if (iter == generators.borders.end())
+					continue; // Not yet parsed
+
+				new_border=iter->second;
+				created_border=false;
+			}
+
+			// If we copied the border from another from, then
+			// unless the following values are given, don't
+			// touch the colors.
+
+			auto color1=get_color(lock, "color", generators.colors,
+					      allowthemerefs);
+
+			if (color1)
+			{
+				new_border.color1= *color1;
+
+				new_border.color2=get_color(lock, "color2",
+							   generators.colors,
+							   allowthemerefs);
+			}
+			else if (created_border)
+			{
+				throw EXCEPTION(gettextmsg
+						(_("<color> not specified for "
+						   "%1"), id));
+			}
+
+			update_dim_if_given(lock, "width",
+					    new_border.width,
+					    new_border.width_scale,
+					    "border", id, allowthemerefs);
+
+			update_dim_if_given(lock, "height",
+					    new_border.height,
+					    new_border.height_scale,
+					    "border", id, allowthemerefs);
+
+			// <rounded> sets the radii both to 1.
+
+			if (single_value_exists(lock, "rounded"))
+			{
+				auto rounded=single_value(lock, "rounded",
+							  "border");
+
+				new_border.rounded=rounded != "0";
+			}
+
+			// Alternatively, hradius and vradius will set them
+			// to at least 2.
+
+			update_dim_if_given(lock, "hradius",
+					    new_border.hradius,
+					    new_border.hradius_scale,
+					    "border", id, allowthemerefs);
+
+			update_dim_if_given(lock, "vradius",
+					    new_border.vradius,
+					    new_border.vradius_scale,
+					    "border", id, allowthemerefs);
+
+			{
+				auto dash_nodes=lock.clone();
+
+				auto xpath=dash_nodes->get_xpath("dash");
+
+				size_t n=xpath->count();
+
+				if (n)
+				{
+					new_border.dashes.clear();
+					new_border.dashes.reserve(n);
+				}
+
+				for (i=0; i<n; ++i)
+				{
+					xpath->to_node(i+1);
+
+					dim_t mm;
+
+					std::istringstream i
+						{
+						 dash_nodes->get_text()
+						};
+
+					imbue<std::istringstream>
+						imbue{dash_nodes.c_locale, i};
+
+					double v;
+
+					i >> v;
+
+					if (i.fail())
+						throw EXCEPTION
+							(gettextmsg
+							 (_("Cannot parse dash "
+							    "values of border "
+							    "%1%"), id));
+
+					new_border.dashes.push_back(v);
+				}
+			}
+			generators.borders.emplace(id, new_border);
+			parsed=true;
+		}
+	} while (parsed);
+
+	for (size_t i=0; i<count; ++i)
+	{
+		xpath->to_node(i+1);
+
+		auto id=lock->get_any_attribute("id");
+
+		if (generators.borders.find(id) != generators.borders.end())
+			continue;
+
+		throw EXCEPTION(gettextmsg
+				(_("Border %1% is based on another"
 				   " color which was not found"
 				   " (this can be because of a circular"
 				   " reference)"),

@@ -41,8 +41,13 @@ public:
 	//!
 	//! Once constructed, this object is just an empty hulk that can be
 	//! discarded.
+	//!
+	//! "allowthemerefs" gets set to false when parsing the default
+	//! theme, and true when parsing a user-specified layout/theme.
+
 	uicompiler(const theme_parser_lock &lock,
-		   uigeneratorsObj &generators);
+		   uigeneratorsObj &generators,
+		   bool allowthemerefs);
 
 private:
 

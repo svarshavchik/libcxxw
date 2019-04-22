@@ -88,17 +88,6 @@ halign to_halign_value(const theme_parser_lock &lock,
 valign to_valign_value(const theme_parser_lock &lock,
 		       const char *element, const char *parent) LIBCXX_HIDDEN;
 
-//! Parse colors
-
-//! Reads all <border> elements.
-
-void parse_borders(const theme_parser_lock &root_lock,
-		   std::unordered_map<std::string, theme_color_t> &colors,
-		   std::unordered_map<std::string, border_infomm
-		   > &parsed_borders,
-		   std::unordered_set<std::string> &other_borders)
-	LIBCXX_HIDDEN;
-
 LIBCXXW_NAMESPACE_END
 
 #endif
