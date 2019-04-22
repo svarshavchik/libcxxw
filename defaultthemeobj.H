@@ -97,9 +97,6 @@ public:
 	//! Parsed dimensions
 	std::unordered_map<std::string, dim_t> dims;
 
-	//! Parsed colors
-	std::unordered_map<std::string, theme_color_t> colors;
-
 	//! Borders
 	std::unordered_map<std::string, border_infomm> borders;
 
@@ -108,9 +105,6 @@ public:
 
 	//! Parse dimensions from the configuration file.
 	void load_dims(const theme_parser_lock &root_lock);
-
-	//! Parse colors from the configuration file.
-	void load_colors(const theme_parser_lock &root_lock);
 
 	//! Parse boders from the configuration file.
 	void load_borders(const theme_parser_lock &root_lock);

@@ -6,6 +6,7 @@
 #define x_w_uigeneratorsobj_h
 
 #include <x/w/uigeneratorsfwd.H>
+#include <x/w/rgb.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
@@ -26,6 +27,10 @@ public:
 
 	//! Destructor
 	~uigeneratorsObj() LIBCXX_HIDDEN;
+
+	//! Custom colors loaded from this layout.
+
+	std::unordered_map<std::string, theme_color_t> colors;
 
 	//! Generators used by the grid layout manager
 

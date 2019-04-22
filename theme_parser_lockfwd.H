@@ -8,7 +8,7 @@
 #include "x/w/namespace.H"
 #include "x/w/types.H"
 #include "x/w/alignment.H"
-#include "x/w/defaultthemefwd.H"
+#include "x/w/uigeneratorsfwd.H"
 #include "x/w/border_infommfwd.H"
 #include "x/w/screenobj.H"
 #include "x/w/impl/border_infofwd.H"
@@ -87,15 +87,6 @@ halign to_halign_value(const theme_parser_lock &lock,
 //! this reads an halign value.
 valign to_valign_value(const theme_parser_lock &lock,
 		       const char *element, const char *parent) LIBCXX_HIDDEN;
-
-//! Parse colors
-
-//! Reads all <color> elements, filling in "colors". Any referenced colors
-//! that are not found are placed into other_colors.
-
-void parse_colors(const theme_parser_lock &root_lock,
-		  std::unordered_map<std::string, theme_color_t> &colors,
-		  std::unordered_set<std::string> &other_colors) LIBCXX_HIDDEN;
 
 //! Parse colors
 

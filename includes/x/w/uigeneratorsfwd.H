@@ -11,9 +11,14 @@
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/bookpagefactoryfwd.H>
 #include <x/w/uielementsfwd.H>
+#include <x/w/rgbfwd.H>
 #include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
+
+//! A theme color is either an rgb solid color, or a gradient color.
+
+typedef std::variant<rgb, linear_gradient, radial_gradient> theme_color_t;
 
 //! Generate something in the grid layout manager
 
