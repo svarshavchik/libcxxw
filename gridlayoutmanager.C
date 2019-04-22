@@ -131,14 +131,14 @@ void gridlayoutmanagerObj::row_alignment(size_t row, valign alignment)
 	impl->row_alignment(grid_lock, row, alignment);
 }
 
-void gridlayoutmanagerObj::row_top_padding_set(size_t row,
-					       const dim_arg &padding)
+void gridlayoutmanagerObj::row_top_padding(size_t row,
+					   const dim_arg &padding)
 {
 	impl->row_top_padding_set(row, padding);
 }
 
-void gridlayoutmanagerObj::row_bottom_padding_set(size_t row,
-						  const dim_arg &padding)
+void gridlayoutmanagerObj::row_bottom_padding(size_t row,
+					      const dim_arg &padding)
 {
 	impl->row_bottom_padding_set(row, padding);
 }
@@ -159,14 +159,14 @@ void gridlayoutmanagerObj::col_alignment(size_t col, halign alignment)
 	impl->col_alignment(grid_lock, col, alignment);
 }
 
-void gridlayoutmanagerObj::col_left_padding_set(size_t col,
-						const dim_arg &padding)
+void gridlayoutmanagerObj::col_left_padding(size_t col,
+					    const dim_arg &padding)
 {
 	impl->col_left_padding_set(col, padding);
 }
 
-void gridlayoutmanagerObj::col_right_padding_set(size_t col,
-						 const dim_arg &padding)
+void gridlayoutmanagerObj::col_right_padding(size_t col,
+					     const dim_arg &padding)
 {
 	impl->col_right_padding_set(col, padding);
 }
