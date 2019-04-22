@@ -112,7 +112,8 @@ element.
 gridlayout->remove();
 \endcode
 
-remove() removes all existing elements from the grid.
+remove() removes all existing elements from the grid. Also resets all
+default row and column defaults (borders, paddings, percentages).
 
 \code
 gridlayout->remove(row, col);

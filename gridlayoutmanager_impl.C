@@ -273,6 +273,9 @@ void gridlayoutmanagerObj::implObj::remove_all_rows(grid_map_t::lock &lock)
 {
 	(*lock)->elements.clear();
 	(*lock)->elements_have_been_modified();
+	(*lock)->column_defaults.clear();
+	(*lock)->row_defaults.clear();
+	(*lock)->defaults_changed();
 }
 
 void gridlayoutmanagerObj::implObj::remove(grid_map_t::lock &lock,
