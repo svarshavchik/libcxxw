@@ -474,6 +474,17 @@ main_windowObj::handlerObj::compute_initial_size(ONLY IN_THREAD)
 		h=dim_t::truncate(hints.height);
 	}
 
+	// An X server will report a BadValue for a window
+	// of size (0,0). Our metrics can compute such
+	// a preferred size, as an edge case. So, we deal
+	// with it.
+
+	if (w == 0)
+		w=1;
+
+	if (h == 0)
+		h=1;
+
 	return {w, h};
 }
 
@@ -482,14 +493,6 @@ void main_windowObj::handlerObj::update_initial_size(ONLY IN_THREAD,
 						     dim_t h,
 						     size_t counter)
 {
-	// An X server will report a BadValue for a window
-	// of size (0,0). Our metrics can compute such
-	// a preferred size, as an edge case. So, we deal
-	// with it.
-
-	if (w == 0 || h == 0)
-		w=h=1;
-
 	// Simulate a configure_notify(), so that the
 	// display elements get arranged accordingly right
 	// away. We will eventually send an xcb_configure_notify
