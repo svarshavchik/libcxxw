@@ -194,9 +194,9 @@ private:
 	 const std::string &background_color,
 	 const std::string &border);
 
-	//! Execute <include>
+	//! Execute <grid>
 
-	//! Executed by the compiled <include>.
+	//! Executed by the compiled <grid>.
 	static void container_gridlayoutmanager
 	(const factory &,
 	 uielements &,

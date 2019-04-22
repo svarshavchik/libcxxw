@@ -617,10 +617,10 @@ List of values:
       </parameter>
     </function>
 
-    <!-- include -->
+    <!-- grid -->
 
     <function>
-      <name>include</name>
+      <name>grid</name>
       <invoke>container_gridlayoutmanager</invoke>
 
       <parameter>
