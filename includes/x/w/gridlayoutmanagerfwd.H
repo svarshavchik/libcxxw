@@ -193,6 +193,22 @@ remove_col_defaults().
 row_alignment() must get set before using append_row() or insert_row()
 to construct a factory for cells in the row.
 
+\par Populating from an XML-based specification
+
+\code
+gridlayout->set_background_color(INSERT_LIBX_NAMESPACE::w::white);
+gridlayout->remove_background_color();
+
+gridlayout->generate("main-layout", generators, elements);
+\endcode
+
+set_background_color() is equivalent to invoking set_background_color()
+and remove_background_color() on the grid layout manager's underlying
+container display element. This is mostly for use by an XML-based
+specification of the container's contents. generate() removes all existing
+display elements in the container and generates new contents from the
+loaded generators. See the tutorial for more information.
+
 */
 
 typedef ref<gridlayoutmanagerObj> gridlayoutmanager;

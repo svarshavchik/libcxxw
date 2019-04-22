@@ -44,6 +44,7 @@ noinst_PROGRAMS=\
 	table2				        \
 	toolboxlayoutmanager			\
 	uigenerator1				\
+	uigenerator2				\
 	validatedinput				\
 	wordwraplabel
 
@@ -183,6 +184,10 @@ toolboxlayoutmanager_LDADD=-lcxxw -lcxx
 uigenerator1_SOURCES=uigenerator1.C close_flag.H
 uigenerator1_LDADD=-lcxxw -lcxx
 EXTRA_DIST += uigenerator1.xml
+
+uigenerator2_SOURCES=uigenerator2.C close_flag.H
+uigenerator2_LDADD=-lcxxw -lcxx
+EXTRA_DIST += uigenerator2.xml
 
 validatedinput_SOURCES=validatedinput.C close_flag.H
 validatedinput_LDADD=-lcxxw -lcxx

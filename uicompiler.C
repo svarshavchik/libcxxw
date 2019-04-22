@@ -370,7 +370,7 @@ static bool parse_gradients(theme_parser_lock &lock,
 static std::optional<color_arg>
 get_color(const theme_parser_lock &lock,
 	  const char *xpath_name,
-	  const std::unordered_map<std::string, theme_color_t> &colors,
+	  const uigeneratorsObj &generators,
 	  bool allowthemerefs)
 {
 	auto color_node=lock.clone();
@@ -384,21 +384,7 @@ get_color(const theme_parser_lock &lock,
 
 	auto name=color_node->get_text();
 
-	auto iter=colors.find(name);
-
-	if (iter == colors.end())
-	{
-		if (!allowthemerefs)
-			throw EXCEPTION(_("Color %1% was not found"));
-
-		return name; // Must be theme color
-	}
-	return std::visit([&]
-			  (const auto &c) -> color_arg
-			  {
-				  return c;
-			  },
-			  iter->second);
+	return generators.lookup_color(name, allowthemerefs, xpath_name);
 }
 
 static void unknown_dim(const char *element, const std::string &id)
@@ -419,7 +405,7 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 				unsigned &scale,
 				const char *descr,
 				const std::string &id,
-				std::unordered_map<std::string, double> &dims,
+				const uigeneratorsObj &generators,
 				bool allowthemerefs)
 {
 	auto node=lock.clone();
@@ -448,36 +434,12 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 			throw EXCEPTION(gettextmsg(_("Cannot parse %1% (%2%)"),
 						   descr, id));
 
-		auto iter=dims.find(s);
-
-		if (iter != dims.end())
-		{
-			size=iter->second;
-		}
-		else
-		{
-			if (!allowthemerefs)
-			{
-				throw EXCEPTION(gettextmsg
-						(_("dim %1% (%2%) not found"),
-						 descr, id));
-			}
-			size=s;
-		}
-		size=s;
+		size=generators.lookup_dim(s, allowthemerefs, descr);
 
 		return;
 	}
-
-	auto iter=dims.find(t);
 
 	scale=1;
-
-	if (iter != dims.end())
-	{
-		size=iter->second;
-		return;
-	}
 
 	double v;
 
@@ -489,12 +451,7 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 		return;
 	}
 
-	if (allowthemerefs)
-	{
-		size=t;
-		return;
-	}
-	unknown_dim(descr, id);
+	size=generators.lookup_dim(t, allowthemerefs, descr);
 }
 
 
@@ -557,7 +514,7 @@ parse_dim(const theme_parser_lock &lock,
 uicompiler::uicompiler(const theme_parser_lock &root_lock,
 		       uigeneratorsObj &generators,
 		       bool allowthemerefs)
-	: generators{generators}
+	: generators{generators}, allowthemerefs{allowthemerefs}
 {
 	if (!root_lock->get_root())
 		return;
@@ -749,7 +706,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			// unless the following values are given, don't
 			// touch the colors.
 
-			auto color1=get_color(lock, "color", generators.colors,
+			auto color1=get_color(lock, "color", generators,
 					      allowthemerefs);
 
 			if (color1)
@@ -757,8 +714,8 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 				new_border.color1= *color1;
 
 				new_border.color2=get_color(lock, "color2",
-							   generators.colors,
-							   allowthemerefs);
+							    generators,
+							    allowthemerefs);
 			}
 			else if (created_border)
 			{
@@ -771,14 +728,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 					    new_border.width,
 					    new_border.width_scale,
 					    "border", id,
-					    generators.dims,
+					    generators,
 					    allowthemerefs);
 
 			update_dim_if_given(lock, "height",
 					    new_border.height,
 					    new_border.height_scale,
 					    "border", id,
-					    generators.dims,
+					    generators,
 					    allowthemerefs);
 
 			// <rounded> sets the radii both to 1.
@@ -798,14 +755,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 					    new_border.hradius,
 					    new_border.hradius_scale,
 					    "border", id,
-					    generators.dims,
+					    generators,
 					    allowthemerefs);
 
 			update_dim_if_given(lock, "vradius",
 					    new_border.vradius,
 					    new_border.vradius_scale,
 					    "border", id,
-					    generators.dims,
+					    generators,
 					    allowthemerefs);
 
 			{

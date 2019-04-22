@@ -5,9 +5,10 @@
 #include "libcxxw_config.h"
 #include "x/w/uigenerators.H"
 #include "uicompiler.H"
-
+#include "messages.H"
 #include "theme_parser_lock.H"
 #include <x/xml/doc.H>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -30,5 +31,59 @@ const_uigenerators uigeneratorsBase::create(const std::string_view &filename)
 uigeneratorsObj::uigeneratorsObj()=default;
 
 uigeneratorsObj::~uigeneratorsObj()=default;
+
+dim_arg uigeneratorsObj::lookup_dim(const std::string &name,
+				   bool allowthemerefs,
+				   const char *tag) const
+{
+	auto iter=dims.find(name);
+
+	if (iter != dims.end())
+		return iter->second;
+
+	if (!allowthemerefs)
+		throw EXCEPTION(gettextmsg
+				(_("The %1% <dim> was not found for %2%"),
+				 name, tag));
+
+	return name;
+}
+
+border_arg uigeneratorsObj::lookup_border(const std::string &name,
+					  bool allowthemerefs,
+					  const char *tag) const
+{
+	auto iter=borders.find(name);
+
+	if (iter != borders.end())
+		return iter->second;
+
+	if (!allowthemerefs)
+		throw EXCEPTION(gettextmsg
+				(_("The %1% <border> was not found for %2%"),
+				 name, tag));
+	return name;
+}
+
+color_arg uigeneratorsObj::lookup_color(const std::string &name,
+					bool allowthemerefs,
+					const char *tag) const
+{
+	auto iter=colors.find(name);
+
+	if (iter != colors.end())
+		return std::visit([]
+				  (const auto &c) -> color_arg
+				  {
+					  return c;
+				  }, iter->second);
+
+	if (!allowthemerefs)
+		throw EXCEPTION(gettextmsg
+				(_("The %1% <color> was not found for %2%"),
+				 name, tag));
+
+	return name;
+}
 
 LIBCXXW_NAMESPACE_END

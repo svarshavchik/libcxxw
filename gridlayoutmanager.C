@@ -49,6 +49,18 @@ gridlayoutmanagerObj::gridlayoutmanagerObj(const ref<implObj> &impl)
 
 gridlayoutmanagerObj::~gridlayoutmanagerObj()=default;
 
+void gridlayoutmanagerObj::set_background_color(const color_arg &arg)
+{
+	impl->layout_container_impl->container_element_impl()
+		.set_background_color(arg);
+}
+
+void gridlayoutmanagerObj::remove_background_color()
+{
+	impl->layout_container_impl->container_element_impl()
+		.remove_background_color();
+}
+
 gridfactory gridlayoutmanagerObj::append_row()
 {
 	return impl->append_row(this);

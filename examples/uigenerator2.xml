@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<theme version="1"
+       xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <!-- Various sizes (dimensions). Specified in millimeters -->
+
+  <dim id="border-size">2.0</dim>
+
+  <dim id="cell-padding">4.0</dim>
+
+  <!-- Define a custom color. r, g, b, and a channels range from 0 to 1 -->
+
+  <color id="left-border-color">
+    <r>1</r>
+    <g>.5</g>
+    <b>.0</b>
+  </color>
+
+  <!-- Border specifications -->
+  <border id="solid-border">
+    <color>left-border-color</color>
+    <width>border-size</width>
+    <height>border-size</height>
+  </border>
+
+  <!--
+      "from" bases a border on another border, replaces the border colors,
+      makes it a dashed border, and adds rounded corners.
+
+      Basically, this inherits the size of the border. Changing the width or
+      height of "solid-border" changes this border's size, to match.
+
+  -->
+
+
+  <border id="dashed-border" from="solid-border">
+
+    <!-- Standard HTML 3.2 colors -->
+    <color>green</color>
+    <color2>blue</color2>
+    <dash>.75</dash>
+    <rounded>1</rounded>
+  </border>
+
+  <layout type="grid" id="main-window-grid">
+
+    <background_color>
+      <color>silver</color>
+    </background_color>
+
+    <!-- Align row 0's cells, by default. -->
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>main-window-row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="main-window-row">
+
+    <!-- Specify the borders for the first cell -->
+
+    <border>
+      <side>left</side>
+      <border>solid-border</border>
+    </border>
+    <border>
+      <side>right</side>
+      <border>solid-border</border>
+    </border>
+    <border>
+      <side>top</side>
+      <border>solid-border</border>
+    </border>
+    <border>
+      <side>bottom</side>
+      <border>solid-border</border>
+    </border>
+
+    <padding>
+      <side>all</side>
+      <padding>cell-padding</padding>
+    </padding>
+
+    <element>
+      <name>label</name>
+    </element>
+
+    <padding>
+      <side>all</side>
+      <padding>cell-padding</padding>
+    </padding>
+
+    <element>
+      <name>label</name>
+    </element>
+
+    <!-- Border for the right cell -->
+    <border>
+      <side>all</side>
+      <border>dashed-border</border>
+    </border>
+
+    <padding>
+      <side>all</side>
+      <padding>cell-padding</padding>
+    </padding>
+
+    <element>
+      <name>label</name>
+    </element>
+  </factory>
+
+</theme>

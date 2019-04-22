@@ -19,6 +19,7 @@
 #include <x/w/shortcutfwd.H>
 #include <x/w/containerfwd.H>
 #include <x/w/uielementsfwd.H>
+#include <x/w/rgbfwd.H>
 #include <x/refptr_hash.H>
 #include <x/functionalrefptrfwd.H>
 
@@ -157,6 +158,12 @@ public:
 
 	//! Remove all custom column defaults.
 	void remove_col_defaults(size_t col);
+
+	//! Set the container's background color
+	void set_background_color(const color_arg &arg);
+
+	//! Set the container's background color
+	void remove_background_color();
 
 	//! Implement generate()
 

@@ -191,6 +191,7 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_dim</lookup>
       </parameter>
     </function>
 
@@ -213,6 +214,7 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_dim</lookup>
       </parameter>
     </function>
 
@@ -235,6 +237,7 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_dim</lookup>
       </parameter>
     </function>
 
@@ -257,6 +260,7 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_dim</lookup>
       </parameter>
     </function>
 
@@ -276,6 +280,7 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_border</lookup>
       </parameter>
     </function>
 
@@ -293,6 +298,7 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_border</lookup>
       </parameter>
     </function>
 
@@ -357,6 +363,28 @@ List of values:
 	<type>lookup_gridfactory_generators</type>
       </parameter>
     </function>
+
+    <!-- background_color -->
+
+    <function>
+      <name>background_color</name>
+      <object>layout</object>
+      <invoke>set_background_color</invoke>
+
+      <parameter>
+	<name>color</name>
+	<type>single_value</type>
+	<lookup>generators.lookup_color</lookup>
+      </parameter>
+    </function>
+
+    <!-- remove_background_color -->
+
+    <function>
+      <name>remove_background_color</name>
+      <object>layout</object>
+      <invoke>remove_background_color</invoke>
+    </function>
   </parser>
 
   <parser>
@@ -404,6 +432,24 @@ List of values:
 
     <function>
       <name>padding</name>
+      <invoke>padding</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>all</value>
+      </condition>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+	<lookup>generators.lookup_dim</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>padding</name>
       <invoke>left_padding</invoke>
 
       <condition>
@@ -416,6 +462,7 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_dim</lookup>
       </parameter>
     </function>
 
@@ -433,6 +480,7 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_dim</lookup>
       </parameter>
     </function>
 
@@ -450,6 +498,7 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_dim</lookup>
       </parameter>
     </function>
 
@@ -467,6 +516,7 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_dim</lookup>
       </parameter>
     </function>
 
@@ -500,6 +550,24 @@ List of values:
 
     <function>
       <name>border</name>
+      <invoke>border</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>all</value>
+      </condition>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>border</name>
+	<type>single_value</type>
+	<lookup>generators.lookup_border</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>border</name>
       <invoke>left_border</invoke>
 
       <condition>
@@ -512,6 +580,7 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_border</lookup>
       </parameter>
     </function>
 
@@ -529,6 +598,7 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_border</lookup>
       </parameter>
     </function>
 
@@ -546,6 +616,7 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_border</lookup>
       </parameter>
     </function>
 
@@ -563,6 +634,7 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
+	<lookup>generators.lookup_border</lookup>
       </parameter>
     </function>
 

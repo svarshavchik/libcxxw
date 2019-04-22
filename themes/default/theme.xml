@@ -8,10 +8,6 @@
 
   <dim id="no-padding">0</dim>
 
-  <color id="transparent">
-    <a>0</a>
-  </color>
-
   <color id="0%" />
 
   <color id="10%">
@@ -607,7 +603,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   <!-- Selection lists -->
 
   <dim id="list_v_padding">.2</dim>
-  <dim id="list_h_padding">2</dim>
+  <dim id="list_h_padding">.5</dim>
   <dim id="list_indent">6</dim>
 
   <border id="list_border" from="thin_0%" />

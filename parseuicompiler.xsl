@@ -34,13 +34,29 @@ Generates:
 	<xsl:text>        auto </xsl:text>
 	<xsl:value-of select="name" />
 	<xsl:text>_value=&#10;            </xsl:text>
+
+	<!--
+	    If <lookup> is specified, massage the argument
+	    accordingly.
+	-->
+	<xsl:if test="lookup">
+	  <xsl:value-of select="lookup" />
+	  <xsl:text>(</xsl:text>
+	</xsl:if>
+
 	<xsl:value-of select="type" />
 	<xsl:text>(lock, "</xsl:text>
 	<xsl:value-of select="name" />
 	<xsl:text>", "</xsl:text>
 	<xsl:value-of select="../name" />
 	<xsl:text>"</xsl:text>
-	<xsl:text>);&#10;</xsl:text>
+	<xsl:text>)</xsl:text>
+	<xsl:if test="lookup">
+	  <xsl:text>, allowthemerefs, &#34;</xsl:text>
+	  <xsl:value-of select="../name" />
+	  <xsl:text>&#34;)</xsl:text>
+	</xsl:if>
+	<xsl:text>;&#10;</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>

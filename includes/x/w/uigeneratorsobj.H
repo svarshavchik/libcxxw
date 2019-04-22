@@ -7,6 +7,7 @@
 
 #include <x/w/uigeneratorsfwd.H>
 #include <x/w/rgb.H>
+#include <x/w/border_argfwd.H>
 #include <x/w/border_infomm.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/obj.H>
@@ -33,13 +34,28 @@ public:
 
 	std::unordered_map<std::string, double> dims;
 
+	//! Look up a parsed dimension.
+	dim_arg lookup_dim(const std::string &name,
+			   bool allowthemerefs,
+			   const char *tag) const;
+
 	//! Custom colors loaded from this layout.
 
 	std::unordered_map<std::string, theme_color_t> colors;
 
+	//! Look up a parsed color
+	color_arg lookup_color(const std::string &name,
+			       bool allowthemerefs,
+			       const char *tag) const;
+
 	//! Borders
 
 	std::unordered_map<std::string, border_infomm> borders;
+
+	//! Look up a parsed border.
+	border_arg lookup_border(const std::string &name,
+				 bool allowthemerefs,
+				 const char *tag) const;
 
 	//! Generators used by the grid layout manager
 

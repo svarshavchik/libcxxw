@@ -480,6 +480,27 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 			      screen->height_in_millimeters, themescale)},
 	  screen{screen}
 {
+	// Install default HTML 3.2 colors
+
+	colors={
+		{"transparent", transparent},
+		{"black", black},
+		{"gray", gray},
+		{"silver", silver},
+		{"white", white},
+		{"maroon", maroon},
+		{"red", red},
+		{"olive", olive},
+		{"yellow", yellow},
+		{"green", green},
+		{"lime", lime},
+		{"teal", teal},
+		{"aqua", aqua},
+		{"navy", navy},
+		{"blue", blue},
+		{"fuchsia", fuchsia},
+		{"purple", purple}};
+
 	try {
 		theme_parser_lock
 			lock{theme_config.theme_configfile->readlock()};

@@ -51,8 +51,10 @@ public:
 
 private:
 
-	//! What's being generator.
+	//! What's being generated.
 	uigeneratorsObj &generators;
+
+	bool allowthemerefs;
 
 	//! Top level generators in the XML code that aren't compiled yet.
 
