@@ -1093,8 +1093,11 @@ static bool parse_gradients(theme_parser_lock &lock,
 	return true;
 }
 
-void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
+void parse_colors(const theme_parser_lock &root_lock,
+		  std::unordered_map<std::string, theme_color_t> &colors,
+		  std::unordered_set<std::string> &other_colors)
 {
+
 	auto lock=root_lock.clone();
 
 	if (!lock->get_root())
@@ -1181,9 +1184,25 @@ void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
 		auto id=lock->get_any_attribute("id");
 
 		if (colors.find(id) == colors.end())
-			throw EXCEPTION(gettextmsg(_("circular or non-existent dependency of color id=%1%"),
-						   id));
+			other_colors.insert(id);
 	}
+}
+
+void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
+{
+	std::unordered_set<std::string> other_colors;
+
+	parse_colors(root_lock, colors, other_colors);
+
+	if (other_colors.empty())
+		return;
+
+	throw EXCEPTION(gettextmsg
+			(_("circular or non-existent dependency: color ids:"
+			   "%1%"
+			   ), join(other_colors.begin(),
+				   other_colors.end(),
+				   ", ")));
 }
 
 //////////////////////////////////////////////////////////////////////////////
