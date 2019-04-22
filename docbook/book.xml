@@ -3,87 +3,89 @@
 
 <!ENTITY % entity-list SYSTEM "entities">
 
+
+<!ENTITY allitemmethods "<link linkend='listitemmethods'><methodname>append_items</methodname>(), <methodname>insert_items</methodname>(), <methodname>replace_items</methodname>(), <methodname>replace_all_items</methodname>() and <methodname>remove_item</methodname>()</link>">
 <!ENTITY app "<application><emphasis>LibCXX Windows Library</emphasis></application>">
+<!ENTITY appearance_object "<link linkend='appearance'>appearance object</link>">
 <!ENTITY appshort "<application><emphasis>LibCXXW</emphasis></application>">
-<!ENTITY xproto "<ulink url=&#34;http://www.x.org/releases/X11R7.7/doc/xproto/x11protocol.html&#34;>X protocol</ulink>">
-<!ENTITY render "<ulink url=&#34;http://www.x.org/releases/current/doc/renderproto/renderproto.txt&#34;>RENDER extension</ulink>">
-<!ENTITY RENDER "<application>RENDER</application>">
-<!ENTITY sxg "<acronym>SXG</acronym>">
-<!ENTITY ns "x">
-<!ENTITY libcxx "<ulink url='/'>LibCXX</ulink>">
-<!ENTITY libcxxname "<application>LIBCXX</application>">
 <!ENTITY callback "<link linkend='callbacks'>callback</link>">
 <!ENTITY connection_thread "<link linkend='connection_thread'>connection thread</link>">
-<!ENTITY focusable "<link linkend='focusable'>focusable</link>">
-<!ENTITY factory "<link linkend='factory'>factory</link>">
-<!ENTITY factories "<link linkend='factory'>factories</link>">
-<!ENTITY focusable "<link linkend='focusable'>focusable</link>">
 <!ENTITY container "<link linkend='container'>container</link>">
-<!ENTITY picture "<link linkend='customdraw'>picture</link>">
-<!ENTITY layoutmanager "<link linkend='layoutmanager'>layout manager</link>">
 <!ENTITY creator "<link linkend='creator'>creator lambda</link>">
-<!ENTITY itemmethods "<link linkend='listitemmethods'><methodname>append_items</methodname>(), <methodname>insert_items</methodname>(), <methodname>replace_items</methodname>(), and <methodname>replace_all_items</methodname>()</link>">
-<!ENTITY allitemmethods "<link linkend='listitemmethods'><methodname>append_items</methodname>(), <methodname>insert_items</methodname>(), <methodname>replace_items</methodname>(), <methodname>replace_all_items</methodname>() and <methodname>remove_item</methodname>()</link>">
 <!ENTITY dialogid "<link linkend='dialogidentifiers'>dialog identifier</link>">
+<!ENTITY factories "<link linkend='factory'>factories</link>">
+<!ENTITY factory "<link linkend='factory'>factory</link>">
+<!ENTITY focusable "<link linkend='focusable'>focusable</link>">
+<!ENTITY implementation_class "<link linkend='pubimpl'>implementation object class</link>">
+<!ENTITY implementation_object "<link linkend='pubimpl'>implementation object</link>">
+<!ENTITY itemmethods "<link linkend='listitemmethods'><methodname>append_items</methodname>(), <methodname>insert_items</methodname>(), <methodname>replace_items</methodname>(), and <methodname>replace_all_items</methodname>()</link>">
+<!ENTITY layoutmanager "<link linkend='layoutmanager'>layout manager</link>">
+<!ENTITY libcxxname "<application>LIBCXX</application>">
+<!ENTITY libcxx "<ulink url='/'>LibCXX</ulink>">
+<!ENTITY metrics "<link linkend='dim_axis_arg'>metrics</link>">
+<!ENTITY ns "x">
+<!ENTITY picture "<link linkend='customdraw'>picture</link>">
+<!ENTITY public_class "<link linkend='pubimpl'>public object class</link>">
+<!ENTITY public_object "<link linkend='pubimpl'>public object</link>">
+<!ENTITY RENDER "<application>RENDER</application>">
+<!ENTITY render "<ulink url=&#34;http://www.x.org/releases/current/doc/renderproto/renderproto.txt&#34;>RENDER extension</ulink>">
+<!ENTITY sxg "<acronym>SXG</acronym>">
+<!ENTITY template_mixin "<link linkend='mixintemplates'>template mixin</link>">
+<!ENTITY xproto "<ulink url=&#34;http://www.x.org/releases/X11R7.7/doc/xproto/x11protocol.html&#34;>X protocol</ulink>">
 
-<!ENTITY intro SYSTEM "intro.xml">
-<!ENTITY install SYSTEM "install.xml">
-<!ENTITY overview SYSTEM "overview.xml">
-<!ENTITY refobj "/refobj.html">
-<!ENTITY helloworld SYSTEM "helloworld.xml">
-<!ENTITY label SYSTEM "label.xml">
-<!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">
-<!ENTITY inputfieldsandbuttons SYSTEM "inputfieldsandbuttons.xml">
-<!ENTITY dateinputfield SYSTEM "dateinputfield.xml">
-<!ENTITY validatedinput SYSTEM "validatedinput.xml">
-<!ENTITY filteredinput SYSTEM "filteredinput.xml">
-<!ENTITY statictooltip SYSTEM "statictooltip.xml">
-<!ENTITY itemlayoutmanager SYSTEM "itemlayoutmanager.xml">
-<!ENTITY spininput SYSTEM "spininput.xml">
-<!ENTITY busy SYSTEM "busy.xml">
-<!ENTITY focusable_section SYSTEM "focusable.xml">
-<!ENTITY checkradio SYSTEM "checkradio.xml">
-<!ENTITY gridlayoutmanager SYSTEM "gridlayoutmanager.xml">
-<!ENTITY pagelayoutmanager SYSTEM "pagelayoutmanager.xml">
 <!ENTITY booklayoutmanager SYSTEM "booklayoutmanager.xml">
-<!ENTITY panelayoutmanager SYSTEM "panelayoutmanager.xml">
-<!ENTITY peepholelayoutmanager SYSTEM "peepholelayoutmanager.xml">
 <!ENTITY borderlayoutmanager SYSTEM "borderlayoutmanager.xml">
-<!ENTITY list SYSTEM "list.xml">
-<!ENTITY toolbox SYSTEM "toolboxlayoutmanager.xml">
-<!ENTITY splash SYSTEM "splash.xml">
-<!ENTITY hierlist SYSTEM "hierlist.xml">
-<!ENTITY table SYSTEM "table.xml">
+<!ENTITY busy SYSTEM "busy.xml">
+<!ENTITY checkradio SYSTEM "checkradio.xml">
 <!ENTITY combobox SYSTEM "combobox.xml">
-<!ENTITY searchinputfield SYSTEM "searchinputfield.xml">
-<!ENTITY menu SYSTEM "menu.xml">
-<!ENTITY popupmenu SYSTEM "popupmenu.xml">
-<!ENTITY copycutpastemenu SYSTEM "copycutpastemenu.xml">
-<!ENTITY dialogs SYSTEM "dialogs.xml">
-<!ENTITY printdialog SYSTEM "printdialog.xml">
-<!ENTITY progressbar SYSTEM "progressbar.xml">
-<!ENTITY scrollbar SYSTEM "scrollbar.xml">
-<!ENTITY fontcolorpickers SYSTEM "fontcolorpickers.xml">
-<!ENTITY sxgdoc SYSTEM "sxg.xml">
-<!ENTITY singleton SYSTEM "singleton.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 <!ENTITY connthread SYSTEM "connthread.xml">
-<!ENTITY properties SYSTEM "properties.xml">
-<!ENTITY customintro SYSTEM "customintro.xml">
+<!ENTITY constrefobj "/constrefobj.html">
+<!ENTITY copycutpastemenu SYSTEM "copycutpastemenu.xml">
 <!ENTITY customcanvas SYSTEM "customcanvas.xml">
-<!ENTITY customelement SYSTEM "customelement.xml">
-
-<!ENTITY appearance_object "<link linkend='appearance'>appearance object</link>">
-<!ENTITY implementation_class "<link linkend='pubimpl'>implementation object class</link>">
-<!ENTITY public_class "<link linkend='pubimpl'>public object class</link>">
-<!ENTITY implementation_object "<link linkend='pubimpl'>implementation object</link>">
-<!ENTITY public_object "<link linkend='pubimpl'>public object</link>">
-<!ENTITY template_mixin "<link linkend='mixintemplates'>template mixin</link>">
-<!ENTITY metrics "<link linkend='dim_axis_arg'>metrics</link>">
-<!ENTITY customfocusableelement SYSTEM "customfocusableelement.xml">
 <!ENTITY customcontainer SYSTEM "customcontainer.xml">
+<!ENTITY customelement SYSTEM "customelement.xml">
+<!ENTITY customfocusableelement SYSTEM "customfocusableelement.xml">
 <!ENTITY customfontrendering SYSTEM "customfontrendering.xml">
+<!ENTITY customintro SYSTEM "customintro.xml">
 <!ENTITY cxxwtheme SYSTEM "cxxwtheme.xml">
+<!ENTITY dateinputfield SYSTEM "dateinputfield.xml">
+<!ENTITY dialogs SYSTEM "dialogs.xml">
+<!ENTITY filteredinput SYSTEM "filteredinput.xml">
+<!ENTITY focusable_section SYSTEM "focusable.xml">
+<!ENTITY fontcolorpickers SYSTEM "fontcolorpickers.xml">
+<!ENTITY gridlayoutmanager SYSTEM "gridlayoutmanager.xml">
+<!ENTITY helloworld SYSTEM "helloworld.xml">
+<!ENTITY hierlist SYSTEM "hierlist.xml">
+<!ENTITY inputfieldsandbuttons SYSTEM "inputfieldsandbuttons.xml">
+<!ENTITY install SYSTEM "install.xml">
+<!ENTITY intro SYSTEM "intro.xml">
+<!ENTITY itemlayoutmanager SYSTEM "itemlayoutmanager.xml">
+<!ENTITY label SYSTEM "label.xml">
+<!ENTITY list SYSTEM "list.xml">
+<!ENTITY menu SYSTEM "menu.xml">
+<!ENTITY overview SYSTEM "overview.xml">
+<!ENTITY pagelayoutmanager SYSTEM "pagelayoutmanager.xml">
+<!ENTITY panelayoutmanager SYSTEM "panelayoutmanager.xml">
+<!ENTITY peepholelayoutmanager SYSTEM "peepholelayoutmanager.xml">
+<!ENTITY popupmenu SYSTEM "popupmenu.xml">
+<!ENTITY printdialog SYSTEM "printdialog.xml">
+<!ENTITY progressbar SYSTEM "progressbar.xml">
+<!ENTITY properties SYSTEM "properties.xml">
+<!ENTITY refobj "/refobj.html">
+<!ENTITY scrollbar SYSTEM "scrollbar.xml">
+<!ENTITY searchinputfield SYSTEM "searchinputfield.xml">
+<!ENTITY singleton SYSTEM "singleton.xml">
+<!ENTITY spininput SYSTEM "spininput.xml">
+<!ENTITY splash SYSTEM "splash.xml">
+<!ENTITY statictooltip SYSTEM "statictooltip.xml">
+<!ENTITY sxgdoc SYSTEM "sxg.xml">
+<!ENTITY table SYSTEM "table.xml">
+<!ENTITY toolbox SYSTEM "toolboxlayoutmanager.xml">
+<!ENTITY uixmldoc SYSTEM "uixmldoc.xml">
+<!ENTITY uigenerator SYSTEM "uigenerator.xml">
+<!ENTITY validatedinput SYSTEM "validatedinput.xml">
+<!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">
 
 %entity-list;
 
@@ -139,6 +141,7 @@ See COPYING for distribution information.
     &fontcolorpickers;
     &toolbox;
     &splash;
+    &uigenerator;
   </part>
 
   <part id="custom">
@@ -160,6 +163,7 @@ See COPYING for distribution information.
     &properties;
   </part>
   &sxgdoc;
+  &uixmldoc;
 
   <appendix id="manpages">
     <title>Manual pages</title>

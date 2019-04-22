@@ -1,0 +1,84 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="uigenerator">
+  <title>Generating UI from an <acronym>XML</acronym> specification</title>
+
+  <para>
+    <filename>uigenerator1.C</filename> is a version of
+    <link linkend="gridlayoutmanager"><filename>gridlayoutmanager.C</filename></link>
+    that gives an example of creating display elements using an
+    <acronym>XML</acronym>-specified layout. Instead of invoking various
+    grid layout managers to create grid rows, factories, and display elements
+    and their various grid-related attributes (borders, padding, etc...),
+    those attributes get loaded from an <acronym>XML</acronym> file.
+    The application provides only the code to create the individual display
+    elements themselves, in this case a label, a combo-box, and a set of
+    buttons.
+  </para>
+
+  <para>
+    This approach does not really end up saving much code, but it can
+    make it possible to adjust the appearance of display elements quickly,
+    without recompiling.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/uigenerator1.C">uigenerator1.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/uigenerator1.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <blockquote>
+    <title><ulink url="examples/uigenerator1.xml">uigenerator1.xml</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/uigenerator1.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    Creating a
+    <ulink url="&link-typedef-x--w-uigenerators;"><classname>&ns;::w::uigenerators</classname></ulink>
+    object loads specifications for layout managers and factories from an
+    <acronym>XML</acronym> file.
+    A single file can contain specifications for more than one layout.
+    Each layout has a unique identifier.
+    The first parameter to a <link linkend="gridlayoutmanager">grid
+      layout manager</link>'s generate() reference a layout from the
+    <acronym>XML</acronym> file:
+  </para>
+  <blockquote>
+    <informalexample>
+      <programlisting>
+layout->generate("main-window-grid",
+                 generator, element_factory);</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This generates the layout specified by:
+  </para>
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="grid" id="main-window-grid">]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <xref linkend="uixmldoc" /> provides a complete description of the
+    <acronym>XML</acronym> UI file.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

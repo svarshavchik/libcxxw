@@ -1,0 +1,314 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<appendix id="uixmldoc">
+  <title>&appshort; <acronym>XML</acronym> UI specification</title>
+
+  <para>
+    A UI specification file is an <acronym>XML</acronym> document that generates
+    the contents of a &layoutmanager;.
+  </para>
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<theme version="1"
+       xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <layout type="grid" id="main-window-grid">
+
+    <!-- ... -->
+
+  </layout>
+
+  <factory type="grid" id="button-row">
+
+    <!-- ... -->
+
+  </layout>
+
+  <layout type="book" id="formatting-options">
+
+
+    <!-- ... -->
+
+  </layout>
+
+  <factory type="book" id="formatting-generic-options">
+
+    <!-- ... -->
+
+  </layout>
+</theme>
+]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The <acronym>XML</acronym> document root element is a
+    <tag class='element'>theme</tag>
+    element. For future compatibility, its
+    <tag class='attribute'>version</tag> attribute should be 1.
+    The
+    <tag class='element'>theme</tag>
+    element contains
+    <tag class='element'>layout</tag>
+    and
+    <tag class='element'>factory</tag>
+    elements. Their
+    <tag class='attribute'>id</tag> attributes must be unique, and serve
+    as means of referring to each
+    <tag class='element'>layout</tag>
+    and
+    <tag class='element'>factory</tag>
+    element by name.
+    Only the first
+    <tag class='element'>layout</tag>
+    and
+    <tag class='element'>factory</tag>
+    with a unique id takes effect, second and subsequent
+    <tag class='element'>layout</tag>s
+    and
+    <tag class='element'>factory</tag>s
+    with the same
+    <tag class='attribute'>id</tag>
+    get ignored.
+    In all other respects the relative order of
+    <tag class='element'>layout</tag>s
+    and
+    <tag class='element'>factory</tag>s
+    doesn't matter,
+    and
+    together with <application>XInclude</application> this makes it possible
+    to implement to create an <acronym>XML</acronym> document with shared
+    <tag class='element'>layout</tag>s
+    and
+    <tag class='element'>factory</tag>s, and then
+    include it from other <acronym>XML</acronym> documents, extending and/or
+    overriding parts of it.
+  </para>
+
+  <para>
+    The element contents of <tag class='element'>layout</tag>s or a
+    <tag class='element'>factory</tag>s depend on their
+    <tag class='attribute'>type</tag>.
+    The element content effectively translates to invoking the corresponding
+    methods of a &layoutmanager; or a &factory;:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term>
+	<tag class='element'>layout</tag>s with a
+	<tag class='attribute'>type</tag> of <literal>grid</literal>.
+      </term>
+      <listitem>
+	<para>
+	  The element contents of this layout invoke the corresponding
+	  methods of a
+	  <ulink url="&link-typedef-x--w-gridlayoutmanager;">grid
+	    layout manager</ulink>.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<tag class='element'>layout</tag>s with a
+	<tag class='attribute'>type</tag> of <literal>book</literal>.
+      </term>
+      <listitem>
+	<para>
+	  The element contents of this layout invoke the corresponding
+	  methods of a
+	  <ulink url="&link-typedef-x--w-booklayoutmanager;">book
+	    layout manager</ulink>.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<tag class='element'>factory</tag>s with a
+	<tag class='attribute'>type</tag> of <literal>grid</literal>.
+      </term>
+      <listitem>
+	<para>
+	  The element contents of this layout invoke the corresponding
+	  methods of a
+	  <ulink url="&link-typedef-x--w-gridfactory;">grid
+	    factory</ulink>.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<tag class='element'>factory</tag>s with a
+	<tag class='attribute'>type</tag> of <literal>book</literal>.
+      </term>
+      <listitem>
+	<para>
+	  The element contents of this layout invoke the corresponding
+	  methods of a
+	  <ulink url="&link-typedef-x--w-bookpagefactory;">book page
+	    factory</ulink>.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <section id="uixmlgenerate">
+    <title>Creating display elements from an <acronym>XML</acronym>
+      specification</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;/w/uielements.H&gt;
+#include &lt;&ns;/w/uigenerators.H&gt;
+
+&ns;::w::gridlayoutmanager grid_layout=container->get_layoutmanager();
+
+&ns;::w::const_uigenerators generators=&ns;::w::uigenerators::create("layouts.xml");
+
+&ns;::w::labelptr created_label;
+&ns;::w::buttonptr created_button;
+
+&ns;::w::uielements creators{
+    {
+          {"label",
+           [&amp;]
+           (const INSERT_LIBX_NAMESPACE::w::factory &amp;f)
+           {
+               created_label=f->create_label("Lorem ipsum");
+           }
+          },
+          {"button",
+           [&amp;]
+           (const INSERT_LIBX_NAMESPACE::w::factory &amp;f)
+           {
+               created_button=f->create_button("Lorem ipsum");
+           }
+          },
+    }
+};</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Creating display elements from an <acronym>XML</acronym> specification
+      is a three step process:
+    </para>
+
+    <orderedlist>
+      <listitem>
+	<para>
+	  <methodname>create</methodname>() an
+	  <ulink url="&link-typedef-x--w-uigenerators;"><classname>&ns;::w::const_uigenerators</classname></ulink>
+	  object.
+	  This loads the <acronym>XML</acronym> specification and effectively
+	  compiles it, into a
+	  <ulink url="&refobj;">reference-counted object</ulink>.
+	  <methodname>create</methodname>() returns a
+	  <classname>&ns;::w::const_uigenerators</classname> handle, a
+	  <ulink url="&constrefobj;">reference to a
+	    <literal>const</literal> object</ulink> object; since they
+	  never change after they're created.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Create an
+	  <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
+	  object.
+	  <classname>&ns;::w::uielements</classname>
+	  should be created in automatic scope, and the individual object
+	  is no longer required after the display elements get created
+	  (an
+	  <classname>&ns;::w::const_uigenerators</classname>
+	  containts multiple layout specifications, is constant, and can
+	  be used multiple times).
+	</para>
+
+	<para>
+	  <classname>&ns;::w::uielements</classname>'s first member,
+	  <varname>factories</varname> is a map. The map key's is a
+	  text string, a label. The keys' values are lambdas, or callable
+	  objects. The lambdas receive a &factory; as their parameter.
+	  It's expected that each lambda uses the factory to create a single
+	  display element.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Invoke a layout manager's
+	  <methodname>generate</methodname>() to process the
+	  <acronym>XML</acronym> specification file and create the contents.
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting>
+grid_layout->generate("main-window-grid", generator, creators);</programlisting>
+	  </informalexample>
+	</blockquote>
+	<para>
+	  A <link linkend="gridlayoutmanager">grid layout manager</link>'s
+	  <methodname>generate</methodname>() method removes all existing
+	  contents of the layout manager's container, if there are any. The
+	  first parameter gives the name of a
+	  <tag class='element'>layout</tag> whose
+	  <tag class='attribute'>type</tag> must be
+	  <quote>grid</quote>.
+	  This compiled generator gets executed by the grid layout
+	  manager.
+	</para>
+      </listitem>
+    </orderedlist>
+  </section>
+
+  <section id="uixmllayoutgrid">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>grid</quote>
+      <tag class='element'>layout</tag>s
+    </title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="grid" id="main-window-grid">
+
+    <halign>
+      <col>0</col>
+      <halign>left</halign>
+    </halign>
+
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <padding>
+      <row>0</row>
+      <side>left</side>
+      <padding>2</padding>
+    </padding>
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+  </section>
+</appendix>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "appendix")
+End:
+-->

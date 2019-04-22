@@ -53,6 +53,48 @@ class LIBCXX_PUBLIC uigeneratorsBase;
 XML-based specification that's compiled into a form that gets used to
 generate() the contents of supported layout manager (and factories).
 
+\code
+INSERT_LIBX_NAMESPACE::w::const_uigenerators generators=INSERT_LIBX_NAMESPACE::w::uigenerators::create("dialogs.xml");
+\endcode
+
+create() always returns a \c const_uigenerators, the created object is
+always constant, and represents the parsed XML layout that gets loaded
+from an XML file.
+
+\code
+INSERT_LIBX_NAMESPACE::w::uielements factories{
+    {
+          {"label",
+           [&]
+           (const INSERT_LIBX_NAMESPACE::w::factory &f)
+           {
+                  f->create_label("Lorem ipsum");
+           }
+          },
+          {"button",
+           [&]
+           (const INSERT_LIBX_NAMESPACE::w::factory &f)
+           {
+                  f->create_button("Lorem ipsum");
+           }
+          },
+    }
+};
+
+INSERT_LIBX_NAMESPACE::w::gridlayoutmanager gml=container->get_layoutmanager();
+
+gml->generate("main", generators, elements);
+\endcode
+
+A \ref gridlayoutmanager "grid layout manager"'s generate() creates the
+contents of its container from the loaded generators and the
+\ref uielements "display element factories".
+
+generate() removes any existing contents from the container before creating
+the new contents.
+
+See the tutorial for more information on XML-specified generators.
+
 */
 
 typedef ref<uigeneratorsObj, uigeneratorsBase> uigenerators;
