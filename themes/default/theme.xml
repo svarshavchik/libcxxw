@@ -89,14 +89,14 @@
 
   <border id="empty">
     <color>transparent</color>
-    <width axis="pixels">0</width>
-    <height axis="pixels">0</height>
+    <width>0</width>
+    <height>0</height>
   </border>
 
   <border id="thin">
     <color>transparent</color>
-    <width axis="horiz">.4</width>
-    <height axis="vert">.4</height>
+    <width>.4</width>
+    <height>.4</height>
   </border>
 
   <border id="thin_0%" from="thin">
@@ -105,8 +105,8 @@
 
   <border id="thick">
     <color>transparent</color>
-    <width axis="horiz">.75</width>
-    <height axis="vert">.75</height>
+    <width>.75</width>
+    <height>.75</height>
   </border>
 
   <border id="thick_0%" from="thick">
@@ -118,23 +118,23 @@
   </border>
 
   <border id="thin_dashed_0%">
-    <width axis="horiz">.4</width>
-    <height axis="vert">.4</height>
+    <width>.4</width>
+    <height>.4</height>
     <dash>.4</dash>
     <color>0%</color>
   </border>
 
   <border id="thick_dashed_0%">
-    <width axis="horiz">.75</width>
-    <height axis="vert">.75</height>
+    <width>.75</width>
+    <height>.75</height>
     <dash>.4</dash>
     <color>0%</color>
   </border>
 
   <border id="inputfocusoff_border">
     <color>transparent</color>
-    <width axis="horiz">.75</width>
-    <height axis="vert">.75</height>
+    <width>.75</width>
+    <height>.75</height>
   </border>
 
   <border id="inputfocuson_border" from="inputfocusoff_border">
@@ -145,8 +145,8 @@
 
   <border id="thin_inputfocusoff_border">
     <color>transparent</color>
-    <width axis="horiz">.5</width>
-    <height axis="vert">.5</height>
+    <width>.5</width>
+    <height>.5</height>
   </border>
 
   <border id="thin_inputfocusoff_border_color2"
@@ -798,8 +798,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <border id="menu_popup_border">
     <color>inputfocus_color1</color>
-    <width axis="horiz">.5</width>
-    <height axis="vert">.5</height>
+    <width>.5</width>
+    <height>.5</height>
   </border>
 
   <!-- Background color for a menu when it's below the menu bar -->
@@ -891,8 +891,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <border id="menu_inputfocusoff_border">
     <color>transparent</color>
-    <width axis="horiz">.2</width>
-    <height axis="vert">.2</height>
+    <width>.2</width>
+    <height>.2</height>
   </border>
 
   <border id="menu_inputfocuson_border" from="menu_inputfocusoff_border">
@@ -1116,8 +1116,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <color2>50%</color2>
     <dash>2</dash>
     <dash>.75</dash>
-    <width axis="horiz">1</width>
-    <height axis="vert">1</height>
+    <width>1</width>
+    <height>1</height>
   </border>
 
   <border id="pane_slider_focusoff_border" from="thin_inputfocusoff_border" />

@@ -9,6 +9,9 @@
 #include "x/w/types.H"
 #include "x/w/alignment.H"
 #include "x/w/defaultthemefwd.H"
+#include "x/w/border_infommfwd.H"
+#include "x/w/screenobj.H"
+#include "x/w/impl/border_infofwd.H"
 #include <unordered_set>
 #include <unordered_map>
 #include <string>
@@ -93,6 +96,17 @@ valign to_valign_value(const theme_parser_lock &lock,
 void parse_colors(const theme_parser_lock &root_lock,
 		  std::unordered_map<std::string, theme_color_t> &colors,
 		  std::unordered_set<std::string> &other_colors) LIBCXX_HIDDEN;
+
+//! Parse colors
+
+//! Reads all <border> elements.
+
+void parse_borders(const theme_parser_lock &root_lock,
+		   std::unordered_map<std::string, theme_color_t> &colors,
+		   std::unordered_map<std::string, border_infomm
+		   > &parsed_borders,
+		   std::unordered_set<std::string> &other_borders)
+	LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

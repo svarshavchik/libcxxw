@@ -14,6 +14,29 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Convert a border_arg to a border_infomm.
+
+static inline const border_infomm &
+get_border_infomm(const border_arg &arg,
+		  const const_defaulttheme &theme)
+{
+	return std::visit(visitor{
+			[&]
+			(const border_infomm &info) -> const border_infomm &
+			{
+				return info; // It already is.
+			},
+			[&]
+			(const std::string &n) -> const border_infomm &
+			{
+				// Theme reference.
+
+				return theme->get_theme_border(n);
+			}}, arg);
+}
+
+//! Now take a border_infomm and convert it to a border_info
+
 static inline border_info
 convert_to_border_info(const ref<screenObj::implObj> &s,
 		       const const_defaulttheme &theme,
@@ -24,15 +47,18 @@ convert_to_border_info(const ref<screenObj::implObj> &s,
 	if (mm.color2)
 		info.color2=s->create_background_color(*mm.color2);
 
-	info.width=theme->compute_width(mm.width);
-	info.height=theme->compute_height(mm.height);
+	auto w=theme->get_theme_dim_t(mm.width, themedimaxis::width);
+	auto h=theme->get_theme_dim_t(mm.height, themedimaxis::height);
+
+	info.width=dim_t::truncate(w * mm.width_scale);
+	info.height=dim_t::truncate(h * mm.height_scale);
 
 	// Sanity check
 	if (info.width == dim_t::infinite() || info.height == dim_t::infinite())
 		info.width=info.height=0;
 
-	auto radius_w=theme->compute_width(mm.radius);
-	auto radius_h=theme->compute_height(mm.radius);
+	auto radius_w=theme->get_theme_dim_t(mm.hradius, themedimaxis::width);
+	auto radius_h=theme->get_theme_dim_t(mm.vradius, themedimaxis::height);
 
 	// Sanity check
 	if (radius_w == dim_t::infinite() ||
@@ -47,16 +73,38 @@ convert_to_border_info(const ref<screenObj::implObj> &s,
 	if (radius_h == 0 && mm.rounded)
 		radius_h=1;
 
+	info.hradius=dim_t::truncate(radius_w * mm.hradius_scale);
+	info.vradius=dim_t::truncate(radius_h * mm.vradius_scale);
+
 	// If a radius was specified, the radius must be at least two pixels.
 
-	if (radius_w <= 1 && mm.radius)
+	if (radius_w <= 1 &&
+	    std::visit(visitor
+		       {[](double v)
+			{
+				return v > 0;
+			},
+			[](const std::string &s)
+			{
+				return !s.empty();
+			}}, mm.hradius))
+	{
 		radius_w=2;
+	}
 
-	if (radius_h <= 1 && mm.radius)
+	if (radius_h <= 1 &&
+	    std::visit(visitor
+		       {[](double v)
+			{
+				return v > 0;
+			},
+			[](const std::string &s)
+			{
+				return !s.empty();
+			}}, mm.vradius))
+	{
 		radius_h=2;
-
-	info.hradius=radius_w;
-	info.vradius=radius_h;
+	}
 
 	// Aspect ratio is expected to be the same horizontally and vertically.
 	//
@@ -88,26 +136,19 @@ convert_to_border_info(const ref<screenObj::implObj> &s,
 	return info;
 }
 
-static const_border_impl
+
+// Convert a border_arg to a border_impl object.
+
+static inline const_border_impl
 border_impl_from_arg(const ref<screenObj::implObj> &screen,
 		     const border_arg &arg,
 		     const const_defaulttheme &theme)
 {
-	return std::visit(visitor{
-			[&]
-			(const border_infomm &info)
-			{
-				auto b=border_impl
-					::create(convert_to_border_info
-						 (screen, theme, info));
-				b->calculate();
-				return const_border_impl(b);
-			},
-			[&]
-			(const std::string &n)
-			{
-				return theme->get_theme_border(n);
-			}}, arg);
+	auto b=border_impl::create(convert_to_border_info
+				   (screen, theme,
+				    get_border_infomm(arg, theme)));
+	b->calculate();
+	return b;
 }
 
 current_border_implObj

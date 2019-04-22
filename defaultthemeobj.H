@@ -10,6 +10,7 @@
 
 #include "x/w/drawablefwd.H"
 #include "x/w/rgb.H"
+#include "x/w/border_infomm.H"
 #include "x/w/font.H"
 #include "x/w/picturefwd.H"
 #include "x/w/screenfwd.H"
@@ -21,7 +22,6 @@
 #include "x/w/connection_threadfwd.H"
 #include "x/w/defaultthemefwd.H"
 #include "x/w/impl/themedimfwd.H"
-#include "x/w/impl/border_implfwd.H"
 #include "x/w/uigeneratorsobj.H"
 #include "theme_parser_lockfwd.H"
 
@@ -101,7 +101,7 @@ public:
 	std::unordered_map<std::string, theme_color_t> colors;
 
 	//! Borders
-	std::unordered_map<std::string, const_border_impl> borders;
+	std::unordered_map<std::string, border_infomm> borders;
 
 	//! Fonts
 	std::unordered_map<std::string, font> fonts;
@@ -113,8 +113,7 @@ public:
 	void load_colors(const theme_parser_lock &root_lock);
 
 	//! Parse boders from the configuration file.
-	void load_borders(const theme_parser_lock &root_lock,
-			  const ref<screenObj::implObj> &screen);
+	void load_borders(const theme_parser_lock &root_lock);
 
 	//! Parse fonts from the configuration file
 	void load_fonts(const theme_parser_lock &root_lock);
@@ -172,7 +171,7 @@ public:
 		const;
 
 	//! Retrieve a theme border.
-	const_border_impl get_theme_border(const std::string_view &id)
+	const border_infomm &get_theme_border(const std::string &id)
 		const;
 
 	//! Retrieve a theme font.
@@ -209,14 +208,6 @@ public:
 	//! the same theme_config parameter.
 	defaultthemeObj(const xcb_screen_t *screen,
 			const config &theme_config);
-
-	//! Actually load the theme into the newly-constructed object.
-
-	//! Finish the construction. Must get the same theme_config that
-	//! the constructor got, plus a reference to the theme's screen.
-
-	void load(const xml::doc &config,
-		  const ref<screenObj::implObj> &screen);
 
 	~defaultthemeObj();
 

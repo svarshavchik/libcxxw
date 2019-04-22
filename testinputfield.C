@@ -163,7 +163,8 @@ void testbutton()
 			 my_border.width=.1;
 			 my_border.height=.1;
 			 my_border.rounded=true;
-			 my_border.radius=2;
+			 my_border.hradius=2;
+			 my_border.vradius=2;
 
 			 LIBCXX_NAMESPACE::w::new_borderlayoutmanager neb
 				 {[&]

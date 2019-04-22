@@ -7,6 +7,7 @@
 #include "theme_parser_lock.H"
 #include "configfile.H"
 #include "x/w/rgb.H"
+#include "x/w/border_infomm.H"
 #include "connection.H"
 #include "connection_thread.H"
 #include "screen.H"
@@ -479,6 +480,26 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 			      screen->height_in_millimeters, themescale)},
 	  screen{screen}
 {
+	try {
+		theme_parser_lock
+			lock{theme_config.theme_configfile->readlock()};
+
+		load_dims(lock);
+		load_colors(lock);
+		load_borders(lock);
+
+		if (lock->get_root())
+		{
+			uicompiler compiler{lock, *this};
+		}
+
+		load_fonts(lock);
+	} catch (const exception &e)
+	{
+		throw EXCEPTION("An error occured while parsing the "
+				<< themename << " theme configuration file: "
+				<< e);
+	}
 }
 
 bool defaultthemeObj::is_different_theme(const const_defaulttheme &t) const
@@ -500,44 +521,11 @@ bool defaultthemeObj::is_different_theme(const const_defaulttheme &t) const
 	return false;
 }
 
-void defaultthemeObj::load(const xml::doc &config,
-			   const ref<screenObj::implObj> &screen)
-{
-	try {
-		theme_parser_lock lock{config->readlock()};
-
-		load_dims(lock);
-		load_colors(lock);
-		load_borders(lock, screen);
-		load_fonts(lock);
-
-		if (lock->get_root())
-		{
-			uicompiler compiler{lock, *this};
-		}
-	} catch (const exception &e)
-	{
-		throw EXCEPTION("An error occured while parsing the "
-				<< themename << " theme configuration file: "
-				<< e);
-	}
-}
-
 defaultthemeObj::~defaultthemeObj()=default;
 
 ////////////////////////////////////////////////////////////////////////////
 //
 // Theme parsing functions.
-
-// Look up something optional.
-
-static bool if_given(const theme_parser_lock &lock,
-		     const char *xpath_node)
-{
-	auto xpath=lock->get_xpath(xpath_node);
-
-	return xpath->count() > 0;
-}
 
 // Take a dim_t, multiply it by a double scale, round off the result.
 
@@ -645,11 +633,10 @@ static void unknown_dim(const char *element, const std::string &id)
 
 // Look up a dimension, when parsing something else.
 
-static bool update_dim_if_given(const theme_parser_lock &lock,
+static void update_dim_if_given(const theme_parser_lock &lock,
 				const char *xpath_node,
-				const std::unordered_map<std::string, dim_t
-				> &existing_dims,
-				dim_t h1mm, dim_t v1mm, dim_t &mm,
+				dim_arg &size,
+				unsigned &scale,
 				const char *descr,
 				const std::string &id)
 {
@@ -658,21 +645,45 @@ static bool update_dim_if_given(const theme_parser_lock &lock,
 	auto xpath=node->get_xpath(xpath_node);
 
 	if (xpath->count() == 0)
-		return false;
+		return;
 
 	xpath->to_node();
 
-	if (!parse_dim(node, existing_dims, h1mm, v1mm, mm, descr, id))
-		unknown_dim(descr, id);
+	std::istringstream i{node->get_text()};
 
-	return true;
+	imbue<std::istringstream> imbue{lock.c_locale, i};
+
+	auto s=node->get_any_attribute("scale");
+
+	if (!s.empty())
+	{
+		size=s;
+
+		i >> scale;
+
+		if (i.fail())
+			throw EXCEPTION(gettextmsg(_("Cannot parse %1% (%2%)"),
+						   descr, id));
+		return;
+	}
+
+	double v;
+
+	i >> v;
+
+	if (i.fail())
+		throw EXCEPTION(gettextmsg(_("Cannot parse %1% (%2%)"),
+					   descr, id));
+
+	size=v;
+	scale=1;
 }
 
 static bool update_color(const theme_parser_lock &lock,
 			 const char *xpath_name,
 			 const std::unordered_map<std::string,
 			 theme_color_t> &colors,
-			 theme_color_t &color)
+			 color_arg &color)
 {
 	auto color_node=lock.clone();
 
@@ -688,10 +699,18 @@ static bool update_color(const theme_parser_lock &lock,
 	auto iter=colors.find(name);
 
 	if (iter == colors.end())
-		throw EXCEPTION(gettextmsg(_("undefined color: %1%"),
-					   name));
-
-	color=iter->second;
+	{
+		color=name; // Must be theme color
+	}
+	else
+	{
+		std::visit([&]
+			   (const auto &c)
+			   {
+				   color=c;
+			   },
+			   iter->second);
+	}
 	return true;
 }
 
@@ -1209,8 +1228,11 @@ void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
 //
 // Borders
 
-void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
-				   const ref<screenObj::implObj> &screen)
+void parse_borders(const theme_parser_lock &root_lock,
+		   std::unordered_map<std::string, theme_color_t> &colors,
+		   std::unordered_map<std::string, border_infomm
+		   > &parsed_borders,
+		   std::unordered_set<std::string> &other_borders)
 {
 	auto lock=root_lock.clone();
 
@@ -1239,129 +1261,84 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 			if (id.empty())
 				throw EXCEPTION(_("no id specified for border"));
 
-			if (borders.find(id) != borders.end())
+			if (parsed_borders.find(id) != parsed_borders.end())
 				continue; // Did this one already.
+
+			border_infomm new_border;
 
 			auto from=lock->get_any_attribute("from");
 
-			border_implptr new_borderptr;
+			bool created_border=true;
 
 			if (!from.empty())
 			{
-				auto iter=borders.find(from);
+				auto iter=parsed_borders.find(from);
 
-				if (iter == borders.end())
+				if (iter == parsed_borders.end())
 					continue; // Not yet parsed
 
-				auto b=iter->second->clone();
-
-				borders.insert({id, b});
-
-				new_borderptr=b;
+				new_border=iter->second;
+				created_border=false;
 			}
 
 			// If we copied the border from another from, then
 			// unless the following values are given, don't
 			// touch the colors.
 
-			bool have_color1=false;
-
-			auto mkbg=[&, this]
-				(const auto &c)
-				{
-					return screen->
-					create_background_color(c);
-				};
-
-			if (if_given(lock, "color"))
+			if (single_value_exists(lock, "color"))
 			{
-				theme_color_t color;
-
 				update_color(lock, "color", colors,
-					     color);
+					     new_border.color1);
 
-				have_color1=true;
+				new_border.color2.reset();
 
-				auto color1=std::visit(mkbg, color);
+				color_arg color2;
 
-				if (new_borderptr)
+				if (update_color(lock, "color2", colors,
+						 color2))
 				{
-					new_borderptr->color1=color1;
-				}
-				else
-				{
-					new_borderptr=border_impl::create(color1);
+					new_border.color2=color2;
 				}
 			}
-
-			if (!new_borderptr)
+			else if (created_border)
 			{
 				throw EXCEPTION(gettextmsg
 						(_("<color> not specified for "
 						   "%1"), id));
 			}
 
-			border_impl new_border=new_borderptr;
-
-			if (have_color1)
-			{
-				theme_color_t color;
-
-				if (update_color(lock, "color2", colors,
-						 color))
-				{
-					new_border->color2=
-						std::visit(mkbg, color);
-				}
-			}
-
 			update_dim_if_given(lock, "width",
-					    dims, h1mm, v1mm,
-					    new_border->width,
+					    new_border.width,
+					    new_border.width_scale,
 					    "border", id);
 
 			update_dim_if_given(lock, "height",
-					    dims, h1mm, v1mm,
-					    new_border->height,
+					    new_border.height,
+					    new_border.height_scale,
 					    "border", id);
 
 			// <rounded> sets the radii both to 1.
 
-			if (if_given(lock, "rounded"))
+			if (single_value_exists(lock, "rounded"))
 			{
-				new_border->hradius=1;
-				new_border->vradius=1;
+				auto rounded=single_value(lock, "rounded",
+							  "border");
+
+				new_border.rounded=rounded != "0";
 			}
 
 			// Alternatively, hradius and vradius will set them
 			// to at least 2.
 
-			if (update_dim_if_given(lock, "hradius",
-						dims, h1mm, v1mm,
-						new_border->hradius,
-						"border", id))
-			{
-				if (new_border->hradius < 2)
-					new_border->hradius=2;
-			}
+			update_dim_if_given(lock, "hradius",
+					    new_border.hradius,
+					    new_border.hradius_scale,
+					    "border", id);
 
-			if (update_dim_if_given(lock, "vradius",
-						dims, h1mm, v1mm,
-						new_border->vradius,
-						"border", id))
-			{
-				if (new_border->vradius < 2)
-					new_border->vradius=2;
-			}
-
-			if (new_border->hradius >= 2 ||
-			    new_border->vradius >= 2)
-			{
-				if (new_border->hradius < 2)
-					new_border->hradius=2;
-				if (new_border->vradius < 2)
-					new_border->vradius=2;
-			}
+			update_dim_if_given(lock, "vradius",
+					    new_border.vradius,
+					    new_border.vradius_scale,
+					    "border", id);
 
 			{
 				auto dash_nodes=lock.clone();
@@ -1372,8 +1349,8 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 
 				if (n)
 				{
-					new_border->dashes.clear();
-					new_border->dashes.reserve(n);
+					new_border.dashes.clear();
+					new_border.dashes.reserve(n);
 				}
 
 				for (i=0; i<n; ++i)
@@ -1382,18 +1359,25 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 
 					dim_t mm;
 
-					if (!parse_dim(dash_nodes, dims,
-						       h1mm, v1mm, mm,
-						       "dash", id))
+					std::istringstream i
+						{
+						 dash_nodes->get_text()
+						};
+
+					imbue<std::istringstream>
+						imbue{dash_nodes.c_locale, i};
+
+					double v;
+
+					i >> v;
+
+					if (i.fail())
 						unknown_dim("dash", id);
 
-					new_border->dashes
-						.push_back((dim_t::value_type)
-							   mm);
+					new_border.dashes.push_back(v);
 				}
 			}
-			new_border->calculate();
-			borders.insert({id, new_border});
+			parsed_borders.emplace(id, new_border);
 			parsed=true;
 		}
 	} while (parsed);
@@ -1404,9 +1388,25 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 
 		auto id=lock->get_any_attribute("id");
 
-		if (borders.find(id) == borders.end())
-			throw EXCEPTION(gettextmsg(_("circular or non-existent dependency of border id=%1%"),
-						   id));
+		if (parsed_borders.find(id) == parsed_borders.end())
+			other_borders.insert(id);
+	}
+}
+
+void defaultthemeObj::load_borders(const theme_parser_lock &root_lock)
+{
+	std::unordered_set<std::string> other_borders;
+
+	parse_borders(root_lock, colors, borders, other_borders);
+
+	if (!other_borders.empty())
+	{
+		throw EXCEPTION(gettextmsg
+				(_("circular or non-existent dependency: border"
+				   " id:%1%"),
+				 join(other_borders.begin(),
+				      other_borders.end(),
+				      ", ")));
 	}
 }
 
@@ -1515,10 +1515,10 @@ theme_color_t defaultthemeObj::get_theme_color(const std::string_view &id) const
 }
 
 
-const_border_impl
-defaultthemeObj::get_theme_border(const std::string_view &id) const
+const border_infomm &
+defaultthemeObj::get_theme_border(const std::string &id) const
 {
-	auto iter=borders.find(std::string(id));
+	auto iter=borders.find(id);
 
 	if (iter != borders.end())
 		return iter->second;

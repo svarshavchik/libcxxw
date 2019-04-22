@@ -16,7 +16,13 @@ bool border_infomm::operator==(const border_infomm &o) const
 {
 	return width == o.width && height == o.height &&
 		rounded == o.rounded &&
-		radius == o.radius && dashes == o.dashes &&
+		hradius == o.hradius &&
+		vradius == o.vradius &&
+		width_scale == o.width_scale &&
+		height_scale == o.height_scale &&
+		hradius_scale == o.hradius_scale &&
+		vradius_scale == o.vradius_scale &&
+		dashes == o.dashes &&
 		color1 == o.color1 && color2 == o.color2;
 }
 

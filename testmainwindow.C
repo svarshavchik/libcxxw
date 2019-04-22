@@ -434,7 +434,8 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 				 b.width=3;
 				 b.height=3;
 				 b.rounded=true;
-				 b.radius=3;
+				 b.hradius=3;
+				 b.vradius=3;
 
 				 auto e=m->append_row()->padding(options.nopadding->value ? 0:1).border(b).create_canvas
 				 ([&]

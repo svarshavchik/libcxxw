@@ -14,7 +14,8 @@ namespace std {
 	//! Specialization of \c std::hash for \c INSERT_LIBX_NAMESPACE::w::border_infomm
 	template<>
 	struct hash<LIBCXX_NAMESPACE::w::border_infomm>
-		: public hash<LIBCXX_NAMESPACE::w::color_arg> {
+		: public hash<LIBCXX_NAMESPACE::w::color_arg>,
+		  public hash<LIBCXX_NAMESPACE::w::dim_arg> {
 
 		//! Calculate a hash for a \c INSERT_LIBX_NAMESPACE::w::border_infomm
 		size_t operator()(const LIBCXX_NAMESPACE::w::border_infomm &b)

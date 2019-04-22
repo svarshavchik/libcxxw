@@ -111,7 +111,8 @@ x::w::main_window create_mainwindow(const options &options)
 	x::w::border_infomm rounded_border=square_border;
 
 	rounded_border.rounded=true;
-	rounded_border.radius=1;
+	rounded_border.hradius=1;
+	rounded_border.vradius=1;
 
 	transparent_splash_config.border=rounded_border;
 

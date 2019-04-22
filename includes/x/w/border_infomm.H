@@ -7,6 +7,7 @@
 
 #include <x/w/rgb.H>
 #include <x/w/border_infommfwd.H>
+#include <x/w/dim_arg.H>
 #include <vector>
 #include <optional>
 
@@ -42,18 +43,34 @@ struct border_infomm {
 	//! Optional 2nd color, for dashed borders.
 	std::optional<color_arg> color2;
 
-	//! Border width in millimeters
-	double width=0;
+	//! Border width.
+	dim_arg width=0;
 
-	//! Border height in millimeters
-	double height=0;
+	//! Border height.
+	dim_arg height=0;
+
+	//! After converting width to pixels, multiply it by:
+	unsigned width_scale=1;
+
+	//! After converting height to pixels, multiply it by:
+	unsigned height_scale=1;
 
 	//! Round corners.
 	bool rounded=false;
 
+	//! If non-0, inner rounded radius.
+
+	dim_arg hradius=0;
+
+	//! After converting radius to pixels, multiply it by:
+	unsigned hradius_scale=1;
+
 	//! If non-0, inner rounded radius, in millimeters
 
-	double radius=0;
+	dim_arg vradius=0;
+
+	//! After converting radius to pixels, multiply it by:
+	unsigned vradius_scale=1;
 
 	//! If not empty, dashed border, this gives the dash lengths in mms.
 	std::vector<double> dashes;

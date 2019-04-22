@@ -99,8 +99,15 @@ size_t hash<LIBCXX_NAMESPACE::w::color_arg>
 size_t hash<LIBCXX_NAMESPACE::w::border_infomm>
 ::operator()(const LIBCXX_NAMESPACE::w::border_infomm &b) const noexcept
 {
-	auto s=b.width * 10000 + b.height * 100 +
-		b.radius * 10 + (b.rounded ? 1:0);
+	auto s=hash<LIBCXX_NAMESPACE::w::dim_arg>::operator()(b.width) * 10000
+		* b.width_scale
+		+ hash<LIBCXX_NAMESPACE::w::dim_arg>::operator()(b.height)
+		* 1000 * b.height_scale
+		+ hash<LIBCXX_NAMESPACE::w::dim_arg>::operator()(b.hradius)
+		* 100 * b.hradius_scale
+		+ hash<LIBCXX_NAMESPACE::w::dim_arg>::operator()(b.vradius)
+		* 10 * b.vradius_scale
+		+ (b.rounded ? 1:0);
 
 	for (const auto dash:b.dashes)
 		s += dash;
@@ -130,7 +137,9 @@ size_t hash<LIBCXX_NAMESPACE::w::border_arg>
 			[this]
 			(const string &s)
 			{
-				return this->hash<string>::operator()(s);
+				hash<LIBCXX_NAMESPACE::w::color_arg> const &r=
+					*this;
+				return r.hash<string>::operator()(s);
 			}}, a);
 }
 

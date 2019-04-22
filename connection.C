@@ -193,7 +193,11 @@ get_screens(const connection_thread &thread,
 
 		}
 
+		// If the constructor throws an exception, try again.
+
+		theme_exception=true;
 		auto new_theme=defaulttheme::create(xcb_screen, theme_config);
+		theme_exception=false;
 
 		auto s=ref<screenObj::implObj>::create(xcb_screen,
 						       screen_number++,
@@ -204,11 +208,6 @@ get_screens(const connection_thread &thread,
 						       root_visual,
 						       root_pictformat,
 						       thread);
-
-		// If load() throws an exception, try again.
-		theme_exception=true;
-		new_theme->load(theme_config.theme_configfile, s);
-		theme_exception=false;
 
 		v.push_back(s);
 		xcb_screen_next(&iter);
@@ -291,7 +290,6 @@ static void update_themes(ONLY IN_THREAD,
 		auto new_theme=defaulttheme::create(screen->xcb_screen,
 						    theme_config);
 
-		new_theme->load(theme_config.theme_configfile, screen);
 		new_themes.push_back(new_theme);
 	}
 
