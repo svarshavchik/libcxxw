@@ -28,7 +28,30 @@ const_uigenerators uigeneratorsBase::create(const std::string_view &filename)
 	return g;
 }
 
-uigeneratorsObj::uigeneratorsObj()=default;
+uigeneratorsObj::uigeneratorsObj()
+	: 	// Install default HTML 3.2 colors
+
+	colors{
+	       {"transparent", transparent},
+	       {"black", black},
+	       {"gray", gray},
+	       {"silver", silver},
+	       {"white", white},
+	       {"maroon", maroon},
+	       {"red", red},
+	       {"olive", olive},
+	       {"yellow", yellow},
+	       {"green", green},
+	       {"lime", lime},
+	       {"teal", teal},
+	       {"aqua", aqua},
+	       {"navy", navy},
+	       {"blue", blue},
+	       {"fuchsia", fuchsia},
+	       {"purple", purple}}
+{
+}
+
 
 uigeneratorsObj::~uigeneratorsObj()=default;
 

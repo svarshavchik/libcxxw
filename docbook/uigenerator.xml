@@ -6,7 +6,7 @@ See COPYING for distribution information.
 -->
 
 <chapter id="uigenerator">
-  <title>Generating UI from an <acronym>XML</acronym> specification</title>
+  <title>Generating UI from an <acronym>XML</acronym> theme file</title>
 
   <para>
     <filename>uigenerator1.C</filename> is a version of
@@ -15,15 +15,19 @@ See COPYING for distribution information.
     <acronym>XML</acronym>-specified layout. Instead of invoking various
     grid layout managers to create grid rows, factories, and display elements
     and their various grid-related attributes (borders, padding, etc...),
-    those attributes get loaded from an <acronym>XML</acronym> file.
+    those attributes get loaded from an <acronym>XML</acronym> document
+    called a <quote>theme file</quote>.
+    The default appearance of &appshort; windows comes from the default
+    theme file. This is the same mechanism.
     The application provides only the code to create the individual display
     elements themselves, in this case a label, a combo-box, and a set of
     buttons.
   </para>
 
   <para>
-    This approach does not really end up saving much code, but it can
-    make it possible to adjust the appearance of display elements quickly,
+    This approach does not really end up saving much code, but it
+    makes it possible to adjust the appearance of display elements quickly,
+    just by editing and changing the theme file, and
     without recompiling.
   </para>
 
@@ -45,14 +49,15 @@ See COPYING for distribution information.
   <para>
     Creating a
     <ulink url="&link-typedef-x--w-uigenerators;"><classname>&ns;::w::uigenerators</classname></ulink>
-    object loads specifications for layout managers and factories from an
-    <acronym>XML</acronym> file.
-    A single file can contain specifications for more than one layout.
+    object loads specifications for layout managers and factories from the
+    theme file.
+    A single theme file may contain specifications for more than one layout.
     Each layout has a unique identifier.
     The first parameter to a <link linkend="gridlayoutmanager">grid
       layout manager</link>'s generate() reference a layout from the
-    <acronym>XML</acronym> file:
+    theme file.
   </para>
+
   <blockquote>
     <informalexample>
       <programlisting>
@@ -72,8 +77,8 @@ layout->generate("main-window-grid",
   </blockquote>
 
   <para>
-    <xref linkend="uixmldoc" /> provides a complete description of the
-    <acronym>XML</acronym> UI file.
+    <xref linkend="uixmldoc" /> provides a complete specification of the
+    theme files.
   </para>
 </chapter>
 <!--

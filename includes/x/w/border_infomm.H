@@ -55,21 +55,36 @@ struct border_infomm {
 	//! After converting height to pixels, multiply it by:
 	unsigned height_scale=1;
 
-	//! Round corners.
+	//! Rounded corners.
+
+	//! A non-0 hradius and vradius define the inner radius. If 0,
+	//! only the outer side of the border gets rounded.
+
 	bool rounded=false;
 
 	//! If non-0, inner rounded radius.
 
+	//! \note
+	//! This effectively adds additional padding. The rounded corner
+	//! is a part of the border, so the vertical and the horizontal
+	//! space required by an inner rounded radius effectively translates
+	//! to extra padding added to the horizontal and vertical border sides.
 	dim_arg hradius=0;
 
-	//! After converting radius to pixels, multiply it by:
+	//! After converting hradius to pixels, multiply it by:
 	unsigned hradius_scale=1;
 
 	//! If non-0, inner rounded radius, in millimeters
 
+	//! \note
+	//! This effectively adds additional padding. The rounded corner
+	//! is a part of the border, so the vertical and the horizontal
+	//! space required by an inner rounded radius effectively translates
+	//! to extra padding added to the horizontal and vertical border sides.
+
 	dim_arg vradius=0;
 
-	//! After converting radius to pixels, multiply it by:
+	//! After converting vradius to pixels, multiply it by:
 	unsigned vradius_scale=1;
 
 	//! If not empty, dashed border, this gives the dash lengths in mms.

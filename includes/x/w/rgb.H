@@ -141,12 +141,16 @@ std::ostream &operator<<(std::ostream &, const rgb &);
 //! it is.
 //!
 //! The x and y coordinates range between 0 and 1. (0, 0) is the display
-//! element's top left corner, (1, 1) is its bottom right corner.
+//! element's top-left corner, (1, 1) is its bottom-right corner.
 //!
 //! If fixed_width and fixed_height are not 0, this computes the gradient
 //! for a display element with a fixed width or height, rather than the
-//! actual height of the display element. fixed_width and fixed_height
-//! gets specified in millimeters.
+//! actual size of the display element. fixed_width and fixed_height
+//! gets specified in millimeters. The (0, 0) coordinate is still the
+//! display element's top-left corner, and (1, 1) now being wherever it is,
+//! if the display element's size is as specified.
+//! Negative fixed width and height anchors
+//! the virtual (0, 0)-(1, 1) coordinate space to the opposite corner.
 
 struct linear_gradient {
 	double x1=0, y1=0, x2=1, y2=1;
@@ -177,12 +181,24 @@ struct linear_gradient {
 //! circles.
 //!
 //! inner_radius_axis and outer_radius_axis specify whether the respective
-//! radius is based on the display element's width or height.
+//! radius is based on the display element's width or height:
+//!
+//! - horizontal: this radius axis is based on the display element's width
+//!
+//! - vertical: this radius axis is based on the display element's height
+//!
+//! - shortest: whichever one's shortest
+//!
+//! - longest: whichever one's shortest
 //!
 //! If fixed_width and fixed_height are not 0, this computes the gradient
 //! for a display element with a fixed width or height, rather than the
-//! actual height of the display element. fixed_width and fixed_height
-//! gets specified in millimeters.
+//! actual size of the display element. fixed_width and fixed_height
+//! gets specified in millimeters. The (0, 0) coordinate is still the
+//! display element's top-left corner, and (1, 1) now being wherever it is,
+//! if the display element's size is as specified.
+//! Negative fixed width and height anchors
+//! the virtual (0, 0)-(1, 1) coordinate space to the opposite corner.
 
 struct radial_gradient {
 
@@ -194,7 +210,19 @@ struct radial_gradient {
 		inner_radius=0,
 		outer_radius=.5;
 
-	enum radius_axis { horizontal, vertical, shortest, longest };
+	enum radius_axis {
+			  //! The display element's width
+			  horizontal,
+
+			  //! The display element's height
+			  vertical,
+
+			  //! The display element's width or height, whichever's the shortest
+			  shortest,
+
+			  //! The display element's width or height, whichever's the longest
+			  longest
+	};
 
 	radius_axis inner_radius_axis=shortest;
 	radius_axis outer_radius_axis=longest;

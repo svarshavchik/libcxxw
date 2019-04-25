@@ -6,12 +6,15 @@ See COPYING for distribution information.
 -->
 
 <appendix id="uixmldoc">
-  <title>&appshort; <acronym>XML</acronym> UI specification</title>
+  <title>&appshort; theme files</title>
 
   <para>
-    A UI specification file is an <acronym>XML</acronym> document that generates
-    the contents of a &layoutmanager;.
+    A theme UI file automates creation of display elements from an
+    <acronym>XML</acronym> document, which
+    <link linkend="uixmlgenerate">generates
+    the contents of a &layoutmanager;</link>.
   </para>
+
   <blockquote>
     <informalexample>
       <programlisting><![CDATA[
@@ -49,7 +52,7 @@ See COPYING for distribution information.
   </blockquote>
 
   <para>
-    The <acronym>XML</acronym> document root element is a
+    The <acronym>XML</acronym> document's root element is a
     <tag class='element'>theme</tag>
     element. For future compatibility, its
     <tag class='attribute'>version</tag> attribute should be 1.
@@ -84,12 +87,22 @@ See COPYING for distribution information.
     doesn't matter,
     and
     together with <application>XInclude</application> this makes it possible
-    to implement to create an <acronym>XML</acronym> document with shared
+    to implement to create a theme file with shared
     <tag class='element'>layout</tag>s
     and
     <tag class='element'>factory</tag>s, and then
-    include it from other <acronym>XML</acronym> documents, extending and/or
+    include it from other theme files, extending and/or
     overriding parts of it.
+  </para>
+
+  <para>
+    The theme file's <acronym>XML</acronym> document also contains several other
+    elements, like
+    <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag>s,
+      <tag class='element'>color</tag>s,
+      and
+      <tag class='element'>border</tag>s</link>, with their own
+    <tag class='attribute'>id</tag>s that work the same way.
   </para>
 
   <para>
@@ -164,7 +177,7 @@ See COPYING for distribution information.
 
   <section id="uixmlgenerate">
     <title>Creating display elements from an <acronym>XML</acronym>
-      specification</title>
+      theme file</title>
 
     <blockquote>
       <informalexample>
@@ -201,7 +214,7 @@ See COPYING for distribution information.
     </blockquote>
 
     <para>
-      Creating display elements from an <acronym>XML</acronym> specification
+      Creating display elements using a theme file
       is a three step process:
     </para>
 
@@ -211,14 +224,14 @@ See COPYING for distribution information.
 	  <methodname>create</methodname>() an
 	  <ulink url="&link-typedef-x--w-uigenerators;"><classname>&ns;::w::const_uigenerators</classname></ulink>
 	  object.
-	  This loads the <acronym>XML</acronym> specification and effectively
-	  compiles it, into a
+	  This loads the theme file and effectively
+	  compiles it into an internal representation, a
 	  <ulink url="&refobj;">reference-counted object</ulink>.
 	  <methodname>create</methodname>() returns a
 	  <classname>&ns;::w::const_uigenerators</classname> handle, a
 	  <ulink url="&constrefobj;">reference to a
-	    <literal>const</literal> object</ulink> object; since they
-	  never change after they're created.
+	    <literal>const</literal> object</ulink> object. The compiled
+	  theme file does does not change after it's created.
 	</para>
       </listitem>
 
@@ -227,13 +240,15 @@ See COPYING for distribution information.
 	  Create an
 	  <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
 	  object.
+	  The
 	  <classname>&ns;::w::uielements</classname>
-	  should be created in automatic scope, and the individual object
-	  is no longer required after the display elements get created
-	  (an
+	  gets created in automatic scope, and this individual object
+	  is no longer required after the display elements get
+	  <methodname>generate</methodname>()d.
+	  The
 	  <classname>&ns;::w::const_uigenerators</classname>
-	  containts multiple layout specifications, is constant, and can
-	  be used multiple times).
+	  contains multiple layout specifications, is constant, and can
+	  be used multiple times.
 	</para>
 
 	<para>
@@ -249,8 +264,8 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Invoke a layout manager's
-	  <methodname>generate</methodname>() to process the
-	  <acronym>XML</acronym> specification file and create the contents.
+	  <methodname>generate</methodname>() to execute the compiled
+	  theme file, and create its contents.
 	</para>
 
 	<blockquote>
@@ -266,12 +281,575 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
 	  first parameter gives the name of a
 	  <tag class='element'>layout</tag> whose
 	  <tag class='attribute'>type</tag> must be
-	  <quote>grid</quote>.
-	  This compiled generator gets executed by the grid layout
-	  manager.
+	  <quote>grid</quote>, and have a matching
+	  <tag class='type'>id</tag> (<quote>main-window-grid</quote>, in
+	  this example).
+	  This executes the specification for this
+	  <tag class='element'>layout</tag> from the compiled theme file.
 	</para>
       </listitem>
     </orderedlist>
+  </section>
+
+  <section id="uixmldimcolorborders">
+    <title><tag class='element'>dim</tag>s,
+      <tag class='element'>color</tag>s,
+      and
+      <tag class='element'>border</tag>s</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<dim id="border-size">2.0</dim>
+
+<color id="left-border-color">
+  <r>1</r>
+  <g>.5</g>
+  <b>.0</b>
+</color>
+
+<border id="solid-border">
+  <color>left-border-color</color>
+  <width>border-size</width>
+  <height>border-size</height>
+</border>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <tag class='element'>dim</tag>ensions specify sizes of various UI
+      elements,
+      A <tag class='element'>dim</tag> element specifies a size in millimeters,
+      which can be fractional, and calculates the number of pixels closest
+      to the given size, taking into account the
+      <link linkend="cxxwtheme.1">current theme's scale</link>.
+      This is the same as setting a
+      <ulink url="&link-typedef-x--w-dim-arg;"><classname>&ns;::w::dim_arg</classname></ulink>
+      from the given value.
+    </para>
+
+    <para>
+      <tag class='element'>color</tag>s define colors in terms of their
+      <tag class='element'>r</tag>ed,
+      <tag class='element'>g</tag>green,
+      <tag class='element'>b</tag>blue, and
+      <tag class='element'>a</tag>alpha (transparency) values.
+      Each component ranges from 0 (none) to 1.0 (maximum intensity).
+      This is the same as setting
+      <ulink url="&link-typedef-x--w-color-arg;"><classname>&ns;::w::color_arg</classname></ulink>
+      from an
+      <ulink url="&link-x--w--rgb;"><classname>&ns;::w::rgb</classname></ulink>
+      whose values are scaled from 0 to
+      <literal>&ns;::w::rgb::maximum</literal> with <literal>1.0</literal>
+      as <literal>&ns;::w::rgb::maximum</literal>.
+    </para>
+
+    <para>
+      Other parts of the theme file refer to dimensions and colors by their
+      <tag class='type'>id</tag>s:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<border id="solid-border">
+  <color>left-border-color</color>
+  <width>border-size</width>
+  <height>border-size</height>
+</border>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A <tag class='element'>border</tag> element defines a border,
+      effectively initializing a
+      <ulink url="&link-typedef-x--w-border-arg;"><classname>&ns;::w::border_arg</classname></ulink>
+      from a
+      <ulink url="&link-x--w--border-infomm;"><classname>&ns;::w::border_infomm</classname></ulink>.
+
+      The <tag class='element'>border</tag> contains the following elements:
+    </para>
+    <variablelist>
+      <varlistentry>
+	<term><tag class='element'>width</tag></term>
+	<listitem>
+	  <para>
+	    This <tag class='element'>dim</tag>ension sets
+	    <classname>&ns;::w::border_infomm</classname>'s
+	    <varname>width</varname>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><tag class='element'>height</tag></term>
+	<listitem>
+	  <para>
+	    This <tag class='element'>dim</tag>ension sets
+	    <classname>&ns;::w::border_infomm</classname>'s
+	    <varname>height</varname>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><tag class='element'>rounded</tag></term>
+	<listitem>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<rounded />
+
+<rounded>1</rounded>
+
+<rounded>0</rounded>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    This sets
+	    <classname>&ns;::w::border_infomm</classname>'s
+	    <varname>rounded</varname> (an empty tag is equivalent to 1).
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>hradius</tag></term>
+	<listitem>
+	  <para>
+	    This <tag class='element'>dim</tag>ension sets
+	    <classname>&ns;::w::border_infomm</classname>'s
+	    <varname>hradius</varname>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><tag class='element'>vradius</tag></term>
+	<listitem>
+	  <para>
+	    This <tag class='element'>dim</tag>ension sets
+	    <classname>&ns;::w::border_infomm</classname>'s
+	    <varname>vradius</varname>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>width_scale</tag>,
+	  <tag class='element'>height_scale</tag>,
+	  <tag class='element'>hradius_scale</tag>, and
+	  <tag class='element'>vradius_scale</tag></term>
+	<listitem>
+	  <para>
+	    These elements' values set
+	    <classname>&ns;::w::border_infomm</classname>'s
+	    corresponding members.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+
+      <varlistentry>
+	<term><tag class='element'>color</tag></term>
+	<listitem>
+	  <para>
+	    This <tag class='element'>color</tag>ension sets
+	    <classname>&ns;::w::border_infomm</classname>'s
+	    <varname>color1</varname>.
+	    This is the border's primary color.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><tag class='element'>color2</tag></term>
+	<listitem>
+	  <para>
+	    This <tag class='element'>color</tag>ension sets
+	    <classname>&ns;::w::border_infomm</classname>'s
+	    <varname>color2</varname>.
+	    This is an optional secondary color for drawing dashed
+	    borders.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><tag class='element'>dash</tag></term>
+	<listitem>
+	  <para>
+	    This element can appear more than once, and initializes
+	    <classname>&ns;::w::border_infomm</classname>'s
+	    <varname>dashes</varname>. This creates a border that's drawn as
+	    a dashed line instead of a solid
+	    <tag class='element'>color</tag>.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <section id="uixmldefaultthemevalues">
+      <title>Using <tag class='element'>dim</tag>s,
+	<tag class='element'>color</tag>s,
+	and
+	<tag class='element'>border</tag>s from the default theme</title>
+
+      <para>
+	Like with all other elements, the relative order of
+	<tag class='element'>dim</tag>s,
+	<tag class='element'>color</tag>s,
+	and
+	<tag class='element'>border</tag>s, relative to each other and other
+	elements in the theme file, does not matter, except that the first
+	unique
+	<tag class='attribute'>id</tag> takes priority over other elements
+	with the same
+	<tag class='attribute'>id</tag> which get ignored.
+      </para>
+
+      <para>
+	<tag class='attribute'>id</tag>s that are not defined in the theme
+	file are presumed to be referring to the ones specifies by the
+	<link linkend="cxxwtheme.1">current default theme</link>.
+      </para>
+    </section>
+
+    <section id="uixmlderivedvalues">
+      <title>Derived<tag class='element'>color</tag>s,
+	and
+	<tag class='element'>border</tag>s</title>
+
+      <para>
+	All theme files can reference the following
+	<tag class='element'>color</tag>s:
+	<quote>transparent</quote>, with 0
+	<tag class='element'>r</tag>,
+	<tag class='element'>g</tag>,
+	<tag class='element'>b</tag>, and
+	<tag class='element'>a</tag> values, and the following standard
+	<acronym>HTML</acronym> 3.2 colors:
+	<quote><literal>black</literal></quote>,
+	<quote><literal>gray</literal></quote>,
+	<quote><literal>silver</literal></quote>,
+	<quote><literal>white</literal></quote>,
+	<quote><literal>maroon</literal></quote>,
+	<quote><literal>red</literal></quote>,
+	<quote><literal>olive</literal></quote>,
+	<quote><literal>yellow</literal></quote>,
+	<quote><literal>green</literal></quote>,
+	<quote><literal>lime</literal></quote>,
+	<quote><literal>teal</literal></quote>,
+	<quote><literal>aqua</literal></quote>,
+	<quote><literal>navy</literal></quote>,
+	<quote><literal>blue</literal></quote>,
+	<quote><literal>fuchsia</literal></quote>,
+	<quote><literal>purple</literal></quote>.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<color id="bgcolor" scale="gray" />
+
+<color id="bgcolor2" scale="gray">
+  <r>1.2</r>
+</color>
+
+<border id="dashed-border" from="solid-border">
+
+  <color>green</color>
+  <color2>blue</color2>
+  <dash>.75</dash>
+  <rounded>1</rounded>
+</border>
+
+]]>
+	  </programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Declaring a
+	<tag class='element'>color</tag> with a
+	<tag class='type'>scale</tag> attribute creates a new alias for another
+	color in the theme file. This copies the
+	<tag class='element'>r</tag>,
+	<tag class='element'>g</tag>,
+	<tag class='element'>b</tag>, and
+	<tag class='element'>a</tag> values from the other color, and
+	multiplies them by the values in the scaled alias, if specified.
+	The above example creates a <literal>bgcolor2</literal> from a
+	<literal>bgcolor</literal>, with the
+	<tag class='element'>r</tag>ed component multiplied by 1.2 (20%
+	higher red channel). The scaled component values get automatically
+	truncated to the range of 0 to 1.
+      </para>
+
+      <para>
+	Similarly, declaring a
+	<tag class='element'>border</tag> with a
+	<tag class='type'>from</tag> attribute creates a new border based
+	on another border, with any given values replacing the values from
+	the other border, with one exception: declaring a new color
+	<tag class='element'>color</tag> replaces the
+	<tag class='element'>color</tag> from the original border, and resets
+	the new border's <tag class='element'>color2</tag>, unless the new
+	border also specifies an explicit <tag class='element'>color2</tag>;
+	and specifying the new border's <tag class='element'>color2</tag>
+	requires
+	explicitly specifying its <tag class='element'>color</tag>, also.
+      </para>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<border id="solid-border" from="dashed-border">
+
+  <dash/>
+  <rounded>0</rounded>
+</border>]]>
+	  </programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	An empty <tag class='element'>dash</tag> in a derived
+	<tag class='element'>border</tag> removes the inherited dashes.
+      </para>
+    </section>
+
+  </section>
+  <section id="uixmldimcolorgradients">
+    <title>Gradient <tag class='element'>color</tag>s</title>
+
+    <para>
+      Color gradients are allowed only for
+      <tag class='element'>color</tag>s that are used as background colors
+      of display elements. A background color gradient is a color that
+      that transitions across its display element.
+    </para>
+
+    <para>
+      &appshort;'s gradient colors are directly implemented using the
+      &render;'s
+      <quote>CreateLinearGradient</quote>
+      and <quote>CreateRadialGradient</quote> requests. &appshort; forms
+      the &RENDER; request by translating and computing its values
+      from a virtualized representation; from virtual
+      coordinates. The following is a brief summary of the
+      <acronym>XML</acronym> format that forms each request, and a brief
+      description, see the &RENDER; specification for more information.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<color id="bgcolor" type="linear_gradient">
+  <x1>0</x1>
+  <y1>0</y1>
+  <x2>0</x2>
+  <y2>1</y2>
+
+  <gradient>
+    <value>0</value>
+    <color>gray</color>
+  </gradient>
+  <gradient>
+    <value>1</value>
+    <color>silver</color>
+  </gradient>
+  <gradient>
+    <value>2</value>
+    <color>white</color>
+  </gradient>
+</color>
+
+<!-- ... -->
+
+<layout type="grid" id="main-window-grid">
+
+  <background_color>
+    <color>bgcolor</color>
+  </background_color>
+
+  <!-- ... -->
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Gradient
+      <tag class='element'>color</tag>s contain two or more
+      <tag class='element'>gradient</tag>s.
+      <tag class='element'>value</tag>s are non-negative integers, one
+      of the <tag class='element'>value</tag>s must be 0, and all
+      <tag class='element'>value</tag>s must be unique.
+      The highest value sets the gradient's range, and each
+      <tag class='element'>gradient</tag> specifies a
+      <tag class='element'>color</tag> that references another plain
+      <tag class='element'>color</tag>.
+    </para>
+
+    <para>
+      A
+      <quote><literal>linear_gradient</literal></quote>
+      <tag class='attribute'>type</tag> defines a gradient with a linear
+      color
+      transition to each
+      <tag class='element'>color</tag> across a range of 0
+      to the maximum <tag class='element'>value</tag>.
+      This is the same as setting
+      <ulink url="&link-typedef-x--w-color-arg;"><classname>&ns;::w::color_arg</classname></ulink>
+      from an
+      <ulink url="&link-x--w--linear-gradient;"><classname>&ns;::w::linear_gradient</classname></ulink>.
+      The above example creates a gradient that starts
+      with the
+      <quote><literal>gray</literal></quote> color,
+      becomes a
+      <quote><literal>silver</literal></quote> color at exactly the midpoint,
+      and reaches the
+      <quote><literal>white</literal></quote> color at the end.
+
+      Using  <tag class='element'>value</tag>s of 0, 3, 4 results in a
+      linear gradient that transitions to the 3 color at about 75% of the
+      way from the starting to the ending color value.
+    </para>
+
+    <para>
+      The gradient colors transition over virtual coordinates of
+      <quote><literal>(x1, y1)</literal></quote> through
+      <quote><literal>(x2, y2)</literal></quote>. The coordinate
+      <quote><literal>(0, 0)</literal></quote> is the upper-left corner of
+      the display element.
+      <quote><literal>(1, 1)</literal></quote> is the bottom-right corner.
+      Specifying <tag class='element'>x1</tag>,
+      <tag class='element'>y1</tag>,
+      <tag class='element'>x2</tag>, and
+      <tag class='element'>y2</tag> is optional; and they default to
+      <quote><literal>(0, 0)</literal></quote> and
+      <quote><literal>(1, 1)</literal></quote>; by default, a linear
+      gradient transition from the upper-left corner to the bottom-right
+      corner.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<color id="bgcolor" type="linear_gradient">
+  <widthmm>10</widthmm>
+  <heightmm>10</heightmm>
+
+  <!-- .... -->
+
+</color>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The virtual gradient range of
+      <quote><literal>(0, 0)</literal></quote> to
+      <quote><literal>(1, 1)</literal></quote> gets automatically scaled
+      to the display element's size, so that
+      <quote><literal>(0, 0)</literal></quote> is always the top-left
+      corner, and
+      <quote><literal>(1, 1)</literal></quote> is always the display
+      element's bottom-right corner.
+      Specifying
+      <tag class='element'>widthmm</tag>,
+      <tag class='element'>heightmm</tag> sets a fixed width or height,
+      specified in millimeters,
+      that gets used to compute the virtual gradient positions, instead
+      of automatically adjusting them to the display element's actual size.
+      This example creates a gradient for a size of 10x10 millimeters;
+      <quote><literal>(0, 0)</literal></quote> is still the top-left
+      corner and <quote><literal>(1, 1)</literal></quote> is 10 millimeters
+      below and to the right of it.
+      If the display element is larger, the additional space gets filled
+      with the closest color from the computed gradient; a smaller display
+      element results in a truncated display element.
+    </para>
+
+    <para>
+      A negative <tag class='element'>widthmm</tag> or
+      <tag class='element'>heightmm</tag> value anchors the gradient
+      coordinates to the opposite border.
+      A
+      <tag class='element'>widthmm</tag> and
+      <tag class='element'>heightmm</tag> of
+      <quote><literal>-10</literal></quote> results in a 10x10 millimeter
+      gradient that's always anchored at the display element's bottom-right
+      corner.
+    </para>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<color  id="bgcolor" type="radial_gradient">
+  <inner_x>.5</inner_x>
+  <inner_y>.5</inner_y>
+  <outer_x>.5</outer_x>
+  <outer_y>.5</outer_y>
+  <inner_radius>0</inner_radius>
+  <outer_radius>.5</outer_radius>
+  <inner_radius_axis>shortest</inner_radius_axis>
+  <outer_radius_axis>longest</outer_radius_axis>
+
+  <gradient>
+    <value>0</value>
+    <color>gray</color>
+  </gradient>
+  <gradient>
+    <value>1</value>
+    <color>white</color>
+  </gradient>
+</color>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A
+      <quote><literal>radial_gradient</literal></quote>
+      <tag class='attribute'>type</tag> also defines a gradient from
+      a <tag class='element'>value</tag>s of 0 to the maximum
+      <tag class='element'>value</tag>.
+      The radial gradiant also gets defined in a virtual coordinate range
+      <quote><literal>(0, 0)</literal></quote> to
+      <quote><literal>(1, 1)</literal></quote>, and also based
+      on two coordinates in the range, which are specified as
+      <quote><literal>(inner_x, inner_y)</literal></quote> and
+      <quote><literal>(outer_x, outer_y)</literal></quote>.
+    </para>
+
+    <para>
+      <tag class='element'>inner_radius</tag> defines a circle whose
+      center is
+      <quote><literal>(inner_x, inner_y)</literal></quote> and
+      <tag class='element'>outer_radius</tag> defines a circle whose
+      center is
+      <quote><literal>(outer_x, outer_y)</literal></quote>.
+      The actual radius value of 1 is defined by
+      <tag class='element'>inner_radius_axis</tag> and
+      <tag class='element'>outer_radius_axis</tag>, respectively.
+      This is the same as setting
+      <ulink url="&link-typedef-x--w-color-arg;"><classname>&ns;::w::color_arg</classname></ulink>
+      from an
+      <ulink url="&link-x--w--radial-gradient;"><classname>&ns;::w::radial_gradient</classname></ulink>.
+    </para>
+
+    <para>
+      The above example shows the default values for all these settings,
+      if not specified.
+    </para>
+
+    <para>
+      The inner circle must be contained entirely within the outer circle.
+      The
+      <tag class='element'>color</tag> value of 0 forms the area inside
+      the inner circle, and the color gradient transition accordingly,
+      to the maximum
+      <tag class='element'>color</tag> value that forms the area outside the
+      outer circle.
+    </para>
+
+    <para>
+      Optional
+      <tag class='element'>widthmm</tag> and
+      <tag class='element'>heightmm</tag> values work the same way for radial
+      gradient as they do for linear gradients.
+    </para>
   </section>
 
   <section id="uixmllayoutgrid">

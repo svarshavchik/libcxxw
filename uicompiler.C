@@ -44,7 +44,7 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 {
 	std::istringstream s;
 
-	imbue<std::istringstream> imbue{lock.c_locale, s};
+	imbue i_parse{lock.c_locale, s};
 
 	for (size_t i=0; i<4; ++i)
 	{
@@ -127,7 +127,7 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 
 	std::istringstream s(lock->get_text());
 
-	imbue<std::istringstream> imbue{lock.c_locale, s};
+	imbue i_parse{lock.c_locale, s};
 
 	for (size_t i=0; i<6; i++)
 	{
@@ -210,7 +210,7 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 
 	std::istringstream s;
 
-	imbue<std::istringstream> imbue{lock.c_locale, s};
+	imbue i_parse{lock.c_locale, s};
 
 	for (size_t i=0; i<6; i++)
 	{
@@ -316,7 +316,7 @@ static bool parse_gradients(theme_parser_lock &lock,
 
 	std::istringstream s;
 
-	imbue<std::istringstream> imbue{lock.c_locale, s};
+	imbue i_parse{lock.c_locale, s};
 
 	for (size_t i=0; i<n; ++i)
 	{
@@ -400,7 +400,8 @@ static void unknown_dim(const char *element, const std::string &id)
 // Look up a dimension, when parsing something else.
 
 static void update_dim_if_given(const theme_parser_lock &lock,
-				const char *xpath_node,
+				const char *size_node,
+				const char *scale_node,
 				dim_arg &size,
 				unsigned &scale,
 				const char *descr,
@@ -408,50 +409,39 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 				const uigeneratorsObj &generators,
 				bool allowthemerefs)
 {
-	auto node=lock.clone();
-
-	auto xpath=node->get_xpath(xpath_node);
-
-	if (xpath->count() == 0)
-		return;
-
-	xpath->to_node();
-
-	auto t=node->get_text();
-
-	std::istringstream i{t};
-
-	imbue<std::istringstream> imbue{lock.c_locale, i};
-
-	auto s=node->get_any_attribute("scale");
-
-	if (!s.empty())
+	if (single_value_exists(lock, size_node))
 	{
+		auto t=single_value(lock, size_node, descr);
+
+		std::istringstream i{t};
+
+		double v;
+
+		i >> v;
+
+		if (i.fail())
+		{
+			size=generators.lookup_dim(t, allowthemerefs, descr);
+		}
+		else
+		{
+			size=v;
+		}
+	}
+
+	if (single_value_exists(lock, scale_node))
+	{
+		auto t=single_value(lock, scale_node, descr);
+
+		std::istringstream i{t};
+
 		// The contents of this node must be a scaling factor.
 		i >> scale;
 
 		if (i.fail())
 			throw EXCEPTION(gettextmsg(_("Cannot parse %1% (%2%)"),
 						   descr, id));
-
-		size=generators.lookup_dim(s, allowthemerefs, descr);
-
-		return;
 	}
-
-	scale=1;
-
-	double v;
-
-	i >> v;
-
-	if (!i.fail())
-	{
-		size=v;
-		return;
-	}
-
-	size=generators.lookup_dim(t, allowthemerefs, descr);
 }
 
 
@@ -477,7 +467,7 @@ parse_dim(const theme_parser_lock &lock,
 
 		std::istringstream i(lock->get_text());
 
-		imbue<std::istringstream> imbue{lock.c_locale, i};
+		imbue i_parse{lock.c_locale, i};
 
 		i >> v;
 
@@ -724,14 +714,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 						   "%1"), id));
 			}
 
-			update_dim_if_given(lock, "width",
+			update_dim_if_given(lock, "width", "width_scale",
 					    new_border.width,
 					    new_border.width_scale,
 					    "border", id,
 					    generators,
 					    allowthemerefs);
 
-			update_dim_if_given(lock, "height",
+			update_dim_if_given(lock, "height", "height_scale",
 					    new_border.height,
 					    new_border.height_scale,
 					    "border", id,
@@ -751,14 +741,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			// Alternatively, hradius and vradius will set them
 			// to at least 2.
 
-			update_dim_if_given(lock, "hradius",
+			update_dim_if_given(lock, "hradius", "hradius_scale",
 					    new_border.hradius,
 					    new_border.hradius_scale,
 					    "border", id,
 					    generators,
 					    allowthemerefs);
 
-			update_dim_if_given(lock, "vradius",
+			update_dim_if_given(lock, "vradius", "vradius_scale",
 					    new_border.vradius,
 					    new_border.vradius_scale,
 					    "border", id,
@@ -784,13 +774,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 					dim_t mm;
 
-					std::istringstream i
-						{
-						 dash_nodes->get_text()
-						};
+					auto t=dash_nodes->get_text();
 
-					imbue<std::istringstream>
-						imbue{dash_nodes.c_locale, i};
+					if (t.empty())
+						continue;
+
+					std::istringstream i{t};
+
+					imbue i_parse{dash_nodes.c_locale, i};
 
 					double v;
 
@@ -806,6 +797,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 					new_border.dashes.push_back(v);
 				}
 			}
+
 			generators.borders.emplace(id, new_border);
 			parsed=true;
 		}

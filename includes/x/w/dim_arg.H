@@ -16,7 +16,11 @@ LIBCXXW_NAMESPACE_START
 //! Certain parameters may be specified either as a numeric value, or as
 //! a text string. A numerical value specifies a size expressed in
 //! millimeters. A text string references a size specified by the current
-//! display theme. This is mostly for the library's internal use.
+//! display theme (this is mostly for the library's internal use).
+//!
+//! The numeric value must be positive. The actual number of pixels gets
+//! computed based on the current theme's scaling factor. A non-0
+//! dimension is always at least one pixel.
 
 typedef std::variant<std::string, double> dim_arg;
 

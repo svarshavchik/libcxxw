@@ -16,6 +16,26 @@
     <b>.0</b>
   </color>
 
+  <color  id="bgcolor" type="radial_gradient">
+    <inner_x>.5</inner_x>
+    <inner_y>.5</inner_y>
+    <outer_x>.5</outer_x>
+    <outer_y>.5</outer_y>
+    <inner_radius>0</inner_radius>
+    <outer_radius>.5</outer_radius>
+    <inner_radius_axis>shortest</inner_radius_axis>
+    <outer_radius_axis>longest</outer_radius_axis>
+
+    <gradient>
+      <value>0</value>
+      <color>gray</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>white</color>
+    </gradient>
+  </color>
+
   <!-- Border specifications -->
   <border id="solid-border">
     <color>left-border-color</color>
@@ -45,7 +65,7 @@
   <layout type="grid" id="main-window-grid">
 
     <background_color>
-      <color>silver</color>
+      <color>bgcolor</color>
     </background_color>
 
     <!-- Align row 0's cells, by default. -->

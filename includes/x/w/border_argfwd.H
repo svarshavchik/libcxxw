@@ -12,7 +12,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! A border can be specified as either a border_infomm, or a theme border.
+//! A border that's specified as either a border_infomm, or a theme border.
+
+//! Specifies the visual appearance of a border, as an explicit
+//! \ref border_infomm "border_infomm", or a label referencing a border
+//! from the current display theme.
 
 typedef std::variant<border_infomm, std::string> border_arg;
 

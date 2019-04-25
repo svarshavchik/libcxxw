@@ -189,10 +189,12 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   <dim id="button_base_vert" >.2</dim>
 
   <border id="normal_button_border">
-    <width scale="button_base_horiz">1</width>
-    <height scale="button_base_vert">1</height>
-    <hradius scale="button_base_horiz">3</hradius>
-    <vradius scale="button_base_vert">3</vradius>
+    <width>button_base_horiz</width>
+    <height>button_base_vert</height>
+    <hradius>button_base_horiz</hradius>
+    <vradius>button_base_vert</vradius>
+    <hradius_scale>3</hradius_scale>
+    <vradius_scale>3</vradius_scale>
     <dash>.5</dash>
     <dash>.5</dash>
     <color>action_color1</color>
@@ -200,10 +202,14 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   </border>
 
   <border id="default_button_border">
-    <width scale="button_base_horiz">3</width>
-    <height scale="button_base_vert">3</height>
-    <hradius scale="button_base_horiz">2</hradius>
-    <vradius scale="button_base_vert">2</vradius>
+    <width>button_base_horiz</width>
+    <height>button_base_vert</height>
+    <width_scale>3</width_scale>
+    <height_scale>3</height_scale>
+    <hradius>button_base_horiz</hradius>
+    <vradius>button_base_vert</vradius>
+    <hradius_scale>2</hradius_scale>
+    <vradius_scale>2</vradius_scale>
     <color>action_color1</color>
   </border>
 
