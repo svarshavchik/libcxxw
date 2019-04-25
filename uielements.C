@@ -19,8 +19,6 @@ void gridlayoutmanagerObj::generate(const std::string_view &name,
 				    const const_uigenerators &generators,
 				    uielements &elements)
 {
-	remove();
-
 	auto iter=generators->gridlayoutmanager_generators.find({name.begin(),
 								 name.end()});
 

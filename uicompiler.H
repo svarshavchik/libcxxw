@@ -182,6 +182,60 @@ private:
 					  const vector<gridfactory_generator> &
 					  );
 
+	//! Execute <insert_row>.
+
+	//! Executed by the compiled <insert_row>.
+	static void gridlayout_insert_row(const gridlayoutmanager &,
+					  size_t,
+					  uielements &,
+					  const vector<gridfactory_generator> &
+					  );
+
+	//! Execute <replace_row>.
+
+	//! Executed by the compiled <insert_row>.
+	static void gridlayout_replace_row(const gridlayoutmanager &,
+					   size_t,
+					   uielements &,
+					   const vector<gridfactory_generator> &
+					   );
+
+	//! Execute <append_columns>.
+
+	//! Executed by the compiled <append_columns>.
+	static void gridlayout_append_columns(const gridlayoutmanager &,
+					      size_t,
+					      uielements &,
+					      const
+					      vector<gridfactory_generator> &
+					      );
+
+	//! Execute <insert_columns>.
+
+	//! Executed by the compiled <insert_columns>.
+	static void gridlayout_insert_columns(const gridlayoutmanager &,
+					      size_t,
+					      size_t,
+					      uielements &,
+					      const
+					      vector<gridfactory_generator> &);
+
+	//! Execute <replace_cell>
+
+	//! Executed by the compiled <replace_cell>.
+	static void gridlayout_replace_cell(const gridlayoutmanager &,
+					    size_t,
+					    size_t,
+					    uielements &,
+					    const
+					    vector<gridfactory_generator> &);
+
+	//! Execute a grid factory generator.
+	static void generate_gridfactory(const gridfactory &,
+					 uielements &,
+					 const vector<gridfactory_generator>
+					 &generators);
+
 	//! Execute <append_pages>.
 
 	//! Executed by the compiled <append_pages>.

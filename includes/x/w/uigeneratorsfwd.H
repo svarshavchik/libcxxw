@@ -48,7 +48,7 @@ typedef functionref<void (const bookpagefactory &, uielements &)
 class LIBCXX_PUBLIC uigeneratorsObj;
 class LIBCXX_PUBLIC uigeneratorsBase;
 
-/*! Loaded and parsed generators
+/*! Loaded and parsed theme files
 
 XML-based specification that's compiled into a form that gets used to
 generate() the contents of supported layout manager (and factories).
@@ -87,11 +87,8 @@ gml->generate("main", generators, elements);
 \endcode
 
 A \ref gridlayoutmanager "grid layout manager"'s generate() creates the
-contents of its container from the loaded generators and the
+contents of its container from the loaded theme file and the
 \ref uielements "display element factories".
-
-generate() removes any existing contents from the container before creating
-the new contents.
 
 See the tutorial for more information on XML-specified generators.
 

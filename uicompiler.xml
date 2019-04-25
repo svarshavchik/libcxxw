@@ -346,6 +346,9 @@ List of values:
       </parameter>
     </function>
 
+    <!-- append_row, insert_row, replace_row, append_columns, insert_columns,
+	 replace_cell -->
+
     <function>
       <name>append_row</name>
       <invoke>gridlayout_append_row</invoke>
@@ -363,6 +366,171 @@ List of values:
 	<type>lookup_gridfactory_generators</type>
       </parameter>
     </function>
+
+    <function>
+      <name>insert_row</name>
+      <invoke>gridlayout_insert_row</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>lookup_gridfactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>replace_row</name>
+      <invoke>gridlayout_replace_row</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>lookup_gridfactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>append_columns</name>
+      <invoke>gridlayout_append_columns</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>lookup_gridfactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>insert_columns</name>
+      <invoke>gridlayout_insert_columns</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>col</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>lookup_gridfactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>replace_cell</name>
+      <invoke>gridlayout_replace_cell</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>col</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>lookup_gridfactory_generators</type>
+      </parameter>
+    </function>
+
+    <!-- remove_all -->
+
+    <function>
+      <name>remove_all</name>
+      <object>layout</object>
+      <invoke>remove</invoke>
+    </function>
+
+    <!-- remove_row -->
+
+    <function>
+      <name>remove_row</name>
+      <object>layout</object>
+      <invoke>remove_row</invoke>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <!-- remove_cell -->
+
+    <function>
+      <name>remove_cell</name>
+      <object>layout</object>
+      <invoke>remove</invoke>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>col</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
 
     <!-- background_color -->
 
@@ -384,6 +552,32 @@ List of values:
       <name>remove_background_color</name>
       <object>layout</object>
       <invoke>remove_background_color</invoke>
+    </function>
+
+    <!-- remove_row_defaults and remove_col_defaults -->
+
+    <function>
+      <name>remove_row_defaults</name>
+      <invoke>remove_row_defaults</invoke>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_col_defaults</name>
+      <invoke>remove_col_defaults</invoke>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>col</name>
+	<type>to_size_t</type>
+      </parameter>
     </function>
   </parser>
 

@@ -968,7 +968,7 @@ halign to_halign_value(const theme_parser_lock &lock,
 	{
 		v=halign::left;
 	}
-	else if (value == "centered")
+	else if (value == "center")
 	{
 		v=halign::center;
 	}

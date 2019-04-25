@@ -205,9 +205,9 @@ gridlayout->generate("main-layout", generators, elements);
 set_background_color() is equivalent to invoking set_background_color()
 and remove_background_color() on the grid layout manager's underlying
 container display element. This is mostly for use by an XML-based
-specification of the container's contents. generate() removes all existing
-display elements in the container and generates new contents from the
-loaded generators. See the tutorial for more information.
+specification of the container's contents. generate() creates
+new contents from the
+loaded theme file. See the tutorial for more information.
 
 */
 

@@ -672,7 +672,8 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			if (id.empty())
 				throw EXCEPTION(_("no id specified for border"));
 
-			if (generators.borders.find(id) != generators.borders.end())
+			if (generators.borders.find(id) !=
+			    generators.borders.end())
 				continue; // Did this one already.
 
 			border_infomm new_border;
@@ -1093,11 +1094,61 @@ uicompiler::lookup_bookpagefactory_generators(const theme_parser_lock &lock,
 
 void uicompiler::gridlayout_append_row(const gridlayoutmanager &layout,
 				       uielements &factories,
-				       const vector<gridfactory_generator>
-				       &generators)
+				       const vector<gridfactory_generator> &g)
 {
-	auto f=layout->append_row();
+	generate_gridfactory(layout->append_row(), factories, g);
+}
 
+void uicompiler::gridlayout_insert_row(const gridlayoutmanager &layout,
+				       size_t row,
+				       uielements &factories,
+				       const vector<gridfactory_generator> &g)
+{
+	generate_gridfactory(layout->insert_row(row), factories, g);
+}
+
+void uicompiler::gridlayout_replace_row(const gridlayoutmanager &layout,
+					size_t row,
+					uielements &factories,
+					const vector<gridfactory_generator> &g)
+{
+	generate_gridfactory(layout->replace_row(row), factories, g);
+}
+
+void uicompiler::gridlayout_append_columns(const gridlayoutmanager &layout,
+					   size_t row,
+					   uielements &factories,
+					   const
+					   vector<gridfactory_generator> &g)
+{
+	generate_gridfactory(layout->append_columns(row), factories, g);
+}
+
+void uicompiler::gridlayout_insert_columns(const gridlayoutmanager &layout,
+					   size_t row,
+					   size_t col,
+					   uielements &factories,
+					   const
+					   vector<gridfactory_generator> &g)
+{
+	generate_gridfactory(layout->insert_columns(row, col), factories, g);
+}
+
+void uicompiler::gridlayout_replace_cell(const gridlayoutmanager &layout,
+					 size_t row,
+					 size_t col,
+					 uielements &factories,
+					 const
+					 vector<gridfactory_generator> &g)
+{
+	generate_gridfactory(layout->replace_cell(row, col), factories, g);
+}
+
+void uicompiler::generate_gridfactory(const gridfactory &f,
+				      uielements &factories,
+				      const vector<gridfactory_generator>
+				      &generators)
+{
 	for (const auto &g:*generators)
 	{
 		g(f, factories);

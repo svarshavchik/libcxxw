@@ -2423,7 +2423,7 @@ first column, to make the labels line up with their input fields.
       <columns>2</columns>
     </colspan>
     <halign>
-      <halign>centered</halign>
+      <halign>center</halign>
     </halign>
     <element>
       <name>error-message-field</name>
@@ -2435,7 +2435,7 @@ first column, to make the labels line up with their input fields.
       <columns>2</columns>
     </colspan>
     <halign>
-      <halign>centered</halign>
+      <halign>center</halign>
     </halign>
 
     <element>
@@ -3072,7 +3072,7 @@ first column, to make the labels line up with their input fields.
 
   <factory type="grid" id="font-picker-popup-font-preview-row">
     <halign>
-      <halign>centered</halign>
+      <halign>center</halign>
     </halign>
     <colspan>
       <columns>2</columns>
@@ -3165,7 +3165,7 @@ first column, to make the labels line up with their input fields.
   <factory type="grid" id="font-size-error-row">
 
     <halign>
-      <halign>centered</halign>
+      <halign>center</halign>
     </halign>
     <colspan>
       <columns>2</columns>
