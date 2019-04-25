@@ -433,7 +433,8 @@ while (!appdata->close_flag)
 	<ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>
 	is an example of a container.
 	A container is a display element which contains other display
-	elements, and a &layoutmanager; that controls them.
+	elements. Each container has a &layoutmanager; that controls the
+	position and the behavior of the elemnts in the container.
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
 	creates a
 	<classname>&ns;::w::main_window</classname> that has a
@@ -623,12 +624,12 @@ while (!appdata->close_flag)
 	      The list layout manager is available for selection lists,
 	      and it also gets called into duty for
 	      <link linkend="menulayoutmanager">pop-up menus</link>, and
-	      serves as a the base class for
+	      serves as a base class for
 	      <link linkend="combobox">combo-boxes</link>.
 	    </para>
 
 	    <para>
-	      The list layout manager is designed for handling relative large
+	      The list layout manager is designed for handling relatively large
 	      numbers of list entries far more efficiently than if each one
 	      was an official <link linkend="labels">label display
 		element</link>. The grid layout manager, for example, needs
@@ -803,14 +804,14 @@ while (!appdata->close_flag)
 	  <link linkend="connthread">connection thread</link>, until the
 	  lock gets released, and all changes made to the container, through
 	  the layout manager, take effect. Depending on the layout manager
-	  the internal locks may also block other execution thread from
+	  the internal locks may also block other execution threads from
 	  accessing the elements in the container.
 	</para>
 
 	<para>
 	  Retrieving the layout manager, and acquiring any required locks is
 	  not cheap, and the application should optimize its access to the
-	  layout manager. For the reasons explained the application should
+	  layout manager. For the reasons explained here, the application should
 	  not store or stash away the layout manager, persistently; but it
 	  should not retrieve it over and over again, to make each individual
 	  change to the container. The optimal use pattern is to retrieve

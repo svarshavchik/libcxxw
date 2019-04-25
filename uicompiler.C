@@ -1172,29 +1172,10 @@ void uicompiler
 ::container_booklayoutmanager(const factory &f,
 			      uielements &factories,
 			      const std::tuple<std::string,
-			      vector<booklayoutmanager_generator>> &generators,
-			      const std::string &background_color,
-			      const std::string &border)
+			      vector<booklayoutmanager_generator>> &generators)
 {
 	new_booklayoutmanager nblm;
 
-	if (!background_color.empty() || !border.empty())
-	{
-		auto appearance=
-			nblm.appearance->modify
-			([&]
-			 (const auto &appearance)
-			 {
-				 if (!background_color.empty())
-					 appearance->background_color=
-						 background_color;
-
-				 if (!border.empty())
-					 appearance->border=border;
-			 });
-
-		nblm.appearance=appearance;
-	}
 	f->create_focusable_container
 		([&]
 		 (const auto &new_container)
@@ -1218,9 +1199,7 @@ void uicompiler::container_gridlayoutmanager(const factory &f,
 					     uielements &factories,
 					     const std::tuple<std::string,
 					     vector<gridlayoutmanager_generator>
-					     > &generators,
-					     const std::string
-					     &background_color)
+					     > &generators)
 {
 	f->create_container
 		([&]
@@ -1232,9 +1211,6 @@ void uicompiler::container_gridlayoutmanager(const factory &f,
 
 			 gridlayoutmanager glm=
 				 new_container->get_layoutmanager();
-			 if (!background_color.empty())
-				 new_container->set_background_color
-					 (background_color);
 
 			 for (const auto &g:*c_generators)
 			 {

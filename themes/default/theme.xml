@@ -1523,11 +1523,13 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
     <grid>
       <name>ok-button-row</name>
-      <background_color>button-row-color</background_color>
     </grid>
   </factory>
 
   <layout type="grid" id="ok-button-row">
+    <background_color>
+      <color>button-row-color</color>
+    </background_color>
     <append_row>
       <name>ok-button</name>
     </append_row>
@@ -1620,7 +1622,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
     <grid>
       <name>ok-cancel-button-row</name>
-      <background_color>button-row-color</background_color>
     </grid>
   </factory>
 
@@ -1671,11 +1672,14 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
     <grid>
       <name>ok-cancel-button-row</name>
-      <background_color>button-row-color</background_color>
     </grid>
   </factory>
 
   <layout type="grid" id="ok-cancel-button-row">
+    <background_color>
+      <color>button-row-color</color>
+    </background_color>
+
     <append_row>
       <name>ok-cancel-button</name>
     </append_row>

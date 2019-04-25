@@ -1136,7 +1136,7 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
       </para>
     </section>
 
-    <section id="uixmllayoutremovedefaults">
+    <section id="uixmllayoutgridremovedefaults">
       <title><tag class='element'>remove_col_defaults</tag> and
 	<tag class='element'>remove_row_defaults</tag></title>
       <blockquote>
@@ -1269,6 +1269,364 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 	<tag class='attribute'>type</tag>=<quote><literal>grid</literal></quote>
 	<tag class='element'>factory</tag> element to create new elements
 	in the grid layout manager's container using the new grid factory.
+      </para>
+    </section>
+  </section>
+
+  <section id="uixmlfactorygrid">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>grid</quote>
+      <tag class='element'>factory</tag>s
+    </title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+  <padding>
+    <side>all</side>
+    <padding>2</padding>
+  </padding>
+
+  <element>
+    <name>label</name>
+  </element>
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The contents of a
+      <tag class='element'>factory</tag>s of
+      <tag class='attribute'>type</tag>=<quote>grid</quote>
+      specify the methods invoked on a
+      <ulink url="&link-typedef-x--w-gridfactory;">grid
+	    factory</ulink>.
+    </para>
+
+    <section id="uixmlfactorygridhalign">
+      <title><tag class='element'>halign</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+<!-- ... -->
+
+    <halign>
+       <halign>right</halign>
+    </halign>
+
+<!-- ... -->
+
+</factory>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>halign</tag>
+	invokes the grid factory's
+	<methodname>halign</methodname>()
+	method.
+	The
+	<tag class='element'>halign</tag> value is one of:
+	<quote><literal>left</literal></quote>,
+	<quote><literal>center</literal></quote>,
+	<quote><literal>right</literal></quote>, or
+	<quote><literal>fill</literal></quote>.
+      </para>
+    </section>
+
+    <section id="uixmlfactorygridvalign">
+      <title><tag class='element'>valign</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+<!-- ... -->
+
+    <valign>
+       <valign>middle</halign>
+    </halign>
+
+<!-- ... -->
+
+</factory>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>valign</tag>
+	invokes the grid factory's
+	<methodname>valign</methodname>()
+	method.
+	The
+	<tag class='element'>valign</tag> value is one of:
+	<quote><literal>top</literal></quote>,
+	<quote><literal>middle</literal></quote>,
+	<quote><literal>bottom</literal></quote>, or
+	<quote><literal>fill</literal></quote>.
+      </para>
+    </section>
+
+    <section id="uixmlfactorygridpadding">
+      <title><tag class='element'>padding</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+<!-- ... -->
+
+  <padding>
+    <side>all</side>
+    <padding>cell-padding</padding>
+  </padding>
+
+<!-- ... -->
+
+</factory>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>padding</tag>
+	invokes the grid factory's
+	<methodname>padding</methodname>(),
+	<methodname>left_padding</methodname>(),
+	<methodname>right_padding</methodname>(),
+	<methodname>top_padding</methodname>(), or
+	<methodname>bottom_padding</methodname>() method.
+	The <tag class='element'>side</tag> value is one of
+	<quote><literal>all</literal></quote>,
+	<quote><literal>left</literal></quote>,
+	<quote><literal>right</literal></quote>,
+	<quote><literal>top</literal></quote>, or
+	<quote><literal>bottom</literal></quote>.
+     </para>
+    </section>
+
+    <section id="uixmlfactorygridborder">
+      <title><tag class='element'>border</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+<!-- ... -->
+
+  <border>
+    <side>all</side>
+    <border>thick-border</border>
+  </padding>
+
+
+<!-- ... -->
+
+</factory>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>border</tag>
+	invokes the grid factory's
+	<methodname>border</methodname>(),
+	<methodname>left_border</methodname>(),
+	<methodname>right_border</methodname>(),
+	<methodname>top_border</methodname>(), or
+	<methodname>bottom_border</methodname>() method.
+	The <tag class='element'>side</tag> value is one of
+	<quote><literal>all</literal></quote>,
+	<quote><literal>left</literal></quote>,
+	<quote><literal>right</literal></quote>,
+	<quote><literal>top</literal></quote>, or
+	<quote><literal>bottom</literal></quote>.
+      </para>
+    </section>
+
+    <section id="uixmlfactorygridspan">
+      <title><tag class='element'>colspan</tag> and
+	<tag class='element'>rowspan</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+<!-- ... -->
+
+   <colspan>
+     <columns>2</columns>
+   </colspan>
+
+   <rowspan>
+     <rows>2</rows>
+   </rowspan>
+
+<!-- ... -->
+
+</factory>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>colspan</tag>
+	and
+	<tag class='element'>rowspan</tag>
+	invoke the grid factory's
+	<methodname>colspan</methodname>() and
+	<methodname>rowspan</methodname>() methods, respectively.
+      </para>
+    </section>
+
+    <section id="uixmlfactorygridremovewhenhidden">
+      <title><tag class='element'>remove_when_hidden</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+<!-- ... -->
+
+  <remove_when_hidden />
+
+<!-- ... -->
+
+</factory>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>remove_when_hidden</tag>
+	invokes the grid factory's
+	<methodname>remove_when_hidden</methodname>()
+	method.
+      </para>
+    </section>
+
+    <section id="uixmlfactorygridelement">
+      <title><tag class='element'>element</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+<!-- ... -->
+
+  <element>
+    <name>label</name>
+  </element>
+
+<!-- ... -->
+
+</factory>]]>
+
+
+&ns;::w::uielements element_factory{
+  {
+    {"label",
+     []
+     (const &ns;::w::factory &amp;factory)
+     {
+         factory-&gt;create_label("Label");
+     }
+    }
+  }
+};</programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>element</tag>
+	invokes the named callback from the
+	<ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
+
+	parameter to
+	<link linkend="uixmlgenerate"><methodname>generate</methodname>()</link>.
+	This callback receives a
+	<ulink url="&link-typedef-x--w-factory;"><classname>&ns;::w:;factory</classname></ulink>
+	parameter which gets used, presumably, to create a display element.
+	The first member of the
+	<classname>&ns;::w::uielements</classname>
+	object is map. The map's key is a <classname>std::string</classname>,
+	and the
+	<tag class='element'>name</tag>
+	value gives the callback's key value. An exception gets thrown
+	if the <tag class='element'>name</tag>
+	key does not exist.
+      </para>
+
+      <para>
+	It's possible that the same
+	<tag class='element'>name</tag> value appears more than once, in the
+	same or different
+	<tag class='element'>factory</tag>s. Each occurence of a
+	<tag class='element'>name</tag> results in the callback getting
+	invoked.
+      </para>
+    </section>
+
+    <section id="uixmlfactorygridcontainer">
+      <title><tag class='element'>grid</tag> and
+	<tag class='element'>book</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+<!-- ... -->
+
+  <grid>
+    <name>bottom-container</name>
+  </grid>
+
+<!-- ... -->
+
+  <book>
+    <name>settings</name>
+  </book>
+
+<!-- ... -->
+
+</factory>
+
+<!-- ... -->
+
+<layout type="grid" id="bottom-container">
+
+<!-- ... -->
+
+</layout>
+
+<layout type="book" id="setting">
+
+<!-- ... -->
+
+</layout>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>grid</tag> and
+	<tag class='element'>book</tag>
+	create a
+	<link linkend="uixmlfactorygridelement">new element</link>
+	by creating a new &container; and then
+	<methodname>generate</methodname>()ing its container from the
+	<tag class='element'>layout</tag> in the theme file.
+      </para>
+
+      <para>
+	<tag class='element'>grid</tag> and
+	<tag class='element'>book</tag>
+	is equivalent to invoking a callback using an
+	<tag class='element'>element</tag>, having the callback
+	create a new container with the appropriate &layoutmanager;,
+	and then <methodname>generate</methodname>()ing its contents
+	from the layout specified by the
+	<tag class='element'>name</tag> value.
       </para>
     </section>
   </section>

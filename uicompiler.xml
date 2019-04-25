@@ -832,6 +832,15 @@ List of values:
       </parameter>
     </function>
 
+    <!-- remove_when_hidden -->
+
+    <function>
+      <name>remove_when_hidden</name>
+      <invoke>remove_when_hidden</invoke>
+
+      <object>factory</object>
+    </function>
+
     <!-- element -->
 
     <function>
@@ -871,16 +880,6 @@ List of values:
 	<name>name</name>
 	<type>lookup_booklayoutmanager_generators</type>
       </parameter>
-
-      <parameter>
-	<type>optional_value</type>
-	<name>background_color</name>
-      </parameter>
-
-      <parameter>
-	<type>optional_value</type>
-	<name>border</name>
-      </parameter>
     </function>
 
     <!-- grid -->
@@ -900,11 +899,6 @@ List of values:
       <parameter>
 	<type>lookup_gridlayoutmanager_generators</type>
 	<name>name</name>
-      </parameter>
-
-      <parameter>
-	<type>optional_value</type>
-	<name>background_color</name>
       </parameter>
     </function>
   </parser>

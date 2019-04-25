@@ -251,9 +251,7 @@ private:
 	static void container_booklayoutmanager
 	(const factory &,
 	 uielements &,
-	 const std::tuple<std::string, vector<booklayoutmanager_generator>> &,
-	 const std::string &background_color,
-	 const std::string &border);
+	 const std::tuple<std::string, vector<booklayoutmanager_generator>> &);
 
 	//! Execute <grid>
 
@@ -261,8 +259,7 @@ private:
 	static void container_gridlayoutmanager
 	(const factory &,
 	 uielements &,
-	 const std::tuple<std::string, vector<gridlayoutmanager_generator>> &,
-	 const std::string &background_color);
+	 const std::tuple<std::string, vector<gridlayoutmanager_generator>> &);
 
 	//! Execute <add>
 
