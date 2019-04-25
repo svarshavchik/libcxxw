@@ -244,6 +244,15 @@ private:
 					    const vector<
 					    bookpagefactory_generator> &);
 
+	//! Execute <insert_pages>.
+
+	//! Executed by the compiled <insert_pages>.
+	static void booklayout_insert_pages(const booklayoutmanager &,
+					    size_t,
+					    uielements &,
+					    const vector<
+					    bookpagefactory_generator> &);
+
 	//! Execute <book>
 
 	//! Executed by the compiled <book>.

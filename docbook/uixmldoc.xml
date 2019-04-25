@@ -1630,6 +1630,164 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
       </para>
     </section>
   </section>
+
+  <section id="uixmllayoutbook">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>book</quote>
+      <tag class='element'>layout</tag>s
+    </title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="book" id="application-settings">
+
+<!-- ... -->
+
+</layout>]]>
+
+&ns;::w::booklayoutmanager glm=container->get_layoutmanager();
+
+glm->generate("application-settings", generator, elements);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The contents of a
+      <tag class='element'>layout</tag>s of
+      <tag class='attribute'>type</tag>=<quote>book</quote>
+      specify the methods invoked by <link linkend="booklayoutmanager">book
+	layout manager</link>'s <methodname>generate</methodname>().
+    </para>
+
+
+    <section id="uixmllayoutbookappendinsertpages">
+      <title><tag class='element'>append_pages</tag>
+      and <tag class='element'>insert_pages</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<layout type="book" id="application-settings">
+
+<!-- ... -->
+
+    <append_pages>
+      <name>general-settings</name>
+    </append_pages>
+
+    <append_pages>
+      <name>process-settings</name>
+      <pos>0</pos>
+    </append_pages>
+
+
+<!-- ... -->
+
+</layout>
+
+<factory type="book" id="general-settings">
+
+<!-- ... -->
+
+</factory>
+
+<factory type="book" id="process-settings">
+
+<!-- ... -->
+
+</factory>
+
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>append_pages</tag> and
+	<tag class='element'>insert_pages</tag>
+	invoke the book layout manager's
+	<methodname>append</methodname>() and
+	<methodname>insert</methodname>() methods to create a new
+	<link linkend="bookpagefactory"><classname>&ns;::w::bookpagefactory</classname></link>,
+	then use the
+	<tag class='element'>name</tag>d
+	<tag class='attribute'>type</tag>=<quote><literal>book</literal></quote>
+	<tag class='element'>factory</tag> element to create new book
+	pages.
+      </para>
+    </section>
+
+    <section id="uixmllayoutbookremove">
+      <title><tag class='element'>remove</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<layout type="book" id="application-settings">
+
+<!-- ... -->
+
+  <open>
+    <page>0</page>
+  </open>
+
+<!-- ... -->
+
+</layout>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>remove</tag>
+	invokes the book layout manager's
+	<methodname>remove</methodname>() method.
+      </para>
+    </section>
+
+    <section id="uixmllayoutbookopen">
+      <title><tag class='element'>open</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<layout type="book" id="application-settings">
+
+<!-- ... -->
+
+  <open>
+    <page>0</page>
+  </open>
+
+<!-- ... -->
+
+</layout>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>open</tag>
+	invokes the book layout manager's
+	<methodname>open</methodname>() method.
+      </para>
+    </section>
+
+    <section id="uixmllayoutbookclose">
+      <title><tag class='element'>close</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<layout type="book" id="application-settings">
+
+<!-- ... -->
+
+   <close />
+
+<!-- ... -->
+
+</layout>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>close</tag>
+	invokes the book layout manager's
+	<methodname>close</methodname>() method.
+      </para>
+    </section>
+  </section>
 </appendix>
 
 <!--

@@ -29,6 +29,7 @@
 #include "busy.H"
 #include "run_as.H"
 #include "catch_exceptions.H"
+#include "messages.H"
 #include "generic_window_handler.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/pagelayoutmanager.H"
@@ -476,6 +477,17 @@ void append_bookpagefactoryObj
 bookpagefactory booklayoutmanagerObj::insert(size_t page_number)
 {
 	return ref<insert_bookpagefactoryObj>::create(ref(this), page_number);
+}
+
+void booklayoutmanagerObj::remove(size_t page_number)
+{
+	book_lock lock{ref{this}};
+
+	if (page_number >= pages())
+		throw EXCEPTION(gettextmsg(_("Page %1% does not exist"),
+					   page_number));
+	book_pagetabgridlayoutmanager->remove(0, page_number);
+	book_pagelayoutmanager->remove(page_number);
 }
 
 void insert_bookpagefactoryObj

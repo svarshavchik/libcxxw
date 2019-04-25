@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/weakptr.H>
 #include <x/config.H>
 
 #include "x/w/main_window.H"
@@ -275,7 +276,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 	nblm.appearance=custom;
 
 	// nblm.scroll_button_height=20;
-	auto c=gf->colspan(2).create_focusable_container
+	auto c=gf->colspan(3).create_focusable_container
 		([&]
 		 (const auto &s)
 		 {
@@ -300,6 +301,27 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 			       lm->open(0);
 		       });
 	b->show();
+
+	b=gf->create_button("Delete 1st page");
+
+	b->on_activate([c, b=LIBCXX_NAMESPACE::weakptr<LIBCXX_NAMESPACE::w::buttonptr>{b}]
+		       (ONLY IN_THREAD,
+			const auto &trigger,
+			const auto &mcguffin)
+		       {
+			       auto bb=b.getptr();
+
+			       if (!bb)
+				       return;
+
+			       LIBCXX_NAMESPACE::w::booklayoutmanager lm=
+				       c->get_layoutmanager();
+
+			       lm->remove(0);
+			       bb->set_enabled(IN_THREAD, false);
+		       });
+	b->show();
+
 
 	b=gf->create_button("Close", {
 			LIBCXX_NAMESPACE::w::normal_button()

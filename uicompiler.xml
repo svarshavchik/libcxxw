@@ -937,8 +937,48 @@ List of values:
     </function>
 
     <function>
+      <name>insert_pages</name>
+      <invoke>booklayout_insert_pages</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<name>pos</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>lookup_bookpagefactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
       <name>open</name>
       <invoke>open</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>page</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>close</name>
+      <invoke>close</invoke>
+      <object>layout</object>
+    </function>
+
+    <function>
+      <name>remove</name>
+      <invoke>remove</invoke>
       <object>layout</object>
 
       <parameter>

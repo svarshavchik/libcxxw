@@ -96,6 +96,15 @@ on_opened() installs a callback that gets executed whenever the book
 layout manager opens a new page, either as a result of selecting one of
 the tabs, or by a call to open().
 
+\par Populating from an XML-based specification
+
+\code
+booklayout->generate("options-layout", generators, elements);
+\endcode
+
+generate() creates new contents from the
+loaded theme file. See the tutorial for more information.
+
 */
 
 typedef ref<booklayoutmanagerObj> booklayoutmanager;

@@ -58,6 +58,9 @@ public:
 	//! Insert new pages
 	bookpagefactory insert(size_t n);
 
+	//! Remove a page
+	void remove(size_t n);
+
 	//! How many pages in the book.
 	size_t pages() const;
 
@@ -86,6 +89,16 @@ public:
 
 	void on_opened(const functionref<void (THREAD_CALLBACK,
 					       const book_status_info_t &)>&);
+
+	//! Implement generate()
+
+	//! \see uigenerators
+
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements) override;
+
+	using layoutmanagerObj::generate;
 };
 
 LIBCXXW_NAMESPACE_END

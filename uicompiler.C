@@ -1168,6 +1168,20 @@ void uicompiler::booklayout_append_pages(const booklayoutmanager &blm,
 	}
 }
 
+void uicompiler::booklayout_insert_pages(const booklayoutmanager &blm,
+					 size_t pos,
+					 uielements &factories,
+					 const vector<bookpagefactory_generator>
+					 &generators)
+{
+	auto f=blm->insert(pos);
+
+	for (const auto &g:*generators)
+	{
+		g(f, factories);
+	}
+}
+
 void uicompiler
 ::container_booklayoutmanager(const factory &f,
 			      uielements &factories,
