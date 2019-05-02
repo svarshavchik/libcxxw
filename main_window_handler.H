@@ -9,6 +9,7 @@
 #include "main_window.H"
 #include "window_handler_constructor_params.H"
 #include "x/w/connection_threadfwd.H"
+#include "x/w/main_window_appearancefwd.H"
 #include "icon_images_vector_elementfwd.H"
 #include "x/w/busyfwd.H"
 #include "sync_counter.H"
@@ -141,6 +142,9 @@ public:
 	std::optional<rectangle> suggested_position_thread_only;
  public:
 	THREAD_DATA_ONLY(suggested_position);
+
+	//! My appearance
+	const const_main_window_appearance appearance;
 
 	//! Unique identifier for the window.
 	const std::string window_id;

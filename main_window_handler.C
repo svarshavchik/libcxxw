@@ -17,6 +17,7 @@
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 #include "x/w/generic_window_appearance.H"
+#include "x/w/main_window_appearance.H"
 #include "busy.H"
 #include "catch_exceptions.H"
 #include "inherited_visibility_info.H"
@@ -57,6 +58,7 @@ main_windowObj::handlerObj::handlerObj(const constructor_params &params,
 					    const auto &ignore) {}),
 	  net_wm_sync_request_counter{screenref->impl->thread},
 	  suggested_position_thread_only{suggested_position},
+	  appearance{params.appearance},
 	  window_id{window_id}
 {
 }
@@ -193,39 +195,20 @@ void main_windowObj::handlerObj
 }
 
 static std::vector<icon> create_icons(drawableObj::implObj &me,
-				      const std::vector<std::tuple<std::string,
-				      dim_t, dim_t>> &icons)
+				      const std::string &icon_name,
+				      const std::vector<dim_t> &icon_sizes)
 {
 	std::vector<icon> v;
 
-	v.reserve(icons.size());
+	v.reserve(icon_sizes.size());
 
-	for (const auto &i:icons)
-	{
-		const auto &[name, width, height]=i;
-
-		v.push_back(me.create_icon_pixels(name,
+	for (auto s:icon_sizes)
+		v.push_back(me.create_icon_pixels(icon_name,
 						  render_repeat::none,
-						  width,
-						  height,
+						  s, s,
 						  icon_scale::nomore));
-	}
+
 	return v;
-}
-
-static std::vector<icon> create_icons(drawableObj::implObj &me,
-				      const std::string &icon,
-				      const const_generic_window_appearance
-				      &appearance)
-{
-	// Steal sizes from the default appearance icons.
-
-	auto icons=appearance->icons;
-
-	for (auto &i:icons)
-		std::get<std::string>(i)=icon;
-
-	return create_icons(me, icons);
 }
 
 void main_windowObj::handlerObj
@@ -240,8 +223,9 @@ void main_windowObj::handlerObj
 			try {
 				install_window_icons
 					(IN_THREAD,
-					 create_icons
-					 (*this, appearance->icons));
+					 create_icons(*this,
+						      appearance->icon,
+						      appearance->icon_sizes));
 			} CATCH_EXCEPTIONS;
 #ifdef MAINWINDOW_HINTS_DEBUG3
 		MAINWINDOW_HINTS_DEBUG3();
@@ -617,7 +601,8 @@ void main_windowObj::handlerObj
 ::install_window_icons(const std::string &icon)
 {
 	screenref->impl->thread->run_as
-		([v=create_icons(*this, icon, appearance), me=ref{this}]
+		([v=create_icons(*this, icon, appearance->icon_sizes),
+		  me=ref{this}]
 		 (ONLY IN_THREAD)
 		 {
 			 me->install_window_icons(IN_THREAD, v);

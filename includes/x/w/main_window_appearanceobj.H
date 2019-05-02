@@ -11,8 +11,11 @@
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/font_arg.H>
+#include <x/w/types.H>
 #include <x/functional.H>
 #include <x/obj.H>
+
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -56,6 +59,13 @@ struct main_window_appearance_properties {
 	//! Border between the menu bar and the main window.
 	border_arg menubar_border;
 
+	//! Default window titlebar icon
+
+	std::string icon;
+
+	//! Icon sizes.
+
+	std::vector<dim_t> icon_sizes;
 };
 
 //! Implementation object.

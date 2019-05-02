@@ -20,7 +20,9 @@ main_window_appearance_properties::main_window_appearance_properties()
 	  menu_clicked_color{"menu_clicked_color"},
 	  menu_inputfocusoff_border{"menu_inputfocusoff_border"},
 	  menu_inputfocuson_border{"menu_inputfocuson_border"},
-	  menubar_border{"menubar_border"}
+	  menubar_border{"menubar_border"},
+	  icon{"mainwindow-icon"},
+	  icon_sizes{16, 24, 32, 48}
 {
 }
 

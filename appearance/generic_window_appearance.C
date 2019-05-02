@@ -12,13 +12,7 @@ generic_window_appearance_properties::generic_window_appearance_properties()
 	  label_color{"label_foreground_color"},
 	  modal_shade_color{"modal_shade"},
 	  disabled_mask{"disabled_mask"},
-	  wait_cursor{"cursor-wait"},
-	  icons{
-		{"mainwindow-icon", 16, 16},
-		{"mainwindow-icon", 24, 24},
-		{"mainwindow-icon", 32, 32},
-		{"mainwindow-icon", 48, 48}
-	  }
+	  wait_cursor{"cursor-wait"}
 {
 }
 
