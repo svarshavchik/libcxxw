@@ -61,6 +61,7 @@ struct create_icon_args_t {
 	render_repeat icon_repeat=render_repeat::none;
 	dim_arg width=0;
 	dim_arg height=0;
+	icon_scale scale=icon_scale::nearest;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -25,15 +25,6 @@ class LIBCXX_HIDDEN themeiconpixmapObj : public themeiconObj<dim_type> {
 
 	~themeiconpixmapObj();
 
-	//! Override resizemm().
-
-	//! Won't resize anything, but we need to construct a new cached icon
-	//! for the new virtual size.
-
-	icon resizemm(ONLY IN_THREAD,
-		      const dim_arg &width_arg,
-		      const dim_arg &height_arg) override;
-
 	//! Override resiz().
 
 	//! Won't resize anything, but we need to construct a new cached icon

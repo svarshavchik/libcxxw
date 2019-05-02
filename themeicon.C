@@ -41,7 +41,8 @@ icon themeiconObj<dim_arg>::initialize(ONLY IN_THREAD)
 	if (theme == current_theme)
 		return icon(this);
 
-	return drawable->create_icon({name, image->repeat, width, height});
+	return drawable->create_icon({name, image->repeat, width, height,
+				      scale});
 }
 
 template<>
@@ -51,7 +52,8 @@ icon themeiconObj<dim_arg>::theme_updated(ONLY IN_THREAD,
 	if (new_theme == theme)
 		return icon(this);
 
-	return image->impl->create_icon({name, image->repeat, width, height});
+	return image->impl->create_icon({name, image->repeat, width, height,
+					 scale});
 }
 
 template<>

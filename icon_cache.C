@@ -45,7 +45,7 @@ typedef ref<pixmapObj::implObj
 			     const const_pictformat &drawable_pictformat,
 			     const const_defaulttheme &theme,
 			     const dim_arg &width_arg,
-			     const dim_arg &height_arg);
+			     const dim_arg &height_arg, icon_scale scale);
 
 typedef ref<pixmapObj::implObj
 	    > dim_t_loader(const std::string &name,
@@ -171,7 +171,7 @@ static bool search_file(std::string &filename,
 // Figure out the image format of a file by its extension. If no extension
 // is given, try each extension we know about.
 
-static inline auto search_extension(const std::string_view &name,
+static inline auto search_extension(const std::string &name,
 				    const const_defaulttheme &theme)
 {
 	size_t p=name.rfind('/');
@@ -709,7 +709,8 @@ create_sxg_icon_from_filename(const std::string &name,
 			      const const_pictformat &drawable_pictformat,
 			      const const_defaulttheme &theme,
 			      const dim_arg &width_arg,
-			      const dim_arg &height_arg)
+			      const dim_arg &height_arg,
+			      icon_scale scale)
 {
 	auto sxg=screenref->impl->iconcaches->sxg_parser_cache->find_or_create
 		({filename},
@@ -1153,7 +1154,8 @@ create_jpg_icon_from_filename(const std::string &name,
 			      const const_pictformat &drawable_pictformat,
 			      const const_defaulttheme &theme,
 			      const dim_arg &width_arg,
-			      const dim_arg &height_arg)
+			      const dim_arg &height_arg,
+			      icon_scale scale)
 {
 	return get_cached_pixmap(filename, screenref, drawable_pictformat,
 				 create_pixmap_from_jpg);
@@ -1181,7 +1183,8 @@ create_gif_icon_from_filename(const std::string &name,
 			      const const_pictformat &drawable_pictformat,
 			      const const_defaulttheme &theme,
 			      const dim_arg &width_arg,
-			      const dim_arg &height_arg)
+			      const dim_arg &height_arg,
+			      icon_scale scale)
 {
 	return get_cached_pixmap(filename, screenref, drawable_pictformat,
 				 create_pixmap_from_gif);
@@ -1209,7 +1212,8 @@ create_png_icon_from_filename(const std::string &name,
 			      const const_pictformat &drawable_pictformat,
 			      const const_defaulttheme &theme,
 			      const dim_arg &width_arg,
-			      const dim_arg &height_arg)
+			      const dim_arg &height_arg,
+			      icon_scale scale)
 {
 	return get_cached_pixmap(filename, screenref, drawable_pictformat,
 				 create_pixmap_from_png);
@@ -1244,7 +1248,7 @@ icon drawableObj::implObj::create_icon(const create_icon_args_t &args,
 	auto pixmap_impl=(*cached_filename->info.create)
 		(args.name, cached_filename, screenref, drawable_pictformat,
 		 theme,
-		 args.width, args.height);
+		 args.width, args.height, args.scale);
 
 	auto cached_pixmap_with_picture=
 		create_cached_pixmap_with_picture(screenref, pixmap_impl,
@@ -1252,7 +1256,7 @@ icon drawableObj::implObj::create_icon(const create_icon_args_t &args,
 
 	return get_cached_icon(args.name, theme, cached_pixmap_with_picture,
 			       args.width, args.height,
-			       icon_scale::nearest);
+			       args.scale);
 }
 
 icon drawableObj::implObj

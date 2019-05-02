@@ -147,7 +147,8 @@ scroll_imagebutton_specific_height(const container_impl &parent_container,
 	for (const auto &image : images)
 		icon_images.push_back(wh.create_icon({image,
 						      render_repeat::none, 0,
-						      height_arg}));
+						      height_arg,
+						      icon_scale::nomore}));
 
 	image_button_internal_impl_init_params init_params
 		{

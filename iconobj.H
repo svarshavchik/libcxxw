@@ -51,11 +51,6 @@ public:
 				   const const_defaulttheme &new_theme);
 
 	//! Resize this icon, if this is a resizable icon.
-	virtual icon resizemm(ONLY IN_THREAD,
-			      const dim_arg &width_arg,
-			      const dim_arg &height_arg);
-
-	//! Resize this icon, if this is a resizable icon.
 	virtual icon resize(ONLY IN_THREAD, dim_t w, dim_t h,
 			    icon_scale scale);
 

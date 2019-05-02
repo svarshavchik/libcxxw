@@ -31,13 +31,6 @@ icon iconObj::theme_updated(ONLY IN_THREAD,
 	return icon(this);
 }
 
-icon iconObj::resizemm(ONLY IN_THREAD,
-		       const dim_arg &,
-		       const dim_arg &)
-{
-	return icon(this);
-}
-
 icon iconObj::resize(ONLY IN_THREAD, dim_t w, dim_t h, icon_scale scale)
 {
 	return icon(this);
