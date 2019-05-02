@@ -1569,8 +1569,7 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
     </section>
 
     <section id="uixmlfactorygridcontainer">
-      <title><tag class='element'>grid</tag> and
-	<tag class='element'>book</tag></title>
+      <title><tag class='element'>container</tag></title>
 
       <blockquote>
 	<informalexample>
@@ -1579,15 +1578,17 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 
 <!-- ... -->
 
-  <grid>
+  <container>
+    <type>grid</type>
     <name>bottom-container</name>
-  </grid>
+  </container>
 
 <!-- ... -->
 
-  <book>
+  <container>
+    <type>grid</type>
     <name>settings</name>
-  </book>
+  </container>
 
 <!-- ... -->
 
@@ -1609,19 +1610,25 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 	</informalexample>
       </blockquote>
       <para>
-	<tag class='element'>grid</tag> and
-	<tag class='element'>book</tag>
-	create a
-	<link linkend="uixmlfactorygridelement">new element</link>
+	<tag class='element'>container</tag>
+	creates a
+	<link linkend="uixmlfactorygridelement">new grid element</link>
 	by creating a new &container; and then
-	<methodname>generate</methodname>()ing its container from the
-	<tag class='element'>layout</tag> in the theme file.
+	<methodname>generate</methodname>()ing the new container from
+	another
+	<tag class='element'>layout</tag> in the theme file, whose
+	<tag class='attribute'>id</tag> is
+	<tag class='element'>name</tag>.
+	<tag class='element'>type</tag> must be either
+	<quote><literal>grid</literal></quote> or
+	<quote><literal>book</literal></quote>, and must match the
+	<tag class='element'>layout</tag>'s
+	<tag class='attribute'>type</tag>.
       </para>
 
       <para>
-	<tag class='element'>grid</tag> and
-	<tag class='element'>book</tag>
-	is equivalent to invoking a callback using an
+	<tag class='element'>container</tag> is
+	equivalent to invoking a callback using an
 	<tag class='element'>element</tag>, having the callback
 	create a new container with the appropriate &layoutmanager;,
 	and then <methodname>generate</methodname>()ing its contents
@@ -1883,8 +1890,8 @@ glm->generate("application-settings", generator, elements);</programlisting>
       </para>
     </section>
 
-    <section id="uixmlfactorybookadd">
-      <title><tag class='element'>add</tag></title>
+    <section id="uixmlfactorybookcontainer">
+      <title><tag class='element'>container</tag></title>
 
       <blockquote>
 	<informalexample>
@@ -1893,11 +1900,12 @@ glm->generate("application-settings", generator, elements);</programlisting>
 
 <!-- ... -->
 
-    <add>
+    <container>
        <label>general-label</label>
        <shortcut>general-shortcut</shortcut>
-       <layout>general-settings</layout>
-    </add>
+       <name>general-settings</name>
+       <type>grid</type>
+    </container>
 
 <!-- ... -->
 
@@ -1929,15 +1937,15 @@ glm->generate("application-settings", generator, elements);</programlisting>
       </blockquote>
 
       <para>
-	<tag class='element'>add</tag>
+	<tag class='element'>container</tag>
 	invokes the book page factory's
 	<methodname>add</methodname>()
-	method.
+	method, to create a new &container;.
 
 	<tag class='element'>label</tag>'s value gives the name of a
 	factory from
 	<link linkend="uixmlgenerate"><classname>&ns;::w::uielements</classname></link>'s
-	factories map, the factory gets invoked for the purpose of creating
+	factories map, this factory gets invoked for the purpose of creating
 	the new page tab's label.
 	The optional <tag class='element'>shortcut</tag>'s value
 	specifies the new page's keyboard shortcut.
@@ -1953,10 +1961,14 @@ glm->generate("application-settings", generator, elements);</programlisting>
       </para>
 
       <para>
-	<tag class='element'>layout</tag>'s value is an
+	<tag class='element'>name</tag> and
+	<tag class='element'>type</tag> means the same thing as in the
+	<link linkend="uixmlfactorygridcontainer">grid factory's
+	  <tag class='element'>container</tag></link>.
+	<tag class='element'>name</tag>'s value is an
 	<tag class='attribute'>id</tag> of a
-	<tag class='attribute'>type</tag>=<quote>grid</quote>
-	<tag class='element'>layout</tag> that
+	<tag class='element'>layout</tag>,
+	of a match <tag class='element'>type</tag>, that
 	<link linkend="uixmlgenerate">generate</link>()s the contents of the
 	new page.
       </para>
@@ -1972,9 +1984,10 @@ glm->generate("application-settings", generator, elements);</programlisting>
 
 <!-- ... -->
 
-  <grid>
+  <container>
+    <type>grid</type>
     <name>bottom-container</name>
-  </grid>
+  </container>
 </factory>
 
 <!-- ... -->

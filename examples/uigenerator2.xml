@@ -2,135 +2,139 @@
 <theme version="1"
        xmlns:xi="http://www.w3.org/2003/XInclude">
 
-  <!-- Various sizes (dimensions). Specified in millimeters -->
+  <dim id="page-padding">30</dim>
 
-  <dim id="border-size">2.0</dim>
-
-  <dim id="cell-padding">4.0</dim>
-
-  <!-- Define a custom color. r, g, b, and a channels range from 0 to 1 -->
-
-  <color id="left-border-color">
-    <r>1</r>
-    <g>.5</g>
-    <b>.0</b>
-  </color>
-
-  <color  id="bgcolor" type="radial_gradient">
-    <inner_x>.5</inner_x>
-    <inner_y>.5</inner_y>
-    <outer_x>.5</outer_x>
-    <outer_y>.5</outer_y>
-    <inner_radius>0</inner_radius>
-    <outer_radius>.5</outer_radius>
-    <inner_radius_axis>shortest</inner_radius_axis>
-    <outer_radius_axis>longest</outer_radius_axis>
-
-    <gradient>
-      <value>0</value>
-      <color>gray</color>
-    </gradient>
-    <gradient>
-      <value>1</value>
-      <color>white</color>
-    </gradient>
-  </color>
-
-  <!-- Border specifications -->
-  <border id="solid-border">
-    <color>left-border-color</color>
-    <width>border-size</width>
-    <height>border-size</height>
-  </border>
-
-  <!--
-      "from" bases a border on another border, replaces the border colors,
-      makes it a dashed border, and adds rounded corners.
-
-      Basically, this inherits the size of the border. Changing the width or
-      height of "solid-border" changes this border's size, to match.
-
-  -->
-
-
-  <border id="dashed-border" from="solid-border">
-
-    <!-- Standard HTML 3.2 colors -->
-    <color>green</color>
-    <color2>blue</color2>
-    <dash>.75</dash>
-    <rounded>1</rounded>
-  </border>
-
-  <layout type="grid" id="main-window-grid">
-
-    <background_color>
-      <color>bgcolor</color>
-    </background_color>
-
-    <!-- Align row 0's cells, by default. -->
-    <valign>
-      <row>0</row>
-      <valign>middle</valign>
-    </valign>
-
+  <layout id="main-window-grid" type="grid">
     <append_row>
-      <name>main-window-row</name>
+      <name>main-window-contents</name>
     </append_row>
   </layout>
 
-  <factory type="grid" id="main-window-row">
+  <factory id="main-window-contents" type="grid">
+    <container>
+      <name>settings</name>
+      <type>book</type>
+    </container>
+  </factory>
 
-    <!-- Specify the borders for the first cell -->
+  <layout id="settings" type="book">
+    <append_pages>
+      <name>settings-pages</name>
+    </append_pages>
+    <open>
+      <page>0</page>
+    </open>
+  </layout>
 
-    <border>
+  <factory id="settings-pages" type="book">
+
+    <halign>
+      <halign>center</halign>
+    </halign>
+
+    <valign>
+      <valign>bottom</valign>
+    </valign>
+
+    <container>
+      <label>general-label</label>
+      <type>grid</type>
+      <name>general-page</name>
+      <shortcut>general-page-shortcut</shortcut>
+    </container>
+
+    <halign>
+      <halign>center</halign>
+    </halign>
+
+    <valign>
+      <valign>bottom</valign>
+    </valign>
+
+    <container>
+      <label>network-label</label>
+      <type>grid</type>
+      <name>network-page</name>
+      <shortcut>network-page-shortcut</shortcut>
+    </container>
+
+    <halign>
+      <halign>center</halign>
+    </halign>
+
+    <valign>
+      <valign>bottom</valign>
+    </valign>
+
+    <container>
+      <label>local-label</label>
+      <type>grid</type>
+      <name>local-page</name>
+      <shortcut>local-page-shortcut</shortcut>
+    </container>
+  </factory>
+
+  <layout id="general-page" type="grid">
+    <append_row>
+      <name>general-page-row</name>
+    </append_row>
+  </layout>
+
+  <factory id="general-page-row" type="grid">
+    <padding>
       <side>left</side>
-      <border>solid-border</border>
-    </border>
-    <border>
+      <padding>page-padding</padding>
+    </padding>
+
+    <padding>
       <side>right</side>
-      <border>solid-border</border>
-    </border>
-    <border>
-      <side>top</side>
-      <border>solid-border</border>
-    </border>
-    <border>
-      <side>bottom</side>
-      <border>solid-border</border>
-    </border>
-
-    <padding>
-      <side>all</side>
-      <padding>cell-padding</padding>
+      <padding>page-padding</padding>
     </padding>
 
     <element>
-      <name>label</name>
+      <name>general-page-placeholder</name>
     </element>
+  </factory>
 
+  <layout id="network-page" type="grid">
+    <append_row>
+      <name>network-page-row</name>
+    </append_row>
+  </layout>
+
+  <factory id="network-page-row" type="grid">
     <padding>
-      <side>all</side>
-      <padding>cell-padding</padding>
+      <side>left</side>
+      <padding>page-padding</padding>
     </padding>
 
+    <padding>
+      <side>right</side>
+      <padding>page-padding</padding>
+    </padding>
     <element>
-      <name>label</name>
+      <name>network-page-placeholder</name>
     </element>
+  </factory>
 
-    <!-- Border for the right cell -->
-    <border>
-      <side>all</side>
-      <border>dashed-border</border>
-    </border>
+  <layout id="local-page" type="grid">
+    <append_row>
+      <name>local-page-row</name>
+    </append_row>
+  </layout>
 
+  <factory id="local-page-row" type="grid">
     <padding>
-      <side>all</side>
-      <padding>cell-padding</padding>
+      <side>left</side>
+      <padding>page-padding</padding>
     </padding>
 
+    <padding>
+      <side>right</side>
+      <padding>page-padding</padding>
+    </padding>
     <element>
-      <name>label</name>
+      <name>local-page-placeholder</name>
     </element>
   </factory>
 

@@ -118,7 +118,7 @@ List of values:
 
 -->
 
-<api>
+<api xmlns:xi="http://www.w3.org/2003/XInclude">
   <parser>
     <name>gridlayout</name>
 
@@ -191,7 +191,9 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_dim</lookup>
+	<lookup>
+	  <function>generators.lookup_dim</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -214,7 +216,9 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_dim</lookup>
+	<lookup>
+	  <function>generators.lookup_dim</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -237,7 +241,9 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_dim</lookup>
+	<lookup>
+	  <function>generators.lookup_dim</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -260,7 +266,9 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_dim</lookup>
+	<lookup>
+	  <function>generators.lookup_dim</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -280,7 +288,9 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_border</lookup>
+	<lookup>
+	  <function>generators.lookup_border</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -298,7 +308,9 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_border</lookup>
+	<lookup>
+	  <function>generators.lookup_border</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -542,7 +554,9 @@ List of values:
       <parameter>
 	<name>color</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_color</lookup>
+	<lookup>
+	  <function>generators.lookup_color</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -638,7 +652,9 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_dim</lookup>
+	<lookup>
+	  <function>generators.lookup_dim</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -656,7 +672,9 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_dim</lookup>
+	<lookup>
+	  <function>generators.lookup_dim</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -674,7 +692,9 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_dim</lookup>
+	<lookup>
+	  <function>generators.lookup_dim</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -692,7 +712,9 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_dim</lookup>
+	<lookup>
+	  <function>generators.lookup_dim</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -710,7 +732,9 @@ List of values:
       <parameter>
 	<name>padding</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_dim</lookup>
+	<lookup>
+	  <function>generators.lookup_dim</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -756,7 +780,9 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_border</lookup>
+	<lookup>
+	  <function>generators.lookup_border</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -774,7 +800,9 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_border</lookup>
+	<lookup>
+	  <function>generators.lookup_border</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -792,7 +820,9 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_border</lookup>
+	<lookup>
+	  <function>generators.lookup_border</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -810,7 +840,9 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_border</lookup>
+	<lookup>
+	  <function>generators.lookup_border</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -828,7 +860,9 @@ List of values:
       <parameter>
 	<name>border</name>
 	<type>single_value</type>
-	<lookup>generators.lookup_border</lookup>
+	<lookup>
+	  <function>generators.lookup_border</function>
+	</lookup>
       </parameter>
     </function>
 
@@ -862,11 +896,11 @@ List of values:
       </parameter>
     </function>
 
-    <!-- book -->
-    <function>
-      <name>book</name>
+    <!-- container -->
 
-      <invoke>container_booklayoutmanager</invoke>
+    <function>
+      <name>container</name>
+      <invoke>create_container</invoke>
 
       <parameter>
 	<scalar>factory</scalar>
@@ -877,28 +911,18 @@ List of values:
       </parameter>
 
       <parameter>
+	<type>single_value</type>
 	<name>name</name>
-	<type>lookup_booklayoutmanager_generators</type>
-      </parameter>
-    </function>
-
-    <!-- grid -->
-
-    <function>
-      <name>grid</name>
-      <invoke>container_gridlayoutmanager</invoke>
-
-      <parameter>
-	<scalar>factory</scalar>
       </parameter>
 
       <parameter>
-	<scalar>elements</scalar>
-      </parameter>
-
-      <parameter>
-	<type>lookup_gridlayoutmanager_generators</type>
-	<name>name</name>
+	<type>single_value</type>
+	<name>type</name>
+	<lookup>
+	  <function>lookup_container_generators</function>
+	  <parameter>lock</parameter>
+	  <parameter>name_value</parameter>
+	</lookup>
       </parameter>
     </function>
   </parser>
@@ -1032,8 +1056,8 @@ List of values:
     </function>
 
     <function>
-      <name>add</name>
-      <invoke>container_addbookpage</invoke>
+      <name>container</name>
+      <invoke>create_container</invoke>
 
       <parameter>
 	<scalar>factory</scalar>
@@ -1054,8 +1078,18 @@ List of values:
       </parameter>
 
       <parameter>
-	<name>layout</name>
-	<type>lookup_gridlayoutmanager_generators</type>
+	<type>single_value</type>
+	<name>name</name>
+      </parameter>
+
+      <parameter>
+	<type>single_value</type>
+	<name>type</name>
+	<lookup>
+	  <function>lookup_container_generators</function>
+	  <parameter>lock</parameter>
+	  <parameter>name_value</parameter>
+	</lookup>
       </parameter>
     </function>
   </parser>

@@ -19,6 +19,7 @@
 #include <x/vector.H>
 #include <tuple>
 #include <unordered_map>
+#include <variant>
 
 LIBCXXW_NAMESPACE_START
 
@@ -136,16 +137,6 @@ private:
 
 	//! Return compiled grid layout manager generators.
 
-	//! Extract the single_value() name of the generators. Return the
-	//! name, and the compiled generators.
-	std::tuple<std::string,
-		   vector<gridlayoutmanager_generator>>
-	lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
-					    const char *element,
-					    const char *parent);
-
-	//! Return compiled grid layout manager generators.
-
 	//! If the generators are already compiled, return them. If not,
 	//! search for them in uncompiled_elements, compile them, put them
 	//! into gridfactory_generators, and return them.
@@ -153,16 +144,6 @@ private:
 	vector<gridlayoutmanager_generator>
 	lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
-
-	//! Return compiled book layout manager generators.
-
-	//! Extract the single_value() name of the generators. Return the
-	//! name, and the compiled generators.
-	std::tuple<std::string,
-		   vector<booklayoutmanager_generator>>
-	lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
-					    const char *element,
-					    const char *parent);
 
 	//! Return compiled book layout manager generators.
 
@@ -253,33 +234,37 @@ private:
 					    const vector<
 					    bookpagefactory_generator> &);
 
-	//! Execute <book>
+	//! The looked up generators for a <container>
 
-	//! Executed by the compiled <book>.
+	typedef std::variant<vector<gridlayoutmanager_generator>,
+			     vector<booklayoutmanager_generator>
+			     > container_generators_t;
 
-	static void container_booklayoutmanager
-	(const factory &,
-	 uielements &,
-	 const std::tuple<std::string, vector<booklayoutmanager_generator>> &);
+	//! Validate container <type>, and look up name's generators.
 
-	//! Execute <grid>
+	container_generators_t
+	lookup_container_generators(const std::string &name,
+				    const theme_parser_lock &lock,
+				    const std::string &type,
+				    bool,
+				    const char *tag);
 
-	//! Executed by the compiled <grid>.
-	static void container_gridlayoutmanager
-	(const factory &,
-	 uielements &,
-	 const std::tuple<std::string, vector<gridlayoutmanager_generator>> &);
+	//! Execute <container>
 
-	//! Execute <add>
+	//! In a grid factory.
+	static void create_container(const factory &f,
+				     uielements &elements,
+				     const std::string &name,
+				     const container_generators_t &generators);
+	//! Execute <container>
 
-	//! Executed by the compiled <add>.
-	static void container_addbookpage(const bookpagefactory &f,
-					  uielements &factories,
-					  const std::string &label,
-					  const std::string &sc,
-					  const std::tuple<std::string,
-					  vector<gridlayoutmanager_generator>>
-					  &generators);
+	//! In a book page factory.
+	static void create_container(const bookpagefactory &f,
+				     uielements &factories,
+				     const std::string &label,
+				     const std::string &sc,
+				     const std::string &name,
+				     const container_generators_t &generators);
 };
 
 LIBCXXW_NAMESPACE_END

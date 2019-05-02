@@ -1521,9 +1521,10 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <border>ok_button_border</border>
     </border>
 
-    <grid>
+    <container>
+      <type>grid</type>
       <name>ok-button-row</name>
-    </grid>
+    </container>
   </factory>
 
   <layout type="grid" id="ok-button-row">
@@ -1620,9 +1621,10 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <border>ok_cancel_button_border</border>
     </border>
 
-    <grid>
+    <container>
+      <type>grid</type>
       <name>ok-cancel-button-row</name>
-    </grid>
+    </container>
   </factory>
 
   <factory type="grid" id="ok-cancel-button-container-1">
@@ -1670,9 +1672,10 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <border>ok_cancel_button_border</border>
     </border>
 
-    <grid>
+    <container>
+      <type>grid</type>
       <name>ok-cancel-button-row</name>
-    </grid>
+    </container>
   </factory>
 
   <layout type="grid" id="ok-cancel-button-row">
@@ -1771,9 +1774,10 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <padding>dialog-h-padding</padding>
     </padding>
 
-    <grid>
+    <container>
+      <type>grid</type>
       <name>label-and-input-container</name>
-    </grid>
+    </container>
   </factory>
 
   <layout type="grid" id="label-and-input-container">
@@ -2045,9 +2049,10 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-    <grid>
+    <container>
+      <type>grid</type>
       <name>color-picker-left-container</name>
-    </grid>
+    </container>
 
     <padding>
       <side>top</side>
@@ -2065,9 +2070,10 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-    <grid>
+    <container>
+      <type>grid</type>
       <name>color-picker-right-container</name>
-    </grid>
+    </container>
   </factory>
 
   <!--
@@ -2486,9 +2492,10 @@ first column, to make the labels line up with their input fields.
       <padding>dialog-v-padding</padding>
     </padding>
 
-    <book>
+    <container>
+      <type>book</type>
       <name>print-dialog-options</name>
-    </book>
+    </container>
   </factory>
 
   <layout type="book" id="print-dialog-options">
@@ -2501,20 +2508,23 @@ first column, to make the labels line up with their input fields.
   </layout>
 
   <factory type="book" id="print-dialog-options-pages">
-    <add>
+    <container>
       <label>print-dialog-general-label</label>
-      <layout>print-dialog-general-options</layout>
-    </add>
+      <type>grid</type>
+      <name>print-dialog-general-options</name>
+    </container>
 
-    <add>
+    <container>
       <label>print-dialog-page-label</label>
-      <layout>print-dialog-page-options</layout>
-    </add>
+      <type>grid</type>
+      <name>print-dialog-page-options</name>
+    </container>
 
-    <add>
+    <container>
       <label>print-dialog-image-label</label>
-      <layout>print-dialog-image-options</layout>
-    </add>
+      <type>grid</type>
+      <name>print-dialog-image-options</name>
+    </container>
   </factory>
 
   <!-- Print dialog: general options -->
@@ -2658,9 +2668,10 @@ first column, to make the labels line up with their input fields.
       <name>filler</name>
     </element>
 
-    <grid>
+    <container>
+      <type>grid</type>
       <name>print-dialog-print-selected-pages-radio-button-and-input-field</name>
-    </grid>
+    </container>
   </factory>
 
   <!--
@@ -2989,9 +3000,10 @@ first column, to make the labels line up with their input fields.
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-    <grid>
+    <container>
+      <type>grid</type>
       <name>font-picker-popup-left-contents</name>
-    </grid>
+    </container>
 
     <padding>
       <side>top</side>
@@ -3015,9 +3027,10 @@ first column, to make the labels line up with their input fields.
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-    <grid>
+    <container>
+      <type>grid</type>
       <name>font-picker-popup-right-contents</name>
-    </grid>
+    </container>
   </factory>
 
   <!--

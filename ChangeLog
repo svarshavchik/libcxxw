@@ -1,5 +1,7 @@
 2019-04-27  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Implement an API for XML-based theme files.
+
 	* element_impl.C (elementObj::implObj::scroll_by_parent_container):
 	Fix scrolling performance bugs.
 

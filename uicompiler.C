@@ -17,6 +17,7 @@
 #include "messages.H"
 #include "picture.H"
 #include <x/functionalrefptr.H>
+#include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -932,13 +933,25 @@ void uicompiler::generate(const factory &f,
 //
 // A factory reference ends up
 
-std::tuple<std::string, vector<gridlayoutmanager_generator>>
-uicompiler::lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
-						const char *element,
-						const char *parent)
+uicompiler::container_generators_t
+uicompiler::lookup_container_generators(const std::string &type,
+					const theme_parser_lock &lock,
+					const std::string &name,
+					bool,
+					const char *tag)
 {
-	auto name=single_value(lock, element, parent);
-	return {name, lookup_gridlayoutmanager_generators(lock, name)};
+	if (type == "grid")
+	{
+		return lookup_gridlayoutmanager_generators(lock, name);
+	}
+
+	if (type == "book")
+	{
+		return lookup_booklayoutmanager_generators(lock, name);
+	}
+
+	throw EXCEPTION(gettextmsg(_("The %1% <type> is not valid for %2%"),
+				   type, tag));
 }
 
 vector<gridlayoutmanager_generator>
@@ -975,15 +988,6 @@ uicompiler::lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
 	return ret;
 }
 
-std::tuple<std::string, vector<booklayoutmanager_generator>>
-uicompiler::lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
-						const char *element,
-						const char *parent)
-{
-	auto name=single_value(lock, element, parent);
-	return {name, lookup_booklayoutmanager_generators(lock, name)};
-}
-
 vector<booklayoutmanager_generator>
 uicompiler::lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
 						const std::string &name)
@@ -1016,6 +1020,61 @@ uicompiler::lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
 	generators.booklayoutmanager_generators.emplace(name, ret);
 
 	return ret;
+}
+
+void uicompiler::create_container(const factory &f,
+				  uielements &factories,
+				  const std::string &name,
+				  const container_generators_t &generators)
+{
+	std::visit
+		(visitor
+		 {[&](const vector<gridlayoutmanager_generator> &generators)
+		  {
+			  f->create_container
+				  ([&]
+				   (const auto &new_container)
+				   {
+					   factories.new_layouts
+						   .emplace(name,
+							    new_container);
+
+					   gridlayoutmanager glm=
+						   new_container
+						   ->get_layoutmanager();
+
+					   for (const auto &g:*generators)
+					   {
+						   g(glm, factories);
+					   }
+				   },
+				   new_gridlayoutmanager{});
+		  },
+		  [&](const vector<booklayoutmanager_generator> &generators)
+		  {
+			  new_booklayoutmanager nblm;
+
+			  f->create_focusable_container
+				  ([&]
+				   (const auto &new_container)
+				   {
+					   factories.new_layouts
+						   .emplace(name,
+							    new_container);
+
+					   booklayoutmanager blm=
+						   new_container
+						   ->get_layoutmanager();
+
+					   for (const auto &g:*generators)
+					   {
+						   g(blm, factories);
+					   }
+				   },
+				   nblm);
+		  }
+		 }, generators);
+
 }
 
 vector<gridfactory_generator>
@@ -1182,66 +1241,12 @@ void uicompiler::booklayout_insert_pages(const booklayoutmanager &blm,
 	}
 }
 
-void uicompiler
-::container_booklayoutmanager(const factory &f,
-			      uielements &factories,
-			      const std::tuple<std::string,
-			      vector<booklayoutmanager_generator>> &generators)
-{
-	new_booklayoutmanager nblm;
-
-	f->create_focusable_container
-		([&]
-		 (const auto &new_container)
-		 {
-			 const auto &[name, c_generators] = generators;
-
-			 factories.new_layouts.emplace(name, new_container);
-
-			 booklayoutmanager blm=
-				 new_container->get_layoutmanager();
-
-			 for (const auto &g:*c_generators)
-			 {
-				 g(blm, factories);
-			 }
-		 },
-		 nblm);
-}
-
-void uicompiler::container_gridlayoutmanager(const factory &f,
-					     uielements &factories,
-					     const std::tuple<std::string,
-					     vector<gridlayoutmanager_generator>
-					     > &generators)
-{
-	f->create_container
-		([&]
-		 (const auto &new_container)
-		 {
-			 const auto &[name, c_generators] = generators;
-
-			 factories.new_layouts.emplace(name, new_container);
-
-			 gridlayoutmanager glm=
-				 new_container->get_layoutmanager();
-
-			 for (const auto &g:*c_generators)
-			 {
-				 g(glm, factories);
-			 }
-
-		 },
-		 new_gridlayoutmanager{});
-}
-
-void uicompiler::container_addbookpage(const bookpagefactory &f,
-				       uielements &factories,
-				       const std::string &label,
-				       const std::string &sc,
-				       const std::tuple<std::string,
-				       vector<gridlayoutmanager_generator>>
-				       &generators)
+void uicompiler::create_container(const bookpagefactory &f,
+				  uielements &factories,
+				  const std::string &label,
+				  const std::string &sc,
+				  const std::string &name,
+				  const container_generators_t &generators)
 {
 	auto shortcut_iter=factories.shortcuts.find(sc);
 
@@ -1251,22 +1256,8 @@ void uicompiler::container_addbookpage(const bookpagefactory &f,
 	       {
 		       generate(label_factory, factories, label);
 
-		       page_factory->create_container
-			       ([&]
-				(const auto &container)
-				{
-					const auto &[name, c_generators]
-						= generators;
-
-					gridlayoutmanager glm=
-						container->get_layoutmanager();
-
-					for (const auto &g:*c_generators)
-					{
-						g(glm, factories);
-					}
-				},
-				new_gridlayoutmanager{});
+		       create_container(page_factory, factories, name,
+					generators);
 	       },
 	       shortcut_iter == factories.shortcuts.end()
 	       ? shortcut{}:shortcut_iter->second);

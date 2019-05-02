@@ -38,9 +38,18 @@ Generates:
 	<!--
 	    If <lookup> is specified, massage the argument
 	    accordingly.
+
+            <lookup>
+               <parameter>extra_parameter</parameter>
+               <function>function_name</function>
+            </lookup>
+
+            This adds "{function_name}(" before the value, and
+            ", <extra_parameter>, allowthemerefs, <elementname>)"
+            after the value, effectively invoking a lookup function, first.
 	-->
 	<xsl:if test="lookup">
-	  <xsl:value-of select="lookup" />
+	  <xsl:value-of select="lookup/function" />
 	  <xsl:text>(</xsl:text>
 	</xsl:if>
 
@@ -52,7 +61,11 @@ Generates:
 	<xsl:text>"</xsl:text>
 	<xsl:text>)</xsl:text>
 	<xsl:if test="lookup">
-	  <xsl:text>, allowthemerefs, &#34;</xsl:text>
+	  <xsl:for-each select="lookup/parameter">
+	    <xsl:text>,&#10;                     </xsl:text>
+	    <xsl:value-of select="node()" />
+	  </xsl:for-each>
+	  <xsl:text>,&#10;                     allowthemerefs, &#34;</xsl:text>
 	  <xsl:value-of select="../name" />
 	  <xsl:text>&#34;)</xsl:text>
 	</xsl:if>

@@ -13,7 +13,7 @@
 #include <x/w/label.H>
 #include <x/w/uielements.H>
 #include <x/w/uigenerators.H>
-#include <x/w/rgb.H>
+#include <x/w/text_param_literals.H>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -33,16 +33,95 @@ static inline void create_main_window(const x::w::main_window &main_window)
 
 	x::w::uielements element_factory
 		{
+
+		 // Elements created from the UI theme file.
+
 		 {
-		  {"label",
+
+		  // Labels for the book's page tabs:
+
+		  {"general-label",
 		   []
 		   (const x::w::factory &factory)
 		   {
-			   // Black text
 			   factory->create_label
-				   ({ x::w::black, "Label"});
+				   ({"underline"_decoration,
+				     "G",
+				     "no"_decoration,
+				     "eneral"});
 		   }
 		  },
+		  {"network-label",
+		   []
+		   (const x::w::factory &factory)
+		   {
+			   factory->create_label
+				   ({"underline"_decoration,
+				     "N",
+				     "no"_decoration,
+				     "etwork"});
+		   }
+		  },
+		  {"local-label",
+		   []
+		   (const x::w::factory &factory)
+		   {
+			   factory->create_label
+				   ({"underline"_decoration,
+				     "L",
+				     "no"_decoration,
+				     "ocal"});
+		   },
+		  },
+
+		  // Placeholders on the individual pages.
+
+		  {"general-page-placeholder",
+		   []
+		   (const x::w::factory &factory)
+		   {
+			   factory->create_label
+				   ({"serif; point_size=24"_theme_font,
+				     "General Settings\n",
+				     "sans_serif"_theme_font,
+				     "\n\nPlaceholder\n"
+				     "Placeholder\n"
+				     "Placeholder\n"},
+					   { x::w::halign::center});
+		   },
+		  },
+		  {"network-page-placeholder",
+		   []
+		   (const x::w::factory &factory)
+		   {
+			   factory->create_label
+				   ({"serif; point_size=24"_theme_font,
+				     "Network Settings\n",
+				     "sans_serif"_theme_font,
+				     "\n\nPlaceholder\n"},
+					   { x::w::halign::center});
+		   },
+		  },
+		  {"local-page-placeholder",
+		   []
+		   (const x::w::factory &factory)
+		   {
+			   factory->create_label
+				   ({"serif; point_size=24"_theme_font,
+				     "Local Settings\n",
+				     "sans_serif"_theme_font,
+				     "\n\nPlaceholder\n"},
+					   { x::w::halign::center});
+		   },
+		  },
+		 },
+
+		 // Keyboard shortcuts referenced in the UI theme file.
+
+		 {
+		  {"general-page-shortcut", {"Alt", 'G'}},
+		  {"network-page-shortcut", {"Alt", 'N'}},
+		  {"local-page-shortcut",   {"Alt", 'L'}},
 		 }
 		};
 
@@ -63,10 +142,12 @@ void uigenerator2()
 			 (const auto &main_window)
 			 {
 				 create_main_window(main_window);
-			 });
+			 },
+
+			 x::w::new_gridlayoutmanager{});
 
 	main_window->set_window_class("main",
-				      "combobox@examples.w.libcxx.com");
+				      "uigenerator2@examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

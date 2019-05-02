@@ -289,7 +289,7 @@ void uigenerator1()
 			 });
 
 	main_window->set_window_class("main",
-				      "combobox@examples.w.libcxx.com");
+				      "uigenerator1@examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 
