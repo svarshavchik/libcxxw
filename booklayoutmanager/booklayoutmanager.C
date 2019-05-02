@@ -463,6 +463,8 @@ void append_bookpagefactoryObj
 ::do_add(const function<void (const factory &, const factory &)> &f,
 	 const shortcut &sc)
 {
+	book_lock lock{layout_manager};
+
 	auto [tab_element, hotspot_element, page_element]=
 		create_new_tab(*this, book_tabfactory,
 			       layout_manager, book_pagefactory, f, sc);
@@ -494,6 +496,8 @@ void insert_bookpagefactoryObj
 ::do_add(const function<void (const factory &, const factory &)> &f,
 	 const shortcut &sc)
 {
+	book_lock lock{layout_manager};
+
 	auto [tab_element, hotspot_element, page_element]=
 		create_new_tab(*this, book_tabfactory,
 			       layout_manager, book_pagefactory, f, sc);
@@ -594,12 +598,17 @@ new_booklayoutmanager::create(const container_impl &parent) const
 
 	auto gridlm=grid->create_gridlayoutmanager();
 
+	// Any extra space beyond what we requested will be assigned to
+	// column #1, which is the tab peephole, and row #1, which is the
+	// page.
+	gridlm->requested_col_width(1, 100);
+	gridlm->requested_row_height(1, 100);
+
 	// Left scroll image button.
 
 	gridlm->row_alignment(0, valign::bottom);
 
 	auto factory=gridlm->append_row();
-	gridlm->requested_row_height(1, 100);
 	factory->padding(0);
 
 	// We will not use image button callbacks, instead we'll hook into
@@ -833,6 +842,8 @@ new_booklayoutmanager::create(const container_impl &parent) const
 				  page_lm_impl);
 
 	factory->colspan(3);
+	factory->halign(halign::fill);
+	factory->valign(valign::fill);
 	factory->border(appearance->border);
 	factory->created_internally(current_page_container);
 
