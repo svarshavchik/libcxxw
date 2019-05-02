@@ -29,6 +29,7 @@
 #include <x/functionalrefptr.H>
 #include <string>
 #include <variant>
+#include <utility>
 #include <tuple>
 #include <unordered_map>
 
@@ -427,8 +428,9 @@ struct list_item_param : public list_item_param_base {
 				      <Arg1, Args...>>>
 	list_item_param(Arg1 &&arg1,
 			Args && ...args)
-		: list_item_param_base{text_param{std::forward<Arg1>(arg1),
-				std::forward<Args>(args)...}}
+		: list_item_param_base{std::in_place_type_t<text_param>{},
+				       std::forward<Arg1>(arg1),
+				       std::forward<Args>(args)...}
 	{
 	}
 
@@ -441,8 +443,9 @@ struct list_item_param : public list_item_param_base {
 		 std::enable_if<is_list_item_status_change_callback<Arg1>
 				::value>>
 	list_item_param(Arg1 &&arg1)
-		: list_item_param_base{list_item_status_change_callback{
-			std::forward<Arg1>(arg1)}}
+		: list_item_param_base{std::in_place_type_t<
+				       list_item_status_change_callback>(),
+				       std::forward<Arg1>(arg1)}
 	{
 	}
 
