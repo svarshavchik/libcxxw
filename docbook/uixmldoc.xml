@@ -1350,8 +1350,8 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 <!-- ... -->
 
     <valign>
-       <valign>middle</halign>
-    </halign>
+       <valign>middle</valign>
+    </valign>
 
 <!-- ... -->
 
@@ -1787,6 +1787,266 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	<methodname>close</methodname>() method.
       </para>
     </section>
+  </section>
+
+  <section id="uixmlfactorybook">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>book</quote>
+      <tag class='element'>factory</tag>s
+    </title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="book" id="settings">
+
+    <add>
+      <label>general-label</label>
+      <layout>options</layout>
+    </add>
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The contents of a
+      <tag class='element'>factory</tag>s of
+      <tag class='attribute'>type</tag>=<quote>book</quote>
+      specify the methods invoked on a
+      <link linkend="bookpagefactory">book page factory</link>.
+    </para>
+
+    <section id="uixmlfactorybookhalign">
+      <title><tag class='element'>halign</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="book" id="settings">
+
+<!-- ... -->
+
+    <halign>
+       <halign>right</halign>
+    </halign>
+
+<!-- ... -->
+
+</factory>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>halign</tag>
+	invokes the book page factory's
+	<methodname>halign</methodname>()
+	method.
+	The
+	<tag class='element'>halign</tag> value is one of:
+	<quote><literal>left</literal></quote>,
+	<quote><literal>center</literal></quote>,
+	<quote><literal>right</literal></quote>, or
+	<quote><literal>fill</literal></quote>.
+      </para>
+    </section>
+
+    <section id="uixmlfactorybookvalign">
+      <title><tag class='element'>valign</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="book" id="settings">
+
+<!-- ... -->
+
+    <valign>
+       <valign>middle</valign>
+    </valign>
+
+<!-- ... -->
+
+</factory>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>valign</tag>
+	invokes the book page factory's
+	<methodname>valign</methodname>()
+	method.
+	The
+	<tag class='element'>valign</tag> value is one of:
+	<quote><literal>top</literal></quote>,
+	<quote><literal>middle</literal></quote>,
+	<quote><literal>bottom</literal></quote>, or
+	<quote><literal>fill</literal></quote>.
+      </para>
+    </section>
+
+    <section id="uixmlfactorybookadd">
+      <title><tag class='element'>add</tag></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="book" id="settings">
+
+<!-- ... -->
+
+    <add>
+       <label>general-label</label>
+       <shortcut>general-shortcut</shortcut>
+       <layout>general-settings</layout>
+    </add>
+
+<!-- ... -->
+
+</factory>
+
+<layout type="grid" id="general-settings">
+
+</layout>
+
+&ns;::w::uielements element_factory{
+  {
+    {"general-label",
+     []
+     (const &ns;::w::factory &amp;factory)
+     {
+         factory-&gt;create_label({"underline"_decoration,
+                                   "G",
+                                   "no"_decoration,
+                                   "eneral"});
+     }
+    }
+  },
+  {
+    {"general-shortcut",
+     {"Alt",'G'}}
+  },
+};]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	<tag class='element'>add</tag>
+	invokes the book page factory's
+	<methodname>add</methodname>()
+	method.
+
+	<tag class='element'>label</tag>'s value gives the name of a
+	factory from
+	<link linkend="uixmlgenerate"><classname>&ns;::w::uielements</classname></link>'s
+	factories map, the factory gets invoked for the purpose of creating
+	the new page tab's label.
+	The optional <tag class='element'>shortcut</tag>'s value
+	specifies the new page's keyboard shortcut.
+      </para>
+
+      <para>
+	<ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
+	second member is a
+	<varname>shortcuts</varname> map. The map key is a text string,
+	<tag class='element'>shortcut</tag>'s value references the map key.
+	The key's value is a keyboard
+	<ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>.
+      </para>
+
+      <para>
+	<tag class='element'>layout</tag>'s value is an
+	<tag class='attribute'>id</tag> of a
+	<tag class='attribute'>type</tag>=<quote>grid</quote>
+	<tag class='element'>layout</tag> that
+	<link linkend="uixmlgenerate">generate</link>()s the contents of the
+	new page.
+      </para>
+    </section>
+  </section>
+
+  <section id="uixmlnewlayouts">
+    <title>Getting the created <varname>new_layouts</varname></title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+<!-- ... -->
+
+  <grid>
+    <name>bottom-container</name>
+  </grid>
+</factory>
+
+<!-- ... -->
+
+<layout type="grid" id="bottom-container">
+
+<!-- ... -->
+
+</layout>]]>
+
+#include &lt;&ns;/w/uielements.H&gt;
+#include &lt;&ns;/w/uigenerators.H&gt;
+
+&ns;::w::labelptr created_label;
+
+&ns;::w::gridlayoutmanager grid_layout=container->get_layoutmanager();
+
+&ns;::w::const_uigenerators generators=&ns;::w::uigenerators::create("layouts.xml");
+
+&ns;::w::uielements elements{
+          {"label",
+           [&amp;]
+           (const INSERT_LIBX_NAMESPACE::w::factory &amp;f)
+           {
+               created_label=f->create_label("Lorem ipsum");
+           }
+          },
+
+    // ...
+
+};
+
+&ns;::w::gridlayoutmanager glm=container->get_layoutmanager();
+
+glm->generate("main-window-grid", generator, elements);
+
+auto iter=elements.new_layouts.find("bottom-container");
+
+if (iter != elements.new_layouts.end())
+{
+    &ns;::w::container bottom_container=iter->second
+
+
+// ...
+</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Display elements that get <methodname>generate</methodname>()d by
+      <link linkend="uixmlgenerate">the element factories</link> can be
+      saved directly, by each factory.
+      New containers that get created by the theme file's factories get
+      placed into
+      <classname>&ns;::w::uielements</classname>'s
+      <varname>new_layouts</varname> which is a map. The map's key is the
+      theme file's layout
+      <tag class='attribute'>id</tag>.
+    </para>
+
+    <note>
+      <para>
+	<varname>new_layouts</varname> is a map, and not a multi-map. The
+	best way to save multiple containers
+	created from the same layout <tag class='attribute'>id</tag>,
+	by a single
+	<methodname>generate</methodname>(), is to use different
+	<tag class='attribute'>id</tag>s for each layout and use
+	<application>XInclude</application> to include the same contents
+	of all layouts.
+      </para>
+    </note>
   </section>
 </appendix>
 
