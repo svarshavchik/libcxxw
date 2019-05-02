@@ -34,7 +34,7 @@ list_appearance_properties::list_appearance_properties()
 
 list_appearance_properties::~list_appearance_properties()=default;
 
-void list_appearance_properties::visible_focusoff_border()
+void list_appearanceObj::visible_focusoff_border()
 {
 	focusoff_border="listvisiblefocusoff_border";
 }

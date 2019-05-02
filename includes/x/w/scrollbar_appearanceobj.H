@@ -6,31 +6,13 @@
 #define x_w_scrollbar_appearanceobj_h
 
 #include <x/w/scrollbar_appearancefwd.H>
+#include <x/w/scrollbar_images_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
-
-//! Various of a \ref scrollbar_appearance "scrollbar appearance"
-struct scrollbar_images {
-
-	//! Image for the "scroll to the beginning" button
-	std::string scroll_low;
-
-	//! Head end part of the scrollbar's knob.
-	std::string knob_start;
-
-	//! Middle part of the scrollbar's knob.
-	std::string knob_handle;
-
-	//! Tail end part of the scrollbar's knob.
-	std::string knob_end;
-
-	//! Image for the "scroll to the end" button
-	std::string scroll_high;
-};
 
 //! Actual properties inherited by \ref scrollbar_appearance "INSERT_LIBX_NAMESPACE::w::scrollbar_appearance".
 
@@ -52,16 +34,16 @@ struct scrollbar_appearance_properties {
 	border_arg focuson_border;
 
 	//! Horizontal scrollbar image
-	scrollbar_images horizontal1;
+	const_scrollbar_images_appearance horizontal1;
 
 	//! Horizontal scrollbar clicked image
-	scrollbar_images horizontal2;
+	const_scrollbar_images_appearance horizontal2;
 
 	//! Vertical scrollbar image
-	scrollbar_images vertical1;
+	const_scrollbar_images_appearance vertical1;
 
 	//! Vertical scrollbar clicked image
-	scrollbar_images vertical2;
+	const_scrollbar_images_appearance vertical2;
 };
 
 //! Implementation object.

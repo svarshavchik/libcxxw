@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "x/w/button_config.H"
 #include "x/w/button_appearance.H"
 #include "x/w/input_field_appearance.H"
 #include "x/w/combobox_appearance.H"
@@ -10,11 +11,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-static button_config create_left_spinner_button_config(const border_arg &border)
+static const_button_appearance
+create_left_spinner_button_appearance(const border_arg &border)
 {
-	auto c=normal_button();
-
-	c.appearance=c.appearance->modify
+	return normal_button().appearance->modify
 		([&]
 		 (const auto &appearance)
 		 {
@@ -31,15 +31,12 @@ static button_config create_left_spinner_button_config(const border_arg &border)
 			 appearance->top_border=appearance->bottom_border=
 				 border;
 		 });
-
-	return c;
 }
 
-static button_config create_right_spinner_button_config(const border_arg &border)
+static const_button_appearance
+create_right_spinner_button_appearance(const border_arg &border)
 {
-	auto c=normal_button();
-
-	c.appearance=c.appearance->modify
+	return normal_button().appearance->modify
 		([&]
 		 (const auto &appearance)
 		 {
@@ -55,8 +52,6 @@ static button_config create_right_spinner_button_config(const border_arg &border
 				 appearance->top_border=
 				 appearance->bottom_border=border;
 		 });
-
-	return c;
 }
 
 
@@ -75,9 +70,10 @@ input_field_appearance_properties::input_field_appearance_properties()
 	  hint_color{"textedit_hint_color"},
 	  drag_horiz_start{"drag_horiz_start"},
 	  drag_vert_start{"drag_vert_start"},
-	  left_spinner_button_config{create_left_spinner_button_config(border)},
-	  right_spinner_button_config{create_right_spinner_button_config
-				      (border)},
+	  left_spinner_appearance{create_left_spinner_button_appearance
+				  (border)},
+	  right_spinner_appearance{create_right_spinner_button_appearance
+				   (border)},
 	  search_popup_appearance{combobox_appearance::base::theme()},
 	  horizontal_scrollbar{scrollbar_appearance::base::theme()},
 	  vertical_scrollbar{scrollbar_appearance::base::theme()},
@@ -86,10 +82,10 @@ input_field_appearance_properties::input_field_appearance_properties()
 {
 }
 
-void input_field_appearance_properties::update_spinner_buttons()
+void input_field_appearanceObj::update_spinner_buttons()
 {
-	left_spinner_button_config=create_left_spinner_button_config(border);
-	right_spinner_button_config=create_right_spinner_button_config(border);
+	left_spinner_appearance=create_left_spinner_button_appearance(border);
+	right_spinner_appearance=create_right_spinner_button_appearance(border);
 }
 
 input_field_appearance_properties::~input_field_appearance_properties()=default;

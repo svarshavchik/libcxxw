@@ -12,7 +12,7 @@
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
-#include <x/w/button_config.H>
+#include <x/w/button_appearancefwd.H>
 #include <x/functional.H>
 #include <x/obj.H>
 
@@ -93,7 +93,7 @@ struct input_field_appearance_properties {
 	//! that comes from the default button appearance them, with our
 	//! borders.
 
-	button_config left_spinner_button_config;
+	const_button_appearance left_spinner_appearance;
 
 	//! Appearance of spinner buttons
 
@@ -102,10 +102,7 @@ struct input_field_appearance_properties {
 	//! Use update_spinner_buttons() to install a new appearance object,
 	//! that comes from the default button appearance them, with our
 	//! borders.
-	button_config right_spinner_button_config;
-
-	//! Update spinner button appearances.
-	void update_spinner_buttons();
+	const_button_appearance right_spinner_appearance;
 
 	//! Appearance of the list search popup.
 
@@ -155,6 +152,9 @@ public:
 	//! Type-erased modify().
 	const_input_field_appearance
 	do_modify(const function<void(const input_field_appearance &)> &) const;
+
+	//! Update spinner button appearances.
+	void update_spinner_buttons();
 };
 
 LIBCXXW_NAMESPACE_END

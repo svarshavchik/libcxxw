@@ -36,13 +36,6 @@ struct image_button_appearance_properties {
 	//! Default focus on border
 	border_arg focuson_border;
 
-	//! Replace focusoff_border with a visible one.
-
-	//! Default focusoff_border of the same size, but visually
-	//! distinct.
-
-	void set_distinct_focusoff_border();
-
 	//! Checkbox images
 
 	//! Specifies filenames the checkbox images get loaded from.
@@ -87,6 +80,13 @@ public:
 	const_image_button_appearance
 	do_modify(const function<void(const image_button_appearance &)> &)
 		const;
+
+	//! Replace focusoff_border with a visible one.
+
+	//! Default focusoff_border of the same size, but visually
+	//! distinct.
+
+	void set_distinct_focusoff_border();
 };
 
 LIBCXXW_NAMESPACE_END

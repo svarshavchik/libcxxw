@@ -43,18 +43,6 @@ struct list_appearance_properties {
 
 	border_arg focusoff_border;
 
-	//! Set the focusoff_border to a visible border.
-
-	//! This gets called automatically if this is a superclass of
-	//! \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
-	//! because it typically has visible borders. If a plain list has
-	//! borders, this should be invoked to install a lesser intensity
-	//~ border that's
-	//! visible, but does not indicate input focus, and provides a visual
-	//! connection with column_borders.
-
-	void visible_focusoff_border();
-
 	//! Inner border around the list when the list has input focus
 
 	//! Border should be the same size as the focusoff_border
@@ -159,6 +147,18 @@ public:
 	//! Type-erased modify().
 	const_list_appearance
 	do_modify(const function<void(const list_appearance &)> &) const;
+
+	//! Set the focusoff_border to a visible border.
+
+	//! This gets called automatically if this is a superclass of
+	//! \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
+	//! because it typically has visible borders. If a plain list has
+	//! borders, this should be invoked to install a lesser intensity
+	//~ border that's
+	//! visible, but does not indicate input focus, and provides a visual
+	//! connection with column_borders.
+
+	void visible_focusoff_border();
 };
 
 LIBCXXW_NAMESPACE_END

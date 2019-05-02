@@ -15,6 +15,7 @@
 #include "run_as.H"
 #include "x/w/rgb.H"
 #include "x/w/factory.H"
+#include "x/w/scrollbar_images_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -148,14 +149,14 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 
 static auto
 create_scrollbar_icon_set(drawableObj::implObj &drawable,
-			  const scrollbar_images &images)
+			  const const_scrollbar_images_appearance &images)
 {
 	return std::tuple{
-		drawable.create_icon({images.scroll_low}),
-			drawable.create_icon({images.scroll_high}),
-			drawable.create_icon({images.knob_start}),
-			drawable.create_icon({images.knob_handle}),
-			drawable.create_icon({images.knob_end}),
+		drawable.create_icon({images->scroll_low}),
+			drawable.create_icon({images->scroll_high}),
+			drawable.create_icon({images->knob_start}),
+			drawable.create_icon({images->knob_handle}),
+			drawable.create_icon({images->knob_end}),
 			};
 }
 

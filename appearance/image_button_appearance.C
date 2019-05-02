@@ -16,7 +16,7 @@ image_button_appearance_properties
 {
 }
 
-void image_button_appearance_properties::set_distinct_focusoff_border()
+void image_button_appearanceObj::set_distinct_focusoff_border()
 {
 	focusoff_border="thin_inputfocusoff_border_color2";
 }
