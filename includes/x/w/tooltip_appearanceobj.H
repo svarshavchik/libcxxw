@@ -6,6 +6,7 @@
 #define x_w_tooltip_appearanceobj_h
 
 #include <x/w/tooltip_appearancefwd.H>
+#include <x/w/tooltip_border_appearancefwd.H>
 #include <x/w/generic_window_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
@@ -15,33 +16,6 @@
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
-
-
-//! Configuration for a tooltip border
-
-//! A tooltip border, and inner padding.
-//!
-//! \see tooltip_appearance_properties
-
-struct tooltip_border {
-
-	//! Border
-	border_arg border;
-
-	//! Additional padding
-	dim_arg hpad;
-
-	//! Additional padding
-	dim_arg vpad;
-
-	//! Initialize border, hpad, and vpad, using theme naming convention.
-
-	//! Mostly used internally by the library.
-	//! Sets "border", and the paddings to
-	//! "border_padding_h" and "border_padding_v";
-
-	void set_theme_border(const std::string &border);
-};
 
 //! Actual properties inherited by \ref tooltip_appearance "INSERT_LIBX_NAMESPACE::w::tooltip_appearance".
 
@@ -58,14 +32,14 @@ struct tooltip_appearance_properties {
 	//! Used when the display has an alpha channel.
 	//! Typically a slightly rounded border.
 
-	tooltip_border alpha_border;
+	const_tooltip_border_appearance alpha_border;
 
 	//! Border for the new tooltip
 
 	//! Used when the display does not have an alpha channel.
 	//! Typically a square border.
 
-	tooltip_border nonalpha_border;
+	const_tooltip_border_appearance nonalpha_border;
 
 	//! Background color
 	color_arg tooltip_background_color;

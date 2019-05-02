@@ -4,37 +4,14 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/tooltip_appearance.H"
+#include "x/w/tooltip_border_appearance.H"
 #include "x/w/generic_window_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
-void tooltip_border::set_theme_border(const std::string &border)
-{
-	this->border=border;
-	this->hpad=border + "_padding_h";
-	this->vpad=border + "_padding_v";
-}
-
-static inline tooltip_border default_alpha_border()
-{
-	tooltip_border b;
-
-	b.set_theme_border("tooltip_border");
-
-	return b;
-}
-
-static inline tooltip_border default_nonalpha_border()
-{
-	tooltip_border b;
-
-	b.set_theme_border("tooltip_border_square");
-	return b;
-}
-
 tooltip_appearance_properties::tooltip_appearance_properties()
-	: alpha_border{default_alpha_border()},
-	  nonalpha_border{default_nonalpha_border()},
+	: alpha_border{tooltip_border_appearance::base::theme()},
+	  nonalpha_border{tooltip_border_appearance::base::nonalpha_theme()},
 	  tooltip_background_color{"tooltip_background_color"},
 	  toplevel_appearance{generic_window_appearance::base::tooltip_theme()},
 	  tooltip_x_offset{"tooltip_x_offset"},

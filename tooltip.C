@@ -15,6 +15,7 @@
 #include "x/w/text_param.H"
 #include "x/w/tooltip.H"
 #include "x/w/tooltip_appearance.H"
+#include "x/w/tooltip_border_appearance.H"
 #include "x/w/pictformat.H"
 #include "x/w/impl/bordercontainer_element.H"
 #include "x/w/impl/richtext/richtext.H"
@@ -59,7 +60,8 @@ class LIBCXX_HIDDEN tooltip_handlerObj :
 	//! Constructor
 	tooltip_handlerObj(ONLY IN_THREAD,
 			   const ref<generic_windowObj::handlerObj> &parent,
-			   const tooltip_border &tooltip_border,
+			   const const_tooltip_border_appearance
+			   &border_appearance,
 			   const const_tooltip_appearance &appearance,
 			   const rectangle &where,
 			   attached_to how);
@@ -116,18 +118,19 @@ tooltip_handlerObj
 tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 				       const ref<generic_windowObj::handlerObj>
 				       &parent,
-				       const tooltip_border &tooltip_border,
+				       const const_tooltip_border_appearance
+				       &border_appearance,
 				       const const_tooltip_appearance
 				       &appearance,
 				       const rectangle &where,
 				       attached_to how)
 	: superclass_t{*parent,
-		tooltip_border.border, tooltip_border.border,
-		tooltip_border.border, tooltip_border.border,
+		border_appearance->border, border_appearance->border,
+		border_appearance->border, border_appearance->border,
 		richtextptr{},
 		0,
-			tooltip_border.hpad,
-			tooltip_border.vpad,
+			border_appearance->hpad,
+			border_appearance->vpad,
 			popup_handler_args
 			{
 				exclusive_popup_type,

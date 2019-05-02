@@ -32,6 +32,7 @@
 #include "x/w/focus.H"
 #include "x/w/tooltip.H"
 #include "x/w/tooltip_appearance.H"
+#include "x/w/tooltip_border_appearance.H"
 #include <x/weakcapture.H>
 #include <string>
 #include <iostream>
@@ -483,8 +484,18 @@ void testbutton()
 						  ([]
 						   (const auto &appearance)
 						   {
-							   appearance->alpha_border.border="thin_0%";
-							   appearance->nonalpha_border.border="thin_0%";
+							   appearance->alpha_border=
+								   appearance->alpha_border->modify([]
+												    (const auto &border)
+												    {
+													    border->border="thin_0%";
+												    });
+							   appearance->nonalpha_border=
+								   appearance->nonalpha_border->modify([]
+												       (const auto &border)
+												       {
+													       border->border="thin_0%";
+												       });
 						   });
 					  me->create_static_tooltip
 						  ([]
