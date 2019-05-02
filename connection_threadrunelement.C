@@ -18,6 +18,17 @@ void connection_threadObj::insert_element_set(element_set_t &s,
 	s[i->nesting_level].insert(i);
 }
 
+bool connection_threadObj::is_element_in_set(element_set_t &s,
+					     const element_impl &i)
+{
+	auto iter=s.find(i->nesting_level);
+
+	if (iter != s.end())
+		return false;
+
+	return (iter->second.find(i) != iter->second.end());
+}
+
 bool connection_threadObj::resize_pending(ONLY IN_THREAD,
 					  const element_impl &e,
 					  int &poll_for)
@@ -231,6 +242,9 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 		 {
 			 try {
 				 auto &data=e->data(IN_THREAD);
+
+				 // NOTE: scroll_by_parent_container()
+				 // short-circuits this processing.
 
 				 if (data.current_position !=
 				     data.previous_position)

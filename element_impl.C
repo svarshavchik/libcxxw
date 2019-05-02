@@ -608,7 +608,18 @@ void elementObj::implObj::scroll_by_parent_container(ONLY IN_THREAD,
 	current_position.x=x;
 	current_position.y=y;
 
-	update_current_position(IN_THREAD, current_position);
+	if (current_position == data(IN_THREAD).current_position)
+		return;
+
+	if (update_position_processing_scheduled(IN_THREAD))
+		return;
+
+	data(IN_THREAD).current_position=data(IN_THREAD).previous_position=
+		current_position;
+	notify_updated_position(IN_THREAD);
+
+	absolute_location_updated(IN_THREAD,
+				  absolute_location_update_reason::scrolled);
 }
 
 void elementObj::implObj::current_position_updated(ONLY IN_THREAD)
@@ -635,6 +646,12 @@ void elementObj::implObj
 		schedule_full_redraw(IN_THREAD);
 	}
 
+	if (reason == absolute_location_update_reason::scrolled)
+	{
+		invalidate_cached_draw_info(IN_THREAD,
+					    draw_info_invalidation_reason
+					    ::recursive_invalidation);
+	}
 	for_each_child(IN_THREAD,
 		       [&]
 		       (const element &e)
@@ -684,6 +701,13 @@ void elementObj::implObj::schedule_update_position_processing(ONLY IN_THREAD)
 	IN_THREAD->insert_element_set(*IN_THREAD->element_position_updated
 				      (IN_THREAD),
 				      element_impl(this));
+}
+
+bool elementObj::implObj::update_position_processing_scheduled(ONLY IN_THREAD)
+{
+	return IN_THREAD->is_element_in_set(*IN_THREAD->element_position_updated
+					    (IN_THREAD),
+					    element_impl(this));
 }
 
 void elementObj::implObj::process_updated_position(ONLY IN_THREAD)

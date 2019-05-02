@@ -1401,7 +1401,7 @@ sxg_parserObj::parse_gc_foreground(const theme_parser_lock &lock)
 			 info.props.foreground(i *
 					       ((1 << (depth_t::value_type)
 						 info.context
-						 ->gc_drawable
+						 ->get_drawable()
 						 ->get_depth())-1));
 		 });
 }
@@ -1427,7 +1427,7 @@ sxg_parserObj::parse_gc_background(const theme_parser_lock &lock)
 			 info.props.background(i *
 					       ((1 << (depth_t::value_type)
 						 info.context
-						 ->gc_drawable
+						 ->get_drawable()
 						 ->get_depth())-1));
 		 });
 }
@@ -1556,7 +1556,7 @@ sxg_parserObj::parse_gc_clear(const theme_parser_lock &lock)
 		([]
 		 (const gc_execute_info &info)
 		 {
-			 auto drawable=info.context->gc_drawable;
+			 const auto &drawable=info.context->get_drawable();
 
 			 info.context->fill_rectangle(0, 0,
 						      drawable->get_width(),

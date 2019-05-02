@@ -94,6 +94,9 @@ class LIBCXX_HIDDEN connection_threadObj
 	static void insert_element_set(element_set_t &s,
 				       const element_impl &i);
 
+	static bool is_element_in_set(element_set_t &s,
+				      const element_impl &i);
+
  private:
 
 	//! Invoke a closure for each element in a set, lowest to highest.

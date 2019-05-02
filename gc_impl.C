@@ -8,6 +8,7 @@
 #include "screen.H"
 #include "connection.H"
 #include "pixmap.H"
+#include "messages.H"
 #include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
@@ -190,6 +191,30 @@ void gcObj::implObj::fill_arcs(const xcb_arc_t *arcs, size_t arc_size)
 		return;
 
 	xcb_poly_fill_arc(conn(), drawable->drawable_id, gc_id(), arc_size, arcs);
+}
+
+void gcObj::implObj::copy(const rectangle &rect,
+			  coord_t to_x, coord_t to_y,
+			  const const_ref<drawableObj::implObj> &src,
+			  const ref<drawableObj::implObj> &dst,
+			  const gcObj::properties &props)
+{
+	if (src->thread_ != dst->thread_ ||
+	    src->drawable_pictformat != dst->drawable_pictformat)
+		throw EXCEPTION(_("copy() to_drawable is not compatible"));
+
+	configure_gc config{ref{this}, props};
+
+	xcb_copy_area(src->thread_->info->conn,
+		      src->drawable_id,
+		      dst->drawable_id,
+		      gc_id(),
+		      coord_t::truncate(rect.x),
+		      coord_t::truncate(rect.y),
+		      coord_t::truncate(to_x),
+		      coord_t::truncate(to_y),
+		      coord_t::truncate(rect.width),
+		      coord_t::truncate(rect.height));
 }
 
 LIBCXXW_NAMESPACE_END

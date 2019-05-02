@@ -477,6 +477,7 @@ class elementObj::implObj : public element_drawObj,
 
 	enum class absolute_location_update_reason {
 		external, //!< Our top level window has moved
+		scrolled, //!< The element was scrolled by its parent
 		internal  //!< The element moved, but without changing its size
 	};
 	//! The top level window's position changed, but not its size
@@ -504,6 +505,11 @@ class elementObj::implObj : public element_drawObj,
 	//! the child elements, that will itself trigger a redraw.
 
 	virtual void current_position_updated(ONLY IN_THREAD);
+
+	//! Indicate whether this element is already updated.
+
+	//! But process_updated_position() was not called yet.
+	bool update_position_processing_scheduled(ONLY IN_THREAD);
 
 	//! Add this element to the element_position_updated() queue.
 

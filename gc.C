@@ -4,7 +4,9 @@
 */
 #include "libcxxw_config.h"
 #include "gc.H"
+#include "gc_thread.H"
 #include "pixmap.H"
+#include "x/w/pictformat.H"
 
 #include <x/chrcasecmp.H>
 #include "messages.H"
@@ -425,6 +427,25 @@ void gcObj::fill_arcs(const arc *arcs,
 
 	implObj::configure_gc config(impl, props);
 	impl->fill_arcs(&xcb_arcs[0], n_arcs);
+}
+
+void gcObj::copy(const rectangle &rect,
+		 coord_t to_x,
+		 coord_t to_y)
+{
+	copy(rect, to_x, to_y, gc_drawable);
+}
+
+void gcObj::copy(const rectangle &rect,
+		 coord_t to_x,
+		 coord_t to_y,
+		 const drawable &to_drawable,
+		 const properties &props) const
+{
+	impl->copy(rect, to_x, to_y,
+		   gc_drawable->impl,
+		   to_drawable->impl,
+		   props);
 }
 
 LIBCXXW_NAMESPACE_END

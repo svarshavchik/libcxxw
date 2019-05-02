@@ -75,6 +75,12 @@ class LIBCXX_HIDDEN gcObj::implObj : public xidObj {
 	void draw_arcs(const xcb_arc_t *, size_t);
 
 	void fill_arcs(const xcb_arc_t *, size_t);
+
+	void copy(const rectangle &, coord_t, coord_t,
+		  const const_ref<drawableObj::implObj> &src,
+		  const ref<drawableObj::implObj> &dst,
+		  const gcObj::properties &props);
+
 };
 
 LIBCXXW_NAMESPACE_END

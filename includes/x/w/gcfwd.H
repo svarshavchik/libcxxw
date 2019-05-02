@@ -44,6 +44,8 @@ context->fill_arc(one_arc, props);
 
 context->fill_arcs(arcs, props);
 
+context->copy(rectangle{0, 0, 50, 50}, 10, 10);
+
 \endcode
 
 Various overloaded versions of these methods implement optional features

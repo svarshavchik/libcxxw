@@ -8,7 +8,6 @@
 #include "x/w/impl/metrics_horizvert.H"
 #include "catch_exceptions.H"
 #include "x/w/impl/container.H"
-#include "generic_window_handler.H"
 #include "gc.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/scratch_buffer.H"
@@ -701,17 +700,14 @@ bool peepholelayoutmanagerObj::implObj
 		  const pixmap &,
 		  const gc &gc)
 		 {
-			 auto wid=peephole_element_impl->get_window_handler()
-				 .id();
+			 ref<drawableObj::implObj> window_drawable
+				 {&peephole_element_impl->get_window_handler()};
 
-			 xcb_copy_area(IN_THREAD->info->conn, wid, wid,
-				       gc->impl->gc_id(),
-				       coord_t::truncate(scrolled_from.x),
-				       coord_t::truncate(scrolled_from.y),
-				       coord_t::truncate(scrolled_to.x),
-				       coord_t::truncate(scrolled_to.y),
-				       coord_t::truncate(scrolled_from.width),
-				       coord_t::truncate(scrolled_from.height));
+			 gc->impl->copy(scrolled_from,
+					scrolled_to.x,
+					scrolled_to.y,
+					window_drawable,
+					window_drawable, {});
 		 });
 
 	// Notify the element via scroll_by_parent_container before

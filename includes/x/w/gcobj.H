@@ -22,12 +22,18 @@ LIBCXXW_NAMESPACE_START
 
 class gcObj : virtual public obj {
 
-public:
-	class LIBCXX_HIDDEN implObj;
-
 	//! The drawable this graphic context is for.
 	const drawable gc_drawable;
 
+public:
+	class LIBCXX_HIDDEN implObj;
+
+	inline const drawable &get_drawable() { return gc_drawable; }
+
+	inline const const_drawable &get_drawable() const
+	{
+		return gc_drawable;
+	}
 	//! Internal implementation object
 
 	const ref<implObj> impl;
@@ -369,6 +375,21 @@ public:
 	void fill_arcs(const arc *arcs,
 		       size_t n_arcs,
 		       const properties &props);
+
+	//! Copy a portion of this gc's drawable to another position in it.
+
+	void copy(const rectangle &rect,
+		  coord_t to_x,
+		  coord_t to_y);
+
+	//! Copy a portion of this drawable to another drawable.
+
+	//! The other drawable must have the same pictformat
+	void copy(const rectangle &rect,
+		  coord_t to_x,
+		  coord_t to_y,
+		  const drawable &to_drawable,
+		  const properties &props={}) const;
 };
 
 LIBCXXW_NAMESPACE_END
