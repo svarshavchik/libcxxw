@@ -48,19 +48,11 @@ const popup_visibility_semantics menu_popup_type={
 };
 
 popupObj::handlerObj::handlerObj(const popup_handler_args &args)
-	: handlerObj{args, {args.parent->screenref,
-			    args.window_type,
-			    args.window_state,
-			    transparent,
-			    args.appearance,
-			}}
-{
-}
-
-popupObj::handlerObj::handlerObj(const popup_handler_args &args,
-				 const main_window_handler_constructor_params
-				 &main_params)
-	: superclass_t{{main_params,
+	: superclass_t{{args.parent->screenref,
+			args.window_type,
+			args.window_state,
+			transparent,
+			args.appearance,
 			args.parent->handler_data,
 			args.nesting_level,
 			true}},

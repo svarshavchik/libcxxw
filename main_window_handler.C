@@ -16,6 +16,7 @@
 #include "screen.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
+#include "x/w/generic_window_appearance.H"
 #include "busy.H"
 #include "catch_exceptions.H"
 #include "inherited_visibility_info.H"
@@ -24,20 +25,37 @@
 
 LIBCXXW_NAMESPACE_START
 
+main_window_handler_constructor_params
+::main_window_handler_constructor_params(const screen &parent_screen,
+					 const char *window_type,
+					 const char *window_state,
+					 const color_arg &background_color,
+					 const const_main_window_appearance &
+					 appearance,
+					 bool override_redirect)
+	: generic_window_handler_constructor_params
+	{
+	 parent_screen,
+	 window_type,
+	 window_state,
+	 background_color,
+	 appearance->toplevel_appearance,
+	 shared_handler_data::create(),
+	 0,
+	 override_redirect
+	}, appearance{appearance}
+{
+}
+
+
 main_windowObj::handlerObj::handlerObj(const constructor_params &params,
 				       const std::optional<rectangle>
 				       &suggested_position,
-				       const std::string &window_id,
-				       bool override_redirect)
-	: superclass_t{{},
-		       generic_window_handler_constructor_params
-		       {params,
-			shared_handler_data::create(),
-			0,
-			override_redirect}},
+				       const std::string &window_id)
+	: superclass_t{{}, params},
 	  on_delete_callback_thread_only([](THREAD_CALLBACK,
 					    const auto &ignore) {}),
-	  net_wm_sync_request_counter{params.parent_screen->impl->thread},
+	  net_wm_sync_request_counter{screenref->impl->thread},
 	  suggested_position_thread_only{suggested_position},
 	  window_id{window_id}
 {
@@ -195,6 +213,21 @@ static std::vector<icon> create_icons(drawableObj::implObj &me,
 	return v;
 }
 
+static std::vector<icon> create_icons(drawableObj::implObj &me,
+				      const std::string &icon,
+				      const const_generic_window_appearance
+				      &appearance)
+{
+	// Steal sizes from the default appearance icons.
+
+	auto icons=appearance->icons;
+
+	for (auto &i:icons)
+		std::get<std::string>(i)=icon;
+
+	return create_icons(me, icons);
+}
+
 void main_windowObj::handlerObj
 ::set_inherited_visibility(ONLY IN_THREAD,
 			   inherited_visibility_info &visibility_info)
@@ -205,7 +238,7 @@ void main_windowObj::handlerObj
 
 		if (!wm_icon_set(IN_THREAD))
 			try {
-				install_window_theme_icon
+				install_window_icons
 					(IN_THREAD,
 					 create_icons
 					 (*this, appearance->icons));
@@ -570,76 +603,60 @@ void main_windowObj::handlerObj::frame_extents_updated(ONLY IN_THREAD)
 // NET_WM_ICON
 
 void main_windowObj::handlerObj
-::install_window_theme_icon(const std::vector<std::tuple<std::string,
-			    dim_t, dim_t>> &icons)
+::install_window_icons(const std::vector<std::string> &icons)
 {
 	screenref->impl->thread->run_as
-		([v=create_icons(*this, icons), me=ref(this)]
+		([v=create_icon_vector(icons), me=ref{this}]
 		 (ONLY IN_THREAD)
 		 {
-			 me->install_window_theme_icon(IN_THREAD, v);
+			 me->install_window_icons(IN_THREAD, v);
 		 });
 }
 
 void main_windowObj::handlerObj
-::install_window_icon(const std::vector<std::tuple<std::string,
-		      dim_t, dim_t>> &icons)
+::install_window_icons(const std::string &icon)
 {
 	screenref->impl->thread->run_as
-		([v=create_icons(*this, icons), me=ref(this)]
+		([v=create_icons(*this, icon, appearance), me=ref{this}]
 		 (ONLY IN_THREAD)
 		 {
-			 me->install_window_icon(IN_THREAD, v);
+			 me->install_window_icons(IN_THREAD, v);
 		 });
 }
 
 void main_windowObj::handlerObj
-::install_window_theme_icon(ONLY IN_THREAD, const std::vector<icon> &icons)
+::install_window_icons(ONLY IN_THREAD, const std::vector<icon> &icons)
 {
-	icon_images(IN_THREAD)=install_window_icon(IN_THREAD, icons);
-}
+	icon_images(IN_THREAD)=icons;
 
-std::vector<icon> main_windowObj::handlerObj
-::install_window_icon(ONLY IN_THREAD, const std::vector<icon> &icons)
-{
-	// Need to finish initializing the icons.
-
-	auto cpy=icons;
-
-	for (auto &i:cpy)
-		i=i->initialize(IN_THREAD);
-
-	update_net_wm_icon(IN_THREAD, cpy);
-
+	icon_images_vector::initialize(IN_THREAD);
 	wm_icon_set(IN_THREAD)=true;
-
-	return cpy;
+	update_net_wm_icon(IN_THREAD);
 }
 
 void main_windowObj::handlerObj
 ::theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
-	update_net_wm_icon(IN_THREAD, icon_images(IN_THREAD));
+	update_net_wm_icon(IN_THREAD);
 }
 
 void main_windowObj::handlerObj
-::update_net_wm_icon(ONLY IN_THREAD,
-		     const std::vector<icon> &icon_images)
+::update_net_wm_icon(ONLY IN_THREAD)
 {
-	if (icon_images.empty())
+	if (icon_images(IN_THREAD).empty())
 		return;
 
 	std::vector<uint32_t> raw_data;
 	size_t total_size=0;
 
-	for (const auto &i:icon_images)
+	for (const auto &i:icon_images(IN_THREAD))
 		total_size += 2 + (dim_squared_t::value_type)
 			(i->image->get_width()*i->image->get_height());
 
 	raw_data.reserve(total_size);
 
-	for (const auto &i:icon_images)
+	for (const auto &i:icon_images(IN_THREAD))
 	{
 		pixmap_extractor extract{i->image};
 

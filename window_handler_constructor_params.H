@@ -9,17 +9,22 @@
 #include "x/w/rgb.H"
 #include "x/w/font_arg.H"
 #include "x/w/generic_window_appearancefwd.H"
+#include "x/w/main_window_appearancefwd.H"
 #include "shared_handler_datafwd.H"
 
 LIBCXXW_NAMESPACE_START
 
 struct LIBCXX_HIDDEN main_window_handler_constructor_params;
 
-//! Parameters to main_windowObj::handlerObj's constructor.
+struct LIBCXX_HIDDEN generic_window_handler_constructor_params;
 
-//! These parameters get forwarded to its generic_windowObj::handlerObj, as is.
+//! Parameters to generic_windowObj::handlerObj's constructor.
 
-struct main_window_handler_constructor_params {
+//! The parameters include the parameters to its subclass, main_window_params,
+//! or a reasonable facsimile for other subclasses.
+
+struct generic_window_handler_constructor_params {
+
 	//! New main window's parent screen.
 	const screen &parent_screen;
 
@@ -34,20 +39,6 @@ struct main_window_handler_constructor_params {
 
 	//! Appearance
 	const const_generic_window_appearance &appearance;
-};
-
-struct LIBCXX_HIDDEN generic_window_handler_constructor_params;
-
-//! Parameters to generic_windowObj::handlerObj's constructor.
-
-//! The parameters include the parameters to its subclass, main_window_params,
-//! or a reasonable facsimile for other subclasses.
-
-struct generic_window_handler_constructor_params {
-
-	//! Parent screen, background color, and window manager stuff.
-
-	const main_window_handler_constructor_params &main_window_params;
 
 	//! Shared data between popups and their main application window.
 	shared_handler_data handler_data;
@@ -61,6 +52,25 @@ struct generic_window_handler_constructor_params {
 
 	//! Create this window with the override-redirect flag
 	bool override_redirect;
+};
+
+//! Parameters to main_windowObj::handlerObj's constructor.
+
+//! These parameters get forwarded to its generic_windowObj::handlerObj, as is.
+
+struct main_window_handler_constructor_params
+	: generic_window_handler_constructor_params {
+
+	main_window_handler_constructor_params
+	(const screen &parent_screen,
+	 const char *window_type,
+	 const char *window_state,
+	 const color_arg &background_color,
+	 const const_main_window_appearance &appearance,
+	 bool override_redirect);
+
+	//! Appearance
+	const const_main_window_appearance &appearance;
 };
 
 

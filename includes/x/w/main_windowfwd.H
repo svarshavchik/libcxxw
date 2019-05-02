@@ -61,31 +61,27 @@ Main windows inherit from \ref generic_window "generic windows".
 \par Window icon
 
 \code
-main_window->install_window_icon({"appsmall.gif", "appmedium.gif", "applarge.gif"});
-main_window->install_window_icon({
-    {"app.sxg", 16, 16},
-    {"app.sxg", 24, 24},
-    {"app.sxg", 32, 32},
-    {"app.sxg", 48, 48},
-});
+main_window->install_window_icons({"appsmall.gif", "appmedium.gif", "applarge.gif"});
+main_window->install_window_icons("app.sxg");
+
 \endcode
 
-install_window_icon() sets icon shown in the main window's
-title bar. install_window_icon()'s parameter is a vector of strings.
+install_window_icons() sets icon shown in the main window's
+title bar. install_window_icons()'s parameter is a vector of strings.
 Multiple icons of different sizes should be made available, for the window
 manager to pick an icon with a preferred size.
 
-An .sxg file is scalable to multiple sizes, and an overloaded
-install_window_icon() takes a vector of tuples containing the filename
-together with the width and the height, in pixels, that the .sxg image
-gets scaled to, for each instance.
+Theme icons are .sxg-formatted images that are scalable to multiple sizes.
+An overloaded
+install_window_icons() takes a single filename referring to an .sxg file,
+and installs multiple copies of it that are scaled to preset default sizes.
 
 Filenames without a search component gets searched for in the current
 directory, and the current display theme's directory if the file does
 not exist in the current directory.
 
-The filename suffix is optional and can be omitted; install_window_icon()
-tries each known filename suffix.
+The filename suffix is optional and can be omitted;
+install_window_icons() tries each known filename suffix.
 
 \par Close button
 

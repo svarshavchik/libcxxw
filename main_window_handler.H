@@ -65,8 +65,7 @@ public:
 	//! Constructor
 	handlerObj(const constructor_params &params,
 		   const std::optional<rectangle> &suggested_position,
-		   const std::string &window_id,
-		   bool override_redirect);
+		   const std::string &window_id);
 
 	//! Destructor
 	~handlerObj();
@@ -187,8 +186,7 @@ public:
 
 	//! Update the _NET_WM_ICON property
 
-	void update_net_wm_icon(ONLY IN_THREAD,
-				const std::vector<icon> &icon_images);
+	void update_net_wm_icon(ONLY IN_THREAD);
 
  public:
 
@@ -204,20 +202,14 @@ public:
 		override;
 
 	//! Install new icons.
-	void install_window_theme_icon(const std::vector<std::tuple<std::string,
-				       dim_t, dim_t>> &icons);
+	void install_window_icons(const std::vector<std::string> &icons);
 
 	//! Install new icons.
-	void install_window_icon(const std::vector<std::tuple<std::string,
-				 dim_t, dim_t>> &icons);
+	void install_window_icons(const std::string &icons);
 
 	//! Install new icons.
-	void install_window_theme_icon(ONLY IN_THREAD,
-				       const std::vector<icon> &icons);
-
-	//! Install new icons.
-	std::vector<icon> install_window_icon(ONLY IN_THREAD,
-					      const std::vector<icon> &icons);
+	void install_window_icons(ONLY IN_THREAD,
+				  const std::vector<icon> &icons);
 
 	//! Override theme_updated.
 

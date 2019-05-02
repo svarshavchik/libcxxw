@@ -19,7 +19,7 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 				  rectangle> &position,
 				  const std::string &window_id,
 				  const color_arg &background_color,
-				  const const_generic_window_appearance
+				  const const_main_window_appearance
 				  &appearance,
 				  const char *window_type,
 				  bool modal,
@@ -30,6 +30,7 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 			modal ? "MODAL":"",
 			background_color,
 			appearance,
+			false
 			},
 		       std::visit(visitor{[&](const rectangle &r)
 					  -> std::optional<rectangle>
@@ -41,8 +42,7 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 					  {
 					   return std::nullopt;
 					  }}, position),
-		       window_id,
-		       false},
+		       window_id},
 	  my_position_thread_only
 	{
 	 std::visit(visitor{[&](const dialog_position &pos)

@@ -76,18 +76,10 @@ public:
 	~main_windowObj() LIBCXX_HIDDEN;
 
 	//! Install a window icon.
-	void install_window_icon(const std::vector<std::string> &);
+	void install_window_icons(const std::vector<std::string> &);
 
 	//! Install a window icon.
-	void install_window_icon(const std::vector<std::tuple
-				 <std::string, dim_t, dim_t>> &);
-
-	//! Install a window icon.
-	void install_window_theme_icon(const std::vector<std::string> &);
-
-	//! Install a window icon.
-	void install_window_theme_icon(const std::vector<std::tuple
-				       <std::string, dim_t, dim_t>> &);
+	void install_window_icons(const std::string &);
 
 	//! Constructor for a standard theme-specified dialog.
 

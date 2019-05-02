@@ -7,7 +7,7 @@
 
 #include <x/w/dialogfwd.H>
 #include <x/w/screen_positionsfwd.H>
-#include <x/w/generic_window_appearance.H>
+#include <x/w/main_window_appearance.H>
 #include <x/w/new_layoutmanager.H>
 #include <string>
 #include <string_view>
@@ -53,8 +53,8 @@ struct standard_dialog_args {
 
 	//! Top level appearance
 
-	const_generic_window_appearance appearance=
-		generic_window_appearance::base::main_window_theme();
+	const_main_window_appearance appearance=
+		main_window_appearance::base::theme();
 
 	//! Default dialog position.
 	void restore(dialog_position) LIBCXX_PUBLIC;

@@ -7,6 +7,7 @@
 #include "main_window_handler.H"
 #include "override_redirect.H"
 #include "screen.H"
+#include "shared_handler_data.H"
 #include "connection_thread.H"
 #include "batch_queue.H"
 #include "busy.H"
@@ -68,37 +69,14 @@ void main_windowObj::on_delete(const functionref<void (THREAD_CALLBACK,
 	impl->on_delete(callback);
 }
 
-void main_windowObj::install_window_icon(const std::vector<std::string> &a)
+void main_windowObj::install_window_icons(const std::vector<std::string> &a)
 {
-	std::vector<std::tuple<std::string, dim_t, dim_t>> cpy;
-
-	cpy.reserve(a.size());
-	for (const auto &n:a)
-		cpy.emplace_back(n, 0, 0);
-	install_window_icon(cpy);
+	impl->handler->install_window_icons(a);
 }
 
-void main_windowObj::install_window_icon(const std::vector<std::tuple
-					 <std::string, dim_t, dim_t>> &a)
+void main_windowObj::install_window_icons(const std::string &filename)
 {
-	impl->handler->install_window_icon(a);
-}
-
-void main_windowObj::install_window_theme_icon(const std::vector<std::string>
-					       &a)
-{
-	std::vector<std::tuple<std::string, dim_t, dim_t>> cpy;
-
-	cpy.reserve(a.size());
-	for (const auto &n:a)
-		cpy.emplace_back(n, 0, 0);
-	install_window_theme_icon(cpy);
-}
-
-void main_windowObj::install_window_theme_icon(const std::vector<std::tuple
-					       <std::string, dim_t, dim_t>> &a)
-{
-	impl->handler->install_window_theme_icon(a);
+	impl->handler->install_window_icons(filename);
 }
 
 void main_window_config::restore(const const_screen_positions &pos,
@@ -408,15 +386,15 @@ create_splash_window_handler(const screen &me,
 	main_window_handler_constructor_params
 		main_params{me, "splash,normal", "above",
 			    background_color,
-			    config.appearance->toplevel_appearance,
+			    config.appearance,
+			    true,
 	};
 
 	main_window_border=config.border;
 
 	return ref<splash_window_handlerObj>::create(main_params,
 						     std::nullopt,
-						     config.name,
-						     true);
+						     config.name);
 }
 
 static ref<main_windowObj::handlerObj>
@@ -477,16 +455,15 @@ main_window screenObj
 					main_params{me, "normal", "",
 						    std_config.appearance
 						    ->background_color,
-						    std_config.appearance
-						    ->toplevel_appearance,
+						    std_config.appearance,
+						    false,
 				};
 
 				return std::tuple
 				{ref<main_windowObj::handlerObj>
 						::create(main_params,
 							 suggested_position,
-							 std_config.name,
-							 false),
+							 std_config.name),
 						&std_config};
 			},
 			[&](const splash_window_config &splash_config)
