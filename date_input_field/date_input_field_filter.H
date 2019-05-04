@@ -244,7 +244,7 @@ std::u32string new_string;
 
 		auto year=ymd::parser().parse(o.str()).get_year();
 
-		std::string y=tostring(year);
+		std::string y=to_string(year, locale::base::c());
 		new_string += std::u32string{y.begin(), y.end()};
 	}
 }

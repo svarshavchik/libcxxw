@@ -28,15 +28,7 @@ void testfilter(const std::u32string &date_format,
 
 void runtests()
 {
-	std::ostringstream y4os;
-
 	auto y=ymd{}.get_year();
-
-	y4os << y;
-
-	std::string y4s=y4os.str();
-	std::u32string uy4s = U"01.01." +
-		std::u32string{y4s.begin(), y4s.end()};
 
 	char32_t y2cslash[8]={'1','.','1','.',
 			      (char32_t)( '0' + ((y / 10) % 10)),
@@ -93,7 +85,7 @@ void runtests()
 		   },
 
 		   {U"mm.dd.YYYY", U"", 0, 0, y2cslash,
-		    0, 0, uy4s.c_str()
+		    0, 0, U"01.01.2019",
 		   },
 
 		   // 11

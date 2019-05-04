@@ -608,8 +608,8 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 		if (stat_succeeded)
 		{
 			unicode::iconvert::convert
-				(tostring(ymdhms(st.st_mtime)
-					  .short_format()),
+				(to_string(ymdhms(st.st_mtime)
+					   .short_format()),
 				 unicode::utf_8,
 				 date_uc);
 
