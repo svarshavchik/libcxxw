@@ -10,6 +10,7 @@
 #include <x/w/namespace.H>
 #include <stdlib.h>
 #include <string>
+#include <string_view>
 #include <iostream>
 
 LIBCXXW_NAMESPACE_START
@@ -88,6 +89,9 @@ public:
 
 	//! Convert to a readable label
 	operator std::string() const;
+
+	//! Convert from a string
+	rgb(const std::string_view &);
 };
 
 //! Transparent color

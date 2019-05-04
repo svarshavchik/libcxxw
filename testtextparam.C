@@ -51,13 +51,29 @@ void testtextparam(const main_window &mw)
 		throw EXCEPTION("Sumthin's wrong.");
 }
 
+void testrgb()
+{
+	std::string s=maroon;
+
+	std::cout << s << std::endl;
+	rgb color{s};
+
+	if (color != maroon)
+	{
+		throw EXCEPTION("wrong.");
+	}
+
+	color=rgb{"b=80"};
+
+	if (color != rgb{"r=0000, g=0000, b=8080, a=ffff"})
+	{
+		throw EXCEPTION("wrong.");
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::property
-			::load_property(LIBCXX_NAMESPACE_STR "::w::themes",
-					"themes", true, true);
-
 		LIBCXX_NAMESPACE::locale::base::environment()->global();
 
 		auto options=LIBCXX_NAMESPACE::option::list::create();
@@ -82,7 +98,7 @@ int main(int argc, char **argv)
 					    });
 
 		testtextparam(mw);
-
+		testrgb();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();
