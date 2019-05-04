@@ -48,6 +48,7 @@
 #include <x/singletonptr.H>
 #include <x/property_value.H>
 #include <x/managedsingletonapp.H>
+#include <x/locale.H>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -1495,6 +1496,7 @@ typedef x::ref<cxxwtheme_threadObj> cxxwtheme_thread;
 
 int main(int argc, char **argv)
 {
+	x::locale::base::environment()->global();
 	try {
 		x::singletonapp::managed
 			([]
