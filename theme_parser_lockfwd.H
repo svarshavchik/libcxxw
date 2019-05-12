@@ -78,15 +78,15 @@ int to_percentage_t(const theme_parser_lock &lock,
 
 //! When parsing XML-specified layouts,
 //! this reads an halign value.
-halign to_halign_value(const theme_parser_lock &lock,
-		       const char *element, const char *parent) LIBCXX_HIDDEN;
+halign to_halign(const theme_parser_lock &lock,
+		 const char *element, const char *parent) LIBCXX_HIDDEN;
 
 //! Read a value.
 
 //! When parsing XML-specified layouts,
 //! this reads an halign value.
-valign to_valign_value(const theme_parser_lock &lock,
-		       const char *element, const char *parent) LIBCXX_HIDDEN;
+valign to_valign(const theme_parser_lock &lock,
+		 const char *element, const char *parent) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

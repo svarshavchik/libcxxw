@@ -790,8 +790,8 @@ int to_percentage_t(const theme_parser_lock &lock,
 	return v;
 }
 
-halign to_halign_value(const theme_parser_lock &lock,
-		       const char *element, const char *parent)
+halign to_halign(const theme_parser_lock &lock,
+		 const char *element, const char *parent)
 {
 	auto value=single_value(lock, element, parent);
 
@@ -823,8 +823,8 @@ halign to_halign_value(const theme_parser_lock &lock,
 	return v;
 }
 
-valign to_valign_value(const theme_parser_lock &lock,
-		       const char *element, const char *parent)
+valign to_valign(const theme_parser_lock &lock,
+		 const char *element, const char *parent)
 {
 	auto value=single_value(lock, element, parent);
 

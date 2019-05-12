@@ -147,7 +147,7 @@ List of values:
 
       <parameter>
 	<name>halign</name>
-	<type>to_halign_value</type>
+	<type>to_halign</type>
       </parameter>
     </function>
 
@@ -166,7 +166,7 @@ List of values:
 
       <parameter>
 	<name>valign</name>
-	<type>to_valign_value</type>
+	<type>to_valign</type>
       </parameter>
     </function>
 
@@ -618,7 +618,7 @@ List of values:
 
       <parameter>
 	<name>halign</name>
-	<type>to_halign_value</type>
+	<type>to_halign</type>
       </parameter>
     </function>
 
@@ -632,7 +632,7 @@ List of values:
 
       <parameter>
 	<name>valign</name>
-	<type>to_valign_value</type>
+	<type>to_valign</type>
       </parameter>
     </function>
 
@@ -1037,7 +1037,7 @@ List of values:
 
       <parameter>
 	<name>halign</name>
-	<type>to_halign_value</type>
+	<type>to_halign</type>
       </parameter>
     </function>
 
@@ -1051,7 +1051,7 @@ List of values:
 
       <parameter>
 	<name>valign</name>
-	<type>to_valign_value</type>
+	<type>to_valign</type>
       </parameter>
     </function>
 
