@@ -25,29 +25,8 @@ struct image_button_appearance_properties {
 	//! Destructor
 	~image_button_appearance_properties();
 
-	//! Vertical alignment, defaults to \c middle
-	valign alignment;
+#include <x/w/image_button_appearance.inc.H>
 
-	//! Default focus off border
-
-	//! It is a transparent border the same size as the focus_on border.
-	border_arg focusoff_border;
-
-	//! Default focus on border
-	border_arg focuson_border;
-
-	//! Checkbox images
-
-	//! Specifies filenames the checkbox images get loaded from.
-	//!
-	//! \note
-	//! Filenames without a path component get searched for in the
-	//! current display theme's directory, and NOT the current
-	//! directory.
-	//!
-	//! All images' sizes should be the same.
-
-	std::vector<std::string> images;
 };
 
 //! Implementation object.

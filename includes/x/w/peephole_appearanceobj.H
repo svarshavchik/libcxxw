@@ -24,30 +24,8 @@ struct peephole_appearance_properties {
 	//! Destructor
 	~peephole_appearance_properties();
 
-	//! Optional border
-	std::optional<border_arg> peephole_border;
+#include <x/w/peephole_appearance.inc.H>
 
-	//! Extra padding for the element in the peephole.
-
-	dim_arg left_padding;
-
-	//! Extra padding for the element in the peephole.
-
-	dim_arg right_padding;
-
-	//! Extra padding for the element in the peephole.
-
-	dim_arg top_padding;
-
-	//! Extra padding for the element in the peephole.
-
-	dim_arg bottom_padding;
-
-	//! Horizontal scrollbar appearance
-	const_scrollbar_appearance horizontal_scrollbar;
-
-	//! Vertical scrollbar appearance
-	const_scrollbar_appearance vertical_scrollbar;
 };
 
 //! Implementation object.

@@ -1,0 +1,41 @@
+<appearance>
+  <name>popup_list</name>
+  <default>menu_theme</default>
+  <default>submenu_theme</default>
+  <default>contextmenu_theme</default>
+  <field>
+    <name>popup_border</name>
+    <descr><![CDATA[
+Popup's border.
+
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>bottomright_color</name>
+    <descr><![CDATA[
+Popup's background color when it's below/to the right of its element
+
+This is the normal background color when a combo-box popup appears
+below the main combo-box element, or a popup-menu appears
+below the menu bar, or a popup submenu appears to the right
+of its parent menu, or a context popup menu opens.
+
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>topleft_color</name>
+    <descr><![CDATA[
+Popup's background color when it's above/to the left of its element
+
+Alternative background color when the popup gets moved from its
+default position to an alternative position, because of available
+space: placing the popup menu above the combo-box or the menu bar,
+or a submenu appearing to the left of its parent menu. Not used
+for context popup menus.
+
+]]></descr>
+    <type>color_arg</type>
+  </field>
+</appearance>

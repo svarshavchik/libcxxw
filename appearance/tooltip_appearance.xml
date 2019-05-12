@@ -1,0 +1,59 @@
+<appearance>
+  <name>tooltip</name>
+  <default>tooltip_theme</default>
+  <default>static_tooltip_theme</default>
+  <field>
+    <name>alpha_border</name>
+    <descr><![CDATA[
+Border for the new tooltip
+
+Used when the display has an alpha channel.
+Typically a slightly rounded border.
+
+]]></descr>
+    <ref>tooltip_border</ref>
+  </field>
+  <field>
+    <name>nonalpha_border</name>
+    <descr><![CDATA[
+Border for the new tooltip
+
+Used when the display does not have an alpha channel.
+Typically a square border.
+
+]]></descr>
+    <ref>tooltip_border</ref>
+  </field>
+  <field>
+    <name>tooltip_background_color</name>
+    <descr><![CDATA[
+Background color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>toplevel_appearance</name>
+    <descr><![CDATA[
+Generic appearance of a top level window
+]]></descr>
+    <ref>generic_window</ref>
+  </field>
+  <field>
+    <name>tooltip_x_offset</name>
+    <descr><![CDATA[
+Tooltip location, to the right of the pointer position.
+
+Regular tooltips only, ignored for static tooltips
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>tooltip_y_offset</name>
+    <descr><![CDATA[
+Tooltip location, above the pointer position.
+
+Regular tooltips only, ignored for static tooltips
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+</appearance>

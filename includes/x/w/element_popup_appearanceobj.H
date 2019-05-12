@@ -27,38 +27,8 @@ struct element_popup_appearance_properties {
 	//! Destructor
 	~element_popup_appearance_properties();
 
-	//! Border around the display element
-	border_arg element_border;
+#include <x/w/element_popup_appearance.inc.H>
 
-	//! Popup border
-	border_arg popup_border;
-
-	//! Popup background color
-	color_arg popup_background_color;
-
-	//! Popup background color
-	color_arg popup_scrollbars_background_color;
-
-	//! Button focus border.
-	border_arg button_focusoff_border;
-
-	//! Button focus border.
-	border_arg button_focuson_border;
-
-	//! Generic appearance of the top-level window that makes up the popup.
-	const_generic_window_appearance toplevel_appearance;
-
-	//! Popup button image
-	std::string button_image1;
-
-	//! Popup button image
-	std::string button_image2;
-
-	//! Horizontal scrollbar appearance
-	const_scrollbar_appearance horizontal_scrollbar;
-
-	//! Vertical scrollbar appearance
-	const_scrollbar_appearance vertical_scrollbar;
 };
 
 //! Implementation object.

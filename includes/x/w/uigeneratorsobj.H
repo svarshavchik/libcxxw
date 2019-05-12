@@ -9,6 +9,7 @@
 #include <x/w/rgb.H>
 #include <x/w/border_argfwd.H>
 #include <x/w/border_infomm.H>
+#include <x/w/font_arg.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
@@ -56,6 +57,14 @@ public:
 	border_arg lookup_border(const std::string &name,
 				 bool allowthemerefs,
 				 const char *tag) const;
+
+	//! Fonts
+	std::unordered_map<std::string, font> fonts;
+
+	//! Look up a parsed font.
+	font_arg lookup_font(const std::string &name,
+			     bool allowthemerefs,
+			     const char *tag) const;
 
 	//! Generators used by the grid layout manager
 

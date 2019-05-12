@@ -29,43 +29,8 @@ struct main_window_appearance_properties {
 	//! Destructor
 	~main_window_appearance_properties();
 
-	//! Window's horizontal scrollbar appearance
-	const_scrollbar_appearance horizontal_scrollbar;
+#include <x/w/main_window_appearance.inc.H>
 
-	//! Window's vertical scrollbar appearance
-	const_scrollbar_appearance vertical_scrollbar;
-
-	//! Main window's background color.
-	color_arg background_color;
-
-	//! Main window's menu bar's background color
-	color_arg menubar_background_color;
-
-	//! Generic top level window appearance
-	const_generic_window_appearance toplevel_appearance;
-
-	//! Menu button has input or pointer focus.
-	color_arg menu_highlighted_color;
-
-	//! Menu button is clicked.
-	color_arg menu_clicked_color;
-
-	//! Menu button does not have keyboard focus
-	border_arg menu_inputfocusoff_border;
-
-	//! Menu button has keyboard focus
-	border_arg menu_inputfocuson_border;
-
-	//! Border between the menu bar and the main window.
-	border_arg menubar_border;
-
-	//! Default window titlebar icon
-
-	std::string icon;
-
-	//! Icon sizes.
-
-	std::vector<dim_t> icon_sizes;
 };
 
 //! Implementation object.

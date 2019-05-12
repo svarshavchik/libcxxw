@@ -1,0 +1,75 @@
+<appearance>
+  <name>button</name>
+  <default>normal_theme</default>
+  <default>default_theme</default>
+  <field>
+    <name>button_font</name>
+    <descr><![CDATA[
+Default font for any text in the button
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>normal_color</name>
+    <descr><![CDATA[
+Normal button background color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>selected_color</name>
+    <descr><![CDATA[
+Background color when the button has input focus.
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>active_color</name>
+    <descr><![CDATA[
+Background color when the button is activated
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>left_border</name>
+    <descr><![CDATA[
+Button's border.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>right_border</name>
+    <descr><![CDATA[
+Button's border.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>top_border</name>
+    <descr><![CDATA[
+Button's border.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>bottom_border</name>
+    <descr><![CDATA[
+Button's border.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>inputfocusoff_border</name>
+    <descr><![CDATA[
+Inner border when the button does not have input focus
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>inputfocuson_border</name>
+    <descr><![CDATA[
+Inner border when the button has input focus
+]]></descr>
+    <type>border_arg</type>
+  </field>
+</appearance>

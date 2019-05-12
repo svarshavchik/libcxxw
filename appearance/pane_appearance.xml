@@ -1,0 +1,87 @@
+<appearance>
+  <name>pane</name>
+  <default>theme</default>
+  <default>focusable_list</default>
+  <default>file_dialog_dir</default>
+  <default>file_dialog_file</default>
+  <field>
+    <name>size</name>
+    <descr><![CDATA[
+Requested size of the next pane
+
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>background_color</name>
+    <descr><![CDATA[
+Requested background color for the next pane.
+
+]]></descr>
+    <optional>1</optional>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>left_padding</name>
+    <descr><![CDATA[
+Padding
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>right_padding</name>
+    <descr><![CDATA[
+Padding
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>top_padding</name>
+    <descr><![CDATA[
+Padding
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>bottom_padding</name>
+    <descr><![CDATA[
+Padding
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>horizontal_alignment</name>
+    <descr><![CDATA[
+Custom alignment
+]]></descr>
+    <type>halign</type>
+  </field>
+  <field>
+    <name>vertical_alignment</name>
+    <descr><![CDATA[
+Custom alignment
+]]></descr>
+    <type>valign</type>
+  </field>
+  <field>
+    <name>pane_scrollbar_visibility</name>
+    <descr><![CDATA[
+Scrollbar visibility
+]]></descr>
+    <type>scrollbar_visibility</type>
+  </field>
+  <field>
+    <name>horizontal_scrollbar</name>
+    <descr><![CDATA[
+Scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>vertical_scrollbar</name>
+    <descr><![CDATA[
+Scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+</appearance>

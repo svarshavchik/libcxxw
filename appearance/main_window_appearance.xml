@@ -1,0 +1,91 @@
+<appearance>
+  <name>main_window</name>
+  <default>theme</default>
+  <field>
+    <name>horizontal_scrollbar</name>
+    <descr><![CDATA[
+Window's horizontal scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>vertical_scrollbar</name>
+    <descr><![CDATA[
+Window's vertical scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>background_color</name>
+    <descr><![CDATA[
+Main window's background color.
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>menubar_background_color</name>
+    <descr><![CDATA[
+Main window's menu bar's background color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>toplevel_appearance</name>
+    <descr><![CDATA[
+Generic top level window appearance
+]]></descr>
+    <ref>generic_window</ref>
+  </field>
+  <field>
+    <name>menu_highlighted_color</name>
+    <descr><![CDATA[
+Menu button has input or pointer focus.
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>menu_clicked_color</name>
+    <descr><![CDATA[
+Menu button is clicked.
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>menu_inputfocusoff_border</name>
+    <descr><![CDATA[
+Menu button does not have keyboard focus
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>menu_inputfocuson_border</name>
+    <descr><![CDATA[
+Menu button has keyboard focus
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>menubar_border</name>
+    <descr><![CDATA[
+Border between the menu bar and the main window.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>icon</name>
+    <descr><![CDATA[
+Default window titlebar icon
+
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>icon_sizes</name>
+    <descr><![CDATA[
+Icon sizes.
+
+]]></descr>
+    <vector>1</vector>
+    <type>dim_t</type>
+  </field>
+</appearance>

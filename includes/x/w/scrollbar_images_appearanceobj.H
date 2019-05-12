@@ -25,20 +25,8 @@ struct scrollbar_images_appearance_properties {
 	//! Destructor
 	~scrollbar_images_appearance_properties();
 
-	//! Image for the "scroll to the beginning" button
-	std::string scroll_low;
+#include <x/w/scrollbar_images_appearance.inc.H>
 
-	//! Head end part of the scrollbar's knob.
-	std::string knob_start;
-
-	//! Middle part of the scrollbar's knob.
-	std::string knob_handle;
-
-	//! Tail end part of the scrollbar's knob.
-	std::string knob_end;
-
-	//! Image for the "scroll to the end" button
-	std::string scroll_high;
 };
 
 //! Implementation object.

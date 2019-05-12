@@ -24,26 +24,8 @@ struct pane_layout_appearance_properties {
 	//! Destructor
 	~pane_layout_appearance_properties();
 
-	//! Pane border.
-	border_arg border;
+#include <x/w/pane_layout_appearance.inc.H>
 
-	//! Border used to draw the slider.
-	border_arg slider;
-
-	//! Slider's background color
-	color_arg slider_background_color;
-
-	//! Slider's focusoff border
-	border_arg slider_focusoff_border;
-
-	//! Slider's focuson border.
-	border_arg slider_focuson_border;
-
-	//! Cursor pointer when hovering over a horizontal slider
-	std::string slider_horiz;
-
-	//! Cursor pointer when hovering over a horizontal slider
-	std::string slider_vert;
 };
 
 //! Implementation object.

@@ -1,0 +1,53 @@
+<appearance>
+  <name>scrollbar</name>
+  <default>theme</default>
+  <field>
+    <name>background_color</name>
+    <descr><![CDATA[
+Scroll-bar's background color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>focusoff_border</name>
+    <descr><![CDATA[
+No focus around the scrollbar
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>focuson_border</name>
+    <descr><![CDATA[
+Focus around the scrollbar
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>horizontal1</name>
+    <descr><![CDATA[
+Horizontal scrollbar image
+]]></descr>
+    <ref>scrollbar_images</ref>
+  </field>
+  <field>
+    <name>horizontal2</name>
+    <descr><![CDATA[
+Horizontal scrollbar clicked image
+]]></descr>
+    <ref>scrollbar_images</ref>
+  </field>
+  <field>
+    <name>vertical1</name>
+    <descr><![CDATA[
+Vertical scrollbar image
+]]></descr>
+    <ref>scrollbar_images</ref>
+  </field>
+  <field>
+    <name>vertical2</name>
+    <descr><![CDATA[
+Vertical scrollbar clicked image
+]]></descr>
+    <ref>scrollbar_images</ref>
+  </field>
+</appearance>

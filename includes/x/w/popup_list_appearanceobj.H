@@ -25,28 +25,8 @@ struct popup_list_appearance_properties {
 
 	~popup_list_appearance_properties();
 
-	//! Popup's border.
+#include <x/w/popup_list_appearance.inc.H>
 
-	border_arg popup_border;
-
-	//! Popup's background color when it's below/to the right of its element
-
-	//! This is the normal background color when a combo-box popup appears
-	//! below the main combo-box element, or a popup-menu appears
-	//! below the menu bar, or a popup submenu appears to the right
-	//! of its parent menu, or a context popup menu opens.
-
-	color_arg bottomright_color;
-
-	//! Popup's background color when it's above/to the left of its element
-
-	//! Alternative background color when the popup gets moved from its
-	//! default position to an alternative position, because of available
-	//! space: placing the popup menu above the combo-box or the menu bar,
-	//! or a submenu appearing to the left of its parent menu. Not used
-	//! for context popup menus.
-
-	color_arg topleft_color;
 };
 
 //! Implementation object.

@@ -1,0 +1,173 @@
+<appearance>
+  <name>list</name>
+  <default>theme</default>
+  <default>list_pane_theme</default>
+  <default>table_theme</default>
+  <default>table_pane_theme</default>
+  <field>
+    <name>list_border</name>
+    <descr><![CDATA[
+The border around the list.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>focusoff_border</name>
+    <descr><![CDATA[
+Inner border around the list when the list does not have input focus
+
+Note that if the list has column_borders, they connect to the
+input focus frame, so this should be visible. The default
+is "listfocusoff_border", which is empty, no border drawn around
+the list when it has no focus. This border is the same size as
+"listfocuson_border".
+Use visible_focusoff_border() to install the default theme
+focusoff border.
+
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>focuson_border</name>
+    <descr><![CDATA[
+Inner border around the list when the list has input focus
+
+Border should be the same size as the focusoff_border
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>v_padding</name>
+    <descr><![CDATA[
+Padding above and below each list item
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>h_padding</name>
+    <descr><![CDATA[
+Default padding before and after each list item.
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>indent</name>
+    <descr><![CDATA[
+When using hierarchical indentations, indentation increment.
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>background_color</name>
+    <descr><![CDATA[
+
+Background color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>selected_color</name>
+    <descr><![CDATA[
+Selected color
+
+Used only by a \c INSERT_LIBX_NAMESPACE::w::highlighted_list.
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>highlighted_color</name>
+    <descr><![CDATA[
+Highlighted color
+
+Item's color when the pointer button #1 is pressed on top of it.
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>current_color</name>
+    <descr><![CDATA[
+Currently selected color
+
+Item's color when the pointer is hovering on top of it, without
+the button being pressed.
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>unmarked_icon</name>
+    <descr><![CDATA[
+Unmarked list icon
+
+In a bulleted list, the icon next to an unmarked item. This
+should be a transparent image that's the same size as the
+marked icon
+
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>marked_icon</name>
+    <descr><![CDATA[
+Marked list icon
+
+Indicates that the item is selected, in a bulleted list.
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>submenu_icon</name>
+    <descr><![CDATA[
+Submenu indication icon
+
+Indicates that the menu item opens a submenu
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>contents_appearance</name>
+    <descr><![CDATA[
+List contents appearance
+
+The label_font and label_color control the default font and color
+of the items in the list. Coincidentally, in combo-boxes this
+also controls the popup window's appearance.
+
+]]></descr>
+    <ref>generic_window</ref>
+  </field>
+  <field>
+    <name>shortcut_foreground_color</name>
+    <descr><![CDATA[
+Default shortcut font color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>shortcut_font</name>
+    <descr><![CDATA[
+Default shortcut font
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>list_separator_border</name>
+    <descr><![CDATA[
+Horizontal separator line
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>horizontal_scrollbar</name>
+    <descr><![CDATA[
+Horizontal scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>vertical_scrollbar</name>
+    <descr><![CDATA[
+Vertical scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+</appearance>

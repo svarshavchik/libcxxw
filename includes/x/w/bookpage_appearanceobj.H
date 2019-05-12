@@ -24,29 +24,8 @@ struct bookpage_appearance_properties {
 	//! Destructor
 	~bookpage_appearance_properties();
 
-	//! Inactive tab color
-	color_arg noncurrent_color;
+#include <x/w/bookpage_appearance.inc.H>
 
-	//! Active tab color
-	color_arg current_color;
-
-	//! Color of the tab when it has keyboard or pointer focus
-	color_arg warm_color;
-
-	//! Color of the tab when it's been activated.
-	color_arg active_color;
-
-	//! Default font for the tab
-	font_arg label_font;
-
-	//! Default font's color
-	color_arg label_foreground_color;
-
-	//! Tab padding.
-	dim_arg horiz_padding;
-
-	//! Padding for an individual tab.
-	dim_arg vert_padding;
 };
 
 //! Implementation object.

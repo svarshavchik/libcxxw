@@ -25,17 +25,8 @@ struct item_layout_appearance_properties {
 	//! Destructor
 	~item_layout_appearance_properties();
 
-	//! Padding between individual items.
-	dim_arg itemlayout_h_padding;
+#include <x/w/item_layout_appearance.inc.H>
 
-	//! Padding between individual items.
-	dim_arg itemlayout_v_padding;
-
-	//! Horizontal scrollbar appearance around the items
-	const_scrollbar_appearance horizontal_scrollbar;
-
-	//! Vertical scrollbar appearance around the items
-	const_scrollbar_appearance vertical_scrollbar;
 };
 
 //! Implementation object.

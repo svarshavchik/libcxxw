@@ -1,0 +1,49 @@
+<appearance>
+  <name>image_button</name>
+  <default>checkbox_theme</default>
+  <default>radio_theme</default>
+  <default>item_theme</default>
+  <default>book_left_theme</default>
+  <default>book_right_theme</default>
+  <default>date_popup_left_theme</default>
+  <default>date_popup_right_theme</default>
+  <field>
+    <name>alignment</name>
+    <descr><![CDATA[
+Vertical alignment, defaults to \c middle
+]]></descr>
+    <type>valign</type>
+  </field>
+  <field>
+    <name>focusoff_border</name>
+    <descr><![CDATA[
+Default focus off border
+
+It is a transparent border the same size as the focus_on border.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>focuson_border</name>
+    <descr><![CDATA[
+Default focus on border
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>images</name>
+    <descr><![CDATA[
+Checkbox images
+
+Specifies filenames the checkbox images get loaded from.
+\note
+Filenames without a path component get searched for in the
+current display theme's directory, and NOT the current
+directory.
+All images' sizes should be the same.
+
+]]></descr>
+    <vector>1</vector>
+    <type>std::string</type>
+  </field>
+</appearance>

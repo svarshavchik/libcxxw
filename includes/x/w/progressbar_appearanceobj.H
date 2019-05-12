@@ -25,28 +25,8 @@ struct progressbar_appearance_properties {
 	//! Destructor
 	~progressbar_appearance_properties();
 
-	//! The border around the progress bar.
+#include <x/w/progressbar_appearance.inc.H>
 
-	border_arg border;
-
-	//! The minimum width of the progress bar
-
-	dim_arg minimum_width;
-
-	//! Background color
-
-	color_arg background_color;
-
-	//! Foreground color (default color for text labels)
-
-	color_arg foreground_color;
-
-	//! Default text label font.
-	font_arg label_font;
-
-	//! The progress bar's slider's color.
-
-	color_arg slider_color;
 };
 
 //! Implementation object.

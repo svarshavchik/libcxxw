@@ -26,21 +26,8 @@ struct combobox_appearance_properties {
 
 	~combobox_appearance_properties();
 
-	//! Border around the combo-box's current element and button
+#include <x/w/combobox_appearance.inc.H>
 
-	border_arg combobox_border;
-
-	//! Focus off border around the combo-box's button
-	border_arg combobox_button_focusoff_border;
-
-	//! Focus on border around the combo-box's button
-	border_arg combobox_button_focuson_border;
-
-	//! Button image
-	std::string popup_button_image1;
-
-	//! Pressed button image
-	std::string popup_button_image2;
 };
 
 //! Implementation object.

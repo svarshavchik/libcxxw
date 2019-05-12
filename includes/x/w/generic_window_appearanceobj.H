@@ -27,24 +27,8 @@ struct generic_window_appearance_properties {
 	//! Destructor
 	~generic_window_appearance_properties();
 
-	//! Default font
-	font_arg label_font;
+#include <x/w/generic_window_appearance.inc.H>
 
-	//! Default color
-	color_arg label_color;
-
-	//! Shaded color
-
-	color_arg modal_shade_color;
-
-	//! Disabled mask
-
-	//! Bitmask image for dithering disabled display elements
-
-	std::string disabled_mask;
-
-	//! "Wait" cursor image
-	std::string wait_cursor;
 };
 
 //! Implementation object.

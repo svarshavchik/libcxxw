@@ -1,0 +1,47 @@
+<appearance>
+  <name>generic_window</name>
+  <default>main_window_theme</default>
+  <default>date_input_field_theme</default>
+  <default>list_contents_theme</default>
+  <default>combobox_theme</default>
+  <default>tooltip_theme</default>
+  <field>
+    <name>label_font</name>
+    <descr><![CDATA[
+Default font
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>label_color</name>
+    <descr><![CDATA[
+Default color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>modal_shade_color</name>
+    <descr><![CDATA[
+Shaded color
+
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>disabled_mask</name>
+    <descr><![CDATA[
+Disabled mask
+
+Bitmask image for dithering disabled display elements
+
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>wait_cursor</name>
+    <descr><![CDATA[
+"Wait" cursor image
+]]></descr>
+    <type>std::string</type>
+  </field>
+</appearance>

@@ -1,0 +1,53 @@
+<appearance>
+  <name>pane_layout</name>
+  <default>theme</default>
+  <field>
+    <name>border</name>
+    <descr><![CDATA[
+Pane border.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>slider</name>
+    <descr><![CDATA[
+Border used to draw the slider.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>slider_background_color</name>
+    <descr><![CDATA[
+Slider's background color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>slider_focusoff_border</name>
+    <descr><![CDATA[
+Slider's focusoff border
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>slider_focuson_border</name>
+    <descr><![CDATA[
+Slider's focuson border.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>slider_horiz</name>
+    <descr><![CDATA[
+Cursor pointer when hovering over a horizontal slider
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>slider_vert</name>
+    <descr><![CDATA[
+Cursor pointer when hovering over a horizontal slider
+]]></descr>
+    <type>std::string</type>
+  </field>
+</appearance>

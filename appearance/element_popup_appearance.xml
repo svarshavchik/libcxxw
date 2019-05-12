@@ -1,0 +1,81 @@
+<appearance>
+  <name>element_popup</name>
+  <default>theme</default>
+  <field>
+    <name>element_border</name>
+    <descr><![CDATA[
+Border around the display element
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>popup_border</name>
+    <descr><![CDATA[
+Popup border
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>popup_background_color</name>
+    <descr><![CDATA[
+Popup background color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>popup_scrollbars_background_color</name>
+    <descr><![CDATA[
+Popup background color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>button_focusoff_border</name>
+    <descr><![CDATA[
+Button focus border.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>button_focuson_border</name>
+    <descr><![CDATA[
+Button focus border.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>toplevel_appearance</name>
+    <descr><![CDATA[
+Generic appearance of the top-level window that makes up the popup.
+]]></descr>
+    <ref>generic_window</ref>
+  </field>
+  <field>
+    <name>button_image1</name>
+    <descr><![CDATA[
+Popup button image
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>button_image2</name>
+    <descr><![CDATA[
+Popup button image
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>horizontal_scrollbar</name>
+    <descr><![CDATA[
+Horizontal scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>vertical_scrollbar</name>
+    <descr><![CDATA[
+Vertical scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+</appearance>

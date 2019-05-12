@@ -1,0 +1,26 @@
+<appearance>
+  <name>tooltip_border</name>
+  <default>theme</default>
+  <default>nonalpha_theme</default>
+  <field>
+    <name>border</name>
+    <descr><![CDATA[
+Border
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>hpad</name>
+    <descr><![CDATA[
+Additional padding
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>vpad</name>
+    <descr><![CDATA[
+Additional padding
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+</appearance>

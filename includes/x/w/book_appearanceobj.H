@@ -26,26 +26,8 @@ struct book_appearance_properties {
 	//! Destructor
 	~book_appearance_properties();
 
-	//! Background color around the currently visible page.
-	color_arg background_color;
+#include <x/w/book_appearance.inc.H>
 
-	//! Border around the currently visible page.
-	border_arg border;
-
-	//! Tab strip background color
-	color_arg tabs_background_color;
-
-	//! Border around the tabs.
-	border_arg tab_border;
-
-	//! How big the scroll buttons are.
-	dim_arg scroll_button_height;
-
-	//! Appearance of the left scroll button
-	const_image_button_appearance left_scroll_button;
-
-	//! Appearance of the right scroll button
-	const_image_button_appearance right_scroll_button;
 };
 
 //! Implementation object.

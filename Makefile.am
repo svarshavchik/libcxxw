@@ -951,7 +951,9 @@ EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 	packaging/fedora/libcxxw.spec \
         examples/configure.ac \
 	examples/Makefile.am \
-        $(shell cd $(srcdir) && echo examples/*.C examples/*.H) \
+	appearance/create_headers.xsl \
+        $(shell cd $(srcdir) && \
+                  echo appearance/*.xml examples/*.C examples/*.H) \
 	$(man_MANS)
 
 $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.xml)

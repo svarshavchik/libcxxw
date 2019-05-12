@@ -25,35 +25,8 @@ struct button_appearance_properties {
 	//! Destructor
 	~button_appearance_properties();
 
-	//! Default font for any text in the button
-	font_arg button_font;
+#include <x/w/button_appearance.inc.H>
 
-	//! Normal button background color
-	color_arg normal_color;
-
-	//! Background color when the button has input focus.
-	color_arg selected_color;
-
-	//! Background color when the button is activated
-	color_arg active_color;
-
-	//! Button's border.
-	border_arg left_border;
-
-	//! Button's border.
-	border_arg right_border;
-
-	//! Button's border.
-	border_arg top_border;
-
-	//! Button's border.
-	border_arg bottom_border;
-
-	//! Inner border when the button does not have input focus
-	border_arg inputfocusoff_border;
-
-	//! Inner border when the button has input focus
-	border_arg inputfocuson_border;
 };
 
 //! Implementation object.

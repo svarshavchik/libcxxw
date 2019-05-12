@@ -93,9 +93,6 @@ public:
 	//! My screen
 	const xcb_screen_t *screen;
 
-	//! Fonts
-	std::unordered_map<std::string, font> fonts;
-
 	//! Parse fonts from the configuration file
 	void load_fonts(const theme_parser_lock &root_lock);
 
@@ -108,12 +105,10 @@ public:
 
 	template<typename install_functor, typename lookup_functor>
 		void load_fonts(const theme_parser_lock &lock,
-				const xml::doc::base::xpath &xpath,
 				install_functor &&install,
 				lookup_functor &&lookup) const
 	{
 		do_load_fonts(lock,
-			      xpath,
 			      make_function<void (const std::string &,
 						  const font &)>
 			      (std::forward<install_functor>(install)),
@@ -124,7 +119,6 @@ public:
 	//! Load font definitions.
 
 	void do_load_fonts(const theme_parser_lock &lock,
-			   const xml::doc::base::xpath &xpath,
 			   const function<void (const std::string &,
 						const font &)> &install,
 			   const function<bool (const std::string &,font &)>

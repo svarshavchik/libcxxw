@@ -1,0 +1,83 @@
+<appearance>
+  <name>file_dialog</name>
+  <default>theme</default>
+  <field>
+    <name>filedir_pane_appearance</name>
+    <descr><![CDATA[
+Custom appearance of the directory/file pane container
+]]></descr>
+    <ref>pane_layout</ref>
+  </field>
+  <field>
+    <name>dir_pane_appearance</name>
+    <descr><![CDATA[
+Custom appearance of the directory pane
+]]></descr>
+    <ref>pane</ref>
+  </field>
+  <field>
+    <name>file_pane_appearance</name>
+    <descr><![CDATA[
+Custom appearance of the file pane
+]]></descr>
+    <ref>pane</ref>
+  </field>
+  <field>
+    <name>dir_pane_list_appearance</name>
+    <descr><![CDATA[
+Custom appearance of the directory pane's list
+
+]]></descr>
+    <ref>list</ref>
+  </field>
+  <field>
+    <name>file_pane_list_appearance</name>
+    <descr><![CDATA[
+Custom appearance of the file pane's list
+
+]]></descr>
+    <ref>list</ref>
+  </field>
+  <field>
+    <name>filedir_filename_font</name>
+    <descr><![CDATA[
+Font used for filenames
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>filedir_filedate_font</name>
+    <descr><![CDATA[
+Font used for file dates
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>filedir_filesize_font</name>
+    <descr><![CDATA[
+Font used for file sizes
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>filedir_directoryfont</name>
+    <descr><![CDATA[
+Font used for the current directory name
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>filedir_highlight_fg</name>
+    <descr><![CDATA[
+Current directory, the currently highlighted part
+]]></descr>
+    <type>text_color_arg</type>
+  </field>
+  <field>
+    <name>filedir_highlight_bg</name>
+    <descr><![CDATA[
+Current directory, the currently highlighted part
+]]></descr>
+    <type>text_color_arg</type>
+  </field>
+</appearance>

@@ -1,0 +1,58 @@
+<appearance>
+  <name>peephole</name>
+  <default>theme</default>
+  <field>
+    <name>peephole_border</name>
+    <descr><![CDATA[
+Optional border
+]]></descr>
+    <optional>1</optional>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>left_padding</name>
+    <descr><![CDATA[
+Extra padding for the element in the peephole.
+
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>right_padding</name>
+    <descr><![CDATA[
+Extra padding for the element in the peephole.
+
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>top_padding</name>
+    <descr><![CDATA[
+Extra padding for the element in the peephole.
+
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>bottom_padding</name>
+    <descr><![CDATA[
+Extra padding for the element in the peephole.
+
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>horizontal_scrollbar</name>
+    <descr><![CDATA[
+Horizontal scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>vertical_scrollbar</name>
+    <descr><![CDATA[
+Vertical scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+</appearance>

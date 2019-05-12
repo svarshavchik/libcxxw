@@ -26,24 +26,8 @@ struct item_button_appearance_properties {
 	//! Destructor
 	~item_button_appearance_properties();
 
-	//! Border around buttons
+#include <x/w/item_button_appearance.inc.H>
 
-	border_arg button_border;
-
-	//! Padding between the border and the button's label
-
-	dim_arg itembutton_h_padding;
-
-	//! Padding between the border and the button's label
-
-	dim_arg itembutton_v_padding;
-
-	//! Button background color
-
-	color_arg itembutton_background_color;
-
-	//! Close image button appearance.
-	const_image_button_appearance item_image_button_appearance;
 };
 
 //! Implementation object.

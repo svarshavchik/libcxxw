@@ -675,9 +675,7 @@ void defaultthemeObj::load_fonts(const theme_parser_lock &root_lock)
 	if (!lock->get_root())
 		return;
 
-	auto xpath=lock->get_xpath("/theme/font");
-
-	load_fonts(lock, xpath,
+	load_fonts(lock,
 		   [&, this]
 		   (const std::string &id, const auto &new_font)
 		   {
@@ -692,7 +690,6 @@ void defaultthemeObj::load_fonts(const theme_parser_lock &root_lock)
 }
 
 void defaultthemeObj::do_load_fonts(const theme_parser_lock &lock,
-				    const xml::doc::base::xpath &xpath,
 				    const function<void (const std::string &,
 							 const font &)>
 				    &install,
@@ -700,6 +697,8 @@ void defaultthemeObj::do_load_fonts(const theme_parser_lock &lock,
 							 font &)> &lookup)
 	const
 {
+	auto xpath=lock->get_xpath("font");
+
 	size_t count=xpath->count();
 
 	bool parsed;

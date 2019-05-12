@@ -25,26 +25,8 @@ struct frame_appearance_properties {
 	//! Destructor
 	~frame_appearance_properties();
 
-	//! The border around the frame.
+#include <x/w/frame_appearance.inc.H>
 
-	border_arg border;
-
-	//! Title indentation
-	dim_arg title_indent;
-
-	//! Disable automatic background.
-
-	//! Frame background color
-
-	//! If no_background is not set, the frame's background.
-	color_arg frame_background;
-
-	//! Extra padding between the border and the element in the container
-
-	dim_arg hpad;
-
-	//! Extra padding between the border and the element in the container
-	dim_arg vpad;
 };
 
 //! Implementation object.

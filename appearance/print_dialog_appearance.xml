@@ -1,0 +1,130 @@
+<appearance>
+  <name>print_dialog</name>
+  <default>theme</default>
+  <field>
+    <name>printer_remote_font</name>
+    <descr><![CDATA[
+Font of names of remote printers.
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>printer_local_font</name>
+    <descr><![CDATA[
+Font of names of local printers.
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>printer_make_and_model_font</name>
+    <descr><![CDATA[
+Font of printer make and model
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>printer_location_font</name>
+    <descr><![CDATA[
+Font of printer locations
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>printer_status_font</name>
+    <descr><![CDATA[
+Font of printer status
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>printer_field_appearance</name>
+    <descr><![CDATA[
+Appearance of the list of printers to select.
+]]></descr>
+    <ref>list</ref>
+  </field>
+  <field>
+    <name>number_of_copies_appearance</name>
+    <descr><![CDATA[
+Appearance of the number of copies field.
+]]></descr>
+    <ref>input_field</ref>
+  </field>
+  <field>
+    <name>print_all_pages_appearance</name>
+    <descr><![CDATA[
+Appearance of the "All pages" radio button
+]]></descr>
+    <ref>image_button</ref>
+  </field>
+  <field>
+    <name>print_page_range_appearance</name>
+    <descr><![CDATA[
+Appearance of the "Pages" radio button
+]]></descr>
+    <ref>image_button</ref>
+  </field>
+  <field>
+    <name>page_range_appearance</name>
+    <descr><![CDATA[
+Appearance of the "Pages" field
+]]></descr>
+    <ref>input_field</ref>
+  </field>
+  <field>
+    <name>orientation_appearance</name>
+    <descr><![CDATA[
+Appearance of the "Orientation" list
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>duplex_appearance</name>
+    <descr><![CDATA[
+Appearance of the "Duplex" list
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>pages_per_side_appearance</name>
+    <descr><![CDATA[
+Appearance of the "Pages per side" list
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>page_size_appearance</name>
+    <descr><![CDATA[
+Appearance of the "Page size" list
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>finishings_appearance</name>
+    <descr><![CDATA[
+Appearance of the "Finishing process" list
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>print_color_mode_appearance</name>
+    <descr><![CDATA[
+Appearance of the "Color Mode" list
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>print_quality_appearance</name>
+    <descr><![CDATA[
+Appearance of the "Print Quality" list
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>printer_resolution_appearance</name>
+    <descr><![CDATA[
+Appearance of the "Resolution" list
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+</appearance>

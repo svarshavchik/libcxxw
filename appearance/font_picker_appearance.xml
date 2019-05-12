@@ -1,0 +1,102 @@
+<appearance>
+  <name>font_picker</name>
+  <default>theme</default>
+  <field>
+    <name>ok_label</name>
+    <descr><![CDATA[
+Label for the "Ok" button
+]]></descr>
+    <type>text_param</type>
+  </field>
+  <field>
+    <name>cancel_label</name>
+    <descr><![CDATA[
+Label for the "Cancel" button
+]]></descr>
+    <type>text_param</type>
+  </field>
+  <field>
+    <name>preview_width</name>
+    <descr><![CDATA[
+Size of the font preview box
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>preview_height</name>
+    <descr><![CDATA[
+Size of the font preview box
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>preview_border</name>
+    <descr><![CDATA[
+Border around the font preview box
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>font_family_appearance</name>
+    <descr><![CDATA[
+Combo-box appearance
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>font_size_appearance</name>
+    <descr><![CDATA[
+Combo-box appearance
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>font_weight_appearance</name>
+    <descr><![CDATA[
+Combo-box appearance
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>font_slant_appearance</name>
+    <descr><![CDATA[
+Combo-box appearance
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>font_width_appearance</name>
+    <descr><![CDATA[
+Combo-box appearance
+]]></descr>
+    <ref>combobox</ref>
+  </field>
+  <field>
+    <name>unsupported_option_color</name>
+    <descr><![CDATA[
+Color for an unsupported font option, in one of the combo-boxes.
+]]></descr>
+    <type>text_color_arg</type>
+  </field>
+  <field>
+    <name>preview_horizontal_scrollbar</name>
+    <descr><![CDATA[
+Horizontal scrollbar appearance around the font preview
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>preview_vertical_scrollbar</name>
+    <descr><![CDATA[
+Vertical scrollbar appearance around the font preview
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>attached_popup_appearance</name>
+    <descr><![CDATA[
+Generic popup configuration
+]]></descr>
+    <ref>element_popup</ref>
+  </field>
+</appearance>

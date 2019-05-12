@@ -1,0 +1,183 @@
+<appearance>
+  <name>input_field</name>
+  <default>theme</default>
+  <default>editable_combobox_theme</default>
+  <field>
+    <name>invisible_pointer</name>
+    <descr><![CDATA[
+Pointer image while typing, invisible pointer.
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>dragging_pointer</name>
+    <descr><![CDATA[
+Pointer image while dragging
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>dragging_nodrop_pointer</name>
+    <descr><![CDATA[
+Pointer image while dragging non-droppable text
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>border</name>
+    <descr><![CDATA[
+The input field's border.
+
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>focusoff_border</name>
+    <descr><![CDATA[
+Inner border when the input field does not have input focus
+
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>focuson_border</name>
+    <descr><![CDATA[
+Inner border when the input field has input focus
+
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>foreground_color</name>
+    <descr><![CDATA[
+Foreground color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>regular_font</name>
+    <descr><![CDATA[
+Font for normal input fields
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>password_font</name>
+    <descr><![CDATA[
+Font for password input fields
+]]></descr>
+    <type>font_arg</type>
+  </field>
+  <field>
+    <name>background_color</name>
+    <descr><![CDATA[
+Background color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>disabled_background_color</name>
+    <descr><![CDATA[
+Background color when the input field is disabled.
+
+Typical disabled element shading is not sufficient to distingish
+the visibility change.
+
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>hint_color</name>
+    <descr><![CDATA[
+Hint's color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>drag_horiz_start</name>
+    <descr><![CDATA[
+Free-play before dragging operation commences
+
+How far the pointer must move before drag operation starts.
+Avoids overhead when a pointer button click slips
+
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>drag_vert_start</name>
+    <descr><![CDATA[
+Free-play before dragging operation commences
+
+How far the pointer must move before drag operation starts.
+Avoids overhead when a pointer button click slips
+
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>left_spinner_appearance</name>
+    <descr><![CDATA[
+Appearance of spinner buttons
+
+\note
+The spinner buttons' borders should be based on our border.
+Use update_spinner_buttons() to install a new appearance object,
+that comes from the default button appearance them, with our
+borders.
+
+]]></descr>
+    <ref>button</ref>
+  </field>
+  <field>
+    <name>right_spinner_appearance</name>
+    <descr><![CDATA[
+Appearance of spinner buttons
+
+\note
+The spinner buttons' borders should be based on our border.
+Use update_spinner_buttons() to install a new appearance object,
+that comes from the default button appearance them, with our
+borders.
+]]></descr>
+    <ref>button</ref>
+  </field>
+  <field>
+    <name>search_popup_appearance</name>
+    <descr><![CDATA[
+Appearance of the list search popup.
+
+]]></descr>
+    <ref>popup_list</ref>
+  </field>
+  <field>
+    <name>horizontal_scrollbar</name>
+    <descr><![CDATA[
+Horizontal scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>vertical_scrollbar</name>
+    <descr><![CDATA[
+Vertical scrollbar appearance
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>spin_decrement</name>
+    <descr><![CDATA[
+Image icon for the "decrement" spin control button.
+
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>spin_increment</name>
+    <descr><![CDATA[
+Image icon for the "increment" spin control button.
+
+]]></descr>
+    <type>std::string</type>
+  </field>
+</appearance>

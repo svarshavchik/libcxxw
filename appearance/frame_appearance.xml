@@ -1,0 +1,45 @@
+<appearance>
+  <name>frame</name>
+  <default>theme</default>
+  <field>
+    <name>border</name>
+    <descr><![CDATA[
+The border around the frame.
+
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>title_indent</name>
+    <descr><![CDATA[
+Title indentation
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>frame_background</name>
+    <descr><![CDATA[
+Disable automatic background.
+
+Frame background color
+
+If no_background is not set, the frame's background.
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>hpad</name>
+    <descr><![CDATA[
+Extra padding between the border and the element in the container
+
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>vpad</name>
+    <descr><![CDATA[
+Extra padding between the border and the element in the container
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+</appearance>

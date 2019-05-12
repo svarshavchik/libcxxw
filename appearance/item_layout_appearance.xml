@@ -1,0 +1,32 @@
+<appearance>
+  <name>item_layout</name>
+  <default>theme</default>
+  <field>
+    <name>itemlayout_h_padding</name>
+    <descr><![CDATA[
+Padding between individual items.
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>itemlayout_v_padding</name>
+    <descr><![CDATA[
+Padding between individual items.
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>horizontal_scrollbar</name>
+    <descr><![CDATA[
+Horizontal scrollbar appearance around the items
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+  <field>
+    <name>vertical_scrollbar</name>
+    <descr><![CDATA[
+Vertical scrollbar appearance around the items
+]]></descr>
+    <ref>scrollbar</ref>
+  </field>
+</appearance>

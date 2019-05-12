@@ -28,83 +28,8 @@ struct date_input_field_appearance_properties {
 	//! Destructor
 	~date_input_field_appearance_properties();
 
-	//! Button image
-	std::string popup_button_image1;
+#include <x/w/date_input_field_appearance.inc.H>
 
-	//! Pressed button image
-	std::string popup_button_image2;
-
-	//! Foreground color: day of month highlighted by pointer or keyboard.
-	text_color_arg day_highlight_fg;
-
-	//! Background color: day of month highlighted by pointer or keyboard.
-
-	text_color_arg day_highlight_bg;
-
-	//! Font for the current month's name (and year)
-	font_arg month_font;
-
-	//! Font color for the current month's name (and year)
-	text_color_arg month_color;
-
-	//! Font for the days of week column titles.
-
-	font_arg day_of_week_font;
-
-	//! Font color for the days of week column titles.
-
-	text_color_arg day_of_week_font_color;
-
-	//! Appearance of the button on the date popup.
-	const_image_button_appearance previous_year_appearance;
-
-	//! Appearance of the button on the date popup.
-	const_image_button_appearance previous_month_appearance;
-
-	//! Appearance of the button on the date popup.
-	const_image_button_appearance next_month_appearance;
-
-	//! Appearance of the button on the date popup.
-	const_image_button_appearance next_year_appearance;
-
-	//! Height of buttons that advance the calendar by a year
-	dim_arg yscroll_height;
-
-	//! Height of buttons that advance the calendar by a month
-	dim_arg mscroll_height;
-
-	//! Appearance of the input field element itself
-
-	//! The default input field appearance, except there's no border
-	//! (the date input field provides it, and the date input field
-	//! has its own background color.
-
-	const_input_field_appearance input_appearance;
-
-	//! Input field's font.
-	font_arg input_field_font;
-
-	//! Input field's font's color
-	text_color_arg input_field_font_color;
-
-	//! Border
-
-	border_arg border;
-
-	//! Button focus border.
-	border_arg focusoff_border;
-
-	//! Button focus border.
-	border_arg focuson_border;
-
-	//! Popup border
-	border_arg popup_border;
-
-	//! Popup background color
-	color_arg popup_background_color;
-
-	//! Generic top level window appearance properties
-	const_generic_window_appearance toplevel_appearance;
 };
 
 //! Implementation object.

@@ -29,59 +29,8 @@ struct print_dialog_appearance_properties {
 	//! Destructor
 	~print_dialog_appearance_properties();
 
-	//! Font of names of remote printers.
-	font_arg printer_remote_font;
+#include <x/w/print_dialog_appearance.inc.H>
 
-	//! Font of names of local printers.
-	font_arg printer_local_font;
-
-	//! Font of printer make and model
-	font_arg printer_make_and_model_font;
-
-	//! Font of printer locations
-	font_arg printer_location_font;
-
-	//! Font of printer status
-	font_arg printer_status_font;
-
-	//! Appearance of the list of printers to select.
-	const_list_appearance printer_field_appearance;
-
-	//! Appearance of the number of copies field.
-	const_input_field_appearance number_of_copies_appearance;
-
-	//! Appearance of the "All pages" radio button
-	const_image_button_appearance print_all_pages_appearance;
-
-	//! Appearance of the "Pages" radio button
-	const_image_button_appearance print_page_range_appearance;
-
-	//! Appearance of the "Pages" field
-	const_input_field_appearance page_range_appearance;
-
-	//! Appearance of the "Orientation" list
-	const_combobox_appearance orientation_appearance;
-
-	//! Appearance of the "Duplex" list
-	const_combobox_appearance duplex_appearance;
-
-	//! Appearance of the "Pages per side" list
-	const_combobox_appearance pages_per_side_appearance;
-
-	//! Appearance of the "Page size" list
-	const_combobox_appearance page_size_appearance;
-
-	//! Appearance of the "Finishing process" list
-	const_combobox_appearance finishings_appearance;
-
-	//! Appearance of the "Color Mode" list
-	const_combobox_appearance print_color_mode_appearance;
-
-	//! Appearance of the "Print Quality" list
-	const_combobox_appearance print_quality_appearance;
-
-	//! Appearance of the "Resolution" list
-	const_combobox_appearance printer_resolution_appearance;
 };
 
 //! Implementation object.

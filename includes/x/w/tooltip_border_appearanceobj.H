@@ -25,14 +25,8 @@ struct tooltip_border_appearance_properties {
 	//! Destructor
 	~tooltip_border_appearance_properties();
 
-	//! Border
-	border_arg border;
+#include <x/w/tooltip_border_appearance.inc.H>
 
-	//! Additional padding
-	dim_arg hpad;
-
-	//! Additional padding
-	dim_arg vpad;
 };
 
 //! Implementation object.

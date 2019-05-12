@@ -28,40 +28,8 @@ struct pane_appearance_properties {
 	//! Destructor
 	~pane_appearance_properties();
 
-	//! Requested size of the next pane
+#include <x/w/pane_appearance.inc.H>
 
-	dim_arg size;
-
-	//! Requested background color for the next pane.
-
-	std::optional<color_arg> background_color;
-
-	//! Padding
-	dim_arg left_padding;
-
-	//! Padding
-	dim_arg right_padding;
-
-	//! Padding
-	dim_arg top_padding;
-
-	//! Padding
-	dim_arg bottom_padding;
-
-	//! Custom alignment
-	halign horizontal_alignment;
-
-	//! Custom alignment
-	valign vertical_alignment;
-
-	//! Scrollbar visibility
-	scrollbar_visibility pane_scrollbar_visibility;
-
-	//! Scrollbar appearance
-	const_scrollbar_appearance horizontal_scrollbar;
-
-	//! Scrollbar appearance
-	const_scrollbar_appearance vertical_scrollbar;
 };
 
 //! Implementation object.

@@ -1178,9 +1178,7 @@ inline void sxg_parserObj::parse_fonts(const theme_parser_lock &root)
 {
 	auto lock=root.clone();
 
-	auto xpath=lock->get_xpath("/sxg/font");
-
-	theme->load_fonts(lock, xpath,
+	theme->load_fonts(lock,
 			  [&, this]
 			  (const std::string &id, const auto &new_font)
 			  {

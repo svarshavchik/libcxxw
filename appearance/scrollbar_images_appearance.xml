@@ -1,0 +1,42 @@
+<appearance>
+  <name>scrollbar_images</name>
+  <default>horizontal1</default>
+  <default>horizontal2</default>
+  <default>vertical1</default>
+  <default>vertical2</default>
+  <field>
+    <name>scroll_low</name>
+    <descr><![CDATA[
+Image for the "scroll to the beginning" button
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>knob_start</name>
+    <descr><![CDATA[
+Head end part of the scrollbar's knob.
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>knob_handle</name>
+    <descr><![CDATA[
+Middle part of the scrollbar's knob.
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>knob_end</name>
+    <descr><![CDATA[
+Tail end part of the scrollbar's knob.
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>scroll_high</name>
+    <descr><![CDATA[
+Image for the "scroll to the end" button
+]]></descr>
+    <type>std::string</type>
+  </field>
+</appearance>

@@ -24,26 +24,8 @@ struct scrollbar_appearance_properties {
 	//! Destructor
 	~scrollbar_appearance_properties();
 
-	//! Scroll-bar's background color
-	color_arg background_color;
+#include <x/w/scrollbar_appearance.inc.H>
 
-	//! No focus around the scrollbar
-	border_arg focusoff_border;
-
-	//! Focus around the scrollbar
-	border_arg focuson_border;
-
-	//! Horizontal scrollbar image
-	const_scrollbar_images_appearance horizontal1;
-
-	//! Horizontal scrollbar clicked image
-	const_scrollbar_images_appearance horizontal2;
-
-	//! Vertical scrollbar image
-	const_scrollbar_images_appearance vertical1;
-
-	//! Vertical scrollbar clicked image
-	const_scrollbar_images_appearance vertical2;
 };
 
 //! Implementation object.

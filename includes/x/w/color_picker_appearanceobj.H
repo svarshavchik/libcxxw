@@ -28,71 +28,8 @@ struct color_picker_appearance_properties {
 	//! Destructor
 	~color_picker_appearance_properties();
 
-	//! Size of the current color swatch
+#include <x/w/color_picker_appearance.inc.H>
 
-	//! The size of the actual display element that shows the currently
-	//! picked color.
-	dim_arg width;
-
-	//! Size of the current color swatch
-
-	//! The size of the actual display element that shows the currently
-	//! picked color.
-	dim_arg height;
-
-	//! Generic popup configuration
-	const_element_popup_appearance attached_popup_appearance;
-
-	//! The size of the top and bottom red/green/blue strips.
-	dim_arg strip_width;
-
-	//! The size of the left red/green/blue strip.
-	dim_arg strip_height;
-
-	//! Additional space between the component strips and the picker.
-	dim_arg buffer_width;
-
-	//! Additional space between the component strips and the picker.
-	dim_arg buffer_height;
-
-	//! Size of the picker gradient element.
-	dim_arg picker_width;
-
-	//! Size of the picker gradient element.
-	dim_arg picker_height;
-
-	//! Size of the buttons showing the basic colors
-	dim_arg basic_color_width;
-
-	//! Size of the buttons showing the basic colors
-	dim_arg basic_color_height;
-
-	//! Appearance of the H button
-	const_button_appearance h_button_appearance;
-
-	//! Appearance of the H button
-	const_button_appearance v_button_appearance;
-
-	//! Appearance of the basic colors buttons
-	const_button_appearance basic_colors_button_appearance;
-
-	//! Appearance of the R input field
-	const_input_field_appearance r_appearance;
-
-	//! Appearance of the G input field
-	const_input_field_appearance g_appearance;
-
-	//! Appearance of the B input field
-	const_input_field_appearance b_appearance;
-
-	//! Appearance of the H input field
-	const_input_field_appearance h_appearance;
-
-	//! Appearance of the S input field
-	const_input_field_appearance s_appearance;
-
-	//! Appearance of the V input field
-	const_input_field_appearance v_appearance;
 };
 
 //! Implementation object.

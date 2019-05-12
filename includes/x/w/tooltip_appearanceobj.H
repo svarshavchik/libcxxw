@@ -27,35 +27,8 @@ struct tooltip_appearance_properties {
 	//! Destructor
 	~tooltip_appearance_properties();
 
-	//! Border for the new tooltip
+#include <x/w/tooltip_appearance.inc.H>
 
-	//! Used when the display has an alpha channel.
-	//! Typically a slightly rounded border.
-
-	const_tooltip_border_appearance alpha_border;
-
-	//! Border for the new tooltip
-
-	//! Used when the display does not have an alpha channel.
-	//! Typically a square border.
-
-	const_tooltip_border_appearance nonalpha_border;
-
-	//! Background color
-	color_arg tooltip_background_color;
-
-	//! Generic appearance of a top level window
-	const_generic_window_appearance toplevel_appearance;
-
-	//! Tooltip location, to the right of the pointer position.
-
-	//! Regular tooltips only, ignored for static tooltips
-	dim_arg tooltip_x_offset;
-
-	//! Tooltip location, above the pointer position.
-
-	//! Regular tooltips only, ignored for static tooltips
-	dim_arg tooltip_y_offset;
 };
 
 //! Implementation object.

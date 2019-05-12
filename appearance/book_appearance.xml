@@ -1,0 +1,53 @@
+<appearance>
+  <name>book</name>
+  <default>theme</default>
+  <field>
+    <name>background_color</name>
+    <descr><![CDATA[
+Background color around the currently visible page.
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>border</name>
+    <descr><![CDATA[
+Border around the currently visible page.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>tabs_background_color</name>
+    <descr><![CDATA[
+Tab strip background color
+]]></descr>
+    <type>color_arg</type>
+  </field>
+  <field>
+    <name>tab_border</name>
+    <descr><![CDATA[
+Border around the tabs.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>scroll_button_height</name>
+    <descr><![CDATA[
+How big the scroll buttons are.
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
+    <name>left_scroll_button</name>
+    <descr><![CDATA[
+Appearance of the left scroll button
+]]></descr>
+    <ref>image_button</ref>
+  </field>
+  <field>
+    <name>right_scroll_button</name>
+    <descr><![CDATA[
+Appearance of the right scroll button
+]]></descr>
+    <ref>image_button</ref>
+  </field>
+</appearance>

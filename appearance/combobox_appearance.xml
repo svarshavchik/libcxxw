@@ -1,0 +1,40 @@
+<appearance>
+  <name>combobox</name>
+  <default>theme</default>
+  <field>
+    <name>combobox_border</name>
+    <descr><![CDATA[
+Border around the combo-box's current element and button
+
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>combobox_button_focusoff_border</name>
+    <descr><![CDATA[
+Focus off border around the combo-box's button
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>combobox_button_focuson_border</name>
+    <descr><![CDATA[
+Focus on border around the combo-box's button
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>popup_button_image1</name>
+    <descr><![CDATA[
+Button image
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>popup_button_image2</name>
+    <descr><![CDATA[
+Pressed button image
+]]></descr>
+    <type>std::string</type>
+  </field>
+</appearance>
