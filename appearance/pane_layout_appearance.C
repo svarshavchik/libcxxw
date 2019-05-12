@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/pane_layout_appearance.H"
+#include "x/w/focus_border_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -11,8 +12,7 @@ pane_layout_appearance_properties::pane_layout_appearance_properties()
 	: border{"pane_border"},
 	  slider{"pane_slider"},
 	  slider_background_color{"pane_slider_background"},
-	  slider_focusoff_border{"pane_slider_focusoff_border"},
-	  slider_focuson_border{"pane_slider_focuson_border"},
+	  slider_focus_border{focus_border_appearance::base::slider_theme()},
 	  slider_horiz{"slider-horiz"},
 	  slider_vert{"slider-vert"}
 {

@@ -7,6 +7,7 @@
 
 #include <x/w/focusable_labelfwd.H>
 #include <x/w/focusable_labelobj.H>
+#include <x/w/focus_border_appearance.H>
 #include <x/w/textlabel.H>
 #include <x/w/focusable.H>
 #include <x/w/alignment.H>
@@ -23,11 +24,10 @@ LIBCXXW_NAMESPACE_START
 
 struct focusable_label_config : public label_config {
 
-	//! No focus border
-	border_arg off_border="inputfocusoff_border";
+	//! Input focus appearance.
 
-	//! Focus border
-	border_arg on_border="inputfocuson_border";
+	const_focus_border_appearance focus_border=
+		focus_border_appearance::base::theme();
 
 	//! Destructor
 	~focusable_label_config();

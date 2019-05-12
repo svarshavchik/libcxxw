@@ -220,6 +220,8 @@ main_window->on_stabilized
         ([&amp;]
          (const &ns;::w::image_button_appearance &amp;appearance)
          {
+             appearance->focus_border=
+                &ns;::w::focus_border_appearance::base::visible_thin_theme();
              appearance->set_distinct_focusoff_border();
              appearance->images={icon_set[0], icon_set[1]};
          });

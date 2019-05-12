@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/tablelayoutmanager.H"
 #include "x/w/table_appearance.H"
+#include "x/w/focus_border_appearance.H"
 #include "x/w/canvas.H"
 #include "x/w/synchronized_axis.H"
 #include "x/w/motion_event.H"
@@ -805,8 +806,8 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 			bordercontainer_elementObj<container_elementObj<
 				child_elementObj>>>>
 		::create(*header_border_container_impl,
-			 appearance->focusoff_border,
-			 appearance->focusoff_border,
+			 appearance->focus_border->focusoff_border,
+			 appearance->focus_border->focusoff_border,
 			 border_arg{}, border_arg{}, richtextptr{},
 			 0, 0, 0,
 			 header_border_container_impl);

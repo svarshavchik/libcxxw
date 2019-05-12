@@ -268,7 +268,7 @@ ll->insert_items(i+1, {
     </para>
 
     <para>
-      <ulink url="&link-function-x--w-operatorQQ--image;"><replaceable>"filename"</replaceable>_image</ulink>
+      <ulink url="&link-function-x--w-operatorQQ-image;"><replaceable>"filename"</replaceable>_image</ulink>
       specifies an image that gets loaded from a file, an
       <ulink url="&link-x--w--image-param;"><classname>&ns;::w::image_param</classname></ulink>.
       <filename>hierlist.C</filename> creates a list with two columns, so

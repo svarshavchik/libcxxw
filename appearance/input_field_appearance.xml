@@ -32,20 +32,11 @@ The input field's border.
     <type>border_arg</type>
   </field>
   <field>
-    <name>focusoff_border</name>
+    <name>focus_border</name>
     <descr><![CDATA[
-Inner border when the input field does not have input focus
-
+Input focus border for the input field.
 ]]></descr>
-    <type>border_arg</type>
-  </field>
-  <field>
-    <name>focuson_border</name>
-    <descr><![CDATA[
-Inner border when the input field has input focus
-
-]]></descr>
-    <type>border_arg</type>
+    <ref>focus_border</ref>
   </field>
   <field>
     <name>foreground_color</name>

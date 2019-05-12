@@ -6,6 +6,7 @@
 #define x_w_main_window_appearanceobj_h
 
 #include <x/w/main_window_appearancefwd.H>
+#include <x/w/focus_border_appearancefwd.H>
 #include <x/w/scrollbar_appearancefwd.H>
 #include <x/w/generic_window_appearancefwd.H>
 #include <x/w/border_arg.H>

@@ -1,0 +1,31 @@
+<appearance>
+  <name>focus_border</name>
+  <default>theme</default>
+  <default>none_theme</default>
+  <default>menu_theme</default>
+  <default>thin_theme</default>
+  <default>visible_thin_theme</default>
+  <default>slider_theme</default>
+  <default>combobox_button_theme</default>
+  <default>input_field_theme</default>
+  <default>list_theme</default>
+  <default>visible_list_theme</default>
+  <default>attached_button_theme</default>
+
+  <field>
+    <name>focusoff_border</name>
+    <descr><![CDATA[
+Default focus off border
+
+It must be the same size as the focus_on border.
+]]></descr>
+    <type>border_arg</type>
+  </field>
+  <field>
+    <name>focuson_border</name>
+    <descr><![CDATA[
+Default focus on border
+]]></descr>
+    <type>border_arg</type>
+  </field>
+</appearance>

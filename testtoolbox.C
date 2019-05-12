@@ -28,6 +28,7 @@
 #include "x/w/menubarfactory.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/shortcut.H"
+#include "x/w/focus_border_appearance.H"
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -168,7 +169,10 @@ static void create_toolbox_contents(const LIBCXX_NAMESPACE::w::toolboxlayoutmana
 				 custom_button->images=
 					 {icon_set[0], icon_set[1]};
 
-				 custom_button->set_distinct_focusoff_border();
+				 custom_button->focus_border=
+					 LIBCXX_NAMESPACE::w
+					 ::focus_border_appearance
+					 ::base::visible_thin_theme();
 			 });
 
 		auto b=f->create_radio(rg,

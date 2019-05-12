@@ -15,20 +15,15 @@ Vertical alignment, defaults to \c middle
     <type>valign</type>
   </field>
   <field>
-    <name>focusoff_border</name>
+    <name>focus_border</name>
     <descr><![CDATA[
-Default focus off border
+Image button's focus border.
 
-It is a transparent border the same size as the focus_on border.
+Defaults to
+\ref focus_border_appearance "INSERT_LIBX_NAMESPACE::w::focus_border_appearance::base::theme()",
+and can be set to visible_theme().
 ]]></descr>
-    <type>border_arg</type>
-  </field>
-  <field>
-    <name>focuson_border</name>
-    <descr><![CDATA[
-Default focus on border
-]]></descr>
-    <type>border_arg</type>
+    <ref>focus_border</ref>
   </field>
   <field>
     <name>images</name>

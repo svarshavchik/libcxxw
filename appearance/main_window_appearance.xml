@@ -51,18 +51,11 @@ Menu button is clicked.
     <type>color_arg</type>
   </field>
   <field>
-    <name>menu_inputfocusoff_border</name>
+    <name>menu_focus_border</name>
     <descr><![CDATA[
-Menu button does not have keyboard focus
+Input focus border for menu buttons
 ]]></descr>
-    <type>border_arg</type>
-  </field>
-  <field>
-    <name>menu_inputfocuson_border</name>
-    <descr><![CDATA[
-Menu button has keyboard focus
-]]></descr>
-    <type>border_arg</type>
+    <ref>focus_border</ref>
   </field>
   <field>
     <name>menubar_border</name>

@@ -10,18 +10,11 @@ Border around the combo-box's current element and button
     <type>border_arg</type>
   </field>
   <field>
-    <name>combobox_button_focusoff_border</name>
+    <name>button_focus_border</name>
     <descr><![CDATA[
-Focus off border around the combo-box's button
+Focus border around the combo-box's button
 ]]></descr>
-    <type>border_arg</type>
-  </field>
-  <field>
-    <name>combobox_button_focuson_border</name>
-    <descr><![CDATA[
-Focus on border around the combo-box's button
-]]></descr>
-    <type>border_arg</type>
+    <ref>focus_border</ref>
   </field>
   <field>
     <name>popup_button_image1</name>

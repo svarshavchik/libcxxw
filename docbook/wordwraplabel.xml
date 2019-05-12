@@ -141,11 +141,11 @@ See COPYING for distribution information.
 	parameter sets the font for the following text.
 	<literal>#include &lt;&ns;/w/font_literals.H&gt;</literal>
 	enables
-	<ulink url="&link-function-x--w-operatorQQ--font;">"<replaceable>description</replaceable>"<literal>_font</literal>
+	<ulink url="&link-function-x--w-operatorQQ-font;">"<replaceable>description</replaceable>"<literal>_font</literal>
 	  decorators</ulink>.
 	<literal>#include &lt;&ns;/w/text_param_literals.H&gt;</literal>
 	enables
-	<ulink url="&link-function-x--w-operatorQQ--theme-font;">"<replaceable>description</replaceable>"<literal>_theme_font</literal>
+	<ulink url="&link-function-x--w-operatorQQ-theme-font;">"<replaceable>description</replaceable>"<literal>_theme_font</literal>
 	decorators</ulink>.
       </para>
     </listitem>

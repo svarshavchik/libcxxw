@@ -28,6 +28,7 @@
 #include <x/w/menubarfactory.H>
 #include <x/w/listlayoutmanager.H>
 #include <x/w/shortcut.H>
+#include <x/w/focus_border_appearance.H>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -170,7 +171,9 @@ static void create_toolbox_contents(const x::w::toolboxlayoutmanager &tlm)
 				 // replace the invisible border when there's
 				 // no focus with one that's visually visible.
 
-				 custom->set_distinct_focusoff_border();
+				 custom->focus_border=
+					 x::w::focus_border_appearance
+					 ::base::visible_thin_theme();
 
 				 // And replace the images with our custom ones:
 				 custom->images={icon_set[0], icon_set[1]};

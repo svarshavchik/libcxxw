@@ -28,6 +28,7 @@
 #include "x/w/input_field.H"
 #include "x/w/input_field_config.H"
 #include "x/w/input_field_appearance.H"
+#include "x/w/focus_border_appearance.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/text_param.H"
 #include "x/w/scrollbar.H"
@@ -262,8 +263,8 @@ factoryObj::create_input_field(const text_param &text,
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({config.appearance->border,
-		  config.appearance->focusoff_border,
-		  config.appearance->focuson_border,
+		  config.appearance->focus_border->focusoff_border,
+		  config.appearance->focus_border->focuson_border,
 		  .2,
 		  config.appearance->background_color,
 		  impl_mixin,

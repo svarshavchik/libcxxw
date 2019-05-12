@@ -9,18 +9,11 @@ Scroll-bar's background color
     <type>color_arg</type>
   </field>
   <field>
-    <name>focusoff_border</name>
+    <name>focus_border</name>
     <descr><![CDATA[
-No focus around the scrollbar
+Scrollbar focus border
 ]]></descr>
-    <type>border_arg</type>
-  </field>
-  <field>
-    <name>focuson_border</name>
-    <descr><![CDATA[
-Focus around the scrollbar
-]]></descr>
-    <type>border_arg</type>
+    <ref>focus_border</ref>
   </field>
   <field>
     <name>horizontal1</name>

@@ -12,20 +12,17 @@ The border around the list.
     <type>border_arg</type>
   </field>
   <field>
-    <name>focusoff_border</name>
+    <name>focus_border</name>
     <descr><![CDATA[
-Inner border around the list when the list does not have input focus
+Input focus border around the list.
 
+This is usually list_theme().
 Note that if the list has column_borders, they connect to the
-input focus frame, so this should be visible. The default
-is "listfocusoff_border", which is empty, no border drawn around
-the list when it has no focus. This border is the same size as
-"listfocuson_border".
-Use visible_focusoff_border() to install the default theme
-focusoff border.
+input focus frame, so this should be visible, use visible_list_theme()
+to have a focus border that's always visually visible.
 
 ]]></descr>
-    <type>border_arg</type>
+    <ref>focus_border</ref>
   </field>
   <field>
     <name>focuson_border</name>

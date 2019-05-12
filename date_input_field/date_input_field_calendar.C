@@ -436,9 +436,8 @@ void date_input_field_calendarObj
 			 // Zap the focus borders around the focusable label,
 			 // and create empty focusable labels. calendar_grid()
 			 // will fill them in, in just a moment.
-
-			 config.off_border=border_infomm{};
-			 config.on_border=border_infomm{};
+			 config.focus_border=focus_border_appearance::base
+				 ::none_theme();
 
 			 for (int row=0; row<6; ++row)
 			 {

@@ -8,6 +8,7 @@
 #include <x/w/input_field_appearancefwd.H>
 #include <x/w/popup_list_appearancefwd.H>
 #include <x/w/scrollbar_appearancefwd.H>
+#include <x/w/focus_border_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>

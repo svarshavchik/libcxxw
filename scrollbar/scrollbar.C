@@ -16,6 +16,7 @@
 #include "x/w/rgb.H"
 #include "x/w/factory.H"
 #include "x/w/scrollbar_images_appearance.H"
+#include "x/w/focus_border_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -105,8 +106,9 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 	auto ffcontainer_impl=
 		create_nonrecursive_visibility_focusframe_impl
 		(parent_container,
-		 conf.appearance->focusoff_border,
-		 conf.appearance->focuson_border, 0, 0, background_color);
+		 conf.appearance->focus_border->focusoff_border,
+		 conf.appearance->focus_border->focuson_border,
+		 0, 0, background_color);
 
 	// The focus frame will manage the actual scrollbar element. Create
 	// the implementation object. Since the focus-framed element will

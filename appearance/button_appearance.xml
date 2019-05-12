@@ -59,17 +59,10 @@ Button's border.
     <type>border_arg</type>
   </field>
   <field>
-    <name>inputfocusoff_border</name>
+    <name>focus_border</name>
     <descr><![CDATA[
-Inner border when the button does not have input focus
+Button input focus border
 ]]></descr>
-    <type>border_arg</type>
-  </field>
-  <field>
-    <name>inputfocuson_border</name>
-    <descr><![CDATA[
-Inner border when the button has input focus
-]]></descr>
-    <type>border_arg</type>
+    <ref>focus_border</ref>
   </field>
 </appearance>

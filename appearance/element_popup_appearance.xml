@@ -30,18 +30,11 @@ Popup background color
     <type>color_arg</type>
   </field>
   <field>
-    <name>button_focusoff_border</name>
+    <name>button_focus_border</name>
     <descr><![CDATA[
 Button focus border.
 ]]></descr>
-    <type>border_arg</type>
-  </field>
-  <field>
-    <name>button_focuson_border</name>
-    <descr><![CDATA[
-Button focus border.
-]]></descr>
-    <type>border_arg</type>
+    <ref>focus_border</ref>
   </field>
   <field>
     <name>toplevel_appearance</name>

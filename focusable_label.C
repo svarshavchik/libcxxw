@@ -29,8 +29,8 @@ focusable_label factoryObj
 {
 	auto ff=create_nonrecursive_visibility_focusframe_impl
 		(get_container_impl(),
-		 config.off_border,
-		 config.on_border, 0, 0);
+		 config.focus_border->focusoff_border,
+		 config.focus_border->focuson_border, 0, 0);
 
 	textlabel_config internal_config{config};
 

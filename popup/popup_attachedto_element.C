@@ -12,6 +12,7 @@
 #include "peephole/peepholed_toplevel.H"
 #include "gridlayoutmanager.H"
 #include "x/w/element_popup_appearance.H"
+#include "x/w/focus_border_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -122,8 +123,8 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 			 appearance->popup_background_color,
 			 appearance->button_image1,
 			 appearance->button_image2,
-			 appearance->button_focusoff_border,
-			 appearance->button_focuson_border
+			 appearance->button_focus_border->focusoff_border,
+			 appearance->button_focus_border->focuson_border,
 		 });
 
 	return {real_impl, popup_imagebutton, glm, popup};

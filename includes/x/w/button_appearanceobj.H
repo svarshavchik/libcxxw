@@ -6,6 +6,7 @@
 #define x_w_button_appearanceobj_h
 
 #include <x/w/button_appearancefwd.H>
+#include <x/w/focus_border_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/dim_arg.H>

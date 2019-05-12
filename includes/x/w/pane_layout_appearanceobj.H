@@ -6,6 +6,7 @@
 #define x_w_pane_layout_appearanceobj_h
 
 #include <x/w/pane_layout_appearancefwd.H>
+#include <x/w/focus_border_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/rgb.H>

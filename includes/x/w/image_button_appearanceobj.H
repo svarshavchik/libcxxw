@@ -6,6 +6,7 @@
 #define x_w_image_button_appearanceobj_h
 
 #include <x/w/image_button_appearancefwd.H>
+#include <x/w/focus_border_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/alignment.H>
 #include <x/functional.H>
@@ -59,13 +60,6 @@ public:
 	const_image_button_appearance
 	do_modify(const function<void(const image_button_appearance &)> &)
 		const;
-
-	//! Replace focusoff_border with a visible one.
-
-	//! Default focusoff_border of the same size, but visually
-	//! distinct.
-
-	void set_distinct_focusoff_border();
 };
 
 LIBCXXW_NAMESPACE_END

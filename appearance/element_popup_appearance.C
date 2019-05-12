@@ -4,7 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/element_popup_appearance.H"
-#include <x/w/scrollbar_appearance.H>
+#include "x/w/scrollbar_appearance.H"
+#include "x/w/focus_border_appearance.H"
 #include <x/w/generic_window_appearance.H>
 
 LIBCXXW_NAMESPACE_START
@@ -16,9 +17,8 @@ element_popup_appearance_properties::element_popup_appearance_properties()
 	  popup_background_color{"element_attached_popup_background_color"},
 	  popup_scrollbars_background_color
 	{"element_attached_popup_background_color"},
-	  button_focusoff_border
-	{"element_attached_popup_button_focusoff_border"},
-	  button_focuson_border{"element_attached_popup_button_focuson_border"},
+	  button_focus_border{focus_border_appearance
+			      ::base::attached_button_theme()},
 	  toplevel_appearance{generic_window_appearance::base
 			      ::main_window_theme()},
 	  button_image1{"scroll-right1"},

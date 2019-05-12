@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "popup_imagebutton.H"
+#include "x/w/focus_border_appearance.H"
 #include "combobox/custom_combobox_container_impl.H"
 #include "combobox/custom_comboboxlayoutmanager.H"
 #include "combobox/custom_combobox_popup_container_impl.H"
@@ -472,8 +473,8 @@ focusable_container new_custom_comboboxlayoutmanager
 			  appearance->background_color,
 			  appearance->popup_button_image1,
 			  appearance->popup_button_image2,
-			  appearance->combobox_button_focusoff_border,
-			  appearance->combobox_button_focuson_border,
+			  appearance->button_focus_border->focusoff_border,
+			  appearance->button_focus_border->focuson_border,
 		});
 
 	// Point the popup container to the current selection element and

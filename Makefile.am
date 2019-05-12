@@ -66,6 +66,7 @@ libcxxw_la_SOURCES=\
 	appearance/date_input_field_appearance.C    \
 	appearance/element_popup_appearance.C       \
 	appearance/file_dialog_appearance.C	    \
+	appearance/focus_border_appearance.C        \
 	appearance/font_picker_appearance.C	    \
 	appearance/frame_appearance.C		    \
 	appearance/generic_window_appearance.C	    \

@@ -5,13 +5,12 @@
 #include "libcxxw_config.h"
 #include "x/w/scrollbar_appearance.H"
 #include "x/w/scrollbar_images_appearance.H"
-
+#include "x/w/focus_border_appearance.H"
 LIBCXXW_NAMESPACE_START
 
 scrollbar_appearance_properties::scrollbar_appearance_properties()
 	: background_color{"scrollbar_background_color"},
-	  focusoff_border{"scrollbarfocusoff_border"},
-	  focuson_border{"scrollbarfocuson_border"},
+	  focus_border{focus_border_appearance::base::scrollbar_theme()},
 	  horizontal1{scrollbar_images_appearance::base::horizontal1()},
 	  horizontal2{scrollbar_images_appearance::base::horizontal2()},
 	  vertical1{scrollbar_images_appearance::base::vertical1()},

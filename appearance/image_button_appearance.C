@@ -4,21 +4,16 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/image_button_appearance.H"
+#include "x/w/focus_border_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
 image_button_appearance_properties
 ::image_button_appearance_properties(const std::vector<std::string> &images)
 	: alignment{valign::middle},
-	  focusoff_border{"thin_inputfocusoff_border"},
-	  focuson_border{"thin_inputfocuson_border"},
+	  focus_border{focus_border_appearance::base::thin_theme()},
 	  images{images}
 {
-}
-
-void image_button_appearanceObj::set_distinct_focusoff_border()
-{
-	focusoff_border="thin_inputfocusoff_border_color2";
 }
 
 image_button_appearance_properties::~image_button_appearance_properties()=default;
@@ -86,7 +81,8 @@ static auto create_book_button(const std::vector<std::string> &images)
 	auto appearance=image_button_appearance::create(images);
 
 	appearance->alignment=valign::bottom;
-	appearance->set_distinct_focusoff_border();
+	appearance->focus_border=
+		focus_border_appearance::base::visible_thin_theme();
 
 	return appearance;
 }

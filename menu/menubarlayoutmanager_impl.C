@@ -18,6 +18,7 @@
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/menubarfactoryobj.H"
 #include "x/w/main_window_appearance.H"
+#include "x/w/focus_border_appearance.H"
 #include "focus/focusframelayoutimpl.H"
 #include "x/w/impl/background_color.H"
 #include "focusable_owner_container.H"
@@ -107,8 +108,8 @@ menu menubarlayoutmanagerObj::implObj
 
 	auto menu_impl=ref<menuObj::implObj>
 		::create(menu_popup,
-			 appearance->menu_inputfocusoff_border,
-			 appearance->menu_inputfocuson_border,
+			 appearance->menu_focus_border->focusoff_border,
+			 appearance->menu_focus_border->focuson_border,
 			 container_impl);
 
 	auto hotspot_impl=ref<menubar_hotspot_implObj>

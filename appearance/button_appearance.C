@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/button_appearance.H"
+#include "x/w/focus_border_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,9 +18,7 @@ button_appearance_properties::button_appearance_properties()
 	  right_border{"normal_button_border"},
 	  top_border{"normal_button_border"},
 	  bottom_border{"normal_button_border"},
-
-	  inputfocusoff_border{"inputfocusoff_border"},
-	  inputfocuson_border{"inputfocuson_border"}
+	  focus_border{focus_border_appearance::base::theme()}
 {
 }
 

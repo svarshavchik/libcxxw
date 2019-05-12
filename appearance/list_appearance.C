@@ -6,13 +6,13 @@
 #include "x/w/list_appearance.H"
 #include "x/w/generic_window_appearance.H"
 #include "x/w/scrollbar_appearance.H"
+#include "x/w/focus_border_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
 list_appearance_properties::list_appearance_properties()
 	: list_border{"list_border"},
-	  focusoff_border{"listfocusoff_border"},
-	  focuson_border{"listfocuson_border"},
+	  focus_border{focus_border_appearance::base::list_theme()},
 	  v_padding{"list_v_padding"},
 	  h_padding{"list_h_padding"},
 	  indent{"list_indent"},
@@ -33,11 +33,6 @@ list_appearance_properties::list_appearance_properties()
 }
 
 list_appearance_properties::~list_appearance_properties()=default;
-
-void list_appearanceObj::visible_focusoff_border()
-{
-	focusoff_border="listvisiblefocusoff_border";
-}
 
 list_appearanceObj::list_appearanceObj()=default;
 
@@ -88,7 +83,8 @@ static auto create_table_theme()
 		->modify([]
 			 (const auto &c)
 			 {
-				 c->visible_focusoff_border();
+				 c->focus_border=focus_border_appearance
+					 ::base::visible_list_theme();
 			 });
 
 	return c;
@@ -107,7 +103,8 @@ static auto create_table_pane_theme()
 		->modify([]
 			 (const auto &c)
 			 {
-				 c->visible_focusoff_border();
+				 c->focus_border=focus_border_appearance
+					 ::base::visible_list_theme();
 			 });
 
 	return c;

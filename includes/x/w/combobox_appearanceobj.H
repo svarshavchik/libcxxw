@@ -6,6 +6,7 @@
 #define x_w_combobox_appearanceobj_h
 
 #include <x/w/combobox_appearancefwd.H>
+#include <x/w/focus_border_appearancefwd.H>
 #include <x/w/popup_list_appearanceobj.H>
 #include <x/w/border_arg.H>
 

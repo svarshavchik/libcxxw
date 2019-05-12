@@ -6,6 +6,7 @@
 #include "image_button.H"
 #include "image_button_internal.H"
 #include "image_button_internal_impl.H"
+#include "x/w/focus_border_appearance.H"
 #include "x/w/impl/focus/standard_focusframecontainer_element.H"
 #include "x/w/impl/focus/standard_focusframecontainer_element_impl.H"
 #include "icon.H"
@@ -271,8 +272,8 @@ do_create_image_button(const create_image_button_info &info,
 	auto focus_frame_impl=
 		create_always_visible_focusframe_impl
 		(image_button_outer_container_impl,
-		 info.appearance->focusoff_border,
-		 info.appearance->focuson_border, 0, 0);
+		 info.appearance->focus_border->focusoff_border,
+		 info.appearance->focus_border->focuson_border, 0, 0);
 
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.

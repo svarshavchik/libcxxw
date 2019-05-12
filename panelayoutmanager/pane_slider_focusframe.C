@@ -15,6 +15,7 @@
 #include "x/w/key_event.H"
 #include "x/w/motion_event.H"
 #include "x/w/pane_layout_appearance.H"
+#include "x/w/focus_border_appearance.H"
 #include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
@@ -24,8 +25,8 @@ pane_slider_focusframeObj
 			    const const_pane_layout_appearance &appearance,
 			    const cursor_pointer &custom_pointer)
 	: superclass_t{custom_pointer,
-		appearance->slider_focusoff_border,
-		appearance->slider_focuson_border,
+		appearance->slider_focus_border->focusoff_border,
+		appearance->slider_focus_border->focuson_border,
 		0,
 		0,
 		parent,

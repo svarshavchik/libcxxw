@@ -23,18 +23,11 @@ Slider's background color
     <type>color_arg</type>
   </field>
   <field>
-    <name>slider_focusoff_border</name>
+    <name>slider_focus_border</name>
     <descr><![CDATA[
-Slider's focusoff border
+Slider's focus focus border
 ]]></descr>
-    <type>border_arg</type>
-  </field>
-  <field>
-    <name>slider_focuson_border</name>
-    <descr><![CDATA[
-Slider's focuson border.
-]]></descr>
-    <type>border_arg</type>
+    <ref>focus_border</ref>
   </field>
   <field>
     <name>slider_horiz</name>

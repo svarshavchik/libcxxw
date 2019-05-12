@@ -4,13 +4,14 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/combobox_appearance.H"
+#include "x/w/focus_border_appearance.H"
 
 LIBCXXW_NAMESPACE_START
 
 combobox_appearance_properties::combobox_appearance_properties()
 	: combobox_border{"combobox_border"},
-	  combobox_button_focusoff_border{"comboboxbuttonfocusoff_border"},
-	  combobox_button_focuson_border{"comboboxbuttonfocuson_border"},
+	  button_focus_border{focus_border_appearance
+			      ::base::combobox_button_theme()},
 	  popup_button_image1{"scroll-down1"},
 	  popup_button_image2{"scroll-down2"}
 {

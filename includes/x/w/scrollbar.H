@@ -17,22 +17,22 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Information passed to scrollbar callbacks.
+//! Information passed to scroll-bar callbacks.
 
-//! When dragging the scrollbar by its handle, the official value
-//! of the scrollbar changes only when the scrollbar handle gets
-//! released. \c dragged_value reflects the value of the scrollbar
+//! When dragging the scroll-bar by its handle, the official value
+//! of the scroll-bar changes only when the scroll-bar handle gets
+//! released. \c dragged_value reflects the value of the scroll-bar
 //! as its being dragged, while \c value remains unchanged.
 //!
-//! The callback has two options for processing scrollbar callback events:
+//! The callback has two options for processing scroll-bar callback events:
 //!
 //! - handle only events when value and dragged_value are the same. This
-//! results in the callback not responding while the scrollbar is
-//! dragging, until the scrollbar's handle gets released.
+//! results in the callback not responding while the scroll-bar is
+//! dragging, until the scroll-bar's handle gets released.
 //!
 //! - handle all events, and always used dragged_value. This results in
-//! the callback responding to the scrollbar while it's dragged, and to all
-//! other events that update the scrollbar position.
+//! the callback responding to the scroll-bar while it's dragged, and to all
+//! other events that update the scroll-bar position.
 
 struct LIBCXX_HIDDEN scrollbar_info_t {
 
@@ -50,31 +50,31 @@ struct LIBCXX_HIDDEN scrollbar_info_t {
 	const busy &mcguffin;
 };
 
-//! Scrollbar's initial configuration.
+//! Scroll-Bar's initial configuration.
 
-//! This is specified when creating a new scrollbar, or when reconfigure()ing it.
+//! This is specified when creating a new scroll-bar, or when reconfigure()ing it.
 
 struct scrollbar_config {
 
-	//! The range of the scrollbar's value.
+	//! The range of the scroll-bar's value.
 
 	scroll_v_t range=1;
 
-	//! Scrollbar page size.
+	//! Scroll-Bar page size.
 
-	//! This translates to the size of the scrollbar's handle. Must be
+	//! This translates to the size of the scroll-bar's handle. Must be
 	//! at least 1.
 	scroll_v_t page_size=1;
 
 	//! Increment size.
 
-	//! How much the scrollbar's up and down buttons adjust its value
+	//! How much the scroll-bar's up and down buttons adjust its value
 	scroll_v_t increment=1;
 
-	//! The current value of the scrollbar.
+	//! The current value of the scroll-bar.
 
-	//! When the scrollbar gets created, this is the initial value.
-	//! The current value of the scrollbar will always be
+	//! When the scroll-bar gets created, this is the initial value.
+	//! The current value of the scroll-bar will always be
 	//! between 0 and range-page_size.
 	scroll_v_t value=0;
 
@@ -87,7 +87,7 @@ struct scrollbar_config {
 			increment == o.increment;
 	}
 
-	//! Scrollbar's appearance
+	//! Scroll-bar's appearance
 
 	const_scrollbar_appearance appearance=
 		scrollbar_appearance::base::theme();
