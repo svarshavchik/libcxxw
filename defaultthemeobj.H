@@ -25,7 +25,6 @@
 #include "theme_parser_lockfwd.H"
 
 #include <string>
-#include <unordered_map>
 #include <xcb/xproto.h>
 #include <string_view>
 
@@ -93,37 +92,7 @@ public:
 	//! My screen
 	const xcb_screen_t *screen;
 
-	//! Parse fonts from the configuration file
-	void load_fonts(const theme_parser_lock &root_lock);
-
  public:
-	//! Load font definitions.
-
-	//! This is also used by the SXG file parser.
-	//! The functor does not get invoked if the <font> specifies a
-	//! "from" that has not been parsed yet.
-
-	template<typename install_functor, typename lookup_functor>
-		void load_fonts(const theme_parser_lock &lock,
-				install_functor &&install,
-				lookup_functor &&lookup) const
-	{
-		do_load_fonts(lock,
-			      make_function<void (const std::string &,
-						  const font &)>
-			      (std::forward<install_functor>(install)),
-			      make_function<bool (const std::string &, font &)>
-			      (std::forward<lookup_functor>(lookup)));
-	}
-
-	//! Load font definitions.
-
-	void do_load_fonts(const theme_parser_lock &lock,
-			   const function<void (const std::string &,
-						const font &)> &install,
-			   const function<bool (const std::string &,font &)>
-			   &lookup) const;
-
 	//! Retrieve theme dimension
 
 	//! The given dimension is specified in the theme. The dimension

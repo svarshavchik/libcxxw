@@ -18,6 +18,7 @@
 #include "pixmap.H"
 #include "screen.H"
 #include "defaulttheme.H"
+#include "uicompiler.H"
 #include "x/w/impl/background_color.H"
 #include <x/locale.H>
 #include <x/imbue.H>
@@ -1178,24 +1179,27 @@ inline void sxg_parserObj::parse_fonts(const theme_parser_lock &root)
 {
 	auto lock=root.clone();
 
-	theme->load_fonts(lock,
-			  [&, this]
-			  (const std::string &id, const auto &new_font)
-			  {
-				  fonts.insert({id, new_font});
-			  },
-			  [&, this]
-			  (const std::string &from,
-			   auto &new_font)
-			  {
-				  auto iter=fonts.find(from);
+	uicompiler::load_fonts
+		(lock,
+		 [&, this]
+		 (const std::string &id, const font &new_font)
+		 {
+			 fonts.emplace(id, new_font);
+		 },
+		 [&, theme=this->theme]
+		 (const std::string &from)->std::optional<font>
+		 {
+			 auto iter=theme->fonts.find(from);
 
-				  if (iter == fonts.end())
-					  return false;
+			 if (iter != theme->fonts.end())
+				 return iter->second;
 
-				  new_font=iter->second;
-				  return true;
-			  });
+			 iter=fonts.find(from);
+			 if (iter != fonts.end())
+				 return iter->second;
+
+			 return std::nullopt;
+		 });
 }
 
 // Parse a text <picture>

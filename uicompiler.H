@@ -18,6 +18,7 @@
 
 #include <x/vector.H>
 #include <tuple>
+#include <optional>
 #include <unordered_map>
 #include <variant>
 
@@ -49,6 +50,36 @@ public:
 	uicompiler(const theme_parser_lock &lock,
 		   uigeneratorsObj &generators,
 		   bool allowthemerefs);
+
+	//! Load font definitions.
+
+	//! This is also used by the SXG file parser.
+	//! lookup_functor searches for an existing font. If it's not found
+	//! install_functor gets invoked to save the new font definition.
+
+	template<typename install_functor, typename lookup_functor>
+		static void load_fonts(const theme_parser_lock &lock,
+				       install_functor &&install,
+				       lookup_functor &&lookup)
+	{
+		do_load_fonts(lock,
+			      make_function<void (const std::string &,
+						  const font &)>
+			      (std::forward<install_functor>(install)),
+			      make_function<std::optional<font>
+			      (const std::string &)>
+			      (std::forward<lookup_functor>(lookup)));
+	}
+
+	//! Type-erased do_load_fonts
+
+	static void do_load_fonts(const theme_parser_lock &lock,
+				  const function<void(const std::string &,
+						      const font &)> &install,
+				  const function<std::optional<font>
+				  (const std::string &)>
+				  &lookup);
+
 
 private:
 

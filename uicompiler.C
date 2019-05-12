@@ -822,6 +822,23 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 				 id));
 	}
 
+	load_fonts(root_lock.clone(),
+		   [&]
+		   (const std::string &id, const font &new_font)
+		   {
+			   generators.fonts.emplace(id, new_font);
+		   },
+		   [&]
+		   (const std::string &from) -> std::optional<font>
+		   {
+			   auto iter=generators.fonts.find(from);
+
+			   if (iter == generators.fonts.end())
+				   return std::nullopt;
+
+			   return iter->second;
+		   });
+
 	xpath=lock->get_xpath("/theme/layout | /theme/factory");
 
 	// Build the list of uncompiled_elements, by id.
@@ -893,6 +910,133 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 		throw EXCEPTION(gettextmsg(_("Unrecognized %1% type \"%2%\""),
 					   name,
 					   type));
+	}
+}
+
+void uicompiler::do_load_fonts(const theme_parser_lock &lock,
+			       const function<void (const std::string &,
+						    const font &)> &install,
+			       const function<std::optional<font>
+			       (const std::string &)> &lookup)
+{
+	auto xpath=lock->get_xpath("font");
+
+	size_t count=xpath->count();
+
+	bool parsed;
+
+	// Repeatedly pass over all fonts, parsing the ones that are not based
+	// on unparsed fonts.
+
+	do
+	{
+		parsed=false;
+
+		for (size_t i=0; i<count; ++i)
+		{
+			xpath->to_node(i+1);
+
+			auto id=lock->get_any_attribute("id");
+
+			if (id.empty())
+				throw EXCEPTION(_("no id specified for font"));
+
+			if (lookup(id))
+				continue; // Did this one already.
+
+			font new_font;
+
+			auto from=lock->get_any_attribute("from");
+
+			if (!from.empty())
+			{
+				auto ret=lookup(from);
+
+				if (!ret)
+					// Not yet parsed
+					continue;
+			}
+
+			static const struct {
+				const char *name;
+				font &(font::*handler)(double);
+			} double_values[]={
+				{ "point_size", &font::set_point_size},
+				{ "scaled_size", &font::set_scaled_size},
+				{ "scale", &font::scale},
+			};
+
+			for (const auto &v:double_values)
+			{
+				double value;
+				auto node=lock.clone();
+
+				auto xpath=node->get_xpath(v.name);
+
+				if (xpath->count() == 0)
+					continue;
+
+				xpath->to_node();
+
+				std::istringstream i(node->get_text());
+
+				imbue i_parse{lock.c_locale, i};
+
+				i >> value;
+
+				if (i.fail())
+					throw EXCEPTION(gettextmsg(_("Cannot parse %1%, font id=%2%"),
+								   v.name,
+								   id));
+				(new_font.*(v.handler))(value);
+			}
+
+			static const struct {
+				const char *name;
+				font &(font::*handler1)(const std::string &);
+				font &(font::*handler2)(const std::string_view &);
+			} string_values[]={
+				{ "family", &font::set_family, nullptr},
+				{ "foundry", &font::set_foundry, nullptr},
+				{ "style", &font::set_style, nullptr},
+				{ "weight", nullptr, &font::set_weight},
+				{ "spacing", nullptr, &font::set_spacing},
+				{ "slant", nullptr, &font::set_slant},
+				{ "width", nullptr, &font::set_width},
+			};
+
+			for (const auto &v:string_values)
+			{
+				auto node=lock.clone();
+
+				auto xpath=node->get_xpath(v.name);
+
+				if (xpath->count() == 0)
+					continue;
+
+				xpath->to_node();
+
+				if (v.handler1)
+					(new_font.*(v.handler1))
+						(node->get_text());
+				if (v.handler2)
+					(new_font.*(v.handler2))
+						(node->get_text());
+			}
+			install(id, new_font);
+			parsed=true;
+		}
+	} while (parsed);
+
+	for (size_t i=0; i<count; ++i)
+	{
+		xpath->to_node(i+1);
+
+		auto id=lock->get_any_attribute("id");
+
+		if (!lookup(id))
+			throw EXCEPTION(gettextmsg(_("circular or non-existent dependency of font id=%1%"),
+						   id));
 	}
 }
 
