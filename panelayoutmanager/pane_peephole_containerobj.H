@@ -45,7 +45,8 @@ public:
 
 	//! Constructor
 	pane_peephole_containerObj(const ref<implObj> &impl,
-				   const layout_impl &container_layout_impl);
+				   const layout_impl &container_layout_impl,
+				   dim_t reference_size);
 
 	//! Destructor
 	~pane_peephole_containerObj();

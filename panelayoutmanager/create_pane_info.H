@@ -18,6 +18,8 @@ LIBCXXW_NAMESPACE_START
 //!
 //! The generic factoryObj calls get_container_impl(). get_container_impl()
 //! creates a container for the new pane's peephole, and the peephole.
+//! Additionally, the reference_size gets computed based on the specified
+//! size in the appearance object.
 //! The new element gets created in the peephole.
 //!
 //! When created() gets called we pick up this ball, and run with it.
@@ -27,6 +29,7 @@ struct LIBCXX_HIDDEN create_pane_info_t {
 	ref<pane_peephole_containerObj
 	    ::implObj> peephole_container_impl;
 	ref<pane_peepholeObj::implObj> peephole_impl;
+	dim_t reference_size;
 };
 
 

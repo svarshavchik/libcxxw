@@ -320,9 +320,10 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! Compute initial pane metrics.
 
 	//! Invoke from create_pane_peephole() to set the initial metrics
-	//! for the new pane's peephole.
+	//! for the new pane's peephole, and return its reference size,
+	//! discretely.
 
-	virtual metrics::horizvert_axi
+	virtual std::tuple<metrics::horizvert_axi, dim_t>
 		initial_peephole_metrics(const dim_arg &size)=0;
 
 	//! Style for panes' peepholes, and scroll-bar visibilities.
@@ -474,7 +475,7 @@ class panelayoutmanagerObj::implObj::orientation
 
 	//! Implement initial_peephole_metrics().
 
-	metrics::horizvert_axi
+	std::tuple<metrics::horizvert_axi, dim_t>
 		initial_peephole_metrics(const dim_arg &size) override;
 
 	//! Find the element in the pane container.

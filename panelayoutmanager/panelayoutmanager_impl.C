@@ -133,6 +133,9 @@ void panelayoutmanagerObj::implObj
 create_pane_info_t panelayoutmanagerObj::implObj
 ::create_pane_peephole(panefactory_implObj &factory)
 {
+	auto [metrics, reference_size] =
+		initial_peephole_metrics(factory.appearance->size);
+
 	// Container for the peephole and its scrollbar.
 
 	auto peephole_container_impl=ref<pane_peephole_containerObj::implObj>
@@ -145,10 +148,9 @@ create_pane_info_t panelayoutmanagerObj::implObj
 	auto peephole_impl=ref<pane_peepholeObj::implObj>
 		::create(peephole_container_impl,
 			 child_element_init_params
-			 {{}, initial_peephole_metrics(factory.appearance
-						       ->size)});
+			 {{}, metrics});
 
-	return {peephole_container_impl, peephole_impl};
+	return {peephole_container_impl, peephole_impl, reference_size};
 }
 
 namespace {
@@ -297,7 +299,8 @@ pane_peephole_container panelayoutmanagerObj::implObj
 	// Ok, we can now create the container.
 	auto pane=pane_peephole_container::create(pane_info
 						  .peephole_container_impl,
-						  pane_container_grid_impl);
+						  pane_container_grid_impl,
+						  pane_info.reference_size);
 
 	// How the new pane gets inserted into the pane container depends
 	// on the existing contents of the pane.
@@ -901,7 +904,7 @@ panelayoutmanagerObj::implObj::orientation<vertical>
 }
 
 template<>
-metrics::horizvert_axi
+std::tuple<metrics::horizvert_axi, dim_t>
 panelayoutmanagerObj::implObj::orientation<vertical>
 ::initial_peephole_metrics(const dim_arg &size)
 {
@@ -910,7 +913,7 @@ panelayoutmanagerObj::implObj::orientation<vertical>
 
 	auto s=theme->get_theme_dim_t(size, themedimaxis::height);
 
-	return { {0, 0, 0}, {s, s, s} };
+	return { { {0, 0, 0}, {s, s, s} }, s};
 }
 
 
@@ -1118,7 +1121,7 @@ panelayoutmanagerObj::implObj::orientation<horizontal>
 }
 
 template<>
-metrics::horizvert_axi
+std::tuple<metrics::horizvert_axi, dim_t>
 panelayoutmanagerObj::implObj::orientation<horizontal>
 ::initial_peephole_metrics(const dim_arg &size)
 {
@@ -1127,7 +1130,7 @@ panelayoutmanagerObj::implObj::orientation<horizontal>
 
 	auto s=theme->get_theme_dim_t(size, themedimaxis::width);
 
-	return { {s, s, s}, {0, 0, 0} };
+	return { { {s, s, s}, {0, 0, 0} }, s};
 }
 
 template<>
