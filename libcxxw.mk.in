@@ -1,0 +1,36 @@
+LIBCXX_XSLTPROC ?= xsltproc
+
+LIBCXXW_XINCLUDEDIR := $(dir $(lastword $(MAKEFILE_LIST)))
+
+# If this gets grokked from automake-generated Makefile, provide some
+# additional targets
+
+ifneq ($(AUTOMAKE),)
+.PHONY: distclean-libcxxw
+
+distclean: distclean-libcxxw
+
+distclean-libcxxw:
+	rm -f $(LIBCXXW_CLEANFILES)
+
+EXTRA_DIST += $(sort $(LIBCXXW_SOURCES))
+endif
+
+define EXTRACT_THEME_TEXT_INVOKE
+
+# Workaround for BUILT_SOURCES in all's dependencies being already etched in stone
+
+ifdef AUTOMAKE
+all: $(1)
+endif
+
+LIBCXXW_CLEANFILES += $(1)
+
+LIBCXXW_SOURCES += $(2)
+
+$(1): $(2) $(LIBCXXW_XINCLUDEDIR)/libcxxw.mk $(LIBCXXW_XINCLUDEDIR)extract-theme-text.xsl
+	$$(LIBCXX_XSLTPROC) $(LIBCXXW_XINCLUDEDIR)extract-theme-text.xsl $$< >$$@.tmp
+	mv -f $$@.tmp $$@
+endef
+
+EXTRACT_THEME_TEXT_GEN=$(eval $(call EXTRACT_THEME_TEXT_INVOKE,$(1),$(2)))

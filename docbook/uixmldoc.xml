@@ -2404,6 +2404,7 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	  </listitem>
 	</varlistentry>
 
+	<!--
 	<varlistentry>
 	  <term>
 	    <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink> fields
@@ -2412,11 +2413,26 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	    <blockquote>
 	      <informalexample>
 		<programlisting><![CDATA[
+<font id="ok_font">
+  <family>liberation mono</family>
+  <point_size>18</point_size>
+</font>
+
+
+<ok_label>${font:ok_font}Ok</ok_label>
 ]]></programlisting>
 	      </informalexample>
 	    </blockquote>
+	    <para>
+	      <classname>&ns;::w::text_param</classname> values contain
+	      text strings that initialize the
+	      <classname>&ns;::w::text_param</classname> using a
+	      <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>-formatted
+	      text string.
+	    </para>
 	  </listitem>
 	</varlistentry>
+-->
 	<varlistentry>
 	  <term>
 	    <ulink url="&link-enum-x--w-valign;"><classname>&ns;::w::valign</classname></ulink> fields

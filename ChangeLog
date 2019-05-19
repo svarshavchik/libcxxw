@@ -1,3 +1,8 @@
+2019-05-18  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Implement API for creating appearance objects from XML theme
+	files.
+
 0.22
 
 2019-04-27  Sam Varshavchik  <mrsam@courier-mta.com>

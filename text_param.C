@@ -71,8 +71,7 @@ text_param &text_param::operator()(const explicit_font &f)
 {
 	auto s=string.size();
 
-	if (fonts.find(s) != fonts.end() ||
-	    theme_fonts.find(s) != theme_fonts.end())
+	if (fonts.find(s) != fonts.end())
 		throw EXCEPTION(gettextmsg("Duplicate font specification."));
 
 	fonts.insert({s, f.f});
@@ -83,11 +82,10 @@ text_param &text_param::operator()(const theme_font &f)
 {
 	auto s=string.size();
 
-	if (fonts.find(s) != fonts.end() ||
-	    theme_fonts.find(s) != theme_fonts.end())
+	if (fonts.find(s) != fonts.end())
 		throw EXCEPTION(gettextmsg("Duplicate font specification."));
 
-	theme_fonts.insert({s, f.name});
+	fonts.insert({s, f.name});
 	return *this;
 }
 
@@ -172,8 +170,6 @@ richtextstring elementObj::implObj
 
 	for (const auto &p:t.fonts)
 		all_positions.insert(p.first);
-	for (const auto &p:t.theme_fonts)
-		all_positions.insert(p.first);
 	for (const auto &p:t.colors)
 		all_positions.insert(p.first);
 	for (const auto &p:t.background_colors)
@@ -227,15 +223,6 @@ richtextstring elementObj::implObj
 				font=font.replace_font
 					(create_current_fontcollection
 					 (iter->second));
-		}
-
-		{
-			auto iter=t.theme_fonts.find(p);
-
-			if (iter != t.theme_fonts.end())
-				font=font.replace_font
-					(create_current_fontcollection
-					 (theme_font{iter->second}));
 		}
 
 		{

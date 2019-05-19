@@ -7,7 +7,7 @@
 #define x_w_text_param_H
 
 #include <string>
-#include <x/w/font.H>
+#include <x/w/font_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/font_arg.H>
 #include <x/w/theme_font.H>
@@ -261,14 +261,7 @@ public:
 	//! \internal
 	//!
 	//! Do not touch, use \c operator() exclusively.
-	std::unordered_map<size_t, font> fonts;
-
-	//! Fonts for the text string being built.
-
-	//! \internal
-	//!
-	//! Do not touch, use \c operator() exclusively.
-	std::unordered_map<size_t, std::string> theme_fonts;
+	std::unordered_map<size_t, font_arg> fonts;
 
 	//! Colors for the text string being built.
 

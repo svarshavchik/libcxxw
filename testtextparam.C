@@ -83,8 +83,8 @@ void testthemetext()
 	    t.colors !=
 	    std::unordered_map<size_t, text_color_arg>
 	    {{0, text_color_arg{rgb{"r=ffff, g=ffff, b=ffff, a=ffff"}}}} ||
-	    t.theme_fonts != std::unordered_map<size_t, std::string>
-	    {{0, "some_theme_font"}} ||
+	    t.fonts != std::unordered_map<size_t, font_arg>
+	    {{0, theme_font{"some_theme_font"}}} ||
 	    t.decorations != std::unordered_map<size_t, text_decoration>{
 		    {0, text_decoration::underline},
 		    {2, text_decoration::none},

@@ -1,0 +1,31 @@
+<?xml version='1.0'?>
+
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+Stylesheet for extracting @type="theme_text" values from a theme file
+and writing it
+
+-->
+
+<xsl:stylesheet
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
+    xmlns:str="http://exslt.org/strings">
+
+  <xsl:output method="text" />
+
+  <xsl:template match='*[@type="theme_text"]'>
+    <xsl:text>_("</xsl:text>
+    <xsl:value-of select="str:replace(str:replace(node(), '\', '\\'), '&#34;', '\&#34;')" />
+    <xsl:text>")&#10;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="*|/">
+    <xsl:apply-templates />
+  </xsl:template>
+
+  <xsl:template match="text()" />
+
+</xsl:stylesheet>

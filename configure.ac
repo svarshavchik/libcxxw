@@ -133,6 +133,7 @@ AM_CONDITIONAL(HAVE_DOCS,[test -d $srcdir/docbook])
 AC_CONFIG_FILES([Makefile
 	Doxyfile
 	libcxxw.m4
+	libcxxw.mk
 	po/Makefile.in
 	includes/x/w/Makefile
 	includes/x/w/deps/Makefile

@@ -33,6 +33,7 @@ configure
 /libcxxw_doctags
 /libcxxw*pc
 /libcxxw*m4
+/libcxxw*mk
 libtool
 ltmain.sh
 man.stamp

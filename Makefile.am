@@ -1,4 +1,8 @@
 @LIBCXX_AM@
+include $(shell pwd)/libcxxw.mk
+
+
+EXTRA_DIST =
 
 if LOCALTHEMEDIR
 CPPFLAGS += -DTHEMEDIR=\"@pwdthemes@\"
@@ -9,6 +13,11 @@ AUTOMAKE_OPTIONS=subdir-objects
 SUBDIRS= po includes/x/w
 
 DISTCHECK_CONFIGURE_FLAGS=--with-pkgconfigdir='$$(prefix)/local/pkgconf'
+
+pkgdatainstdir=$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@
+pkgdatainst_DATA=extract-theme-text.xsl libcxxw.mk
+
+EXTRA_DIST += extract-theme-text.xsl
 
 pkgconfdir=@PKGCONFIGDIR@
 
@@ -946,7 +955,7 @@ $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
 man_MANS=cxxwtheme.1
 
-EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
+EXTRA_DIST += config.rpath m4/ChangeLog COPYING \
 	pic_constants.xml gc_constants.xml constants.xsl \
 	parseuicompiler.xsl uicompiler.xml \
 	xim/xim.xml xim/xim.xsl \
@@ -994,7 +1003,7 @@ INTERACTIVETESTPROGRAMS=\
 	testdateinput					\
 	testfocusrestore				\
 	testimagebuttons			        \
-	testinputfield					\
+testinputfield					\
 	testitemlayoutmanager				\
 	testmainwindow					\
 	testmenu					\

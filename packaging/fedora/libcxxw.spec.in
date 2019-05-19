@@ -104,7 +104,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %dir %{_libdir}/libcxxw*
 %{_libdir}/libcxxw*/libcxxw.so.*
-%{_datadir}/libcxxw*
+%dir %{_datadir}/libcxxw*
+%{_datadir}/libcxxw*/themes
 
 %if %do_compat
 
@@ -124,6 +125,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libcxxw*/*.a
 %{_libdir}/pkgconfig/*
 %{_datadir}/aclocal/*
+%{_datadir}/libcxxw*/*.mk
+%{_datadir}/libcxxw*/*.xsl
+
 %doc examples
 
 %files devel-internals
