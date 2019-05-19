@@ -1,6 +1,7 @@
 <appearance>
   <name>font_picker</name>
   <default>theme</default>
+  <!--
   <field>
     <name>ok_label</name>
     <descr><![CDATA[
@@ -15,6 +16,7 @@ Label for the "Cancel" button
 ]]></descr>
     <type>text_param</type>
   </field>
+-->
   <field>
     <name>preview_width</name>
     <descr><![CDATA[

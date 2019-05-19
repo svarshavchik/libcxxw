@@ -10,6 +10,7 @@
 #include <x/w/font.H>
 #include <x/w/font_picker_appearancefwd.H>
 #include <x/w/screen_positionsfwd.H>
+#include <x/w/text_param.H>
 #include <x/functionalrefptr.H>
 
 #include <optional>
@@ -48,6 +49,18 @@ struct font_picker_config_settings {
 	//! The default library font is used if not specified.
 
 	std::optional<font> initial_font;
+
+	//! Label for the "Ok" button.
+	text_param ok_label=default_ok_label();
+
+	//! Default "Ok" button label
+	static text_param default_ok_label();
+
+	//! Label for the "Cancel" button.
+	text_param cancel_label=default_cancel_label();
+
+	//! Default "Cancel" button label
+	static text_param default_cancel_label();
 
 	//! This font picker's label
 

@@ -412,10 +412,10 @@ standard_dialog_elements_t font_picker_init_helper
 	auto same_width=synchronized_axis::create();
 
 	return {
-		{"ok", dialog_ok_button(config.appearance->ok_label,
+		{"ok", dialog_ok_button(config.ok_label,
 					ok_button, '\n')},
 		{"filler", dialog_filler()},
-		{"cancel", dialog_cancel_button(config.appearance->cancel_label,
+		{"cancel", dialog_cancel_button(config.cancel_label,
 						cancel_button,
 						'\e')},
 
@@ -514,6 +514,16 @@ standard_dialog_elements_t font_picker_init_helper
 				preview_label=create_preview_label(f, config);
 			}},
 	};
+}
+
+text_param font_picker_config_settings::default_ok_label()
+{
+	return _("Ok");
+}
+
+text_param font_picker_config_settings::default_cancel_label()
+{
+	return _("Cancel");
 }
 
 font_picker factoryObj::create_font_picker()

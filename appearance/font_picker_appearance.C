@@ -12,9 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 font_picker_appearance_properties::font_picker_appearance_properties()
-	: ok_label{_("Ok")},
-	  cancel_label{_("Cancel")},
-	  preview_width{"font_picker_preview_width"},
+	: preview_width{"font_picker_preview_width"},
 	  preview_height{"font_picker_preview_height"},
 	  preview_border{"font_picker_preview_border"},
 	  font_family_appearance{combobox_appearance::base::theme()},
