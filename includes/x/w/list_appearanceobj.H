@@ -14,7 +14,7 @@
 #include <x/w/scrollbar_appearancefwd.H>
 #include <x/w/focus_border_appearancefwd.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,7 +37,7 @@ struct list_appearance_properties {
 //! \see list_appearance
 
 class list_appearanceObj: public list_appearance_properties,
-			  virtual public obj {
+			  public appearanceObj {
 
 public:
 	//! Constructor

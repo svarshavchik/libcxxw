@@ -58,6 +58,7 @@ libcxxw_la_SOURCES=\
 	activated_in_thread.H			    \
 	activated_in_threadfwd.H		    \
 	activated_in_threadobj.H		    \
+	appearance/appearance.C			    \
 	appearance/book_appearance.C		    \
 	appearance/bookpage_appearance.C	    \
 	appearance/button_appearance.C		    \
@@ -79,6 +80,7 @@ libcxxw_la_SOURCES=\
 	appearance/pane_appearance.C		    \
 	appearance/pane_layout_appearance.C	    \
 	appearance/peephole_appearance.C	    \
+	appearance/print_dialog_appearance.C	    \
 	appearance/progressbar_appearance.C	    \
 	appearance/popup_list_appearance.C	    \
 	appearance/scrollbar_appearance.C	    \
@@ -923,7 +925,6 @@ $(call REFCOLLECTION_GEN,font_picker/font_picker.inc.H, \
 libcxxwcups_la_LIBADD=libcxxw.la -lcxxcups -lcxx -lcourier-unicode
 libcxxwcups_la_LDFLAGS=$(STATICLINKFLAGS) -version-info @VERSION_INFO@
 libcxxwcups_la_SOURCES=\
-	appearance/print_dialog_appearance.C	    \
 	print_dialog/print_dialog.C		    \
 	print_dialog/print_dialog_impl.C	    \
 	print_dialog/print_dialog_impl.H	    \
@@ -954,6 +955,11 @@ EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
         examples/configure.ac \
 	examples/Makefile.am \
 	appearance/create_headers.xsl \
+	appearance/appearance_parser.xsl \
+	all_appearancesfwd.xsl \
+	all_appearances.xsl \
+	appearance/appearance_create_list.xsl \
+	appearance/appearance_create_proto.xsl \
         $(shell cd $(srcdir) && \
                   echo appearance/*.xml examples/*.C examples/*.H) \
 	$(man_MANS)
@@ -1173,42 +1179,103 @@ testwordwrappablelabel_SOURCES=testwordwrappablelabel.C
 testwordwrappablelabel_LDADD=libcxxw.la
 testwordwrappablelabel_LDFLAGS=-static $(STATICLINKFLAGS)
 
+# Pick up all appearance/*_appearance.xml file, get a list of all the *
+#
+# This is the list of appearance files, this is used to...
+ALL_APPEARANCES := $(shell cd $(srcdir)/appearance && ls *_appearance.xml | sed 's/_appearance.xml$$//')
+
+
+ALL_APPEARANCES_XML = \
+	$(patsubst %,appearance/%_appearance.xml,$(ALL_APPEARANCES))
+
+# Generate appearance_parser_inc.C
+#
+# First we generate a master XML document that XIncludes ALL_APPEARANCES
+appearance/appearance_parser.inc.C: \
+		appearance/appearance_parser.xsl appearance/appearance_parser.xml
+	$(XSLTPROC) -xinclude $(srcdir)/appearance/appearance_parser.xsl \
+          appearance/appearance_parser.xml \
+              >appearance/appearance_parser.inc.C.tmp
+	mv -f appearance/appearance_parser.inc.C.tmp \
+		appearance/appearance_parser.inc.C
+
+appearance/appearance_parser.xml: $(ALL_APPEARANCES_XML)
+	echo "<?xml version='1.0'?>" >appearance/appearance_parser.xml.tmp
+	echo "<root xmlns:xi='http://www.w3.org/2003/XInclude'>" >>appearance/appearance_parser.xml.tmp
+	for f in $(ALL_APPEARANCES) ; \
+        do \
+		echo "<xi:include href='$(abs_top_srcdir)/appearance/$${f}_appearance.xml' xpointer='xpointer(/appearance)' />" >>appearance/appearance_parser.xml.tmp ; \
+	done
+	echo '</root>' >>appearance/appearance_parser.xml.tmp
+	mv -f appearance/appearance_parser.xml.tmp appearance/appearance_parser.xml
+
+includes/x/w/all_appearancesfwd.H: \
+	all_appearancesfwd.xsl appearance/appearance_parser.xml
+	$(XSLTPROC) -xinclude $(srcdir)/all_appearancesfwd.xsl \
+          appearance/appearance_parser.xml \
+              >includes/x/w/all_appearancesfwd.H.tmp
+	mv -f includes/x/w/all_appearancesfwd.H.tmp includes/x/w/all_appearancesfwd.H
+
+includes/x/w/all_appearances.H: \
+	all_appearances.xsl appearance/appearance_parser.xml
+	$(XSLTPROC) -xinclude $(srcdir)/all_appearances.xsl \
+          appearance/appearance_parser.xml \
+              >includes/x/w/all_appearances.H.tmp
+	mv -f includes/x/w/all_appearances.H.tmp includes/x/w/all_appearances.H
+
+uicompiler_appearance_proto.inc.H: \
+	appearance/appearance_create_proto.xsl appearance/appearance_parser.xml
+	$(XSLTPROC) -xinclude $(srcdir)/appearance/appearance_create_proto.xsl \
+          appearance/appearance_parser.xml \
+              >uicompiler_appearance_proto.inc.H.tmp
+	mv -f uicompiler_appearance_proto.inc.H.tmp uicompiler_appearance_proto.inc.H
 
 BUILT_SOURCES=includes/x/w/constants_inc.H \
 	$(XIM_AUTOGEN) \
+	appearance/appearance_parser.xml \
+	appearance/appearance_parser.inc.C \
 	uicompiler.inc.C \
+	includes/x/w/all_appearancesfwd.H \
+	includes/x/w/all_appearances.H \
+	uicompiler_appearance_proto.inc.H \
 	gc_constants.inc.C pic_constants.inc.C
 
 CLEANFILES += uicompiler.inc.C \
 	gc_constants.inc.C pic_constants.inc.C \
+	appearance/appearance_parser.inc.C \
+	appearance/appearance_parser.xml \
+	uicompiler_appearance_proto.inc.H \
         $(XIM_AUTOGEN)
+
+dist-hook:
+	rm -f $(distdir)/appearance/appearance_parser.xml
 
 includes/x/w/constants_inc.H: genconstants
 	./genconstants >$@.tmp
 	mv $@.tmp $@
 
 gc_constants.inc.C: gc_constants.xml constants.xsl
-	xsltproc $(srcdir)/constants.xsl $(srcdir)/gc_constants.xml >gc_constants.inc.C.tmp
+	$(XSLTPROC) $(srcdir)/constants.xsl $(srcdir)/gc_constants.xml >gc_constants.inc.C.tmp
 	mv -f gc_constants.inc.C.tmp gc_constants.inc.C
 
 pic_constants.inc.C: pic_constants.xml constants.xsl
-	xsltproc $(srcdir)/constants.xsl $(srcdir)/pic_constants.xml >pic_constants.inc.C.tmp
+	$(XSLTPROC) $(srcdir)/constants.xsl $(srcdir)/pic_constants.xml >pic_constants.inc.C.tmp
 	mv -f pic_constants.inc.C.tmp pic_constants.inc.C
 
 xim/ximclient.inc.H: xim/xim.xml xim/xim.xsl
-	xsltproc --stringparam mode request-prototypes $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient.inc.H.tmp
+	$(XSLTPROC) --stringparam mode request-prototypes $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient.inc.H.tmp
 	mv -f xim/ximclient.inc.H.tmp xim/ximclient.inc.H
 
 xim/ximclient.inc.C: xim/xim.xml xim/xim.xsl
-	xsltproc --stringparam mode request $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient.inc.C.tmp
+	$(XSLTPROC) --stringparam mode request $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient.inc.C.tmp
 	mv -f xim/ximclient.inc.C.tmp xim/ximclient.inc.C
 
 xim/ximclient2.inc.C: xim/xim.xml xim/xim.xsl
-	xsltproc --stringparam mode received-switch $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient2.inc.C.tmp
+	$(XSLTPROC) --stringparam mode received-switch $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient2.inc.C.tmp
 	mv -f xim/ximclient2.inc.C.tmp xim/ximclient2.inc.C
 
 uicompiler.inc.C: uicompiler.xml parseuicompiler.xsl
-	xsltproc $(srcdir)/parseuicompiler.xsl $(srcdir)/uicompiler.xml >uicompiler.inc.C.tmp
+	$(XSLTPROC) $(srcdir)/parseuicompiler.xsl $(srcdir)/uicompiler.xml >uicompiler.inc.C.tmp
 	mv -f uicompiler.inc.C.tmp uicompiler.inc.C
 
 genconstants_SOURCES=genconstants.C
@@ -1236,13 +1303,13 @@ $(foreach f,$(patsubst html/%,%,$(ALL_DOCS)),$(eval $(call install_docimage,$(f)
 
 html/index.html: html/ref/index.html $(wildcard docbook/*.xml docbook/xmllinks*.xsl)
 	mkdir -p docbook
-	xsltproc $(srcdir)/docbook/xmllinks-extract.xsl xml/index.xml >docbook/entities.tmp
-	xsltproc $(srcdir)/docbook/xmllinks-dedupe.xsl docbook/entities.tmp >docbook/entities.tmp2
-	xsltproc $(srcdir)/docbook/xmllinks-generate.xsl docbook/entities.tmp2 >docbook/entities
+	$(XSLTPROC) $(srcdir)/docbook/xmllinks-extract.xsl xml/index.xml >docbook/entities.tmp
+	$(XSLTPROC) $(srcdir)/docbook/xmllinks-dedupe.xsl docbook/entities.tmp >docbook/entities.tmp2
+	$(XSLTPROC) $(srcdir)/docbook/xmllinks-generate.xsl docbook/entities.tmp2 >docbook/entities
 	rm -f docbook/entities.tmp docbook/entities.tmp2
 	rm -rf html.tmp
 	mkdir -p html.tmp
-	xsltproc --nonet -o html.tmp/ --xinclude \
+	$(XSLTPROC) --nonet -o html.tmp/ --xinclude \
 		--stringparam use.id.as.filename 1 \
 		--stringparam html.stylesheet book.css \
 		--stringparam root.filename 'toc' \
@@ -1266,7 +1333,7 @@ CLEANFILES += $(man_MANS)
 
 man.stamp: $(wildcard docbook/cxxwtheme.xml)
 	set -e; rm -rf manpages; \
-	xsltproc --nonet -o manpages/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl docbook/book.xml; \
+	$(XSLTPROC) --nonet -o manpages/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl docbook/book.xml; \
 	mv -f manpages/* . ; touch man.stamp
 	rm -rf manpages
 

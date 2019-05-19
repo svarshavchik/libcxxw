@@ -10,7 +10,7 @@
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,7 +33,7 @@ struct bookpage_appearance_properties {
 //! \see bookpage_appearance
 
 class bookpage_appearanceObj: public bookpage_appearance_properties,
-				 virtual public obj {
+			      public appearanceObj {
 
 public:
 	//! Constructor

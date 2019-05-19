@@ -14,8 +14,11 @@ BUILT_SOURCES=$(APPEARANCE_XML)
 
 dist-hook:
 	rm -f $(distdir)/*_inc.H
+	rm -f $(patsubst %,$(distdir)/%,$(APPEARANCE_XML))
+	rm -f all_appearances.H
+	rm -f all_appearancesfwd.H
 
 CLEANFILES = $(shell cd $(srcdir) && echo *_inc.H) $(APPEARANCE_XML)
 
 $(APPEARANCE_XML): %.inc.H: ../../../appearance/%.xml ../../../appearance/create_headers.xsl
-	xsltproc $(srcdir)/../../../appearance/create_headers.xsl $(srcdir)/$(<) >$@.tmp && mv -f $@.tmp $@
+	$(XSLTPROC) $(srcdir)/../../../appearance/create_headers.xsl $(<) >$@.tmp && mv -f $@.tmp $@

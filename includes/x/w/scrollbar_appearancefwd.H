@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class scrollbar_appearanceObj;
+class LIBCXX_PUBLIC scrollbar_appearanceObj;
 class scrollbar_appearance_base;
 
 /*! Appearance of the \ref scrollbar_config "scrollbar_config".

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class input_field_appearanceObj;
+class LIBCXX_PUBLIC input_field_appearanceObj;
 class input_field_appearance_base;
 
 /*! Appearance of the \ref input_field "input_field".

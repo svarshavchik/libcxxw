@@ -13,6 +13,11 @@
 #include "x/w/uielementsfwd.H"
 #include "x/w/uigeneratorsfwd.H"
 #include "x/w/shortcutfwd.H"
+#include "x/w/border_argfwd.H"
+#include "x/w/all_appearancesfwd.H"
+#include "x/w/text_paramfwd.H"
+#include "x/w/font_arg.H"
+#include "x/w/scrollbarfwd.H"
 #include "theme_parser_lock.H"
 #include "uicompilerfwd.H"
 
@@ -48,7 +53,7 @@ public:
 	//! theme, and true when parsing a user-specified layout/theme.
 
 	uicompiler(const theme_parser_lock &lock,
-		   uigeneratorsObj &generators,
+		   const uigenerators &generators,
 		   bool allowthemerefs);
 
 	//! Load font definitions.
@@ -84,13 +89,13 @@ public:
 private:
 
 	//! What's being generated.
-	uigeneratorsObj &generators;
+	uigenerators generators;
 
 	bool allowthemerefs;
 
-	//! Top level generators in the XML code that aren't compiled yet.
+	//! Top level factory and layouts that aren't compiled yet.
 
-	//! The constructor puts all children of the node it gets passed in,
+	//! The constructor puts all <factory> and <layout>
 	//! into this lookup map, keyed by their @id attribute.
 	//!
 	//! The constructor then repeatedly removes an element from this map
@@ -296,6 +301,88 @@ private:
 				     const std::string &sc,
 				     const std::string &name,
 				     const container_generators_t &generators);
+
+	//! Parse a color_arg value for an appearance in the theme file.
+	color_arg to_color_arg(const theme_parser_lock &lock,
+			       const char *element, const char *parent);
+
+	//! Parse a border_arg value for an appearance in the theme file.
+	border_arg to_border_arg(const theme_parser_lock &lock,
+				 const char *element, const char *parent);
+
+	//! Parse a dim_arg value for an appearance in the theme file.
+	dim_arg to_dim_arg(const theme_parser_lock &lock,
+			   const char *element, const char *parent);
+
+	//! Parse a font_arg value for an appearance in the theme file.
+	font_arg to_font_arg(const theme_parser_lock &lock,
+			     const char *element, const char *parent);
+
+	//! Parse a text_color_arg value for an appearance in the theme file.
+	text_color_arg to_text_color_arg(const theme_parser_lock &lock,
+					 const char *element,
+					 const char *parent);
+
+public:
+	//! Convert a color_arg to a text_color_arg
+
+	static text_color_arg to_text_color_arg(const color_arg &color,
+						const char *element,
+						const char *parent);
+
+private:
+	//! Parse a text_param value for an appearance in the theme file.
+	text_param to_text_param(const theme_parser_lock &lock,
+				 const char *element,
+				 const char *parent);
+
+	//! Parse a scrollbar_visibility
+	scrollbar_visibility to_scrollbar_visibility(const theme_parser_lock &,
+						     const char *element,
+						     const char *parent);
+
+	//! Top level appearance objects that aren't compiled yet.
+
+	//! The constructor puts all <appearance> elements
+	//! into this lookup map, keyed by their @id attribute.
+	//!
+	//! The constructor then repeatedly removes an element from this map
+	//! and compiles, placing the result into the generators, until the
+	//! map is empty.
+	//!
+	//! An appearance object may recursively reference another one. If it's
+	//! already been generated it gets plucked from the generators,
+	//! otherwise it's removed from uncompiled_appearances and compiled,
+	//! recursively.
+	std::unordered_map<std::string,
+			   theme_parser_lock> uncompiled_appearances;
+
+	//! Return a compiled appearance
+
+	//! Check if the given name is an uncompiled_appearance, if so
+	//! remove it, and compile_appearance(). Otherwise we expect this
+	//! appearance to already be generated, so we return it.
+
+	template<typename appearance_type>
+	appearance_type get_compiled_appearance(const std::string &name);
+
+	//! Compile an uncompiled appearance.
+
+	//! If the specified name is an uncompiled_appearance, then compile
+	//! it, and put it into the generators.
+
+	void compile_uncompiled_appearance(const std::string &name);
+
+	//! Compile an <appearance> in the theme file.
+
+	//! Looks up its <type>, and compiles the appropriate appearance
+	//! type.
+
+	const_appearance compile_appearance(const theme_parser_lock &parent);
+
+	struct generate_info;
+
+#include "uicompiler_appearance_proto.inc.H"
 };
 
 LIBCXXW_NAMESPACE_END

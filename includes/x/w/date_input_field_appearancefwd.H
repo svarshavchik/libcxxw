@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class date_input_field_appearanceObj;
+class LIBCXX_PUBLIC date_input_field_appearanceObj;
 class date_input_field_appearance_base;
 
 /*! Appearance of the \ref date_input_field_config "date_input_field".

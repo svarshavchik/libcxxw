@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pane_layout_appearanceObj;
+class LIBCXX_PUBLIC pane_layout_appearanceObj;
 class pane_layout_appearance_base;
 
 /*! Appearance of the \ref new_panelayoutmanager "pane layout manager".

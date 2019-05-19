@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class table_appearanceObj;
+class LIBCXX_PUBLIC table_appearanceObj;
 class table_appearance_base;
 
 /*! Table header appearance

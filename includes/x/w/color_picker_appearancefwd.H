@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class color_picker_appearanceObj;
+class LIBCXX_PUBLIC color_picker_appearanceObj;
 class color_picker_appearance_base;
 
 /*! Appearance of the \ref color_picker_config "color_picker".

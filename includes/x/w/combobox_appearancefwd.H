@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class combobox_appearanceObj;
+class LIBCXX_PUBLIC combobox_appearanceObj;
 class combobox_appearance_base;
 
 /*! Combobox appearance

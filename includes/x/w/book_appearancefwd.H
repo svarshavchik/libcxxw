@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class book_appearanceObj;
+class LIBCXX_PUBLIC book_appearanceObj;
 class book_appearance_base;
 
 /*! Appearance of a \ref new_booklayoutmanager "book".

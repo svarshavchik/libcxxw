@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class font_picker_appearanceObj;
+class LIBCXX_PUBLIC font_picker_appearanceObj;
 class font_picker_appearance_base;
 
 /*! Appearance of the \ref font_picker_config "font picker dialog".

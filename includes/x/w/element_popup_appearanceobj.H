@@ -14,7 +14,7 @@
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,7 +37,7 @@ struct element_popup_appearance_properties {
 //! \see element_popup_appearance
 
 class element_popup_appearanceObj: public element_popup_appearance_properties,
-				 virtual public obj {
+				   public appearanceObj {
 
 public:
 	//! Constructor

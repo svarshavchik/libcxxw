@@ -15,7 +15,7 @@
 #include <x/w/rgb.H>
 #include <x/w/button_appearancefwd.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -38,7 +38,7 @@ struct input_field_appearance_properties {
 //! \see input_field_appearance
 
 class input_field_appearanceObj: public input_field_appearance_properties,
-				 virtual public obj {
+				 public appearanceObj {
 
 public:
 	//! Constructor

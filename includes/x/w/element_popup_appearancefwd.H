@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class element_popup_appearanceObj;
+class LIBCXX_PUBLIC element_popup_appearanceObj;
 class element_popup_appearance_base;
 
 /*! Appearance of a display element with a button that opens an attached popup.

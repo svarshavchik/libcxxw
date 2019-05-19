@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class generic_window_appearanceObj;
+class LIBCXX_PUBLIC generic_window_appearanceObj;
 class generic_window_appearance_base;
 
 /*! Common appearance properties of a top level window.

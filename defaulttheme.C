@@ -480,11 +480,16 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 			      screen->height_in_millimeters, themescale)},
 	  screen{screen}
 {
+}
+
+void defaultthemeObj::constructor(const xcb_screen_t *screen,
+				  const config &theme_config)
+{
 	try {
 		theme_parser_lock
 			lock{theme_config.theme_configfile->readlock()};
 
-		uicompiler compiler{lock, *this, false};
+		uicompiler compiler{lock, uigenerators{this}, false};
 	} catch (const exception &e)
 	{
 		throw EXCEPTION("An error occured while parsing the "
@@ -664,24 +669,7 @@ defaultthemeObj::get_theme_border(const std::string &id) const
 
 font defaultthemeObj::get_theme_font(const std::string &id) const
 {
-	auto semicolon=id.find(';');
-
-	if (semicolon != id.npos)
-	{
-		auto base_font=get_theme_font(id.substr(0, semicolon));
-
-		base_font += id.substr(++semicolon);
-
-		return base_font;
-	}
-
-	auto iter=fonts.find(id);
-
-	if (iter != fonts.end())
-		return iter->second;
-
-	throw EXCEPTION(gettextmsg(_("Theme font %1% does not exist"),
-				   id));
+	return std::get<font>(lookup_font(id, false, "theme"));
 }
 
 //////////////////////////////////////////////////////////////////////////////

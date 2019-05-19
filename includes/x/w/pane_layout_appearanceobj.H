@@ -11,7 +11,7 @@
 #include <x/w/font_arg.H>
 #include <x/w/rgb.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,7 +34,7 @@ struct pane_layout_appearance_properties {
 //! \see pane_layout_appearance
 
 class pane_layout_appearanceObj: public pane_layout_appearance_properties,
-				 virtual public obj {
+				 public appearanceObj {
 
 public:
 	//! Constructor

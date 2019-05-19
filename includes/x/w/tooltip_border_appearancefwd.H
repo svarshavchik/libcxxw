@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class tooltip_border_appearanceObj;
+class LIBCXX_PUBLIC tooltip_border_appearanceObj;
 class tooltip_border_appearance_base;
 
 /*! Appearance of the \ref tooltip_appearance "tooltip" border.

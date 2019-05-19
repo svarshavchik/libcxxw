@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class list_appearanceObj;
+class LIBCXX_PUBLIC list_appearanceObj;
 class list_appearance_base;
 
 /*! List appearance

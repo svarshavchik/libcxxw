@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class frame_appearanceObj;
+class LIBCXX_PUBLIC frame_appearanceObj;
 class frame_appearance_base;
 
 /*! Appearance of the \ref borderlayoutmanager "border layout manager's frame".

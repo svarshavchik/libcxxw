@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class main_window_appearanceObj;
+class LIBCXX_PUBLIC main_window_appearanceObj;
 class main_window_appearance_base;
 
 /*! Appearance of the \ref main_window_config "main_window_config".

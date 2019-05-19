@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class tooltip_appearanceObj;
+class LIBCXX_PUBLIC tooltip_appearanceObj;
 class tooltip_appearance_base;
 
 /*! Appearance of a new \ref tooltip_factory "tooltip_factory".

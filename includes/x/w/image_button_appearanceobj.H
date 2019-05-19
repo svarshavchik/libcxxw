@@ -10,7 +10,7 @@
 #include <x/w/border_arg.H>
 #include <x/w/alignment.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 #include <vector>
 #include <string>
 
@@ -35,7 +35,7 @@ struct image_button_appearance_properties {
 //! \see image_button_appearance
 
 class image_button_appearanceObj: public image_button_appearance_properties,
-				  virtual public obj {
+				  public appearanceObj {
 
 public:
 	//! Constructor

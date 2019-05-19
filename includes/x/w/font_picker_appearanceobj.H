@@ -15,7 +15,7 @@
 #include <x/w/rgb.H>
 #include <x/w/text_param.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -38,7 +38,7 @@ struct font_picker_appearance_properties {
 //! \see font_picker_appearance
 
 class font_picker_appearanceObj: public font_picker_appearance_properties,
-				 virtual public obj {
+				 public appearanceObj {
 
 public:
 	//! Constructor

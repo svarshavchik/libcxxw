@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class peephole_appearanceObj;
+class LIBCXX_PUBLIC peephole_appearanceObj;
 class peephole_appearance_base;
 
 /*! Appearance of the \ref new_scrollable_peepholelayoutmanager "scrollable peephole".

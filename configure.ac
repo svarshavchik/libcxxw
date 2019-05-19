@@ -37,6 +37,12 @@ CXXFLAGS="$CXXFLAGS -fvisibility-inlines-hidden"
 export CXXFLAGS
 LDFLAGS="$LDFLAGS -z relro -z now"
 export LDFLAGS
+AC_PATH_PROG(XSLTPROC,xsltproc,"none")
+if test "$XSLTPROC" = "none"
+then
+	AC_MSG_ERROR([Cannot find xsltproc, please install libxslt])
+fi
+AC_SUBST(XSLTPROC)
 
 # VERSION_INFO is:
 #

@@ -12,7 +12,7 @@
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -35,7 +35,7 @@ struct button_appearance_properties {
 //! \see button_appearance
 
 class button_appearanceObj: public button_appearance_properties,
-				 virtual public obj {
+			    public appearanceObj {
 
 public:
 	//! Constructor

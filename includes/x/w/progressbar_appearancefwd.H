@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class progressbar_appearanceObj;
+class LIBCXX_PUBLIC progressbar_appearanceObj;
 class progressbar_appearance_base;
 
 /*! Appearance of a \ref progressbar_config "progress bar".

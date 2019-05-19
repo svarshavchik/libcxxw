@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class scrollbar_images_appearanceObj;
+class LIBCXX_PUBLIC scrollbar_images_appearanceObj;
 class scrollbar_images_appearance_base;
 
 /*! A set of images that draws the various parts of the scrollbar.

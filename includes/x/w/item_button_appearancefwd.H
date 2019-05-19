@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class item_button_appearanceObj;
+class LIBCXX_PUBLIC item_button_appearanceObj;
 class item_button_appearance_base;
 
 /*! Appearance of the buttons created by the \ref new_itemlayoutmanager "item layout manager".

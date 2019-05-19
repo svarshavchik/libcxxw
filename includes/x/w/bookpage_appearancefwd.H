@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class bookpage_appearanceObj;
+class LIBCXX_PUBLIC bookpage_appearanceObj;
 class bookpage_appearance_base;
 
 /*! Appearance of \ref booklayoutmanager "book's page tabs".

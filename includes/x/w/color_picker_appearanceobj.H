@@ -14,7 +14,7 @@
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,7 +37,7 @@ struct color_picker_appearance_properties {
 //! \see color_picker_appearance
 
 class color_picker_appearanceObj: public color_picker_appearance_properties,
-				 virtual public obj {
+				  public appearanceObj {
 
 public:
 	//! Constructor

@@ -10,9 +10,12 @@
 #include <x/w/border_argfwd.H>
 #include <x/w/border_infomm.H>
 #include <x/w/font_arg.H>
+#include <x/w/all_appearancesfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/obj.H>
+#include <x/visitor.H>
 #include <x/vectorfwd.H>
+#include <x/refptr_traits.H>
 #include <unordered_map>
 #include <string>
 
@@ -66,6 +69,12 @@ public:
 	font_arg lookup_font(const std::string &name,
 			     bool allowthemerefs,
 			     const char *tag) const;
+
+	//! Loaded appearance objects.
+	std::unordered_map<std::string, const_appearance> loaded_appearances;
+
+	//! Retrieve an appearance object
+	const_appearance lookup_appearance(const std::string_view &name) const;
 
 	//! Generators used by the grid layout manager
 

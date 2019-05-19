@@ -11,8 +11,12 @@
 #include "x/w/gridfactory.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
-#include "x/w/book_appearance.H"
 #include "x/w/shortcut.H"
+#include "x/w/border_arg.H"
+#include "x/w/text_param.H"
+#include "x/w/all_appearances.H"
+#include "x/w/scrollbar.H"
+#include "x/w/theme_text.H"
 #include "theme_parser_lock.H"
 #include "messages.H"
 #include "picture.H"
@@ -371,7 +375,7 @@ static bool parse_gradients(theme_parser_lock &lock,
 static std::optional<color_arg>
 get_color(const theme_parser_lock &lock,
 	  const char *xpath_name,
-	  const uigeneratorsObj &generators,
+	  const uigenerators &generators,
 	  bool allowthemerefs)
 {
 	auto color_node=lock.clone();
@@ -385,7 +389,7 @@ get_color(const theme_parser_lock &lock,
 
 	auto name=color_node->get_text();
 
-	return generators.lookup_color(name, allowthemerefs, xpath_name);
+	return generators->lookup_color(name, allowthemerefs, xpath_name);
 }
 
 static void unknown_dim(const char *element, const std::string &id)
@@ -407,7 +411,7 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 				unsigned &scale,
 				const char *descr,
 				const std::string &id,
-				const uigeneratorsObj &generators,
+				const uigenerators &generators,
 				bool allowthemerefs)
 {
 	if (single_value_exists(lock, size_node))
@@ -422,7 +426,7 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 
 		if (i.fail())
 		{
-			size=generators.lookup_dim(t, allowthemerefs, descr);
+			size=generators->lookup_dim(t, allowthemerefs, descr);
 		}
 		else
 		{
@@ -503,7 +507,7 @@ parse_dim(const theme_parser_lock &lock,
 
 
 uicompiler::uicompiler(const theme_parser_lock &root_lock,
-		       uigeneratorsObj &generators,
+		       const uigenerators &generators,
 		       bool allowthemerefs)
 	: generators{generators}, allowthemerefs{allowthemerefs}
 {
@@ -534,8 +538,8 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			if (id.empty())
 				throw EXCEPTION(_("no id specified for color"));
 
-			if (generators.colors.find(id) !=
-			    generators.colors.end())
+			if (generators->colors.find(id) !=
+			    generators->colors.end())
 				continue; // Did this one already.
 
 			auto scale=lock->get_any_attribute("scale");
@@ -544,9 +548,9 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 			if (!scale.empty())
 			{
-				auto iter=generators.colors.find(scale);
+				auto iter=generators->colors.find(scale);
 
-				if (iter == generators.colors.end())
+				if (iter == generators->colors.end())
 					continue; // Not yet.
 
 				new_color=iter->second;
@@ -577,12 +581,12 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 					 return scale_theme_color
 						 (lock, id,
 						  scale, c,
-						  generators.colors);
+						  generators->colors);
 				 }, new_color);
 
 			if (flag)
 			{
-				generators.colors.insert({id, new_color});
+				generators->colors.insert({id, new_color});
 				parsed=true;
 			}
 
@@ -595,7 +599,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 		auto id=lock->get_any_attribute("id");
 
-		if (generators.colors.find(id) != generators.colors.end())
+		if (generators->colors.find(id) != generators->colors.end())
 			continue;
 
 		throw EXCEPTION(gettextmsg
@@ -627,16 +631,16 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			if (id.empty())
 				throw EXCEPTION(_("no id specified for dim"));
 
-			if (generators.dims.find(id) != generators.dims.end())
+			if (generators->dims.find(id) != generators->dims.end())
 				continue; // Did this one already.
 
 			auto value=parse_dim(lock,
-					     generators.dims, "dim", id);
+					     generators->dims, "dim", id);
 
 			if (!value)
 				continue;
 
-			generators.dims.insert({id, *value});
+			generators->dims.insert({id, *value});
 			parsed=true;
 		}
 	} while (parsed);
@@ -647,7 +651,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 		auto id=lock->get_any_attribute("id");
 
-		if (generators.dims.find(id) == generators.dims.end())
+		if (generators->dims.find(id) == generators->dims.end())
 			unknown_dim("dim", id);
 	}
 
@@ -673,8 +677,8 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			if (id.empty())
 				throw EXCEPTION(_("no id specified for border"));
 
-			if (generators.borders.find(id) !=
-			    generators.borders.end())
+			if (generators->borders.find(id) !=
+			    generators->borders.end())
 				continue; // Did this one already.
 
 			border_infomm new_border;
@@ -685,9 +689,9 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 			if (!from.empty())
 			{
-				auto iter=generators.borders.find(from);
+				auto iter=generators->borders.find(from);
 
-				if (iter == generators.borders.end())
+				if (iter == generators->borders.end())
 					continue; // Not yet parsed
 
 				new_border=iter->second;
@@ -800,7 +804,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 				}
 			}
 
-			generators.borders.emplace(id, new_border);
+			generators->borders.emplace(id, new_border);
 			parsed=true;
 		}
 	} while (parsed);
@@ -811,12 +815,12 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 		auto id=lock->get_any_attribute("id");
 
-		if (generators.borders.find(id) != generators.borders.end())
+		if (generators->borders.find(id) != generators->borders.end())
 			continue;
 
 		throw EXCEPTION(gettextmsg
 				(_("Border %1% is based on another"
-				   " color which was not found"
+				   " border which was not found"
 				   " (this can be because of a circular"
 				   " reference)"),
 				 id));
@@ -826,18 +830,44 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 		   [&]
 		   (const std::string &id, const font &new_font)
 		   {
-			   generators.fonts.emplace(id, new_font);
+			   generators->fonts.emplace(id, new_font);
 		   },
 		   [&]
 		   (const std::string &from) -> std::optional<font>
 		   {
-			   auto iter=generators.fonts.find(from);
+			   auto iter=generators->fonts.find(from);
 
-			   if (iter == generators.fonts.end())
+			   if (iter == generators->fonts.end())
 				   return std::nullopt;
 
 			   return iter->second;
 		   });
+
+	// Build a list of uncompiled appearances, by id
+
+	xpath=lock->get_xpath("/theme/appearance");
+
+	count=xpath->count();
+
+	for (size_t i=0; i<count; ++i)
+	{
+		xpath->to_node(i+1);
+
+		auto id=lock->get_any_attribute("id");
+
+		if (id.empty())
+			throw EXCEPTION(_("Missing <appearance> "
+					  "\"id\" element"));
+
+		uncompiled_appearances.emplace(id, lock->clone());
+	}
+
+	while (!uncompiled_appearances.empty())
+	{
+		auto name=uncompiled_appearances.begin()->first;
+
+		compile_uncompiled_appearance(name);
+	}
 
 	xpath=lock->get_xpath("/theme/layout | /theme/factory");
 
@@ -852,7 +882,8 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 		auto id=lock->get_any_attribute("id");
 
 		if (id.empty())
-			throw EXCEPTION(_("Missing \"id\" element"));
+			throw EXCEPTION(_("Missing <layout> or <factory> "
+					  "\"id\" element"));
 
 		uncompiled_elements.emplace(id, lock->clone());
 	}
@@ -875,7 +906,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			if (type == "grid")
 			{
 				auto ret=gridlayout_parseconfig(lock);
-				generators.gridlayoutmanager_generators
+				generators->gridlayoutmanager_generators
 					.emplace(id, ret);
 				continue;
 			}
@@ -883,7 +914,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			if (type == "book")
 			{
 				auto ret=booklayout_parseconfig(lock);
-				generators.booklayoutmanager_generators
+				generators->booklayoutmanager_generators
 					.emplace(id, ret);
 				continue;
 			}
@@ -893,7 +924,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			if (type == "grid")
 			{
 				auto ret=gridfactory_parseconfig(lock);
-				generators.gridfactory_generators
+				generators->gridfactory_generators
 					.emplace(id, ret);
 				continue;
 			}
@@ -901,7 +932,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			if (type == "book")
 			{
 				auto ret=bookpagefactory_parseconfig(lock);
-				generators.bookpagefactory_generators
+				generators->bookpagefactory_generators
 					.emplace(id, ret);
 				continue;
 			}
@@ -1103,9 +1134,9 @@ uicompiler::lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
 						const std::string &name)
 {
 	{
-		auto iter=generators.gridlayoutmanager_generators.find(name);
+		auto iter=generators->gridlayoutmanager_generators.find(name);
 
-		if (iter != generators.gridlayoutmanager_generators.end())
+		if (iter != generators->gridlayoutmanager_generators.end())
 			return iter->second;
 	}
 
@@ -1127,7 +1158,7 @@ uicompiler::lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
 
 	auto ret=gridlayout_parseconfig(new_lock);
 
-	generators.gridlayoutmanager_generators.emplace(name, ret);
+	generators->gridlayoutmanager_generators.emplace(name, ret);
 
 	return ret;
 }
@@ -1137,9 +1168,9 @@ uicompiler::lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
 						const std::string &name)
 {
 	{
-		auto iter=generators.booklayoutmanager_generators.find(name);
+		auto iter=generators->booklayoutmanager_generators.find(name);
 
-		if (iter != generators.booklayoutmanager_generators.end())
+		if (iter != generators->booklayoutmanager_generators.end())
 			return iter->second;
 	}
 
@@ -1161,7 +1192,7 @@ uicompiler::lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
 
 	auto ret=booklayout_parseconfig(new_lock);
 
-	generators.booklayoutmanager_generators.emplace(name, ret);
+	generators->booklayoutmanager_generators.emplace(name, ret);
 
 	return ret;
 }
@@ -1229,9 +1260,9 @@ uicompiler::lookup_gridfactory_generators(const theme_parser_lock &lock,
 	auto name=single_value(lock, element, parent);
 
 	{
-		auto iter=generators.gridfactory_generators.find(name);
+		auto iter=generators->gridfactory_generators.find(name);
 
-		if (iter != generators.gridfactory_generators.end())
+		if (iter != generators->gridfactory_generators.end())
 			return iter->second;
 	}
 
@@ -1253,7 +1284,7 @@ uicompiler::lookup_gridfactory_generators(const theme_parser_lock &lock,
 
 	auto ret=gridfactory_parseconfig(new_lock);
 
-	generators.gridfactory_generators.emplace(name, ret);
+	generators->gridfactory_generators.emplace(name, ret);
 
 	return ret;
 }
@@ -1266,9 +1297,9 @@ uicompiler::lookup_bookpagefactory_generators(const theme_parser_lock &lock,
 	auto name=single_value(lock, element, parent);
 
 	{
-		auto iter=generators.bookpagefactory_generators.find(name);
+		auto iter=generators->bookpagefactory_generators.find(name);
 
-		if (iter != generators.bookpagefactory_generators.end())
+		if (iter != generators->bookpagefactory_generators.end())
 			return iter->second;
 	}
 
@@ -1290,7 +1321,7 @@ uicompiler::lookup_bookpagefactory_generators(const theme_parser_lock &lock,
 
 	auto ret=bookpagefactory_parseconfig(new_lock);
 
-	generators.bookpagefactory_generators.emplace(name, ret);
+	generators->bookpagefactory_generators.emplace(name, ret);
 
 	return ret;
 }
@@ -1409,4 +1440,199 @@ void uicompiler::create_container(const bookpagefactory &f,
 
 #include "uicompiler.inc.C"
 
+// Additional helpers used by appearance_parser
+
+color_arg uicompiler::to_color_arg(const theme_parser_lock &lock,
+				   const char *element, const char *parent)
+{
+	return generators->lookup_color(single_value(lock, ".", parent),
+				       allowthemerefs, element);
+}
+
+border_arg uicompiler::to_border_arg(const theme_parser_lock &lock,
+				     const char *element, const char *parent)
+{
+	return generators->lookup_border(single_value(lock, ".", parent),
+					allowthemerefs, element);
+}
+
+dim_arg uicompiler::to_dim_arg(const theme_parser_lock &lock,
+			       const char *element, const char *parent)
+{
+	return generators->lookup_dim(single_value(lock, ".", parent),
+				     allowthemerefs, element);
+}
+
+font_arg uicompiler::to_font_arg(const theme_parser_lock &lock,
+				 const char *element, const char *parent)
+{
+	return generators->lookup_font(single_value(lock, ".", parent),
+				      allowthemerefs, element);
+}
+
+static void cannot_convert_color_arg(const char *element, const char *parent)
+	__attribute__((noreturn));
+
+void cannot_convert_color_arg(const char *element, const char *parent)
+{
+	throw EXCEPTION(gettextmsg
+			(_("Color <%1%> (%2%) cannot be a text color"),
+			 element, parent));
+}
+
+text_color_arg uicompiler::to_text_color_arg(const theme_parser_lock &lock,
+					     const char *element,
+					     const char *parent)
+{
+	return to_text_color_arg(to_color_arg(lock, element, parent),
+				 element,
+				 parent);
+}
+
+text_color_arg uicompiler::to_text_color_arg(const color_arg &color,
+					     const char *element,
+					     const char *parent)
+{
+	return std::visit(visitor{
+			[&](const std::string &s) -> text_color_arg
+			{
+				return theme_color{s};
+			},
+			[&](const auto &v) -> text_color_arg
+			{
+				typedef std::remove_cv_t
+					<std::remove_reference_t<decltype(v)>>
+					v_t;
+
+				if constexpr(visited_v<v_t, text_color_arg>)
+				{
+					return v;
+				}
+				else
+				{
+					cannot_convert_color_arg(element,
+								 parent);
+				}
+			}}, color);
+}
+
+text_param uicompiler::to_text_param(const theme_parser_lock &lock,
+				     const char *element,
+				     const char *parent)
+{
+	text_param t;
+
+	t(theme_text{single_value(lock, ".", parent), generators});
+
+	return t;
+}
+
+scrollbar_visibility
+uicompiler::to_scrollbar_visibility(const theme_parser_lock &lock,
+				    const char *element,
+				    const char *parent)
+{
+	auto s=lowercase_single_value(lock, ".", parent);
+
+	if (s == "never")
+		return scrollbar_visibility::never;
+
+	if (s == "always")
+		return scrollbar_visibility::always;
+
+	if (s == "automatic")
+		return scrollbar_visibility::automatic;
+
+	if (s == "automatic_reserved")
+		return scrollbar_visibility::automatic_reserved;
+
+	throw EXCEPTION(gettextmsg
+			(_("Scrollbar visibility \"%1%\" (%2%) cannot be "
+			   "converted to a valid value"),
+			 s, parent));
+}
+
+static void unknown_appearance_node(const char *where,
+				    const std::string &name)
+	       __attribute__((noreturn));
+
+static void unknown_appearance_node(const char *where,
+				    const std::string &name)
+{
+	throw EXCEPTION(gettextmsg(_("circular or non-existent dependency of "
+				     "%1% appearance object \"%2\""),
+				   where,
+				   name));
+}
+
+static void unknown_appearance_type(const std::string &id,
+				    const std::string &type)
+	       __attribute__((noreturn));
+
+static void unknown_appearance_type(const std::string &id,
+				    const std::string &type)
+{
+	if (type.empty())
+		throw EXCEPTION(gettextmsg(_("<appearance id=\"%1\"> is missing"
+					     " a type"), id));
+	throw EXCEPTION(gettextmsg(_("unknown <appearance id=\"%1\"> type:"
+				     " %2%"), id, type));
+}
+
+static void duplicate_reset(const std::string &name)
+	       __attribute__((noreturn));
+
+static void duplicate_reset(const std::string &name)
+{
+	throw EXCEPTION(gettextmsg(_("multiple <reset> in <%1%>"), name));
+}
+
+void uicompiler::compile_uncompiled_appearance(const std::string &name)
+{
+	auto iter=uncompiled_appearances.find(name);
+
+	if (iter == uncompiled_appearances.end())
+		return;
+
+	auto lock=iter->second;
+
+	uncompiled_appearances.erase(iter);
+
+	generators->loaded_appearances.emplace(name, compile_appearance(lock));
+}
+
+static void wrong_appearance_type(const std::string &name)
+	__attribute__((noreturn));
+
+static void wrong_appearance_type(const std::string &name)
+{
+	throw EXCEPTION(gettextmsg(_("<appearance id=\"%1%\"> expected "
+				     "to be a different appearance type"),
+				   name));
+}
+
+template<typename appearance_type>
+appearance_type uicompiler::get_compiled_appearance(const std::string &name)
+{
+	compile_uncompiled_appearance(name); // If necessary
+
+	auto appearance=generators->lookup_appearance(name);
+
+	if (!appearance->isa<appearance_type>())
+		wrong_appearance_type(name);
+
+	return appearance;
+}
+
+// Helper class used to pass parameters into generate() without having to
+// pull in the entire xml/doc file for everyone who includes uicompiler.H.
+
+struct uicompiler::generate_info {
+	const theme_parser_lock &parent;
+	const theme_parser_lock &lock;
+	xml::doc::base::xpath &xpath;
+};
+
 LIBCXXW_NAMESPACE_END
+
+#include "appearance/appearance_parser.inc.C"

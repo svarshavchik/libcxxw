@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class image_button_appearanceObj;
+class LIBCXX_PUBLIC image_button_appearanceObj;
 class image_button_appearance_base;
 
 /*! Appearance of the \ref image_button "image_buttons".

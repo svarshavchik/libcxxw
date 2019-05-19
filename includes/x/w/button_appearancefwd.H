@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class button_appearanceObj;
+class LIBCXX_PUBLIC button_appearanceObj;
 class button_appearance_base;
 
 /*! Appearance of the \ref button_config "button_config".

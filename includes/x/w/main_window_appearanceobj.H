@@ -14,7 +14,7 @@
 #include <x/w/font_arg.H>
 #include <x/w/types.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 #include <tuple>
 
@@ -39,7 +39,7 @@ struct main_window_appearance_properties {
 //! \see main_window_appearance
 
 class main_window_appearanceObj: public main_window_appearance_properties,
-				 virtual public obj {
+				 public appearanceObj {
 
 public:
 	//! Constructor

@@ -10,7 +10,7 @@
 #include <x/w/border_arg.H>
 #include <x/w/dim_arg.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,7 +33,7 @@ struct peephole_appearance_properties {
 //! \see peephole_appearance
 
 class peephole_appearanceObj: public peephole_appearance_properties,
-				 virtual public obj {
+			      public appearanceObj {
 
 public:
 	//! Constructor

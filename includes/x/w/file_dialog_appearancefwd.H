@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class file_dialog_appearanceObj;
+class LIBCXX_PUBLIC file_dialog_appearanceObj;
 class file_dialog_appearance_base;
 
 /*! Appearance of the \ref file_dialog_config "file dialog".

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pane_appearanceObj;
+class LIBCXX_PUBLIC pane_appearanceObj;
 class pane_appearance_base;
 
 /*! Appearance of the next \ref panefactory "new pane".

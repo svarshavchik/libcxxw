@@ -40,7 +40,7 @@ BuildRequires: libpng-devel
 BuildRequires: desktop-file-utils
 
 %description
-LibCXX widget toolkit.
+LibCXX Windows Library
 
 %package cups
 Group: System Environment/Libraries

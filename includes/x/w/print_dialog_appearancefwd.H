@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class print_dialog_appearanceObj;
+class LIBCXX_PUBLIC print_dialog_appearanceObj;
 class print_dialog_appearance_base;
 
 /*! Appearance of the \ref print_dialog_config "print_dialog dialog".

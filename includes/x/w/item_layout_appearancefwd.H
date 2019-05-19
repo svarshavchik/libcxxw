@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class item_layout_appearanceObj;
+class LIBCXX_PUBLIC item_layout_appearanceObj;
 class item_layout_appearance_base;
 
 /*! Appearance of the \ref new_itemlayoutmanager "item layout manager".

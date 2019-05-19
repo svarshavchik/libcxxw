@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class popup_list_appearanceObj;
+class LIBCXX_PUBLIC popup_list_appearanceObj;
 class popup_list_appearance_base;
 
 /*! Popup list appearance

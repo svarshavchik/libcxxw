@@ -11,7 +11,7 @@
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
 #include <x/functional.H>
-#include <x/obj.H>
+#include <x/w/appearanceobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,7 +34,7 @@ struct focus_border_appearance_properties {
 //! \see focus_border_appearance
 
 class focus_border_appearanceObj: public focus_border_appearance_properties,
-				 virtual public obj {
+				  public appearanceObj {
 
 public:
 	//! Constructor

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class focus_border_appearanceObj;
+class LIBCXX_PUBLIC focus_border_appearanceObj;
 class focus_border_appearance_base;
 
 /*! Appearance of a focus border.

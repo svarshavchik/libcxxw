@@ -153,6 +153,11 @@ public:
 	defaultthemeObj(const xcb_screen_t *screen,
 			const config &theme_config);
 
+	//! Phase 2 constructor
+	void constructor(const xcb_screen_t *screen,
+			 const config &theme_config);
+
+	//! Destructor
 	~defaultthemeObj();
 
 	//! Default cut/paste selection
