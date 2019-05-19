@@ -530,6 +530,16 @@ static &ns;::w::const_progressbar_appearance &amp;custom_progressbar()
 	  bar</link>s will share, efficiently, the same appearance object.
       </para>
     </section>
+
+    <section id="appearanceuixml">
+      <title>Using an <acronym>XML</acronym> stylesheet to create an appearance object</title>
+
+      <para>
+	It is also possible to create a new appearance object from an
+	<acronym>XML</acronym> stylesheet. See <xref linkend="uixmldoc" /> for more
+	information.
+      </para>
+    </section>
   </section>
 </chapter>
 <!--

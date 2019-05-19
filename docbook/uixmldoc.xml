@@ -12,7 +12,13 @@ See COPYING for distribution information.
     A theme UI file automates creation of display elements from an
     <acronym>XML</acronym> document, which
     <link linkend="uixmlgenerate">generates
-    the contents of a &layoutmanager;</link>.
+      the contents of a &layoutmanager; or a factory</link>. The theme UI
+    file also creates several supporting objects:
+    <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag>s,
+      <tag class='element'>color</tag>s,
+      and
+      <tag class='element'>border</tag>s</link>; as well as custom
+    <link linkend="uixmlappearance">appearance objects</link>.
   </para>
 
   <blockquote>
@@ -100,8 +106,10 @@ See COPYING for distribution information.
     elements, like
     <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag>s,
       <tag class='element'>color</tag>s,
-      and
-      <tag class='element'>border</tag>s</link>, with their own
+      <tag class='element'>border</tag>s</link>,
+    and
+    <link linkend="uixmlappearance"><tag class='element'>appearance</tag></link>,
+    with their own
     <tag class='attribute'>id</tag>s that work the same way.
   </para>
 
@@ -861,6 +869,8 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
+<dim id="extra-padding">2.0</dim>
+
 <layout type="grid" id="main-window-grid">
 
   <halign>
@@ -876,7 +886,7 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
   <padding>
     <row>0</row>
     <side>left</side>
-    <padding>2</padding>
+    <padding>extra-padding</padding>
   </padding>
 </layout>]]>
 
@@ -1976,7 +1986,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
   </section>
 
   <section id="uixmlnewlayouts">
-    <title>Getting the created <varname>new_layouts</varname></title>
+    <title>Created <varname>new_layouts</varname></title>
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
@@ -2028,7 +2038,7 @@ auto iter=elements.new_layouts.find("bottom-container");
 
 if (iter != elements.new_layouts.end())
 {
-    &ns;::w::container bottom_container=iter->second
+    &ns;::w::container bottom_container=iter->second;
 
 
 // ...
@@ -2060,6 +2070,445 @@ if (iter != elements.new_layouts.end())
 	of all layouts.
       </para>
     </note>
+  </section>
+
+  <section id="uixmlappearance">
+    <title><tag class='element'>appearance</tag>s</title>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="uigenerator3.png" format="PNG"
+		   contentwidth="266px" contentdepth="206px" />
+      </imageobject>
+      <textobject>
+	<phrase>
+	  Creating custom &appearance_object;s
+	</phrase>
+      </textobject>
+      <caption>
+	<para>
+	  Each <tag class='element'>appearance</tag> creates a custom
+	  &appearance_object;.
+	  <ulink url="examples/uigenerator3.C"><filename>uigenerator3.C</filename></ulink>
+	  creates a <link linkend="checkradio">checkbox</link> with a custom
+	  visual appearance. The default checkbox image gets replaced with
+	  a chevron that alternates between pointing left and right, with
+	  a large, blocky input focus frame around it.
+	</para>
+      </caption>
+    </mediaobject>
+
+    <blockquote>
+      <title><ulink url="examples/uigenerator3.xml">uigenerator3.xml</ulink></title>
+
+      <informalexample>
+	<programlisting><xi:include href="../examples/uigenerator3.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Each <tag class='element'>appearance</tag> must have a unique
+      <tag class='attribute'>id</tag> and a valid
+      <tag class='attribute'>type</tag>. The first occurence of an
+      <tag class='element'>appearance</tag> with a designated
+      <tag class='attribute'>id</tag> takes effect, and subsequent
+      <tag class='element'>appearance</tag>s with the same
+      <tag class='attribute'>id</tag> get ignored.
+    </para>
+
+    <section id="uixmlappearanceusing">
+      <title>Creating and using <tag class='element'>appearance</tag> objects</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+auto generator=&ns;::w::const_uigenerators::create("uigenerator3.xml");
+
+// ...
+
+factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	A <link linkend="uixmlgenerate">generator</link>'s
+	<methodname>lookup_appearance</methodname> returns an appearance
+	object specified by its <quote>id</quote>. This theme file creates
+	an appearance object named <quote>custom-checkbox</quote>, and
+	<methodname>lookup_appearance</methodname>() returns it. This gets
+	passed to a &factory;'s <methodname>create_checkbox</methodname>()
+	that takes an optional appearance object as a parameter, and this
+	sets the new checkbox's appearance using the specified appearance
+	object.
+      </para>
+
+      <para>
+	<methodname>lookup_appearance</methodname>() returns a generatic
+	<classname>&ns;;::w::const_appearance</classname> object from which
+	all appearance objects get derived from. The following table lists
+	all appearance object classes and the
+	<tag class='attribute'>type</tag>s which create them.
+      </para>
+
+      <para>
+	<tag class='element'>appearance</tag> 's optional
+	<tag class='element'>from</tag> attribute specifies another,
+	<quote>parent</quote>
+	<tag class='element'>appearance</tag> that this
+	<tag class='element'>appearance</tag> gets based from.
+	The following table lists all available appearance
+	<tag class='attribute'>type</tag>s, and the resulting appearance
+	object class.
+	<tag class='attribute'>from</tag> specifies either:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    The <tag class='attribute'>id</tag> of another, parent
+	    appearance object.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    One of the built-in themes from the following table.
+	    The default built-in theme gets used when a
+	    <tag class='attribute'>from</tag> parent does not get
+	    specified.
+	  </para>
+	</listitem>
+      </itemizedlist>
+      &uixmlappearance_list;
+    </section>
+
+    <section id="uixmlappearancefields">
+      <title>Contents of <tag class='element'>appearance</tag>s in theme files</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<appearance id="custom-checkbox-focus-border" type="focus_border">
+  <focusoff_border>custom-focusoff</focusoff_border>
+  <focuson_border>custom-focuson</focuson_border>
+</appearance>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Each
+	<tag class='element'>appearance</tag> contains elements whose names
+	match the names of the fields in the corresponding appearance classes.
+	A <ulink url="&link-x--w--focus-border-appearance-properties;">focus
+	  border appearance object</ulink> contains two fields,
+	<varname>focusoff_border</varname>, and
+	<varname>focuson_border</varname>, and an
+	<tag class='element'>appearance</tag> with a
+	<literal>focus_border</literal> <tag class='attribute'>type</tag>
+	specifies their values accordingly.
+      </para>
+
+      <para>
+	If not explicitly specified,
+	the value of each field comes from the parent
+	<tag class='element'>appearance</tag>, explicitly specified by the
+	<tag class='attribute'>from</tag> attribute, or the default parent.
+      </para>
+
+      <para>
+	The fields get specified as follows:
+      </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term>
+	   <classname>std::string</classname> fields
+	  </term>
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<images>scroll-left1</images>
+]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	    <para>
+	      <classname>std::string</classname> values get specified directly.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <ulink url="&link-typedef-x--w-border-arg;"><classname>&ns;::w::border_arg</classname></ulink> fields
+	  </term>
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<focuson_border>custom-focuson</focuson_border>
+]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	    <para>
+	      <classname>&ns;::w::border_arg</classname> values are
+	      are <tag class='attribute'>id</tag>s of
+	      <tag class='element'>border</tag>s in the theme file. They
+	      may also reference border <tag class='attribute'>id</tag>s
+	      from the current display theme, but this is not documented.
+	      A more future-proof way of borrowing a standard theme border
+	      is to use one of the built-in theme appearance objects as
+	      the parent object and
+	      not changing the existing
+	      <classname>&ns;::w::border_arg</classname> value.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <ulink url="&link-typedef-x--w-color-arg;"><classname>&ns;::w::color_arg</classname></ulink>
+	    and <ulink url="&link-typedef-x--w-text-color-arg;"><classname>&ns;::w::text_color_arg</classname></ulink>
+	    fields
+	  </term>
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<color2>focuson2</color2>
+]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	    <para>
+	      Color values are
+	      are <tag class='attribute'>id</tag>s of
+	      <tag class='element'>color</tag>s in the theme file. They
+	      may also reference border <tag class='attribute'>id</tag>s
+	      from the current display theme, but this is not documented.
+	      A more future-proof way of borrowing a standard theme border
+	      is to use one of the built-in theme appearance objects as
+	      the parent object and
+	      not changing the existing color value.
+	    </para>
+
+	    <para>
+	      Color values may also reference
+	      <link linkend="uixmlderivedvalues">standard HTML 3.2
+		colors</link>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <ulink url="&link-typedef-x--w-dim-arg;"><classname>&ns;::w::dim_arg</classname></ulink> fields
+	  </term>
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+  <dim id="cell-padding">20</dim>
+]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	    <para>
+	      <classname>&ns;::w::dim_arg</classname> values are
+	      are <tag class='attribute'>id</tag>s of
+	      <tag class='element'>dim</tag>s in the theme file. They
+	      may also reference border <tag class='attribute'>id</tag>s
+	      from the current display theme, but this is not documented.
+	      A more future-proof way of borrowing a standard theme border
+	      is to use one of the built-in theme appearance objects as
+	      the parent object and
+	      not changing the existing
+	      <classname>&ns;::w::dim_arg</classname> value.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <ulink url="&link-typedef-x--w-font-arg;"><classname>&ns;::w::font_arg</classname></ulink> fields
+	  </term>
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<shortcut_font>small</shortcut_font>
+]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	    <para>
+	      <classname>&ns;::w::font_arg</classname> values are
+	      are <tag class='attribute'>id</tag>s of
+	      <tag class='element'>font</tag>s in the theme file. They
+	      may also reference border <tag class='attribute'>id</tag>s
+	      from the current display theme, but this is not documented.
+	      A more future-proof way of borrowing a standard theme border
+	      is to use one of the built-in theme appearance objects as
+	      the parent object and
+	      not changing the existing
+	      <classname>&ns;::w::font_arg</classname> value.
+	    </para>
+
+	    <para>
+	      See <xref linkend="sxgfonts" /> for more information on how
+	      to define custom <tag class='element'>font</tag>s.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <ulink url="&link-enum-x--w-halign;"><classname>&ns;::w::halign</classname></ulink> fields
+	  </term>
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<horizontal_alignment>center</horizontal_alignment>
+]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	    <para>
+	      <classname>&ns;::w::halign</classname>'s
+	      <link linkend="labels">possible values</link> are:
+	      <quote>left</quote>,
+	      <quote>right</quote>,
+	      <quote>center</quote>,
+	      or
+	      <quote>fill</quote>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <ulink url="&link-enum-x--w-scrollbar-visibility;"><classname>&ns;::w::scrollbar_visibility</classname></ulink> fields
+	  </term>
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<pane_scrollbar_visibility>automatic</pane_scrollbar_visibility>
+]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	    <para>
+	      <classname>&ns;::w::scrollbar_visibility</classname>'s
+	      possible values are:
+	      <quote>never</quote>,
+	      <quote>always</quote>,
+	      <quote>automatic</quote>,
+	      or
+	      <quote>automatic_reserved</quote>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink> fields
+	  </term>
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <ulink url="&link-enum-x--w-valign;"><classname>&ns;::w::valign</classname></ulink> fields
+	  </term>
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<vertical_alignment>middle</vertical_alignment>
+]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	    <para>
+	      <classname>&ns;::w::halign</classname>'s
+	      possible values are:
+	      <quote>top</quote>,
+	      <quote>bottom</quote>,
+	      <quote>middle</quote>,
+	      or
+	      <quote>fill</quote>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <classname>&ns;::w::const_<replaceable>type</replaceable>_apperance</classname> fields
+	  </term>
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<focus_border>custom-checkbox-focus-border</focus_border>
+]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	  </listitem>
+	  <para>
+	    Appearance object can contain other appearance objects, as their fields.
+	    Example: the <varname>focus_border</varname> field in an
+	    <ulink url="&link-x--w--image-button-appearance-properties;">image button appearance</ulink>
+	    object is a
+	    <ulink url="&link-x--w--focus-border-appearance-properties;">focus border appearance</ulink>
+	    object.
+	    The value of this field ia an
+	    <tag class='attribute'>id</tag>s of another
+	    <tag class='element'>appearance</tag> element, with the appropriate type,
+	    in the theme file.
+	  </para>
+	</varlistentry>
+      </variablelist>
+    </section>
+    <section id="uixmlappearanceoptionalvectorfields">
+      <title><classname>std::optional</classname> and <classname>std::vector</classname> fields</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<images>
+  <reset />
+</images>
+
+<images>scroll-left1</images>
+<images>scroll-right1</images>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	A new
+	<tag class='element'>appearance</tag> element starts with the values of all fields
+	copied from its parent appearance object, then each value in the
+	<tag class='element'>appearance</tag> element replaces the value of the
+	corresponding field in the
+	new appearance object.
+	Some fields in appearance objects are <classname>std::optional</classname> or
+	<classname>std::vector</classname>s.
+	Each value of a
+	<classname>std::vector</classname> field gets appended to a vector.
+	Specifying a
+	<tag class='element'>reset</tag> for a
+	<classname>std::vector</classname> value
+	<methodname>erase</methodname>()s its existing contents.
+	Specifying a
+	<tag class='element'>reset</tag> for a
+	<classname>std::optional</classname> <methodname>reset</methodname>()s its value.
+      </para>
+
+      <para>
+	New values of a <classname>std::vector</classname> usually gets specified after
+	<tag class='element'>reset</tag>ing the values it inherited from its parent
+	appearance object.
+      </para>
+    </section>
   </section>
 </appendix>
 

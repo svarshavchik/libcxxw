@@ -33,6 +33,8 @@ struct standard_dialog_args {
 	bool modal=false;
 
 	//! Window name
+
+	//! Used when saving/loading screen_positions.
 	std::string name;
 
 	//! Default dialog position

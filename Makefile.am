@@ -1113,7 +1113,7 @@ testpage_LDADD=libcxxw.la
 testpage_LDFLAGS=-static $(STATICLINKFLAGS)
 
 $(call OPTIONS_GEN,testpane.inc.H,testpane.xml)
-testpane_SOURCES=testpane.C
+testpane_SOURCES=testpane.C testpane_theme.xml
 testpane_LDADD=libcxxw.la
 testpane_LDFLAGS=$(TESTLINKTYPE)
 
@@ -1199,6 +1199,16 @@ appearance/appearance_parser.inc.C: \
 	mv -f appearance/appearance_parser.inc.C.tmp \
 		appearance/appearance_parser.inc.C
 
+appearance/appearance_list.xml: appearance/appearance_parser.xml \
+	appearance/appearance_create_list.xsl
+	$(XSLTPROC) -xinclude $(srcdir)/appearance/appearance_create_list.xsl \
+		appearance/appearance_parser.xml \
+		>appearance/appearance_list.xml.tmp
+	sed '1d;s/\&amp;/\&/g' <appearance/appearance_list.xml.tmp \
+		>appearance/appearance_list.xml.tmp2
+	rm -f appearance/appearance_list.xml.tmp
+	mv -f appearance/appearance_list.xml.tmp2 appearance/appearance_list.xml
+
 appearance/appearance_parser.xml: $(ALL_APPEARANCES_XML)
 	echo "<?xml version='1.0'?>" >appearance/appearance_parser.xml.tmp
 	echo "<root xmlns:xi='http://www.w3.org/2003/XInclude'>" >>appearance/appearance_parser.xml.tmp
@@ -1232,6 +1242,7 @@ uicompiler_appearance_proto.inc.H: \
 
 BUILT_SOURCES=includes/x/w/constants_inc.H \
 	$(XIM_AUTOGEN) \
+	appearance/appearance_list.xml     \
 	appearance/appearance_parser.xml \
 	appearance/appearance_parser.inc.C \
 	uicompiler.inc.C \
@@ -1242,6 +1253,7 @@ BUILT_SOURCES=includes/x/w/constants_inc.H \
 
 CLEANFILES += uicompiler.inc.C \
 	gc_constants.inc.C pic_constants.inc.C \
+	appearance/appearance_list.xml \
 	appearance/appearance_parser.inc.C \
 	appearance/appearance_parser.xml \
 	uicompiler_appearance_proto.inc.H \
@@ -1301,7 +1313,7 @@ DOCS_SRC = $(shell find includes -name '*.H' -print)
 
 $(foreach f,$(patsubst html/%,%,$(ALL_DOCS)),$(eval $(call install_docimage,$(f))))
 
-html/index.html: html/ref/index.html $(wildcard docbook/*.xml docbook/xmllinks*.xsl)
+html/index.html: html/ref/index.html $(wildcard docbook/*.xml docbook/xmllinks*.xsl) appearance/appearance_list.xml
 	mkdir -p docbook
 	$(XSLTPROC) $(srcdir)/docbook/xmllinks-extract.xsl xml/index.xml >docbook/entities.tmp
 	$(XSLTPROC) $(srcdir)/docbook/xmllinks-dedupe.xsl docbook/entities.tmp >docbook/entities.tmp2

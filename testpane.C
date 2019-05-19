@@ -10,6 +10,7 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include <x/config.H>
+#include <x/singletonptr.H>
 #include "x/w/main_window.H"
 #include "x/w/screen_positions.H"
 #include "x/w/gridlayoutmanager.H"
@@ -24,12 +25,27 @@
 #include "x/w/listlayoutmanager.H"
 #include "x/w/tablelayoutmanager.H"
 #include "x/w/canvas.H"
+#include "x/w/uigenerators.H"
 
 #include <string>
 #include <iostream>
 #include <sstream>
 
 #include "testpane.inc.H"
+
+struct my_appObj : virtual public LIBCXX_NAMESPACE::obj {
+
+public:
+
+	LIBCXX_NAMESPACE::w::const_uigenerators theme;
+
+	my_appObj() : theme{LIBCXX_NAMESPACE::w::uigenerators
+			    ::create("testpane_theme.xml")}
+	{
+	}
+};
+
+typedef LIBCXX_NAMESPACE::singletonptr<my_appObj> my_app;
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -76,15 +92,22 @@ static void insert(const LIBCXX_NAMESPACE::w::container &c,
 
 	LIBCXX_NAMESPACE::w::panefactory f=lm->insert_panes(0);
 
-	auto appearance=f->appearance->modify
-		([v]
-		 (const auto &appearance)
-		 {
-			 appearance->size=20;
-			 appearance->pane_scrollbar_visibility=v;
-		 });
+	my_app app;
 
-	f->appearance=appearance;
+	switch (v) {
+	case LIBCXX_NAMESPACE::w::scrollbar_visibility::never:
+		f->appearance=app->theme->lookup_appearance("insert_never");
+		break;
+	case LIBCXX_NAMESPACE::w::scrollbar_visibility::always:
+		f->appearance=app->theme->lookup_appearance("insert_always");
+		break;
+	case LIBCXX_NAMESPACE::w::scrollbar_visibility::automatic:
+		f->appearance=app->theme->lookup_appearance("insert_automatic");
+		break;
+	case LIBCXX_NAMESPACE::w::scrollbar_visibility::automatic_reserved:
+		f->appearance=app->theme->lookup_appearance("insert_automatic_reserved");
+		break;
+	}
 
 	f->create_label("Lorem ipsum\n"
 			"dolor sit amet\n"
@@ -596,6 +619,8 @@ int main(int argc, char **argv)
 	try {
 		testpaneoptions options;
 		options.parse(argc, argv);
+
+		my_app app{my_app::create()};
 
 		testpane(options);
 	} catch (const LIBCXX_NAMESPACE::exception &e)

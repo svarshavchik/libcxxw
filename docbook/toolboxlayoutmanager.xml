@@ -206,10 +206,19 @@ main_window->on_stabilized
       The individual tool icons created by
       <link linkend="toolbox"><filename>toolboxlayoutmanager.C</filename></link>
       are nothing more than customized radio buttons. Existing radio buttons
-      have all the needed functionality to implement the individual toolbox
-      tools: choosing a new icon automatically deselects the previous icon.
+      have all the needed functionality to implement typical toolbox
+      behavior: choosing a new icon automatically deselects the previous icon.
       This is stock radio button functionality: selecting one radio button
-      deselects the previous one. All that's needed is to use custom images:
+      deselects the previous one. All that's needed is to create a radio
+      button with a custom appearance by using a custom
+      <link linkend="appearance">appearance object</link> for the radio
+      button.
+    </para>
+
+    <para>
+      <filename>toolboxlayoutmanager.C</filename> shows two approaches for
+      creating custom appearance objects. The first approach creates a
+      custom appearance object directly:
     </para>
 
     <blockquote>

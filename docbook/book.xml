@@ -82,8 +82,9 @@
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY table SYSTEM "table.xml">
 <!ENTITY toolbox SYSTEM "toolboxlayoutmanager.xml">
-<!ENTITY uixmldoc SYSTEM "uixmldoc.xml">
 <!ENTITY uigenerator SYSTEM "uigenerator.xml">
+<!ENTITY uixmlappearance_list SYSTEM "../appearance/appearance_list.xml">
+<!ENTITY uixmldoc SYSTEM "uixmldoc.xml">
 <!ENTITY validatedinput SYSTEM "validatedinput.xml">
 <!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">
 

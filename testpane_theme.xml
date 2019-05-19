@@ -1,0 +1,20 @@
+<theme>
+  <dim id="insert_size">80</dim>
+
+  <appearance id="insert_never" type="pane">
+    <pane_scrollbar_visibility>never</pane_scrollbar_visibility>
+    <size>insert_size</size>
+  </appearance>
+
+  <appearance id="insert_always" type="pane" from="insert_never">
+    <pane_scrollbar_visibility>always</pane_scrollbar_visibility>
+  </appearance>
+
+  <appearance id="insert_automatic" type="pane" from="insert_never">
+    <pane_scrollbar_visibility>automatic</pane_scrollbar_visibility>
+  </appearance>
+
+  <appearance id="insert_automatic_reserved" type="pane" from="insert_never">
+    <pane_scrollbar_visibility>automatic_reserved</pane_scrollbar_visibility>
+  </appearance>
+</theme>

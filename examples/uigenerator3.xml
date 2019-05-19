@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<theme version="1"
+       xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <dim id="cell-padding">20</dim>
+
+  <color id="focusoff">
+    <r>.8</r>
+    <g>.8</g>
+    <b>.2</b>
+  </color>
+
+  <color id="focuson1">
+    <r>.2</r>
+    <g>.2</g>
+    <b>.8</b>
+  </color>
+
+  <color id="focuson2">
+    <r>.2</r>
+    <g>.8</g>
+    <b>.2</b>
+  </color>
+
+  <border id="custom-focusoff">
+    <color>focusoff</color>
+    <width>1</width>
+    <height>1</height>
+  </border>
+
+  <border id="custom-focuson" from="custom-focusoff">
+    <color>focuson1</color>
+    <color2>focuson2</color2>
+    <dash>1</dash>
+  </border>
+
+  <appearance id="custom-checkbox-focus-border" type="focus_border">
+    <focusoff_border>custom-focusoff</focusoff_border>
+    <focuson_border>custom-focuson</focuson_border>
+  </appearance>
+
+  <appearance id="custom-checkbox" type="image_button">
+    <images>
+      <reset />
+    </images>
+
+    <focus_border>custom-checkbox-focus-border</focus_border>
+
+    <images>scroll-left1</images>
+    <images>scroll-right1</images>
+
+  </appearance>
+
+  <layout id="main-window-grid" type="grid">
+
+    <padding>
+      <row>0</row>
+      <side>top</side>
+      <padding>cell-padding</padding>
+    </padding>
+    <padding>
+      <row>0</row>
+      <side>bottom</side>
+      <padding>cell-padding</padding>
+    </padding>
+
+    <padding>
+      <col>0</col>
+      <side>left</side>
+      <padding>cell-padding</padding>
+    </padding>
+    <padding>
+      <col>1</col>
+      <side>right</side>
+      <padding>cell-padding</padding>
+    </padding>
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>main-window-contents</name>
+    </append_row>
+  </layout>
+
+  <factory id="main-window-contents" type="grid">
+    <element>
+      <name>checkbox</name>
+    </element>
+    <element>
+      <name>label</name>
+    </element>
+  </factory>
+
+</theme>
