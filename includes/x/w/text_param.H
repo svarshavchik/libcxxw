@@ -15,6 +15,8 @@
 #include <x/w/screenfwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/text_hotspotfwd.H>
+#include <x/w/theme_textfwd.H>
+
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -235,6 +237,12 @@ p("underline"_decoration,
    " world!");
 \endcode
 
+\par gettext-compatible markup
+
+It is possible to specify fonts, colors, and markup in a single
+string parameter that's amenable to gettext-ization. See
+\ref theme_text for more information.
+
 */
 
 class text_param {
@@ -388,6 +396,9 @@ public:
 
 	//! End of hotspot.
 	text_param &operator()(std::nullptr_t);
+
+	//! Add text referencing colors and fonts from a theme file.
+	text_param &operator()(const theme_text &);
 
 	//! Variadic list of parameters to the \c () operator.
 

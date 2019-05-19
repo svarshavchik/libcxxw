@@ -155,6 +155,7 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 
 	auto d=creator(dialog_args{ref_dialog_impl, mw});
 
+	// TODO: std::string should not be necessary in C++20
 	std::string dialog_ids{args.dialog_id.begin(), args.dialog_id.end()};
 
 	// Insert or replace this dialog_id.
@@ -174,6 +175,7 @@ void main_windowObj::remove_dialog(const std::string_view &dialog_id)
 {
 	implObj::all_dialogs_t::lock lock{impl->all_dialogs};
 
+	// TODO: std::string should not be necessary in C++20
 	auto p=lock->find(std::string{dialog_id.begin(), dialog_id.end()});
 
 	if (p != lock->end())
@@ -200,6 +202,7 @@ dialogptr main_windowObj::get_dialog(const std::string_view &dialog_id)
 
 	implObj::all_dialogs_t::lock lock{impl->all_dialogs};
 
+	// TODO: std::string should not be necessary in C++20
 	auto p=lock->find(std::string{dialog_id.begin(), dialog_id.end()});
 
 	if (p != lock->end())

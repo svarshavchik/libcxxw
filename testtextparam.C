@@ -10,6 +10,7 @@
 #include "x/w/impl/richtext/richtextmeta.H"
 #include "x/w/text_param.H"
 #include "x/w/text_param_literals.H"
+#include "x/w/theme_text.H"
 #include "screen.H"
 #include "main_window.H"
 #include "main_window_handler.H"
@@ -71,6 +72,26 @@ void testrgb()
 	}
 }
 
+void testthemetext()
+{
+	text_param t{ theme_text{"${font:some_theme_font}${color:white}"
+				 "${decoration:underline}"
+				 "O$$${decoration:none}k"}};
+
+
+	if (t.string != U"O$k" ||
+	    t.colors !=
+	    std::unordered_map<size_t, text_color_arg>
+	    {{0, text_color_arg{rgb{"r=ffff, g=ffff, b=ffff, a=ffff"}}}} ||
+	    t.theme_fonts != std::unordered_map<size_t, std::string>
+	    {{0, "some_theme_font"}} ||
+	    t.decorations != std::unordered_map<size_t, text_decoration>{
+		    {0, text_decoration::underline},
+		    {2, text_decoration::none},
+	    })
+		throw EXCEPTION("theme_text parsing failed");
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -99,6 +120,7 @@ int main(int argc, char **argv)
 
 		testtextparam(mw);
 		testrgb();
+		testthemetext();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

@@ -54,6 +54,7 @@ public:
 	std::unordered_map<std::string, border_infomm> borders;
 
 	//! Look up a parsed border.
+	//! TODO: should be std::string_view in C++20
 	border_arg lookup_border(const std::string &name,
 				 bool allowthemerefs,
 				 const char *tag) const;

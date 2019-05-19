@@ -18,6 +18,16 @@ LIBCXXW_NAMESPACE_START
 struct theme_color {
 
 	std::string name;
+
+	bool operator==(const theme_color &o) const
+	{
+		return name == o.name;
+	}
+
+	bool operator!=(const theme_color &o) const
+	{
+		return name != o.name;
+	}
 };
 
 LIBCXXW_NAMESPACE_END

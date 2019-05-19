@@ -856,6 +856,7 @@ libcxxw_la_SOURCES=\
 	sync_counter.C				    \
 	sync_counter.H				    \
 	text_param.C				    \
+	theme_text.C				    \
 	themeborder_element_impl.C		    \
 	themedim.C				    \
 	themedim_element_minoverride.H		    \
