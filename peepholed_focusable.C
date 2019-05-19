@@ -100,8 +100,7 @@ create_peepholed_focusable_with_frame_impl
 	auto focusframecontainer_impl=
 		create_always_visible_focusframe_impl
 		(pfc_impl,
-		 args.inputfocusoff_border,
-		 args.inputfocuson_border,
+		 args.focus_border,
 		 args.focusable_padding,
 		 args.focusable_padding,
 		 args.focusable_background_color);

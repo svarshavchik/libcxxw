@@ -106,8 +106,7 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 	auto ffcontainer_impl=
 		create_nonrecursive_visibility_focusframe_impl
 		(parent_container,
-		 conf.appearance->focus_border->focusoff_border,
-		 conf.appearance->focus_border->focuson_border,
+		 conf.appearance->focus_border,
 		 0, 0, background_color);
 
 	// The focus frame will manage the actual scrollbar element. Create

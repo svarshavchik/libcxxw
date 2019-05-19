@@ -9,6 +9,7 @@
 #include "x/w/rgb.H"
 #include "x/w/element.H"
 #include "x/w/gridfactory.H"
+#include "x/w/focus_border_appearancefwd.H"
 #include "image_button_internal.H"
 #include "x/w/impl/focus/focusframecontainer_impl.H"
 #include "x/w/impl/focus/focusframecontainer_element.H"
@@ -39,11 +40,8 @@ struct LIBCXX_HIDDEN popup_imagebutton_config {
 	//! Popup button image
 	std::string image2;
 
-	//! Popup button's focus "off" border.
-	border_arg focusoff_border;
-
-	//! Popup button's focus "on" border.
-	border_arg focuson_border;
+	//! Focus border appearance.
+	const_focus_border_appearance appearance;
 };
 
 //! Type of a factory for a popup image button's focus frame.
@@ -60,8 +58,7 @@ struct LIBCXX_HIDDEN popup_imagebutton_config {
 //! base mixin composition.
 
 typedef ref<focusframecontainer_implObj>
-popup_imagebutton_focusframe_factory(const border_arg &,
-				     const border_arg &,
+popup_imagebutton_focusframe_factory(const const_focus_border_appearance &,
 				     const container_impl &,
 				     const child_element_init_params &);
 

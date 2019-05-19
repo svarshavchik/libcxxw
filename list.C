@@ -200,8 +200,7 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({appearance->list_border,
-		  appearance->focus_border->focusoff_border,
-		  appearance->focus_border->focuson_border,
+		  appearance->focus_border,
 		  0,
 		  appearance->background_color,
 		  focusable_container_impl,

@@ -6,6 +6,7 @@
 #define menu_impl_h
 
 #include "x/w/menu.H"
+#include "x/w/focus_border_appearancefwd.H"
 #include "x/w/impl/nonrecursive_visibilityfwd.H"
 #include "x/w/impl/focus/focusframecontainer_elementfwd.H"
 #include "x/w/impl/popup/popupobj.H"
@@ -39,8 +40,7 @@ class LIBCXX_HIDDEN menuObj::implObj :
 
 	//! Constructor
 	implObj(const popup &menu_popup,
-		const border_arg &focusoff_border,
-		const border_arg &focuson_border,
+		const const_focus_border_appearance &appearance,
 		const container_impl &parent_container);
 
 	//! Destructor

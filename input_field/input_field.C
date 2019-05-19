@@ -263,9 +263,8 @@ factoryObj::create_input_field(const text_param &text,
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({config.appearance->border,
-		  config.appearance->focus_border->focusoff_border,
-		  config.appearance->focus_border->focuson_border,
-		  .2,
+		  config.appearance->focus_border,
+		  config.appearance->focusable_padding,
 		  config.appearance->background_color,
 		  impl_mixin,
 		  input_field_peephole_style,

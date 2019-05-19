@@ -451,14 +451,12 @@ focusable_container new_custom_comboboxlayoutmanager
 	auto combobox_button=create_popup_imagebutton
 		(f,
 		 []
-		 (const border_arg &focusoff_border,
-		  const border_arg &focuson_border,
+		 (const const_focus_border_appearance &focus_border,
 		  const container_impl &parent_container,
 		  const child_element_init_params &init_params)
 		 {
 			 return ref<popup_imagebutton_focusframe_implObj>
-			 ::create(focusoff_border,
-				  focuson_border,
+			 ::create(focus_border,
 				  0,
 				  0,
 				  parent_container,
@@ -473,8 +471,7 @@ focusable_container new_custom_comboboxlayoutmanager
 			  appearance->background_color,
 			  appearance->popup_button_image1,
 			  appearance->popup_button_image2,
-			  appearance->button_focus_border->focusoff_border,
-			  appearance->button_focus_border->focuson_border,
+			  appearance->button_focus_border,
 		});
 
 	// Point the popup container to the current selection element and

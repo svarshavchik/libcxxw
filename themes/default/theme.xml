@@ -404,7 +404,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   <color id="textedit_hint_color" scale="50%" />
 
   <border id="textedit_border" from="thin_0%" />
-
+  <dim id="textedit_focusable_padding">.2</dim>
   <border id="texteditfocusoff_border" from="inputfocusoff_border" />
   <border id="texteditfocuson_border" from="inputfocuson_border" />
 

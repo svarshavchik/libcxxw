@@ -8,6 +8,7 @@
 #include <x/w/containerobj.H>
 #include <x/w/elementobj.H>
 #include <x/w/focus.H>
+#include <x/w/focus_border_appearancefwd.H>
 #include <x/w/impl/current_border_implfwd.H>
 #include <x/w/impl/bordercontainer_impl.H>
 #include <x/w/connection_threadfwd.H>
@@ -32,13 +33,8 @@ class focusframecontainer_implObj : virtual public obj {
 
 	virtual bordercontainer_implObj &focusframe_bordercontainer_impl()=0;
 
-	//! Implemented by the mixin template, to return my focusoff border.
-
-	virtual border_arg get_focusoff_border(ONLY IN_THREAD) const=0;
-
-	//! Implemented by the mixin template, to return my focuson border.
-
-	virtual border_arg get_focuson_border(ONLY IN_THREAD) const=0;
+	//! Implemented by the mixin template, to return my appearance
+	virtual const const_focus_border_appearance &get_appearance() const=0;
 
 	//! Trigger a container rebuild, in order to update the focus frame.
 

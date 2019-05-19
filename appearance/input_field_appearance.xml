@@ -39,6 +39,13 @@ Input focus border for the input field.
     <ref>focus_border</ref>
   </field>
   <field>
+    <name>focusable_padding</name>
+    <descr><![CDATA[
+Padding between the focus border and the peephole.
+]]></descr>
+    <type>dim_arg</type>
+  </field>
+  <field>
     <name>foreground_color</name>
     <descr><![CDATA[
 Foreground color

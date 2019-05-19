@@ -20,10 +20,9 @@ static child_element_init_params create_menu_init_params(const popup &p)
 }
 
 menuObj::implObj::implObj(const popup &menu_popup,
-			  const border_arg &focusoff_border,
-			  const border_arg &focuson_border,
+			  const const_focus_border_appearance &appearance,
 			  const container_impl &parent_container)
-	: superclass_t{focusoff_border, focuson_border,
+	: superclass_t{appearance,
 		       0,
 		       0,
 		       parent_container,

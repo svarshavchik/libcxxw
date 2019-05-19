@@ -15,15 +15,14 @@ LIBCXXW_NAMESPACE_START
 
 always_visible_focusframe_ref_t
 create_always_visible_focusframe_impl(const container_impl &parent_container,
-				      const border_arg &focusoff_border,
-				      const border_arg &focuson_border,
+				      const const_focus_border_appearance
+				      &appearance,
 				      const dim_arg &hpad,
 				      const dim_arg &vpad,
 				      const std::optional<color_arg> &bgcolor)
 {
 	auto e=always_visible_focusframe_ref_t
-		::create(focusoff_border,
-			 focuson_border,
+		::create(appearance,
 			 hpad,
 			 vpad,
 			 parent_container,
@@ -38,15 +37,13 @@ create_always_visible_focusframe_impl(const container_impl &parent_container,
 nonrecursive_visibility_focusframe_ref_t
 create_nonrecursive_visibility_focusframe_impl
 (const container_impl &parent_container,
- const border_arg &focusoff_border,
- const border_arg &focuson_border,
+ const const_focus_border_appearance &appearance,
  const dim_arg &hpad,
  const dim_arg &vpad,
  const std::optional<color_arg> &bgcolor)
 {
 	auto e=nonrecursive_visibility_focusframe_ref_t
-		::create(focusoff_border,
-			 focuson_border,
+		::create(appearance,
 			 hpad,
 			 vpad,
 			 parent_container,

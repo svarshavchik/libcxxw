@@ -383,8 +383,7 @@ date_input_field factoryObj
 		  config.appearance->input_appearance->background_color,
 		  config.appearance->popup_button_image1,
 		  config.appearance->popup_button_image2,
-		  config.appearance->focusoff_border,
-		  config.appearance->focuson_border
+		  config.appearance
 		 });
 
 	auto impl=ref<date_input_fieldObj::implObj>

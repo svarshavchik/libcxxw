@@ -12,7 +12,7 @@
 #include <x/w/impl/always_visiblefwd.H>
 #include <x/w/impl/child_element.H>
 #include <x/w/impl/background_colorfwd.H>
-#include <x/w/border_arg.H>
+#include <x/w/focus_border_appearancefwd.H>
 #include <x/ref.H>
 #include <optional>
 
@@ -52,8 +52,7 @@ typedef ref<nonrecursive_visibility_focusframe_t
 
 always_visible_focusframe_ref_t
 create_always_visible_focusframe_impl(const container_impl &parent_container,
-				      const border_arg &focusoff_border,
-				      const border_arg &focuson_border,
+				      const const_focus_border_appearance &,
 				      const dim_arg &hpad,
 				      const dim_arg &vpad,
 				      const std::optional<color_arg> &bgcolor
@@ -64,8 +63,7 @@ create_always_visible_focusframe_impl(const container_impl &parent_container,
 nonrecursive_visibility_focusframe_ref_t
 create_nonrecursive_visibility_focusframe_impl(const container_impl
 					       &parent_container,
-					       const border_arg &focusoff_border,
-					       const border_arg &focuson_border,
+					       const const_focus_border_appearance &,
 					       const dim_arg &hpad,
 					       const dim_arg &vpad,
 					       const std::optional<color_arg>

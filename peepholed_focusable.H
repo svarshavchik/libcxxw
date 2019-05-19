@@ -9,9 +9,10 @@
 #include "x/w/containerobj.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/scrollbarfwd.H"
-#include "x/w/border_arg.H"
+#include "x/w/border_argfwd.H"
 #include "x/w/peephole_style.H"
 #include "x/w/scrollbar_appearancefwd.H"
+#include "x/w/focus_border_appearancefwd.H"
 #include "peephole/peepholefwd.H"
 #include "peephole/peepholedfwd.H"
 #include "peephole/peepholeobj.H"
@@ -41,13 +42,11 @@ struct LIBCXX_HIDDEN create_peepholed_focusable_args_t {
 	//! The border around the focus frame and scrollbars.
 	const border_arg &border;
 
-	//! Focus off border
-	const border_arg &inputfocusoff_border;
-	//! Focus on border
-	const border_arg &inputfocuson_border;
+	//! Focus border appearance
+	const const_focus_border_appearance &focus_border;
 
-	//! Padding between the scrollbar and the peephole.
-	double focusable_padding;
+	//! Padding between the focusable and the peephole.
+	dim_arg focusable_padding;
 
 	//! Focusable's background color.
 

@@ -11,7 +11,6 @@
 #include "x/w/button_appearance.H"
 #include "x/w/focus_border_appearance.H"
 #include "x/w/label.H"
-#include "x/w/border_arg.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/container_visible_element.H"
 #include "x/w/impl/bordercontainer_element.H"
@@ -148,8 +147,7 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 			 config.appearance->normal_color,
 			 config.appearance->selected_color,
 			 config.appearance->active_color,
-			 config.appearance->focus_border->focusoff_border,
-			 config.appearance->focus_border->focuson_border,
+			 config.appearance->focus_border,
 			 0,
 			 0,
 			 impl, impl,

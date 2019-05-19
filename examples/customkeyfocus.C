@@ -12,6 +12,7 @@
 
 #include <x/w/main_window.H>
 #include <x/w/button_appearance.H>
+#include <x/w/focus_border_appearance.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
 #include <x/w/element.H>
@@ -325,26 +326,30 @@ my_element create_with_focusframe(const x::w::factory &f,
 						x::w::rgb::maximum/4*3,
 						0};
 
-	// Make our custom border
+	// Make our focus border.
 
-	x::w::border_arg focusoff_border{custom_focusoff_border};
-	x::w::border_arg focuson_border{custom_focuson_border};
+	// Use standard theme borders. Hijack them from the buttons'
+	// appearance objects.
 
-	if (!custom)
+	auto focus_border=x::w::normal_button().appearance->focus_border;
+
+	if (custom)
 	{
-		// Use standard theme borders. Hijack them from the buttons'
-		// appearance objects.
-
-		const x::w::button_config &config=x::w::normal_button();
-
-		focusoff_border=config.appearance->inputfocusoff_border;
-		focuson_border=config.appearance->inputfocuson_border;
+		focus_border=focus_border
+			->modify([&]
+				 (const auto &appearance)
+				 {
+					 appearance->focusoff_border=
+						 custom_focusoff_border;
+					 appearance->focuson_border=
+						 custom_focuson_border;
+				 });
 	}
+
 	auto focus_frame_container_impl=
 		x::w::create_nonrecursive_visibility_focusframe_impl
 		(f_c_impl,
-		 focusoff_border,
-		 focuson_border,
+		 focus_border,
 
 		 // Additional padding between the focus frame and the
 		 // display element.

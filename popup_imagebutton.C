@@ -29,14 +29,12 @@ create_standard_popup_imagebutton(const gridfactory &f,
 	return create_popup_imagebutton
 		(f,
 		 [&]
-		 (const border_arg &focusoff_border,
-		  const border_arg &focuson_border,
+		 (const const_focus_border_appearance &appearance,
 		  const container_impl &parent_container,
 		  const child_element_init_params &init_params)
 		 {
 			 auto ff=ref<popup_imagebutton_focusframe_implObj>
-				 ::create(focusoff_border,
-					  focuson_border,
+				 ::create(appearance,
 					  0,
 					  0,
 					  parent_container,
@@ -78,8 +76,7 @@ do_create_popup_imagebutton(const gridfactory &f,
 	focusframe_init_params.background_color=
 		config.grid_cell_background_color;
 
-	auto cbfc=ff_factory(config.focusoff_border,
-			     config.focuson_border,
+	auto cbfc=ff_factory(config.appearance,
 			     parent_container,
 			     focusframe_init_params);
 

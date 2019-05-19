@@ -62,6 +62,7 @@ input_field_appearance_properties::input_field_appearance_properties()
 	  dragging_nodrop_pointer{"cursor-dragging-wontdrop"},
 	  border{"textedit_border"},
 	  focus_border{focus_border_appearance::base::input_field_theme()},
+	  focusable_padding{"textedit_focusable_padding"},
 	  foreground_color{"textedit_foreground_color"},
 	  regular_font{theme_font{"textedit"}},
 	  password_font{theme_font{"password"}},

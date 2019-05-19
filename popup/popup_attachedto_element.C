@@ -123,8 +123,7 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 			 appearance->popup_background_color,
 			 appearance->button_image1,
 			 appearance->button_image2,
-			 appearance->button_focus_border->focusoff_border,
-			 appearance->button_focus_border->focuson_border,
+			 appearance->button_focus_border,
 		 });
 
 	return {real_impl, popup_imagebutton, glm, popup};

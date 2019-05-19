@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/impl/focus/focusframecontainer_impl.H"
 #include "x/w/impl/current_border_impl.H"
+#include "x/w/focus_border_appearance.H"
 #include "gridlayoutmanager.H"
 #include "grid_map_info.H"
 #include "container_impl.H"
@@ -33,9 +34,11 @@ void focusframecontainer_implObj::update_focusframe(ONLY IN_THREAD)
 
 	auto &e=bc.get_container_impl().container_element_impl();
 
-	auto b=e.current_keyboard_focus(IN_THREAD)
-		? get_focuson_border(IN_THREAD)
-		: get_focusoff_border(IN_THREAD);
+	const auto &appearance=get_appearance();
+
+	const auto &b=e.current_keyboard_focus(IN_THREAD)
+		? appearance->focuson_border
+		: appearance->focusoff_border;
 
 	bc.set_border(IN_THREAD, b, b, b, b);
 }
