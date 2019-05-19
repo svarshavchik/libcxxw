@@ -42,7 +42,7 @@ void gridlayoutmanagerObj::implObj::uninstalling(ONLY IN_THREAD)
 }
 
 /*
-** Using insert_or_assign to retrieve or initialize grid_map_column_defaults
+** Using try_emplace to retrieve or initialize grid_map_column_defaults
 ** and grid_map_row_defaults. Helper objects to construct a new object only
 ** when necessary.
 
@@ -85,15 +85,15 @@ static grid_map_column_defaults &get_column_defaults(grid_map_t::lock &lock,
 						     size_t col)
 {
 	return (*lock)->column_defaults
-		.insert_or_assign(col, new_column_defaults{lock}).first
+		.try_emplace(col, new_column_defaults{lock}).first
 		->second;
 }
 
 static grid_map_row_defaults &get_row_defaults(grid_map_t::lock &lock,
-					       size_t col)
+					       size_t row)
 {
 	return (*lock)->row_defaults
-		.insert_or_assign(col, new_row_defaults{lock}).first
+		.try_emplace(row, new_row_defaults{lock}).first
 		->second;
 }
 
