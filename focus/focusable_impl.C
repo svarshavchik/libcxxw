@@ -442,6 +442,8 @@ void focusableObj::implObj::next_focus(ONLY IN_THREAD,
 {
 	auto &ff=focusable_fields(IN_THREAD);
 
+	// Find the next focusable element in this window.
+
 	while (starting_iter != ff.end())
 	{
 		if ((*starting_iter)->focusable_enabled(IN_THREAD))
@@ -452,6 +454,18 @@ void focusableObj::implObj::next_focus(ONLY IN_THREAD,
 		++starting_iter;
 	}
 
+	auto &wh=get_focusable_element().get_window_handler();
+
+	// If this is the last focusable element in this window we will
+	// try to transfer focus to the next window. If there are none, we
+	// will go back to the first focusable element in this window.
+
+	if (wh.transfer_focus_to_next_window(IN_THREAD))
+	{
+		wh.unset_keyboard_focus(IN_THREAD, trigger);
+		return;
+	}
+
 	for (starting_iter=ff.begin(); starting_iter != ff.end();
 	     ++starting_iter)
 		if ((*starting_iter)->focusable_enabled(IN_THREAD))
@@ -460,14 +474,19 @@ void focusableObj::implObj::next_focus(ONLY IN_THREAD,
 			return;
 		}
 
-	get_focusable_element().get_window_handler()
-		.unset_keyboard_focus(IN_THREAD, trigger);
+	// We should at least have gone back to this element. If not, this
+	// means we must be losing focus because of loss of focusability, and
+	// it has nowhere else to go. As such, we give up.
+
+	wh.unset_keyboard_focus(IN_THREAD, trigger);
 }
 
 void focusableObj::implObj::prev_focus(ONLY IN_THREAD,
 				  const callback_trigger_t &trigger)
 {
 	auto iter=GET_FOCUSABLE_FIELD_ITER();
+
+	// Find the previous focusable element in this window.
 
 	auto &ff=focusable_fields(IN_THREAD);
 
@@ -481,6 +500,18 @@ void focusableObj::implObj::prev_focus(ONLY IN_THREAD,
 		}
 	}
 
+	auto &wh=get_focusable_element().get_window_handler();
+
+	// If this is the first focusable element in this window we will
+	// try to transfer focus to the next window. If there are none,
+	// we'll go back to the last focusable element in this window.
+
+	if (wh.transfer_focus_to_next_window(IN_THREAD))
+	{
+		wh.unset_keyboard_focus(IN_THREAD, trigger);
+		return;
+	}
+
 	for (iter=ff.end(); iter != ff.begin(); )
 	{
 		--iter;
@@ -491,8 +522,11 @@ void focusableObj::implObj::prev_focus(ONLY IN_THREAD,
 		}
 	}
 
-	get_focusable_element().get_window_handler()
-		.unset_keyboard_focus(IN_THREAD, trigger);
+	// We should at least have gone back to this element. If not, this
+	// means we must be losing focus because of loss of focusability, and
+	// it has nowhere else to go. As such, we give up.
+
+	wh.unset_keyboard_focus(IN_THREAD, trigger);
 }
 
 void focusableObj::implObj::set_focus_only(ONLY IN_THREAD,

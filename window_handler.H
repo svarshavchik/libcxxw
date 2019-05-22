@@ -446,6 +446,24 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! Called by the XIM server.
 	virtual void pasted_string(ONLY IN_THREAD,
 				   const std::u32string_view &);
+
+	//! Transfer keyboard focus to the next window
+
+	//! This is used when tabbing out of the window.
+	//! Returns true if we found another window to request focus to.
+
+	bool transfer_focus_to_next_window(ONLY IN_THREAD);
+
+	//! Whether this window will accept keyboard focus from another window.
+
+	//! This is used by transfer_focus_to_prev_window() and
+	//! transfer_focus_to_next_window().
+	//!
+	//! The default implementation returns false. only main_window
+	//! returns true. Other kinds of windows are popups that don't handle
+	//! keyboard focus.
+
+	virtual bool will_accept_transferred_focus(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -236,6 +236,13 @@ public:
 	//! Check if reconfigure_sync_request_processed,
 	void idle(ONLY IN_THREAD) override;
 
+	//! Override will_accept_transferred_focus()
+
+	//! Main windows (and dialogs) accept keyboard focus after
+	//! tabbing out of another window, as long as we're not is_input_busy()
+	//! and we are visible.
+
+	bool will_accept_transferred_focus(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

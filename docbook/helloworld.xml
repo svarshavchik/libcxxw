@@ -83,7 +83,7 @@ make</programlisting>
 	  and
 	  <classname>&ns;::const_ptr</classname> (a constant ptr)
 	</ulink>,
-	which work in similar ways (but has additional features).
+	which work in similar ways (but have additional features).
 	This documentation uses the term <quote>reference</quote> to
 	refer to &libcxx;'s <classname>&ns;::ref</classname> family
 	of smart
@@ -635,7 +635,7 @@ while (!appdata->close_flag)
 		element</link>. The grid layout manager, for example, needs
 	      to figure out how to position each display element according
 	      to how many columns and rows it spans and figure out how to draw
-	      each cell's borders, if it has any. It's quite a bit of work.
+	      each cell's borders, if it has any. It's a lot of work.
 	      The list layout manager,
 	      on the other hand, has a single list of labels to draw vertically,
 	      a much simpler task.

@@ -391,7 +391,7 @@ auto main_window=
       <para>
 	A new main window gets created using a
 	<ulink url="&link-x--w--main-window-config;"><classname>&ns;::w::main_window_config</classname></ulink>
-	whose <varname>appearance</varname> members specifies the main window's
+	whose <varname>appearance</varname> member specifies the main window's
 	default visual appearance. This is a design pattern that's universally
 	shared by all display elements.
 	For example,

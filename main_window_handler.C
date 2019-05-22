@@ -696,4 +696,12 @@ void main_windowObj::handlerObj::idle(ONLY IN_THREAD)
 	superclass_t::idle(IN_THREAD);
 }
 
+bool main_windowObj::handlerObj::will_accept_transferred_focus(ONLY IN_THREAD)
+{
+	if (is_input_busy())
+		return false;
+
+	return data(IN_THREAD).reported_inherited_visibility;
+}
+
 LIBCXXW_NAMESPACE_END

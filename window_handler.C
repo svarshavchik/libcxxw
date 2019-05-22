@@ -446,4 +446,54 @@ void window_handlerObj
 	}
 }
 
+bool window_handlerObj
+::transfer_focus_to_next_window(ONLY IN_THREAD)
+{
+	if (!will_accept_transferred_focus(IN_THREAD))
+		// A popup that doesn't accept it, won't transfer it either.
+		return false;
+
+	auto &handlers=*IN_THREAD->window_handlers(IN_THREAD);
+
+	auto iter=handlers.find(id());
+
+	auto e=handlers.end();
+
+	if (iter == e)
+		return false; // Can't find myself?
+
+	while (++iter != e)
+	{
+		if (iter->second->will_accept_transferred_focus(IN_THREAD))
+		{
+			xcb_set_input_focus(conn()->conn,
+					    XCB_INPUT_FOCUS_PARENT,
+					    iter->first,
+					    IN_THREAD->timestamp(IN_THREAD));
+			return true;
+		}
+	}
+
+	// Take it from the top
+
+	for (const auto &wh:handlers)
+		if (wh.first != id() &&
+		    wh.second->will_accept_transferred_focus(IN_THREAD))
+		{
+			xcb_set_input_focus(conn()->conn,
+					    XCB_INPUT_FOCUS_PARENT,
+					    wh.first,
+					    IN_THREAD->timestamp(IN_THREAD));
+			return true;
+		}
+
+	return false;
+}
+
+bool window_handlerObj::will_accept_transferred_focus(ONLY IN_THREAD)
+{
+	return false;
+}
+
+
 LIBCXXW_NAMESPACE_END

@@ -1524,6 +1524,9 @@ bool generic_windowObj::handlerObj::process_key_event(ONLY IN_THREAD,
 {
 	if (prev_key_pressed(ke))
 	{
+		// If there's an element with the keyboard focus,
+		// invoke its prev_focus() method, and we're done.
+
 		if (most_recent_keyboard_focus(IN_THREAD))
 		{
 			if (!most_recent_keyboard_focus(IN_THREAD)
@@ -1533,6 +1536,8 @@ bool generic_windowObj::handlerObj::process_key_event(ONLY IN_THREAD,
 				->prev_focus(IN_THREAD, prev_key{});
 			return true;
 		}
+
+		// No element with keyboard focus, find the last one.
 
 		for (auto b=focusable_fields(IN_THREAD).begin(),
 			     e=focusable_fields(IN_THREAD).end();
@@ -1548,10 +1553,17 @@ bool generic_windowObj::handlerObj::process_key_event(ONLY IN_THREAD,
 				return true;
 			}
 		}
+		// No elements that can accept keyboard focus, transfer
+		// keyboard focus to the next window.
+
+		return transfer_focus_to_next_window(IN_THREAD);
 	}
 
 	if (next_key_pressed(ke))
 	{
+		// If there's an element with the keyboard focus,
+		// invoke its next_focus() method, and we're done.
+
 		if (most_recent_keyboard_focus(IN_THREAD))
 		{
 			if (!most_recent_keyboard_focus(IN_THREAD)
@@ -1562,7 +1574,16 @@ bool generic_windowObj::handlerObj::process_key_event(ONLY IN_THREAD,
 				->next_focus(IN_THREAD, next_key{});
 			return true;
 		}
-		return set_default_focus(IN_THREAD, next_key{});
+
+		// No element with the keyboard focus, find the first one.
+
+		if (set_default_focus(IN_THREAD, next_key{}))
+			return true;
+
+		// No elements that can accept keyboard focus, transfer
+		// keyboard focus to the next window.
+
+		return transfer_focus_to_next_window(IN_THREAD);
 	}
 	return false;
 }
