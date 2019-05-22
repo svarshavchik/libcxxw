@@ -10,22 +10,30 @@ See COPYING for distribution information.
   <section id="intro">
     <title>Introduction</title>
 
+    <para>
+      &appshort; is an optional add-on library to &libcxx; that
+      implements an X widget toolkit with a modern C++ API.
+      &appshort; aims to make it possible to implement a
+      basic, no-frills X user interface in modern C++.
+      This short demo gives a brief overview of &appshort;'s X widget
+      toolkit implementation:
+    </para>
     <?dbhtml-include href="demoreel.inc.html"?>
 
     <para>
-      &appshort; is an optional add-on library to &libcxx;
-      that implements a basic X user interface toolkit with a modern
-      C++17 <acronym>API</acronym> and without any dependencies on large
-      Gnome (GTK) or QT libraries. The only dependencies are
-      toolkit-independent
-      libraries that are not tied to any particular desktop environment.
-      See <xref linkend="INSTALL" /> for more information.
-      &appshort; aims to make it possible to quickly implement a simple,
-      basic, no-frills X user interface in C++.
-      Notable features:
+      &appshort;'s notable features:
     </para>
 
     <itemizedlist>
+      <listitem>
+	<para>
+	  An independent X widget toolkit stack, from the ground up. The
+	  only dependencies are low-level
+	  libraries that are not tied to any particular desktop environment.
+	  See <xref linkend="INSTALL" /> for more information.
+	</para>
+      </listitem>
+
       <listitem>
 	<para>
 	  Combines a clean modern look with classical, traditional UI
@@ -35,9 +43,11 @@ See COPYING for distribution information.
 	  UI elements include
 	  labels, text input fields,
 	  lists, combo-boxes, menus, and dialogs &mdash; updated to modern
-	  UI standards: confirming the last character typed into a
-	  password field before masking it, predictive selection of
-	  combo-box entries, spin buttons for numerical input fields, etc...
+	  UI standards: <link linkend="passwordfields">confirming the last
+	    character typed into a
+	    password field</link> before masking it, predictive selection of
+	  combo-box entries, <link linkend="spininput">spin buttons</link>
+	  for numerical input fields, etc...
 	</para>
       </listitem>
       <listitem>
@@ -69,11 +79,11 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
+	  Unlike other widget toolkits,
 	  &app; does not force the application to use an event-driven
-	  design. &app; runs in an internal execution thread that handles all
-	  X events. The library's execution thread
-	  continues to update the display elements, and process X events
-	  as needed, all by itself, while the main application performs a
+	  design. &appshort; uses an internal execution thread to handle
+	  &xproto; events. The application's UI remains responsive to X
+	  events, while the main application runs a
 	  long-running task (with all pointer and button activity suspended).
 	</para>
       </listitem>

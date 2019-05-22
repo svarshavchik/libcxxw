@@ -329,7 +329,9 @@ dim_t freetypefontObj::implObj::width_lookup(char32_t c)
 	dim_t width=0;
 
 	if (load_and_render_glyph(lock, glyph_index, c))
-		width=(*lock)->glyph->bitmap.width;
+		// This should really do sqrt(x*x + y*y)
+		width=((*lock)->glyph->advance.x +
+		       (*lock)->glyph->advance.y) >> 6;
 
 	return width;
 }

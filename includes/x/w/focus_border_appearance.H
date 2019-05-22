@@ -59,6 +59,9 @@ public:
 	//! Focus border for \ref scrollbar "scroll-bars".
 	static const const_focus_border_appearance &scrollbar_theme();
 
+	//! Focus border for \ref date_input_field "date input field popup button".
+	static const const_focus_border_appearance &dateeditbutton_theme();
+
 	//! No focus border.
 
 	//! Both focus off and on borders are 0-width borders, effectively.

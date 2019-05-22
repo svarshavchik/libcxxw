@@ -270,4 +270,27 @@ const const_focus_border_appearance
 	return config;
 }
 
+static inline const_focus_border_appearance make_dateeditbutton_theme()
+{
+	return focus_border_appearance::base::none_theme()->modify
+		([]
+		 (const auto &appearance)
+		 {
+			 appearance->focusoff_border=
+				 "dateeditbuttonfocusoff_border";
+
+			 appearance->focuson_border=
+				 "dateeditbuttonfocuson_border";
+		 });
+}
+
+const const_focus_border_appearance
+&focus_border_appearance_base::dateeditbutton_theme()
+{
+	static const const_focus_border_appearance config=
+		make_dateeditbutton_theme();
+
+	return config;
+}
+
 LIBCXXW_NAMESPACE_END

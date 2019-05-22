@@ -8,6 +8,7 @@
 #include <x/w/date_input_field_appearancefwd.H>
 #include <x/w/input_field_appearancefwd.H>
 #include <x/w/image_button_appearancefwd.H>
+#include <x/w/focus_border_appearancefwd.H>
 #include <x/w/generic_window_appearancefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/font_arg.H>

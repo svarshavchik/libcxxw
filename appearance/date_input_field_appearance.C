@@ -7,6 +7,7 @@
 #include "x/w/generic_window_appearance.H"
 #include "x/w/image_button_appearance.H"
 #include "x/w/input_field_appearance.H"
+#include <x/w/focus_border_appearance.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,6 +34,7 @@ static const_input_field_appearance &default_date_input_field_appearance()
 date_input_field_appearance_properties::date_input_field_appearance_properties()
 	: popup_button_image1{"scroll-right1"},
 	  popup_button_image2{"scroll-right2"},
+	  popup_button_focus_border{focus_border_appearance::base::dateeditbutton_theme()},
 	  day_highlight_fg{theme_color{"dateedit_day_highlight_fg"}},
 	  day_highlight_bg{theme_color{"dateedit_day_highlight_bg"}},
 	  month_font{theme_font{"dateedit_popup_month"}},
@@ -53,8 +55,6 @@ date_input_field_appearance_properties::date_input_field_appearance_properties()
 	  input_field_font{theme_font{"dateedit"}},
 	  input_field_font_color{theme_color{"dateedit_foreground_color"}},
 	  border{"dateedit_border"},
-	  focusoff_border{"dateeditbuttonfocusoff_border"},
-	  focuson_border{"dateeditbuttonfocuson_border"},
 	  popup_border{"dateedit_popup_border"},
 	  popup_background_color{"dateedit_popup_background_color"},
 	  toplevel_appearance{generic_window_appearance::base

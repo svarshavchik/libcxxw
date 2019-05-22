@@ -327,9 +327,46 @@ x::w::input_lock lock{f};</programlisting>
 	</para>
       </note>
     </section>
+  </section>
 
-    <section id="passwordfields">
-      <title>Password input fields</title>
+  <section id="passwordfields">
+    <title>Password input fields</title>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="passwordinput.png" format="PNG"
+		   contentwidth="350px" contentdepth="66px" />
+      </imageobject>
+      <textobject>
+	<phrase>
+	  Password input
+	</phrase>
+      </textobject>
+      <caption>
+	<para>
+	  Turning on an <link linkend="inputfieldsandbuttons">input
+	    field</link>'s password mode results in each typed character
+	  getting masked after a brief delay.
+	</para>
+      </caption>
+    </mediaobject>
+
+
+    <para>
+      <filename>passwordinput.C</filename> shows a basic example of using
+      a password input.
+    </para>
+
+    <blockquote>
+      <title><ulink url="examples/passwordinput.C">passwordinput.C</ulink></title>
+
+      <informalexample>
+	<programlisting><xi:include href="../examples/passwordinput.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <section id="inputsetpassword">
+      <title>Turning on an input field's password mode</title>
 
       <blockquote>
 	<informalexample>
@@ -348,7 +385,7 @@ factory->create_input_field("", password_conf);</programlisting>
 	is 21 characters long, with a 20 character limit on the entered
 	text (one more for the cursor pointer when it follows the last
 	character in the input field).
-      </para>
+    </para>
 
       <para>
 	<methodname>set_password</methodname>() sets the configuration for

@@ -16,6 +16,13 @@ Pressed button image
     <type>std::string</type>
   </field>
   <field>
+    <name>popup_button_focus_border</name>
+    <descr><![CDATA[
+Focus border for the popup button.
+]]></descr>
+    <ref>focus_border</ref>
+  </field>
+  <field>
     <name>day_highlight_fg</name>
     <descr><![CDATA[
 Foreground color: day of month highlighted by pointer or keyboard.
@@ -133,20 +140,6 @@ Input field's font's color
     <descr><![CDATA[
 Border
 
-]]></descr>
-    <type>border_arg</type>
-  </field>
-  <field>
-    <name>focusoff_border</name>
-    <descr><![CDATA[
-Button focus border.
-]]></descr>
-    <type>border_arg</type>
-  </field>
-  <field>
-    <name>focuson_border</name>
-    <descr><![CDATA[
-Button focus border.
 ]]></descr>
     <type>border_arg</type>
   </field>

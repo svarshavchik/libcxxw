@@ -986,6 +986,7 @@ void uicompiler::do_load_fonts(const theme_parser_lock &lock,
 				if (!ret)
 					// Not yet parsed
 					continue;
+				new_font=*ret;
 			}
 
 			static const struct {

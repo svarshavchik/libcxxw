@@ -132,9 +132,23 @@ cached_fontptr freetypeObj::font(const const_screen &screenArg,
 						  descender_value,
 						  max_advance, fixed_width);
 
+#if 0
+				 if (fixed_width)
+				 {
+					 std::cout << font_key << std::endl;
+					 std::cout << "  MAX ADVANCE="
+						   << max_advance << std::endl;
+				 }
+#endif
 				 dim_t nominal_width=max_advance;
 
+
+#if 0
+				 // max_advance does not appear to be
+				 // reliable.
+
 				 if (!fixed_width)
+#endif
 				 {
 					 // Calculate nominal font width by calculating
 					 // the average width of the first page's
@@ -153,6 +167,17 @@ cached_fontptr freetypeObj::font(const const_screen &screenArg,
 							  characters_in_font=coverage;
 							  return false;
 						  });
+
+					 if (characters_in_font.size() > 64)
+					 {
+						 auto b=characters_in_font
+							 .begin();
+						 std::vector<char32_t> smaller
+							 {b+32, b+64};
+
+						 characters_in_font=
+							 std::move(smaller);
+					 }
 
 					 // Now, get the width info.
 
@@ -173,6 +198,12 @@ cached_fontptr freetypeObj::font(const const_screen &screenArg,
 						 nominal_width=1;
 				 }
 
+#if 0
+				 if (fixed_width)
+					 std::cout << "  NOMINAL="
+						   << nominal_width
+						   << std::endl;
+#endif
 				 auto ftf=freetypefont::create(ascender_value,
 							       descender_value,
 							       max_advance,
