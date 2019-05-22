@@ -2404,7 +2404,6 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	  </listitem>
 	</varlistentry>
 
-	<!--
 	<varlistentry>
 	  <term>
 	    <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink> fields
@@ -2430,9 +2429,16 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	      <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>-formatted
 	      text string.
 	    </para>
+	    <note>
+	      <para>
+		There are no
+		<classname>&ns;::w::text_param</classname> values
+		in the current appearance objects, this documentation is
+		included here for use in a future release.
+	      </para>
+	    </note>
 	  </listitem>
 	</varlistentry>
--->
 	<varlistentry>
 	  <term>
 	    <ulink url="&link-enum-x--w-valign;"><classname>&ns;::w::valign</classname></ulink> fields

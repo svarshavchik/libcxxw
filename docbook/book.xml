@@ -5,7 +5,7 @@
 
 
 <!ENTITY allitemmethods "<link linkend='listitemmethods'><methodname>append_items</methodname>(), <methodname>insert_items</methodname>(), <methodname>replace_items</methodname>(), <methodname>replace_all_items</methodname>() and <methodname>remove_item</methodname>()</link>">
-<!ENTITY app "<application><emphasis>LibCXX Windows Library</emphasis></application>">
+<!ENTITY app "<application><emphasis>LibCXX Widget Toolkit</emphasis></application>">
 <!ENTITY appearance_object "<link linkend='appearance'>appearance object</link>">
 <!ENTITY appshort "<application><emphasis>LibCXXW</emphasis></application>">
 <!ENTITY callback "<link linkend='callbacks'>callback</link>">

@@ -219,9 +219,6 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-variable"
-
 			auto [ret, ignore]=x::singletonapp::managed
 				([]
 				 {
@@ -230,8 +227,6 @@ int main(int argc, char **argv)
 				 app_args::create(argc, argv));
 
 			std::cout << ret->message << std::endl;
-#pragma GCC diagnostic pop
-
 		}
 	} catch (const x::exception &e)
 	{
