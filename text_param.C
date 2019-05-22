@@ -69,34 +69,23 @@ text_param &text_param::operator()(const std::u32string_view &s)
 
 text_param &text_param::operator()(const explicit_font &f)
 {
+	return operator()(font_arg{f.f});
+}
+
+text_param &text_param::operator()(const theme_font &f)
+{
+	return operator()(font_arg{f});
+}
+
+//! Use this font for all text going forward.
+text_param &text_param::operator()(const explicit_font_arg &f)
+{
 	auto s=string.size();
 
 	if (fonts.find(s) != fonts.end())
 		throw EXCEPTION(gettextmsg("Duplicate font specification."));
 
 	fonts.insert({s, f.f});
-	return *this;
-}
-
-text_param &text_param::operator()(const theme_font &f)
-{
-	auto s=string.size();
-
-	if (fonts.find(s) != fonts.end())
-		throw EXCEPTION(gettextmsg("Duplicate font specification."));
-
-	fonts.insert({s, f.name});
-	return *this;
-}
-
-//! Use this font for all text going forward.
-text_param &text_param::operator()(const explicit_font_arg &f)
-{
-	std::visit(visitor{
-			[this](const auto &f)
-			{
-				this->operator()(f);
-			}}, f.f);
 	return *this;
 }
 
