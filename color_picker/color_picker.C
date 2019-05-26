@@ -700,9 +700,10 @@ make_manual_input_validator(const input_field &f,
 					 : get_rgb_high_byte(rgb::maximum));
 
 				 impl->error_message_field->update
-					 (gettextmsg(_("Entered value must be"
-						       " between %1% and %2%"),
-						     min.str(), max.str()));
+					 (static_cast<std::string>
+					  (gettextmsg(_("Entered value must be"
+							" between %1% and %2%"),
+						      min.str(), max.str())));
 				 return std::nullopt;
 			 }
 

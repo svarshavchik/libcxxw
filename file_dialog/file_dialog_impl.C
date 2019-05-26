@@ -704,10 +704,11 @@ class LIBCXX_HIDDEN text_uri_selection_handlerObj
 
 			if (!scheme.empty() && scheme != "file")
 			{
-				me.stop_message(gettextmsg
-						(_("I can only open files, I "
-						   "don't speak %1%"),
-						 scheme));
+				me.stop_message(static_cast<std::string>
+						(gettextmsg
+						 (_("I can only open files, I "
+						    "don't speak %1%"),
+						  scheme)));
 				return;
 			}
 
@@ -715,11 +716,12 @@ class LIBCXX_HIDDEN text_uri_selection_handlerObj
 
 			if (!authority.empty() && authority != "localhost")
 			{
-				me.stop_message(gettextmsg
-						(_("I can only open files, I "
-						   "cannot open files on "
-						   "\"%1%\""),
-						 authority));
+				me.stop_message(static_cast<std::string>
+						(gettextmsg
+						 (_("I can only open files, I "
+						    "cannot open files on "
+						    "\"%1%\""),
+						  authority)));
 				return;
 			}
 
