@@ -875,6 +875,42 @@ List of values:
       <object>factory</object>
     </function>
 
+    <!-- label -->
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>label</exists>
+      </condition>
+
+      <invoke>create_label</invoke>
+
+      <object>factory</object>
+
+      <parameter>
+	<type>to_text_param</type>
+	<name>label</name>
+      </parameter>
+
+      <parameter>
+	<scalar>config</scalar>
+	<object>label_config</object>
+	<name>options</name>
+
+	<member>
+	  <name>alignment</name>
+	  <field>alignment</field>
+	  <type>to_halign</type>
+	</member>
+	<member>
+	  <name>widthmm</name>
+	  <field>widthmm</field>
+	  <type>to_mm</type>
+	</member>
+      </parameter>
+    </function>
+
     <!-- element -->
 
     <function>

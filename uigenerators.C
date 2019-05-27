@@ -9,11 +9,12 @@
 #include "messages.H"
 #include "theme_parser_lock.H"
 #include <x/xml/doc.H>
+#include <x/messages.H>
 #include <functional>
 
 LIBCXXW_NAMESPACE_START
 
-const_uigenerators uigeneratorsBase::create(const std::string_view &filename)
+static uigenerators create_generators(const std::string_view &filename)
 {
 	auto xml=xml::doc::create(filename, "nonet xinclude");
 
@@ -25,6 +26,21 @@ const_uigenerators uigeneratorsBase::create(const std::string_view &filename)
 	{
 		uicompiler compiler{lock, g, true};
 	}
+
+	return g;
+}
+
+const_uigenerators uigeneratorsBase::create(const std::string_view &filename)
+{
+	return create_generators(filename);
+}
+
+const_uigenerators uigeneratorsBase::create(const std::string_view &filename,
+					    const const_messages &catalog)
+{
+	auto g=create_generators(filename);
+
+	g->catalog=catalog;
 
 	return g;
 }

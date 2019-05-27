@@ -28,51 +28,124 @@ Generates:
     <!-- Except when there's a <scalar> -->
 
     <xsl:choose>
-      <xsl:when test="scalar" />
+      <xsl:when test="scalar">
 
+	<!-- If <scalar> has an <object>, we declare it -->
+
+	<xsl:if test="object">
+	  <xsl:text>        </xsl:text>
+	  <xsl:value-of select="object" />
+	  <xsl:text> </xsl:text>
+	  <xsl:value-of select="scalar" />
+	  <xsl:text>;
+
+        if (single_value_exists(lock, "</xsl:text>
+	<xsl:value-of select="name" />
+	<xsl:text>"))
+        {
+            auto cloned_lock=lock->clone();
+
+            auto xpath=cloned_lock->get_xpath("</xsl:text>
+
+	    <xsl:value-of select="name" />
+	    <xsl:text>");
+
+	    xpath->to_node();
+
+	    auto lock=cloned_lock->clone();
+
+	    xpath=cloned_lock->get_xpath("*");
+
+            size_t n=xpath-&gt;count();
+            for (size_t i=1; i &lt;= n; ++i)
+            {
+                xpath->to_node(i);
+
+                auto name=cloned_lock-&gt;name();&#10;&#10;</xsl:text>
+	  <xsl:for-each select="member">
+
+	    <xsl:text>                </xsl:text>
+	    <xsl:if test="position() &gt; 1">
+	      <xsl:text>else </xsl:text>
+	    </xsl:if>
+
+	    <xsl:text>if (name == "</xsl:text>
+	    <xsl:value-of select="name" />
+	    <xsl:text>")
+                {
+                    </xsl:text>
+		    <xsl:value-of select="../scalar" />
+		    <xsl:text>.</xsl:text>
+		    <xsl:value-of select="field" />
+		    <xsl:text>=</xsl:text>
+
+		    <xsl:call-template name="parse-parameter-value" />
+
+		    <xsl:text>                }&#10;</xsl:text>
+	  </xsl:for-each>
+	  <xsl:text>                else throw EXCEPTION(gettextmsg(_("&lt;%1%&gt;: unknown element"), name));
+            }
+        }&#10;</xsl:text>
+
+
+	</xsl:if>
+      </xsl:when>
       <xsl:otherwise>
 	<xsl:text>        auto </xsl:text>
 	<xsl:value-of select="name" />
 	<xsl:text>_value=&#10;            </xsl:text>
 
-	<!--
-	    If <lookup> is specified, massage the argument
-	    accordingly.
+	<xsl:call-template name="parse-parameter-value" />
 
-            <lookup>
-               <parameter>extra_parameter</parameter>
-               <function>function_name</function>
-            </lookup>
-
-            This adds "{function_name}(" before the value, and
-            ", <extra_parameter>, allowthemerefs, <elementname>)"
-            after the value, effectively invoking a lookup function, first.
-	-->
-	<xsl:if test="lookup">
-	  <xsl:value-of select="lookup/function" />
-	  <xsl:text>(</xsl:text>
-	</xsl:if>
-
-	<xsl:value-of select="type" />
-	<xsl:text>(lock, "</xsl:text>
-	<xsl:value-of select="name" />
-	<xsl:text>", "</xsl:text>
-	<xsl:value-of select="../name" />
-	<xsl:text>"</xsl:text>
-	<xsl:text>)</xsl:text>
-	<xsl:if test="lookup">
-	  <xsl:for-each select="lookup/parameter">
-	    <xsl:text>,&#10;                     </xsl:text>
-	    <xsl:value-of select="node()" />
-	  </xsl:for-each>
-	  <xsl:text>,&#10;                     allowthemerefs, &#34;</xsl:text>
-	  <xsl:value-of select="../name" />
-	  <xsl:text>&#34;)</xsl:text>
-	</xsl:if>
-	<xsl:text>;&#10;</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+
+  <!-- Parse parameter value
+
+Used by parse-parameter to generates the code for the value of a parameter.
+
+  -->
+
+  <xsl:template name="parse-parameter-value">
+
+    <!--
+	If <lookup> is specified, massage the argument
+	accordingly.
+
+<lookup>
+<parameter>extra_parameter</parameter>
+<function>function_name</function>
+</lookup>
+
+This adds "{function_name}(" before the value, and
+", <extra_parameter>, allowthemerefs, <elementname>)"
+after the value, effectively invoking a lookup function, first.
+    -->
+    <xsl:if test="lookup">
+      <xsl:value-of select="lookup/function" />
+      <xsl:text>(</xsl:text>
+    </xsl:if>
+
+    <xsl:value-of select="type" />
+    <xsl:text>(lock, "</xsl:text>
+    <xsl:value-of select="name" />
+    <xsl:text>", "</xsl:text>
+    <xsl:value-of select="../name" />
+    <xsl:text>"</xsl:text>
+    <xsl:text>)</xsl:text>
+    <xsl:if test="lookup">
+      <xsl:for-each select="lookup/parameter">
+	<xsl:text>,&#10;                     </xsl:text>
+	<xsl:value-of select="node()" />
+      </xsl:for-each>
+      <xsl:text>,&#10;                     allowthemerefs, &#34;</xsl:text>
+      <xsl:value-of select="../name" />
+      <xsl:text>&#34;)</xsl:text>
+    </xsl:if>
+    <xsl:text>;&#10;</xsl:text>
+  </xsl:template>
+
 
   <!--
       Declare parameters.
@@ -134,17 +207,26 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
 	<xsl:value-of select="value" />
 	<xsl:text>"</xsl:text>
       </xsl:otherwise>
-      </xsl:choose></xsl:for-each>)
-    {
-<xsl:for-each select="parameter">
+      </xsl:choose></xsl:for-each>
+      <xsl:text>)
+    {&#10;</xsl:text>
+    <xsl:for-each select="parameter">
   <xsl:call-template name="parse-parameter"/>
-</xsl:for-each>
-        return [=]
-            (<xsl:for-each select="../parameter">
-	    <xsl:call-template name="declare-parameter" />
-	  </xsl:for-each>)
+</xsl:for-each><xsl:text>&#10;        return [=</xsl:text>
+<xsl:if test="new_element">
+  <xsl:text>, id=lock-&gt;get_any_attribute("id")</xsl:text>
+</xsl:if>
+<xsl:text>]
+            (</xsl:text>
+	    <xsl:for-each select="../parameter">
+	      <xsl:call-template name="declare-parameter" />
+	    </xsl:for-each><xsl:text>)
 	    {
-                <xsl:if test="object">
+                </xsl:text>
+		<xsl:if test="new_element">
+		  <xsl:text>auto new_element=</xsl:text>
+		</xsl:if>
+		<xsl:if test="object">
 	            <xsl:value-of select="object"/>-&gt;</xsl:if>
 		<xsl:value-of select="invoke" />(<xsl:for-each select="parameter">
 		  <xsl:if test="position() &gt; 1">
@@ -165,10 +247,14 @@ Maybe we should use a <scalar>?
 		      <xsl:value-of select="name" /><xsl:text>_value</xsl:text>
 		    </xsl:otherwise>
 		  </xsl:choose>
-		</xsl:for-each>);
-            };
-    }
-</xsl:template>
+		  </xsl:for-each><xsl:text>);&#10;</xsl:text>
+		  <xsl:if test="new_element">
+		    <xsl:text>&#10;                if (!id.empty())
+                    elements.new_elements.emplace(id, new_element);&#10;</xsl:text>
+		  </xsl:if>
+
+		  <xsl:text>            };
+    }&#10;</xsl:text></xsl:template>
 
 <!-- <parser> generates:
 

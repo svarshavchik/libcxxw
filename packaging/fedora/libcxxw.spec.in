@@ -38,6 +38,7 @@ BuildRequires: libjpeg-turbo-devel
 BuildRequires: giflib-devel
 BuildRequires: libpng-devel
 BuildRequires: desktop-file-utils
+BuildRequires: gettext
 
 %description
 LibCXX Windows Library

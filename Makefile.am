@@ -17,7 +17,7 @@ DISTCHECK_CONFIGURE_FLAGS=--with-pkgconfigdir='$$(prefix)/local/pkgconf'
 pkgdatainstdir=$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@
 pkgdatainst_DATA=extract-theme-text.xsl libcxxw.mk
 
-EXTRA_DIST += extract-theme-text.xsl
+BUILT_SOURCES =
 
 pkgconfdir=@PKGCONFIGDIR@
 
@@ -1165,7 +1165,30 @@ testsearch_SOURCES=testsearch.C
 testsearch_LDADD=-lcxx
 testsearch_LDFLAGS=-static $(STATICLINKFLAGS)
 
-testtextparam_SOURCES=testtextparam.C
+XTEST_MO_DIR=xtest/en_US/LC_MESSAGES
+XTEST_MO_FILE=xtest.mo
+
+BUILT_SOURCES += $(XTEST_MO_DIR)/$(XTEST_MO_FILE)
+CLEANFILES += $(XTEST_MO_DIR)/$(XTEST_MO_FILE)
+EXTRA_DIST += testmessages.po
+
+$(XTEST_MO_DIR)/$(XTEST_MO_FILE): testmessages.po
+	mkdir -p $(XTEST_MO_DIR)
+	rm -f $(XTEST_MO_DIR)/$(XTEST_MO_FILE)
+	msgfmt -o $(XTEST_MO_DIR)/$(XTEST_MO_FILE).tmp $(srcdir)/testmessages.po
+	mv $(XTEST_MO_DIR)/$(XTEST_MO_FILE).tmp $(XTEST_MO_DIR)/$(XTEST_MO_FILE)
+
+BUILT_SOURCES += testtextparam_dummy_xml
+CLEANFILES += testtextparam_dummy_xml
+
+testtextparam_dummy_xml:
+	echo '<theme />' >testtextparam_dummy_xml
+
+$(call EXTRACT_THEME_TEXT_GEN,theme-text.inc.C,themes/default/theme.xml)
+
+testtextparam_SOURCES=testtextparam.C $(XTEST_MO_DIR)/$(XTEST_MO_FILE) \
+        testtextparam_dummy_xml
+
 testtextparam_LDADD=libcxxw.la
 testtextparam_LDFLAGS=-static $(STATICLINKFLAGS)
 
@@ -1249,7 +1272,7 @@ uicompiler_appearance_proto.inc.H: \
               >uicompiler_appearance_proto.inc.H.tmp
 	mv -f uicompiler_appearance_proto.inc.H.tmp uicompiler_appearance_proto.inc.H
 
-BUILT_SOURCES=includes/x/w/constants_inc.H \
+BUILT_SOURCES += includes/x/w/constants_inc.H \
 	$(XIM_AUTOGEN) \
 	appearance/appearance_list.xml     \
 	appearance/appearance_parser.xml \

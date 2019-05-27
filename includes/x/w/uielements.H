@@ -73,9 +73,21 @@ struct uielements {
 
 	//! The internal containers that get created.
 
-	//! Generate puts new containers that get created in here.
+	//! generate() puts new containers that get created in here.
 
 	std::unordered_map<std::string, container> new_layouts;
+
+	//! The new elements that get created
+
+	//! generate() puts new elements that get created in here.
+
+	std::unordered_map<std::string, element> new_elements;
+
+	//! Return the generated element.
+
+	//! An exception gets thrown if the expect element was not found.
+
+	element get_element(const std::string_view &name) const;
 };
 
 LIBCXXW_NAMESPACE_END

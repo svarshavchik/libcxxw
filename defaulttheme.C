@@ -25,6 +25,8 @@
 #include <x/glob.H>
 #include <x/imbue.H>
 #include <x/visitor.H>
+#include <x/singleton.H>
+#include <x/messages.H>
 #include <x/functionalrefptr.H>
 #include <sstream>
 #include <cmath>
@@ -467,6 +469,24 @@ defaulttheme::base::get_config(const std::string &themename,
 			theme_configfile };
 }
 
+namespace {
+#if 0
+}
+#endif
+
+class libcxxw_catalog_singletonObj : virtual public obj {
+
+public:
+
+	const_messages catalog=messages::create("libcxxw",
+						locale::base::utf8());
+};
+
+#if 0
+{
+#endif
+}
+
 defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 				 const config &theme_config)
 	: themename{theme_config.themename},
@@ -480,6 +500,7 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 			      screen->height_in_millimeters, themescale)},
 	  screen{screen}
 {
+	catalog=singleton<libcxxw_catalog_singletonObj>::get()->catalog;
 }
 
 void defaultthemeObj::constructor(const xcb_screen_t *screen,
@@ -745,10 +766,17 @@ static to_value_t to_value(const theme_parser_lock &lock,
 
 	i >> v;
 
-	if (i.fail())
+	if (i.fail() || (i.get(), !i.eof()))
 		throw EXCEPTION(gettextmsg(_("Cannot convert the value of <%1%>"
 					     ), element));
 	return v;
+}
+
+double to_mm(const theme_parser_lock &lock,
+	     const char *element, const char *parent)
+{
+	return to_value<double>(lock,
+				single_value(lock, element, parent), element);
 }
 
 dim_t to_dim_t(const theme_parser_lock &lock,

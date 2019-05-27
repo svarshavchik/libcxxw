@@ -14,6 +14,19 @@
 
 LIBCXXW_NAMESPACE_START
 
+element uielements::get_element(const std::string_view &name) const
+{
+	// TODO: C++20;
+
+	auto iter=new_elements.find(std::string{name.begin(), name.end()});
+
+	if (iter == new_elements.end())
+		throw EXCEPTION(gettextmsg(_("Element %1% was not found"),
+					   name));
+
+	return iter->second;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 void gridlayoutmanagerObj::generate(const std::string_view &name,

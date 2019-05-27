@@ -25,6 +25,12 @@ public:
 	//! Load template from file.
 	static const_uigenerators create(const std::string_view &filename);
 
+	//! Load template from file.
+
+	//! \overload
+	static const_uigenerators create(const std::string_view &filename,
+					 const const_messages &catalog);
+
 	//! Factory for objects.
 
 	//! Implements custom create().
@@ -40,6 +46,17 @@ public:
 		create(const std::string_view &filename)
 		{
 			return uigeneratorsBase::create(filename);
+		}
+
+		//! create() for uigenerators
+
+		//! \overload
+
+		static inline const_uigenerators
+		create(const std::string_view &filename,
+		       const const_messages &catalog)
+		{
+			return uigeneratorsBase::create(filename, catalog);
 		}
 	};
 };

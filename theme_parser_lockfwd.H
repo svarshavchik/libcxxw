@@ -88,6 +88,13 @@ halign to_halign(const theme_parser_lock &lock,
 valign to_valign(const theme_parser_lock &lock,
 		 const char *element, const char *parent) LIBCXX_HIDDEN;
 
+//! Read a value.
+
+//! When parsing XML-specified layouts,
+//! this reads a millimeter size value.
+double to_mm(const theme_parser_lock &lock,
+	     const char *element, const char *parent) LIBCXX_HIDDEN;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

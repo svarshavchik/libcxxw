@@ -24,6 +24,7 @@ configure
 .dirstamp
 /docbook/entities
 /Doxyfile
+/extract-theme-text.xsl
 /genconstants
 /html
 /install-sh
@@ -78,6 +79,7 @@ suppressfile*
 /testscrollbar_metrics
 /testshowhide
 /testtextparam
+/testtextparam_dummy_xml
 /testtoolbox
 /testtoolboxoptions.H
 /testtooltip
@@ -85,3 +87,4 @@ suppressfile*
 /testunfocus
 /m4
 /xml
+/xtest

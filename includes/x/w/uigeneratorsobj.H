@@ -15,6 +15,7 @@
 #include <x/obj.H>
 #include <x/visitor.H>
 #include <x/vectorfwd.H>
+#include <x/messagesfwd.H>
 #include <x/refptr_traits.H>
 #include <unordered_map>
 #include <string>
@@ -33,6 +34,9 @@ public:
 
 	//! Destructor
 	~uigeneratorsObj() LIBCXX_HIDDEN;
+
+	//! Optional message catalog
+	const_messagesptr catalog;
 
 	//! Parsed dimensions
 

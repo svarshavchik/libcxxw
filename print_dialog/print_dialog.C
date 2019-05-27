@@ -187,13 +187,6 @@ standard_dialog_elements_t print_dialog_init_helper
 					factory->create_label(_("Image "
 								"Options"));
 				}},
-		{"select-printer-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label
-						(_("Printer:"));
-				}},
 		{"select-printer-field",
 				[&, this]
 				(const auto &factory)
@@ -222,21 +215,6 @@ standard_dialog_elements_t print_dialog_init_helper
 						([](const auto &){}, nlm);
 
 					fields.selected_printer=f;
-				}},
-		{"printer-info",
-				[&, this]
-				(const auto &factory)
-				{
-					auto l=factory->create_label("");
-
-					fields.printer_info=l;
-				}},
-		{"number-of-copies-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label
-						(_("Number of copies:"));
 				}},
 		{"number-of-copies-field",
 				[&, this]
@@ -299,13 +277,6 @@ standard_dialog_elements_t print_dialog_init_helper
 					f->autofocus(false);
 					fields.page_range=f;
 				}},
-		{"orientation-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label
-						(_("Orientation:"));
-				}},
 		{"orientation-field",
 				[&, this]
 				(const auto &factory)
@@ -319,12 +290,6 @@ standard_dialog_elements_t print_dialog_init_helper
 						->create_focusable_container
 						([](const auto &){}, nlm);
 					fields.orientation_requested=f;
-				}},
-		{"duplex-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label(_("Duplex:"));
 				}},
 		{"duplex-field",
 				[&, this]
@@ -340,13 +305,6 @@ standard_dialog_elements_t print_dialog_init_helper
 						([](const auto &){}, nlm);
 					fields.sides=f;
 				}},
-		{"pages-per-side-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label
-						(_("Pages Per Side:"));
-				}},
 		{"pages-per-side-field",
 				[&, this]
 				(const auto &factory)
@@ -360,13 +318,6 @@ standard_dialog_elements_t print_dialog_init_helper
 						->create_focusable_container
 						([](const auto &){}, nlm);
 					fields.number_up=f;
-				}},
-		{"page-size-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label
-						(_("Page size:"));
 				}},
 		{"page-size-field",
 				[&, this]
@@ -383,13 +334,6 @@ standard_dialog_elements_t print_dialog_init_helper
 						([](const auto &){}, nlm);
 					fields.page_size=f;
 				}},
-		{"finishings-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label
-						(_("Finishing process:"));
-				}},
 		{"finishings-field",
 				[&, this]
 				(const auto &factory)
@@ -403,13 +347,6 @@ standard_dialog_elements_t print_dialog_init_helper
 						->create_focusable_container
 						([](const auto &){}, nlm);
 					fields.finishings=f;
-				}},
-		{"print-color-mode-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label
-						(_("Color Mode:"));
 				}},
 		{"print-color-mode-field",
 				[&, this]
@@ -425,13 +362,6 @@ standard_dialog_elements_t print_dialog_init_helper
 						([](const auto &){}, nlm);
 					fields.print_color_mode=f;
 				}},
-		{"print-quality-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label
-						(_("Print Quality:"));
-				}},
 		{"print-quality-field",
 				[&, this]
 				(const auto &factory)
@@ -445,13 +375,6 @@ standard_dialog_elements_t print_dialog_init_helper
 						->create_focusable_container
 						([](const auto &){}, nlm);
 					fields.print_quality=f;
-				}},
-		{"printer-resolution-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label
-						(_("Resolution:"));
 				}},
 		{"printer-resolution-field",
 				[&, this]
@@ -514,6 +437,9 @@ print_dialog main_windowObj
 			 };
 
 			 args.dialog_window->generate("print-dialog", tmpl);
+
+			 helper.fields.printer_info=
+				 tmpl.get_element("printer-info");
 
 			 auto iter=tmpl.new_layouts
 				 .find("print-dialog-options");

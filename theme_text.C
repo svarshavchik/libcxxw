@@ -7,22 +7,35 @@
 #include "x/w/text_param.H"
 #include "x/w/theme_text.H"
 #include "x/w/uigenerators.H"
+#include <x/messages.H>
+#include <x/singleton.H>
 #include "uicompiler.H"
 #include "messages.H"
 #include <algorithm>
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
-static const_uigenerators &cached_default_generator()
-{
-	static const_uigenerators config=
-		ptrref_base::objfactory<const_uigenerators>::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+class cached_default_generatorObj : virtual public obj {
+
+public:
+
+	const_uigenerators config=
+		ptrref_base::objfactory<const_uigenerators>::create();
+};
+
+#if 0
+{
+#endif
 }
 
 theme_text::theme_text(const std::string &s)
-	: theme_text{s, cached_default_generator()}
+	: theme_text{s, singleton<cached_default_generatorObj>::get()->config}
 {
 }
 
@@ -41,7 +54,22 @@ theme_text &theme_text::operator=(theme_text &&)=default;
 
 text_param &text_param::operator()(const theme_text &text)
 {
-	auto b=text.text.data(), e=b+text.text.size();
+	std::u32string utext;
+
+	if (text.generators->catalog)
+	{
+		utext=text.generators->catalog->get_unicode(text.text);
+	}
+	else
+	{
+		unicode::iconvert::tou::convert(text.text.begin(),
+						text.text.end(),
+						unicode_locale_chset(),
+						utext);
+	}
+
+	auto b=utext.begin();
+	auto e=utext.end();
 
 	while (b != e)
 	{
@@ -49,7 +77,7 @@ text_param &text_param::operator()(const theme_text &text)
 
 		if (p != b)
 		{
-			operator()(std::string_view{b, (size_t)(p-b)});
+			operator()(std::u32string_view{&*b,(size_t)(p-b)});
 			b=p;
 			continue;
 		}
@@ -60,31 +88,32 @@ text_param &text_param::operator()(const theme_text &text)
 		if (*b == '$')
 		{
 			++b;
-			operator()("$");
+			operator()(U"$");
 			continue;
 		}
 
-		if (*(p=b) != '{' || (b=std::find(++p, e, '}')) == e)
+		if (*(p=b) != '{' || (b=std::find(++p, e, '}')) == e
+		    || std::find_if(p, b,
+				    [](auto c)
+				    {
+					    return c >= 0x80;
+				    }) != b)
 			throw EXCEPTION(_("Cannot parse theme_text macro"));
 
-		std::string_view macro{p, (size_t)(b-p)};
-
+		auto mb=p;
+		auto me=b;
 		++b;
-
-		auto mb=macro.data();
-		auto me=mb+macro.size();
 
 		p=std::find(mb, me, ':');
 
 		if (p != me)
 			++p;
 
-		std::string_view name{mb, (size_t)(p-mb)};
+		std::u32string_view name{&*mb, (size_t)(p-mb)};
 
-		// TODO: std::string should not be necessary in C++20
-		std::string value{p, (size_t)(me-p)};
+		std::string value{p, me};
 
-		if (name == "color:")
+		if (name == U"color:")
 		{
 			operator()(uicompiler::to_text_color_arg
 				   (text.generators->lookup_color(value, true,
@@ -92,13 +121,13 @@ text_param &text_param::operator()(const theme_text &text)
 				    "${color}", "text_param"));
 			continue;
 		}
-		else if (name == "font:")
+		else if (name == U"font:")
 		{
 			operator()(text.generators->lookup_font(value, true,
 								"${font}"));
 			continue;
 		}
-		else if (name == "decoration:")
+		else if (name == U"decoration:")
 		{
 			if (value == "underline")
 			{
@@ -111,8 +140,13 @@ text_param &text_param::operator()(const theme_text &text)
 				continue;
 			}
 		}
+		else if (name == U"context:")
+			continue;
+
 		throw EXCEPTION(gettextmsg(_("Cannot parse \"${%1%}\" "
-					     "theme_text macro"), macro));
+					     "theme_text macro"),
+					   std::string{name.begin(),
+							       name.end()}));
 	}
 
 	return *this;

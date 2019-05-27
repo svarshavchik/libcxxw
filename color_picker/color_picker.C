@@ -314,31 +314,6 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 				f->created_internally(cps);
 			}},
 
-		{"r-label", [&](const auto &f)
-			{
-				f->create_label(TAG(_("RED:R:")));
-			}},
-		{"g-label", [&](const auto &f)
-			{
-				f->create_label(TAG(_("GREEN:G:")));
-			}},
-		{"b-label", [&](const auto &f)
-			{
-				f->create_label(TAG(_("BLUE:B:")));
-			}},
-		{"h-label", [&](const auto &f)
-			{
-				f->create_label(TAG(_("HUE:H:")));
-			}},
-		{"s-label", [&](const auto &f)
-			{
-				f->create_label(TAG(_("SATURATION:S:")));
-			}},
-		{"v-label", [&](const auto &f)
-			{
-				f->create_label(TAG(_("VALUE:V:")));
-			}},
-
 		{"r-input-field", [&](const auto &f)
 			{
 				input_fields_conf.appearance=
@@ -400,10 +375,6 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 						 f->create_label
 							 (_("Full Precision"));
 					 });
-			}},
-		{"error-message-field", [&](const auto &f)
-			{
-				error_message_field=f->create_label(" ");
 			}},
 		{"basic-colors", [&](const auto &f)
 			{
@@ -525,13 +496,12 @@ static inline auto
 create_contents(const ref<color_picker_selectorObj::implObj>
 		&contents_container_impl,
 		color_picker_layout_helper &helper,
+		uielements &tmpl,
 		const ref<gridlayoutmanagerObj::implObj> &lm_impl,
 		const popup_attachedto_info &attachedto_info,
 		const color_picker_config &config)
 {
 	auto glm=lm_impl->create_gridlayoutmanager();
-
-	uielements tmpl{helper.elements()};
 
 	glm->generate("color-picker-popup", tmpl);
 
@@ -904,6 +874,8 @@ color_picker factoryObj
 	auto initial_color=color_pickerObj::implObj::official_color
 		::create(config.initial_color);
 
+	uielements tmpl{helper.elements()};
+
 	auto [real_impl, popup_imagebutton, glm, color_picker_popup]
 		=create_popup_attachedto_element
 		(*this, config.appearance->attached_popup_appearance,
@@ -922,8 +894,8 @@ color_picker factoryObj
 
 		 {
 			 return create_contents
-			 (color_picker_selector_impl, helper,
-			  lm_impl, info, config);
+				 (color_picker_selector_impl, helper, tmpl,
+				  lm_impl, info, config);
 		 },
 		 [&](const auto &f)
 		 {
@@ -953,7 +925,7 @@ color_picker factoryObj
 			 contents.v_canvas,
 			 contents.fixed_canvas,
 			 contents.square,
-			 contents.error_message_field);
+			 tmpl.get_element("error-message-field"));
 
 	auto wimpl=weak_impl::create(impl);
 

@@ -61,10 +61,6 @@
   </ref>
 
   <ref>
-    <name>error_message_field</name>
-    <type>label</type>
-  </ref>
-  <ref>
     <name>cancel_button</name>
     <type>button</type>
   </ref>

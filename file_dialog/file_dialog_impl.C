@@ -562,12 +562,6 @@ standard_dialog_elements_t file_dialogObj::init_args
 ::create_elements(const file_dialog_config &conf)
 {
 	return {
-		{"file-input-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label(_("File:"));
-				}},
 		{"file-input-field",
 				[&, this]
 				(const auto &factory)
@@ -576,12 +570,6 @@ standard_dialog_elements_t file_dialogObj::init_args
 						create_file_input_field
 						(factory);
 				}},
-		{"directory-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label(_("Directory:"));
-				}},
 		{"directory-field",
 				[&, this]
 				(const auto &factory)
@@ -589,12 +577,6 @@ standard_dialog_elements_t file_dialogObj::init_args
 					directory_field=factory
 						->create_focusable_label
 						("");
-				}},
-		{"filter-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label(_("Files:"));
 				}},
 		{"filter-field",
 				[&, this]

@@ -7,6 +7,7 @@
 #include "defaulttheme.H"
 #include "x/w/uielements.H"
 #include "x/w/uigenerators.H"
+#include "x/w/label.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/booklayoutmanager.H"
@@ -1523,7 +1524,7 @@ text_param uicompiler::to_text_param(const theme_parser_lock &lock,
 {
 	text_param t;
 
-	t(theme_text{single_value(lock, ".", parent), generators});
+	t(theme_text{single_value(lock, element, parent), generators});
 
 	return t;
 }

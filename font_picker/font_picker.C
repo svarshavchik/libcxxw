@@ -419,11 +419,6 @@ standard_dialog_elements_t font_picker_init_helper
 						cancel_button,
 						'\e')},
 
-		{"font-family-label", [](const auto &f)
-			{
-				f->create_label(_("Font:"));
-			}},
-
 		{"font-family-combobox",
 		 [&, this](const auto &f)
 		 {
@@ -436,11 +431,6 @@ standard_dialog_elements_t font_picker_init_helper
 				  lm);
 		 }},
 
-		{"font-size-label", [](const auto &f)
-			{
-				f->create_label(_("Size:"));
-			}},
-
 		{"font-size-combobox",
 		 [&, this](const auto &f)
 		 {
@@ -451,16 +441,6 @@ standard_dialog_elements_t font_picker_init_helper
 			 font_size=f->create_focusable_container
 				 ([](const auto &){}, lm);
 		 }},
-
-		{"font-size-error", [&](const auto &f)
-			{
-				font_size_error=f->create_label(" ");
-			}},
-
-		{"font-weight-label", [](const auto &f)
-			{
-				f->create_label(_("Font Weight:"));
-			}},
 
 		{"font-weight-combobox",
 		 [&, same_width, this](const auto &f)
@@ -475,11 +455,6 @@ standard_dialog_elements_t font_picker_init_helper
 				 ([](const auto &){}, lm);
 		 }},
 
-		{"font-slant-label", [](const auto &f)
-			{
-				f->create_label(_("Font Slant:"));
-			}},
-
 		{"font-slant-combobox",
 		 [&, same_width, this](const auto &f)
 		 {
@@ -492,10 +467,6 @@ standard_dialog_elements_t font_picker_init_helper
 			 font_slant=f->create_focusable_container
 				 ([](const auto &){}, lm);
 		 }},
-		{"font-width-label", [](const auto &f)
-			{
-				f->create_label(_("Font Width:"));
-			}},
 
 		{"font-width-combobox",
 		 [&, same_width, this](const auto &f)
@@ -563,6 +534,8 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 			 glm->generate("font-picker-popup", tmpl);
 
+			 helper.font_size_error=
+				 tmpl.get_element("font-size-error");
 			 return peepholed_attachedto_container
 			 ::create(info, popup_container_impl, lm_impl);
 		 },

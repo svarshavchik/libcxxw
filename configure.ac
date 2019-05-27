@@ -43,6 +43,11 @@ then
 	AC_MSG_ERROR([Cannot find xsltproc, please install libxslt])
 fi
 AC_SUBST(XSLTPROC)
+AC_PATH_PROG(MSGFMT,msgfmt,"none")
+if test "$MSGFMT" = "none"
+then
+	AC_MSG_ERROR([Cannot find msgfmt, please install gettext])
+fi
 
 # VERSION_INFO is:
 #
@@ -134,6 +139,7 @@ AC_CONFIG_FILES([Makefile
 	Doxyfile
 	libcxxw.m4
 	libcxxw.mk
+	extract-theme-text.xsl
 	po/Makefile.in
 	includes/x/w/Makefile
 	includes/x/w/deps/Makefile

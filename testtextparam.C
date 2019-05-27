@@ -11,11 +11,16 @@
 #include "x/w/text_param.H"
 #include "x/w/text_param_literals.H"
 #include "x/w/theme_text.H"
+#include "x/w/uigenerators.H"
 #include "screen.H"
 #include "main_window.H"
 #include "main_window_handler.H"
 #include "x/w/impl/background_color.H"
 
+#include <x/messages.H>
+#include <x/locale.H>
+
+using namespace LIBCXX_NAMESPACE;
 using namespace LIBCXX_NAMESPACE::w;
 
 void testtextparam(const main_window &mw)
@@ -92,6 +97,19 @@ void testthemetext()
 		throw EXCEPTION("theme_text parsing failed");
 }
 
+void testthemetext2()
+{
+	text_param t{ theme_text{"${context:label}message-label",
+				 uigenerators::create
+				 ("./testtextparam_dummy_xml",
+				  messages::create("xtest", "xtest",
+						   locale::create("en_US.UTF8"))
+				  )}};
+
+	if (t.string != U"translated-label")
+		throw EXCEPTION("Localized label failed");
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -121,6 +139,7 @@ int main(int argc, char **argv)
 		testtextparam(mw);
 		testrgb();
 		testthemetext();
+		testthemetext2();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();
