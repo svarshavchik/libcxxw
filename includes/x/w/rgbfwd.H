@@ -42,7 +42,7 @@ struct radial_gradient;
 
 //! A color can be specified as either a literal rgb value, or a theme color
 
-//! The background color for a display element may also be specified as a
+//! The background color for a widget may also be specified as a
 //! linear or a radial gradient. Gradient colors are ignored in all other
 //! situations (border colors, etc...), and fall back to using the #0 gradient
 //! color.

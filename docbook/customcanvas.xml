@@ -15,7 +15,7 @@ See COPYING for distribution information.
     </imageobject>
     <textobject>
       <phrase>
-	Custom canvas display element
+	Custom canvas widget
       </phrase>
     </textobject>
   </mediaobject>
@@ -24,7 +24,7 @@ See COPYING for distribution information.
     <filename>customcanvas.C</filename> shows an example of creating
     a custom subclass of the
     <ulink url="&link-typedef-x--w-canvas;"><classname>&ns;::w::canvas</classname></ulink>
-    display element that draws a circle. This example demonstrates:
+    widget that draws a circle. This example demonstrates:
   </para>
 
   <variablelist>
@@ -35,7 +35,7 @@ See COPYING for distribution information.
 	  Canvas's &implementation_class;'s,
 	  <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>'s
 	  constructor takes a parameter that sets its minimum,
-	  preferred, and maximum size. This is the only display element in
+	  preferred, and maximum size. This is the only widget in
 	  its window, so the window becomes resizable within the specified
 	  constraints.
 	</para>
@@ -62,21 +62,21 @@ See COPYING for distribution information.
 
 	<para>
 	  This example uses two mixin templates that implement a simplified
-	  interface for drawing the contents of the display element, and
+	  interface for drawing the contents of the widget, and
 	  specifying a theme-based color for drawing this circle.
 	</para>
       </listitem>
     </varlistentry>
 
     <varlistentry>
-      <term><link linkend="customdraw">Drawing custom display elements</link></term>
+      <term><link linkend="customdraw">Drawing custom widgets</link></term>
       <listitem>
 	<para>
 	  &appshort; implements several classes that provide access to the
 	  graphic context, pixmap, and picture resources of the underlying
 	  &xproto; and its &render;.
 	  <filename>customcanvas.C</filename> uses them to draw a circle
-	  in the custom display element.
+	  in the custom widget.
 	</para>
       </listitem>
     </varlistentry>
@@ -95,11 +95,11 @@ See COPYING for distribution information.
 
     <para>
       <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>'s
-      constructor first parameter is a reference to the new element's
+      constructor first parameter is a reference to the new widget's
       parent container. Its second parameter is an
       <ulink url="&link-x--w--canvas-init-params;"><classname>&ns;::w::canvas_init_params</classname></ulink>
       object.
-      The object's first two members specify the new display element's metrics:
+      The object's first two members specify the new widget's metrics:
       the horizontal metric and the vertical metric.
       They are specified as a
       <ulink url="&link-x--w--dim-axis-arg;"><classname>&ns;::w::dim_axis_arg</classname></ulink>
@@ -110,51 +110,51 @@ See COPYING for distribution information.
       A horizontal or a vertical metric consists of
       three discrete values: minimum,
       preferred, and maximum; and the metric
-      specifies that the display element's width or height should have
-      this minimum, preferred, or maximum size. The display element's
+      specifies that the widget's width or height should have
+      this minimum, preferred, or maximum size. The widget's
       &container; should
-      size the display element to at least its minimum width, or height;
+      size the widget to at least its minimum width, or height;
       but no larger than the maximum value. The preferred metric requests the
-      element's initial width and height; however in a container with multiple
-      display elements it's unlikely that the container will make everyone
+      widget's initial width and height; however in a container with multiple
+      widgets it's unlikely that the container will make everyone
       happy.
     </para>
 
     <para>
-      Display elements do not get explicitly resized, directly. This is done
+      Widgets do not get explicitly resized, directly. This is done
       indirectly by updating their metrics. Their &container; and its
-      &layoutmanager; always have the final word on each element's actual
+      &layoutmanager; always have the final word on each widget's actual
       size.
     </para>
 
     <note>
       <para>
-	Its possible that a container resizes a display element to be larger
+	Its possible that a container resizes a widget to be larger
 	than its maximum requested metric. For example, the
 	<link linkend="gridlayoutmanager">grid layout manager</link> can
 	be instructed to use
 	<literal><literal>&ns;::w::halign::fill</literal></literal> or
 	<literal><literal>&ns;::w::valign::fill</literal></literal>
-	for an element's alignment,
-	which may exceed the element's maximum metric.
+	for an widget's alignment,
+	which may exceed the widget's maximum metric.
       </para>
 
       <para>
 	It's unlikely that a container
-	will size an element to be smaller than its minimum metrics.
-	However, a new display element's width or height is usually 0, until
+	will size an widget to be smaller than its minimum metrics.
+	However, a new widget's width or height is usually 0, until
 	it gets formally sized by its container. So it's possible that
-	a display element's state indicates that its smaller than its minimum
+	a widget's state indicates that its smaller than its minimum
 	metric; this can also happen in some edge cases when the
 	parent container has no other options.
       </para>
 
       <para>
-	In conclusion: custom display elements must be
+	In conclusion: custom widgets must be
 	prepared to draw themselves when their size is outside of their
-	declared metrics. Display elements should still reasonably draw their
+	declared metrics. Widgets should still reasonably draw their
 	contents if their size exceeds their maximum metrics. It is acceptable
-	to simply draw an empty display element if their size is smaller than
+	to simply draw an empty widget if their size is smaller than
 	their minimum metrics.
       </para>
     </note>
@@ -187,7 +187,7 @@ See COPYING for distribution information.
 	<para>
 	  Additionally, a <literal>NAN</literal> value for a maximum metric,
 	  and only the maximum metric, sets
-	  an unlimited maximum metric. The display element has no defined
+	  an unlimited maximum metric. The widget has no defined
 	  maximum width or height.
 	</para>
       </listitem>
@@ -211,7 +211,7 @@ See COPYING for distribution information.
       creates horizontal and vertical metrics that set the custom canvas's
       minimum width and height to 20 millimeters, the preferred width and
       height to 50 millimeters, and 100 millimeters as the maximum metric.
-      This is the only display element in the window, so the resulting
+      This is the only widget in the window, so the resulting
       window is resizable within these bounds.
       Replacing the 100 millimeter value with <literal>NAN</literal> results
       in a window that has no upper maximum width or height.
@@ -347,11 +347,11 @@ typedef &ns;::w::scratch_and_mask_buffer_draw&lt;
   </section>
 
   <section id="customdraw">
-    <title>Drawing custom display elements</title>
+    <title>Drawing custom widgets</title>
 
     <para>
       <link linkend="customcanvas"><filename>customcanvas.C</filename></link>
-      gives a simplified example of drawing custom display elements by
+      gives a simplified example of drawing custom widgets by
       inheriting from
       <ulink url="&link-x--w--scratch-and-mask-buffer-draw;"><classname>&ns;::w::scratch_and_mask_buffer_draw</classname></ulink>
       and implementing its <methodname>do_draw</methodname>():
@@ -387,7 +387,7 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
       <ulink url="&link-typedef-x--w-pixmap;"><classname>&ns;::w::pixmap</classname></ulink>,
       <ulink url="&link-typedef-x--w-gc;"><classname>&ns;::w::gc</classname></ulink>, and
       <ulink url="&link-typedef-x--w-picture;"><classname>&ns;::w::picture</classname></ulink>
-      objects representing the scratch buffer for drawing the display element.
+      objects representing the scratch buffer for drawing the widget.
       These &appshort;
       objects implement most operations on pixmap, graphic contexts, and
       picture objects, as specified by the underlying &xproto; and the
@@ -400,19 +400,19 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
       The <varname>area_entire_rect</varname> parameter describes the
       <ulink url="&link-x--w--rectangle;">rectangle</ulink>
       that <methodname>do_draw</methodname>() should draw.
-      This simplified drawing interface always has the display element's
+      This simplified drawing interface always has the widget's
       current size reflected in the rectangle's width and height, and
       the x and y coordinates are always zero. In other words: the entire
       rectangle.
     </para>
 
     <para>
-      <methodname>do_draw</methodname>() does not draw the display element
+      <methodname>do_draw</methodname>() does not draw the widget
       directly in its window.
       The <varname>area_picture</varname>,
       <varname>area_pixmap</varname>, and
       <varname>area_gc</varname> parameters refer to a scratch buffer.
-      This scratch buffer gets cleared to the display element's background
+      This scratch buffer gets cleared to the widget's background
       color before <methodname>do_draw</methodname>() gets called.
       The scratch buffer's
       contents get copied to the window
@@ -434,7 +434,7 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
       <title>Scratch buffers</title>
 
       <para>
-	Custom display elements must provide an
+	Custom widgets must provide an
 	identifying label for their scratch buffers. This label is a plain
 	text string.
 	Their <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>
@@ -442,7 +442,7 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 	a
 	<ulink url="&link-x--w--child-element-init-params;"><classname>child_element_init_params</classname></ulink>
 	parameter with a <varname>scratch_buffer_id</varname>.
-	This specifies the label for the display elements scratch buffer.
+	This specifies the label for the widgets scratch buffer.
       </para>
 
       <para>
@@ -455,8 +455,8 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
       <para>
 	These labels are plain text strings that uniquely identify a scratch
 	buffer. &appshort; treats them as opaque identifiers, and
-	display elements that specify the same scratch buffer label
-	share the same underlying scratch buffer. Display elements that
+	widgets that specify the same scratch buffer label
+	share the same underlying scratch buffer. Widgets that
 	specify different labels get separate scratch buffers.
       </para>
 
@@ -472,11 +472,11 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 
       <para>
 	The scratch buffers get
-	sized appropriately for each display element that uses them. For
+	sized appropriately for each widget that uses them. For
 	that reason <methodname>do_draw</methodname>() can get a scratch
 	buffer that's actually bigger than the drawing rectangle's size
 	because another,
-	larger, display element shares the same scratch buffer.
+	larger, widget shares the same scratch buffer.
       </para>
 
       <para>
@@ -488,7 +488,7 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 	  <para>
 	    Each label should be formatted as either an E-mail address or
 	    an Internet hostname, using the domain that belongs to the
-	    application that uses the custom display element.
+	    application that uses the custom widget.
 	    An application developed by
 	    <literal>example.com</literal>
 	    can use <quote>circle@labels.example.com</quote>, or
@@ -501,44 +501,43 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 	<listitem>
 	  <para>
 	    Use the same scratch buffer label with
-	    display elements whose sizes are similar.
-	    Display elements of vastly different sizes need to use different
+	    widgets whose sizes are similar.
+	    Widgets of vastly different sizes need to use different
 	    scratch buffer labels.
 	  </para>
 
 	  <para>
-	    If a very wide display element uses the same label as another
-	    display element that's very tall, the resulting scratch buffer
-	    becomes both as wide as as tall as both of these display
-	    elements combined together. These two display elements end up
+	    If a very wide widget uses the same label as another
+	    widget that's very tall, the resulting scratch buffer
+	    becomes both as wide as as tall as both of these widgets combined together. These two widgets end up
 	    using the same underlying scratch buffer, which becomes wasteful.
 	  </para>
 
 	  <para>
-	    Display elements don't need to have identical sizes in order
+	    Widgets don't need to have identical sizes in order
 	    to share a scratch buffer.
 	    <quote>Close enough</quote> is good enough.
 	    The library simply sizes the scratch
-	    buffer, on demand, to accomodate each display element's requested
+	    buffer, on demand, to accomodate each widget's requested
 	    size, so the scratch buffer ends up being big enough to keep
 	    everyone happy (&appshort; actually tries to stay ahead of the
 	    game by proactively sizing the scratch buffer with extra room
 	    to spare, for growth, in hopes of avoiding a reallocation forced
-	    by a larger display element).
+	    by a larger widget).
 	  </para>
 
 	  <para>
 	    But this means that having both a very wide and a very tall
-	    display element ends up with a scratch buffer wasting a lot of
+	    widget ends up with a scratch buffer wasting a lot of
 	    valuable display memory (pixmap memory gets allocated on the
 	    display server, after all) in order to accomodate both a very
-	    wide and a very tall display element.
+	    wide and a very tall widget.
 	  </para>
 
 	  <para>
 	    By naming scratch buffer labels using Internet domain names,
 	    this avoids accidental reuse of the same label by different
-	    libraries/applications for display elements with widely different
+	    libraries/applications for widgets with widely different
 	    sizes.
 	  </para>
 	</listitem>
@@ -561,7 +560,7 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 
     <para>
       <filename>customcanvas.C</filename> responds to a pointer button #1
-      click by adjusting the custom element's metrics by invoking
+      click by adjusting the custom widget's metrics by invoking
       <methodname>update</methodname>() that it inherits from
       <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>.
     </para>

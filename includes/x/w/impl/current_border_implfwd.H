@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC current_border_implObj;
 
-//! Current border around a display element.
+//! Current border around a widget.
 
 //! Provides a \ref border_impl "border implementation object", and
 //! a \c theme_updated() method that rebuilds it, after a theme change.

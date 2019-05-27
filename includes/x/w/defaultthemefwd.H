@@ -39,7 +39,7 @@ typedef const_ptr<defaultthemeObj, defaultthemeBase> const_defaultthemeptr;
 //! Current theme, mutex protected.
 
 //! The current theme must be consulted when constructing new
-//! display elements, and it is also accessed by the connection thread
+//! widgets, and it is also accessed by the connection thread
 //! as well.
 
 

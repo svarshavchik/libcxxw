@@ -28,19 +28,19 @@ class new_borderlayoutmanager : public new_layoutmanager {
 
 public:
 	//! Constructor
-	new_borderlayoutmanager(//! Create the border contain's element.
+	new_borderlayoutmanager(//! Create the border container's widget.
 
 				//! The callback gets invoked, and must
 				//! use the factory parameter to create
-				//! exactly one display element. This is
-				//! the element in the border layout manager's
+				//! exactly one widget. This is
+				//! the widget in the border layout manager's
 				//! container.
 				const functionref<void (const factory &)> &);
 
 	//! Destructor
 	~new_borderlayoutmanager();
 
-	//! Factory for the initial element insoider the border
+	//! Factory for the initial widget inside the border
 
 	functionref<void (const factory &)> element_factory;
 
@@ -54,11 +54,11 @@ public:
 
 	//! If no title is set, automatically sets the element's background
 	//! color to the theme default. Borders with titles are not visually
-	//! "coherent" if the element inside the border has a custom
+	//! "coherent" if the widget inside the border has a custom
 	//! background color, because the border is interrupted by the
 	//! title.
 	//!
-	//! Set this to true to prevent the element from having its background
+	//! Set this to true to prevent the widget from having its background
 	//! set, even if there's no title.
 
 	bool no_background;

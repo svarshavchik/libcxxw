@@ -15,7 +15,7 @@ See COPYING for distribution information.
     </imageobject>
     <textobject>
       <phrase>
-	Custom container display element
+	Custom container widget
       </phrase>
     </textobject>
     <caption>
@@ -43,9 +43,9 @@ See COPYING for distribution information.
     <title>The <classname>&ns;::w::container_elementObj</classname> template mixin</title>
 
     <para>
-      Creating a custom container element involves several additional
+      Creating a custom container widget involves several additional
       steps beyond the ones for <link linkend="customimpl">creating a
-	custom display element</link>.
+	custom widget</link>.
     </para>
 
     <itemizedlist>
@@ -78,9 +78,9 @@ See COPYING for distribution information.
     <para>
       Creating each custom container requires obtaining a
       &factory; from an
-      existing container, like for an ordinary display element.
+      existing container, like for an ordinary widget.
       This is followed by some additional steps,
-      similar to the ones taken when creating a custom display element.
+      similar to the ones taken when creating a custom widget.
     </para>
 
     <itemizedlist>
@@ -88,7 +88,7 @@ See COPYING for distribution information.
 	<para>
 	  The first step is the same as when
 	  <link linkend="customimpl">creating a
-	    custom display element</link>:
+	    custom widget</link>:
 	  use the
 	  &factory;'s <methodname>get_container_impl</methodname>() method.
 	  to obtain an
@@ -143,7 +143,7 @@ See COPYING for distribution information.
 	  contents. The last step is to invoke the original &factory;'s
 	  <methodname>created_internally</methodname>() method, just like when
 	  <link linkend="customimpl">creating a
-	    custom display element</link>.
+	    custom widget</link>.
 	  This can be done immediately and before populating the contents of
 	  the new container, but optimally the new container's contents should
 	  be created first.
@@ -169,11 +169,11 @@ See COPYING for distribution information.
 
     <para>
       <methodname>pointer_focus</methodname>() gets invoked whenever the
-      pointer moves into, or out of, a display element. Moving the pointer
+      pointer moves into, or out of, a widget. Moving the pointer
       ten millimeters into the window crosses into the custom container,
       triggering a call to
       <methodname>pointer_focus</methodname>(). The custom implementation
-      uses this to set the custom display element's background color to
+      uses this to set the custom widget's background color to
       a radial gradient color. Moving the pointer out of the container restores
       the default background color.
     </para>
@@ -182,8 +182,8 @@ See COPYING for distribution information.
       <para>
 	The entire window's background color changes, and not just the
 	custom container's
-	This is because a display element's background color
-	includes any padding around the display element. The custom
+	This is because a widget's background color
+	includes any padding around the widget. The custom
 	container's background color gets extended to the padding area around
 	it.
       </para>

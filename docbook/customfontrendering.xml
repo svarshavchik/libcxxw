@@ -21,7 +21,7 @@ See COPYING for distribution information.
     <caption>
       <para>
 	&appshort;'s
-	<link linkend="labels">text label</link> display element
+	<link linkend="labels">text label</link> widget
 	provides deceptively simple ways to show text labels.
 	The <ulink url="&link-typedef-x--w-label;"><classname>&ns;::w::label</classname></ulink>
 	handles multiple colors, fonts, and word-wrapping all by itself.
@@ -67,7 +67,7 @@ See COPYING for distribution information.
 	  gets prepared first, which specifies the font's face, size, and
 	  other attributes, then passed to
 	  any <ulink url="&link-x--w--elementObj--implObj;">internal
-	    display element implementation object</ulink> to construct a
+	    widget implementation object</ulink> to construct a
 	  font collection.
 	</para>
 
@@ -152,10 +152,10 @@ See COPYING for distribution information.
 	  Other <classname>&ns;::w::fontcollection</classname> methods return
 	  various other metadata of the loaded glyphs, such as their size.
 	  <filename>customfontrenderer.C</filename> uses them to compute
-	  the size of the custom display element, in advance, when creating
+	  the size of the custom widget, in advance, when creating
 	  it. This can be done any time before drawing the actual text, and
 	  <filename>customfontrenderer.C</filename> does this work just once,
-	  when creating the custom display element.
+	  when creating the custom widget.
 	</para>
 
 	<para>
@@ -190,7 +190,7 @@ See COPYING for distribution information.
       that size. Using the
       <link linkend="cxxwtheme.1"><command>cxxwtheme</command></link>
       utility to set a larger or a smaller display theme does not update
-      the appearance of the custom element until
+      the appearance of the custom widget until
       <filename>customfontrenderer</filename> gets stopped and restarted.
     </para>
 
@@ -221,11 +221,11 @@ See COPYING for distribution information.
       </listitem>
       <listitem>
 	<para>
-	  A custom display element overrides
+	  A custom widget overrides
 	  <methodname>initialize</methodname>() and
 	  <methodname>theme_updated</methodname>() methods.
 	  Both overrides invoke their overriden methods, first. At that
-	  point the custom display element works the current display theme
+	  point the custom widget works the current display theme
 	  into its appearance.
 	</para>
 	<para>
@@ -239,8 +239,7 @@ See COPYING for distribution information.
 	  <classname>&ns;;::w::fontcollection</classname>. If an updated
 	  theme results in a new font (changing the current display theme's
 	  size replaces the current font with a new font with a different size),
-	  <methodname>update</methodname>() recomputes the custom display
-	  element's size, based on the new
+	  <methodname>update</methodname>() recomputes the custom widget's size, based on the new
 	  <classname>&ns;;::w::fontcollection</classname>.
 	</para>
       </listitem>
@@ -249,8 +248,8 @@ See COPYING for distribution information.
 	  <methodname>update</methodname>() uses
 	  <methodname>set_element_metrics</methodname>() to install its
 	  updated &metrics;.
-	  This results in the custom element's container resizing the
-	  custom element, triggering a redraw, with
+	  This results in the custom widget's container resizing the
+	  custom widget, triggering a redraw, with
 	  <methodname>do_draw</methodname>() eventually doing its job.
 	</para>
       </listitem>
@@ -298,7 +297,7 @@ See COPYING for distribution information.
 	takes a different approach,
 	the <ulink url="&link-typedef-x--w-themedim-elementObj;"><classname>&ns;::w::themedim_elementObj</classname></ulink>.
 	This is a &template_mixin; that attaches a theme-based dimension
-	(width or height) to a display element.
+	(width or height) to a widget.
       </para>
 
       <para>
@@ -315,24 +314,23 @@ See COPYING for distribution information.
     </section>
 
     <section id="usingthemes">
-      <title>Typical implementation of custom theme-aware custom display
-	elements</title>
+      <title>Typical implementation of custom theme-aware custom widgets</title>
 
       <para>
 	<ulink url="examples/customfontrenderer2.C"><filename>customfontrenderer2.C</filename></ulink>
 	gives the general approach of implementing proper theme support
-	with custom display elements:
+	with custom widgets:
       </para>
 
       <itemizedlist>
 	<listitem>
 	  <para>
-	    Compute the custom display element's initial metrics before
+	    Compute the custom widget's initial metrics before
 	    constructing it, and pass along the data that went into the
 	    calculations into the object.
 	    <filename>customfontrenderer2.C</filename>'s computed metrics
 	    depend on a <classname>&ns;;::w::fontcollection</classname>,
-	    The custom display element saves a private reference to this
+	    The custom widget saves a private reference to this
 	    <classname>&ns;;::w::fontcollection</classname>.
 	  </para>
 	</listitem>
@@ -343,7 +341,7 @@ See COPYING for distribution information.
 	    <methodname>theme_updated</methodname>() recheck and update
 	    the saved data. A new
 	    <classname>&ns;;::w::fontcollection</classname> results
-	    in the display element's metrics getting updated, together with
+	    in the widget's metrics getting updated, together with
 	    any ancillary data that derived from it.
 	  </para>
 	</listitem>

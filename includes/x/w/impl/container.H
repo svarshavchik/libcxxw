@@ -43,13 +43,13 @@ public:
 
 	~implObj();
 
-	//! This container must be an element.
+	//! This container must be an widget.
 
 	//! Must be implement in a subclass
 
 	virtual elementObj::implObj &container_element_impl()=0;
 
-	//! This container must be an element.
+	//! This container must be an widget.
 
 	//! Must be implement in a subclass
 
@@ -114,7 +114,7 @@ public:
 
 	void uninstall_layoutmanager(ONLY IN_THREAD) LIBCXX_HIDDEN;
 
-	//! If this element is visible, recursively invoke draw_after_visibility_updated().
+	//! If this widget is visible, recursively invoke draw_after_visibility_updated().
 
 	//! Overridden in generic_window_handler. Top level visibility is
 	//! translated into MapWindow(), and we'll draw everything when we
@@ -123,13 +123,13 @@ public:
 	virtual void draw_child_elements_after_visibility_updated
 		(ONLY IN_THREAD, bool flag);
 
-	//! A child element will be visible or not visible.
+	//! A child widget will be visible or not visible.
 
 	void requested_child_visibility_updated(ONLY IN_THREAD,
 						const element_impl &,
 						bool);
 
-	//! A child element became visible or not visible.
+	//! A child widget became visible or not visible.
 
 	void inherited_child_visibility_updated(ONLY IN_THREAD,
 						const element_impl &,
@@ -161,7 +161,7 @@ public:
 	//! Forcibly redraw the entire container.
 
 	//! Invoked by layout managers in order to clear the filler space
-	//! in the container, after they reposition their display elements.
+	//! in the container, after they reposition their widgets.
 	void do_draw(ONLY IN_THREAD);
 
 	//! Container's inherited visibility has been updated, part 1.
@@ -186,7 +186,7 @@ public:
 	//!
 	//! If the container is being shown, the child elements get
 	//! get shown after propagating the inherited_visibility
-	//! updated() call to the container element.
+	//! updated() call to the container widget.
 	//!
 	//! Also invokes the layout manager's inherited_visibility_updated().
 
@@ -227,7 +227,7 @@ public:
 	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme);
 	//////////////////////////////////////////////////////////////////////
 
-	//! Invoke a lambda for each child element.
+	//! Invoke a lambda for each child widget.
 
 	template<typename functor_type>
 		void for_each_child(ONLY IN_THREAD,
@@ -262,7 +262,7 @@ public:
 
  public:
 
-	//! This element wants to make sure that this part of it is visible.
+	//! This widget wants to make sure that this part of it is visible.
 
 	//! Notifies the layout manager, then invokes
 	//! ensured_visibility_of_child_element().
@@ -274,7 +274,7 @@ public:
 
 	void removed_from_container(ONLY IN_THREAD);
 
-	//! A child element was just ensure_visibility()-ed.
+	//! A child widget was just ensure_visibility()-ed.
 
 	//! Overriden by the container_visible_element mixin.
 	//!

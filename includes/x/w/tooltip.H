@@ -54,13 +54,13 @@ public:
 		const LIBCXX_PUBLIC=0;
 };
 
-//! How a static tooltip, or a popup, gets attached to its element
+//! How a static tooltip, or a popup, gets attached to its widget
 
 //! Specifies how a static tooltip gets positioned with respect to its
-//! element.
+//! widget.
 //!
 //! below_or_above, above_or_below: the first preference if there's enough
-//! room between the element and the edge of the screen, else the other side.
+//! room between the widget and the edge of the screen, else the other side.
 //! Furthermore, the popup's minimum width is set to be its element's width.
 //! This is the style used by combo-box popups.
 //!

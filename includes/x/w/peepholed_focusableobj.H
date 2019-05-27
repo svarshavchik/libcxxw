@@ -15,7 +15,7 @@ class LIBCXX_PUBLIC peepholed_focusableObj;
 
 //! A focusable in a peephole.
 
-//! An internal class that's used to derive a focusable element inside
+//! An internal class that's used to derive a focusable widget inside
 //! a scrollable peephole.
 //!
 //! \internal

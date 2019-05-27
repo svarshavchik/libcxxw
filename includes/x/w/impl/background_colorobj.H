@@ -27,7 +27,7 @@ public:
 	//! Destructor
 	~background_colorObj() LIBCXX_HIDDEN;
 
-	//! Adjust this background color for an element of the given size.
+	//! Adjust this background color for an widget of the given size.
 
 	//! If the background color is a gradient, this gets adjusted
 	//! accordingly.
@@ -38,7 +38,7 @@ public:
 				 dim_t width,
 				 dim_t height)=0;
 
-	//! Adjust this background color for the given element.
+	//! Adjust this background color for the given widget.
 
 	background_color get_background_color_for_element(ONLY IN_THREAD,
 							  elementObj::implObj &)

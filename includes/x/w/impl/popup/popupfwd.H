@@ -14,7 +14,7 @@ class LIBCXX_HIDDEN popupObj;
 
 //! A popup.
 
-//! A top level display element that's not controlled by the window manager.
+//! A top level widget that's not controlled by the window manager.
 //! Whatever size and position we want it to be, there it is.
 //!
 //! The popup typically grabs the pointer or the keyboard focus; but the

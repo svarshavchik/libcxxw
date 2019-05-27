@@ -61,7 +61,7 @@ See COPYING for distribution information.
 	</listitem>
 	<listitem>
 	  <para>
-	    Create the rest of the display elements in the main window
+	    Create the rest of the widgets in the main window
 	    normally. This can be done before or after the menu.
 	  </para>
 	</listitem>
@@ -101,7 +101,7 @@ See COPYING for distribution information.
   </blockquote>
 
   <para>
-    Unlike regular display elements in the main window, display elements
+    Unlike regular widgets in the main window, widgets
     that make up the menu bar and its menus should not be
     <methodname>show</methodname>()n, except for
     <methodname>show</methodname>()ing the menu bar itself.
@@ -400,7 +400,7 @@ m->append_items(
     <para>
       &appshort;'s menus are fully keyboard-accessible. The menu titles
       in the menu bar are tabbable. Their tabbing order always precede any
-      tabbable display elements in the main window.
+      tabbable widgets in the main window.
       <keycap>Enter</keycap> with a menu title receiving input focus opens
       the submenu, and
       <keycap>Cursor-Down</keycap> selects the menu's first enabled item.
@@ -423,7 +423,7 @@ l->enabled(4, false);</programlisting>
     <para>
       A disabled menu item is not selectable via the pointer or the keyboard.
       Disabled menu items have a dithered, faint, appearance like all
-      disabled display elements.
+      disabled widgets.
     </para>
   </section>
 </chapter>

@@ -33,7 +33,7 @@ public:
 	//! This font is for this screen.
 	const screen font_screen;
 
-	//! This font collection is for display elements with this alpha channel.
+	//! This font collection is for widgets with this alpha channel.
 	const depth_t depth;
 
  private:

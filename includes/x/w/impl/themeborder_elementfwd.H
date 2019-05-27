@@ -73,7 +73,7 @@ struct themeborder_element_types<base, arg1, arg2, args...> {
 					::type, arg1> type;
 };
 
-//! Template for attaching one or more themeborder_element_impl mixins to a display element.
+//! Template for attaching one or more themeborder_element_impl mixins to a widget.
 
 //! The first template parameter is a subclass of elementObj::implObj,
 //! and themeborder_elementObj multiply-inherits from the template parameter

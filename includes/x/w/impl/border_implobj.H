@@ -89,10 +89,10 @@ class border_implObj: virtual public obj, public border_info {
 
 		//! The border gets rendered into this picture
 
-		//! This is not the actual display element, but rather a
+		//! This is not the actual widget, but rather a
 		//! scratch/temporary buffer where the border(s) get
 		//! pre-drawn, before the final image gets composited into
-		//! the display element.
+		//! the widget.
 
 		picture area_picture;
 
@@ -102,7 +102,7 @@ class border_implObj: virtual public obj, public border_info {
 		//! area_picture's pixmap
 
 		//! Before draw..()ing, the area picture/pixmap gets
-		//! cleared to the display element's background color.
+		//! cleared to the widget's background color.
 
 		pixmap area_pixmap;
 
@@ -124,12 +124,12 @@ class border_implObj: virtual public obj, public border_info {
 
 		//! Specifies to the draw...() methods that the area
 		//! picture/pixmap's represents a rectangle in its parent
-		//! display element whose top-left corner is this coordinate.
+		//! widget whose top-left corner is this coordinate.
 		coord_t area_x;
 
 		//! Specifies to the draw...() methods that the area
 		//! picture/pixmap's represents a rectangle in its parent
-		//! display element whose top-left corner is this coordinate.
+		//! widget whose top-left corner is this coordinate.
 		coord_t area_y;
 
 		//! Fill in the background color.

@@ -90,9 +90,9 @@ LIBCXXW_NAMESPACE_START
 
 class clip_region_set;
 
-//! Base class for element implementation.
+//! Base class for widget implementation.
 
-//! Stuff that all display elements have.
+//! Stuff that all widgets have.
 
 class elementObj::implObj : public element_drawObj,
 
@@ -143,11 +143,11 @@ class elementObj::implObj : public element_drawObj,
 		//!
 		//! invalidate_cached_draw_info() gets called whenever
 		//! the cached draw info may no longer be valid for this
-		//! element.
+		//! widget.
 
 		std::optional<draw_info> cached_draw_info;
 
-		//! Which parts of the element need redrawing.
+		//! Which parts of the widget need redrawing.
 
 		//! The default state is an empty rectarea. When an
 		//! schedule_full_redraw() is called, this is removed.
@@ -160,7 +160,7 @@ class elementObj::implObj : public element_drawObj,
 
 		//! Requested visibility.
 
-		//! show()/hide() sets this, then adds this element to the
+		//! show()/hide() sets this, then adds this widget to the
 		//! visibility_updated set.
 
 		bool requested_visibility=false;
@@ -176,7 +176,7 @@ class elementObj::implObj : public element_drawObj,
 
 		//! Inherited visibility
 
-		//! An element is actually visible only if the element,
+		//! An widget is actually visible only if the element,
 		//! and all of its parent elements are visible.
 
 		bool logical_inherited_visibility=false;
@@ -191,16 +191,16 @@ class elementObj::implObj : public element_drawObj,
 		//! reported_inherited_visibility gets updated in response
 		//! to show()ing or hide()ing them.
 		//!
-		//! When determining whether the display element is visible
+		//! When determining whether the widget is visible
 		//! the library code looks at logical_inherited_visibility
 		//! except when:
 		//!
 		//! - need to determine whether the top level window is mapped
 		//! or not (this is reflected by reported_inherited_visibility).
 		//!
-		//! - when reporting the visibility status of a display element,
+		//! - when reporting the visibility status of a widget,
 		//! so that the visibility report reflects the top level
-		//! display element's visibility.
+		//! widget's visibility.
 
 		bool reported_inherited_visibility=false;
 
@@ -208,21 +208,21 @@ class elementObj::implObj : public element_drawObj,
 
 		bool initialized=false;
 
-		//! Whether the element has been removed from its container.
+		//! Whether the widget has been removed from its container.
 
 		bool removed=false;
 
-		//! Whether this element is "enabled".
+		//! Whether this widget is "enabled".
 
-		//! If this is an element that receives pointer and keyboard
-		//! focus, it can be selectively disabled. If this element
+		//! If this is an widget that receives pointer and keyboard
+		//! focus, it can be selectively disabled. If this widget
 		//! is disabled, we draw a shade over its contents.
 		//!
 		//! The enabled() method checks not only this element's
 		//! enabled flag, but also all of its parent containers.
-		//! If any of them are disabled this element is considered to
+		//! If any of them are disabled this widget is considered to
 		//! be disabled. The enabled flag only specifies whether
-		//! this element is explicitly set as enabled or not.
+		//! this widget is explicitly set as enabled or not.
 
 		bool enabled=true;
 
@@ -251,7 +251,7 @@ class elementObj::implObj : public element_drawObj,
 
 		functionptr<motion_event_callback_t> on_motion_event_callback;
 
-		//! Whether this element is a label for some focusable.
+		//! Whether this widget is a label for some focusable.
 
 		label_forptr label_for;
 
@@ -270,11 +270,11 @@ class elementObj::implObj : public element_drawObj,
 		functionptr<void (THREAD_CALLBACK,
 				  const tooltip_factory &)> tooltip_factory;
 
-		//! There's a popup attached to this element.
+		//! There's a popup attached to this widget.
 
 		//! This is used by combo-box code to attach the implementation
 		//! object for the combo-box's popup, so it gets hidden if
-		//! the combo-box element itself gets hidden.
+		//! the combo-box widget itself gets hidden.
 
 		element_implptr attached_popup_impl;
 
@@ -311,18 +311,18 @@ class elementObj::implObj : public element_drawObj,
 	}
  public:
 
-	//! Use parent display element's background color.
+	//! Use parent widget's background color.
 
 	//! Schedules the virtual method to be invoked by the connection thread.
 
 	void remove_background_color();
 
-	//! Use parent display element's background color.
+	//! Use parent widget's background color.
 
 	virtual void remove_background_color(ONLY IN_THREAD)=0;
 
 
-	//! Use a standard background color for this display element.
+	//! Use a standard background color for this widget.
 
 	//! If there's no background color of the given name, use the
 	//! default value.
@@ -340,7 +340,7 @@ class elementObj::implObj : public element_drawObj,
 	virtual void set_background_color(ONLY IN_THREAD,
 					  const background_color &)=0;
 
-	//! Whether this element uses its own custom background color
+	//! Whether this widget uses its own custom background color
 
 	//! The default implementation always returns true.
 	//! child_element overrides this, and returns the correct values.
@@ -355,7 +355,7 @@ class elementObj::implObj : public element_drawObj,
 
 	//! This element's background color has changed.
 
-	//! Invoke schedule_full_redraw() if this element is visible.
+	//! Invoke schedule_full_redraw() if this widget is visible.
 	//! But wait, there's more!. If this is a container, and the
 	//! container has any visible child elements that use the parent's
 	//! background color, they need to be redrawn too!
@@ -371,10 +371,10 @@ class elementObj::implObj : public element_drawObj,
 	//! Nesting level.
 
 	//! Top level window elements have a nesting level of 0.
-	//! All others have one more than their parent element.
+	//! All others have one more than their parent widget.
 	const size_t nesting_level;
 
-	//! Available scratch buffer, for drawing in this element.
+	//! Available scratch buffer, for drawing in this widget.
 
 	const scratch_buffer element_scratch_buffer;
 
@@ -402,15 +402,15 @@ class elementObj::implObj : public element_drawObj,
 		return (!data(IN_THREAD).logical_inherited_visibility);
 	}
  public:
-	//! Install minimum element size overrides.
+	//! Install minimum widget size overrides.
 	void set_minimum_override(dim_t horiz_override, dim_t vert_override);
 
-	//! Install minimum element size overrides.
+	//! Install minimum widget size overrides.
 	virtual void set_minimum_override(ONLY IN_THREAD,
 					  dim_t horiz_override,
 					  dim_t vert_override);
 
-	//! The container has removed this element.
+	//! The container has removed this widget.
 
 	//! Invoked from elementObj's destructor.
 	//! Runs removed_from_container() IN_THREAD.
@@ -425,17 +425,17 @@ class elementObj::implObj : public element_drawObj,
 
 	bool removed_from_container_was_called_in_destructor=false;
 
-	//! The container has removed this element.
+	//! The container has removed this widget.
 
 	//! Executed in the connection thread.
-	//! Recursively invokes removed_from_container if this element itself
+	//! Recursively invokes removed_from_container if this widget itself
 	//! is a container.
 	//!
 	//! If data.removed is not set, sets it and invoked removed().
 
 	virtual void removed_from_container(ONLY IN_THREAD);
 
-	//! This element has been removed from its container just now.
+	//! This widget has been removed from its container just now.
 
 	//! The default implementation does nothing.
 	virtual void removed(ONLY IN_THREAD);
@@ -477,8 +477,8 @@ class elementObj::implObj : public element_drawObj,
 
 	enum class absolute_location_update_reason {
 		external, //!< Our top level window has moved
-		scrolled, //!< The element was scrolled by its parent
-		internal  //!< The element moved, but without changing its size
+		scrolled, //!< The widget was scrolled by its parent
+		internal  //!< The widget moved, but without changing its size
 	};
 	//! The top level window's position changed, but not its size
 
@@ -506,19 +506,19 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual void current_position_updated(ONLY IN_THREAD);
 
-	//! Indicate whether this element is already updated.
+	//! Indicate whether this widget is already updated.
 
 	//! But process_updated_position() was not called yet.
 	bool update_position_processing_scheduled(ONLY IN_THREAD);
 
-	//! Add this element to the element_position_updated() queue.
+	//! Add this widget to the element_position_updated() queue.
 
-	//! Adds this element to the queue that the connection thread uses
+	//! Adds this widget to the queue that the connection thread uses
 	//! to invoke process_updated_position().
 	//!
 	//! generic_window_handler invokes this directly, bypassing
 	//! current_position_updated(). It is not necessary to recursively
-	//! do this for all display elements when the top level window is
+	//! do this for all widgets when the top level window is
 	//! resized or moved. It is only necessary to schedule the top level
 	//! window to execute current_position_updated(), as the top level
 	//! container will recalculate and reposition all elements, as needed.
@@ -560,15 +560,15 @@ class elementObj::implObj : public element_drawObj,
 	/////////////////////////////////////////////////////////////////////
 	//
 
-	//! show() or hide() this display element.
+	//! show() or hide() this widget.
 
 	void request_visibility(bool flag);
 
-	//! Show or hide() this display element.
+	//! Show or hide() this widget.
 
 	void toggle_visibility();
 
-	//! show() or hide() this display element.
+	//! show() or hide() this widget.
 
 	//! Executed in the connection thread.
 	//!
@@ -582,14 +582,14 @@ class elementObj::implObj : public element_drawObj,
 	//! to hide non-visible elements.
 	virtual void request_visibility(ONLY IN_THREAD, bool flag);
 
-	//! show() or hide() this display element.
+	//! show() or hide() this widget.
 
 	//! Executed in the connection thread.
 	void toggle_visibility(ONLY IN_THREAD);
 
 	//! Schedule update_visibility() to be invoke by the connection thread.
 
-	//! Inserts this element into the visibility_update list.
+	//! Inserts this widget into the visibility_update list.
 
 	void schedule_update_visibility(ONLY IN_THREAD) LIBCXX_HIDDEN;
 
@@ -615,7 +615,7 @@ class elementObj::implObj : public element_drawObj,
 
 	//! This is overridden in child_elementObj, which also checks
 	//! the parent's inherited visibility. If the parent is hidden,
-	//! this element is not visible, and flag is forced to off, before
+	//! this widget is not visible, and flag is forced to off, before
 	//! invoking this method.
 	//!
 	//! visibility_updated() compares flag with the
@@ -637,7 +637,7 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Finally update this element's inherited visibility status.
 
-	//! The relationships with the parent element and any child elements
+	//! The relationships with the parent widget and any child elements
 	//! (if this is a container), have been squared away.
 	//!
 	//! Update the flag, invoke before/after showing/hiding callbacks.
@@ -655,7 +655,7 @@ class elementObj::implObj : public element_drawObj,
 	//!
 	//! Overridden in child_elementObj to also invoke its container's
 	//! child_background_color_changed() callback, since when the
-	//! child element is not shown, it falls back to using the parent's
+	//! child widget is not shown, it falls back to using the parent's
 	//! background color, so officially its background color has changed.
 
 	virtual void set_inherited_visibility(ONLY IN_THREAD,
@@ -669,7 +669,7 @@ class elementObj::implObj : public element_drawObj,
 	virtual void set_inherited_visibility_flag(ONLY IN_THREAD,
 						   bool, bool);
 
-	//! Redraw this display element, after showing or hiding it.
+	//! Redraw this widget, after showing or hiding it.
 
 	//! visibility_updated() invokes it after it invokes
 	//! inherited_visibility_updated().
@@ -685,13 +685,13 @@ class elementObj::implObj : public element_drawObj,
 						   bool flag);
 
 
-	//! Return the cached_draw_info for this element.
+	//! Return the cached_draw_info for this widget.
 
 	//! Call get_draw_info_from_scratch() if it does not exist.
 
 	virtual draw_info &get_draw_info(ONLY IN_THREAD)=0;
 
-	//! Calculate draw_info for this element.
+	//! Calculate draw_info for this widget.
 
 	virtual draw_info &get_draw_info_from_scratch(ONLY IN_THREAD)=0;
 
@@ -700,7 +700,7 @@ class elementObj::implObj : public element_drawObj,
 	enum class draw_info_invalidation_reason {
 
 		//! Something that factored into cached_draw_info for this
-		//! element might've changed.
+		//! widget might've changed.
 		something_changed,
 
 		//! Something definitely changed, remove any cached_draw_info.
@@ -722,9 +722,9 @@ class elementObj::implObj : public element_drawObj,
 	//! We need get_absolute_location() for the screen!
 	rectangle get_absolute_location_on_screen(ONLY IN_THREAD) const;
 
-	//! Whether this element can be under the mouse pointer.
+	//! Whether this widget can be under the mouse pointer.
 
-	//! Returns true if this element is eligible to be consider to be
+	//! Returns true if this widget is eligible to be consider to be
 	//! under the mouse pointer.
 
 	bool can_be_under_pointer(ONLY IN_THREAD) const;
@@ -752,23 +752,23 @@ class elementObj::implObj : public element_drawObj,
 	//! Calls schedule_redraw() and invokes itself recursively for all
 	//! child elements (if any).
 	//!
-	//! Disabled elements are drawn in shaded style, so when an element
+	//! Disabled elements are drawn in shaded style, so when an widget
 	//! becomes enabled or disabled we schedule_redraw().
 	//!
-	//! Additionally, an element marked as disabled automatically
+	//! Additionally, an widget marked as disabled automatically
 	//! disables all child elements.
 
 	virtual void enablability_changed(ONLY IN_THREAD);
 
-	//! Whether this element is scheduled for complete redrawing
+	//! Whether this widget is scheduled for complete redrawing
 
 	bool full_redraw_scheduled(ONLY IN_THREAD);
 
-	//! Forcibly redraw this display element
+	//! Forcibly redraw this widget
 
-	//! If this display element is not visible, calls clear_to_color().
+	//! If this widget is not visible, calls clear_to_color().
 	//! Otherwise calls draw() (which then has to call do_draw(), because
-	//! the element is visible).
+	//! the widget is visible).
 
 	void explicit_redraw(ONLY IN_THREAD);
 
@@ -782,7 +782,7 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Exposure event handling.
 
-	//! We get areas to redraw for this element. Invoke draw(),
+	//! We get areas to redraw for this widget. Invoke draw(),
 	//! then recursively invoke ourselves for all visible children,
 	//! after calculating each child's rectarea consisting of the
 	//! given rectarea intersected with the child's viewport.
@@ -804,21 +804,21 @@ class elementObj::implObj : public element_drawObj,
 	//! to get filled in over its background.
 	//!
 	//! exposure_event_recursive() progressively draws containers first,
-	//! then the elements in the container. The element that represents
+	//! then the elements in the container. The widget that represents
 	//! the main contents of the window overrides should_preclear and
 	//! returns true,
 	virtual bool should_preclear_entirely_exposed_element(ONLY IN_THREAD);
 
-	//! Draw the display element.
+	//! Draw the widget.
 
-	//! If the display element is not visible, does nothing.
+	//! If the widget is not visible, does nothing.
 	//!
 	//! Otherwise calls do_draw().
 	void draw(ONLY IN_THREAD,
 		  const draw_info &di,
 		  const rectarea &areas) LIBCXX_HIDDEN;
 
-	//! Draw the display element.
+	//! Draw the widget.
 
 	//! The default implementation invokes clear_to_color().
 	//!
@@ -850,7 +850,7 @@ class elementObj::implObj : public element_drawObj,
 					  const scratch_buffer &buffer)
 		override;
 
-	//! A subclass drew all or a portion of this element.
+	//! A subclass drew all or a portion of this widget.
 
 	//! Composite it into draw_info.window_picture. All drawing of this
 	//! element's contents is ultimately funneled through draw_to_window
@@ -871,17 +871,17 @@ class elementObj::implObj : public element_drawObj,
 				    //! further modifications.
 				    const picture &contents,
 
-				    //! Which portion of this element is drawn.
+				    //! Which portion of this widget is drawn.
 
 				    //! The subclass draws a portion of the
-				    //! this element specified by "rect"
+				    //! this widget specified by "rect"
 				    //! in "contents".
 				    const rectangle &rect)
 		LIBCXX_HIDDEN;
 
 	//! Whether draw_to_window_picture() should apply the disabled_mask
 
-	//! Determines whether this display element should be shown as
+	//! Determines whether this widget should be shown as
 	//! "disabled".
 	//!
 	//! Overridden in child_elementObj. Elements in a focusable label
@@ -901,7 +901,7 @@ class elementObj::implObj : public element_drawObj,
 	//! Clear to background color
 
 	//! The rectangles' coordinates are relative to the viewport.
-	//! background_color_di is the draw_info of the element whose background
+	//! background_color_di is the draw_info of the widget whose background
 	//! color is drawn here (default is the same as di).
 	void clear_to_color(ONLY IN_THREAD,
 			    const clip_region_set &,
@@ -952,21 +952,21 @@ class elementObj::implObj : public element_drawObj,
 	void initialize_or_log_exception(ONLY IN_THREAD) LIBCXX_HIDDEN;
 
  protected:
-	//! Initialize this display element.
+	//! Initialize this widget.
 
-	//! After a display element gets added to a container, the layout
+	//! After a widget gets added to a container, the layout
 	//! manager should invoke initialize() from the connection thread.
 
 	virtual void initialize(ONLY IN_THREAD);
 
-	//! Whether this display element has been initialized
+	//! Whether this widget has been initialized
 
 	inline bool initialized(ONLY IN_THREAD) const
 	{
 		return data(IN_THREAD).initialized;
 	}
  public:
-	//! Invoke a lambda for each child element.
+	//! Invoke a lambda for each child widget.
 
 	template<typename functor_type>
 		void for_each_child(ONLY IN_THREAD,
@@ -1048,13 +1048,13 @@ class elementObj::implObj : public element_drawObj,
 	//
 	// Input focus handling
 
-	//! A new focusable element was initialized.
+	//! A new focusable widget was initialized.
 
-	//! A new focusable element always gets created as the last element
+	//! A new focusable element always gets created as the last widget
 	//! in the tabbing order.
 	//!
 	//! Overriden by child_elementObj, forwarding this call to its
-	//! parent element.
+	//! parent widget.
 	//! Overriden in peephole_toplevel, to enforce that the top level
 	//! peephole's scrollbars are always last in the tabbing order,
 	//! repositioning this one's.
@@ -1065,16 +1065,16 @@ class elementObj::implObj : public element_drawObj,
 	virtual void focusable_initialized(ONLY IN_THREAD,
 					   focusableObj::implObj &fimpl)=0;
 
-	//! This element should be the first focusable element.
+	//! This element should be the first focusable widget.
 	//! child_elementObj forwards it to its parent container; and this
 	//! is implemented in generic_windowObj::handlerObj.
 
 	virtual void get_focus_first(ONLY IN_THREAD, const focusable &)=0;
 
-	//! Whether this element is enabled for focus processing.
+	//! Whether this widget is enabled for focus processing.
 
-	//! Overridden in child_elementObj, to forward to the parent element.
-	//! Turning off focus in any parent element automatically turns off
+	//! Overridden in child_elementObj, to forward to the parent widget.
+	//! Turning off focus in any parent widget automatically turns off
 	//! focus processing for all of their child elements, in this manner.
 
 	virtual bool enabled(ONLY IN_THREAD);
@@ -1092,9 +1092,9 @@ class elementObj::implObj : public element_drawObj,
 	typedef void (elementObj::implObj::*focus_reporter_t)
 		(ONLY IN_THREAD, focus_change, const callback_trigger_t &);
 
-	//! Input focus is being requested for this display element.
+	//! Input focus is being requested for this widget.
 
-	//! Generates calls to {type}_focus() for all affected display elements.
+	//! Generates calls to {type}_focus() for all affected widgets.
 	//!
 	//! focus_reporter parameter is either &report_keyboard_focus or
 	//! &report_pointer_focus.
@@ -1111,7 +1111,7 @@ class elementObj::implObj : public element_drawObj,
 	//! focus_reporter parameter is either &report_keyboard_focus or
 	//! &report_pointer_focus.
 	//!
-	//! Generates calls to {type}_focus() for all affected display elements.
+	//! Generates calls to {type}_focus() for all affected widgets.
 	//! \see focus_change
 	//!
 	//! In testfocusable.C this is equivalent to the (!t.to) case in
@@ -1284,17 +1284,17 @@ class elementObj::implObj : public element_drawObj,
 					  const callback_trigger_t
 					  &trigger);
 
-	//! Whether this element will use the X Input Method.
+	//! Whether this widget will use the X Input Method.
 
-	//! The default implementation returns false. When the element
+	//! The default implementation returns false. When the widget
 	//! returns true, text entered via XIM gets pasted().
 
 	virtual bool uses_input_method();
 
-	//! Current cursor position when this element uses_input_method().
+	//! Current cursor position when this widget uses_input_method().
 
 	//! Reports the current cursor position to the XIM server. Should
-	//! only be called when this element has keyboard focus.
+	//! only be called when this widget has keyboard focus.
 	void report_current_cursor_position(ONLY IN_THREAD, rectangle pos);
 
 	//! process_button_event() calls grab() to grab the pointer.
@@ -1333,7 +1333,7 @@ class elementObj::implObj : public element_drawObj,
 	//! hover processing, if appropriate.
 	virtual void report_motion_event(ONLY IN_THREAD, const motion_event &);
 
-	//! If this element has a hover action, schedule it.
+	//! If this widget has a hover action, schedule it.
 
 	//! If hover_action_delay() returns a non-0 delay, make sure that
 	//! something will look at it, after the prescribed interval
@@ -1351,25 +1351,25 @@ class elementObj::implObj : public element_drawObj,
 	//! invokes its container unschedule_hover_action().
 	virtual void unschedule_hover_action(ONLY IN_THREAD);
 
-	//! If this element takes action on a hover delay, return the delay.
+	//! If this widget takes action on a hover delay, return the delay.
 
-	//! A display element that implements a hover-triggered action
+	//! A widget that implements a hover-triggered action
 	//! implements hover_action_delay() together with hover_action()
 	//! and hover_cancel().
 	//!
-	//! Returns 0 if this display element does not have a hover-triggered
+	//! Returns 0 if this widget does not have a hover-triggered
 	//! action, at the moment, otherwise the delay before the action
 	//! takes place.
 	//!
 	//! The default implementation returns the tooltip delay
-	//! configuration setting if this element has a tooltip factory
+	//! configuration setting if this widget has a tooltip factory
 	//! installed, else returns 0.
 
 	virtual std::chrono::milliseconds hover_action_delay(ONLY IN_THREAD);
 
 	//! The pointer has hovered over this element, so do something.
 
-	//! A display element that implements a hover-triggered action
+	//! A widget that implements a hover-triggered action
 	//! implements hover_action_delay() together with hover_action()
 	//! and hover_cancel().
 	//!
@@ -1381,7 +1381,7 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Cancel the hover-triggered action.
 
-	//! A display element that implements a hover-triggered action
+	//! A widget that implements a hover-triggered action
 	//! implements hover_action_delay() together with hover_action()
 	//! and hover_cancel().
 	//!
@@ -1419,14 +1419,14 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual void window_focus_change(ONLY IN_THREAD, bool flag);
 
-	//! Whether this display element currently has keyboard input focus.
+	//! Whether this widget currently has keyboard input focus.
 
 	//! Returns true if most_recent_keyboard_focus_change was anything
 	//! other than focus_change::lost or focus_change::child_lost
 
 	bool current_keyboard_focus(ONLY IN_THREAD);
 
-	//! Whether this display element currently has pointer input focus.
+	//! Whether this widget currently has pointer input focus.
 
 	//! Returns true if most_recent_pointer_focus_change was anything
 	//! other than focus_change::lost or focus_change::child_lost
@@ -1440,7 +1440,7 @@ class elementObj::implObj : public element_drawObj,
 	//! child_elementObj forwards this call to its container.
 	//!
 	//! The container's layout manager, by default, adds this element's
-	//! current_position, and forward it to the container's element.
+	//! current_position, and forward it to the container's widget.
 	//!
 	//! The \ref peepholeObj::layoutmanager_implObj "peephole layout manager"
 	//! makes sure that its child element's specified position will be
@@ -1448,21 +1448,21 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual void ensure_visibility(ONLY IN_THREAD, const rectangle &);
 
-	//! Ensure visibility of this entire element.
+	//! Ensure visibility of this entire widget.
 
-	//! Constructs a rectangle for this entire display element's current
+	//! Constructs a rectangle for this entire widget's current
 	//! size and invokes ensure_visibility().
 	void ensure_entire_visibility(ONLY IN_THREAD);
 
 	//! Process pasted text.
 
-	//! Returns true if this element processed the pasted text.
+	//! Returns true if this widget processed the pasted text.
 	//! The default elementation returns false.
 
 	virtual bool pasted(ONLY IN_THREAD,
 			    const std::u32string_view &str);
 
-	//! Whether this display element is capable of receiving a selection()
+	//! Whether this widget is capable of receiving a selection()
 
 	//! The default implementation returns false. Overridden by the editor
 	//! implementation element, returning true.
@@ -1474,27 +1474,27 @@ class elementObj::implObj : public element_drawObj,
 	//! This reaches into the default theme object, in order to get it.
 
 	std::string default_cut_paste_selection() const;
-	//! Whether this display element has something to copy or cut, or do it.
+	//! Whether this widget has something to copy or cut, or do it.
 
 	//! The default implementation returns false.
 	//! Overridden in the editor implementation object.
 	virtual bool cut_or_copy_selection(cut_or_copy_op, xcb_atom_t);
 
-	//! Whether this display element has something to copy or cut, or do it.
+	//! Whether this widget has something to copy or cut, or do it.
 
 	//! The default implementation returns false.
 	//! Overridden in the editor implementation object.
 	virtual bool cut_or_copy_selection(ONLY IN_THREAD,
 					   cut_or_copy_op, xcb_atom_t);
 
-	//! Creating a focusable element in this container.
+	//! Creating a focusable widget in this container.
 
 	//! The default implementation does nothing. child_elementObj also
 	//! forwards it to its parent container.
 
 	virtual void creating_focusable_element();
 
-	//! Grab the pointer for this element.
+	//! Grab the pointer for this widget.
 
 	//! Returns a mcguffin if the pointer is not already grabbed by another
 	//! element, and the grab succeeds.
@@ -1507,9 +1507,9 @@ class elementObj::implObj : public element_drawObj,
 	//! Remove the mouse pointer cursor,
 	void remove_cursor_pointer(ONLY IN_THREAD);
 
-	//! Retrieve the cursor pointer for this element.
+	//! Retrieve the cursor pointer for this widget.
 
-	//! Overridden in child_elementObj. If this element does not have a
+	//! Overridden in child_elementObj. If this widget does not have a
 	//! set cursor pointer, call get_container_cursor_pointer().
 
 	virtual cursor_pointerptr get_cursor_pointer(ONLY IN_THREAD);
@@ -1526,17 +1526,17 @@ class elementObj::implObj : public element_drawObj,
 	//! Recursively build this element's name.
 	virtual void element_name(std::ostream &);
 
-	//! Find an element that will accept something dropped into it.
+	//! Find an widget that will accept something dropped into it.
 
-	//! find_acceptable_drop() gets called for the element under the current
+	//! find_acceptable_drop() gets called for the widget under the current
 	//! drag position.
 	//!
 	//! The default implementation returns false.
 	//!
-	//! child_elementObj forwards the call to its container's element.
+	//! child_elementObj forwards the call to its container's widget.
 	//!
-	//! If a display element accepts this drop, find_acceptable_drop()
-	//! returns true, with accepting_element set to the accepting element.
+	//! If a widget accepts this drop, find_acceptable_drop()
+	//! returns true, with accepting_element set to the accepting widget.
 	//!
 	//! Otherwise the passed-in accepting_element should not be modified.
 

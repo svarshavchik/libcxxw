@@ -30,10 +30,10 @@ public:
 	//! Destructor
 	~singletonlayoutmanagerObj() LIBCXX_HIDDEN;
 
-	//! Return the current element
+	//! Return the current widget
 	element get() const;
 
-	//! Return a factory for replacing the singleton element.
+	//! Return a factory for replacing the singleton widget.
 
 	factory replace();
 };

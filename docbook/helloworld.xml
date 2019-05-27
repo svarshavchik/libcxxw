@@ -67,7 +67,7 @@ make</programlisting>
     </para>
 
     <section id="refobjelements">
-      <title>Display elements are reference-counted objects with smart pointers</title>
+      <title>Widgets are reference-counted objects with smart pointers</title>
       <para>
 	<filename>helloworld.C</filename> creates an
 	<ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>,
@@ -94,33 +94,33 @@ make</programlisting>
 	The application does not need to take an explicit step to destroy
 	the main window, or any other display object. When its
 	<classname>&ns;::ref</classname> goes out of scope and gets destroyed
-	the display element gets destroyed and removed.
+	the widget gets destroyed and removed.
       </para>
     </section>
 
     <section id="containerrefs">
-      <title>Containers own references to the elements in the container</title>
+      <title>Containers own references to the widgets in the container</title>
       <para>
 	<classname>&ns;::w::main_window</classname> is a
 	&container;,
-	a display element that contains other display elements.
-	They can be individual display elements like buttons and input
-	fields, or they can be other containers with their own display
-	elements. Each container is, itself, a display element.
+	a widget that contains other widgets.
+	All widgets are either individuals elements, like buttons and input
+	fields, or they are containers with their own widgets; and
+	each container is, itself, a widget.
       </para>
 
       <para>
-	Naturally, containers hold references on the elements in the
-	container. Removing an element from the container gets rid of the
-	container's reference on the element. Normally, no other references
-	remain and all resources used by the display element are released.
+	Naturally, containers hold references on the widgets in the
+	container. Removing an widget from the container gets rid of the
+	container's reference on the widget. Normally, no other references
+	remain and all resources used by the widget get released.
       </para>
 
       <para>
-	The application creates all display elements, and it's possible
-	for the application to retain its own reference to the display
-	element. The application must make sure that it no longer holds
-	its own reference on a display element when it gets removed from
+	The application creates all widgets, and it's possible
+	for the application to retain its own reference to a widget.
+	The application must make sure that it no longer holds
+	its own reference on a widget when it gets removed from
 	the container;
 	or when any of its parent containers get removed from their respective
 	container.
@@ -141,14 +141,14 @@ make</programlisting>
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>'s
 	<function>create_label</function>() creates a
 	label
-	display element in the main window, but
+	widget in the main window, but
 	<function>testlabel</function>() does not store this reference
 	itself, leaving the only reference to the label in its
 	main window container. When <function>testlabel</function>()
 	returns, the last reference to the main window goes away and
 	the underlying object gets destroyed. Since that object held
-	the only reference to the label display element object, the
-	label display element object gets destroyed as well.
+	the only reference to the label widget object, the
+	label widget object gets destroyed as well.
       </para>
 
       <para>
@@ -318,15 +318,15 @@ make</programlisting>
 
 	<para>
 	  As explained in <xref linkend="containerrefs" />,
-	  containers own references to all elements in the container.
+	  containers own references to all widgets in the container.
 	  It is possible to attach additional application data to
-	  any display element, including containers; and
+	  any widget, including containers; and
 	  <xref linkend="appdata" /> explains that the attached
 	  application data cannot have references to any parent (of the
-	  display element the data is attached to). This results in a
+	  widget the data is attached to). This results in a
 	  circular reference because the parent has its own direct
-	  or indirect reference to the element in the container; and
-	  &app; uses reference-counted objects for all display elements,
+	  or indirect reference to the widget in the container; and
+	  &app; uses reference-counted objects for all widgets,
 	  which get destroyed automatically, but only when the last reference
 	  to each object goes out of scope.
 	</para>
@@ -334,15 +334,15 @@ make</programlisting>
 	<para>
 	  References captured by lambdas that are used as callbacks have
 	  more restrictions. Capturing
-	  <emphasis>either</emphasis> a parent or a child element
+	  <emphasis>either</emphasis> a parent or a child widget
 	  results in an internal circular reference.
-	  Capturing a reference to an element not in the parent or the
-	  child element hierarchy is fine.
+	  Capturing a reference to an widget not in the parent or the
+	  child widget hierarchy is fine.
 	</para>
 
 	<para>
 	  There are several ways to correctly capture references to other
-	  display elements for use in callbacks. One way is to use
+	  widgets for use in callbacks. One way is to use
 	  weak captures, see <xref linkend="callbackweakcaptures" />
 	  in <xref linkend="gridlayoutmanager" /> for
 	  an example.
@@ -407,15 +407,15 @@ while (!appdata->close_flag)
 	  so no locking is required for setting the
 	  <varname>close_flag</varname> which only the main execution thread
 	  checks, as well. And even though the callback cannot capture
-	  references to its parent or child element, it has full access to
-	  all display elements, from the passed-in main window element;
+	  references to its parent or child widget, it has full access to
+	  all widgets, from the passed-in main window widget;
 	  or from any references in the application data object.
 	</para>
 
 	<para>
 	  The only thing that the main execution thread needs to be careful
 	  with is to make sure that its own reference to the application
-	  data object goes out of scope before the main window display element
+	  data object goes out of scope before the main window widget
 	  goes out of scope and gets destroyed.
 	</para>
 
@@ -432,13 +432,12 @@ while (!appdata->close_flag)
       <para>
 	<ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>
 	is an example of a container.
-	A container is a display element which contains other display
-	elements. Each container has a &layoutmanager; that controls the
+	A container is a widget which contains other widgets. Each container has a &layoutmanager; that controls the
 	position and the behavior of the elemnts in the container.
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
 	creates a
 	<classname>&ns;::w::main_window</classname> that has a
-	label element.
+	label widget.
       </para>
 
       <para>
@@ -453,7 +452,7 @@ while (!appdata->close_flag)
       <title>Creator lambdas</title>
 
       <para>
-	Creator lambdas initialize the contents of a new display element,
+	Creator lambdas initialize the contents of a new widget,
 	including containers. For containers,
 	a lambda gets passed as a parameter to a function or a method
 	that creates a new container, like a
@@ -486,7 +485,7 @@ while (!appdata->close_flag)
       </blockquote>
 
       <para>
-	The creator lambda gets the new display element as its parameter.
+	The creator lambda gets the new widget as its parameter.
 	This is the same object that's going to be returned from the function
 	or
 	a method that's creating the container.
@@ -531,8 +530,8 @@ while (!appdata->close_flag)
 	There are some isolated exceptions.
 	The <link linkend="peepholelayoutmanager">peephole layout manager</link>
 	does not use creator lambdas. Peepholes always contain a single
-	display element in the peephole (but the display element itself can
-	be a container with many other display elements).
+	widget in the peephole (but the widget itself can
+	be a container with many other widgets).
 	The peepholed's creator gets specified separately, as a constructor
 	to the new layout manager specification parameter.
 	However, an empty creator lambda must still be provided, to
@@ -546,10 +545,10 @@ while (!appdata->close_flag)
       <title>Layout managers</title>
 
       <para>
-	A container is a display element that contains other display elements.
+	A container is a widget that contains other widgets.
 	The main application window is a container.
 	Each container has a <quote>layout manager</quote>. The layout
-	manager arranges the display elements in the container.
+	manager arranges the widgets in the container.
 	A container's <methodname>get_layoutmanager</methodname>() method
 	returns a
 	<ulink url="&link-typedef-x--w-layoutmanager;"><classname>&ns;::w::layoutmanager</classname></ulink>,
@@ -565,8 +564,7 @@ while (!appdata->close_flag)
 	  </term>
 	  <listitem>
 	    <para>
-	      The default, generic layout manager that positions its display
-	      elements in a rectangular grid, or a table, with optional
+	      The default, generic layout manager that positions its widgets in a rectangular grid, or a table, with optional
 	      borders.
 	    </para>
 	  </listitem>
@@ -578,18 +576,17 @@ while (!appdata->close_flag)
 	  </term>
 	  <listitem>
 	    <para>
-	      This layout manager draws a border around a single display
-	      element, the only display element in this layout manager's
+	      This layout manager draws a border around a single widget, the only widget in this layout manager's
 	      container.
 	    </para>
 
 	    <para>
 	      This layout manager is optimized for this purpose. The grid
-	      layout manager is capable of drawing borders around the elements
-	      in the rectangular grid too, and managing multiple elements.
+	      layout manager is capable of drawing borders around the widgets
+	      in the rectangular grid too, and managing multiple widgets.
 	      The grid layout manager's complexity results in non-trivial
 	      overhead, and when all that's needed is a simple border
-	      around an element, the border layout manager does the job faster
+	      around an widget, the border layout manager does the job faster
 	      and with less cost.
 	    </para>
 
@@ -606,7 +603,7 @@ while (!appdata->close_flag)
 	  </term>
 	  <listitem>
 	    <para>
-	      Each display element in this container represents a title
+	      Each widget in this container represents a title
 	      in the main application window's menu bar.
 	    </para>
 	  </listitem>
@@ -619,7 +616,7 @@ while (!appdata->close_flag)
 	  <listitem>
 	    <para>
 	      A crafty impostor that is not a really true layout manager.
-	      It doesn't contain discrete display elements, but plain
+	      It doesn't contain discrete widgets, but plain
 	      text strings.
 	      The list layout manager is available for selection lists,
 	      and it also gets called into duty for
@@ -631,9 +628,8 @@ while (!appdata->close_flag)
 	    <para>
 	      The list layout manager is designed for handling relatively large
 	      numbers of list entries far more efficiently than if each one
-	      was an official <link linkend="labels">label display
-		element</link>. The grid layout manager, for example, needs
-	      to figure out how to position each display element according
+	      was an official <link linkend="labels">label widget</link>. The grid layout manager, for example, needs
+	      to figure out how to position each widget according
 	      to how many columns and rows it spans and figure out how to draw
 	      each cell's borders, if it has any. It's a lot of work.
 	      The list layout manager,
@@ -664,7 +660,7 @@ while (!appdata->close_flag)
 	    <para>
 	      These layout managers leverage the list layout manager to quickly
 	      deal with the list of choices shown in the combo-box's pop-up,
-	      and also deal with the display element that represents the
+	      and also deal with the widget that represents the
 	      current selection in the combo-box.
 	    </para>
 	  </listitem>
@@ -677,7 +673,7 @@ while (!appdata->close_flag)
 
 	  <listitem>
 	    <para>
-	      Arranges its display elements horizontally and draws them as
+	      Arranges its widgets horizontally and draws them as
 	      individual buttons. The item layout manager typically gets
 	      used together with an
 	      <link linkend="inputfieldsandbuttons">input field</link> to
@@ -688,10 +684,10 @@ while (!appdata->close_flag)
 	    <para>
 	      The typed-in text gets parsed into one or more discrete items,
 	      of some kind. A container with the item layout manager gets
-	      placed above or below the text input field. A display element,
+	      placed above or below the text input field. A widget,
 	      usually a simple <link linkend="labels">label</link> gets created
 	      and added to the item layout manager's container. The
-	      item layout manager draws its display elements with a border,
+	      item layout manager draws its widgets with a border,
 	      like buttons.
 	    </para>
 
@@ -713,20 +709,20 @@ while (!appdata->close_flag)
 	  </term>
 	  <listitem>
 	    <para>
-	      Treats its display elements as virtual <quote>pages</quote>,
+	      Treats its widgets as virtual <quote>pages</quote>,
 	      showing one page at a time.
 	      <quote>Opening</quote> a different
-	      page element replaces the current page's display element with
-	      the new element.
+	      page widget replaces the current page's widget with
+	      the new widget.
 	    </para>
 
 	    <para>
-	      All elements in this container technically exist, all the time,
-	      but only one of the elements is visible at any given time.
-	      Each one of page layout manager's display elements is typically
+	      All widgets in this container technically exist, all the time,
+	      but only one of the widgets is visible at any given time.
+	      Each one of page layout manager's widgets is typically
 	      a &container; of its own, with a collection of individual
-	      display elements. In this manner, each collection of
-	      display elements forms a virtual page, and the layout manager's
+	      widgets. In this manner, each collection of
+	      widgets forms a virtual page, and the layout manager's
 	      methods make one of its pages visible.
 	    </para>
 	  </listitem>
@@ -752,8 +748,8 @@ while (!appdata->close_flag)
 	  </term>
 	  <listitem>
 	    <para>
-	      All elements in this container get arranged into a single
-	      row or column. Each element is a resizable <quote>pane</quote>
+	      All widgets in this container get arranged into a single
+	      row or column. Each widget is a resizable <quote>pane</quote>
 	      with draggable sliders between the panes dividing the
 	      row or column between the panes.
 	    </para>
@@ -765,7 +761,7 @@ while (!appdata->close_flag)
 	  </term>
 	  <listitem>
 	    <para>
-	      The toolbox layout manager arranges the elements in a resizable
+	      The toolbox layout manager arranges the widgets in a resizable
 	      matrix. This layout manager typically gets used to implement
 	      a separate dialog with <quote>toolbox icons</quote>.
 	    </para>
@@ -805,7 +801,7 @@ while (!appdata->close_flag)
 	  lock gets released, and all changes made to the container, through
 	  the layout manager, take effect. Depending on the layout manager
 	  the internal locks may also block other execution threads from
-	  accessing the elements in the container.
+	  accessing the widgets in the container.
 	</para>
 
 	<para>
@@ -835,13 +831,13 @@ x::w::label l=f->create_label("Hello world");</programlisting>
 
       <para>
 	An <ulink url="&link-typedef-x--w-factory;"><classname>&ns;::w::factory</classname></ulink>
-	creates new display elements. The factory comes from the layout manager,
+	creates new widgets. The factory comes from the layout manager,
 	and the process for obtaining a factory is specific to each layout
 	manager (except for the bare list layout manager, which is an impostor).
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
 	calls its grid layout manager's
 	<methodname>append_row</methodname>() method, which returns a
-	factory that places the new display element in a new row in the grid.
+	factory that places the new widget in a new row in the grid.
       </para>
 
       <para>
@@ -849,7 +845,7 @@ x::w::label l=f->create_label("Hello world");</programlisting>
 	<link linkend="gridlayoutmanager">Grid layout manager</link>'s
 	methods return an
 	<ulink url="&link-typedef-x--w-gridfactory;"><classname>&ns;::w::gridfactory</classname></ulink>
-	with additional methods that set each new element's borders, padding
+	with additional methods that set each new widget's borders, padding
 	and alignment.
       </para>
 
@@ -859,7 +855,7 @@ x::w::label l=f->create_label("Hello world");</programlisting>
 	  reference on their layout manager. Everything that's been said
 	  about layout managers apply to factories as well: the factory
 	  object should be used only long enough to manufacture new
-	  display elements; then they should go out of scope and get
+	  widgets; then they should go out of scope and get
 	  destroyed, releasing their internal reference to their layout
 	  manager, and releasing the indirect reference on their container,
 	  unblocking it.

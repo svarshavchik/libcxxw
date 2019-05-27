@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! An element that does not implement recursive visibility changes.
+//! An widget that does not implement recursive visibility changes.
 
 //! A mixin for implementing a container of some kind that controls the
 //! visibility of the objects in the container.

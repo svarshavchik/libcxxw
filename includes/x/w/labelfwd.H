@@ -16,10 +16,10 @@ class LIBCXX_PUBLIC labelObj;
 
 struct label_config;
 
-//! A text label display element.
+//! A text label widget.
 
 //! Multiply-inherits from \ref textlabel "textlabel" and
-//! \ref element "element" for a normal label display element.
+//! \ref element "widget" for a normal label widget.
 //!
 //! \code
 //! factory->create_label({"Hello world!"});

@@ -15,14 +15,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Mixin for a current_border_impl used by a display element.
+//! Mixin for a current_border_impl used by a widget.
 
 //! Maintains a current_border_impl, made available as a current_border,
-//! that a display element uses.
+//! that a widget uses.
 //!
 //! There is no value-added to the themeborder_element_implObj, at this time.
 //! This is a placeholder in case some features that alter a border's
-//! appearance, based on the element that it's attached to, ever get
+//! appearance, based on the widget that it's attached to, ever get
 //! developed.
 //!
 //! \see themeborder_element
@@ -44,7 +44,7 @@ class themeborder_element_implObj : virtual public obj {
 	//! Destructor
 	~themeborder_element_implObj();
 
-	//! Return the element the border is attached to.
+	//! Return the widget the border is attached to.
 	virtual elementObj::implObj &get_border_element_impl()=0;
 
 	//! Set a new theme border

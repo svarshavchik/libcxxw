@@ -9,7 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Information passed to a \ref element "element's" state update callback.
+//! Information passed to a \ref element "widget's" state update callback.
 
 //! The callback installed by on_state_update() gets invoked with the following
 //! information provided.
@@ -28,21 +28,21 @@ struct element_state {
 
 	//! State update type
 
-	//! - current_state: the current state of the display element.
+	//! - current_state: the current state of the widget.
 	//! The initial invocation of a newly-installed callback, or if it's
 	//! been resized.
 	//!
-	//! - before_showing: the display element is about to be shown.
+	//! - before_showing: the widget is about to be shown.
 	//!
-	//! - after_showing: the display element is shown.
+	//! - after_showing: the widget is shown.
 	//!
-	//! - before_hiding: the display element is about to be hidden.
+	//! - before_hiding: the widget is about to be hidden.
 	//!
-	//! - after_hiding: the display element is hidden.
+	//! - after_hiding: the widget is hidden.
 
 	state_update_t state_update;
 
-	//! Whether the display element is currently shown.
+	//! Whether the widget is currently shown.
 
 	bool shown;
 

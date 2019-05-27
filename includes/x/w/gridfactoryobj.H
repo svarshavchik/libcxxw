@@ -236,7 +236,7 @@ class gridfactoryObj : public factoryObj {
 	//! Implement bottom_padding()
 	void bottom_padding_set(const dim_arg &padding);
 
-	//! When this display element is hidden, "remove" it from the grid.
+	//! When this widget is hidden, "remove" it from the grid.
 
 	//! It is not actually removed, just ignored for the purposes of
 	//! calculating the grid layout.
@@ -250,7 +250,7 @@ class gridfactoryObj : public factoryObj {
 	void remove_when_hidden_set(bool);
 
 private:
-	//! Created a new display element for the grid.
+	//! Created a new widget for the grid.
 	void created(const element &new_element) override LIBCXX_HIDDEN;
 };
 

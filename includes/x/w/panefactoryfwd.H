@@ -102,13 +102,13 @@ nearby sliders to make the pane bigger. The default
 is \c INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::automatic_reserved.
 
 \note
-Using the factory to create multiple display elements places each individual
+Using the factory to create multiple widgets places each individual
 element into a new pane, and resets the pane appearance to the default
 theme-specified appearance. Creating multiple panes with a custom background
 color, for example, requires taking the pane appearance object from the
 factory, using modify(), and setting its background_color to the same
 pane's background color. Call set_background_color() again to use the same
-(or different) background color before creating the next display element.
+(or different) background color before creating the next widget.
 
 \par Panes with selection lists and tables
 

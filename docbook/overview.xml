@@ -58,7 +58,7 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  The &app; does not maintain its own internal references to top
-	  level display elements, like
+	  level widgets, like
 	  <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>.
 	</para>
       </listitem>
@@ -88,7 +88,7 @@ See COPYING for distribution information.
       A main window is a container. Typically, an application
       creates its main window, and stores its
       <classname>&ns;::w::main_window</classname> somewhere. The application
-      procedes and creates the various display elements, putting them in their
+      procedes and creates the various widgets, putting them in their
       containers, which now hold a reference on them.
     </para>
 
@@ -97,13 +97,12 @@ See COPYING for distribution information.
       window object.
       When the application destroys its
       <classname>&ns;::w::main_window</classname> handle, the cascading
-      effect from that destroys all display elements and internal objects.
+      effect from that destroys all widgets and internal objects.
     </para>
 
     <para>
-      This works correctly as long as no other references to any display
-      elements, or other related objects, exist. If the application has
-      a reference to a display element, or some other &app; object that's
+      This works correctly as long as no other references to any widgets, or other related objects, exist. If the application has
+      a reference to a widget, or some other &app; object that's
       tied to the main application window, directly, or indirectly, this is
       going to prevent the main application window from getting properly
       destroyed.

@@ -114,7 +114,7 @@ typedef functionref<void (THREAD_CALLBACK,
 //! \endcode
 //!
 //! Returns true if the current keyboard focus is in a display
-//! element that's capable of receiving a converted X selection.
+//! widget that's capable of receiving a converted X selection.
 //! Currently, only \ref input_field "input fields" accept converted
 //! X selections as pasted text.
 //!
@@ -129,11 +129,11 @@ typedef functionref<void (THREAD_CALLBACK,
 //! \endcode
 //!
 //! Presumably we've checked if selection_can_be_received(), so this
-//! starts the process of converting the X selection into the display element.
+//! starts the process of converting the X selection into the widget.
 //!
 //! \note
 //! receive_selection() returns immediately after sending a request to the
-//! selection's current owner. The display element gets updated later, when
+//! selection's current owner. The widget gets updated later, when
 //! the owner's response, with the converted selection's data gets received.
 //!
 //! \code
@@ -150,7 +150,7 @@ typedef functionref<void (THREAD_CALLBACK,
 //! by the parameter.
 //!
 //! - cut_or_copy_op::available returns \c true if the current input focus
-//! is in a display element that has something to copy or cut, and
+//! is in a widget that has something to copy or cut, and
 //! \c false otherwise.
 //!
 //! - cut_or_copy_op::copy and cut_or_copy_op::cut start the copy or the cut

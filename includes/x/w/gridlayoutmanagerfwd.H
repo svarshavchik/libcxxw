@@ -135,7 +135,7 @@ elementptr e=gridlayout->get(row, col);
 \endcode
 
 get() returns the element at the given grid coordinates. A \c nullptr
-display element gets returned if no element exists at the given coordinates.
+widget gets returned if no element exists at the given coordinates.
 
 \par Row and column defaults
 
@@ -204,7 +204,7 @@ gridlayout->generate("main-layout", generators, elements);
 
 set_background_color() is equivalent to invoking set_background_color()
 and remove_background_color() on the grid layout manager's underlying
-container display element. This is mostly for use by an XML-based
+container widget. This is mostly for use by an XML-based
 specification of the container's contents. generate() creates
 new contents from the
 loaded theme file. See the tutorial for more information.

@@ -45,7 +45,7 @@ factory->add([]
 \endcode
 
 Each page in a book consists of a tab, shown above the page container,
-and the page itself, a display element.
+and the page itself, a widget.
 
 When a book's pages have different sizes, the smaller pages get centered
 in the larger book by default. add() can be called more than once, adding
@@ -58,8 +58,7 @@ add() is overloaded. The first version of add takes the following parameters:
 shown in the page's tab, as a text string.
 
 - A closure or a callable object. The callable object receives one parameter,
-a \ref factory "factory" that the callable object must use to create one display
-element that represents the page in the book; typically a
+a \ref factory "factory" that the callable object must use to create one widget that represents the page in the book; typically a
 \ref container "container". The callable object is responsible for
 show()ing the new element.
 
@@ -67,21 +66,21 @@ show()ing the new element.
 
 - An optional \ref halign "alignment" for the text tab, if it contains
 multiple lines of text. Even though the book layout manager
-controls which page is currently visible, like all other display elements,
+controls which page is currently visible, like all other widgets,
 they have to be shown, in order to actually become visible when the page
 gets shown.
 
 The page's tab is nearly always a short text label but any non-focusable
-display element can serve as a tab. This is done by using the second version
+widget can serve as a tab. This is done by using the second version
 of the overloaded add() without the label's parameter; and the callable
 object receives two factory objects as its parameters instead of one.
-The first factory is for creating the display element that represents
+The first factory is for creating the widget that represents
 the new page's; which may even a container with multiple
 elements (although big tabs won't look very pretty). The second factory
 is for creating the new page's element.
 
 The closure must invoke both of the factories exactly once, using each
-factory to create one display element. The callable object is responsible
+factory to create one widget. The callable object is responsible
 for show()ing both new elements.
 
 \code

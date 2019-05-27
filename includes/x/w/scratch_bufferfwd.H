@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC scratch_bufferObj;
 
-//! A picture and a pixmap used for preparing display element images.
+//! A picture and a pixmap used for preparing widget images.
 
 //! This is returned by screen object's create_scratch_buffer().
 //!

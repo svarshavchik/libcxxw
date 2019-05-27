@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 //! A keyboard shortcut for a \ref hotspot "hotspot".
 
 //! Defines a keyboard shortcut for activating a hotspot no matter which
-//! display element has keyboard focus.
+//! widget has keyboard focus.
 
 class shortcut : public input_mask {
 

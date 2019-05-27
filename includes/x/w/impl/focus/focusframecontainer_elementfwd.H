@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 template<typename element_impl>
 class LIBCXX_PUBLIC focusframecontainer_elementObj;
 
-//! A mixin for inheriting from a display element, and a focusframecontainer_implObj.
+//! A mixin for inheriting from a widget, and a focusframecontainer_implObj.
 
 //! The template parameter must be a subclass of containerObj::implObj.
 //! This template class multiply-inherits from the template parameter,

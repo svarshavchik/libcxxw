@@ -23,23 +23,23 @@ See COPYING for distribution information.
 	The
 	<ulink url="&link-typedef-x--w-pagelayoutmanager;"><classname>&ns;::w::pagelayoutmanager</classname></ulink>
 	shows one of the elements in its container at any given time.
-	Each element in the container becomes a <quote>virtual page</quote>,
+	Each widget in the container becomes a <quote>virtual page</quote>,
 	of sorts, with only one page being visible at any time.
-	Opening a different element, a different page, makes it visible,
-	and the previous page, previous display element, becomes not visible
+	Opening a different widget, a different page, makes it visible,
+	and the previous page, previous widget, becomes not visible
 	any more.
       </para>
 
       <para>
-	Each page consists of a single element, but this single element
-	is typically a &container; of many individual display element.
+	Each page consists of a single widget, but this single widget
+	is typically a &container; of many individual widget.
       </para>
     </caption>
   </mediaobject>
 
   <para>
     The following example creates a container that uses the page layout manager.
-    Each element in the page layout manager is itself a &container; with
+    Each widget in the page layout manager is itself a &container; with
     several <link linkend="inputfieldsandbuttons">input fields</link>;
     and the buttons below the page layout manager's container open each
     page and make it visible.
@@ -72,7 +72,7 @@ See COPYING for distribution information.
   <para>
     <methodname>pages</methodname>() returns the number of page elements in the
     container. <methodname>open</methodname>() makes the specified
-    element page, identified by its number, visible.
+    widget page, identified by its number, visible.
     <methodname>close</methodname>() hides the current page, but does not
     make any other page visible.
     The container becomes visibly empty.
@@ -82,51 +82,50 @@ See COPYING for distribution information.
 
   <note>
     <para>
-      Each page element created by the
+      Each page widget created by the
       <ulink url="&link-typedef-x--w-pagefactory;"><classname>&ns;::w::pagefactory</classname></ulink>
       must be <methodname>show</methodname>()n in order for it to be visible,
-      just like every element in every other kind of a container.
+      just like every widget in every other kind of a container.
       This is orthogonal to opening pages to make the page elements visible.
-      All display elements have to be <methodname>show</methodname>()n
+      All widgets have to be <methodname>show</methodname>()n
       before the page layout manager can actually make them visible.
     </para>
 
     <para>
-      This is because, in general, in order for an individual display
-      element to
-      appear, not only that display element has to be
+      This is because, in general, in order for an individual widget to
+      appear, not only that widget has to be
       <methodname>show</methodname>()n, but also its container, and every
       of their collective parent containers in their window. After all,
       <methodname>hide</methodname>()ing a container makes it invisible
       together with everything in the container.
       <methodname>show_all</methodname>() and
       <methodname>hide_all</methodname>() recursively show or hide
-      the specified display element and all other elements it contains (if
+      the specified widget and all other elements it contains (if
       it is a container).
     </para>
 
     <para>
       The page layout manager leverages this generic framework to implement
-      paging. For each page element, the page layout manager
+      paging. For each page widget, the page layout manager
       sets up an internal container. The page layout manager handles this
-      internal container entirely by itself. Each element on the page does
+      internal container entirely by itself. Each widget on the page does
       not get added to the page layout manager's container directly, but
       to this internal page. The page layout manager handles the visibility
       of its internal containers in order to show its pages; therefore each
-      element added by the page layout manager still needs to be
+      widget added by the page layout manager still needs to be
       <methodname>show</methodname>()n, on its own merits. Even after
       the page layout manager makes its internal container visible, the
-      actual page element in the container must be
+      actual page widget in the container must be
       <methodname>show</methodname>()n before it can actually appear.
     </para>
 
     <para>
-      Typically, each page element gets created
+      Typically, each page widget gets created
       and <methodname>show</methodname>()n, and left at that. The page
       layout manager then gets used to <quote>open</quote> it. Alternatively,
       all page elements get created, then <methodname>show_all</methodname>()
       of the page layout manager's container, or the entire top level window,
-      makes all display elements visible, when needed.
+      makes all widgets visible, when needed.
     </para>
   </note>
 </chapter>

@@ -14,7 +14,7 @@ class LIBCXX_PUBLIC peepholelayoutmanagerObj;
 
 /*! The peephole layout manager
 
-This layout manager puts another display element inside a (usually)
+This layout manager puts another widget inside a (usually)
 smaller area, and scrolls parts of it into view, as needed.
 
 \see new_scrollable_peepholelayoutmanager
@@ -51,7 +51,7 @@ f->create_focusable_container(
 width() and height() sets the peephole's size, given as
 \ref dim_axis_arg "dim_axis_arg"'s.
 new_scrollable_peepholelayoutmanager/new_peepholelayoutmanager's callback
-creates the peepholed display element, and gets scrolled within the peephole
+creates the peepholed widget, and gets scrolled within the peephole
 if its size exceeds the peephole's.
 
 create_container() and create_focusable_container()'s creators are not used

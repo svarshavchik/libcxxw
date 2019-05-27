@@ -41,7 +41,7 @@ enum class cut_or_copy_op {
 			   cut,	      //!< Cut something
 };
 
-/*! Methods common to all display elements.
+/*! Methods common to all widgets.
 
 \code
 e->appdata=INSERT_LIBX_NAMESPACE::mcguffinstash<std::string>::create();
@@ -70,9 +70,9 @@ The library does not use it in any way.
 
 get_screen() returns the element's \ref screen "screen object".
 
-show() and hide() displays or hides the display element. show_all() and
-hide_all() also shows or hides any other display elements contained
-in this one (this display element is a \ref container "container").
+show() and hide() displays or hides the widget. show_all() and
+hide_all() also shows or hides any other widgets contained
+in this one (this widget is a \ref container "container").
 
 \code
 e->ensure_entire_visibility();
@@ -80,7 +80,7 @@ e->ensure_entire_visibility();
 e->ensure_entire_visibility(IN_THREAD);
 \endcode
 
-Scrolls this display element into view if it's currently hidden inside
+Scrolls this widget into view if it's currently hidden inside
 a \ref peepholelayoutmanager "peephole".
 
 \code
@@ -132,7 +132,7 @@ element->on_pointer_focus([]
 \endcode
 
 Installs a callback that reports the element's pointer focus state
-(when the pointer moves in and out of the display element).
+(when the pointer moves in and out of the widget).
 
 The callback also gets invoked immediately to report the element's
 current focus state, after the callback gets installed.
@@ -160,8 +160,8 @@ after the execution thread invokes the replacement callback once, the
 previous one is a distant memory.
 
 \note
-The callback cannot capture references to its display element, any of its
-parent display elements, or any of its child display elements (if the
+The callback cannot capture references to its widget, any of its
+parent widgets, or any of its child widgets (if the
 element is a container). This creates a circular references. Weak captures
 must be used.
 
@@ -196,11 +196,11 @@ The callback gets invoked only if no other action occurs in response to the
 button event.
 
 on_motion_event() installs a callback that gets invoked each time the
-mouse pointer moves inside the display element.
+mouse pointer moves inside the widget.
 
 \note
-The callback cannot capture references to its display element, any of its
-parent display elements, or any of its child display elements (if the
+The callback cannot capture references to its widget, any of its
+parent widgets, or any of its child widgets (if the
 element is a container). This creates a circular references. Weak captures
 must be used.
 
@@ -245,7 +245,7 @@ m->on_state_update(ONLY IN_THREAD,
                     });
 \endcode
 
-The state update callback reports changes to the display element's visibility,
+The state update callback reports changes to the widget's visibility,
 and receives the \ref element_state "INSERT_LIBX_NAMESPACE::w::element_state".
 
 \par Context popups
@@ -275,10 +275,9 @@ element->install_contextpopup_callback([context_popup]
 element->remove_contextpopup();
 \endcode
 
-Each display element has an optional "context popup". An element's context
+Each widget has an optional "context popup". An element's context
 popup gets opened by right clicking on it with the right pointer button.
-An optional keyboard shortcut also makes the popup visible if its display
-element is visible.
+An optional keyboard shortcut also makes the popup visible if its widget is visible.
 
 create_popup_menu() creates a context popup as a \ref menubarfactory "menu".
 Its parameter is a creator that gets invoked with a
@@ -309,17 +308,17 @@ parameters are:
 
 remove_context_popup() removes the element's current context popup callback.
 Each
-display element can only have one context popup installed, at a time.
+widget can only have one context popup installed, at a time.
 Installing a new context popup callback automatically removes the previously
 installed context popup callback; and remove_context_popup() explicitly
 removes the currently installed one.
 
 \note
-The display element owns a reference on its installed context popup callback.
-The display element does not directly own a reference on any of its context
-popup callbacks, and the popups do not own a reference on its display element.
+The widget owns a reference on its installed context popup callback.
+The widget does not directly own a reference on any of its context
+popup callbacks, and the popups do not own a reference on its widget.
 The above example captures the context popup container, for the callback.
-This results in the display element owning a reference on its callback,
+This results in the widget owning a reference on its callback,
 and the callback owning a reference on the popup, so it remains in scope
 until the callback gets removed.
 
@@ -328,7 +327,7 @@ Only containers created using the element's create_popup_menu() should be
 shown by the installed callback. Using a container created by another element's
 create_popup_menu() has unspecified results.
 
-\par Invoke an arbitrary callback in the display element's connection thread.
+\par Invoke an arbitrary callback in the widget's connection thread.
 
 \code
 conn->in_thread([]
@@ -346,8 +345,8 @@ conn->in_thread_idle([]
 
 in_thread() returns immediately, and executes the passed-in callable
 object by the internal connection thread that's responsible for updating
-the visual appearance of this display element. The callback gets executed
-after repositioning and resizing any display elements (not just this one)
+the visual appearance of this widget. The callback gets executed
+after repositioning and resizing any widgets (not just this one)
 due to any pending metric and size changes, but before processing X
 display server messages or updating the display.
 
@@ -410,17 +409,16 @@ element->remove_tooltip();
 element->remove_tooltip(IN_THREAD)
 \endcode
 
-A display element has an optional regular tooltip or a static tooltip.
+A widget has an optional regular tooltip or a static tooltip.
 
 A regular tooltip is a popup that appears when the mouse pointer hovers over
-a display element. The library automatically show()s and hide()s the tooltip,
+a widget. The library automatically show()s and hide()s the tooltip,
 as needed.
 create_tooltip() creates a default tooltip from a text label (which is a
 \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param" that can specify
 custom fonts), and an optional
  \ref label_config "INSERT_LIBX_NAMESPACE::w::label_config". The resulting
-tooltip appears automatically when the pointer pauses over the display
-element, and disappears when it moves again.
+tooltip appears automatically when the pointer pauses over the widget, and disappears when it moves again.
 
 create_custom_tooltip() provides the means of creating a custom regular
 tooltip. Its parameter is a callable object that gets invoked whenever
@@ -439,20 +437,20 @@ It is not necessary for the creator lambda to show() the new container. The
 new container gets automatically show_all()ed and the tooltip becomes visible
 when the creator returns.
 
-A static tooltip appears next to the display element, instead of directly
+A static tooltip appears next to the widget, instead of directly
 next to the pointer's position, and the application controls the tooltip's
 visibility, with some restrictions:
 
 - the tooltip should be show()n only directly in response to some keyboard
-or pointer activity in the display element
+or pointer activity in the widget
 
-- the tooltip should be hide()n when the display element no longer receives
+- the tooltip should be hide()n when the widget no longer receives
 keyboard or pointer focus
 
 Static tooltips should be used only with
-\ref focusable "focusable display elements"; and get typically show()n and
+\ref focusable "focusable widgets"; and get typically show()n and
 hide()n by the focusable element's on_keyboard_focus() callbacks, becoming
-visible when the display element has keyboard focus.
+visible when the widget has keyboard focus.
 
 create_static_tooltip() has one required parameter, a creator lambda that's
 responsible for creating the contents of the tooltip, and an optional
@@ -475,7 +473,7 @@ that specifies the tooltip's appearance, and other general settings.
 The static tooltip gets created in advance. show() or show_all() makes it
 visible, hide() or hide_all() hides it.
 
-A tooltip is considered to be a child element of the display element it's
+A tooltip is considered to be a child element of the widget it's
 attached to, for the purpose of the object reference hierarchy.
 
 remove_tooltip() removes a regular or a static tooltip.
@@ -484,17 +482,17 @@ remove_tooltip() removes a regular or a static tooltip.
 
 typedef ref<elementObj> element;
 
-//! A nullable pointer reference to an element.
+//! A nullable pointer reference to an widget.
 
 typedef ptr<elementObj> elementptr;
 
-//! A reference to a constant element.
+//! A reference to a constant widget.
 
 //! \see element
 
 typedef const_ref<elementObj> const_element;
 
-//! A nullable pointer reference to a constant element.
+//! A nullable pointer reference to a constant widget.
 
 //! \see element
 

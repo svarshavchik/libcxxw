@@ -14,13 +14,13 @@ LIBCXXW_NAMESPACE_START
 //! Horizontal/vertical axis dimensions.
 
 //! A parameter that specifies the allowable horizontal or vertical
-//! dimensions, typically for a display element.
+//! dimensions, typically for a widget.
 //!
 //! The dimensions are given as three values: minimum, preferred, and
 //! maximum values.
 //!
 //! The minimum value is the element's smallest size. The preferred value
-//! is typically the display element's initial, or default size (which is
+//! is typically the widget's initial, or default size (which is
 //! subject to any bounds imposed by the element's container). The maximum
 //! value specifies the upper bounds of the element's size.
 //!
@@ -29,7 +29,7 @@ LIBCXXW_NAMESPACE_START
 //! specifies the size in millimeters, or a string value uses the size set
 //! by the display theme (this is used mostly internally, by the library).
 //!
-//! Setting the maximum value as NAN specifies a display element with no
+//! Setting the maximum value as NAN specifies a widget with no
 //! maximum size.
 
 struct dim_axis_arg {

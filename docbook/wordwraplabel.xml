@@ -76,7 +76,7 @@ See COPYING for distribution information.
 	automatically, to compute the targeted width in pixels.
 	Furthermore, the eventual width of the word-wrapped label may differ,
 	because its container's layout manager may end up adjusting its
-	width based on other display elements in the containjer.
+	width based on other widgets in the containjer.
       </para>
     </listitem>
     <listitem>
@@ -93,13 +93,13 @@ See COPYING for distribution information.
 	The label automatically adjusts the width of the
 	word-wrapped text to fit whatever space is available. When a window
 	has other elements the grid layout manager typically computes
-	the width of the label's columns based on other display elements'
+	the width of the label's columns based on other widgets'
 	requirements. The label then adjusts its width accordingly.
       </para>
     </listitem>
     <listitem>
       <para>
-	The above example does not create any other display elements, so
+	The above example does not create any other widgets, so
 	the window does not have any other requirements. The resulting
 	window's width becomes resizable. The window's width can be increased
 	or decreased. The text flows to fit the window's width; in turn
@@ -214,7 +214,7 @@ pos->save(configfile);</programlisting>
       <classname>&ns;::w::screen_positions</classname> object
       records the window's position, together with
       the sizes and properties of all adjustable
-      containers and display elements:
+      containers and widgets:
     </para>
 
     <itemizedlist>
@@ -315,9 +315,9 @@ auto main_window=
 
     <para>
       If the window had any <methodname>save</methodname>()d containers
-      or display elements
+      or widgets
       they have to be individually restored, as they get constructed by
-      the &creator;. All memorizable containers and display elements
+      the &creator;. All memorizable containers and widgets
       get automatically <methodname>save</methodname>()d together with
       their main window; but they need individual restoration.
     </para>
@@ -344,13 +344,13 @@ auto main_window=
   </section>
 
   <section id="appearance">
-    <title>Customizing visual appearance of display elements</title>
+    <title>Customizing visual appearance of widgets</title>
 
     <para>
       <link linkend="wordwraplabel"><filename>wordwraplabel.C</filename></link>
       gives an example of using so-called <quote>appearance objects</quote>
-      to adjust a display element's visual appearance. The visual appearance
-      of &appshort;'s display elements defaults to the
+      to adjust a widget's visual appearance. The visual appearance
+      of &appshort;'s widgets defaults to the
       current <link linkend="cxxwtheme.1">display theme</link>.
       <filename>wordwraplabel.C</filename> overrides the default window
       background color to light yellow for showing text
@@ -367,9 +367,9 @@ auto main_window=
       handles follow the default &libcxx; naming conventions. A main window's
       appearance object handle is named
       <classname>&ns;::w::const_main_window_appearance</classname>.
-      Each &appshort;'s class that gets used to create a display element
+      Each &appshort;'s class that gets used to create a widget
       has an appearance object attached to it, and the appearance object
-      remains attached to the display element for the duration of its
+      remains attached to the widget for the duration of its
       existence.
     </para>
 
@@ -393,7 +393,7 @@ auto main_window=
 	<ulink url="&link-x--w--main-window-config;"><classname>&ns;::w::main_window_config</classname></ulink>
 	whose <varname>appearance</varname> member specifies the main window's
 	default visual appearance. This is a design pattern that's universally
-	shared by all display elements.
+	shared by all widgets.
 	For example,
 	an <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>'s
 	<varname>appearance</varname> object specifies the visual appearance
@@ -459,7 +459,7 @@ config.appearance=appearance;</programlisting>
 	Appearance-objects, like all other library objects, are
 	<link linkend="refobjelements">reference-counted objects</link>. This
 	convention ensures by contract that appearance objects referenced
-	by active display elements are always constant and thread-safe.
+	by active widgets are always constant and thread-safe.
 	This approach makes appearance objects modifiable only after they're
 	copied from an existing constant object, and the modified appearance
 	objects remain constant thereafter.
@@ -472,14 +472,13 @@ config.appearance=appearance;</programlisting>
       <para>
 	Each call to an existing appearance object's
 	<methodname>modify</methodname>() creates a new object. It is more
-	efficient to use the same appearance object with multiple display
-	elements that should have the same visual appearance.
+	efficient to use the same appearance object with multiple widgets that should have the same visual appearance.
       </para>
 
       <para>
-	If all display elements with the same appearance get created together,
+	If all widgets with the same appearance get created together,
 	it's simple enough to create their common appearance object and use
-	them when creating each one. When display elements get created in
+	them when creating each one. When widgets get created in
 	different places, taking advantage of static local function scope
 	is a basic, thread-safe singleton implementation:
       </para>

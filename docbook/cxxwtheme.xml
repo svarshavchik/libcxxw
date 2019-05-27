@@ -46,7 +46,7 @@ See COPYING for distribution information.
     <para>
       Selecting a theme, an option, or adjusting the theme's scale redraws
       the window using the new settings. The bottom
-      of the window displays a sampling of display elements, and serves as
+      of the window displays a sampling of widgets, and serves as
       a preview of the theme's appearance. The window's menus don't serve
       any specific function other than to demonstrate their appearance with
       the currently shown display theme.

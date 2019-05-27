@@ -38,7 +38,7 @@ public:
 	//! Insert elements before an existing one.
 	pagefactory insert(size_t);
 
-	//! Remove an element.
+	//! Remove an widget.
 	void remove(size_t);
 
 	//! How many pages there are right now.
@@ -47,17 +47,17 @@ public:
 	//! Look up the element's current index position.
 	std::optional<size_t> lookup(const element &) const;
 
-	//! Return the specified page element.
+	//! Return the specified page widget.
 	element get(size_t) const;
 
 	//! Return the currently opened- element, if there is one.
 
 	std::optional<size_t> opened() const;
 
-	//! Switch to the given element.
+	//! Switch to the given widget.
 	void open(size_t);
 
-	//! Un-switch, don't show any element.
+	//! Un-switch, don't show any widget.
 	void close();
 };
 

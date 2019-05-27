@@ -26,7 +26,7 @@ struct LIBCXX_HIDDEN internal_focusable_group;
 
 typedef void internal_focusable_cb(const internal_focusable_group &);
 
-//! Methods common to all display elements that can receive input focus.
+//! Methods common to all widgets that can receive input focus.
 
 //! \see focusable
 
@@ -72,12 +72,12 @@ public:
 	//! This focusable should be the first tabbable focusable.
 	void get_focus_first();
 
-	//! Request for keyboard focus to be moved to this element.
+	//! Request for keyboard focus to be moved to this widget.
 
 	//! No action takes place if this focusable is disabled.
 	void request_focus();
 
-	//! Return the set of real internal focusable element implementations.
+	//! Return the set of real internal focusable widget implementations.
 
 	//! \internal
 	//!
@@ -99,7 +99,7 @@ public:
 	//! Install a new callback to report focus changes.
 
 	//! The callback gets invoked upon installation, reporting this
-	//! display element's current status.
+	//! widget's current status.
 
 	void on_keyboard_focus(const functionref<focus_callback_t> &)
 		LIBCXX_PUBLIC;
@@ -109,10 +109,10 @@ public:
 	void on_key_event(const functionref<key_event_callback_t> &)
 		LIBCXX_PUBLIC;
 
-	//! Give this element the initial input focus
+	//! Give this widget the initial input focus
 
 	//! After the window/dialog opens, the input focus is placed into
-	//! the first element with autofocus set.
+	//! the first widget with autofocus set.
 	//!
 	//! autofocus is set by default in input_fields only. Some specific
 	//! dialogs may set autofocus for their own fields/
@@ -141,7 +141,7 @@ public:
 
 	//! Receive a selection, if this focusable has keyboard focus.
 
-	//! Checks that this display element is currently receiving keyboard
+	//! Checks that this widget is currently receiving keyboard
 	//! focus, if so then call's \ref generic_window "top level window"'s
 	//! receive_selection().
 
@@ -155,7 +155,7 @@ public:
 
 	//! Receive a selection, if this focusable has keyboard focus.
 
-	//! Checks that this display element is currently receiving keyboard
+	//! Checks that this widget is currently receiving keyboard
 	//! focus, if so then call's \ref generic_window "top level window"'s
 	//! receive_selection().
 
@@ -178,15 +178,15 @@ inline void focusableObj::get_impl(functor &&f) const
 
 //! A focusable implementation mixin.
 
-//! A display element that can received pointer or keyboard focus.
+//! A widget that can received pointer or keyboard focus.
 //!
 //! There must be exactly one \ref focusableObj::ownerObj "owner object"
 //! that officially owns a reference to the focusable object.
 //!
 //! A list of focusable fields is stored in the top level window handler
-//! objects. This creates a circular reference, since display elements own
-//! strong references to their parent display element, and the list becomes a
-//! circular reference from the topmost display element to its child elements.
+//! objects. This creates a circular reference, since widgets own
+//! strong references to their parent widget, and the list becomes a
+//! circular reference from the topmost widget to its child elements.
 //!
 //! The focusable owner object is responsible for creating the circular
 //! reference in its constructor and removing it in the destructor.

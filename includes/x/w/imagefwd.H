@@ -21,7 +21,7 @@ INSERT_LIBX_NAMESPACE::w::image image=
     factory->create_image("image1.sxg", 100, 0);
 \endcode
 
-This display element shows an image loaded from a file.
+This widget shows an image loaded from a file.
 The filename is followed by width and height values which are
 \ref dim_arg "INSERT_LIBX_NAMESPACE::w::dim_arg"s and are optional.
 The width and height values are
@@ -59,7 +59,7 @@ exists in the new directory, and does not fail if the file does not exist in
 the new directory.
 
 \note
-The cached images get automatically discarded after their display element
+The cached images get automatically discarded after their widget
 gets removed, and creating another one with the same name tries to load the
 image file again. Because image element removal gets finalized in an
 internal execution thread, it is not specified whether removing one image

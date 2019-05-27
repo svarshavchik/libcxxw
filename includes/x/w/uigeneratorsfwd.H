@@ -88,7 +88,7 @@ gml->generate("main", generators, elements);
 
 A \ref gridlayoutmanager "grid layout manager"'s generate() creates the
 contents of its container from the loaded theme file and the
-\ref uielements "display element factories".
+\ref uielements "widget factories".
 
 See the tutorial for more information on XML-specified generators.
 
@@ -96,19 +96,19 @@ See the tutorial for more information on XML-specified generators.
 
 typedef ref<uigeneratorsObj, uigeneratorsBase> uigenerators;
 
-//! Constant \ref uigenerators "compiled display element generators".
+//! Constant \ref uigenerators "compiled widget generators".
 
 //! \see uigenerators
 
 typedef const_ref<uigeneratorsObj, uigeneratorsBase> const_uigenerators;
 
-//! A nullable pointer reference to \ref uigenerators "compiled display element generators".
+//! A nullable pointer reference to \ref uigenerators "compiled widget generators".
 
 //! \see uigenerators
 
 typedef ptr<uigeneratorsObj, uigeneratorsBase> uigeneratorsptr;
 
-//! A nullable pointer reference to const \ref uigenerators "compiled display element generators".
+//! A nullable pointer reference to const \ref uigenerators "compiled widget generators".
 
 //! \see uigenerators
 

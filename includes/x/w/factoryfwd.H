@@ -17,33 +17,32 @@ class LIBCXX_PUBLIC factoryObj;
 A factory object is created by a \ref layoutmanager "layout manager".
 
 Depending on the layout manager, the same factory object can be used
-to repetitively create multiple display elements; or a factory object
+to repetitively create multiple widgets; or a factory object
 can be used for creating no more than one element, with unspecified
 results (a thrown exception is typical) if the factory object gets reused.
 
 \par Initializer lambdas
 
 The factory provides various methods to create different kinds of
-display elements. Each method returns the newly-created display element,
+widgets. Each method returns the newly-created widget,
 and some methods' first argument is a "initializer lambda".
 
 The initializer lambda gets invoked just before the factory method
 finishes
 creating the new element, and the parameter to the lambda is the newly-
 created element. The lambda's job is to finalize any needed
-initialization of the new display element. This results in optimal
-performance. The new display element's container integrates the new
+initialization of the new widget. This results in optimal
+performance. The new widget's container integrates the new
 element after the creator returns and before the factory method itself
-returns. The container generally ignores the new display element until
+returns. The container generally ignores the new widget until
 its creator returns.
 
-If the lambda does not initialize the contents of the new display
-element (where appropriate), and that occurs after the factory method
-returns, the new display element's container will often need to make
-expensive recalculations if the new display element's size changes
+If the lambda does not initialize the contents of the new widget (where appropriate), and that occurs after the factory method
+returns, the new widget's container will often need to make
+expensive recalculations if the new widget's size changes
 (likely). By having the lambda handle the initialization, these calculation
 occur, for the first time, after the creator returns with a
-fully-initialized display element,
+fully-initialized widget,
 
 \par Canvases
 
@@ -61,7 +60,7 @@ INSERT_LIBX_NAMESPACE::w::canvas new_canvas=factory->create_canvas();
 
 \endcode
 
-create_canvas() creates an empty display element that does nothing but
+create_canvas() creates an empty widget that does nothing but
 take up the alloted space. This is typically used to fill in the unused
 elements in a \ref gridlayoutmanager "grid".
 
@@ -94,11 +93,11 @@ A grid layout manager's sophisticated layout capabilities are simply
 not enough sometimes. For those situations, one of its elements can simply
 be another layout manager, such as the grid layout manager.
 
-Also, many specialized display elements, such as combo-boxes, are actually
+Also, many specialized widgets, such as combo-boxes, are actually
 containers with a specialized layout manager, as described below.
 
 The first parameter is a lambda that initializes the new container before
-it's attached to its parent display element. The lambda receives a single
+it's attached to its parent widget. The lambda receives a single
 parameter, the new \ref container "INSERT_LIBX_NAMESPACE::w::container" and
  the lambda gets invoked just before create_container() returns.
 
@@ -170,7 +169,7 @@ only newlines introduce linebreaks.
 
 A word-wrapped label's width is flexible. The optional second parameter
 only sets the suggested width. When placed in a container with other
-display elements, the label adjusts its width to fit within its alloted
+widgets, the label adjusts its width to fit within its alloted
 space, if additional space is available. If the label's width is not
 spcified, the label's size remains fixed.
 
@@ -244,12 +243,11 @@ A clickable button. This is a container with one element, with a border
 drawn around it.
 The first parameter to create_button() is a callable object or a lambda that
 gets invoked to create the contents of the button. The callable object must
-use the passed-in factory object to create exactly one display element. This
+use the passed-in factory object to create exactly one widget. This
 is what the button looks like.
 
-As with all other display elements, it is necessary to show() the display
-element, at some point. The created display element can be a container with
-other, multiple, display elements.
+As with all other widgets, it is necessary to show() the widget, at some point. The created widget can be a container with
+other, multiple, widgets.
 
 For a typical button, the first parameter to create_button() can be
 a text string,
@@ -389,7 +387,7 @@ INSERT_LIBX_NAMESPACE::w::image_button
                                       });
 \endcode
 
-create_checkbox() creates a simple checkbox display element.
+create_checkbox() creates a simple checkbox widget.
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/radio_group.H>
@@ -456,12 +454,12 @@ to \ref new_gridlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager".
 
 The description inside the progress bar is typically just a
 centered label, but can
-be any arbitrary display element. The creator lambda  constructs
+be any arbitrary widget. The creator lambda  constructs
 a single label for the initial status of the progress bar.
 
 \par Scroll bars
 
-The factory automatically supplies standard scroll-bars to display elements
+The factory automatically supplies standard scroll-bars to widgets
 that use them. create_horizontal_scrollbar() and create_vertical_scrollbar()
 create an independent scroll-bar, a convenient user interface for
 specifying an integer value in a consecutive range.
@@ -508,7 +506,7 @@ INSERT_LIBX_NAMESPACE::w::color_picker cp=factory->create_color_picker(config);
 
 create_color_picker() returns
 \ref color_picker "INSERT_LIBX_NAMESPACE::w::color_picker".
-This is a display element that provides an interactive approach for
+This is a widget that provides an interactive approach for
 specifying an \ref rgb "INSERT_LIBX_NAMESPACE::w::rgb" value.
 create_color_picker()'s optional
 \ref color_picker_config "INSERT_LIBX_NAMESPACE::w::color_picker_config"
@@ -528,7 +526,7 @@ INSERT_LIBX_NAMESPACE::w::color_picker cp=factory->create_color_picker(config);
 
 create_font_picker() returns
 \ref font_picker "INSERT_LIBX_NAMESPACE::w::font_picker".
-This is a display element that provides an interactive approach for
+This is a widget that provides an interactive approach for
 setting a \ref font "INSERT_LIBX_NAMESPACE::w::font" specification.
 create_font_picker()'s optional
 \ref font_picker_config "INSERT_LIBX_NAMESPACE::w::font_picker_config"

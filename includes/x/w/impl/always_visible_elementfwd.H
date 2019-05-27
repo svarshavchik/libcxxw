@@ -12,13 +12,13 @@ LIBCXXW_NAMESPACE_START
 template<typename element_impl>
 class LIBCXX_PUBLIC always_visible_elementObj;
 
-//! A mixin for an always-visible element implementation object.
+//! A mixin for an always-visible widget implementation object.
 
 //! The template parameter is a child_elementObj or a subclass of it.
-//! This is a mixin for an internal implementation of an element
+//! This is a mixin for an internal implementation of an widget
 //! that will always be visible.
 //!
-//! This is not for containers, but for individual display elements.
+//! This is not for containers, but for individual widgets.
 //! always_visibleObj is for containers.
 //!
 //! The constructor sets the visibility right off the bat (and forwards

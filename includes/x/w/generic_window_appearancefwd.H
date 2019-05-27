@@ -19,7 +19,7 @@ Specifies various common properties of top level windows like
 \ref main_window "main windows", and popup windows like the
 \ref standard_comboboxlayoutmanager "combo-boxes". A
 generic window appearance object is typically attached to another
-appearance object related to the relevant display element.
+appearance object related to the relevant widget.
 
 \code
 

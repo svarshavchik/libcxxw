@@ -99,7 +99,7 @@ struct themedims_element_types<base, arg1, arg2, args...> {
 				     ::type, arg1> type;
 };
 
-//! Template for attaching one or more themedimObj mixins to a display element.
+//! Template for attaching one or more themedimObj mixins to a widget.
 
 //! The first template parameter is a subclass of elementObj::implObj,
 //! and themedim_elementObj multiply-inherits from the template parameter

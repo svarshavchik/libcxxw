@@ -18,7 +18,7 @@ class LIBCXX_PUBLIC menuObj;
 INSERT_LIBX_NAMESPACE::w::listlayoutmanager l=m->get_layoutmanager();
 \endcode
 
-This display element represents a menu in a menu bar, a container
+This widget represents a menu in a menu bar, a container
 with \ref listlayoutmanager "list layout manager" that manages the items
 in the menu.
 

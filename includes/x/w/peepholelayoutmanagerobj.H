@@ -29,7 +29,7 @@ public:
 	//! Destructor
 	~peepholelayoutmanagerObj() LIBCXX_HIDDEN;
 
-	//! Return the peepholed element
+	//! Return the peepholed widget
 	element get() const;
 };
 

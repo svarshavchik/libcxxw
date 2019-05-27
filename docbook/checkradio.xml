@@ -67,14 +67,14 @@ See COPYING for distribution information.
 	and the second parameter to <methodname>create_radio</methodname>()
 	is a closure, or a callable object. The callable object
 	receives one parameter: a &factory; that the closure should use
-	to create one display element.
+	to create one widget.
       </para>
 
       <para>
 	The traditional <classname>&ns;::w::image_button</classname>
 	label is, well, a <link linkend="labels">label
 	  created by <methodname>create_label</methodname>()</link> but it
-	can be any display element.
+	can be any widget.
 	This sets the checkbox's, or the radio button's initial label.
 	An existing
 	<ulink url="&link-typedef-x--w-image-button;"><classname>&ns;::w::image_button</classname></ulink>'s
@@ -106,7 +106,7 @@ train->update_label([selected]
 
       <note>
 	<para>
-	  The label, like any other display element, must be
+	  The label, like any other widget, must be
 	  <methodname>show</methodname>()n to be visible.
 	</para>
       </note>
@@ -141,7 +141,7 @@ train->update_label([selected]
 	This is a common &appshort; design pattern: an
 	<quote>&appearance_object;</quote>.
 	This object specifies various appearance-related properties of
-	a display element.
+	a widget.
 	The default appearance object is cached, which is why it is a constant
 	object. An appearance object's <methodname>modify</methodname>() creates
 	a duplicate copy of the appearance object,
@@ -183,21 +183,21 @@ factory->create_checkbox([]
 	<varname>alignment</varname> member
 	adjusts the
 	<ulink url="&link-enum-x--w-valign;">vertical alignment</ulink>
-	of the label display element with respect to the checkbox or the
+	of the label widget with respect to the checkbox or the
 	radio button.
-	Note that the button and its label is a single display element,
+	Note that the button and its label is a single widget,
 	in the button's &container;.
       </para>
 
       <para>
 	It's always possible to create a label separately, as a discrete
-	display element: the factory parameter to
+	widget: the factory parameter to
 	<methodname>create_checkbox</methodname>() and
 	<methodname>create_radio</methodname>() is optional. Without it,
 	this results in a
 	<classname>&ns;::w::image_button</classname> all by itself: a small,
-	clickable button. It's presumed that the label display element
-	gets created independently, as a discrete display element of its own.
+	clickable button. It's presumed that the label widget
+	gets created independently, as a discrete widget of its own.
       </para>
 
       <para>
@@ -213,9 +213,8 @@ factory->create_checkbox([]
 	Normally only the small checkbox or radio button itself responds
 	to pointer clicks, but it's expected that clicking on its associated
 	label also activated the checkbox or the radio button. This is done
-	by using <methodname>label_for</methodname>() to link a display
-	element to the actual checkbox or a radio button it triggers.
-	Only <quote>inert</quote> display elements that do not directly
+	by using <methodname>label_for</methodname>() to link a widget to the actual checkbox or a radio button it triggers.
+	Only <quote>inert</quote> widgets that do not directly
 	respond to pointer clicks on their own can have their
 	<methodname>label_for</methodname>() method used, and the parameter
 	must be a &focusable;:
@@ -236,9 +235,9 @@ bottom_label->label_for(train);</programlisting>
 	&focusable;, like our
 	<classname>&ns;::w::image_button</classname>.
 	<methodname>label_for</methodname>() specifies that a pointer click
-	on its object's display element (the display element whose
+	on its object's widget (the widget whose
 	<methodname>label_for</methodname>()) has the same effect as
-	a pointer click on the parameter display element.
+	a pointer click on the parameter widget.
       </para>
 
       <para>
@@ -248,18 +247,18 @@ bottom_label->label_for(train);</programlisting>
       </para>
 
       <para>
-	<methodname>label_for</methodname>() designates its display element
-	as a <quote>label</quote> for the &focusable; element,
+	<methodname>label_for</methodname>() designates its widget
+	as a <quote>label</quote> for the &focusable; widget,
 	specified by its parameter.
-	Invoking the display element's <methodname>label_for</methodname>()
+	Invoking the widget's <methodname>label_for</methodname>()
 	has the following results:
       </para>
 
       <itemizedlist>
 	<listitem>
 	  <para>
-	    Clicking on the label element results in the pointer click getting
-	    processed by the &focusable; element.
+	    Clicking on the label widget results in the pointer click getting
+	    processed by the &focusable; widget.
 	  </para>
 	</listitem>
 	<listitem>

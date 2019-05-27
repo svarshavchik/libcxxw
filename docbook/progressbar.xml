@@ -24,7 +24,7 @@ See COPYING for distribution information.
 	<ulink url="&link-typedef-x--w-progressbar;"><classname>&ns;::w::progressbar</classname></ulink>
 	is a specialized &container; with a &layoutmanager;, the
 	<link linkend="gridlayoutmanager">grid layout manager</link> by default.
-	It's expected that the contents of this display element report
+	It's expected that the contents of this widget report
 	an outgoing progress of some sort of a multi-step process; typically
 	using a descriptive <link linkend="labels">label</link>.
       </para>

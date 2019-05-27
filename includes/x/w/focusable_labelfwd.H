@@ -21,7 +21,7 @@ callbacks for processing keyboard input.
 
 It also inherits from a container object, this is for internal use only.
 
-This display element implements the shown current value in combo-boxes.
+This widget implements the shown current value in combo-boxes.
 
 */
 

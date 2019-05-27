@@ -173,9 +173,9 @@ x::w::skip_xim_disconnect=true</programlisting>
 	<listitem>
 	  <para>
 	    &app; uses <link linkend="libcxx_overview">smart pointers/reference
-	      counted objects</link> to implement all display elements.
+	      counted objects</link> to implement all widgets.
 	    A circular reference results in class instances of various &app;
-	    display elements not getting destroyed correctly. This prevents
+	    widgets not getting destroyed correctly. This prevents
 	    the library's internal execution thread from properly shutting
 	    down. The internal execution thread does not stop until all
 	    objects that use it get destroyed.
@@ -191,27 +191,27 @@ x::w::skip_xim_disconnect=true</programlisting>
 
     <variablelist>
       <varlistentry>
-	<term>Containers hold references to all display elements in the
+	<term>Containers hold references to all widgets in the
 	  container</term>
 	<listitem>
 	  <para>
-	    A basic display element, like a button,
+	    A basic widget, like a button,
 	    <link linkend="containerrefs">is owned by its
 	      container</link>
 	    (the top level main window, or an intermediate container).
-	    Taking the button element, and storing its parent container
-	    in the element's <varname>appdata</varname> field creates
+	    Taking the button widget, and storing its parent container
+	    in the widget's <varname>appdata</varname> field creates
 	    a circular reference.
 	  </para>
 	</listitem>
       </varlistentry>
       <varlistentry>
-	<term>Capturing display elements in callbacks</term>
+	<term>Capturing widgets in callbacks</term>
 	<listitem>
 	  <para>
-	    A &callback; for a display element
+	    A &callback; for a widget
 	    cannot <link linkend="callbackrefs">capture
-	      a reference to the display element's parent or child
+	      a reference to the widget's parent or child
 	      elements</link>. This creates an internal circular reference.
 	  </para>
 
@@ -222,7 +222,7 @@ x::w::skip_xim_disconnect=true</programlisting>
 	</listitem>
       </varlistentry>
       <varlistentry>
-	<term>Storing display elements in static or dynamic scope</term>
+	<term>Storing widgets in static or dynamic scope</term>
 	<listitem>
 	  <blockquote>
 	    <informalexample>
@@ -237,32 +237,31 @@ void create_tab(const &amp;&ns;::w::factory &amp;f)
 	  </blockquote>
 	  <para>
 	    Unless something gets rid of this statically-scoped reference to
-	    a display element, its existence will prevent &app; from
+	    a widget, its existence will prevent &app; from
 	    properly shutting down. Good rules of thumb to follow:
 	  </para>
 	  <itemizedlist>
 	    <listitem>
 	      <para>
-		All display elements get created in automatic scope. All
+		All widgets get created in automatic scope. All
 		examples in this tutorial create their
 		<classname>&ns;::w::main_window</classname>s in automatic
-		scope, before creating all display elements but not
+		scope, before creating all widgets but not
 		directly storing them anywhere.
 	      </para>
 	    </listitem>
 	    <listitem>
 	      <para>
-		The remaining display elements get created, and generally
+		The remaining widgets get created, and generally
 		not separately stored anywhere other than internally, by
 		the library, in their containers.
 	      </para>
 	    </listitem>
 	    <listitem>
 	      <para>
-		Callbacks attached to display elements typically weakly capture
+		Callbacks attached to widgets typically weakly capture
 		any other elements they need. In limited, well defined,
-		controlled cases, a callback captures a different display
-		element in an unrelated hierarchy.
+		controlled cases, a callback captures a different widget in an unrelated hierarchy.
 	      </para>
 	    </listitem>
 	  </itemizedlist>
@@ -282,21 +281,21 @@ void create_tab(const &amp;&ns;::w::factory &amp;f)
 	<term>Explicit locks</term>
 	<listitem>
 	  <para>
-	    Many display elements and layout managers have explicit
+	    Many widgets and layout managers have explicit
 	    locks that block all other execution threads from accessing
-	    the display element.
+	    the widget.
 	    &app; maintains its own internal
 	    <link linkend="connthread">execution thread</link> that,
-	    amongst other things, updates all windows and display elements.
+	    amongst other things, updates all windows and widgets.
 	  </para>
 
 	  <para>
 	    The need for explicit locking is obvious. This allows working
 	    with the
-	    contents and the state of a particular display element without
+	    contents and the state of a particular widget without
 	    having it simultaneously modified as a result of some
 	    input activity. &app;'s internal execution thread might
-	    access any display element at any time, for example to
+	    access any widget at any time, for example to
 	    redraw its contents if the display server does not use backing
 	    stores and sends an exposure event because some other
 	    application's window moved.

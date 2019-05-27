@@ -31,7 +31,7 @@ class LIBCXX_PUBLIC new_scrollable_peepholelayoutmanager;
 
 //! Passing this object to a \ref factory "factory"'s create_container() creates
 //! a lightweight
-//! peephole for another display element. No borders or scroll-bars get
+//! peephole for another widget. No borders or scroll-bars get
 //! created.
 //!
 //! Use \ref new_scrollable_peepholelayoutmanager "new_scrollable_peepholelayoutmanager"
@@ -43,7 +43,7 @@ class new_peepholelayoutmanager : public new_layoutmanager,
 				  public peephole_style {
 
 public:
-	//! Peepholed element factory.
+	//! Peepholed widget factory.
 	functionref<void (const factory &)> peepholed_factory;
 
 	//! Constructor
@@ -66,7 +66,7 @@ private:
 
 //! Passing this object to a \ref factory "factory"'s
 //! create_focusable_container()
-//! creates a peephole for another display element.
+//! creates a peephole for another widget.
 //! Like \ref new_peepholelayoutmanager "new_peepholelayoutmanager", but
 //! with a border and operational scroll-bars.
 //!
@@ -74,8 +74,8 @@ private:
 //! \c new_scrollable_peepholelayoutmanager have one required parameter:
 //! a closure that takes a \ref factory "factory" object.
 //! The closure must use the factory to create exactly
-//! one display element. This becomes the display element in the peephole.
-//! The display element can be a container with many display elements.
+//! one widget. This becomes the widget in the peephole.
+//! The widget can be a container with many widgets.
 //!
 //! Inherits from peephole_style, which sets most peephole properties.
 //! Additionally, the peephole's border, optional padding, and scroll-bar
@@ -85,7 +85,7 @@ class new_scrollable_peepholelayoutmanager : public new_focusable_layoutmanager,
 					     public peephole_style {
 
 public:
-	//! Peepholed element factory.
+	//! Peepholed widget factory.
 	functionref<void (const factory &)> peepholed_factory;
 
 	//! Constructor

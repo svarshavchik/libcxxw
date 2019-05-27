@@ -41,7 +41,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! A factory of display elements.
+//! A factory of widgets.
 
 //! \see factory
 
@@ -55,7 +55,7 @@ public:
 
 	virtual container_impl get_container_impl()=0;
 
-	//! Return the container's element implementation object.
+	//! Return the container's widget implementation object.
 
 	//! This is used for ancillary purposes, such as constructing
 	//! theme-related metadata.
@@ -64,11 +64,11 @@ public:
 
 	virtual elementObj::implObj &get_element_impl()=0;
 
-	//! Return parent container implementation object of newly created element.
+	//! Return parent container implementation object of newly created widget.
 
 	//! Used for an internal sanity check. The default implementation
 	//! calls get_container_impl(). A factory that creates a new container
-	//! for each new display element returns the same return value as the
+	//! for each new widget returns the same return value as the
 	//! last call to get_container_impl().
 	//!
 	//! \internal.
@@ -80,7 +80,7 @@ public:
 	void created_internally(const element &);
 
 private:
-	//! Invoked by factory's methods, after creating a new element.
+	//! Invoked by factory's methods, after creating a new widget.
 
 	virtual void created(const element &) LIBCXX_HIDDEN=0;
 public:
@@ -214,10 +214,10 @@ public:
 	//! Create a date input field
 	date_input_field create_date_input_field(const date_input_field_config &);
 
-	//! Create a display element that shows an image.
+	//! Create a widget that shows an image.
 	image create_image(const std::string &name);
 
-	//! Create a display element that shows an image.
+	//! Create a widget that shows an image.
 
 	//! "name" specifies a scalable SXG image, that's sized as specified.
 	//!

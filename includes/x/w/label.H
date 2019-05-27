@@ -14,7 +14,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Optional custom configuration parameters for a label display element.
+//! Optional custom configuration parameters for a label widget.
 
 struct label_config {
 

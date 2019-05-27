@@ -73,24 +73,23 @@ template derives from it (the template parameter).
 
 This template implements do_draw(), inherited from elementObj::implObj.
 Implementing do_draw() directly provides for maximum flexibility, redrawing
-only the parts of the display element that need redrawing.
+only the parts of the widget that need redrawing.
 
-But most simple display elements don't need this flexibility, and it's simpler
-to simply redraw the entire display element, every time, using the element's
+But most simple widgets don't need this flexibility, and it's simpler
+to simply redraw the entire widget, every time, using the element's
 default scratch buffer.
 
 The template implements and overrides elementObj::implObj::do_draw();
 and defines its own do_draw(), that the subclass implements instead. The
 implemented
 do_draw() obtains and locks the element_scratch_buffer, enlarging it to
-the size of the drawn element, sets the clip region for the display
-element, invokes draw_using_scratch_buffer(), specifying the entire
-area of the display element to be drawn, and then invokes a modified
+the size of the drawn element, sets the clip region for the widget, invokes draw_using_scratch_buffer(), specifying the entire
+area of the widget to be drawn, and then invokes a modified
 do_draw(), passing in the scratch buffer's picture, pixmap, and graphic
 context; and a rectangle that specifies the element's current size.
 
 The passed-in scratch buffer is at least the size of the element's current
-size, but may be larger. All display elements with the same scratch buffer
+size, but may be larger. All widgets with the same scratch buffer
 id share the same scratch buffer. The scratch buffer gets automatically
 replaced with a larger one if the current scratch buffer is not big enough
 for the drawn element's current size.

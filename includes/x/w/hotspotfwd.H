@@ -21,9 +21,9 @@ typedef functionref<void (THREAD_CALLBACK,
 			  const callback_trigger_t &,
 			  const busy &)> hotspot_callback_t;
 
-//! \anchor hotspot A display element that can be activated.
+//! \anchor hotspot A widget that can be activated.
 
-//! A display element that can be activated, in some way, with a pointer
+//! A widget that can be activated, in some way, with a pointer
 //! button or ENTER or SPACE.
 //!
 //! \code
@@ -50,19 +50,19 @@ typedef functionref<void (THREAD_CALLBACK,
 
 typedef ref<hotspotObj> hotspot;
 
-//! A nullable pointer reference to an \ref hotspot "activatable display element".
+//! A nullable pointer reference to an \ref hotspot "activatable widget".
 
 typedef ptr<hotspotObj> hotspotptr;
 
-//! A reference to a constant \ref hotspot "activatable display element".
+//! A reference to a constant \ref hotspot "activatable widget".
 
 typedef const_ref<hotspotObj> const_hotspot;
 
-//! A nullable pointer reference to a constant \ref hotspot "activatable display element".
+//! A nullable pointer reference to a constant \ref hotspot "activatable widget".
 
 typedef const_ptr<hotspotObj> const_hotspotptr;
 
-//! Current temperature of an \ref hotspot "activatable display element".
+//! Current temperature of an \ref hotspot "activatable widget".
 
 enum class temperature {
 

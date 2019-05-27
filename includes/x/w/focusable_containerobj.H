@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! A focusable display element that's implemented as an internal container.
+//! A focusable widget that's implemented as an internal container.
 
 //! \see focusable_container
 

@@ -34,9 +34,9 @@ namespace metrics {
 			      const axis &vert);
 	};
 
-	//! A display element's metrics.
+	//! A widget's metrics.
 
-	//! Specifies a display element's horizontal and vertical sizes.
+	//! Specifies a widget's horizontal and vertical sizes.
 	//!
 	//! \note
 	//! THIS ENTIRE OBJECT IS ONLY IN_THREAD

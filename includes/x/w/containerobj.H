@@ -34,9 +34,9 @@ public:
 
 	//! This is overridden by top level elements, like main_windowObj,
 	//! which installs a grid layout manager instead of the requested
-	//! one, and then creates an internal element with the requested
+	//! one, and then creates an internal widget with the requested
 	//! layout manager, then overrides get_layout_impl() so that it
-	//! looks like the top level display element is using that layout
+	//! looks like the top level widget is using that layout
 	//! manager.
 
 	virtual layout_impl get_layout_impl() const;

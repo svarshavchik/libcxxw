@@ -19,7 +19,7 @@ class current_fontcollectionObj;
 //! the library execution thread.
 //!
 //! The \ref theme_font_elementObj "theme_font_elementObj" mixin template
-//! attaches one or more of these to a display element, updating the
+//! attaches one or more of these to a widget, updating the
 //! font collection when the display theme changes.
 //!
 //! theme_updated() recreates the font collection after a new theme is

@@ -14,7 +14,7 @@ class LIBCXX_PUBLIC textlabelObj;
 
 //! Text label interface
 
-//! Specifies the interface for a display element that contains a text label.
+//! Specifies the interface for a widget that contains a text label.
 //!
 //! \see label
 

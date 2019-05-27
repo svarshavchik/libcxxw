@@ -6,11 +6,11 @@ See COPYING for distribution information.
 -->
 
 <chapter id="focusable">
-  <title>Using focusable display elements</title>
+  <title>Using focusable widgets</title>
 
   <para>
     <link linkend="inputfieldsandbuttons">Input fields and buttons</link>
-    are examples of focusable display elements, or
+    are examples of focusable widgets, or
     <quote>focusables</quote>. Focusables process keyboard
     events when they have keyboard input focus. There are two general
     ways for a focusable to gain input focus: by clicking on it with the
@@ -20,16 +20,15 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    A dashed border gets typically drawn around the display element that
+    A dashed border gets typically drawn around the widget that
     has keyboard input focus.
-    <keycap>Tab</keycap> moves the keyboard input focus to the next display
-    element, and
+    <keycap>Tab</keycap> moves the keyboard input focus to the next widget, and
     <keycap>Shift-Tab</keycap> moves the keyboard input focus to the
-    previous display element.
+    previous widget.
   </para>
 
   <para>
-    The tabbing order does not get determined by the display elements'
+    The tabbing order does not get determined by the widgets'
     position, but rather their creation order. Focusables
     inherit from
     <ulink url="&link-typedef-x--w-focusable;"><classname>&ns;::w::focusable</classname></ulink>
@@ -47,27 +46,27 @@ See COPYING for distribution information.
   <para>
     <methodname>get_focus_after</methodname>(),
     <methodname>get_focus_before</methodname>(), and
-    <methodname>get_focus_first</methodname>() moves the focusable element's
-    tabbing order to be after another focusable element, before another
-    focusable element, or the first focusable element in the window after
+    <methodname>get_focus_first</methodname>() moves the focusable widget's
+    tabbing order to be after another focusable widget, before another
+    focusable widget, or the first focusable widget in the window after
     the <link linkend="menu">window's menu</link>, if it has one; or the first
-    focusable element in windows without menu bars.
+    focusable widget in windows without menu bars.
   </para>
 
   <para>
     <methodname>set_enabled</methodname>() enables or disables a focusable
-    display element. Disabled focusable display elements do not respond to
+    widget. Disabled focusable widgets do not respond to
     pointer clicks, and tabbing the input focus skips them. Disabled
-    focusable display elements get drawn with a dithered mask that blends
+    focusable widgets get drawn with a dithered mask that blends
     them with the background color, making them appear faint compared to
-    enabled display elements.
+    enabled widgets.
   </para>
 
   <para>
     <methodname>request_focus</methodname>() warps the keyboard input focus
     to the given focusable, if it's enabled.
     <methodname>request_focus</methodname>() gets ignored if the given
-    focusable element is not visible or if it is not enabled.
+    focusable widget is not visible or if it is not enabled.
   </para>
 
   <para>
@@ -78,14 +77,13 @@ See COPYING for distribution information.
 
   <para>
     The <methodname>on_keyboard_focus</methodname>() callback gets invoked
-    whenever the focusable display element gains or loses keyboard input
+    whenever the focusable widget gains or loses keyboard input
     focus. Additionally, the callback gets invoked upon installation to
-    report the focusable display element's current focus (which is typically
-    no input focus for newly-created display elements).
+    report the focusable widget's current focus (which is typically
+    no input focus for newly-created widgets).
     The <methodname>on_key_event</methodname>() callback gets invoked
     when a key gets pressed or released, or when a unicode string gets
-    composed using the X Input Method server, while the focusable display
-    element receives input focus.
+    composed using the X Input Method server, while the focusable widget receives input focus.
   </para>
 
   <para>
@@ -94,7 +92,7 @@ See COPYING for distribution information.
     key event. Returning <literal>false</literal> results in &app;'s default
     action for the key event; but &app; calls the
     <methodname>on_key_event</methodname>() callback only when the key event
-    results in no specific action by the focusable display element.
+    results in no specific action by the focusable widget.
   </para>
 
   <para>

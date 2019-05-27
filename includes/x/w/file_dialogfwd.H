@@ -40,9 +40,9 @@ The complexity of the task at hand means that a plain \ref dialog "dialog"
 object is not sufficient. The file dialog is represented by a discrete
 \c file_dialog object.
 
-the_dialog() returns the dialog display element, for directly invoking its
+the_dialog() returns the dialog widget, for directly invoking its
 methods, such as set_window_title() and show_all(). create_file_dialog()
-constructs the complete dialog and all of the individual display elements
+constructs the complete dialog and all of the individual widgets
 that make it up; requiring a call to show_all() to make all of that visible.
 
 \par Custom file dialog appearance.

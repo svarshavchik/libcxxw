@@ -25,18 +25,18 @@ struct bottom_border_tag;
 template<typename element_impl>
 class LIBCXX_PUBLIC bordercontainer_elementObj;
 
-//! A mixin for inheriting from a display element, and a bordercontainer_implObj.
+//! A mixin for inheriting from a widget, and a bordercontainer_implObj.
 
 //! The template parameter must be a subclass of containerObj::implObj.
 //! This template class multiply-inherits from the template parameter,
 //! and two dims that specify additional padding between the border and the
-//! display element inside it.
+//! widget inside it.
 //!
 //! \par Constructor parameters
 //!
 //! The first parameter is either a child_elementObj, presumable the parent
-//! element of this new display element, or its genericwindowObj::handlerObj,
-//! its top level element.
+//! widget of this new widget, or its genericwindowObj::handlerObj,
+//! its top level widget.
 //!
 //! The next four parameters to the constructor are the four border_args
 //! that set the initial borders, the next two parameters specify an optional

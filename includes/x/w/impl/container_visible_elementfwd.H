@@ -14,13 +14,13 @@ LIBCXXW_NAMESPACE_START
 template<typename container_impl>
 class LIBCXX_PUBLIC container_visible_elementObj;
 
-//! Make the whole container visible, not just its child element.
+//! Make the whole container visible, not just its child widget.
 
 //! The template parameter is a subclass of container_elementObj.
 //! Implements ensured_visibility_of_child_element() by invoking
-//! ensure_entire_visibility(). This is used by display elements that
-//! are containers with focusable elements, and when the focus element
-//! wants to ensure its visibility the entire display element wants to
+//! ensure_entire_visibility(). This is used by widgets that
+//! are containers with focusable elements, and when the focus widget
+//! wants to ensure its visibility the entire widget wants to
 //! ensure its visibility.
 
 template<typename container_impl>

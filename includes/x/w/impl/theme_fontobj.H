@@ -17,10 +17,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! A mixin for attaching a theme-based font to a display element.
+//! A mixin for attaching a theme-based font to a widget.
 
 //! Adds a \ref current_fontcollection "current_fontcollection" to a
-//! display element. Provides a current_font class member, with a cached
+//! widget. Provides a current_font class member, with a cached
 //! nominal_width and height.
 //!
 //! \see theme_font_elementObj
@@ -51,10 +51,10 @@ public:
 	//! Destructor
 	~theme_fontObj();
 
-	//! Return my element.
+	//! Return my widget.
 	virtual elementObj::implObj &font_element()=0;
 
-	//! The mixin's element has been initialized
+	//! The mixin's widget has been initialized
 
 	//! Invokes theme_updated().
 	void initialize(ONLY IN_THREAD);

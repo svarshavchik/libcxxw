@@ -88,11 +88,11 @@ void my_implObj::do_draw(ONLY IN_THREAD,
 
 This template subclasses \ref scratch_buffer_draw "scratch_buffer_draw",
 and adds a second scratch buffer, which is a 1-bit scratch buffer suitable
-for masking purposes when compositing the contents of the display element.
-The first parameter is the label for the scratch buffer. All display elements
+for masking purposes when compositing the contents of the widget.
+The first parameter is the label for the scratch buffer. All widgets
 that specify the same label will reuse the same scratch buffer.
 The next two parameters is the initial estimated size of the scratch buffer.
-Optimally, the initial size would match the size of the display element when
+Optimally, the initial size would match the size of the widget when
 it becomes visible, but if not the mask scratch buffer gets sized accordingly.
 
 The mask picture scratch buffer label, and the estimated size parameters,
@@ -109,16 +109,16 @@ of do_draw(), passing the following parameters:
 
 - the scratch buffer's picture, pixmap, and graphic context. The scratch
 buffer may be larger than area_entire_rect's size. When do_draw() returns
-the display element's new contents come from the scratch buffer's rectangle
+the widget's new contents come from the scratch buffer's rectangle
 anchored at the scratch buffer's top-left corner, (0, 0).
 
 - a \c clip_region_set handle, which proves, by contract, that all drawing
-operations will eventually be clipped to the display element's current
+operations will eventually be clipped to the widget's current
 position.
 
-- a rectangle for the entire display element. area_entire_rect's x and y
+- a rectangle for the entire widget. area_entire_rect's x and y
 position will always be 0, and its width and height indicates the current
-size of the display element.
+size of the widget.
 
 */
 

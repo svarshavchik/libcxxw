@@ -46,7 +46,7 @@ theme_font_1elementObj<element_impl, tag>
 
 //! Inherited from theme_fontObj
 
-//! Returns my attached element.
+//! Returns my attached widget.
 
 template<typename element_impl, typename tag>
 elementObj::implObj &theme_font_1elementObj<element_impl, tag>

@@ -67,16 +67,16 @@ public:
 	//! Append elements at the end of an existing row.
 	gridfactory append_columns(size_t row_number);
 
-	//! Insert elements before an existing element on an existing row.
+	//! Insert elements before an existing widget on an existing row.
 	gridfactory insert_columns(size_t row_number, size_t col_number);
 
-	//! Replace an existing element
+	//! Replace an existing widget
 	gridfactory replace_cell(size_t row_number, size_t col_number);
 
 	//! Remove everything from the grid.
 	void remove();
 
-	//! Remove a display element from the given location.
+	//! Remove a widget from the given location.
 
 	//! The given column does not count spanned cells.
 	void remove(size_t row, size_t col);
@@ -99,15 +99,15 @@ public:
 	//! This does not include spanned cells.
 	size_t cols(size_t row) const;
 
-	//! Get the display element at the given location.
+	//! Get the widget at the given location.
 
 	//! The column does not count spanned cells.
 	elementptr get(size_t row, size_t col) const;
 
-	//! Find the row and column of the specified element.
+	//! Find the row and column of the specified widget.
 
 	//! Returns a tuple with the given element's row and column, if the
-	//! element exists in the grid.
+	//! widget exists in the grid.
 
 	std::optional<std::tuple<size_t, size_t>
 		      > lookup_row_col(const element &);

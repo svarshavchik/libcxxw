@@ -19,8 +19,7 @@ See COPYING for distribution information.
   </blockquote>
 
   <para>
-    <methodname>create_label</methodname>() creates a simple display
-    element, a
+    <methodname>create_label</methodname>() creates a simple widget, a
     <ulink url="&link-typedef-x--w-label;"><classname>&ns;::w::label</classname></ulink>,
     that displays text. The first parameter to
     <methodname>create_label</methodname>() is actually a
@@ -37,7 +36,7 @@ See COPYING for distribution information.
     <methodname>create_label</methodname>() takes an optional second parameter
     which is a
     <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>
-    that configures the label element's appearance.
+    that configures the label widget's appearance.
     <classname>&ns;::w::label_config</classname>'s
     <varname>alignment</varname> value specifies the formatting of labels
     that have multiple lines of text:
@@ -72,7 +71,7 @@ See COPYING for distribution information.
 
   <para>
     Sometimes it's desirable to explicitly set the alignment even for labels
-    with just a single line of text. Normally display elements get
+    with just a single line of text. Normally widgets get
     automatically sized for their content. It's possible that a
     <link linkend="container">container</link> adjusts the label to
     a wider size that it needs, due to other elements in the container, and

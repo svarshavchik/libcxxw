@@ -94,16 +94,16 @@ struct font_picker_group_id {
 	}
 };
 
-/*! Font picker display element.
+/*! Font picker widget.
 
 \code
 INSERT_LIBX_NAMESPACE::w::font_picker fp=factory->create_font_picker();
 \endcode
 
-The font picker display element provides the means of specifying most
+The font picker widget provides the means of specifying most
 values of a \ref font "INSERT_LIBX_NAMESPACE::w::font" specification.
 
-The display element itself shows only the name of the font, with a button
+The widget itself shows only the name of the font, with a button
 next to it. Clicking the popup opens an interactive popup for modifying
 the font's family, size, and style (bold, italicized, etc...)
 
@@ -181,10 +181,10 @@ custom \ref font_picker_config "font picker configuration" makes the selecting
 a font optional, in that case the passed in font value is the default system
 font and the identifier is a \c nullptr.
 
-- the font picker display element itself. Font picker callbacks often need
-to reference their display element; usually to have the font picker's
+- the font picker widget itself. Font picker callbacks often need
+to reference their widget; usually to have the font picker's
 most recently used list include the newly picked font. This saved the
-callbacks the trouble of properly weakly-capturing their display element and
+callbacks the trouble of properly weakly-capturing their widget and
 recovering the weak reference before using it. That detail is already taken
 care of.
 

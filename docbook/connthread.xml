@@ -137,9 +137,9 @@ main_window->on_delete([close_flag]
       Some &appshort; objects provide overloaded versions of the same
       method, with and without the <literal>ONLY IN_THREAD</literal>
       designation. Except where noted, &appshort; makes all changes to
-      display elements from the internal connection thread.
+      widgets from the internal connection thread.
       Application code invoking the non-<literal>IN_THREAD</literal>
-      method does not immediately update the display element. What happens
+      method does not immediately update the widget. What happens
       is that a message gets sent to the connection thread, which processes
       it at the first available opportunity.
     </para>
@@ -231,7 +231,7 @@ main_window->on_delete([close_flag]
       to <quote>flush</quote> their
       output buffer and send all buffered commands to the display
       server in order to update the application's window and have it reflect
-      all buffered changes to its fields and display elements. There is no such
+      all buffered changes to its fields and widgets. There is no such
       direct equivalent with &appshort;. Its internal &connection_thread;
       automatically flushes the display buffer after the thread finishes
       all pending processes, and has nothing else to do.
@@ -240,7 +240,7 @@ main_window->on_delete([close_flag]
     <para>
       However, sometimes its necessary to do something analogous with
       &appshort;. One such case is creating a large window with many
-      display elements, and a complicated layout, which may take a noticably
+      widgets, and a complicated layout, which may take a noticably
       long period of time, and cannot be avoided. Using
       <link linkend="busy"><methodname>get_wait_busy_mcguffin</methodname></link>()
       changes the current pointer to a <quote>busy</quote> icon, but
@@ -292,7 +292,7 @@ button-&gt;on_activate(
     </para>
 
     <para>
-      Invoking a display element's
+      Invoking a widget's
       <methodname>in_thread_idle</methodname>() method schedules the
       specified callback to get executed by the &connection_thread; after
       the connection thread finishes all of its pending work and flushes
@@ -372,7 +372,7 @@ void flush(const &ns;::w::element &amp;e)
       <methodname>in_thread</methodname>() does not wait for the connection
       thread to be idle, but executes the callback after all higher-priority
       processing is complete, but before doing any low priority work like
-      drawing the actual display elements.
+      drawing the actual widgets.
     </para>
   </section>
 </chapter>

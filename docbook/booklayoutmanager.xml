@@ -54,8 +54,8 @@ See COPYING for distribution information.
     <ulink url="&link-typedef-x--w-pagelayoutmanager;"><classname>&ns;::w::pagelayoutmanager</classname></ulink>'s
     <methodname>append</methodname>() and
     <methodname>insert</methodname>() methods return a &factory; that
-    directly creates display elements,
-    with each display element becoming a new page.
+    directly creates widgets,
+    with each widget becoming a new page.
     <ulink url="&link-typedef-x--w-booklayoutmanager;"><classname>&ns;::w::booklayoutmanager</classname></ulink>'s
     <methodname>append</methodname>() and
     <methodname>insert</methodname>() methods return a meta-factory object.
@@ -103,20 +103,20 @@ new_page->add("Tab",
       The second version takes only the callable object, or a closure,
       but the closure's parameters are two factories.
       The extra factory is for creating the new page's tab. Instead of a
-      text string, the tab can be any non-focusable display element.
+      text string, the tab can be any non-focusable widget.
       The second version of <methodname>add</methodname>()'s parameters are
-      a factory for creating the display element for the new page's tab,
-      and a factory for creating the new display element for the new page
+      a factory for creating the widget for the new page's tab,
+      and a factory for creating the new widget for the new page
       (same parameter as the first version of
       <methodname>add</methodname>()).
     </para>
 
     <para>
       For either version of <methodname>add</methodname>(),
-      the closure must create exactly one display element using each one of
+      the closure must create exactly one widget using each one of
       its factory parmeters. For the second version of
       <methodname>add</methodname>() the closure may create the
-      two display elements in either order.
+      two widgets in either order.
     </para>
 
     <para>
@@ -188,12 +188,12 @@ pl->on_opened([]
       <classname>&ns;::w::input_field</classname> on each page, and puts it
       into the
       <varname>appdata</varname> of each page's
-      <classname>&ns;::w::container</classname> element.
+      <classname>&ns;::w::container</classname> widget.
     </para>
 
     <para>
       The <link linkend="bookonopened"><methodname>on_opened</methodname></link>
-      callback only needs to fetch the opened page's element.
+      callback only needs to fetch the opened page's widget.
       <methodname>get_page</methodname>()
       returns the
       <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::element</classname></ulink>
@@ -230,14 +230,14 @@ pl->on_opened([]
 	reference pointer for an object. The reference pointer to a child
 	object gets stored in each parent, like &appshort; normally does;
 	and once the parent container gets removed, its references to its
-	child display elements also get removed.
+	child widgets also get removed.
       </para>
 
       <para>
-	Only storing a reference to a parent display element, in its child's
+	Only storing a reference to a parent widget, in its child's
 	<varname>appdata</varname>,
 	creates a circular reference because of the internal reference from
-	the container to each child display elements.
+	the container to each child widgets.
       </para>
     </note>
   </section>

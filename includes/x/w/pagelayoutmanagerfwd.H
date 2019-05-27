@@ -51,13 +51,13 @@ layout_manager->remove(1);
 
 The pages get numbered by the page layout manager, starting with page #0.
 append() returns a \ref pagefactory "factory" that adds new pages, new
-display elements, to the end of the existing list of pages; insert() returns
+widgets, to the end of the existing list of pages; insert() returns
  a factory that inserts new pages between an existing page, identified
 by its number, and automatically renumbers the remaining pages.
 remove() removes a page, and automatically renumbers the remaining pages.
 
 \note
-Each page, each display element in the page container must still be show()n
+Each page, each widget in the page container must still be show()n
 in order to be visible when its turn comes to shine, even though
 the page layout manager only makes one page visible.
 

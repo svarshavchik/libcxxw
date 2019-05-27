@@ -51,7 +51,7 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    The item layout manager draws a button around each display element created
+    The item layout manager draws a button around each widget created
     by its &factory;. Its container adjusts to any width, so it's typically
     positioned above or below the text input field, in a parent container
     that uses the <link linkend="gridlayoutmanager">grid layout manager</link>.
@@ -86,7 +86,7 @@ See COPYING for distribution information.
       <methodname>append_item</methodname>() and
       <methodname>insert_item</methodname>() invoke the callback with a
       &factory;. The callback must use the factory to create and
-      <methodname>show</methodname>() exactly one display element, which
+      <methodname>show</methodname>() exactly one widget, which
       becomes the new item.
       Each item has an <quote>X</quote> next to it, which invokes
       a &callback; that uses <methodname>remove_item</methodname>() to
@@ -134,7 +134,7 @@ app my_app{&ns;::ref&lt;appObj&gt;::create(main_window)};</programlisting>
 
     <para>
       The <classname>appObj</classname> class contains references to
-      key display elements and other application data, such as:
+      key widgets and other application data, such as:
     </para>
 
     <itemizedlist>
@@ -142,7 +142,7 @@ app my_app{&ns;::ref&lt;appObj&gt;::create(main_window)};</programlisting>
 	<para>The main application window itself.</para>
       </listitem>
       <listitem>
-	<para>The main window's display elements.</para>
+	<para>The main window's widgets.</para>
       </listitem>
       <listitem>
 	<para>Other application data.</para>

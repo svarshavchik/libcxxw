@@ -21,12 +21,12 @@ halign() and valign() methods.
 
 The page layout manager automatically sizes the container to accomodate
 the largest element in the container, even when it is visible; so switching
-to a different element does not change the layout of the display elements
+to a different element does not change the layout of the widgets
 in the window.
 
 Other, smaller elements in the switched container appear in the center of
-the container by default. When creating new display element, invoking
-halign() and/or valign() specifies that the next display element created
+the container by default. When creating new widget, invoking
+halign() and/or valign() specifies that the next widget created
 by the factory gets positioned in the switched container, when the element
 is visible, according to the
 specified alignment if it's not the largest element in the switch.

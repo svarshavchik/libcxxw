@@ -72,7 +72,7 @@ set() returns immediately after doing so.
 For that reason,
 getting the contents of the input field immediately after setting it may
 still retrieve the original contents. The input field, like all other
-display elements, gets updated by an internal execution thread, which
+widgets, gets updated by an internal execution thread, which
 might be busy with other things, before focusing its attention on
 updating the input field's contents.
 
@@ -141,7 +141,7 @@ change while the input field has focus, and the input field's contents
 already passed validation. There are some rare edge cases where the input
 field loses input focus in some other way (such as the not-very edge case
 of the application explicitly invoke request_focus() for some other
-display element). When the input field regains focus, the input field
+widget). When the input field regains focus, the input field
 becomes subject to validation once again.
 
 Returning \c true marks the field as validated, and the input field

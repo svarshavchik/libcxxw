@@ -51,15 +51,15 @@ public:
 	//! For drawing as disabled.
 
 	//! If set, draw_using_scratch_buffer draws as disabled, even if the
-	//! element is not disabled.
+	//! widget is not disabled.
 	bool draw_as_disabled=false;
 };
 
-//! Scratch buffer-based element draw interface.
+//! Scratch buffer-based widget draw interface.
 
 //! Defines the draw_using_scratch_buffer() interface. elementObj::implObj
 //! inherits from this and implements the virtual functions. Modules that
-//! handle drawing a display element's contents can include only this
+//! handle drawing a widget's contents can include only this
 //! header file, and avoid pulling in all of elementObj::implObj's
 //! dependencies.
 
@@ -73,7 +73,7 @@ public:
 						const pixmap &,
 						const gc &);
 
-	//! Draw into this display element using a scratch buffer.
+	//! Draw into this widget using a scratch buffer.
 
 	//! Subclass implements do_draw() using draw_using_scratch_buffer(),
 	//! which allocates a scratch buffer, clears it to the element's
@@ -85,11 +85,11 @@ public:
 	//! The first parameter is a callback.
 	//!
 	//! The second parameter is a rectangle that specifies which portion
-	//! of the display element is going to get drawn. The scratch buffer
+	//! of the widget is going to get drawn. The scratch buffer
 	//! is made sure to be at least as big as the rectangle.
 	//!
 	//! The remaining parameters are what get_draw_info() returned for
-	//! this element, what get_draw_info() returned for the element whose
+	//! this element, what get_draw_info() returned for the widget whose
 	//! background color gets used to clear the initial contents of the
 	//! scratch buffer, an instantiated clip_region, and finally the
 	//! scratch buffer to be used.

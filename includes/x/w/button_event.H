@@ -13,7 +13,7 @@ LIBCXXW_NAMESPACE_START
 
 //! A pointer button event.
 
-//! The object passed to an \ref element "element"'s on_button() callback.
+//! The object passed to an \ref element "widget"'s on_button() callback.
 
 class button_event : public input_mask {
 

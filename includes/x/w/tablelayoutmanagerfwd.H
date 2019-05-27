@@ -122,7 +122,7 @@ The initial table headers get specified by the
 An existing table's layout manager's header() returns the header element of
 the specified column. replace_header() returns a
 \ref factory "factory" for replacing the existing header element with a
-new one. Using the returned factory to create and show() a new display element
+new one. Using the returned factory to create and show() a new widget
 replaces the existing column's header with a new one.
 
 */

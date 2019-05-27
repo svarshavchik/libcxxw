@@ -31,8 +31,8 @@ LIBCXXW_NAMESPACE_START
 //! columns-1.
 //!
 //! The callback must use the given factory to construct exactly
-//! one display element. The callback is responsible for show()ing
-//! the element.
+//! one widget. The callback is responsible for show()ing
+//! the widget.
 //!
 //! This is not a thread-safe object.
 

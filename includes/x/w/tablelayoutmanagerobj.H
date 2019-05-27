@@ -38,7 +38,7 @@ public:
 
 	factory replace_header(size_t column);
 
-	//! Return the element representing the column header;
+	//! Return the widget representing the column header;
 
 	element header(size_t column) const;
 };

@@ -33,10 +33,10 @@ public:
 	//! Destructor
 	~custom_comboboxlayoutmanagerObj() LIBCXX_HIDDEN;
 
-	//! Return the display element that represents the current selection.
+	//! Return the widget that represents the current selection.
 	element current_selection();
 
-	//! Return the display element that represents the current selection.
+	//! Return the widget that represents the current selection.
 	const_element current_selection() const;
 
 	//! Install a new selection changed callback.

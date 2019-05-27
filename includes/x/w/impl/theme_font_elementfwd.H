@@ -61,7 +61,7 @@ struct theme_font_element_types<base, arg1, arg2, args...>
 		 ::type, arg1> type;
 };
 
-//! Template for attaching theme_fontObj mixins to display elements.
+//! Template for attaching theme_fontObj mixins to widgets.
 
 //! The first template parameter is a subclass of elementObj::implObj.
 //! theme_font_elementObj multiply-inherits from the template

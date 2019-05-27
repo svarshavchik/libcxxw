@@ -20,7 +20,7 @@ See COPYING for distribution information.
     </textobject>
     <caption>
       <para>
-	Each display element can have an associated context popup menu.
+	Each widget can have an associated context popup menu.
 	Clicking on it with the right pointer button makes the context
 	popup menu appear next to the pointer's current location.
       </para>
@@ -52,7 +52,7 @@ See COPYING for distribution information.
     The executed callback has no obligation to do anything in particular,
     such as displaying a popup menu. All that happens
     is that it gets executed by the pointer's right button getting clicked
-    with the pointer position on top of the display element.
+    with the pointer position on top of the widget.
     <filename>popupmenu1.C</filename>
     demonstrates the expected behavior: the callback
     simply <methodname>show</methodname>()s the context popup menu.
@@ -68,25 +68,25 @@ See COPYING for distribution information.
 
   <note>
     <para>
-      The context popup menu does not own a reference on its display element,
-      and the display element does not own a reference on its context popup
+      The context popup menu does not own a reference on its widget,
+      and the widget does not own a reference on its context popup
       menu, but all other <link linkend="callbackrefs">rules for captured
 	references</link> apply.
-      The callback's first parameter is a reference to its display element,
+      The callback's first parameter is a reference to its widget,
       and this is done in a manner that does not violate the rules.
-      Context popup callbacks often need to use their display elements, and
+      Context popup callbacks often need to use their widgets, and
       this avoids the chore of
       <link linkend="callbackweakcaptures">weakly-capturing</link>
-      their display elements,
+      their widgets,
       and recovering the strong reference in the callback.
     </para>
 
     <para>
       In this example, the context popup gets captured by value, by
       the installed callback. The installed callback exists as long as the
-      context popup remains installed: as long as its display element exists,
+      context popup remains installed: as long as its widget exists,
       or until a replacement context popup callback gets installed (only
-      one context popup callback exists for each display element),
+      one context popup callback exists for each widget),
       or until <methodname>remove_contextpopup_callback</methodname>()
       explicitly removes it.
     </para>
@@ -173,10 +173,10 @@ See COPYING for distribution information.
 
       <note>
 	<para>
-	  The keyboard shortcut is active only when its display element is
+	  The keyboard shortcut is active only when its widget is
 	  visible. <methodname>show</methodname>()ing the context popup menu
 	  makes it appear next to the pointer, whether it's on top of the
-	  display element, or not.
+	  widget, or not.
 	</para>
 
 	<para>

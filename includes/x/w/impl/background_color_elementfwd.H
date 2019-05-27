@@ -32,11 +32,11 @@ class background_color_element_implObj : virtual public obj {
 	//! Wrapped background color
 	background_color color;
 
-	//! The background color was computed for its element that's this wide
+	//! The background color was computed for its widget that's this wide
 
 	dim_t background_color_element_width=0;
 
-	//! The background color was computed for its element that's this tall
+	//! The background color was computed for its widget that's this tall
 
 	dim_t background_color_element_height=0;
 
@@ -59,7 +59,7 @@ public:
 			   const const_defaulttheme &new_theme,
 			   elementObj::implObj &);
 
-	//! The size of the background color's element.
+	//! The size of the background color's widget.
 	void set_background_color_for_element(ONLY IN_THREAD,
 					      elementObj::implObj &);
 
@@ -86,7 +86,7 @@ class background_color_element
 
 	~background_color_element();
 
-	//! Return my element.
+	//! Return my widget.
 
 	virtual elementObj::implObj &background_color_element_impl()=0;
 
@@ -94,7 +94,7 @@ class background_color_element
 	void update(ONLY IN_THREAD,
 		    const background_color &new_color);
 
-	//! If the element is visible, invoke do_update().
+	//! If the widget is visible, invoke do_update().
 
 	void set_background_color_for_element(ONLY IN_THREAD);
 };
@@ -139,7 +139,7 @@ class background_color_1elementObj
 
 	//! Recalculate the background color, after a theme change.
 
-	//! If the display element is visible, call
+	//! If the widget is visible, call
 	//! set_background_color_for_element().
 
 	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
@@ -147,7 +147,7 @@ class background_color_1elementObj
 
 	//! Override process_updated_position.
 
-	//! If the display element is visible, call
+	//! If the widget is visible, call
 	//! set_background_color_for_element().
 
 	void process_updated_position(ONLY IN_THREAD) override;
@@ -188,7 +188,7 @@ struct background_colors_element_types<base, arg1, arg2, args...>
 		 ::type, arg1> type;
 };
 
-/*! Template for attaching one or more background_colors, as mixins, to a display element.
+/*! Template for attaching one or more background_colors, as mixins, to a widget.
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/impl/background_color_element.H>

@@ -95,7 +95,7 @@ class richtextObj : virtual public obj {
 
 	void set(ONLY IN_THREAD, const richtextstring &string);
 
-	//! Redraw this element fully.
+	//! Redraw this widget fully.
 
 	//! Invoked from do_draw(), which handles exposure events.
 
@@ -105,10 +105,10 @@ class richtextObj : virtual public obj {
 			 const draw_info &,
 			 const rectarea &);
 
-	//! Redraw this element fully.
+	//! Redraw this widget fully.
 
 	//! This is used by the rich text layout manager that positions
-	//! multiple text elements inside its element. It supplies a custom
+	//! multiple text elements inside its widget. It supplies a custom
 	//! richtext_draw_boundaries.
 	//!
 	//! The richtext_draw_boundaries parameter is mutable. full_redraw()
@@ -152,7 +152,7 @@ class richtextObj : virtual public obj {
 
 	//! This is used by the editor element, as such this takes care of
 	//! constructing richtext_draw_boundaries that assumes that the
-	//! text label is the entire display element (it is).
+	//! text label is the entire widget (it is).
 	void redraw_between(ONLY IN_THREAD,
 			    element_drawObj &,
 			    const richtextiterator &,
@@ -186,7 +186,7 @@ class richtextObj : virtual public obj {
 	void draw(//! Invoked only in the connection thread.
 
 		  ONLY IN_THREAD,
-		  //! The element being drawn
+		  //! The widget being drawn
 		  element_drawObj &element,
 
 		  //! Additional drawing information

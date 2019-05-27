@@ -16,7 +16,7 @@ class LIBCXX_HIDDEN new_layoutmanager;
 //! A layout manager
 
 //! Every container has a layout manager, that manages the elements inside
-//! the container element. get_layoutmanager() returns the container's
+//! the container widget. get_layoutmanager() returns the container's
 //! layout manager, which can be:
 //!
 //! - \ref gridlayoutmanager "The grid layout manager"

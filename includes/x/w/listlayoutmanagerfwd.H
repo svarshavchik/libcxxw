@@ -197,7 +197,7 @@ l->replace_all_items(item_number, {"Lorem ipsum"});
 \endcode
 
 Unlike other layout managers, the list layout manager does not manage
-arbitrary display elements. The list layout manager contains only simple
+arbitrary widgets. The list layout manager contains only simple
 text labels.
 
 append_items() adds new list items to the end of the existing list.
@@ -568,7 +568,7 @@ append_copy_cut_paste()'s parameter is either:
 - the \ref main_window "main window" when adding the default
 "Copy", "Cut", and "Paste" menu items to an application field.
 
-- a display element when adding the menu items to the element's right context
+- a widget when adding the menu items to the element's right context
 button popup.
 
 append_copy_cut_paste() returns

@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! An empty display element, perhaps with a background color.
+//! An empty widget, perhaps with a background color.
 
 //! \see element
 

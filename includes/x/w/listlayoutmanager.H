@@ -109,15 +109,15 @@ class new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	//! Invoked each time a list item is selected or unselected.
 	//!
-	//! This callback cannot strongly capture the list display element
-	//! or any of its parent display elements.
+	//! This callback cannot strongly capture the list widget
+	//! or any of its parent widgets.
 
 	list_selection_changed_cb_t selection_changed;
 
 	//! Callback when currently highlighted list item changes.
 
-	//! This callback cannot strongly capture the list display element
-	//! or any of its parent display elements.
+	//! This callback cannot strongly capture the list widget
+	//! or any of its parent widgets.
 
 	list_item_status_change_callbackptr current_list_item_changed;
 
@@ -169,12 +169,12 @@ public:
 private:
 	//! List's width.
 
-	//! If not set, the list is always wide enough for its widest element.
+	//! If not set, the list is always wide enough for its widest widget.
 
 	std::optional<dim_axis_arg> width_value;
 public:
 
-	//! By default, the list's width is determined by its widest element.
+	//! By default, the list's width is determined by its widest widget.
 	inline void default_width()
 	{
 		width_value.reset();

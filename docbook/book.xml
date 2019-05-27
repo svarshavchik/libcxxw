@@ -146,7 +146,7 @@ See COPYING for distribution information.
   </part>
 
   <part id="custom">
-    <title>Custom display elements</title>
+    <title>Custom widgets</title>
 
     &customintro;
     &customcanvas;

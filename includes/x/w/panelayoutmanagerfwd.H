@@ -79,7 +79,7 @@ INSERT_LIBX_NAMESPACE::w::panefactory pane_f=pane_lm->replace_all_panes();
 \endcode
 
 append_panes() returns a factory that adds new panes after the container's
-existing panes. Each display element created with the returned factory's
+existing panes. Each widget created with the returned factory's
 methods gets placed into a new pane.
 
 The pane layout manager automatically numbers the panes in the container,
@@ -118,7 +118,7 @@ c->get_focus_before(another_focusable);
 \endcode
 
 The pane layout manager's container is \ref focusable "focusable", whose
-tabbing order is adjustable with respect to other focusable display elements.
+tabbing order is adjustable with respect to other focusable widgets.
 The focusable elements in the pane container include the dividing sliders,
 and each pane's scroll-bars, when they're visible.
 

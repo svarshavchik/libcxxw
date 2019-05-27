@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC canvasObj;
 
-//! A mostly empty display element.
+//! A mostly empty widget.
 
 //! \code
 //! INSERT_LIBX_NAMESPACE::w::dim_axis_arg h_metrics{0, 50, 100};

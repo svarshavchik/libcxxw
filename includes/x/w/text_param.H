@@ -37,10 +37,10 @@ template<typename ...Args>
 using text_param_constructible=
 	typename text_param_constructible_d<Args...>::type;
 
-/*! \brief \anchor text_param A text parameter for a new display element.
+/*! \brief \anchor text_param A text parameter for a new widget.
 
 This parameter specifies a text string when creating
-a new display element using the \ref factory "element factory"; such
+a new widget using the \ref factory "element factory"; such
 as create_label(), for example.
 
 The text may include colors and markups, as described here.

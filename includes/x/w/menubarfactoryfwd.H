@@ -35,13 +35,12 @@ factory->add_text("File",
 
 \c INSERT_LIBX_NAMESPACE::w::menubarfactory is a meta-factory that adds
 new menus to the application's menu bar. The title of the new menu does
-not necessarily have to be a text string. Any non-focusable display
-element can serve as a menu title. add() creates a new menu. The first
+not necessarily have to be a text string. Any non-focusable widget can serve as a menu title. add() creates a new menu. The first
 parameter is a callback that receives an \c INSERT_LIBX_NAMESPACE::w::factory
-for a parameter, and should use it to construct a display element that
+for a parameter, and should use it to construct a widget that
 becomes the new menu's title. add_text()'s first parameter is a
 \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param". add_text() is
-equivalent to using add() with create_label(). Only one display element
+equivalent to using add() with create_label(). Only one widget
 may be created using the factory, and it gets automatically show()n.
 
 The second parameter is the creator callback for the menu's contents.

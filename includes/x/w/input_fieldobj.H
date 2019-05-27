@@ -75,7 +75,7 @@ public:
 
 	//! Inherited from elementObj
 
-	//! The minimum overrides are set for the editor display element
+	//! The minimum overrides are set for the editor widget
 	//! inside the focus frame.
 
 	ref<elementObj::implObj> get_minimum_override_element_impl() override;

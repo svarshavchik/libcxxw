@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Methods common to all display elements that change background color when activated.
+//! Methods common to all widgets that change background color when activated.
 
 //! \see hotspot_bgcolor
 

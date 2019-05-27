@@ -296,7 +296,7 @@ x::w::input_lock lock{f};</programlisting>
 	  <methodname>set</methodname>() method replaces the contents of
 	  the
 	  <classname>&ns;::w::input_field</classname>. Like all other
-	  display elements, the
+	  widgets, the
 	  <classname>&ns;::w::input_field</classname> actually gets updated
 	  by &appshort;'s internal execution thread.
 	  <methodname>set</methodname>() does not get blocked directly by an
@@ -425,7 +425,7 @@ text_field->create_tooltip("A brief message, a few lines long.", config);</progr
       <link linkend="inputfieldsandbuttons"><filename>inputfieldsandbuttons.C</filename></link>
       gives an example of creating tooltips.
       A tooltip is a small popup window that appears when the pointer
-      gets positioned on top of a display element and doesn't move for a
+      gets positioned on top of a widget and doesn't move for a
       few seconds. The tooltip popup appears next to the pointer and goes
       away automatically when the pointer moves again.
     </para>
@@ -487,9 +487,7 @@ factory->create_button([]
     <para>
       This overload takes a single lambda or a callable object
       as a parameter. The lambda receives another factory as its sole
-      argument, and is expected to use that factory to create a single display
-      element. This becomes the contents of the button. Like all display
-      elements they must be <methodname>show</methodname>()n in order to
+      argument, and is expected to use that factory to create a single widget. This becomes the contents of the button. Like all widgets they must be <methodname>show</methodname>()n in order to
       be visible.
     </para>
 
@@ -690,10 +688,10 @@ factory->create_button("Ok",
   </section>
 
   <section id="appdata">
-    <title>Attaching application data to display elements</title>
+    <title>Attaching application data to widgets</title>
 
     <para>
-      All display elements, including the main application window, have
+      All widgets, including the main application window, have
       an opaque <varname>appdata</varname> member that &app; does not use
       itself.
       <varname>appdata</varname> is an opaque
@@ -704,58 +702,58 @@ factory->create_button("Ok",
 
     <para>
       <varname>appdata</varname> provides convenient means for an application
-      to attach its own data to a display element, by deriving from
+      to attach its own data to a widget, by deriving from
       <classname>&ns;::obj</classname>, and saving a
       <classname>&ns;::ref</classname> to it in <classname>appdata</classname>.
     </para>
 
     <para>
       With application windows having complicated layouts, and a large number of
-      display elements, it's more convenient to stash away a direct reference
-      to a particular display element, rather than having to drill down and
+      widgets, it's more convenient to stash away a direct reference
+      to a particular widget, rather than having to drill down and
       find it, each time.
       As explained in <xref linkend="containerrefs" />, &app;'s containers
       own references to their elements, and in order for application
       windows and their elements to be properly destroyed and terminated the
       application must release its own references to them.
       With &app; built on top of &libcxx;'s reference-counted object framework,
-      a lingering reference from an application to some display element will
-      prevent proper destruction of display elements.
+      a lingering reference from an application to some widget will
+      prevent proper destruction of widgets.
     </para>
 
     <para>
       The <varname>appdata</varname> provides one convenient way to compile a
-      list of all display elements in one place, safely:
+      list of all widgets in one place, safely:
     </para>
 
     <itemizedlist>
       <listitem>
 	<para>
-	  A list of the display elements gets collected into an object and
+	  A list of the widgets gets collected into an object and
 	  installed as an <varname>appdata</varname> object, that's attached
 	  to the top level main window object.
 	  The <varname>appdata</varname> may contain anything that the
 	  application wants, not just <classname>&ns;::ref</classname>s to
-	  various display elements in the main window.
+	  various widgets in the main window.
 	</para>
       </listitem>
 
       <listitem>
 	<para>
 	  The application only holds a reference to the top level
-	  display element, such as an
+	  widget, such as an
 	  <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>.
-	  The application always uses the top level display element to access
+	  The application always uses the top level widget to access
 	  the <varname>appdata</varname>.
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  When the top level display element goes out of scope and gets
+	  When the top level widget goes out of scope and gets
 	  destroyed, no other reference to the <varname>appdata</varname>
 	  remain, so it gets destroyed, together with its references to
-	  the display elements in the <varname>appdata</varname>.
+	  the widgets in the <varname>appdata</varname>.
 	  Because top level elements, and all containers,
 	  <link linkend="containerrefs">own references to their
 	    child elements</link>, all references to the child elements
@@ -827,11 +825,10 @@ typedef &ns;::ref&lt;appdataObj&gt; appdata_t;</programlisting>
     </para>
 
     <para>
-      Every display element has an available <classname>appdata</classname>.
+      Every widget has an available <classname>appdata</classname>.
       The application can use this to attach an object to any
-      display element; but it is important to understand that the display
-      element owns a reference to its <classname>appdata</classname> so this
-      object should not have its own reference to the display element or to
+      widget; but it is important to understand that the widget owns a reference to its <classname>appdata</classname> so this
+      object should not have its own reference to the widget or to
       any of its parent container elements (see
       <xref linkend="containerrefs" /> for more information). Otherwise
       this creates a problematic circular reference.

@@ -12,9 +12,9 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN grid_elementObj;
 
-//! An element in a grid.
+//! An widget in a grid.
 
-//! An object that represents an element in a grid, and its metadata;
+//! An object that represents an widget in a grid, and its metadata;
 //! namely its "width" and "height" (number of grid cells it spans),
 //! and its custom borders, if any.
 //!

@@ -108,7 +108,7 @@ See COPYING for distribution information.
       <methodname>append_copy_paste</methodname>() takes a parameter that
       specifies either the application main window, when creating
       <quote>Copy</quote>, <quote>Cut</quote>, and
-      <quote>Paste</quote> application menu options, or an input field element
+      <quote>Paste</quote> application menu options, or an input field widget
       when creating its context popup menu.
     </para>
 

@@ -18,7 +18,7 @@ class LIBCXX_PUBLIC borderlayoutmanagerObj;
 /*! Draw a border around an element.
 
 A subclass of the \ref singletonlayoutmanager "singleton layout manager"
-that draws a border around the display element.
+that draws a border around the widget.
 
 The same effect can be obtained by using the
 \ref gridlayoutmanager "grid layout manager", but this is more efficient.

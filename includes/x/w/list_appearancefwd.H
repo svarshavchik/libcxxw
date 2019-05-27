@@ -16,7 +16,7 @@ class list_appearance_base;
 /*! List appearance
 
 Specifies the appearance of a \ref listlayoutmanager "list", and lists used
-in derivative display elements, like
+in derivative widgets, like
 \ref standard_comboboxlayoutmanager "combo-boxes".
 
 When creating a new container that uses the list layout manager, or

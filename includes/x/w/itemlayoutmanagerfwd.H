@@ -90,7 +90,7 @@ INSERT_LIBX_NAMESPACE::w::element e=il->get_item(0);
 \c append_item() and \c insert_item() take a lambda or a callable object as
 a parameter and invoke it with a \ref factory "factory". The lambda
 must use the factory to create the item's label, usually a
-\ref label "label", but it can be any display element. The callback must
+\ref label "label", but it can be any widget. The callback must
 explicitly \c show() the label element. The results of using the factory
 to create more than one element are not specified.
 

@@ -12,7 +12,7 @@ See COPYING for distribution information.
     <filename>customelement.C</filename> is an example of creating
     a custom subclass of the
     <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::element</classname></ulink>
-    display element that draws a circle. The differences between creating
+    widget that draws a circle. The differences between creating
     a custom subclass of an <classname>&ns;::w::element</classname>
     and a custom subclass of an <classname>&ns;::w::canvas</classname> are:
   </para>
@@ -31,8 +31,7 @@ See COPYING for distribution information.
 	  but a custom subclass always uses an intermediate subclass,
 	  <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>.
 	  <classname>&ns;::w::child_elementObj</classname>
-	  is a subclass that represents an implementation class of a display
-	  element in its parent container. All custom display elements always
+	  is a subclass that represents an implementation class of a widget in its parent container. All custom widgets always
 	  get placed in a container, and therefore must derive from
 	  <classname>&ns;::w::child_elementObj</classname>.
 	</para>
@@ -55,9 +54,9 @@ See COPYING for distribution information.
 	<para>
 	  <classname>&ns;::w::elementObj::implObj</classname>'s metrics
 	  get specified in pixels, and they ignore the current display theme.
-	  The display element is resizable. This is done by updating its
+	  The widget is resizable. This is done by updating its
 	  metrics. Afterwards, its container factors in the revised metrics,
-	  and may or may not resize the display element, accordingly.
+	  and may or may not resize the widget, accordingly.
 	</para>
       </listitem>
     </varlistentry>
@@ -67,7 +66,7 @@ See COPYING for distribution information.
     <filename>customelement.C</filename> differs from
     <link linkend="customcanvas"><filename>customcanvas.C</filename></link>
     in several ways: it's a custom subclass of
-    <classname>&ns;::w::element</classname>; the custom display element's
+    <classname>&ns;::w::element</classname>; the custom widget's
     size is initially 50x50 pixels, and a button toggles its size between 50x50
     and 100x100 pixels; the window's background color is set to white,
     overriding the current display theme's default; and the circle gets drawn
@@ -95,12 +94,12 @@ See COPYING for distribution information.
 
   <para>
     Although the gradient color is not theme-dependent, it does depend on the
-    size of the display element. The background color element mixin template
+    size of the widget. The background color widget mixin template
     takes care of recalculating the gradient color, automatically.
   </para>
 
   <section id="elementresize">
-    <title>Resizing a custom display element</title>
+    <title>Resizing a custom widget</title>
 
     <blockquote>
       <informalexample>
@@ -122,7 +121,7 @@ See COPYING for distribution information.
       analogous parameter, this
       <ulink url='&link-x--w--metrics--horizvert-axi;'><classname>&ns;::w::horizvert_axi</classname></ulink>
       parameter sets the individual minimum, preferred, and maximum
-      horizontal and vertical metrics of the new display element.
+      horizontal and vertical metrics of the new widget.
     </para>
 
     <blockquote>
@@ -137,21 +136,20 @@ e-&gt;impl-&gt;get_horizvert(IN_THREAD)
     </blockquote>
 
     <para>
-      A display element's size does not get adjusted directly. Instead, its
+      A widget's size does not get adjusted directly. Instead, its
       horizontal and vertical metrics get adjusted.
       <methodname>get_horizvert</methodname>() returns the implementation
       object's metrics object. its
-      <methodname>set_element_metrics</methodname>() method sets the display
-      element's new horizontal and vertical metrics, expressed in pixels.
-      The element's container processes the updated metrics automatically
-      and may (or may not) choose to actually resize the display element.
+      <methodname>set_element_metrics</methodname>() method sets the widget's new horizontal and vertical metrics, expressed in pixels.
+      The widget's container processes the updated metrics automatically
+      and may (or may not) choose to actually resize the widget.
     </para>
 
     <para>
-      The display element's container has full responsibility for resizing the
-      display element. The only thing that anyone else can do is update a
-      display element's metrics, and hope for the best.
-      Resized display elements get redrawn automatically.
+      The widget's container has full responsibility for resizing the
+      widget. The only thing that anyone else can do is update a
+      widget's metrics, and hope for the best.
+      Resized widgets get redrawn automatically.
       <methodname>do_draw</methodname>() in this example is materially the same
       as <filename>customcanvas.C</filename>'s.
     </para>

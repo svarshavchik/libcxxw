@@ -58,7 +58,7 @@ public:
 
 	void on_activate(const image_button_callback_t &callback);
 
-	//! Replace the label element next to the image button.
+	//! Replace the label widget next to the image button.
 
 	template<typename functor>
 	void update_label(functor &&f)

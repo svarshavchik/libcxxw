@@ -21,7 +21,7 @@ inline const background_color background_color_element_implObj
 template<typename tag>
 background_color_element<tag>::~background_color_element()=default;
 
-//! If the element is visible, invoke do_update().
+//! If the widget is visible, invoke do_update().
 
 template<typename tag>
 void background_color_element<tag>
@@ -79,7 +79,7 @@ template<typename element_impl, typename tag>
 background_color_1elementObj<element_impl, tag>::~background_color_1elementObj()
 =default;
 
-//! Display element has been initialized
+//! Widget has been initialized
 
 //! Invoke the parent class's initialize(), then invoke theme_updated() for
 //! the background_color, in case the theme has changed in the meantime.
@@ -109,7 +109,7 @@ void background_color_1elementObj<element_impl, tag>
 
 //! Override process_updated_position.
 
-//! If the display element is visible, call background_color_size().
+//! If the widget is visible, call background_color_size().
 
 template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>

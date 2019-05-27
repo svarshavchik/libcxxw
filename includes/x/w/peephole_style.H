@@ -44,7 +44,7 @@ enum class peephole_algorithm {
 	//! Stretch the peephole to match the peepholed element's dimension.
 
 	//! Always set the width or the height of the peephole to match
-	//! the width or height of the peepholed element. This effectively
+	//! the width or height of the peepholed widget. This effectively
 	//! turns this peephole into a single-dimension peephole. If the
 	//! width gets stretched, the peephole operates only in the vertical
 	//! dimension, and vice versa
@@ -92,10 +92,10 @@ struct peephole_style {
 		height_algorithm=a;
 	}
 
-	//! Alignment of the element when it is smaller than the peephole.
+	//! Alignment of the widget when it is smaller than the peephole.
 	halign horizontal_alignment=halign::left;
 
-	//! Alignment of the element when it is smaller than the peephole.
+	//! Alignment of the widget when it is smaller than the peephole.
 	valign vertical_alignment=valign::top;
 
 	//! Peephole scrolling strategy

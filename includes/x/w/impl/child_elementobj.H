@@ -40,7 +40,7 @@ struct child_element_init_params {
 
 struct child_element_bgcolor;
 
-//! An element that has a parent element.
+//! An element that has a parent widget.
 
 class child_elementObj
 	: public background_color_elementObj<elementObj::implObj,
@@ -66,7 +66,7 @@ private:
 
 	void update_draw_info_background_color(ONLY IN_THREAD);
 public:
-	//! My parent element
+	//! My parent widget
 	const container_impl child_container;
 
 	//! Constructor.
@@ -98,11 +98,11 @@ public:
 	//! Redraw my container after my position is updated.
 
 	//! The container is responsible for clearing parts of it that are
-	//! not covered by any element.
+	//! not covered by any widget.
 
 	void process_updated_position(ONLY IN_THREAD) override;
 
-	//! Use parent display element's background color.
+	//! Use parent widget's background color.
 
 	void remove_background_color(ONLY IN_THREAD) override;
 
@@ -113,7 +113,7 @@ public:
 
 	//! Theme has changed.
 
-	//! If this child element has its own background color, if it was
+	//! If this child widget has its own background color, if it was
 	//! changed by the theme we pretend that set_background_color()
 	//! has happened.
 
@@ -122,7 +122,7 @@ public:
 
 	//! Override schedule_hover_action
 
-	//! This gets invoked for the element under the pointer. Propagate
+	//! This gets invoked for the widget under the pointer. Propagate
 	//! this to its parent container, so that anything under the pointer
 	//! with a tooltip will schedule its creation.
 
@@ -130,7 +130,7 @@ public:
 
 	//! Override schedule_hover_action
 
-	//! This gets invoked for the element under the pointer. Propagate
+	//! This gets invoked for the widget under the pointer. Propagate
 	//! this to its parent container, so that anything under the pointer
 	//! with a tooltip will schedule its creation.
 	void unschedule_hover_action(ONLY IN_THREAD) override;
@@ -151,7 +151,7 @@ public:
 
 	//! Button events
 
-	//! All display elements, starting with the one under the pointer
+	//! All widgets, starting with the one under the pointer
 	//! and its parents, get notified of a button event. The return
 	//! value is true if anyone returned true.
 
@@ -166,7 +166,7 @@ public:
 	//! Motion events
 
 	//! The motion event, after it's reported for this element,
-	//! gets also reported for its parent display element.
+	//! gets also reported for its parent widget.
 
 	void report_motion_event(ONLY IN_THREAD, const motion_event &)
 		override;
@@ -201,7 +201,7 @@ public:
 	//! update_visibility() invokes this callback.
 
 	//! This element's inherited visibility is visible only if
-	//! both this element is explicitly visible, and its parent is.
+	//! both this widget is explicitly visible, and its parent is.
 
 	void visibility_updated(ONLY IN_THREAD, bool flag) override;
 
@@ -275,7 +275,7 @@ public:
 
 	//! Received pasted text.
 
-	//! Forwarded to the container, if not handled by the element.
+	//! Forwarded to the container, if not handled by the widget.
 
 	bool pasted(ONLY IN_THREAD,
 		    const std::u32string_view &str) override;
@@ -294,7 +294,7 @@ public:
 
 	//! Override get_cursor_pointer().
 
-	//! If this element does not have a set cursor pointer,
+	//! If this widget does not have a set cursor pointer,
 	//! the call is forwarded to the parent.
 
 	cursor_pointerptr get_cursor_pointer(ONLY IN_THREAD) override;
@@ -307,7 +307,7 @@ public:
 
 	//! Forward find_acceptable_drop() to the parent container.
 
-	//! This display element does not, so pass the buck to the container.
+	//! This widget does not, so pass the buck to the container.
 	bool find_acceptable_drop(ONLY IN_THREAD,
 				  element_impl &accepting_element,
 				  const source_dnd_formats_t &source_formats,

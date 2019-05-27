@@ -12,18 +12,18 @@ See COPYING for distribution information.
     <filename>customkeyfocus.C</filename> is an example of creating
     a custom subclass of the basic
     <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::element</classname></ulink>
-    display element with keyboard focus support.
-    Handling keyboard focus allows a display element to process key press
+    widget with keyboard focus support.
+    Handling keyboard focus allows a widget to process key press
     and release events.
     <literal>TAB</literal> key moves the keyboard focus to the next
-    focusable display element, one at a time.
+    focusable widget, one at a time.
     (<literal>SHIFT-TAB</literal> goes backwards in the order).
-    Key press and release events get routed to the display element with
+    Key press and release events get routed to the widget with
     the current keyboard focus.
   </para>
 
   <para>
-    Requirements for implementing a custom display element that handles
+    Requirements for implementing a custom widget that handles
     keyboard focus:
   </para>
 
@@ -45,7 +45,7 @@ See COPYING for distribution information.
 	The &public_class; must derive from
 	<ulink url="&link-x--w--focusableObj--ownerObj;"><classname>&ns;::w::focusableObj::ownerObj</classname></ulink>,
 	designating the public subclass as the responsible
-	<quote>owner</quote> of the focusable display element. The
+	<quote>owner</quote> of the focusable widget. The
 	&public_class; multiply-inherits from
 	<classname>&ns;::w::focusableObj::ownerObj</classname> and a
 	<classname>&ns;::w::elementObj</classname>, or some subclass of it.
@@ -62,16 +62,15 @@ See COPYING for distribution information.
   </itemizedlist>
 
   <para>
-    <filename>customkeyfocus.C</filename> implements a bare-bones display
-    element that handles keyboard focus. The display element is a bare,
+    <filename>customkeyfocus.C</filename> implements a bare-bones widget that handles keyboard focus. The widget is a bare,
     colored
     square; initially light grey and changing to a white color when it
-    acquired keyboard focus. There's a button below the element, and tabbing
-    between the button and the custom display element demonstrates the color
+    acquired keyboard focus. There's a button below the widget, and tabbing
+    between the button and the custom widget demonstrates the color
     difference.
     Pressing <quote>r</quote>, <quote>g</quote>, and <quote>b</quote> keys
-    on the keyboard, when the input focus is in the custom display element,
-    results in the element's color getting updated to red, green, or blue,
+    on the keyboard, when the input focus is in the custom widget,
+    results in the widget's color getting updated to red, green, or blue,
     respectively:
   </para>
 
@@ -92,9 +91,9 @@ See COPYING for distribution information.
       <methodname>keyboard_focus</methodname>() and
       <methodname>process_key_event</methodname>().
       <methodname>keyboard_focus</methodname>() gets executed whenever the
-      display element gains or loses input focus.
+      widget gains or loses input focus.
       <methodname>process_key_event</methodname>() gets executed to process
-      a key event that occurs while the display element has keyboard input
+      a key event that occurs while the widget has keyboard input
       focus.
     </para>
 
@@ -137,10 +136,10 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  A list of rectangles that specify the portion or portions of the
-	  display element that require drawing. In nearly all cases this is
+	  widget that require drawing. In nearly all cases this is
 	  just one rectangle representing the entire area taken up by the
-	  display element; but it doesn't have to be. A partially-obscured
-	  display element results in just the visible parts of its appearing
+	  widget; but it doesn't have to be. A partially-obscured
+	  widget results in just the visible parts of its appearing
 	  in the rectangle set.
 	</para>
       </listitem>
@@ -148,7 +147,7 @@ See COPYING for distribution information.
 
     <para>
       <filename>customkeyfocus.C</filename>
-      gives an example of manually redrawing the display element, one
+      gives an example of manually redrawing the widget, one
       rectangle at a time.
     </para>
 
@@ -158,13 +157,13 @@ See COPYING for distribution information.
 	  Creating a
 	  <ulink url="&link-x--w--clip-region-set;"><classname>&ns;::w::clip_region_set</classname></ulink>
 	  sets a clip mask on the underlying window, clipping the subsequent
-	  draw operations to the display element.
+	  draw operations to the widget.
 	</para>
       </listitem>
       <listitem>
 	<para>
 	  Calling <methodname>draw_using_scratch_buffer</methodname>()
-	  to redraw each portion of the display element.
+	  to redraw each portion of the widget.
 	</para>
       </listitem>
     </itemizedlist>
@@ -175,13 +174,12 @@ See COPYING for distribution information.
       gets invoked with a picture, pixmap, and a graphic context representing
       a <link linkend="scratchbuffers">scratch buffer</link> for drawing.
       <methodname>draw_using_scratch_buffer</methodname>() is the only
-      mechanism that must be used for updating the apperance of the display
-      element.
+      mechanism that must be used for updating the apperance of the widget.
       After the lambda returns, the scratch buffers get copied to the window
       after some additional, optional processing related
       to <link linkend="busy">shading inactive windows</link> and
-      adjusting the image in the style of a disabled element, if the
-      focusable display element is disabled.
+      adjusting the image in the style of a disabled widget, if the
+      focusable widget is disabled.
     </para>
 
     <para>
@@ -198,14 +196,14 @@ See COPYING for distribution information.
   </section>
 
   <section id="schedule_redraw">
-    <title>Drawing the updated contents of a custom display element</title>
+    <title>Drawing the updated contents of a custom widget</title>
 
     <para>
       <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>'s
-      custom display element's appearance changes when it gains or
+      custom widget's appearance changes when it gains or
       loses keyboard input focus, and in response to
       <quote>r</quote>, <quote>g</quote>, and <quote>b</quote> keys.
-      This means that it's necessary to redraw the display element when any
+      This means that it's necessary to redraw the widget when any
       of these events occur.
     </para>
 
@@ -227,12 +225,11 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  <methodname>schedule_redraw</methodname>() quietly does nothing
-	  at all if the display element is not visible, and nothing needs
+	  at all if the widget is not visible, and nothing needs
 	  to be redrawn.
 	  This can't happen in
           <filename>customkeyfocus.C</filename> because all events that
-	  result in an explicit redrawing can only occur while the display
-	  element is busy.
+	  result in an explicit redrawing can only occur while the widget is busy.
 	</para>
       </listitem>
 
@@ -241,19 +238,19 @@ See COPYING for distribution information.
 	  Actual redrawing is a low-priority task, done only when there's
 	  nothing more urgent to do. The more urgent tasks are:
 	  handling display server messages;
-	  adding or creating new display elements; moving them around for
+	  adding or creating new widgets; moving them around for
 	  one reason, or another.
 	  It's better to wait until all of this is done in order to avoid
-	  needlessly redrawing the same display elements after every little
+	  needlessly redrawing the same widgets after every little
 	  change. It's more efficient to postpone the drawing until the dust
 	  settles.
 	</para>
 
 	<para>
 	  <methodname>schedule_redraw</methodname>() quietly does nothing
-	  if it gets called a second time before the display element gets
+	  if it gets called a second time before the widget gets
 	  redrawn. That's the flip side of the coin.
-	  A custom display element only needs to use
+	  A custom widget only needs to use
 	  <methodname>schedule_redraw</methodname>() to indicate that it needs
 	  to be redrawn. Multiple calls to
 	  <methodname>schedule_redraw</methodname> result in
@@ -264,57 +261,56 @@ See COPYING for distribution information.
   </section>
 
   <section id="standard_focusframe">
-    <title>Creating the standard input focus frame display element</title>
+    <title>Creating the standard input focus frame widget</title>
 
     <para>
       <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>'s
-      custom display element's default appearance is plain and unadorned.
-      &appshort;'s standard display elements visually indicate which one has
+      custom widget's default appearance is plain and unadorned.
+      &appshort;'s standard widgets visually indicate which one has
       keyboard
-      input focus frame by drawing a border around that display
-      element. This is not something that happens automatically. Each
-      display element has full control over its appearance.
+      input focus frame by drawing a border around that widget. This is not something that happens automatically. Each
+      widget has full control over its appearance.
     </para>
 
     <para>
-      <filename>customkeyfocus.C</filename> custom display element
+      <filename>customkeyfocus.C</filename> custom widget
       changes its background color when it has input focus.
       Running <command>customkeyfocus</command> with the <option>-f</option>
       option also draws the standard input focus frame.
     </para>
 
     <para>
-      An input focus frame is a &container;. &appshort;'s display elements
+      An input focus frame is a &container;. &appshort;'s widgets
       are arranged in a logical hierarchy of containers, and a container
-      itself is a display element; namely a display element that contains
-      other display elements. An input focus frame is a container that draws
-      a input focus border around the display element inside the container.
+      itself is a widget; namely a widget that contains
+      other widgets. An input focus frame is a container that draws
+      a input focus border around the widget inside the container.
     </para>
 
     <para>
       A brief overview of a process for <link linkend="customimpl">creating
-	a custom display element</link>:
+	a custom widget</link>:
     </para>
 
     <orderedlist>
       <listitem>
 	<para>
 	  Use a &factory;'s <methodname>get_container_impl</methodname>() to
-	  obtain the new custom element's parent container
+	  obtain the new custom widget's parent container
 	  &implementation_object;.
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  Create the custom element's &implementation_object; instance,
+	  Create the custom widget's &implementation_object; instance,
 	  passing to it the parent container's &implementation_object;.
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  Create the &public_object; for the custom element's
+	  Create the &public_object; for the custom widget's
 	  &implementation_object;.
 	</para>
       </listitem>
@@ -328,7 +324,7 @@ See COPYING for distribution information.
     </orderedlist>
 
     <para>
-      Use the following process for creating a custom focusable element with
+      Use the following process for creating a custom focusable widget with
       an input focus frame.
     </para>
 
@@ -336,7 +332,7 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Use a &factory;'s <methodname>get_container_impl</methodname>() to
-	  obtain the new custom element's parent container
+	  obtain the new custom widget's parent container
 	  &implementation_object;.
 	</para>
       </listitem>
@@ -350,7 +346,7 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
-	  Create the custom element's &implementation_object; instance,
+	  Create the custom widget's &implementation_object; instance,
 	  passing to it the input focus frame container's
 	  &implementation_object;.
 	</para>
@@ -358,7 +354,7 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
-	  Create the &public_object; for the custom element's
+	  Create the &public_object; for the custom widget's
 	  &implementation_object;.
 	</para>
       </listitem>
@@ -369,7 +365,7 @@ See COPYING for distribution information.
 	  <function>&ns;::w::create_focusframe_container</function>(), which
 	  takes care of logically using
 	  <methodname>created_internally</methodname>() with the
-	  custom element's &public_object;.
+	  custom widget's &public_object;.
 	</para>
       </listitem>
 
@@ -383,10 +379,10 @@ See COPYING for distribution information.
 
     <para>
       This logically translates to a minor sleight of hand.
-      Instead of creating a custom display element for the &factory; in
-      question, the input focus frame display element gets created. That
-      becomes the new display element.
-      But the real custom display element goes into the input focus frame,
+      Instead of creating a custom widget for the &factory; in
+      question, the input focus frame widget gets created. That
+      becomes the new widget.
+      But the real custom widget goes into the input focus frame,
       which is a container.
     </para>
   </section>
@@ -405,8 +401,8 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      A display element's <methodname>show</methodname>() or
-      <methodname>hide</methodname>() makes the display element visible or
+      A widget's <methodname>show</methodname>() or
+      <methodname>hide</methodname>() makes the widget visible or
       invisible.
       A container's <methodname>show_all</methodname>() and
       <methodname>hide_all</methodname>() recursively updates the visibility
@@ -417,14 +413,14 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      This matters because a given display element is visible not only
+      This matters because a given widget is visible not only
       when it's <methodname>show</methodname>()n, but only if all of its
       parent containers are also <methodname>show</methodname>()n.
       <methodname>hide</methodname>()ing a container makes the entire
-      container disappear, even if some display elements in the container
-      are <methodname>show</methodname>()n. Each display element maintains
+      container disappear, even if some widgets in the container
+      are <methodname>show</methodname>()n. Each widget maintains
       its own visibility state, and the final visibility of a given
-      display element requires all of its parent containers to be visible.
+      widget requires all of its parent containers to be visible.
     </para>
 
     <section id="nonrecursive_visibility">
@@ -437,15 +433,14 @@ See COPYING for distribution information.
 	focus frame container's &implementation_class;.
 	<classname>&ns;::w::nonrecursive_visibilityObj</classname> is a
 	&template_mixin; that overrides <methodname>show_all</methodname>()
-	and <methodname>hide_all</methodname>() for the resulting display
-	element. They become equivalent to
+	and <methodname>hide_all</methodname>() for the resulting widget. They become equivalent to
 	<methodname>show</methodname>() and
 	<methodname>hide</methodname>().
       </para>
 
       <para>
 	This makes the resulting container behave similar to a monolithic
-	display element. Otherwise, a
+	widget. Otherwise, a
 	<methodname>hide_all</methodname>() followed by
 	<methodname>show</methodname>() results
 	in the container being visible, but none of the container's
@@ -455,16 +450,16 @@ See COPYING for distribution information.
       </para>
 
       <para>
-	For a simple display element, and not a container,
+	For a simple widget, and not a container,
 	<methodname>show</methodname>() and
 	<methodname>hide</methodname>() are the same as
 	<methodname>show_all</methodname>() and
 	<methodname>hide_all</methodname>().
 	Only containers have
-	other display elements that
+	other widgets that
 	<methodname>show_all</methodname>() and
 	<methodname>hide_all</methodname>() affects.
-	This template mixin makes containers look like simple display elements
+	This template mixin makes containers look like simple widgets
 	in that respect.
       </para>
 
@@ -473,18 +468,18 @@ See COPYING for distribution information.
 	The
 	<classname>&ns;::w::nonrecursive_visibilityObj</classname>
 	&template_mixin; results in a container that behaves as a monolithic
-	display element, for visibility purposes.
+	widget, for visibility purposes.
 	<methodname>hide_all</methodname>() followed by
 	<methodname>show</methodname>() makes the container's contents appear,
-	as if the container is just a single display element, because
+	as if the container is just a single widget, because
 	<methodname>hide_all</methodname>() ignored the container's elements
 	in the first place.
       </para>
 
       <note>
 	<para>
-	  New display elements are not visible upon creation, by default.
-	  This remains the case. Each display element that gets added to this
+	  New widgets are not visible upon creation, by default.
+	  This remains the case. Each widget that gets added to this
 	  container should still be
 	  <methodname>show</methodname>()n (or
 	  <methodname>show_all</methodname>()ed, perhaps),
@@ -496,7 +491,7 @@ See COPYING for distribution information.
 	  This is why
 	  <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>
 	  still needs to <methodname>show</methodname>() the custom
-	  display element after it gets added to a non-recursive visibility
+	  widget after it gets added to a non-recursive visibility
 	  input focus frame.
 	</para>
 
@@ -512,8 +507,7 @@ See COPYING for distribution information.
 	focus frame container's &implementation_class;.
 	<classname>&ns;::w::always_visibilityObj</classname> is a
 	&template_mixin; that overrides <methodname>show_all</methodname>()
-	and <methodname>hide_all</methodname>() for the resulting display
-	element.
+	and <methodname>hide_all</methodname>() for the resulting widget.
       </para>
 
       <para>
@@ -523,7 +517,7 @@ See COPYING for distribution information.
 	but only for the container itself.
 	<methodname>show_all</methodname>() and
 	<methodname>hide_all</methodname>() still apply to
-	all display elements in the container.
+	all widgets in the container.
 	Additionally, <classname>&ns;::w::always_visibleObj</classname>
 	automatically <methodname>show</methodname>()s the container after
 	it gets created.
@@ -554,18 +548,16 @@ See COPYING for distribution information.
 	<link linkend="scrollbar">scroll-bars</link>
 	for the application's window if it's too big to fit on the screen.
 	When that happens,
-	display elements that receive keyboard focus get automatically
+	widgets that receive keyboard focus get automatically
 	scrolled into view if they are not fully visible.
       </para>
 
       <para>
 	This &template_mixin; adjusts the scrolling so that its entire
-	container gets scrolled into view instead of just some display
-	element in the container. The
+	container gets scrolled into view instead of just some widget in the container. The
 	<link linkend="standard_focusframe">standard input focus frame</link>
 	is a container, and using this template mixin scrolls the entire
-	input focus frame into view, instead of the focusable display
-	element in the container, leaving one edge of the input focus frame
+	input focus frame into view, instead of the focusable widget in the container, leaving one edge of the input focus frame
 	scrolled out of view.
       </para>
     </section>
@@ -578,14 +570,14 @@ See COPYING for distribution information.
       After <link linkend="standard_focusframe_impl_element">creating the
 	input focus frame's implementation object</link>,
       <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>
-      uses it to create the custom element's &implementation_object;
+      uses it to create the custom widget's &implementation_object;
       and the &public_object;, then
       calls
       <ulink url="&link-function-x--w-create-focusframe-container;"><function>&ns;::w::create_focusframe_container</function></ulink>().
 
       <function>&ns;::w::create_focusframe_container</function>()
       constructs the &public_object; for the input focus frame
-      implementation object, and puts the new custom element into the
+      implementation object, and puts the new custom widget into the
       new input focus frame container.
       <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>
       concludes the process by <link linkend="customimpl">calling the
@@ -593,9 +585,9 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      From the original &factory;'s perspective, one new display element
-      gets created. The display element is the focus frame container, and
-      the focus frame container contains the real custom display element
+      From the original &factory;'s perspective, one new widget
+      gets created. The widget is the focus frame container, and
+      the focus frame container contains the real custom widget
       that gets created.
     </para>
   </section>

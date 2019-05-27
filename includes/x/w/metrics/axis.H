@@ -16,35 +16,35 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! The metrics namespace defines rules for computing a display element's size
+//! The metrics namespace defines rules for computing a widget's size
 
-//! A display elements horizontal and vertical size is specified by
+//! A widgets horizontal and vertical size is specified by
 //! \ref metrics::axis "INSERT_LIBX_NAMESPACE::w::metrics::axis", which
 //! defines three values: minimum, preferred, and maximum. This specifies
-//! the display element's minimum, preferred, and maximum size in the
+//! the widget's minimum, preferred, and maximum size in the
 //! given dimension.
 //!
 //! \ref rectangle "INSERT_LIBX_NAMESPACE::w::metrics::rectangle"
 //! contains two members: horiz and vert. Both of them are \c axis
-//! specifications, and this defines a display element's horizontal and
+//! specifications, and this defines a widget's horizontal and
 //! vertical dimensions.
 
 namespace metrics {
 
 	//! A single horizontal or a vertical axis.
 
-	//! The minimum, preferred, and maximum size of a display element.
+	//! The minimum, preferred, and maximum size of a widget.
 	//!
-	//! The display element will not be any smaller than its stated
+	//! The widget will not be any smaller than its stated
 	//! minimum size. Its initial size, if possible, will be its
 	//! stated preferred size, which cannot be smaller than the minimum
-	//! size. The display element will not be any larger than its stated
+	//! size. The widget will not be any larger than its stated
 	//! maximum size, if possible; but it may end up being larger if
 	//! needed to satisfy its container's layout requirements.
 	//!
 	//! The maximum size cannot be smaller than its preferred size, The
 	//! maximum size can also be specified as infinite(), indicating that
-	//! the display element does not specify a maximum size.
+	//! the widget does not specify a maximum size.
 	//!
 	//! This is mostly an internal object that specifies the size in
 	//! pixel counts.

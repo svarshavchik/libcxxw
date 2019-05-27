@@ -38,7 +38,7 @@ public:
 
 	//! Inherited from elementObj
 
-	//! The minimum overrides are set for the label display element
+	//! The minimum overrides are set for the label widget
 	//! inside the focus frame.
 
 	ref<elementObj::implObj> get_minimum_override_element_impl() override;

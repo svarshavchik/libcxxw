@@ -52,7 +52,7 @@ See COPYING for distribution information.
       </listitem>
       <listitem>
 	<para>
-	  All display elements have full
+	  All widgets have full
 	  keyboard navigation, where possible. No explicit application
 	  support is needed. Even scroll-bars have keyboard controls.
 	</para>
@@ -64,7 +64,7 @@ See COPYING for distribution information.
 	  handle UI events (button clicks, menu selections, and other
 	  activity). Variant types provide compact means for
 	  selecting alternative options.
-	  All display elements are reference-counted objects.
+	  All widgets are reference-counted objects.
 	</para>
       </listitem>
 
@@ -116,7 +116,7 @@ See COPYING for distribution information.
 	<link linkend="INSTALL">is available for downloading</link>.
 	The most recent build of &app; implements and documents the
 	API for
-	<link linkend="uigenerator">generating display elements from an
+	<link linkend="uigenerator">generating widgets from an
 	  <acronym>XML</acronym> stylesheet</link>.
       </para>
     </section>

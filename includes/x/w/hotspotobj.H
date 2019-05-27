@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Methods common to all display elements that can be activated.
+//! Methods common to all widgets that can be activated.
 
 //! \see hotspot
 

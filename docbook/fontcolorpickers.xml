@@ -52,13 +52,13 @@ See COPYING for distribution information.
       parameter that sets the properties of the new font picker,
       returning a new
       <ulink url="&link-typedef-x--w-font-picker;"><classname>&ns;::w::font_picker</classname></ulink>
-      display element.
+      widget.
       <methodname>create_color_picker</methodname>() takes a
       <ulink url="&link-x--w--color-picker-config;"><classname>&ns;::w::color_picker_config</classname></ulink>
       parameter that sets the properties of the new color picker,
       returning a new
       <ulink url="&link-typedef-x--w-color-picker;"><classname>&ns;::w::color_picker</classname></ulink>
-      display element.
+      widget.
     </para>
   </section>
 
@@ -69,7 +69,7 @@ See COPYING for distribution information.
       <link linkend="fontcolorpickers"><filename>fontcolorpickers.C</filename></link>
       summarizes how to use a
       <ulink url="&link-typedef-x--w-font-picker;"><classname>&ns;::w::font_picker</classname></ulink>
-      display element. This display element provides a popup for selecting
+      widget. This widget provides a popup for selecting
       the most common font options of the
       <ulink url="&link-x--w--font;"><classname>&ns;::w::font</classname></ulink>.
     </para>
@@ -120,14 +120,14 @@ See COPYING for distribution information.
       The initial list of most recently used fonts gets specified in
       the <ulink url="&link-x--w--font-picker-config;"><classname>&ns;::w::font_picker_config</classname></ulink>
       when creating the font picker.
-      The font picker element's overloaded
+      The font picker widget's overloaded
       <methodname>most_recently_used</methodname>() method either returns
       the current list of most recently used fonts, or sets the new list,
       updating the font picker popup accordingly.
       An application can be responsible for saving and restoring the list of
       fonts each time it runs, but it's easier to use the
       existing support for <link linkend="screen_positions">preserving the
-	position and size of windows and display elements</link>.
+	position and size of windows and widgets</link>.
     </para>
 
     <para>
@@ -160,7 +160,7 @@ See COPYING for distribution information.
       <link linkend="fontcolorpickers"><filename>fontcolorpickers.C</filename></link>
       summarizes how to use a
       <ulink url="&link-typedef-x--w-color-picker;"><classname>&ns;::w::color_picker</classname></ulink>
-      display element. This display element provides a popup for selecting
+      widget. This widget provides a popup for selecting
       the red, green, and blue channels of a
       <ulink url="&link-x--w--rgb;"><classname>&ns;::w::rgb</classname></ulink>.
       The popup ignores the alpha channel component.

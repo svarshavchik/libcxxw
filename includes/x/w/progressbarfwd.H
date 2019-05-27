@@ -35,7 +35,7 @@ pb->update(
 
 \endcode
 
-A display element created by a \ref factory "factory's" create_progressbar().
+A widget created by a \ref factory "factory's" create_progressbar().
 
 */
 

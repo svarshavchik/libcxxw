@@ -14,7 +14,7 @@ class LIBCXX_HIDDEN toolboxfactoryObj;
 
 /*! A toolbox factory.
 
-A factory that adds new display elements to a container with a
+A factory that adds new widgets to a container with a
 \ref toolboxlayoutmanager "toolbox layout manager".
 
 */

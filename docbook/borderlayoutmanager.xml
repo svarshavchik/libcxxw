@@ -16,7 +16,7 @@ See COPYING for distribution information.
   </mediaobject>
 
   <para>
-    The border layout manager draws a border around a display element.
+    The border layout manager draws a border around a widget.
     The <link linkend="gridlayoutmanager">grid layout manager</link>
     handles containers with many elements, and also has the means to draw
     borders around them. The grid layout manager has many options and settings,
@@ -29,7 +29,7 @@ See COPYING for distribution information.
 
   <para>
     The border layout manager has an option of adding a title to the border.
-    This visual frames related display elements, and gives them a title.
+    This visual frames related widgets, and gives them a title.
   </para>
 
   <blockquote>
@@ -55,7 +55,7 @@ See COPYING for distribution information.
       <classname>&ns;::w::new_borderlayoutmanager</classname>'s constructor's
       parameter is a callable object or a lambda. The lambda receives one
       parameter, a &factory;. The callable object must use the factory
-      to create exactly one display element:
+      to create exactly one widget:
     </para>
 
     <blockquote>
@@ -82,8 +82,8 @@ See COPYING for distribution information.
       This is the typical way to create a border.
       The lambda uses the factory to create a &container; that uses the grid
       layout manager, then proceeds to initialize the grid.
-      The border layout manager draws a border around a display element,
-      but this diplay element could be a &container; of other display elements.
+      The border layout manager draws a border around a widget,
+      but this diplay widget could be a &container; of other widgets.
     </para>
 
     <para>
@@ -103,7 +103,7 @@ See COPYING for distribution information.
       <methodname>create_container</methodname>() takes the
       <classname>&ns;::w::new_borderlayoutmanager</classname> and constructs
       a new container with the border layout manager, and calls the
-      lambda to create the display element with the border.
+      lambda to create the widget with the border.
       As always, <methodname>create_container</methodname>()
       invokes the &creator; to initialize the contents of the new container.
       However <classname>&ns;::w::new_borderlayoutmanager</classname>'s
@@ -119,7 +119,7 @@ See COPYING for distribution information.
     <para>
       <link linkend="borderlayoutmanager"><filename>borderlayoutmanager.C</filename></link>
       creates two bordered elements. The one on the right has a title.
-      A bordered element with a title requires some additional space, to
+      A bordered widget with a title requires some additional space, to
       make room for the title text, so
       <filename>borderlayoutmanager.C</filename> aligns both elements on their
       bottom margins, for an even look.
@@ -144,25 +144,25 @@ nblm.title("Hello world");</programlisting>
       <varname>title</varname> is an initially empty
       <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>.
       A non-empty <varname>title</varname> creates a title for the bordered
-      display element.
+      widget.
     </para>
 
     <para>
       <link linkend="borderlayoutmanager"><filename>borderlayoutmanager.C</filename></link>'s
-      left bordered element does not have a title, unlike the the right
-      bordered element. Besides the title, the two bordered elements have
-      a slightly different visual apperance. The title-less bordered element
+      left bordered widget does not have a title, unlike the the right
+      bordered widget. Besides the title, the two bordered elements have
+      a slightly different visual apperance. The title-less bordered widget
       has a slightly shaded, visually-highlighted background color.
     </para>
 
     <para>
       Without a title the border layout
       manager automatically installs a theme-specified background color for
-      the element in the border. Turn off this default behavior by
+      the widget in the border. Turn off this default behavior by
       setting the <varname>no_background</varname> flag in the
       <ulink url="&link-x--w--new-borderlayoutmanager;"><classname>&ns;::w::new_borderlayoutmanager</classname></ulink>.
       This behavior gets automatically turned off when creating a border
-      with a title, which is why the right bordered element has a plain
+      with a title, which is why the right bordered widget has a plain
       background color. There's no explicit border drawn under the title,
       to serve as an explicit edge to the highlighted border. It would not
       look good, so the highlighted background does not get installed when
@@ -184,24 +184,24 @@ blm-&gt;update_title("Lorem Ipsum");</programlisting>
       title after their creation. Adding or removing a title
       requires resizing the container. This is because the title uses up.
       additional vertical real estate; and the border layout manager does
-      not update the existing element's background color either.
+      not update the existing widget's background color either.
     </para>
 
     <note>
       <para>
-	An untitled border element's default background color gets set when
-	the bordered element gets created. The border layout manager inherits
+	An untitled border widget's default background color gets set when
+	the bordered widget gets created. The border layout manager inherits
 	from the utility singleton layout manager object, which implements
-	methods for replacing the element in the container. The default
-	bordered element's background color gets installed only in the
-	border layout manager's container's initial element. The singleton
+	methods for replacing the widget in the container. The default
+	bordered widget's background color gets installed only in the
+	border layout manager's container's initial widget. The singleton
 	layout manager's <methodname>replace</methodname>() should be
 	considered as undocumented.
       </para>
 
       <para>
 	The established approach to modifying the contents of a bordered
-	element is to use
+	widget is to use
 	<classname>&ns;::w::new_borderlayoutmanager</classname>'s
 	constructor's callback to create a discrete container, with a
 	stock grid layout manager, and use the grid layout manager to

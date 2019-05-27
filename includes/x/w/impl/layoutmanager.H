@@ -66,7 +66,7 @@ class layoutmanagerObj::implObj : virtual public obj {
 	//! The default implementation does nothing.
 	virtual void uninstalling(ONLY IN_THREAD);
 
-	//! An element in the container has updated metrics.
+	//! An widget in the container has updated metrics.
 
 	//! The default implementation invokes needs_recalculation().
 
@@ -95,7 +95,7 @@ class layoutmanagerObj::implObj : virtual public obj {
 				  (std::forward<functor_type>(functor)));
 	}
 
-	//! Subclass iterates over each child element.
+	//! Subclass iterates over each child widget.
 	virtual void do_for_each_child(ONLY IN_THREAD,
 				       const function<void
 				       (const element &e)> &)=0;
@@ -164,14 +164,14 @@ class layoutmanagerObj::implObj : virtual public obj {
 		 const element_impl &child,
 		 inherited_visibility_info &info);
 
-	//! Return the child element position that includes any container-provided padding.
+	//! Return the child widget position that includes any container-provided padding.
 
 	//! The default implementation returns the same rectangle as the
 	//! element's current_position.
 
 	virtual rectangle padded_position(ONLY IN_THREAD, const element_impl &e);
 
-	//! Return this layout manager's element.
+	//! Return this layout manager's widget.
 
 	//! This allows mixin templates to be added to a subclass of either
 	//! elementObj::implObj, or layoutmanagerObj::implObj
@@ -187,18 +187,18 @@ class layoutmanagerObj::implObj : virtual public obj {
 
  protected:
 
-	//! Invokes the container's element function of the same name.
+	//! Invokes the container's widget function of the same name.
 
 	void current_position_updated(ONLY IN_THREAD);
 
  public:
 
-	//! This element wants to make sure that part of it is visible.
+	//! This widget wants to make sure that part of it is visible.
 
 	//! An element's ensure_visibility() winds up here.
 	//!
 	//! The default implementation does nothing.
-	//! The peephole layout manager makes sure that its element scrolls
+	//! The peephole layout manager makes sure that its widget scrolls
 	//! this part of it into view.
 
 	virtual void ensure_visibility(ONLY IN_THREAD,
@@ -212,7 +212,7 @@ class layoutmanagerObj::implObj : virtual public obj {
 	//! Invoked to draw the contents of the container.
 
 	//! The default implementation uses container_clear_padding() to clear
-	//! the padding around each display element. The passed-in drawn_areas
+	//! the padding around each widget. The passed-in drawn_areas
 	//! gets forwarded to container_clear_padding(), in this manner it
 	//! is populated with the areas occupied by all the elements in the
 	//! container.

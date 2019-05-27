@@ -77,8 +77,8 @@ void container_elementObj<element_impl>
 
 //! Forwarded to containerObj::implObj and the superclass.
 //!
-//! If the element is getting shown, the container gets shown first, then
-//! all the elements in the container get shown. If the element is getting
+//! If the widget is getting shown, the container gets shown first, then
+//! all the elements in the container get shown. If the widget is getting
 //! hidden, all elements inthe container get hidden first, then the container.
 
 template<typename element_impl>

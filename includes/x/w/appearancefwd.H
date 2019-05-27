@@ -15,9 +15,9 @@ class LIBCXX_PUBLIC appearanceObj;
 /*! Appearance object.
 
 An object that describes the visual appearance of properties of some
-display element.
+widget.
 
-This is a base class that display element-specific appearance objects
+This is a base class that widget-specific appearance objects
 derived from.
 
 A \ref uigenerators "parsed theme file"'s get_appearance() method returns

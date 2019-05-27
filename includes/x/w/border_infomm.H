@@ -13,15 +13,15 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! A border of an element in a grid.
+//! A border of an widget in a grid.
 
 //! The \ref gridlayoutmanager "grid layout manager" draws borders around
-//! each grid element. This class specifies a custom grid element border.
+//! each grid element. This class specifies a custom grid widget border.
 //!
 //! Borders of adjacent elements get collapsed together, with the "better"
 //! border ending up on top, and ruling the roost.
 //!
-//! Other display elements also use borders, for various purposes.
+//! Other widgets also use borders, for various purposes.
 
 struct border_infomm {
 

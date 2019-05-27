@@ -15,13 +15,13 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC color_pickerObj;
 
-/*! Color picker display element.
+/*! Color picker widget.
 
 \code
 INSERT_LIBX_NAMESPACE::w::color_picker cp=factory->create_color_picker();
 \endcode
 
-A small display element for initializing colors. Displays a small rectangle
+A small widget for initializing colors. Displays a small rectangle
 in the current color, an
 \ref rgb "INSERT_LIBX_NAMESPACE::w::rgb" value, and a button next to it.
 The button opens a popup for individually adjusting the color's red, green,

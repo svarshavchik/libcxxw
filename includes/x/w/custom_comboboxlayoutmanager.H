@@ -29,7 +29,7 @@ struct custom_combobox_selection_changed_info_t {
 	//! The layout manager
 	const custom_comboboxlayoutmanager &lm;
 
-	//! The item element that has been selected or unselected.
+	//! The item widget that has been selected or unselected.
 	const element &current_selection;
 
 	//! The popup
@@ -64,7 +64,7 @@ struct custom_combobox_selection_search_info_t {
 	//! Starting position to search
 	size_t starting_index;
 
-	//! The item element that has been selected or unselected.
+	//! The item widget that has been selected or unselected.
 	const element &current_selection;
 
 	//! The selection_required flag from new_custom_comboboxlayoutmanager
@@ -112,12 +112,11 @@ The members/methods of this class are not thread-safe. It is intended that
 an execution thread constructs an instance of this class in automatic scope,
 then passes the class instance to create_focusable_container().
 
-A subclass must override selection_factory() to create a display
-element that represents the current selection in the combo-box. The callback
+A subclass must override selection_factory() to create a widget that represents the current selection in the combo-box. The callback
 must use the factory that it receives as a parameter to create exactly one
-display element.
+widget.
 
-This current selection display element must be focusable, and the factory
+This current selection widget must be focusable, and the factory
 must return the focusable element as well, so for a basic, simple
 focusable element the element created by the factory gets returned.
 
@@ -148,8 +147,7 @@ to manually update it when a combo-box selection gets made.
 \ref new_standard_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_standard_comboboxlayoutmanager"
 and
 \ref new_editable_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager"
-provide layout managers that implement a more conventional combo-box display
-element.
+provide layout managers that implement a more conventional combo-box widget.
 
 \par Synchronized combo-boxes
 
@@ -184,7 +182,7 @@ class new_custom_comboboxlayoutmanager
 	new_custom_comboboxlayoutmanager &operator=
 	(const new_custom_comboboxlayoutmanager &) LIBCXX_PUBLIC;
 
-	//! Current selection element factory
+	//! Current selection widget factory
 
 	//! The subclass must override and implement it.
 	virtual focusable selection_factory(const factory &) const=0;

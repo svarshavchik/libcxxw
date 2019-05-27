@@ -134,7 +134,7 @@ d->dialog_window->show_all();
 \endcode
 
 Creates a generic dialog. The dialog needs to be show_all()ed, to make
-it visible by showing all of the dialog's display elements.
+it visible by showing all of the dialog's widgets.
 
 The first parameter is an
 \ref create_dialog_args "INSERT_LIBX_NAMESPACE::w::create_dialog_args"
@@ -211,7 +211,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_dialog(
     // Use this icon for this dialog.
     "alert",
 
-    // The featured display element.
+    // The featured widget.
     []
     (const INSERT_LIBX_NAMESPACE::w::factory &factory)
     {
@@ -233,7 +233,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
     // Icon
     "alert",
 
-    // The featured display element.
+    // The featured widget.
     []
     (const INSERT_LIBX_NAMESPACE::w::factory &factory)
     {
@@ -285,7 +285,7 @@ INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog
        // This callback gets invoked by the "Ok" button, or when <Enter>
        // is pressed in the input field. In either case the dialog is hidden.
        //
-       // This callback received the input_field display elements, so that
+       // This callback received the input_field widgets, so that
        // the callback may obtain the entered text.
        []
        (ONLY IN_THREAD,

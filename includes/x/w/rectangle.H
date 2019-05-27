@@ -134,7 +134,7 @@ rectarea intersect(const rectarea &,
 
 //! Return an intersection set of two rectangle sets.
 
-//! With the second set consisting of one element. Most often used optimized
+//! With the second set consisting of one widget. Most often used optimized
 //! path.
 rectarea intersect(const rectarea &,
 			const rectangle &,

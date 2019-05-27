@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 //!
 //! The focusable_container_owner gets registered as an owner for the specified
 //! focusable implementation. This is typically some focusable object in the
-//! the focus frame (either the given element itself, or some element in the
+//! the focus frame (either the given element itself, or some widget in the
 //! the container), but whose public object is intentionally not the owner of
 //! its focusable implementation object.
 //!

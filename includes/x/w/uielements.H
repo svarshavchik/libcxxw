@@ -23,7 +23,7 @@ Passed to a supported layout manager's generate(), to
 The first element is a map. The key is the \<element>'s \<name> from the
 XML template. The value is a lambda, or a callable object. \<element>
 invokes the lambda, passing to it a \ref factory "factory". The lambda
-is expected to use the factory to create a display element:
+is expected to use the factory to create a widget:
 
 \code
 INSERT_LIBX_NAMESPACE::w::uielements factories{
@@ -60,7 +60,7 @@ results in the corresponding lambda getting invoked.
 
 struct uielements {
 
-	//! Generators for new display elements.
+	//! Generators for new widgets.
 
 	//! Referenced by name, from the template.
 
@@ -83,9 +83,9 @@ struct uielements {
 
 	std::unordered_map<std::string, element> new_elements;
 
-	//! Return the generated element.
+	//! Return the generated widget.
 
-	//! An exception gets thrown if the expect element was not found.
+	//! An exception gets thrown if the specified widget was not found.
 
 	element get_element(const std::string_view &name) const;
 };

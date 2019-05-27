@@ -65,7 +65,7 @@ See COPYING for distribution information.
       <term><methodname>insert_columns</methodname>(row, col)</term>
       <listitem>
 	<para>
-	  Insert new elements before an existing element in an existing row.
+	  Insert new elements before an existing widget in an existing row.
 	</para>
       </listitem>
     </varlistentry>
@@ -73,7 +73,7 @@ See COPYING for distribution information.
       <term><methodname>remove</methodname>(row, col)</term>
       <listitem>
 	<para>
-	  Remove an element in the given row and column.
+	  Remove an widget in the given row and column.
 	</para>
       </listitem>
     </varlistentry>
@@ -92,7 +92,7 @@ See COPYING for distribution information.
     <methodname>append_row</methodname>(), and
     <methodname>insert_columns</methodname>()
     (there's also <methodname>append_columns</methodname>() too)
-    return a &factory;. New display elements created by the factory
+    return a &factory;. New widgets created by the factory
     get placed into the grid accordingly.
   </para>
 
@@ -114,20 +114,20 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      Using nested containers is the solution. An element in the grid
+      Using nested containers is the solution. An widget in the grid
       can simply be another container with its own grid layout manager.
       The nested grid layout manager is self-contained, and independently
-      manages its contents. This container is viewed as a single element
+      manages its contents. This container is viewed as a single widget
       by the main window's grid layout manager, which positions it as a
-      single element, and the nested container's grid layout manager aligns
+      single widget, and the nested container's grid layout manager aligns
       its cells independently.
     </para>
 
     <para>
       This is what's really going on with <link linkend="checkradio">checkboxes
 	and radio buttons</link>. Each image button is an internal
-      grid with one row: an internal element for the actual image button, and an
-      optional display element, and the optional
+      grid with one row: an internal widget for the actual image button, and an
+      optional widget, and the optional
       <ulink url="&link-enum-x--w-valign;"><classname>&ns;::w::valign</classname></ulink>
       parameter controls the row's vertical alignment.
       <ulink url="examples/gridlayoutmanager.C">gridlayoutmanager.C</ulink>
@@ -245,9 +245,9 @@ button-&gt;on_activate
 
     <para>
       As explained in <xref linkend="callbackrefs" />, callbacks attached
-      to display elements can't capture references to parent or child
-      display elements. This creates an internal circular reference that
-      prevents the display elements, which are reference-counted objects,
+      to widgets can't capture references to parent or child
+      widgets. This creates an internal circular reference that
+      prevents the widgets, which are reference-counted objects,
       from getting destroyed.
     </para>
 
@@ -276,8 +276,7 @@ button-&gt;on_activate
       each button's <methodname>on_activate</methodname>() takes this
       approach. Strictly speaking, <filename>gridlayoutmanager.C</filename>
       doesn't actually need to do this. Each button's action affects only
-      other display elements that are neither its parent or child display
-      element; <filename>gridlayoutmanager.C</filename> uses weak captures
+      other widgets that are neither its parent or child widget; <filename>gridlayoutmanager.C</filename> uses weak captures
       only to give an example of using this design pattern.
     </para>
   </section>

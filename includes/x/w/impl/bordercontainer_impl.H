@@ -49,7 +49,7 @@ class bordercontainer_implObj : virtual public obj {
 
 	const scratch_buffer v_scratch_buffer;
 
-	//! Masking scratch buffer for the display element.
+	//! Masking scratch buffer for the widget.
 
 	//! For optimal use of scratch buffers, separate scratch buffer are
 	//! used for horizontal, vertical, and corner borders. The corner
@@ -119,14 +119,14 @@ public:
 	//! Additional padding.
 
 	//! Implemented by the mixin template, to return the additional
-	//! padding between the border and the element.
+	//! padding between the border and the widget.
 
 	virtual dim_t get_border_hpad(ONLY IN_THREAD) const=0;
 
 	//! Additional padding.
 
 	//! Implemented by the mixin template, to return the additional
-	//! padding between the border and the element.
+	//! padding between the border and the widget.
 
 	virtual dim_t get_border_vpad(ONLY IN_THREAD) const=0;
 

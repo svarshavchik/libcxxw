@@ -137,7 +137,7 @@ struct input_field_config {
 
 	//! Enables two spin buttons next to the input field.
 	//! The callbacks must use the their factory parameter to create one
-	//! display element that shows an icon or a label for that spin
+	//! widget that shows an icon or a label for that spin
 	//! button.
 
 	void set_spin_control_factories(const functionref<void(const factory

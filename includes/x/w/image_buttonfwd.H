@@ -58,7 +58,7 @@ typedef functionref<void (THREAD_CALLBACK, size_t,
 //! some aggressive overloading).
 //!
 //! A sole factory parameter is the usual case. The factory is expected to
-//! create a single display element, typically a \ref label "label", that
+//! create a single widget, typically a \ref label "label", that
 //! appears next to the button's image. Without a factory-created label,
 //! the button image appears by itself, unadorned.
 //!

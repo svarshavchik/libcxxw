@@ -11,26 +11,25 @@ See COPYING for distribution information.
   <para>
     <filename>uigenerator1.C</filename> is a version of
     <link linkend="combobox"><filename>combobox.C</filename></link>
-    that gives an example of creating display elements using an
+    that gives an example of creating widgets using an
     <acronym>XML</acronym>-specified layout,
     a <quote>theme file</quote>.
     The <acronym>XML</acronym> content of the theme file gets effectively
     executed as a list of instructions for invoking the various methods of
     layout managers and factories.
     Instead of invoking various methods
-    grid rows, factories, and display elements
+    grid rows, factories, and widgets
     and their various grid-related attributes (borders, padding, etc...),
     these methods gets executed via the theme file.
     The default appearance of &appshort; windows comes from the default
     theme file, and this is the same mechanism.
-    The application provides only the code to create the individual display
-    elements themselves: in this case a label, a combo-box, and a set of
+    The application provides only the code to create the individual widgets themselves: in this case a label, a combo-box, and a set of
     buttons.
   </para>
 
   <para>
     This approach does not really end up saving much code, but it
-    makes it possible to adjust the appearance of display elements quickly,
+    makes it possible to adjust the appearance of widgets quickly,
     just by editing and changing the theme file, and
     without recompiling.
   </para>

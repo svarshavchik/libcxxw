@@ -104,7 +104,7 @@ class focusableObj::implObj : virtual public obj {
 	//! Destructor
 	~implObj();
 
-	//! Whether this element is enabled for focusing.
+	//! Whether this widget is enabled for focusing.
 
 	bool focusable_enabled(ONLY IN_THREAD);
 
@@ -114,14 +114,14 @@ class focusableObj::implObj : virtual public obj {
 
 	//! Must be implement in the subclass.
 
-	//! Returns this focusable's element.
+	//! Returns this focusable's widget.
 	//! \see focusable_element
 
 	virtual child_elementObj &get_focusable_element()=0;
 
 	//! Must be implement in the subclass.
 
-	//! Returns this focusable's element.
+	//! Returns this focusable's widget.
 	//! \see focusable_element
 
 	virtual const child_elementObj &get_focusable_element() const=0;
@@ -142,7 +142,7 @@ class focusableObj::implObj : virtual public obj {
 	void next_focus(ONLY IN_THREAD,
 			const callback_trigger_t &trigger) LIBCXX_HIDDEN;
 
-	//! This is a label for this display element.
+	//! This is a label for this widget.
 	void set_label(const ref<elementObj::implObj> &) LIBCXX_HIDDEN;
 
  private:
@@ -159,7 +159,7 @@ class focusableObj::implObj : virtual public obj {
 	void prev_focus(ONLY IN_THREAD,
 			const callback_trigger_t &trigger) LIBCXX_HIDDEN;
 
-	//! Set focus to this focusable element.
+	//! Set focus to this focusable widget.
 
 	//! Sets the focus, but doesn't bother to call ensure_visibility().
 	//! Typically done in response to a button press, because unexpected
@@ -187,7 +187,7 @@ class focusableObj::implObj : virtual public obj {
 
 	virtual bool focus_autorestorable(ONLY IN_THREAD);
 
-	//! Set focus to this focusable element and make sure it is visible.
+	//! Set focus to this focusable widget and make sure it is visible.
 
 	virtual void set_focus_and_ensure_visibility(ONLY IN_THREAD,
 						     const callback_trigger_t &)
@@ -229,7 +229,7 @@ class focusableObj::implObj : virtual public obj {
 	//! Throw an exception
 
 	//! Invoked by the focusable_elementObj mixin when a child focusable
-	//! element gets created.
+	//! widget gets created.
 	//!
 	//! Throw an exception, can't do it.
 
@@ -242,7 +242,7 @@ class focusableObj::implObj : virtual public obj {
 
 	//! Schedule unfocus() to be invoked later.
 
-	//! This is called when the focusable element is no longer visible.
+	//! This is called when the focusable widget is no longer visible.
 	//! We don't want to unfocus() immediately, since other elements may
 	//! also be losing visibility at the same time, so let's not bounce
 	//! the focus all over the place. Instead punt this into idle

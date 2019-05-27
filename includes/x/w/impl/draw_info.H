@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Information that's needed to draw an element.
+//! Information that's needed to draw an widget.
 
 //! This is based on: the element's position, its background color,
 //! with the background color depending on its inherited_visibility
@@ -40,11 +40,11 @@ struct draw_info {
 		return !operator==(o);
 	}
 
-	//! The display element's position in the window
+	//! The widget's position in the window
 
 	//! This is, essentially, the sum of x/y coordinates of all elements
 	//! starting with the top level window, whose x/y coordinates are
-	//! logically (0,0), and ending with this display element.
+	//! logically (0,0), and ending with this widget.
 	//!
 	//! width and height of this is the element's current position's
 	//! width and height.
@@ -54,15 +54,15 @@ struct draw_info {
 	//! Return a rectarea containing just absolute_location, at (0, 0)
 
 	//! This used to construct a rectarea to redraw this entire
-	//! element.
+	//! widget.
 
 	rectarea entire_area() const;
 
-	//! The element is clipped to this viewport.
+	//! The widget is clipped to this viewport.
 
-	//! It's possible that a display element is outside the visible
+	//! It's possible that a widget is outside the visible
 	//! region of its parent. The calculated visibly-clipped region is
-	//! placed here. This is an empty set if this display element
+	//! placed here. This is an empty set if this widget
 	//! is completely invisible.
 	//!
 	//! This element's top/left coordinate in the top level window
@@ -86,7 +86,7 @@ struct draw_info {
 
 	//! window_background's (0, 0) coordinates are located at
 	//! at this position in window_picture. If the background is this
-	//! display element's, background_x and background_y are equal to
+	//! widget's, background_x and background_y are equal to
 	//! absolute_location.[xy]
 
 	coord_t background_x, background_y;

@@ -12,19 +12,19 @@ LIBCXXW_NAMESPACE_START
 
 //! Reported keyboard and pointer focus changes.
 
-//! This indication gets passed to a display element's on_pointer_focus() and
+//! This indication gets passed to a widget's on_pointer_focus() and
 //! a focusable element's on_keyboard_focus() callbacks, and indicates
-//! how the display element focus has changed.
+//! how the widget focus has changed.
 
 enum class focus_change {
 	gained,       //!< Gained focus
 	lost,         //!< Lost focus
-	child_gained, //!< Child element gained focus
-	child_lost,   //!< Child element lost focus
-	child_moved,        //!< Focus moved to a different child element.
+	child_gained, //!< Child widget gained focus
+	child_lost,   //!< Child widget lost focus
+	child_moved,        //!< Focus moved to a different child widget.
 
 	gained_from_child,       //! Child lost focus for me, a gained event will follow
-	lost_to_child,           //! After a lost focus, the focus was received by a child element.
+	lost_to_child,           //! After a lost focus, the focus was received by a child widget.
 
 	focus_movement_complete, //! Focus movement has finished (internal state only).
 };

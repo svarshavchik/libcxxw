@@ -45,7 +45,7 @@ LIBCXXW_NAMESPACE_START
 //! gets changed to a "wait/busy" cursor pointer.
 //!
 //! There's also a get_shade_mcguffin() and get_wait_mcguffin() method
-//! in \ref element "every display element", which obtain their respective
+//! in \ref element "every widget", which obtain their respective
 //! mcguffins as well.
 //!
 //! get_shade_busy_mcguffin() is equivalent to get_wait_busy_mcguffin() on

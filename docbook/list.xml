@@ -359,7 +359,7 @@ llmanager->enabled(2, !flag);</programlisting>
     <para>
       The
       <ulink url="&link-typedef-x--w-listlayoutmanager;"><classname>&ns;::w::listlayoutmanager</classname></ulink>:
-      does not manage discrete display elements, but a vertical list of text
+      does not manage discrete widgets, but a vertical list of text
       labels in <link linkend="list">selection lists</link>,
       <link linkend="combobox">combo-boxes</link>, and
       <link linkend="menu">menus</link>.
@@ -439,7 +439,7 @@ llmanager->append_items(
       <para>
 	<methodname>size</methodname>() will not immediately reflect the
 	new size of the list after calling &allitemmethods;.
-	The contents of the display element get updated by the
+	The contents of the widget get updated by the
 	&connection_thread;. These methods send a message to the connection
 	thread, which then makes the corresponding update.
       </para>

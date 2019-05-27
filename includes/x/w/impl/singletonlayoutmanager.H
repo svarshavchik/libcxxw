@@ -20,10 +20,10 @@ class singletonlayoutmanagerObj::implObj :
 	//! The container for the current element, and/or new elements.
 
 	//! created() pushes new elements at the end. The connection thread
-	//! when it gets around to it will remove the old element.
+	//! when it gets around to it will remove the old widget.
 	typedef mpobj<std::deque<element>> current_element_t;
 
-	//! The current element.
+	//! The current widget.
 
 	current_element_t current_element;
 
@@ -56,11 +56,11 @@ public:
 	//! New element, replace the existing one.
 	void created(const element &e);
 
-	//! Return the existing element.
+	//! Return the existing widget.
 
 	element get();
 
-	//! Return the existing element.
+	//! Return the existing widget.
 
 	element get(ONLY IN_THREAD);
  private:
@@ -128,13 +128,13 @@ public:
 				    const metrics::axis &horiz,
 				    const metrics::axis &vert);
 
-	//! Calculate and position the sole child element.
+	//! Calculate and position the sole child widget.
 
 	//! The container's metrics should include any padding, so this
-	//! would normally end up positioning the current element according
+	//! would normally end up positioning the current widget according
 	//! to the specified padding. If the container is taller, the
-	//! element is vertically centered. If the container is wider, the
-	//! element maintains the set left padding, and the right padding
+	//! widget is vertically centered. If the container is wider, the
+	//! widget maintains the set left padding, and the right padding
 	//! gets increased.
 
 	void process_updated_position(ONLY IN_THREAD,

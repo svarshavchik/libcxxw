@@ -98,7 +98,7 @@ public:
 	//! Whether list item \#i is selected right now.
 	bool selected(size_t i) const;
 
-	//! Return indentation level of the given element.
+	//! Return indentation level of the given widget.
 	size_t hierindent(size_t i) const;
 
 	//! Return the currently selected item.
@@ -118,7 +118,7 @@ public:
 	void selected(ONLY IN_THREAD, size_t i, bool selected_flag,
 		      const callback_trigger_t &trigger);
 
-	//! Which element is currently under cursor
+	//! Which widget is currently under cursor
 	std::optional<size_t> current_list_item() const;
 
 	//! As if item \#i was clicked on.

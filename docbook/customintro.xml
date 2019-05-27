@@ -9,11 +9,11 @@ See COPYING for distribution information.
   <title>Introduction</title>
 
   <para>
-    This is a guide for creating &appshort; display elements with
+    This is a guide for creating &appshort; widgets with
     custom functionality, by taking the classes and templates
-    the library uses to represent display elements and subclassing them.
+    the library uses to represent widgets and subclassing them.
     For typical use cases
-    &appshort;'s display elements offer installable
+    &appshort;'s widgets offer installable
     &callback;s that provide sufficient functionality.
     These callbacks provide the means for executing actions
     in response to pointer and button clicks, and other activity and events.
@@ -22,7 +22,7 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    At this time, only the following display elements are fully exposed to
+    At this time, only the following widgets are fully exposed to
     the public API, and are subclassable:
   </para>
 
@@ -31,7 +31,7 @@ See COPYING for distribution information.
       <term><link linkend="customelement"><classname>&ns;::w::element</classname></link></term>
       <listitem>
 	<para>
-	  A basic display element, that does nothing.
+	  A basic widget, that does nothing.
 	</para>
       </listitem>
     </varlistentry>
@@ -40,7 +40,7 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  A little bit more than just an
-	  <classname>&ns;::w::element</classname>. A display element with a
+	  <classname>&ns;::w::element</classname>. A widget with a
 	  fixed size, specified in millimeters, and actual size computed
 	  and updated based on the display's resolution and the current theme's
 	  scaling factor.
@@ -62,7 +62,7 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Defines one or more colors; based on the current theme and/or
-	  based on the display element's size (color gradients).
+	  based on the widget's size (color gradients).
 	</para>
       </listitem>
     </varlistentry>
@@ -71,9 +71,9 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Implements a simplified interface for drawing the contents of the
-	  display element. Rather than updating only the rectangular areas
-	  of the display element that require updating, the entire contents
-	  of the display element get updated in one fell swoop.
+	  widget. Rather than updating only the rectangular areas
+	  of the widget that require updating, the entire contents
+	  of the widget get updated in one fell swoop.
 	</para>
       </listitem>
     </varlistentry>
@@ -105,7 +105,7 @@ See COPYING for distribution information.
 	  Creates a specialized &container; that draws a
 	  <link linkend="standard_focusframe">keyboard
 	    input focus frame</link> around the container's contents
-	  whenever a display element in the container has keyboard input focus.
+	  whenever a widget in the container has keyboard input focus.
 	</para>
       </listitem>
     </varlistentry>
@@ -130,7 +130,7 @@ See COPYING for distribution information.
 	  <methodname>show_all</methodname>() and
 	  <methodname>hide_all</methodname>() are ignored, but
 	  <link linkend="always_visible">continue to get processed by the
-	  display elements in the container</link>.
+	  widgets in the container</link>.
 	</para>
       </listitem>
     </varlistentry>
@@ -140,24 +140,24 @@ See COPYING for distribution information.
 	<para>
 	  The entire container
 	  <link linkend="container_visible"> always gets scrolled into view
-	    instead of one element in the container</link>.
+	    instead of one widget in the container</link>.
 	</para>
       </listitem>
     </varlistentry>
   </variablelist>
 
   <para>
-    The desired properties inherited by a custom display elements are formed
+    The desired properties inherited by a custom widgets are formed
     by combining these mixin templates. For example:
     <classname>&ns;::w::nonrecursive_visibilityObj&lt;&ns;::w::container_elementObj&lt;child_elementObj&gt;&gt;</classname>.
     This chapter gives a brief overview and examples of subclassing these
-    display elements and
+    widgets and
     using these mixins.
   </para>
 
   <para>
     The most useful aspect of creating a custom class of &appshort;'s
-    display elements is attaching some custom data to a display element
+    widgets is attaching some custom data to a widget
     in situations where the
     <link linkend="appdata">generic <varname>appdata</varname>
     object</link>
@@ -174,7 +174,7 @@ See COPYING for distribution information.
 	tutorial</link>
       all &appshort; objects are reference-counted objects, represented
       by reference handles.
-      Each &appshort; display element consists of two objects.
+      Each &appshort; widget consists of two objects.
       The <quote>public</quote> object is the object that's visible to
       the application, such as
       <link linkend="inputfieldsandbuttons"><classname>&ns;::w::input_field</classname></link>.
@@ -183,8 +183,7 @@ See COPYING for distribution information.
       <classname>&ns;::w::input_field</classname> is an
       <classname>&ns;::ref</classname> to the
       <classname>&ns;::w::input_fieldObj</classname>
-      class. All other display
-      element classes follow the same naming convention.
+      class. All other widget classes follow the same naming convention.
     </para>
 
     <para>
@@ -200,7 +199,7 @@ See COPYING for distribution information.
       A brief, very brief, example of subclassing:
       the public object inherits from
       <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::elementObj</classname></ulink> (<classname>&ns;::w::elementObj</classname>
-      implements shared functionality that's common to all display elements);
+      implements shared functionality that's common to all widgets);
       and the implementation object is a subclass
       of <ulink url="&link-x--w--elementObj--implObj;"><classname>&ns;::w::elementObj::implObj</classname></ulink>.
     </para>
@@ -208,22 +207,22 @@ See COPYING for distribution information.
     <para>
       But it turns out that only the main application window
       directly subclasses <classname>&ns;::w::elementObj::implObj</classname>.
-      All regular display elements are subclasses of
+      All regular widgets are subclasses of
       <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>.
       This class represents an implementation object for a
-      display element in a &container;.
-      All ordinary display elements always get placed inside some
+      widget in a &container;.
+      All ordinary widgets always get placed inside some
       &container; and controlled by their container's &layoutmanager;.
-      This results in all display elements using implementation objects
+      This results in all widgets using implementation objects
       that are subclasses of <classname>&ns;::w::child_elementObj</classname>.
     </para>
   </section>
 
   <section id="customimpl">
-    <title>Implementing a custom display element</title>
+    <title>Implementing a custom widget</title>
 
     <para>
-      Implementing a custom display element involves several steps.
+      Implementing a custom widget involves several steps.
     </para>
 
     <itemizedlist>
@@ -243,7 +242,7 @@ See COPYING for distribution information.
     </itemizedlist>
 
     <para>
-      Creating each custom display element requires obtaining a
+      Creating each custom widget requires obtaining a
       &factory; from an
       existing container, then:
     </para>
@@ -255,13 +254,13 @@ See COPYING for distribution information.
 	  &factory;'s <methodname>get_container_impl</methodname>() method.
 	  This returns an
 	  <ulink url="&link-typedef-x--w-container-impl;"><classname>&ns;::w::container_impl</classname></ulink>
-	  that refers the parent container element's &implementation_object;.
+	  that refers the parent container widget's &implementation_object;.
 	  The custom &implementation_class;'s parent class is
 	  <classname>&ns;::w::child_elementObj</classname> whose constructor
-	  takes the parent container element's &implementation_object; as
+	  takes the parent container widget's &implementation_object; as
 	  a parameter.
 	  The custom subclass's constructor typically takes the parent container
-	  element reference as the first parameter
+	  widget reference as the first parameter
 	  to its constructor, and the subclass's
 	  constructor typically passes it to its parent class together with
 	  any other parameters.
@@ -286,7 +285,7 @@ See COPYING for distribution information.
 	<para>
 	  The constructed &public_object; gets passed to the &factory;'s
 	  <methodname>created_internally</methodname>() method. This method
-	  places the new display element into its container.
+	  places the new widget into its container.
 	  Just creating the &implementation_object; and the &public_object;
 	  is not the entire story. The story doesn't end until the
 	  &factory;'s

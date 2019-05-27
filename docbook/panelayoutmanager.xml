@@ -18,13 +18,13 @@ See COPYING for distribution information.
   <para>
     The pane layout manager is another way to conserve valuable window
     real estate and share a small amount of it with
-    multiple display elements.
+    multiple widgets.
   </para>
 
   <para>
-    The pane layout manager controls the display elements in its container
+    The pane layout manager controls the widgets in its container
     by placing them in one vertical
-    column, or one horizontal row. Each display element becomes a
+    column, or one horizontal row. Each widget becomes a
     <quote>pane</quote>. Draggable dividers separate the
     panes. The dividers look like
     thick dashed lines.
@@ -39,7 +39,7 @@ See COPYING for distribution information.
 
   <para>
     The pane layout manager also provides scroll-bars for each pane
-    when the pane's display element is larger than the pane's current
+    when the pane's widget is larger than the pane's current
     size.
   </para>
 
@@ -109,7 +109,7 @@ See COPYING for distribution information.
       return a
       <ulink url="&link-typedef-x--w-panefactory;"><classname>&ns;::w::panefactory</classname></ulink>,
       which is a &factory;.
-      Every display element created by the factory becomes a new pane in the
+      Every widget created by the factory becomes a new pane in the
       pane layout manager's container.
     </para>
 
@@ -132,7 +132,7 @@ f->appearance=f->appearance->modify
 
     <para>
       The <varname>size</varname> sets the
-      new element's initial size. This is just a suggestion, since the
+      new widget's initial size. This is just a suggestion, since the
       pane container, with all of its elements, always gets constrained by
       its specified size.
     </para>
@@ -182,7 +182,7 @@ factory->create_focusable_container(
     </para>
 
     <para>
-      The actual size of each element in this container is slightly less than
+      The actual size of each widget in this container is slightly less than
       20 millimeters. The draggable divider between the two panes takes
       up some space too, and it has to fit within its container's 40 millimeter
       size. The two new panes' sizes get slightly adjusted, in order to leave
@@ -192,7 +192,7 @@ factory->create_focusable_container(
     <para>
       The sizes set in the appearance objects, in this
       manner, are just guidelines, or hints, and the actual size of each new
-      element gets proportionately adjusted, together with the sizes of any
+      widget gets proportionately adjusted, together with the sizes of any
       existing panes, so that the entire container stays within its bounds.
       It is also possible to <link linkend="preservepanesizes">preserve
 	the previous size of panes</link> when creating them the next time
@@ -243,7 +243,7 @@ f->remove_pane(1);</programlisting>
 
     <para>
       <methodname>size</methodname>() returns the number of elements in the
-      pane, and <methodname>get</methodname>() returns an existing element
+      pane, and <methodname>get</methodname>() returns an existing widget
       in the pane.
     </para>
   </section>
@@ -252,7 +252,7 @@ f->remove_pane(1);</programlisting>
     <title>Input focus and selection lists or tables</title>
 
     <para>
-      The pane layout manager uses &focusable; display elements internally,
+      The pane layout manager uses &focusable; widgets internally,
       specifically the dividing sliders between the individual panes, and
       the <link linkend="scrollbar">scroll-bars</link> that scroll the
       elements bigger than their pane, into view. This is why
@@ -263,10 +263,10 @@ f->remove_pane(1);</programlisting>
     <para>
       The pane layout manager automatically manages the individual
       tabbing order for its scroll-bars and sliders. The focusable container
-      is considered to be a single focusable display element, and moving its
+      is considered to be a single focusable widget, and moving its
       tabbing order moves the order of all the scroll-bars and sliders as
       a group.
-      Setting a focusable element's tabbing order before or after the
+      Setting a focusable widget's tabbing order before or after the
       pane's focusable container moves the input focus to it before or after
       all of the pane's sliders and scroll-bars; with one exception.
     </para>
@@ -381,7 +381,7 @@ pf->create_focusable_container([]
 
 	<listitem>
 	  <para>
-	    Setting the pane element alignment options to fill out the element
+	    Setting the pane widget alignment options to fill out the widget
 	    in the pane to always match the size of the pane. This automatically
 	    adjusts the list's height to match the pane's, making the
 	    selection list responsible for its own scrolling.
@@ -467,7 +467,7 @@ pf->create_focusable_container([]
       <para>
 	In this example, the two selection lists appear as two panes,
 	one list on top of each other, and their columns will always line up.
-	This looks like a single list, with a divider element that splits
+	This looks like a single list, with a divider widget that splits
 	them. But they're really two independent selection lists.
       </para>
 

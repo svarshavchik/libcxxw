@@ -12,10 +12,10 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC focusableObj;
 
-/*! Methods common to all display element that can receive keyboard focus.
+/*! Methods common to all widget that can receive keyboard focus.
 
-A display element with keyboard input focus receives and processes all
-keyboard input. All display elements capable of processing keyboard input
+A widget with keyboard input focus receives and processes all
+keyboard input. All widgets capable of processing keyboard input
 are kept in an internal list. TAB and BACK-TAB transfers keyboard focus
 to the next or the previous element in the list.
 
@@ -23,15 +23,15 @@ to the next or the previous element in the list.
 f->set_enabled(false);
 \endcode
 
-\c set_enabled(false) blocks this display element from receiving keyboard
-focus. The keyboard focus gets moved to another display element if this
+\c set_enabled(false) blocks this widget from receiving keyboard
+focus. The keyboard focus gets moved to another widget if this
 element has keyboard focus at the time it is disabled.
 
 \c set_enabled(true) makes this focusable element enabled for processing
 keyboard and button press events.
 
 Disabled focusable elements are drawn at half intensity. \c set_enabled()
-redraws the display elements accordingly.
+redraws the widgets accordingly.
 
 \code
 f->get_focus_after(other);
@@ -49,11 +49,11 @@ f->get_focus_before_me({other1, other2, other3});
 \endcode
 
 The parameter to \c get_focus_after() and \c get_focus_before() is another
-focusable display element in the same window. These functions move
-the tabbing order of this display element.
+focusable widget in the same window. These functions move
+the tabbing order of this widget.
 
 get_focus_after() sets this focusable element's tabbing order to be after
-the other display element's. When the other focusable has keyboard
+the other widget's. When the other focusable has keyboard
 focus, TAB moves the focus to this focusable, then whichever other
 element originally followed the other element in the tabbing order. In
 other words, other's tabbing order with respect to all other elements does
@@ -61,17 +61,17 @@ not change, except that this focusable now gets tabbed to after this one,
 instead of its original tabbing order.
 
 get_focus_before() sets this focusable element's tabbing order to be before
-the other display element's. The other focusable's tabbing order with
+the other widget's. The other focusable's tabbing order with
 respect
 to all other elements does not change, except that a TAB from the previous
 focusable in the tabbing order first goes to this focusable, than the other
 one.
 
 get_focus_first() moves this focusable element's tabbing order to be the
-first tabbable display element in its window.
+first tabbable widget in its window.
 
 get_focus_after_me() and get_focus_before_me() efficiently rearranges the
-tabbing order of multiple display elements. The second parameter is a
+tabbing order of multiple widgets. The second parameter is a
 \c std::vector of focusable objects. These methods do not change this
 focusable's tabbing order with respect to other focusables. They change
 the tabbing order of the focusables that get passed in the vector.
@@ -114,7 +114,7 @@ f->on_key_event([]
                      });
 \endcode
 
-on_keyboard_focus() installs a callback that reports the display element's
+on_keyboard_focus() installs a callback that reports the widget's
 focus change events. Immediately upon installation, the callback gets
 invoked to report the element's most recent focus change event, and gets
 invoke to report all future ones.
@@ -136,7 +136,7 @@ text entered via an X Input Method server, that comes in as a
 \c std::u32string_view. The parameter to a callback is a
 \c std::variant of the two, defined as a
 \ref all_key_events_t "INSERT_LIBX_NAMESPACE::w::all_key_events_t".
-This callback gets invoked only when the display element
+This callback gets invoked only when the widget
 has keyboard focus. The
 on_key_event() callback should return \c true if the key event
 has been processed/consumed by the callback, and will not
@@ -150,18 +150,18 @@ executed for both key press and release events, as specified in the
 based on whether the key press, or the release, is considered to be
 "activating", that is, whether a corresponding action associated with the
 key should take places. This flag gets set either for a key press or the
-release, depending on the display element. The flag is always set for
+release, depending on the widget. The flag is always set for
 a pasted \c std::u32string_view.
 
 \code
 f->autofocus(true);
 \endcode
 
-autofocus() sets whether the display element is eligible for automatically
+autofocus() sets whether the widget is eligible for automatically
 getting the keyboard focus when its main window gets shown. The first
-display element with autofocus gets the keyboard focus.
+widget with autofocus gets the keyboard focus.
 
-The default autofocus() setting depends on the display element.
+The default autofocus() setting depends on the widget.
 
 \par Selections
 
@@ -193,17 +193,17 @@ currently receives the keyboard focus, and does nothing otherwise.
 
 typedef ref<focusableObj> focusable;
 
-//! A nullable pointer reference to a focusable display element.
+//! A nullable pointer reference to a focusable widget.
 
 typedef ptr<focusableObj> focusableptr;
 
-//! A reference to a constant focusable display element.
+//! A reference to a constant focusable widget.
 
 //! \see focusable
 
 typedef const_ref<focusableObj> const_focusable;
 
-//! A nullable pointer reference to a constant focusable display element.
+//! A nullable pointer reference to a constant focusable widget.
 
 //! \see focusable
 

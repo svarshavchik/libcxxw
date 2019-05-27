@@ -36,7 +36,7 @@ public:
 	//! How many panes currently exist.
 	size_t size() const;
 
-	//! Return an existing element in the pane.
+	//! Return an existing widget in the pane.
 	elementptr get(size_t) const;
 
 	//! Append panes after all existing ones.

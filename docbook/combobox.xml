@@ -200,7 +200,7 @@ lock->remove_item(1);</programlisting>
     </blockquote>
 
     <para>
-      As is the case with all of &appshort;'s display elements, an
+      As is the case with all of &appshort;'s widgets, an
       internal execution thread takes care of processing display server
       events and updating the combo-box.
       Instantiating a <ulink url="&link-x--w--standard-combobox-lock;"><classname>&ns;::w::standard_combobox_lock</classname></ulink> acquires an internal

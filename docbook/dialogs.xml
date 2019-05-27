@@ -255,16 +255,16 @@ const &ns;::w::main_window dialog_window;</programlisting>
 	<para>
 	  A &callback; that receives a &factory; for creating the contents
 	  of the dialog. This factory callback must create exactly one
-	  display element. Dialogs typically contain brief messages, created
+	  widget. Dialogs typically contain brief messages, created
 	  with <methodname>create_label</methodname>(), but may contain
-	  arbitrary display elements. This is done by having the
+	  arbitrary widgets. This is done by having the
 	  factory callback create a &container; and then creating the
-	  display elements in the new container.
+	  widgets in the new container.
 	</para>
 
 	<para>
 	  <methodname>create_input_field</methodname>()'s factory callback
-	  creates the display element that appears to the left of the
+	  creates the widget that appears to the left of the
 	  input field.
 	</para>
       </listitem>
@@ -572,7 +572,7 @@ d->dialog_window->show_all();</programlisting>
     <para>
       In main windows, container elements
       <link linkend="containerrefs">own references to the
-	display elements in the container</link>. This applies to dialogs
+	widgets in the container</link>. This applies to dialogs
       too. Their parent main window (or their parent dialog) owns a reference
       on all of its dialogs.
     </para>
@@ -800,7 +800,7 @@ auto new_custom_dialog=mw->create_custom_dialog(
       to its <classname>&ns;::w::dialogObj</classname> superclass.
       The custom dialog class's constructor can, at this point, use the
       <varname>dialog_window</varname> to create the new dialog's
-      display elements, and to store them into the custom dialog class itself,
+      widgets, and to store them into the custom dialog class itself,
       for easy access. This is how
       <methodname>create_input_dialog</methodname>()
       assembles a new

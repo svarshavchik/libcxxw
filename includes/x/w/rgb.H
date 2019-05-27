@@ -138,7 +138,7 @@ constexpr rgb purple{rgb::maximum/2+1, 0, rgb::maximum/2+1};
 
 std::ostream &operator<<(std::ostream &, const rgb &);
 
-//! A linear gradient for a display element's background color.
+//! A linear gradient for a widget's background color.
 
 //! Define a linear gradient from (x1, y1) to (x2, y2). Closely modeled on
 //! the RENDER extension's CreateLinearGradient request, because that's what
@@ -148,11 +148,11 @@ std::ostream &operator<<(std::ostream &, const rgb &);
 //! element's top-left corner, (1, 1) is its bottom-right corner.
 //!
 //! If fixed_width and fixed_height are not 0, this computes the gradient
-//! for a display element with a fixed width or height, rather than the
-//! actual size of the display element. fixed_width and fixed_height
+//! for a widget with a fixed width or height, rather than the
+//! actual size of the widget. fixed_width and fixed_height
 //! gets specified in millimeters. The (0, 0) coordinate is still the
-//! display element's top-left corner, and (1, 1) now being wherever it is,
-//! if the display element's size is as specified.
+//! widget's top-left corner, and (1, 1) now being wherever it is,
+//! if the widget's size is as specified.
 //! Negative fixed width and height anchors
 //! the virtual (0, 0)-(1, 1) coordinate space to the opposite corner.
 
@@ -171,7 +171,7 @@ struct linear_gradient {
 	}
 };
 
-//! A radial gradient for a display element's background color.
+//! A radial gradient for a widget's background color.
 
 //! Define a radial gradient from an inner circle to an outer circle.
 //! Closely modeled on
@@ -185,22 +185,22 @@ struct linear_gradient {
 //! circles.
 //!
 //! inner_radius_axis and outer_radius_axis specify whether the respective
-//! radius is based on the display element's width or height:
+//! radius is based on the widget's width or height:
 //!
-//! - horizontal: this radius axis is based on the display element's width
+//! - horizontal: this radius axis is based on the widget's width
 //!
-//! - vertical: this radius axis is based on the display element's height
+//! - vertical: this radius axis is based on the widget's height
 //!
 //! - shortest: whichever one's shortest
 //!
 //! - longest: whichever one's shortest
 //!
 //! If fixed_width and fixed_height are not 0, this computes the gradient
-//! for a display element with a fixed width or height, rather than the
-//! actual size of the display element. fixed_width and fixed_height
+//! for a widget with a fixed width or height, rather than the
+//! actual size of the widget. fixed_width and fixed_height
 //! gets specified in millimeters. The (0, 0) coordinate is still the
-//! display element's top-left corner, and (1, 1) now being wherever it is,
-//! if the display element's size is as specified.
+//! widget's top-left corner, and (1, 1) now being wherever it is,
+//! if the widget's size is as specified.
 //! Negative fixed width and height anchors
 //! the virtual (0, 0)-(1, 1) coordinate space to the opposite corner.
 
@@ -215,16 +215,16 @@ struct radial_gradient {
 		outer_radius=.5;
 
 	enum radius_axis {
-			  //! The display element's width
+			  //! The widget's width
 			  horizontal,
 
-			  //! The display element's height
+			  //! The widget's height
 			  vertical,
 
-			  //! The display element's width or height, whichever's the shortest
+			  //! The widget's width or height, whichever's the shortest
 			  shortest,
 
-			  //! The display element's width or height, whichever's the longest
+			  //! The widget's width or height, whichever's the longest
 			  longest
 	};
 

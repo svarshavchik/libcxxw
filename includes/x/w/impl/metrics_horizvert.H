@@ -23,17 +23,17 @@ namespace metrics {
 //! Used often in metrics-related context, so we'll throw this
 //! declaration here.
 //!
-//! An element whose halign and valign is as stated, and it's width
+//! An widget whose halign and valign is as stated, and it's width
 //! and height is as follows needs is to be positioned in an area
 //! with the given outside width and height.
 //!
 //! Returns the adjusted rectangle for the element, suitably aligned
 //! as follows:
 //!
-//! 1) If the corresponding alignment is a fill, and the element size
+//! 1) If the corresponding alignment is a fill, and the widget size
 //! is smaller, it is set to the outside size.
 //!
-//! 2) If the element size is smaller and the corresponding alignment
+//! 2) If the widget size is smaller and the corresponding alignment
 //! is not a fill, the starting coordinate (x or y) is computed
 //! accordingly (it is 0 by default).
 

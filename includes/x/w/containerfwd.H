@@ -14,11 +14,11 @@ class LIBCXX_PUBLIC containerObj;
 
 //! Methods common to all display containers.
 
-//! A container contains other display elements, and a
+//! A container contains other widgets, and a
 //! \ref layoutmanager "layout manager" object
 //! that manages them.
 //!
-//! Creating a display element that's a container requires that
+//! Creating a widget that's a container requires that
 //! a \ref new_layoutmanager "new layout manager" gets created first, then
 //! used to create the container.
 //!

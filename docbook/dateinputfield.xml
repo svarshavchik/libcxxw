@@ -55,9 +55,9 @@ See COPYING for distribution information.
     A &factory;'s <methodname>create_date_input_field</methodname>()'s
     method creates a new
     <ulink url="&link-typedef-x--w-date-input-field;"><classname>&ns;::w::date_input_field</classname></ulink>
-    display element. <filename>dateinputfield.C</filename> shows how to
+    widget. <filename>dateinputfield.C</filename> shows how to
     use its <methodname>set</methodname>() and <methodname>get</methodname>()
-    methods to set or get the current date in the display element.
+    methods to set or get the current date in the widget.
   </para>
 
   <para>

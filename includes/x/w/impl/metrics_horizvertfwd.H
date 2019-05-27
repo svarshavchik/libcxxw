@@ -14,25 +14,25 @@ namespace metrics {
 
 	class horizvertObj;
 
-	//! Metrics of a display element
+	//! Metrics of a widget
 
 	//! A reference-counted object with "horiz" and "vert" metrics::axis
-	//! objects, specifying the display element's horizontal and
+	//! objects, specifying the widget's horizontal and
 	//! vertical metrics.
 
 	typedef ref<horizvertObj> horizvert;
 
-	//! Metrics of a display element
+	//! Metrics of a widget
 
 	//! \see horizvert
 	typedef ptr<horizvertObj> horizvertptr;
 
-	//! Metrics of a display element
+	//! Metrics of a widget
 
 	//! \see horizvert
 	typedef const_ref<horizvertObj> const_horizvert;
 
-	//! Metrics of a display element
+	//! Metrics of a widget
 
 	//! \see horizvert
 	typedef const_ptr<horizvertObj> const_horizvertptr;

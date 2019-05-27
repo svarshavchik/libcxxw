@@ -12,13 +12,13 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC focusable_containerObj;
 
-//! A focusable display element that's implemented as an internal container.
+//! A focusable widget that's implemented as an internal container.
 
-//! Base class for display elements that multiply-inherit from a
+//! Base class for widgets that multiply-inherit from a
 //! \ref container "container" and a \ref focusable "focusable".
 //!
 //! Use the \ref factory "factory"'s create_focusable_container() to
-//! create these display elements, instead of create_container().
+//! create these widgets, instead of create_container().
 
 typedef ref<focusable_containerObj> focusable_container;
 

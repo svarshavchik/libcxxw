@@ -31,7 +31,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Methods common to all display elements.
+//! Methods common to all widgets.
 
 //! \see element
 
@@ -64,49 +64,49 @@ public:
 
 	const_screen get_screen() const;
 
-	//! Show this display element, and all elements inside it.
+	//! Show this widget, and all elements inside it.
 
 	void show_all();
 
-	//! Hide this display element, and all elements inside it.
+	//! Hide this widget, and all elements inside it.
 
 	void hide_all();
 
-	//! Show this display element only.
+	//! Show this widget only.
 
 	void show();
 
-	//! Hide this display element only.
+	//! Hide this widget only.
 
 	void hide();
 
-	//! Show this display element, and all elements inside it.
+	//! Show this widget, and all elements inside it.
 
 	void show_all(ONLY IN_THREAD);
 
-	//! Hide this display element, and all elements inside it.
+	//! Hide this widget, and all elements inside it.
 
 	void hide_all(ONLY IN_THREAD);
 
-	//! Show this display element only.
+	//! Show this widget only.
 
 	void show(ONLY IN_THREAD);
 
-	//! Hide this display element only.
+	//! Hide this widget only.
 
 	void hide(ONLY IN_THREAD);
 
-	//! Moves this display element into view, if it's in a peephole.
+	//! Moves this widget into view, if it's in a peephole.
 	void ensure_entire_visibility();
 
-	//! Moves this display element into view, if it's in a peephole.
+	//! Moves this widget into view, if it's in a peephole.
 	void ensure_entire_visibility(ONLY IN_THREAD);
 
-	//! Use a standard background color for this display element.
+	//! Use a standard background color for this widget.
 
 	void set_background_color(const color_arg &name);
 
-	//! Remove this display element's custom background color.
+	//! Remove this widget's custom background color.
 
 	void remove_background_color();
 
@@ -120,7 +120,7 @@ public:
 	//! Install a metrics update callback.
 	void on_metrics_update(const functionref<metrics_update_callback_t> &);
 
-	//! Return the mcguffin for this display element's connection.
+	//! Return the mcguffin for this widget's connection.
 
 	//! \see connection
 	ref<obj> connection_mcguffin() const;
@@ -133,7 +133,7 @@ public:
 
 	ref<obj> get_wait_busy_mcguffin() const;
 
-	//! This display element is a label for another focusable element.
+	//! This widget is a label for another focusable widget.
 
 	void label_for(const focusable &f);
 
@@ -249,17 +249,17 @@ public:
 					   const
 					   create_static_tooltip_args_t &args);
 
-	//! Remove the tooltip from this display element.
+	//! Remove the tooltip from this widget.
 
 	//! Removes a standard or a static tooltip.
 	void remove_tooltip() const;
 
-	//! Remove the tooltip from this display element.
+	//! Remove the tooltip from this widget.
 
 	//! Removes a standard or a static tooltip.
 	void remove_tooltip(ONLY IN_THREAD) const;
 
-	//! Create a popup context menu for this display element.
+	//! Create a popup context menu for this widget.
 
 	template<typename functor,
 		 typename ...Args>
@@ -315,7 +315,7 @@ public:
 
 	//! May return a null ptr in a rare race condition when the main window
 	//! is being simultaneously destroyed by another execution thread.
-	//! This display element will also be destroyed, its days are numbered,
+	//! This widget will also be destroyed, its days are numbered,
 	//! might as well give up the ghost.
 
 	main_windowptr get_main_window() const;
@@ -346,16 +346,16 @@ public:
 
 	//! This gets forwarded to this element's
 	//! \ref generic_window "top level window"'s
-	//! selection_can_be_received(), so the element that gets to receive
-	//! the selection may not necessarily be this display element.
+	//! selection_can_be_received(), so the widget that gets to receive
+	//! the selection may not necessarily be this widget.
 	virtual bool selection_can_be_received() const;
 
 	//! Receive a selection
 
 	//! This gets forwarded to this element's
 	//! \ref generic_window "top level window"'s
-	//! receive_selection(), so the element that gets to receive
-	//! the selection may not necessarily be this display element.
+	//! receive_selection(), so the widget that gets to receive
+	//! the selection may not necessarily be this widget.
 	void receive_selection(const std::string_view &selection);
 
 	//! Receive the current theme's default selection .
@@ -367,8 +367,8 @@ public:
 
 	//! This gets forwarded to this element's
 	//! \ref generic_window "top level window"'s
-	//! receive_selection(), so the element that gets to receive
-	//! the selection may not necessarily be this display element.
+	//! receive_selection(), so the widget that gets to receive
+	//! the selection may not necessarily be this widget.
 	virtual void receive_selection(ONLY IN_THREAD,
 				       const std::string_view &selection);
 
@@ -381,8 +381,8 @@ public:
 
 	//! This gets forwarded to this element's
 	//! \ref generic_window "top level window"'s
-	//! cut_or_copy_selection(), so the element whose selection gets cut
-	//! or copied may not necessarily be this display element.
+	//! cut_or_copy_selection(), so the widget whose selection gets cut
+	//! or copied may not necessarily be this widget.
 
 	virtual bool cut_or_copy_selection(cut_or_copy_op,
 					   const std::string_view &selection);
@@ -396,8 +396,8 @@ public:
 
 	//! This gets forwarded to this element's
 	//! \ref generic_window "top level window"'s
-	//! cut_or_copy_selection(), so the element whose selection gets cut
-	//! or copied may not necessarily be this display element.
+	//! cut_or_copy_selection(), so the widget whose selection gets cut
+	//! or copied may not necessarily be this widget.
 
 	virtual bool cut_or_copy_selection(ONLY IN_THREAD,
 					   cut_or_copy_op,

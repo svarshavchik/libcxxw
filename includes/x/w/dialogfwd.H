@@ -109,7 +109,7 @@ d->dialog_window->set_window_title("Help");
 d->dialog_window->show_all();
 \endcode
 
-A dialog itself is like a top level display element, appearing on the
+A dialog itself is like a top level widget, appearing on the
 desktop like a \ref main_window "main_window". In fact, the class contains
 a \c dialog_window member which is the dialog's
 \ref main_window "INSERT_LIBX_NAMESPACE::w::main_window".

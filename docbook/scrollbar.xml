@@ -20,7 +20,7 @@ See COPYING for distribution information.
     </textobject>
     <caption>
       <para>
-	Display elements with scrolling, like multi-line
+	Widgets with scrolling, like multi-line
 	<link linkend="inputfieldsandbuttons">input fields</link> take
 	care of providing their own scroll-bars.
 	But scroll-bars are also convenient for setting a value in some
@@ -29,7 +29,7 @@ See COPYING for distribution information.
 	and <methodname>create_vertical_scrollbar</methodname>() methods
 	create a new, stand-alone
 	<ulink url="&link-typedef-x--w-scrollbar;"><classname>&ns;::w::scrollbar</classname></ulink>
-	that's not linked to any other display element.
+	that's not linked to any other widget.
       </para>
     </caption>
   </mediaobject>

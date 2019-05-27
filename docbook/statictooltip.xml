@@ -22,7 +22,7 @@ See COPYING for distribution information.
 
   <para>
     A regular tooltip appears automatically when the pointer hovers over
-    a display element. The tooltip appears next to the pointer position.
+    a widget. The tooltip appears next to the pointer position.
     See <xref linkend="tooltips" /> for a brief example.
     &appshort; automatically shows and hides regular tooltips, by itself.
   </para>
@@ -41,7 +41,7 @@ See COPYING for distribution information.
 
     <listitem>
       <para>
-	A static tooltip appears next to the display element, off to one of
+	A static tooltip appears next to the widget, off to one of
 	its sides, and not near the current pointer position.
       </para>
     </listitem>
@@ -50,9 +50,9 @@ See COPYING for distribution information.
       <para>
 	In order for static tooltip to be meaningfully visible, they are
 	typically used only with <link linkend="focusable">focusable
-	  display elements</link>. The static tooltip gets shown
-	only when its display element has keyboard focus, and hidden when
-	the display element loses keyboard focus.
+	  widgets</link>. The static tooltip gets shown
+	only when its widget has keyboard focus, and hidden when
+	the widget loses keyboard focus.
 	This functionality employs the
 	<methodname>on_keyboard_focus</methodname>() &callback;.
       </para>
@@ -115,7 +115,7 @@ x::w::static_tooltip_config config;
 config.affinity=x::w::attached_to::above_or_below;
 
 x::w::container tooltip=
-    element->create_static_tooltip([&amp;]
+    widget->create_static_tooltip([&amp;]
                                    (const x::w::container &amp;c)
                                    {
                                        x::w::gridlayoutmanager glm=
@@ -134,7 +134,7 @@ tooltip->show_all();
 
 // ...
 
-element->remove_tooltip();</programlisting>
+widget->remove_tooltip();</programlisting>
       </informalexample>
     </blockquote>
 
@@ -142,16 +142,16 @@ element->remove_tooltip();</programlisting>
       It is necessary to explicitly create
       static tooltips, represented as generic &container;s, before making
       them visible.
-      A display element's
+      A widget's
       <methodname>create_static_tooltip</methodname>() method creates a
-      static tooltip for the display element.
+      static tooltip for the widget.
     </para>
 
     <note>
       <para>
-	A display element has either a regular tooltip or a static
+	A widget has either a regular tooltip or a static
 	tooltip, but not both. Creating either kind of a tooltip replaces
-	the display element's existing tooltip, if any.
+	the widget's existing tooltip, if any.
       </para>
     </note>
 
@@ -182,8 +182,7 @@ element->remove_tooltip();</programlisting>
 
     <para>
       Using <methodname>show</methodname> or <methodname>show_all</methodname>()
-      makes the tooltip visible. Static tooltips appear next to their display
-      element, on their immediate right by default
+      makes the tooltip visible. Static tooltips appear next to their widget, on their immediate right by default
       (or to the left if there's no room on the
       right). This behavior is adjusted by setting
       <classname>&ns;::w::static_tooltip_config</classname>'s
@@ -192,7 +191,7 @@ element->remove_tooltip();</programlisting>
 
     <note>
       <para>
-	Display elements own an internal reference to their tooltips.
+	Widgets own an internal reference to their tooltips.
 	This must be taken into consideration in order
 	to <link linkend="containerrefs">avoid circular references</link>.
 	This is why <filename>statictooltip.C</filename> uses weak references,

@@ -27,7 +27,7 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    All display elements in a container that uses the toolbox layout manager
+    All widgets in a container that uses the toolbox layout manager
     should have the same size. This gets typically done by creating icon
     buttons for image files that all have the same size.
     The toolbox layout manager automatically arranges the icons in a grid;

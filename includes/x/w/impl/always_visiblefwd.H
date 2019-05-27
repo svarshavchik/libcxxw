@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 //!
 //! Overrides request_visibility_recursive(), and implements it by invoking
 //! request_child_visibility_recursive(), so that show_all() or hide_all()
-//! skip over this display element.
+//! skip over this widget.
 //!
 //! The second template parameter defaults to true, and sets the
 //! new element's initial requested visibility.

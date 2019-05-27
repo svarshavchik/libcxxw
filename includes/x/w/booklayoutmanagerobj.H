@@ -82,7 +82,7 @@ public:
 	//! Which page is currently open.
 	std::optional<size_t> opened() const;
 
-	//! Return the specified page element.
+	//! Return the specified page widget.
 	element get_page(size_t) const;
 
 	//! Install a new callback

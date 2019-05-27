@@ -13,9 +13,9 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_PUBLIC element_popup_appearanceObj;
 class element_popup_appearance_base;
 
-/*! Appearance of a display element with a button that opens an attached popup.
+/*! Appearance of a widget with a button that opens an attached popup.
 
-Specifies various properties of a display element that has a button that
+Specifies various properties of a widget that has a button that
 opens an attached popup. The default properties are set by the current
 display theme.
 

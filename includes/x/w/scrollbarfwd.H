@@ -31,7 +31,7 @@ struct LIBCXX_HIDDEN scrollbar_info_t;
 typedef functionref<void (THREAD_CALLBACK,
 			  const scrollbar_info_t &)> scrollbar_cb_t;
 
-/*! A scroll-bar display element.
+/*! A scroll-bar widget.
 
 \code
 sb->set(4);

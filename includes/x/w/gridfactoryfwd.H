@@ -16,7 +16,7 @@ class LIBCXX_PUBLIC gridfactoryObj;
 Factory implementation for a grid.
 
 This grid factory gets returned by the grid layout manager. Most of the
-methods that create new display elements in the grid are inherited
+methods that create new widgets in the grid are inherited
 from \ref factory "the factory base class". Each call to
 the layout manager's methods add the new element to the grid, one after
 another on the same row.
@@ -54,8 +54,8 @@ gridfactory->top_padding(2.5);
 gridfactory->bottom_padding(2.5);
 \endcode
 
-Each display element in the grid has borders and inner padding.
-Before creating and adding a new display element to the grid, these
+Each widget in the grid has borders and inner padding.
+Before creating and adding a new widget to the grid, these
 methods specify its border and the padding.
 
 border() and padding() set the border and the padding for all four sides,
@@ -125,8 +125,8 @@ cell. The supported values are:
 
 Additionally, \c INSERT_LIBX_NAMESPACE::w::halign::fill and
 \c INSERT_LIBX_NAMESPACE::w::valign::fill are available options which
-stretch the display element to the full width or height of its row or column,
-if its bigger because of other display elements in the same row or column.
+stretch the widget to the full width or height of its row or column,
+if its bigger because of other widgets in the same row or column.
 This should be used only with nested \ref container "containers" that are
 placed into the grid layout manager.
 
