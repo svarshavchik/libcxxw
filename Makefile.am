@@ -1347,7 +1347,10 @@ $(foreach f,$(patsubst html/%,%,$(ALL_DOCS)),$(eval $(call install_docimage,$(f)
 
 html/index.html: html/ref/index.html $(wildcard docbook/*.xml docbook/xmllinks*.xsl) appearance/appearance_list.xml
 	mkdir -p docbook
-	$(XSLTPROC) $(srcdir)/docbook/xmllinks-extract.xsl xml/index.xml >docbook/entities.tmp
+	echo '<tags>' >docbook/entities.tmp
+	$(XSLTPROC) --stringparam 'path' '/ref' $(srcdir)/docbook/xmllinks-extract.xsl ../libcxx/xml/index.xml >>docbook/entities.tmp
+	$(XSLTPROC) --stringparam 'path' 'ref' $(srcdir)/docbook/xmllinks-extract.xsl xml/index.xml >>docbook/entities.tmp
+	echo '</tags>' >>docbook/entities.tmp
 	$(XSLTPROC) $(srcdir)/docbook/xmllinks-dedupe.xsl docbook/entities.tmp >docbook/entities.tmp2
 	$(XSLTPROC) $(srcdir)/docbook/xmllinks-generate.xsl docbook/entities.tmp2 >docbook/entities
 	rm -f docbook/entities.tmp docbook/entities.tmp2

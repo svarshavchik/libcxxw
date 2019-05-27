@@ -15,11 +15,18 @@ LIBCXXW_NAMESPACE_START
 /*! Helper for creating a \ref text_param "text parameter" that uses fonts and colors, in gettext-compatible way
 
 \code
+#include &lt;INSERT_LIBX_NAMESPACE/locale.H&gt;
+#include &lt;INSERT_LIBX_NAMESPACE/messages.H&gt;
+
+auto catalog=INSERT_LIBX_NAMESPACE::w::messages::create("app", INSERT_LIBX_NAMESPACE::locale::base::utf8());
+
+auto generators=INSERT_LIBX_NAMESPACE::w::uigenerators::create("template.xml", catalog);
+
 INSERT_LIBX_NAMESPACE text_param t{
     INSERT_LIBX_NAMESPACE::theme_text{ _("${color:black}Ok"), generators }
 };
 
-factory->create_label(INSERT_LIBX_NAMESPACE::theme_text{ _("${color:red}Ok"), generators });
+factory->create_label(t);
 
 \endcode
 
@@ -28,7 +35,7 @@ The \c theme_text object gets constructed and passed as a
 parameter, or, alternatively, gets used to construct an explicit
 \ref text_param "text_param".
 
-The first parameter to the constructor is a string that's amenable to
+The first parameter to the constructor is a string that's optionally amenable to
 internationalization, using the gettext-visible _() macro.
 
 The second parameter is an optional \ref uigenerators "parsed theme file" that
@@ -48,6 +55,53 @@ are always available; other "name"s must be specified in the theme file.
 
 - ${decoration:underline} and ${decoration:none} - turns on/off the
 corresponding text decoration.
+
+- ${context:id} - this does nothing, and is skipped over. This is used to
+provide distinct strings for translated strings, used with gettext().
+Identical theme strings differing only in the "id" values result in
+distinct internationalizable strings:
+
+- $# - introduces a "comment". The \c $# and all following text up until the
+next newline gets ignored. If there are any spaces or tabs that immediately
+precede the \c $# they get replaced by a single space character. No replacement
+occurs if the only whitespace precedes the \c $#. This is mostly for use
+in theme files:
+
+\code
+   <label>                 $#
+Lorem Ipsum                $#
+
+Dolor Sit Amet</label>
+\endcode
+
+This produces the text string "Lorem Ipsum \nDolor Sit Amet". Except for the
+whitespace removed by the \c $#, all whitespace and newlines in the theme
+text get preserved. In the above example, the rich text starts immediately after the \c &lt;label&gt;, but all whitespace on the first line gets removed by the
+first \c $# together with the following newline. All whitespace and the newline
+on the 2nd line gets replaced by a single space, then the newline from the
+blank line; and finally the last line of the theme text.
+
+\code
+INSERT_LIBX_NAMESPACE::theme_text{ _("${context:file}Menu"), generators }
+
+// ...
+
+INSERT_LIBX_NAMESPACE::theme_text{ _("${context:tools}Menu"), generators }
+\endcode
+
+This results in two distinct translatable strings. Both strings appear as
+"Menu" in the base English version, but they are used in different contexts.
+Here, "Menu" can be translated differently, depending on its context
+(in another language, it could be translated differently for the "File"
+menu or the "Tools" menu, as a simple example).
+
+\par Internationalization and message catalogs
+
+The 2nd parameter to theme_text's constructor is a
+\ref messages "message catalog" object. For best results the message catalog
+should get constructed with a UTF-8 \ref locale "locale", so that the
+translated text string gets converted directly into the internal Unicode
+string.
 
 */
 

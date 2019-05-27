@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<theme version="1"
+       xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <!--
+
+Custom fonts and colors
+
+The <label> also uses a font called "label", which comes from the
+default theme.
+
+  -->
+  <font id="title">
+    <family>liberation sans</family>
+    <point_size>24</point_size>
+    <weight>bold</weight>
+  </font>
+
+  <color id="background">
+    <r>1</r>
+    <g>1</g>
+    <b>.75</b>
+  </color>
+
+  <layout id="main-window-grid" type="grid">
+    <background_color>
+      <color>background</color>
+    </background_color>
+    <append_row>
+      <name>main-window-contents</name>
+    </append_row>
+  </layout>
+
+  <factory id="main-window-contents" type="grid">
+    <element>
+      <label type="theme_text">                                 $#
+                                                                $#
+${font:title}${color:blue}${decoration:underline}Lorem Ipsum${decoration:none}${color:black}${font:label}
+
+dolor sit amet, consectetur adipisicing elit,                   $#
+sed do eiusmod tempor incididunt ut labore et dolore mana       $#
+aliqua. Ut enim ad minim veniam, quis nostrud exercitation      $#
+ullamco laboris nisi ut aliquip ex ea commodo consequat.        $#
+Duis aute irure dolor in reprehenderit in voluptate velit       $#
+esse cillum dolore eu fugiat nulla pariatur.                    $#
+Excepteur sint occaecat cupidatat non proident,                 $#
+sunt in culpa qui officia deserunt mollit anim id est           $#
+laborum.</label>
+
+      <options>
+	<alignment>center</alignment>
+	<widthmm>100.00</widthmm>
+      </options>
+    </element>
+  </factory>
+
+</theme>

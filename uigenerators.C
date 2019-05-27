@@ -126,6 +126,7 @@ color_arg uigeneratorsObj::lookup_color(const std::string &name,
 	return name;
 }
 
+// TODO: C++20, make this a std::string_view
 font_arg uigeneratorsObj::lookup_font(const std::string &name,
 				      bool allowthemerefs,
 				      const char *tag) const
@@ -134,19 +135,24 @@ font_arg uigeneratorsObj::lookup_font(const std::string &name,
 
 	if (semicolon != name.npos)
 	{
-		auto base_font_arg=lookup_font(name.substr(0, semicolon),
-					       false, tag);
+		auto iter=fonts.find(name.substr(0, semicolon));
 
-		auto &base_font=std::get<font>(base_font_arg);
-		base_font += name.substr(++semicolon);
+		if (iter != fonts.end())
+		{
+			font_arg res{iter->second};
 
-		return base_font_arg;
+			std::get<font>(res) += name.substr(++semicolon);
+
+			return res;
+		}
 	}
+	else
+	{
+		auto iter=fonts.find(name);
 
-	auto iter=fonts.find(name);
-
-	if (iter != fonts.end())
-		return iter->second;
+		if (iter != fonts.end())
+			return iter->second;
+	}
 
 	if (allowthemerefs)
 		return theme_font{name};

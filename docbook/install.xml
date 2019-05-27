@@ -213,15 +213,19 @@ LIBCXXW_INIT</programlisting>
     <para>
       &libcxx;'s <command>LIBCXX_INIT</command> gets supplemented by
       &app;'s <command>LIBCXXW_INIT</command>,
-      The <filename>Makefile.am</filename> can also use
+      The <filename>Makefile.am</filename> should also use
       &libcxx;'s <command>@LIBCXX_AM@</command>, if needed,
       and applications link with -lcxxw and -lcxx
+      The <filename>Makefile.am</filename> should also use
+      <command>@LIBCXXW_AM@</command> to include several macros, like
+      <link linkend="uixmlgettext"><literal>EXTRACT_THEME_TEXT_GEN</literal></link>.
     </para>
 
     <blockquote>
       <informalexample>
 	<programlisting>
 @LIBCXX_AM@
+@LIBCXXW_AM@
 
 bin_PROGRAMS=main
 main_SOURCES=main.C

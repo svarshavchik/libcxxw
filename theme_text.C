@@ -77,8 +77,31 @@ text_param &text_param::operator()(const theme_text &text)
 
 		if (p != b)
 		{
-			operator()(std::u32string_view{&*b,(size_t)(p-b)});
+			size_t n=p-b;
+			auto s=&*b;
 			b=p;
+
+			bool squashed=false;
+
+			if (e-b > 1 && b[1] == '#')
+			{
+				// Squash spaces before the comment.
+
+				while (n > 0 && (s[n-1] == ' '||
+						 s[n-1] == '\t'))
+				{
+					squashed=true;
+					--n;
+				}
+
+			}
+
+			if (n)
+			{
+				operator()(std::u32string_view{s, n});
+				if (squashed)
+					operator()(U" ");
+			}
 			continue;
 		}
 
@@ -92,6 +115,15 @@ text_param &text_param::operator()(const theme_text &text)
 			continue;
 		}
 
+		if (*b == '#')
+		{
+			while (b != e)
+			{
+				if (*b++ == '\n')
+					break;
+			}
+			continue;
+		}
 		if (*(p=b) != '{' || (b=std::find(++p, e, '}')) == e
 		    || std::find_if(p, b,
 				    [](auto c)

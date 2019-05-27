@@ -110,6 +110,19 @@ void testthemetext2()
 		throw EXCEPTION("Localized label failed");
 }
 
+void testthemetext3()
+{
+	text_param t{ theme_text{"Lorem\t     $#   \n     $#   \nIpsum"}};
+
+	if (t.string != U"Lorem Ipsum")
+		throw EXCEPTION("Comment failed");
+
+	text_param t2{ theme_text{"      $#\nLorem Ipsum\t     $#   \n\nDolor"}};
+
+	if (t2.string != U"Lorem Ipsum \nDolor")
+		throw EXCEPTION("Comment failed");
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -140,6 +153,7 @@ int main(int argc, char **argv)
 		testrgb();
 		testthemetext();
 		testthemetext2();
+		testthemetext3();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

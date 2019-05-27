@@ -6,15 +6,14 @@
 <xsl:output method="text" />
 
 <xsl:template match="/doxygenindex">
-  <xsl:text>&lt;tags&gt;&#10;</xsl:text>
   <xsl:apply-templates select="@*|node()"/>
-  <xsl:text>&lt;/tags&gt;&#10;</xsl:text>
 </xsl:template>
 
 <xsl:template match="/doxygenindex/compound[@kind='class' or @kind='struct']">
   <xsl:text>&lt;tag name="link-</xsl:text>
   <xsl:value-of select="translate(name,': &amp;&lt;&gt;,_[]()*~&#34;%/','-----------ZDQMD')" />
-  <xsl:text>" value="ref/</xsl:text>
+  <xsl:text>" value="</xsl:text>
+  <xsl:value-of select='$path' /><xsl:text>/</xsl:text>
   <xsl:value-of select="@refid" />
   <xsl:text>.html&quot;/&gt;&#10;</xsl:text>
 </xsl:template>
@@ -22,7 +21,8 @@
 <xsl:template match="/doxygenindex/compound[@kind='singleton']">
   <xsl:text>&lt;tag name="link-</xsl:text>
   <xsl:value-of select="translate(name,': &amp;&lt;&gt;,_[]()*~&#34;%/','-----------ZDQMD')" />
-  <xsl:text>" value="ref/</xsl:text>
+  <xsl:text>" value="</xsl:text>
+  <xsl:value-of select='$path' /><xsl:text>/</xsl:text>
   <xsl:value-of select="@refid" />
   <xsl:text>.html&quot;/&gt;&#10;</xsl:text>
 </xsl:template>
@@ -30,7 +30,8 @@
 <xsl:template match="/doxygenindex/compound[@kind='namespace']">
   <xsl:text>&lt;tag name="namespace-</xsl:text>
   <xsl:value-of select="translate(name,': &amp;&lt;&gt;,_[]()*~&#34;','-----------ZDQ')" />
-  <xsl:text>" value="ref/</xsl:text>
+  <xsl:text>" value="</xsl:text>
+  <xsl:value-of select='$path' /><xsl:text>/</xsl:text>
   <xsl:value-of select="@refid" />
   <xsl:text>.html&quot;/&gt;&#10;</xsl:text>
   <xsl:apply-templates select="@*|node()"/>
@@ -42,7 +43,8 @@
   <xsl:value-of select="translate(../name,': &amp;&lt;&gt;,_[]()*~!=+&#34;%/','-----------ZDNEPQMD')" />
   <xsl:text>-</xsl:text>
   <xsl:value-of select="translate(name,': &amp;&lt;&gt;,_[]()*~!=+&#34;%/','-----------ZDNEPQMD')" />
-  <xsl:text>" value="ref/</xsl:text>
+  <xsl:text>" value="</xsl:text>
+  <xsl:value-of select='$path' /><xsl:text>/</xsl:text>
   <xsl:value-of select="substring(@refid, 1, string-length(@refid)-35)" />
   <xsl:text>.html#</xsl:text>
   <xsl:value-of select="substring(@refid, string-length(@refid)-32)" />

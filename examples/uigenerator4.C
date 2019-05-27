@@ -14,7 +14,6 @@
 #include <x/w/uielements.H>
 #include <x/w/uigenerators.H>
 #include <x/w/label.H>
-#include <x/w/image_button.H>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -26,46 +25,20 @@ static inline void create_main_window(const x::w::main_window &main_window)
 	std::string me=x::exename(); // My path.
 	size_t p=me.rfind('/');
 
-	// Load "uigenerator3.xml" from the same directory as me
+	// Load "uigenerator4.xml" from the same directory as me
 
 	x::w::const_uigenerators generator=
 		x::w::const_uigenerators::create(me.substr(0, ++p) +
-						 "uigenerator3.xml");
+						 "uigenerator4.xml");
 
-	x::w::uielements element_factory
-		{
-
-		 // Elements created from the UI theme file.
-
-		 {
-		  {
-		   "checkbox",
-		   [&]
-		   (const x::w::factory &factory)
-		   {
-			   factory->create_checkbox
-				   (generator
-				    ->lookup_appearance("custom-checkbox"));
-		   }
-		  },
-		  {
-		   "label",
-		   []
-		   (const x::w::factory &factory)
-		   {
-			   factory->create_label("Direction");
-		   }
-		  }
-		 },
-		};
-
+	x::w::uielements element_factory;
 	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
 
 	layout->generate("main-window-grid",
 			 generator, element_factory);
 }
 
-void uigenerator3()
+void uigenerator4()
 {
 	x::destroy_callback::base::guard guard;
 
@@ -83,7 +56,7 @@ void uigenerator3()
 	main_window->set_window_title("Custom checkbox");
 
 	main_window->set_window_class("main",
-				      "uigenerator3@examples.w.libcxx.com");
+				      "uigenerator4@examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 
@@ -108,7 +81,7 @@ void uigenerator3()
 int main(int argc, char **argv)
 {
 	try {
-		uigenerator3();
+		uigenerator4();
 	} catch (const x::exception &e)
 	{
 		e->caught();

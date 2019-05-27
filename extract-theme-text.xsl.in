@@ -18,7 +18,7 @@ and writing it
 
   <xsl:template match='*[@type="theme_text"]'>
     <xsl:text>_("</xsl:text>
-    <xsl:value-of select="str:replace(str:replace(node(), '\', '\\'), '&#34;', '\&#34;')" />
+    <xsl:value-of select="str:replace(str:replace(str:replace(str:replace(node(), '\', '\\'), '&#34;', '\&#34;'), '&#10;', '\n'), '&#13;', '\r')" />
     <xsl:text>")&#10;</xsl:text>
   </xsl:template>
 

@@ -1,4 +1,5 @@
 @LIBCXX_AM@
+@LIBCXXW_AM@
 
 EXTRA_DIST=
 
@@ -46,6 +47,7 @@ noinst_PROGRAMS=\
 	uigenerator1				\
 	uigenerator2				\
 	uigenerator3				\
+	uigenerator4				\
 	validatedinput				\
 	wordwraplabel
 
@@ -193,6 +195,11 @@ EXTRA_DIST += uigenerator2.xml
 uigenerator3_SOURCES=uigenerator3.C close_flag.H
 uigenerator3_LDADD=-lcxxw -lcxx
 EXTRA_DIST += uigenerator3.xml
+
+uigenerator4_SOURCES=uigenerator4.C close_flag.H
+uigenerator4_LDADD=-lcxxw -lcxx
+EXTRA_DIST += uigenerator4.xml
+$(call EXTRACT_THEME_TEXT_GEN,uigenerator4.i18n.C, uigenerator4.xml)
 
 validatedinput_SOURCES=validatedinput.C close_flag.H
 validatedinput_LDADD=-lcxxw -lcxx

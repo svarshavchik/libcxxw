@@ -299,6 +299,98 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
     </orderedlist>
   </section>
 
+  <section id="uixmllabel">
+    <title>Creating labels from the theme file</title>
+
+    <para>
+      It's always possible to <link linkend="wordwraplabel">create
+	label widgets</link>
+      by specifying a <tag class='element'>name</tag>d
+      <tag class='element'>element</tag> in the theme file,
+      and implementing the named
+      <classname>&ns;::w::uielements</classname> callback when
+      <link linkend="uixmlgenerate">generating the widgets</link>.
+    </para>
+
+    <para>
+      It is possible to specify label widgets directly in the theme file.
+      <ulink url="examples/uigenerator4.C"><filename>uigenerator4.C</filename></ulink>
+      gives an example of using label widget specifications in the theme file,
+      creating the same label widget as
+      <link linkend="wordwraplabel">wordwraplabel.C</link>.
+      This makes it possible to tweak labels without recompiling the code.
+    </para>
+
+    <blockquote>
+      <title><ulink url="examples/uigenerator4.xml">uigenerator4.xml</ulink></title>
+
+      <informalexample>
+	<programlisting><xi:include href="../examples/uigenerator4.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The contents of the
+      <tag class='element'>label</tag> is a
+      <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
+      with references to colors and fonts defined in the theme file or the
+      default display theme.
+    </para>
+
+    <section id="uixmllabelgettext">
+      <title>Translations</title>
+
+      <para>
+	<tag class='element'>label</tag>'s
+	<tag class='attribute'>type</tag> gets ignored when constructing
+	label widgets. A
+	<quote>theme_text</quote> type
+	attribute marks a
+	<link linkend="uixmlgettext">gettext-translable text string</link>.
+	The example from the <filename>Makefile.am</filename>:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+$(call EXTRACT_THEME_TEXT_GEN,uigenerator4.i18n.C, uigenerator4.xml)</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This generates a pseudo-C++ source file containing
+	<quote>_("text")</quote> stubs that <command>gettext</command>
+	tools extract into message catalog templates.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+#include &lt;&ns;/locale.H&gt;
+#include &lt;&ns;/messages.H&gt;
+
+// ...
+auto utf8_locale=&ns;::locale::base::utf8();
+
+auto catalog=&ns;::messages::create("app", utf8_locale);
+
+auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog);</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Specifying the optional
+	<ulink url="&link-typedef-x-messages;"><classname>&ns;::messages</classname></ulink>
+	parameter,
+	when <link linkend="uixmlgenerate">creating a generator</link> object,
+	attaches a message catalog to the generator
+	generator.
+	The message catalog should explicitly use a UTF-8
+	<ulink url="&link-typedef-x-locale;"><classname>&ns;::locale</classname></ulink>
+	so that the translated messages get directly converted to Unicode.
+      </para>
+    </section>
+  </section>
   <section id="uixmldimcolorborders">
     <title><tag class='element'>dim</tag>s,
       <tag class='element'>color</tag>s,
@@ -1992,6 +2084,150 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	</para>
       </listitem>
     </orderedlist>
+
+    <section id="uixmlfactorylabelelement">
+      <title>Label <tag class='element'>element</tag>s</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<element id="directory-label">
+  <label type='theme_text'>${context:file-dialog}Directory:</name>
+</element>
+
+
+/* ----- */
+
+INSERT_LIBX_NAMESPACE::w::uielements elements;
+
+layout_manager->generate("dialog", generators, elements);
+
+&ns;::w::label directory_label=elements.get_element("directory-label");
+
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Specifying an <tag class='element'>element</tag>
+	that contains a <tag class='element'>label</tag>
+	results in a new label getting created by the
+	<tag class='element'>element</tag>'s &factory;.
+	This is equivalent to invoking the factory's
+	<methodname>create_label</methodname>() methods.
+      </para>
+
+      <para>
+	The <tag class="attribute">id</tag> attribute provides a unique
+	identifier for the label. After
+	<link linkend="uixmlgenerate">generating the theme-specified
+	  widgets</link>,
+	<ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
+	<methodname>get_element</methodname>() name retrieves the new widget
+	by its identifier.
+	The <tag class="element">label</tag> specifies a
+	<ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>-formatted
+	text string.
+      </para>
+
+      <section id="uixmllabelconfig">
+	<title>Specifying label options</title>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+<element id="title">
+    <label type="theme_text">Lorem Ipsum ... est laborum.</label>
+    <options>
+        <alignment>center</alignment>
+        <widthmm>40</widthmm>
+    </options>
+</element>]]></programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  An optional <tag class="element">options</tag> element of a
+	  <tag class="element">label</tag> element specifies the values
+	  of a <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>
+	  for creating the label widget.
+	</para>
+      </section>
+
+      <section id="uixmlgettext">
+	<title>Using gettext with labels and
+	  <classname>&ns;::w::text_param</classname>s</title>
+
+	<para>
+	  If the generator object has an optionally attached message catalog,
+	  each text label in the theme file gets looked up in the message
+	  catalog.
+	  The <tag class="attribute">type</tag> attribute gets ignored when
+	  creating widget from the theme file, and it serves to mark
+	  translatable text in the theme file, such as the one in the
+	  <tag class='element'>label</tag> element.
+	  <application>gettext</application> tools know look only for
+	  translatable strings in C/C++ source, so &appshort; provides
+	  an <acronym>XML</acronym> stylesheet that creates a pseudo-C/C++
+	  file that does not get compiled, but it contains translatable
+	  strings that <application>gettext</application>'s
+	  <command>msgfmt</command> picks up and adds to the message catalog
+	  template.
+	</para>
+
+	<para>
+	  The <filename>extract-theme-text.xsl</filename> file in
+	  &appshort;'s <filename>theme</filename> directory is a stylesheet
+	  that generates pseudo C/C++ source containing text from any
+	  element with a
+	  <literal><tag class="attribute">type</tag>="theme_text"</literal>
+	  in a theme file:
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting>
+xsltproc <replaceable>...</replaceable>/extract-theme-text.xsl theme.xml &gt;strings.C</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  If <filename>theme.xml</filename>'s contents include the above
+	  example, the resulting
+	  <filename>strings.C</filename> has the following contents:
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting>
+_("${context:file-dialog}Directory:")</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  This gets picked up by <command>msgfmt</command> and included with
+	  the rest of the application's translatable strings. &appshort;
+	  provides <command>automake</command> macros to automate this process.
+	  In the <filename>Makefile.am</filename>:
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting>
+$(call EXTRACT_THEME_TEXT_GEN,strings.C,theme.xml)</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  This create <filename>Makefile</filename> rules that automatically
+	  build <filename>strings.C</filename> from
+	  <filename>theme.xml</filename>.
+	  The <literal>EXTRACT_THEME_TEXT_GEN</literal> macro comes from
+	  <link linkend="developing">&appshort;'s
+	    <literal>@LIBCXXW_AM@</literal> framework</link>.
+	</para>
+      </section>
+    </section>
 
     <section id="uixmlfactorygenericelement">
       <title>Generic <tag class='element'>element</tag>s</title>
