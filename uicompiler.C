@@ -19,6 +19,7 @@
 #include "x/w/all_appearances.H"
 #include "x/w/scrollbar.H"
 #include "x/w/theme_text.H"
+#include "x/w/tooltip.H"
 #include "theme_parser_lock.H"
 #include "messages.H"
 #include "picture.H"
@@ -507,6 +508,50 @@ parse_dim(const theme_parser_lock &lock,
 	return v;
 }
 
+struct uicompiler::compiler_functions {
+
+#include "uicompiler2.inc.C"
+
+	static functionptr<void (THREAD_CALLBACK,
+				 const tooltip_factory &)>
+	get_optional_tooltip(uicompiler &compiler,
+			     const theme_parser_lock &lock)
+	{
+		functionptr<void (THREAD_CALLBACK,
+				  const tooltip_factory &)> optional_tooltip;
+
+		auto id=lock->get_any_attribute("tooltip");
+
+		if (!id.empty())
+		{
+			auto iter=compiler.generators
+				->tooltip_generators.find(id);
+
+			if (iter == compiler.generators
+			    ->tooltip_generators.end())
+				throw EXCEPTION(gettextmsg
+						(_("Tooltip \"%1\" is not"
+						   " defined"),
+						 id));
+			optional_tooltip=iter->second;
+		}
+
+		return optional_tooltip;
+	}
+
+	//! Install the tooltip for the new element.
+	static void install_tooltip(const element &e,
+				    const functionptr
+				    <void (THREAD_CALLBACK,
+					   const tooltip_factory &)>
+				    &optional_tooltip)
+	{
+		if (!optional_tooltip)
+			return;
+
+		e->create_custom_tooltip(optional_tooltip);
+	}
+};
 
 uicompiler::uicompiler(const theme_parser_lock &root_lock,
 		       const uigenerators &generators,
@@ -524,6 +569,8 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 	bool parsed;
 
+	///////////////////////////////////////////////////////////////////////
+	//
 	// Repeatedly pass over all colors, parsing the ones that are not based
 	// on unparsed colors.
 
@@ -618,8 +665,11 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 	count=xpath->count();
 
+	///////////////////////////////////////////////////////////////////////
+	//
 	// Repeatedly pass over all dims, parsing the ones that are not based
 	// on unparsed dims.
+
 	do
 	{
 		parsed=false;
@@ -663,6 +713,8 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 
 	count=xpath->count();
 
+	///////////////////////////////////////////////////////////////////////
+	//
 	// Repeatedly pass over all borders, parsing the ones that are not based
 	// on unparsed borders.
 
@@ -845,6 +897,8 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			   return iter->second;
 		   });
 
+	///////////////////////////////////////////////////////////////////////
+	//
 	// Build a list of uncompiled appearances, by id
 
 	xpath=lock->get_xpath("/theme/appearance");
@@ -864,6 +918,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 		uncompiled_appearances.emplace(id, lock->clone());
 	}
 
+	// Compile the appearances
 	while (!uncompiled_appearances.empty())
 	{
 		auto name=uncompiled_appearances.begin()->first;
@@ -871,9 +926,11 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 		compile_uncompiled_appearance(name);
 	}
 
-	xpath=lock->get_xpath("/theme/layout | /theme/factory");
+	///////////////////////////////////////////////////////////////////////
+	//
+	// Compile all tooltips
 
-	// Build the list of uncompiled_elements, by id.
+	xpath=lock->get_xpath("/theme/tooltip");
 
 	count=xpath->count();
 
@@ -884,8 +941,38 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 		auto id=lock->get_any_attribute("id");
 
 		if (id.empty())
-			throw EXCEPTION(_("Missing <layout> or <factory> "
-					  "\"id\" element"));
+			throw EXCEPTION(_("Missing <tooltip> \"id\""));
+
+		if (generators->tooltip_generators.find(id) !=
+		    generators->tooltip_generators.end())
+			continue;
+
+		auto tooltip_info=
+			compiler_functions::get_label_parameters(*this, lock);
+
+		const auto &[text, config]=tooltip_info;
+
+		generators->tooltip_generators.emplace
+			(id, create_label_tooltip(text, config));
+	}
+
+	///////////////////////////////////////////////////////////////////////
+	//
+	// Build the list of uncompiled_elements, by id.
+
+	xpath=lock->get_xpath("/theme/layout | /theme/factory");
+
+	count=xpath->count();
+
+	for (size_t i=0; i<count; ++i)
+	{
+		xpath->to_node(i+1);
+
+		auto id=lock->get_any_attribute("id");
+
+		if (id.empty())
+			throw EXCEPTION(_("Missing <layout> or <factory>"
+					  " \"id\""));
 
 		uncompiled_elements.emplace(id, lock->clone());
 	}
@@ -1441,14 +1528,7 @@ void uicompiler::create_container(const bookpagefactory &f,
 	       ? shortcut{}:shortcut_iter->second);
 }
 
-struct uicompiler::compiler_functions {
-
-#include "uicompiler2.inc.C"
-
-};
-
 #include "uicompiler.inc.C"
-
 
 // Additional helpers used by appearance_parser
 

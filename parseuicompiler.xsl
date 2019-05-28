@@ -254,7 +254,7 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
     <xsl:value-of select="$parameter_parser_name" />
     <xsl:text>(*this, lock)</xsl:text>
 <xsl:if test="new_element">
-  <xsl:text>, id=lock-&gt;get_any_attribute("id")</xsl:text>
+  <xsl:text>,&#10;                   id=lock-&gt;get_any_attribute("id"),&#10;                   optional_tooltip=compiler_functions::get_optional_tooltip(*this, lock)</xsl:text>
 </xsl:if>
 <xsl:text>]
             (</xsl:text>
@@ -272,7 +272,7 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
 
 		<xsl:text>                </xsl:text>
 		<xsl:if test="new_element">
-		  <xsl:text>auto new_element=</xsl:text>
+		  <xsl:text>element new_element=</xsl:text>
 		</xsl:if>
 		<xsl:if test="object">
 	            <xsl:value-of select="object"/>-&gt;</xsl:if>
@@ -297,7 +297,7 @@ Maybe we should use a <scalar>?
 		  </xsl:choose>
 		  </xsl:for-each><xsl:text>);&#10;</xsl:text>
 		  <xsl:if test="new_element">
-		    <xsl:text>&#10;                if (!id.empty())
+		    <xsl:text>&#10;                compiler_functions::install_tooltip(new_element, optional_tooltip);&#10;                if (!id.empty())
                     elements.new_elements.emplace(id, new_element);&#10;</xsl:text>
 		  </xsl:if>
 

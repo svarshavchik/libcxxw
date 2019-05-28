@@ -346,22 +346,29 @@ void elementObj::create_tooltip(const text_param &text)
 void elementObj::create_tooltip(const text_param &text,
 				const label_config &config)
 {
-	create_custom_tooltip
-		([=]
-		 (THREAD_CALLBACK, const auto &factory)
-		 {
-			 factory([&]
-				 (const auto &c)
-				 {
-					 gridlayoutmanager l=
-						 c->get_layoutmanager();
+	create_custom_tooltip(create_label_tooltip(text, config));
+}
 
-					 auto f=l->append_row();
-					 f->padding(0);
-					 f->create_label(text, config);
-				 },
-				 new_gridlayoutmanager());
-		 });
+functionref<void (THREAD_CALLBACK,
+		  const tooltip_factory &)>
+create_label_tooltip(const text_param &text,
+		     const label_config &config)
+{
+	return [=]
+		(THREAD_CALLBACK, const auto &factory)
+	       {
+		       factory([&]
+			       (const auto &c)
+			       {
+				       gridlayoutmanager l=
+					       c->get_layoutmanager();
+
+				       auto f=l->append_row();
+				       f->padding(0);
+				       f->create_label(text, config);
+			       },
+			       new_gridlayoutmanager());
+	       };
 }
 
 std::chrono::milliseconds

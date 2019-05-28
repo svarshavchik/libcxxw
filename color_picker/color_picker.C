@@ -250,14 +250,6 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 					 },
 					 b_conf);
 			}},
-		{"fixed-canvas", [&](const auto &f)
-			{
-				fixed_canvas=f->create_canvas
-					({std::nullopt,
-					  {},
-					  {config.appearance->strip_height}});
-
-			}},
 		{"square", [&](const auto &f)
 			{
 				auto parent_container=f->get_container_impl();
@@ -498,9 +490,6 @@ create_contents(const ref<color_picker_selectorObj::implObj>
 
 	helper.h_button->create_tooltip(button_tooltip);
 	helper.v_button->create_tooltip(button_tooltip);
-	helper.fixed_canvas->create_tooltip
-		(_("Click to adjust this color channel in the currently"
-		   " selected color"));
 	helper.square->create_tooltip(_("Click to pick a color"));
 
 	return p;
@@ -896,6 +885,8 @@ color_picker factoryObj
 
 	color_picker_popup_fields contents{helper};
 
+	auto fixed_canvas=tmpl.get_element("fixed-canvas");
+
 	// Capture the elements in the implementation object.
 
 	auto impl=ref<color_pickerObj::implObj>
@@ -906,7 +897,7 @@ color_picker factoryObj
 			 initial_color,
 			 contents.h_canvas,
 			 contents.v_canvas,
-			 contents.fixed_canvas,
+			 fixed_canvas,
 			 contents.square,
 			 tmpl.get_element("error-message-field"));
 
@@ -1082,8 +1073,8 @@ color_picker factoryObj
 			 impl->swap_vert_gradient(IN_THREAD);
 		 });
 
-	contents.fixed_canvas->on_button_event
-		([get=make_weak_capture(impl, contents.fixed_canvas)]
+	fixed_canvas->on_button_event
+		([get=make_weak_capture(impl, fixed_canvas)]
 		 (ONLY IN_THREAD,
 		  const auto &be,
 		  bool activate_for,
@@ -1111,8 +1102,8 @@ color_picker factoryObj
 			 return true;
 		 });
 
-	contents.fixed_canvas->on_motion_event
-		([get=make_weak_capture(impl, contents.fixed_canvas)]
+	fixed_canvas->on_motion_event
+		([get=make_weak_capture(impl, fixed_canvas)]
 		 (ONLY IN_THREAD,
 		  const auto &me)
 		 {

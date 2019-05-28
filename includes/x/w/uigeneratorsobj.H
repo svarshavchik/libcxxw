@@ -11,6 +11,7 @@
 #include <x/w/border_infomm.H>
 #include <x/w/font_arg.H>
 #include <x/w/all_appearancesfwd.H>
+#include <x/w/tooltipfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/obj.H>
 #include <x/visitor.H>
@@ -96,6 +97,12 @@ public:
 	//! Generators used by the book page factory
 	std::unordered_map<std::string, vector<bookpagefactory_generator>
 			   > bookpagefactory_generators;
+
+	//! Tooltip generators
+	std::unordered_map<std::string,
+			   functionref<void (THREAD_CALLBACK,
+					     const tooltip_factory &)>
+			   > tooltip_generators;
 };
 
 LIBCXXW_NAMESPACE_END

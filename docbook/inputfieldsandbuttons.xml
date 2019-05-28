@@ -450,7 +450,38 @@ text_field->create_tooltip("A brief message, a few lines long.", config);</progr
       but may contain <literal>'\n'</literal>s to introduce explicit
       line breaks.
     </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::functionref&lt;void (THREAD_CALLBACK, const &ns;::w::tooltip_factory &amp;)&gt;
+    factory=&ns;::w::create_label_tooltip("Push for help",
+                                       &ns;::w::label_config{});
+
+// ...
+
+help_button_1->create_custom_tooltip(factory);
+help_button_2->create_custom_tooltip(factory);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A tooltip gets created only when necessary.
+      A widget's
+      <methodname>create_tooltip</methodname>() is equivalent to calling the
+      widget's <methodname>create_custom_tooltip</methodname>() with a
+      &callback; from
+      <ulink url="&link-variable-x--w-create-label-tooltip;"><function>create_label_tooltip</function></ulink>().
+    </para>
+
+    <para>
+      Using <function>create_label_tooltip</function>() and then installing
+      the resulting callback in multiple widgets is slightly more efficient,
+      by capturing the tooltip text and configuration only once, and sharing
+      them with the widgets.
+    </para>
   </section>
+
   <section id="buttons">
     <title>Buttons</title>
 

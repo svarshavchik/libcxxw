@@ -14,11 +14,12 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! A factory used by a custom tooltip creator.
+/*! A factory used by a custom tooltip creator.
 
-//! An \ref element "element"'s create_custom_tooltip() arranges for its
-//! callback to get invoked and receive this factory for creating the actual
-//! tooltip.
+A \ref element "widget"'s create_custom_tooltip() arranges for its
+callback to get invoked and receive this factory for creating the actual
+tooltip.
+*/
 
 class tooltip_factory {
 

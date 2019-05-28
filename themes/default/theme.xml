@@ -2311,10 +2311,16 @@ the grid layout manager's borders for it.
       <border>color_picker_fixed_component_border</border>
     </border>
 
-    <element>
-      <name>fixed-canvas</name>
+    <element id="fixed-canvas" tooltip="color-picker-fixed-canvas-tooltip">
+      <canvas>
+	<height>color_picker_strip_height</height>
+      </canvas>
     </element>
   </factory>
+
+  <tooltip type="label" id="color-picker-fixed-canvas-tooltip">
+    <label type='theme_text'>Click to adjust this color channel&#10;(in the currently selected color)</label>
+  </tooltip>
 
   <!--
 
