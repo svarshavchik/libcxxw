@@ -1,6 +1,10 @@
 2019-05-27  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Create <canvas>es from the theme file.
+
 	* Create <label>s from the theme file.
+
+	* Specify tooltips in the theme file, for supported elements.
 
 0.23
 

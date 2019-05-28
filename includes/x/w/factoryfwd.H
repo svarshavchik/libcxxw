@@ -12,28 +12,28 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC factoryObj;
 
-/*! An element factory
+/*! A widget factory
 
-A factory object is created by a \ref layoutmanager "layout manager".
+A factory object gets created by \ref layoutmanager "layout managers".
 
 Depending on the layout manager, the same factory object can be used
 to repetitively create multiple widgets; or a factory object
-can be used for creating no more than one element, with unspecified
+can be used for creating no more than one widget, with unspecified
 results (a thrown exception is typical) if the factory object gets reused.
 
-\par Initializer lambdas
+\par Creator lambdas
 
 The factory provides various methods to create different kinds of
 widgets. Each method returns the newly-created widget,
-and some methods' first argument is a "initializer lambda".
+and some methods' first argument is a "creator lambda".
 
-The initializer lambda gets invoked just before the factory method
+The creator lambda gets invoked just before the factory method
 finishes
-creating the new element, and the parameter to the lambda is the newly-
-created element. The lambda's job is to finalize any needed
+creating the new widget, and the parameter to the lambda is the newly-
+created widget. The lambda's job is to finalize any needed
 initialization of the new widget. This results in optimal
 performance. The new widget's container integrates the new
-element after the creator returns and before the factory method itself
+widget after the creator returns and before the factory method itself
 returns. The container generally ignores the new widget until
 its creator returns.
 
@@ -49,24 +49,26 @@ fully-initialized widget,
 \code
 #include <INSERT_LIBX_NAMESPACE/w/canvas.H>
 
+INSERT_LIBX_NAMESPACE::w::canvas_config config;
+
+config.width=4.0;
+config.height=4.0;
+
 INSERT_LIBX_NAMESPACE::w::canvas new_canvas=
-   factory->create_canvas([]
-                          (const auto &new_canvas)
-                          {
-                                // Initializer lambda
-                          }, {4}, {4});
+   factory->create_canvas(config);
 
 INSERT_LIBX_NAMESPACE::w::canvas new_canvas=factory->create_canvas();
 
 \endcode
 
 create_canvas() creates an empty widget that does nothing but
-take up the alloted space. This is typically used to fill in the unused
-elements in a \ref gridlayoutmanager "grid".
+take up its alloted space. This is typically used to fill in the unused
+widgets in a \ref gridlayoutmanager "grid".
 
-Besides its initializer lambda (which doesn't really have much to
-initializer), create_canvas()'s remaining two parameters specify the
-\ref dim_axis_arg "size" of the canvas, its width and height.
+create_canvas()'s optional parameter is a \ref canvas_config "canvas_config",
+which provides the
+\ref dim_axis_arg "size" of the canvas, its width and height, as well
+as an optional background color.
 
 An overloaded create_canvas() with no parameters
 returns a canvas that's adjustable to any
@@ -83,14 +85,14 @@ INSERT_LIBX_NAMESPACE::w::container new_container=
    factory->create_container([]
                           (const auto &new_container)
                           {
-                                // Initializer lambda
+                                // Creator lambda
                           }, INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager());
 \endcode
 
-create_container() creates a new element that is, itself, another container.
+create_container() creates a new widget that is, itself, another container.
 
 A grid layout manager's sophisticated layout capabilities are simply
-not enough sometimes. For those situations, one of its elements can simply
+not enough sometimes. For those situations, one of its widgets can simply
 be another layout manager, such as the grid layout manager.
 
 Also, many specialized widgets, such as combo-boxes, are actually
@@ -110,6 +112,9 @@ the new container uses the \ref gridlayoutmanager "grid layout manager".
 - \ref new_pagelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_pagelayoutmanager":
 the new container uses the \ref pagelayoutmanager "page layout manager".
 
+- \ref new_toolboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_toolboxlayoutmanager":
+the new container uses the \ref toolboxlayoutmanager "toolbox layout manager".
+
 \code
 #include <INSERT_LIBX_NAMESPACE/w/focusable_container.H>
 #include <INSERT_LIBX_NAMESPACE/w/listlayoutmanager.H>
@@ -122,7 +127,7 @@ INSERT_LIBX_NAMESPACE::w::focusable_container new_container=
    factory->create_focusable_container([]
                           (const auto &new_container)
                           {
-                                // Initializer lambda
+                                // Creator lambda
                           }, list_style);
 \endcode
 
@@ -146,6 +151,15 @@ This creates a selection list.
 - \ref new_booklayoutmanager "INSERT_LIBX_NAMESPACE::w::new_booklayoutmanager":
 the new container uses the \ref booklayoutmanager "book layout manager".
 
+- \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager":
+the new container uses the \ref tablelayoutmanager "table layout manager".
+
+- \ref new_itemlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_itemlayoutmanager":
+the new container uses the \ref itemlayoutmanager "item layout manager".
+
+- \ref new_panelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_panelayoutmanager":
+the new container uses the \ref panelayoutmanager "pane layout manager".
+
 \par Labels
 
 \code
@@ -158,7 +172,7 @@ INSERT_LIBX_NAMESPACE::w::label new_label=
    factory->create_label({"Hello world!"}, 40.0);
 \endcode
 
-create_label() creates a \ref label "text label element". The first
+create_label() creates a \ref label "text label widget". The first
 parameter is a \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param"
 that sets the label's text.
 
@@ -175,7 +189,7 @@ spcified, the label's size remains fixed.
 
 An optional third parameter sets the label's \ref halign "alignment".
 
-\par Bordered elements
+\par Bordered widget elements
 
 \code
 INSERT_LIBX_NAMESPACE::w::container border_container=
@@ -191,7 +205,7 @@ INSERT_LIBX_NAMESPACE::w::container border_container=
       1, 1);
 \endcode
 
-created_bordered_element() creates a container with a single element that
+created_bordered_element() creates a container with a single widget that
 has a border drawn around it. The container uses a special-purpose
 \ref borderlayoutmanager "border layout manager" that's optimized for this
 specific purpose. Using the \ref gridlayoutmanager "grid layout manager"
@@ -239,21 +253,20 @@ INSERT_LIBX_NAMESPACE::w::button button=factory->create_button(
      });
 \endcode
 
-A clickable button. This is a container with one element, with a border
+A clickable button. This is a container with one widget, with a border
 drawn around it.
-The first parameter to create_button() is a callable object or a lambda that
+The first parameter to create_button() is a creator lambda that
 gets invoked to create the contents of the button. The callable object must
 use the passed-in factory object to create exactly one widget. This
 is what the button looks like.
 
+Alternatively, specifying a
+\ref text_param "INSERT_LIBX_NAMESPACE::w::text_param" for the first
+parameter creates a typical button containing a text label. This is equivalent
+to using a creator lambda that does a create_label().
+
 As with all other widgets, it is necessary to show() the widget, at some point. The created widget can be a container with
 other, multiple, widgets.
-
-For a typical button, the first parameter to create_button() can be
-a text string,
-or a \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param". This is equivalent
-to passing a factory that calls create_label(), and show()ing the resulting
-label.
 
 create_button() has an optional second parameter that sets the new button's
 options:

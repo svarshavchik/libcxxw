@@ -767,6 +767,9 @@ while (!appdata->close_flag)
 	    </para>
 	  </listitem>
 	</varlistentry>
+
+	<!-- Also update the list of layout managers in factory -->
+
       </variablelist>
 
       <para>
