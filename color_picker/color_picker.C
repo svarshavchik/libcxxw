@@ -8,6 +8,7 @@
 #include "x/w/input_field_appearance.H"
 #include "x/w/button_appearance.H"
 #include "x/w/impl/canvas.H"
+#include "x/w/canvas.H"
 #include "x/w/button.H"
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
@@ -186,16 +187,13 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 					 (const auto &f)
 					 {
 						 f->create_canvas
-							 ([&]
-							  (const auto &c) {
-								  c->set_background_color
-									  (col.color);
-							  },
-							  {config.appearance
-							   ->basic_color_width},
-							  {config.appearance
-							   ->basic_color_height
-							  });
+							 ({col.color,
+							   {config.appearance
+							    ->basic_color_width
+							   },
+							   {config.appearance
+							    ->basic_color_height
+							   }});
 					 },
 					 b_config);
 
@@ -212,7 +210,6 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 inline standard_dialog_elements_t color_picker_layout_helper::elements()
 {
 	return {
-		{"filler", dialog_filler()},
 		{"h-button", [&](const auto &f)
 			{
 				auto b_conf=normal_button();
@@ -225,9 +222,10 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 					 {
 						 h_canvas=button_factory
 							 ->create_canvas
-							 ([] (const auto &){}, {
-							 }, {config.appearance
-							     ->strip_height});
+							 ({std::nullopt, {
+								 },
+							   {config.appearance
+							    ->strip_height}});
 					 },
 					 b_conf);
 			}},
@@ -243,36 +241,21 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 					 {
 						 v_canvas=button_factory
 							 ->create_canvas
-							 ([](const auto &) {}, {
-								 config
-								 .appearance
-								 ->strip_width},
-								 {});
+							 ({std::nullopt,
+							   {
+							    config
+							    .appearance
+							    ->strip_width},
+							   {}});
 					 },
 					 b_conf);
 			}},
-		{"h-button-spacing", [&](const auto &f)
-			{
-				f->create_canvas([](const auto &) {},
-						 {},
-						 {config.appearance
-						  ->buffer_height});
-			}},
-		{"v-button-spacing", [&](const auto &f)
-			{
-				f->create_canvas([](const auto &) {},
-						 {config.appearance
-						  ->buffer_width},
-						 {});
-			}},
 		{"fixed-canvas", [&](const auto &f)
 			{
-				fixed_canvas=f->create_canvas([]
-							      (const auto &){},
-							      {},
-							      {config
-							       .appearance
-							       ->strip_height});
+				fixed_canvas=f->create_canvas
+					({std::nullopt,
+					  {},
+					  {config.appearance->strip_height}});
 
 			}},
 		{"square", [&](const auto &f)

@@ -414,7 +414,6 @@ standard_dialog_elements_t font_picker_init_helper
 	return {
 		{"ok", dialog_ok_button(config.ok_label,
 					ok_button, '\n')},
-		{"filler", dialog_filler()},
 		{"cancel", dialog_cancel_button(config.cancel_label,
 						cancel_button,
 						'\e')},

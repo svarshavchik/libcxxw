@@ -102,22 +102,9 @@ public:
 
 	canvas create_canvas();
 
-	//! Create an empty \ref canvas "canvas".
-	template<typename functor>
-	canvas create_canvas(functor &&creator,
-			     const dim_axis_arg &horiz,
-			     const dim_axis_arg &vert)
-	{
-		return do_create_canvas(make_function<void (const canvas &)>
-					(creator),
-					horiz, vert);
-	}
+	//! Create an empty canvas
 
-	//! Create an empty \ref canvas "canvas".
-
-	canvas do_create_canvas(const function<void (const canvas &)> &creator,
-				const dim_axis_arg &horiz,
-				const dim_axis_arg &vert);
+	canvas create_canvas(const canvas_config &);
 
 	//! Create a nested container
 

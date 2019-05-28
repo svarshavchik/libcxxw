@@ -375,7 +375,7 @@ List of values:
 
       <parameter>
 	<name>name</name>
-	<type>lookup_gridfactory_generators</type>
+	<type>compiler.lookup_gridfactory_generators</type>
       </parameter>
     </function>
 
@@ -398,7 +398,7 @@ List of values:
 
       <parameter>
 	<name>name</name>
-	<type>lookup_gridfactory_generators</type>
+	<type>compiler.lookup_gridfactory_generators</type>
       </parameter>
     </function>
 
@@ -421,7 +421,7 @@ List of values:
 
       <parameter>
 	<name>name</name>
-	<type>lookup_gridfactory_generators</type>
+	<type>compiler.lookup_gridfactory_generators</type>
       </parameter>
     </function>
 
@@ -444,7 +444,7 @@ List of values:
 
       <parameter>
 	<name>name</name>
-	<type>lookup_gridfactory_generators</type>
+	<type>compiler.lookup_gridfactory_generators</type>
       </parameter>
     </function>
 
@@ -472,7 +472,7 @@ List of values:
 
       <parameter>
 	<name>name</name>
-	<type>lookup_gridfactory_generators</type>
+	<type>compiler.lookup_gridfactory_generators</type>
       </parameter>
     </function>
 
@@ -500,7 +500,7 @@ List of values:
 
       <parameter>
 	<name>name</name>
-	<type>lookup_gridfactory_generators</type>
+	<type>compiler.lookup_gridfactory_generators</type>
       </parameter>
     </function>
 
@@ -884,19 +884,21 @@ List of values:
 	<exists>label</exists>
       </condition>
 
+      <parameter_parser_name>label_parameters</parameter_parser_name>
+
       <invoke>create_label</invoke>
 
       <object>factory</object>
 
       <parameter>
-	<type>to_text_param</type>
+	<type>compiler.to_text_param</type>
 	<name>label</name>
       </parameter>
 
       <parameter>
-	<scalar>config</scalar>
+	<name>config</name>
 	<object>label_config</object>
-	<name>options</name>
+	<member_name>options</member_name>
 
 	<member>
 	  <name>alignment</name>
@@ -907,6 +909,108 @@ List of values:
 	  <name>widthmm</name>
 	  <field>widthmm</field>
 	  <type>to_mm</type>
+	</member>
+      </parameter>
+    </function>
+
+    <!-- canvas -->
+
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>canvas</exists>
+      </condition>
+
+      <invoke>create_canvas</invoke>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>canvas</name>
+	<object>canvas_config</object>
+	<member_name>canvas</member_name>
+
+	<member>
+	  <name>background_color</name>
+	  <field>background_color</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <function>generators-&gt;lookup_color</function>
+	  </lookup>
+	</member>
+
+	<member>
+	  <name>width</name>
+	  <field>width</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <function>generators-&gt;lookup_dim</function>
+	  </lookup>
+	</member>
+
+	<member>
+	  <name>minimum_width</name>
+	  <field>width.minimum</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <function>generators-&gt;lookup_dim</function>
+	  </lookup>
+	</member>
+
+	<member>
+	  <name>preferred_width</name>
+	  <field>width.preferred</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <function>generators-&gt;lookup_dim</function>
+	  </lookup>
+	</member>
+
+	<member>
+	  <name>maximum_width</name>
+	  <field>width.maximum</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <function>generators-&gt;lookup_dim</function>
+	  </lookup>
+	</member>
+
+	<member>
+	  <name>height</name>
+	  <field>height</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <function>generators-&gt;lookup_dim</function>
+	  </lookup>
+	</member>
+
+	<member>
+	  <name>minimum_height</name>
+	  <field>height.minimum</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <function>generators-&gt;lookup_dim</function>
+	  </lookup>
+	</member>
+
+	<member>
+	  <name>preferred_height</name>
+	  <field>height.preferred</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <function>generators-&gt;lookup_dim</function>
+	  </lookup>
+	</member>
+
+	<member>
+	  <name>maximum_height</name>
+	  <field>height.maximum</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <function>generators-&gt;lookup_dim</function>
+	  </lookup>
 	</member>
       </parameter>
     </function>
@@ -992,7 +1096,7 @@ List of values:
 
       <parameter>
 	<name>name</name>
-	<type>lookup_bookpagefactory_generators</type>
+	<type>compiler.lookup_bookpagefactory_generators</type>
       </parameter>
     </function>
 
@@ -1015,7 +1119,7 @@ List of values:
 
       <parameter>
 	<name>name</name>
-	<type>lookup_bookpagefactory_generators</type>
+	<type>compiler.lookup_bookpagefactory_generators</type>
       </parameter>
     </function>
 

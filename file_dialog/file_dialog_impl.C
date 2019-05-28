@@ -596,7 +596,6 @@ standard_dialog_elements_t file_dialogObj::init_args
 							 directory, conf);
 				}},
 		{"ok", dialog_ok_button(_("Ok"), ok_button, 0)},
-		{"filler", dialog_filler()},
 		{"cancel", dialog_cancel_button(_("Cancel"),
 						cancel_button,
 						'\e')}

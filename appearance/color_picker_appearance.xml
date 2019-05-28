@@ -43,20 +43,6 @@ The size of the left red/green/blue strip.
     <type>dim_arg</type>
   </field>
   <field>
-    <name>buffer_width</name>
-    <descr><![CDATA[
-Additional space between the component strips and the picker.
-]]></descr>
-    <type>dim_arg</type>
-  </field>
-  <field>
-    <name>buffer_height</name>
-    <descr><![CDATA[
-Additional space between the component strips and the picker.
-]]></descr>
-    <type>dim_arg</type>
-  </field>
-  <field>
     <name>picker_width</name>
     <descr><![CDATA[
 Size of the picker gradient element.

@@ -10,7 +10,10 @@ Stylesheet for transforming the XML in gridlayoutapi.xml
 -->
 
 <xsl:stylesheet
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+    xmlns:exsl="http://exslt.org/common"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
+    extension-element-prefixes="exsl"
+>
 
   <xsl:output method="text" />
 
@@ -28,26 +31,24 @@ Generates:
     <!-- Except when there's a <scalar> -->
 
     <xsl:choose>
-      <xsl:when test="scalar">
-
+      <xsl:when test="object">
 	<!-- If <scalar> has an <object>, we declare it -->
 
-	<xsl:if test="object">
 	  <xsl:text>        </xsl:text>
 	  <xsl:value-of select="object" />
 	  <xsl:text> </xsl:text>
-	  <xsl:value-of select="scalar" />
-	  <xsl:text>;
+	  <xsl:value-of select="name" />
+	  <xsl:text>_value;
 
         if (single_value_exists(lock, "</xsl:text>
-	<xsl:value-of select="name" />
+	<xsl:value-of select="member_name" />
 	<xsl:text>"))
         {
             auto cloned_lock=lock->clone();
 
             auto xpath=cloned_lock->get_xpath("</xsl:text>
 
-	    <xsl:value-of select="name" />
+	    <xsl:value-of select="member_name" />
 	    <xsl:text>");
 
 	    xpath->to_node();
@@ -74,8 +75,8 @@ Generates:
 	    <xsl:text>")
                 {
                     </xsl:text>
-		    <xsl:value-of select="../scalar" />
-		    <xsl:text>.</xsl:text>
+		    <xsl:value-of select="../name" />
+		    <xsl:text>_value.</xsl:text>
 		    <xsl:value-of select="field" />
 		    <xsl:text>=</xsl:text>
 
@@ -86,9 +87,6 @@ Generates:
 	  <xsl:text>                else throw EXCEPTION(gettextmsg(_("&lt;%1%&gt;: unknown element"), name));
             }
         }&#10;</xsl:text>
-
-
-	</xsl:if>
       </xsl:when>
       <xsl:otherwise>
 	<xsl:text>        auto </xsl:text>
@@ -123,6 +121,7 @@ This adds "{function_name}(" before the value, and
 after the value, effectively invoking a lookup function, first.
     -->
     <xsl:if test="lookup">
+      <xsl:text>compiler.</xsl:text>
       <xsl:value-of select="lookup/function" />
       <xsl:text>(</xsl:text>
     </xsl:if>
@@ -139,7 +138,7 @@ after the value, effectively invoking a lookup function, first.
 	<xsl:text>,&#10;                     </xsl:text>
 	<xsl:value-of select="node()" />
       </xsl:for-each>
-      <xsl:text>,&#10;                     allowthemerefs, &#34;</xsl:text>
+      <xsl:text>,&#10;                     compiler.allowthemerefs, &#34;</xsl:text>
       <xsl:value-of select="../name" />
       <xsl:text>&#34;)</xsl:text>
     </xsl:if>
@@ -210,9 +209,50 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
       </xsl:choose></xsl:for-each>
       <xsl:text>)
     {&#10;</xsl:text>
-    <xsl:for-each select="parameter">
-  <xsl:call-template name="parse-parameter"/>
-</xsl:for-each><xsl:text>&#10;        return [=</xsl:text>
+
+    <xsl:variable name="parameter_parser_name">
+      <xsl:choose>
+	<xsl:when test="parameter_parser_name">
+	  <xsl:value-of select="parameter_parser_name" />
+	</xsl:when>
+	<xsl:otherwise>
+	  <xsl:value-of select="../name" />
+	  <xsl:text>_</xsl:text>
+	  <xsl:value-of select="name" />
+	  <xsl:text>_</xsl:text>
+	  <xsl:value-of select="position()" />
+	</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <exsl:document
+	href="uicompiler.inc.H/{$parameter_parser_name}.H"
+	method="text">
+
+      <xsl:text>static auto get_</xsl:text>
+      <xsl:value-of select="$parameter_parser_name" />
+      <xsl:text>(uicompiler &amp;compiler, const theme_parser_lock &amp;lock)&#10;{&#10;</xsl:text>
+      <xsl:for-each select="parameter">
+	<xsl:choose>
+	  <xsl:when test="scalar" />
+	  <xsl:otherwise>
+	    <xsl:call-template name="parse-parameter"/>
+	  </xsl:otherwise>
+	</xsl:choose>
+      </xsl:for-each>
+
+      <xsl:text>        return std::tuple{</xsl:text>
+      <xsl:for-each select="parameter[count(scalar) = 0]">
+	<xsl:if test="position() &gt; 1">
+	  <xsl:text>,&#10;                          </xsl:text>
+	</xsl:if>
+	<xsl:value-of select="name" />
+	<xsl:text>_value</xsl:text>
+      </xsl:for-each>
+	<xsl:text>};&#10;}&#10;</xsl:text>
+    </exsl:document><xsl:text>&#10;        return [=, params=compiler_functions::get_</xsl:text>
+    <xsl:value-of select="$parameter_parser_name" />
+    <xsl:text>(*this, lock)</xsl:text>
 <xsl:if test="new_element">
   <xsl:text>, id=lock-&gt;get_any_attribute("id")</xsl:text>
 </xsl:if>
@@ -221,8 +261,16 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
 	    <xsl:for-each select="../parameter">
 	      <xsl:call-template name="declare-parameter" />
 	    </xsl:for-each><xsl:text>)
-	    {
-                </xsl:text>
+	    {&#10;</xsl:text>
+		<xsl:for-each select="parameter[count(scalar) = 0]">
+		  <xsl:text>                const auto &amp;</xsl:text>
+		  <xsl:value-of select="name" />
+		  <xsl:text>_value=std::get&lt;</xsl:text>
+		  <xsl:value-of select="position()-1" />
+		  <xsl:text>&gt;(params);&#10;</xsl:text>
+		</xsl:for-each>
+
+		<xsl:text>                </xsl:text>
 		<xsl:if test="new_element">
 		  <xsl:text>auto new_element=</xsl:text>
 		</xsl:if>

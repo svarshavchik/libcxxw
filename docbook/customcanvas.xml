@@ -35,7 +35,8 @@ See COPYING for distribution information.
 	  Canvas's &implementation_class;'s,
 	  <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>'s
 	  constructor takes a parameter that sets its minimum,
-	  preferred, and maximum size. This is the only widget in
+	  preferred, and maximum size (as well as the optional background
+	  color). This is the only widget in
 	  its window, so the window becomes resizable within the specified
 	  constraints.
 	</para>

@@ -264,10 +264,7 @@ auto wait_until_clear(int current_number_of_calls)
 	return *lock;
 }
 
-void set_filler_color(const LIBCXX_NAMESPACE::w::element &e)
-{
-	e->set_background_color(LIBCXX_NAMESPACE::w::rgb{0, 0, 0});
-}
+constexpr LIBCXX_NAMESPACE::w::rgb filler_color=LIBCXX_NAMESPACE::w::black;
 
 auto runteststate(testmainwindowoptions &options,
 		  bool individual_show)
@@ -289,13 +286,11 @@ auto runteststate(testmainwindowoptions &options,
 			 {
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
 				 auto e=m->append_row()->padding(options.nopadding->value ? 0:1).create_canvas
-				 ([&]
-				  (const auto &c) {
-					 set_filler_color(c);
-					 if (individual_show)
-						 c->show();
-				 },
-		{10}, {10});
+					 ({{filler_color},
+					   {10}, {10}});
+
+				 if (individual_show)
+					 e->show();
 
 				 main_window->appdata=e;
 			 },
@@ -437,16 +432,19 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 				 b.hradius=3;
 				 b.vradius=3;
 
-				 auto e=m->append_row()->padding(options.nopadding->value ? 0:1).border(b).create_canvas
-				 ([&]
-				  (const auto &c) {
-					 if (options.showhide->value)
-						 set_filler_color(c);
+				 std::optional<LIBCXX_NAMESPACE::w::color_arg
+					       > canvas_color;
 
-					 if (options.exceptiontest->value)
-						 throw EXCEPTION("Test");
-				 },
-		{10.0}, {10.0});
+				 if (options.showhide->value)
+					 canvas_color=filler_color;
+
+				 auto e=m->append_row()->padding(options.nopadding->value ? 0:1).border(b).create_canvas
+					 ({ canvas_color,
+					    {10.0 },
+					    {10.0 }});
+
+				 if (options.exceptiontest->value)
+					 throw EXCEPTION("Test");
 
 				 main_window->appdata=e;
 			 });
@@ -491,7 +489,7 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 		{
 			if (flag)
 			{
-				set_filler_color(e);
+				e->set_background_color(filler_color);
 			}
 			else
 			{
@@ -527,9 +525,8 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 			 {
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
 				 m->append_row()->padding(options.nopadding->value ? 0:1).create_canvas
-				 ([]
-				  (const auto &ignore) {},
-		{10}, {10});
+					 ({std::nullopt,
+					   {10}, {10}});
 			 });
 
 	auto [original_theme, original_scale, original_options]=
@@ -680,9 +677,8 @@ runtestthemescale(const testmainwindowoptions &options)
 				 b.dashes.push_back(2);
 
 				 auto c=m->append_row()->border(b).create_canvas
-				 ([]
-				  (const auto &ignore) {},
-		{30}, {30});
+					 ({std::nullopt,
+					   {30.0}, {30.0}});
 
 				 main_window->appdata=c;
 			 });

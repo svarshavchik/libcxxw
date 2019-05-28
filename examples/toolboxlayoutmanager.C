@@ -216,10 +216,12 @@ static void create_main_window(const x::w::main_window &mw,
 	x::w::gridlayoutmanager glm=mw->get_layoutmanager();
 
 	// Create a canvas element, to give the window some size.
-	glm->append_row()->create_canvas
-		([](const auto &f){},
-		 {50, 100, 150},
-		 {50, 100, 150});
+	x::w::canvas_config config;
+
+	config.width={50, 100, 150};
+	config.height={50, 100, 150};
+
+	glm->append_row()->create_canvas(config);
 
 	// The layout manager for the new toolbox.
 	x::w::new_toolboxlayoutmanager dialog_lm;

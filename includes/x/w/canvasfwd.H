@@ -11,19 +11,17 @@
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC canvasObj;
+struct canvas_config;
 
 //! A mostly empty widget.
 
 //! \code
-//! INSERT_LIBX_NAMESPACE::w::dim_axis_arg h_metrics{0, 50, 100};
-//! INSERT_LIBX_NAMESPACE::w::dim_axis_arg v_metrics{0, 50, 100};
+//! canvas_config config;
 //!
-//! factory->create_canvas([]
-//!                        (const canvas &c)
-//!                        {
-//!                            // ...
-//!                        },
-//!                        h_metrics, v_metrics);
+//! config.width={0, 50, 100};
+//! config.height={0, 50, 100};
+//!
+//! factory->create_canvas(config);
 //! \endcode
 //!
 //! The canvas object gets constructed, with specified
@@ -34,6 +32,8 @@ class LIBCXX_PUBLIC canvasObj;
 //! \endcode
 //!
 //! Update the canvas object's horizontal and vertical metrics.
+//!
+//! \see canvas_config
 
 typedef ref<canvasObj> canvas;
 

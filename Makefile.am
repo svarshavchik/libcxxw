@@ -1277,13 +1277,13 @@ BUILT_SOURCES += includes/x/w/constants_inc.H \
 	appearance/appearance_list.xml     \
 	appearance/appearance_parser.xml \
 	appearance/appearance_parser.inc.C \
-	uicompiler.inc.C \
+	uicompiler.inc.C uicompiler2.inc.C \
 	includes/x/w/all_appearancesfwd.H \
 	includes/x/w/all_appearances.H \
 	uicompiler_appearance_proto.inc.H \
 	gc_constants.inc.C pic_constants.inc.C
 
-CLEANFILES += uicompiler.inc.C \
+CLEANFILES += uicompiler.inc.C uicompiler2.inc.C \
 	gc_constants.inc.C pic_constants.inc.C \
 	appearance/appearance_list.xml \
 	appearance/appearance_parser.inc.C \
@@ -1318,9 +1318,22 @@ xim/ximclient2.inc.C: xim/xim.xml xim/xim.xsl
 	$(XSLTPROC) --stringparam mode received-switch $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient2.inc.C.tmp
 	mv -f xim/ximclient2.inc.C.tmp xim/ximclient2.inc.C
 
-uicompiler.inc.C: uicompiler.xml parseuicompiler.xsl
+uicompiler.stamp.inc.H: uicompiler.xml parseuicompiler.xsl
+	rm -rf uicompiler.inc.H
+	mkdir uicompiler.inc.H
 	$(XSLTPROC) $(srcdir)/parseuicompiler.xsl $(srcdir)/uicompiler.xml >uicompiler.inc.C.tmp
-	mv -f uicompiler.inc.C.tmp uicompiler.inc.C
+	cat uicompiler.inc.H/* >uicompiler2-new.inc.C
+	mv -f uicompiler.inc.C.tmp uicompiler-new.inc.C
+	rm -rf uicompiler.inc.H
+	touch uicompiler.stamp.inc.H
+
+CLEANFILES += uicompiler.stamp.inc.H
+
+uicompiler.inc.C: uicompiler.stamp.inc.H
+	cp -f uicompiler-new.inc.C uicompiler.inc.C
+
+uicompiler2.inc.C: uicompiler.stamp.inc.H
+	cp -f uicompiler2-new.inc.C uicompiler2.inc.C
 
 genconstants_SOURCES=genconstants.C
 

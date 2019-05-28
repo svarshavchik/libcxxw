@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "x/w/canvas.H"
 #include "x/w/impl/canvas.H"
 #include "x/w/factory.H"
 #include "x/w/impl/container.H"
@@ -28,26 +29,18 @@ void canvasObj::update(const dim_axis_arg &new_width,
 
 canvas factoryObj::create_canvas()
 {
-	return create_canvas([]
-			     (const auto &ignore)
-			     {
-			     },
-			     {},
-			     {});
+	return create_canvas({});
 }
 
-canvas factoryObj::do_create_canvas(const function<void (const canvas &)>
-				    &creator,
-				    const dim_axis_arg &horiz,
-				    const dim_axis_arg &vert)
+canvas factoryObj::create_canvas(const canvas_config &config)
 {
 	auto canvas_impl=ref<canvasObj::implObj>
 		::create(get_container_impl(),
-			 canvas_init_params{horiz, vert});
+			 canvas_init_params{config.width, config.height, {},
+						    config.background_color});
 
 	auto c=canvas::create(canvas_impl);
 
-	creator(c);
 	created(c);
 
 	return c;

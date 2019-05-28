@@ -46,8 +46,6 @@ dialog_cancel_button(const text_param &label,
 		     buttonptr &ret,
 		     char32_t key);
 
-functionref<void (const factory &)> dialog_filler();
-
 LIBCXXW_NAMESPACE_END
 
 #endif

@@ -204,9 +204,9 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 		mw->get_layoutmanager();
 
 	glm->append_row()->create_canvas
-		([](const auto &f){},
-		 {50, 100, 150},
-		 {50, 100, 150});
+		({std::nullopt,
+		  {50, 100, 150},
+		  {50, 100, 150}});
 
 	LIBCXX_NAMESPACE::w::new_toolboxlayoutmanager dialog_lm;
 

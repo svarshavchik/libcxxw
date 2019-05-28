@@ -584,14 +584,6 @@ dialog_cancel_button(const text_param &label,
 	};
 }
 
-functionref<void (const factory &)> dialog_filler()
-{
-	return [](const factory &f)
-	{
-		f->create_canvas();
-	};
-}
-
 // Hide a theme-generated dialog, then invoke a callback action.
 
 static void hide_and_invoke(ONLY IN_THREAD,
@@ -694,19 +686,6 @@ dialog main_windowObj
 				   {"icon", icon_element(icon)},
 				   {"message", content_factory},
 
-				   // Still need to add a filler
-				   // element to the container
-				   // row, so that the container's
-				   // horizontal metrics are
-				   // open-ended.
-				   //
-				   // Otherwise the fixed
-				   // container row metrics
-				   // will constrain the width
-				   // of wrappable labels used
-				   // for the message.
-
-				   {"filler", dialog_filler()},
 				   {"ok", dialog_ok_button(ok_label,
 							   ok_button, '\e')}
 				  }};
@@ -898,7 +877,6 @@ dialog main_windowObj
 				   {"ok", dialog_ok_button(ok_label,
 							   ok_button,
 							   '\n')},
-				   {"filler", dialog_filler()},
 				   {"cancel", dialog_cancel_button
 				    (cancel_label,
 				     cancel_button, '\e')}
@@ -980,7 +958,6 @@ input_dialog main_windowObj
 				   {"ok", dialog_ok_button(ok_label,
 							   ok_button,
 							   '\n')},
-				   {"filler", dialog_filler()},
 				   {"cancel", dialog_cancel_button
 				    (cancel_label,
 				     cancel_button, '\e')}

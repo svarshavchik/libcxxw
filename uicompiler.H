@@ -91,6 +91,12 @@ private:
 	//! What's being generated.
 	uigenerators generators;
 
+	//! Whether this is a custom theme compiler
+
+	//! Custom theme compilers will allow various entities (colors,
+	//! fonts) referenced by widgets to be undefined in the theme file,
+	//! and presumed to be referring to the default theme. When compiling
+	//! the default theme this is false.
 	bool allowthemerefs;
 
 	//! Top level factory and layouts that aren't compiled yet.
@@ -381,6 +387,8 @@ private:
 	const_appearance compile_appearance(const theme_parser_lock &parent);
 
 	struct generate_info;
+
+	struct compiler_functions;
 
 #include "uicompiler_appearance_proto.inc.H"
 };

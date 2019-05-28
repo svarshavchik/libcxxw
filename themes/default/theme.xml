@@ -1537,8 +1537,20 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   </layout>
 
   <factory type="grid" id="ok-button">
+
+    <!--
+
+Still need to add a filler element to the container
+row, so that the container's horizontal metrics are
+open-ended.
+
+Otherwise the fixed container row metrics will constrain the width
+of wrappable labels used for the message.
+
+    -->
+
     <element>
-      <name>filler</name>
+      <canvas />
     </element>
 
     <padding>
@@ -1699,7 +1711,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </element>
 
     <element>
-      <name>filler</name>
+      <canvas />
     </element>
 
     <padding>
@@ -1958,7 +1970,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </padding>
 
     <element>
-      <name>filler</name>
+      <canvas />
     </element>
 
     <padding>
@@ -2138,7 +2150,7 @@ the grid layout manager's borders for it.
       <columns>2</columns>
     </colspan>
     <element>
-      <name>filler</name>
+      <canvas />
     </element>
 
     <padding>
@@ -2171,7 +2183,9 @@ the grid layout manager's borders for it.
     </colspan>
 
     <element>
-      <name>h-button-spacing</name>
+      <canvas>
+	<height>color_picker_buffer_height</height>
+      </canvas>
     </element>
   </factory>
 
@@ -2198,7 +2212,9 @@ the grid layout manager's borders for it.
     </element>
 
     <element>
-      <name>v-button-spacing</name>
+      <canvas>
+	<width>color_picker_buffer_width</width>
+      </canvas>
     </element>
 
     <!-- SSSSS -->
@@ -2246,7 +2262,9 @@ the grid layout manager's borders for it.
     </colspan>
 
     <element>
-      <name>h-button-spacing</name>
+      <canvas>
+	<height>color_picker_buffer_height</height>
+      </canvas>
     </element>
   </factory>
 
@@ -2255,7 +2273,7 @@ the grid layout manager's borders for it.
       <columns>2</columns>
     </colspan>
     <element>
-      <name>filler</name>
+      <canvas />
     </element>
 
     <!-- CCCCCC -->
@@ -2613,7 +2631,7 @@ first column, to make the labels line up with their input fields.
 
   <factory type="grid" id="print-dialog-printer-info">
     <element>
-      <name>filler</name>
+      <canvas />
     </element>
 
     <element id="printer-info">
@@ -2649,7 +2667,7 @@ first column, to make the labels line up with their input fields.
 
   <factory type="grid" id="print-dialog-print-all-pages">
     <element>
-      <name>filler</name>
+      <canvas />
     </element>
 
     <element>
@@ -2665,7 +2683,7 @@ first column, to make the labels line up with their input fields.
 
   <factory type="grid" id="print-dialog-print-selected-pages-row">
     <element>
-      <name>filler</name>
+      <canvas />
     </element>
 
     <container>

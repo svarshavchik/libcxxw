@@ -8,6 +8,7 @@
 #include "x/w/uielements.H"
 #include "x/w/uigenerators.H"
 #include "x/w/label.H"
+#include "x/w/canvas.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/booklayoutmanager.H"
@@ -1440,7 +1441,14 @@ void uicompiler::create_container(const bookpagefactory &f,
 	       ? shortcut{}:shortcut_iter->second);
 }
 
+struct uicompiler::compiler_functions {
+
+#include "uicompiler2.inc.C"
+
+};
+
 #include "uicompiler.inc.C"
+
 
 // Additional helpers used by appearance_parser
 

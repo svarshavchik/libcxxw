@@ -177,21 +177,22 @@ void create_peepholes(const x::w::main_window &mw)
 	// peepholes, since the peepholes span both columns, and the canvas's
 	// maximum width can expand too.
 
-	f->create_canvas([]
-			 (const auto &ignore)
-			 {
-			 },
 
-			 // A plain create_canvas() sets its preferred width
-			 // to 0 pixels. In order to compute the initial
-			 // default width of the grid we need to make
-			 // the canvas's preferred width the same 100
-			 // millimeters as the peepholes'.
-			 //
-			 // So we need to use the overloaded create_canvas()
-			 // that explicitly sets the canvas's metrics:
-			 {0, 100},
-			 {0, 0, 0});
+	// A plain create_canvas() sets its preferred width
+	// to 0 pixels. In order to compute the initial
+	// default width of the grid we need to make
+	// the canvas's preferred width the same 100
+	// millimeters as the peepholes'.
+	//
+	// So we need to use the overloaded create_canvas()
+	// that takes a x::w::canvas_config parameter.
+
+	x::w::canvas_config config;
+
+	config.width={0, 100};
+	config.height={0};
+
+	f->create_canvas(config);
 }
 
 void peepholelayoutmanager()

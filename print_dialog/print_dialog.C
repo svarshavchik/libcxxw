@@ -391,7 +391,6 @@ standard_dialog_elements_t print_dialog_init_helper
 					fields.printer_resolution=f;
 				}},
 		{"ok", dialog_ok_button(_("Print"), fields.ok_button, '\n')},
-		{"filler", dialog_filler()},
 		{"cancel", dialog_cancel_button(_("Cancel"),
 						fields.cancel_button,
 						'\e')}

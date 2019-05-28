@@ -6,7 +6,7 @@ See COPYING for distribution information.
 -->
 
 <chapter id="customelement">
-  <title>Custom <classname>&ns;::w::element</classname></title>
+  <title>Custom <classname>&ns;::w::element</classname> widgets</title>
 
   <para>
     <filename>customelement.C</filename> is an example of creating

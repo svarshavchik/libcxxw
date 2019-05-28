@@ -151,12 +151,7 @@ void install_peephole_scrollbars(const gridlayoutmanager &lm,
 		.padding(0).created_internally(horizontal_scrollbar);
 
 	// Create a canvas to fill in the unused bottom-right corner.
-	row1_factory->padding(0).create_canvas([]
-					       (const auto &ignore)
-					       {
-					       },
-					       {0, 0, 0},
-					       {0, 0, 0});
+	row1_factory->padding(0).create_canvas({std::nullopt, {0}, {0}});
 }
 
 //! Set scrollbar focus order.

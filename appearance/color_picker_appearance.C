@@ -18,8 +18,6 @@ color_picker_appearance_properties::color_picker_appearance_properties()
 				    ::theme()},
 	  strip_width{"color_picker_strip_width"},
 	  strip_height{"color_picker_strip_height"},
-	  buffer_width{"color_picker_buffer_width"},
-	  buffer_height{"color_picker_buffer_height"},
 	  picker_width{"color_picker_square_width"},
 	  picker_height{"color_picker_square_height"},
 	  basic_color_width{"color_picker_basic_color_width"},

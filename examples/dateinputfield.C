@@ -121,12 +121,10 @@ static std::tuple<x::w::date_input_field, x::w::date_input_field
 
 	f=lm->append_row();
 
-	f->colspan(2).create_canvas([]
-				    (const auto &ignore)
-				    {
-				    },
-				    {150, 150, 150},
-				    {0, 0, 0});
+	f->colspan(2).create_canvas({
+				     std::nullopt,
+				     {150, 150, 150},
+				     {0, 0, 0}});
 
 	f=lm->append_row();
 

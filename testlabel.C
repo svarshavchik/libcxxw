@@ -95,8 +95,7 @@ void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_window,
 				      "jumped over the lazy\n"
 				       "dog's tail."});
 		factory=layout->append_row();
-		factory->create_canvas([](const auto &){},
-				       {10,10,10},{10,10,10})->show();
+		factory->create_canvas({std::nullopt, {10}, {10}})->show();
 		return;
 	}
 
@@ -165,8 +164,8 @@ void testlabel(const testlabel_options &options)
 
 				auto size=(i % 2) ? 10:100;
 				glm->append_row()->create_canvas
-					([](const auto &){},{size, size, size},
-					 {10,10,10})->show();
+					({std::nullopt, {size},
+					  {10}})->show();
 			}
 			lock.wait_for(std::chrono::seconds(1),
 				      [&] { return *lock; });
