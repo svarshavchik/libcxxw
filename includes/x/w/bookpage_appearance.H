@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_bookpage_appearance &theme();
+	static const_bookpage_appearance theme();
 
 };
 

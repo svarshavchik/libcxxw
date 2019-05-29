@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/popup_list_appearance.H"
 #include "x/w/generic_window_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -71,11 +72,24 @@ static popup_list_appearance create_menu_theme()
 	return appearance;
 }
 
-const const_popup_list_appearance &popup_list_appearance_base::menu_theme()
-{
-	static const const_popup_list_appearance config=create_menu_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct popup_list_appearance_base_menu_themeObj : virtual public obj {
+
+	const const_popup_list_appearance config=create_menu_theme();
+};
+
+#if 0
+{
+#endif
+}
+
+const_popup_list_appearance popup_list_appearance_base::menu_theme()
+{
+	return singleton<popup_list_appearance_base_menu_themeObj>::get()->config;
 }
 
 static popup_list_appearance create_submenu_theme()
@@ -88,14 +102,27 @@ static popup_list_appearance create_submenu_theme()
 	return appearance;
 }
 
-const const_popup_list_appearance &popup_list_appearance_base::submenu_theme()
-{
-	static const const_popup_list_appearance config=create_submenu_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct popup_list_appearance_base_submenu_themeObj : virtual public obj {
+
+	const const_popup_list_appearance config=create_submenu_theme();
+};
+
+#if 0
+{
+#endif
 }
 
-const const_popup_list_appearance &popup_list_appearance_base::contextmenu_theme()
+const_popup_list_appearance popup_list_appearance_base::submenu_theme()
+{
+	return singleton<popup_list_appearance_base_submenu_themeObj>::get()->config;
+}
+
+const_popup_list_appearance popup_list_appearance_base::contextmenu_theme()
 {
 	return menu_theme();
 }

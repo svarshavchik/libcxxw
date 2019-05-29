@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_file_dialog_appearance &theme();
+	static const_file_dialog_appearance theme();
 
 };
 

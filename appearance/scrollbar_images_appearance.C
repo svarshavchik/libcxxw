@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/scrollbar_images_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -55,44 +56,93 @@ const_scrollbar_images_appearance scrollbar_images_appearanceObj
 
 
 
-const const_scrollbar_images_appearance &
-scrollbar_images_appearance_base::horizontal1()
-{
-	static const_scrollbar_images_appearance config=
-		create_images("left", "right",
+namespace {
+#if 0
+}
+#endif
+
+struct scrollbar_images_appearance_base_horizontal1Obj : virtual public obj {
+
+	const const_scrollbar_images_appearance config=create_images("left", "right",
 				 "left", "horiz", "right", "1");
 
-	return config;
+};
+
+#if 0
+{
+#endif
 }
 
-const const_scrollbar_images_appearance &scrollbar_images_appearance_base
-::horizontal2()
+const_scrollbar_images_appearance 
+scrollbar_images_appearance_base::horizontal1()
 {
-	static const_scrollbar_images_appearance config=
-		create_images("left", "right",
+	return singleton<scrollbar_images_appearance_base_horizontal1Obj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct scrollbar_images_appearance_base_horizontal2Obj : virtual public obj {
+
+	const const_scrollbar_images_appearance config=create_images("left", "right",
 				 "left", "horiz", "right", "2");
 
-	return config;
+};
+
+#if 0
+{
+#endif
 }
 
-const const_scrollbar_images_appearance &scrollbar_images_appearance_base
-::vertical1()
+const_scrollbar_images_appearance scrollbar_images_appearance_base::horizontal2()
 {
-	static const_scrollbar_images_appearance config=
-		create_images("up", "down",
+	return singleton<scrollbar_images_appearance_base_horizontal2Obj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct scrollbar_images_appearance_base_vertical1Obj : virtual public obj {
+
+	const const_scrollbar_images_appearance config=create_images("up", "down",
 			      "top", "vert", "bottom", "1");
 
-	return config;
+};
+
+#if 0
+{
+#endif
 }
 
-const const_scrollbar_images_appearance &scrollbar_images_appearance_base
-::vertical2()
+const_scrollbar_images_appearance scrollbar_images_appearance_base::vertical1()
 {
-	static const_scrollbar_images_appearance config=
-		create_images("up", "down",
+	return singleton<scrollbar_images_appearance_base_vertical1Obj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct scrollbar_images_appearance_base_vertical2Obj : virtual public obj {
+
+	const const_scrollbar_images_appearance config=create_images("up", "down",
 			      "top", "vert", "bottom", "2");
 
-	return config;
+};
+
+#if 0
+{
+#endif
+}
+
+const_scrollbar_images_appearance scrollbar_images_appearance_base::vertical2()
+{
+	return singleton<scrollbar_images_appearance_base_vertical2Obj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_frame_appearance &theme();
+	static const_frame_appearance theme();
 
 };
 

@@ -6,6 +6,7 @@
 #include "x/w/tooltip_appearance.H"
 #include "x/w/tooltip_border_appearance.H"
 #include "x/w/generic_window_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -39,18 +40,36 @@ const_tooltip_appearance tooltip_appearanceObj
         return copy;
 }
 
-const const_tooltip_appearance &tooltip_appearance_base::tooltip_theme()
-{
-	static const const_tooltip_appearance config=
-		const_tooltip_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct tooltip_appearance_base_tooltip_themeObj : virtual public obj {
+
+	const const_tooltip_appearance config=const_tooltip_appearance::create();
+
+};
+
+#if 0
+{
+#endif
 }
 
-const const_tooltip_appearance &tooltip_appearance_base::static_tooltip_theme()
+const_tooltip_appearance tooltip_appearance_base::tooltip_theme()
 {
-	static const const_tooltip_appearance config=
-		tooltip_theme()->modify
+	return singleton<tooltip_appearance_base_tooltip_themeObj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct tooltip_appearance_base_static_tooltip_themeObj : virtual public obj {
+
+	const const_tooltip_appearance config=
+		tooltip_appearance_base::tooltip_theme()->modify
 		([]
 		 (const auto &theme)
 		 {
@@ -58,7 +77,16 @@ const const_tooltip_appearance &tooltip_appearance_base::static_tooltip_theme()
 				 "static_tooltip_background_color";
 		 });
 
-	return config;
+};
+
+#if 0
+{
+#endif
+}
+
+const_tooltip_appearance tooltip_appearance_base::static_tooltip_theme()
+{
+	return singleton<tooltip_appearance_base_static_tooltip_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

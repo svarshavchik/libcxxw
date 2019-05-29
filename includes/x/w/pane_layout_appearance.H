@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_pane_layout_appearance &theme();
+	static const_pane_layout_appearance theme();
 
 };
 

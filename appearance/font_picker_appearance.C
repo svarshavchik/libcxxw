@@ -8,6 +8,7 @@
 #include "x/w/scrollbar_appearance.H"
 #include "x/w/element_popup_appearance.H"
 #include "messages.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -52,12 +53,25 @@ const_font_picker_appearance font_picker_appearanceObj
         return copy;
 }
 
-const const_font_picker_appearance &font_picker_appearance_base::theme()
-{
-	static const const_font_picker_appearance config=
-		const_font_picker_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct font_picker_appearance_base_themeObj : virtual public obj {
+
+	const const_font_picker_appearance config=const_font_picker_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_font_picker_appearance font_picker_appearance_base::theme()
+{
+	return singleton<font_picker_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

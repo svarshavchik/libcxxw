@@ -20,7 +20,7 @@ class combobox_appearance_base : public ptrref_base {
 public:
 
 	//! Default combo-box theme.
-	static const const_combobox_appearance &theme();
+	static const_combobox_appearance theme();
 };
 LIBCXXW_NAMESPACE_END
 

@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_color_picker_appearance &theme();
+	static const_color_picker_appearance theme();
 
 };
 

@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/focus_border_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -31,12 +32,25 @@ const_focus_border_appearance focus_border_appearanceObj
         return copy;
 }
 
-const const_focus_border_appearance &focus_border_appearance_base::none_theme()
-{
-	static const const_focus_border_appearance config=
-		const_focus_border_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_none_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=const_focus_border_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance focus_border_appearance_base::none_theme()
+{
+	return singleton<focus_border_appearance_base_none_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_theme()
@@ -50,11 +64,24 @@ static inline const_focus_border_appearance make_theme()
 		 });
 }
 
-const const_focus_border_appearance &focus_border_appearance_base::theme()
-{
-	static const const_focus_border_appearance config=make_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_theme();
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance focus_border_appearance_base::theme()
+{
+	return singleton<focus_border_appearance_base_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_menu_theme()
@@ -70,11 +97,24 @@ static inline const_focus_border_appearance make_menu_theme()
 		 });
 }
 
-const const_focus_border_appearance &focus_border_appearance_base::menu_theme()
-{
-	static const const_focus_border_appearance config=make_menu_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_menu_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_menu_theme();
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance focus_border_appearance_base::menu_theme()
+{
+	return singleton<focus_border_appearance_base_menu_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_thin_theme()
@@ -90,11 +130,24 @@ static inline const_focus_border_appearance make_thin_theme()
 		 });
 }
 
-const const_focus_border_appearance &focus_border_appearance_base::thin_theme()
-{
-	static const const_focus_border_appearance config=make_thin_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_thin_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_thin_theme();
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance focus_border_appearance_base::thin_theme()
+{
+	return singleton<focus_border_appearance_base_thin_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_visible_thin_theme()
@@ -108,13 +161,26 @@ static inline const_focus_border_appearance make_visible_thin_theme()
 		 });
 }
 
-const const_focus_border_appearance
-&focus_border_appearance_base::visible_thin_theme()
-{
-	static const const_focus_border_appearance config=
-		make_visible_thin_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_visible_thin_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_visible_thin_theme();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance
+focus_border_appearance_base::visible_thin_theme()
+{
+	return singleton<focus_border_appearance_base_visible_thin_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_slider_theme()
@@ -130,13 +196,26 @@ static inline const_focus_border_appearance make_slider_theme()
 		 });
 }
 
-const const_focus_border_appearance
-&focus_border_appearance_base::slider_theme()
-{
-	static const const_focus_border_appearance config=
-		make_slider_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_slider_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_slider_theme();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance
+focus_border_appearance_base::slider_theme()
+{
+	return singleton<focus_border_appearance_base_slider_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_combobox_button_theme()
@@ -152,13 +231,26 @@ static inline const_focus_border_appearance make_combobox_button_theme()
 		 });
 }
 
-const const_focus_border_appearance
-&focus_border_appearance_base::combobox_button_theme()
-{
-	static const const_focus_border_appearance config=
-		make_combobox_button_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_combobox_button_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_combobox_button_theme();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance
+focus_border_appearance_base::combobox_button_theme()
+{
+	return singleton<focus_border_appearance_base_combobox_button_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_input_field_theme()
@@ -174,13 +266,26 @@ static inline const_focus_border_appearance make_input_field_theme()
 		 });
 }
 
-const const_focus_border_appearance
-&focus_border_appearance_base::input_field_theme()
-{
-	static const const_focus_border_appearance config=
-		make_input_field_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_input_field_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_input_field_theme();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance
+focus_border_appearance_base::input_field_theme()
+{
+	return singleton<focus_border_appearance_base_input_field_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_list_theme()
@@ -196,13 +301,26 @@ static inline const_focus_border_appearance make_list_theme()
 		 });
 }
 
-const const_focus_border_appearance
-&focus_border_appearance_base::list_theme()
-{
-	static const const_focus_border_appearance config=
-		make_list_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_list_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_list_theme();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance
+focus_border_appearance_base::list_theme()
+{
+	return singleton<focus_border_appearance_base_list_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_visible_list_theme()
@@ -216,13 +334,26 @@ static inline const_focus_border_appearance make_visible_list_theme()
 		 });
 }
 
-const const_focus_border_appearance
-&focus_border_appearance_base::visible_list_theme()
-{
-	static const const_focus_border_appearance config=
-		make_visible_list_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_visible_list_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_visible_list_theme();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance
+focus_border_appearance_base::visible_list_theme()
+{
+	return singleton<focus_border_appearance_base_visible_list_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_attached_button_theme()
@@ -238,13 +369,26 @@ static inline const_focus_border_appearance make_attached_button_theme()
 		 });
 }
 
-const const_focus_border_appearance
-&focus_border_appearance_base::attached_button_theme()
-{
-	static const const_focus_border_appearance config=
-		make_attached_button_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_attached_button_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_attached_button_theme();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance
+focus_border_appearance_base::attached_button_theme()
+{
+	return singleton<focus_border_appearance_base_attached_button_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_scrollbar_theme()
@@ -261,13 +405,26 @@ static inline const_focus_border_appearance make_scrollbar_theme()
 		 });
 }
 
-const const_focus_border_appearance
-&focus_border_appearance_base::scrollbar_theme()
-{
-	static const const_focus_border_appearance config=
-		make_scrollbar_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_scrollbar_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_scrollbar_theme();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance
+focus_border_appearance_base::scrollbar_theme()
+{
+	return singleton<focus_border_appearance_base_scrollbar_themeObj>::get()->config;
 }
 
 static inline const_focus_border_appearance make_dateeditbutton_theme()
@@ -284,13 +441,26 @@ static inline const_focus_border_appearance make_dateeditbutton_theme()
 		 });
 }
 
-const const_focus_border_appearance
-&focus_border_appearance_base::dateeditbutton_theme()
-{
-	static const const_focus_border_appearance config=
-		make_dateeditbutton_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct focus_border_appearance_base_dateeditbutton_themeObj : virtual public obj {
+
+	const const_focus_border_appearance config=make_dateeditbutton_theme();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_focus_border_appearance
+focus_border_appearance_base::dateeditbutton_theme()
+{
+	return singleton<focus_border_appearance_base_dateeditbutton_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

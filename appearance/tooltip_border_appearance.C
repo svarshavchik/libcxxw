@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/tooltip_border_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -56,21 +57,47 @@ static inline tooltip_border_appearance default_nonalpha_border()
 	return b;
 }
 
-const const_tooltip_border_appearance &tooltip_border_appearance_base::theme()
-{
-	static const const_tooltip_border_appearance config=
-		default_alpha_border();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct tooltip_border_appearance_base_themeObj : virtual public obj {
+
+	const const_tooltip_border_appearance config=default_alpha_border();
+
+};
+
+#if 0
+{
+#endif
 }
 
-const const_tooltip_border_appearance
-&tooltip_border_appearance_base::nonalpha_theme()
+const_tooltip_border_appearance tooltip_border_appearance_base::theme()
 {
-	static const const_tooltip_border_appearance config=
-		default_nonalpha_border();
+	return singleton<tooltip_border_appearance_base_themeObj>::get()->config;
+}
 
-	return config;
+namespace {
+#if 0
+}
+#endif
+
+struct tooltip_border_appearance_base_nonalpha_themeObj : virtual public obj {
+
+	const const_tooltip_border_appearance config=default_nonalpha_border();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_tooltip_border_appearance
+tooltip_border_appearance_base::nonalpha_theme()
+{
+	return singleton<tooltip_border_appearance_base_nonalpha_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

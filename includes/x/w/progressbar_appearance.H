@@ -24,7 +24,7 @@ public:
 
 	//! Default theme.
 
-	static const const_progressbar_appearance &theme();
+	static const_progressbar_appearance theme();
 
 };
 

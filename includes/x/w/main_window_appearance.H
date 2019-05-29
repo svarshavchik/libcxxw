@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_main_window_appearance &theme();
+	static const_main_window_appearance theme();
 
 };
 

@@ -7,6 +7,7 @@
 #include "x/w/scrollbar_appearance.H"
 #include "x/w/focus_border_appearance.H"
 #include <x/w/generic_window_appearance.H>
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -48,12 +49,25 @@ const_element_popup_appearance element_popup_appearanceObj
         return copy;
 }
 
-const const_element_popup_appearance &element_popup_appearance_base::theme()
-{
-	static const const_element_popup_appearance config=
-		const_element_popup_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct element_popup_appearance_base_themeObj : virtual public obj {
+
+	const const_element_popup_appearance config=const_element_popup_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_element_popup_appearance element_popup_appearance_base::theme()
+{
+	return singleton<element_popup_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

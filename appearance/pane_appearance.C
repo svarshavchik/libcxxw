@@ -6,6 +6,7 @@
 #include "x/w/pane_appearance.H"
 #include "x/w/scrollbar_appearance.H"
 #include "x/w/scrollbar.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -43,12 +44,25 @@ const_pane_appearance pane_appearanceObj
         return copy;
 }
 
-const const_pane_appearance &pane_appearance_base::theme()
-{
-	static const const_pane_appearance config=
-		const_pane_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct pane_appearance_base_themeObj : virtual public obj {
+
+	const const_pane_appearance config=const_pane_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_pane_appearance pane_appearance_base::theme()
+{
+	return singleton<pane_appearance_base_themeObj>::get()->config;
 }
 
 static const_pane_appearance create_focusable_list()
@@ -69,11 +83,24 @@ static const_pane_appearance create_focusable_list()
 	return appearance;
 }
 
-const const_pane_appearance &pane_appearance_base::focusable_list()
-{
-	static const const_pane_appearance obj=create_focusable_list();
+namespace {
+#if 0
+}
+#endif
 
-	return obj;
+struct pane_appearance_base_focusable_listObj : virtual public obj {
+
+	const const_pane_appearance config=create_focusable_list();
+};
+
+#if 0
+{
+#endif
+}
+
+const_pane_appearance pane_appearance_base::focusable_list()
+{
+	return singleton<pane_appearance_base_focusable_listObj>::get()->config;
 }
 
 static const_pane_appearance create_file_dialog_dir()
@@ -100,18 +127,44 @@ static const_pane_appearance create_file_dialog_file()
 	return appearance;
 }
 
-const const_pane_appearance &pane_appearance_base::file_dialog_dir()
-{
-	static const const_pane_appearance config=create_file_dialog_dir();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct pane_appearance_base_file_dialog_dirObj : virtual public obj {
+
+	const const_pane_appearance config=create_file_dialog_dir();
+};
+
+#if 0
+{
+#endif
 }
 
-const const_pane_appearance &pane_appearance_base::file_dialog_file()
+const_pane_appearance pane_appearance_base::file_dialog_dir()
 {
-	static const const_pane_appearance config=create_file_dialog_file();
+	return singleton<pane_appearance_base_file_dialog_dirObj>::get()->config;
+}
 
-	return config;
+namespace {
+#if 0
+}
+#endif
+
+struct pane_appearance_base_file_dialog_fileObj : virtual public obj {
+
+	const const_pane_appearance config=create_file_dialog_file();
+};
+
+#if 0
+{
+#endif
+}
+
+const_pane_appearance pane_appearance_base::file_dialog_file()
+{
+	return singleton<pane_appearance_base_file_dialog_fileObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

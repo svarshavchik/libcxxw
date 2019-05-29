@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/book_appearance.H"
 #include "x/w/image_button_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -38,12 +39,25 @@ const_book_appearance book_appearanceObj
         return copy;
 }
 
-const const_book_appearance &book_appearance_base::theme()
-{
-	static const const_book_appearance config=
-		const_book_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct book_appearance_base_themeObj : virtual public obj {
+
+	const const_book_appearance config=const_book_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_book_appearance book_appearance_base::theme()
+{
+	return singleton<book_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

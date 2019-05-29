@@ -21,19 +21,19 @@ public:
 
 	//! Default theme.
 
-	static const const_pane_appearance &theme();
+	static const_pane_appearance theme();
 
 	//! Default theme
 
-	static const const_pane_appearance &focusable_list();
+	static const_pane_appearance focusable_list();
 
 	//! Default theme
 
-	static const const_pane_appearance &file_dialog_dir();
+	static const_pane_appearance file_dialog_dir();
 
 	//! Default theme
 
-	static const const_pane_appearance &file_dialog_file();
+	static const_pane_appearance file_dialog_file();
 };
 
 LIBCXXW_NAMESPACE_END

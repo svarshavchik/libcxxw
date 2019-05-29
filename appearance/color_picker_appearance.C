@@ -8,6 +8,7 @@
 #include "x/w/input_field_appearance.H"
 #include "x/w/button_config.H"
 #include "x/w/button_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -54,12 +55,25 @@ const_color_picker_appearance color_picker_appearanceObj
         return copy;
 }
 
-const const_color_picker_appearance &color_picker_appearance_base::theme()
-{
-	static const const_color_picker_appearance config=
-		const_color_picker_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct color_picker_appearance_base_themeObj : virtual public obj {
+
+	const const_color_picker_appearance config=const_color_picker_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_color_picker_appearance color_picker_appearance_base::theme()
+{
+	return singleton<color_picker_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

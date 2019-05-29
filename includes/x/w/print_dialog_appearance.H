@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_print_dialog_appearance &theme();
+	static const_print_dialog_appearance theme();
 
 };
 

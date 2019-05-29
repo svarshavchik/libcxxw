@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/progressbar_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,12 +38,25 @@ const_progressbar_appearance progressbar_appearanceObj
         return copy;
 }
 
-const const_progressbar_appearance &progressbar_appearance_base::theme()
-{
-	static const const_progressbar_appearance config=
-		const_progressbar_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct progressbar_appearance_base_themeObj : virtual public obj {
+
+	const const_progressbar_appearance config=const_progressbar_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_progressbar_appearance progressbar_appearance_base::theme()
+{
+	return singleton<progressbar_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

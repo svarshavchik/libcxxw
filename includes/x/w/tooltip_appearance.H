@@ -21,11 +21,11 @@ public:
 
 	//! Default theme.
 
-	static const const_tooltip_appearance &tooltip_theme();
+	static const_tooltip_appearance tooltip_theme();
 
 	//! Default theme.
 
-	static const const_tooltip_appearance &static_tooltip_theme();
+	static const_tooltip_appearance static_tooltip_theme();
 };
 
 LIBCXXW_NAMESPACE_END

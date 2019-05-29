@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_peephole_appearance &theme();
+	static const_peephole_appearance theme();
 
 };
 

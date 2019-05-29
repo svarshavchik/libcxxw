@@ -1,3 +1,8 @@
+2019-05-28  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Use the singleton template to cache appearance objects, to avoid
+	undefined behavior during the global destruction phase.
+
 2019-05-27  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Create <canvas>es from the theme file.

@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/generic_window_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,21 +38,38 @@ const_generic_window_appearance generic_window_appearanceObj
         return copy;
 }
 
-const const_generic_window_appearance
-&generic_window_appearance_base::main_window_theme()
-{
-	static const const_generic_window_appearance config=
-		const_generic_window_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct generic_window_appearance_base_main_window_themeObj : virtual public obj {
+
+	const const_generic_window_appearance config=const_generic_window_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_generic_window_appearance
+generic_window_appearance_base::main_window_theme()
+{
+	return singleton<generic_window_appearance_base_main_window_themeObj>::get()->config;
 }
 
 
-const const_generic_window_appearance
-&generic_window_appearance_base::date_input_field_theme()
-{
-	static const_generic_window_appearance config=
-		main_window_theme()->modify
+namespace {
+#if 0
+}
+#endif
+
+struct generic_window_appearance_base_date_input_field_themeObj : virtual public obj {
+
+	const const_generic_window_appearance config=
+		generic_window_appearance_base::main_window_theme()->modify
 		([]
 		 (const auto &custom)
 		 {
@@ -59,49 +77,101 @@ const const_generic_window_appearance
 			 custom->label_color="dateedit_day";
 		 });
 
-	return config;
+};
+
+#if 0
+{
+#endif
 }
 
-const const_generic_window_appearance
-&generic_window_appearance_base::list_contents_theme()
+const_generic_window_appearance
+generic_window_appearance_base::date_input_field_theme()
 {
-	static const const_generic_window_appearance config=
-		main_window_theme()->modify
+	return singleton<generic_window_appearance_base_date_input_field_themeObj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct generic_window_appearance_base_list_contents_themeObj : virtual public obj {
+
+	const const_generic_window_appearance config=
+		generic_window_appearance_base::main_window_theme()->modify
 		([]
 		 (const auto &custom)
 		 {
 			 custom->label_font=theme_font{"list"};
 		 });
 
-	return config;
+};
+
+#if 0
+{
+#endif
 }
 
-const const_generic_window_appearance
-&generic_window_appearance_base::combobox_theme()
+const_generic_window_appearance
+generic_window_appearance_base::list_contents_theme()
 {
-	static const const_generic_window_appearance config=
-		main_window_theme()->modify
+	return singleton<generic_window_appearance_base_list_contents_themeObj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct generic_window_appearance_base_combobox_themeObj : virtual public obj {
+
+	const const_generic_window_appearance config=
+		generic_window_appearance_base::main_window_theme()->modify
 		([]
 		 (const auto &custom)
 		 {
 			 custom->label_font=theme_font{"combobox"};
 		 });
 
-	return config;
+};
+
+#if 0
+{
+#endif
 }
 
-const const_generic_window_appearance
-&generic_window_appearance_base::tooltip_theme()
+const_generic_window_appearance
+generic_window_appearance_base::combobox_theme()
 {
-	static const const_generic_window_appearance config=
-		main_window_theme()
+	return singleton<generic_window_appearance_base_combobox_themeObj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct generic_window_appearance_base_tooltip_themeObj : virtual public obj {
+
+	const const_generic_window_appearance config=
+		generic_window_appearance_base::main_window_theme()
 		->modify([]
 			 (const auto &custom)
 			 {
 				 custom->label_font=theme_font{"tooltip"};
 			 });
 
-	return config;
+};
+
+#if 0
+{
+#endif
+}
+
+const_generic_window_appearance
+generic_window_appearance_base::tooltip_theme()
+{
+	return singleton<generic_window_appearance_base_tooltip_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

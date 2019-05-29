@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_date_input_field_appearance &theme();
+	static const_date_input_field_appearance theme();
 
 };
 

@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/bookpage_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -39,12 +40,25 @@ const_bookpage_appearance bookpage_appearanceObj
         return copy;
 }
 
-const const_bookpage_appearance &bookpage_appearance_base::theme()
-{
-	static const const_bookpage_appearance config=
-		const_bookpage_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct bookpage_appearance_base_themeObj : virtual public obj {
+
+	const const_bookpage_appearance config=const_bookpage_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_bookpage_appearance bookpage_appearance_base::theme()
+{
+	return singleton<bookpage_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

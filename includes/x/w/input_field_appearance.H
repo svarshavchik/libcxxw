@@ -21,11 +21,15 @@ public:
 
 	//! Default theme.
 
-	static const const_input_field_appearance &theme();
+	static const_input_field_appearance theme();
 
 	//! Default theme for the input field in an editable combo-box.
 
-	static const const_input_field_appearance &editable_combobox_theme();
+	static const_input_field_appearance editable_combobox_theme();
+
+	//! Default theme for date input fields.
+
+	static const_input_field_appearance date_input_field_theme();
 };
 
 LIBCXXW_NAMESPACE_END

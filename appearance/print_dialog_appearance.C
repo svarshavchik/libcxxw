@@ -8,6 +8,7 @@
 #include "x/w/image_button_appearance.H"
 #include "x/w/input_field_appearance.H"
 #include "x/w/combobox_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -55,12 +56,25 @@ const_print_dialog_appearance print_dialog_appearanceObj
         return copy;
 }
 
-const const_print_dialog_appearance &print_dialog_appearance_base::theme()
-{
-	static const const_print_dialog_appearance config=
-		const_print_dialog_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct print_dialog_appearance_base_themeObj : virtual public obj {
+
+	const const_print_dialog_appearance config=const_print_dialog_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_print_dialog_appearance print_dialog_appearance_base::theme()
+{
+	return singleton<print_dialog_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

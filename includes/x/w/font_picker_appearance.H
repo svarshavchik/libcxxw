@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_font_picker_appearance &theme();
+	static const_font_picker_appearance theme();
 
 };
 

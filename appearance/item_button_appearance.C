@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/item_button_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -38,12 +39,25 @@ const_item_button_appearance item_button_appearanceObj
         return copy;
 }
 
-const const_item_button_appearance &item_button_appearance_base::theme()
-{
-	static const const_item_button_appearance config=
-		const_item_button_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct item_button_appearance_base_themeObj : virtual public obj {
+
+	const const_item_button_appearance config=const_item_button_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_item_button_appearance item_button_appearance_base::theme()
+{
+	return singleton<item_button_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

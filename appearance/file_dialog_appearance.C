@@ -7,6 +7,7 @@
 #include "x/w/pane_layout_appearance.H"
 #include "x/w/list_appearance.H"
 #include "x/w/pane_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -46,12 +47,25 @@ const_file_dialog_appearance file_dialog_appearanceObj
         return copy;
 }
 
-const const_file_dialog_appearance &file_dialog_appearance_base::theme()
-{
-	static const const_file_dialog_appearance config=
-		const_file_dialog_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct file_dialog_appearance_base_themeObj : virtual public obj {
+
+	const const_file_dialog_appearance config=const_file_dialog_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_file_dialog_appearance file_dialog_appearance_base::theme()
+{
+	return singleton<file_dialog_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

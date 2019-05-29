@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/table_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -39,12 +40,25 @@ const_table_appearance table_appearanceObj
         return copy;
 }
 
-const const_table_appearance &table_appearance_base::theme()
-{
-	static const const_table_appearance config=
-		const_table_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct table_appearance_base_themeObj : virtual public obj {
+
+	const const_table_appearance config=const_table_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_table_appearance table_appearance_base::theme()
+{
+	return singleton<table_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

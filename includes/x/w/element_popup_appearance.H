@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_element_popup_appearance &theme();
+	static const_element_popup_appearance theme();
 
 };
 

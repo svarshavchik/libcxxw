@@ -6,6 +6,7 @@
 #include "x/w/scrollbar_appearance.H"
 #include "x/w/scrollbar_images_appearance.H"
 #include "x/w/focus_border_appearance.H"
+#include <x/singleton.H>
 LIBCXXW_NAMESPACE_START
 
 scrollbar_appearance_properties::scrollbar_appearance_properties()
@@ -38,12 +39,25 @@ const_scrollbar_appearance scrollbar_appearanceObj
         return copy;
 }
 
-const const_scrollbar_appearance &scrollbar_appearance_base::theme()
-{
-	static const const_scrollbar_appearance config=
-		const_scrollbar_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct scrollbar_appearance_base_themeObj : virtual public obj {
+
+	const const_scrollbar_appearance config=const_scrollbar_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_scrollbar_appearance scrollbar_appearance_base::theme()
+{
+	return singleton<scrollbar_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

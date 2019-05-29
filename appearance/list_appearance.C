@@ -7,6 +7,7 @@
 #include "x/w/generic_window_appearance.H"
 #include "x/w/scrollbar_appearance.H"
 #include "x/w/focus_border_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -51,11 +52,24 @@ const_list_appearance list_appearanceObj
         return copy;
 }
 
-const const_list_appearance &list_appearance_base::theme()
-{
-	static const const_list_appearance obj=list_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return obj;
+struct list_appearance_base_themeObj : virtual public obj {
+
+	const const_list_appearance config=list_appearance::create();
+};
+
+#if 0
+{
+#endif
+}
+
+const_list_appearance list_appearance_base::theme()
+{
+	return singleton<list_appearance_base_themeObj>::get()->config;
 }
 
 static auto create_list_pane_theme()
@@ -70,11 +84,24 @@ static auto create_list_pane_theme()
 	return c;
 }
 
-const const_list_appearance &list_appearance_base::list_pane_theme()
-{
-	static const const_list_appearance obj=create_list_pane_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return obj;
+struct list_appearance_base_list_pane_themeObj : virtual public obj {
+
+	const const_list_appearance config=create_list_pane_theme();
+};
+
+#if 0
+{
+#endif
+}
+
+const_list_appearance list_appearance_base::list_pane_theme()
+{
+	return singleton<list_appearance_base_list_pane_themeObj>::get()->config;
 }
 
 static auto create_table_theme()
@@ -90,11 +117,24 @@ static auto create_table_theme()
 	return c;
 }
 
-const const_list_appearance &list_appearance_base::table_theme()
-{
-	static const const_list_appearance obj=create_table_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return obj;
+struct list_appearance_base_table_themeObj : virtual public obj {
+
+	const const_list_appearance config=create_table_theme();
+};
+
+#if 0
+{
+#endif
+}
+
+const_list_appearance list_appearance_base::table_theme()
+{
+	return singleton<list_appearance_base_table_themeObj>::get()->config;
 }
 
 static auto create_table_pane_theme()
@@ -110,11 +150,24 @@ static auto create_table_pane_theme()
 	return c;
 }
 
-const const_list_appearance &list_appearance_base::table_pane_theme()
-{
-	static const const_list_appearance obj=create_table_pane_theme();
+namespace {
+#if 0
+}
+#endif
 
-	return obj;
+struct list_appearance_base_table_pane_themeObj : virtual public obj {
+
+	const const_list_appearance config=create_table_pane_theme();
+};
+
+#if 0
+{
+#endif
+}
+
+const_list_appearance list_appearance_base::table_pane_theme()
+{
+	return singleton<list_appearance_base_table_pane_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

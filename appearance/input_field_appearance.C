@@ -9,6 +9,7 @@
 #include "x/w/combobox_appearance.H"
 #include "x/w/scrollbar_appearance.H"
 #include "x/w/focus_border_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -110,12 +111,25 @@ const_input_field_appearance input_field_appearanceObj
         return copy;
 }
 
-const const_input_field_appearance &input_field_appearance_base::theme()
-{
-	static const const_input_field_appearance config=
-		const_input_field_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct input_field_appearance_base_themeObj : virtual public obj {
+
+	const const_input_field_appearance config=const_input_field_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_input_field_appearance input_field_appearance_base::theme()
+{
+	return singleton<input_field_appearance_base_themeObj>::get()->config;
 }
 
 static const_input_field_appearance create_editable_combobox_theme()
@@ -129,13 +143,26 @@ static const_input_field_appearance create_editable_combobox_theme()
 	return custom;
 }
 
-const const_input_field_appearance &
+namespace {
+#if 0
+}
+#endif
+
+struct input_field_appearance_base_editable_combobox_themeObj : virtual public obj {
+
+	const const_input_field_appearance config=create_editable_combobox_theme();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_input_field_appearance 
 input_field_appearance_base::editable_combobox_theme()
 {
-	static const const_input_field_appearance config=
-		create_editable_combobox_theme();
-
-	return config;
+	return singleton<input_field_appearance_base_editable_combobox_themeObj>::get()->config;
 }
 
 

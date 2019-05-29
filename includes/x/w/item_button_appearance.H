@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_item_button_appearance &theme();
+	static const_item_button_appearance theme();
 
 };
 

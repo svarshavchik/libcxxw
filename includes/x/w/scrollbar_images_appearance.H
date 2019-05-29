@@ -20,16 +20,16 @@ class scrollbar_images_appearance_base : public ptrref_base {
 public:
 
 	//! Horizontal scrollbar images
-	static const const_scrollbar_images_appearance &horizontal1();
+	static const_scrollbar_images_appearance horizontal1();
 
 	//! Horizontal scrollbar clicked images
-	static const const_scrollbar_images_appearance &horizontal2();
+	static const_scrollbar_images_appearance horizontal2();
 
 	//! Vertical scrollbar images
-	static const const_scrollbar_images_appearance &vertical1();
+	static const_scrollbar_images_appearance vertical1();
 
 	//! Vertical scrollbar clicked image
-	static const const_scrollbar_images_appearance &vertical2();
+	static const_scrollbar_images_appearance vertical2();
 };
 
 LIBCXXW_NAMESPACE_END

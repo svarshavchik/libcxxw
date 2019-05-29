@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/button_appearance.H"
 #include "x/w/focus_border_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -42,18 +43,36 @@ const_button_appearance button_appearanceObj
         return copy;
 }
 
-const const_button_appearance &button_appearance_base::normal_theme()
-{
-	static const const_button_appearance config=
-		const_button_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct button_appearance_base_normal_themeObj : virtual public obj {
+
+	const const_button_appearance config=const_button_appearance::create();
+
+};
+
+#if 0
+{
+#endif
 }
 
-const const_button_appearance &button_appearance_base::default_theme()
+const_button_appearance button_appearance_base::normal_theme()
 {
-	static const const_button_appearance &config=
-		normal_theme()->modify
+	return singleton<button_appearance_base_normal_themeObj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct button_appearance_base_default_themeObj : virtual public obj {
+
+	const const_button_appearance config=
+		button_appearance_base::normal_theme()->modify
 		([]
 		 (const auto &appearance)
 		 {
@@ -64,7 +83,16 @@ const const_button_appearance &button_appearance_base::default_theme()
 				 "default_button_border";
 		 });
 
-	return config;
+};
+
+#if 0
+{
+#endif
+}
+
+const_button_appearance button_appearance_base::default_theme()
+{
+	return singleton<button_appearance_base_default_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/pane_layout_appearance.H"
 #include "x/w/focus_border_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -39,12 +40,25 @@ const_pane_layout_appearance pane_layout_appearanceObj
         return copy;
 }
 
-const const_pane_layout_appearance &pane_layout_appearance_base::theme()
-{
-	static const const_pane_layout_appearance config=
-		const_pane_layout_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct pane_layout_appearance_base_themeObj : virtual public obj {
+
+	const const_pane_layout_appearance config=const_pane_layout_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_pane_layout_appearance pane_layout_appearance_base::theme()
+{
+	return singleton<pane_layout_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

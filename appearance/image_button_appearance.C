@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/image_button_appearance.H"
 #include "x/w/focus_border_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -40,35 +41,74 @@ const_image_button_appearance image_button_appearanceObj
         return copy;
 }
 
-const const_image_button_appearance &
-image_button_appearance_base::checkbox_theme()
-{
-	static const const_image_button_appearance config=
-		const_image_button_appearance::create
+namespace {
+#if 0
+}
+#endif
+
+struct image_button_appearance_base_checkbox_themeObj : virtual public obj {
+
+	const const_image_button_appearance config=const_image_button_appearance::create
 		(std::vector<std::string>{"checkbox1", "checkbox2", "checkbox3"
 				});
 
-	return config;
+};
+
+#if 0
+{
+#endif
 }
 
-const const_image_button_appearance &
-image_button_appearance_base::radio_theme()
+const_image_button_appearance 
+image_button_appearance_base::checkbox_theme()
 {
-	static const const_image_button_appearance config=
-		const_image_button_appearance::create
+	return singleton<image_button_appearance_base_checkbox_themeObj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct image_button_appearance_base_radio_themeObj : virtual public obj {
+
+	const const_image_button_appearance config=const_image_button_appearance::create
 		(std::vector<std::string>{"radio1", "radio2"});
 
-	return config;
+};
+
+#if 0
+{
+#endif
 }
 
-const const_image_button_appearance &
-image_button_appearance_base::item_theme()
+const_image_button_appearance 
+image_button_appearance_base::radio_theme()
 {
-	static const const_image_button_appearance config=
-		const_image_button_appearance::create
+	return singleton<image_button_appearance_base_radio_themeObj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct image_button_appearance_base_item_themeObj : virtual public obj {
+
+	const const_image_button_appearance config=const_image_button_appearance::create
 		(std::vector<std::string>{"itemdelete1", "itemdelete2"});
 
-	return config;
+};
+
+#if 0
+{
+#endif
+}
+
+const_image_button_appearance 
+image_button_appearance_base::item_theme()
+{
+	return singleton<image_button_appearance_base_item_themeObj>::get()->config;
 }
 
 // Scroll buttons, just above the main page area. Align the scroll
@@ -87,22 +127,48 @@ static auto create_book_button(const std::vector<std::string> &images)
 	return appearance;
 }
 
-const const_image_button_appearance &
-image_button_appearance_base::book_left_theme()
-{
-	static const const_image_button_appearance config=
-		create_book_button({"scroll-left1", "scroll-left2"});
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct image_button_appearance_base_book_left_themeObj : virtual public obj {
+
+	const const_image_button_appearance config=create_book_button({"scroll-left1", "scroll-left2"});
+
+};
+
+#if 0
+{
+#endif
 }
 
-const const_image_button_appearance &
+const_image_button_appearance 
+image_button_appearance_base::book_left_theme()
+{
+	return singleton<image_button_appearance_base_book_left_themeObj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct image_button_appearance_base_book_right_themeObj : virtual public obj {
+
+	const const_image_button_appearance config=create_book_button({"scroll-right1", "scroll-right2"});
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_image_button_appearance 
 image_button_appearance_base::book_right_theme()
 {
-	static const const_image_button_appearance config=
-		create_book_button({"scroll-right1", "scroll-right2"});
-
-	return config;
+	return singleton<image_button_appearance_base_book_right_themeObj>::get()->config;
 }
 
 static auto create_date_popup_button(const std::vector<std::string> &images)
@@ -114,22 +180,48 @@ static auto create_date_popup_button(const std::vector<std::string> &images)
 	return appearance;
 }
 
-const const_image_button_appearance &
-image_button_appearance::base::date_popup_left_theme()
-{
-	static const const_image_button_appearance config=
-		create_date_popup_button({"scroll-left1", "scroll-left2"});
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct base_date_popup_left_themeObj : virtual public obj {
+
+	const const_image_button_appearance config=create_date_popup_button({"scroll-left1", "scroll-left2"});
+
+};
+
+#if 0
+{
+#endif
 }
 
-const const_image_button_appearance &
+const_image_button_appearance 
+image_button_appearance::base::date_popup_left_theme()
+{
+	return singleton<base_date_popup_left_themeObj>::get()->config;
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct image_button_appearance_base_date_popup_right_themeObj : virtual public obj {
+
+	const const_image_button_appearance config=create_date_popup_button({"scroll-right1", "scroll-right2"});
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_image_button_appearance 
 image_button_appearance_base::date_popup_right_theme()
 {
-	static const const_image_button_appearance config=
-		create_date_popup_button({"scroll-right1", "scroll-right2"});
-
-	return config;
+	return singleton<image_button_appearance_base_date_popup_right_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

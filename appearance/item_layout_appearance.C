@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/item_layout_appearance.H"
 #include "x/w/scrollbar_appearance.H"
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -36,12 +37,25 @@ const_item_layout_appearance item_layout_appearanceObj
         return copy;
 }
 
-const const_item_layout_appearance &item_layout_appearance_base::theme()
-{
-	static const const_item_layout_appearance config=
-		const_item_layout_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct item_layout_appearance_base_themeObj : virtual public obj {
+
+	const const_item_layout_appearance config=const_item_layout_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_item_layout_appearance item_layout_appearance_base::theme()
+{
+	return singleton<item_layout_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

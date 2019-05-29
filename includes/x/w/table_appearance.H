@@ -21,7 +21,7 @@ public:
 
 	//! Default theme.
 
-	static const const_table_appearance &theme();
+	static const_table_appearance theme();
 
 };
 

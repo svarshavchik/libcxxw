@@ -8,6 +8,7 @@
 #include "x/w/image_button_appearance.H"
 #include "x/w/input_field_appearance.H"
 #include <x/w/focus_border_appearance.H>
+#include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -82,12 +83,25 @@ const_date_input_field_appearance date_input_field_appearanceObj
         return copy;
 }
 
-const const_date_input_field_appearance &date_input_field_appearance_base::theme()
-{
-	static const const_date_input_field_appearance config=
-		const_date_input_field_appearance::create();
+namespace {
+#if 0
+}
+#endif
 
-	return config;
+struct date_input_field_appearance_base_themeObj : virtual public obj {
+
+	const const_date_input_field_appearance config=const_date_input_field_appearance::create();
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_date_input_field_appearance date_input_field_appearance_base::theme()
+{
+	return singleton<date_input_field_appearance_base_themeObj>::get()->config;
 }
 
 LIBCXXW_NAMESPACE_END

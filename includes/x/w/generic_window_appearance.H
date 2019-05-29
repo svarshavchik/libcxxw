@@ -21,23 +21,23 @@ public:
 
 	//! Default theme.
 
-	static const const_generic_window_appearance &main_window_theme();
+	static const_generic_window_appearance main_window_theme();
 
 	//! Default theme.
 
-	static const const_generic_window_appearance &date_input_field_theme();
+	static const_generic_window_appearance date_input_field_theme();
 
 	//! Default theme.
 
-	static const const_generic_window_appearance &list_contents_theme();
+	static const_generic_window_appearance list_contents_theme();
 
 	//! Default theme.
 
-	static const const_generic_window_appearance &combobox_theme();
+	static const_generic_window_appearance combobox_theme();
 
 	//! Default theme.
 
-	static const const_generic_window_appearance &tooltip_theme();
+	static const_generic_window_appearance tooltip_theme();
 };
 
 LIBCXXW_NAMESPACE_END

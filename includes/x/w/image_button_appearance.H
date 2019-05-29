@@ -22,12 +22,12 @@ public:
 	//! Default theme.
 
 	//! Returns cached theme-based appearance of checkbox image buttons.
-	static const const_image_button_appearance &checkbox_theme();
+	static const_image_button_appearance checkbox_theme();
 
 	//! Default theme.
 
 	//! Returns cached theme-based appearance of radio image buttons.
-	static const const_image_button_appearance &radio_theme();
+	static const_image_button_appearance radio_theme();
 
 
 	//! Default theme
@@ -35,32 +35,32 @@ public:
 	//! Returns cached theme-based appearance of close button for items
 	//! managed by the item layout manager.
 
-	static const const_image_button_appearance &item_theme();
+	static const_image_button_appearance item_theme();
 
 	//! Default theme
 
 	//! Returns cached theme-based appearance of the scroll-left button
 	//! that the book layout manager uses.
-	static const const_image_button_appearance &book_left_theme();
+	static const_image_button_appearance book_left_theme();
 
 	//! Default theme
 
 	//! Returns cached theme-based appearance of the scroll-right button
 	//! that the book layout manager uses.
 
-	static const const_image_button_appearance &book_right_theme();
+	static const_image_button_appearance book_right_theme();
 
 	//! Default theme
 
 	//! Returns cached theme-based appearance of the scroll-left button
 	//! that the date input popup uses.
-	static const const_image_button_appearance &date_popup_left_theme();
+	static const_image_button_appearance date_popup_left_theme();
 
 	//! Default theme
 
 	//! Returns cached theme-based appearance of the scroll-left button
 	//! that the date input popup uses.
-	static const const_image_button_appearance &date_popup_right_theme();
+	static const_image_button_appearance date_popup_right_theme();
 };
 
 LIBCXXW_NAMESPACE_END

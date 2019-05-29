@@ -21,11 +21,11 @@ public:
 
 	//! Cached appearance of a normal button.
 
-	static const const_button_appearance &normal_theme();
+	static const_button_appearance normal_theme();
 
 	//! Cached appearance of a button that represents the "default" action.
 
-	static const const_button_appearance &default_theme();
+	static const_button_appearance default_theme();
 };
 
 LIBCXXW_NAMESPACE_END
