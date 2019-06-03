@@ -118,6 +118,10 @@ private:
 	vector<gridlayoutmanager_generator
 	       > gridlayout_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for base factory generator.
+	vector<factory_generator
+	       > factory_parseconfig(const theme_parser_lock &lock);
+
 	//! Parser for grid factory generator.
 	vector<gridfactory_generator
 	       > gridfactory_parseconfig(const theme_parser_lock &lock);
@@ -144,6 +148,9 @@ private:
 
 	//! Generate a single grid factory instruction.
 	gridfactory_generator gridfactory_parser(const theme_parser_lock &lock);
+
+	//! Generate a single factory instruction.
+	factory_generator factory_parser(const theme_parser_lock &lock);
 
 	//! Generate a single book layout manager instruction.
 	booklayoutmanager_generator

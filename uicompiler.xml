@@ -598,6 +598,7 @@ List of values:
   <parser>
     <name>gridfactory</name>
 
+    <use_common>factory</use_common>
     <parameter>
       <type>gridfactory</type>
       <name>factory</name>
@@ -874,6 +875,20 @@ List of values:
 
       <object>factory</object>
     </function>
+  </parser>
+
+  <parser>
+    <name>factory</name>
+
+    <parameter>
+      <type>factory</type>
+      <name>generic_factory</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
 
     <!-- label -->
 
@@ -889,7 +904,7 @@ List of values:
 
       <invoke>create_label</invoke>
 
-      <object>factory</object>
+      <object>generic_factory</object>
 
       <parameter>
 	<type>compiler.to_text_param</type>
@@ -926,7 +941,7 @@ List of values:
 
       <invoke>create_focusable_label</invoke>
 
-      <object>factory</object>
+      <object>generic_factory</object>
 
       <parameter>
 	<type>compiler.to_text_param</type>
@@ -973,7 +988,7 @@ List of values:
 
       <invoke>create_canvas</invoke>
 
-      <object>factory</object>
+      <object>generic_factory</object>
 
       <parameter>
 	<name>canvas</name>
@@ -1071,7 +1086,7 @@ List of values:
       <invoke>generate</invoke>
 
       <parameter>
-	<scalar>factory</scalar>
+	<scalar>generic_factory</scalar>
       </parameter>
 
       <parameter>
@@ -1091,7 +1106,7 @@ List of values:
       <invoke>create_container</invoke>
 
       <parameter>
-	<scalar>factory</scalar>
+	<scalar>generic_factory</scalar>
       </parameter>
 
       <parameter>

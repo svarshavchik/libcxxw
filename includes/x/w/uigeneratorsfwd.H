@@ -6,6 +6,7 @@
 #define x_w_uigeneratorsfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/factoryfwd.H>
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/booklayoutmanagerfwd.H>
 #include <x/w/gridfactoryfwd.H>
@@ -19,6 +20,12 @@ LIBCXXW_NAMESPACE_START
 //! A theme color is either an rgb solid color, or a gradient color.
 
 typedef std::variant<rgb, linear_gradient, radial_gradient> theme_color_t;
+
+//! Generate something using a base factory.
+
+//! \see uigenerators
+typedef functionref<void (const factory &, uielements &)
+		    > factory_generator;
 
 //! Generate something in the grid layout manager
 

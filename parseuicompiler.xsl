@@ -313,6 +313,22 @@ functionref<void, ...parameters> {name}_parser()
 Loops over each <function>
 
 Throws an exception
+}
+
+And
+
+vector<functionref<void, ...parameters>> {name}_parseconfig()
+{
+
+    // Loop over each child element
+
+    // Call _parser()
+}
+
+If <common> exists, _parseconfig() doe not get generated.
+
+This is used for generating code that's shared by all factory objects,
+to generate a single element in the factory.
 
 -->
 
@@ -324,10 +340,25 @@ functionref&lt;void (<xsl:for-each select="parameter">
 <xsl:for-each select="function">
   <xsl:call-template name="parse-function" />
 </xsl:for-each>
-
+<xsl:choose>
+  <xsl:when test="use_common">
+    return [common=<xsl:value-of select="use_common" />_parser(lock)]
+        (<xsl:for-each select="parameter">
+	      <xsl:call-template name="declare-parameter" />
+	    </xsl:for-each>)
+        {
+            return common(<xsl:for-each select="parameter">
+                <xsl:if test="position() &gt; 1">, </xsl:if>
+	      <xsl:value-of select="name" />
+	    </xsl:for-each>);
+        };
+}
+</xsl:when>
+  <xsl:otherwise>
     throw EXCEPTION(gettextmsg(_("&lt;%1%&gt;: unknown element"), name));
 }
-
+</xsl:otherwise>
+</xsl:choose>
 vector&lt;functionref&lt;void (<xsl:for-each select="parameter">
 <xsl:call-template name="declare-parameter" /></xsl:for-each>)&gt;&gt;
 uicompiler::<xsl:value-of select="name" />_parseconfig(const theme_parser_lock &amp;lock)
