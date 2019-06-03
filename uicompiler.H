@@ -122,6 +122,18 @@ private:
 	vector<factory_generator
 	       > factory_parseconfig(const theme_parser_lock &lock);
 
+	//! Wrapper for factory_parseconfig()
+
+	//! Parses a parameter that represents a creator that receives a
+	//! a factory, and uses the factory to create one or more elements.
+	//!
+	//! Referenced from the theme file. Receivs the name of the element
+	//! that specifies what gets created.
+
+	factory_generator factory_parseconfig(const theme_parser_lock &lock,
+					      const char *element,
+					      const char *parent);
+
 	//! Parser for grid factory generator.
 	vector<gridfactory_generator
 	       > gridfactory_parseconfig(const theme_parser_lock &lock);
@@ -344,10 +356,15 @@ public:
 						const char *parent);
 
 private:
-	//! Parse a text_param value for an appearance in the theme file.
-	text_param to_text_param(const theme_parser_lock &lock,
-				 const char *element,
-				 const char *parent);
+	//! Parse a text_param value
+	text_param text_param_value(const theme_parser_lock &lock,
+				    const char *element,
+				    const char *parent);
+
+	//! Parse a shortcut value
+	shortcut shortcut_value(const theme_parser_lock &lock,
+				const char *element,
+				const char *parent);
 
 	//! Parse a scrollbar_visibility
 	scrollbar_visibility to_scrollbar_visibility(const theme_parser_lock &,

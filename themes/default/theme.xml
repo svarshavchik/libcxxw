@@ -2173,8 +2173,15 @@ the grid layout manager's borders for it.
 
     <!-- HHHHH -->
 
-    <element>
-      <name>h-button</name>
+    <element id="h-button" tooltip="color-picker-h-button-tooltip">
+      <button>
+	<element id="h-canvas">
+	  <canvas>
+	    <height>color_picker_strip_height</height>
+	  </canvas>
+	</element>
+      </button>
+      <shortcut>Alt-H</shortcut>
     </element>
   </factory>
 
@@ -2208,8 +2215,15 @@ the grid layout manager's borders for it.
       <padding>no-padding</padding>
     </padding>
 
-    <element>
-      <name>v-button</name>
+    <element id="v-button" tooltip="color-picker-v-button-tooltip">
+      <button>
+	<element id="v-canvas">
+	  <canvas>
+	    <width>color_picker_strip_width</width>
+	  </canvas>
+	</element>
+      </button>
+      <shortcut>Alt-V</shortcut>
     </element>
 
     <element>
@@ -2318,6 +2332,14 @@ the grid layout manager's borders for it.
       </canvas>
     </element>
   </factory>
+
+  <tooltip type="label" id="color-picker-h-button-tooltip">
+    <label>Click to select this color channel&#10;for adjustment (Alt-H)</label>
+  </tooltip>
+
+  <tooltip type="label" id="color-picker-v-button-tooltip">
+    <label>Click to select this color channel&#10; for adjustment (Alt-V)</label>
+  </tooltip>
 
   <tooltip type="label" id="color-picker-fixed-canvas-tooltip">
     <label type='theme_text'>Click to adjust this color channel&#10;(in the currently selected color)</label>

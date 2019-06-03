@@ -290,6 +290,12 @@ public:
 
 	std::unordered_map<size_t, text_hotspotptr> hotspots;
 
+	//! Undecorated, there were no specified decorations.
+
+	//! All the maps are empty.
+
+	bool undecorated() const;
+
 	//! Default constructor
 	text_param();
 

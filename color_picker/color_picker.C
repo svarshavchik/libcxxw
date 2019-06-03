@@ -210,46 +210,6 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 inline standard_dialog_elements_t color_picker_layout_helper::elements()
 {
 	return {
-		{"h-button", [&](const auto &f)
-			{
-				auto b_conf=normal_button();
-				b_conf.appearance=config.appearance
-					->h_button_appearance;
-
-				h_button=f->create_button
-					([&]
-					 (const auto &button_factory)
-					 {
-						 h_canvas=button_factory
-							 ->create_canvas
-							 ({std::nullopt, {
-								 },
-							   {config.appearance
-							    ->strip_height}});
-					 },
-					 b_conf);
-			}},
-		{"v-button", [&](const auto &f)
-			{
-				auto b_conf=normal_button();
-				b_conf.appearance=config.appearance
-					->h_button_appearance;
-
-				v_button=f->create_button
-					([&]
-					 (const auto &button_factory)
-					 {
-						 v_canvas=button_factory
-							 ->create_canvas
-							 ({std::nullopt,
-							   {
-							    config
-							    .appearance
-							    ->strip_width},
-							   {}});
-					 },
-					 b_conf);
-			}},
 		{"square", [&](const auto &f)
 			{
 				auto parent_container=f->get_container_impl();
@@ -484,12 +444,11 @@ create_contents(const ref<color_picker_selectorObj::implObj>
 					     contents_container_impl,
 					     lm_impl);
 
-	// Tooltips
-	text_param button_tooltip{
-		_("Select this color channel for adjustment")};
+	helper.h_button=tmpl.get_element("h-button");
+	helper.v_button=tmpl.get_element("v-button");
+	helper.h_canvas=tmpl.get_element("h-canvas");
+	helper.v_canvas=tmpl.get_element("v-canvas");
 
-	helper.h_button->create_tooltip(button_tooltip);
-	helper.v_button->create_tooltip(button_tooltip);
 	helper.square->create_tooltip(_("Click to pick a color"));
 
 	return p;

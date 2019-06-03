@@ -47,6 +47,13 @@ text_param::~text_param()=default;
 text_param::text_param(const text_param &)=default;
 text_param::text_param(text_param &&)=default;
 
+bool text_param::undecorated() const
+{
+	return fonts.empty() && colors.empty() &&
+		background_colors.empty() && decorations.empty() &&
+		hotspots.empty();
+}
+
 text_param &text_param::operator=(const text_param &)=default;
 text_param &text_param::operator=(text_param &&)=default;
 

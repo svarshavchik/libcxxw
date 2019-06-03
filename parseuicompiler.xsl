@@ -91,7 +91,15 @@ tuple value.
 		    <xsl:value-of select="field" />
 		    <xsl:text>=</xsl:text>
 
-		    <xsl:call-template name="parse-parameter-value" />
+		    <xsl:call-template name="parse-parameter-value">
+		      <xsl:with-param name="prepend-parameter">
+			<xsl:if test="count(lookup/modify) &gt; 0">
+			  <xsl:value-of select="$parameter" />
+			  <xsl:text>.</xsl:text>
+			  <xsl:value-of select="field" />
+			</xsl:if>
+		      </xsl:with-param>
+		    </xsl:call-template>
 		    <xsl:text>;&#10;                }&#10;</xsl:text>
 	  </xsl:for-each>
 	  <xsl:text>                </xsl:text>
@@ -113,6 +121,8 @@ Used by parse-parameter to generates the code for the value of a parameter.
 
   <xsl:template name="parse-parameter-value">
 
+    <xsl:param name="prepend-parameter" />
+
     <!--
 	If <lookup> is specified, massage the argument
 	accordingly.
@@ -123,13 +133,22 @@ Used by parse-parameter to generates the code for the value of a parameter.
 </lookup>
 
 This adds "{function_name}(" before the value, and
-", <extra_parameter>, allowthemerefs, <elementname>)"
+", <extra_parameter>"
 after the value, effectively invoking a lookup function, first.
+
+If there's a <default_params>, we also append
+", allowthemerefs, <elementname>" to the parameters.
+
     -->
     <xsl:if test="lookup">
       <xsl:text>compiler.</xsl:text>
       <xsl:value-of select="lookup/function" />
       <xsl:text>(</xsl:text>
+
+      <xsl:if test="$prepend-parameter != ''">
+	<xsl:value-of select="$prepend-parameter" />
+	<xsl:text>, </xsl:text>
+      </xsl:if>
     </xsl:if>
 
     <xsl:value-of select="type" />
@@ -144,9 +163,12 @@ after the value, effectively invoking a lookup function, first.
 	<xsl:text>,&#10;                     </xsl:text>
 	<xsl:value-of select="node()" />
       </xsl:for-each>
-      <xsl:text>,&#10;                     compiler.allowthemerefs, &#34;</xsl:text>
-      <xsl:value-of select="../name" />
-      <xsl:text>&#34;)</xsl:text>
+      <xsl:if test="count(lookup/default_params) &gt; 0">
+	<xsl:text>,&#10;                     compiler.allowthemerefs, &#34;</xsl:text>
+	<xsl:value-of select="../name" />
+	<xsl:text>&#34;</xsl:text>
+      </xsl:if>
+      <xsl:text>)</xsl:text>
     </xsl:if>
   </xsl:template>
 
@@ -291,6 +313,7 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
 		    <xsl:text>, </xsl:text>
 		  </xsl:if>
 
+		  <xsl:value-of select="before-passing-parameter" />
 		  <!--
 
 Maybe we should use a <scalar>?
@@ -301,10 +324,42 @@ Maybe we should use a <scalar>?
 		    <xsl:when test="scalar">
 		      <xsl:value-of select="scalar" />
 		    </xsl:when>
+		    <xsl:when test="factory_wrapper">
+
+
+		      <!--
+
+The parameter is created by factory_parseconfig, a functionref that takes
+a factory and a uilements parameter, and forwards the uielements to a compiled
+list of element generators.
+method that takes a creator as a parameter.
+
+The actual parameter we generate is
+
+[&]
+(const auto &<wrapper>)    // The factory parameter
+{
+    [values](forwarded parameter);
+}
+
+		      -->
+		      <xsl:text>&#10;                    [&amp;]&#10;                    (const auto &amp;</xsl:text>
+		      <xsl:value-of select="factory_wrapper" />
+		      <xsl:text>)
+                    {
+                        </xsl:text>
+		        <xsl:value-of select="name" /><xsl:text>_value(</xsl:text>
+			<xsl:for-each select="../../parameter">
+			  <xsl:if test="position() &gt; 1"><xsl:text>, </xsl:text></xsl:if>
+			  <xsl:value-of select="name" />
+			  </xsl:for-each><xsl:text>);
+                    }</xsl:text>
+		    </xsl:when>
 		    <xsl:otherwise>
 		      <xsl:value-of select="name" /><xsl:text>_value</xsl:text>
 		    </xsl:otherwise>
 		  </xsl:choose>
+		  <xsl:value-of select="after-passing-parameter" />
 		  </xsl:for-each><xsl:text>);&#10;</xsl:text>
 		  <xsl:if test="new_element">
 		    <xsl:text>&#10;                compiler_functions::install_tooltip(new_element, optional_tooltip);&#10;                if (!id.empty())

@@ -29,20 +29,6 @@ Generic popup configuration
     <ref>element_popup</ref>
   </field>
   <field>
-    <name>strip_width</name>
-    <descr><![CDATA[
-The size of the top and bottom red/green/blue strips.
-]]></descr>
-    <type>dim_arg</type>
-  </field>
-  <field>
-    <name>strip_height</name>
-    <descr><![CDATA[
-The size of the left red/green/blue strip.
-]]></descr>
-    <type>dim_arg</type>
-  </field>
-  <field>
     <name>picker_width</name>
     <descr><![CDATA[
 Size of the picker gradient element.
@@ -69,20 +55,6 @@ Size of the buttons showing the basic colors
 Size of the buttons showing the basic colors
 ]]></descr>
     <type>dim_arg</type>
-  </field>
-  <field>
-    <name>h_button_appearance</name>
-    <descr><![CDATA[
-Appearance of the H button
-]]></descr>
-    <ref>button</ref>
-  </field>
-  <field>
-    <name>v_button_appearance</name>
-    <descr><![CDATA[
-Appearance of the H button
-]]></descr>
-    <ref>button</ref>
   </field>
   <field>
     <name>basic_colors_button_appearance</name>

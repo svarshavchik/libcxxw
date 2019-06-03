@@ -1,6 +1,13 @@
+2019-06-02  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Create <button>s using the theme file.
+
+	* Create keyboard shortcuts in the theme file, for supported
+	elements.
+
 2019-05-31  Sam Varshavchik  <mrsam@courier-mta.com>
 
-	* Create <focusable_label>s from the theme file.
+	* Create <focusable_label>s using the theme file.
 
 2019-05-28  Sam Varshavchik  <mrsam@courier-mta.com>
 
@@ -9,9 +16,9 @@
 
 2019-05-27  Sam Varshavchik  <mrsam@courier-mta.com>
 
-	* Create <canvas>es from the theme file.
+	* Create <canvas>es using the theme file.
 
-	* Create <label>s from the theme file.
+	* Create <label>s using the theme file.
 
 	* Specify tooltips in the theme file, for supported elements.
 
