@@ -19,28 +19,39 @@ Stylesheet for transforming the XML in gridlayoutapi.xml
 
   <!-- <parameter>
 
-Generates:
-
-    auto {name}_value={type}(lock, "<parameter>")
-
+Create an initialization for each parameter's value in the tuple
+that gets returned from get_<mumble>()
 
   -->
 
-  <xsl:template name="parse-parameter">
-
-    <!-- Except when there's a <scalar> -->
+  <xsl:template name="parse-parameter-tuple-value">
 
     <xsl:choose>
+      <!-- An instance of a class, default-constructed -->
       <xsl:when test="object">
-	<!-- If <scalar> has an <object>, we declare it -->
+	<xsl:value-of select="object" />
+	<xsl:text>{}</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:call-template name="parse-parameter-value" />
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
 
-	  <xsl:text>        </xsl:text>
-	  <xsl:value-of select="object" />
-	  <xsl:text> </xsl:text>
-	  <xsl:value-of select="name" />
-	  <xsl:text>_value;
 
-        if (single_value_exists(lock, "</xsl:text>
+  <!--
+
+After the tuple declaration, initialize the corresponding value.
+
+Our caller already used a structured binding to bind <name>_value to our
+tuple value.
+  -->
+
+  <xsl:template name="parse-parameter-tuple-initialize">
+    <xsl:param name="parameter" />
+    <xsl:choose>
+      <xsl:when test="object">
+	<xsl:text>&#10;        if (single_value_exists(lock, "</xsl:text>
 	<xsl:value-of select="member_name" />
 	<xsl:text>"))
         {
@@ -75,27 +86,22 @@ Generates:
 	    <xsl:text>")
                 {
                     </xsl:text>
-		    <xsl:value-of select="../name" />
-		    <xsl:text>_value.</xsl:text>
+		    <xsl:value-of select="$parameter" />
+		    <xsl:text>.</xsl:text>
 		    <xsl:value-of select="field" />
 		    <xsl:text>=</xsl:text>
 
 		    <xsl:call-template name="parse-parameter-value" />
-
-		    <xsl:text>                }&#10;</xsl:text>
+		    <xsl:text>;&#10;                }&#10;</xsl:text>
 	  </xsl:for-each>
-	  <xsl:text>                else throw EXCEPTION(gettextmsg(_("&lt;%1%&gt;: unknown element"), name));
+	  <xsl:text>                </xsl:text>
+	  <xsl:if test="count(member) &gt; 0">
+	    <xsl:text>else </xsl:text>
+	  </xsl:if>
+	  <xsl:text>throw EXCEPTION(gettextmsg(_("&lt;%1%&gt;: unknown element"), name));
             }
         }&#10;</xsl:text>
       </xsl:when>
-      <xsl:otherwise>
-	<xsl:text>        auto </xsl:text>
-	<xsl:value-of select="name" />
-	<xsl:text>_value=&#10;            </xsl:text>
-
-	<xsl:call-template name="parse-parameter-value" />
-
-      </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
 
@@ -142,7 +148,6 @@ after the value, effectively invoking a lookup function, first.
       <xsl:value-of select="../name" />
       <xsl:text>&#34;)</xsl:text>
     </xsl:if>
-    <xsl:text>;&#10;</xsl:text>
   </xsl:template>
 
 
@@ -231,25 +236,30 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
 
       <xsl:text>static auto get_</xsl:text>
       <xsl:value-of select="$parameter_parser_name" />
-      <xsl:text>(uicompiler &amp;compiler, const theme_parser_lock &amp;lock)&#10;{&#10;</xsl:text>
-      <xsl:for-each select="parameter">
-	<xsl:choose>
-	  <xsl:when test="scalar" />
-	  <xsl:otherwise>
-	    <xsl:call-template name="parse-parameter"/>
-	  </xsl:otherwise>
-	</xsl:choose>
+      <xsl:text>(uicompiler &amp;compiler, const theme_parser_lock &amp;lock)&#10;{&#10;    std::tuple return_value{</xsl:text>
+
+      <xsl:for-each select="parameter[count(scalar)=0]">
+        <xsl:if test="position() &gt; 1">
+	  <xsl:text>,</xsl:text>
+	</xsl:if>
+	<xsl:text>&#10;        </xsl:text>
+
+	<xsl:call-template name="parse-parameter-tuple-value" />
       </xsl:for-each>
 
-      <xsl:text>        return std::tuple{</xsl:text>
-      <xsl:for-each select="parameter[count(scalar) = 0]">
-	<xsl:if test="position() &gt; 1">
-	  <xsl:text>,&#10;                          </xsl:text>
-	</xsl:if>
-	<xsl:value-of select="name" />
-	<xsl:text>_value</xsl:text>
+      <xsl:text>};&#10;&#10;</xsl:text>
+
+      <xsl:for-each select="parameter[count(scalar)=0]">
+	<xsl:call-template name="parse-parameter-tuple-initialize">
+	  <xsl:with-param name="parameter">
+	    <xsl:text>std::get&lt;</xsl:text>
+	    <xsl:value-of select="position()-1" />
+	    <xsl:text>&gt;(return_value)</xsl:text>
+	  </xsl:with-param>
+	</xsl:call-template>
       </xsl:for-each>
-	<xsl:text>};&#10;}&#10;</xsl:text>
+
+      <xsl:text>        return return_value;&#10;}&#10;</xsl:text>
     </exsl:document><xsl:text>&#10;        return [=, params=compiler_functions::get_</xsl:text>
     <xsl:value-of select="$parameter_parser_name" />
     <xsl:text>(*this, lock)</xsl:text>

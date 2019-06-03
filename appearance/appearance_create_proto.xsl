@@ -28,15 +28,14 @@ defined in appearance/*.xml
   <xsl:template name="appearance">
     <xsl:text>//! Appearance generator&#10;&#10;void generate(const generate_info &amp;, const </xsl:text>
     <xsl:value-of select="name" />
-    <xsl:text>_appearance &amp;appearance);&#10;&#10;//! Appearance generator&#10;const_</xsl:text>
+    <xsl:text>_appearance &amp;appearance);&#10;&#10;//! Find the base appearance object&#10;const_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance generate(const theme_parser_lock &amp;,
-    const const_</xsl:text>
+    <xsl:text>_appearance get_appearance_base(const const_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance &amp;);
+    <xsl:text>_appearance &amp;, const std::string &amp;);
 //! Appearance generator&#10;&#10;const_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance do_generate(const theme_parser_lock &amp;,
+    <xsl:text>_appearance get_appearance(const theme_parser_lock &amp;,
     const const_</xsl:text>
     <xsl:value-of select="name"/>
     <xsl:text>_appearance &amp;);&#10;</xsl:text>

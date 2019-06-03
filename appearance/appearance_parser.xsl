@@ -26,21 +26,22 @@ defined in appearance/*.xml
     <xsl:text>
 LIBCXXW_NAMESPACE_START
 
-const_appearance uicompiler::compile_appearance(const theme_parser_lock &amp;parent)
+const_appearance uicompiler::compile_appearance(const theme_parser_lock &amp;parent,
+                                                const std::string &amp;type)
 {
-    auto type=parent->get_any_attribute("type");
 </xsl:text>
+    auto based_on=parent->get_any_attribute("from");
 
     <xsl:for-each select="appearance">
       <xsl:text>
     if (type == "</xsl:text>
       <xsl:value-of select="name" />
       <xsl:text>")
-        return generate(parent, </xsl:text>
+        return get_appearance(parent, get_appearance_base(</xsl:text>
       <xsl:value-of select="name" />
       <xsl:text>_appearance::base::</xsl:text>
       <xsl:value-of select="default[position() = 1]" />
-      <xsl:text>());
+      <xsl:text>(), based_on));
 </xsl:text>
     </xsl:for-each>
     <xsl:text>
@@ -195,51 +196,47 @@ inline void uicompiler::generate(const generate_info &amp;info,
 
 const_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance uicompiler::generate(const theme_parser_lock &amp;parent,
-    const const_</xsl:text>
+    <xsl:text>_appearance uicompiler::get_appearance_base(const const_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance &amp;appearance)
+    <xsl:text>_appearance &amp;base_appearance,
+        const std::string &amp;based_on)
 {
-    auto based_on=parent->get_any_attribute("from");
+    if (based_on.empty())
+        return base_appearance;
 
-    if (!based_on.empty())
-    {
 </xsl:text>
     <xsl:choose>
       <xsl:when test="default">
 	<xsl:for-each select="default">
-	  <xsl:text>        </xsl:text>
+	  <xsl:text>    </xsl:text>
 	  <xsl:if test="position() &gt; 1">
 	    <xsl:text>else </xsl:text>
 	  </xsl:if>
 	  <xsl:text>if (based_on == "</xsl:text>
 	  <xsl:value-of select="." />
 	  <xsl:text>")
-            return do_generate(parent, </xsl:text>
+            return </xsl:text>
 	  <xsl:value-of select="../name" />
 	  <xsl:text>_appearance::base::</xsl:text>
 	  <xsl:value-of select="." />
-	  <xsl:text>());
+	  <xsl:text>();
 </xsl:text>
 	</xsl:for-each>
-	<xsl:text>        else </xsl:text>
+	<xsl:text>    else </xsl:text>
       </xsl:when>
       <xsl:otherwise>
-	<xsl:text>        </xsl:text>
+	<xsl:text>    </xsl:text>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:text>return get_compiled_appearance&lt;const_</xsl:text>
     <xsl:value-of select="name" />
     <xsl:text>_appearance&gt;(based_on);
 </xsl:text>
-<xsl:text>    }
-
-    return do_generate(parent, appearance);
-}
+<xsl:text>}
 
 const_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance uicompiler::do_generate(const theme_parser_lock &amp;parent,
+    <xsl:text>_appearance uicompiler::get_appearance(const theme_parser_lock &amp;parent,
     const const_</xsl:text>
     <xsl:value-of select="name"/>
     <xsl:text>_appearance &amp;appearance)

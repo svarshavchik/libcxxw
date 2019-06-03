@@ -388,10 +388,10 @@ private:
 
 	//! Compile an <appearance> in the theme file.
 
-	//! Looks up its <type>, and compiles the appropriate appearance
-	//! type.
+	//! "type" is it's type attribute.
 
-	const_appearance compile_appearance(const theme_parser_lock &parent);
+	const_appearance compile_appearance(const theme_parser_lock &parent,
+					    const std::string &type);
 
 	//! Look up a compiled appearance
 

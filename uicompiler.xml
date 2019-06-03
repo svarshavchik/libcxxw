@@ -1124,7 +1124,7 @@ List of values:
 	<lookup>
 	  <function>lookup_container_generators</function>
 	  <parameter>lock</parameter>
-	  <parameter>name_value</parameter>
+	  <parameter>single_value(lock, "name", "container")</parameter>
 	</lookup>
       </parameter>
     </function>
@@ -1291,7 +1291,7 @@ List of values:
 	<lookup>
 	  <function>lookup_container_generators</function>
 	  <parameter>lock</parameter>
-	  <parameter>name_value</parameter>
+	  <parameter>single_value(lock, "name", "container")</parameter>
 	</lookup>
       </parameter>
     </function>

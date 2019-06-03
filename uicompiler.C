@@ -1715,7 +1715,10 @@ void uicompiler::compile_uncompiled_appearance(const std::string &name)
 
 	uncompiled_appearances.erase(iter);
 
-	generators->loaded_appearances.emplace(name, compile_appearance(lock));
+	generators->loaded_appearances
+		.emplace(name,
+			 compile_appearance(lock,
+					    lock->get_any_attribute("type")));
 }
 
 static void wrong_appearance_type(const std::string &name)
