@@ -145,11 +145,13 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 		.valign(LIBCXX_NAMESPACE::w::valign::top);
 
 	sf->add([]
-		(const auto &tab_factory,
-		 const auto &page_factory)
+		(const auto &tab_factory)
 		{
-			tab_factory->create_label("Address")->show();
-
+			tab_factory->create_label("Address");
+		},
+		[]
+		(const auto &page_factory)
+		{
 			page_factory->create_container
 				([&]
 				 (const auto &container)
@@ -164,10 +166,13 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 	LIBCXX_NAMESPACE::w::input_fieldptr phone;
 
 	sf->add([]
-		(const auto &tab_factory,
-		 const auto &page_factory)
+		(const auto &tab_factory)
 		{
-			tab_factory->create_label("Phone")->show();
+			tab_factory->create_label("Phone");
+		},
+		[]
+		(const auto &page_factory)
+		{
 			page_factory->create_container
 				([&]
 				 (const auto &container)
@@ -185,10 +190,13 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 		.valign(LIBCXX_NAMESPACE::w::valign::top);
 
 	sf->add([]
-		(const auto &tab_factory,
-		 const auto &page_factory)
+		(const auto &tab_factory)
 		{
-			tab_factory->create_label("First/Last\nName")->show();
+			tab_factory->create_label("First/Last\nName");
+		},
+		[]
+		(const auto &page_factory)
+		{
 			page_factory->create_container
 				([&]
 				 (const auto &container)
@@ -204,18 +212,21 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 
 	for (int i=0; i<6; i++)
 	{
-		sf->add([i]
-			(const auto &tab_factory,
-			 const auto &page_factory)
+		std::ostringstream o;
+
+		o << "Page " << i+1;
+
+		std::string s=o.str();
+
+		sf->add([&]
+			(const auto &tab_factory)
 			{
-				std::ostringstream o;
-
-				o << "Page " << i+1;
-
-				std::string s=o.str();
-
 				tab_factory->create_label(s);
 
+			},
+			[&]
+			(const auto &page_factory)
+			{
 				page_factory->create_label
 					({LIBCXX_NAMESPACE::w::font{
 							"sans serif",

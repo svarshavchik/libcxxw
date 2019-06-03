@@ -5,10 +5,21 @@
 #ifndef x_w_bookpagefactoryfwd_h
 #define x_w_bookpagefactoryfwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/labelfwd.H>
+#include <x/w/shortcutfwd.H>
+
 #include <x/ptrfwd.H>
+#include <x/optional_argsfwd.H>
 
 LIBCXXW_NAMESPACE_START
+
+//! The options for a \ref bookpagefactory "book page factory"'s add().
+
+typedef optional_argconstrefs<label_config, shortcut> create_bookpage_with_label_args_t;
+
+//! The options for a \ref bookpagefactory "book page factory"'s add().
+
+typedef optional_argconstrefs<shortcut> create_bookpage_args_t;
 
 class LIBCXX_PUBLIC bookpagefactoryObj;
 

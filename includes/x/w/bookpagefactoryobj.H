@@ -38,49 +38,66 @@ public:
 
 	//! Add another page to the book.
 
-	template<typename functor>
-	inline auto &add(functor &&f)
+	template<typename tab_factory,
+		 typename page_factory,
+		 typename=std::void_t<decltype(std::declval<tab_factory &&>()
+					       (std::declval<const factory &>())
+					       )>>
+	inline auto &add(tab_factory &&tf,
+			 page_factory &&pf)
 	{
-		do_add(make_function<void (const factory &, const factory &)>
-		       (std::forward<functor>(f)));
+		do_add(make_function<void (const factory &)>
+		       (std::forward<tab_factory>(tf)),
+		       make_function<void (const factory &)>
+		       (std::forward<page_factory>(pf)));
+		return *this;
+	}
+
+	//! Add another page to the book.
+
+	//! \overload
+	template<typename tab_factory,
+		 typename page_factory,
+		 typename=std::void_t<decltype(std::declval<tab_factory &&>()
+					       (std::declval<const factory &>())
+					       )>>
+	inline auto &add(tab_factory &&tf,
+			 page_factory &&pf,
+			 const create_bookpage_args_t &args)
+	{
+		do_add(make_function<void (const factory &)>
+		       (std::forward<tab_factory>(tf)),
+		       make_function<void (const factory &)>
+		       (std::forward<page_factory>(pf)), args);
 
 		return *this;
 	}
 
 	//! Add another page to the book.
 
-	template<typename functor>
+	//! \overload
+
+	template<typename page_factory>
 	inline auto &add(const text_param &label,
-			 functor &&f,
-			 halign h=halign::center)
-	{
-		do_add(label, make_function<void (const factory &)>
-		       (std::forward<functor>(f)), h);
-
-		return *this;
-	}
-
-	//! Add another page to the book, with a shortcut.
-
-	template<typename functor>
-	inline auto &add(functor &&f, const shortcut &s)
-	{
-		do_add(make_function<void (const factory &, const factory &)>
-		       (std::forward<functor>(f)), s);
-
-		return *this;
-	}
-
-	//! Add another page to the book, with a shortcut.
-
-	template<typename functor>
-	inline auto &add(const text_param &label,
-			 functor &&f, const shortcut &s,
-			 halign h=halign::center)
+			 page_factory &&pf)
 	{
 		do_add(label,
 		       make_function<void (const factory &)>
-		       (std::forward<functor>(f)), s, h);
+		       (std::forward<page_factory>(pf)));
+		return *this;
+	}
+
+	//! Add another page to the book.
+
+	//! \overload
+	template<typename page_factory>
+	inline auto &add(const text_param &label,
+			 page_factory &&pf,
+			 const create_bookpage_with_label_args_t &args)
+	{
+		do_add(label,
+		       make_function<void (const factory &)>
+		       (std::forward<page_factory>(pf)), args);
 
 		return *this;
 	}
@@ -88,15 +105,25 @@ public:
 	//! Type-erased add().
 
 	void do_add(const text_param &,
-		    const function<void (const factory &)> &f,
-		    halign);
+		    const function<void (const factory &)> &);
 
 	//! Type-erased add().
 
 	void do_add(const text_param &,
-		    const function<void (const factory &)> &f,
-		    const shortcut &,
-		    halign);
+		    const function<void (const factory &)> &,
+		    const create_bookpage_with_label_args_t &);
+
+
+	//! Type-erased add().
+
+	void do_add(const function<void (const factory &)> &,
+		    const function<void (const factory &)> &);
+
+	//! Type-erased add().
+
+	virtual void do_add(const function<void (const factory &)> &,
+			    const function<void (const factory &)> &,
+			    const create_bookpage_args_t &)=0;
 
 	//! Set next page's alignment
 
@@ -105,16 +132,6 @@ public:
 	//! Set next page's alignment
 
 	virtual bookpagefactoryObj &valign(LIBCXXW_NAMESPACE::valign)=0;
-
-	//! Type-erased add().
-
-	void do_add(const function<void (const factory &,
-					 const factory &)> &f);
-	//! Type-erased add().
-
-	virtual void do_add(const function<void (const factory &,
-						 const factory &)> &f,
-			    const shortcut &sc)=0;
 };
 
 LIBCXXW_NAMESPACE_END

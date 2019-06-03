@@ -76,7 +76,7 @@ new_page->add("Tab",
 
               },
               // Optional shortcut
-              {"Alt", 'X'});</programlisting>
+              {&ns;::w::shortcut{"Alt", 'X'}});</programlisting>
       </informalexample>
     </blockquote>
 
@@ -89,42 +89,98 @@ new_page->add("Tab",
       Each call to
       <classname>&ns;::w::bookpagefactory</classname>'s
       <methodname>add</methodname>() method creates a new page.
-      <methodname>add</methodname>() takes a closure, or a callable object, as
-      a parameter parameter.
     </para>
 
     <para>
       There are two overloaded versions of <methodname>add</methodname>().
-      The first version takes a
+      The first version creates a plain text label for the tab from an
       <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>
-      parameter that sets the new page's tab as a short text string.
-      Its second parameter is a callable object or a closure that creates
+      parameter, and the
+      the second parameter is a callable object or a closure that creates
       the new page.
-      The second version takes only the callable object, or a closure,
-      but the closure's parameters are two factories.
-      The extra factory is for creating the new page's tab. Instead of a
+      The second version takes another callable object, or a closure,
+      that takes a factory object instead of the
+      <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>
+      first parameter. This factory gets use used to create the
+      widget representing the new page's tab. Instead of a
       text string, the tab can be any non-focusable widget.
-      The second version of <methodname>add</methodname>()'s parameters are
-      a factory for creating the widget for the new page's tab,
-      and a factory for creating the new widget for the new page
-      (same parameter as the first version of
-      <methodname>add</methodname>()).
+      The second version of <methodname>add</methodname>()'s parameters are:
     </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  A factory that creates the widget for the new page's tab.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  A factory that creates the new page widget
+	  (same parameter as the first version of
+	  <methodname>add</methodname>()).
+	</para>
+      </listitem>
+    </itemizedlist>
 
     <para>
       For either version of <methodname>add</methodname>(),
       the closure must create exactly one widget using each one of
       its factory parmeters. For the second version of
-      <methodname>add</methodname>() the closure may create the
-      two widgets in either order.
+      <methodname>add</methodname>() the order in which the factories
+      get called is not specified.
     </para>
 
     <para>
-      Another optional parameter to
-      <methodname>add</methodname>() is a keyboard
-      <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>
-      for opening the corresponding page.
+      <methodname>add</methodname>() also takes
+      an <ulink url="/optionalargs.html">optional argument
+	parameter</ulink>.
     </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  An overloaded <methodname>add</methodname>() with a
+	  a factory callback that creates a tab has one optional argument,
+	  the tab's keyboard
+	  <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  An overloaded <methodname>add</methodname>() with a
+	  <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>
+	  tab label has two optional parameters:
+	  the label's <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>
+	  and the tab's keyboard
+	  <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>:
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting>
+new_page->add({
+                "underline"_decoration,
+                U"H",
+                "no"_decoration,
+                U"elp",
+              },
+              []
+	      (const &ns;::w::factory &amp;page_factory)
+              {
+
+              },
+              // Optional shortcut
+              {&ns;::w::label_config{&ns;::w::center},
+               &ns;::w::shortcut{"Alt", 'X'}});</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  This is a somewhat contrived example. Label alignment only
+	  makes a difference with multi-line labels.
+	</para>
+      </listitem>
+    </itemizedlist>
   </section>
 
   <section id="bookonopened">

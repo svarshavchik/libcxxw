@@ -19,35 +19,42 @@ bookpagefactoryObj::bookpagefactoryObj()
 
 bookpagefactoryObj::~bookpagefactoryObj()=default;
 
-void bookpagefactoryObj::do_add(const function<void (const factory &,
-						     const factory &)> &f)
+void bookpagefactoryObj::do_add(const function<void (const factory &)> &tf,
+				const function<void (const factory &)> &pf)
 {
-	do_add(f, {});
+	do_add(tf, pf, {});
+}
+
+void bookpagefactoryObj::do_add(const text_param &label,
+				const function<void (const factory &)> &f)
+{
+	do_add(label, f, {});
 }
 
 void bookpagefactoryObj::do_add(const text_param &label,
 				const function<void (const factory &)> &f,
-				LIBCXXW_NAMESPACE::halign h)
+				const create_bookpage_with_label_args_t &args)
 {
-	do_add(label, f, {}, h);
-}
+	std::optional<label_config> label_config_arg;
+	std::optional<shortcut> shortcut_arg;
 
-void bookpagefactoryObj::do_add(const text_param &label,
-				const function<void (const factory &)> &f,
-				const shortcut &shortcut,
-				LIBCXXW_NAMESPACE::halign h)
-{
+	const auto &label_config_value=
+		optional_arg_or<label_config>(args, label_config_arg);
+	const auto &shortcut_value=
+		optional_arg_or<shortcut>(args, shortcut_arg);
+
 	add([&]
-	    (const factory &label_factory,
-	     const factory &page_factory)
+	    (const factory &label_factory)
 	    {
-		    label_config config;
-
-		    config.alignment=h;
-
-		    label_factory->create_label(label, config)->show();
+		    label_factory->create_label(label, label_config_value)
+			    ->show();
+	    },
+	    [&]
+	    (const factory &page_factory)
+	    {
 		    f(page_factory);
-	    }, shortcut);
+	    },
+	    {shortcut_value});
 }
 
 LIBCXXW_NAMESPACE_END

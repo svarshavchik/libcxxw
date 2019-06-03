@@ -1543,16 +1543,20 @@ void uicompiler::create_container(const bookpagefactory &f,
 	auto shortcut_iter=factories.shortcuts.find(sc);
 
 	f->add([&]
-	       (const auto &label_factory,
-		const auto &page_factory)
+	       (const auto &label_factory)
 	       {
 		       generate(label_factory, factories, label);
-
+	       },
+	       [&]
+	       (const auto &page_factory)
+	       {
 		       create_container(page_factory, factories, name,
 					generators);
 	       },
-	       shortcut_iter == factories.shortcuts.end()
-	       ? shortcut{}:shortcut_iter->second);
+	       {
+		(shortcut_iter == factories.shortcuts.end()
+		 ? shortcut{}:shortcut_iter->second)
+	       });
 }
 
 #include "uicompiler.inc.C"

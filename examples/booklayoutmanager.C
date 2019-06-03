@@ -202,10 +202,12 @@ static void create_book(const x::w::booklayoutmanager &pl)
 			     container->show_all();
 		     },
 
-		     // The third parameter to add() is optional, and specifies
-		     // an x::w::shortcut for this page.
+		     // The third parameter to add() is its options. We
+		     // specify x::w::shortcut option for this page.
 
-		     {"Alt", 'A'});
+		     {
+		      x::w::shortcut{"Alt", 'A'}
+		     });
 
 
 	/*
@@ -230,7 +232,9 @@ static void create_book(const x::w::booklayoutmanager &pl)
 				 x::w::new_gridlayoutmanager{})
 				->show_all();
 		},
-		{"Alt", 'P'});
+		{
+		 x::w::shortcut{"Alt", 'P'}
+		});
 
 	/*
 	** And, similar to the pagefactory, the insert() method adds new
@@ -240,14 +244,13 @@ static void create_book(const x::w::booklayoutmanager &pl)
 
 	/*
 	** The page's tab doesn't have to be a plain text label, it can
-	** be an arbitrary display element. This is done by omitting the
-	** first parameter to add(), and the lambda callback takes two
-	** factories, one for the tab, one for the page.
+	** be an arbitrary display element. This is done by passing another
+	** callable object that takes a factory parameter, instead of the
+	** first text_param argument to add().
 	*/
 	new_page->halign(x::w::halign::left).valign(x::w::valign::top)
 		.add([&]
-		     (const x::w::factory &tab_factory,
-		      const x::w::factory &page_factory)
+		     (const x::w::factory &tab_factory)
 		     {
 			     /*
 			     ** Providing the text label to add() directly
@@ -260,6 +263,11 @@ static void create_book(const x::w::booklayoutmanager &pl)
 					     "N",
 					     "no"_decoration,
 					     "ame"})->show();
+
+		     },
+		     [&]
+		     (const x::w::factory &page_factory)
+		     {
 
 			     /*
 			     ** And the second parameter is the same page
@@ -274,7 +282,9 @@ static void create_book(const x::w::booklayoutmanager &pl)
 				      x::w::new_gridlayoutmanager{})
 				     ->show_all();
 		     },
-		     {"Alt", 'N'});
+		     {
+		      x::w::shortcut{"Alt", 'N'}
+		     });
 
 	/*
 	** The initial state of the paged container: make element #0

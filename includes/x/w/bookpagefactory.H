@@ -8,6 +8,9 @@
 #include <x/w/bookpagefactoryfwd.H>
 #include <x/w/bookpagefactoryobj.H>
 #include <x/ref.H>
+#include <x/optional_args.H>
+#include <x/w/label.H>
+#include <x/w/shortcut.H>
 #include <x/w/text_param.H>
 
 LIBCXXW_NAMESPACE_START

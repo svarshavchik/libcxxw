@@ -274,9 +274,9 @@ static auto create_new_tab(const bookpagefactoryObj &my_factory,
 			   const gridfactory &gridfactory,
 			   const booklayoutmanager &layout_manager,
 			   const pagefactory &book_pagefactory,
-			   const function<void (const factory &,
-						const factory &)> &tab_factory,
-			   const shortcut &sc)
+			   const function<void (const factory &)> &tab_factory,
+			   const function<void (const factory &)> &page_factory,
+			   const create_bookpage_args_t &args)
 {
 	// All elements in the tab strip have no padding, and take up the
 	// full height of the tab strip.
@@ -314,7 +314,9 @@ static auto create_new_tab(const bookpagefactoryObj &my_factory,
 
 	// Finish initializing the impl in the connection thread.
 	// Need to install the shortcut.
+	std::optional<shortcut> default_shortcut;
 
+	const auto &sc=optional_arg_or<shortcut>(args, default_shortcut);
 	impl->set_shortcut(sc);
 
 	// Obtain the initial contents of the actual tab label.
@@ -322,15 +324,19 @@ static auto create_new_tab(const bookpagefactoryObj &my_factory,
 	auto page_capture_factory=
 		capturefactory::create(book_pagefactory
 				       ->get_container_impl());
-	tab_factory(tab_capture_factory, page_capture_factory);
+	tab_factory(tab_capture_factory);
+	page_factory(page_capture_factory);
 
 	auto page_element=page_capture_factory->get();
 
 	// And now we can construct the singleton layout manager for the
 	// pagetab implementation object.
 
+	auto tab_element=tab_capture_factory->get();
+	// tab_element->show_all();
+
 	auto lm=ref<pagetabsingletonlayoutmanager_implObj>
-		::create(impl, tab_capture_factory->get());
+		::create(impl, tab_element);
 
 	auto new_page=pagetab::create(impl, lm);
 
@@ -416,10 +422,9 @@ class LIBCXX_HIDDEN append_bookpagefactoryObj
 	~append_bookpagefactoryObj()=default;
 
 	//! Implement add()
-	void do_add(const function<void (const factory &,
-					 const factory &)> &factory,
-		    const shortcut &sc)
-		override;
+	void do_add(const function<void (const factory &)> &,
+		    const function<void (const factory &)> &,
+		    const create_bookpage_args_t &) override;
 };
 
 // The insert factory.
@@ -448,10 +453,9 @@ class LIBCXX_HIDDEN insert_bookpagefactoryObj
 	~insert_bookpagefactoryObj()=default;
 
 	//! Implement add().
-	void do_add(const function<void (const factory &,
-					 const factory &)> &factory,
-		    const shortcut &sc)
-		override;
+	void do_add(const function<void (const factory &)> &,
+		    const function<void (const factory &)> &,
+		    const create_bookpage_args_t &) override;
 };
 
 bookpagefactory booklayoutmanagerObj::append()
@@ -460,14 +464,16 @@ bookpagefactory booklayoutmanagerObj::append()
 }
 
 void append_bookpagefactoryObj
-::do_add(const function<void (const factory &, const factory &)> &f,
-	 const shortcut &sc)
+::do_add(const function<void (const factory &)> &tab_factory,
+	 const function<void (const factory &)> &page_factory,
+	 const create_bookpage_args_t &args)
 {
 	book_lock lock{layout_manager};
 
 	auto [tab_element, hotspot_element, page_element]=
 		create_new_tab(*this, book_tabfactory,
-			       layout_manager, book_pagefactory, f, sc);
+			       layout_manager, book_pagefactory,
+			       tab_factory, page_factory, args);
 
 	install_activate_callback(layout_manager, hotspot_element,
 				  page_element);
@@ -493,14 +499,16 @@ void booklayoutmanagerObj::remove(size_t page_number)
 }
 
 void insert_bookpagefactoryObj
-::do_add(const function<void (const factory &, const factory &)> &f,
-	 const shortcut &sc)
+::do_add(const function<void (const factory &)> &tab_factory,
+	 const function<void (const factory &)> &page_factory,
+	 const create_bookpage_args_t &args)
 {
 	book_lock lock{layout_manager};
 
 	auto [tab_element, hotspot_element, page_element]=
 		create_new_tab(*this, book_tabfactory,
-			       layout_manager, book_pagefactory, f, sc);
+			       layout_manager, book_pagefactory,
+			       tab_factory, page_factory, args);
 
 	install_activate_callback(layout_manager, hotspot_element,
 				  page_element);
