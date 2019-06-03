@@ -570,14 +570,6 @@ standard_dialog_elements_t file_dialogObj::init_args
 						create_file_input_field
 						(factory);
 				}},
-		{"directory-field",
-				[&, this]
-				(const auto &factory)
-				{
-					directory_field=factory
-						->create_focusable_label
-						("");
-				}},
 		{"filter-field",
 				[&, this]
 				(const auto &factory)
@@ -817,6 +809,10 @@ file_dialog main_windowObj
 			 gridlayoutmanager inner_glm=c->get_layoutmanager();
 
 			 inner_glm->generate("file-dialog", tmpl);
+
+			 init_args.directory_field=
+				 tmpl.get_element("directory-field");
+
 			 f->created_internally(c);
 
 			 auto fd=file_dialog::create(args,

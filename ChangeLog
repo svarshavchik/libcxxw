@@ -1,3 +1,7 @@
+2019-05-31  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Create <focusable_label>s from the theme file.
+
 2019-05-28  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Use the singleton template to cache appearance objects, to avoid

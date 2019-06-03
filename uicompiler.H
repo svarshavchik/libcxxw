@@ -386,6 +386,17 @@ private:
 
 	const_appearance compile_appearance(const theme_parser_lock &parent);
 
+	//! Look up a compiled appearance
+
+	//! An appearance requested for use by an element. Invoked by
+	//! robo-generated parser to set the value of a particular appearance
+	//! object.
+
+	template<typename appearance_type>
+	appearance_type lookup_appearance(std::string name,
+					  bool ignore,
+					  const char *element);
+
 	struct generate_info;
 
 	struct compiler_functions;

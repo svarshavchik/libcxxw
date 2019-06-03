@@ -2071,12 +2071,12 @@ layout_manager->generate("dialog", generators, elements);
       <para>
 	Specifying an <tag class='element'>element</tag>
 	that contains a <tag class='element'>label</tag>
-	results in a new
+	creates a new
 	<ulink url="&link-typedef-x--w-label;"><classname>&ns;::w::label</classname></ulink>
-	widget getting created by the
+	widget by the
 	<tag class='element'>element</tag>'s &factory;.
 	This is equivalent to invoking the factory's
-	<methodname>create_label</methodname>() methods.
+	<methodname>create_label</methodname>() method.
       </para>
 
       <para>
@@ -2241,12 +2241,12 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
       <para>
 	Specifying an <tag class='element'>element</tag>
 	that contains a <tag class='element'>canvas</tag>
-	results in a new
+	creates a new
 	<ulink url="&link-typedef-x--w-canvas;"><classname>&ns;::w::canvas</classname></ulink>
-	widget getting created by the
+	widget, by the element's
 	<tag class='element'>element</tag>'s &factory;.
 	This is equivalent to invoking the factory's
-	<methodname>create_canvas</methodname>() methods.
+	<methodname>create_canvas</methodname>() method.
       </para>
 
       <para>
@@ -2364,6 +2364,53 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 	elements. This is equivalent to using a widget's
 	<methodname>create_tooltip</methodname>() to create a basic,
 	label tooltip.
+      </para>
+    </section>
+
+    <section id="uixmlfactoryfocusablelabelelement">
+      <title>Focusable label <tag class='element'>element</tag> widgets</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<element id="directory-name">
+  <focusable_label type='theme_text'>Top Level Directory</focusable_label>
+
+  <options>
+     <widthmm>40</widthmm>
+     <focus_border>custom</focus_border>
+  </otions>
+</element>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Specifying an <tag class='element'>element</tag>
+	with a <tag class='element'>focusable_label</tag>
+	creates a new
+	<ulink url="&link-typedef-x--w-focusable-label;"><classname>&ns;::w::focusable_label</classname></ulink>
+	by the
+	<tag class='element'>element</tag>'s &factory;.
+	This is equivalent to invoking the factory's
+	<methodname>create_focusable_label</methodname>() method.
+      </para>
+
+      <para>
+	The <tag class='element'>focusable_label</tag> element has the same
+	contents as a
+	<link linkend="uixmlfactorylabelelement"><tag class='element'>label</tag>
+	  element</link>, with an additional
+	<tag class='element'>options</tag> setting.
+	<tag class='element'>options</tag> initializes the
+	<ulink url="&link-x--w--focusable-label-config;"><classname>&ns;::w::focusable_label_config</classname></ulink>
+	parameter for <methodname>create_focusable_label</methodname>, which has
+	the same members as
+	<tag class='element'>label</tag>'s
+	<ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>,
+	with an additional
+	<tag class='element'>focus_border</tag> that sets the focusable
+	label's
+	<link linkend="uixmlappearance">appearance object</link>.
       </para>
     </section>
 

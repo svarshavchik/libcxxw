@@ -1935,9 +1935,10 @@ of wrappable labels used for the message.
       <padding>dialog-h-padding</padding>
     </padding>
 
-    <element>
-      <name>directory-field</name>
+    <element id="directory-field">
+      <focusable_label> </focusable_label>
     </element>
+
   </factory>
   <factory type="grid" id="filter-row">
     <padding>

@@ -8,6 +8,7 @@
 #include "x/w/uielements.H"
 #include "x/w/uigenerators.H"
 #include "x/w/label.H"
+#include "x/w/focusable_label.H"
 #include "x/w/canvas.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
@@ -506,6 +507,32 @@ parse_dim(const theme_parser_lock &lock,
 	}
 
 	return v;
+}
+
+static void wrong_appearance_type(const std::string &,
+				  const char *) __attribute__((noreturn));
+
+static void wrong_appearance_type(const std::string &name,
+				  const char *element)
+{
+	throw EXCEPTION(gettextmsg(_("The appearance object \"%1\" (specified"
+				     " for the \"%2%\" parameter)"
+				     " is not the expected"
+				     " appearance object type"),
+				   name, element));
+}
+
+template<typename appearance_type>
+appearance_type uicompiler::lookup_appearance(std::string name,
+					      bool ignore,
+					      const char *element)
+{
+	auto ret=generators->lookup_appearance(name);
+
+	if (!ret->isa<appearance_type>())
+		wrong_appearance_type(name, element);
+
+	return ret;
 }
 
 struct uicompiler::compiler_functions {
