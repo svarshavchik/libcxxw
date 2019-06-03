@@ -8,6 +8,8 @@
 #include <x/strtok.H>
 #include <x/chrcasecmp.H>
 #include <xcb/xproto.h>
+#include <charconv>
+#include "messages.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -127,9 +129,7 @@ input_mask::operator std::string() const
 
 input_mask::input_mask(const std::string_view &o)
 {
-	std::list<std::string> words;
-
-	strtok_str(o, ",-+ \r\t\n", words);
+	std::string_view o_copy{o};
 
 	static const struct {
 		const char *name;
@@ -146,29 +146,69 @@ input_mask::input_mask(const std::string_view &o)
 		{"mode_switch", &input_mask::mode_switch},
 	};
 
-	for (auto &w:words)
+	while (!o_copy.empty())
 	{
-		std::transform(w.begin(), w.end(), w.begin(),
+		size_t n=o_copy.find_first_of(",-+ \r\t\n");
+
+		if (n == 0)
+		{
+			o_copy.remove_prefix(1);
+			continue;
+		}
+
+		if (n > o_copy.size())
+			n=o_copy.size();
+
+		char w_buf[n];
+
+		const char *p=o_copy.data();
+
+		std::copy(p, p+n, w_buf);
+
+		std::transform(w_buf, w_buf+n, w_buf,
 			       chrcasecmp::tolower);
 
+		std::string_view w{w_buf, n};
+
+		o_copy.remove_prefix(n);
+
+		bool found=false;
 		for (const auto &field:fields)
 		{
 			if (w == field.name)
 			{
 				(this->*(field.field))=true;
+				found=true;
 				break;
 			}
 		}
 
+		if (found)
+			continue;
+
 		if (w.substr(0, 6) == "button")
 		{
-			int n= -1;
+			unsigned n;
 
-			std::istringstream(w.substr(6)) >> n;
+			auto n_str=w.substr(6);
 
-			if (n >= 0)
-				buttons |= (1 << n);
+			if (!n_str.empty())
+			{
+				const char *b=&*n_str.begin();
+				const char *e=b+n_str.size();
+
+				auto conv=std::from_chars(b, e, n);
+
+				if (conv.ec==std::errc{} &&
+				    conv.ptr==e)
+				{
+					buttons |= (1 << n);
+					continue;
+				}
+			}
 		}
+
+		throw EXCEPTION(_("Invalid input mask"));
 	}
 }
 
