@@ -8,6 +8,7 @@
 #include "configfile.H"
 #include "x/w/rgb.H"
 #include "x/w/border_infomm.H"
+#include "x/w/scrollbar.H"
 #include "connection.H"
 #include "connection_thread.H"
 #include "screen.H"
@@ -741,6 +742,30 @@ std::string lowercase_single_value(const theme_parser_lock &lock,
 	std::transform(s.begin(), s.end(), s.begin(), chrcasecmp::tolower);
 
 	return s;
+}
+
+scrollbar_visibility to_scrollbar_visibility(const theme_parser_lock &lock,
+					     const char *element,
+					     const char *parent)
+{
+	auto s=lowercase_single_value(lock, ".", parent);
+
+	if (s == "never")
+		return scrollbar_visibility::never;
+
+	if (s == "always")
+		return scrollbar_visibility::always;
+
+	if (s == "automatic")
+		return scrollbar_visibility::automatic;
+
+	if (s == "automatic_reserved")
+		return scrollbar_visibility::automatic_reserved;
+
+	throw EXCEPTION(gettextmsg
+			(_("Scrollbar visibility \"%1%\" (%2%) cannot be "
+			   "converted to a valid value"),
+			 s, parent));
 }
 
 bool single_value_exists(const theme_parser_lock &lock,

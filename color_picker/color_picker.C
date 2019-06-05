@@ -125,19 +125,9 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 
 	const color_picker_config &config;
 
-	static constexpr auto digits=
-		std::numeric_limits<rgb_component_t>::digits10+1;
-
-	// The input field has one more position, for the trailing cursor.
-	input_field_config input_fields_conf{digits+1};
-
 	color_picker_layout_helper(const color_picker_config &config)
 		: config{config}
 	{
-		input_fields_conf.alignment=halign::right;
-		input_fields_conf.maximum_size=digits;
-		input_fields_conf.autoselect=true;
-		input_fields_conf.set_default_spin_control_factories();
 	}
 
 	std::vector<std::tuple<rgb, button>> basic_colors;
@@ -247,49 +237,6 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 				auto cps=color_picker_square::create(impl);
 				square=cps;
 				f->created_internally(cps);
-			}},
-
-		{"r-input-field", [&](const auto &f)
-			{
-				input_fields_conf.appearance=
-					config.appearance->r_appearance;
-				r_input_field=f->create_input_field
-					("", input_fields_conf);
-			}},
-		{"g-input-field", [&](const auto &f)
-			{
-				input_fields_conf.appearance=
-					config.appearance->g_appearance;
-				g_input_field=f->create_input_field
-					("", input_fields_conf);
-			}},
-		{"b-input-field", [&](const auto &f)
-			{
-				input_fields_conf.appearance=
-					config.appearance->b_appearance;
-				b_input_field=f->create_input_field
-					("", input_fields_conf);
-			}},
-		{"h-input-field", [&](const auto &f)
-			{
-				input_fields_conf.appearance=
-					config.appearance->h_appearance;
-				h_input_field=f->create_input_field
-					("", input_fields_conf);
-			}},
-		{"s-input-field", [&](const auto &f)
-			{
-				input_fields_conf.appearance=
-					config.appearance->s_appearance;
-				s_input_field=f->create_input_field
-					("", input_fields_conf);
-			}},
-		{"v-input-field", [&](const auto &f)
-			{
-				input_fields_conf.appearance=
-					config.appearance->v_appearance;
-				v_input_field=f->create_input_field
-					("", input_fields_conf);
 			}},
 		{"hexadecimal", [&](const auto &f)
 			{
@@ -448,6 +395,12 @@ create_contents(const ref<color_picker_selectorObj::implObj>
 	helper.v_button=tmpl.get_element("v-button");
 	helper.h_canvas=tmpl.get_element("h-canvas");
 	helper.v_canvas=tmpl.get_element("v-canvas");
+	helper.r_input_field=tmpl.get_element("r-input-field");
+	helper.g_input_field=tmpl.get_element("g-input-field");
+	helper.b_input_field=tmpl.get_element("b-input-field");
+	helper.h_input_field=tmpl.get_element("h-input-field");
+	helper.s_input_field=tmpl.get_element("s-input-field");
+	helper.v_input_field=tmpl.get_element("v-input-field");
 
 	helper.square->create_tooltip(_("Click to pick a color"));
 

@@ -196,21 +196,6 @@ standard_dialog_elements_t print_dialog_init_helper
 
 					fields.selected_printer=f;
 				}},
-		{"number-of-copies-field",
-				[&, this]
-				(const auto &factory)
-				{
-					input_field_config iconf{4, 1, true};
-
-					iconf.appearance=conf.appearance
-						->number_of_copies_appearance;
-					iconf.set_default_spin_control_factories
-						();
-					auto f=factory->create_input_field
-						("", iconf);
-					f->autofocus(false);
-					fields.number_of_copies=f;
-				}},
 		{"all-pages-radio-button",
 				[&, this]
 				(const auto &factory)
@@ -242,20 +227,6 @@ standard_dialog_elements_t print_dialog_init_helper
 						 conf.appearance
 						 ->print_page_range_appearance);
 					fields.page_range_radio_button=f;
-				}},
-		{"page-range-field",
-				[&, this]
-				(const auto &factory)
-				{
-					input_field_config iconf{8, 1, true};
-
-					iconf.appearance=conf.appearance
-						->page_range_appearance;
-
-					auto f=factory->create_input_field
-						("", iconf);
-					f->autofocus(false);
-					fields.page_range=f;
 				}},
 		{"orientation-field",
 				[&, this]
@@ -422,6 +393,14 @@ print_dialog main_windowObj
 
 			 helper.fields.options_book=
 				 tmpl.get_element("print-dialog-options");
+
+			 helper.fields.number_of_copies=
+				 tmpl.get_element("number-of-copies-field");
+			 helper.fields.number_of_copies->autofocus(false);
+
+			 helper.fields.page_range=
+				 tmpl.get_element("page-range-field");
+			 helper.fields.page_range->autofocus(false);
 
 			 auto impl=ref<print_dialogObj::implObj>
 				 ::create(ref{this},

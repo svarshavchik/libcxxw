@@ -89,17 +89,27 @@ tuple value.
 		    <xsl:value-of select="$parameter" />
 		    <xsl:text>.</xsl:text>
 		    <xsl:value-of select="field" />
-		    <xsl:text>=</xsl:text>
 
-		    <xsl:call-template name="parse-parameter-value">
-		      <xsl:with-param name="prepend-parameter">
-			<xsl:if test="count(lookup/modify) &gt; 0">
-			  <xsl:value-of select="$parameter" />
-			  <xsl:text>.</xsl:text>
-			  <xsl:value-of select="field" />
-			</xsl:if>
-		      </xsl:with-param>
-		    </xsl:call-template>
+		    <xsl:choose>
+		      <xsl:when test='count(method_call) &gt; 0'>
+			<xsl:text>(</xsl:text>
+			<xsl:value-of select="method_call" />
+			<xsl:text>)</xsl:text>
+		      </xsl:when>
+		      <xsl:otherwise>
+			<xsl:text>=</xsl:text>
+
+			<xsl:call-template name="parse-parameter-value">
+			  <xsl:with-param name="prepend-parameter">
+			    <xsl:if test="count(lookup/modify) &gt; 0">
+			      <xsl:value-of select="$parameter" />
+			      <xsl:text>.</xsl:text>
+			      <xsl:value-of select="field" />
+			    </xsl:if>
+			  </xsl:with-param>
+			</xsl:call-template>
+		      </xsl:otherwise>
+		    </xsl:choose>
 		    <xsl:text>;&#10;                }&#10;</xsl:text>
 	  </xsl:for-each>
 	  <xsl:text>                </xsl:text>

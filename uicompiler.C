@@ -22,6 +22,8 @@
 #include "x/w/theme_text.H"
 #include "x/w/tooltip.H"
 #include "x/w/button.H"
+#include "x/w/input_field.H"
+#include "x/w/input_field_config.H"
 #include "theme_parser_lock.H"
 #include "messages.H"
 #include "picture.H"
@@ -1697,31 +1699,6 @@ shortcut uicompiler::shortcut_value(const theme_parser_lock &lock,
 	}
 
 	return shortcut("-"); // Throws an exception.
-}
-
-scrollbar_visibility
-uicompiler::to_scrollbar_visibility(const theme_parser_lock &lock,
-				    const char *element,
-				    const char *parent)
-{
-	auto s=lowercase_single_value(lock, ".", parent);
-
-	if (s == "never")
-		return scrollbar_visibility::never;
-
-	if (s == "always")
-		return scrollbar_visibility::always;
-
-	if (s == "automatic")
-		return scrollbar_visibility::automatic;
-
-	if (s == "automatic_reserved")
-		return scrollbar_visibility::automatic_reserved;
-
-	throw EXCEPTION(gettextmsg
-			(_("Scrollbar visibility \"%1%\" (%2%) cannot be "
-			   "converted to a valid value"),
-			 s, parent));
 }
 
 static void unknown_appearance_node(const char *where,

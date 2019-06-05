@@ -17,7 +17,6 @@
 #include "x/w/all_appearancesfwd.H"
 #include "x/w/text_paramfwd.H"
 #include "x/w/font_arg.H"
-#include "x/w/scrollbarfwd.H"
 #include "theme_parser_lock.H"
 #include "uicompilerfwd.H"
 
@@ -356,11 +355,6 @@ private:
 	shortcut shortcut_value(const theme_parser_lock &lock,
 				const char *element,
 				const char *parent);
-
-	//! Parse a scrollbar_visibility
-	scrollbar_visibility to_scrollbar_visibility(const theme_parser_lock &,
-						     const char *element,
-						     const char *parent);
 
 	//! Top level appearance objects that aren't compiled yet.
 

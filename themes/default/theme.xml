@@ -1911,8 +1911,11 @@ of wrappable labels used for the message.
       <padding>dialog-h-padding</padding>
     </padding>
 
-    <element>
-      <name>file-input-field</name>
+    <element id="file-input-field">
+      <input_field />
+      <config>
+	<columns>60</columns>
+      </config>
     </element>
   </factory>
 
@@ -2399,8 +2402,15 @@ first column, to make the labels line up with their input fields.
     <element id="r-label">
       <label type='theme_text'>${context:color-picker}R:</label>
     </element>
-    <element>
-      <name>r-input-field</name>
+    <element id='r-input-field'>
+      <input_field />
+      <config>
+	<columns>6</columns>
+	<alignment>right</alignment>
+	<maximum_size>5</maximum_size>
+	<autoselect />
+	<set_default_spin_control_factories />
+      </config>
     </element>
   </factory>
 
@@ -2408,8 +2418,15 @@ first column, to make the labels line up with their input fields.
     <element id='g-label'>
       <label type='theme_text'>${context:color-picker}G:</label>
     </element>
-    <element>
-      <name>g-input-field</name>
+    <element id='g-input-field'>
+      <input_field />
+      <config>
+	<columns>6</columns>
+	<alignment>right</alignment>
+	<maximum_size>5</maximum_size>
+	<autoselect />
+	<set_default_spin_control_factories />
+      </config>
     </element>
   </factory>
 
@@ -2417,8 +2434,15 @@ first column, to make the labels line up with their input fields.
     <element id='b-label'>
       <label type='theme_text'>${context:color-picker}B:</label>
     </element>
-    <element>
-      <name>b-input-field</name>
+    <element id='b-input-field'>
+      <input_field />
+      <config>
+	<columns>6</columns>
+	<alignment>right</alignment>
+	<maximum_size>5</maximum_size>
+	<autoselect />
+	<set_default_spin_control_factories />
+      </config>
     </element>
   </factory>
 
@@ -2426,8 +2450,15 @@ first column, to make the labels line up with their input fields.
     <element id='h-label'>
       <label type='theme_text'>${context:color-picker}H:</label>
     </element>
-    <element>
-      <name>h-input-field</name>
+    <element id='h-input-field'>
+      <input_field />
+      <config>
+	<columns>6</columns>
+	<alignment>right</alignment>
+	<maximum_size>5</maximum_size>
+	<autoselect />
+	<set_default_spin_control_factories />
+      </config>
     </element>
   </factory>
 
@@ -2435,8 +2466,15 @@ first column, to make the labels line up with their input fields.
     <element id='s-label'>
       <label type='theme_text'>${context:color-picker}S:</label>
     </element>
-    <element>
-      <name>s-input-field</name>
+    <element id='s-input-field'>
+      <input_field />
+      <config>
+	<columns>6</columns>
+	<alignment>right</alignment>
+	<maximum_size>5</maximum_size>
+	<autoselect />
+	<set_default_spin_control_factories />
+      </config>
     </element>
   </factory>
 
@@ -2444,8 +2482,15 @@ first column, to make the labels line up with their input fields.
     <element id='v-label'>
       <label type='theme_text'>${context:color-picker}V:</label>
     </element>
-    <element>
-      <name>v-input-field</name>
+    <element id='v-input-field'>
+      <input_field />
+      <config>
+	<columns>6</columns>
+	<alignment>right</alignment>
+	<maximum_size>5</maximum_size>
+	<autoselect />
+	<set_default_spin_control_factories />
+      </config>
     </element>
   </factory>
 
@@ -2718,8 +2763,13 @@ first column, to make the labels line up with their input fields.
       <valign>middle</valign>
     </valign>
 
-    <element>
-      <name>number-of-copies-field</name>
+    <element id="number-of-copies-field">
+      <input_field />
+      <config>
+	<columns>4</columns>
+	<autoselect />
+	<set_default_spin_control_factories />
+      </config>
     </element>
   </factory>
 
@@ -2809,8 +2859,12 @@ first column, to make the labels line up with their input fields.
       <valign>middle</valign>
     </valign>
 
-    <element>
-      <name>page-range-field</name>
+    <element id="page-range-field">
+      <input_field />
+      <config>
+	<columns>8</columns>
+	<autoselect />
+      </config>
     </element>
   </factory>
 

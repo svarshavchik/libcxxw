@@ -237,6 +237,14 @@ f->on_search([]
 	<varname>search_items</varname> formatted so that the matching
 	substring gets shown in bold, and underlined.
       </para>
+
+      <note>
+	<para>
+	  Despite it being a standalone execution thread, the search callback
+	  is owned by the input field, and <link linkend="callbackrefs">the
+	    usual rules for capturing references in callbaks</link> apply.
+	</para>
+      </note>
     </section>
   </section>
 

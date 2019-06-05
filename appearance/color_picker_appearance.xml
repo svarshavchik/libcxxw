@@ -63,46 +63,4 @@ Appearance of the basic colors buttons
 ]]></descr>
     <ref>button</ref>
   </field>
-  <field>
-    <name>r_appearance</name>
-    <descr><![CDATA[
-Appearance of the R input field
-]]></descr>
-    <ref>input_field</ref>
-  </field>
-  <field>
-    <name>g_appearance</name>
-    <descr><![CDATA[
-Appearance of the G input field
-]]></descr>
-    <ref>input_field</ref>
-  </field>
-  <field>
-    <name>b_appearance</name>
-    <descr><![CDATA[
-Appearance of the B input field
-]]></descr>
-    <ref>input_field</ref>
-  </field>
-  <field>
-    <name>h_appearance</name>
-    <descr><![CDATA[
-Appearance of the H input field
-]]></descr>
-    <ref>input_field</ref>
-  </field>
-  <field>
-    <name>s_appearance</name>
-    <descr><![CDATA[
-Appearance of the S input field
-]]></descr>
-    <ref>input_field</ref>
-  </field>
-  <field>
-    <name>v_appearance</name>
-    <descr><![CDATA[
-Appearance of the V input field
-]]></descr>
-    <ref>input_field</ref>
-  </field>
 </appearance>

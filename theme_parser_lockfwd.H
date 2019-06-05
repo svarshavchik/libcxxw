@@ -8,6 +8,7 @@
 #include "x/w/namespace.H"
 #include "x/w/types.H"
 #include "x/w/alignment.H"
+#include "x/w/scrollbarfwd.H"
 #include "x/w/uigeneratorsfwd.H"
 #include "x/w/border_infommfwd.H"
 #include "x/w/screenobj.H"
@@ -52,6 +53,30 @@ std::string lowercase_single_value(const theme_parser_lock &lock,
 bool single_value_exists(const theme_parser_lock &lock,
 			 const char *element) LIBCXX_HIDDEN;
 
+template<auto v>
+constexpr auto optional_constant(const theme_parser_lock &lock,
+				 const char *element,
+				 const char *parent)
+	LIBCXX_HIDDEN;
+
+//! If the given xpath exists, return a constant.
+
+template<auto v> constexpr auto optional_constant(const theme_parser_lock &lock,
+						  const char *element,
+						  const char *parent)
+{
+	return v;
+}
+
+
+//! Read a value
+
+//! When parsing XML-specified layouts,
+//! this reads a scrollbar_visibility value.
+
+scrollbar_visibility to_scrollbar_visibility(const theme_parser_lock &,
+					     const char *element,
+					     const char *parent) LIBCXX_HIDDEN;
 
 //! Read a value.
 

@@ -488,15 +488,6 @@ void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
 }
 
 // Factored out for readability. Creates the filename input field
-static inline input_field create_file_input_field(const factory &f)
-{
-	input_field_config filename_field_config{60};
-
-	return f->create_input_field("", filename_field_config);
-
-}
-
-// Factored out for readability. Creates the filename input field
 static inline focusable_container create_filter_field(const factory &f,
 						      const file_dialog_config
 						      &conf)
@@ -562,14 +553,6 @@ standard_dialog_elements_t file_dialogObj::init_args
 ::create_elements(const file_dialog_config &conf)
 {
 	return {
-		{"file-input-field",
-				[&, this]
-				(const auto &factory)
-				{
-					filename_field=
-						create_file_input_field
-						(factory);
-				}},
 		{"filter-field",
 				[&, this]
 				(const auto &factory)
@@ -812,6 +795,8 @@ file_dialog main_windowObj
 
 			 init_args.directory_field=
 				 tmpl.get_element("directory-field");
+			 init_args.filename_field=
+				 tmpl.get_element("file-input-field");
 
 			 f->created_internally(c);
 

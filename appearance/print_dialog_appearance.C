@@ -19,12 +19,10 @@ print_dialog_appearance_properties::print_dialog_appearance_properties()
 	  printer_location_font{theme_font{"printer_location"}},
 	  printer_status_font{theme_font{"printer_status"}},
 	  printer_field_appearance{list_appearance::base::theme()},
-	  number_of_copies_appearance{input_field_appearance::base::theme()},
 	  print_all_pages_appearance{
 		  image_button_appearance::base::radio_theme()},
 	  print_page_range_appearance{
 		  image_button_appearance::base::radio_theme()},
-	  page_range_appearance{input_field_appearance::base::theme()},
 	  orientation_appearance{combobox_appearance::base::theme()},
 	  duplex_appearance{combobox_appearance::base::theme()},
 	  pages_per_side_appearance{combobox_appearance::base::theme()},

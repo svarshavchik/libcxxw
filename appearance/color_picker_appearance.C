@@ -21,13 +21,7 @@ color_picker_appearance_properties::color_picker_appearance_properties()
 	  picker_height{"color_picker_square_height"},
 	  basic_color_width{"color_picker_basic_color_width"},
 	  basic_color_height{"color_picker_basic_color_height"},
-	  basic_colors_button_appearance{normal_button().appearance},
-	  r_appearance{input_field_appearance::base::theme()},
-	  g_appearance{input_field_appearance::base::theme()},
-	  b_appearance{input_field_appearance::base::theme()},
-	  h_appearance{input_field_appearance::base::theme()},
-	  s_appearance{input_field_appearance::base::theme()},
-	  v_appearance{input_field_appearance::base::theme()}
+	  basic_colors_button_appearance{normal_button().appearance}
 {
 }
 

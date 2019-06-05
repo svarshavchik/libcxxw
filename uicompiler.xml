@@ -1154,6 +1154,121 @@ List of values:
       </parameter>
     </function>
 
+    <!-- input_field -->
+
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>input_field</exists>
+      </condition>
+
+      <invoke>create_input_field</invoke>
+
+      <object>generic_factory</object>
+
+      <parameter>
+	<name>input_field</name>
+	<type>compiler.text_param_value</type>
+      </parameter>
+
+      <parameter>
+	<name>config</name>
+	<member_name>config</member_name>
+	<object>input_field_config</object>
+
+	<member>
+	  <name>columns</name>
+	  <field>columns</field>
+	  <type>to_size_t</type>
+	</member>
+
+	<member>
+	  <name>rows</name>
+	  <field>rows</field>
+	  <type>to_size_t</type>
+	</member>
+
+	<member>
+	  <name>autoselect</name>
+	  <field>autoselect</field>
+	  <type>optional_constant&lt;true&gt;</type>
+	</member>
+
+	<member>
+	  <name>autodeselect</name>
+	  <field>autodeselect</field>
+	  <type>optional_constant&lt;true&gt;</type>
+	</member>
+
+	<member>
+	  <name>disable_clipboards</name>
+	  <field>update_clipboards</field>
+	  <type>optional_constant&lt;false&gt;</type>
+	</member>
+
+	<member>
+	  <name>autodeselect</name>
+	  <field>autodeselect</field>
+	  <type>optional_constant&lt;true&gt;</type>
+	</member>
+
+	<member>
+	  <name>hint</name>
+	  <field>hint</field>
+	  <type>compiler.text_param_value</type>
+	</member>
+
+	<member>
+	  <name>password</name>
+	  <field>set_password</field>
+	  <method_call />
+	</member>
+
+	<member>
+	  <name>vertical_scrollbar</name>
+	  <field>vertical_scrollbar</field>
+	  <type>to_scrollbar_visibility</type>
+	</member>
+
+	<member>
+	  <name>alignment</name>
+	  <field>alignment</field>
+	  <type>to_halign</type>
+	</member>
+
+	<member>
+	  <name>maximum_size</name>
+	  <field>maximum_size</field>
+	  <type>to_size_t</type>
+	</member>
+
+	<member>
+	  <name>set_default_spin_control_factories</name>
+	  <field>set_default_spin_control_factories</field>
+	  <method_call />
+	</member>
+
+	<member>
+	  <name>enable_search</name>
+	  <field>enable_search</field>
+	  <method_call />
+	</member>
+
+	<member>
+	  <name>appearance</name>
+	  <field>appearance</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <modify />
+	    <function>get_appearance_base</function>
+	  </lookup>
+	</member>
+      </parameter>
+
+    </function>
+
     <!-- element -->
 
     <function>
