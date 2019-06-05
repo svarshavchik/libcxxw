@@ -2404,7 +2404,7 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
       which is an
       <ulink url="&link-typedef-x--w-canvas;"><classname>&ns;::w::canvas</classname></ulink>
       widget.
-      This is equivalent to invoking the factory's
+      This is equivalent to invoking the &factory;'s
       <methodname>create_canvas</methodname>() method.
     </para>
 
@@ -2492,11 +2492,9 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
       with a <tag class='element'>focusable_label</tag>
       creates a new &themewidget;
       which is an
-      which is an
       <ulink url="&link-typedef-x--w-focusable-label;"><classname>&ns;::w::focusable_label</classname></ulink>
       widget.
-
-      This is equivalent to invoking the factory's
+      This is equivalent to invoking the &factory;'s
       <methodname>create_focusable_label</methodname>() method.
     </para>
 
@@ -2516,6 +2514,54 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
       <tag class='element'>focus_border</tag> that sets the focusable
       label's
       <link linkend="uixmlappearance">appearance object</link>.
+    </para>
+  </section>
+
+  <section id="uixmlfactorybuttonelement">
+    <title>Button <tag class='element'>element</tag> widgets</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="help-button">
+  <button>
+    <element id="h-canvas">
+      <label type="theme_text">Help</label>
+    </element>
+  </button>
+  <config>
+    <appearance>default_theme</appearance>
+  </config>
+  <shortcut>Alt-H</shortcut>
+</element>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='element'>button</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-button;"><classname>&ns;::w::button</classname></ulink>
+      widget.
+      This is equivalent to invoking the &factory;'s
+      <methodname>create_button</methodname>() method.
+    </para>
+
+    <para>
+      The <tag class='element'>button</tag> contains a &themewidgetorcontainer;
+      that creates the contents of the button, usually a
+      <link linkend="uixmlfactorylabelelement"><tag class='element'>label</tag>
+	element</link>.
+    </para>
+
+    <para>
+      An optional <tag class='element'>config</tag> value sets
+      <methodname>create_button</methodname>()'s
+      <ulink url="&link-x--w--button-config;"><classname>&ns;::w::button_config</classname></ulink>
+      parameter, and an
+      optional <tag class='element'>shortcut</tag> value sets
+      the <link linkend="themeshortcuts"><classname>&ns;::w::shortcut</classname></link>
+      parameter.
     </para>
   </section>
 
