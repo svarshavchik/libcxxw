@@ -91,6 +91,29 @@ config.input_field_search_callback=
       popup to the search input field.
     </para>
 
+    <para>
+      Alternatively, <methodname>enable_search</methodname>() also enables
+      the search popup, and the callback gets installed after the input
+      field gets created:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::input_field_config config{30};
+
+config.enable_search();
+
+&ns;::w::input_field f=factory-&gt;create_input_field("", config);
+
+f->on_search([]
+             (const &ns;::w::input_field_search_info &amp;search_info)
+             {
+                // ...
+             });</programlisting>
+      </informalexample>
+    </blockquote>
+
     <section id="searchinputthread">
       <title>The search callback thread</title>
       <blockquote>

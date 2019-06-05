@@ -419,6 +419,39 @@ may or may not have anything to do with the tentative change.
 move() moves the cursor pointer to the indicated position in the input field.
 select_all() selects the entire contents of the input field.
 
+\par Replacing or installing a search callback
+
+\code
+INSERT_LIBX_NAMESPACE::w::input_field_config conf{40};
+
+conf.input_field_search_callback=
+                 []
+                 (const INSERT_LIBX_NAMESPACE::w::input_field_search_info &info)
+                 {
+
+                 };
+
+conf.enable_search();
+
+// ...
+
+field->on_search([]
+                 (const INSERT_LIBX_NAMESPACE::w::input_field_search_info &info)
+                 {
+
+                 });
+\endcode
+
+A search widget behavior gets enabled by setting
+\ref input_field_config "INSERT_LIBX_NAMESPACE::w::input_field_config"'s
+\c input_field_search_callback to a lambda or a callback object that takes an
+\ref input_field_search_info "INSERT_LIBX_NAMESPACE::w::input_field_search_info"
+parameter.
+
+Alternatively, enable_search() installs a stub closure, and
+on_search() installs the callable object after the input field widget gets
+created.
+
 \par Spin buttons
 
 \code

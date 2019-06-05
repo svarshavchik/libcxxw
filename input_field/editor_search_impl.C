@@ -284,4 +284,11 @@ void editor_search_implObj::search_stop_message(const text_param &t)
 	stop_message(t);
 }
 
+void editor_search_implObj
+::on_search(ONLY IN_THREAD,
+	    const functionref<input_field_search_callback_t> &callback)
+{
+	search_callback(IN_THREAD)=callback;
+}
+
 LIBCXXW_NAMESPACE_END

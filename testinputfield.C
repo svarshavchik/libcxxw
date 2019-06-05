@@ -582,10 +582,11 @@ void testbutton()
 			 LIBCXX_NAMESPACE::w::input_field_config conf5{20};
 
 			 conf5.hint = "Search...";
-			 conf5.input_field_search_callback=search_function;
+			 conf5.enable_search();
 
 			 auto search=factory->create_input_field({},
 								 conf5);
+			 search->on_search(search_function);
 
 			 search->on_validate
 				 ([f=make_weak_capture(search)]

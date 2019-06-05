@@ -74,11 +74,15 @@ static void search_function(const x::w::input_field_search_info &search_info)
 		// Let's do something more sophisticated than sleeping for
 		// a second. Let's make use of the abort mcguffin. The main
 		// library execution thread releases its reference on the
-		// mcguffin in order to single that the current search
-		// got aborted. This could be because the keyboard focus left
-		// the search field, or additional text was added to, or
-		// removed from, the search field; the current "slow running
-		// search" is obsolete.
+		// mcguffin when it aborts the current search in progress.
+		// This could be because the keyboard focus left the search
+		// field, or additional text was added to, or removed from,
+		// the search field; the current "slow running search" is
+		// obsolete. There are no means to forcibly terminate a
+		// different execution thread, so the main library execution
+		// thread releases its reference on the object as the means
+		// of indicating the aborted search, and any results returned
+		// by the search thread get ignored.
 		//
 		// What we'll do is attach a destructor callback to the
 		// abort mcguffin.

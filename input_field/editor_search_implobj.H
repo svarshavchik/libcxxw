@@ -119,6 +119,12 @@ public:
 
 	void selected(ONLY IN_THREAD, size_t item_number,
 		      const callback_trigger_t &trigger);
+
+	//! Override on_search().
+
+	void on_search(ONLY IN_THREAD,
+		       const functionref<input_field_search_callback_t>
+		       &callback) override;
 };
 
 LIBCXXW_NAMESPACE_END

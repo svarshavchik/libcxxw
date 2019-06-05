@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 input_field_search_threadObj
 ::input_field_search_threadObj(const functionref<input_field_search_callback_t>
 			       &search_callback)
-	: search_callback{search_callback}
+	: search_callback_thread_only{search_callback}
 {
 }
 
@@ -54,7 +54,7 @@ void input_field_search_threadObj::search_request(ONLY IN_THREAD)
 
 		// And start the thread.
 		run_lambda(&search_thread_infoObj::run, new_thread_info,
-			   search_callback,
+			   search_callback(IN_THREAD),
 			   weakptr<ptr<input_field_search_threadObj>>
 			   {ptr{this}});
 

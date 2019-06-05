@@ -735,6 +735,16 @@ class LIBCXX_HIDDEN editorObj::implObj
 	THREAD_DATA_ONLY(validation_required);
 	THREAD_DATA_ONLY(validation_callback);
 
+	//! Install a new search callback
+
+	//! The default implementation throws an exception.
+	//!
+	//! Overridden by editor_search_implObj.
+
+	virtual void on_search(ONLY IN_THREAD,
+			       const
+			       functionref<input_field_search_callback_t>
+			       &callback);
 };
 
 LIBCXXW_NAMESPACE_END

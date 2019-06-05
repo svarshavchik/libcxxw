@@ -63,8 +63,7 @@ void input_field_config
 	spin_control_factories.emplace(first, second);
 }
 
-void input_field_config
-::set_default_spin_control_factories()
+void input_field_config::set_default_spin_control_factories()
 {
 	set_spin_control_factories
 		([appearance=this->appearance](const auto &factory) {
@@ -72,6 +71,15 @@ void input_field_config
 		},[appearance=this->appearance](const auto &factory) {
 			factory->create_image(appearance->spin_increment);
 		});
+}
+
+void input_field_config::enable_search()
+{
+	input_field_search_callback=
+		[]
+		(const input_field_search_info &)
+		{
+		};
 }
 
 input_field_config_appearance::input_field_config_appearance()
@@ -607,6 +615,20 @@ void input_fieldObj::on_filter(const
 		 (ONLY IN_THREAD)
 		 {
 			 editor_impl->on_filter(IN_THREAD)=callback;
+		 });
+}
+
+void input_fieldObj::on_search(const
+			       functionref<input_field_search_callback_t>
+			       &callback)
+{
+	auto editor_impl=impl->editor_element->impl;
+
+	editor_impl->get_window_handler().thread()->run_as
+		([callback, editor_impl]
+		 (ONLY IN_THREAD)
+		 {
+			 editor_impl->on_search(IN_THREAD, callback);
 		 });
 }
 

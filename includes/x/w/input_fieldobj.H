@@ -73,6 +73,10 @@ public:
 
 	void on_filter(const functionref<input_field_filter_callback_t> &);
 
+	//! Installs or replaces the search callback
+
+	void on_search(const functionref<input_field_search_callback_t> &);
+
 	//! Inherited from elementObj
 
 	//! The minimum overrides are set for the editor widget

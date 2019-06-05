@@ -25,12 +25,13 @@ LIBCXXW_NAMESPACE_START
 
 class input_field_search_threadObj : virtual public obj {
 
+	//! The search callback.
+
+	functionref<input_field_search_callback_t> search_callback_thread_only;
 public:
 	LOG_CLASS_SCOPE;
 
-	//! The search callback.
-
-	const functionref<input_field_search_callback_t> search_callback;
+	THREAD_DATA_ONLY(search_callback);
 
 	//! Constructor
 	input_field_search_threadObj(const

@@ -162,6 +162,16 @@ struct input_field_config {
 
 	functionptr<input_field_search_callback_t> input_field_search_callback;
 
+	//! Install a default search callback that does nothing.
+
+	//! This sets input_field_search_callback to a dummy function that
+	//! does nothing. This makes it possible to provide a search callback
+	//! after the input field widget gets created. This makes it possible
+	//! to create an input field search widgets using an XML theme file,
+	//! to create the widget, and then install the search callback using
+	//! install_search_callback.
+	void enable_search();
+
 	//! Visual appearance of the input field
 
 	input_field_config_appearance appearance;
@@ -175,7 +185,8 @@ struct input_field_config {
 
 //! The search callback gets invoked in a separate execution thread.
 //! search_string is the string to search, and upon a successfull search,
-//! the callback prior to returning should invoke results() with two vectors.
+//! search_results and search_items gets set to two vectors that indicate
+//! the search results.
 //!
 //! The first vector contains the found search results. The 2nd vector lists
 //! what should be shown in the search results popup.
@@ -216,6 +227,8 @@ struct input_field_search_info {
 	//! thread can use this mcguffin to signal it should abort execution.
 	//!
 	//! The new search does not get started until the callback returns.
+	//! The search callback can install a destructor callback in the
+	//! abort mcguffin to implement premature search termination.
 	virtual ref<obj> get_abort_mcguffin() const=0;
 };
 
