@@ -23,6 +23,7 @@
 <!ENTITY libcxxname "<application>LIBCXX</application>">
 <!ENTITY libcxx "<ulink url='/'>LibCXX</ulink>">
 <!ENTITY metrics "<link linkend='dim_axis_arg'>metrics</link>">
+<!ENTITY namedwidget "<link linkend='uixmlfactoryelement'>named <tag class='element'>element</tag> widget</link>">
 <!ENTITY ns "x">
 <!ENTITY picture "<link linkend='customdraw'>picture</link>">
 <!ENTITY public_class "<link linkend='pubimpl'>public object class</link>">
@@ -30,7 +31,11 @@
 <!ENTITY RENDER "<application>RENDER</application>">
 <!ENTITY render "<ulink url=&#34;http://www.x.org/releases/current/doc/renderproto/renderproto.txt&#34;>RENDER extension</ulink>">
 <!ENTITY sxg "<acronym>SXG</acronym>">
+<!ENTITY supportedthemewidget "<link linkend='uixmlfactoryelement'>supported theme widget</link>">
 <!ENTITY template_mixin "<link linkend='mixintemplates'>template mixin</link>">
+<!ENTITY themecontainer "<link linkend='uixmlfactoryelement'>theme container</link>">
+<!ENTITY themewidget "<link linkend='uixmlfactoryelement'>theme widget</link>">
+<!ENTITY themewidgetorcontainer "<link linkend='uixmlfactoryelement'>theme widget or container</link>">
 <!ENTITY xproto "<ulink url=&#34;http://www.x.org/releases/X11R7.7/doc/xproto/x11protocol.html&#34;>X protocol</ulink>">
 
 <!ENTITY booklayoutmanager SYSTEM "booklayoutmanager.xml">

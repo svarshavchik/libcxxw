@@ -1336,41 +1336,41 @@ List of values:
     </function>
 
     <function>
-      <name>container</name>
-      <invoke>create_container</invoke>
-
+      <name>set_appearance</name>
+      <invoke>set_appearance</invoke>
+      <object>factory</object>
       <parameter>
-	<scalar>factory</scalar>
-      </parameter>
-
-      <parameter>
-	<scalar>elements</scalar>
-      </parameter>
-
-      <parameter>
-	<name>label</name>
+	<name>appearance</name>
 	<type>single_value</type>
-      </parameter>
-
-      <parameter>
-	<name>shortcut</name>
-	<type>optional_value</type>
-      </parameter>
-
-      <parameter>
-	<type>single_value</type>
-	<name>name</name>
-      </parameter>
-
-      <parameter>
-	<type>single_value</type>
-	<name>type</name>
 	<lookup>
-	  <function>lookup_container_generators</function>
-	  <parameter>lock</parameter>
-	  <parameter>single_value(lock, "name", "container")</parameter>
+	  <function>lookup_appearance&lt;const_bookpage_appearance&gt;</function>
 	  <default_params />
 	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>add</name>
+      <invoke>add</invoke>
+      <object>factory</object>
+
+      <parameter>
+	<name>tab</name>
+	<type>compiler.factory_parseconfig</type>
+	<factory_wrapper>factory</factory_wrapper>
+      </parameter>
+
+      <parameter>
+	<name>page</name>
+	<type>compiler.factory_parseconfig</type>
+	<factory_wrapper>factory</factory_wrapper>
+      </parameter>
+
+      <parameter>
+	<before-passing-parameter>{</before-passing-parameter>
+	<name>shortcut</name>
+	<type>compiler.shortcut_value</type>
+	<after-passing-parameter>}</after-passing-parameter>
       </parameter>
     </function>
   </parser>

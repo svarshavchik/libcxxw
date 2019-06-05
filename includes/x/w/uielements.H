@@ -67,16 +67,6 @@ struct uielements {
 	std::unordered_map<std::string,
 			   functionref<void (const factory &)>> factories;
 
-	//! Standalone shortcuts, currently used for book pages.
-
-	std::unordered_map<std::string, shortcut> shortcuts;
-
-	//! The internal containers that get created.
-
-	//! generate() puts new containers that get created in here.
-
-	std::unordered_map<std::string, container> new_layouts;
-
 	//! The new elements that get created
 
 	//! generate() puts new elements that get created in here.

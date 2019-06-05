@@ -2554,24 +2554,55 @@ first column, to make the labels line up with their input fields.
     </open>
   </layout>
 
+  <appearance id="customXX" type="bookpage" from="theme">
+  </appearance>
+
   <factory type="book" id="print-dialog-options-pages">
-    <container>
-      <label>print-dialog-general-label</label>
-      <type>grid</type>
-      <name>print-dialog-general-options</name>
-    </container>
+    <add>
+      <tab>
+	<element>
+	  <label type='theme_text'>${context:print-dialog}${decoration:underline}G${decoration:none}eneral</label>
+	</element>
+      </tab>
+      <shortcut type='theme_text'>${context:print-dialog}Alt-G</shortcut>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>print-dialog-general-options</name>
+	</container>
+      </page>
+    </add>
 
-    <container>
-      <label>print-dialog-page-label</label>
-      <type>grid</type>
-      <name>print-dialog-page-options</name>
-    </container>
+    <add>
+      <tab>
+	<element>
+	  <label type='theme_text'>${context:print-dialog}${decoration:underline}P${decoration:none}age Options</label>
+	</element>
+      </tab>
+      <shortcut type='theme_text'>${context:print-dialog}Alt-P</shortcut>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>print-dialog-page-options</name>
+	</container>
+      </page>
+    </add>
 
-    <container>
-      <label>print-dialog-image-label</label>
-      <type>grid</type>
-      <name>print-dialog-image-options</name>
-    </container>
+    <add>
+      <tab>
+	<element>
+	  <label type='theme_text'>${context:print-dialog}${decoration:underline}I${decoration:none}mage Options</label>
+	</element>
+      </tab>
+      <shortcut type='theme_text'>${context:print-dialog}Alt-I</shortcut>
+      <page>
+	<container>
+	  <label>print-dialog-image-label</label>
+	  <type>grid</type>
+	  <name>print-dialog-image-options</name>
+	</container>
+      </page>
+    </add>
   </factory>
 
   <!-- Print dialog: general options -->

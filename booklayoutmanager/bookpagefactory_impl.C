@@ -16,6 +16,12 @@ bookpagefactoryObj::bookpagefactoryObj()
 {
 }
 
+bookpagefactoryObj &bookpagefactoryObj
+::set_appearance(const const_bookpage_appearance &new_appearance)
+{
+	appearance=new_appearance;
+	return *this;
+}
 
 bookpagefactoryObj::~bookpagefactoryObj()=default;
 

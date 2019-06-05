@@ -41,6 +41,9 @@ factory->halign(LIBCXX_NAMESPACE:w::halign::left)
                // ...
             });
 
+factory->appearance=theme;
+factory->set_appearance(theme)
+
 factory->add([]
              (const LIBCXX_NAMESPACE::w::factory &tab_factory,
               const LIBCXX_NAMESPACE::w::factory &page_factory)
@@ -62,6 +65,12 @@ When a book's pages have different sizes, the smaller pages get centered
 in the larger book by default. add() can be called more than once, adding
 multiple pages to the book at a time. halign() and valign() overrides the
 alignment only for the next add()ed page.
+
+The factory's \c appearance class member specifies the visual appearance
+of the new pages' tabs.
+
+set_appearance() installs a new \c appearance member, and is equivalent to
+setting the \c appearance class member directly.
 
 add() is overloaded. The first version of add takes the following parameters:
 

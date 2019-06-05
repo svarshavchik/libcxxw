@@ -184,8 +184,7 @@ See COPYING for distribution information.
   </variablelist>
 
   <section id="uixmlgenerate">
-    <title>Creating generic widgets from an <acronym>XML</acronym>
-      theme file</title>
+    <title>Creating generic widgets using named callbacks</title>
 
     <blockquote>
       <informalexample>
@@ -238,8 +237,8 @@ See COPYING for distribution information.
 	  <methodname>create</methodname>() returns a
 	  <classname>&ns;::w::const_uigenerators</classname> handle, a
 	  <ulink url="&constrefobj;">reference to a
-	    <literal>const</literal> object</ulink> object. The compiled
-	  theme file does does not change after it's created.
+	    <literal>const</literal> object</ulink> object (the compiled
+	  theme file object remains constant after it's created).
 	</para>
       </listitem>
 
@@ -1558,7 +1557,8 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
     </section>
 
     <section id="uixmlfactorygridelement">
-      <title><tag class='element'>element</tag></title>
+      <title><tag class='element'>element</tag>s and
+	<tag class='element'>container</tag>s</title>
 
       <blockquote>
 	<informalexample>
@@ -1573,26 +1573,6 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 
 <!-- ... -->
 
-</factory>]]></programlisting>
-	</informalexample>
-      </blockquote>
-      <para>
-	<tag class='element'>element</tag>
-	uses the factory to create a new widget.
-	See <xref linkend="uixmlcreatingelements" /> for more information.
-      </para>
-    </section>
-
-    <section id="uixmlfactorygridcontainer">
-      <title><tag class='element'>container</tag></title>
-
-      <blockquote>
-	<informalexample>
-	  <programlisting><![CDATA[
-<factory type="grid" id="statusrow">
-
-<!-- ... -->
-
   <container>
     <type>grid</type>
     <name>bottom-container</name>
@@ -1600,55 +1580,14 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 
 <!-- ... -->
 
-  <container>
-    <type>grid</type>
-    <name>settings</name>
-  </container>
-
-<!-- ... -->
-
-</factory>
-
-<!-- ... -->
-
-<layout type="grid" id="bottom-container">
-
-<!-- ... -->
-
-</layout>
-
-<layout type="book" id="setting">
-
-<!-- ... -->
-
-</layout>]]></programlisting>
+</factory>]]></programlisting>
 	</informalexample>
       </blockquote>
       <para>
-	<tag class='element'>container</tag>
-	creates a
-	<link linkend="uixmlfactorygridelement">new grid widget</link>
-	by creating a new &container; and then
-	<methodname>generate</methodname>()ing the new container from
-	another
-	<tag class='element'>layout</tag> in the theme file, whose
-	<tag class='attribute'>id</tag> is
-	<tag class='element'>name</tag>.
-	<tag class='element'>type</tag> must be either
-	<quote><literal>grid</literal></quote> or
-	<quote><literal>book</literal></quote>, and must match the
-	<tag class='element'>layout</tag>'s
-	<tag class='attribute'>type</tag>.
-      </para>
-
-      <para>
-	<tag class='element'>container</tag> is
-	equivalent to invoking a callback using an
-	<tag class='element'>element</tag>, having the callback
-	create a new container with the appropriate &layoutmanager;,
-	and then <methodname>generate</methodname>()ing its contents
-	from the layout specified by the
-	<tag class='element'>name</tag> value.
+	<tag class='element'>element</tag>s and
+	<tag class='element'>container</tag>s
+	use the factory to create a new
+	&themewidgetorcontainer;.
       </para>
     </section>
   </section>
@@ -1905,8 +1844,42 @@ glm->generate("application-settings", generator, elements);</programlisting>
       </para>
     </section>
 
+    <section id="uixmlfactorybooksetappearance">
+      <title><tag class='element'>set_appearance</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="book" id="settings">
+
+<!-- ... -->
+
+  <set_appearance>
+    <appearance>booksettings</appearance>
+  </set_appearance>
+</factory>
+
+<!-- ... -->
+
+<appearance id="booksettings" type="bookpage" from="theme">
+</appearance>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	<tag class='element'>set_appearance</tag>
+	invokes the book page factory's
+	<methodname>set_appearance</methodname>()
+	method.
+	The
+	<tag class='element'>appearance</tag> value gives the
+	<tag class='attribute'>id</tag> of a
+	<tag class='attribute'>type</tag>=<quote>bookpage</quote>
+	<link linkend="uixmlappearance">appearance object</link>.
+      </para>
+    </section>
+
     <section id="uixmlfactorybookcontainer">
-      <title><tag class='element'>container</tag></title>
+      <title><tag class='element'>add</tag></title>
 
       <blockquote>
 	<informalexample>
@@ -1915,511 +1888,90 @@ glm->generate("application-settings", generator, elements);</programlisting>
 
 <!-- ... -->
 
-    <container>
-       <label>general-label</label>
-       <shortcut>general-shortcut</shortcut>
-       <name>general-settings</name>
-       <type>grid</type>
-    </container>
-
-<!-- ... -->
-
-</factory>
+  <add>
+    <tab>
+      <element>
+        <label type='theme_text'>${context:settings-dialog}${decoration:underline}G${decoration:none}eneral settings</label>
+      </element>
+    </tab>
+    <shortcut type='theme_text'>${context:settings-dialog}Alt-G</shortcut>
+    <page>
+      <container>
+        <type>grid</type>
+        <name>general-settings</name>
+      </container>
+    </page>
+  </add>
 
 <layout type="grid" id="general-settings">
 
-</layout>
-
-&ns;::w::uielements element_factory{
-  {
-    {"general-label",
-     []
-     (const &ns;::w::factory &amp;factory)
-     {
-         factory-&gt;create_label({"underline"_decoration,
-                                   "G",
-                                   "no"_decoration,
-                                   "eneral"});
-     }
-    }
-  },
-  {
-    {"general-shortcut",
-     {"Alt",'G'}}
-  },
-};]]></programlisting>
+</layout>]]></programlisting>
 	</informalexample>
       </blockquote>
 
       <para>
-	<tag class='element'>container</tag>
+	<tag class='element'>add</tag>
 	invokes the book page factory's
 	<methodname>add</methodname>()
-	method, to create a new &container;.
-
-	<tag class='element'>label</tag>'s value gives the name of a
-	factory from
-	<link linkend="uixmlgenerate"><classname>&ns;::w::uielements</classname></link>'s
-	factories map, this factory gets invoked for the purpose of creating
-	the new page tab's label.
-	The optional <tag class='element'>shortcut</tag>'s value
-	specifies the new page's keyboard shortcut.
+	method, creating a new tab and a page in the book container.
       </para>
 
       <para>
-	<ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
-	second member is a
-	<varname>shortcuts</varname> map. The map key is a text string,
-	<tag class='element'>shortcut</tag>'s value references the map key.
-	The key's value is a keyboard
-	<ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>.
+	The <tag class='element'>tab</tag> element creates the page's
+	tab, and must have exactly one &themewidgetorcontainer;. It's
+	usually a
+	<link linkend="uixmlfactorylabelelement">plain label</link>.
       </para>
 
       <para>
-	<tag class='element'>name</tag> and
-	<tag class='element'>type</tag> means the same thing as in the
-	<link linkend="uixmlfactorygridcontainer">grid factory's
-	  <tag class='element'>container</tag></link>.
-	<tag class='element'>name</tag>'s value is an
-	<tag class='attribute'>id</tag> of a
-	<tag class='element'>layout</tag>,
-	of a match <tag class='element'>type</tag>, that
-	<link linkend="uixmlgenerate">generate</link>()s the contents of the
-	new page.
+	The <tag class='element'>page</tag> element creates the page itself,
+	and must have exactly one &themewidgetorcontainer;. It is usually
+	a &themecontainer;.
       </para>
+
+      <para>
+	An optional <tag class='element'>shortcut</tag> specifies the page's
+	keyboard shorcut.
+      </para>
+
+      <section id="themeshortcuts">
+	<title>Keyboard <tag class='element'>shortcut</tag>s</title>
+
+	<para>
+	  <tag class='element'>shortcut</tag> elements contain any string
+	  text that's recognizable by
+	  <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shorcut</classname></ulink>'s constructors.
+	  The strings use the same
+	  <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
+	  formatting as
+	  <link linkend="uixmlfactorylabelelement">labels</link>, except
+	  fonts, colors, and other visual markup references are not allowed,
+	  of course.
+	  This allows shortcuts and labels to be
+	  <link linkend="uixmlgettext">translatable together</link>;
+	  with distinct <literal>${context}</literal>s that discriminate
+	  difference labels that happen to have the same default shortcut,
+	  but get translated to different ones.
+	</para>
+
+	<note>
+	  <para>
+	    This means that a shortcut must use <quote>$$</quote> to refer
+	    to the <literal>$</literal> key.
+	  </para>
+	</note>
+
+      </section>
     </section>
   </section>
 
-  <section id="uixmlcreatingelements">
-    <title>Creating new <tag class='element'>element</tag> widgets</title>
+  <section id="uixmlfactoryelement">
+    <title><tag class='element'>element</tag> and
+      <tag class='element'>container</tag> widgets</title>
 
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
-<element>
-  <name>label</name>
-</element>]]></programlisting>
-      </informalexample>
-    </blockquote>
-
-    <para>
-      An <tag class='element'>element</tag> in the theme file uses
-      the factory in which <tag class='element'>element</tag> appears to
-      create a new widget.
-      This is done in one of two ways.
-    </para>
-
-    <orderedlist>
-      <listitem>
-	<para>
-	  All the information needed to create the new widget comes from the
-	  theme file. The
-	  <tag class='element'>element</tag>'s
-	  <tag class='attribute'>id</tag>
-	  sets the widget's unique identifier label, and the contents of the
-	  <tag class='element'>element</tag> specify widget-specific
-	  values.
-	</para>
-
-	<para>
-	  The widget gets created, and stored in the
-	  <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
-	  <varname>new_elements</varname>'s map.
-	  <methodname>get_element</methodname>() returns a created widget,
-	  given its <tag class='attribute'>id</tag>.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  A named callback gets invoked, with the factory as its parameter.
-	  This creates a
-	  <link linkend="uixmlfactorygenericelement">generic, arbitrary
-	    widget</link>
-	  under the application's
-	  control.
-	  There is no <tag class='attribute'>id</tag> attribute,
-	  callback has full control over the process of creating the new
-	  widget.
-	  The callback is responsible for invoking the factory's appropriate
-	  methods, and for managing the new widget.
-	</para>
-      </listitem>
-    </orderedlist>
-
-    <section id="uixmlfactorylabelelement">
-      <title>Label <tag class='element'>element</tag> widgets</title>
-
-      <blockquote>
-	<informalexample>
-	  <programlisting><![CDATA[
-<element id="directory-label">
-  <label type='theme_text'>${context:file-dialog}Directory:</name>
-</element>
-
-
-/* ----- */
-
-]]>&ns;::w::uielements elements;
-
-layout_manager->generate("dialog", generators, elements);
-
-&ns;::w::label directory_label=elements.get_element("directory-label");</programlisting>
-	</informalexample>
-      </blockquote>
-
-      <para>
-	Specifying an <tag class='element'>element</tag>
-	that contains a <tag class='element'>label</tag>
-	creates a new
-	<ulink url="&link-typedef-x--w-label;"><classname>&ns;::w::label</classname></ulink>
-	widget by the
-	<tag class='element'>element</tag>'s &factory;.
-	This is equivalent to invoking the factory's
-	<methodname>create_label</methodname>() method.
-      </para>
-
-      <para>
-	The <tag class="attribute">id</tag> attribute provides a unique
-	identifier for the label. After
-	<link linkend="uixmlgenerate">generating the theme-specified
-	  widgets</link>,
-	<ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
-	<methodname>get_element</methodname>() name retrieves the new widget
-	by its identifier.
-	The <tag class="element">label</tag> specifies a
-	<ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>-formatted
-	text string.
-      </para>
-
-      <section id="uixmllabelconfig">
-	<title>Specifying label options</title>
-
-	<blockquote>
-	  <informalexample>
-	    <programlisting><![CDATA[
-<element id="title">
-    <label type="theme_text">Lorem Ipsum ... est laborum.</label>
-    <options>
-        <alignment>center</alignment>
-        <widthmm>40</widthmm>
-    </options>
-</element>]]></programlisting>
-	  </informalexample>
-	</blockquote>
-
-	<para>
-	  An optional <tag class="element">options</tag> element of a
-	  <tag class="element">label</tag> element specifies the values
-	  of a <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>
-	  for creating the label widget.
-	</para>
-      </section>
-
-      <section id="uixmlgettext">
-	<title>Using gettext with labels and
-	  <classname>&ns;::w::text_param</classname>s</title>
-
-	<para>
-	  If the generator object has an optionally attached message catalog,
-	  each text label in the theme file gets looked up in the message
-	  catalog.
-	  The <tag class="attribute">type</tag> attribute gets ignored when
-	  creating widget from the theme file, and it serves to mark
-	  translatable text in the theme file, such as the one in the
-	  <tag class='element'>label</tag> element.
-	  <application>gettext</application> tools know look only for
-	  translatable strings in C/C++ source, so &appshort; provides
-	  an <acronym>XML</acronym> stylesheet that creates a pseudo-C/C++
-	  file that does not get compiled, but it contains translatable
-	  strings that <application>gettext</application>'s
-	  <command>msgfmt</command> picks up and adds to the message catalog
-	  template.
-	</para>
-
-	<para>
-	  The <filename>extract-theme-text.xsl</filename> file in
-	  &appshort;'s <filename>theme</filename> directory is a stylesheet
-	  that generates pseudo C/C++ source containing text from any
-	  element with a
-	  <literal><tag class="attribute">type</tag>="theme_text"</literal>
-	  in a theme file:
-	</para>
-
-	<blockquote>
-	  <informalexample>
-	    <programlisting>
-xsltproc <replaceable>...</replaceable>/extract-theme-text.xsl theme.xml &gt;strings.C</programlisting>
-	  </informalexample>
-	</blockquote>
-
-	<para>
-	  If <filename>theme.xml</filename>'s contents include the above
-	  example, the resulting
-	  <filename>strings.C</filename> has the following contents:
-	</para>
-
-	<blockquote>
-	  <informalexample>
-	    <programlisting>
-_("${context:file-dialog}Directory:")</programlisting>
-	  </informalexample>
-	</blockquote>
-
-	<para>
-	  This gets picked up by <command>msgfmt</command> and included with
-	  the rest of the application's translatable strings. &appshort;
-	  provides <command>automake</command> macros to automate this process.
-	  In the <filename>Makefile.am</filename>:
-	</para>
-
-	<blockquote>
-	  <informalexample>
-	    <programlisting>
-$(call EXTRACT_THEME_TEXT_GEN,strings.C,theme.xml)</programlisting>
-	  </informalexample>
-	</blockquote>
-
-	<para>
-	  This create <filename>Makefile</filename> rules that automatically
-	  build <filename>strings.C</filename> from
-	  <filename>theme.xml</filename>.
-	  The <literal>EXTRACT_THEME_TEXT_GEN</literal> macro comes from
-	  <link linkend="developing">&appshort;'s
-	    <literal>@LIBCXXW_AM@</literal> framework</link>.
-	</para>
-
-
-	<blockquote>
-	  <informalexample>
-	    <programlisting>
-#include &lt;&ns;/locale.H&gt;
-#include &lt;&ns;/messages.H&gt;
-
-// ...
-auto utf8_locale=&ns;::locale::base::utf8();
-
-auto catalog=&ns;::messages::create("app", utf8_locale);
-
-auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog);</programlisting>
-	  </informalexample>
-	</blockquote>
-
-	<para>
-	  Specifying the optional
-	  <ulink url="&link-typedef-x-messages;"><classname>&ns;::messages</classname></ulink>
-	  parameter,
-	  when <link linkend="uixmlgenerate">creating a generator</link> object,
-	  attaches a message catalog to the generator
-	  generator.
-	  The message catalog should explicitly use a UTF-8
-	  <ulink url="&link-typedef-x-locale;"><classname>&ns;::locale</classname></ulink>
-	  so that the translated messages get directly converted to Unicode.
-	</para>
-      </section>
-    </section>
-
-    <section id="uixmlfactorycanvaselement">
-      <title>Canvas <tag class='element'>element</tag> widgets</title>
-
-      <blockquote>
-	<informalexample>
-	  <programlisting><![CDATA[
-<dim id="strip_width">10</dim>
-<dim id="strip_height">10</dim>
-
-<element id="fixed-canvas">
-    <canvas>
-        <background_color>white</background>
-	<width>strip_width</width>
-	<height>strip_height</height>
-    </canvas>
-</element>]]></programlisting>
-	</informalexample>
-      </blockquote>
-
-      <para>
-	Specifying an <tag class='element'>element</tag>
-	that contains a <tag class='element'>canvas</tag>
-	creates a new
-	<ulink url="&link-typedef-x--w-canvas;"><classname>&ns;::w::canvas</classname></ulink>
-	widget, by the element's
-	<tag class='element'>element</tag>'s &factory;.
-	This is equivalent to invoking the factory's
-	<methodname>create_canvas</methodname>() method.
-      </para>
-
-      <para>
-	The contents of the <tag class='element'>canvas</tag> set the values
-	of <methodname>create_canvas</methodname>()'s
-	<ulink url="&link-x--w--canvas-config;"><classname>&ns;::w::canvas_config</classname></ulink>
-	parameter:
-      </para>
-
-      <variablelist>
-	<varlistentry>
-	  <term>
-	    <tag class='element'>background_color</tag>
-	  </term>
-	  <listitem>
-	    <para>
-	      References a <link linkend="uixmldimcolorborders"><tag class='element'>color</tag></link>
-	      in the theme file, defining the canvas's background color.
-	    </para>
-	  </listitem>
-	</varlistentry>
-	<varlistentry>
-	  <term>
-	    <tag class='element'>minimum_width</tag>,
-	    <tag class='element'>preferred_width</tag>,
-	    <tag class='element'>maximum_width</tag>,
-	    <tag class='element'>minimum_height</tag>,
-	    <tag class='element'>preferred_height</tag>, and
-	    <tag class='element'>maximum_height</tag>
-	  </term>
-	  <listitem>
-	    <para>
-	      These elements reference other
-	      <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>s
-	      in the theme file, defining the canvas's size.
-	    </para>
-	  </listitem>
-	</varlistentry>
-	<varlistentry>
-	  <term>
-	    <tag class='element'>width</tag>
-	  </term>
-	  <listitem>
-	    <para>
-	      This is equivalent to defining the same minimum, preferred,
-	      and maximum width.
-	    </para>
-	  </listitem>
-	</varlistentry>
-
-	<varlistentry>
-	  <term>
-	    <tag class='element'>height</tag>
-	  </term>
-	  <listitem>
-	    <para>
-	      This is equivalent to defining the same minimum, preferred,
-	      and maximum height.
-	    </para>
-	  </listitem>
-	</varlistentry>
-      </variablelist>
-    </section>
-
-    <section id="uixmlelementtooltip">
-      <title><tag class='element'>tooltip</tag>s</title>
-      <blockquote>
-	<informalexample>
-	  <programlisting><![CDATA[
-<element id="fixed-canvas" tooltip="canvas-tooltip">
-
-    ...
-
-</element>
-
-<tooltip type="label" id="canvas-tooltip">
-    <label type='theme_text'>Click to adjust this color channel&#10;(in the currently selected color)</label>
-</tooltip>]]></programlisting>
-	</informalexample>
-      </blockquote>
-
-      <para>
-	<tag class='element'>tooltip</tag>s have unique
-	<tag class='attribute'>id</tag>s. The second and subsequent
-	<tag class='element'>tooltip</tag>s with the same
-	<tag class='attribute'>id</tag> get ignored.
-	<tag class='attribute'>type</tag> must always be
-	<quote>label</quote>, this is currently ignored but should be set for
-	future extensibility.
-      </para>
-
-      <para>
-	Other <tag class='element'>element</tag>s'
-	<tag class='attribute'>tooltip</tag> attribute refers to a tooltip
-	with the given
-	<tag class='attribute'>id</tag>. More then one
-	<tag class='element'>element</tag> may refer to the same tooltip.
-      </para>
-
-      <note>
-	<para>
-	  Only widget <tag class='element'>element</tag>s with an
-	  <tag class='attribute'>id</tag> have a
-	  <tag class='attribute'>tooltip</tag> attribute.
-	  <link linkend="uixmlfactorygenericelement">Generic
-	    elements</link> that get created by
-	  <tag class='attribute'>callback</tag>s are under the callbacks'
-	  control, and only the callbacks can set their tooltips.
-	</para>
-      </note>
-
-      <para>
-	<tag class='element'>tooltip</tag>s' contents are the same
-	as <link linkend="uixmlfactorylabelelement">label widget</link>
-	elements. This is equivalent to using a widget's
-	<methodname>create_tooltip</methodname>() to create a basic,
-	label tooltip.
-      </para>
-    </section>
-
-    <section id="uixmlfactoryfocusablelabelelement">
-      <title>Focusable label <tag class='element'>element</tag> widgets</title>
-
-      <blockquote>
-	<informalexample>
-	  <programlisting><![CDATA[
-<element id="directory-name">
-  <focusable_label type='theme_text'>Top Level Directory</focusable_label>
-
-  <options>
-     <widthmm>40</widthmm>
-     <focus_border>custom</focus_border>
-  </otions>
-</element>]]></programlisting>
-	</informalexample>
-      </blockquote>
-
-      <para>
-	Specifying an <tag class='element'>element</tag>
-	with a <tag class='element'>focusable_label</tag>
-	creates a new
-	<ulink url="&link-typedef-x--w-focusable-label;"><classname>&ns;::w::focusable_label</classname></ulink>
-	by the
-	<tag class='element'>element</tag>'s &factory;.
-	This is equivalent to invoking the factory's
-	<methodname>create_focusable_label</methodname>() method.
-      </para>
-
-      <para>
-	The <tag class='element'>focusable_label</tag> element has the same
-	contents as a
-	<link linkend="uixmlfactorylabelelement"><tag class='element'>label</tag>
-	  element</link>, with an additional
-	<tag class='element'>options</tag> setting.
-	<tag class='element'>options</tag> initializes the
-	<ulink url="&link-x--w--focusable-label-config;"><classname>&ns;::w::focusable_label_config</classname></ulink>
-	parameter for <methodname>create_focusable_label</methodname>, which has
-	the same members as
-	<tag class='element'>label</tag>'s
-	<ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>,
-	with an additional
-	<tag class='element'>focus_border</tag> that sets the focusable
-	label's
-	<link linkend="uixmlappearance">appearance object</link>.
-      </para>
-    </section>
-
-    <section id="uixmlfactorygenericelement">
-      <title>Generic <tag class='element'>element</tag>s</title>
-
-      <blockquote>
-	<informalexample>
-	  <programlisting><![CDATA[
 <factory type="grid" id="statusrow">
 
 <!-- ... -->
@@ -2444,53 +1996,53 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
     }
   }
 };</programlisting>
-	</informalexample>
-      </blockquote>
-      <para>
-	<tag class='element'>element</tag>
-	invokes the named callback from the
-	<ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
+      </informalexample>
+    </blockquote>
 
-	parameter to
-	<link linkend="uixmlgenerate"><methodname>generate</methodname>()</link>.
-	This callback receives a
-	<ulink url="&link-typedef-x--w-factory;"><classname>&ns;::w::factory</classname></ulink>
-	parameter which gets used, presumably, to create a widget.
-	The first member of the
-	<classname>&ns;::w::uielements</classname>
-	object is map. The map's key is a <classname>std::string</classname>,
-	and the
-	<tag class='element'>name</tag>
-	value gives the callback's key value. An exception gets thrown
-	if the <tag class='element'>name</tag>
-	key does not exist.
-      </para>
+    <para>
+      An <tag class='element'>element</tag> with a
+      <tag class='element'>name</tag>
+      (a <quote>named element</quote>)
+      invokes the named callback from the
+      <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
+      parameter to
+      <link linkend="uixmlgenerate"><methodname>generate</methodname>()</link>.
 
-      <para>
-	It's possible that the same
-	<tag class='element'>name</tag> value appears more than once, in the
-	same or different
-	<tag class='element'>factory</tag>s. Each occurence of a
-	<tag class='element'>name</tag> results in the callback getting
-	invoked.
-      </para>
-    </section>
-  </section>
+      This callback receives an
+      <ulink url="&link-typedef-x--w-factory;"><classname>&ns;::w::factory</classname></ulink>
+      parameter which gets used, presumably, to create a widget.
+      The first member of the
+      <classname>&ns;::w::uielements</classname>
+      object is map. The map's key is a <classname>std::string</classname>,
+      and the
+      <tag class='element'>name</tag>
+      value gives the callback's key value. An exception gets thrown
+      if the <tag class='element'>name</tag>
+      key does not exist.
+    </para>
 
-  <section id="uixmlnewlayouts">
-    <title>Created <varname>new_layouts</varname></title>
+    <para>
+      It's possible that the same
+      <tag class='element'>name</tag> value appears more than once, in the
+      same or different
+      <tag class='element'>factory</tag>s. Each occurence of a
+      <tag class='element'>name</tag> results in the callback getting
+      invoked.
+    </para>
+
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
-<factory type="grid" id="statusrow">
+<element id="fixed-canvas" tooltip="canvas-tooltip">
 
-<!-- ... -->
+    ...
 
-  <container>
+</element>
+
+<container>
     <type>grid</type>
     <name>bottom-container</name>
-  </container>
-</factory>
+</container>
 
 <!-- ... -->
 
@@ -2498,70 +2050,473 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 
 <!-- ... -->
 
-</layout>]]>
-
-#include &lt;&ns;/w/uielements.H&gt;
-#include &lt;&ns;/w/uigenerators.H&gt;
-
-&ns;::w::labelptr created_label;
-
-&ns;::w::gridlayoutmanager grid_layout=container->get_layoutmanager();
-
-&ns;::w::const_uigenerators generators=&ns;::w::uigenerators::create("layouts.xml");
-
-&ns;::w::uielements elements{
-          {"label",
-           [&amp;]
-           (const INSERT_LIBX_NAMESPACE::w::factory &amp;f)
-           {
-               created_label=f->create_label("Lorem ipsum");
-           }
-          },
-
-    // ...
-
-};
-
-&ns;::w::gridlayoutmanager glm=container->get_layoutmanager();
-
-glm->generate("main-window-grid", generator, elements);
-
-auto iter=elements.new_layouts.find("bottom-container");
-
-if (iter != elements.new_layouts.end())
-{
-    &ns;::w::container bottom_container=iter->second;
+</layout>
 
 
-// ...
-</programlisting>
+
+]]>
+
+/* ----- */
+&ns;::w::uielements elements;
+
+layout_manager->generate("dialog", generators, elements);
+
+&ns;::w::canvas fixed_canvas=elements.get_element("fixed-canvas");
+
+&ns;::w::container bottom_container=elements.get_element("bottom-container");</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
-      Widgets that get <methodname>generate</methodname>()d by
-      <link linkend="uixmlgenerate">the widget factories</link> can be
-      saved directly, by each factory.
-      New containers that get created by the theme file's factories get
-      placed into
-      <classname>&ns;::w::uielements</classname>'s
-      <varname>new_layouts</varname> which is a map. The map's key is the
-      theme file's layout
-      <tag class='attribute'>id</tag>.
+      An <tag class='element'>element</tag> without a
+      <tag class='element'>name</tag> creates one of several supported widgets
+      directly, without invoking an application callback, using the
+      given parameters. Supported widgets:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactorylabelelement"><classname>&ns;::w::label</classname></link>s
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactorycanvaselement"><classname>&ns;::w::canvas</classname></link>es
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactoryfocusablelabelelement"><classname>&ns;::w::focusable_label</classname></link>s
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      These <tag class="element">element</tag> widgets have an optional
+      <tag class="attribute">id</tag> attribute.
+      After the widgets get generated,
+      <link linkend="uixmlgenerate"><classname>&ns;::w::uielements</classname></link>'s
+      <methodname>get_element</methodname>() retrieves the created widget
+      with the specified <tag class="attribute">id</tag>.
+      Duplicate <tag class="attribute">id</tag>s get ignored;
+      <methodname>get_element</methodname>() returns the first widget with
+      the specified <tag class="attribute">id</tag>.
+    </para>
+
+    <para>
+      These <tag class="element">element</tag> widgets also have an optional
+      <tag class="attribute">tooltip</tag> attribute that
+      <link linkend="uixmlelementtooltip">creates a tooltip for the
+	widget</link>.
+    </para>
+
+    <para>
+      A <tag class="element">container</tag> creates a new &container;
+      widget. Its <tag class="element">name</tag> serves a dual purpose:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  It gives the <tag class="element">layout</tag> with the same
+	  <tag class="attribute">id</tag> as the
+	  <tag class="element">container</tag>'s
+	  <tag class="element">name</tag>.
+	  The
+	  <tag class="element">type</tag>s must match.
+	  This specifies the new &container;'s layout and creates the
+	  widget in the &container;.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  After <methodname>generate</methodname>()ing the widgets,
+	  <methodname>get_element</methodname>() returns the created
+	  <classname>&ns;::w::container</classname>.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      <tag class='element'>container</tag>
+      creates a &container; and then
+      <methodname>generate</methodname>()s the new container from
+      another
+      <tag class='element'>layout</tag> in the theme file, whose
+      <tag class='attribute'>id</tag> is
+      <tag class='element'>name</tag>.
+      <tag class='element'>type</tag> must be either
+      <quote><literal>grid</literal></quote> or
+      <quote><literal>book</literal></quote>, and must match the
+      <tag class='element'>layout</tag>'s
+      <tag class='attribute'>type</tag>.
+    </para>
+
+    <para>
+      <tag class='element'>container</tag> is
+      equivalent to invoking a <tag class='element'>name</tag>d
+      <tag class='element'>element</tag>
+      callback, and having the callback
+      create a new container with the appropriate &layoutmanager;,
+      and then <methodname>generate</methodname>()ing its contents
+      from the layout specified by the
+      <tag class='element'>name</tag> value.
+    </para>
+  </section>
+
+  <section id="uixmlelementtooltip">
+    <title><tag class='element'>tooltip</tag>s</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="fixed-canvas" tooltip="canvas-tooltip">
+
+    ...
+
+</element>
+
+<tooltip type="label" id="canvas-tooltip">
+    <label type='theme_text'>Click to adjust this color channel&#10;(in the currently selected color)</label>
+</tooltip>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <tag class='element'>tooltip</tag>s have unique
+      <tag class='attribute'>id</tag>s. The second and subsequent
+      <tag class='element'>tooltip</tag>s with the same
+      <tag class='attribute'>id</tag> get ignored.
+      <tag class='attribute'>type</tag> must always be
+      <quote>label</quote>, this is currently ignored but should be set for
+      future extensibility.
+    </para>
+
+    <para>
+      <tag class="element">element</tag>s'
+      <tag class='attribute'>tooltip</tag> attribute refers to a tooltip
+      with the given
+      <tag class='attribute'>id</tag>. More then one
+      <tag class='element'>element</tag> may refer to the same tooltip.
     </para>
 
     <note>
       <para>
-	<varname>new_layouts</varname> is a map, and not a multi-map. The
-	best way to save multiple containers
-	created from the same layout <tag class='attribute'>id</tag>,
-	by a single
-	<methodname>generate</methodname>(), is to use different
-	<tag class='attribute'>id</tag>s for each layout and use
-	<application>XInclude</application> to include the same contents
-	of all layouts.
+	Only &supportedthemewidget;s have a
+	<tag class='attribute'>tooltip</tag> attribute;
+	&namedwidget;s are under the callbacks'
+	control and only the callbacks can set their tooltips.
       </para>
     </note>
+
+    <para>
+      <tag class='element'>tooltip</tag>s' contents are the same
+      as <link linkend="uixmlfactorylabelelement">label widget</link>'s
+      <tag class='element'>label</tag>. This is equivalent to using a widget's
+      <methodname>create_tooltip</methodname>() to create a basic,
+      label tooltip.
+    </para>
+  </section>
+
+  <section id="uixmlfactorylabelelement">
+    <title>Label <tag class='element'>element</tag> widgets</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="directory-label">
+  <label type='theme_text'>${context:file-dialog}Directory:</name>
+</element>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      that contains a <tag class='element'>label</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-label;"><classname>&ns;::w::label</classname></ulink>
+      widget.
+      This is equivalent to invoking the &factory;'s
+      <methodname>create_label</methodname>() method.
+    </para>
+
+    <para>
+      The contents of the
+      <tag class='element'>label</tag> is a
+      <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
+      with references to colors and fonts defined in the theme file or the
+      default display theme.
+    </para>
+
+    <section id="uixmllabelconfig">
+      <title>Specifying label options</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<element id="title">
+    <label type="theme_text">Lorem Ipsum ... est laborum.</label>
+    <options>
+        <alignment>center</alignment>
+        <widthmm>40</widthmm>
+    </options>
+</element>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	An optional <tag class="element">options</tag> element of a
+	<tag class="element">label</tag> element specifies the values
+	of a <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>
+	for creating the label widget.
+      </para>
+    </section>
+
+    <section id="uixmlgettext">
+      <title>Using gettext with labels and
+	<classname>&ns;::w::text_param</classname>s</title>
+
+      <para>
+	If the generator object has an optionally attached message catalog,
+	each text label in the theme file gets looked up in the message
+	catalog.
+	The <tag class="attribute">type</tag> attribute gets ignored when
+	creating widget from the theme file, and it serves to mark
+	translatable text in the theme file, such as the one in the
+	<tag class='element'>label</tag> element.
+	<application>gettext</application> tools know look only for
+	translatable strings in C/C++ source, so &appshort; provides
+	an <acronym>XML</acronym> stylesheet that creates a pseudo-C/C++
+	file that does not get compiled, but it contains translatable
+	strings that <application>gettext</application>'s
+	<command>msgfmt</command> picks up and adds to the message catalog
+	template.
+      </para>
+
+      <para>
+	The <filename>extract-theme-text.xsl</filename> file in
+	&appshort;'s <filename>theme</filename> directory is a stylesheet
+	that generates pseudo C/C++ source containing text from any
+	element with a
+	<literal><tag class="attribute">type</tag>="theme_text"</literal>
+	in a theme file:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+xsltproc <replaceable>...</replaceable>/extract-theme-text.xsl theme.xml &gt;strings.C</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	If <filename>theme.xml</filename>'s contents include the above
+	example, the resulting
+	<filename>strings.C</filename> has the following contents:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+_("${context:file-dialog}Directory:")</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This gets picked up by <command>msgfmt</command> and included with
+	the rest of the application's translatable strings. &appshort;
+	provides <command>automake</command> macros to automate this process.
+	In the <filename>Makefile.am</filename>:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+$(call EXTRACT_THEME_TEXT_GEN,strings.C,theme.xml)</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This create <filename>Makefile</filename> rules that automatically
+	build <filename>strings.C</filename> from
+	<filename>theme.xml</filename>.
+	The <literal>EXTRACT_THEME_TEXT_GEN</literal> macro comes from
+	<link linkend="developing">&appshort;'s
+	  <literal>@LIBCXXW_AM@</literal> framework</link>.
+      </para>
+
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+#include &lt;&ns;/locale.H&gt;
+#include &lt;&ns;/messages.H&gt;
+
+// ...
+auto utf8_locale=&ns;::locale::base::utf8();
+
+auto catalog=&ns;::messages::create("app", utf8_locale);
+
+auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog);</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Specifying the optional
+	<ulink url="&link-typedef-x-messages;"><classname>&ns;::messages</classname></ulink>
+	parameter,
+	when <link linkend="uixmlgenerate">creating a generator</link> object,
+	attaches a message catalog to the generator
+	generator.
+	The message catalog should explicitly use a UTF-8
+	<ulink url="&link-typedef-x-locale;"><classname>&ns;::locale</classname></ulink>
+	so that the translated messages get directly converted to Unicode.
+      </para>
+    </section>
+  </section>
+
+  <section id="uixmlfactorycanvaselement">
+    <title>Canvas <tag class='element'>element</tag> widgets</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<dim id="strip_width">10</dim>
+<dim id="strip_height">10</dim>
+
+<element id="fixed-canvas">
+    <canvas>
+        <background_color>white</background>
+	<width>strip_width</width>
+	<height>strip_height</height>
+    </canvas>
+</element>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      that contains a <tag class='element'>canvas</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-canvas;"><classname>&ns;::w::canvas</classname></ulink>
+      widget.
+      This is equivalent to invoking the factory's
+      <methodname>create_canvas</methodname>() method.
+    </para>
+
+    <para>
+      The contents of the <tag class='element'>canvas</tag> set the values
+      of <methodname>create_canvas</methodname>()'s
+      <ulink url="&link-x--w--canvas-config;"><classname>&ns;::w::canvas_config</classname></ulink>
+      parameter:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>background_color</tag>
+	</term>
+	<listitem>
+	  <para>
+	    References a <link linkend="uixmldimcolorborders"><tag class='element'>color</tag></link>
+	    in the theme file, defining the canvas's background color.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>minimum_width</tag>,
+	  <tag class='element'>preferred_width</tag>,
+	  <tag class='element'>maximum_width</tag>,
+	  <tag class='element'>minimum_height</tag>,
+	  <tag class='element'>preferred_height</tag>, and
+	  <tag class='element'>maximum_height</tag>
+	</term>
+	<listitem>
+	  <para>
+	    These elements reference other
+	    <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>s
+	    in the theme file, defining the canvas's size.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>width</tag>
+	</term>
+	<listitem>
+	  <para>
+	    This is equivalent to defining the same minimum, preferred,
+	    and maximum width.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>height</tag>
+	</term>
+	<listitem>
+	  <para>
+	    This is equivalent to defining the same minimum, preferred,
+	    and maximum height.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+  <section id="uixmlfactoryfocusablelabelelement">
+    <title>Focusable label <tag class='element'>element</tag> widgets</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="directory-name">
+  <focusable_label type='theme_text'>Top Level Directory</focusable_label>
+
+  <options>
+     <widthmm>40</widthmm>
+     <focus_border>custom</focus_border>
+  </otions>
+</element>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='element'>focusable_label</tag>
+      creates a new &themewidget;
+      which is an
+      which is an
+      <ulink url="&link-typedef-x--w-focusable-label;"><classname>&ns;::w::focusable_label</classname></ulink>
+      widget.
+
+      This is equivalent to invoking the factory's
+      <methodname>create_focusable_label</methodname>() method.
+    </para>
+
+    <para>
+      The <tag class='element'>focusable_label</tag> element has the same
+      contents as a
+      <link linkend="uixmlfactorylabelelement"><tag class='element'>label</tag>
+	element</link>, with an additional
+      <tag class='element'>options</tag> setting.
+      <tag class='element'>options</tag> initializes the
+      <ulink url="&link-x--w--focusable-label-config;"><classname>&ns;::w::focusable_label_config</classname></ulink>
+      parameter for <methodname>create_focusable_label</methodname>, which has
+      the same members as
+      <tag class='element'>label</tag>'s
+      <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>,
+      with an additional
+      <tag class='element'>focus_border</tag> that sets the focusable
+      label's
+      <link linkend="uixmlappearance">appearance object</link>.
+    </para>
   </section>
 
   <section id="uixmlappearance">

@@ -36,6 +36,12 @@ public:
 
 	const_bookpage_appearance appearance;
 
+	//! Set the appearance.
+
+	//! Convenience function for the benefit of the theme file.
+
+	bookpagefactoryObj &set_appearance(const const_bookpage_appearance &);
+
 	//! Add another page to the book.
 
 	template<typename tab_factory,

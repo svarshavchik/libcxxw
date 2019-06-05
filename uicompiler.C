@@ -1329,7 +1329,7 @@ void uicompiler::create_container(const factory &f,
 				  ([&]
 				   (const auto &new_container)
 				   {
-					   factories.new_layouts
+					   factories.new_elements
 						   .emplace(name,
 							    new_container);
 
@@ -1352,7 +1352,7 @@ void uicompiler::create_container(const factory &f,
 				  ([&]
 				   (const auto &new_container)
 				   {
-					   factories.new_layouts
+					   factories.new_elements
 						   .emplace(name,
 							    new_container);
 
@@ -1533,32 +1533,6 @@ void uicompiler::booklayout_insert_pages(const booklayoutmanager &blm,
 	{
 		g(f, factories);
 	}
-}
-
-void uicompiler::create_container(const bookpagefactory &f,
-				  uielements &factories,
-				  const std::string &label,
-				  const std::string &sc,
-				  const std::string &name,
-				  const container_generators_t &generators)
-{
-	auto shortcut_iter=factories.shortcuts.find(sc);
-
-	f->add([&]
-	       (const auto &label_factory)
-	       {
-		       generate(label_factory, factories, label);
-	       },
-	       [&]
-	       (const auto &page_factory)
-	       {
-		       create_container(page_factory, factories, name,
-					generators);
-	       },
-	       {
-		(shortcut_iter == factories.shortcuts.end()
-		 ? shortcut{}:shortcut_iter->second)
-	       });
 }
 
 #include "uicompiler.inc.C"

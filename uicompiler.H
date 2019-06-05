@@ -312,18 +312,9 @@ private:
 
 	//! Execute <container>
 
-	//! In a grid factory.
+	//! In a factory.
 	static void create_container(const factory &f,
 				     uielements &elements,
-				     const std::string &name,
-				     const container_generators_t &generators);
-	//! Execute <container>
-
-	//! In a book page factory.
-	static void create_container(const bookpagefactory &f,
-				     uielements &factories,
-				     const std::string &label,
-				     const std::string &sc,
 				     const std::string &name,
 				     const container_generators_t &generators);
 

@@ -167,26 +167,6 @@ standard_dialog_elements_t print_dialog_init_helper
 		  const ref<print_dialog_parentObj> &parent)
 {
 	return {
-		{"print-dialog-general-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label(_("General"));
-				}},
-		{"print-dialog-page-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label(_("Page Options"))
-						;
-				}},
-		{"print-dialog-image-label",
-				[&]
-				(const auto &factory)
-				{
-					factory->create_label(_("Image "
-								"Options"));
-				}},
 		{"select-printer-field",
 				[&, this]
 				(const auto &factory)
@@ -440,14 +420,8 @@ print_dialog main_windowObj
 			 helper.fields.printer_info=
 				 tmpl.get_element("printer-info");
 
-			 auto iter=tmpl.new_layouts
-				 .find("print-dialog-options");
-
-			 if (iter == tmpl.new_layouts.end())
-				 throw EXCEPTION("Internal error: dialog "
-						 "container was not created.");
-
-			 helper.fields.options_book=iter->second;
+			 helper.fields.options_book=
+				 tmpl.get_element("print-dialog-options");
 
 			 auto impl=ref<print_dialogObj::implObj>
 				 ::create(ref{this},
