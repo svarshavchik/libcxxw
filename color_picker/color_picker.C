@@ -121,6 +121,30 @@ namespace {
 #pragma GCC visibility push(hidden)
 #include "color_picker/color_picker.inc.H"
 
+static const struct {
+	rgb color;
+	const char name[20];
+} basic_colors[16]={
+		    {black,  "basic-color-black"},
+		    {gray,   "basic-color-gray"},
+		    {silver, "basic-color-silver"},
+		    {white,  "basic-color-white"},
+		    {maroon, "basic-color-maroon"},
+		    {red,    "basic-color-red"},
+		    {olive,  "basic-color-olive"},
+		    {yellow, "basic-color-yellow"},
+
+		    {green,  "basic-color-green"},
+		    {lime,   "basic-color-lime"},
+		    {teal,   "basic-color-teal"},
+		    {aqua,   "basic-color-aqua"},
+		    {navy,   "basic-color-navy"},
+		    {blue,   "basic-color-blue"},
+		    {fuchsia,"basic-color-fuchsia"},
+		    {purple, "basic-color-purple"},
+};
+
+
 struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 
 	const color_picker_config &config;
@@ -128,70 +152,6 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 	color_picker_layout_helper(const color_picker_config &config)
 		: config{config}
 	{
-	}
-
-	std::vector<std::tuple<rgb, button>> basic_colors;
-
-	inline void create_basic_colors(const gridlayoutmanager &glm)
-	{
-		const struct {
-			rgb color;
-			const char *name;
-		} rgb_values[2][8]={
-			{
-				{black, _("Black")},
-				{gray, _("Gray")},
-				{silver, _("Silver")},
-				{white, _("White")},
-				{maroon, _("Maroon")},
-				{red, _("Red")},
-				{olive, _("Olive")},
-				{yellow, _("Yellow")},
-			},
-			{
-				{green, _("Green")},
-				{lime, _("Lime")},
-				{teal, _("Teal")},
-				{aqua, _("Aqua")},
-				{navy, _("Navy")},
-				{blue, _("Blue")},
-				{fuchsia, _("Fuchsia")},
-				{purple, _("Purple")},
-			}};
-
-		basic_colors.reserve(16);
-
-		for (const auto &row:rgb_values)
-		{
-			auto f=glm->append_row();
-
-			auto b_config=normal_button();
-
-			b_config.appearance=config.appearance
-				->basic_colors_button_appearance;
-
-			for (const auto &col:row)
-			{
-				auto b=f->create_button
-					([&]
-					 (const auto &f)
-					 {
-						 f->create_canvas
-							 ({col.color,
-							   {config.appearance
-							    ->basic_color_width
-							   },
-							   {config.appearance
-							    ->basic_color_height
-							   }});
-					 },
-					 b_config);
-
-				b->create_tooltip(col.name);
-				basic_colors.push_back(std::tuple{col.color,
-							b});
-			}
-		}
 	}
 
 	standard_dialog_elements_t elements();
@@ -257,18 +217,6 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 						 f->create_label
 							 (_("Full Precision"));
 					 });
-			}},
-		{"basic-colors", [&](const auto &f)
-			{
-				f->create_container
-					([&]
-					 (const container &c)
-					 {
-						 create_basic_colors
-							 (c->get_layoutmanager()
-							  );
-					 },
-					 new_gridlayoutmanager{});
 			}},
 
 		{"ok", dialog_ok_button(_("Ok"),
@@ -391,17 +339,6 @@ create_contents(const ref<color_picker_selectorObj::implObj>
 					     contents_container_impl,
 					     lm_impl);
 
-	helper.h_button=tmpl.get_element("h-button");
-	helper.v_button=tmpl.get_element("v-button");
-	helper.h_canvas=tmpl.get_element("h-canvas");
-	helper.v_canvas=tmpl.get_element("v-canvas");
-	helper.r_input_field=tmpl.get_element("r-input-field");
-	helper.g_input_field=tmpl.get_element("g-input-field");
-	helper.b_input_field=tmpl.get_element("b-input-field");
-	helper.h_input_field=tmpl.get_element("h-input-field");
-	helper.s_input_field=tmpl.get_element("s-input-field");
-	helper.v_input_field=tmpl.get_element("v-input-field");
-
 	helper.square->create_tooltip(_("Click to pick a color"));
 
 	return p;
@@ -491,10 +428,13 @@ static constexpr rgb_component_t rgb_from_high_byte(uint8_t v)
 // Build an input field validator for one of the manual entry fields.
 
 static auto
-make_manual_input_validator(const input_field &f,
+make_manual_input_validator(const uielements &tmpl,
+			    const char *name,
 			    const weak_impl &wimpl,
 			    void (color_pickerObj::implObj::*n)(ONLY IN_THREAD))
 {
+	input_field f{tmpl.get_element(name)};
+
 	auto validator=f->set_validator
 		([wimpl]
 		 (ONLY IN_THREAD,
@@ -807,8 +747,8 @@ color_picker factoryObj
 
 			 config,
 			 initial_color,
-			 contents.h_canvas,
-			 contents.v_canvas,
+			 tmpl.get_element("h-canvas"),
+			 tmpl.get_element("v-canvas"),
 			 fixed_canvas,
 			 contents.square,
 			 tmpl.get_element("error-message-field"));
@@ -817,13 +757,13 @@ color_picker factoryObj
 
 	// Install validators for manual R, G, and B fields.
 	impl->r_value=make_manual_input_validator
-		(contents.r_input_field, wimpl,
+		(tmpl, "r-input-field", wimpl,
 		 &color_pickerObj::implObj::new_rgb_values);
 	impl->g_value=make_manual_input_validator
-		(contents.g_input_field, wimpl,
+		(tmpl, "g-input-field", wimpl,
 		 &color_pickerObj::implObj::new_rgb_values);
 	impl->b_value=make_manual_input_validator
-		(contents.b_input_field, wimpl,
+		(tmpl, "b-input-field", wimpl,
 		 &color_pickerObj::implObj::new_rgb_values);
 
 	// And set their initial values
@@ -834,13 +774,13 @@ color_picker factoryObj
 	// Install validators for manual H, S, and V fields.
 
 	impl->h_value=make_manual_input_validator
-		(contents.h_input_field, wimpl,
+		(tmpl, "h-input-field", wimpl,
 		 &color_pickerObj::implObj::new_hsv_values);
 	impl->s_value=make_manual_input_validator
-		(contents.s_input_field, wimpl,
+		(tmpl, "s-input-field", wimpl,
 		 &color_pickerObj::implObj::new_hsv_values);
 	impl->v_value=make_manual_input_validator
-		(contents.v_input_field, wimpl,
+		(tmpl, "v-input-field", wimpl,
 		 &color_pickerObj::implObj::new_hsv_values);
 
 	// And set their initial values.
@@ -859,11 +799,11 @@ color_picker factoryObj
 
 	// Load basic colors
 
-	for (const auto &basic_color:helper.basic_colors)
+	for (const auto &basic_color:basic_colors)
 	{
-		auto &[color,b]=basic_color;
+		button b=tmpl.get_element(basic_color.name);
 
-		b->on_activate([color,wimpl]
+		b->on_activate([color=basic_color.color, wimpl]
 			       (ONLY IN_THREAD,
 				const auto &trigger,
 				const auto &busy)
@@ -957,7 +897,7 @@ color_picker factoryObj
 
 	// Clicking on the gradient strips
 
-	contents.h_button->on_activate
+	button{tmpl.get_element("h-button")}->on_activate
 		([wimpl]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,
@@ -971,7 +911,7 @@ color_picker factoryObj
 			 impl->swap_horiz_gradient(IN_THREAD);
 		 });
 
-	contents.v_button->on_activate
+	button{tmpl.get_element("v-button")}->on_activate
 		([wimpl]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,

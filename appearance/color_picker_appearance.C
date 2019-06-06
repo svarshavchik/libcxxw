@@ -18,10 +18,7 @@ color_picker_appearance_properties::color_picker_appearance_properties()
 	  attached_popup_appearance{const_element_popup_appearance::base
 				    ::theme()},
 	  picker_width{"color_picker_square_width"},
-	  picker_height{"color_picker_square_height"},
-	  basic_color_width{"color_picker_basic_color_width"},
-	  basic_color_height{"color_picker_basic_color_height"},
-	  basic_colors_button_appearance{normal_button().appearance}
+	  picker_height{"color_picker_square_height"}
 {
 }
 

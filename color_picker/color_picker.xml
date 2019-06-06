@@ -1,50 +1,8 @@
 <collection>
   <name>color_picker_popup_fields</name>
   <ref>
-    <name>h_button</name>
-    <type>button</type>
-  </ref>
-  <ref>
-    <name>h_canvas</name>
-    <type>canvas</type>
-  </ref>
-  <ref>
-    <name>v_button</name>
-    <type>button</type>
-  </ref>
-  <ref>
-    <name>v_canvas</name>
-    <type>canvas</type>
-  </ref>
-
-  <ref>
     <name>square</name>
     <type>element</type>
-  </ref>
-
-  <ref>
-    <name>r_input_field</name>
-    <type>input_field</type>
-  </ref>
-  <ref>
-    <name>g_input_field</name>
-    <type>input_field</type>
-  </ref>
-  <ref>
-    <name>b_input_field</name>
-    <type>input_field</type>
-  </ref>
-  <ref>
-    <name>h_input_field</name>
-    <type>input_field</type>
-  </ref>
-  <ref>
-    <name>s_input_field</name>
-    <type>input_field</type>
-  </ref>
-  <ref>
-    <name>v_input_field</name>
-    <type>input_field</type>
   </ref>
   <ref>
     <name>hexadecimal</name>

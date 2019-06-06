@@ -2540,10 +2540,266 @@ first column, to make the labels line up with their input fields.
       <halign>center</halign>
     </halign>
 
-    <element>
-      <name>basic-colors</name>
+    <container>
+      <type>grid</type>
+      <name>basic-colors-table</name>
+    </container>
+  </factory>
+
+  <layout type="grid" id="basic-colors-table">
+    <append_row>
+      <name>basic-colors-table-row-1</name>
+    </append_row>
+    <append_row>
+      <name>basic-colors-table-row-2</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="basic-colors-table-row-1">
+    <element id="basic-color-black" tooltip="basic-color-black-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>black</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-gray" tooltip="basic-color-gray-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>gray</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-silver" tooltip="basic-color-silver-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>silver</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-white" tooltip="basic-color-white-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>white</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-maroon" tooltip="basic-color-maroon-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>maroon</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-red" tooltip="basic-color-red-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>red</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-olive" tooltip="basic-color-olive-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>olive</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-yellow" tooltip="basic-color-yellow-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>yellow</background_color>
+	  </canvas>
+	</element>
+      </button>
     </element>
   </factory>
+
+  <factory type="grid" id="basic-colors-table-row-2">
+    <element id="basic-color-green" tooltip="basic-color-green-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>green</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-lime" tooltip="basic-color-lime-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>lime</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-teal" tooltip="basic-color-teal-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>teal</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-aqua" tooltip="basic-color-aqua-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>aqua</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-navy" tooltip="basic-color-navy-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>navy</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-blue" tooltip="basic-color-blue-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>blue</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-fuchsia" tooltip="basic-color-fuchsia-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>fuchsia</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+    <element id="basic-color-purple" tooltip="basic-color-purple-tooltip">
+      <button>
+	<element>
+	  <canvas>
+	    <width>color_picker_basic_color_width</width>
+	    <height>color_picker_basic_color_height</height>
+	    <background_color>purple</background_color>
+	  </canvas>
+	</element>
+      </button>
+    </element>
+  </factory>
+
+  <tooltip type="label" id="basic-color-black-tooltip">
+    <label type="theme_text">Black</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-gray-tooltip">
+    <label type="theme_text">Gray</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-silver-tooltip">
+    <label type="theme_text">Silver</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-white-tooltip">
+    <label type="theme_text">White</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-maroon-tooltip">
+    <label type="theme_text">Maroon</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-red-tooltip">
+    <label type="theme_text">Red</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-olive-tooltip">
+    <label type="theme_text">Olive</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-yellow-tooltip">
+    <label type="theme_text">Yellow</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-green-tooltip">
+    <label type="theme_text">Green</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-lime-tooltip">
+    <label type="theme_text">Lime</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-teal-tooltip">
+    <label type="theme_text">Teal</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-aqua-tooltip">
+    <label type="theme_text">Aqua</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-navy-tooltip">
+    <label type="theme_text">Navy</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-blue-tooltip">
+    <label type="theme_text">Blue</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-fuchsia-tooltip">
+    <label type="theme_text">Fuchsia</label>
+  </tooltip>
+
+  <tooltip type="label" id="basic-color-purple-tooltip">
+    <label type="theme_text">Purple</label>
+  </tooltip>
 
   <!-- Print dialog -->
 
