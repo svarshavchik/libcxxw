@@ -198,26 +198,6 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 				square=cps;
 				f->created_internally(cps);
 			}},
-		{"hexadecimal", [&](const auto &f)
-			{
-				hexadecimal=f->create_checkbox
-					([]
-					 (const auto &f)
-					 {
-						 f->create_label
-							 (_("Hexadecimal"));
-					 });
-			}},
-		{"full-precision", [&](const auto &f)
-			{
-				full_precision=f->create_checkbox
-					([]
-					 (const auto &f)
-					 {
-						 f->create_label
-							 (_("Full Precision"));
-					 });
-			}},
 
 		{"ok", dialog_ok_button(_("Ok"),
 					ok_button,
@@ -794,8 +774,10 @@ color_picker factoryObj
 		impl->v_value->set(v);
 	}
 
-	contents.hexadecimal->set_value(impl->hexadecimal.get() ? 1:0);
-	contents.full_precision->set_value(impl->full_precision.get() ? 1:0);
+	image_button hexadecimal=tmpl.get_element("hexadecimal"),
+		full_precision=tmpl.get_element("full-precision");
+	hexadecimal->set_value(impl->hexadecimal.get() ? 1:0);
+	full_precision->set_value(impl->full_precision.get() ? 1:0);
 
 	// Load basic colors
 
@@ -818,7 +800,7 @@ color_picker factoryObj
 	}
 	// Invoke reformat_values() when the display options change.
 
-	contents.hexadecimal->on_activate
+	hexadecimal->on_activate
 		([wimpl]
 		 (ONLY IN_THREAD,
 		  size_t value,
@@ -837,7 +819,7 @@ color_picker factoryObj
 			 }
 		 });
 
-	contents.full_precision->on_activate
+	full_precision->on_activate
 		([wimpl]
 		 (ONLY IN_THREAD,
 		  size_t value,

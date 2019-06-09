@@ -4,14 +4,6 @@
     <name>square</name>
     <type>element</type>
   </ref>
-  <ref>
-    <name>hexadecimal</name>
-    <type>image_button</type>
-  </ref>
-  <ref>
-    <name>full_precision</name>
-    <type>image_button</type>
-  </ref>
 
   <ref>
     <name>cancel_button</name>

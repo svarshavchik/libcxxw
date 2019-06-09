@@ -2501,8 +2501,12 @@ first column, to make the labels line up with their input fields.
     <halign>
       <halign>left</halign>
     </halign>
-    <element>
-      <name>hexadecimal</name>
+    <element id="hexadecimal">
+      <checkbox>
+	<element>
+	  <label type="theme_text">Hexadecimal</label>
+	</element>
+      </checkbox>
     </element>
   </factory>
 
@@ -2513,8 +2517,12 @@ first column, to make the labels line up with their input fields.
     <halign>
       <halign>left</halign>
     </halign>
-    <element>
-      <name>full-precision</name>
+    <element id="full-precision">
+      <checkbox>
+	<element>
+	  <label type="theme_text">Full Precision</label>
+	</element>
+      </checkbox>
     </element>
   </factory>
 

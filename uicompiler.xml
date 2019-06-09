@@ -1346,6 +1346,39 @@ List of values:
       </parameter>
     </function>
 
+    <!-- checkbox -->
+
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>checkbox</exists>
+      </condition>
+
+      <invoke>create_checkbox</invoke>
+
+      <object>generic_factory</object>
+
+      <parameter>
+	<name>checkbox</name>
+	<type>compiler.factory_parseconfig</type>
+	<factory_wrapper>generic_factory</factory_wrapper>
+      </parameter>
+
+      <parameter>
+	<member_name>appearance</member_name>
+	<name>appearance</name>
+	<object>const_image_button_appearance</object>
+	<default_constructor_params>const_image_button_appearance::base::checkbox_theme()</default_constructor_params>
+	<initialize_self />
+	<type>single_value</type>
+	<lookup>
+	  <function>lookup_appearance&lt;const_image_button_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
 
     <!-- element -->
 

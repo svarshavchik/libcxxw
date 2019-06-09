@@ -2289,7 +2289,8 @@ layout_manager->generate("dialog", generators, elements);
       </listitem>
       <listitem>
 	<para>
-	  <link linkend="uixmlfactoryimageelement"><classname>&ns;::w::image</classname></link>s
+	  <link linkend="uixmlfactorycheckboxelement">checkbox</link>
+	  <classname>&ns;::w::image_button</classname>s
 	</para>
       </listitem>
     </itemizedlist>
@@ -2955,6 +2956,51 @@ layout_manager->generate("dialog", generators, elements);
       <tag class='element'>image</tag> is an
       <link linkend="sxg">&sxg; file</link>
       and specifies the size the &sxg; image gets scaled to.
+    </para>
+  </section>
+
+  <section id="uixmlfactorycheckboxelement">
+    <title>Checkbox <tag class='element'>element</tag> widgets</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="full-precision">
+  <checkbox>
+    <element>
+      <label type="theme_text">Full Precision</label>
+    </element>
+  </checkbox>
+</element>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='element'>checkbox</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-image-button;"><classname>&ns;::w::image_button</classname></ulink>
+      checkbox widget.
+      This is equivalent to invoking the &factory;'s
+      <methodname>create_checkbox</methodname>() method.
+    </para>
+
+    <para>
+      The <tag class='element'>checkbox</tag> contains a &themewidgetorcontainer;
+      that creates the contents of the button, usually a
+      <link linkend="uixmlfactorylabelelement"><tag class='element'>label</tag>
+	element</link>.
+    </para>
+
+    <para>
+      An optional <tag class='element'>appearance</tag> value provides
+      <methodname>create_checkbox</methodname>()'s
+      optional <classname>&ns;::w::const_image_button_appearance</classname>
+      parameter.
+      The value of the <tag class='element'>appearance</tag> element
+      is a <tag class="attribute">type</tag>=<quote>image_button</quote>
+      <link linkend="uixmlappearance">appearance object</link> from the
+      theme file.
     </para>
   </section>
 
