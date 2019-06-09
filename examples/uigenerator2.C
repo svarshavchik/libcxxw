@@ -33,46 +33,8 @@ static inline void create_main_window(const x::w::main_window &main_window)
 
 	x::w::uielements element_factory
 		{
-
-		 // Elements created from the UI theme file.
-
 		 {
-
-		  // Labels for the book's page tabs:
-
-		  {"general-label",
-		   []
-		   (const x::w::factory &factory)
-		   {
-			   factory->create_label
-				   ({"underline"_decoration,
-				     "G",
-				     "no"_decoration,
-				     "eneral"});
-		   }
-		  },
-		  {"network-label",
-		   []
-		   (const x::w::factory &factory)
-		   {
-			   factory->create_label
-				   ({"underline"_decoration,
-				     "N",
-				     "no"_decoration,
-				     "etwork"});
-		   }
-		  },
-		  {"local-label",
-		   []
-		   (const x::w::factory &factory)
-		   {
-			   factory->create_label
-				   ({"underline"_decoration,
-				     "L",
-				     "no"_decoration,
-				     "ocal"});
-		   },
-		  },
+		  // Elements created from the UI theme file.
 
 		  // Placeholders on the individual pages.
 
@@ -115,14 +77,6 @@ static inline void create_main_window(const x::w::main_window &main_window)
 		   },
 		  },
 		 },
-
-		 // Keyboard shortcuts referenced in the UI theme file.
-
-		 {
-		  {"general-page-shortcut", {"Alt", 'G'}},
-		  {"network-page-shortcut", {"Alt", 'N'}},
-		  {"local-page-shortcut",   {"Alt", 'L'}},
-		 }
 		};
 
 	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();

@@ -36,12 +36,20 @@
       <valign>bottom</valign>
     </valign>
 
-    <container>
-      <label>general-label</label>
-      <type>grid</type>
-      <name>general-page</name>
-      <shortcut>general-page-shortcut</shortcut>
-    </container>
+    <add>
+      <tab>
+	<element>
+	  <label>${decoration:underline}G${decoration:none}eneral</label>
+	</element>
+      </tab>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>general-page</name>
+	</container>
+      </page>
+      <shortcut>Alt-G</shortcut>
+    </add>
 
     <halign>
       <halign>center</halign>
@@ -51,12 +59,20 @@
       <valign>bottom</valign>
     </valign>
 
-    <container>
-      <label>network-label</label>
-      <type>grid</type>
-      <name>network-page</name>
-      <shortcut>network-page-shortcut</shortcut>
-    </container>
+    <add>
+      <tab>
+	<element>
+	  <label>${decoration:underline}N${decoration:none}etwork</label>
+	</element>
+      </tab>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>network-page</name>
+	</container>
+      </page>
+      <shortcut>Alt-N</shortcut>
+    </add>
 
     <halign>
       <halign>center</halign>
@@ -66,12 +82,20 @@
       <valign>bottom</valign>
     </valign>
 
-    <container>
-      <label>local-label</label>
-      <type>grid</type>
-      <name>local-page</name>
-      <shortcut>local-page-shortcut</shortcut>
-    </container>
+    <add>
+      <tab>
+	<element>
+	  <label>${decoration:underline}L${decoration:none}ocal</label>
+	</element>
+      </tab>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>local-page</name>
+	</container>
+      </page>
+      <shortcut>Alt-L</shortcut>
+    </add>
   </factory>
 
   <layout id="general-page" type="grid">
