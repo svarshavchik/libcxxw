@@ -591,16 +591,15 @@ void sxg_parserObj::get_width_height(const theme_parser_lock &parent,
 rectangle sxg_parserObj::adjust_x_y_width_height(const xy_t &x,
 						 const xy_t &y,
 						 double width, double height,
-						 const scale_info &scale)
+						 const scale_info &scale,
+						 scale_info::mode_t scale_mode)
 {
-	auto x1=coord_t::truncate(scale.x_pixel(x, scale_info::beginning));
-	auto y1=coord_t::truncate(scale.y_pixel(y, scale_info::beginning));
+	auto x1=coord_t::truncate(scale.x_pixel(x, scale_mode));
+	auto y1=coord_t::truncate(scale.y_pixel(y, scale_mode));
 
-	auto rw=coord_squared_t::truncate(scale.x_pixel(x+width,
-							scale_info::beginning))
+	auto rw=coord_squared_t::truncate(scale.x_pixel(x+width, scale_mode))
 		- x1;
-	auto rh=coord_squared_t::truncate(scale.y_pixel(y+height,
-							scale_info::beginning))
+	auto rh=coord_squared_t::truncate(scale.y_pixel(y+height, scale_mode))
 		- y1;
 
 	// Adjust 0 width or height. Adjust it to 1 or -1, depending on the
@@ -1542,8 +1541,10 @@ sxg_parserObj::parse_gc_fill(const theme_parser_lock &lock)
 			 if (width == 0 || height == 0)
 				 return;
 
-			 auto r=adjust_x_y_width_height(x, y, width, height,
-							info.scale);
+			 auto r=adjust_x_y_width_height
+				 (x, y, width, height,
+				  info.scale,
+				  scale_info::mode_t::beginning);
 
 			 info.context->fill_rectangle(r.x, r.y,
 						      r.width, r.height,
@@ -1966,11 +1967,15 @@ sxg_parserObj::parse_gc_arcs(const theme_parser_lock &lock)
 			 {
 				 auto &gc_arc=arcs[i++];
 
-				 auto r=adjust_x_y_width_height(arc.x,
-								arc.y,
-								arc.width,
-								arc.height,
-								info.scale);
+				 auto r=adjust_x_y_width_height
+					 (arc.x,
+					  arc.y,
+					  arc.width,
+					  arc.height,
+					  info.scale,
+					  fill_flag
+					  ? scale_info::mode_t::beginning
+					  : scale_info::mode_t::centered);
 
 				 gc_arc.x=r.x;
 				 gc_arc.y=r.y;
@@ -2249,14 +2254,18 @@ sxg_parserObj::parse_render_composite(const theme_parser_lock &render_element)
 			 }
 			 else
 			 {
-				 dst=adjust_x_y_width_height(x, y,
-							     width, height,
-							     info.scale);
+				 dst=adjust_x_y_width_height
+					 (x, y,
+					  width, height,
+					  info.scale,
+					  scale_info::mode_t::beginning);
 
 
-				 auto copy=adjust_x_y_width_height(src_x, src_y,
-								   0, 0,
-								   src_scale);
+				 auto copy=adjust_x_y_width_height
+					 (src_x, src_y,
+					  0, 0,
+					  src_scale,
+					  scale_info::mode_t::beginning);
 
 				 if (width < 0)
 					 copy.x=coord_t::truncate(copy.x-
@@ -2305,11 +2314,12 @@ sxg_parserObj::parse_render_composite(const theme_parser_lock &render_element)
 				 auto mask_scale=info.info
 					 .source_scale(mask_picture);
 
-				 auto mask_scaled=
-					 adjust_x_y_width_height(mask_x,
-								 mask_y,
-								 0, 0,
-								 mask_scale);
+				 auto mask_scaled=adjust_x_y_width_height
+					 (mask_x,
+					  mask_y,
+					  0, 0,
+					  mask_scale,
+					  scale_info::mode_t::beginning);
 
 				 if (width < 0)
 					 mask_scaled.x=coord_t::truncate

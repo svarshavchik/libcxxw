@@ -436,7 +436,8 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 	static rectangle adjust_x_y_width_height(const xy_t &x, const xy_t &y,
 						 double width, double height,
-						 const scale_info &info);
+						 const scale_info &info,
+						 scale_info::mode_t scale_mode);
 
 	//! A container for points and dimensions.
 

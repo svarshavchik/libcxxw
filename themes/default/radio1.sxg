@@ -28,43 +28,6 @@
   </pixmap>
 
   <gc id="circle_mask_gc">
-    <function>set</function>
-
-    <arcs>
-      <fill />
-
-      <arc>
-	<x>0</x>
-	<y>0</y>
-	<width>10</width>
-	<height>10</height>
-	<angle1>0</angle1>
-	<angle2>360</angle2>
-      </arc>
-    </arcs>
-  </gc>
-
-  <render id="main">
-    <composite>
-      <op>over</op>
-      <mask>
-	<pixmap>circle_mask</pixmap>
-	<x>0</x>
-	<y>0</y>
-      </mask>
-      <src>
-	<picture>fill</picture>
-	<x>0</x>
-	<y>0</y>
-      </src>
-      <x>0</x>
-      <y>0</y>
-      <width>11</width>
-      <height>11</height>
-    </composite>
-  </render>
-
-  <gc id="circle_mask_gc">
     <function>clear</function>
 
     <fill>

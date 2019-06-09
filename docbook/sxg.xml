@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2015 Double Precision, Inc.
+Copyright 2015-2019 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -78,7 +78,7 @@ See COPYING for distribution information.
     </blockquote>
 
     <para>
-      The top level <tag class='element'>sxg</tag> widget defines:
+      The top level <tag class='element'>sxg</tag> element defines:
     </para>
 
     <itemizedlist>
@@ -158,7 +158,7 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Some special-purpose &sxg; icons have a
-	  <tag class='element'>depth</tag> widget with a value of
+	  <tag class='element'>depth</tag> element with a value of
 	  <literal>1</literal>. This creates a one-bit deep image that's
 	  typically used to create a masking image of some kind.
 	</para>
@@ -251,10 +251,10 @@ See COPYING for distribution information.
 	</para>
 
 	<para>
-	  The <tag class='element'>gc</tag> widget specifies a list of
+	  The <tag class='element'>gc</tag> element specifies a list of
 	  commands to execute for a graphic context object with the specified
 	  label identifier.
-	  The <tag class='element'>render</tag> widget specifies a list of
+	  The <tag class='element'>render</tag> element specifies a list of
 	  commands to execute for a picture object with the specified
 	  label identifier.
 	</para>
@@ -345,8 +345,11 @@ See COPYING for distribution information.
 
       <para>
 	However, the
-	<tag class="element">fill</tag> widget, for both pictures
+	<tag class="element">fill</tag> element, for both pictures
 	and pixmaps,
+	the
+	<tag class="element">arcs</tag> element that specify the
+	<tag class='element'>fill</tag> option,
 	as well as the picture
 	<tag class="element">clip</tag> and
 	<tag class="element">composite</tag>
@@ -513,7 +516,7 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      The <tag class='element'>font</tag> widget contains the following
+      The <tag class='element'>font</tag> element contains the following
       elements:
     </para>
 
@@ -637,7 +640,7 @@ See COPYING for distribution information.
       <tag class='attribute'>id</tag> attribute gives the label that the
       drawing instructions in the &sxg; file use to refer to this picture.
       A <tag class='element'>picture</tag>'s
-      <tag class='element'>type</tag> widget specifies the picture's
+      <tag class='element'>type</tag> element specifies the picture's
       type. There are three picture types:
     </para>
 
@@ -677,10 +680,10 @@ See COPYING for distribution information.
 
     <para><anchor id="sxgsize" />
       A pixmap <tag class='element'>picture</tag>'s
-      <tag class='element'>size</tag> widget calculates the pixmap's
+      <tag class='element'>size</tag> element calculates the pixmap's
       actual size. A
       <tag class='element'>pixmap</tag> has the same
-      <tag class='element'>size</tag> widget, too:
+      <tag class='element'>size</tag> element, too:
     </para>
 
     <variablelist>
@@ -937,7 +940,7 @@ See COPYING for distribution information.
 
       <para>
 	Instead of specifying an explicit color, the
-	<tag class='element'>color</tag> widget copies a predefined color from
+	<tag class='element'>color</tag> element copies a predefined color from
 	the current display theme. This example copies the predefined
 	color named <quote>grey</quote>.
 	Combining the optional
@@ -989,7 +992,7 @@ See COPYING for distribution information.
 	Often the same coordinate gets referenced from multiple rendering
 	elements.
 	The
-	<tag class='element'>location</tag> widget assigns a label identifier
+	<tag class='element'>location</tag> element assigns a label identifier
 	to a coordinate, and the location gets referenced in rendering
 	widget	anywhere where
 	<tag class='element'>x</tag> and
@@ -1001,14 +1004,14 @@ See COPYING for distribution information.
 
       <para>
 	One special usage of a
-	<tag class='element'>location</tag> widget is
+	<tag class='element'>location</tag> element is
 	the defined
 	<quote><literal>hotspot</literal></quote> location in an &sxg;
 	file for a cursor. This specifies the cursor's hotspot.
       </para>
 
       <para>
-	Similarly, the <tag class='element'>dimension</tag> widget lists
+	Similarly, the <tag class='element'>dimension</tag> element lists
 	predefined widths and heights that can be referenced accordingly.
       </para>
     </section>
@@ -1065,10 +1068,10 @@ See COPYING for distribution information.
     <para>
       The
       <tag class='element'>text</tag>
-      widget specifies the text that makes up the picture.
+      element specifies the text that makes up the picture.
       A newline, <literal>&amp;#10;</literal> introduces a linebreak.
       An optional
-      <tag class='element'>align</tag> widget sets the relative alignment
+      <tag class='element'>align</tag> element sets the relative alignment
       of multiple text lines to either
       <literal>left</literal> (default),
       <literal>centered</literal>, or
@@ -1076,17 +1079,17 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      The <tag class='element'>font</tag> widget references a previously
+      The <tag class='element'>font</tag> element references a previously
       defined font, for all following text, until the next
-      <tag class='element'>font</tag> widget.
+      <tag class='element'>font</tag> element.
     </para>
 
     <para>
-      The <tag class='element'>rgb</tag> widget sets the foreground color
+      The <tag class='element'>rgb</tag> element sets the foreground color
       for all following text, until the next
-      <tag class='element'>rgb</tag> widget.
+      <tag class='element'>rgb</tag> element.
       The
-      <tag class='element'>color</tag> widget selects a theme color.
+      <tag class='element'>color</tag> element selects a theme color.
       Alternatively,
       <tag class='element'>r</tag>,
       <tag class='element'>g</tag>,
@@ -1140,7 +1143,7 @@ See COPYING for distribution information.
       <tag class='element'>clip</tag> mask, or a
       <link linkend="sxg_pixmap_fill_style">fill stipple</link>
       must specify a
-      <tag class='element'>mask</tag> widget, which
+      <tag class='element'>mask</tag> element, which
       creates a one-bit deep pixmap:
     </para>
 
@@ -1169,7 +1172,7 @@ See COPYING for distribution information.
 
     <para>
       Each <tag class='element'>pixmap</tag>'s
-      <tag class='element'>gc</tag> widget creates a graphic
+      <tag class='element'>gc</tag> element creates a graphic
       context for drawing into the pixmap.
       All <tag class='element'>gc</tag>'s
       <tag class='attribute'>id</tag>s are unique.
@@ -1216,7 +1219,7 @@ See COPYING for distribution information.
       <tag class='element'>gc</tag> elements
       execute commands for the graphic context specified by their
       <tag class='attribute'>id</tag> attribute.
-      A <tag class='element'>gc</tag> widget is a list of
+      A <tag class='element'>gc</tag> element is a list of
       commands described below.
       Each list gets executed in the given order, and the
       &sxg; file itself has a list of
@@ -1224,7 +1227,7 @@ See COPYING for distribution information.
       <tag class='element'>render</tag> elements, which are processed
       in the order of their appearance.
       It's possible to have more than one appearance of a
-      <tag class='element'>gc</tag> widget referencing the same
+      <tag class='element'>gc</tag> element referencing the same
       graphic context
       <tag class='attribute'>id</tag>:
     </para>
@@ -1368,7 +1371,7 @@ See COPYING for distribution information.
 	pixmap serves as an alpha channel filter. A value of 0 is a completely
 	transparent pixel value, a value of 1 is a fully opaque pixel value.
 	A pixmap declared with a
-	<tag class='element'>mask</tag> widget can only have a value of a 0
+	<tag class='element'>mask</tag> element can only have a value of a 0
 	or a 1, since it's a 1 bit deep pixmap. A non-mask pixmap is 8 bits
 	deep, and a value between 0 and 1 gets scaled across the entire
 	8-bit deep pixmap.
@@ -1407,7 +1410,7 @@ See COPYING for distribution information.
 	pixmap serves as an alpha channel filter. A value of 0 is a completely
 	transparent pixel value, a value of 1 is a fully opaque pixel value.
 	A pixmap declared with a
-	<tag class='element'>mask</tag> widget can only have a value of a 0
+	<tag class='element'>mask</tag> element can only have a value of a 0
 	or a 1.
       </para>
     </section>
@@ -1576,7 +1579,7 @@ See COPYING for distribution information.
 	component values of the
 	graphic context.
 
-	An empty <tag class="element">fill_style</tag> widget
+	An empty <tag class="element">fill_style</tag> element
 	sets the <quote>fill-style</quote> component to
 	<literal>Solid</literal>.
 	Otherwise, the <quote>fill-style</quote> component gets set
@@ -1586,9 +1589,9 @@ See COPYING for distribution information.
 	either the <quote>tile</quote> or the <quote>stipple</quote>
 	component value set to specified pixmap.
 	The stipple pixmap must be declared with the
-	<tag class="element">mask</tag> widget. The tile pixmap cannot
+	<tag class="element">mask</tag> element. The tile pixmap cannot
 	be declared with
-	<tag class="element">mask</tag> widget.
+	<tag class="element">mask</tag> element.
       </para>
 
       <para>
@@ -1665,7 +1668,7 @@ See COPYING for distribution information.
 	    Using the id label of a
 	    <tag class='element'>pixmap</tag> that serves as a clipping mask.
 	    This <tag class='element'>pixmap</tag> must be declared with a
-	    <tag class='element'>mask</tag> widget.
+	    <tag class='element'>mask</tag> element.
 	  </para>
 
 	  <para>
@@ -1698,7 +1701,7 @@ See COPYING for distribution information.
       <para>
 	The pixmap specified by
 	<quote>pixmap</quote> must be declared with a
-	<tag class="element">mask</tag> widget.
+	<tag class="element">mask</tag> element.
       </para>
 
       <para>
@@ -1952,7 +1955,7 @@ See COPYING for distribution information.
 	the <function>PolyArc</function> or the
 	<function>PolyFillArc</function> protocol command,
 	depending on whether the
-	<tag class='element'>fill</tag> widget exists.
+	<tag class='emptytag'>fill</tag> element exists.
 	Each arc's coordinates <link linkend="sxgscaling">get scaled</link> according to the pixmap's
 	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
       </para>
@@ -1966,18 +1969,11 @@ See COPYING for distribution information.
 
       <note>
 	<para>
-	  Note that, by default, &app;
+	  Without the <tag class='emptytag'>fill</tag> option &app;
 	  <link linkend="sxgscalingalgo">calculates coordinates based on the
 	    center of virtually-scaled pixels</link>.
-	  This has implications on the specification of the
-	  <tag class='element'>width</tag> and
-	  <tag class='element'>height</tag> of the arc.
-	  The width and the height of the scaled arc is computed from
-	  <tag class='element'>x</tag> to
-	  <tag class='element'>x</tag>+<tag class='element'>width</tag>
-	  and
-	  <tag class='element'>y</tag> to
-	  <tag class='element'>y</tag>+<tag class='element'>height</tag>.
+	  The <tag class='emptytag'>fill</tag> option interprets the coordinates
+	  as a bounding box.
 	</para>
 
 	<blockquote>
@@ -1998,7 +1994,8 @@ See COPYING for distribution information.
       <height>9</height>
       <angle1>0</angle1>
       <angle2>360</angle2>
-    </arc>]]></programlisting>
+    </arc>
+  </arcs>]]></programlisting>
 	  </informalexample>
 	</blockquote>
 
@@ -2006,30 +2003,49 @@ See COPYING for distribution information.
 	  This defines a virtual cartesian coordinate space of 10x10 pixels,
 	  and draws a full circle within the coordinates defined by
 	  (<tag class='element'>x</tag>, <tag class='element'>y</tag>) and
-	  (<tag class='element'>x</tag>+<tag class='element'>width</tag>,
+	  (<tag class='element'>x</tag>+<tag class='element'>width</tag>,w
 	  <tag class='element'>y</tag>+<tag class='element'>height</tag>);
 	  or (0, 0) through (9, 9), the entire size of the virtual
 	  10x10 cartesian coordinate space.
 	</para>
 
 	<para>
-	  When scaled, the scaled circle gets bounded on the center of the
-	  virtually-scaled pixels. If the scaled image 1:1, the circle
-	  touches the sides of the image, since each virtual pixel is
-	  equivalent to a single physical pixel. If the scaled image is 3:1,
-	  there's a one pixel gap between the circle and the sides of the
-	  image, since the circle is scaled to the centerpoints of the
-	  virtuals, which now correspond to 3x3 physical pixels.
-	</para>
-
-	<para>
-	  Note that explicitly specifying a
+	  The arc's coordinates are based on the center of the
+	  virtual (0, 0) and (9, 9) pixel, and the default
 	  <link linkend="sxg_pixmap_line_width"><tag class="element">line_width</tag></link>
-	  of 1 also scales the width of the drawn line. With a 3:1 scale the
+	  of 1 means that, for example, the sides of the arc extend half a
+	  pixel from the center of the virtual coordinate, and fully
+	  touch the bounding box. With a 3:1 scale the
 	  drawn line becomes three pixels thick; and with the circle boundary is
 	  anchored at the centerpoint of the scaled pixel, the drawn circle
 	  once again touches the sides of the image.
 	</para>
+
+	<para>
+	  Filling this arc requires specifying the coordinates as a bounding
+	  box:
+	</para>
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+  <arcs>
+    <fill />
+    <arc>
+      <x>0</x>
+      <y>0</y>
+      <width>10</width>
+      <height>10</height>
+      <angle1>0</angle1>
+      <angle2>360</angle2>
+    </arc>
+  </arcs>]]></programlisting>
+	  </informalexample>
+	</blockquote>
+
+        <para>
+	  This draws the arc within the boundaries of the 10x10 virtual
+	  rectangle, anchored at the top-left corner of pixel (0, 0).
+        </para>
       </note>
 
       <note>
@@ -2092,14 +2108,14 @@ See COPYING for distribution information.
       <quote>main</quote> gets automatically created by default.
       It represents the final
       drawn picture.
-      Each <tag class='element'>render</tag> widget itself
+      Each <tag class='element'>render</tag> element itself
       contains a list of commands to execute, and the
       &sxg; file itself has a list of
       <tag class='element'>gc</tag> and
       <tag class='element'>render</tag> elements, which are processed
       in the order of their appearance.
       It's possible to have more than one appearance of a
-      <tag class='element'>render</tag> widget referencing the same picture
+      <tag class='element'>render</tag> element referencing the same picture
       <tag class='attribute'>id</tag>:
     </para>
 
@@ -2255,7 +2271,7 @@ See COPYING for distribution information.
 
       <para>
 	The
-	<tag class='element'>repeat</tag> widget sets the picture's
+	<tag class='element'>repeat</tag> element sets the picture's
 	<literal>repeat</literal> attribute.
 	The value must be
 	<quote>none</quote>,
@@ -2317,7 +2333,7 @@ See COPYING for distribution information.
       </blockquote>
       <para>
 	The
-	<tag class='element'>clip</tag> widget sets the picture's
+	<tag class='element'>clip</tag> element sets the picture's
 	clip area in one of two different ways:
       </para>
 
@@ -2327,7 +2343,7 @@ See COPYING for distribution information.
 	    Using the id label of a
 	    <tag class='element'>pixmap</tag> that serves as a clipping mask.
 	    This <tag class='element'>pixmap</tag> must be declared with a
-	    <tag class='element'>mask</tag> widget.
+	    <tag class='element'>mask</tag> element.
 	  </para>
 
 	  <para>
@@ -2412,7 +2428,7 @@ See COPYING for distribution information.
 
       <para>
 	The
-	<tag class='element'>fill</tag> widget executes a
+	<tag class='element'>fill</tag> element executes a
 	<function>FillRectangles</function> render command.
 	Its
 	<tag class='element'>r</tag>,
@@ -2493,11 +2509,11 @@ See COPYING for distribution information.
 
       <para>
 	The
-	<tag class='element'>composite</tag> widget executes a
+	<tag class='element'>composite</tag> element executes a
 	<function>Composite</function> render command. The
 	<function>Composite</function>'s
 	<literal>dst</literal> picture is the
-	<tag class='element'>render</tag> widget that contains
+	<tag class='element'>render</tag> element that contains
 	the
 	<tag class='element'>composite</tag> command.
 	<tag class='element'>x</tag>,
@@ -2621,7 +2637,7 @@ See COPYING for distribution information.
 
       <para>
 	The
-	<tag class='element'>triangles</tag> widget executes a
+	<tag class='element'>triangles</tag> element executes a
 	<function>Triangles</function> render command. The optional
 	<link linkend="sxg_render_op"><tag class='element'>op</tag></link>
 	specifies the compositing operator, and defaults to
@@ -2642,7 +2658,7 @@ See COPYING for distribution information.
 	to the picture's
 	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
 	If not specified, they default to actual (0, 0) coordinates.
-	The <tag class='element'>src</tag> widget is the id label of
+	The <tag class='element'>src</tag> element is the id label of
 	a picture that sets the
 	<literal>src</literal> parameter.
       </para>
@@ -2742,7 +2758,7 @@ See COPYING for distribution information.
 	to the picture's
 	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
 	If not specified, they default to actual (0, 0) coordinates.
-	The <tag class='element'>src</tag> widget is the id label of
+	The <tag class='element'>src</tag> element is the id label of
 	a picture that sets the
 	<literal>src</literal> parameter.
       </para>

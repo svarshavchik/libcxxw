@@ -31,17 +31,6 @@
 	<angle2>360</angle2>
       </arc>
     </arcs>
-
-    <arcs>
-      <arc>
-	<x>0</x>
-	<y>0</y>
-	<width>6</width>
-	<height>6</height>
-	<angle1>0</angle1>
-	<angle2>360</angle2>
-      </arc>
-    </arcs>
   </gc>
 
   <render id="knob">
@@ -80,17 +69,6 @@
 
     <arcs>
       <fill />
-      <arc>
-	<x>1</x>
-	<y>1</y>
-	<width>4</width>
-	<height>4</height>
-	<angle1>0</angle1>
-	<angle2>360</angle2>
-      </arc>
-    </arcs>
-
-    <arcs>
       <arc>
 	<x>1</x>
 	<y>1</y>
