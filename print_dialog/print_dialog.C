@@ -196,38 +196,6 @@ standard_dialog_elements_t print_dialog_init_helper
 
 					fields.selected_printer=f;
 				}},
-		{"all-pages-radio-button",
-				[&, this]
-				(const auto &factory)
-				{
-					auto f=factory->create_radio
-						(pages_radio_group,
-						 []
-						 (const auto &factory)
-						 {
-							 factory->create_label
-							 (_("All pages"));
-						 },
-						 conf.appearance
-						 ->print_all_pages_appearance);
-					fields.all_pages_radio_button=f;
-				}},
-		{"page-range-radio-button",
-				[&, this]
-				(const auto &factory)
-				{
-					auto f=factory->create_radio
-						(pages_radio_group,
-						 []
-						 (const auto &factory)
-						 {
-							 factory->create_label
-							 (_("Pages: "));
-						 },
-						 conf.appearance
-						 ->print_page_range_appearance);
-					fields.page_range_radio_button=f;
-				}},
 		{"orientation-field",
 				[&, this]
 				(const auto &factory)
@@ -398,6 +366,10 @@ print_dialog main_windowObj
 				 tmpl.get_element("number-of-copies-field");
 			 helper.fields.number_of_copies->autofocus(false);
 
+			 helper.fields.all_pages_radio_button=
+				 tmpl.get_element("all-pages-radio-button");
+			 helper.fields.page_range_radio_button=
+				 tmpl.get_element("page-range-radio-button");
 			 helper.fields.page_range=
 				 tmpl.get_element("page-range-field");
 			 helper.fields.page_range->autofocus(false);

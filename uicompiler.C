@@ -28,6 +28,7 @@
 #include "x/w/date_input_field_config.H"
 #include "x/w/image.H"
 #include "x/w/image_button.H"
+#include "x/w/radio_group.H"
 #include "theme_parser_lock.H"
 #include "messages.H"
 #include "picture.H"
@@ -1539,6 +1540,21 @@ void uicompiler::booklayout_insert_pages(const booklayoutmanager &blm,
 	{
 		g(f, factories);
 	}
+}
+
+static radio_group lookup_radio_group(uielements &elements,
+				      const std::string &name)
+{
+	auto iter=elements.new_radio_groups.find(name);
+
+	if (iter != elements.new_radio_groups.end())
+		return iter->second;
+
+	auto g=radio_group::create();
+
+	elements.new_radio_groups.emplace(name, g);
+
+	return g;
 }
 
 #include "uicompiler.inc.C"

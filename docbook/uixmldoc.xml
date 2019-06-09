@@ -2289,7 +2289,13 @@ layout_manager->generate("dialog", generators, elements);
       </listitem>
       <listitem>
 	<para>
-	  <link linkend="uixmlfactorycheckboxelement">checkbox</link>
+	  <link linkend="uixmlfactorycheckboxelement">Checkbox</link>
+	  <classname>&ns;::w::image_button</classname>s
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactoryradioelement">Radio</link>
 	  <classname>&ns;::w::image_button</classname>s
 	</para>
       </listitem>
@@ -2987,7 +2993,7 @@ layout_manager->generate("dialog", generators, elements);
 
     <para>
       The <tag class='element'>checkbox</tag> contains a &themewidgetorcontainer;
-      that creates the contents of the button, usually a
+      that creates the contents of the checkbox, usually a
       <link linkend="uixmlfactorylabelelement"><tag class='element'>label</tag>
 	element</link>.
     </para>
@@ -3001,6 +3007,63 @@ layout_manager->generate("dialog", generators, elements);
       is a <tag class="attribute">type</tag>=<quote>image_button</quote>
       <link linkend="uixmlappearance">appearance object</link> from the
       theme file.
+    </para>
+  </section>
+
+  <section id="uixmlfactoryradioelement">
+    <title>Radio <tag class='element'>element</tag> widgets</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="full-precision">
+  <radio>
+    <element>
+      <label type="theme_text">Full Precision</label>
+    </element>
+  </radio>
+  <group>precision-group</group>
+</element>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='element'>radio</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-image-button;"><classname>&ns;::w::image_button</classname></ulink>
+      radio button widget.
+      This is equivalent to invoking the &factory;'s
+      <methodname>create_radio</methodname>() method.
+    </para>
+
+    <para>
+      The <tag class='element'>radio</tag>
+      element contains a &themewidgetorcontainer;
+      that creates the contents of the radio button, usually a
+      <link linkend="uixmlfactorylabelelement"><tag class='element'>label</tag>
+	element</link>.
+    </para>
+
+    <para>
+      An optional <tag class='element'>appearance</tag> value provides
+      <methodname>create_checkbox</methodname>()'s
+      optional <classname>&ns;::w::const_image_button_appearance</classname>
+      parameter.
+      The value of the <tag class='element'>appearance</tag> element
+      is a <tag class="attribute">type</tag>=<quote>image_button</quote>
+      <link linkend="uixmlappearance">appearance object</link> from the
+      theme file.
+    </para>
+
+    <para>
+      The required <tag class='element'>group</tag> element
+      sets the first parameter <methodname>create_radio</methodname>(), and
+      gives the radio button
+      group's name.
+      All <methodname>generate</methodname>()d radio buttons with the
+      same <tag class='element'>group</tag> name get created with the
+      same <classname>&ns;::w::radio_group</classname> handle.
     </para>
   </section>
 

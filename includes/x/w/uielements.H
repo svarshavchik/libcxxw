@@ -9,6 +9,7 @@
 #include <x/w/factory.H>
 #include <x/w/shortcut.H>
 #include <x/w/container.H>
+#include <x/w/radio_groupfwd.H>
 #include <x/functionalrefptr.H>
 #include <unordered_map>
 #include <string>
@@ -73,11 +74,47 @@ struct uielements {
 
 	std::unordered_map<std::string, element> new_elements;
 
+	//! Container for the generated radio groups
+
+	//! Implements default constructors and destructors, avoiding the
+	//! need to pull in the full definition of radio_group objects.
+
+	struct new_radio_groups_t :
+		std::unordered_map<std::string, radio_group> {
+
+		//! Constructor
+		new_radio_groups_t();
+
+		//! Destructor
+		~new_radio_groups_t();
+
+		//! Copy constructor
+		new_radio_groups_t(const new_radio_groups_t &);
+
+		//! Move constructor
+		new_radio_groups_t(new_radio_groups_t &&);
+
+		//! Assignment operator
+		new_radio_groups_t &operator=(const new_radio_groups_t &);
+
+		//! Move operator
+		new_radio_groups_t &operator=(new_radio_groups_t &&);
+	};
+
+	//! Destructor
+	~uielements();
+
+	//! New radio button groups
+	new_radio_groups_t new_radio_groups;
+
 	//! Return the generated widget.
 
 	//! An exception gets thrown if the specified widget was not found.
 
 	element get_element(const std::string_view &name) const;
+
+	//! Return a radio group
+	radio_group get_radio_group(const std::string_view &name) const;
 };
 
 LIBCXXW_NAMESPACE_END

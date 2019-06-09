@@ -44,20 +44,6 @@ Appearance of the list of printers to select.
     <ref>list</ref>
   </field>
   <field>
-    <name>print_all_pages_appearance</name>
-    <descr><![CDATA[
-Appearance of the "All pages" radio button
-]]></descr>
-    <ref>image_button</ref>
-  </field>
-  <field>
-    <name>print_page_range_appearance</name>
-    <descr><![CDATA[
-Appearance of the "Pages" radio button
-]]></descr>
-    <ref>image_button</ref>
-  </field>
-  <field>
     <name>orientation_appearance</name>
     <descr><![CDATA[
 Appearance of the "Orientation" list

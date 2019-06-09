@@ -3044,8 +3044,13 @@ first column, to make the labels line up with their input fields.
       <canvas />
     </element>
 
-    <element>
-      <name>all-pages-radio-button</name>
+    <element id="all-pages-radio-button">
+      <radio>
+	<element>
+	  <label type="theme_text">All Pages</label>
+	</element>
+      </radio>
+      <group>pages-radio-group</group>
     </element>
   </factory>
 
@@ -3100,8 +3105,13 @@ first column, to make the labels line up with their input fields.
       <valign>middle</valign>
     </valign>
 
-    <element>
-      <name>page-range-radio-button</name>
+    <element id="page-range-radio-button">
+      <radio>
+	<element>
+	  <label type="theme_text">Pages:</label>
+	</element>
+      </radio>
+      <group>pages-radio-group</group>
     </element>
 
     <padding>

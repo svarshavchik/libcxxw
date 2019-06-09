@@ -9,10 +9,29 @@
 #include "gridlayoutmanager.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/impl/container.H"
+#include "x/w/radio_group.H"
 #include "screen.H"
 #include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START
+
+typedef uielements::new_radio_groups_t new_radio_groups_t;
+
+new_radio_groups_t::new_radio_groups_t()=default;
+
+new_radio_groups_t::~new_radio_groups_t()=default;
+
+new_radio_groups_t::new_radio_groups_t(const new_radio_groups_t &)=default;
+
+new_radio_groups_t::new_radio_groups_t(new_radio_groups_t &&)=default;
+
+new_radio_groups_t &new_radio_groups_t::operator=(const new_radio_groups_t &)
+=default;
+
+new_radio_groups_t &new_radio_groups_t::operator=(new_radio_groups_t &&)
+=default;
+
+uielements::~uielements()=default;
 
 element uielements::get_element(const std::string_view &name) const
 {
@@ -23,6 +42,20 @@ element uielements::get_element(const std::string_view &name) const
 	if (iter == new_elements.end())
 		throw EXCEPTION(gettextmsg(_("Element %1% was not found"),
 					   name));
+
+	return iter->second;
+}
+
+radio_group uielements::get_radio_group(const std::string_view &name) const
+{
+	// TODO: C++20;
+
+	auto iter=new_radio_groups.find(std::string{name.begin(), name.end()});
+
+	if (iter == new_radio_groups.end())
+		throw EXCEPTION(gettextmsg
+				(_("Radio button group %1% was not found"),
+				 name));
 
 	return iter->second;
 }

@@ -1380,6 +1380,47 @@ List of values:
       </parameter>
     </function>
 
+    <!-- radio -->
+
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>radio</exists>
+      </condition>
+
+      <invoke>create_radio</invoke>
+
+      <object>generic_factory</object>
+
+      <parameter>
+	<name>group</name>
+	<type>single_value</type>
+	<before-passing-parameter>lookup_radio_group(elements, </before-passing-parameter>
+	<after-passing-parameter>)</after-passing-parameter>
+      </parameter>
+
+      <parameter>
+	<name>radio</name>
+	<type>compiler.factory_parseconfig</type>
+	<factory_wrapper>generic_factory</factory_wrapper>
+      </parameter>
+
+      <parameter>
+	<member_name>appearance</member_name>
+	<name>appearance</name>
+	<object>const_image_button_appearance</object>
+	<default_constructor_params>const_image_button_appearance::base::radio_theme()</default_constructor_params>
+	<initialize_self />
+	<type>single_value</type>
+	<lookup>
+	  <function>lookup_appearance&lt;const_image_button_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
     <!-- element -->
 
     <function>
