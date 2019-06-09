@@ -68,8 +68,11 @@ See COPYING for distribution information.
     Essentially, <methodname>update</methodname>() draws the slider from
     the left margin and up to <literal>value/maximum_value</literal> of
     the progress bar's width. Both the <varname>value</varname> and
-    <varname>maximum_value</varname> are updated by the same
-    <methodname>update</methodname>(), and each update may specify a
+    <varname>maximum_value</varname> get updated by the same
+    <methodname>update</methodname>().
+    Each <methodname>update</methodname>() provides the same
+    <varname>maximum_value</varname>, and an increasing
+    <varname>value</varname>, but each update may specify a
     different <methodname>maximum_value</methodname>, and a higher or
     a lower <methodname>value</methodname>. The progress bar's slider
     simply gets moved to the recalculated position.

@@ -44,11 +44,11 @@ class LIBCXX_HIDDEN progressbar_sliderObj : public progressbar_slider_base_t {
 
 	//! Current logical value.
 
-	size_t value_thread_only=0;
+	size_t value_thread_only;
 
 	//! Maximum slider logical value.
 
-	size_t maximum_value_thread_only=1;
+	size_t maximum_value_thread_only;
 
  public:
 
@@ -57,7 +57,7 @@ class LIBCXX_HIDDEN progressbar_sliderObj : public progressbar_slider_base_t {
 
 	//! Constructor
 	progressbar_sliderObj(const container_impl &parent,
-			      const const_progressbar_appearance &appearance);
+			      const progressbar_config &config);
 
 	//! Destructor
 	~progressbar_sliderObj();

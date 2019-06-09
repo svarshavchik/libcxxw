@@ -15,17 +15,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-progressbar_config::progressbar_config()
-	: appearance{progressbar_appearance::base::theme()}
+progressbar_config::appearance_wrapper::appearance_wrapper()
+	: const_progressbar_appearance{progressbar_appearance::base::theme()}
 {
 }
 
-progressbar_config::~progressbar_config()=default;
+progressbar_config::appearance_wrapper::~appearance_wrapper()=default;
 
-progressbar_config::progressbar_config(const progressbar_config &)=default;
-
-progressbar_config &progressbar_config::operator=(const progressbar_config &)
-=default;
+progressbar_config::appearance_wrapper::appearance_wrapper(const appearance_wrapper &)=default;
 
 progressbarObj::progressbarObj(const ref<implObj> &impl,
 			       const layout_impl &container_layout_impl)
@@ -111,7 +108,7 @@ progressbar factoryObj
 	// The slider in the progress bar.
 
 	auto slider=progressbar_slider::create(progressbar_handler,
-					       config.appearance);
+					       config);
 
 	// Use the passed-in layout manager to create the layout manager
 	// for slider.

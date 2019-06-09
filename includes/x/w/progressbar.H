@@ -19,25 +19,40 @@ LIBCXXW_NAMESPACE_START
 
 struct progressbar_config {
 
+	//! Initial value of the progress bar
+	size_t value=0;
+
+	//! Maximum value of the progress bar
+	size_t maximum_value=100;
+
+	//! Wrap a const_progressbar_appearance
+
+	//! Avoids the need to pull in the entire header file.
+
+	struct appearance_wrapper : public const_progressbar_appearance {
+
+		using const_progressbar_appearance::const_progressbar_appearance;
+
+		using const_progressbar_appearance::operator->;
+
+		//! Default constructor
+
+		appearance_wrapper();
+
+		//! Destructor
+
+		~appearance_wrapper();
+
+		//! Copy constructor
+
+		appearance_wrapper(const appearance_wrapper &);
+
+		using const_progressbar_appearance::operator=;
+	};
+
 	//! The appearance of the new progress bar
 
-	const_progressbar_appearance appearance;
-
-	//! Default constructor
-
-	progressbar_config();
-
-	//! Destructor
-
-	~progressbar_config();
-
-	//! Copy constructor
-
-	progressbar_config(const progressbar_config &);
-
-	//! Assignment operator
-
-	progressbar_config &operator=(const progressbar_config &);
+	appearance_wrapper appearance;
 };
 
 LIBCXXW_NAMESPACE_END

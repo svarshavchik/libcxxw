@@ -25,7 +25,12 @@
 
 static auto initialize_progressbar(const x::w::factory &f)
 {
-	x::w::progressbar_config config;
+	// progressbar_config is an optional parameter to create_progressbar().
+	//
+	// It provides the progress bar's initial value and maximum value,
+	// as well as a custom appearance object.
+
+	x::w::progressbar_config config{0, 100};
 
 	auto pb=f->create_progressbar
 		([]
@@ -45,7 +50,7 @@ static auto initialize_progressbar(const x::w::factory &f)
 			 f->create_label("0%")->show();
 		 },
 
-		 // Optional parameter: progress bar's appearance
+		 // Optional parameter: initial configuration
 		 config,
 
 		 // Optional parameter: the grid layout manager, by default.

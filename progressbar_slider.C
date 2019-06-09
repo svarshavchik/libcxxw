@@ -20,14 +20,16 @@ LIBCXXW_NAMESPACE_START
 
 progressbar_sliderObj
 ::progressbar_sliderObj(const container_impl &parent,
-			const const_progressbar_appearance &appearance)
+			const progressbar_config &config)
 	// We temporary initialize the slider to 'color', and because
 	// new_gradient_required we will make sure to create the gradient
 	// in the connection thread.
-	: superclass_t{appearance->background_color,
-		appearance->slider_color,
-		parent, child_element_init_params
-	{{}, {}, appearance->background_color}}
+	: superclass_t{config.appearance->background_color,
+		       config.appearance->slider_color,
+		       parent, child_element_init_params
+		       {{}, {}, config.appearance->background_color}},
+	  value_thread_only{config.value},
+	  maximum_value_thread_only{config.maximum_value}
 {
 }
 
