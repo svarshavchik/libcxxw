@@ -19,6 +19,8 @@
 #include "x/w/connection.H"
 #include "x/w/button.H"
 #include "x/w/font_literals.H"
+#include "x/w/uielements.H"
+#include "x/w/uigenerators.H"
 #include <string>
 #include <iostream>
 
@@ -58,22 +60,23 @@ void testdateinput()
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
 
-				 layout->col_alignment(0, LIBCXX_NAMESPACE::w::halign::center);
+				 LIBCXX_NAMESPACE::w::uielements elements;
+				 auto generator=
+					 LIBCXX_NAMESPACE::w::uigenerators
+					 ::create("testdateinput.xml");
 
-				 LIBCXX_NAMESPACE::w::gridfactory factory=
-				     layout->append_row();
+				 layout->generate("main",
+						  generator,
+						  elements);
 
-				 LIBCXX_NAMESPACE::w::date_input_field_config
-					 difc;
-
-				 auto di=factory->create_date_input_field(difc);
+				 LIBCXX_NAMESPACE::w::date_input_field
+					 di=elements.get_element("date_input");
 
 				 diptr=di;
 				 di->show();
 
-				 factory=layout->append_row();
-
-				 auto ed=factory->create_button("Enable/Disable");
+				 LIBCXX_NAMESPACE::w::button
+					 ed=elements.get_element("enable_disable");
 
 				 ed->on_activate([di, flag=false]
 						 (THREAD_CALLBACK,
@@ -100,6 +103,8 @@ void testdateinput()
 							   << std::endl;
 				 });
 
+				 elements.get_element("enable_disable_label")
+					 ->show();
 				 ed->show();
 				 main_window->show();
 			 },

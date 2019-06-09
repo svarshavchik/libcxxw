@@ -1263,6 +1263,42 @@ List of values:
 
     </function>
 
+    <!-- date_input_field -->
+
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>date_input_field</exists>
+      </condition>
+
+      <invoke>create_date_input_field</invoke>
+
+      <object>generic_factory</object>
+
+      <parameter>
+	<name>config</name>
+	<member_name>config</member_name>
+	<object>date_input_field_config</object>
+
+	<member>
+	  <name>appearance</name>
+	  <field>appearance</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <modify />
+	    <function>get_appearance_base</function>
+	  </lookup>
+	</member>
+	<member>
+	  <name>invalid_input</name>
+	  <field>invalid_input</field>
+	  <type>compiler.text_param_value</type>
+	</member>
+      </parameter>
+    </function>
+
     <!-- element -->
 
     <function>

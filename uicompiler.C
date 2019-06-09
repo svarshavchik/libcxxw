@@ -24,6 +24,8 @@
 #include "x/w/button.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_config.H"
+#include "x/w/date_input_field.H"
+#include "x/w/date_input_field_config.H"
 #include "theme_parser_lock.H"
 #include "messages.H"
 #include "picture.H"

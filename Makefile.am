@@ -1076,6 +1076,7 @@ testcollapse_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testdateinputfilter_SOURCES=testdateinputfilter.C
 testdateinputfilter_LDADD=-lcxx -lcourier-unicode
+EXTRA_DIST += testdateinput.xml
 
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la

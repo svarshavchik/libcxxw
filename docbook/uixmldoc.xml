@@ -900,6 +900,239 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
     </para>
   </section>
 
+  <section id="uixmlvalues">
+    <title>Other values in theme files</title>
+
+    <para>
+      Values for various properties of &supportedthemewidget;s and
+      <link linkend="uixmlappearance">appearance object</link>s directly
+      translate to the values of various &appshort; data types.
+    </para>
+
+    <section id="uixmlhalignvalue">
+      <title><ulink url="&link-enum-x--w-halign;"><classname>&ns;::w::halign</classname></ulink> values</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<halign>left</halign>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	An <classname>&ns;::w::halign</classname> value
+	is one of:
+	<quote><literal>left</literal></quote>,
+	<quote><literal>center</literal></quote>,
+	<quote><literal>right</literal></quote>, or
+	<quote><literal>fill</literal></quote>.
+      </para>
+    </section>
+
+    <section id="uixmlvalignvalue">
+      <title><ulink url="&link-enum-x--w-valign;"><classname>&ns;::w::valign</classname></ulink> values</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<valign>middle</valign>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	An <classname>&ns;::w::valign</classname> value
+	is one of:
+	<quote><literal>top</literal></quote>,
+	<quote><literal>middle</literal></quote>,
+	<quote><literal>bottom</literal></quote>, or
+	<quote><literal>fill</literal></quote>.
+      </para>
+    </section>
+
+    <section id="uixmlscrollbar_visibilityvalue">
+      <title><ulink url="&link-enum-x--w-scrollbar-visibility;"><classname>&ns;::w::scrollbar_visibility</classname></ulink> values</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<horizontal_visibility>automatic</horizontal_visibility>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	An <classname>&ns;::w::scrollbar_visibility</classname> value
+	is one of:
+	<quote>never</quote>,
+	<quote>always</quote>,
+	<quote>automatic</quote>,
+	or
+	<quote>automatic_reserved</quote>.
+      </para>
+    </section>
+
+    <section id="uixmltext_paramvalue">
+      <title><ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink> values</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<label type='theme_text'>${context:file-dialog}Directory:</name>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	The content of elements that specify values of
+	<classname>&ns;::w::text_param</classname> fields is
+	<ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>-formatted
+	text
+	with references to colors and fonts defined in the theme file or the
+	default display theme.
+      </para>
+
+      <section id="uixmlgettext">
+	<title>Using gettext with
+	  <classname>&ns;::w::text_param</classname> values</title>
+
+	<para>
+	  If the generator object has an optionally attached message catalog,
+	  each text label in the theme file gets looked up in the message
+	  catalog.
+	  The <tag class="attribute">type</tag> attribute gets ignored when
+	  creating widget from the theme file, and it serves to mark
+	  translatable text in the theme file, such as the one in the
+	  <tag class='element'>label</tag> element.
+	  <application>gettext</application> tools know look only for
+	  translatable strings in C/C++ source, so &appshort; provides
+	  an <acronym>XML</acronym> stylesheet that creates a pseudo-C/C++
+	  file that does not get compiled, but it contains translatable
+	  strings that <application>gettext</application>'s
+	  <command>msgfmt</command> picks up and adds to the message catalog
+	  template.
+	</para>
+
+	<para>
+	  The <filename>extract-theme-text.xsl</filename> file in
+	  &appshort;'s <filename>theme</filename> directory is a stylesheet
+	  that generates pseudo C/C++ source containing text from any
+	  element with a
+	  <literal><tag class="attribute">type</tag>="theme_text"</literal>
+	  in a theme file:
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting>
+xsltproc <replaceable>...</replaceable>/extract-theme-text.xsl theme.xml &gt;strings.C</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  If <filename>theme.xml</filename>'s contents include the above
+	  example, the resulting
+	  <filename>strings.C</filename> has the following contents:
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting>
+_("${context:file-dialog}Directory:")</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  This gets picked up by <command>msgfmt</command> and included with
+	  the rest of the application's translatable strings. &appshort;
+	  provides <command>automake</command> macros to automate this process.
+	  In the <filename>Makefile.am</filename>:
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting>
+$(call EXTRACT_THEME_TEXT_GEN,strings.C,theme.xml)</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  This creates <filename>Makefile</filename> rules that automatically
+	  build <filename>strings.C</filename> from
+	  <filename>theme.xml</filename>.
+	  The <literal>EXTRACT_THEME_TEXT_GEN</literal> macro comes from
+	  <link linkend="developing">&appshort;'s
+	    <literal>@LIBCXXW_AM@</literal> framework</link>.
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting>
+#include &lt;&ns;/locale.H&gt;
+#include &lt;&ns;/messages.H&gt;
+
+// ...
+auto utf8_locale=&ns;::locale::base::utf8();
+
+auto catalog=&ns;::messages::create("app", utf8_locale);
+
+auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog);</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  Specifying the optional
+	  <ulink url="&link-typedef-x-messages;"><classname>&ns;::messages</classname></ulink>
+	  parameter,
+	  when <link linkend="uixmlgenerate">creating a generator</link> object,
+	  attaches a message catalog to the generator
+	  generator.
+	  The message catalog should explicitly use a UTF-8
+	  <ulink url="&link-typedef-x-locale;"><classname>&ns;::locale</classname></ulink>
+	  so that the translated messages get directly converted to Unicode.
+	</para>
+      </section>
+    </section>
+
+    <section id="uixmlshortcutvalue">
+      <title><ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink> values</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<shortcut type='theme_text'>${context:settings-dialog}Alt-G</shortcut></programlisting>]]>
+          </programlisting>
+        </informalexample>
+      </blockquote>
+
+      <para>
+	An <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>
+	contains text that uses the same
+	<ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
+	formatting as &text_paramvalue;s, except
+	fonts, colors, and other visual markup references are not allowed,
+	of course.
+	Keyboard shortcuts frequently associate with buttons and labels that
+	have <link linkend="uixmlgettext">translatable text</link>;
+	with distinct <literal>${context}</literal>s that discriminate
+	different text. This allows the associated keyboard shortcuts also
+	have translated text; and if the main button or label's text gets
+	translated, the associated keyboard shortcut gets revised accordingly.
+      </para>
+
+      <note>
+	<para>
+	  This means that a shortcut must use <quote>$$</quote> to refer
+	  to the <literal>$</literal> key.
+	</para>
+      </note>
+
+      <para>
+	The specified shortcut text selects the most appropriate
+	<ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>
+	constructor: a single character, or
+	one or more modifiers, like
+	<quote>Ctrl</quote> or <quote>Alt</quote>,
+	followed by a single character, or <quote>Fn</quote>
+	(function key), or a recognized special key (like
+	<quote>Left</quote> or <quote>Del</quote>).
+      </para>
+    </section>
+  </section>
+
   <section id="uixmllayoutgrid">
     <title>
       <tag class='attribute'>type</tag>=<quote>grid</quote>
@@ -1019,11 +1252,8 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 	invokes the grid layout manager's
 	<methodname>col_alignment</methodname>() method.
 	The
-	<tag class='element'>halign</tag> value is one of:
-	<quote><literal>left</literal></quote>,
-	<quote><literal>center</literal></quote>,
-	<quote><literal>right</literal></quote>, or
-	<quote><literal>fill</literal></quote>.
+	<tag class='element'>halign</tag> element contains an
+	&halignvalue;.
       </para>
     </section>
 
@@ -1052,11 +1282,7 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 	invokes the grid layout manager's
 	<methodname>row_alignment</methodname>() method.
 	The
-	<tag class='element'>valign</tag> value is one of:
-	<quote><literal>top</literal></quote>,
-	<quote><literal>middle</literal></quote>,
-	<quote><literal>bottom</literal></quote>, or
-	<quote><literal>fill</literal></quote>.
+	<tag class='element'>valign</tag> element contains an &valignvalue;.
       </para>
     </section>
 
@@ -1381,11 +1607,7 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 	<methodname>halign</methodname>()
 	method.
 	The
-	<tag class='element'>halign</tag> value is one of:
-	<quote><literal>left</literal></quote>,
-	<quote><literal>center</literal></quote>,
-	<quote><literal>right</literal></quote>, or
-	<quote><literal>fill</literal></quote>.
+	<tag class='element'>halign</tag> element contains an &halignvalue;.
       </para>
     </section>
 
@@ -1409,16 +1631,13 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 	</informalexample>
       </blockquote>
       <para>
+	The
 	<tag class='element'>valign</tag>
 	invokes the grid factory's
 	<methodname>valign</methodname>()
 	method.
 	The
-	<tag class='element'>valign</tag> value is one of:
-	<quote><literal>top</literal></quote>,
-	<quote><literal>middle</literal></quote>,
-	<quote><literal>bottom</literal></quote>, or
-	<quote><literal>fill</literal></quote>.
+	<tag class='element'>valign</tag> element contains an &valignvalue;.
       </para>
     </section>
 
@@ -1803,11 +2022,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	<methodname>halign</methodname>()
 	method.
 	The
-	<tag class='element'>halign</tag> value is one of:
-	<quote><literal>left</literal></quote>,
-	<quote><literal>center</literal></quote>,
-	<quote><literal>right</literal></quote>, or
-	<quote><literal>fill</literal></quote>.
+	<tag class='element'>halign</tag> element contains an &halignvalue;.
       </para>
     </section>
 
@@ -1836,11 +2051,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	<methodname>valign</methodname>()
 	method.
 	The
-	<tag class='element'>valign</tag> value is one of:
-	<quote><literal>top</literal></quote>,
-	<quote><literal>middle</literal></quote>,
-	<quote><literal>bottom</literal></quote>, or
-	<quote><literal>fill</literal></quote>.
+	<tag class='element'>valign</tag> element contains an &valignvalue;.
       </para>
     </section>
 
@@ -1930,38 +2141,9 @@ glm->generate("application-settings", generator, elements);</programlisting>
       </para>
 
       <para>
-	An optional <tag class='element'>shortcut</tag> specifies the page's
-	keyboard shorcut.
+	An optional <tag class='element'>shortcut</tag>
+	element contains the page's &keyboard_shortcutvalue;.
       </para>
-
-      <section id="themeshortcuts">
-	<title>Keyboard <tag class='element'>shortcut</tag>s</title>
-
-	<para>
-	  <tag class='element'>shortcut</tag> elements contain any string
-	  text that's recognizable by
-	  <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shorcut</classname></ulink>'s constructors.
-	  The text uses the same
-	  <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
-	  formatting as
-	  <link linkend="uixmlfactorylabelelement">labels</link>, except
-	  fonts, colors, and other visual markup references are not allowed,
-	  of course.
-	  This allows shortcuts and labels to be
-	  <link linkend="uixmlgettext">translatable together</link>;
-	  with distinct <literal>${context}</literal>s that discriminate
-	  difference labels that happen to have the same default shortcut,
-	  but get translated to different ones.
-	</para>
-
-	<note>
-	  <para>
-	    This means that a shortcut must use <quote>$$</quote> to refer
-	    to the <literal>$</literal> key.
-	  </para>
-	</note>
-
-      </section>
     </section>
   </section>
 
@@ -2098,6 +2280,11 @@ layout_manager->generate("dialog", generators, elements);
       <listitem>
 	<para>
 	  <link linkend="uixmlfactoryinputfieldelement"><classname>&ns;::w::input_field</classname></link>s
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactorydateinputfieldelement"><classname>&ns;::w::date_input_field</classname></link>s
 	</para>
       </listitem>
     </itemizedlist>
@@ -2255,10 +2442,7 @@ layout_manager->generate("dialog", generators, elements);
 
     <para>
       The contents of the
-      <tag class='element'>label</tag> is a
-      <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
-      with references to colors and fonts defined in the theme file or the
-      default display theme.
+      <tag class='element'>label</tag> is a &text_paramvalue;.
     </para>
 
     <section id="uixmllabelconfig">
@@ -2282,108 +2466,6 @@ layout_manager->generate("dialog", generators, elements);
 	<tag class="element">label</tag> element specifies the values
 	of a <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>
 	for creating the label widget.
-      </para>
-    </section>
-
-    <section id="uixmlgettext">
-      <title>Using gettext with labels and
-	<classname>&ns;::w::text_param</classname>s</title>
-
-      <para>
-	If the generator object has an optionally attached message catalog,
-	each text label in the theme file gets looked up in the message
-	catalog.
-	The <tag class="attribute">type</tag> attribute gets ignored when
-	creating widget from the theme file, and it serves to mark
-	translatable text in the theme file, such as the one in the
-	<tag class='element'>label</tag> element.
-	<application>gettext</application> tools know look only for
-	translatable strings in C/C++ source, so &appshort; provides
-	an <acronym>XML</acronym> stylesheet that creates a pseudo-C/C++
-	file that does not get compiled, but it contains translatable
-	strings that <application>gettext</application>'s
-	<command>msgfmt</command> picks up and adds to the message catalog
-	template.
-      </para>
-
-      <para>
-	The <filename>extract-theme-text.xsl</filename> file in
-	&appshort;'s <filename>theme</filename> directory is a stylesheet
-	that generates pseudo C/C++ source containing text from any
-	element with a
-	<literal><tag class="attribute">type</tag>="theme_text"</literal>
-	in a theme file:
-      </para>
-
-      <blockquote>
-	<informalexample>
-	  <programlisting>
-xsltproc <replaceable>...</replaceable>/extract-theme-text.xsl theme.xml &gt;strings.C</programlisting>
-	</informalexample>
-      </blockquote>
-
-      <para>
-	If <filename>theme.xml</filename>'s contents include the above
-	example, the resulting
-	<filename>strings.C</filename> has the following contents:
-      </para>
-
-      <blockquote>
-	<informalexample>
-	  <programlisting>
-_("${context:file-dialog}Directory:")</programlisting>
-	</informalexample>
-      </blockquote>
-
-      <para>
-	This gets picked up by <command>msgfmt</command> and included with
-	the rest of the application's translatable strings. &appshort;
-	provides <command>automake</command> macros to automate this process.
-	In the <filename>Makefile.am</filename>:
-      </para>
-
-      <blockquote>
-	<informalexample>
-	  <programlisting>
-$(call EXTRACT_THEME_TEXT_GEN,strings.C,theme.xml)</programlisting>
-	</informalexample>
-      </blockquote>
-
-      <para>
-	This create <filename>Makefile</filename> rules that automatically
-	build <filename>strings.C</filename> from
-	<filename>theme.xml</filename>.
-	The <literal>EXTRACT_THEME_TEXT_GEN</literal> macro comes from
-	<link linkend="developing">&appshort;'s
-	  <literal>@LIBCXXW_AM@</literal> framework</link>.
-      </para>
-
-
-      <blockquote>
-	<informalexample>
-	  <programlisting>
-#include &lt;&ns;/locale.H&gt;
-#include &lt;&ns;/messages.H&gt;
-
-// ...
-auto utf8_locale=&ns;::locale::base::utf8();
-
-auto catalog=&ns;::messages::create("app", utf8_locale);
-
-auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog);</programlisting>
-	</informalexample>
-      </blockquote>
-
-      <para>
-	Specifying the optional
-	<ulink url="&link-typedef-x-messages;"><classname>&ns;::messages</classname></ulink>
-	parameter,
-	when <link linkend="uixmlgenerate">creating a generator</link> object,
-	attaches a message catalog to the generator
-	generator.
-	The message catalog should explicitly use a UTF-8
-	<ulink url="&link-typedef-x-locale;"><classname>&ns;::locale</classname></ulink>
-	so that the translated messages get directly converted to Unicode.
       </para>
     </section>
   </section>
@@ -2569,9 +2651,9 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
       <methodname>create_button</methodname>()'s
       <ulink url="&link-x--w--button-config;"><classname>&ns;::w::button_config</classname></ulink>
       parameter, and an
-      optional <tag class='element'>shortcut</tag> value sets
-      the <link linkend="themeshortcuts"><classname>&ns;::w::shortcut</classname></link>
-      parameter.
+      optional <tag class='element'>shortcut</tag> contains the
+      button's
+      &keyboard_shortcutvalue;.
     </para>
   </section>
 
@@ -2618,13 +2700,13 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 
     <note>
       <para>
-	<tag class='element'>input_field</tag>'s text uses the same
-	<ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
-	formatting as
-	<link linkend="uixmlfactorylabelelement">labels</link>, except
-	fonts, colors, and other visual markup references are not allowed,
-	of course; so any literal <quote>$</quote> should be doubled as
-	<quote>$$</quote>
+	<tag class='element'>input_field</tag> element's value is a
+	&text_paramvalue;, the first parameter to
+	<methodname>create_input_field</methodname>(); this sets the
+	input field's initial contents (fonts, colors, and other visual
+	markup references are not allowed,
+	of course, and any literal <quote>$</quote> should be doubled as
+	<quote>$$</quote>).
       </para>
     </note>
 
@@ -2681,12 +2763,9 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 	</term>
 	<listitem>
 	  <para>
-	    Sets
+	    Sets the
 	    <classname>&ns;::w::input_field_config</classname>'s
-	    <varname>hint</varname>, using
-	    <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
-	    formatting, just like
-	    <link linkend="uixmlfactorylabelelement">labels</link>.
+	    <varname>hint</varname> &text_paramvalue;.
 	  </para>
 	</listitem>
       </varlistentry>
@@ -2735,10 +2814,11 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 	</term>
 	<listitem>
 	  <para>
-	    Sets the value of this
-	    <ulink url="&link-enum-x--w-scrollbar-visibility;"><classname>&ns;::w::scrollbar_visibility</classname></ulink>
-	    field.
-	    See <xref linkend="uixmlappearancefields" /> for more information.
+	    This element contains an &scrollbar_visibilityvalue; that sets
+	    the corresponding
+	    member of ths
+	    <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>
+	    parameter.
 	  </para>
 	</listitem>
       </varlistentry>
@@ -2748,12 +2828,10 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 	</term>
 	<listitem>
 	  <para>
-	  <para>
-	    Sets the value of this
-	    <ulink url="&link-enum-x--w-halign;"><classname>&ns;::w::halign</classname></ulink>
-	    field.
-	    See <xref linkend="uixmlappearancefields" /> for more information.
-	  </para>
+	    This element contains an &halignvalue; that sets the corresponding
+	    member of ths
+	    <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>
+	    parameter.
 	  </para>
 	</listitem>
       </varlistentry>
@@ -2764,6 +2842,66 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 	<listitem>
 	  <para>
 	    Sets the input field's
+	    <link linkend="uixmlappearance"><varname>appearance</varname></link>
+	    object.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+
+  <section id="uixmlfactorydateinputfieldelement">
+    <title>Date input field <tag class='element'>element</tag> widgets</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="starting_date">
+  <date_input_field />
+  <config>
+    <invalid_input type='theme_text'>Starting date is not valid</invalid_input>
+  </config>
+</element>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='emptytag'>date_input_field</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-date-input-field;"><classname>&ns;::w::date_input_field</classname></ulink>
+      widget.
+      This is equivalent to invoking the &factory;'s
+      <methodname>create_date_input_field</methodname>() method.
+    </para>
+
+    <para>
+      An optional <tag class='element'>config</tag> element initializes the
+      <ulink url="&link-x--w--date-input-field-config;"><classname>&ns;::w::date_input_field_config</classname></ulink>
+      parameter for <methodname>create_date_input_field</methodname>, as
+      follows:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>invalid_input</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::date_input_field_config</classname>'s
+	    <varname>invalid_input</varname> &text_paramvalue;.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>appearance</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the date input field's
 	    <link linkend="uixmlappearance"><varname>appearance</varname></link>
 	    object.
 	  </para>
@@ -3068,13 +3206,7 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	      </informalexample>
 	    </blockquote>
 	    <para>
-	      <classname>&ns;::w::halign</classname>'s
-	      <link linkend="labels">possible values</link> are:
-	      <quote>left</quote>,
-	      <quote>right</quote>,
-	      <quote>center</quote>,
-	      or
-	      <quote>fill</quote>.
+	      These fields contain &halignvalue;s.
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -3092,13 +3224,7 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	      </informalexample>
 	    </blockquote>
 	    <para>
-	      <classname>&ns;::w::scrollbar_visibility</classname>'s
-	      possible values are:
-	      <quote>never</quote>,
-	      <quote>always</quote>,
-	      <quote>automatic</quote>,
-	      or
-	      <quote>automatic_reserved</quote>.
+	      These fields contain &scrollbar_visibilityvalue;s.
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -3122,20 +3248,8 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	      </informalexample>
 	    </blockquote>
 	    <para>
-	      <classname>&ns;::w::text_param</classname> values contain
-	      text strings that initialize the
-	      <classname>&ns;::w::text_param</classname> using a
-	      <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>-formatted
-	      text string.
+	      These fields contain &text_paramvalue;s.
 	    </para>
-	    <note>
-	      <para>
-		There are no
-		<classname>&ns;::w::text_param</classname> values
-		in the current appearance objects, this documentation is
-		included here for use in a future release.
-	      </para>
-	    </note>
 	  </listitem>
 	</varlistentry>
 	<varlistentry>
@@ -3151,13 +3265,7 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	      </informalexample>
 	    </blockquote>
 	    <para>
-	      <classname>&ns;::w::halign</classname>'s
-	      possible values are:
-	      <quote>top</quote>,
-	      <quote>bottom</quote>,
-	      <quote>middle</quote>,
-	      or
-	      <quote>fill</quote>.
+	      These fields contain &valignvalue;s.
 	    </para>
 	  </listitem>
 	</varlistentry>

@@ -16,9 +16,11 @@
 <!ENTITY factories "<link linkend='factory'>factories</link>">
 <!ENTITY factory "<link linkend='factory'>factory</link>">
 <!ENTITY focusable "<link linkend='focusable'>focusable</link>">
+<!ENTITY halignvalue "<link linkend='uixmlhalignvalue'><classname>&ns;::w::halign</classname></link> value">
 <!ENTITY implementation_class "<link linkend='pubimpl'>implementation object class</link>">
 <!ENTITY implementation_object "<link linkend='pubimpl'>implementation object</link>">
 <!ENTITY itemmethods "<link linkend='listitemmethods'><methodname>append_items</methodname>(), <methodname>insert_items</methodname>(), <methodname>replace_items</methodname>(), and <methodname>replace_all_items</methodname>()</link>">
+<!ENTITY keyboard_shortcutvalue "<link linkend='uixmlshortcutvalue'>keyboard <classname>&ns;::w::shortcut</classname> value</link>">
 <!ENTITY layoutmanager "<link linkend='layoutmanager'>layout manager</link>">
 <!ENTITY libcxxname "<application>LIBCXX</application>">
 <!ENTITY libcxx "<ulink url='/'>LibCXX</ulink>">
@@ -30,12 +32,15 @@
 <!ENTITY public_object "<link linkend='pubimpl'>public object</link>">
 <!ENTITY RENDER "<application>RENDER</application>">
 <!ENTITY render "<ulink url=&#34;http://www.x.org/releases/current/doc/renderproto/renderproto.txt&#34;>RENDER extension</ulink>">
+<!ENTITY scrollbar_visibilityvalue "<link linkend='uixmlscrollbar_visibilityvalue'><classname>&ns;::w::scrollbar_visibility</classname></link> value">
 <!ENTITY sxg "<acronym>SXG</acronym>">
 <!ENTITY supportedthemewidget "<link linkend='uixmlfactoryelement'>supported theme widget</link>">
 <!ENTITY template_mixin "<link linkend='mixintemplates'>template mixin</link>">
+<!ENTITY text_paramvalue "<link linkend='uixmltext_paramvalue'><classname>&ns;::w::text_param</classname></link> value">
 <!ENTITY themecontainer "<link linkend='uixmlfactoryelement'>theme container</link>">
 <!ENTITY themewidget "<link linkend='uixmlfactoryelement'>theme widget</link>">
 <!ENTITY themewidgetorcontainer "<link linkend='uixmlfactoryelement'>theme widget or container</link>">
+<!ENTITY valignvalue "<link linkend='uixmlvalignvalue'><classname>&ns;::w::valign</classname></link> value">
 <!ENTITY xproto "<ulink url=&#34;http://www.x.org/releases/X11R7.7/doc/xproto/x11protocol.html&#34;>X protocol</ulink>">
 
 <!ENTITY booklayoutmanager SYSTEM "booklayoutmanager.xml">
@@ -89,6 +94,7 @@
 <!ENTITY toolbox SYSTEM "toolboxlayoutmanager.xml">
 <!ENTITY uigenerator SYSTEM "uigenerator.xml">
 <!ENTITY uixmlappearance_list SYSTEM "../appearance/appearance_list.xml">
+
 <!ENTITY uixmldoc SYSTEM "uixmldoc.xml">
 <!ENTITY validatedinput SYSTEM "validatedinput.xml">
 <!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">

@@ -1,0 +1,33 @@
+<theme>
+  <layout type="grid" id="main">
+    <halign>
+      <col>0</col>
+      <halign>center</halign>
+    </halign>
+    <append_row>
+      <name>first_row</name>
+    </append_row>
+    <append_row>
+      <name>second_row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="first_row">
+    <element id="date_input">
+      <date_input_field />
+      <config>
+	<invalid_input>Invalid starting date</invalid_input>
+      </config>
+    </element>
+  </factory>
+
+  <factory type="grid" id="second_row">
+    <element id="enable_disable">
+      <button>
+	<element id="enable_disable_label">
+	  <label>Enable/Disable</label>
+	</element>
+      </button>
+    </element>
+  </factory>
+</theme>
