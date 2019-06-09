@@ -2287,6 +2287,11 @@ layout_manager->generate("dialog", generators, elements);
 	  <link linkend="uixmlfactorydateinputfieldelement"><classname>&ns;::w::date_input_field</classname></link>s
 	</para>
       </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactoryimageelement"><classname>&ns;::w::image</classname></link>s
+	</para>
+      </listitem>
     </itemizedlist>
 
     <para>
@@ -2909,6 +2914,50 @@ layout_manager->generate("dialog", generators, elements);
       </varlistentry>
     </variablelist>
   </section>
+
+  <section id="uixmlfactoryimageelement">
+    <title>Image <tag class='element'>element</tag> widgets</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element>
+   <image>radio2</image>
+   <width>radio-width</width>
+   <height>radio-height</height>
+</element>
+
+<!-- ... -->
+
+<dim id="radio-width">10</dim>
+<dim id="radio-height">10</dim>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='element'>image</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-image;"><classname>&ns;::w::image</classname></ulink>
+      widget.
+      This is equivalent to invoking the &factory;'s
+      <methodname>create_image</methodname>() method.
+    </para>
+
+    <para>
+      The value of the <tag class='element'>image</tag> element is the
+      first parameter to <methodname>create_image</methodname>(), the image
+      file.
+      The values of optional <tag class='element'>width</tag> and
+      <tag class='element'>height</tag> elements
+      are <tag class='attribute'>id</tag>s of
+      <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>s
+      in the them file. They are only used when the
+      <tag class='element'>image</tag> is an
+      <link linkend="sxg">&sxg; file</link>
+      and specifies the size the &sxg; image gets scaled to.
+    </para>
+  </section>
+
   <section id="uixmlappearance">
     <title><tag class='element'>appearance</tag>s</title>
 

@@ -30,7 +30,9 @@ that gets returned from get_<mumble>()
       <!-- An instance of a class, default-constructed -->
       <xsl:when test="object">
 	<xsl:value-of select="object" />
-	<xsl:text>{}</xsl:text>
+	<xsl:text>{</xsl:text>
+	<xsl:value-of select="default_constructor_params" />
+	<xsl:text>}</xsl:text>
       </xsl:when>
       <xsl:otherwise>
 	<xsl:call-template name="parse-parameter-value" />
@@ -53,9 +55,18 @@ tuple value.
       <xsl:when test="object">
 	<xsl:text>&#10;        if (single_value_exists(lock, "</xsl:text>
 	<xsl:value-of select="member_name" />
-	<xsl:text>"))
-        {
-            auto cloned_lock=lock->clone();
+	<xsl:text>"))&#10;        {&#10;</xsl:text>
+	<xsl:choose>
+	  <xsl:when test="count(initialize_self) &gt; 0">
+
+	    <xsl:text>            </xsl:text>
+	    <xsl:value-of select="$parameter" />
+	    <xsl:text>=</xsl:text>
+	    <xsl:call-template name="parse-parameter-value" />
+	    <xsl:text>;&#10;</xsl:text>
+	  </xsl:when>
+	  <xsl:otherwise>
+	    <xsl:text>            auto cloned_lock=lock->clone();
 
             auto xpath=cloned_lock->get_xpath("</xsl:text>
 
@@ -74,16 +85,16 @@ tuple value.
                 xpath->to_node(i);
 
                 auto name=cloned_lock-&gt;name();&#10;&#10;</xsl:text>
-	  <xsl:for-each select="member">
+	    <xsl:for-each select="member">
 
-	    <xsl:text>                </xsl:text>
-	    <xsl:if test="position() &gt; 1">
-	      <xsl:text>else </xsl:text>
-	    </xsl:if>
+	      <xsl:text>                </xsl:text>
+	      <xsl:if test="position() &gt; 1">
+		<xsl:text>else </xsl:text>
+	      </xsl:if>
 
-	    <xsl:text>if (name == "</xsl:text>
-	    <xsl:value-of select="name" />
-	    <xsl:text>")
+	      <xsl:text>if (name == "</xsl:text>
+	      <xsl:value-of select="name" />
+	      <xsl:text>")
                 {
                     </xsl:text>
 		    <xsl:value-of select="$parameter" />
@@ -117,8 +128,10 @@ tuple value.
 	    <xsl:text>else </xsl:text>
 	  </xsl:if>
 	  <xsl:text>throw EXCEPTION(gettextmsg(_("&lt;%1%&gt;: unknown element"), name));
-            }
-        }&#10;</xsl:text>
+            }&#10;</xsl:text>
+          </xsl:otherwise>
+	</xsl:choose>
+	<xsl:text>        }&#10;</xsl:text>
       </xsl:when>
     </xsl:choose>
   </xsl:template>

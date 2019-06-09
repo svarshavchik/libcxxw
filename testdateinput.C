@@ -106,7 +106,7 @@ void testdateinput()
 				 elements.get_element("enable_disable_label")
 					 ->show();
 				 ed->show();
-				 main_window->show();
+				 main_window->show_all();
 			 },
 			 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 

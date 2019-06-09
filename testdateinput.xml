@@ -10,6 +10,12 @@
     <append_row>
       <name>second_row</name>
     </append_row>
+    <append_row>
+      <name>image_row1</name>
+    </append_row>
+    <append_row>
+      <name>image_row2</name>
+    </append_row>
   </layout>
 
   <factory type="grid" id="first_row">
@@ -30,4 +36,23 @@
       </button>
     </element>
   </factory>
+
+  <factory type="grid" id="image_row1">
+    <element>
+      <image>radio1</image>
+      <width>radio-width</width>
+      <height>radio-height</height>
+    </element>
+  </factory>
+
+  <factory type="grid" id="image_row2">
+    <element>
+      <image>radio2</image>
+      <width>radio-width</width>
+      <height>radio-height</height>
+    </element>
+  </factory>
+
+  <dim id="radio-width">10</dim>
+  <dim id="radio-height">10</dim>
 </theme>

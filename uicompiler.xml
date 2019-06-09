@@ -1299,6 +1299,54 @@ List of values:
       </parameter>
     </function>
 
+
+    <!-- image -->
+
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>image</exists>
+      </condition>
+
+      <invoke>create_image</invoke>
+
+      <object>generic_factory</object>
+
+      <parameter>
+	<name>image</name>
+	<type>single_value</type>
+      </parameter>
+
+      <parameter>
+	<member_name>width</member_name>
+	<name>width</name>
+	<object>dim_arg</object>
+	<type>single_value</type>
+	<default_constructor_params>0</default_constructor_params>
+	<initialize_self />
+	<lookup>
+	  <function>generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<member_name>height</member_name>
+	<name>height</name>
+	<object>dim_arg</object>
+	<default_constructor_params>0</default_constructor_params>
+	<initialize_self />
+	<type>single_value</type>
+	<lookup>
+	  <function>generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+
     <!-- element -->
 
     <function>
