@@ -2299,6 +2299,11 @@ layout_manager->generate("dialog", generators, elements);
 	  <classname>&ns;::w::image_button</classname>s
 	</para>
       </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactoryprogressbarelement"><classname>&ns;::w::progressbar</classname></link>s
+	</para>
+      </listitem>
     </itemizedlist>
 
     <para>
@@ -3064,6 +3069,76 @@ layout_manager->generate("dialog", generators, elements);
       All <methodname>generate</methodname>()d radio buttons with the
       same <tag class='element'>group</tag> name get created with the
       same <classname>&ns;::w::radio_group</classname> handle.
+    </para>
+  </section>
+
+  <section id="uixmlfactoryprogressbarelement">
+    <title>Progress bar <tag class='element'>element</tag> widgets</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="progressbar">
+  <progressbar>progressbar_label_layout</progressbar>
+  <type>grid</type>
+  <config>
+    <value>25</value>
+    <maximum_value>50</maximum_value>
+    <appearance>custom_progressbar</appearance>
+  </config>
+</element>
+
+<!-- ...... -->
+
+<layout id="progressbar_label_layout" type="grid">
+  <append_row>
+    <name>progressbar_label_row</name>
+  </append_row>
+</layout>
+
+<factory id="progressbar_label_row" type="grid">
+  <halign>
+    <halign>center</halign>
+  </halign>
+  <element id="progressbar_label">
+    <label>25%</label>
+  </element>
+</factory>
+
+<!-- ...... -->
+
+<appearance id="custom_progressbar" type="progressbar">
+
+</appearance>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='element'>progressbar</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-progressbar;"><classname>&ns;::w::progressbar</classname></ulink>
+      widget.
+      This is equivalent to invoking the &factory;'s
+      <methodname>create_progressbar</methodname>() method.
+    </para>
+
+    <para>
+      The <tag class='element'>progressbar</tag> element's value
+      must be an <tag class='attribute'>id</tag> with a matching
+      <tag class='attribute'>type</tag> of a
+      <tag class='element'>layout</tag> which generates the initial layout
+      of the progress bar's contents.
+      This is typically a <quote>grid</quote> layout containing a centered
+      <link linkend="uixmlfactorylabelelement">label widget</link>.
+    </para>
+
+    <para>
+      An optional <tag class='element'>config</tag> value
+      initializes
+      <methodname>create_progressbar</methodname>'s
+      <ulink url="&link-x--w--progressbar-config;"><classname>&ns;::w::progressbar_config</classname></ulink>
+      parameter.
     </para>
   </section>
 

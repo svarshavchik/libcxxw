@@ -1421,6 +1421,63 @@ List of values:
       </parameter>
     </function>
 
+    <!-- progressbar -->
+
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>progressbar</exists>
+      </condition>
+
+      <invoke>create_progressbar</invoke>
+
+      <parameter>
+	<scalar>generic_factory</scalar>
+      </parameter>
+
+      <parameter>
+	<type>single_value</type>
+	<name>type</name>
+	<lookup>
+	  <function>lookup_container_generators</function>
+	  <parameter>lock</parameter>
+	  <parameter>single_value(lock, "progressbar", "container")</parameter>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>config</name>
+	<member_name>config</member_name>
+	<object>progressbar_config</object>
+	<member>
+	  <name>value</name>
+	  <field>value</field>
+	  <type>to_size_t</type>
+	</member>
+	<member>
+	  <name>maximum_value</name>
+	  <field>maximum_value</field>
+	  <type>to_size_t</type>
+	</member>
+	<member>
+	  <name>appearance</name>
+	  <field>appearance</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <modify />
+	    <function>get_appearance_base</function>
+	  </lookup>
+	</member>
+      </parameter>
+    </function>
+
     <!-- element -->
 
     <function>

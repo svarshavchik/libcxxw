@@ -25,7 +25,7 @@ struct progressbar_config {
 	//! Maximum value of the progress bar
 	size_t maximum_value=100;
 
-	//! Wrap a const_progressbar_appearance
+	//! Wrap a \ref const_progressbar_appearance "const_progressbar_appearance".
 
 	//! Avoids the need to pull in the entire header file.
 

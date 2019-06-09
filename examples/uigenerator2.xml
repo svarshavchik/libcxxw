@@ -28,6 +28,7 @@
 
   <factory id="settings-pages" type="book">
 
+    <!--             General        -->
     <halign>
       <halign>center</halign>
     </halign>
@@ -51,6 +52,7 @@
       <shortcut>Alt-G</shortcut>
     </add>
 
+    <!--             Network        -->
     <halign>
       <halign>center</halign>
     </halign>
@@ -74,6 +76,8 @@
       <shortcut>Alt-N</shortcut>
     </add>
 
+    <!--             Local        -->
+
     <halign>
       <halign>center</halign>
     </halign>
@@ -96,6 +100,43 @@
       </page>
       <shortcut>Alt-L</shortcut>
     </add>
+
+    <!--             Progress        -->
+
+    <halign>
+      <halign>center</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <add>
+      <tab>
+	<element>
+	  <label>${decoration:underline}P${decoration:none}rogress</label>
+	</element>
+      </tab>
+      <page>
+
+	<!-- This effectively executes create_progressbar(), with
+	     new_gridlayoutmanager creating the contents of the progress bar
+	-->
+
+	<element id="progressbar_element">
+	  <progressbar>progressbar_label_layout</progressbar>
+	  <type>grid</type>
+
+	  <!-- Set a custom appearance in the progressbar_config parameter.
+	       This sets the default font for labels in the progress bar.
+	  -->
+	  <config>
+	    <appearance>progressbar_large_font</appearance>
+	  </config>
+	</element>
+      </page>
+      <shortcut>Alt-P</shortcut>
+    </add>
   </factory>
 
   <layout id="general-page" type="grid">
@@ -116,7 +157,16 @@
     </padding>
 
     <element>
-      <name>general-page-placeholder</name>
+      <label>                                        $#
+${font:serif; point_size=24}General Settings
+${font:sans_serif}
+
+Placeholder
+Placeholder
+Placeholder</label>
+      <options>
+        <alignment>center</alignment>
+      </options>
     </element>
   </factory>
 
@@ -137,7 +187,14 @@
       <padding>page-padding</padding>
     </padding>
     <element>
-      <name>network-page-placeholder</name>
+      <label>                                        $#
+${font:serif; point_size=24}Network Settings
+${font:sans_serif}
+
+Placeholder</label>
+      <options>
+        <alignment>center</alignment>
+      </options>
     </element>
   </factory>
 
@@ -158,8 +215,35 @@
       <padding>page-padding</padding>
     </padding>
     <element>
-      <name>local-page-placeholder</name>
+      <label>                                        $#
+${font:serif; point_size=24}Local Settings
+${font:sans_serif}
+
+Placeholder</label>
+      <options>
+        <alignment>center</alignment>
+      </options>
     </element>
   </factory>
 
+  <layout id="progressbar_label_layout" type="grid">
+    <append_row>
+      <name>progressbar_label_row</name>
+    </append_row>
+  </layout>
+
+  <factory id="progressbar_label_row" type="grid">
+    <halign>
+      <halign>center</halign>
+    </halign>
+    <element id="progressbar_label">
+      <label>0%</label>
+    </element>
+  </factory>
+
+  <!-- Custom progressbar appearance object -->
+
+  <appearance type="progressbar" id="progressbar_large_font">
+    <label_font>serif; point_size=24</label_font>
+  </appearance>
 </theme>

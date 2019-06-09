@@ -77,6 +77,12 @@ static inline void create_main_window(const x::w::main_window &main_window)
 	x::w::buttonptr reset_button;
 	x::w::buttonptr shuffle_button;
 
+	// The first member in the element factory is a map with callbacks,
+	// identified by a text label, that get referenced from the theme
+	// file. The first one, "combobox-label" gets referenced by the
+	// <name>d <element> in the theme file. The <element> instruction
+	// invokes the callback, and passes the current factory. The callback
+	// creates a label widget.
 	x::w::uielements element_factory
 		{
 		 {

@@ -14,13 +14,17 @@
 #include <x/w/uielements.H>
 #include <x/w/uigenerators.H>
 #include <x/w/text_param_literals.H>
+#include <x/w/progressbar.H>
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <tuple>
+#include <chrono>
 
 #include "close_flag.H"
 
-static inline void create_main_window(const x::w::main_window &main_window)
+
+static inline auto create_main_window(const x::w::main_window &main_window)
 {
 	std::string me=x::exename(); // My path.
 	size_t p=me.rfind('/');
@@ -31,58 +35,20 @@ static inline void create_main_window(const x::w::main_window &main_window)
 		x::w::const_uigenerators::create(me.substr(0, ++p) +
 						 "uigenerator2.xml");
 
-	x::w::uielements element_factory
-		{
-		 {
-		  // Elements created from the UI theme file.
-
-		  // Placeholders on the individual pages.
-
-		  {"general-page-placeholder",
-		   []
-		   (const x::w::factory &factory)
-		   {
-			   factory->create_label
-				   ({"serif; point_size=24"_theme_font,
-				     "General Settings\n",
-				     "sans_serif"_theme_font,
-				     "\n\nPlaceholder\n"
-				     "Placeholder\n"
-				     "Placeholder\n"},
-					   { x::w::halign::center});
-		   },
-		  },
-		  {"network-page-placeholder",
-		   []
-		   (const x::w::factory &factory)
-		   {
-			   factory->create_label
-				   ({"serif; point_size=24"_theme_font,
-				     "Network Settings\n",
-				     "sans_serif"_theme_font,
-				     "\n\nPlaceholder\n"},
-					   { x::w::halign::center});
-		   },
-		  },
-		  {"local-page-placeholder",
-		   []
-		   (const x::w::factory &factory)
-		   {
-			   factory->create_label
-				   ({"serif; point_size=24"_theme_font,
-				     "Local Settings\n",
-				     "sans_serif"_theme_font,
-				     "\n\nPlaceholder\n"},
-					   { x::w::halign::center});
-		   },
-		  },
-		 },
-		};
+	x::w::uielements element_factory;
 
 	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
 
 	layout->generate("main-window-grid",
 			 generator, element_factory);
+
+	// generate() saved the id-ed widgets that were created. Fish out
+	// the progressbar widget and its label widget, and return them.
+
+	return std::tuple{
+		element_factory.get_element("progressbar_element"),
+			element_factory.get_element("progressbar_label")
+			};
 }
 
 void uigenerator2()
@@ -91,11 +57,15 @@ void uigenerator2()
 
 	auto close_flag=close_flag_ref::create();
 
+	x::w::progressbarptr progressbar;
+	x::w::labelptr progressbar_label;
+
 	auto main_window=x::w::main_window
 		::create([&]
 			 (const auto &main_window)
 			 {
-				 create_main_window(main_window);
+				 std::tie(progressbar, progressbar_label)=
+					 create_main_window(main_window);
 			 },
 
 			 x::w::new_gridlayoutmanager{});
@@ -120,7 +90,28 @@ void uigenerator2()
 
 	main_window->show_all();
 
-	close_flag->wait();
+	// While waiting for the window to be closed, update the progress bar.
+	x::mpcobj<bool>::lock lock{close_flag->flag};
+
+	int n=0;
+
+	do
+	{
+		progressbar->update(n, 100,
+				    [=]
+				    (ONLY IN_THREAD)
+				    {
+					    std::ostringstream o;
+
+					    o << n << "%";
+
+					    progressbar_label->update(o.str());
+				    });
+		n= (n+10)%110;
+
+		lock.wait_for(std::chrono::milliseconds(500),
+			      [&] { return *lock; });
+	} while (!*lock);
 }
 
 int main(int argc, char **argv)

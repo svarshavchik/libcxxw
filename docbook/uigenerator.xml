@@ -15,16 +15,20 @@ See COPYING for distribution information.
     <acronym>XML</acronym>-specified layout,
     a <quote>theme file</quote>.
     The <acronym>XML</acronym> content of the theme file gets effectively
-    executed as a list of instructions for invoking the various methods of
+    executed instructions for invoking various methods of
     layout managers and factories.
-    Instead of invoking various methods
-    grid rows, factories, and widgets
+    Instead of the methods which create and access containers,
+    factories, and widgets
     and their various grid-related attributes (borders, padding, etc...),
     these methods gets executed via the theme file.
     The default appearance of &appshort; windows comes from the default
     theme file, and this is the same mechanism.
-    The application provides only the code to create the individual widgets themselves: in this case a label, a combo-box, and a set of
-    buttons.
+    The application provides only the code to create custom widgets.
+    Most of the standard widgets can be created directly by the theme file.
+    <filename>uigenerator1.C</filename> manually creates
+    several standard widgets,
+    a label, a combo-box, and a set of buttons, as an example; even though
+    they could be created directly from the theme file.
   </para>
 
   <para>
@@ -85,15 +89,81 @@ layout->generate("main-window-grid",
   </blockquote>
 
   <para>
-    <xref linkend="uixmldoc" /> provides a complete specification of the
+    <xref linkend="uixmldoc" /> provides a complete specification of
+    &appshort;'s
     theme files.
 
     <ulink url="examples/uigenerator2.C">uigenerator2.C</ulink> is another
     example that uses a theme file to create a main window showing
     <link linkend="booklayoutmanager">book tabs</link>, filling out the
     entire contents of the window, the book, and the tabs, from the theme
-    file.
+    file, including all the standard widgets.
+    <filename>uigenerator2.C</filename> provides an example of:
   </para>
+
+  <variablelist>
+    <varlistentry>
+      <term>
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+<element>
+  <label>${decoration:underline}N${decoration:none}etwork</label>
+</element>
+]]></programlisting>
+	  </informalexample>
+	</blockquote>
+      </term>
+      <listitem>
+	<para>
+	  Creating
+	  <link linkend="uixmlfactorylabelelement">label widgets</link>
+	  and using
+	  <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>-formatted
+	  text to create
+	  <classname>&ns;::w::text_param</classname>s.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+<element id="progressbar_element">
+  <progressbar>progressbar_label_layout</progressbar>
+  <type>grid</type>
+</element>
+]]></programlisting>
+	  </informalexample>
+	</blockquote>
+      </term>
+      <listitem>
+	<para>
+	  Creating <link linkend="uixmlfactoryprogressbarelement">progress
+	    bar widgets</link>.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+element_factory.get_element("progressbar_element"),
+]]></programlisting>
+	  </informalexample>
+	</blockquote>
+      </term>
+      <listitem>
+	<para>
+	  Using <methodname>get_element</methodname>() to retrieve the
+	  widget that was <methodname>generate</methodname>() from the theme
+	  file.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </chapter>
 <!--
 Local Variables:

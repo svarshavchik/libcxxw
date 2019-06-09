@@ -29,6 +29,7 @@
 #include "x/w/image.H"
 #include "x/w/image_button.H"
 #include "x/w/radio_group.H"
+#include "x/w/progressbar.H"
 #include "theme_parser_lock.H"
 #include "messages.H"
 #include "picture.H"
@@ -559,6 +560,8 @@ appearance_type uicompiler::lookup_appearance(std::string name,
 //
 // - generate - takes a container, gets its layout manager, and generates
 // its contents.
+//
+// - new_layoutmanager - returns the corresponding new layoutmanager object.
 
 // Grid layout manager functionality.
 
@@ -589,6 +592,11 @@ struct uicompiler::gridlayoutmanager_functions {
 					 generate(container, factories);
 				 },
 				 new_gridlayoutmanager{});
+		}
+
+		inline new_gridlayoutmanager new_layoutmanager() const
+		{
+			return {};
 		}
 
 		void generate(const container &c,
@@ -636,6 +644,11 @@ struct uicompiler::booklayoutmanager_functions {
 				 new_booklayoutmanager{});
 		}
 
+		inline new_booklayoutmanager new_layoutmanager() const
+		{
+			return {};
+		}
+
 		void generate(const container &c,
 			      uielements &factories) const
 		{
@@ -669,6 +682,44 @@ struct uicompiler::container_generators_t
 
 	using variant_t::variant_t;
 };
+
+// Used by compiler progressbar code
+
+static inline
+element create_progressbar(const factory &generic_factory,
+			   const uicompiler::container_generators_t::variant_t
+			   generators,
+			   uielements &elements,
+			   const progressbar_config &config)
+{
+	return std::visit
+		([&]
+		 (const auto &generators) -> progressbar
+		 {
+			 if constexpr (std::is_base_of_v<new_layoutmanager,
+				       decltype(generators.new_layoutmanager())
+				       >)
+			 {
+				auto nlm=generators.new_layoutmanager();
+
+				return generic_factory->create_progressbar
+					([&]
+					 (const auto &c)
+					 {
+						 generators.generate(c,
+								     elements);
+					 },
+					 config,
+					 nlm);
+			 }
+			 else
+			 {
+				 throw EXCEPTION(_("Invalid layout manager"
+						   " for progress bars"));
+			 }
+		 },
+		 generators);
+}
 
 uicompiler::layoutmanager_functions
 uicompiler::get_layoutmanager(const std::string &type)

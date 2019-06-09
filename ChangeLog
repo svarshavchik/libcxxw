@@ -1,3 +1,7 @@
+2019-06-09  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Create <progressbar>s using the theme file.
+
 2019-06-08  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Create <radio>s using the theme file.

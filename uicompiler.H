@@ -312,8 +312,9 @@ private:
 
 	layoutmanager_functions get_layoutmanager(const std::string &type);
 
+public:
 	struct container_generators_t;
-
+private:
 	//! Validate container <type>, and look up name's generators.
 
 	container_generators_t
