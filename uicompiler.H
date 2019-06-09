@@ -294,11 +294,25 @@ private:
 					    const vector<
 					    bookpagefactory_generator> &);
 
-	//! The looked up generators for a <container>
+	//! Supported grid layout manager functionality.
 
-	typedef std::variant<vector<gridlayoutmanager_generator>,
-			     vector<booklayoutmanager_generator>
-			     > container_generators_t;
+	struct gridlayoutmanager_functions;
+
+	//! Supported book layout manager functionality.
+
+	struct booklayoutmanager_functions;
+
+	//! All supported layout manager funcitonality.
+
+	typedef std::variant<gridlayoutmanager_functions,
+			     booklayoutmanager_functions
+			     > layoutmanager_functions;
+
+	//! Convert "grid" or "book" to all_layoutmanagers
+
+	layoutmanager_functions get_layoutmanager(const std::string &type);
+
+	struct container_generators_t;
 
 	//! Validate container <type>, and look up name's generators.
 

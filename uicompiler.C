@@ -35,6 +35,8 @@
 #include <x/functionalrefptr.H>
 #include <x/visitor.H>
 #include <algorithm>
+#include <functional>
+#include <type_traits>
 
 LIBCXXW_NAMESPACE_START
 
@@ -542,6 +544,143 @@ appearance_type uicompiler::lookup_appearance(std::string name,
 		wrong_appearance_type(name, element);
 
 	return ret;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Supported layout manager functionality.
+
+// Each supported layout manager defines a 'generators' member which holds
+// a vector of compiled layout manager generator, and implements additional
+// functionality:
+//
+// - create_container(): takes a factory object, and an elements object;
+// creates a container and generates its contents.
+//
+// - generate - takes a container, gets its layout manager, and generates
+// its contents.
+
+// Grid layout manager functionality.
+
+struct uicompiler::gridlayoutmanager_functions {
+
+	// A vector of compiled grid layout manager generators
+
+	struct generators {
+
+		vector<gridlayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const theme_parser_lock &lock,
+			   const std::string &name)
+			: generator_vector{compiler
+					   .lookup_gridlayoutmanager_generators
+					   (lock, name)}
+		{
+		}
+
+		container create_container(const factory &f,
+					   uielements &factories) const
+		{
+			return f->create_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 new_gridlayoutmanager{});
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			gridlayoutmanager glm=c->get_layoutmanager();
+
+			for (const auto &g:*generator_vector)
+			{
+				g(glm, factories);
+			}
+		}
+	};
+};
+
+// Book layout manager functionality
+
+struct uicompiler::booklayoutmanager_functions {
+
+	// A vector of compiler book layout manager generators
+
+	struct generators {
+
+		vector<booklayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const theme_parser_lock &lock,
+			   const std::string &name)
+			: generator_vector{compiler
+					   .lookup_booklayoutmanager_generators
+					   (lock, name)}
+		{
+		}
+
+		focusable_container create_container(const factory &f,
+						     uielements &factories)
+			const
+		{
+			return f->create_focusable_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 new_booklayoutmanager{});
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			booklayoutmanager blm=c->get_layoutmanager();
+
+			for (const auto &g:*generator_vector)
+			{
+				g(blm, factories);
+			}
+		}
+	};
+};
+
+//
+// "container_generators_t" is a variant of all these "generators' classes.
+//
+// Define the container_generators_t variant directly based on the
+// layoutmanager_functions variant.
+
+template<typename variant_t> struct all_generators;
+
+template<typename ...Args> struct all_generators<std::variant<Args...>> {
+
+	typedef std::variant<typename Args::generators...> type;
+};
+
+struct uicompiler::container_generators_t
+	: all_generators<layoutmanager_functions>::type {
+
+	typedef all_generators<layoutmanager_functions>::type variant_t;
+
+	using variant_t::variant_t;
+};
+
+uicompiler::layoutmanager_functions
+uicompiler::get_layoutmanager(const std::string &type)
+{
+	if (type == "grid")
+		return gridlayoutmanager_functions{};
+
+	if (type == "book")
+		return booklayoutmanager_functions{};
+
+	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a known layout/container"),
+				   type));
 }
 
 struct uicompiler::compiler_functions {
@@ -1241,18 +1380,18 @@ uicompiler::lookup_container_generators(const std::string &type,
 					bool,
 					const char *tag)
 {
-	if (type == "grid")
-	{
-		return lookup_gridlayoutmanager_generators(lock, name);
-	}
+	auto functions=get_layoutmanager(type);
 
-	if (type == "book")
-	{
-		return lookup_booklayoutmanager_generators(lock, name);
-	}
+	return std::visit([&]
+			  (auto &functions) -> container_generators_t
+			  {
+				  typedef typename
+					  std::remove_reference_t
+					  <decltype(functions)>
+					  ::generators generators;
 
-	throw EXCEPTION(gettextmsg(_("The %1% <type> is not valid for %2%"),
-				   type, tag));
+				  return generators{*this, lock, name};
+			  }, functions);
 }
 
 vector<gridlayoutmanager_generator>
@@ -1328,54 +1467,17 @@ void uicompiler::create_container(const factory &f,
 				  const std::string &name,
 				  const container_generators_t &generators)
 {
-	std::visit
-		(visitor
-		 {[&](const vector<gridlayoutmanager_generator> &generators)
-		  {
-			  f->create_container
-				  ([&]
-				   (const auto &new_container)
-				   {
-					   factories.new_elements
-						   .emplace(name,
-							    new_container);
+	// std::visit needs a variant to work with.
+	const container_generators_t::variant_t &v=generators;
 
-					   gridlayoutmanager glm=
-						   new_container
-						   ->get_layoutmanager();
-
-					   for (const auto &g:*generators)
-					   {
-						   g(glm, factories);
-					   }
-				   },
-				   new_gridlayoutmanager{});
-		  },
-		  [&](const vector<booklayoutmanager_generator> &generators)
-		  {
-			  new_booklayoutmanager nblm;
-
-			  f->create_focusable_container
-				  ([&]
-				   (const auto &new_container)
-				   {
-					   factories.new_elements
-						   .emplace(name,
-							    new_container);
-
-					   booklayoutmanager blm=
-						   new_container
-						   ->get_layoutmanager();
-
-					   for (const auto &g:*generators)
-					   {
-						   g(blm, factories);
-					   }
-				   },
-				   nblm);
-		  }
-		 }, generators);
-
+	factories.new_elements.emplace
+		(name,
+		 std::visit([&]
+			    (const auto &generators) -> container
+			    {
+				    return generators
+					    .create_container(f, factories);
+			    }, v));
 }
 
 vector<gridfactory_generator>
