@@ -1941,7 +1941,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	  <tag class='element'>shortcut</tag> elements contain any string
 	  text that's recognizable by
 	  <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shorcut</classname></ulink>'s constructors.
-	  The strings use the same
+	  The text uses the same
 	  <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
 	  formatting as
 	  <link linkend="uixmlfactorylabelelement">labels</link>, except
@@ -2088,6 +2088,16 @@ layout_manager->generate("dialog", generators, elements);
       <listitem>
 	<para>
 	  <link linkend="uixmlfactoryfocusablelabelelement"><classname>&ns;::w::focusable_label</classname></link>s
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactorybuttonelement"><classname>&ns;::w::button</classname></link>s
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactoryinputfieldelement"><classname>&ns;::w::input_field</classname></link>s
 	</para>
       </listitem>
     </itemizedlist>
@@ -2565,6 +2575,202 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
     </para>
   </section>
 
+  <section id="uixmlfactoryinputfieldelement">
+    <title>Input field <tag class='element'>element</tag> widgets</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id='number-of-copies'>
+  <input_field>1</input_field>
+  <config>
+    <columns>6</columns>
+    <alignment>right</alignment>
+    <maximum_size>5</maximum_size>
+    <autoselect />
+    <set_default_spin_control_factories />
+  </config>
+</element>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='element'>input_field</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-input-field;"><classname>&ns;::w::input_field</classname></ulink>
+      widget.
+      This is equivalent to invoking the &factory;'s
+      <methodname>create_input_field</methodname>() method.
+    </para>
+
+    <para>
+      The value of the <tag class='element'>input_field</tag> sets the initial
+      contents of the input field (the first parameter to
+      <methodname>create_input_field</methodname>()). It may be empty:
+    </para>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<input_field />]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <note>
+      <para>
+	<tag class='element'>input_field</tag>'s text uses the same
+	<ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
+	formatting as
+	<link linkend="uixmlfactorylabelelement">labels</link>, except
+	fonts, colors, and other visual markup references are not allowed,
+	of course; so any literal <quote>$</quote> should be doubled as
+	<quote>$$</quote>
+      </para>
+    </note>
+
+    <para>
+      An optional <tag class='element'>config</tag> element initializes the
+      <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>
+      parameter for <methodname>create_input_field</methodname>, as
+      follows:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>columns</tag>,
+	  <tag class='element'>rows</tag>, and
+	  <tag class='element'>maximum_size</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the corresponding members in the
+	    <classname>&ns;::w::input_field_config</classname>
+	    parameter.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>autoselect</tag> and
+	  <tag class='emptytag'>autodeselect</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the corresponding flags in the
+	    <classname>&ns;::w::input_field_config</classname>
+	    parameter.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>disable_clipboards</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets
+	    <classname>&ns;::w::input_field_config</classname>'s
+	    <varname>update_clipboards</varname> to <literal>false</literal>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>hint</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets
+	    <classname>&ns;::w::input_field_config</classname>'s
+	    <varname>hint</varname>, using
+	    <ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>
+	    formatting, just like
+	    <link linkend="uixmlfactorylabelelement">labels</link>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>password</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Invokes <classname>&ns;::w::input_field_config</classname>'s
+	    <methodname>set_password</methodname>() method, configuring this
+	    input field as a <link linkend="passwordfields">password
+	      input field</link>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>set_default_spin_control_factories</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Invokes <classname>&ns;::w::input_field_config</classname>'s
+	    <methodname>set_default_spin_control_factories</methodname>()
+	    method, enabling this
+	    input field's <link linkend="spininput">spin buttons</link>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>enable_search</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Invokes <classname>&ns;::w::input_field_config</classname>'s
+	    <methodname>enable_search</methodname>()
+	    method, enabling this
+	    input field's <link linkend="searchwidgets">search popup</link>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>vertical_scrollbar</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the value of this
+	    <ulink url="&link-enum-x--w-scrollbar-visibility;"><classname>&ns;::w::scrollbar_visibility</classname></ulink>
+	    field.
+	    See <xref linkend="uixmlappearancefields" /> for more information.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>alignment</tag>
+	</term>
+	<listitem>
+	  <para>
+	  <para>
+	    Sets the value of this
+	    <ulink url="&link-enum-x--w-halign;"><classname>&ns;::w::halign</classname></ulink>
+	    field.
+	    See <xref linkend="uixmlappearancefields" /> for more information.
+	  </para>
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>appearance</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the input field's
+	    <link linkend="uixmlappearance"><varname>appearance</varname></link>
+	    object.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
   <section id="uixmlappearance">
     <title><tag class='element'>appearance</tag>s</title>
 

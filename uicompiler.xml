@@ -1209,12 +1209,6 @@ List of values:
 	</member>
 
 	<member>
-	  <name>autodeselect</name>
-	  <field>autodeselect</field>
-	  <type>optional_constant&lt;true&gt;</type>
-	</member>
-
-	<member>
 	  <name>hint</name>
 	  <field>hint</field>
 	  <type>compiler.text_param_value</type>
