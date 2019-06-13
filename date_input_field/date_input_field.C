@@ -323,31 +323,53 @@ date_input_field factoryObj
 
 	// Validate the contents of the date input field.
 
+	// on_validate() uses std::optional to indicate whether the input
+	// passed validation, or not. If nullopt, validation failed.
+	//
+	// In order to allow empty input, our validated data type
+	// is std::optional<ymd>, so if no date is entered it is nullopt.
+
+	typedef std::optional<ymd> validated_type_t;
+
+	// And the validator validates std::optional<validated_type_t>
+
 	text_input_field->set_validator
 		([cc=make_weak_capture(calendar_containerptr),
 		  invalid_input_error_message=config.invalid_input]
 		 (ONLY IN_THREAD,
 		  const std::u32string &d,
 		  const input_field &f,
-		  const callback_trigger_t &trigger) -> std::optional<ymd>
+		  const callback_trigger_t &trigger)
+		 -> std::optional<validated_type_t>
 		 {
-			 std::optional<ymd> parsed_date;
+			 std::optional<validated_type_t> ret;
 
 			 // try_parse() what was entered.
 
-			 if (!d.empty())
-			 {
-				 parsed_date=ymd::parser{}.try_parse(d);
+			 bool error=false;
 
-				 if (!parsed_date)
+			 if (d.empty())
+			 {
+				 ret.emplace(std::nullopt);
+			 }
+			 else
+			 {
+				 ret=ymd::parser{}.try_parse(d);
+
+				 if (!ret.value())
+				 {
+					 error=true;
 					 f->stop_message
 						 (invalid_input_error_message);
+				 }
 			 }
+
+			 auto &parsed_date=ret.value();
 
 			 auto got=cc.get();
 
 			 if (!got)
-				 return parsed_date;
+				 return ret;
 
 			 auto &[cc]=*got;
 
@@ -363,14 +385,19 @@ date_input_field factoryObj
 
 			 cc->report_new_date(IN_THREAD, parsed_date, trigger);
 
-			 return parsed_date;
+			 if (error)
+				 ret.reset();
+			 return ret;
 		 },
 		 [preferred]
 		 (const auto &new_date)
 		 {
+			 if (!new_date)
+				 return std::u32string{};
+
 			 // Canonically format the date.
 
-			 return new_date.format_date(preferred);
+			 return new_date->format_date(preferred);
 		 });
 
 	auto date_picker_popup=popup::create(popup_impl, popup_lm->impl,

@@ -1,5 +1,9 @@
 2019-06-09  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* date_input_field/date_input_field.C: allow empty date input
+	field, don't treat it as an error condition. "No date entered" is
+	already a valid value in the date input field.
+
 	* Create <progressbar>s using the theme file.
 
 2019-06-08  Sam Varshavchik  <mrsam@courier-mta.com>
