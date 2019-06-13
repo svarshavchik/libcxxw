@@ -117,6 +117,9 @@ The initial invocation of a replacement callback gets executed by the
 library's internal execution thread, and may happen before or after
 on_update() returns.
 
+set(), reconfigure(), and on_update() are overloaded with an initial
+\c IN_THREAD parameter, to be invoked from another callback in the
+connection thread.
 */
 
 typedef ref<scrollbarObj> scrollbar;

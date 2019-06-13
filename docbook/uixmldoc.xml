@@ -2429,6 +2429,11 @@ layout_manager->generate("dialog", generators, elements);
 	  <link linkend="uixmlfactoryfontpickerelement"><classname>&ns;::w::font_picker</classname></link>s
 	</para>
       </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactoryscrollbarelement"><classname>&ns;::w::scrollbar</classname></link>s
+	</para>
+      </listitem>
     </itemizedlist>
 
     <para>
@@ -3351,7 +3356,7 @@ layout_manager->generate("dialog", generators, elements);
     </variablelist>
   </section>
 
-    <section id="uixmlfactoryfontpickerelement">
+  <section id="uixmlfactoryfontpickerelement">
     <title>Font picker <tag class='element'>element</tag> widgets</title>
     <blockquote>
       <informalexample>
@@ -3504,6 +3509,101 @@ layout_manager->generate("dialog", generators, elements);
 	</listitem>
       </varlistentry>
     </variablelist>
+  </section>
+
+  <section id="uixmlfactoryscrollbarelement">
+    <title>Scroll-bar <tag class='element'>element</tag> widgets</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="range">
+  <scrollbar>horizontal</scrollbar>
+  <config>
+    <minimum_size>range_width</minimum_size>
+    <range>100</range>
+    <page_size>25</page_size>
+    <increment>10</increment>
+  </config>
+  <appearance>range-appearance</appearance>
+</element>
+
+<!-- -->
+<dim id="range_width">100</dim>
+
+<appearance id="range-appearance" type="scrollbar">
+
+    <!-- -->
+
+</appearance>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='element'>scrollbar</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-scrollbar;"><classname>&ns;::w::scrollbar</classname></ulink>
+      widget.
+      <tag class='element'>scrollbar</tag>'s value is either
+      <quote>horizontal</quote> or <quote>vertical</quote>, and
+      this is equivalent to invoking the &factory;'s
+      <methodname>create_horizontal_scrollbar</methodname>() or
+      <methodname>create_vertical_scrollbar</methodname>() method.
+    </para>
+
+    <para>
+      An optional <tag class='element'>config</tag> value
+      initializes
+      the
+      <ulink url="&link-x--w--scrollbar-config;"><classname>&ns;::w::scrollbar_config</classname></ulink>
+      parameter, as follows:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>minimum_size</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::scrollbar_config</classname>'s
+	    <varname>minimum_size</varname>. The value of the
+	    <tag class='element'>minimum_size</tag> element is an
+	    <tag class='attribute'>id</tag> of a
+	    <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>range</tag>,
+	  <tag class='element'>page_size</tag>,
+	  <tag class='element'>increment</tag>, and
+	  <tag class='element'>value</tag>
+	</term>
+
+	<listitem>
+	  <para>
+	    These elements set
+	    <classname>&ns;::w::scrollbar_config</classname>'s
+	    corresponding values.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>
+      An optional <tag class='element'>appearance</tag> element
+      sets the optional
+      <link linkend="uixmlappearance"><varname>appearance</varname></link>
+      object parameter to
+      <methodname>create_horizontal_scrollbar</methodname>() or
+      <methodname>create_vertical_scrollbar</methodname>().
+    </para>
   </section>
 
   <section id="uixmlappearance">

@@ -34,6 +34,7 @@
 #include "x/w/color_picker_config.H"
 #include "x/w/font_picker.H"
 #include "x/w/font_picker_config.H"
+#include "x/w/scrollbar.H"
 #include "theme_parser_lock.H"
 #include "messages.H"
 #include "picture.H"
@@ -776,6 +777,28 @@ inline void invoke_restore(object_type &object,
 #endif
 }
 
+uicompiler::scrollbar_type
+uicompiler::lookup_scrollbar_type(const std::string &value)
+{
+	if (value == "horizontal")
+		return horizontal;
+
+	if (value == "vertical")
+		return vertical;
+
+	throw EXCEPTION(_("<scrollbar> is not \"horizontal\" or \"vertical\""));
+}
+
+scrollbar uicompiler::create_scrollbar(uicompiler::scrollbar_type type,
+				       const factory &f,
+				       const scrollbar_config &config,
+				       const const_scrollbar_appearance &a)
+{
+	return type==uicompiler::scrollbar_type::horizontal
+		? f->create_horizontal_scrollbar(config, a)
+		: f->create_vertical_scrollbar(config, a);
+}
+
 
 struct uicompiler::compiler_functions {
 
@@ -799,7 +822,7 @@ struct uicompiler::compiler_functions {
 			if (iter == compiler.generators
 			    ->tooltip_generators.end())
 				throw EXCEPTION(gettextmsg
-						(_("Tooltip \"%1\" is not"
+						(_("Tooltip \"%1%\" is not"
 						   " defined"),
 						 id));
 			optional_tooltip=iter->second;

@@ -1598,12 +1598,95 @@ List of values:
       </parameter>
     </function>
 
+    <!-- scrollbar -->
+
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>scrollbar</exists>
+      </condition>
+
+      <invoke>create_scrollbar</invoke>
+
+      <parameter>
+	<name>scrollbar</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>lookup_scrollbar_type</function>
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<scalar>generic_factory</scalar>
+      </parameter>
+
+      <parameter>
+	<name>config</name>
+	<member_name>config</member_name>
+	<object>scrollbar_config</object>
+
+	<member>
+	  <name>range</name>
+	  <field>range</field>
+	  <type>to_size_t</type>
+	</member>
+
+	<member>
+	  <name>page_size</name>
+	  <field>page_size</field>
+	  <type>to_size_t</type>
+	</member>
+
+	<member>
+	  <name>increment</name>
+	  <field>increment</field>
+	  <type>to_size_t</type>
+	</member>
+
+	<member>
+	  <name>value</name>
+	  <field>value</field>
+	  <type>to_size_t</type>
+	</member>
+
+	<member>
+	  <name>minimum_size</name>
+	  <field>minimum_size</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <function>generators-&gt;lookup_dim</function>
+	    <default_params />
+	  </lookup>
+	</member>
+      </parameter>
+
+      <parameter>
+	<member_name>appearance</member_name>
+	<name>appearance</name>
+	<object>const_scrollbar_appearance</object>
+	<default_constructor_params>const_scrollbar_appearance::base::theme()</default_constructor_params>
+	<initialize_self />
+	<type>single_value</type>
+	<lookup>
+	  <function>lookup_appearance&lt;const_scrollbar_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+    </function>
+
     <!-- element -->
 
     <function>
       <name>element</name>
 
       <invoke>generate</invoke>
+
+      <condition>
+	<exists>name</exists>
+      </condition>
 
       <parameter>
 	<scalar>generic_factory</scalar>

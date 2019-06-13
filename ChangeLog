@@ -1,3 +1,7 @@
+2019-06-13  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Create <scrollbar> using the theme file.
+
 2019-06-10  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Create <font_picker> and <color_picker> using the theme file.

@@ -485,6 +485,7 @@ INSERT_LIBX_NAMESPACE::w::scrollbar_config config;
 config.range=110;
 config.page_size=10;
 config.increment=5;
+config.minimum_size=50;
 
 INSERT_LIBX_NAMESPACE::w::scrollbar sb=factory->create_horizontal_scrollbar(
     config,
@@ -492,15 +493,22 @@ INSERT_LIBX_NAMESPACE::w::scrollbar sb=factory->create_horizontal_scrollbar(
     (const INSERT_LIBX_NAMESPACE::w::scrollbar_info_t &info)
     {
 
-    },
-    50);
+    });
 \endcode
 
 The first parameter is the new scrollbar's
 \ref scrollbar_config "configuration".
-The remaining parameters are optional. The second parameter is the scroll-bar's
-initial callback that gets executed whenever the scrollbar's value changes.
-The third parameter sets the minimum size of the scroll-bar,
+The remaining two parameters are optional. Either of the following
+parameters is optional, but they must be specified in the given order:
+
+- The scroll-bar's initial callback that gets executed whenever the
+scrollbar's value changes. Alternatively, an existing scroll-bar's on_update()
+installs the callback.
+
+- A \ref scrollbar_appearance "scrollbar appearance object" parameter.
+
+\ref scrollbar_config "scrollbar_config"'s \c minimum_size sets the
+scroll-bar's minimum size
 in millimeters. The scroll-bar's actual size may be also adjusted by its
 layout manager. Irrespective of the scroll-bar's ultimate size, the reported
 scroll-bar values get scaled to its configured range and page size.

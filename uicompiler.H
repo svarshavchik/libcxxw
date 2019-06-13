@@ -330,6 +330,18 @@ private:
 				    bool,
 				    const char *tag);
 
+	//! Parsed "horizontal" or "vertical" scrollbar value.
+	enum scrollbar_type {horizontal, vertical};
+
+	//! Parse <scrollbar> value.
+	static scrollbar_type lookup_scrollbar_type(const std::string &value);
+
+	//! Create the scrollbar.
+	static scrollbar create_scrollbar(scrollbar_type type,
+					  const factory &f,
+					  const scrollbar_config &config,
+					  const const_scrollbar_appearance &a);
+
 	//! Execute <container>
 
 	//! In a factory.
