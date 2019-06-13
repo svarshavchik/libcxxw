@@ -104,6 +104,41 @@ layout->generate("main-window-grid",
   <variablelist>
     <varlistentry>
       <term>
+	Restoring properties of widgets
+      </term>
+      <listitem>
+	<para>
+	  <methodname>create</methodname>() takes two optional parameters.
+	  Either one is optional, but if specified they must appear in the
+	  following order:
+	</para>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <link linkend="screen_positions">Preserved window positions</link>
+	      in the <classname>&ns;::w::const_screen_positions</classname>
+	      object.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      An
+	      <classname>&ns;::w::const_messages</classname> parameter that
+	      gives a
+	      <link linkend="uixmlgettext">message catalog</link> for
+	      translated
+	      <link linkend="uixmltext_paramvalue"><classname>&ns;::w::text_param</classname></link>s.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>
+	Specifying <classname>&ns;::w::text_param</classname> values
+      </term>
+      <listitem>
 	<blockquote>
 	  <informalexample>
 	    <programlisting><![CDATA[
@@ -113,8 +148,6 @@ layout->generate("main-window-grid",
 ]]></programlisting>
 	  </informalexample>
 	</blockquote>
-      </term>
-      <listitem>
 	<para>
 	  Creating
 	  <link linkend="uixmlfactorylabelelement">label widgets</link>
@@ -127,6 +160,10 @@ layout->generate("main-window-grid",
     </varlistentry>
     <varlistentry>
       <term>
+	Creating <link linkend="uixmlfactoryprogressbarelement">progress
+	  bar widgets</link>
+      </term>
+      <listitem>
 	<blockquote>
 	  <informalexample>
 	    <programlisting><![CDATA[
@@ -137,16 +174,15 @@ layout->generate("main-window-grid",
 ]]></programlisting>
 	  </informalexample>
 	</blockquote>
-      </term>
-      <listitem>
-	<para>
-	  Creating <link linkend="uixmlfactoryprogressbarelement">progress
-	    bar widgets</link>.
-	</para>
       </listitem>
     </varlistentry>
     <varlistentry>
       <term>
+	<para>
+	  <methodname>get_element</methodname>()
+	</para>
+      </term>
+      <listitem>
 	<blockquote>
 	  <informalexample>
 	    <programlisting><![CDATA[
@@ -154,8 +190,6 @@ element_factory.get_element("progressbar_element"),
 ]]></programlisting>
 	  </informalexample>
 	</blockquote>
-      </term>
-      <listitem>
 	<para>
 	  Using <methodname>get_element</methodname>() to retrieve the
 	  widget that was <methodname>generate</methodname>() from the theme

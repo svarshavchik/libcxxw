@@ -500,100 +500,32 @@ See COPYING for distribution information.
     </blockquote>
 
     <para>
-      A <tag class='element'>font</tag>'s
-      <tag class='attribute'>id</tag> attribute gives the label that
-      text pictures in the &sxg; file use to refer to this font.
-      An optional
-      <tag class='attribute'>from</tag> attribute specifies that this
-      font specification is based on another font. The other font's
-      definition gets copied, and this font's settings
-      modify the original font's setting.
-    </para>
-
-    <para>
-      The <tag class='attribute'>from</tag> attribute can also reference
-      a font specification in the default theme.
-    </para>
-
-    <para>
-      The <tag class='element'>font</tag> element contains the following
-      elements:
+      A <tag class='element'>font</tag> specification in the &sxg; file
+      defines fonts for
+      text pictures in the &sxg; file. See
+      <xref linkend="uixmlfonts" /> for more information.
+      Additionally, with
+      <tag class='element'>font</tag>s in &sxg; files:
     </para>
 
     <itemizedlist>
       <listitem>
 	<para>
-	  <tag class='element'>foundry</tag> and
-	  <tag class='element'>family</tag> specify the system font.
+	  A <tag class='element'>font</tag>'s
+	  <tag class='attribute'>from</tag> attribute can also reference
+	  a font specification from the default theme.
 	</para>
       </listitem>
+
       <listitem>
 	<para>
-	  <tag class='element'>point_size</tag> specifies the font's height
-	  in points.
-	  <tag class='element'>scaled_size</tag> scales the size of the font
+	  Instead of a <tag class='element'>point_size</tag>,
+	  <tag class='element'>scaled_size</tag>
+	  scales the size of the font
 	  based on the scaled height of the <quote>main</quote> picture.
 	  The above example creates two fonts approximately 1/3rd the height
 	  of the <quote>main</quote> picture.
-	</para>
-
-	<note>
-	  <para>
-	    Font sizes are approximate. The actual font size could slightly
-	    vary.
-	    Even an explicit pixel size may not produce a font with the given
-	    height. Some fonts' height can only scale to a small pixel
-	    multiple.
 	  </para>
-	</note>
-      </listitem>
-
-      <listitem>
-	<para>
-	  <tag class='element'>weight</tag> of
-	  <literal>thin</literal>,
-	  <literal>light</literal>,
-	  <literal>normal</literal>,
-	  <literal>medium</literal>,
-	  <literal>demibold</literal>,
-	  <literal>bold</literal>,
-	  <literal>heavy</literal>, or
-	  <literal>extrablack</literal>.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  <tag class='element'>slant</tag> of
-	  <literal>roman</literal>,
-	  <literal>italic</literal>, or
-	  <literal>oblique</literal>.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  <tag class='element'>width</tag> of
-	  <literal>condensed</literal>,
-	  <literal>normal</literal>, or
-	  <literal>expanded</literal>.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  A font-specific <tag class='element'>style</tag>.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  A <tag class='element'>spacing</tag> of
-	  <literal>proportional</literal>,
-	  <literal>dual</literal>,
-	  <literal>monospace</literal>, or
-	  <literal>charcell</literal>.
-	</para>
       </listitem>
     </itemizedlist>
   </section>

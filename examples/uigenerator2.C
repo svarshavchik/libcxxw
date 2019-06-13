@@ -37,7 +37,13 @@ static inline auto create_main_window(const x::w::main_window &main_window,
 
 	x::w::const_uigenerators generator=
 		x::w::const_uigenerators::create(me.substr(0, ++p) +
-						 "uigenerator2.xml", pos);
+						 "uigenerator2.xml",
+
+						 // Previous settings of the
+						 // font and color picker
+						 // widgets to restore:
+
+						 pos);
 
 	x::w::uielements element_factory;
 

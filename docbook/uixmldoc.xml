@@ -60,11 +60,11 @@ See COPYING for distribution information.
   <para>
     The <acronym>XML</acronym> document's root widget is a
     <tag class='element'>theme</tag>
-    widget. For future compatibility, its
+    element. For future compatibility, its
     <tag class='attribute'>version</tag> attribute should be 1.
     The
     <tag class='element'>theme</tag>
-    widget contains
+    element contains
     <tag class='element'>layout</tag>
     and
     <tag class='element'>factory</tag>
@@ -74,7 +74,7 @@ See COPYING for distribution information.
     <tag class='element'>layout</tag>
     and
     <tag class='element'>factory</tag>
-    widget by name.
+    element by name.
     Only the first
     <tag class='element'>layout</tag>
     and
@@ -368,7 +368,7 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
     <para>
       <tag class='element'>dim</tag>ensions specify sizes of various UI
       elements,
-      A <tag class='element'>dim</tag> widget specifies a size in millimeters,
+      A <tag class='element'>dim</tag> element specifies a size in millimeters,
       which can be fractional, and calculates the number of pixels closest
       to the given size, taking into account the
       <link linkend="cxxwtheme.1">current theme's scale</link>.
@@ -410,7 +410,7 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
     </blockquote>
 
     <para>
-      A <tag class='element'>border</tag> widget defines a border,
+      A <tag class='element'>border</tag> element defines a border,
       effectively initializing a
       <ulink url="&link-typedef-x--w-border-arg;"><classname>&ns;::w::border_arg</classname></ulink>
       from a
@@ -524,7 +524,7 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
 	<term><tag class='element'>dash</tag></term>
 	<listitem>
 	  <para>
-	    This widget can appear more than once, and initializes
+	    This element can appear more than once, and initializes
 	    <classname>&ns;::w::border_infomm</classname>'s
 	    <varname>dashes</varname>. This creates a border that's drawn as
 	    a dashed line instead of a solid
@@ -900,6 +900,117 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
     </para>
   </section>
 
+  <section id="uixmlfonts">
+    <title><tag class='element'>font</tag>s</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<!-- -->
+
+  <font id="question_mark_font">
+    <family>liberation serif</family>
+    <point_size>14</point_size</point_size>
+  </font>
+
+  <font id="question_mark_font_bold" from="question_mark_font">
+    <weight>heavy</weight>
+  </font>
+
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A <tag class='element'>font</tag>'s
+      <tag class='attribute'>id</tag> attribute gives the label that
+      theme file uses to refer to this font.
+      An optional
+      <tag class='attribute'>from</tag> attribute specifies that this
+      font specification is based on another font. The other font's
+      definition gets copied, and this font's settings
+      modify the original font's setting.
+    </para>
+
+    <para>
+      The <tag class='element'>font</tag> element contains the following
+      elements:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <tag class='element'>foundry</tag> and
+	  <tag class='element'>family</tag> specify the system font.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <tag class='element'>point_size</tag> specifies the font's height
+	  in points.
+	</para>
+
+	<note>
+	  <para>
+	    Font sizes are approximate. The actual font size could slightly
+	    vary.
+	    Even an explicit pixel size may not produce a font with the given
+	    height. Some fonts' height can only scale to a small pixel
+	    multiple.
+	  </para>
+	</note>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <tag class='element'>weight</tag> of
+	  <literal>thin</literal>,
+	  <literal>light</literal>,
+	  <literal>normal</literal>,
+	  <literal>medium</literal>,
+	  <literal>demibold</literal>,
+	  <literal>bold</literal>,
+	  <literal>heavy</literal>, or
+	  <literal>extrablack</literal>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <tag class='element'>slant</tag> of
+	  <literal>roman</literal>,
+	  <literal>italic</literal>, or
+	  <literal>oblique</literal>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <tag class='element'>width</tag> of
+	  <literal>condensed</literal>,
+	  <literal>normal</literal>, or
+	  <literal>expanded</literal>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A font-specific <tag class='element'>style</tag>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A <tag class='element'>spacing</tag> of
+	  <literal>proportional</literal>,
+	  <literal>dual</literal>,
+	  <literal>monospace</literal>, or
+	  <literal>charcell</literal>.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
   <section id="uixmlvalues">
     <title>Other values in theme files</title>
 
@@ -981,7 +1092,11 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
 	<classname>&ns;::w::text_param</classname> fields is
 	<ulink url="&link-x--w--theme-text;"><classname>&ns;::w::theme_text</classname></ulink>-formatted
 	text
-	with references to colors and fonts defined in the theme file or the
+	with references to
+	<link linkend="uixmldimcolorborders">colors</link>
+	and
+	<link linkend="uixmlfonts">fonts</link>
+	defined in the theme file or the
 	default display theme.
       </para>
 
@@ -1543,7 +1658,7 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
       	These methods create a new grid factory using the corresponding
 	grid layout manager method; then use the referenced
 	<tag class='attribute'>type</tag>=<quote><literal>grid</literal></quote>
-	<tag class='element'>factory</tag> widget to create new elements
+	<tag class='element'>factory</tag> element to create new elements
 	in the grid layout manager's container using the new grid factory.
       </para>
     </section>
@@ -1890,7 +2005,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	then use the
 	<tag class='element'>name</tag>d
 	<tag class='attribute'>type</tag>=<quote><literal>book</literal></quote>
-	<tag class='element'>factory</tag> widget to create new book
+	<tag class='element'>factory</tag> element to create new book
 	pages.
       </para>
     </section>
@@ -2149,7 +2264,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
 
   <section id="uixmlfactoryelement">
     <title><tag class='element'>element</tag> and
-      <tag class='element'>container</tag> widgets</title>
+      <tag class='element'>container</tag> elements</title>
 
     <blockquote>
       <informalexample>
@@ -2304,10 +2419,20 @@ layout_manager->generate("dialog", generators, elements);
 	  <link linkend="uixmlfactoryprogressbarelement"><classname>&ns;::w::progressbar</classname></link>s
 	</para>
       </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactorycolorpickerelement"><classname>&ns;::w::color_picker</classname></link>s
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <link linkend="uixmlfactoryfontpickerelement"><classname>&ns;::w::font_picker</classname></link>s
+	</para>
+      </listitem>
     </itemizedlist>
 
     <para>
-      These <tag class="element">element</tag> widgets have an optional
+      These <tag class="element">element</tag> elements have an optional
       <tag class="attribute">id</tag> attribute.
       After the widgets get generated,
       <link linkend="uixmlgenerate"><classname>&ns;::w::uielements</classname></link>'s
@@ -2319,7 +2444,7 @@ layout_manager->generate("dialog", generators, elements);
     </para>
 
     <para>
-      These <tag class="element">element</tag> widgets also have an optional
+      These <tag class="element">element</tag> elements also have an optional
       <tag class="attribute">tooltip</tag> attribute that
       <link linkend="uixmlelementtooltip">creates a tooltip for the
 	widget</link>.
@@ -3142,6 +3267,245 @@ layout_manager->generate("dialog", generators, elements);
     </para>
   </section>
 
+  <section id="uixmlfactorycolorpickerelement">
+    <title>Color picker <tag class='element'>element</tag> widgets</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="foreground_color">
+  <color_picker />
+  <config>
+    <restore />
+  </config>
+</element>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='emptytag'>color_picker</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-color-picker;"><classname>&ns;::w::color_picker</classname></ulink>
+      widget.
+      This is equivalent to invoking the &factory;'s
+      <methodname>create_color_picker</methodname>() method.
+    </para>
+
+    <para>
+      An optional <tag class='element'>config</tag> value
+      initializes
+      <methodname>create_color_picker</methodname>'s
+      <ulink url="&link-x--w--color-picker-config;"><classname>&ns;::w::color_picker_config</classname></ulink>
+      parameter, as follows:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>initial_color</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::color_picker_config</classname>'s
+	    <varname>initial_color</varname>. The value of the
+	    <tag class='element'>initial_color</tag> element is an
+	    <tag class='attribute'>id</tag> of a
+	    <link linkend="uixmldimcolorborders"><tag class='element'>color</tag></link>.
+	    The referenced <tag class='element'>color</tag> must be a plain
+	    RGBA color specification.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>restore</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Calls <classname>&ns;::w::color_picker_config</classname>'s
+	    <methodname>restore</methodname>() method.
+	    The <tag class='element'>element</tag> must have a specified
+	    <tag class='attribute'>id</tag>, and the
+	    <link linkend="uigenerator"><classname>&ns;::w::uigenerator</classname></link>
+	    must get constructed with a
+	    <link linkend="screen_positions"><classname>&ns;::w::const_screen_positions</classname></link>
+	    parameter with preserved window positions.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>appearance</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the color picker's appearance
+	    <link linkend="uixmlappearance"><varname>appearance</varname></link>
+	    object.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+    <section id="uixmlfactoryfontpickerelement">
+    <title>Font picker <tag class='element'>element</tag> widgets</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="title_font">
+  <font_picker />
+  <config>
+    <restore />
+  </config>
+</element>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Specifying an <tag class='element'>element</tag>
+      with a <tag class='emptytag'>font_picker</tag>
+      creates a new &themewidget;
+      which is an
+      <ulink url="&link-typedef-x--w-font-picker;"><classname>&ns;::w::font_picker</classname></ulink>
+      widget.
+      This is equivalent to invoking the &factory;'s
+      <methodname>create_font_picker</methodname>() method.
+    </para>
+
+    <para>
+      An optional <tag class='element'>config</tag> value
+      initializes
+      <methodname>create_font_picker</methodname>'s
+      <ulink url="&link-x--w--font-picker-config;"><classname>&ns;::w::font_picker_config</classname></ulink>
+      parameter, as follows:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>initial_font</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::font_picker_config</classname>'s
+	    <varname>initial_font</varname>. The value of the
+	    <tag class='element'>initial_font</tag> element is an
+	    <tag class='attribute'>id</tag> of a
+	    <link linkend="uixmlfonts"><tag class='element'>font</tag></link>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>ok_label</tag>
+	</term>
+
+	<listitem>
+	  <para>
+	    This &text_paramvalue; sets
+	    <classname>&ns;::w::font_picker_config</classname>'s
+	    <varname>ok_label</varname>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>cancel_label</tag>
+	</term>
+
+	<listitem>
+	  <para>
+	    This &text_paramvalue; sets
+	    <classname>&ns;::w::font_picker_config</classname>'s
+	    <varname>cancel_label</varname>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>optional</tag>
+	</term>
+
+	<listitem>
+	  <para>
+	    This sets
+	    <classname>&ns;::w::font_picker_config</classname>'s
+	    <varname>selection_required</varname>
+	    setting to <literal>false</literal>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>select_by_foundry</tag>
+	</term>
+
+	<listitem>
+	  <para>
+	    This sets
+	    <classname>&ns;::w::font_picker_config</classname>'s
+	    <varname>select_by_foundry</varname>
+	    setting to <literal>true</literal>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>foundry_required</tag>
+	</term>
+
+	<listitem>
+	  <para>
+	    This sets
+	    <classname>&ns;::w::font_picker_config</classname>'s
+	    <varname>foundry_required</varname>
+	    setting to <literal>true</literal>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>restore</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Calls <classname>&ns;::w::font_picker_config</classname>'s
+	    <methodname>restore</methodname>() method.
+	    The <tag class='element'>element</tag> must have a specified
+	    <tag class='attribute'>id</tag>, and the
+	    <link linkend="uigenerator"><classname>&ns;::w::uigenerator</classname></link>
+	    must get constructed with a
+	    <link linkend="screen_positions"><classname>&ns;::w::const_screen_positions</classname></link>
+	    parameter with preserved window positions.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>appearance</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the font picker's appearance
+	    <link linkend="uixmlappearance"><varname>appearance</varname></link>
+	    object.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
   <section id="uixmlappearance">
     <title><tag class='element'>appearance</tag>s</title>
 
@@ -3524,7 +3888,7 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	    object.
 	    The value of this field ia an
 	    <tag class='attribute'>id</tag>s of another
-	    <tag class='element'>appearance</tag> widget, with the appropriate type,
+	    <tag class='element'>appearance</tag> element, with the appropriate type,
 	    in the theme file.
 	  </para>
 	</varlistentry>
@@ -3547,9 +3911,9 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 
       <para>
 	A new
-	<tag class='element'>appearance</tag> widget starts with the values of all fields
+	<tag class='element'>appearance</tag> element starts with the values of all fields
 	copied from its parent appearance object, then each value in the
-	<tag class='element'>appearance</tag> widget replaces the value of the
+	<tag class='element'>appearance</tag> element replaces the value of the
 	corresponding field in the
 	new appearance object.
 	Some fields in appearance objects are <classname>std::optional</classname> or
