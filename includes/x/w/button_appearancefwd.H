@@ -5,7 +5,7 @@
 #ifndef x_w_button_appearancefwd_h
 #define x_w_button_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -63,6 +63,10 @@ typedef ptr<button_appearanceObj,
 
 typedef const_ptr<button_appearanceObj,
 		  button_appearance_base> const_button_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_button_appearance> const_button_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

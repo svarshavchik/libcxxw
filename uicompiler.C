@@ -2031,6 +2031,13 @@ struct uicompiler::generate_info {
 	xml::doc::base::xpath &xpath;
 };
 
+template<typename T> appearance_wrapper<T>::~appearance_wrapper()=default;
+
+template<typename T> appearance_wrapper<T>::appearance_wrapper(const T &arg)
+	: T{arg}
+{
+}
+
 LIBCXXW_NAMESPACE_END
 
 #include "appearance/appearance_parser.inc.C"

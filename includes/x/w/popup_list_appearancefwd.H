@@ -5,7 +5,7 @@
 #ifndef x_w_popup_list_appearancefwd_h
 #define x_w_popup_list_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -51,6 +51,10 @@ typedef ptr<popup_list_appearanceObj,
 
 typedef const_ptr<popup_list_appearanceObj,
 		  popup_list_appearance_base> const_popup_list_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_popup_list_appearance> const_popup_list_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

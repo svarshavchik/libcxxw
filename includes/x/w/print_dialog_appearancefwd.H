@@ -5,7 +5,7 @@
 #ifndef x_w_print_dialog_appearancefwd_h
 #define x_w_print_dialog_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -63,6 +63,10 @@ typedef ptr<print_dialog_appearanceObj,
 
 typedef const_ptr<print_dialog_appearanceObj,
 		  print_dialog_appearance_base> const_print_dialog_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_print_dialog_appearance> const_print_dialog_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

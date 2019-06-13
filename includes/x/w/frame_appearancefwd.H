@@ -5,7 +5,7 @@
 #ifndef x_w_frame_appearancefwd_h
 #define x_w_frame_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -64,6 +64,10 @@ typedef ptr<frame_appearanceObj,
 
 typedef const_ptr<frame_appearanceObj,
 		  frame_appearance_base> const_frame_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_frame_appearance> const_frame_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

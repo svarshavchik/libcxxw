@@ -72,7 +72,10 @@ void testscrollbar()
 					  (THREAD_CALLBACK,
 					   const auto &scrollbar_info) {
 						  updated_value(scrollbar_info);
-					  });
+					  },
+					  LIBCXX_NAMESPACE::w
+					  ::scrollbar_appearance
+					  ::base::theme());
 			 });
 
 	main_window->set_window_title("Hello world!");

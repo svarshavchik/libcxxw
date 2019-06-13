@@ -5,7 +5,7 @@
 #ifndef x_w_combobox_appearancefwd_h
 #define x_w_combobox_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -67,6 +67,10 @@ typedef ptr<combobox_appearanceObj,
 
 typedef const_ptr<combobox_appearanceObj,
 		  combobox_appearance_base> const_combobox_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_combobox_appearance> const_combobox_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

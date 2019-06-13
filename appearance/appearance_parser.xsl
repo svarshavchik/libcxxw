@@ -60,6 +60,10 @@ LIBCXXW_NAMESPACE_END
 
 LIBCXXW_NAMESPACE_START
 
+template class appearance_wrapper&lt;const_</xsl:text>
+    <xsl:value-of select="name"/>
+    <xsl:text>_appearance&gt;;
+
 inline void uicompiler::generate(const generate_info &amp;info,
     const </xsl:text>
     <xsl:value-of select="name"/>

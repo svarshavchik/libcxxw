@@ -312,7 +312,8 @@ public:
 	//! Optional arguments to create_horizontal/vertical_scrollbar
 
 	typedef optional_args<scrollbar_cb_t,
-			      const_scrollbar_appearance> scrollbar_args_t;
+			      appearance_wrapper<const_scrollbar_appearance>
+			      > scrollbar_args_t;
 
 	//! Create a horizontal scrollbar
 	template<typename ...Args> inline

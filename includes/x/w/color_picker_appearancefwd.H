@@ -5,7 +5,7 @@
 #ifndef x_w_color_picker_appearancefwd_h
 #define x_w_color_picker_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -63,6 +63,10 @@ typedef ptr<color_picker_appearanceObj,
 
 typedef const_ptr<color_picker_appearanceObj,
 		  color_picker_appearance_base> const_color_picker_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_color_picker_appearance> const_color_picker_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

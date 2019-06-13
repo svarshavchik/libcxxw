@@ -5,7 +5,7 @@
 #ifndef x_w_file_dialog_appearancefwd_h
 #define x_w_file_dialog_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -63,6 +63,10 @@ typedef ptr<file_dialog_appearanceObj,
 
 typedef const_ptr<file_dialog_appearanceObj,
 		  file_dialog_appearance_base> const_file_dialog_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_file_dialog_appearance> const_file_dialog_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

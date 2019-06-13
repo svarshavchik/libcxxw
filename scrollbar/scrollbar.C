@@ -227,7 +227,8 @@ scrollbar factoryObj
 
 	std::optional<const_scrollbar_appearance> default_appearance;
 
-	auto appearance=optional_arg_or<const_scrollbar_appearance>
+	auto appearance=optional_arg_or<appearance_wrapper<
+		const_scrollbar_appearance>>
 		(args, default_appearance,
 		 scrollbar_appearance::base::theme());
 
@@ -256,7 +257,8 @@ scrollbar factoryObj
 
 	std::optional<const_scrollbar_appearance> default_appearance;
 
-	auto appearance=optional_arg_or<const_scrollbar_appearance>
+	auto appearance=optional_arg_or<appearance_wrapper<
+		const_scrollbar_appearance>>
 		(args, default_appearance,
 		 scrollbar_appearance::base::theme());
 

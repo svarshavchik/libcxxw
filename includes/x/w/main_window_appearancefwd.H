@@ -5,7 +5,7 @@
 #ifndef x_w_main_window_appearancefwd_h
 #define x_w_main_window_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -63,6 +63,10 @@ typedef ptr<main_window_appearanceObj,
 
 typedef const_ptr<main_window_appearanceObj,
 		  main_window_appearance_base> const_main_window_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_main_window_appearance> const_main_window_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

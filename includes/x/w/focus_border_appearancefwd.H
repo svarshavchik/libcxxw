@@ -5,7 +5,7 @@
 #ifndef x_w_focus_border_appearancefwd_h
 #define x_w_focus_border_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -104,6 +104,10 @@ typedef ptr<focus_border_appearanceObj,
 
 typedef const_ptr<focus_border_appearanceObj,
 		  focus_border_appearance_base> const_focus_border_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_focus_border_appearance> const_focus_border_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

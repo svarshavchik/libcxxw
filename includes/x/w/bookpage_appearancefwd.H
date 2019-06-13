@@ -5,7 +5,7 @@
 #ifndef x_w_bookpage_appearancefwd_h
 #define x_w_bookpage_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -61,6 +61,10 @@ typedef ptr<bookpage_appearanceObj,
 
 typedef const_ptr<bookpage_appearanceObj,
 		  bookpage_appearance_base> const_bookpage_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_bookpage_appearance> const_bookpage_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

@@ -5,7 +5,7 @@
 #ifndef x_w_font_picker_appearancefwd_h
 #define x_w_font_picker_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -63,6 +63,10 @@ typedef ptr<font_picker_appearanceObj,
 
 typedef const_ptr<font_picker_appearanceObj,
 		  font_picker_appearance_base> const_font_picker_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_font_picker_appearance> const_font_picker_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

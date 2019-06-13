@@ -5,7 +5,7 @@
 #ifndef x_w_scrollbar_appearancefwd_h
 #define x_w_scrollbar_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -63,6 +63,10 @@ typedef ptr<scrollbar_appearanceObj,
 
 typedef const_ptr<scrollbar_appearanceObj,
 		  scrollbar_appearance_base> const_scrollbar_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_scrollbar_appearance> const_scrollbar_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

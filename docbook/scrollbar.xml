@@ -70,12 +70,32 @@ See COPYING for distribution information.
       <methodname>create_vertical_scrollbar</methodname>().
       An existing scroll-bar's <methodname>reconfigure</methodname>() method
       updates its configuration.
-      <methodname>create_horizontal_scrollbar</methodname>() and
-      <methodname>create_vertical_scrollbar</methodname>()'s optional
-      second parameter specifies the scroll-bar's initial
-      &callback; that gets executed to report changes to the scroll-bar's
-      position.
     </para>
+    <para>
+      <methodname>create_horizontal_scrollbar</methodname>() and
+      <methodname>create_vertical_scrollbar</methodname>() take the
+      following optional parameters. Either parameter is optional, but
+      they must appear in the following order, if both are provided:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The scroll-bar's initial
+	  &callback; that gets executed to report changes to the scroll-bar's
+	  position.
+	  An existing scroll-bar's <methodname>on_update</methodname>()
+	  method installs a new callback, replacing the previous one.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  A <link linkend="appearance"><classname>&ns;::w::const_scrollbar_appearance</classname>
+	    object</link> that specifies a custom scrollbar
+	  appearance.
+	</para>
+      </listitem>
+    </itemizedlist>
 
     <para>
       <classname>&ns;::w::scrollbar_config</classname>'s

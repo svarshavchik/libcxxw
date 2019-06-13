@@ -5,7 +5,7 @@
 #ifndef x_w_peephole_appearancefwd_h
 #define x_w_peephole_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -63,6 +63,10 @@ typedef ptr<peephole_appearanceObj,
 
 typedef const_ptr<peephole_appearanceObj,
 		  peephole_appearance_base> const_peephole_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_peephole_appearance> const_peephole_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

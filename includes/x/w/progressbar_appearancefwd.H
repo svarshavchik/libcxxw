@@ -5,7 +5,7 @@
 #ifndef x_w_progressbar_appearancefwd_h
 #define x_w_progressbar_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -70,6 +70,10 @@ typedef ptr<progressbar_appearanceObj,
 
 typedef const_ptr<progressbar_appearanceObj,
 		  progressbar_appearance_base> const_progressbar_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_progressbar_appearance> const_progressbar_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

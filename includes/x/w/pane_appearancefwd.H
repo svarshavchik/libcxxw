@@ -5,7 +5,7 @@
 #ifndef x_w_pane_appearancefwd_h
 #define x_w_pane_appearancefwd_h
 
-#include <x/w/namespace.H>
+#include <x/w/appearancefwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -61,6 +61,10 @@ typedef ptr<pane_appearanceObj,
 
 typedef const_ptr<pane_appearanceObj,
 		  pane_appearance_base> const_pane_appearanceptr;
+
+//! Alias
+
+typedef appearance_wrapper<const_pane_appearance> const_pane_appearance_wrapper;
 
 LIBCXXW_NAMESPACE_END
 

@@ -48,6 +48,26 @@ typedef ptr<appearanceObj> appearanceptr;
 
 typedef const_ptr<appearanceObj> const_appearanceptr;
 
+//! A wrapper for an appearance object
+
+//! This allows us to define an appearance object parameter via optional_args
+//! without pulling in the full header file. The only thing that needs to be
+//! defined is a destructor. The destructor is left undefined in the header
+//! files, and the destructors for all const_ appearance objects are compiled
+//! into the library and used as external references; while constructors are
+//! inherited.
+
+template<typename T> struct appearance_wrapper: public T {
+
+	using T::T;
+
+	//! Explicit constructor
+	appearance_wrapper(const T &);
+
+	//! Destructor
+	~appearance_wrapper();
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif
