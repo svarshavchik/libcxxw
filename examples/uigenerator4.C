@@ -8,19 +8,22 @@
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/pidinfo.H>
+#include <x/config.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/label.H>
 #include <x/w/uielements.H>
 #include <x/w/uigenerators.H>
 #include <x/w/label.H>
+#include <x/w/screen_positions.H>
 #include <string>
 #include <iostream>
 #include <sstream>
 
 #include "close_flag.H"
 
-static inline void create_main_window(const x::w::main_window &main_window)
+static inline void create_main_window(const x::w::main_window &main_window,
+				      const x::w::screen_positions &pos)
 {
 	std::string me=x::exename(); // My path.
 	size_t p=me.rfind('/');
@@ -29,7 +32,7 @@ static inline void create_main_window(const x::w::main_window &main_window)
 
 	x::w::const_uigenerators generator=
 		x::w::const_uigenerators::create(me.substr(0, ++p) +
-						 "uigenerator4.xml");
+						 "uigenerator4.xml", pos);
 
 	x::w::uielements element_factory;
 	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
@@ -42,13 +45,26 @@ void uigenerator4()
 {
 	x::destroy_callback::base::guard guard;
 
+	// Configuration filename where we save the window's position.
+
+	std::string configfile=
+		x::configdir("uigenerator4@examples.w.libcxx.com")
+		+ "/windows";
+
+	x::w::main_window_config config;
+
+	auto pos=x::w::screen_positions::create(configfile);
+
+	config.restore(pos, "main");
+
 	auto close_flag=close_flag_ref::create();
 
 	auto main_window=x::w::main_window
-		::create([&]
+		::create(config,
+			 [&]
 			 (const auto &main_window)
 			 {
-				 create_main_window(main_window);
+				 create_main_window(main_window, pos);
 			 },
 
 			 x::w::new_gridlayoutmanager{});
@@ -76,6 +92,9 @@ void uigenerator4()
 	main_window->show_all();
 
 	close_flag->wait();
+
+	main_window->save(pos);
+	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

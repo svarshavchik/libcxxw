@@ -52,11 +52,28 @@ tuple value.
   <xsl:template name="parse-parameter-tuple-initialize">
     <xsl:param name="parameter" />
     <xsl:choose>
+
+      <!--
+	  "object" introduces a helper object that gets passed as an
+	  additional parameter to a factory method call, such as
+	  input_field_config. For example. We generate code for initializing
+	  individual fields of this object.
+      -->
+
       <xsl:when test="object">
 	<xsl:text>&#10;        if (single_value_exists(lock, "</xsl:text>
 	<xsl:value-of select="member_name" />
 	<xsl:text>"))&#10;        {&#10;</xsl:text>
 	<xsl:choose>
+
+	  <!--
+	      An <object> that's marked with <initialize_self /> indicates
+	      an additional parameter that's not a class with individual
+	      members, but a discrete datatype.
+	      The std::tuple return value default-constructed it, and
+	      if specified, we generate an assignment operator to set its
+	      new value.
+	  -->
 	  <xsl:when test="count(initialize_self) &gt; 0">
 
 	    <xsl:text>            </xsl:text>
@@ -97,17 +114,57 @@ tuple value.
 	      <xsl:text>")
                 {
                     </xsl:text>
-		    <xsl:value-of select="$parameter" />
-		    <xsl:text>.</xsl:text>
-		    <xsl:value-of select="field" />
-
 		    <xsl:choose>
+		      <!--
+			  <method_call /> indicates that instead of assigning
+			  a value, the parameter's method gets called.
+
+		      -->
 		      <xsl:when test='count(method_call) &gt; 0'>
-			<xsl:text>(</xsl:text>
-			<xsl:value-of select="method_call" />
-			<xsl:text>)</xsl:text>
+
+			<!--
+			    "field" gives the name of the method to call,
+			    and <method_call> specifies any additional
+			    parameters
+			-->
+
+			<xsl:choose>
+			  <xsl:when test="count(field) &gt; 0">
+			    <xsl:value-of select="$parameter" />
+			    <xsl:text>.</xsl:text>
+			    <xsl:value-of select="field" />
+
+			    <xsl:text>()</xsl:text>
+			  </xsl:when>
+
+			  <xsl:otherwise>
+
+			    <!--
+				If there's no <field>,
+				we're calling something else.
+			    -->
+
+			    <xsl:value-of select="method_call/name" />
+			    <xsl:text>(</xsl:text>
+
+			    <!-- Pass $parameter as the first parameter. -->
+			    <xsl:value-of select="$parameter" />
+
+			    <!-- And any additional parameters -->
+
+			    <xsl:for-each select="method_call/parameter">
+			      <xsl:text>,&#10;                            </xsl:text>
+			      <xsl:value-of select="node()" />
+			    </xsl:for-each>
+			    <xsl:text>)</xsl:text>
+			  </xsl:otherwise>
+			</xsl:choose>
 		      </xsl:when>
 		      <xsl:otherwise>
+			<xsl:value-of select="$parameter" />
+			<xsl:text>.</xsl:text>
+			<xsl:value-of select="field" />
+
 			<xsl:text>=</xsl:text>
 
 			<xsl:call-template name="parse-parameter-value">
@@ -281,7 +338,12 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
 
       <xsl:text>static auto get_</xsl:text>
       <xsl:value-of select="$parameter_parser_name" />
-      <xsl:text>(uicompiler &amp;compiler, const theme_parser_lock &amp;lock)&#10;{&#10;    std::tuple return_value{</xsl:text>
+      <xsl:text>(uicompiler &amp;compiler, const theme_parser_lock &amp;orig_lock)&#10;{&#10;</xsl:text>
+      <xsl:if test="count(parameter[count(scalar)=0]) &gt; 0">
+	<xsl:text>    auto &amp;lock=orig_lock;&#10;</xsl:text>
+      </xsl:if>
+
+      <xsl:text>    std::tuple return_value{</xsl:text>
 
       <xsl:for-each select="parameter[count(scalar)=0]">
         <xsl:if test="position() &gt; 1">

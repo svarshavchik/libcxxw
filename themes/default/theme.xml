@@ -2863,9 +2863,6 @@ first column, to make the labels line up with their input fields.
     </open>
   </layout>
 
-  <appearance id="customXX" type="bookpage" from="theme">
-  </appearance>
-
   <factory type="book" id="print-dialog-options-pages">
     <add>
       <tab>

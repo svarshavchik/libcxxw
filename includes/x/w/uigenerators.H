@@ -7,9 +7,13 @@
 
 #include <x/w/uigeneratorsfwd.H>
 #include <x/w/uigeneratorsobj.H>
+#include <x/w/screen_positions.H>
 #include <x/functionalrefptr.H>
 #include <x/vector.H>
 #include <x/ref.H>
+#include <x/optional_args.H>
+#include <x/refptr_traits.H>
+#include <x/messages.H>
 #include <string_view>
 
 LIBCXXW_NAMESPACE_START
@@ -22,14 +26,14 @@ class uigeneratorsBase {
 
 public:
 
-	//! Load template from file.
-	static const_uigenerators create(const std::string_view &filename);
+	//! Optional create() parameters.
+
+	typedef optional_args<explicit_refptr<const_screen_positions>,
+			      explicit_refptr<const_messages>> create_args_t;
 
 	//! Load template from file.
-
-	//! \overload
 	static const_uigenerators create(const std::string_view &filename,
-					 const const_messages &catalog);
+					 const create_args_t &args);
 
 	//! Factory for objects.
 
@@ -42,21 +46,14 @@ public:
 
 		//! Always return a const_uigenerators handle.
 
-		static inline const_uigenerators
-		create(const std::string_view &filename)
-		{
-			return uigeneratorsBase::create(filename);
-		}
-
-		//! create() for uigenerators
-
-		//! \overload
-
+		template<typename ...Args>
 		static inline const_uigenerators
 		create(const std::string_view &filename,
-		       const const_messages &catalog)
+		       Args && ...args)
 		{
-			return uigeneratorsBase::create(filename, catalog);
+			return uigeneratorsBase::create(filename,
+							{std::forward<Args>
+							 (args)...});
 		}
 	};
 };

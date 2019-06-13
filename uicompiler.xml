@@ -1478,6 +1478,126 @@ List of values:
       </parameter>
     </function>
 
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>color_picker</exists>
+      </condition>
+
+      <invoke>create_color_picker</invoke>
+
+      <object>generic_factory</object>
+
+      <parameter>
+	<name>config</name>
+	<member_name>config</member_name>
+	<object>color_picker_config</object>
+
+	<member>
+	  <name>initial_color</name>
+	  <field>initial_color</field>
+	  <type>compiler.rgb_value</type>
+	</member>
+
+	<member>
+	  <name>restore</name>
+
+	  <method_call>
+	    <name>invoke_restore</name>
+	    <parameter>orig_lock</parameter>
+	    <parameter>compiler</parameter>
+	  </method_call>
+	</member>
+
+	<member>
+	  <name>appearance</name>
+	  <field>appearance</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <modify />
+	    <function>get_appearance_base</function>
+	  </lookup>
+	</member>
+      </parameter>
+    </function>
+
+    <function>
+      <name>element</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>font_picker</exists>
+      </condition>
+
+      <invoke>create_font_picker</invoke>
+
+      <object>generic_factory</object>
+
+      <parameter>
+	<name>config</name>
+	<member_name>config</member_name>
+	<object>font_picker_config</object>
+
+	<member>
+	  <name>initial_font</name>
+	  <field>initial_font</field>
+	  <type>compiler.font_value</type>
+	</member>
+
+	<member>
+	  <name>ok_label</name>
+	  <field>ok_label</field>
+	  <type>compiler.text_param_value</type>
+	</member>
+
+	<member>
+	  <name>cancel_label</name>
+	  <field>cancel_label</field>
+	  <type>compiler.text_param_value</type>
+	</member>
+
+	<member>
+	  <name>optional</name>
+	  <field>selection_required</field>
+	  <type>optional_constant&lt;false&gt;</type>
+	</member>
+
+	<member>
+	  <name>select_by_foundry</name>
+	  <field>select_by_foundry</field>
+	  <type>optional_constant&lt;true&gt;</type>
+	</member>
+
+	<member>
+	  <name>foundry_required</name>
+	  <field>foundry_required</field>
+	  <type>optional_constant&lt;true&gt;</type>
+	</member>
+
+	<member>
+	  <name>restore</name>
+
+	  <method_call>
+	    <name>invoke_restore</name>
+	    <parameter>orig_lock</parameter>
+	    <parameter>compiler</parameter>
+	  </method_call>
+	</member>
+
+	<member>
+	  <name>appearance</name>
+	  <field>appearance</field>
+	  <type>single_value</type>
+	  <lookup>
+	    <modify />
+	    <function>get_appearance_base</function>
+	  </lookup>
+	</member>
+      </parameter>
+    </function>
+
     <!-- element -->
 
     <function>

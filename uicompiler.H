@@ -17,6 +17,7 @@
 #include "x/w/all_appearancesfwd.H"
 #include "x/w/text_paramfwd.H"
 #include "x/w/font_arg.H"
+#include "x/w/screen_positions.H"
 #include "theme_parser_lock.H"
 #include "uicompilerfwd.H"
 
@@ -53,6 +54,7 @@ public:
 
 	uicompiler(const theme_parser_lock &lock,
 		   const uigenerators &generators,
+		   const const_screen_positionsptr &saved_positions,
 		   bool allowthemerefs);
 
 	//! Load font definitions.
@@ -88,8 +90,12 @@ public:
 private:
 
 	//! What's being generated.
-	uigenerators generators;
+	const uigenerators generators;
 
+public:
+	//! Saved screen positions that might be restored
+	const const_screen_positionsptr saved_positions;
+private:
 	//! Whether this is a custom theme compiler
 
 	//! Custom theme compilers will allow various entities (colors,
@@ -370,6 +376,18 @@ private:
 	shortcut shortcut_value(const theme_parser_lock &lock,
 				const char *element,
 				const char *parent);
+
+	//! Parse an rgb value
+
+	//! Used only by the color picker.
+	rgb rgb_value(const theme_parser_lock &lock,
+		      const char *element, const char *parent);
+
+	//! Parse a font value
+
+	//! Used only by the font picker.
+	font font_value(const theme_parser_lock &lock,
+			const char *element, const char *parent);
 
 	//! Top level appearance objects that aren't compiled yet.
 

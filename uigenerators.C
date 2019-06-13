@@ -14,7 +14,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-static uigenerators create_generators(const std::string_view &filename)
+const_uigenerators uigeneratorsBase::create(const std::string_view &filename,
+					    const create_args_t &args)
 {
 	auto xml=xml::doc::create(filename, "nonet xinclude");
 
@@ -24,23 +25,19 @@ static uigenerators create_generators(const std::string_view &filename)
 
 	if (lock->get_root())
 	{
-		uicompiler compiler{lock, g, true};
+		std::optional<const_screen_positionsptr> no_positions;
+
+		uicompiler compiler{lock, g,
+				    optional_arg_or<explicit_refptr
+				    <const_screen_positions>>(args,
+							      no_positions),
+				    true};
 	}
 
-	return g;
-}
+	auto messages=optional_arg<explicit_refptr<const_messages>>(args);
 
-const_uigenerators uigeneratorsBase::create(const std::string_view &filename)
-{
-	return create_generators(filename);
-}
-
-const_uigenerators uigeneratorsBase::create(const std::string_view &filename,
-					    const const_messages &catalog)
-{
-	auto g=create_generators(filename);
-
-	g->catalog=catalog;
+	if (messages)
+		g->catalog=messages.value();
 
 	return g;
 }

@@ -137,6 +137,31 @@
       </page>
       <shortcut>Alt-P</shortcut>
     </add>
+
+    <!--     Font and color     -->
+
+    <halign>
+      <halign>center</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <add>
+      <tab>
+	<element>
+	  <label>${decoration:underline}F${decoration:none}ont</label>
+	</element>
+      </tab>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>font-page</name>
+	</container>
+      </page>
+      <shortcut>Alt-F</shortcut>
+    </add>
   </factory>
 
   <layout id="general-page" type="grid">
@@ -246,4 +271,53 @@ Placeholder</label>
   <appearance type="progressbar" id="progressbar_large_font">
     <label_font>serif; point_size=24</label_font>
   </appearance>
+
+  <!-- Font and Color -->
+
+  <layout id="font-page" type="grid">
+    <append_row>
+      <name>color-picker-row</name>
+    </append_row>
+    <append_row>
+      <name>font-picker-row</name>
+    </append_row>
+  </layout>
+
+  <factory id="color-picker-row" type="grid">
+    <padding>
+      <side>left</side>
+      <padding>page-padding</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>page-padding</padding>
+    </padding>
+
+    <element id="default-color">
+      <color_picker />
+      <config>
+	<restore />
+      </config>
+    </element>
+  </factory>
+
+  <factory id="font-picker-row" type="grid">
+    <padding>
+      <side>left</side>
+      <padding>page-padding</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>page-padding</padding>
+    </padding>
+
+    <element id="default-font">
+      <font_picker />
+      <config>
+	<restore />
+      </config>
+    </element>
+  </factory>
 </theme>

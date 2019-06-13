@@ -1,3 +1,7 @@
+2019-06-10  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Create <font_picker> and <color_picker> using the theme file.
+
 2019-06-09  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* date_input_field/date_input_field.C: allow empty date input

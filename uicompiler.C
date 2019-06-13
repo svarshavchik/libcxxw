@@ -30,6 +30,10 @@
 #include "x/w/image_button.H"
 #include "x/w/radio_group.H"
 #include "x/w/progressbar.H"
+#include "x/w/color_picker.H"
+#include "x/w/color_picker_config.H"
+#include "x/w/font_picker.H"
+#include "x/w/font_picker_config.H"
 #include "theme_parser_lock.H"
 #include "messages.H"
 #include "picture.H"
@@ -734,6 +738,45 @@ uicompiler::get_layoutmanager(const std::string &type)
 				   type));
 }
 
+namespace {
+#if 0
+}
+#endif
+
+static std::string get_id_to_restore(const theme_parser_lock &lock)
+{
+	auto id=lock->get_any_attribute("id");
+
+	if (id.empty())
+		throw EXCEPTION(_("<restore> requires <element> to specify an"
+				  " id attribute"));
+
+	return id;
+}
+
+static const_screen_positions positions_to_restore(uicompiler &compiler)
+{
+	if (!compiler.saved_positions)
+		throw EXCEPTION(_("<restore> requires saved screen_positions"));
+
+	return compiler.saved_positions;
+}
+
+template<typename object_type>
+inline void invoke_restore(object_type &object,
+			   const theme_parser_lock &lock,
+			   uicompiler &compiler)
+{
+	object.restore(positions_to_restore(compiler),
+		       get_id_to_restore(lock));
+}
+
+#if 0
+{
+#endif
+}
+
+
 struct uicompiler::compiler_functions {
 
 #include "uicompiler2.inc.C"
@@ -781,8 +824,11 @@ struct uicompiler::compiler_functions {
 
 uicompiler::uicompiler(const theme_parser_lock &root_lock,
 		       const uigenerators &generators,
+		       const const_screen_positionsptr &saved_positions,
 		       bool allowthemerefs)
-	: generators{generators}, allowthemerefs{allowthemerefs}
+	: generators{generators},
+	  saved_positions{saved_positions},
+	  allowthemerefs{allowthemerefs}
 {
 	if (!root_lock->get_root())
 		return;
@@ -1873,6 +1919,33 @@ shortcut uicompiler::shortcut_value(const theme_parser_lock &lock,
 
 	return shortcut("-"); // Throws an exception.
 }
+
+rgb uicompiler::rgb_value(const theme_parser_lock &lock,
+			   const char *element, const char *parent)
+{
+	auto c=generators->lookup_color(single_value(lock, element, parent),
+					allowthemerefs, element);
+
+	if (!std::holds_alternative<rgb>(c))
+		throw EXCEPTION(gettextmsg("<%1%> in <%2%> must specify an rgb"
+					   " color", element, parent));
+
+	return std::get<rgb>(c);
+}
+
+font uicompiler::font_value(const theme_parser_lock &lock,
+			    const char *element, const char *parent)
+{
+	auto c=generators->lookup_font(single_value(lock, element, parent),
+				       allowthemerefs, element);
+
+	if (!std::holds_alternative<font>(c))
+		throw EXCEPTION(gettextmsg("<%1%> in <%2%> must specify a"
+					   " font", element, parent));
+
+	return std::get<font>(c);
+}
+
 
 static void unknown_appearance_node(const char *where,
 				    const std::string &name)
