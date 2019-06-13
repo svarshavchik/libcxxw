@@ -42,6 +42,12 @@ struct LIBCXX_HIDDEN popup_imagebutton_config {
 
 	//! Focus border appearance.
 	const_focus_border_appearance appearance;
+
+	//! Whether to attach the popup to button
+
+	//! This is turned off for combo-box popup buttons, whose popup gets
+	//! attached to the entire combo-box.
+	bool attach_popup=true;
 };
 
 //! Type of a factory for a popup image button's focus frame.

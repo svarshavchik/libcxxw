@@ -72,7 +72,8 @@ do_create_popup_imagebutton(const gridfactory &f,
 		 "focusframe@libcxx.com"
 		};
 
-	focusframe_init_params.attached_popup=attached_popup;
+	if (config.attach_popup)
+		focusframe_init_params.attached_popup=attached_popup;
 	focusframe_init_params.background_color=
 		config.grid_cell_background_color;
 

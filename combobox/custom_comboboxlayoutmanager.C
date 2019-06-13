@@ -472,6 +472,7 @@ focusable_container new_custom_comboboxlayoutmanager
 			  appearance->popup_button_image1,
 			  appearance->popup_button_image2,
 			  appearance->button_focus_border,
+			  false,
 		});
 
 	// Point the popup container to the current selection element and
