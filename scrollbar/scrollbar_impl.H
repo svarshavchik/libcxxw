@@ -38,7 +38,7 @@ scrollbar do_create_h_scrollbar(const container_impl
 				&parent_container,
 				const std::optional<color_arg> &background_color,
 				const scrollbar_config &conf,
-				const dim_arg &minimum_size,
+				const const_scrollbar_appearance &appearance,
 				const scrollbar_cb_t &callback)
 	LIBCXX_HIDDEN;
 
@@ -50,7 +50,7 @@ scrollbar do_create_v_scrollbar(const container_impl
 				&parent_container,
 				const std::optional<color_arg> &background_color,
 				const scrollbar_config &conf,
-				const dim_arg &minimum_size,
+				const const_scrollbar_appearance &appearance,
 				const scrollbar_cb_t &callback)
 	LIBCXX_HIDDEN;
 
@@ -65,7 +65,7 @@ struct LIBCXX_HIDDEN scrollbar_impl_init_params {
 	const scrollbar_orientation &orientation;
 	const scrollbar_icons_tuple_t &icons;
 	const scrollbar_config &conf;
-	const dim_arg &minimum_size;
+	const const_scrollbar_appearance &appearance;
 };
 
 //! Scrollbar implementation object.

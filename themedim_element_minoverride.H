@@ -7,6 +7,9 @@
 
 #include "themedim_element_minoverridefwd.H"
 #include "x/w/impl/themedim_element.H"
+#include "generic_window_handler.H"
+#include "defaulttheme.H"
+#include "screen.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -53,6 +56,27 @@ void themedim_element_minoverrideObj<element_impl>
 		const const_defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
+	compute_minimum_override(IN_THREAD);
+}
+
+//! Update the minimum overrides
+
+template<typename element_impl>
+void themedim_element_minoverrideObj<element_impl>
+::update_minimum_override(ONLY IN_THREAD,
+			  const dim_arg &width_override,
+			  const dim_arg &height_override)
+{
+	elementObj::implObj *me=this;
+
+	auto theme=me->get_window_handler()
+		.get_screen()->impl->current_theme.get();
+
+	themedim_element<themedim_element_override_width_tag>
+		::update(IN_THREAD, width_override, theme);
+
+	themedim_element<themedim_element_override_height_tag>
+		::update(IN_THREAD, height_override, theme);
 	compute_minimum_override(IN_THREAD);
 }
 

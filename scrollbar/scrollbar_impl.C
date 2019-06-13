@@ -10,6 +10,8 @@
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
 #include "x/w/callback_trigger.H"
+#include "x/w/impl/background_color.H"
+#include "x/w/scrollbar_appearance.H"
 #include "busy.H"
 #include "scrollbar/scrollbar_impl.H"
 #include "x/w/impl/always_visible_element.H"
@@ -98,17 +100,27 @@ create_c_e_init_params(const std::string &id,
 	return params;
 }
 
-scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
-	: superclass_t{(init_params.orientation.minimum_width
-			? init_params.minimum_size:dim_arg(0)),
-		(init_params.orientation.minimum_height
-		 ? init_params.minimum_size:dim_arg(0)),
+static dim_arg minimum_width(const scrollbar_orientation &orientation,
+			     const scrollbar_config &config)
+{
+	return orientation.minimum_width ? config.minimum_size:dim_arg{0};
+}
 
-		scrollbar_icon_tuple_t_get(init_params.icons),
-		init_params.container,
-		create_c_e_init_params(init_params.orientation
-				       .scratch_buffer_id,
-				       init_params.conf.appearance)},
+static dim_arg minimum_height(const scrollbar_orientation &orientation,
+			      const scrollbar_config &config)
+{
+	return orientation.minimum_height ? config.minimum_size:dim_arg{0};
+}
+
+scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
+	: superclass_t{minimum_width(init_params.orientation, init_params.conf),
+		       minimum_height(init_params.orientation,init_params.conf),
+
+		       scrollbar_icon_tuple_t_get(init_params.icons),
+		       init_params.container,
+		       create_c_e_init_params(init_params.orientation
+					      .scratch_buffer_id,
+					      init_params.appearance)},
 	  orientation{init_params.orientation},
 	  state_thread_only{init_params.conf},
 	  updated_value_thread_only{init_params.callback},
@@ -173,12 +185,30 @@ void scrollbarObj::implObj::reconfigure(ONLY IN_THREAD,
 		return;
 
 	reset_state(IN_THREAD);
+
+	bool minimum_override_changed=
+		new_config.minimum_size != state(IN_THREAD).minimum_size;
+
 	state(IN_THREAD)=new_config;
 	validate_conf(IN_THREAD);
 	calculate_scrollbar_metrics(IN_THREAD);
-	draw_slider(IN_THREAD);
+
+	if (minimum_override_changed)
+	{
+		update_minimum_override(IN_THREAD,
+					minimum_width(orientation,
+						      state(IN_THREAD)),
+					minimum_height(orientation,
+						       state(IN_THREAD)));
+		schedule_full_redraw(IN_THREAD);
+	}
+	else
+	{
+		draw_slider(IN_THREAD);
+	}
 	report_changed_values(IN_THREAD, state(IN_THREAD).value,
 			      state(IN_THREAD).value);
+
 }
 
 dim_t scrollbarObj::implObj::major_size(const rectangle &r) const

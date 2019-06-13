@@ -20,16 +20,17 @@ See COPYING for distribution information.
     </textobject>
     <caption>
       <para>
-	Widgets with scrolling, like multi-line
+	Widgets with scrolling, such as multi-line
 	<link linkend="inputfieldsandbuttons">input fields</link> take
-	care of providing their own scroll-bars.
-	But scroll-bars are also convenient for setting a value in some
+	care of providing their own scroll-bars;
+	but scroll-bars by themselves are convenient means
+	for setting a value in some
 	specified range.
 	A &factory;'s <methodname>create_horizontal_scrollbar</methodname>()
 	and <methodname>create_vertical_scrollbar</methodname>() methods
-	create a new, stand-alone
-	<ulink url="&link-typedef-x--w-scrollbar;"><classname>&ns;::w::scrollbar</classname></ulink>
-	that's not linked to any other widget.
+	create new, stand-alone
+	<ulink url="&link-typedef-x--w-scrollbar;"><classname>&ns;::w::scrollbar</classname></ulink>s
+	that are not linked to any other widget.
       </para>
     </caption>
   </mediaobject>
@@ -63,7 +64,8 @@ See COPYING for distribution information.
       a &factory;'s <methodname>create_horizontal_scrollbar</methodname>()'s to
       create a new scroll-bar, and shows some examples of using it.
       An <ulink url="&link-x--w--scrollbar-config;"><classname>&ns;::w::scrollbar_config</classname></ulink>
-      specifies scroll-bar's configuration, and passed to
+      parameter
+      specifies scroll-bar's configuration, and gets passed to
       <methodname>create_horizontal_scrollbar</methodname>() or
       <methodname>create_vertical_scrollbar</methodname>().
       An existing scroll-bar's <methodname>reconfigure</methodname>() method
@@ -72,13 +74,18 @@ See COPYING for distribution information.
       <methodname>create_vertical_scrollbar</methodname>()'s optional
       second parameter specifies the scroll-bar's initial
       &callback; that gets executed to report changes to the scroll-bar's
-      position. An optional third parameter specifies its minimum size,
+      position.
+    </para>
+
+    <para>
+      <classname>&ns;::w::scrollbar_config</classname>'s
+      <varname>minimum_size</varname> sets the scroll-bar's minimum size,
       in millimeters.
       The scroll-bar's &layoutmanager; typically sizes the scroll-bar to
       fit within its assigned cell, and this value instructs the layout
       manager what the minimum size should be.
       If <filename>scrollbar.C</filename> does not specify its scrollbar's
-      width, it would end up taking the size of the short label above it.
+      width, it becomes the size of the short label above it.
       As such, the scroll-bar's minimum width is slightly larger, and
       the <filename>scrollbar.C</filename> creates a larger window on account
       of that.

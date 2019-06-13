@@ -6,6 +6,7 @@
 #define x_w_scrollbarfwd_h
 
 #include <x/w/connection_threadfwd.H>
+#include <x/w/scrollbar_appearancefwd.H>
 #include <x/ptrfwd.H>
 #include <x/number.H>
 #include <x/functionalrefptrfwd.H>
@@ -36,6 +37,8 @@ typedef functionref<void (THREAD_CALLBACK,
 \code
 sb->set(4);
 
+sb->set(IN_THREAD, 4);
+
 INSERT_LIBX_NAMESPACE::w::scrollbar_config config;
 
 config.range=110;
@@ -43,6 +46,8 @@ config.page_size=10;
 config.increment=5;
 
 sb->reconfigure(sb);
+
+sb->reconfigure(IN_THREAD, sb);
 
 auto v=sb->get_value();
 

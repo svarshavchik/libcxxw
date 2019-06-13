@@ -277,7 +277,7 @@ public:
 					     (std::forward<functor>(creator)));
 	}
 
-	//! Option argument to create_progressbar().
+	//! Optional argument to create_progressbar().
 
 	typedef optional_argconstrefs<progressbar_config,
 				      new_layoutmanager
@@ -309,30 +309,39 @@ public:
 					  const create_progressbar_args_t &)
 		LIBCXX_PUBLIC;
 
-	//! Create a horizontal scrollbar
-	scrollbar create_horizontal_scrollbar(const scrollbar_config &config,
-					      dim_arg minimum_size=0)
-		LIBCXX_PUBLIC;
+	//! Optional arguments to create_horizontal/vertical_scrollbar
+
+	typedef optional_args<scrollbar_cb_t,
+			      const_scrollbar_appearance> scrollbar_args_t;
 
 	//! Create a horizontal scrollbar
-
-	//! \overload
+	template<typename ...Args> inline
 	scrollbar create_horizontal_scrollbar(const scrollbar_config &config,
-					      const scrollbar_cb_t &callback,
-					      dim_arg minimum_size=0)
+					      Args && ...args)
+	{
+		return do_create_horizontal_scrollbar
+			(config, { std::forward<Args>(args)... });
+	}
+
+	//! Type-erased create_horizontal_scrollbar()
+
+	scrollbar do_create_horizontal_scrollbar(const scrollbar_config &config,
+						 const scrollbar_args_t &args)
 		LIBCXX_PUBLIC;
 
 	//! Create a vertical scrollbar
+	template<typename ...Args> inline
 	scrollbar create_vertical_scrollbar(const scrollbar_config &config,
-					    dim_arg minimum_size=0)
-		LIBCXX_PUBLIC;
+					    Args && ...args)
+	{
+		return do_create_vertical_scrollbar
+			(config, { std::forward<Args>(args)... });
+	}
 
-	//! Create a vertical scrollbar
+	//! Type-erased create_vertical_scrollbar()
 
-	//! \overload
-	scrollbar create_vertical_scrollbar(const scrollbar_config &config,
-					    const scrollbar_cb_t &callback,
-					    dim_arg minimum_size=0)
+	scrollbar do_create_vertical_scrollbar(const scrollbar_config &config,
+					       const scrollbar_args_t &args)
 		LIBCXX_PUBLIC;
 
 	//! Create a color picker

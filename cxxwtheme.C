@@ -37,6 +37,7 @@
 #include "x/w/busy.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/element_state.H"
+#include "x/w/scrollbar_appearance.H"
 #include "configfile.H"
 #include "messages.H"
 
@@ -533,9 +534,10 @@ static w::container create_main_window(const w::main_window &mw)
 	w::scrollbar_config config{(SCALE_MAX-SCALE_MIN)/SCALE_INC+1};
 
 	config.value=(theme_info->scale-SCALE_MIN)/SCALE_INC;
+	config.minimum_size=100;
 
 	auto scale_scrollbar=
-		f->colspan(2).create_horizontal_scrollbar(config, 100);
+		f->colspan(2).create_horizontal_scrollbar(config);
 
 	scale_scrollbar->on_update
 		([scale_label, conn, mw=make_weak_capture(mw)]

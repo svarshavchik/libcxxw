@@ -94,21 +94,18 @@ create_peephole_scrollbars(const container_impl &container,
 
 	scrollbar_config sc;
 
-	sc.appearance=happearance;
-
 	auto horizontal=do_create_h_scrollbar
 		(container, background_color, sc,
-		 0,
+		 happearance,
 		 [=]
 		 (ONLY IN_THREAD, const auto &config)
 		 {
 			 horizontal_impl->updated_value(IN_THREAD, config);
 		 });
 
-	sc.appearance=vappearance;
 	auto vertical=do_create_v_scrollbar
 		(container, background_color, sc,
-		 0,
+		 vappearance,
 		 [=]
 		 (ONLY IN_THREAD, const auto &config)
 		 {
@@ -313,6 +310,8 @@ void scrollbarsObj
 		   dim_t increment)
 {
 	scrollbar_config new_config;
+
+	new_config.minimum_size=scrollbar->state(IN_THREAD).minimum_size;
 
 	new_config.range=scroll_v_t::truncate(size);
 	new_config.page_size=scroll_v_t::truncate(peephole_size);

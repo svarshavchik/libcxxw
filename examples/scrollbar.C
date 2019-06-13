@@ -58,6 +58,9 @@ public:
 		{
 			config.value=(int)current_volume;
 		}
+
+		config.minimum_size=75; // 75 millimeters wide.
+
 		return config;
 	}
 
@@ -190,10 +193,7 @@ void initialize_volume_control(const x::w::main_window &main_window)
 						     {
 							     vi->set_volume(status.dragged_value,
 									    input_field);
-						     },
-
-						     // 75 millimeters wide.
-						     75);
+						     });
 
 	// Add a key event to the input field, for the Enter key, to set the
 	// manually typed-in value as the explicit value.

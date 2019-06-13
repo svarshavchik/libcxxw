@@ -53,6 +53,10 @@ class LIBCXX_HIDDEN themedim_element_minoverrideObj
 
 	void theme_updated(ONLY IN_THREAD,
 			   const const_defaulttheme &new_theme) override;
+
+	void update_minimum_override(ONLY IN_THREAD,
+				     const dim_arg &width_override,
+				     const dim_arg &height_override);
  private:
 	void compute_minimum_override(ONLY IN_THREAD);
 };

@@ -8,6 +8,7 @@
 #include <x/w/containerobj.H>
 #include <x/w/focusableownerobj.H>
 #include <x/w/scrollbarfwd.H>
+#include <x/w/connection_threadfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -35,6 +36,10 @@ public:
 
 	void set(scroll_v_t value);
 
+	//! Set the value of the scrollbar
+
+	void set(ONLY IN_THREAD, scroll_v_t value);
+
 	//! Return the scrollbar's current value
 	scroll_v_t::value_type get_value() const;
 
@@ -43,6 +48,9 @@ public:
 
 	//! Reconfigure the scrollbar
 	void reconfigure(const scrollbar_config &);
+
+	//! Reconfigure the scrollbar
+	void reconfigure(ONLY IN_THREAD, const scrollbar_config &);
 
 	//! Install a new callback.
 	void on_update(const scrollbar_cb_t &) LIBCXX_PUBLIC;

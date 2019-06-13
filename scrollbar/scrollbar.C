@@ -15,6 +15,7 @@
 #include "run_as.H"
 #include "x/w/rgb.H"
 #include "x/w/factory.H"
+#include "x/w/scrollbar_appearance.H"
 #include "x/w/scrollbar_images_appearance.H"
 #include "x/w/focus_border_appearance.H"
 
@@ -33,15 +34,21 @@ scrollbarObj::~scrollbarObj()=default;
 
 void scrollbarObj::set(scroll_v_t value)
 {
-	impl->THREAD->run_as([impl=this->impl, value]
+	impl->THREAD->run_as([me=ref{this}, value]
 			     (ONLY IN_THREAD)
 			     {
-				     auto new_state=impl->state(IN_THREAD);
-
-				     new_state.value=value;
-
-				     impl->reconfigure(IN_THREAD, new_state);
+				     me->set(IN_THREAD, value);
 			     });
+}
+
+void scrollbarObj::set(ONLY IN_THREAD,
+		       scroll_v_t value)
+{
+	auto new_state=impl->state(IN_THREAD);
+
+	new_state.value=value;
+
+	reconfigure(IN_THREAD, new_state);
 }
 
 scroll_v_t::value_type scrollbarObj::get_value() const
@@ -60,11 +67,17 @@ scroll_v_t::value_type scrollbarObj::get_dragged_value() const
 
 void scrollbarObj::reconfigure(const scrollbar_config &new_state)
 {
-	impl->THREAD->run_as([impl=this->impl, new_state]
+	impl->THREAD->run_as([me=ref{this}, new_state]
 			     (ONLY IN_THREAD)
 			     {
-				     impl->reconfigure(IN_THREAD, new_state);
+				     me->reconfigure(IN_THREAD, new_state);
 			     });
+}
+
+void scrollbarObj::reconfigure(ONLY IN_THREAD,
+			       const scrollbar_config &new_state)
+{
+	impl->reconfigure(IN_THREAD, new_state);
 }
 
 void scrollbarObj::on_update(const scrollbar_cb_t &callback)
@@ -74,13 +87,6 @@ void scrollbarObj::on_update(const scrollbar_cb_t &callback)
 			     {
 				     impl->update_callback(IN_THREAD, callback);
 			     });
-}
-
-static scrollbar_cb_t null_callback()
-{
-	return [](THREAD_CALLBACK, const auto &)
-	{
-	};
 }
 
 typedef std::tuple<icon, icon, icon, icon, icon> icon_set_t;
@@ -93,7 +99,7 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 				  const scrollbar_orientation &orientation,
 				  const icon_set_t &icon_set_1,
 				  const icon_set_t &icon_set_2,
-				  const dim_arg &minimum_size,
+				  const const_scrollbar_appearance &appearance,
 				  const scrollbar_cb_t &callback)
 {
 	// Create a container for the focus frame around the scrollbar.
@@ -106,8 +112,10 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 	auto ffcontainer_impl=
 		create_nonrecursive_visibility_focusframe_impl
 		(parent_container,
-		 conf.appearance->focus_border,
+		 appearance->focus_border,
 		 0, 0, background_color);
+
+	ref<focusframecontainer_implObj> ff_impl{ffcontainer_impl};
 
 	// The focus frame will manage the actual scrollbar element. Create
 	// the implementation object. Since the focus-framed element will
@@ -117,12 +125,12 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 	auto scrollbar_impl=
 		ref<always_visible_elementObj<scrollbarObj::implObj>>
 		::create(scrollbar_impl_init_params{ffcontainer_impl,
-					callback,
-					orientation,
-					std::tuple_cat(icon_set_1,
-						       icon_set_2),
-					conf,
-					minimum_size});
+						    callback,
+						    orientation,
+						    std::tuple_cat(icon_set_1,
+								   icon_set_2),
+						    conf,
+						    appearance});
 
 	// We need to tell the focu sframe that we, supposedly, created
 	// an element for it. Create a plain element that owns the
@@ -165,7 +173,7 @@ scrollbar
 do_create_h_scrollbar(const container_impl &parent_container,
 		      const std::optional<color_arg> &background_color,
 		      const scrollbar_config &conf,
-		      const dim_arg &minimum_size,
+		      const const_scrollbar_appearance &appearance,
 		      const scrollbar_cb_t &callback)
 {
 	auto &window_handler=parent_container->get_window_handler();
@@ -174,11 +182,11 @@ do_create_h_scrollbar(const container_impl &parent_container,
 				horizontal_scrollbar,
 				create_scrollbar_icon_set
 				(window_handler,
-				 conf.appearance->horizontal1),
+				 appearance->horizontal1),
 				create_scrollbar_icon_set
 				(window_handler,
-				 conf.appearance->horizontal2),
-				minimum_size,
+				 appearance->horizontal2),
+				appearance,
 				callback);
 }
 
@@ -186,7 +194,7 @@ scrollbar
 do_create_v_scrollbar(const container_impl &parent_container,
 		      const std::optional<color_arg> &background_color,
 		      const scrollbar_config &conf,
-		      const dim_arg &minimum_size,
+		      const const_scrollbar_appearance &appearance,
 		      const scrollbar_cb_t &callback)
 {
 	auto &window_handler=parent_container->get_window_handler();
@@ -195,55 +203,67 @@ do_create_v_scrollbar(const container_impl &parent_container,
 				vertical_scrollbar,
 				create_scrollbar_icon_set
 				(window_handler,
-				 conf.appearance->vertical1),
+				 appearance->vertical1),
 				create_scrollbar_icon_set
 				(window_handler,
-				 conf.appearance->vertical2),
-				minimum_size,
+				 appearance->vertical2),
+				appearance,
 				callback);
 }
 
-scrollbar factoryObj
-::create_horizontal_scrollbar(const scrollbar_config &config,
-			      dim_arg minimum_size)
-{
-	return create_horizontal_scrollbar(config, null_callback(),
-					   minimum_size);
-}
 
 scrollbar factoryObj
-::create_horizontal_scrollbar(const scrollbar_config &config,
-			      const scrollbar_cb_t &callback,
-			      dim_arg minimum_size)
+::do_create_horizontal_scrollbar(const scrollbar_config &config,
+				 const scrollbar_args_t &args)
 {
+	std::optional<scrollbar_cb_t> default_callback;
+
+	auto callback=optional_arg_or<scrollbar_cb_t>(args,
+						      default_callback,
+						      [](THREAD_CALLBACK,
+							 const auto &)
+						      {
+						      });
+
+	std::optional<const_scrollbar_appearance> default_appearance;
+
+	auto appearance=optional_arg_or<const_scrollbar_appearance>
+		(args, default_appearance,
+		 scrollbar_appearance::base::theme());
+
 	auto sb=do_create_h_scrollbar(get_container_impl(),
 				      std::nullopt,
 				      config,
-				      minimum_size,
+				      appearance,
 				      callback);
 
 	created_internally(sb);
 	return sb;
 }
 
-
 scrollbar factoryObj
-::create_vertical_scrollbar(const scrollbar_config &config,
-			    dim_arg minimum_size)
+::do_create_vertical_scrollbar(const scrollbar_config &config,
+			       const scrollbar_args_t &args)
 {
-	return create_vertical_scrollbar(config, null_callback(),
-					 minimum_size);
-}
+	std::optional<scrollbar_cb_t> default_callback;
 
-scrollbar factoryObj
-::create_vertical_scrollbar(const scrollbar_config &config,
-			    const scrollbar_cb_t &callback,
-			    dim_arg minimum_size)
-{
+	auto callback=optional_arg_or<scrollbar_cb_t>(args,
+						      default_callback,
+						      [](THREAD_CALLBACK,
+							 const auto &)
+						      {
+						      });
+
+	std::optional<const_scrollbar_appearance> default_appearance;
+
+	auto appearance=optional_arg_or<const_scrollbar_appearance>
+		(args, default_appearance,
+		 scrollbar_appearance::base::theme());
+
 	auto sb=do_create_v_scrollbar(get_container_impl(),
 				      std::nullopt,
 				      config,
-				      minimum_size,
+				      appearance,
 				      callback);
 
 	created_internally(sb);

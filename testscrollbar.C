@@ -18,6 +18,7 @@
 #include "x/w/button.H"
 #include "x/w/canvas.H"
 #include "x/w/scrollbar.H"
+#include "x/w/scrollbar_appearance.H"
 #include <string>
 #include <iostream>
 
@@ -66,12 +67,12 @@ void testscrollbar()
 				 auto factory=layout->append_row();
 				 factory->padding(0);
 				 factory->create_horizontal_scrollbar
-				 ({100, 10, 2, 45},
-				   []
-				  (THREAD_CALLBACK,
-				   const auto &scrollbar_info) {
-					   updated_value(scrollbar_info);
-				   }, 100);
+					 ({100, 10, 2, 45, 100},
+					  []
+					  (THREAD_CALLBACK,
+					   const auto &scrollbar_info) {
+						  updated_value(scrollbar_info);
+					  });
 			 });
 
 	main_window->set_window_title("Hello world!");
