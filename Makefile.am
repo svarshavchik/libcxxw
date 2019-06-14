@@ -1285,6 +1285,7 @@ BUILT_SOURCES += includes/x/w/constants_inc.H \
 	gc_constants.inc.C pic_constants.inc.C
 
 CLEANFILES += uicompiler.inc.C uicompiler2.inc.C \
+	uicompiler-new.inc.C uicompiler2-new.inc.C \
 	gc_constants.inc.C pic_constants.inc.C \
 	appearance/appearance_list.xml \
 	appearance/appearance_parser.inc.C \
