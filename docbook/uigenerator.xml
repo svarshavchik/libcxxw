@@ -6,21 +6,21 @@ See COPYING for distribution information.
 -->
 
 <chapter id="uigenerator">
-  <title>Generating UI from an <acronym>XML</acronym> theme file</title>
+  <title>Generating widgets from an <acronym>XML</acronym> theme file</title>
 
   <para>
     <filename>uigenerator1.C</filename> is a version of
     <link linkend="combobox"><filename>combobox.C</filename></link>
     that gives an example of creating widgets using an
     <acronym>XML</acronym>-specified layout,
-    a <quote>theme file</quote>.
-    The <acronym>XML</acronym> content of the theme file gets effectively
-    executed instructions for invoking various methods of
+    that's called a <quote>theme file</quote>.
+    The <acronym>XML</acronym> content of the theme file effectively
+    execute instructions for invoking various methods of
     layout managers and factories.
     Instead of the methods which create and access containers,
     factories, and widgets
     and their various grid-related attributes (borders, padding, etc...),
-    these methods gets executed via the theme file.
+    these methods get executed by instructions the theme file.
     The default appearance of &appshort; windows comes from the default
     theme file, and this is the same mechanism.
     The application provides only the code to create custom widgets.

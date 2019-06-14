@@ -37,11 +37,11 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Combines a clean modern look with classical, traditional UI
-	  elements.
+	  widgets.
 	  Mild gradient shading provides a subtle, non-intrusive
 	  3D effect.
-	  UI elements include
-	  labels, text input fields,
+	  Traditional UI widgets include
+	  labels, checkboxes, radio buttons, input fields,
 	  lists, combo-boxes, menus, and dialogs &mdash; updated to modern
 	  UI standards: <link linkend="passwordfields">confirming the last
 	    character typed into a
@@ -70,10 +70,15 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
-	  Fully scalable and themeable UI uses a
+	  Fully scalable and themeable widgets use a
 	  <link linkend="sxg">library-specific
-	    scalable graphic format</link>, to easily scale all UI elements
-	  to a user-preferred size.
+	    scalable graphic format</link>, to fractionally scale the widgets
+	  to a targeted size. The library also implements an
+	  <link linkend="uigenerator"><acronym>XML</acronym>
+	    specification</link> for creating widgets. It's possible to
+	  make changes to the layout and the appearance of widgets without
+	  recompiling, but by updating the <acronym>XML</acronym> theme
+	  file.
 	</para>
       </listitem>
 
@@ -90,15 +95,11 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
-	  &app; is a compositing toolkit. The underlying video hardware
-	  must implement the X RENDER extension. This should be supported by all
-	  modern video hardware.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  Anti-aliased fonts get rendered by the Freetype library.
+	  &appshort;'s build scripts allow running, <emphasis>and
+	    developing with</emphasis> multiple versions of the library
+	  concurrently. It's possible to install different &appshort; versions
+	  for applications that use different <acronym>ABI</acronym>s, solving
+	  this common problem with using large C++ libraries.
 	</para>
       </listitem>
     </itemizedlist>
@@ -114,10 +115,9 @@ See COPYING for distribution information.
       <para>
 	&app;'s core functionality is complete, and
 	<link linkend="INSTALL">is available for downloading</link>.
-	The most recent build of &app; implements and documents the
-	API for
-	<link linkend="uigenerator">generating widgets from an
-	  <acronym>XML</acronym> stylesheet</link>.
+	The most recent build of &app; implements additional APIs for
+	<link linkend="uigenerator">generating widgets from
+	  <acronym>XML</acronym> stylesheets</link>.
       </para>
     </section>
   </section>
