@@ -327,7 +327,7 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 			   {
 				   create_separator();
 			   },
-			   [&](const new_items &)
+			   [&](const get_new_items &)
 			   {
 			   }
 		   }, item);
@@ -404,7 +404,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 	const size_t real_columns=textlist_element.columns-helper.extra;
 
-	const new_items *seen_new_items=nullptr;
+	const get_new_items *seen_new_items=nullptr;
 
 	for (const auto &item:t)
 	{
@@ -447,7 +447,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 				{
 					++n_real_elements;
 				},
-				[&](const new_items &arg)
+				[&](const get_new_items &arg)
 				{
 					seen_new_items=&arg;
 				}},
@@ -469,7 +469,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 	for (const auto &s:t)
 	{
-		if (std::holds_alternative<new_items>(s))
+		if (std::holds_alternative<get_new_items>(s))
 			continue; // Checks that this is kosher here, above.
 
 
@@ -487,9 +487,9 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 	if (seen_new_items)
 	{
-		auto &handles=seen_new_items->handles.get();
+		auto &handles=info.ret.handles;
 
-		handles.reserve(handles.size() + info.rowmeta.size());
+		handles.reserve(info.rowmeta.size());
 
 		for (const auto &meta:info.rowmeta)
 		{

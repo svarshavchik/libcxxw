@@ -535,28 +535,37 @@ in the connection thread.
 \code
 #include <INSERT_LIBX_NAMESPACE/w/listitemhandle.H>
 
-std::vector<INSERT_LIBX_NAMESPACE::w::listitemhandle> handles;
-
-auto f=l->append_items(
+auto ret=l->append_items(
           {
                   "Lorem ipsum",
                   "dolor sit amet",
                   "consectetur",
 
-                   INSERT_LIBX_NAMESPACE::w::new_items{handles}
+                   INSERT_LIBX_NAMESPACE::w::get_new_items{},
           });
+
+std::vector<INSERT_LIBX_NAMESPACE::w::listitemhandle> &handles=ret.handles;
+
 \endcode
 
-The \c std::vector of \ref list_item_param "list_item_param" variant may
-contain an \c INSERT_LIBX_NAMESPACE::w::new_items as its last value.
-This value, if specified, must be the last value in the vector when creating
+Additional information gets returned from methods that create new list items,
+like append_items(),
+when the last value in a
+ \c std::vector of \ref list_item_param "list_item_param" variants
+is an \ref get_new_items "INSERT_LIBX_NAMESPACE::w::get_new_items" value.
+
+\c get_new_items, if specified, must be the last value in the vector when
+creating
 new items with append_items(), or other methods that create items.
 
-A std::vector of \ref listitemhandle "INSERT_LIBX_NAMESPACE::w::listitemhandle"s
-gets specified in this manner, and a handle for each new list item gets
-appended to the vector by append_items(), or other methods that create the
-items. A new handle gets created for each logical item in lists with multiple
-columns.
+Currently
+the returned object contains a single value, \c handles, which is
+a std::vector of
+ \ref listitemhandle "INSERT_LIBX_NAMESPACE::w::listitemhandle"s.
+
+This is empty by default, and gets returned only when
+\c get_new_items gets specified. It takes additional work to create these
+objects, so this work gets done only upon request.
 
 \par Standard Copy/Cut/Paste menu items
 
@@ -707,12 +716,54 @@ struct LIBCXX_PUBLIC list_item_status_info_t {
 	const busy &mcguffin;
 };
 
-struct LIBCXX_PUBLIC new_items;
+struct LIBCXX_PUBLIC new_items_ret;
 
 //! Save handles for new items.
 
-struct new_items {
-	std::reference_wrapper<std::vector<listitemhandle>> handles;
+//! Passed as a last value to a \ref listlayoutmanager "list layout manager"
+//! method that creates new list items, to indicate that additional information
+//! should be returned from the method.
+//!
+//! This avoids doing all the work to create the additional objects, that get
+//! returned, unless needed.
+
+struct get_new_items {};
+
+//! Saved handles for new items
+
+//! This object is returned by \ref listlayoutmanager "list layout manager"
+//! methods that create new items. This object is normally empty unless the
+//! list of new items, that gets passed to the method, ends with a
+//! \ref get_new_items "get_new_items" value.
+//!
+//! The copy constructor and the assignment operator are deleted. The return
+//! value from the method is intended to be saved in an auto variable,
+//! examined, and destroyed.
+
+struct new_items_ret {
+
+	//! New handles
+	std::vector<listitemhandle> handles;
+
+	//! Default constructor
+	new_items_ret();
+
+	//! Copy constructor declared but not defined
+
+	//! This is used to internally enforce copy elision in all contexts.
+	new_items_ret(const new_items_ret &);
+
+	//! Move constructor declared but not defined
+
+	//! This is used to internally enforce copy elision in all contexts.
+	new_items_ret(new_items_ret &&);
+
+	//! Assignment operator is deleted
+
+	new_items_ret &operator=(const new_items_ret &)=delete;
+
+	//! Destructor
+	~new_items_ret();
 };
 
 //! List item callback's signature
@@ -753,7 +804,7 @@ typedef std::variant<text_param, image_param, separator, shortcut,
 		     hierindent,
 		     menuoption, submenu,
 		     list_item_status_change_callback,
-		     new_items> list_item_param_base;
+		     get_new_items> list_item_param_base;
 
 //! The list highlights items to indicate they're selected
 

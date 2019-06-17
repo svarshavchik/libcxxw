@@ -162,24 +162,26 @@ public:
 	~standard_combobox_lock();
 
 	//! Append a new item to the combo-box.
-	void append_items(const list_item_param &item);
+	new_items_ret append_items(const list_item_param &item);
 
 	//! Append new items to the combo-box.
-	void append_items(const std::vector<list_item_param> &items);
+	new_items_ret append_items(const std::vector<list_item_param> &items);
 
 	//! Append new items to the combo-box.
-	void append_items(ONLY IN_THREAD,
-			  const std::vector<list_item_param> &items);
+	new_items_ret append_items(ONLY IN_THREAD,
+				   const std::vector<list_item_param> &items);
 
 	//! Insert a new item to the combo-box before an existing item.
-	void insert_items(size_t i, const list_item_param &item);
+	new_items_ret insert_items(size_t i, const list_item_param &item);
 
 	//! Insert a new item to the combo-box before an existing item.
-	void insert_items(size_t i, const std::vector<list_item_param> &items);
+	new_items_ret insert_items(size_t i,
+				   const std::vector<list_item_param> &items);
 
 	//! Insert a new item to the combo-box before an existing item.
-	void insert_items(ONLY IN_THREAD,
-			  size_t i, const std::vector<list_item_param> &items);
+	new_items_ret insert_items(ONLY IN_THREAD,
+				   size_t i,
+				   const std::vector<list_item_param> &items);
 
 	//! Remove an item from the combo-box.
 	void remove_item(size_t i);
@@ -194,21 +196,25 @@ public:
 	void remove_items(ONLY IN_THREAD, size_t i, size_t n);
 
 	//! Replace an item in the combo-box.
-	void replace_items(size_t i, const list_item_param &item);
+	new_items_ret replace_items(size_t i, const list_item_param &item);
 
 	//! Replace items in the combo-box.
-	void replace_items(size_t i, const std::vector<list_item_param> &items);
+	new_items_ret replace_items(size_t i,
+				    const std::vector<list_item_param> &items);
 
 	//! Replace items in the combo-box.
-	void replace_items(ONLY IN_THREAD,
-			   size_t i, const std::vector<list_item_param> &items);
+	new_items_ret replace_items(ONLY IN_THREAD,
+				    size_t i,
+				    const std::vector<list_item_param> &items);
 
 	//! Replace all existing items in the combo-box.
-	void replace_all_items(const std::vector<list_item_param> &items);
+	new_items_ret replace_all_items(const std::vector<list_item_param>
+					&items);
 
 	//! Replace all existing items in the combo-box.
-	void replace_all_items(ONLY IN_THREAD,
-			       const std::vector<list_item_param> &items);
+	new_items_ret replace_all_items(ONLY IN_THREAD,
+					const std::vector<list_item_param>
+					&items);
 
 	//! Re-sort the existing items in the combo-box.
 	void resort_items(const std::vector<size_t> &indexes);

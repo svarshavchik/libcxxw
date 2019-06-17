@@ -12,7 +12,9 @@ LIBCXXW_NAMESPACE_START
 
 in_thread_new_cells_infoObj
 ::in_thread_new_cells_infoObj(const listlayoutmanager &lm,
-			      const std::vector<list_item_param> &items)
+			      const std::vector<list_item_param> &items,
+			      new_items_ret &ret)
+	:info{ret}
 {
 	auto list_impl=lm->impl->list_element_singleton->impl;
 

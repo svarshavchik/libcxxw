@@ -47,6 +47,10 @@ struct textlist_rowinfo {
 
 struct new_cells_info {
 
+	// Return value from the list layout manager that's creating the cells.
+
+	new_items_ret &ret;
+
 	//! New list cell contents.
 	std::vector<list_cell> newcells;
 

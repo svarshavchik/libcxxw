@@ -7,7 +7,7 @@
 
 #include "listlayoutmanager/in_thread_new_cells_infofwd.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
-#include "includes/x/w/listlayoutmanagerfwd.H"
+#include "x/w/listlayoutmanagerfwd.H"
 
 #include <x/obj.H>
 
@@ -23,7 +23,8 @@ public:
 	new_cells_info info;
 
 	in_thread_new_cells_infoObj(const listlayoutmanager &lm,
-				    const std::vector<list_item_param> &items);
+				    const std::vector<list_item_param> &items,
+				    new_items_ret &ret);
 
 	~in_thread_new_cells_infoObj();
 };

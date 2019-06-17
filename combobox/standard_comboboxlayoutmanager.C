@@ -90,9 +90,9 @@ static std::vector<text_param> to_text_param(const std::vector<list_item_param>
 	return ret;
 }
 
-void standard_combobox_lock::append_items(const list_item_param &item)
+new_items_ret standard_combobox_lock::append_items(const list_item_param &item)
 {
-	append_items({item});
+	return append_items({item});
 }
 
 namespace {
@@ -157,10 +157,11 @@ public:
 	//! Constructor
 	noninthread_update_helperObj(standard_combobox_lock &lock,
 				     std::vector<list_item_param>
-				     updated_items)
+				     updated_items,
+				     new_items_ret &ret)
 		: new_text_params_wrapper{updated_items, lock},
 		  in_thread_new_cells_infoObj{lock.locked_layoutmanager,
-					      updated_items},
+					      updated_items, ret},
 		  impl{lock.locked_layoutmanager->impl}
 	{
 	}
@@ -212,8 +213,10 @@ struct inthread_update_helper : new_text_params_wrapper {
 
 	//! Constructor
 	inthread_update_helper(standard_combobox_lock &lock,
-			       std::vector<list_item_param> updated_items)
+			       std::vector<list_item_param> updated_items,
+			       new_items_ret &ret)
 		: new_text_params_wrapper{updated_items, lock},
+		  info{ret},
 		  list_impl{lock.locked_layoutmanager
 			    ->listlayoutmanagerObj::impl
 			    ->list_element_singleton->impl}
@@ -532,10 +535,12 @@ struct replace_all_helper : public update_helper {
 #endif
 }
 
-void standard_combobox_lock::append_items(const std::vector<list_item_param>
-					  &items)
+new_items_ret standard_combobox_lock
+::append_items(const std::vector<list_item_param> &items)
 {
-	auto helper=noninthread_update_helper::create(*this, items);
+	new_items_ret ret;
+
+	auto helper=noninthread_update_helper::create(*this, items, ret);
 
 	locked_layoutmanager->impl->run_as
 		([helper]
@@ -553,13 +558,17 @@ void standard_combobox_lock::append_items(const std::vector<list_item_param>
 
 			 doit.finish();
 		 });
+
+	return ret;
 }
 
-void standard_combobox_lock::append_items(ONLY IN_THREAD,
-					  const std::vector<list_item_param>
-					  &items)
+new_items_ret standard_combobox_lock
+::append_items(ONLY IN_THREAD,
+	       const std::vector<list_item_param> &items)
 {
-	inthread_update_helper helper{*this, items};
+	new_items_ret ret;
+
+	inthread_update_helper helper{*this, items, ret};
 
 	append_helper doit{*this, helper.new_text_params};
 
@@ -569,18 +578,24 @@ void standard_combobox_lock::append_items(ONLY IN_THREAD,
 				      locked_layoutmanager,
 				      helper.info);
 	doit.finish();
+
+	return ret;
+
 }
 
-void standard_combobox_lock::insert_items(size_t i, const list_item_param &item)
+new_items_ret standard_combobox_lock::insert_items(size_t i,
+						   const list_item_param &item)
 {
-	insert_items(i, {item});
+	return insert_items(i, {item});
 }
 
-void standard_combobox_lock::insert_items(size_t i,
-					  const std::vector<list_item_param>
-					  &items)
+new_items_ret standard_combobox_lock
+::insert_items(size_t i,
+	       const std::vector<list_item_param> &items)
 {
-	auto helper=noninthread_update_helper::create(*this, items);
+	new_items_ret ret;
+
+	auto helper=noninthread_update_helper::create(*this, items, ret);
 
 	locked_layoutmanager->impl->run_as
 		([helper, i]
@@ -597,14 +612,18 @@ void standard_combobox_lock::insert_items(size_t i,
 						helper->info);
 			 doit.finish();
 		 });
+
+	return ret;
 }
 
-void standard_combobox_lock::insert_items(ONLY IN_THREAD,
-					  size_t i,
-					  const std::vector<list_item_param>
-					  &items)
+new_items_ret standard_combobox_lock
+::insert_items(ONLY IN_THREAD,
+	       size_t i,
+	       const std::vector<list_item_param> &items)
 {
-	inthread_update_helper helper{*this, items};
+	new_items_ret ret;
+
+	inthread_update_helper helper{*this, items, ret};
 
 	insert_helper doit{*this, helper.new_text_params};
 
@@ -615,19 +634,23 @@ void standard_combobox_lock::insert_items(ONLY IN_THREAD,
 				      i,
 				      helper.info);
 	doit.finish();
+
+	return ret;
 }
 
-void standard_combobox_lock::replace_items(size_t i,
-					  const list_item_param &item)
+new_items_ret standard_combobox_lock::replace_items(size_t i,
+						    const list_item_param &item)
 {
-	replace_items(i, {item});
+	return replace_items(i, {item});
 }
 
-void standard_combobox_lock::replace_items(size_t i,
-					   const std::vector<list_item_param>
-					   &items)
+new_items_ret standard_combobox_lock
+::replace_items(size_t i,
+		const std::vector<list_item_param> &items)
 {
-	auto helper=noninthread_update_helper::create(*this, items);
+	new_items_ret ret;
+
+	auto helper=noninthread_update_helper::create(*this, items, ret);
 
 	locked_layoutmanager->impl->run_as
 		([helper, i]
@@ -644,14 +667,18 @@ void standard_combobox_lock::replace_items(size_t i,
 						 helper->info);
 			 doit.finish();
 		 });
+
+	return ret;
 }
 
-void standard_combobox_lock::replace_items(ONLY IN_THREAD,
-					   size_t i,
-					   const std::vector<list_item_param>
-					   &items)
+new_items_ret standard_combobox_lock
+::replace_items(ONLY IN_THREAD,
+		size_t i,
+		const std::vector<list_item_param> &items)
 {
-	inthread_update_helper helper{*this, items};
+	new_items_ret ret;
+
+	inthread_update_helper helper{*this, items, ret};
 
 	replace_helper doit{*this, helper.new_text_params};
 
@@ -662,6 +689,8 @@ void standard_combobox_lock::replace_items(ONLY IN_THREAD,
 				       i,
 				       helper.info);
 	doit.finish();
+
+	return ret;
 }
 
 void standard_combobox_lock::remove_item(size_t i)
@@ -672,8 +701,11 @@ void standard_combobox_lock::remove_item(size_t i)
 void standard_combobox_lock::remove_items(size_t i, size_t n)
 {
 	// For consistency:
+
+	new_items_ret ret;
+
 	auto helper=noninthread_update_helper
-		::create(*this, std::vector<list_item_param>{});
+		::create(*this, std::vector<list_item_param>{}, ret);
 
 	locked_layoutmanager->impl->run_as
 		([helper, i, n]
@@ -698,10 +730,12 @@ void standard_combobox_lock::remove_items(ONLY IN_THREAD, size_t i, size_t n)
 	doit.removed();
 }
 
-void standard_combobox_lock::replace_all_items(const std::vector<list_item_param>
-					       &items)
+new_items_ret standard_combobox_lock
+::replace_all_items(const std::vector<list_item_param> &items)
 {
-	auto helper=noninthread_update_helper::create(*this, items);
+	new_items_ret ret;
+
+	auto helper=noninthread_update_helper::create(*this, items, ret);
 
 	locked_layoutmanager->impl->run_as
 		([helper]
@@ -719,13 +753,17 @@ void standard_combobox_lock::replace_all_items(const std::vector<list_item_param
 						     helper->info);
 			 doit.finish();
 		 });
+
+	return ret;
 }
 
-void standard_combobox_lock::replace_all_items(ONLY IN_THREAD,
-					       const std::vector<list_item_param
-					       > &items)
+new_items_ret standard_combobox_lock
+::replace_all_items(ONLY IN_THREAD,
+		    const std::vector<list_item_param> &items)
 {
-	inthread_update_helper helper{*this, items};
+	new_items_ret ret;
+
+	inthread_update_helper helper{*this, items, ret};
 
 	replace_all_helper doit{IN_THREAD, *this, helper.new_text_params};
 
@@ -737,13 +775,18 @@ void standard_combobox_lock::replace_all_items(ONLY IN_THREAD,
 				   locked_layoutmanager,
 				   helper.info);
 	doit.finish();
+
+	return ret;
 }
 
 void standard_combobox_lock::resort_items(const std::vector<size_t> &indexes)
 {
 	// For consistency:
+
+	new_items_ret ret;
+
 	auto helper=noninthread_update_helper
-		::create(*this, std::vector<list_item_param>{});
+		::create(*this, std::vector<list_item_param>{}, ret);
 
 	locked_layoutmanager->impl->run_as
 		([helper, indexes]
@@ -851,41 +894,41 @@ static void nosuchitem(size_t i)
 	throw EXCEPTION(gettextmsg(_("Item %1% does not exist."), i));
 }
 
-void standard_comboboxlayoutmanagerObj
+new_items_ret standard_comboboxlayoutmanagerObj
 ::append_items(const std::vector<list_item_param> &items)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
 
-	lock.append_items(items);
+	return lock.append_items(items);
 }
 
-void standard_comboboxlayoutmanagerObj
+new_items_ret standard_comboboxlayoutmanagerObj
 ::append_items(ONLY IN_THREAD, const std::vector<list_item_param> &items)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
 
-	lock.append_items(IN_THREAD, items);
+	return lock.append_items(IN_THREAD, items);
 }
 
-void standard_comboboxlayoutmanagerObj
+new_items_ret standard_comboboxlayoutmanagerObj
 ::insert_items(size_t i,
 	       const std::vector<list_item_param> &items)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
 
-	lock.insert_items(i, items);
+	return lock.insert_items(i, items);
 }
 
-void standard_comboboxlayoutmanagerObj
+new_items_ret standard_comboboxlayoutmanagerObj
 ::insert_items(ONLY IN_THREAD, size_t i,
 	       const std::vector<list_item_param> &items)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
 
-	lock.insert_items(IN_THREAD, i, items);
+	return lock.insert_items(IN_THREAD, i, items);
 }
 
-void standard_comboboxlayoutmanagerObj
+new_items_ret standard_comboboxlayoutmanagerObj
 ::replace_items(size_t i,
 		const std::vector<list_item_param> &items)
 {
@@ -894,7 +937,7 @@ void standard_comboboxlayoutmanagerObj
 	return lock.replace_items(i, items);
 }
 
-void standard_comboboxlayoutmanagerObj
+new_items_ret standard_comboboxlayoutmanagerObj
 ::replace_items(ONLY IN_THREAD, size_t i,
 		const std::vector<list_item_param> &items)
 {
@@ -920,21 +963,21 @@ text_param standard_comboboxlayoutmanagerObj::item(size_t i) const
 	return lock.item(i);
 }
 
-void standard_comboboxlayoutmanagerObj
+new_items_ret standard_comboboxlayoutmanagerObj
 ::replace_all_items(const std::vector<list_item_param> &items)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
 
-	lock.replace_all_items(items);
+	return lock.replace_all_items(items);
 }
 
-void standard_comboboxlayoutmanagerObj
+new_items_ret standard_comboboxlayoutmanagerObj
 ::replace_all_items(ONLY IN_THREAD,
 		    const std::vector<list_item_param> &items)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
 
-	lock.replace_all_items(IN_THREAD, items);
+	return lock.replace_all_items(IN_THREAD, items);
 }
 
 void standard_comboboxlayoutmanagerObj

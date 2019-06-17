@@ -38,49 +38,58 @@ public:
 
 	//! Append a new item to the combo-box.
 
-	void append_items(const std::vector<list_item_param> &items) override;
+	new_items_ret append_items(const std::vector<list_item_param> &items)
+		override;
 
 	//! Append a new item to the combo-box.
 
-	void append_items(ONLY IN_THREAD,
-			  const std::vector<list_item_param> &items) override;
-
-	//! Insert a new item to the combo-box before an existing item.
-
-	void insert_items(size_t i, const std::vector<list_item_param> &items)
+	new_items_ret append_items(ONLY IN_THREAD,
+				   const std::vector<list_item_param> &items)
 		override;
 
 	//! Insert a new item to the combo-box before an existing item.
 
-	void insert_items(ONLY IN_THREAD,
-			  size_t i, const std::vector<list_item_param> &items)
+	new_items_ret insert_items(size_t i,
+				   const std::vector<list_item_param> &items)
+		override;
+
+	//! Insert a new item to the combo-box before an existing item.
+
+	new_items_ret insert_items(ONLY IN_THREAD,
+				   size_t i,
+				   const std::vector<list_item_param> &items)
 		override;
 
 	//! Remove an item from the combo-box.
-	void remove_items(ONLY IN_THREAD, size_t i, size_t n_items) override;
+	void remove_items(ONLY IN_THREAD, size_t i, size_t n_items)
+		override;
 
 	using custom_comboboxlayoutmanagerObj::remove_items;
 
 	//! Replace an item.
 
-	void replace_items(size_t item_number,
-			  const std::vector<list_item_param> &items) override;
+	new_items_ret replace_items(size_t item_number,
+				    const std::vector<list_item_param> &items)
+		override;
 
 	//! Replace an item.
 
-	void replace_items(ONLY IN_THREAD,
-			   size_t item_number,
-			   const std::vector<list_item_param> &items) override;
-
-	//! Override replace_all().
-
-	void replace_all_items(const std::vector<list_item_param> &items)
+	new_items_ret replace_items(ONLY IN_THREAD,
+				    size_t item_number,
+				    const std::vector<list_item_param> &items)
 		override;
 
 	//! Override replace_all().
 
-	void replace_all_items(ONLY IN_THREAD,
-			       const std::vector<list_item_param> &items)
+	new_items_ret replace_all_items(const std::vector<list_item_param>
+					&items)
+		override;
+
+	//! Override replace_all().
+
+	new_items_ret replace_all_items(ONLY IN_THREAD,
+					const std::vector<list_item_param>
+					&items)
 		override;
 
 	using superclass_t::resort_items;

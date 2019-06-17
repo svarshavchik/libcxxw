@@ -183,8 +183,7 @@ public:
 // so we specify that their shorcuts are inactive_shortcut.
 
 static std::vector<list_item_param>
-get_copy_cut_paste_popup_menu_items(const weak_target_element &me,
-				    std::vector<listitemhandle> &handles)
+get_copy_cut_paste_popup_menu_items(const weak_target_element &me)
 {
 	return {
 		[me]
@@ -245,8 +244,7 @@ get_copy_cut_paste_popup_menu_items(const weak_target_element &me,
 		},
 		inactive_shortcut{"Shift-Ins"},
 		{_("Paste")},
-
-		new_items{handles}
+		get_new_items{}
 	};
 }
 
@@ -264,12 +262,11 @@ listlayoutmanagerObj::append_copy_cut_paste(const element &parent)
 
 	auto target_element=weak_target_element::create(parent->impl);
 
-	std::vector<listitemhandle> handles;
+	auto ret=append_items(get_copy_cut_paste_popup_menu_items
+			      (target_element));
 
-	append_items(get_copy_cut_paste_popup_menu_items(target_element,
-							 handles));
-
-	return ref<copy_cut_paste_implObj>::create(target_element, handles);
+	return ref<copy_cut_paste_implObj>::create(target_element,
+						   ret.handles);
 }
 
 copy_cut_paste_menu_items
@@ -282,13 +279,11 @@ listlayoutmanagerObj::append_copy_cut_paste(ONLY IN_THREAD,
 
 	auto target_element=weak_target_element::create(parent->impl);
 
-	std::vector<listitemhandle> handles;
+	auto ret=append_items(IN_THREAD,
+			      get_copy_cut_paste_popup_menu_items
+			      (target_element));
 
-	append_items(IN_THREAD,
-		     get_copy_cut_paste_popup_menu_items(target_element,
-							 handles));
-
-	return ref<copy_cut_paste_implObj>::create(target_element, handles);
+	return ref<copy_cut_paste_implObj>::create(target_element, ret.handles);
 }
 
 LIBCXXW_NAMESPACE_END

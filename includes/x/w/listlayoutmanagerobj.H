@@ -47,42 +47,50 @@ public:
 
 	//! Append new list items.
 
-	virtual void append_items(const std::vector<list_item_param> &items);
+	virtual new_items_ret append_items(const std::vector<list_item_param>
+					   &items);
 
 	//! Append new list items.
 
-	virtual void append_items(ONLY IN_THREAD,
-				  const std::vector<list_item_param> &items);
+	virtual new_items_ret append_items(ONLY IN_THREAD,
+					   const std::vector<list_item_param>
+					   &items);
 
 	//! Insert new list items.
-	virtual void insert_items(size_t item_number,
-				  const std::vector<list_item_param> &items);
+	virtual new_items_ret insert_items(size_t item_number,
+					   const std::vector<list_item_param>
+					   &items);
 
 	//! Insert new list items.
-	virtual void insert_items(ONLY IN_THREAD, size_t item_number,
-				  const std::vector<list_item_param> &items);
+	virtual new_items_ret insert_items(ONLY IN_THREAD, size_t item_number,
+					   const std::vector<list_item_param>
+					   &items);
 
 	//! Replace list items.
 
-	virtual void replace_items(size_t item_number,
-				   const std::vector<list_item_param> &items);
+	virtual new_items_ret replace_items(size_t item_number,
+					    const std::vector<list_item_param>
+					    &items);
 
 	//! Replace list items.
 
-	virtual void replace_items(ONLY IN_THREAD,
-				   size_t item_number,
-				   const std::vector<list_item_param> &items);
+	virtual new_items_ret replace_items(ONLY IN_THREAD,
+					    size_t item_number,
+					    const std::vector<list_item_param>
+					    &items);
 
 	//! Replace all list items.
 
-	virtual void replace_all_items(const std::vector<list_item_param>
-				       &items);
+	virtual new_items_ret replace_all_items(const
+						std::vector<list_item_param>
+						&items);
 
 	//! Replace all list items.
 
-	virtual void replace_all_items(ONLY IN_THREAD,
-				       const std::vector<list_item_param>
-				       &items);
+	virtual new_items_ret replace_all_items(ONLY IN_THREAD,
+						const
+						std::vector<list_item_param>
+						&items);
 
 	//! Resort items.
 	virtual void resort_items(const std::vector<size_t> &indexes);
