@@ -85,14 +85,25 @@ namespace {
 
 struct create_cells_helper {
 
+	//! We're helping this style
 	const listlayoutstyle_impl &style;
+
+	//! The implementation element that's creating cells.
 	list_elementObj::implObj &textlist_element;
+
+	//! Where the new cells are being created.
 	new_cells_info &info;
 
+	//! Precomputed value
 	const size_t extra_leading=style.extra_leading_columns();
+
+	//! Precomputed value
 	const size_t extra_trailing=style.extra_trailing_columns();
+
+	//! Precomputed value
 	const size_t extra=extra_leading+extra_trailing;
 
+	//! Internal flag
 	bool havemeta=false;
 
 	//! Column counter
@@ -128,8 +139,10 @@ struct create_cells_helper {
 	}
 
 private:
+	//! Internal - create a new cell.
 	void create_cell(const list_cell &);
 
+	//! Internal - cretae a new separator.
 	void create_separator();
 public:
 	//! Whether process_list_item_param() created a new cell
@@ -318,6 +331,53 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 			   {
 			   }
 		   }, item);
+
+	if (created_separator)
+		return;
+
+	if (created_cell)
+	{
+		++column_counter;
+
+		// Processed a column value. If this is the end of
+		// the row, save the metadata.
+
+		if ((column_counter % textlist_element.columns) ==
+		    (textlist_element.columns - extra_trailing))
+		{
+			// Last column. Add trailing cells.
+
+			for (size_t i=0; i<extra_trailing; ++i)
+			{
+				info.newcells.push_back
+					(style.create_trailing_column
+					 (textlist_element, i,
+					  next_rowinfo));
+				++column_counter;
+			}
+		}
+
+		if ((column_counter % textlist_element.columns) == 0)
+		{
+			auto new_extra_list=extra_list_row_info::create();
+
+			info.rowmeta.emplace_back(new_extra_list,
+						  next_rowinfo);
+			next_rowinfo={};
+			havemeta=false;
+		}
+	}
+	else
+	{
+		// Metadata must be specified only at the beginning
+		// of the row.
+		if ((column_counter % textlist_element.columns)
+		    != 0)
+			throw EXCEPTION(_("Row metadata must be "
+					  "specified before the "
+					  "row data."));
+		havemeta=true;
+	}
 }
 
 #if 0
@@ -335,16 +395,14 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 	list_elementObj::implObj &textlist_element=
 		*lilm->list_element_singleton->impl;
 
-	const size_t extra_leading=extra_leading_columns();
-	const size_t extra_trailing=extra_trailing_columns();
-	const size_t extra=extra_leading+extra_trailing;
+	create_cells_helper helper{*this, textlist_element, info};
 
 	size_t n_real_elements=0;
 
-	if (textlist_element.columns <= extra)
+	if (textlist_element.columns <= helper.extra)
 		throw EXCEPTION("Internal error: attempting to initialize a list with too few columns");
 
-	const size_t real_columns=textlist_element.columns-extra;
+	const size_t real_columns=textlist_element.columns-helper.extra;
 
 	const new_items *seen_new_items=nullptr;
 
@@ -409,8 +467,6 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 			      * textlist_element.columns);
 	info.rowmeta.reserve(n_real_elements / real_columns);
 
-	create_cells_helper helper{*this, textlist_element, info};
-
 	for (const auto &s:t)
 	{
 		if (std::holds_alternative<new_items>(s))
@@ -418,54 +474,6 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 
 		helper.process_list_item_param(s);
-
-		if (helper.created_separator)
-			continue;
-
-		if (helper.created_cell)
-		{
-			++helper.column_counter;
-
-			// Processed a column value. If this is the end of
-			// the row, save the metadata.
-
-			if ((helper.column_counter % textlist_element.columns)
-			    ==
-			    (textlist_element.columns - extra_trailing))
-			{
-				// Last column. Add trailing cells.
-
-				for (size_t i=0; i<extra_trailing; ++i)
-				{
-					info.newcells.push_back
-						(create_trailing_column
-						 (textlist_element, i,
-						  helper.next_rowinfo));
-					++helper.column_counter;
-				}
-			}
-
-			if ((helper.column_counter % textlist_element.columns)
-			    == 0)
-			{
-				info.rowmeta.emplace_back
-					(extra_list_row_info::create(),
-					 helper.next_rowinfo);
-				helper.next_rowinfo={};
-				helper.havemeta=false;
-			}
-		}
-		else
-		{
-			// Metadata must be specified only at the beginning
-			// of the row.
-			if ((helper.column_counter % textlist_element.columns)
-			    != 0)
-				throw EXCEPTION(_("Row metadata must be "
-						  "specified before the "
-						  "row data."));
-			helper.havemeta=true;
-		}
 
 	}
 
