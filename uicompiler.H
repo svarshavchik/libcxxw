@@ -7,6 +7,7 @@
 
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/gridfactoryfwd.H"
+#include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/booklayoutmanagerfwd.H"
 #include "x/w/bookpagefactoryfwd.H"
 #include "x/w/factoryfwd.H"
@@ -151,6 +152,10 @@ private:
 	vector<bookpagefactory_generator
 	       > bookpagefactory_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for list layout manager generator.
+	vector<listlayoutmanager_generator
+	       > listlayout_parseconfig(const theme_parser_lock &lock);
+
 	//! Implement <element>
 
 	//! Executed by the compiled <element> code.
@@ -169,6 +174,10 @@ private:
 	//! Generate a single factory instruction.
 	factory_generator factory_parser(const theme_parser_lock &lock);
 
+	//! Generate a single list layout manager instruction.
+	listlayoutmanager_generator
+	listlayout_parser(const theme_parser_lock &lock);
+
 	//! Generate a single book layout manager instruction.
 	booklayoutmanager_generator
 	booklayout_parser(const theme_parser_lock &lock);
@@ -184,7 +193,7 @@ private:
 	//! exist, search for them in uncompiled_elements, compile them, put
 	//! them into gridfactory_generators, and return them.
 
-	vector<gridfactory_generator
+	const_vector<gridfactory_generator
 	       > lookup_gridfactory_generators(const theme_parser_lock &lock,
 					       const char *element,
 					       const char *parent);
@@ -196,7 +205,7 @@ private:
 	//! exist, search for them in uncompiled_elements, compile them, put
 	//! them into bookpagefactory_generators, and return them.
 
-	vector<bookpagefactory_generator>
+	const_vector<bookpagefactory_generator>
 	lookup_bookpagefactory_generators(const theme_parser_lock &lock,
 					  const char *element,
 					  const char *parent);
@@ -207,8 +216,18 @@ private:
 	//! search for them in uncompiled_elements, compile them, put them
 	//! into gridfactory_generators, and return them.
 
-	vector<gridlayoutmanager_generator>
+	const_vector<gridlayoutmanager_generator>
 	lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
+					    const std::string &);
+
+	//! Return compiled lits layout manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into gridfactory_generators, and return them.
+
+	const_vector<listlayoutmanager_generator>
+	lookup_listlayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled book layout manager generators.
@@ -217,7 +236,7 @@ private:
 	//! search for them in uncompiled_elements, compile them, put them
 	//! into gridfactory_generators, and return them.
 
-	vector<booklayoutmanager_generator>
+	const_vector<booklayoutmanager_generator>
 	lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
 
@@ -226,7 +245,8 @@ private:
 	//! Executed by the compiled <append_row>.
 	static void gridlayout_append_row(const gridlayoutmanager &,
 					  uielements &,
-					  const vector<gridfactory_generator> &
+					  const const_vector
+					  <gridfactory_generator> &
 					  );
 
 	//! Execute <insert_row>.
@@ -235,7 +255,8 @@ private:
 	static void gridlayout_insert_row(const gridlayoutmanager &,
 					  size_t,
 					  uielements &,
-					  const vector<gridfactory_generator> &
+					  const const_vector
+					  <gridfactory_generator> &
 					  );
 
 	//! Execute <replace_row>.
@@ -244,7 +265,8 @@ private:
 	static void gridlayout_replace_row(const gridlayoutmanager &,
 					   size_t,
 					   uielements &,
-					   const vector<gridfactory_generator> &
+					   const const_vector
+					   <gridfactory_generator> &
 					   );
 
 	//! Execute <append_columns>.
@@ -253,8 +275,8 @@ private:
 	static void gridlayout_append_columns(const gridlayoutmanager &,
 					      size_t,
 					      uielements &,
-					      const
-					      vector<gridfactory_generator> &
+					      const const_vector
+					      <gridfactory_generator> &
 					      );
 
 	//! Execute <insert_columns>.
@@ -264,8 +286,8 @@ private:
 					      size_t,
 					      size_t,
 					      uielements &,
-					      const
-					      vector<gridfactory_generator> &);
+					      const const_vector
+					      <gridfactory_generator> &);
 
 	//! Execute <replace_cell>
 
@@ -274,13 +296,14 @@ private:
 					    size_t,
 					    size_t,
 					    uielements &,
-					    const
-					    vector<gridfactory_generator> &);
+					    const const_vector
+					    <gridfactory_generator> &);
 
 	//! Execute a grid factory generator.
 	static void generate_gridfactory(const gridfactory &,
 					 uielements &,
-					 const vector<gridfactory_generator>
+					 const const_vector
+					 <gridfactory_generator>
 					 &generators);
 
 	//! Execute <append_pages>.
@@ -288,7 +311,7 @@ private:
 	//! Executed by the compiled <append_pages>.
 	static void booklayout_append_pages(const booklayoutmanager &,
 					    uielements &,
-					    const vector<
+					    const const_vector<
 					    bookpagefactory_generator> &);
 
 	//! Execute <insert_pages>.
@@ -297,7 +320,7 @@ private:
 	static void booklayout_insert_pages(const booklayoutmanager &,
 					    size_t,
 					    uielements &,
-					    const vector<
+					    const const_vector<
 					    bookpagefactory_generator> &);
 
 	//! Supported grid layout manager functionality.
@@ -308,9 +331,14 @@ private:
 
 	struct booklayoutmanager_functions;
 
+	//! Supported list layout manager functionality.
+
+	struct listlayoutmanager_functions;
+
 	//! All supported layout manager funcitonality.
 
 	typedef std::variant<gridlayoutmanager_functions,
+			     listlayoutmanager_functions,
 			     booklayoutmanager_functions
 			     > layoutmanager_functions;
 

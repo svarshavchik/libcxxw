@@ -1901,4 +1901,18 @@ List of values:
       </parameter>
     </function>
   </parser>
+
+  <parser>
+    <name>listlayout</name>
+
+    <parameter>
+      <type>listlayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+  </parser>
 </api>

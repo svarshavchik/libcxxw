@@ -83,19 +83,29 @@ public:
 
 	//! Generators used by the grid layout manager
 
-	std::unordered_map<std::string, vector<gridlayoutmanager_generator>
+	std::unordered_map<std::string,
+			   const_vector<gridlayoutmanager_generator>
 			   > gridlayoutmanager_generators;
 
 	//! Generators used by the grid factory
-	std::unordered_map<std::string, vector<gridfactory_generator>
+	std::unordered_map<std::string,
+			   const_vector<gridfactory_generator>
 			   > gridfactory_generators;
 
+	//! Generators used by the list layout manager
+
+	std::unordered_map<std::string,
+			   const_vector<listlayoutmanager_generator>
+			   > listlayoutmanager_generators;
+
 	//! Generators used by the book layout manager
-	std::unordered_map<std::string, vector<booklayoutmanager_generator>
+	std::unordered_map<std::string,
+			   const_vector<booklayoutmanager_generator>
 			   > booklayoutmanager_generators;
 
 	//! Generators used by the book page factory
-	std::unordered_map<std::string, vector<bookpagefactory_generator>
+	std::unordered_map<std::string,
+			   const_vector<bookpagefactory_generator>
 			   > bookpagefactory_generators;
 
 	//! Tooltip generators

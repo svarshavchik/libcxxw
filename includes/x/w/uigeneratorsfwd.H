@@ -9,6 +9,7 @@
 #include <x/w/factoryfwd.H>
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/booklayoutmanagerfwd.H>
+#include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/bookpagefactoryfwd.H>
 #include <x/w/uielementsfwd.H>
@@ -33,6 +34,13 @@ typedef functionref<void (const factory &, uielements &)
 
 typedef functionref<void (const gridlayoutmanager &, uielements &)
 		    > gridlayoutmanager_generator;
+
+//! Generate something in the list layout manager
+
+//! \see uigenerators
+
+typedef functionref<void (const listlayoutmanager &, uielements &)
+		    > listlayoutmanager_generator;
 
 //! Generate something using a grid factory.
 

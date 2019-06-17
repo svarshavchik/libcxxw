@@ -12,6 +12,7 @@
 #include "x/w/canvas.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
+#include "x/w/listlayoutmanager.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
 #include "x/w/shortcut.H"
@@ -576,7 +577,7 @@ struct uicompiler::gridlayoutmanager_functions {
 
 	struct generators {
 
-		vector<gridlayoutmanager_generator> generator_vector;
+		const_vector<gridlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
@@ -617,6 +618,69 @@ struct uicompiler::gridlayoutmanager_functions {
 	};
 };
 
+// list layout manager functionality.
+
+struct uicompiler::listlayoutmanager_functions {
+
+	class new_listlayoutmanagerObj : virtual public obj,
+					 public new_listlayoutmanager {
+
+	public:
+		using new_listlayoutmanager::new_listlayoutmanager;
+	};
+
+	typedef const_ref<new_listlayoutmanagerObj> const_new_listlayoutmanager;
+
+	// A vector of compiled grid layout manager generators
+
+	struct generators {
+
+		const_new_listlayoutmanager nllm;
+
+		const_vector<listlayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const theme_parser_lock &lock,
+			   const std::string &name)
+			: nllm{const_new_listlayoutmanager::create
+			       (highlighted_list)},
+			  generator_vector{compiler
+					   .lookup_listlayoutmanager_generators
+					   (lock, name)}
+		{
+		}
+
+		focusable_container create_container(const factory &f,
+						     uielements &factories)
+			const
+		{
+			return f->create_focusable_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 *nllm);
+		}
+
+		inline const new_listlayoutmanager &new_layoutmanager() const
+		{
+			return *nllm;
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			listlayoutmanager llm=c->get_layoutmanager();
+
+			for (const auto &g:*generator_vector)
+			{
+				g(llm, factories);
+			}
+		}
+	};
+};
+
 // Book layout manager functionality
 
 struct uicompiler::booklayoutmanager_functions {
@@ -625,7 +689,7 @@ struct uicompiler::booklayoutmanager_functions {
 
 	struct generators {
 
-		vector<booklayoutmanager_generator> generator_vector;
+		const_vector<booklayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
@@ -693,7 +757,7 @@ struct uicompiler::container_generators_t
 static inline
 element create_progressbar(const factory &generic_factory,
 			   const uicompiler::container_generators_t::variant_t
-			   generators,
+			   &generators,
 			   uielements &elements,
 			   const progressbar_config &config)
 {
@@ -702,10 +766,11 @@ element create_progressbar(const factory &generic_factory,
 		 (const auto &generators) -> progressbar
 		 {
 			 if constexpr (std::is_base_of_v<new_layoutmanager,
+				       std::remove_reference_t<
 				       decltype(generators.new_layoutmanager())
-				       >)
+				       >>)
 			 {
-				auto nlm=generators.new_layoutmanager();
+				const auto &nlm=generators.new_layoutmanager();
 
 				return generic_factory->create_progressbar
 					([&]
@@ -730,10 +795,20 @@ uicompiler::layoutmanager_functions
 uicompiler::get_layoutmanager(const std::string &type)
 {
 	if (type == "grid")
-		return gridlayoutmanager_functions{};
+		return layoutmanager_functions{
+			std::in_place_type_t<gridlayoutmanager_functions>{}
+		};
 
 	if (type == "book")
-		return booklayoutmanager_functions{};
+		return layoutmanager_functions{
+			std::in_place_type_t<booklayoutmanager_functions>{}
+		};
+
+	if (type == "list")
+		return layoutmanager_functions{
+			std::in_place_type_t<listlayoutmanager_functions>{}
+		};
+
 
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a known layout/container"),
 				   type));
@@ -798,7 +873,6 @@ scrollbar uicompiler::create_scrollbar(uicompiler::scrollbar_type type,
 		? f->create_horizontal_scrollbar(config, a)
 		: f->create_vertical_scrollbar(config, a);
 }
-
 
 struct uicompiler::compiler_functions {
 
@@ -1295,6 +1369,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 				continue;
 			}
 
+			if (type == "list")
+			{
+				auto ret=listlayout_parseconfig(lock);
+				generators->listlayoutmanager_generators
+					.emplace(id, ret);
+				continue;
+			}
+
 			if (type == "book")
 			{
 				auto ret=booklayout_parseconfig(lock);
@@ -1510,11 +1592,14 @@ uicompiler::lookup_container_generators(const std::string &type,
 					  <decltype(functions)>
 					  ::generators generators;
 
-				  return generators{*this, lock, name};
+				  return container_generators_t{
+					  std::in_place_type_t<generators>{},
+					  *this, lock, name
+				  };
 			  }, functions);
 }
 
-vector<gridlayoutmanager_generator>
+const_vector<gridlayoutmanager_generator>
 uicompiler::lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
 						const std::string &name)
 {
@@ -1548,7 +1633,41 @@ uicompiler::lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
 	return ret;
 }
 
-vector<booklayoutmanager_generator>
+const_vector<listlayoutmanager_generator>
+uicompiler::lookup_listlayoutmanager_generators(const theme_parser_lock &lock,
+						const std::string &name)
+{
+	{
+		auto iter=generators->listlayoutmanager_generators.find(name);
+
+		if (iter != generators->listlayoutmanager_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "layout"
+	    || iter->second->get_any_attribute("type") != "list")
+	{
+		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=listlayout_parseconfig(new_lock);
+
+	generators->listlayoutmanager_generators.emplace(name, ret);
+
+	return ret;
+}
+
+const_vector<booklayoutmanager_generator>
 uicompiler::lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
 						const std::string &name)
 {
@@ -1600,7 +1719,7 @@ void uicompiler::create_container(const factory &f,
 			    }, v));
 }
 
-vector<gridfactory_generator>
+const_vector<gridfactory_generator>
 uicompiler::lookup_gridfactory_generators(const theme_parser_lock &lock,
 					  const char *element,
 					  const char *parent)
@@ -1637,7 +1756,7 @@ uicompiler::lookup_gridfactory_generators(const theme_parser_lock &lock,
 	return ret;
 }
 
-vector<bookpagefactory_generator>
+const_vector<bookpagefactory_generator>
 uicompiler::lookup_bookpagefactory_generators(const theme_parser_lock &lock,
 					      const char *element,
 					      const char *parent)
@@ -1676,7 +1795,8 @@ uicompiler::lookup_bookpagefactory_generators(const theme_parser_lock &lock,
 
 void uicompiler::gridlayout_append_row(const gridlayoutmanager &layout,
 				       uielements &factories,
-				       const vector<gridfactory_generator> &g)
+				       const const_vector<gridfactory_generator>
+				       &g)
 {
 	generate_gridfactory(layout->append_row(), factories, g);
 }
@@ -1684,7 +1804,8 @@ void uicompiler::gridlayout_append_row(const gridlayoutmanager &layout,
 void uicompiler::gridlayout_insert_row(const gridlayoutmanager &layout,
 				       size_t row,
 				       uielements &factories,
-				       const vector<gridfactory_generator> &g)
+				       const const_vector<gridfactory_generator>
+				       &g)
 {
 	generate_gridfactory(layout->insert_row(row), factories, g);
 }
@@ -1692,7 +1813,8 @@ void uicompiler::gridlayout_insert_row(const gridlayoutmanager &layout,
 void uicompiler::gridlayout_replace_row(const gridlayoutmanager &layout,
 					size_t row,
 					uielements &factories,
-					const vector<gridfactory_generator> &g)
+					const const_vector
+					<gridfactory_generator> &g)
 {
 	generate_gridfactory(layout->replace_row(row), factories, g);
 }
@@ -1701,7 +1823,8 @@ void uicompiler::gridlayout_append_columns(const gridlayoutmanager &layout,
 					   size_t row,
 					   uielements &factories,
 					   const
-					   vector<gridfactory_generator> &g)
+					   const_vector<gridfactory_generator>
+					   &g)
 {
 	generate_gridfactory(layout->append_columns(row), factories, g);
 }
@@ -1710,8 +1833,8 @@ void uicompiler::gridlayout_insert_columns(const gridlayoutmanager &layout,
 					   size_t row,
 					   size_t col,
 					   uielements &factories,
-					   const
-					   vector<gridfactory_generator> &g)
+					   const const_vector
+					   <gridfactory_generator> &g)
 {
 	generate_gridfactory(layout->insert_columns(row, col), factories, g);
 }
@@ -1721,14 +1844,14 @@ void uicompiler::gridlayout_replace_cell(const gridlayoutmanager &layout,
 					 size_t col,
 					 uielements &factories,
 					 const
-					 vector<gridfactory_generator> &g)
+					 const_vector<gridfactory_generator> &g)
 {
 	generate_gridfactory(layout->replace_cell(row, col), factories, g);
 }
 
 void uicompiler::generate_gridfactory(const gridfactory &f,
 				      uielements &factories,
-				      const vector<gridfactory_generator>
+				      const const_vector<gridfactory_generator>
 				      &generators)
 {
 	for (const auto &g:*generators)
@@ -1739,7 +1862,8 @@ void uicompiler::generate_gridfactory(const gridfactory &f,
 
 void uicompiler::booklayout_append_pages(const booklayoutmanager &blm,
 					 uielements &factories,
-					 const vector<bookpagefactory_generator>
+					 const
+					 const_vector<bookpagefactory_generator>
 					 &generators)
 {
 	auto f=blm->append();
@@ -1753,7 +1877,8 @@ void uicompiler::booklayout_append_pages(const booklayoutmanager &blm,
 void uicompiler::booklayout_insert_pages(const booklayoutmanager &blm,
 					 size_t pos,
 					 uielements &factories,
-					 const vector<bookpagefactory_generator>
+					 const
+					 const_vector<bookpagefactory_generator>
 					 &generators)
 {
 	auto f=blm->insert(pos);
