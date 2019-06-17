@@ -278,6 +278,56 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
   </xsl:template>
 
 
+  <xsl:template name="function-parameters-parser-name">
+    <xsl:text>get_</xsl:text>
+    <xsl:choose>
+      <xsl:when test="parameter_parser_name">
+	<xsl:value-of select="parameter_parser_name" />
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:value-of select="name" />
+	<xsl:text>_</xsl:text>
+	<xsl:value-of select="position()" />
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="parse-function-parameters">
+    <xsl:param name="parameter_parser_name" />
+
+    <xsl:text>static auto </xsl:text>
+    <xsl:value-of select="$parameter_parser_name" />
+    <xsl:text>(uicompiler &amp;compiler, const theme_parser_lock &amp;orig_lock)&#10;{&#10;</xsl:text>
+    <xsl:if test="count(parameter[count(scalar)=0]) &gt; 0">
+      <xsl:text>    auto &amp;lock=orig_lock;&#10;</xsl:text>
+    </xsl:if>
+
+    <xsl:text>    std::tuple return_value{</xsl:text>
+
+    <xsl:for-each select="parameter[count(scalar)=0]">
+      <xsl:if test="position() &gt; 1">
+	<xsl:text>,</xsl:text>
+      </xsl:if>
+      <xsl:text>&#10;</xsl:text>
+
+      <xsl:call-template name="parse-parameter-tuple-value" />
+    </xsl:for-each>
+
+    <xsl:text>};&#10;&#10;</xsl:text>
+
+    <xsl:for-each select="parameter[count(scalar)=0]">
+      <xsl:call-template name="parse-parameter-tuple-initialize">
+	<xsl:with-param name="parameter">
+	  <xsl:text>std::get&lt;</xsl:text>
+	  <xsl:value-of select="position()-1" />
+	  <xsl:text>&gt;(return_value)</xsl:text>
+	</xsl:with-param>
+      </xsl:call-template>
+    </xsl:for-each>
+
+    <xsl:text>        return return_value;&#10;}&#10;</xsl:text>
+  </xsl:template>
+
   <!-- <function> generates:
 
     if (name == "{name}"   { conditions } )
@@ -293,7 +343,9 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
   -->
 
   <xsl:template name="parse-function">
-    if (name == "<xsl:value-of select="name"/>"<xsl:for-each select="condition">
+    <xsl:param name="parameter_parser_name" />
+    <xsl:text>&#10;    if (name == "</xsl:text><xsl:value-of select="name"/><xsl:text>"</xsl:text>
+    <xsl:for-each select="condition">
 
     <!-- loop over the conditions -->
 
@@ -315,59 +367,7 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
       </xsl:otherwise>
       </xsl:choose></xsl:for-each>
       <xsl:text>)
-    {&#10;</xsl:text>
-
-    <xsl:variable name="parameter_parser_name">
-      <xsl:choose>
-	<xsl:when test="parameter_parser_name">
-	  <xsl:value-of select="parameter_parser_name" />
-	</xsl:when>
-	<xsl:otherwise>
-	  <xsl:value-of select="../name" />
-	  <xsl:text>_</xsl:text>
-	  <xsl:value-of select="name" />
-	  <xsl:text>_</xsl:text>
-	  <xsl:value-of select="position()" />
-	</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-
-    <exsl:document
-	href="uicompiler.inc.H/{$parameter_parser_name}.H"
-	method="text">
-
-      <xsl:text>static auto get_</xsl:text>
-      <xsl:value-of select="$parameter_parser_name" />
-      <xsl:text>(uicompiler &amp;compiler, const theme_parser_lock &amp;orig_lock)&#10;{&#10;</xsl:text>
-      <xsl:if test="count(parameter[count(scalar)=0]) &gt; 0">
-	<xsl:text>    auto &amp;lock=orig_lock;&#10;</xsl:text>
-      </xsl:if>
-
-      <xsl:text>    std::tuple return_value{</xsl:text>
-
-      <xsl:for-each select="parameter[count(scalar)=0]">
-        <xsl:if test="position() &gt; 1">
-	  <xsl:text>,</xsl:text>
-	</xsl:if>
-	<xsl:text>&#10;        </xsl:text>
-
-	<xsl:call-template name="parse-parameter-tuple-value" />
-      </xsl:for-each>
-
-      <xsl:text>};&#10;&#10;</xsl:text>
-
-      <xsl:for-each select="parameter[count(scalar)=0]">
-	<xsl:call-template name="parse-parameter-tuple-initialize">
-	  <xsl:with-param name="parameter">
-	    <xsl:text>std::get&lt;</xsl:text>
-	    <xsl:value-of select="position()-1" />
-	    <xsl:text>&gt;(return_value)</xsl:text>
-	  </xsl:with-param>
-	</xsl:call-template>
-      </xsl:for-each>
-
-      <xsl:text>        return return_value;&#10;}&#10;</xsl:text>
-    </exsl:document><xsl:text>&#10;        return [=, params=compiler_functions::get_</xsl:text>
+    {&#10;&#10;        return [=, params=</xsl:text>
     <xsl:value-of select="$parameter_parser_name" />
     <xsl:text>(*this, lock)</xsl:text>
 <xsl:if test="new_element">
@@ -483,12 +483,31 @@ to generate a single element in the factory.
 -->
 
   <xsl:template name="make-parser">
-functionref&lt;void (<xsl:for-each select="parameter">
+    <exsl:document
+	href="uicompiler.inc.H/{name}_parser.H"
+	method="text">
+    <xsl:text>&#10;functionref&lt;void (</xsl:text><xsl:for-each select="parameter">
 <xsl:call-template name="declare-parameter" /></xsl:for-each>)&gt;&#10;      uicompiler::<xsl:value-of select="name" />_parser(const theme_parser_lock &amp;lock)
 {
     auto name=lock->name();
+<exsl:document
+    href="{name}_parse_parameters.H"
+    method="text">
+  <xsl:for-each select="function">
+    <xsl:call-template name="parse-function-parameters">
+      <xsl:with-param name="parameter_parser_name">
+	<xsl:call-template name="function-parameters-parser-name" />
+      </xsl:with-param>
+    </xsl:call-template>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:for-each>
+</exsl:document>
 <xsl:for-each select="function">
-  <xsl:call-template name="parse-function" />
+  <xsl:call-template name="parse-function">
+    <xsl:with-param name="parameter_parser_name">
+      <xsl:call-template name="function-parameters-parser-name" />
+    </xsl:with-param>
+  </xsl:call-template>
 </xsl:for-each>
 <xsl:choose>
   <xsl:when test="use_common">
@@ -525,7 +544,7 @@ uicompiler::<xsl:value-of select="name" />_parseconfig(const theme_parser_lock &
 	} while (lock->get_next_element_sibling());
     return config;
 }
-
+</exsl:document>
 </xsl:template>
 
 

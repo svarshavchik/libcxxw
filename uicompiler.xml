@@ -917,7 +917,7 @@ List of values:
 	<exists>label</exists>
       </condition>
 
-      <parameter_parser_name>label_parameters</parameter_parser_name>
+      <parameter_parser_name>create_label_parameters</parameter_parser_name>
 
       <invoke>create_label</invoke>
 
@@ -1431,7 +1431,7 @@ List of values:
 	<exists>progressbar</exists>
       </condition>
 
-      <invoke>create_progressbar</invoke>
+      <invoke>uicompiler::create_progressbar</invoke>
 
       <parameter>
 	<scalar>generic_factory</scalar>

@@ -888,6 +888,13 @@ libcxxw_la_SOURCES=\
 	uicompilerfwd.H				    \
 	uicompiler.H				    \
 	uicompiler.C				    \
+	uicompiler2.C				    \
+	uicompiler3.C				    \
+	uicompiler_booklayout.C			    \
+	uicompiler_bookpagefactory.C		    \
+	uicompiler_gridfactory.C		    \
+	uicompiler_gridlayout.C			    \
+	uicompiler_listlayout.C			    \
 	uigenerators.C				    \
 	uielements.C				    \
 	windowobj.C				    \
@@ -1278,14 +1285,12 @@ BUILT_SOURCES += includes/x/w/constants_inc.H \
 	appearance/appearance_list.xml     \
 	appearance/appearance_parser.xml \
 	appearance/appearance_parser.inc.C \
-	uicompiler.inc.C uicompiler2.inc.C \
 	includes/x/w/all_appearancesfwd.H \
 	includes/x/w/all_appearances.H \
 	uicompiler_appearance_proto.inc.H \
 	gc_constants.inc.C pic_constants.inc.C
 
-CLEANFILES += uicompiler.inc.C uicompiler2.inc.C \
-	uicompiler-new.inc.C uicompiler2-new.inc.C \
+CLEANFILES += \
 	gc_constants.inc.C pic_constants.inc.C \
 	appearance/appearance_list.xml \
 	appearance/appearance_parser.inc.C \
@@ -1323,19 +1328,19 @@ xim/ximclient2.inc.C: xim/xim.xml xim/xim.xsl
 uicompiler.stamp.inc.H: uicompiler.xml parseuicompiler.xsl
 	rm -rf uicompiler.inc.H
 	mkdir uicompiler.inc.H
-	$(XSLTPROC) $(srcdir)/parseuicompiler.xsl $(srcdir)/uicompiler.xml >uicompiler.inc.C.tmp
-	cat uicompiler.inc.H/* >uicompiler2-new.inc.C
-	mv -f uicompiler.inc.C.tmp uicompiler-new.inc.C
-	rm -rf uicompiler.inc.H
+	$(XSLTPROC) $(srcdir)/parseuicompiler.xsl $(srcdir)/uicompiler.xml
 	touch uicompiler.stamp.inc.H
 
-CLEANFILES += uicompiler.stamp.inc.H
+uicompiler.lo                   \
+uicompiler_booklayout.lo	\
+uicompiler_bookpagefactory.lo   \
+uicompiler_gridfactory.lo       \
+uicompiler_gridlayout.lo        \
+uicompiler_listlayout.lo        \
+	: uicompiler.stamp.inc.H
 
-uicompiler.inc.C: uicompiler.stamp.inc.H
-	cp -f uicompiler-new.inc.C uicompiler.inc.C
-
-uicompiler2.inc.C: uicompiler.stamp.inc.H
-	cp -f uicompiler2-new.inc.C uicompiler2.inc.C
+clean-local:
+	rm -rf uicompiler.stamp.inc.H uicompiler.inc.H
 
 genconstants_SOURCES=genconstants.C
 

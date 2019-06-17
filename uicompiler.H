@@ -12,13 +12,16 @@
 #include "x/w/bookpagefactoryfwd.H"
 #include "x/w/factoryfwd.H"
 #include "x/w/uielementsfwd.H"
-#include "x/w/uigeneratorsfwd.H"
 #include "x/w/shortcutfwd.H"
 #include "x/w/border_argfwd.H"
 #include "x/w/all_appearancesfwd.H"
 #include "x/w/text_paramfwd.H"
 #include "x/w/font_arg.H"
 #include "x/w/screen_positions.H"
+#include "x/w/elementfwd.H"
+#include "x/w/progressbarfwd.H"
+#include "x/w/uigenerators.H"
+#include "x/w/appearance.H"
 #include "theme_parser_lock.H"
 #include "uicompilerfwd.H"
 
@@ -88,23 +91,21 @@ public:
 				  &lookup);
 
 
-private:
-
 	//! What's being generated.
 	const uigenerators generators;
 
-public:
 	//! Saved screen positions that might be restored
 	const const_screen_positionsptr saved_positions;
-private:
+
 	//! Whether this is a custom theme compiler
 
 	//! Custom theme compilers will allow various entities (colors,
 	//! fonts) referenced by widgets to be undefined in the theme file,
 	//! and presumed to be referring to the default theme. When compiling
 	//! the default theme this is false.
-	bool allowthemerefs;
+	const bool allowthemerefs;
 
+private:
 	//! Top level factory and layouts that aren't compiled yet.
 
 	//! The constructor puts all <factory> and <layout>
@@ -120,6 +121,7 @@ private:
 	//! recursively.
 	std::unordered_map<std::string, theme_parser_lock> uncompiled_elements;
 
+public:
 	//! Parser for grid layout manager generator.
 	vector<gridlayoutmanager_generator
 	       > gridlayout_parseconfig(const theme_parser_lock &lock);
@@ -155,7 +157,7 @@ private:
 	//! Parser for list layout manager generator.
 	vector<listlayoutmanager_generator
 	       > listlayout_parseconfig(const theme_parser_lock &lock);
-
+private:
 	//! Implement <element>
 
 	//! Executed by the compiled <element> code.
@@ -186,6 +188,7 @@ private:
 	bookpagefactory_generator
 	bookpagefactory_parser(const theme_parser_lock &lock);
 
+public:
 	//! Return compiled grid factory generators.
 
 	//! Extract single_value() from element, and look it up in
@@ -239,7 +242,7 @@ private:
 	const_vector<booklayoutmanager_generator>
 	lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
-
+private:
 	//! Execute <append_row>.
 
 	//! Executed by the compiled <append_row>.
@@ -348,7 +351,7 @@ private:
 
 public:
 	struct container_generators_t;
-private:
+
 	//! Validate container <type>, and look up name's generators.
 
 	container_generators_t
@@ -357,10 +360,11 @@ private:
 				    const std::string &type,
 				    bool,
 				    const char *tag);
-
+private:
 	//! Parsed "horizontal" or "vertical" scrollbar value.
 	enum scrollbar_type {horizontal, vertical};
 
+public:
 	//! Parse <scrollbar> value.
 	static scrollbar_type lookup_scrollbar_type(const std::string &value);
 
@@ -377,6 +381,12 @@ private:
 				     uielements &elements,
 				     const std::string &name,
 				     const container_generators_t &generators);
+
+	static element
+	create_progressbar(const factory &generic_factory,
+			   const container_generators_t &generators,
+			   uielements &elements,
+			   const progressbar_config &config);
 
 	//! Parse a color_arg value for an appearance in the theme file.
 	color_arg to_color_arg(const theme_parser_lock &lock,
@@ -406,7 +416,6 @@ public:
 						const char *element,
 						const char *parent);
 
-private:
 	//! Parse a text_param value
 	text_param text_param_value(const theme_parser_lock &lock,
 				    const char *element,
@@ -429,6 +438,7 @@ private:
 	font font_value(const theme_parser_lock &lock,
 			const char *element, const char *parent);
 
+private:
 	//! Top level appearance objects that aren't compiled yet.
 
 	//! The constructor puts all <appearance> elements
@@ -468,6 +478,12 @@ private:
 	const_appearance compile_appearance(const theme_parser_lock &parent,
 					    const std::string &type);
 
+	//! lookup_appearance() found a wrong appearance.
+	static void wrong_appearance_type(const std::string_view &,
+					  const char *)
+		__attribute__((noreturn));
+
+public:
 	//! Look up a compiled appearance
 
 	//! An appearance requested for use by an element. Invoked by
@@ -475,14 +491,26 @@ private:
 	//! object.
 
 	template<typename appearance_type>
-	appearance_type lookup_appearance(std::string name,
+	appearance_type lookup_appearance(const std::string_view &name,
 					  bool ignore,
-					  const char *element);
+					  const char *element)
+	{
+		auto ret=generators->lookup_appearance(name);
 
+		if (!ret->isa<appearance_type>())
+			wrong_appearance_type(name, element);
+
+		return ret;
+	}
+private:
 	struct generate_info;
 
 	struct compiler_functions;
 
+	std::tuple<text_param, label_config>
+	get_label_parameters(const theme_parser_lock &lock);
+
+public:
 #include "uicompiler_appearance_proto.inc.H"
 };
 
