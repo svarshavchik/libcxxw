@@ -87,6 +87,13 @@ struct create_cells_helper {
 
 	const listlayoutstyle_impl &style;
 	list_elementObj::implObj &textlist_element;
+	new_cells_info &info;
+
+	const size_t extra_leading=style.extra_leading_columns();
+	const size_t extra_trailing=style.extra_trailing_columns();
+	const size_t extra=extra_leading+extra_trailing;
+
+	bool havemeta=false;
 
 	//! Column counter
 
@@ -120,6 +127,23 @@ struct create_cells_helper {
 		return ret;
 	}
 
+private:
+	void create_cell(const list_cell &);
+
+	void create_separator();
+public:
+	//! Whether process_list_item_param() created a new cell
+
+	//! ... as a result of the given list_item_param.
+
+	bool created_cell;
+
+	//! Whether process_list_item_param() created a new separator
+
+	//! ... as a result of the given list_item_param.
+
+	bool created_separator;
+
 	//! Helper function for converting a list_item_param.
 
 	//! Processes the next list_item_param. Invokes item_callback if
@@ -128,35 +152,78 @@ struct create_cells_helper {
 	//!
 	//! Otherwise updates next_rowinfo.
 
-	template<typename Item_callback,
-		 typename Separator_callback> void process_list_item_param
-		(const list_item_param &item,
-		 Item_callback &&item_callback,
-		 Separator_callback &&separator_callback)
-	{
-		do_process_list_item_param(item,
-					   make_function
-					   <void (const list_cell &)>
-					   (std::forward<Item_callback>
-					    (item_callback)),
-					   make_function<void ()>
-					   (std::forward<Separator_callback>
-					    (separator_callback)));
-
-	}
-
-	//! Type-erased process_list_item_param().
-	void do_process_list_item_param
-		(const list_item_param::variant_t &,
-		 const function<void (const list_cell &)> &,
-		 const function<void ()> &);
+	void process_list_item_param(const list_item_param_base &item);
 };
 
-void create_cells_helper::do_process_list_item_param
-(const list_item_param::variant_t &item,
- const function<void (const list_cell &)>&item_callback,
- const function<void ()> &separator_callback)
+inline void create_cells_helper::create_cell(const list_cell &new_cell)
 {
+	if (std::holds_alternative<menu_item_submenu>(next_rowinfo.menu_item))
+	{
+		if (next_rowinfo.listitem_shortcut ||
+		    next_rowinfo.listitem_callback)
+			throw EXCEPTION
+				(_("Cannot specify shortcuts or "
+				   "callbacks for sub-menus"));
+	}
+
+	bool first_column=
+		(column_counter % textlist_element.columns) == 0;
+
+	if (first_column)
+	{
+		// First column on each row.
+		// Add leading cells.
+
+		for (size_t i=0; i<extra_leading; ++i)
+		{
+			info.newcells.push_back(style.create_leading_column
+						(textlist_element, i));
+						 ++column_counter;
+		}
+	}
+
+	info.newcells.push_back(new_cell);
+	created_cell=true;
+}
+
+inline void create_cells_helper::create_separator()
+{
+	bool first_column=(column_counter % textlist_element.columns) == 0;
+
+	// The preliminary pass that reserved all
+	// elements should've checked this already.
+	if (!first_column)
+		throw EXCEPTION(_("Internal error: separator element "
+				  "is out of place"));
+
+	if (havemeta)
+		throw EXCEPTION(_("Cannot specify any other "
+				  "attributes for a separator element")
+				);
+
+	// We must push a separator object for each
+	// column. We cannot just link the same object
+	// into all columns. The logic dealing with
+	// column_iterators expects each cell in each
+	// column to be a discrete object, for
+	// recording the column_iterator.
+
+	for (size_t i=0; i<textlist_element.columns; ++i)
+		info.newcells.push_back(list_cellseparator::create());
+
+	// next_rowinfo should be clean
+	info.rowmeta.emplace_back(extra_list_row_info::create(),
+				  next_rowinfo);
+
+	column_counter += textlist_element.columns;
+	created_separator=true;
+}
+
+void create_cells_helper::process_list_item_param(const list_item_param_base &item)
+{
+	created_cell=false;
+	created_separator=false;
+
 	std::visit(visitor
 		   {
 			   [&](const shortcut &sc)
@@ -226,7 +293,7 @@ void create_cells_helper::do_process_list_item_param
 						    rts, halignment,
 						    valignment, 0);
 
-				   item_callback(t);
+				   create_cell(t);
 			   },
 			   [&](const image_param &s)
 			   {
@@ -241,11 +308,11 @@ void create_cells_helper::do_process_list_item_param
 					   (list_cellimage::create
 					    (std::vector<icon>{i},
 					     halignment, valignment));
-				   item_callback(t);
+				   create_cell(t);
 			   },
 			   [&](const separator &)
 			   {
-				   separator_callback();
+				   create_separator();
 			   },
 			   [&](const new_items &)
 			   {
@@ -342,9 +409,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 			      * textlist_element.columns);
 	info.rowmeta.reserve(n_real_elements / real_columns);
 
-	bool havemeta=false;
-
-	create_cells_helper helper{*this, textlist_element};
+	create_cells_helper helper{*this, textlist_element, info};
 
 	for (const auto &s:t)
 	{
@@ -352,95 +417,12 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 			continue; // Checks that this is kosher here, above.
 
 
+		helper.process_list_item_param(s);
 
-
-		// Create the cell.
-
-		bool created_cell=false;
-		bool created_separator=false;
-
-		helper.process_list_item_param
-			(s,
-			 [&, this]
-			 (const auto &new_cell)
-			 {
-				 if (std::holds_alternative<menu_item_submenu>
-				     (helper.next_rowinfo.menu_item))
-				 {
-					 if (helper.next_rowinfo.listitem_shortcut ||
-					     helper.next_rowinfo.listitem_callback)
-						 throw EXCEPTION
-							 (_("Cannot specify "
-							    "shortcuts or "
-							    "callbacks for "
-							    "sub-menus"));
-				 }
-
-				 bool first_column=
-					 (helper.column_counter % textlist_element.columns) == 0;
-
-				 if (first_column)
-				 {
-					 // First column on each row.
-					 // Add leading cells.
-
-					 for (size_t i=0; i<extra_leading; ++i)
-					 {
-						 info.newcells.push_back
-							 (create_leading_column
-							  (textlist_element,
-							   i));
-						 ++helper.column_counter;
-					 }
-				 }
-
-				 info.newcells.push_back(new_cell);
-				 created_cell=true;
-			 },
-			 [&]
-			 {
-				 bool first_column=
-					 (helper.column_counter % textlist_element.columns) == 0;
-
-				 // The preliminary pass that reserved all
-				 // elements should've checked this already.
-				 if (!first_column)
-					 throw EXCEPTION(_("Internal error: "
-							   "separator element "
-							   "is out of place"));
-
-				 if (havemeta)
-					 throw EXCEPTION(_("Cannot specify "
-							   "any other "
-							   "attributes for a "
-							   "separator element")
-							 );
-
-				 // We must push a separator object for each
-				 // column. We cannot just link the same object
-				 // into all columns. The logic dealing with
-				 // column_iterators expects each cell in each
-				 // column to be a discrete object, for
-				 // recording the column_iterator.
-
-				 for (size_t i=0; i<textlist_element.columns;
-				      ++i)
-					 info.newcells.push_back
-						 (list_cellseparator::create());
-
-				 // next_rowinfo should be clean
-				 info.rowmeta.emplace_back
-					 (extra_list_row_info::create(),
-					  helper.next_rowinfo);
-
-				 helper.column_counter += textlist_element.columns;
-				 created_separator=true;
-			 });
-
-		if (created_separator)
+		if (helper.created_separator)
 			continue;
 
-		if (created_cell)
+		if (helper.created_cell)
 		{
 			++helper.column_counter;
 
@@ -470,7 +452,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 					(extra_list_row_info::create(),
 					 helper.next_rowinfo);
 				helper.next_rowinfo={};
-				havemeta=false;
+				helper.havemeta=false;
 			}
 		}
 		else
@@ -482,12 +464,12 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 				throw EXCEPTION(_("Row metadata must be "
 						  "specified before the "
 						  "row data."));
-			havemeta=true;
+			helper.havemeta=true;
 		}
 
 	}
 
-	if (havemeta)
+	if (helper.havemeta)
 		throw EXCEPTION(_("Row metadata must be specified before "
 				  "the row data."));
 

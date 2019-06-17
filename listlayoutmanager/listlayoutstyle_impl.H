@@ -166,6 +166,7 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 
 	virtual void nonmenu_attribute_requested() const;
 
+ public:
 	//! How many extra leading columns there are.
 
 	//! Called by create_cells() to figure out what it's doing.
