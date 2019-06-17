@@ -417,6 +417,20 @@ llmanager->append_items(
 	  a separator value between groups of list items.
 	</para>
       </listitem>
+
+      <listitem>
+	<para>
+	  Other <classname>&ns;::w::list_item_param</classname> values
+	  set additional properties related to the new list item. The all
+	  appear before the list item's basic value. For example,
+	  <link linkend="menu">menu list items</link> have an optional
+	  keyboard shortcut.
+	  This is done with a
+	  <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>
+	  value that precedes the menu item's
+	  <classname>&ns;::w::text_param</classname>
+	</para>
+      </listitem>
     </itemizedlist>
 
     <para>

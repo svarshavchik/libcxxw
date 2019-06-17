@@ -39,7 +39,7 @@ listitemhandleObj::implObj::implObj(const ref<listlayoutmanagerObj::implObj>
 
 listitemhandleObj::implObj::~implObj()=default;
 
-bool listitemhandleObj::implObj::enabled()
+bool listitemhandleObj::implObj::enabled() const
 {
 	auto p=listlayout_impl.getptr();
 
@@ -76,10 +76,38 @@ void listitemhandleObj::implObj::enabled(ONLY IN_THREAD, bool flag)
 	if (!p)
 		return;
 
-	listimpl_info_t::lock lock{p->list_element_singleton->impl
-				   ->textlist_info};
-
-	p->list_element_singleton->impl->enabled(IN_THREAD, lock, extra, flag);
+	p->list_element_singleton->impl->enabled(IN_THREAD, extra, flag);
 }
+
+void listitemhandleObj::implObj
+::on_status_update(const list_item_status_change_callback &cb)
+{
+	auto p=listlayout_impl.getptr();
+
+	if (!p)
+		return;
+
+	p->run_as([cb, me=ref{this}]
+		  (ONLY IN_THREAD)
+		  {
+			  me->on_status_update(IN_THREAD, cb);
+		  });
+}
+
+void listitemhandleObj::implObj
+::on_status_update(ONLY IN_THREAD,
+		   const list_item_status_change_callback &cb)
+{
+	auto p=listlayout_impl.getptr();
+
+	if (!p)
+		return;
+
+	listlayoutmanager llm=p->create_public_object();
+
+	p->list_element_singleton->impl->on_status_update(IN_THREAD, llm,
+							  extra, cb);
+}
+
 
 LIBCXXW_NAMESPACE_END

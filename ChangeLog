@@ -1,3 +1,9 @@
+2019-06-15  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* listlayoutmanager: implement on_status_update().
+
+0.24.0
+
 2019-06-13  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Create <scrollbar> using the theme file.

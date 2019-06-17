@@ -78,17 +78,27 @@ list_lock::~list_lock()=default;
 // recalculate().
 
 list_elementObj::implObj::textlist_info_lock
-::textlist_info_lock(ONLY IN_THREAD, implObj &me)
-	: listimpl_info_t::lock{me.textlist_info},
-	was_modified{ listimpl_info_t::lock::operator->()
-			->row_infos.modified}
+::textlist_info_lock(ONLY IN_THREAD,
+		     listimpl_info_t::lock &lock,
+		     implObj &me)
+	: lock{lock},
+	  was_modified{ lock->row_infos.modified}
 {
 	if (was_modified)
-		me.recalculate(IN_THREAD, *this);
+		me.recalculate(IN_THREAD, lock);
 }
 
 list_elementObj::implObj::textlist_info_lock::~textlist_info_lock()=default;
 
+list_elementObj::implObj::create_textlist_info_lock
+::create_textlist_info_lock(ONLY IN_THREAD, implObj &me)
+	: listimpl_info_t::lock{me.textlist_info},
+	  textlist_info_lock{IN_THREAD, *this, me}
+{
+}
+
+list_elementObj::implObj::create_textlist_info_lock
+::~create_textlist_info_lock()=default;
 
 ////////////////////////////////////////////////////////////////////////////
 //
@@ -740,7 +750,7 @@ void list_elementObj::implObj
 
 void list_elementObj::implObj::recalculate(ONLY IN_THREAD)
 {
-	textlist_info_lock lock{IN_THREAD, *this};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	// If full recalculation was done, that's it. Otherwise the only
 	// thing we need to do is to calculate_column_poswidths, because
@@ -1174,7 +1184,7 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				       const draw_info &di,
 				       const rectarea &areas)
 {
-	textlist_info_lock lock{IN_THREAD, *this};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	lock->row_redraw_needed=false; // We're taking care of everything now.
 
@@ -1183,7 +1193,7 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 
 void list_elementObj::implObj::redraw_needed_rows(ONLY IN_THREAD)
 {
-	textlist_info_lock lock{IN_THREAD, *this};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	if (!lock->row_redraw_needed)
 		return;
@@ -1201,9 +1211,11 @@ void list_elementObj::implObj::redraw_needed_rows(ONLY IN_THREAD)
 void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				       const draw_info &di,
 				       const rectarea &areas,
-				       textlist_info_lock &lock,
+				       textlist_info_lock &our_lock,
 				       bool only_whats_needed)
 {
+	auto &lock=our_lock.lock;
+
 	richtext_draw_boundaries bounds{di, areas};
 
 	if (full_redraw_scheduled(IN_THREAD))
@@ -1595,7 +1607,7 @@ void list_elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 	if (me.y < 0) // Shouldn't happen.
 		return;
 
-	textlist_info_lock lock{IN_THREAD, *this};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	if (current_element(lock))
 	{
@@ -1633,7 +1645,7 @@ bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
 						 const key_event &ke)
 {
 	{
-		textlist_info_lock lock{IN_THREAD, *this};
+		create_textlist_info_lock lock{IN_THREAD, *this};
 
 		if (process_key_event(IN_THREAD, ke, lock))
 			return true;
@@ -1825,7 +1837,7 @@ bool list_elementObj::implObj::process_button_event(ONLY IN_THREAD,
 
 	if (be.button == 1 || be.button == 3)
 	{
-		textlist_info_lock lock{IN_THREAD, *this};
+		create_textlist_info_lock lock{IN_THREAD, *this};
 
 		if (current_element(lock))
 		{
@@ -1857,7 +1869,7 @@ void list_elementObj::implObj::pointer_focus(ONLY IN_THREAD,
 {
 	superclass_t::pointer_focus(IN_THREAD, trigger);
 
-	textlist_info_lock lock{IN_THREAD, *this};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	if (!current_pointer_focus(IN_THREAD))
 	{
@@ -1871,7 +1883,7 @@ void list_elementObj::implObj::keyboard_focus(ONLY IN_THREAD,
 {
 	superclass_t::keyboard_focus(IN_THREAD, trigger);
 
-	textlist_info_lock lock{IN_THREAD, *this};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	if (!current_keyboard_focus(IN_THREAD))
 	{
@@ -2079,7 +2091,8 @@ void list_elementObj::implObj
 				.status_change_callback(IN_THREAD, info);
 		} REPORT_EXCEPTIONS(this);
 
-	if (lock->selection_changed)
+	if (lock->selection_changed &&
+	    trigger.index() != callback_trigger_initial)
 		try {
 			lock->selection_changed(IN_THREAD, info);
 		} REPORT_EXCEPTIONS(this);
@@ -2097,7 +2110,7 @@ bool list_elementObj::implObj::enabled(size_t i)
 
 void list_elementObj::implObj::enabled(ONLY IN_THREAD, size_t i, bool flag)
 {
-	listimpl_info_t::lock lock{textlist_info};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	if (i >= lock->row_infos.size())
 		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"), i));
@@ -2106,11 +2119,20 @@ void list_elementObj::implObj::enabled(ONLY IN_THREAD, size_t i, bool flag)
 }
 
 void list_elementObj::implObj::enabled(ONLY IN_THREAD,
-				       listimpl_info_t::lock &lock,
 				       const extra_list_row_info &extra,
 				       bool flag)
 {
-	auto &r=extra->data(lock);
+	create_textlist_info_lock lock{IN_THREAD, *this};
+
+	enabled(IN_THREAD, lock, extra, flag);
+}
+
+void list_elementObj::implObj::enabled(ONLY IN_THREAD,
+				       textlist_info_lock &lock,
+				       const extra_list_row_info &extra,
+				       bool flag)
+{
+	auto &r=extra->data(lock.lock);
 
 	if (r.row_type != list_row_type_t::enabled &&
 	    r.row_type != list_row_type_t::disabled)
@@ -2124,7 +2146,61 @@ void list_elementObj::implObj::enabled(ONLY IN_THREAD,
 	r.row_type=new_type;
 	r.redraw_needed=true;
 
-	schedule_row_redraw(lock);
+	schedule_row_redraw(lock.lock);
+}
+
+void list_elementObj::implObj
+::on_status_update(ONLY IN_THREAD,
+		   const listlayoutmanager &lm,
+		   const extra_list_row_info &extra,
+		   const list_item_status_change_callback &new_callback)
+{
+	list_lock ll{lm};
+	textlist_info_lock lock{IN_THREAD, ll, *this};
+
+	size_t i=extra->current_row_number(IN_THREAD);
+
+	if (i >= lock->row_infos.size())
+		return;
+
+	if (lock->row_infos.at(i).extra != extra)
+		return;
+
+	on_status_update(IN_THREAD, lm, ll, lock, i, new_callback);
+}
+
+void list_elementObj::implObj
+::on_status_update(ONLY IN_THREAD,
+		   const listlayoutmanager &lm,
+		   size_t i,
+		   const list_item_status_change_callback &new_callback)
+{
+	list_lock ll{lm};
+	textlist_info_lock lock{IN_THREAD, ll, *this};
+
+	on_status_update(IN_THREAD, lm, ll, lock, i, new_callback);
+}
+
+void list_elementObj::implObj
+::on_status_update(ONLY IN_THREAD,
+		   const listlayoutmanager &lm,
+		   list_lock &ll,
+		   textlist_info_lock &lock,
+		   size_t i,
+		   const list_item_status_change_callback &new_callback)
+{
+	if (i >= lock->row_infos.size())
+		throw EXCEPTION(gettextmsg(_("List item #%1% does not exist"),
+					   i));
+
+	auto &info=lock->row_infos.at(i);
+
+	info.extra->data(lock.lock).status_change_callback=new_callback;
+
+	notify_callbacks(IN_THREAD, lm, ll, info,
+			 i,
+			 info.extra->data(lock.lock).selected,
+			 initial{});
 }
 
 void list_elementObj::implObj::schedule_row_redraw(listimpl_info_t::lock &lock)
@@ -2246,7 +2322,7 @@ bool list_elementObj::implObj::unselect(ONLY IN_THREAD,
 std::chrono::milliseconds list_elementObj::implObj
 ::hover_action_delay(ONLY IN_THREAD)
 {
-	textlist_info_lock lock{IN_THREAD, *this};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	if (current_element(lock))
 	{
@@ -2261,7 +2337,7 @@ std::chrono::milliseconds list_elementObj::implObj
 
 void list_elementObj::implObj::hover_action(ONLY IN_THREAD)
 {
-	textlist_info_lock lock{IN_THREAD, *this};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	if (!current_element(lock))
 		return;

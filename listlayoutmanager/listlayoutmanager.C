@@ -38,9 +38,10 @@ void listlayoutmanagerObj::remove_item(size_t item_number)
 void listlayoutmanagerObj::remove_items(size_t item_number,
 					size_t n_items)
 {
-	impl->run_as([me=ref{this}, item_number, n_items]
+	impl->run_as([impl=this->impl, item_number, n_items]
 		     (ONLY IN_THREAD)
 		     {
+			     listlayoutmanager me=impl->create_public_object();
 			     me->impl->list_element_singleton->impl
 				     ->remove_rows(IN_THREAD,
 						   me,
@@ -68,9 +69,10 @@ void listlayoutmanagerObj::append_items(const std::vector<list_item_param>
 {
 	auto cells=in_thread_new_cells_info::create(ref{this}, items);
 
-	impl->run_as([cells, me=ref{this}]
+	impl->run_as([cells, impl=this->impl]
 		     (ONLY IN_THREAD)
 		     {
+			     listlayoutmanager me=impl->create_public_object();
 			     me->impl->list_element_singleton->impl
 				     ->append_rows(IN_THREAD, me, cells->info);
 		     });
@@ -95,9 +97,10 @@ void listlayoutmanagerObj::insert_items(size_t item_number,
 {
 	auto cells=in_thread_new_cells_info::create(ref{this}, items);
 
-	impl->run_as([me=ref{this}, item_number, cells]
+	impl->run_as([impl=this->impl, item_number, cells]
 		     (ONLY IN_THREAD)
 		     {
+			     listlayoutmanager me=impl->create_public_object();
 			     me->impl->list_element_singleton->impl
 				     ->insert_rows(IN_THREAD, me, item_number,
 						   cells->info);
@@ -124,9 +127,10 @@ void listlayoutmanagerObj::replace_items(size_t item_number,
 {
 	auto cells=in_thread_new_cells_info::create(ref{this}, items);
 
-	impl->run_as([me=ref{this}, item_number, cells]
+	impl->run_as([impl=this->impl, item_number, cells]
 		     (ONLY IN_THREAD)
 		     {
+			     listlayoutmanager me=impl->create_public_object();
 			     me->impl->list_element_singleton->impl
 				     ->replace_rows(IN_THREAD, me,
 						    item_number,
@@ -154,9 +158,10 @@ void listlayoutmanagerObj::replace_all_items(const
 {
 	auto cells=in_thread_new_cells_info::create(ref{this}, items);
 
-	impl->run_as([cells, me=ref{this}]
+	impl->run_as([cells, impl=this->impl]
 		     (ONLY IN_THREAD)
 		     {
+			     listlayoutmanager me=impl->create_public_object();
 			     me->impl->list_element_singleton->impl
 				     ->replace_all_rows(IN_THREAD, me,
 							cells->info);
@@ -179,9 +184,11 @@ void listlayoutmanagerObj::replace_all_items(ONLY IN_THREAD,
 
 void listlayoutmanagerObj::resort_items(const std::vector<size_t> &indexes)
 {
-	impl->run_as([indexes, me=ref(this)]
+	impl->run_as([indexes, impl=this->impl]
 		     (ONLY IN_THREAD)
 		     {
+			     listlayoutmanager me=impl->create_public_object();
+
 			     me->resort_items(IN_THREAD, indexes);
 		     });
 }
@@ -232,9 +239,11 @@ std::optional<size_t> listlayoutmanagerObj::current_list_item() const
 
 void listlayoutmanagerObj::selected(size_t i, bool selected_flag)
 {
-	impl->run_as([me=ref(this), i, selected_flag]
+	impl->run_as([impl=this->impl, i, selected_flag]
 		     (ONLY IN_THREAD)
 		     {
+			     listlayoutmanager me=impl->create_public_object();
+
 			     me->selected(IN_THREAD, i, selected_flag, {});
 		     });
 }
@@ -250,9 +259,10 @@ void listlayoutmanagerObj::selected(ONLY IN_THREAD,
 
 void listlayoutmanagerObj::autoselect(size_t i)
 {
-	impl->run_as([me=ref(this),i]
+	impl->run_as([impl=this->impl,i]
 		     (ONLY IN_THREAD)
 		     {
+			     listlayoutmanager me=impl->create_public_object();
 			     me->autoselect(IN_THREAD, i, {});
 		     });
 }
@@ -267,9 +277,10 @@ void listlayoutmanagerObj::autoselect(ONLY IN_THREAD,
 
 void listlayoutmanagerObj::unselect()
 {
-	impl->run_as([me=ref(this)]
+	impl->run_as([impl=this->impl]
 		     (ONLY IN_THREAD)
 		     {
+			     listlayoutmanager me=impl->create_public_object();
 			     me->unselect(IN_THREAD);
 		     });
 }
@@ -286,9 +297,10 @@ bool listlayoutmanagerObj::enabled(size_t i) const
 
 void listlayoutmanagerObj::enabled(size_t i, bool flag)
 {
-	impl->run_as([me=ref(this), i, flag]
+	impl->run_as([impl=this->impl, i, flag]
 		     (ONLY IN_THREAD)
 		     {
+			     listlayoutmanager me=impl->create_public_object();
 			     me->enabled(IN_THREAD, i, flag);
 		     });
 }
@@ -296,6 +308,28 @@ void listlayoutmanagerObj::enabled(size_t i, bool flag)
 void listlayoutmanagerObj::enabled(ONLY IN_THREAD, size_t i, bool flag)
 {
 	impl->list_element_singleton->impl->enabled(IN_THREAD, i, flag);
+}
+
+void listlayoutmanagerObj::on_status_update(size_t i,
+					    const list_item_status_change_callback &cb)
+{
+	impl->run_as([impl=this->impl, i, cb]
+		     (ONLY IN_THREAD)
+		     {
+			     auto me=listlayoutmanager::create(impl);
+			     me->on_status_update(IN_THREAD, i, cb);
+		     });
+
+}
+
+void listlayoutmanagerObj::on_status_update(ONLY IN_THREAD,
+					    size_t i,
+					    const list_item_status_change_callback &cb)
+{
+	impl->list_element_singleton->impl->on_status_update(IN_THREAD,
+							     ref{this},
+							     i,
+							     cb);
 }
 
 listlayoutmanagerptr

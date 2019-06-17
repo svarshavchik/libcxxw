@@ -7,6 +7,7 @@
 
 #include <x/w/listitemhandlefwd.H>
 #include <x/w/listitemhandleobj.H>
+#include <x/functionalrefptr.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

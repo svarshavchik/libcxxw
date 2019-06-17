@@ -25,7 +25,7 @@ listlayoutmanagerObj::implObj::~implObj()=default;
 
 layoutmanager listlayoutmanagerObj::implObj::create_public_object()
 {
-	return listlayoutmanager::create(ref(this));
+	return listlayoutmanager::create(ref{this});
 }
 
 void listlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)

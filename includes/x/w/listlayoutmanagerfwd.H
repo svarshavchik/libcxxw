@@ -287,6 +287,21 @@ The above example attaches the callback object to the "Lorem" item.
 No callback gets attached to the following "Ipsum" item, unless one is
 also specified.
 
+on_status_update() replaces the existing list item's callback.
+
+\code
+l->on_status_update(1,
+                    []
+                    (ONLY IN_THREAD,
+                    const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
+                    {
+                    });
+\endcode
+
+This replaces item #1's callback, and invokes the new callback with
+the trigger parameter's value of \c INSERT_LIBX_NAMESPACE::w::initial,
+reporting whether or not the list item is currently selected.
+
 \par Selectable menu options
 
 \code
@@ -498,7 +513,7 @@ becomes a new item, with each text string in the corresponding column,
 The sole exception is a list item separator. This parameter always gets
 specified by itself, as a single value.
 
-\par Internal thread methods
+\par Connection thread methods
 
 remove_item(), append_items(), insert_items(), replace_items(),
 replace_all_items(),
@@ -506,12 +521,14 @@ resort_items(),
 autoselect(),
 unselect(),
 selected(),
+on_status_update(),
 and the enabled() overload which enables or disable a list item,
 get executed by the internal connection thread. There are two versions
 of each method. The first version sends a message to the internal
 library connection thread that implements this method. The \c IN_THREAD
-version of each message is the implemention method that executes the
-operation.
+overload of each method is the implemention method that executes the
+operation, and can be invoked directly when executing another callback
+in the connection thread.
 
 \par Creating handles for new list items
 

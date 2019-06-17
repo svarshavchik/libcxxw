@@ -45,6 +45,8 @@ class extra_list_row_infoObj::shortcut_implObj
 	weakptr<extra_list_row_infoptr> extra_ptr;
 
 	typedef list_elementObj::implObj::textlist_info_lock textlist_info_lock;
+	typedef list_elementObj::implObj
+	::create_textlist_info_lock create_textlist_info_lock;
 
 public:
 
@@ -83,7 +85,8 @@ public:
 			 {
 				 auto impl=l_impl->list_element_singleton->impl;
 
-				 textlist_info_lock lock{IN_THREAD, *impl};
+				 create_textlist_info_lock lock{IN_THREAD,
+								*impl};
 
 				 auto p=extra_ptr.getptr();
 
@@ -120,7 +123,7 @@ public:
 		// Now, make sure we recalculate the list,
 		// if needed.
 
-		textlist_info_lock lock{IN_THREAD, *impl};
+		textlist_info_lock lock{IN_THREAD, ll, *impl};
 
 		auto p=extra_ptr.getptr();
 

@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 class listitemhandleObj::implObj : public listitemhandleObj {
 
-	weakptr<ptr<listlayoutmanagerObj::implObj>> listlayout_impl;
+	const weakptr<ptr<listlayoutmanagerObj::implObj>> listlayout_impl;
 
 	const extra_list_row_info extra;
 
@@ -32,7 +32,7 @@ class listitemhandleObj::implObj : public listitemhandleObj {
 	~implObj();
 
 	//! Implement enabled()
-	bool enabled() override;
+	bool enabled() const override;
 
 	//! Implement enabled()
 	void enabled(bool flag) override;
@@ -40,6 +40,14 @@ class listitemhandleObj::implObj : public listitemhandleObj {
 	//! Implement enabled()
 	void enabled(ONLY IN_THREAD, bool) override;
 
+	//! Install a new status update callback.
+	void on_status_update(const list_item_status_change_callback &)
+		override;
+
+	//! Install a new status update callback.
+	void on_status_update(ONLY IN_THREAD,
+			      const list_item_status_change_callback &)
+		override;
 };
 
 LIBCXXW_NAMESPACE_END

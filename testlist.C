@@ -22,6 +22,7 @@
 #include "x/w/canvas.H"
 #include "x/w/screen.H"
 #include "x/w/image_param_literals.H"
+#include "x/w/listitemhandle.H"
 #include "x/w/connection.H"
 
 #include <vector>
@@ -765,27 +766,29 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 				 list_container->get_layoutmanager();
 
 			 l->insert_items
-				 (0, {
-					 [counter]
-					 (ONLY IN_THREAD,
-					  const LIBCXX_NAMESPACE::w
-					  ::list_item_status_info_t
-					  &info)
-					 {
-						 std::cout << "Item factory: "
-							 "item #"
-							   << counter
-							   << (info.selected ?
-							       " is":
-							       " is not")
-							   << " selected at"
-							   << " position "
-							   << info.item_number
-							   << std::endl;
-					 },
-
-					 next_lorem_ipsum()
+				 (0, {next_lorem_ipsum()
 				 });
+
+			 l->on_status_update
+				 (0,
+				  [counter]
+				  (ONLY IN_THREAD,
+				   const LIBCXX_NAMESPACE::w
+				   ::list_item_status_info_t
+				   &info)
+				  {
+					  std::cout << "Item factory: "
+						  "item #"
+						    << counter
+						    << (info.selected ?
+							" is":
+							" is not")
+						    << " selected at"
+						    << " position "
+						    << info.item_number
+						    << std::endl;
+				  });
+			 ++counter;
 		 });
 
 	append_row->on_activate
@@ -806,7 +809,26 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 			 //
 			 // A plain const char pointer will work as well.
 
-			 l->append_items({next_lorem_ipsum()});
+			 auto ret=l->append_items
+				 ({next_lorem_ipsum(),
+				   LIBCXX_NAMESPACE::w::get_new_items{}});
+
+			 ret.handles.at(0)->on_status_update
+				 ([]
+				  (ONLY IN_THREAD,
+				   const LIBCXX_NAMESPACE::w
+				   ::list_item_status_info_t &info)
+				  {
+					  if (info.trigger.index() ==
+					      LIBCXX_NAMESPACE::w
+					      ::callback_trigger_initial)
+						  return;
+
+					  std::cout <<
+						  "Appended item selected: "
+						    << info.selected
+						    << std::endl;
+				  });
 		 });
 
 	remove_row->on_activate

@@ -96,6 +96,9 @@ constexpr size_t callback_trigger_motion_event=3;
 //! - initial invocation from on_pointer_focus() and on_keyboard_focus().
 //!
 //! - initial invocation from date_input_field's on_change().
+//!
+//! - a new on_status callback is installed for a list item, and this
+//!   reports the current list item status.
 
 constexpr size_t callback_trigger_initial=4;
 

@@ -150,6 +150,15 @@ public:
 
 	void enabled(ONLY IN_THREAD, size_t i, bool flag);
 
+	//! Replace/install an item's status callback
+	void on_status_update(size_t i,
+			      const list_item_status_change_callback &cb);
+
+	//! Replace/install an item's status callback
+	void on_status_update(ONLY IN_THREAD,
+			      size_t i,
+			      const list_item_status_change_callback &cb);
+
 	//! Return an existing menu item's submenu layoutmanager.
 	listlayoutmanagerptr get_item_layoutmanager(size_t i);
 

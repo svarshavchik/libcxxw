@@ -442,6 +442,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			     bool,
 			     const callback_trigger_t &);
 
+	struct textlist_info_lock;
+
  public:
 	//! Number of items in the list
 
@@ -478,12 +480,40 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Enable or disable the list item.
 
 	void enabled(ONLY IN_THREAD,
-		     listimpl_info_t::lock &lock,
 		     const extra_list_row_info &extra,
 		     bool flag);
 
  private:
-	struct textlist_info_lock;
+	//! Enable or disable the list item.
+
+	void enabled(ONLY IN_THREAD,
+		     textlist_info_lock &lock,
+		     const extra_list_row_info &extra,
+		     bool flag);
+ public:
+	//! Install a new on_status_update callback.
+
+	void on_status_update(ONLY IN_THREAD,
+			      const listlayoutmanager &lm,
+			      const extra_list_row_info &extra,
+			      const list_item_status_change_callback &);
+
+	//! Install a new on_status_update callback.
+
+	void on_status_update(ONLY IN_THREAD,
+			      const listlayoutmanager &lm,
+			      size_t i,
+			      const list_item_status_change_callback &);
+
+	//! Install a new on_status_update callback.
+	void on_status_update(ONLY IN_THREAD,
+			      const listlayoutmanager &lm,
+			      list_lock &ll,
+			      textlist_info_lock &lock,
+			      size_t i,
+			      const list_item_status_change_callback &);
+
+ private:
 
 	//! Redraw only those rows whose status has changed.
 
@@ -517,17 +547,18 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
  private:
 
-	//! A mutex lock on textlist_info
+	//! Internal lock on textlist_info
 
-	//! listimpl_info_t is an mpobj. This is a subclass of
-	//! listimpl_info_t::lock that acquires the lock, then checks
+	//! listimpl_info_t is an mpobj. A lock must get acquired first,
+	//! then used to instantiate th textlist_info_lock. This checks
 	//! if list_row_info_vector.modified if set, then if so calls
 	//! recalculate().
 
-	struct textlist_info_lock
-		: public listimpl_info_t::lock {
+	struct textlist_info_lock {
 
 	public:
+
+		listimpl_info_t::lock &lock;
 
 		// Whether the list was modified, before we were constructed.
 
@@ -536,13 +567,41 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 		// The construct checks row_infos.modified, and if so calls
 		// recalculate().
 
-		textlist_info_lock(ONLY IN_THREAD, implObj &me);
+		textlist_info_lock(ONLY IN_THREAD,
+				   listimpl_info_t::lock &lock,
+				   implObj &me);
 
 		//! Destructor
 
 		~textlist_info_lock();
+
+		//! Convenience function
+		inline auto operator->() noexcept
+		{
+			return lock.operator->();
+		}
+
+		//! Convenience function
+		inline auto operator->() const noexcept
+		{
+			return lock.operator->();
+		}
 	};
 
+	//! If the show starts without a lock in place, create one.
+
+	struct create_textlist_info_lock
+		: public listimpl_info_t::lock,
+		  public textlist_info_lock {
+
+		//! Constructor
+		create_textlist_info_lock(ONLY IN_THREAD, implObj &me);
+
+		//! Destructor
+		~create_textlist_info_lock();
+
+		using listimpl_info_t::lock::operator->;
+	};
  public:
 
 	//! Scratch buffer for drawing separators

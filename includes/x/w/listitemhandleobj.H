@@ -6,7 +6,9 @@
 #define x_w_listitemhandleobj_h
 
 #include <x/w/listitemhandlefwd.H>
+#include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/connection_threadfwd.H>
+#include <x/functionalrefptrfwd.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -27,13 +29,22 @@ public:
 	~listitemhandleObj() LIBCXX_HIDDEN;
 
 	//! Whether this list item is enabled.
-	virtual bool enabled()=0;
+	virtual bool enabled() const=0;
 
 	//! Enable or disable this list item.
 	virtual void enabled(bool)=0;
 
 	//! Enable or disable this list item.
 	virtual void enabled(ONLY IN_THREAD, bool)=0;
+
+	//! Install a new status update callback.
+	virtual void on_status_update(const
+				      list_item_status_change_callback &)=0;
+
+	//! Install a new status update callback.
+	virtual void on_status_update(ONLY IN_THREAD,
+				      const
+				      list_item_status_change_callback &)=0;
 };
 
 LIBCXXW_NAMESPACE_END
