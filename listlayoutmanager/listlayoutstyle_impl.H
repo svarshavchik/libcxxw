@@ -194,48 +194,6 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 						     size_t column_number,
 						     const textlist_rowinfo &)
 		const=0;
-
-	//! Helper function for converting a list_item_param.
-
-	//! Processes the next list_item_param. Invokes item_callback if
-	//! it specifies new cell content. Invokes separator_callback for a
-	//! separator.
-	//!
-	//! Otherwise updates next_rowinfo.
-
-	template<typename Item_callback,
-		 typename Separator_callback> void process_list_item_param
-		(const list_item_param &item,
-		 list_elementObj::implObj &textlist_element,
-		 halign halignment,
-		 valign valignment,
-		 textlist_rowinfo &next_rowinfo,
-		 Item_callback &&item_callback,
-		 Separator_callback &&separator_callback) const
-	{
-		do_process_list_item_param(item, textlist_element,
-					   halignment,
-					   valignment,
-					   next_rowinfo,
-					   make_function
-					   <void (const list_cell &)>
-					   (std::forward<Item_callback>
-					    (item_callback)),
-					   make_function<void ()>
-					   (std::forward<Separator_callback>
-					    (separator_callback)));
-
-	}
-
-	//! Type-erased process_list_item_param().
-	void do_process_list_item_param
-		(const list_item_param::variant_t &,
-		 list_elementObj::implObj &,
-		 halign,
-		 valign,
-		 textlist_rowinfo &,
-		 const function<void (const list_cell &)> &,
-		 const function<void ()> &) const;
 };
 
 //! Parameters to list_elementObj::implObj's constructor

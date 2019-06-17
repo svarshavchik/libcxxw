@@ -78,6 +78,186 @@ listlayoutstyle_impl
 	return {container, container, container, t_impl};
 }
 
+namespace {
+#if 0
+}
+#endif
+
+struct create_cells_helper {
+
+	const listlayoutstyle_impl &style;
+	list_elementObj::implObj &textlist_element;
+
+	//! Column counter
+
+	//! Gets increment each time a cell gets created.
+
+	size_t column_counter=0;
+
+	//! The rowinfo for the next cell, that we are helping to create.
+
+	textlist_rowinfo next_rowinfo;
+
+	//! Compute a new cell's alignments.
+
+	auto compute_alignments() const
+	{
+		std::tuple ret{halign::left, valign::bottom};
+
+		auto c=column_counter % textlist_element.columns;
+
+		// Was this column's alignment specifically requested?
+		auto col_alignment=textlist_element.col_alignments.find(c);
+
+		if (col_alignment != textlist_element.col_alignments.end())
+			std::get<halign>(ret)=col_alignment->second;
+
+		auto row_alignment=textlist_element.row_alignments.find(c);
+
+		if (row_alignment != textlist_element.row_alignments.end())
+			std::get<valign>(ret)=row_alignment->second;
+
+		return ret;
+	}
+
+	//! Helper function for converting a list_item_param.
+
+	//! Processes the next list_item_param. Invokes item_callback if
+	//! it specifies new cell content. Invokes separator_callback for a
+	//! separator.
+	//!
+	//! Otherwise updates next_rowinfo.
+
+	template<typename Item_callback,
+		 typename Separator_callback> void process_list_item_param
+		(const list_item_param &item,
+		 Item_callback &&item_callback,
+		 Separator_callback &&separator_callback)
+	{
+		do_process_list_item_param(item,
+					   make_function
+					   <void (const list_cell &)>
+					   (std::forward<Item_callback>
+					    (item_callback)),
+					   make_function<void ()>
+					   (std::forward<Separator_callback>
+					    (separator_callback)));
+
+	}
+
+	//! Type-erased process_list_item_param().
+	void do_process_list_item_param
+		(const list_item_param::variant_t &,
+		 const function<void (const list_cell &)> &,
+		 const function<void ()> &);
+};
+
+void create_cells_helper::do_process_list_item_param
+(const list_item_param::variant_t &item,
+ const function<void (const list_cell &)>&item_callback,
+ const function<void ()> &separator_callback)
+{
+	std::visit(visitor
+		   {
+			   [&](const shortcut &sc)
+			   {
+				   if (next_rowinfo.listitem_shortcut)
+					   throw EXCEPTION
+						   (_("Cannot specify multiple "
+						      "shorcuts for list items")
+						    );
+
+				   next_rowinfo.listitem_shortcut=sc;
+			   },
+			   [&](const inactive_shortcut &sc)
+			   {
+				   if (next_rowinfo.listitem_shortcut)
+					   throw EXCEPTION
+						   (_("Cannot specify multiple "
+						      "shorcuts for list items")
+						    );
+
+				   next_rowinfo.listitem_shortcut=sc;
+				   next_rowinfo.inactive_shortcut=true;
+			   },
+			   [&](const list_item_status_change_callback &cb)
+			   {
+				   if (next_rowinfo.listitem_callback)
+					   throw EXCEPTION
+						   (_("Cannot specify multiple "
+						      "callbacks for list "
+						      "items"));
+				   next_rowinfo.listitem_callback=cb;
+			   },
+			   [&](const hierindent &i)
+			   {
+				   next_rowinfo.indent_level=i.n;
+			   },
+			   [&](const menuoption &mo)
+			   {
+				   next_rowinfo.setting_menu_item();
+				   next_rowinfo.menu_item=menu_item_option{};
+			   },
+			   [&](const submenu &sm)
+			   {
+				   next_rowinfo.setting_menu_item();
+				   const auto &[popup, popup_handler]
+					   =create_menu_popup
+					   (element_impl(&textlist_element),
+					    sm.creator,
+					    sm.appearance,
+					    submenu_popup);
+
+				   next_rowinfo.menu_item=menu_item_submenu{
+					   popup,
+					   popup_handler
+				   };
+			   },
+			   [&](const text_param &s)
+			   {
+				   const auto & [halignment, valignment]=
+					   compute_alignments();
+				   auto rts=textlist_element
+					   .create_richtextstring
+					   (textlist_element.itemlabel_meta, s);
+
+				   auto t=list_celltext
+					   ::create(textlist_element,
+						    rts, halignment,
+						    valignment, 0);
+
+				   item_callback(t);
+			   },
+			   [&](const image_param &s)
+			   {
+				   const auto & [halignment, valignment]=
+					   compute_alignments();
+
+				   auto i=textlist_element
+					   .get_window_handler()
+					   .create_icon({s});
+
+				   auto t=list_cell
+					   (list_cellimage::create
+					    (std::vector<icon>{i},
+					     halignment, valignment));
+				   item_callback(t);
+			   },
+			   [&](const separator &)
+			   {
+				   separator_callback();
+			   },
+			   [&](const new_items &)
+			   {
+			   }
+		   }, item);
+}
+
+#if 0
+{
+#endif
+}
+
 void
 listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 				   const ref<listlayoutmanagerObj::implObj>
@@ -162,53 +342,33 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 			      * textlist_element.columns);
 	info.rowmeta.reserve(n_real_elements / real_columns);
 
-	size_t c=0;
-
-	textlist_rowinfo next_rowinfo;
 	bool havemeta=false;
+
+	create_cells_helper helper{*this, textlist_element};
 
 	for (const auto &s:t)
 	{
 		if (std::holds_alternative<new_items>(s))
 			continue; // Checks that this is kosher here, above.
 
-		halign halignment=halign::left;
-		valign valignment=valign::bottom;
 
-		// Was this column's alignment specifically requested?
-		auto col_alignment=textlist_element
-			.col_alignments.find(c % textlist_element.columns);
 
-		if (col_alignment != textlist_element
-		    .col_alignments.end())
-			halignment=col_alignment->second;
-
-		auto row_alignment=textlist_element
-			.row_alignments.find(c % textlist_element.columns);
-
-		if (row_alignment != textlist_element
-		    .row_alignments.end())
-			valignment=row_alignment->second;
 
 		// Create the cell.
 
 		bool created_cell=false;
 		bool created_separator=false;
 
-		process_list_item_param
+		helper.process_list_item_param
 			(s,
-			 textlist_element,
-			 halignment,
-			 valignment,
-			 next_rowinfo,
 			 [&, this]
 			 (const auto &new_cell)
 			 {
 				 if (std::holds_alternative<menu_item_submenu>
-				     (next_rowinfo.menu_item))
+				     (helper.next_rowinfo.menu_item))
 				 {
-					 if (next_rowinfo.listitem_shortcut ||
-					     next_rowinfo.listitem_callback)
+					 if (helper.next_rowinfo.listitem_shortcut ||
+					     helper.next_rowinfo.listitem_callback)
 						 throw EXCEPTION
 							 (_("Cannot specify "
 							    "shortcuts or "
@@ -217,7 +377,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 				 }
 
 				 bool first_column=
-					 (c % textlist_element.columns) == 0;
+					 (helper.column_counter % textlist_element.columns) == 0;
 
 				 if (first_column)
 				 {
@@ -230,7 +390,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 							 (create_leading_column
 							  (textlist_element,
 							   i));
-						 ++c;
+						 ++helper.column_counter;
 					 }
 				 }
 
@@ -240,7 +400,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 			 [&]
 			 {
 				 bool first_column=
-					 (c % textlist_element.columns) == 0;
+					 (helper.column_counter % textlist_element.columns) == 0;
 
 				 // The preliminary pass that reserved all
 				 // elements should've checked this already.
@@ -271,9 +431,9 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 				 // next_rowinfo should be clean
 				 info.rowmeta.emplace_back
 					 (extra_list_row_info::create(),
-					  next_rowinfo);
+					  helper.next_rowinfo);
 
-				 c += textlist_element.columns;
+				 helper.column_counter += textlist_element.columns;
 				 created_separator=true;
 			 });
 
@@ -282,12 +442,13 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 		if (created_cell)
 		{
-			++c;
+			++helper.column_counter;
 
 			// Processed a column value. If this is the end of
 			// the row, save the metadata.
 
-			if ((c % textlist_element.columns) ==
+			if ((helper.column_counter % textlist_element.columns)
+			    ==
 			    (textlist_element.columns - extra_trailing))
 			{
 				// Last column. Add trailing cells.
@@ -297,17 +458,18 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 					info.newcells.push_back
 						(create_trailing_column
 						 (textlist_element, i,
-						  next_rowinfo));
-					++c;
+						  helper.next_rowinfo));
+					++helper.column_counter;
 				}
 			}
 
-			if ((c % textlist_element.columns) == 0)
+			if ((helper.column_counter % textlist_element.columns)
+			    == 0)
 			{
 				info.rowmeta.emplace_back
 					(extra_list_row_info::create(),
-					 next_rowinfo);
-				next_rowinfo={};
+					 helper.next_rowinfo);
+				helper.next_rowinfo={};
 				havemeta=false;
 			}
 		}
@@ -315,7 +477,8 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 		{
 			// Metadata must be specified only at the beginning
 			// of the row.
-			if ((c % textlist_element.columns) != 0)
+			if ((helper.column_counter % textlist_element.columns)
+			    != 0)
 				throw EXCEPTION(_("Row metadata must be "
 						  "specified before the "
 						  "row data."));
@@ -346,106 +509,6 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 						   (meta)));
 		}
 	}
-}
-
-void listlayoutstyle_impl::do_process_list_item_param
-(const list_item_param::variant_t &item,
- list_elementObj::implObj &textlist_element,
- halign halignment,
- valign valignment,
- textlist_rowinfo &next_rowinfo,
- const function<void (const list_cell &)>&item_callback,
- const function<void ()> &separator_callback) const
-{
-	std::visit(visitor
-		   {
-			   [&](const shortcut &sc)
-			   {
-				   if (next_rowinfo.listitem_shortcut)
-					   throw EXCEPTION
-						   (_("Cannot specify multiple "
-						      "shorcuts for list items")
-						    );
-
-				   next_rowinfo.listitem_shortcut=sc;
-			   },
-			   [&](const inactive_shortcut &sc)
-			   {
-				   if (next_rowinfo.listitem_shortcut)
-					   throw EXCEPTION
-						   (_("Cannot specify multiple "
-						      "shorcuts for list items")
-						    );
-
-				   next_rowinfo.listitem_shortcut=sc;
-				   next_rowinfo.inactive_shortcut=true;
-			   },
-			   [&](const list_item_status_change_callback &cb)
-			   {
-				   if (next_rowinfo.listitem_callback)
-					   throw EXCEPTION
-						   (_("Cannot specify multiple "
-						      "callbacks for list "
-						      "items"));
-				   next_rowinfo.listitem_callback=cb;
-			   },
-			   [&](const hierindent &i)
-			   {
-				   next_rowinfo.indent_level=i.n;
-			   },
-			   [&](const menuoption &mo)
-			   {
-				   next_rowinfo.setting_menu_item();
-				   next_rowinfo.menu_item=menu_item_option{};
-			   },
-			   [&](const submenu &sm)
-			   {
-				   next_rowinfo.setting_menu_item();
-				   const auto &[popup, popup_handler]
-					   =create_menu_popup
-					   (element_impl(&textlist_element),
-					    sm.creator,
-					    sm.appearance,
-					    submenu_popup);
-
-				   next_rowinfo.menu_item=menu_item_submenu{
-					   popup,
-					   popup_handler
-				   };
-			   },
-			   [&](const text_param &s)
-			   {
-				   auto rts=textlist_element
-					   .create_richtextstring
-					   (textlist_element.itemlabel_meta, s);
-
-				   auto t=list_celltext
-					   ::create(textlist_element,
-						    rts, halignment,
-						    valignment, 0);
-
-				   item_callback(t);
-			   },
-			   [&](const image_param &s)
-			   {
-				   auto i=textlist_element
-					   .get_window_handler()
-					   .create_icon({s});
-
-				   auto t=list_cell
-					   (list_cellimage::create
-					    (std::vector<icon>{i},
-					     halignment, valignment));
-				   item_callback(t);
-			   },
-			   [&](const separator &)
-			   {
-				   separator_callback();
-			   },
-			   [&](const new_items &)
-			   {
-			   }
-		   }, item);
 }
 
 void listlayoutstyle_impl::menu_attribute_requested() const
