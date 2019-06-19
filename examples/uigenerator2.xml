@@ -14,8 +14,13 @@
     <container>
       <name>settings</name>
       <type>book</type>
+      <config>
+	<appearance>my_bookappearance</appearance>
+      </config>
     </container>
   </factory>
+
+  <appearance id="my_bookappearance" type="book" />
 
   <layout id="settings" type="book">
     <append_pages>

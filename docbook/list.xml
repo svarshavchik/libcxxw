@@ -421,7 +421,7 @@ llmanager->append_items(
       <listitem>
 	<para>
 	  Other <classname>&ns;::w::list_item_param</classname> values
-	  set additional properties related to the new list item. The all
+	  set additional properties related to the new list item. They all
 	  appear before the list item's basic value. For example,
 	  <link linkend="menu">menu list items</link> have an optional
 	  keyboard shortcut.

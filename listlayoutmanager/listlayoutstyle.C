@@ -103,6 +103,13 @@ struct create_cells_helper {
 	//! Precomputed value
 	const size_t extra=extra_leading+extra_trailing;
 
+	//! Non-separator rowinfos.
+
+	//! If we are asked to get_new_items, only non-separator rows will
+	//! have their rowinfos added here.
+
+	std::vector<extra_list_row_info> nonseparator_rows;
+
 	//! Internal flag
 	bool havemeta=false;
 
@@ -361,6 +368,7 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 		{
 			auto new_extra_list=extra_list_row_info::create();
 
+			nonseparator_rows.push_back(new_extra_list);
 			info.rowmeta.emplace_back(new_extra_list,
 						  next_rowinfo);
 			next_rowinfo={};
@@ -398,6 +406,8 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 	create_cells_helper helper{*this, textlist_element, info};
 
 	size_t n_real_elements=0;
+
+	size_t n_separators=0;
 
 	if (textlist_element.columns <= helper.extra)
 		throw EXCEPTION("Internal error: attempting to initialize a list with too few columns");
@@ -438,6 +448,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 					if (n_real_elements % real_columns)
 						throw EXCEPTION("list separator must be specified by itself");
 					n_real_elements += real_columns;
+					++n_separators;
 				},
 				[&](const text_param &)
 				{
@@ -467,6 +478,10 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 			      * textlist_element.columns);
 	info.rowmeta.reserve(n_real_elements / real_columns);
 
+
+	helper.nonseparator_rows.reserve(n_real_elements / real_columns
+					 - n_separators);
+
 	for (const auto &s:t)
 	{
 		if (std::holds_alternative<get_new_items>(s))
@@ -489,14 +504,13 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 	{
 		auto &handles=info.ret.handles;
 
-		handles.reserve(info.rowmeta.size());
 
-		for (const auto &meta:info.rowmeta)
+		handles.reserve(helper.nonseparator_rows.size());
+
+		for (const auto &meta:helper.nonseparator_rows)
 		{
 			handles.push_back(ref<listitemhandleObj::implObj>
-					  ::create(lilm,
-						   std::get<extra_list_row_info>
-						   (meta)));
+					  ::create(lilm, meta));
 		}
 	}
 }
@@ -726,6 +740,18 @@ bulleted_listlayoutstyle_impl bulleted_style_instance;
 }
 
 const listlayoutstyle_impl &bulleted_list=bulleted_style_instance;
+
+const listlayoutstyle_impl &list_style_by_name(const std::string_view &n)
+{
+	if (n == "highlight")
+		return highlighted_list;
+
+	if (n == "bullet")
+		return bulleted_list;
+
+	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a known list style"),
+				   n));
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //

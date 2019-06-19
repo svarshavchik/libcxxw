@@ -351,6 +351,8 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
 	<programlisting><![CDATA[
 <dim id="border-size">2.0</dim>
 
+<dim id="unlimited">inf</dim>
+
 <color id="left-border-color">
   <r>1</r>
   <g>.5</g>
@@ -375,6 +377,9 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
       This is the same as setting a
       <ulink url="&link-typedef-x--w-dim-arg;"><classname>&ns;::w::dim_arg</classname></ulink>
       from the given value.
+      A special value of <quote>inf</quote> evaluates to a
+      <literal>NAN</literal>, and used in contexts of specifying an unlimited
+      maximum widget size.
     </para>
 
     <para>
@@ -900,6 +905,46 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
     </para>
   </section>
 
+
+  <section id="uixmldimaxisarg">
+    <title>Specifying <classname>&ns;::w::dim_axis_arg</classname>
+      values</title>
+
+    <para>
+      A <ulink url="link-x--w--dim-axis-arg;"><classname>&ns;::w::dim_axis_arg</classname></ulink>
+      value is specified as three discrete
+      <tag class='element'>dim</tag> elements:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<height>
+  <min>list-min</min>
+  <preferred>list-preferred</preferred>
+  <max>list-max</max>
+</height>
+
+<!-- ..... -->
+
+<dim id="list-min">10</dim>
+<dim id="list-preferred">100</dim>
+<dim id="list-max">inf</dim>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Individual <tag class='element'>min</tag>,
+      <tag class='element'>preferred</tag>, and
+      <tag class='element'>max</tag> values set the minimum, preferred,
+      and maximum values of a
+      <classname>&ns;::w::dim_axis_arg</classname> by specifying
+      <tag class='attribute'>id</tag>s of other
+      <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>
+      elements in the theme file.
+    </para>
+  </section>
+
   <section id="uixmlfonts">
     <title><tag class='element'>font</tag>s</title>
 
@@ -1083,7 +1128,7 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
       <blockquote>
 	<informalexample>
 	  <programlisting><![CDATA[
-<label type='theme_text'>${context:file-dialog}Directory:</name>]]></programlisting>
+<label type='theme_text'>${context:file-dialog}Directory:</label>]]></programlisting>
 	</informalexample>
       </blockquote>
 
@@ -1208,7 +1253,7 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
       <blockquote>
 	<informalexample>
 	  <programlisting><![CDATA[
-<shortcut type='theme_text'>${context:settings-dialog}Alt-G</shortcut></programlisting>]]>
+<shortcut type='theme_text'>${context:settings-dialog}Alt-G</shortcut>	]]>
           </programlisting>
         </informalexample>
       </blockquote>
@@ -1246,6 +1291,195 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 	<quote>Left</quote> or <quote>Del</quote>).
       </para>
     </section>
+
+    <section id="uixmllistitemvalue">
+      <title><ulink url="&link-x--w--list-item-param;"><classname>&ns;::w::list_item_param</classname></ulink> values</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+   <items>
+
+      <name>option_1</name>
+      <shortcut>Alt-1</shortcut>
+      <label type="theme_text">Option1</label>
+
+      <separator />
+
+      <name>option_2</name>
+      <shortcut>Alt-2</shortcut>
+      <label type="theme_text">Option1</label>
+
+   </items>]]>
+          </programlisting>
+        </informalexample>
+      </blockquote>
+
+      <para>
+	<link linkend="listlayoutmanager">List layout manager</link>'s methods
+	that add new items to the selection list take a vector
+	of <ulink url="&link-x--w--list-item-param;"><classname>&ns;::w::list_item_param</classname></ulink>
+	values.
+	These various variant values get specified as follows:
+      </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term>
+	    <tag class='element'>label</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      A selection list text value, specified as a
+	      &text_paramvalue;.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='element'>image</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Specifies a <link linkend="imageparam">selection list image
+		icon</link> value.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='emptytag'>separator</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Inserts a <link linkend="listseparators">list separator</link>,
+	      a <classname>&ns;::w::separator</classname> value in the
+	      <classname>&ns;::w::list_item_param</classname>vector.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='element'>shortcut</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Specifies a &keyboard_shortcutvalue;.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='element'>inactive_shortcut</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      An <link linkend="menuattributes">inactive keyboard
+		shortcut</link>
+	      value.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='element'>hierindent</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Specifies an identation level of this list item in a
+	      <link linkend="hierlist">hierarchical list</link>:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<hierindent>1</hierindent>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='element'>name</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Specifies an <link linkend="uixmllistitemvaluename">identifier
+		for the following list item</link>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+
+      <para>
+	All
+	<ulink url="&link-x--w--list-item-param;"><classname>&ns;::w::list_item_param</classname></ulink>
+	values must follow the same relative ordering rules as
+	<link linkend="listitemmethods">actual
+	  <classname>&ns;::w::list_item_param</classname> values</link>,
+	specifically: all attributes of a list item (such as its
+	keyboard shortcut or its hierarchy indentation value)
+	must precede their
+	<tag class='element'>label</tag> or the
+	<tag class='element'>image</tag> list item value.
+	This includes the
+	<link linkend="uixmllistitemvaluename"><tag class='element'>name</tag>
+	  identifier</link>.
+	All attributes must precede the first
+	<tag class='element'>label</tag> or the
+	<tag class='element'>image</tag> list item value in a multi-column
+	list.
+      </para>
+
+      <section id="uixmllistitemvaluename">
+	<title>List item
+	  <tag class='element'>name</tag>s</title>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+   <items>
+
+      <name>option_1</name>
+      <shortcut>Alt-1</shortcut>
+      <label type="theme_text">Option1</label>
+
+      <separator />
+
+      <name>option_2</name>
+      <shortcut>Alt-2</shortcut>
+      <label type="theme_text">Option1</label>
+
+   </items>
+]]>
+
+&ns;::w::uielements elements;
+
+layout->generate("main-window-grid",
+                 generator, elements);
+
+&ns;::w::listitemhandle h=elements.get_listitemhandle("option_1");</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  A
+	  <tag class='element'>name</tag> element in a &listitemparamvalueslist;
+	  is not an actual <classname>&ns;::w::list_item_param</classname>
+	  value. This element assigns an identifer to the following list
+	  item. After generating the contents of a selection list,
+	  After the widgets get generated,
+	  <methodname>get_element</methodname>() retrieves a
+	  <ulink url="&link-typedef-x--w-listitemhandle;"><classname>&ns;::w::listitemhandle</classname></ulink>
+	  for the new list item specified by its name.
+	</para>
+
+	<para>
+	  <tag class='element'>name</tag> element values are optional, but
+	  if specified every item in a &listitemparamvalueslist; must have
+	  a <tag class='element'>name</tag>.
+	</para>
+      </section>
+    </section>
   </section>
 
   <section id="uixmllayoutgrid">
@@ -1276,7 +1510,13 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
     <side>left</side>
     <padding>extra-padding</padding>
   </padding>
-</layout>]]>
+</layout>
+
+   <!-- in some factory... -->
+   <container>
+     <name>main-window-grid</name>
+     <type>grid</type>
+   </container>]]>
 
 &ns;::w::gridlayoutmanager glm=container->get_layoutmanager();
 
@@ -1291,6 +1531,25 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
       specify the methods invoked by <link linkend="gridlayoutmanager">grid
 	layout manager</link>'s <methodname>generate</methodname>().
     </para>
+
+    <section id="uixmllayoutgridcreatecontainer">
+      <title>Creating
+	<tag class='attribute'>type</tag>=<quote>grid</quote>
+	<tag class='element'>layout</tag>s</title>
+
+      <para>
+	A <tag class='element'>container</tag> with a
+	<tag class='attribute'>type</tag>=<quote>grid</quote>
+	creates a container that uses the
+	<link linkend="gridlayoutmanager">grid layout manager</link>.
+      </para>
+    </section>
+  </section>
+  <section id="uixmlgridlayoutelements">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>grid</quote>
+      <tag class='element'>layout</tag>
+      elements</title>
 
     <section id="uixmllayoutgridbackgroundcolor">
       <title><tag class='element'>background_color</tag></title>
@@ -1939,7 +2198,17 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
 
 <!-- ... -->
 
-</layout>]]>
+</layout>
+
+   <!-- in some factory... -->
+
+<container>
+   <name>application-settings</name>
+   <type>book</type>
+   <config>
+      <appearance>application-settings-appearance</appearance>
+   </config>
+</container>]]>
 
 &ns;::w::booklayoutmanager glm=container->get_layoutmanager();
 
@@ -1955,6 +2224,42 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	layout manager</link>'s <methodname>generate</methodname>().
     </para>
 
+    <section id="uixmllayoutbookcreatecontainer">
+      <title>Creating
+	<tag class='attribute'>type</tag>=<quote>book</quote>
+	<tag class='element'>layout</tag>s</title>
+
+      <para>
+	A <tag class='element'>container</tag> with a
+	<tag class='attribute'>type</tag>=<quote>book</quote>
+	creates a container that uses the
+	<link linkend="booklayoutmanager">book layout manager</link>.
+	An optional
+	<tag class='element'>config</tag> element sets non-default values
+	of the
+	<ulink url="&link-x--w--new-booklayoutmanager;"><classname>&ns;::w::new_booklayoutmanager</classname></ulink>
+	that creates the container:
+      </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term><tag class='element'>appearance</tag></term>
+	  <listitem>
+	    <para>
+	      Sets the book layout manager's
+	      <link linkend="uixmlappearance"><varname>appearance</varname></link>
+	      object.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+  </section>
+  <section id="uixmlbooklayoutelements">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>book</quote>
+      <tag class='element'>layout</tag>
+      elements</title>
 
     <section id="uixmllayoutbookappendinsertpages">
       <title><tag class='element'>append_pages</tag>
@@ -2228,6 +2533,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
       </container>
     </page>
   </add>
+</factory>
 
 <layout type="grid" id="general-settings">
 
@@ -2258,6 +2564,411 @@ glm->generate("application-settings", generator, elements);</programlisting>
       <para>
 	An optional <tag class='element'>shortcut</tag>
 	element contains the page's &keyboard_shortcutvalue;.
+      </para>
+    </section>
+  </section>
+
+  <section id="uixmllayoutlist">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>list</quote>
+      <tag class='element'>layout</tag>s
+    </title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="list" id="option-list">
+  <append_items>
+
+    <!-- ... -->
+
+  </append_items>
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The contents of a
+      <tag class='element'>layout</tag>s with
+      <tag class='attribute'>type</tag>=<quote>list</quote>
+      specify the <link linkend="listlayoutmanager">list
+	layout manager</link> methods that get invoked to
+      <methodname>generate</methodname>() its contents.
+    </para>
+
+    <section id="uixmllayoutlistcreatecontainer">
+      <title>Creating
+	<tag class='attribute'>type</tag>=<quote>list</quote>
+	<tag class='element'>layout</tag>s</title>
+
+      <para>
+	A <tag class='element'>container</tag> with a
+	<tag class='attribute'>type</tag>=<quote>list</quote>
+	creates a container that uses the
+	<link linkend="listlayoutmanager">list layout manager</link>.
+      </para>
+
+      <para>
+	<filename>uigenerator5.C</filename> is an example of creating
+	a list container using a theme file:
+      </para>
+
+      <blockquote>
+	<title><ulink url="examples/uigenerator5.C">uigenerator5.C</ulink></title>
+
+	<informalexample>
+	  <programlisting><xi:include href="../examples/uigenerator5.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <blockquote>
+	<title><ulink url="examples/uigenerator5.xml">uigenerator5.xml</ulink></title>
+
+	<informalexample>
+	  <programlisting><xi:include href="../examples/uigenerator5.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+	</informalexample>
+      </blockquote>
+    </section>
+
+    <section id="uixmllayoutnewlistlayoutmanager">
+      <title>Iniitalizing the values of a
+	<classname>&ns;::w::new_listlayoutmanager</classname></title>
+
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<container>
+   <name>option-list</name>
+   <type>list</type>
+   <config>
+     <height>
+       <min_rows>4</min_rows>
+       <max_rows>4</max_rows>
+     </height>
+   </config>
+</container>]]>
+
+&ns;::w::listlayoutmanager glm=container->get_layoutmanager();
+
+glm->generate("option-list", generator, elements);</programlisting>
+	</informalexample>
+      </blockquote>
+
+
+      <para>
+	An optional
+	<tag class='element'>config</tag> element sets non-default values
+	of the
+	<ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>
+	that creates the container:
+      </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term><tag class='element'>selection_type</tag></term>
+	  <listitem>
+	    <para>
+	      Sets the
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      <varname>selection_type</varname>:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <selection_type>multiple</selection_type>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      The value of a <tag class='element'>selection_type</tag>
+	      is one of:
+	      <quote>single</quote>,
+	      <quote>single_optional</quote>,
+	      <quote>multiple</quote>, or
+	      <quote>node</quote>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>height</tag></term>
+	  <listitem>
+	    <para>
+	      This element invokes one of
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      overloaded
+	      <methodname>height</methodname>() methods:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <height>
+    <min_rows>4</min_rows>
+    <max_rows>4</max_rows>
+  </height>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      Specifies the list height in the range of a minimum and
+	      maximum number of rows, calculated using the default list font's
+	      height.
+	    </para>
+
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <height>
+    <variable />
+  </height>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      Invokes <methodname>variable_height</methodname>() method.
+	    </para>
+
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <height>
+    <min>list-min</min>
+    <preferred>list-preferred</preferred>
+    <max>list-max</max>
+  </height>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      A <tag class='element'>height</tag> element with an
+	      &dimaxisargvalue;
+	      invokes <methodname>height</methodname>() with this
+	      explicit value.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>width</tag></term>
+	  <listitem>
+	    <para>
+	      Invokes one of
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      methods that specifies the list's width:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <width>
+    <default />
+  </width>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      This invokes the <methodname>default_width</methodname>()
+	      method.
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <width>
+    <variable />
+  </width>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	    <para>
+	      This invokes the <methodname>variable_width</methodname>()
+	      method.
+	    </para>
+
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <width>
+    <min>list-width-min</min>
+    <preferred>list-width-preferred</preferred>
+    <max>list-width-max</max>
+  </width>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      A <tag class='element'>width</tag> element with an
+	      &dimaxisargvalue;
+	      invokes <methodname>width</methodname>() with this
+	      explicit value.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>columns</tag></term>
+	  <listitem>
+	    <para>
+	      Sets the
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      <varname>columns</varname> value:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <columns>2</columns>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      This set <varname>columns</varname> to <literal>2</literal>,
+	      creating a list with two columns.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>requested_col_width</tag></term>
+	  <listitem>
+	    <para>
+	      Initializes
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      <varname>requested_col_widths</varname> map:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <requested_col_width>
+    <column>0</column>
+    <percentage>25</percentage>
+  </requested_col_width>
+  <requested_col_width>
+    <column>1</column>
+    <percentage>75</percentage>
+  </requested_col_width>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      Each <tag class='element'>requested_col_width</tag>
+	      contains a <tag class='element'>column</tag> number and
+	      a <tag class='element'>percentage</tag> value from 0 to
+	      100.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>col_alignment</tag></term>
+	  <listitem>
+	    <para>
+	      Initializes
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      <varname>col_alignments</varname> map:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <col_alignment>
+    <column>0</column>
+    <halign>right</halign>
+  </col_alignment>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      Each <tag class='element'>col_alignment</tag>
+	      contains a <tag class='element'>column</tag> number and
+	      an <tag class='element'>halign</tag>
+	      &halignvalue;.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>row_alignment</tag></term>
+	  <listitem>
+	    <para>
+	      Initializes
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      <varname>row_alignments</varname> map:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <row_alignment>
+    <column>0</column>
+    <valign>middle</valign>
+  </row_alignment>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      Each <tag class='element'>col_alignment</tag>
+	      contains a <tag class='element'>column</tag> number and
+	      an <tag class='element'>valign</tag>
+	      &valignvalue;.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+  </section>
+  <section id="uixmllistlayoutelements">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>list</quote>
+      <tag class='element'>layout</tag>
+      elements</title>
+
+    <section id="uixmllayoutlistnewitems">
+      <title><tag class='element'>append_items</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<layout type="list" id="option-list">
+
+<!-- ... -->
+
+    <append_items>
+      <items>
+         <label>Option 1</label>
+         <label>Option 2</label>
+      </items>
+    </append_items>
+
+<!-- ... -->
+
+</layout>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>append_items</tag>
+	invokes the list layout manager's
+	<methodname>append_items</methodname>()
+	method to add new items to the list.
+	These methods have a
+	<tag class='element'>items</tag> element that contains
+	a &listitemparamvalueslist; that specifies the new list items.
       </para>
     </section>
   </section>
@@ -2507,6 +3218,12 @@ layout_manager->generate("dialog", generators, elements);
       and then <methodname>generate</methodname>()ing its contents
       from the layout specified by the
       <tag class='element'>name</tag> value.
+    </para>
+
+    <para>
+      A <tag class='element'>container</tag> element also has other
+      optional values that depend on its <tag class='attribute'>type</tag>
+      that initialize the container.
     </para>
   </section>
 

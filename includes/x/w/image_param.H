@@ -7,6 +7,7 @@
 #define x_w_image_param_H
 
 #include <string>
+#include <utility>
 #include <x/w/image_paramfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -28,6 +29,18 @@ LIBCXXW_NAMESPACE_START
 struct image_param : public std::string {
 
 	using std::string::string;
+
+	//! Constructor
+	inline image_param(const std::string &s)
+		: std::string{s}
+	{
+	}
+
+	//! Constructor
+	inline image_param(std::string &&s)
+		: std::string{std::move(s)}
+	{
+	}
 };
 
 //! "foo"_image specifies an image icon to be used in a list.

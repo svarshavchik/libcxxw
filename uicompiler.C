@@ -13,6 +13,7 @@
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/synchronized_axis.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
 #include "x/w/shortcut.H"
@@ -134,32 +135,52 @@ struct uicompiler::gridlayoutmanager_functions {
 	};
 };
 
-// list layout manager functionality.
+// Parse generators for the contents of a new_listlayoutmanager
+
+static const_vector<new_listlayoutmanager_generator>
+create_newlistlayoutmanager_vector(uicompiler &compiler,
+				   const theme_parser_lock &orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	auto xpath=lock->get_xpath("config");
+
+	if (xpath->count() == 0) // None, return an empty vector.
+		return const_vector<new_listlayoutmanager_generator>::create();
+
+	xpath->to_node();
+
+	return compiler.new_listlayout_parseconfig(lock);
+}
 
 struct uicompiler::listlayoutmanager_functions {
-
-	class new_listlayoutmanagerObj : virtual public obj,
-					 public new_listlayoutmanager {
-
-	public:
-		using new_listlayoutmanager::new_listlayoutmanager;
-	};
-
-	typedef const_ref<new_listlayoutmanagerObj> const_new_listlayoutmanager;
 
 	// A vector of compiled grid layout manager generators
 
 	struct generators {
 
-		const_new_listlayoutmanager nllm;
+		const listlayoutstyle_impl &style;
 
+		// Generators for the contents of the new_listlayoutmanager
+
+		const_vector<new_listlayoutmanager_generator
+			     > new_listlayoutmanager_vector;
+
+		// Generators for the contents of the list layout manager.
 		const_vector<listlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: nllm{const_new_listlayoutmanager::create
-			       (highlighted_list)},
+			: style{single_value_exists(lock, "style")
+				? list_style_by_name(lowercase_single_value
+						     (lock, "style",
+						      "container"))
+				: highlighted_list},
+			  new_listlayoutmanager_vector
+			{
+			 create_newlistlayoutmanager_vector(compiler, lock)
+			},
 			  generator_vector{compiler
 					   .lookup_listlayoutmanager_generators
 					   (lock, name)}
@@ -170,18 +191,29 @@ struct uicompiler::listlayoutmanager_functions {
 						     uielements &factories)
 			const
 		{
+		        auto nlm=new_layoutmanager();
+
+			// Generate the contents of the new_listlayoutmanager.
+
+			for (const auto &g:*new_listlayoutmanager_vector)
+			{
+				g(&nlm, factories);
+			}
+
 			return f->create_focusable_container
 				([&, this]
 				 (const auto &container)
 				 {
 					 generate(container, factories);
 				 },
-				 *nllm);
+				 nlm);
 		}
 
-		inline const new_listlayoutmanager &new_layoutmanager() const
+		inline new_listlayoutmanager new_layoutmanager() const
 		{
-			return *nllm;
+			new_listlayoutmanager nlm{style};
+
+			return nlm;
 		}
 
 		void generate(const container &c,
@@ -198,6 +230,23 @@ struct uicompiler::listlayoutmanager_functions {
 };
 
 // Book layout manager functionality
+// Parse generators for the contents of a new_listlayoutmanager
+
+static const_vector<new_booklayoutmanager_generator>
+create_newbooklayoutmanager_vector(uicompiler &compiler,
+				   const theme_parser_lock &orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	auto xpath=lock->get_xpath("config");
+
+	if (xpath->count() == 0) // None, return an empty vector.
+		return const_vector<new_booklayoutmanager_generator>::create();
+
+	xpath->to_node();
+
+	return compiler.new_booklayout_parseconfig(lock);
+}
 
 struct uicompiler::booklayoutmanager_functions {
 
@@ -205,12 +254,21 @@ struct uicompiler::booklayoutmanager_functions {
 
 	struct generators {
 
+		// Generators for the contents of the new_booklayoutmanager
+
+		const_vector<new_booklayoutmanager_generator
+			     > new_booklayoutmanager_vector;
+
 		const_vector<booklayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generator_vector{compiler
+			: new_booklayoutmanager_vector
+			{
+			 create_newbooklayoutmanager_vector(compiler, lock)
+			},
+			  generator_vector{compiler
 					   .lookup_booklayoutmanager_generators
 					   (lock, name)}
 		{
@@ -220,13 +278,22 @@ struct uicompiler::booklayoutmanager_functions {
 						     uielements &factories)
 			const
 		{
+		        auto nblm=new_layoutmanager();
+
+			// Generate the contents of the new_listlayoutmanager.
+
+			for (const auto &g:*new_booklayoutmanager_vector)
+			{
+				g(&nblm, factories);
+			}
+
 			return f->create_focusable_container
 				([&, this]
 				 (const auto &container)
 				 {
 					 generate(container, factories);
 				 },
-				 new_booklayoutmanager{});
+				 nblm);
 		}
 
 		inline new_booklayoutmanager new_layoutmanager() const

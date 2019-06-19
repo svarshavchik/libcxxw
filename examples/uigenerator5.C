@@ -10,11 +10,12 @@
 #include <x/pidinfo.H>
 #include <x/config.H>
 #include <x/w/main_window.H>
-#include <x/w/gridlayoutmanager.H>
-#include <x/w/label.H>
+#include <x/w/listlayoutmanager.H>
+#include <x/w/listitemhandle.H>
 #include <x/w/uielements.H>
 #include <x/w/uigenerators.H>
 #include <x/w/screen_positions.H>
+#include <x/w/callback_trigger.H>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -27,27 +28,49 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	std::string me=x::exename(); // My path.
 	size_t p=me.rfind('/');
 
-	// Load "uigenerator4.xml" from the same directory as me
+	// Load "uigenerator5.xml" from the same directory as me
 
 	x::w::const_uigenerators generator=
 		x::w::const_uigenerators::create(me.substr(0, ++p) +
-						 "uigenerator4.xml", pos);
+						 "uigenerator5.xml", pos);
 
 	x::w::uielements element_factory;
 	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
 
 	layout->generate("main-window-grid",
 			 generator, element_factory);
+
+	x::w::listitemhandle h=element_factory.get_listitemhandle("option_1");
+
+	h->on_status_update
+		([]
+		 (ONLY IN_THREAD,
+		  const x::w::list_item_status_info_t &i)
+		 {
+			 if (i.selected)
+				 std::cout << "Option 1" << std::endl;
+		 });
+
+	h=element_factory.get_listitemhandle("option_2");
+
+	h->on_status_update
+		([]
+		 (ONLY IN_THREAD,
+		  const x::w::list_item_status_info_t &i)
+		 {
+			 if (i.selected)
+				 std::cout << "Option 2" << std::endl;
+		 });
 }
 
-void uigenerator4()
+void uigenerator5()
 {
 	x::destroy_callback::base::guard guard;
 
 	// Configuration filename where we save the window's position.
 
 	std::string configfile=
-		x::configdir("uigenerator4@examples.w.libcxx.com")
+		x::configdir("uigenerator5@examples.w.libcxx.com")
 		+ "/windows";
 
 	x::w::main_window_config config;
@@ -68,10 +91,10 @@ void uigenerator4()
 
 			 x::w::new_gridlayoutmanager{});
 
-	main_window->set_window_title("Custom checkbox");
+	main_window->set_window_title("List");
 
 	main_window->set_window_class("main",
-				      "uigenerator4@examples.w.libcxx.com");
+				      "uigenerator5@examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 
@@ -99,7 +122,7 @@ void uigenerator4()
 int main(int argc, char **argv)
 {
 	try {
-		uigenerator4();
+		uigenerator5();
 	} catch (const x::exception &e)
 	{
 		e->caught();

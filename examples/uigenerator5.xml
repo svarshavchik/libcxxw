@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<theme version="1"
+       xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <layout id="main-window-grid" type="grid">
+    <append_row>
+      <name>main-window-contents</name>
+    </append_row>
+  </layout>
+
+  <factory id="main-window-contents" type="grid">
+    <container>
+      <type>list</type>
+      <name>main-window-list</name>
+      <config>
+	<selection_type>single_optional</selection_type>
+	<columns>2</columns>
+	<height>
+	  <variable />
+	</height>
+
+	<row_alignment>
+	  <column>0</column>
+	  <valign>middle</valign>
+	</row_alignment>
+      </config>
+    </container>
+  </factory>
+
+  <layout id="main-window-list" type="list">
+    <append_items>
+      <items>
+	<name>header</name>
+	<label> </label>
+	<label type="theme_text">-- Options --</label>
+
+	<separator />
+
+	<name>option_1</name>
+	<hierindent>1</hierindent>
+	<shortcut>Alt-1</shortcut>
+	<image>checkbox1</image>
+	<label type="theme_text">This is option #1</label>
+
+	<name>option_2</name>
+	<hierindent>1</hierindent>
+	<shortcut>Alt-2</shortcut>
+	<image>checkbox1</image>
+	<label type="theme_text">This is option #2</label>
+      </items>
+    </append_items>
+  </layout>
+</theme>

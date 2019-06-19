@@ -23,6 +23,7 @@
 #include <type_traits>
 #include <functional>
 #include <vector>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -814,6 +815,9 @@ extern const listlayoutstyle_impl &highlighted_list LIBCXX_PUBLIC;
 
 extern const listlayoutstyle_impl &bulleted_list LIBCXX_PUBLIC;
 
+//! Return a list layout style by name.
+
+const listlayoutstyle_impl &list_style_by_name(const std::string_view &);
 
 //! selection_type callback.
 
@@ -861,7 +865,8 @@ extern const list_selection_type_cb_t multiple_selection_type LIBCXX_PUBLIC;
 //! This results in a list, potentially scrollable, that exists solely
 //! for the virtue of presenting a potentially scrollable list. Clicking
 //! on a list item has no effect. (The individual list item can still be
-//! selected().
+//! visually selected by directly invoking the list layout manager's
+//! selected() method).
 
 extern const list_selection_type_cb_t no_selection_type LIBCXX_PUBLIC;
 

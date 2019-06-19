@@ -233,7 +233,14 @@ If there's a <default_params>, we also append
 
     <xsl:value-of select="type" />
     <xsl:text>(lock, "</xsl:text>
-    <xsl:value-of select="name" />
+    <xsl:choose>
+      <xsl:when test="xpath">
+	<xsl:value-of select="xpath" />
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:value-of select="name" />
+      </xsl:otherwise>
+    </xsl:choose>
     <xsl:text>", "</xsl:text>
     <xsl:value-of select="../name" />
     <xsl:text>"</xsl:text>
@@ -391,6 +398,7 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
 		<xsl:if test="new_element">
 		  <xsl:text>element new_element=</xsl:text>
 		</xsl:if>
+		<xsl:value-of select="before_invocation" />
 		<xsl:if test="object">
 	            <xsl:value-of select="object"/>-&gt;</xsl:if>
 		<xsl:value-of select="invoke" />(<xsl:for-each select="parameter">
@@ -445,7 +453,9 @@ The actual parameter we generate is
 		    </xsl:otherwise>
 		  </xsl:choose>
 		  <xsl:value-of select="after-passing-parameter" />
-		  </xsl:for-each><xsl:text>);&#10;</xsl:text>
+		  </xsl:for-each><xsl:text>)</xsl:text>
+		  <xsl:value-of select="after_invocation" />
+		  <xsl:text>;&#10;</xsl:text>
 		  <xsl:if test="new_element">
 		    <xsl:text>&#10;                compiler_functions::install_tooltip(new_element, optional_tooltip);&#10;                if (!id.empty())
                     elements.new_elements.emplace(id, new_element);&#10;</xsl:text>

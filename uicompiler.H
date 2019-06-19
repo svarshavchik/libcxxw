@@ -157,6 +157,16 @@ public:
 	//! Parser for list layout manager generator.
 	vector<listlayoutmanager_generator
 	       > listlayout_parseconfig(const theme_parser_lock &lock);
+
+	//! Parser for the new book layout manager generator
+
+	vector<new_booklayoutmanager_generator
+	       > new_booklayout_parseconfig(const theme_parser_lock &lock);
+
+	//! Parser for the new list layout manager generator
+
+	vector<new_listlayoutmanager_generator
+	       > new_listlayout_parseconfig(const theme_parser_lock &lock);
 private:
 	//! Implement <element>
 
@@ -187,6 +197,14 @@ private:
 	//! Generate a single book page factory instruction.
 	bookpagefactory_generator
 	bookpagefactory_parser(const theme_parser_lock &lock);
+
+	//! Generate a single new_booklayoutmanager instruction.
+	new_booklayoutmanager_generator
+	new_booklayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single new_listlayoutmanager instruction.
+	new_listlayoutmanager_generator
+	new_listlayout_parser(const theme_parser_lock &lock);
 
 public:
 	//! Return compiled grid factory generators.
@@ -409,7 +427,6 @@ public:
 					 const char *element,
 					 const char *parent);
 
-public:
 	//! Convert a color_arg to a text_color_arg
 
 	static text_color_arg to_text_color_arg(const color_arg &color,
@@ -437,6 +454,23 @@ public:
 	//! Used only by the font picker.
 	font font_value(const theme_parser_lock &lock,
 			const char *element, const char *parent);
+
+
+
+	//! Parsed list_item_params
+
+	struct list_items_params {
+		//! The actual parameters that get passed in
+		vector<list_item_param> params;
+
+		//! Labels for the resulting listitemhandles
+		vector<std::string> labels;
+	};
+
+	//! Parse list_item_params
+	list_items_params list_items_param_value(const theme_parser_lock &lock,
+						 const char *element,
+						 const char *parent);
 
 private:
 	//! Top level appearance objects that aren't compiled yet.

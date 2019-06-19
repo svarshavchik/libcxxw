@@ -6,6 +6,7 @@
 #define x_w_uielements_h
 
 #include <x/w/uielementsfwd.H>
+#include <x/w/listitemhandle.H>
 #include <x/w/factory.H>
 #include <x/w/shortcut.H>
 #include <x/w/container.H>
@@ -107,7 +108,10 @@ struct uielements {
 	//! New radio button groups
 	new_radio_groups_t new_radio_groups;
 
-	//! Return the generated widget.
+	//! New list item handles
+	std::unordered_map<std::string, listitemhandle> new_list_item_handles;
+
+	//! Return a created widget.
 
 	//! An exception gets thrown if the specified widget was not found.
 
@@ -115,6 +119,10 @@ struct uielements {
 
 	//! Return a radio group
 	radio_group get_radio_group(const std::string_view &name) const;
+
+	//! Return a created listitemhandle
+	listitemhandle get_listitemhandle(const std::string_view &name)
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

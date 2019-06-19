@@ -6,6 +6,7 @@
 #define x_w_shortcut_h
 
 #include <string>
+#include <utility>
 #include <x/w/shortcutfwd.H>
 #include <x/w/input_mask.H>
 #include <x/w/key_eventfwd.H>
@@ -112,6 +113,19 @@ class inactive_shortcut : public shortcut {
 
 public:
 	using shortcut::shortcut;
+
+	//! Constructor
+	inline inactive_shortcut(const shortcut &sc)
+		: shortcut{sc}
+	{
+	}
+
+	//! Constructor
+	inline inactive_shortcut(shortcut &&sc)
+		: shortcut{std::move(sc)}
+	{
+	}
+
 };
 
 LIBCXXW_NAMESPACE_END

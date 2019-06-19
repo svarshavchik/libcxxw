@@ -22,12 +22,13 @@ List item handlers are returned when
 \ref get_new_items "INSERT_LIBX_NAMESPACE::w::get_new_items" is requested
 when calling of the list layout manager methods that create new list items.
 
-The handle gives a way of having weak reference to items in the list to
+The handle gives a way of having weak references to items in the list, and
 make it possible to
 conveniently update a particular item in the list, without going through
-the motions of memorizing its list item number, and going through the motions
-of instantiating the layout manager and updating the list item. Only a limited
-number of operations are currently possible:
+the motions of keeping track of its list item number, and going through
+the motions of formally constructing the layout manager object
+and updating the list item. List item handles support the
+following operation on their list item:
 
 \code
 bool enabled=handle->enabled();

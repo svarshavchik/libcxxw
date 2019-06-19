@@ -48,6 +48,7 @@ noinst_PROGRAMS=\
 	uigenerator2				\
 	uigenerator3				\
 	uigenerator4				\
+	uigenerator5				\
 	validatedinput				\
 	wordwraplabel
 
@@ -200,6 +201,10 @@ uigenerator4_SOURCES=uigenerator4.C close_flag.H
 uigenerator4_LDADD=-lcxxw -lcxx
 EXTRA_DIST += uigenerator4.xml
 $(call EXTRACT_THEME_TEXT_GEN,uigenerator4.i18n.C, uigenerator4.xml)
+
+uigenerator5_SOURCES=uigenerator5.C close_flag.H
+uigenerator5_LDADD=-lcxxw -lcxx
+EXTRA_DIST += uigenerator5.xml
 
 validatedinput_SOURCES=validatedinput.C close_flag.H
 validatedinput_LDADD=-lcxxw -lcxx

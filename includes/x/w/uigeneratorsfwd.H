@@ -60,6 +60,29 @@ typedef functionref<void (const booklayoutmanager &, uielements &)
 typedef functionref<void (const bookpagefactory &, uielements &)
 		    > bookpagefactory_generator;
 
+
+//! Pseudo-ref used to initialize a new_booklayoutmanager parameter
+
+typedef new_booklayoutmanager *new_booklayoutmanager_plainptr;
+
+//! Generate something to initialize a new_booklayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_booklayoutmanager_plainptr &layout,
+			  uielements &elements)
+		    > new_booklayoutmanager_generator;
+
+//! Pseudo-ref used to initialize a new_listlayoutmanager parameter
+
+typedef new_listlayoutmanager *new_listlayoutmanager_plainptr;
+
+//! Generate something to initialize a new_listlayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_listlayoutmanager_plainptr &layout,
+			  uielements &elements)
+		    > new_listlayoutmanager_generator;
+
 class LIBCXX_PUBLIC uigeneratorsObj;
 class LIBCXX_PUBLIC uigeneratorsBase;
 
@@ -101,7 +124,7 @@ INSERT_LIBX_NAMESPACE::w::gridlayoutmanager gml=container->get_layoutmanager();
 gml->generate("main", generators, elements);
 \endcode
 
-A \ref gridlayoutmanager "grid layout manager"'s generate() creates the
+A layout manager's generate() creates the
 contents of its container from the loaded theme file and the
 \ref uielements "widget factories".
 

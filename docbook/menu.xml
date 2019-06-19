@@ -281,9 +281,9 @@ m->append_items(
 	      This option exists mainly for the benefit of the
 	      default <link linkend="copycutpastemenu">default
 		Copy/Cut/Paste context menu</link> for text input fields.
-	      The next input field directly implements the keyboard commands
+	      The text input field directly implements the keyboard commands
 	      for copying/cutting/pasting text. The context popup menu
-	      lists the keyboard shortcuts for informative purposes only.
+	      lists the keyboard shortcuts only for informational purposes.
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -371,7 +371,7 @@ m->append_items(
       </para>
 
       <para>
-	This draws a horizontal line to visually separator groups of items in
+	This draws a horizontal line to visually separate groups of items in
 	a menu.
 	Separators typically appear in menus, but separators can also be
 	added to ordinary <link linkend="list">selection list elements</link>

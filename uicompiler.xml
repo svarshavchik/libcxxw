@@ -1914,5 +1914,257 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
+
+
+    <function>
+      <name>append_items</name>
+      <invoke>append_items</invoke>
+      <object>layout</object>
+
+      <before_invocation>process_new_items(</before_invocation>
+      <after_invocation>, items_value, elements)</after_invocation>
+      <parameter>
+	<before-passing-parameter>*</before-passing-parameter>
+	<name>items</name>
+	<after-passing-parameter>.params</after-passing-parameter>
+	<type>compiler.list_items_param_value</type>
+      </parameter>
+    </function>
+  </parser>
+
+  <!-- new_booklayoutmanager initialization -->
+
+  <parser>
+    <name>new_booklayout</name>
+
+    <parameter>
+      <type>new_booklayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>appearance</name>
+      <object>layout</object>
+      <invoke>appearance=</invoke>
+
+      <parameter>
+	<name>appearance</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>lookup_appearance&lt;const_book_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+  </parser>
+
+  <!-- new_listlayoutmanager initialization -->
+
+  <parser>
+    <name>new_listlayout</name>
+
+    <parameter>
+      <type>new_listlayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>selection_type</name>
+      <object>layout</object>
+      <invoke>selection_type=</invoke>
+
+      <parameter>
+	<name>columns</name>
+	<xpath>.</xpath>
+	<type>to_selection_type</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>height</name>
+      <object>layout</object>
+      <invoke>height</invoke>
+      <condition>
+	<exists>min_rows</exists>
+      </condition>
+      <parameter>
+	<name>min_rows</name>
+	<type>to_size_t</type>
+      </parameter>
+      <parameter>
+	<name>max_rows</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>height</name>
+      <object>layout</object>
+      <invoke>variable_height</invoke>
+      <condition>
+	<exists>variable</exists>
+      </condition>
+    </function>
+
+    <function>
+      <name>height</name>
+      <object>layout</object>
+      <invoke>height</invoke>
+
+      <parameter>
+	<name>min</name>
+	<type>single_value</type>
+	<before-passing-parameter>{</before-passing-parameter>
+	<lookup>
+	  <function>generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<name>preferred</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<name>max</name>
+	<type>single_value</type>
+	<after-passing-parameter>}</after-passing-parameter>
+	<lookup>
+	  <function>generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>width</name>
+      <object>layout</object>
+      <invoke>default_width</invoke>
+      <condition>
+	<exists>default</exists>
+      </condition>
+    </function>
+
+    <function>
+      <name>width</name>
+      <object>layout</object>
+      <invoke>variable_width</invoke>
+      <condition>
+	<exists>variable</exists>
+      </condition>
+    </function>
+
+    <function>
+      <name>width</name>
+      <object>layout</object>
+      <invoke>width</invoke>
+
+      <parameter>
+	<name>min</name>
+	<type>single_value</type>
+	<before-passing-parameter>{</before-passing-parameter>
+	<lookup>
+	  <function>generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<name>preferred</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<name>max</name>
+	<type>single_value</type>
+	<after-passing-parameter>}</after-passing-parameter>
+	<lookup>
+	  <function>generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>columns</name>
+      <object>layout</object>
+      <invoke>columns=</invoke>
+
+      <parameter>
+	<name>columns</name>
+	<xpath>.</xpath>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>requested_col_width</name>
+      <object>layout</object>
+      <invoke>requested_col_widths.emplace</invoke>
+
+      <parameter>
+	<name>column</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>percentage</name>
+	<type>to_percentage_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>col_alignment</name>
+      <object>layout</object>
+      <invoke>col_alignments.emplace</invoke>
+
+      <parameter>
+	<name>column</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>halign</name>
+	<type>to_halign</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>row_alignment</name>
+      <object>layout</object>
+      <invoke>row_alignments.emplace</invoke>
+
+      <parameter>
+	<name>column</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>valign</name>
+	<type>to_valign</type>
+      </parameter>
+    </function>
+
   </parser>
 </api>

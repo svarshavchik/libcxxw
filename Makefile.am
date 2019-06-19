@@ -895,6 +895,8 @@ libcxxw_la_SOURCES=\
 	uicompiler_gridfactory.C		    \
 	uicompiler_gridlayout.C			    \
 	uicompiler_listlayout.C			    \
+	uicompiler_new_booklayout.C		    \
+	uicompiler_new_listlayout.C		    \
 	uigenerators.C				    \
 	uielements.C				    \
 	windowobj.C				    \
@@ -1337,6 +1339,8 @@ uicompiler_bookpagefactory.lo   \
 uicompiler_gridfactory.lo       \
 uicompiler_gridlayout.lo        \
 uicompiler_listlayout.lo        \
+uicompiler_new_booklayout.lo    \
+uicompiler_new_listlayout.lo    \
 	: uicompiler.stamp.inc.H
 
 clean-local:

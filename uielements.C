@@ -5,9 +5,11 @@
 #include "libcxxw_config.h"
 #include "x/w/uielements.H"
 #include "x/w/uigenerators.H"
+#include "x/w/listitemhandle.H"
 #include "messages.H"
 #include "gridlayoutmanager.H"
 #include "x/w/booklayoutmanager.H"
+#include "x/w/listlayoutmanager.H"
 #include "x/w/impl/container.H"
 #include "x/w/radio_group.H"
 #include "screen.H"
@@ -89,6 +91,25 @@ void booklayoutmanagerObj::generate(const std::string_view &name,
 								 name.end()});
 
 	if (iter == generators->booklayoutmanager_generators.end())
+	{
+		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
+					   name));
+	}
+
+	auto me=ref{this};
+
+	for (const auto &g:*iter->second)
+		g(me, elements);
+}
+
+void listlayoutmanagerObj::generate(const std::string_view &name,
+				    const const_uigenerators &generators,
+				    uielements &elements)
+{
+	auto iter=generators->listlayoutmanager_generators.find({name.begin(),
+								 name.end()});
+
+	if (iter == generators->listlayoutmanager_generators.end())
 	{
 		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
 					   name));
