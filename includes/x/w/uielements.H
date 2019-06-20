@@ -11,6 +11,7 @@
 #include <x/w/shortcut.H>
 #include <x/w/container.H>
 #include <x/w/radio_groupfwd.H>
+#include <x/w/synchronized_axisfwd.H>
 #include <x/functionalrefptr.H>
 #include <unordered_map>
 #include <string>
@@ -102,11 +103,42 @@ struct uielements {
 		new_radio_groups_t &operator=(new_radio_groups_t &&);
 	};
 
+	//! Container for the generated synchronized axis handles.
+
+	//! Implements default constructors and destructors, avoiding the
+	//! need to pull in the full definition of synchronized_axis objects.
+
+	struct new_synchronized_axis_t :
+		std::unordered_map<std::string, synchronized_axis> {
+
+		//! Constructor
+		new_synchronized_axis_t();
+
+		//! Destructor
+		~new_synchronized_axis_t();
+
+		//! Copy constructor
+		new_synchronized_axis_t(const new_synchronized_axis_t &);
+
+		//! Move constructor
+		new_synchronized_axis_t(new_synchronized_axis_t &&);
+
+		//! Assignment operator
+		new_synchronized_axis_t
+		&operator=(const new_synchronized_axis_t &);
+
+		//! Move operator
+		new_synchronized_axis_t &operator=(new_synchronized_axis_t &&);
+	};
+
 	//! Destructor
 	~uielements();
 
 	//! New radio button groups
 	new_radio_groups_t new_radio_groups;
+
+	//! New synchronized axis objects.
+	new_synchronized_axis_t new_synchronized_axis;
 
 	//! New list item handles
 	std::unordered_map<std::string, listitemhandle> new_list_item_handles;
@@ -119,6 +151,10 @@ struct uielements {
 
 	//! Return a radio group
 	radio_group get_radio_group(const std::string_view &name) const;
+
+	//! Return a synchronized axis
+	synchronized_axis get_synchronized_axis(const std::string_view &name)
+		const;
 
 	//! Return a created listitemhandle
 	listitemhandle get_listitemhandle(const std::string_view &name)

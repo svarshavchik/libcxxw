@@ -2631,7 +2631,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
     </section>
 
     <section id="uixmllayoutnewlistlayoutmanager">
-      <title>Iniitalizing the values of a
+      <title>Initializing the values of a
 	<classname>&ns;::w::new_listlayoutmanager</classname></title>
 
 
@@ -2835,7 +2835,7 @@ glm->generate("option-list", generator, elements);</programlisting>
 	    </blockquote>
 
 	    <para>
-	      This set <varname>columns</varname> to <literal>2</literal>,
+	      This sets <varname>columns</varname> to <literal>2</literal>,
 	      creating a list with two columns.
 	    </para>
 	  </listitem>
@@ -2928,6 +2928,206 @@ glm->generate("option-list", generator, elements);</programlisting>
 	      contains a <tag class='element'>column</tag> number and
 	      an <tag class='element'>valign</tag>
 	      &valignvalue;.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>column_border</tag></term>
+	  <listitem>
+	    <para>
+	      Initializes
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      <varname>column_border</varname> map:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <column_border>
+    <column>1</column>
+    <border>divider</border>
+  </column_border>
+</config>
+
+<!-- ... -->
+
+<border id="divider">
+
+   <!-- ... -->
+
+</border>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      Each <tag class='element'>column_border</tag>
+	      contains a <tag class='element'>column</tag> number and
+	      a
+	      <link linkend="uixmldimcolorborders"><tag class='element'>border</tag>
+	      reference</link>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>minimum_column_width</tag></term>
+	  <listitem>
+	    <para>
+	      Initializes
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      <varname>minimum_column_widths</varname> map:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <minimum_column_width>
+    <column>0</column>
+    <width>10.0</width>
+  </minimum_column_width>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      Each <tag class='element'>minimum_column_width</tag>
+	      contains a <tag class='element'>column</tag> number and
+	      a
+	      <tag class='element'>width</tag> value.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>synchronized_columns</tag></term>
+	  <listitem>
+	    <para>
+	      Initializes
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      <varname>synchronized_columns</varname> object:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <synchronized_columns>table_columns</synchronized_columns>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      All <methodname>generate</methodname>()d selection lists
+	      with the
+	      same <tag class='element'>synchronized_columns</tag> name
+	      have the
+	      <link linkend="panesynclists">same
+		<classname>&ns;::w::synchronized_axis</classname>
+		handle</link>.
+	      The element's name is an opaque label.
+	      <classname>&ns;::w::synchronized_axis</classname> objects
+	      get automatically created, internally, and associated with
+	      their name.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>lr_padding</tag></term>
+	  <listitem>
+	    <para>
+	      Initializes
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      <varname>lr_paddings</varname> map:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <lr_padding>
+      <column>1</column>
+      <left>l-padding</left>
+      <right>r-padding</right>
+  </lr_padding>
+</config>
+
+<!-- ... -->
+
+<dim id="l-padding">0</dim>
+<dim id="r-padding">4</dim>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      Each <tag class='element'>lr_padding</tag>
+	      contains a <tag class='element'>column</tag> number; and
+	      a
+	      <tag class='element'>left</tag> and
+	      <tag class='element'>right</tag> values
+	      that reference
+	      <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>
+	      elements in the theme file.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><tag class='element'>horizontal_scrollbar</tag> and
+	    <tag class='element'>vertical_scrollbar</tag></term>
+	  <listitem>
+	    <para>
+	      These elements
+	      initialize the corresponding
+	      <classname>&ns;::w::new_listlayoutmanager</classname>
+	      members:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <vertical_scrollbar>always</vertical_scrollbar>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      The
+	      <tag class='element'>horizontal_scrollbar</tag> and
+	      <tag class='element'>vertical_scrollbar</tag>
+	      elements contain &scrollbar_visibilityvalue;s.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <tag class='element'>appearance</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Sets the
+	      <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	      <varname>appearance</varname> value:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <appearance>options</appearance>
+</config>
+
+<appearance id="options" type="list">
+
+<!-- ... -->
+
+</appearance>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      The value of the element specifies an
+	      <link linkend="uixmlappearance"><tag class='element'>appearance</tag></link>
+	      object of <tag class='attribute'>type</tag>=<quote>list</quote>.
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -4638,7 +4838,7 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	      </informalexample>
 	    </blockquote>
 	    <para>
-	      These fields contain &scrollbar_visibilityvalue;s.
+	      These elements contain &scrollbar_visibilityvalue;s.
 	    </para>
 	  </listitem>
 	</varlistentry>

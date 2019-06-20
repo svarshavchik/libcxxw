@@ -6,6 +6,7 @@
 #include "uicompiler.H"
 #include "messages.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/synchronized_axis.H"
 #include "x/w/uigenerators.H"
 #include "x/w/uielements.H"
 
@@ -34,6 +35,21 @@ static list_selection_type_cb_t to_selection_type(const theme_parser_lock &lock,
 					   v, parent));
 
 	return no_selection_type;
+}
+
+static synchronized_axis lookup_synchronized_axis(uielements &elements,
+						  const std::string &name)
+{
+	auto iter=elements.new_synchronized_axis.find(name);
+
+	if (iter != elements.new_synchronized_axis.end())
+		return iter->second;
+
+	auto g=synchronized_axis::create();
+
+	elements.new_synchronized_axis.emplace(name, g);
+
+	return g;
 }
 
 #include "uicompiler.inc.H/new_listlayout_parse_parameters.H"

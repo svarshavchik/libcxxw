@@ -317,7 +317,7 @@ public:
 
 	//! \internal
 	focusable_container create(const container_impl &)
-		const override;
+		const override LIBCXX_HIDDEN;
 
 	struct LIBCXX_HIDDEN table_create_info;
 
@@ -335,14 +335,16 @@ public:
 
 	//! \internal
 	virtual void created_list_container(const container_impl &,
-					    table_create_info *) const;
+					    table_create_info *) const
+		LIBCXX_HIDDEN;
 
 	//! Implemented in \ref new_tablelayoutmanager "new_tablelayoutmanager".
 
 	//! \internal
 
 	virtual void create_table_header_row(const gridlayoutmanager &,
-					     table_create_info *) const;
+					     table_create_info *) const
+		LIBCXX_HIDDEN;
 };
 
 //! Lock the list layout manager.

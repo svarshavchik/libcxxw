@@ -1,3 +1,7 @@
+2019-06-19  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Create list containers using the theme file.
+
 2019-06-16  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* listlayoutmanager: replace new_items{} parameter with get_new_items{}

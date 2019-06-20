@@ -2166,5 +2166,124 @@ List of values:
       </parameter>
     </function>
 
+    <function>
+      <name>column_border</name>
+      <object>layout</object>
+      <invoke>column_borders.emplace</invoke>
+
+      <parameter>
+	<name>column</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>border</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>generators-&gt;lookup_border</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>minimum_column_width</name>
+      <object>layout</object>
+      <invoke>minimum_column_widths.emplace</invoke>
+
+      <parameter>
+	<name>column</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>width</name>
+	<type>to_mm</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>synchronized_columns</name>
+      <object>layout</object>
+      <invoke>synchronized_columns=</invoke>
+
+      <parameter>
+	<name>axis</name>
+	<type>single_value</type>
+	<before-passing-parameter>lookup_synchronized_axis(elements, </before-passing-parameter>
+	<after-passing-parameter>)</after-passing-parameter>
+      </parameter>
+    </function>
+
+    <function>
+      <name>lr_padding</name>
+      <object>layout</object>
+      <invoke>lr_paddings.emplace</invoke>
+
+      <parameter>
+	<name>column</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>left</name>
+	<type>single_value</type>
+	<before-passing-parameter>std::tuple{</before-passing-parameter>
+	<lookup>
+	  <function>generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<name>right</name>
+	<type>single_value</type>
+	<after-passing-parameter>}</after-passing-parameter>
+	<lookup>
+	  <function>generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>horizontal_scrollbar</name>
+      <object>layout</object>
+      <invoke>horizontal_scrollbar=</invoke>
+
+      <parameter>
+	<name>visibility</name>
+	<xpath>.</xpath>
+	<type>to_scrollbar_visibility</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>vertical_scrollbar</name>
+      <object>layout</object>
+      <invoke>vertical_scrollbar=</invoke>
+
+      <parameter>
+	<name>visibility</name>
+	<xpath>.</xpath>
+	<type>to_scrollbar_visibility</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>appearance</name>
+      <object>layout</object>
+      <invoke>appearance=</invoke>
+
+      <parameter>
+	<name>appearance</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>lookup_appearance&lt;const_list_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
   </parser>
 </api>
