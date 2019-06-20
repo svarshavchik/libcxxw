@@ -40,7 +40,40 @@ public:
 	const_element current_selection() const;
 
 	//! Install a new selection changed callback.
-	void selection_changed(const custom_combobox_selection_changed_t &);
+	void on_selection_changed(const custom_combobox_selection_changed_t &);
+
+	//! Install a new selection changed callback.
+	void on_selection_changed(ONLY IN_THREAD,
+				  const custom_combobox_selection_changed_t &);
+
+private:
+	//! Throw an exception
+
+	//! List layout manager method not allowed in combo-boxes.
+	void selection_type(const list_selection_type_cb_t &selection_type)
+		override LIBCXX_HIDDEN;
+
+	//! Throw an exception
+
+	//! List layout manager method not allowed in combo-boxes.
+	void selection_type(ONLY IN_THREAD,
+			    const list_selection_type_cb_t &selection_type)
+		override LIBCXX_HIDDEN;
+
+	//! Throw an exception
+
+	//! List layout manager method not allowed in combo-boxes.
+	void on_list_selection_changed(const list_selection_changed_cb_t
+				       &selection_changed)
+		override LIBCXX_HIDDEN;
+
+	//! Throw an exception
+
+	//! List layout manager method not allowed in combo-boxes.
+	void on_list_selection_changed(ONLY IN_THREAD,
+				       const list_selection_changed_cb_t
+				       &selection_changed)
+		override LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

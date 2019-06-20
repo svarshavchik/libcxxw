@@ -1930,6 +1930,99 @@ List of values:
 	<type>compiler.list_items_param_value</type>
       </parameter>
     </function>
+
+    <function>
+      <name>insert_items</name>
+      <invoke>insert_items</invoke>
+      <object>layout</object>
+
+      <before_invocation>process_new_items(</before_invocation>
+      <after_invocation>, items_value, elements)</after_invocation>
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<before-passing-parameter>*</before-passing-parameter>
+	<name>items</name>
+	<after-passing-parameter>.params</after-passing-parameter>
+	<type>compiler.list_items_param_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>replace_items</name>
+      <invoke>replace_items</invoke>
+      <object>layout</object>
+
+      <before_invocation>process_new_items(</before_invocation>
+      <after_invocation>, items_value, elements)</after_invocation>
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<before-passing-parameter>*</before-passing-parameter>
+	<name>items</name>
+	<after-passing-parameter>.params</after-passing-parameter>
+	<type>compiler.list_items_param_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>replace_all_items</name>
+      <invoke>replace_all_items</invoke>
+      <object>layout</object>
+
+      <before_invocation>process_new_items(</before_invocation>
+      <after_invocation>, items_value, elements)</after_invocation>
+      <parameter>
+	<before-passing-parameter>*</before-passing-parameter>
+	<name>items</name>
+	<after-passing-parameter>.params</after-passing-parameter>
+	<type>compiler.list_items_param_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_item</name>
+      <invoke>remove_item</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_items</name>
+      <invoke>remove_items</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>count</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>autoselect</name>
+      <invoke>autoselect</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
   </parser>
 
   <!-- new_booklayoutmanager initialization -->

@@ -1,3 +1,10 @@
+2019-06-20  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* combo-box layout managers: renamed selection_changed() to
+	on_selection_changed() to be consistent with the list layout managers.
+	Disable the inherited selection_type() and on_selection_changed()
+	callbacks that are inherited from the list layout manager.
+
 2019-06-19  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Add list layout manager methods that replace list's initial

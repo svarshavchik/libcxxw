@@ -22,7 +22,7 @@
 #include "x/w/text_param_literals.H"
 #include "busy.H"
 #include "capturefactory.H"
-#include "run_as.H"
+#include "messages.H"
 
 #include <x/weakcapture.H>
 #include <x/visitor.H>
@@ -531,7 +531,7 @@ focusable_container new_custom_comboboxlayoutmanager
 
 	auto collector=lookup_collector::create();
 
-	c->elementObj::impl->THREAD->run_as
+	lm->run_as
 		([=,
 		  selection_required=this->selection_required,
 		  selection_search=this->selection_search]
@@ -605,9 +605,16 @@ focusable_container new_custom_comboboxlayoutmanager
 }
 
 void custom_comboboxlayoutmanagerObj
-::selection_changed(const custom_combobox_selection_changed_t &cb)
+::on_selection_changed(const custom_combobox_selection_changed_t &cb)
 {
 	impl->selection_changed=cb;
+}
+
+void custom_comboboxlayoutmanagerObj
+::on_selection_changed(ONLY IN_THREAD,
+		       const custom_combobox_selection_changed_t &cb)
+{
+	on_selection_changed(cb);
 }
 
 ref<custom_comboboxlayoutmanagerObj::implObj
@@ -616,6 +623,41 @@ ref<custom_comboboxlayoutmanagerObj::implObj
 {
 	return ref<custom_comboboxlayoutmanagerObj::implObj>
 		::create(i.container_impl, *this);
+}
+
+static void not_allowed() __attribute__((noreturn));
+static void not_allowed()
+{
+	throw EXCEPTION(_("This listlayoutmanager function is disabled in "
+			  "combo-boxes"));
+}
+
+void custom_comboboxlayoutmanagerObj
+::selection_type(const list_selection_type_cb_t &selection_type)
+{
+	not_allowed();
+}
+
+void custom_comboboxlayoutmanagerObj
+::selection_type(ONLY IN_THREAD,
+		 const list_selection_type_cb_t &selection_type)
+{
+	not_allowed();
+}
+
+void custom_comboboxlayoutmanagerObj
+::on_list_selection_changed(const list_selection_changed_cb_t
+			    &selection_changed)
+{
+	not_allowed();
+}
+
+void custom_comboboxlayoutmanagerObj
+::on_list_selection_changed(ONLY IN_THREAD,
+			    const list_selection_changed_cb_t
+			    &selection_changed)
+{
+	not_allowed();
 }
 
 LIBCXXW_NAMESPACE_END

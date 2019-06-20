@@ -627,17 +627,9 @@ void listhiertest(const LIBCXX_NAMESPACE::w::main_window &main_window)
 		 nlm);
 }
 
-static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
-			      &main_window,
-			      const testlistoptions &opts)
+static list_container
+create_plain_list(const LIBCXX_NAMESPACE::w::gridfactory &factory)
 {
-	LIBCXX_NAMESPACE::w::gridlayoutmanager
-		layout=main_window->get_layoutmanager();
-
-	LIBCXX_NAMESPACE::w::gridfactory factory=layout->append_row();
-
-	factory->rowspan(6);
-
 	LIBCXX_NAMESPACE::w::new_listlayoutmanager
 		new_list{opts.bullets->value
 			 ? LIBCXX_NAMESPACE::w::bulleted_list
@@ -711,7 +703,23 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 				 });
 		 },
 		 new_list);
+
 	list_container->show();
+	return list_container;
+}
+
+static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
+			      &main_window,
+			      const testlistoptions &opts)
+{
+	LIBCXX_NAMESPACE::w::gridlayoutmanager
+		layout=main_window->get_layoutmanager();
+
+	LIBCXX_NAMESPACE::w::gridfactory factory=layout->append_row();
+
+	factory->rowspan(6);
+
+	auto list_container=create_plain_list(factory);
 
 	auto insert_row=
 		factory->halign(LIBCXX_NAMESPACE::w::halign::fill)

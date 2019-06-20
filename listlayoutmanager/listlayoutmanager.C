@@ -378,9 +378,9 @@ void listlayoutmanagerObj::selection_type(ONLY IN_THREAD,
 	selection_type(s); // In case this changed in the future.
 }
 
-void listlayoutmanagerObj::on_selection_changed(const
-						list_selection_changed_cb_t
-						&selection_changed)
+void listlayoutmanagerObj::on_list_selection_changed(const
+						     list_selection_changed_cb_t
+						     &selection_changed)
 {
 	listimpl_info_t::lock lock{impl->list_element_singleton->impl
 				   ->textlist_info};
@@ -388,11 +388,26 @@ void listlayoutmanagerObj::on_selection_changed(const
 	lock->selection_changed=selection_changed;
 }
 
+void listlayoutmanagerObj
+::on_list_selection_changed(ONLY IN_THREAD,
+			    const list_selection_changed_cb_t &s)
+{
+	on_list_selection_changed(s); // In case this changed in the future.
+}
+
+void listlayoutmanagerObj::on_selection_changed(const
+						list_selection_changed_cb_t
+						&selection_changed)
+{
+	on_list_selection_changed(selection_changed);
+}
+
 void listlayoutmanagerObj::on_selection_changed(ONLY IN_THREAD,
 						const
-						list_selection_changed_cb_t &s)
+						list_selection_changed_cb_t
+						&selection_changed)
 {
-	on_selection_changed(s); // In case this changed in the future.
+	on_list_selection_changed(IN_THREAD, selection_changed);
 }
 
 void listlayoutmanagerObj

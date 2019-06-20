@@ -169,21 +169,46 @@ public:
 
 	//! Replace the selection type callback.
 
-	void selection_type(const list_selection_type_cb_t &selection_type);
+	virtual void selection_type(const list_selection_type_cb_t
+				    &selection_type);
 
 	//! Replace the selection type callback.
 
-	void selection_type(ONLY IN_THREAD,
-			    const list_selection_type_cb_t &selection_type);
+	virtual void selection_type(ONLY IN_THREAD,
+				    const list_selection_type_cb_t
+				    &selection_type);
 
 	//! Replace the selection changed callback
-	void on_selection_changed(const	list_selection_changed_cb_t
+	void on_selection_changed(const list_selection_changed_cb_t
 				  &selection_changed);
 
 	//! Replace the selection changed callback
 	void on_selection_changed(ONLY IN_THREAD,
 				  const	list_selection_changed_cb_t
 				  &selection_changed);
+private:
+
+	//! Implement on_selection_changed()
+
+	//! Overridden in custom_comboboxlayoutmanagerObj to throw an exception,
+	//! combo-boxes have their own on_selection_changed() that takes
+	//! a different parameter.
+	virtual void on_list_selection_changed(const list_selection_changed_cb_t
+					       &selection_changed)
+		LIBCXX_HIDDEN;
+
+	//! Implement on_selection_changed()
+
+	//! Overridden in custom_comboboxlayoutmanagerObj to throw an exception,
+	//! combo-boxes have their own on_selection_changed() that takes
+	//! a different parameter.
+
+	virtual void on_list_selection_changed(ONLY IN_THREAD,
+					       const list_selection_changed_cb_t
+					       &selection_changed)
+		LIBCXX_HIDDEN;
+public:
+
 
 	//! Replace the current list item changed callback
 
