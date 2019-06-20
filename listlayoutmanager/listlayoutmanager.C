@@ -362,6 +362,64 @@ void listlayoutmanagerObj::on_status_update(ONLY IN_THREAD,
 							     cb);
 }
 
+
+void listlayoutmanagerObj::selection_type(const list_selection_type_cb_t
+					  &selection_type)
+{
+	listimpl_info_t::lock lock{impl->list_element_singleton->impl
+				   ->textlist_info};
+
+	lock->selection_type=selection_type;
+}
+
+void listlayoutmanagerObj::selection_type(ONLY IN_THREAD,
+					  const list_selection_type_cb_t &s)
+{
+	selection_type(s); // In case this changed in the future.
+}
+
+void listlayoutmanagerObj::on_selection_changed(const
+						list_selection_changed_cb_t
+						&selection_changed)
+{
+	listimpl_info_t::lock lock{impl->list_element_singleton->impl
+				   ->textlist_info};
+
+	lock->selection_changed=selection_changed;
+}
+
+void listlayoutmanagerObj::on_selection_changed(ONLY IN_THREAD,
+						const
+						list_selection_changed_cb_t &s)
+{
+	on_selection_changed(s); // In case this changed in the future.
+}
+
+void listlayoutmanagerObj
+::on_current_list_item_changed(const list_item_status_change_callbackptr
+			       &current_list_item_changed)
+{
+	impl->run_as([impl=this->impl, current_list_item_changed]
+		     (ONLY IN_THREAD)
+		     {
+			     listlayoutmanager lm=impl->create_public_object();
+
+			     lm->on_selection_changed
+				     (IN_THREAD,
+				      current_list_item_changed);
+		     });
+}
+
+void listlayoutmanagerObj
+::on_current_list_item_changed(ONLY IN_THREAD,
+			       const list_item_status_change_callbackptr
+			       &current_list_item_changed)
+{
+	impl->list_element_singleton->impl
+		->current_list_item_changed(IN_THREAD)=
+		current_list_item_changed;
+}
+
 listlayoutmanagerptr
 listlayoutmanagerObj::get_item_layoutmanager(size_t i)
 {

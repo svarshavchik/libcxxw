@@ -625,10 +625,12 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Default metadata for list element.
 	const richtextmeta itemshortcut_meta;
 
-	//! Callback when the current list item changes.
-	const list_item_status_change_callbackptr current_list_item_changed;
-
  private:
+	//! Callback when the current list item changes.
+	list_item_status_change_callbackptr current_list_item_changed_thread_only;
+ public:
+	THREAD_DATA_ONLY(current_list_item_changed);
+
 	//! Return the vertical padding of each row.
 	dim_t list_v_padding(ONLY IN_THREAD) const;
 

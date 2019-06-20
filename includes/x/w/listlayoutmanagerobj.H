@@ -158,14 +158,45 @@ public:
 
 	void enabled(ONLY IN_THREAD, size_t i, bool flag);
 
-	//! Replace/install an item's status callback
+	//! Replace/install an individual item's status callback
 	void on_status_update(size_t i,
 			      const list_item_status_change_callback &cb);
 
-	//! Replace/install an item's status callback
+	//! Replace/install an individual item's status callback
 	void on_status_update(ONLY IN_THREAD,
 			      size_t i,
 			      const list_item_status_change_callback &cb);
+
+	//! Replace the selection type callback.
+
+	void selection_type(const list_selection_type_cb_t &selection_type);
+
+	//! Replace the selection type callback.
+
+	void selection_type(ONLY IN_THREAD,
+			    const list_selection_type_cb_t &selection_type);
+
+	//! Replace the selection changed callback
+	void on_selection_changed(const	list_selection_changed_cb_t
+				  &selection_changed);
+
+	//! Replace the selection changed callback
+	void on_selection_changed(ONLY IN_THREAD,
+				  const	list_selection_changed_cb_t
+				  &selection_changed);
+
+	//! Replace the current list item changed callback
+
+	void on_current_list_item_changed(const
+					  list_item_status_change_callbackptr
+					  &current_list_item_changed);
+
+	//! Replace the current list item changed callback
+
+	void on_current_list_item_changed(ONLY IN_THREAD,
+					  const
+					  list_item_status_change_callbackptr
+					  &current_list_item_changed);
 
 	//! Return an existing menu item's submenu layoutmanager.
 	listlayoutmanagerptr get_item_layoutmanager(size_t i);

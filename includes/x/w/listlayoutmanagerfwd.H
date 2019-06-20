@@ -288,10 +288,19 @@ The above example attaches the callback object to the "Lorem" item.
 No callback gets attached to the following "Ipsum" item, unless one is
 also specified.
 
-on_status_update() replaces the existing list item's callback.
+An overloaded on_status_update() replaces either an existing list item's
+callback.
 
 \code
 l->on_status_update(1,
+                    []
+                    (ONLY IN_THREAD,
+                    const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
+                    {
+                    });
+
+l->on_status_update(IN_THREAD,
+                    1,
                     []
                     (ONLY IN_THREAD,
                     const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
@@ -302,6 +311,60 @@ l->on_status_update(1,
 This replaces item #1's callback, and invokes the new callback with
 the trigger parameter's value of \c INSERT_LIBX_NAMESPACE::w::initial,
 reporting whether or not the list item is currently selected.
+
+\par Replacing other callbacks
+
+\code
+l->selection_type([]
+                  (ONLY IN_THREAD,
+                   const INSERT_LIBX_NAMESPACE::w::listlayoutmanager &lm,
+                   size_t n,
+                   const INSERT_LIBX_NAMESPACE::w::callback_trigger &trigger,
+                   const INSERT_LIBX_NAMESPACE::w::busy &mcguffin)
+                  {
+                  });
+
+l->selection_type(IN_THREAD,
+                  []
+                  (ONLY IN_THREAD,
+                   const INSERT_LIBX_NAMESPACE::w::listlayoutmanager &lm,
+                   size_t n,
+                   const INSERT_LIBX_NAMESPACE::w::callback_trigger &trigger,
+                   const INSERT_LIBX_NAMESPACE::w::busy &mcguffin)
+                  {
+                  });
+
+l->on_selection_changed([]
+                        (ONLY IN_THREAD,
+                         const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
+                        {
+                        });
+
+l->on_selection_changed(ONLY IN_THREAD,
+                        []
+                        (ONLY IN_THREAD,
+                         const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
+                        {
+                        });
+
+l->on_current_list_item_changed([]
+                               (ONLY IN_THREAD,
+                               const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
+                               {
+                               });
+
+l->on_current_list_item_changed(IN_THREAD,
+                                []
+                                (ONLY IN_THREAD,
+                                const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
+                                {
+                                });
+\endcode
+
+These replace existing callbacks. The initial callbacks get specified
+in the
+\ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::new_listlayoutmanager"
+when creating the list.
 
 \par Selectable menu options
 
@@ -523,6 +586,9 @@ autoselect(),
 unselect(),
 selected(),
 on_status_update(),
+on_selection_changed(),
+on_current_list_item_changed(),
+selection_type(),
 and the enabled() overload which enables or disable a list item,
 get executed by the internal connection thread. There are two versions
 of each method. The first version sends a message to the internal
@@ -783,6 +849,14 @@ typedef functionref<list_item_status_change_callback_t
 
 typedef functionptr<list_item_status_change_callback_t
 		    > list_item_status_change_callbackptr;
+
+
+//! selection_changed callback.
+
+//! \see new_listlayoutmanager
+
+typedef functionptr<void (THREAD_CALLBACK, const list_item_status_info_t &)
+		    > list_selection_changed_cb_t;
 
 //! SFINAE template for overloading a list_item_status_change_callback_t parameter.
 

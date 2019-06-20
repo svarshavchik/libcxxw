@@ -331,7 +331,10 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 			   ->shortcut_foreground_color),
 			  create_current_fontcollection
 			  (init_args.style.appearance->shortcut_font)},
-	  current_list_item_changed{init_args.style.current_list_item_changed}
+	  current_list_item_changed_thread_only
+	{
+	 init_args.style.current_list_item_changed
+	}
 {
 	for (auto &info:requested_col_widths)
 	{
@@ -385,7 +388,7 @@ void list_elementObj::implObj
 			     const std::optional<size_t> &current,
 			     const callback_trigger_t &trigger)
 {
-	if (!current_list_item_changed)
+	if (!current_list_item_changed(IN_THREAD))
 		return;
 
 	ptr<listlayoutmanagerObj::implObj> llm_impl;
@@ -419,7 +422,7 @@ void list_elementObj::implObj
 		info.item_number=*original;
 
 		try {
-			current_list_item_changed(IN_THREAD, info);
+			current_list_item_changed(IN_THREAD)(IN_THREAD, info);
 		} REPORT_EXCEPTIONS(this);
 
 	}
@@ -430,7 +433,7 @@ void list_elementObj::implObj
 		info.selected=true;
 
 		try {
-			current_list_item_changed(IN_THREAD, info);
+			current_list_item_changed(IN_THREAD)(IN_THREAD, info);
 		} REPORT_EXCEPTIONS(this);
 	}
 }

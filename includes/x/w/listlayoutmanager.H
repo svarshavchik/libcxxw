@@ -35,13 +35,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! selection_changed callback.
-
-//! \see new_listlayoutmanager
-
-typedef functionptr<void (THREAD_CALLBACK, const list_item_status_info_t &)
-		    > list_selection_changed_cb_t;
-
 //! Create a new container with a \ref listlayoutmanager "list layout manager".
 
 //! This parameter gets passed to a \ref factory "factory"'s

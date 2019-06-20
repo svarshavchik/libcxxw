@@ -1,5 +1,8 @@
 2019-06-19  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Add list layout manager methods that replace list's initial
+	callbacks.
+
 	* Create list containers using the theme file.
 
 2019-06-16  Sam Varshavchik  <mrsam@courier-mta.com>
