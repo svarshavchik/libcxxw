@@ -158,6 +158,16 @@ public:
 	vector<listlayoutmanager_generator
 	       > listlayout_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for standard combobox layout manager generator.
+	vector<standard_comboboxlayoutmanager_generator
+	       > standard_comboboxlayout_parseconfig(const theme_parser_lock
+						     &lock);
+
+	//! Parser for editable combobox layout manager generator.
+	vector<editable_comboboxlayoutmanager_generator
+	       > editable_comboboxlayout_parseconfig(const theme_parser_lock
+						     &lock);
+
 	//! Parser for the new book layout manager generator
 
 	vector<new_booklayoutmanager_generator
@@ -167,6 +177,15 @@ public:
 
 	vector<new_listlayoutmanager_generator
 	       > new_listlayout_parseconfig(const theme_parser_lock &lock);
+
+	//! Parser for the new standard combobox layout manager generator
+
+	vector<new_standard_comboboxlayoutmanager_generator
+	       > new_standard_comboboxlayout_parseconfig(const theme_parser_lock &lock);
+	//! Parser for the new editable combobox layout manager generator
+
+	vector<new_editable_comboboxlayoutmanager_generator
+	       > new_editable_comboboxlayout_parseconfig(const theme_parser_lock &lock);
 private:
 	//! Implement <element>
 
@@ -190,6 +209,14 @@ private:
 	listlayoutmanager_generator
 	listlayout_parser(const theme_parser_lock &lock);
 
+	//! Generate a single standard combobox layout manager instruction.
+	standard_comboboxlayoutmanager_generator
+	standard_comboboxlayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single editable combobox layout manager instruction.
+	editable_comboboxlayoutmanager_generator
+	editable_comboboxlayout_parser(const theme_parser_lock &lock);
+
 	//! Generate a single book layout manager instruction.
 	booklayoutmanager_generator
 	booklayout_parser(const theme_parser_lock &lock);
@@ -205,6 +232,14 @@ private:
 	//! Generate a single new_listlayoutmanager instruction.
 	new_listlayoutmanager_generator
 	new_listlayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single new_standard_comboboxlayoutmanager instruction.
+	new_standard_comboboxlayoutmanager_generator
+	new_standard_comboboxlayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single new_editable_comboboxlayoutmanager instruction.
+	new_editable_comboboxlayoutmanager_generator
+	new_editable_comboboxlayout_parser(const theme_parser_lock &lock);
 
 public:
 	//! Return compiled grid factory generators.
@@ -241,7 +276,7 @@ public:
 	lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
 
-	//! Return compiled lits layout manager generators.
+	//! Return compiled list layout manager generators.
 
 	//! If the generators are already compiled, return them. If not,
 	//! search for them in uncompiled_elements, compile them, put them
@@ -250,6 +285,26 @@ public:
 	const_vector<listlayoutmanager_generator>
 	lookup_listlayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
+
+	//! Return compiled combobox layout manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them	//! into gridfactory_generators, and return them.
+
+	const_vector<standard_comboboxlayoutmanager_generator>
+	lookup_standard_comboboxlayoutmanager_generators
+	(const theme_parser_lock &lock,
+	 const std::string &);
+
+	//! Return compiled combobox layout manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them	//! into gridfactory_generators, and return them.
+
+	const_vector<editable_comboboxlayoutmanager_generator>
+	lookup_editable_comboboxlayoutmanager_generators
+	(const theme_parser_lock &lock,
+	 const std::string &);
 
 	//! Return compiled book layout manager generators.
 
@@ -356,10 +411,20 @@ private:
 
 	struct listlayoutmanager_functions;
 
+	//! Supported standard combobox layout manager functionality.
+
+	struct standard_comboboxlayoutmanager_functions;
+
+	//! Supported editable combobox layout manager functionality.
+
+	struct editable_comboboxlayoutmanager_functions;
+
 	//! All supported layout manager funcitonality.
 
 	typedef std::variant<gridlayoutmanager_functions,
 			     listlayoutmanager_functions,
+			     standard_comboboxlayoutmanager_functions,
+			     editable_comboboxlayoutmanager_functions,
 			     booklayoutmanager_functions
 			     > layoutmanager_functions;
 

@@ -106,6 +106,15 @@ versions of the methods from the underlying
 \ref listlayoutmanager "list layout manager", which
 work in the analogous way.
 
+\par Generating contents from an XML-based specification
+
+\code
+lm->generate("standard-combobox-layout", generators, elements);
+\endcode
+
+generate() generates the contents of the combo-box from the
+loaded theme file. See the tutorial for more information.
+
 */
 
 typedef ref<standard_comboboxlayoutmanagerObj> standard_comboboxlayoutmanager;

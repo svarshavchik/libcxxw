@@ -13,6 +13,8 @@
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/standard_comboboxlayoutmanager.H"
+#include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/synchronized_axis.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
@@ -229,6 +231,188 @@ struct uicompiler::listlayoutmanager_functions {
 	};
 };
 
+// Parse generators for the contents of a new_standard_comboboxlayoutmanager
+
+static const_vector<new_standard_comboboxlayoutmanager_generator>
+create_newstandard_comboboxlayoutmanager_vector(uicompiler &compiler,
+						const theme_parser_lock
+						&orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	auto xpath=lock->get_xpath("config");
+
+	if (xpath->count() == 0) // None, return an empty vector.
+		return const_vector<new_standard_comboboxlayoutmanager_generator
+				    >::create();
+
+	xpath->to_node();
+
+	return compiler.new_standard_comboboxlayout_parseconfig(lock);
+}
+
+struct uicompiler::standard_comboboxlayoutmanager_functions {
+
+	// A vector of compiled grid layout manager generators
+
+	struct generators {
+
+		// Generators for the contents of the new_standard_comboboxlayoutmanager
+
+		const_vector<new_standard_comboboxlayoutmanager_generator
+			     > new_standard_comboboxlayoutmanager_vector;
+
+		// Generators for the contents of the standard_combobox layout manager.
+		const_vector<standard_comboboxlayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const theme_parser_lock &lock,
+			   const std::string &name)
+			: new_standard_comboboxlayoutmanager_vector
+			{
+			 create_newstandard_comboboxlayoutmanager_vector(compiler, lock)
+			},
+			  generator_vector{compiler
+					   .lookup_standard_comboboxlayoutmanager_generators
+					   (lock, name)}
+		{
+		}
+
+		focusable_container create_container(const factory &f,
+						     uielements &factories)
+			const
+		{
+		        auto nlm=new_layoutmanager();
+
+			// Generate the contents of the new_standard_comboboxlayoutmanager.
+
+			for (const auto &g:*new_standard_comboboxlayoutmanager_vector)
+			{
+				g(&nlm, factories);
+			}
+
+			return f->create_focusable_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 nlm);
+		}
+
+		inline new_standard_comboboxlayoutmanager new_layoutmanager()
+			const
+		{
+			new_standard_comboboxlayoutmanager nlm;
+
+			return nlm;
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			standard_comboboxlayoutmanager llm=
+				c->get_layoutmanager();
+
+			for (const auto &g:*generator_vector)
+			{
+				g(llm, factories);
+			}
+		}
+	};
+};
+
+// Parse generators for the contents of a new_editable_comboboxlayoutmanager
+
+static const_vector<new_editable_comboboxlayoutmanager_generator>
+create_neweditable_comboboxlayoutmanager_vector(uicompiler &compiler,
+						const theme_parser_lock
+						&orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	auto xpath=lock->get_xpath("config");
+
+	if (xpath->count() == 0) // None, return an empty vector.
+		return const_vector<new_editable_comboboxlayoutmanager_generator
+				    >::create();
+
+	xpath->to_node();
+
+	return compiler.new_editable_comboboxlayout_parseconfig(lock);
+}
+
+struct uicompiler::editable_comboboxlayoutmanager_functions {
+
+	// A vector of compiled grid layout manager generators
+
+	struct generators {
+
+		// Generators for the contents of the new_editable_comboboxlayoutmanager
+
+		const_vector<new_editable_comboboxlayoutmanager_generator
+			     > new_editable_comboboxlayoutmanager_vector;
+
+		// Generators for the contents of the editable_combobox layout manager.
+		const_vector<editable_comboboxlayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const theme_parser_lock &lock,
+			   const std::string &name)
+			: new_editable_comboboxlayoutmanager_vector
+			{
+			 create_neweditable_comboboxlayoutmanager_vector(compiler, lock)
+			},
+			  generator_vector{compiler
+					   .lookup_editable_comboboxlayoutmanager_generators
+					   (lock, name)}
+		{
+		}
+
+		focusable_container create_container(const factory &f,
+						     uielements &factories)
+			const
+		{
+		        auto nlm=new_layoutmanager();
+
+			// Generate the contents of the new_editable_comboboxlayoutmanager.
+
+			for (const auto &g:*new_editable_comboboxlayoutmanager_vector)
+			{
+				g(&nlm, factories);
+			}
+
+			return f->create_focusable_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 nlm);
+		}
+
+		inline new_editable_comboboxlayoutmanager new_layoutmanager()
+			const
+		{
+			new_editable_comboboxlayoutmanager nlm;
+
+			return nlm;
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			editable_comboboxlayoutmanager llm=
+				c->get_layoutmanager();
+
+			for (const auto &g:*generator_vector)
+			{
+				g(llm, factories);
+			}
+		}
+	};
+};
+
 // Book layout manager functionality
 // Parse generators for the contents of a new_listlayoutmanager
 
@@ -395,6 +579,17 @@ uicompiler::get_layoutmanager(const std::string &type)
 			std::in_place_type_t<listlayoutmanager_functions>{}
 		};
 
+	if (type == "standard_combobox")
+		return layoutmanager_functions{
+			std::in_place_type_t<
+				standard_comboboxlayoutmanager_functions>{}
+		};
+
+	if (type == "editable_combobox")
+		return layoutmanager_functions{
+			std::in_place_type_t<
+				editable_comboboxlayoutmanager_functions>{}
+		};
 
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a known layout/container"),
 				   type));

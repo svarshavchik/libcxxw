@@ -35,6 +35,16 @@ public:
 
 	//! Install a new selection changed callback.
 	void selection_changed(const editable_combobox_selection_changed_t &);
+
+	//! Implement generate()
+
+	//! \see uigenerators
+
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements) override;
+
+	using standard_comboboxlayoutmanagerObj::generate;
 };
 
 LIBCXXW_NAMESPACE_END

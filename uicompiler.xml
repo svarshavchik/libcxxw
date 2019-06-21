@@ -1902,6 +1902,8 @@ List of values:
     </function>
   </parser>
 
+  <!-- list layout manager -->
+
   <parser>
     <name>listlayout</name>
 
@@ -2023,6 +2025,38 @@ List of values:
 	<type>to_size_t</type>
       </parameter>
     </function>
+  </parser>
+
+  <!-- standard combobox layout manager -->
+
+  <parser>
+    <name>standard_comboboxlayout</name>
+
+    <parameter>
+      <type>standard_comboboxlayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+  </parser>
+
+  <!-- editable combobox layout manager -->
+
+  <parser>
+    <name>editable_comboboxlayout</name>
+
+    <parameter>
+      <type>editable_comboboxlayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
   </parser>
 
   <!-- new_booklayoutmanager initialization -->
@@ -2379,4 +2413,37 @@ List of values:
       </parameter>
     </function>
   </parser>
+
+  <!-- new_standard_comboboxlayoutmanager initialization -->
+
+  <parser>
+    <name>new_standard_comboboxlayout</name>
+
+    <parameter>
+      <type>new_standard_comboboxlayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+  </parser>
+
+  <!-- new_editable_comboboxlayoutmanager initialization -->
+
+  <parser>
+    <name>new_editable_comboboxlayout</name>
+
+    <parameter>
+      <type>new_editable_comboboxlayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+  </parser>
+
 </api>

@@ -13,6 +13,8 @@
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/standard_comboboxlayoutmanager.H"
+#include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
 #include "picture.H"
@@ -942,6 +944,24 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 				continue;
 			}
 
+			if (type == "standard_combobox")
+			{
+				auto ret=standard_comboboxlayout_parseconfig
+					(lock);
+				generators->standard_comboboxlayoutmanager_generators
+					.emplace(id, ret);
+				continue;
+			}
+
+			if (type == "editable_combobox")
+			{
+				auto ret=editable_comboboxlayout_parseconfig
+					(lock);
+				generators->editable_comboboxlayoutmanager_generators
+					.emplace(id, ret);
+				continue;
+			}
+
 			if (type == "book")
 			{
 				auto ret=booklayout_parseconfig(lock);
@@ -1180,6 +1200,74 @@ uicompiler::lookup_listlayoutmanager_generators(const theme_parser_lock &lock,
 	auto ret=listlayout_parseconfig(new_lock);
 
 	generators->listlayoutmanager_generators.emplace(name, ret);
+
+	return ret;
+}
+
+const_vector<standard_comboboxlayoutmanager_generator>
+uicompiler::lookup_standard_comboboxlayoutmanager_generators(const theme_parser_lock &lock,
+						const std::string &name)
+{
+	{
+		auto iter=generators->standard_comboboxlayoutmanager_generators.find(name);
+
+		if (iter != generators->standard_comboboxlayoutmanager_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "layout"
+	    || iter->second->get_any_attribute("type") != "standard_combobox")
+	{
+		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=standard_comboboxlayout_parseconfig(new_lock);
+
+	generators->standard_comboboxlayoutmanager_generators.emplace(name, ret);
+
+	return ret;
+}
+
+const_vector<editable_comboboxlayoutmanager_generator>
+uicompiler::lookup_editable_comboboxlayoutmanager_generators(const theme_parser_lock &lock,
+						const std::string &name)
+{
+	{
+		auto iter=generators->editable_comboboxlayoutmanager_generators.find(name);
+
+		if (iter != generators->editable_comboboxlayoutmanager_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "layout"
+	    || iter->second->get_any_attribute("type") != "editable_combobox")
+	{
+		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=editable_comboboxlayout_parseconfig(new_lock);
+
+	generators->editable_comboboxlayoutmanager_generators.emplace(name, ret);
 
 	return ret;
 }

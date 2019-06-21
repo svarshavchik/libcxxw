@@ -892,11 +892,15 @@ libcxxw_la_SOURCES=\
 	uicompiler3.C				    \
 	uicompiler_booklayout.C			    \
 	uicompiler_bookpagefactory.C		    \
+	uicompiler_editable_comboboxlayout.C	    \
 	uicompiler_gridfactory.C		    \
 	uicompiler_gridlayout.C			    \
 	uicompiler_listlayout.C			    \
+	uicompiler_standard_comboboxlayout.C	    \
 	uicompiler_new_booklayout.C		    \
+	uicompiler_new_editable_comboboxlayout.C    \
 	uicompiler_new_listlayout.C		    \
+	uicompiler_new_standard_comboboxlayout.C    \
 	uigenerators.C				    \
 	uielements.C				    \
 	windowobj.C				    \
@@ -1339,8 +1343,12 @@ uicompiler_bookpagefactory.lo   \
 uicompiler_gridfactory.lo       \
 uicompiler_gridlayout.lo        \
 uicompiler_listlayout.lo        \
+uicompiler_standard_comboboxlayout.lo        \
+uicompiler_editable_comboboxlayout.lo        \
 uicompiler_new_booklayout.lo    \
 uicompiler_new_listlayout.lo    \
+uicompiler_new_standard_comboboxlayout.lo    \
+uicompiler_new_editable_comboboxlayout.lo    \
 	: uicompiler.stamp.inc.H
 
 clean-local:

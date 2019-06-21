@@ -98,6 +98,20 @@ public:
 			   const_vector<listlayoutmanager_generator>
 			   > listlayoutmanager_generators;
 
+	//! Generators used by the standard combobox layout manager
+
+	std::unordered_map<std::string,
+			   const_vector<standard_comboboxlayoutmanager_generator
+					>
+			   > standard_comboboxlayoutmanager_generators;
+
+	//! Generators used by the editable combobox layout manager
+
+	std::unordered_map<std::string,
+			   const_vector<editable_comboboxlayoutmanager_generator
+					>
+			   > editable_comboboxlayoutmanager_generators;
+
 	//! Generators used by the book layout manager
 	std::unordered_map<std::string,
 			   const_vector<booklayoutmanager_generator>

@@ -668,6 +668,16 @@ append_copy_cut_paste() returns
 an \ref copy_cut_paste_menu_items "INSERT_LIBX_NAMESPACE::w::copy_cut_paste_menu_items"
 object.
 
+
+\par Generating content from an XML-based specification
+
+\code
+l->generate("list-layout", generators, elements);
+\endcode
+
+generate() generates the contents of the list from the
+loaded theme file. See the tutorial for more information.
+
 */
 
 typedef ref<listlayoutmanagerObj> listlayoutmanager;

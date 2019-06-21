@@ -10,6 +10,8 @@
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/booklayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/standard_comboboxlayoutmanagerfwd.H>
+#include <x/w/editable_comboboxlayoutmanagerfwd.H>
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/bookpagefactoryfwd.H>
 #include <x/w/uielementsfwd.H>
@@ -41,6 +43,20 @@ typedef functionref<void (const gridlayoutmanager &, uielements &)
 
 typedef functionref<void (const listlayoutmanager &, uielements &)
 		    > listlayoutmanager_generator;
+
+//! Generate something in the standard combobox layout manager
+
+//! \see uigenerators
+
+typedef functionref<void (const standard_comboboxlayoutmanager &, uielements &)
+		    > standard_comboboxlayoutmanager_generator;
+
+//! Generate something in the editable combobox layout manager
+
+//! \see uigenerators
+
+typedef functionref<void (const editable_comboboxlayoutmanager &, uielements &)
+		    > editable_comboboxlayoutmanager_generator;
 
 //! Generate something using a grid factory.
 
@@ -82,6 +98,31 @@ typedef new_listlayoutmanager *new_listlayoutmanager_plainptr;
 typedef functionref<void (const new_listlayoutmanager_plainptr &layout,
 			  uielements &elements)
 		    > new_listlayoutmanager_generator;
+
+
+//! Pseudo-ref used to initialize a new_standard_comboboxlayoutmanager parameter
+
+typedef new_standard_comboboxlayoutmanager
+*new_standard_comboboxlayoutmanager_plainptr;
+
+//! Generate something to initialize a new_standard_comboboxlayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_standard_comboboxlayoutmanager_plainptr &,
+			  uielements &elements)
+		    > new_standard_comboboxlayoutmanager_generator;
+
+//! Pseudo-ref used to initialize a new_editable_comboboxlayoutmanager parameter
+
+typedef new_editable_comboboxlayoutmanager
+*new_editable_comboboxlayoutmanager_plainptr;
+
+//! Generate something to initialize a new_editable_comboboxlayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_editable_comboboxlayoutmanager_plainptr &,
+			  uielements &elements)
+		    > new_editable_comboboxlayoutmanager_generator;
 
 class LIBCXX_PUBLIC uigeneratorsObj;
 class LIBCXX_PUBLIC uigeneratorsBase;
