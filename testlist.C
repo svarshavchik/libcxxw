@@ -627,8 +627,9 @@ void listhiertest(const LIBCXX_NAMESPACE::w::main_window &main_window)
 		 nlm);
 }
 
-static list_container
-create_plain_list(const LIBCXX_NAMESPACE::w::gridfactory &factory)
+static LIBCXX_NAMESPACE::w::focusable_container
+create_plain_list(const testlistoptions &opts,
+		  const LIBCXX_NAMESPACE::w::gridfactory &factory)
 {
 	LIBCXX_NAMESPACE::w::new_listlayoutmanager
 		new_list{opts.bullets->value
@@ -719,7 +720,7 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 
 	factory->rowspan(6);
 
-	auto list_container=create_plain_list(factory);
+	auto list_container=create_plain_list(opts, factory);
 
 	auto insert_row=
 		factory->halign(LIBCXX_NAMESPACE::w::halign::fill)
@@ -932,10 +933,44 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 			 std::cout << "Total # of selected items: " << n
 				   << std::endl;
 		 });
+
+	factory=layout->append_row();
+
+	factory->colspan(2);
+	list_container=create_plain_list(opts, factory);
+
+	LIBCXX_NAMESPACE::w::listlayoutmanager
+		l=list_container->get_layoutmanager();
+
+	l->selection_type(LIBCXX_NAMESPACE::w::single_selection_type);
+
+	l->on_selection_changed
+		([]
+		 (ONLY IN_THREAD,
+		  const LIBCXX_NAMESPACE::w::list_item_status_info_t &info)
+		 {
+			 std::cout << "Item #" << info.item_number << " was ";
+
+			 std::cout << (info.selected ? "selected":"unselected");
+
+			 std::cout << " in list 2";
+			 std::cout << std::endl;
+		 });
+
+	l->on_current_list_item_changed
+		([]
+		 (ONLY IN_THREAD,
+		  const LIBCXX_NAMESPACE::w::list_item_status_info_t &info)
+		 {
+			 std::cout << "Item #" << info.item_number << " was ";
+
+			 std::cout << (info.selected ? "highlighted"
+				       : "unhighlighted");
+
+			 std::cout << " in list 2";
+			 std::cout << std::endl;
+		 });
 }
-
-
-
 
 void testlist(const testlistoptions &options)
 {

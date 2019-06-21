@@ -419,7 +419,7 @@ void listlayoutmanagerObj
 		     {
 			     listlayoutmanager lm=impl->create_public_object();
 
-			     lm->on_selection_changed
+			     lm->on_current_list_item_changed
 				     (IN_THREAD,
 				      current_list_item_changed);
 		     });
