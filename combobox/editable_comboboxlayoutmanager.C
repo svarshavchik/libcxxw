@@ -192,14 +192,15 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 				// that gets installed into the input element
 				// will process the new item. We do this by
 				// setting the required flag, moving the input
-				// focus into the editor, and invoking the
+				// focus into the editor (if the combo-box
+				// is enabled), and invoking the
 				// validation function.
 				editor_impl->validation_required(IN_THREAD)=
 					true;
 
 				focusableObj &f=*current_selection;
 
-				f.get_impl()->request_focus(IN_THREAD);
+				f.get_impl()->request_focus_quietly(IN_THREAD);
 				editor_impl->validate_modified(IN_THREAD, {});
 			}
 		}
