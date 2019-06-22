@@ -1926,9 +1926,8 @@ List of values:
       <before_invocation>process_new_items(</before_invocation>
       <after_invocation>, items_value, elements)</after_invocation>
       <parameter>
-	<before-passing-parameter>*</before-passing-parameter>
 	<name>items</name>
-	<after-passing-parameter>.params</after-passing-parameter>
+	<after-passing-parameter>.create(elements)</after-passing-parameter>
 	<type>compiler.list_items_param_value</type>
       </parameter>
     </function>
@@ -1946,9 +1945,8 @@ List of values:
       </parameter>
 
       <parameter>
-	<before-passing-parameter>*</before-passing-parameter>
 	<name>items</name>
-	<after-passing-parameter>.params</after-passing-parameter>
+	<after-passing-parameter>.create(elements)</after-passing-parameter>
 	<type>compiler.list_items_param_value</type>
       </parameter>
     </function>
@@ -1966,9 +1964,8 @@ List of values:
       </parameter>
 
       <parameter>
-	<before-passing-parameter>*</before-passing-parameter>
 	<name>items</name>
-	<after-passing-parameter>.params</after-passing-parameter>
+	<after-passing-parameter>.create(elements)</after-passing-parameter>
 	<type>compiler.list_items_param_value</type>
       </parameter>
     </function>
@@ -1981,9 +1978,8 @@ List of values:
       <before_invocation>process_new_items(</before_invocation>
       <after_invocation>, items_value, elements)</after_invocation>
       <parameter>
-	<before-passing-parameter>*</before-passing-parameter>
 	<name>items</name>
-	<after-passing-parameter>.params</after-passing-parameter>
+	<after-passing-parameter>.create(elements)</after-passing-parameter>
 	<type>compiler.list_items_param_value</type>
       </parameter>
     </function>

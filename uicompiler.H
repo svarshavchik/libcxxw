@@ -541,11 +541,22 @@ public:
 	//! Parsed list_item_params
 
 	struct list_items_params {
-		//! The actual parameters that get passed in
-		vector<list_item_param> params;
+
+		//! We compile a list of creators for the new list items.
+
+		typedef const_vector<functionref
+				     <void (std::vector<list_item_param> &,
+					    uielements &)>> creators_t;
+
+		//! Creators for the new list items.
+
+		creators_t creators;
+
+		//! Create the new list items.
+		std::vector<list_item_param> create(uielements &elements) const;
 
 		//! Labels for the resulting listitemhandles
-		vector<std::string> labels;
+		const_vector<std::string> labels;
 	};
 
 	//! Parse list_item_params
