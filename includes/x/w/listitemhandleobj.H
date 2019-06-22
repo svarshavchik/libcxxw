@@ -34,6 +34,9 @@ public:
 	//! Enable or disable this list item.
 	virtual void enabled(bool)=0;
 
+	//! Return the menu item's layout manager.
+	virtual listlayoutmanagerptr get_item_layoutmanager() const=0;
+
 	//! Enable or disable this list item.
 	virtual void enabled(ONLY IN_THREAD, bool)=0;
 

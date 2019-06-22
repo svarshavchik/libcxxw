@@ -109,5 +109,22 @@ void listitemhandleObj::implObj
 							  extra, cb);
 }
 
+listlayoutmanagerptr listitemhandleObj::implObj::get_item_layoutmanager() const
+{
+	listlayoutmanagerptr ptr;
+
+	auto p=listlayout_impl.getptr();
+
+	if (!p)
+		return ptr;
+
+	listimpl_info_t::lock lock{p->list_element_singleton->impl
+				   ->textlist_info};
+
+	if (extra->has_submenu(lock))
+		ptr=extra->submenu_layoutmanager(lock);
+
+	return ptr;
+}
 
 LIBCXXW_NAMESPACE_END
