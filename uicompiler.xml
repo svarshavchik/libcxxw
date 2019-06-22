@@ -2523,4 +2523,75 @@ List of values:
     </function>
   </parser>
 
+  <!-- menubarfactory -->
+
+  <parser>
+    <name>menubarfactory</name>
+
+    <parameter>
+      <type>menubarfactory</type>
+      <name>factory</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>add</name>
+      <new_element>1</new_element>
+
+      <condition>
+	<exists>appearance</exists>
+      </condition>
+
+      <invoke>add</invoke>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>title</name>
+	<type>compiler.factory_parseconfig</type>
+	<factory_wrapper>title_factory</factory_wrapper>
+      </parameter>
+
+      <parameter>
+	<name>menu</name>
+	<type>compiler.listlayout_parseconfig</type>
+	<factory_wrapper>layout</factory_wrapper>
+      </parameter>
+
+      <parameter>
+	<name>appearance</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>lookup_appearance&lt;const_popup_list_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>add</name>
+      <new_element>1</new_element>
+
+      <invoke>add</invoke>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>title</name>
+	<type>compiler.factory_parseconfig</type>
+	<factory_wrapper>title_factory</factory_wrapper>
+      </parameter>
+
+      <parameter>
+	<name>menu</name>
+	<type>compiler.listlayout_parseconfig</type>
+	<factory_wrapper>layout</factory_wrapper>
+      </parameter>
+    </function>
+  </parser>
+
 </api>

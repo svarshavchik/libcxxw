@@ -980,6 +980,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 				continue;
 			}
 
+			if (type == "menubar")
+			{
+				auto ret=menubarfactory_parseconfig(lock);
+				generators->menubarfactory_generators
+					.emplace(id, ret);
+				continue;
+			}
+
 			if (type == "book")
 			{
 				auto ret=bookpagefactory_parseconfig(lock);
@@ -1339,6 +1347,43 @@ uicompiler::lookup_gridfactory_generators(const theme_parser_lock &lock,
 	auto ret=gridfactory_parseconfig(new_lock);
 
 	generators->gridfactory_generators.emplace(name, ret);
+
+	return ret;
+}
+
+const_vector<menubarfactory_generator>
+uicompiler::lookup_menubarfactory_generators(const theme_parser_lock &lock,
+					     const char *element,
+					     const char *parent)
+{
+	auto name=single_value(lock, element, parent);
+
+	{
+		auto iter=generators->menubarfactory_generators.find(name);
+
+		if (iter != generators->menubarfactory_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "factory"
+	    || iter->second->get_any_attribute("type") != "menubar")
+	{
+		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=menubarfactory_parseconfig(new_lock);
+
+	generators->menubarfactory_generators.emplace(name, ret);
 
 	return ret;
 }

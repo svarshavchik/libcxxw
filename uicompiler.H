@@ -136,7 +136,7 @@ public:
 	//! Parses a parameter that represents a creator that receives a
 	//! a factory, and uses the factory to create one or more elements.
 	//!
-	//! Referenced from the theme file. Receivs the name of the element
+	//! Referenced from the theme file. Receives the name of the element
 	//! that specifies what gets created.
 
 	factory_generator factory_parseconfig(const theme_parser_lock &lock,
@@ -146,6 +146,10 @@ public:
 	//! Parser for grid factory generator.
 	vector<gridfactory_generator
 	       > gridfactory_parseconfig(const theme_parser_lock &lock);
+
+	//! Parser for menu bar factory generator.
+	vector<menubarfactory_generator
+	       > menubarfactory_parseconfig(const theme_parser_lock &lock);
 
 	//! Parser for book layout manager generator.
 	vector<booklayoutmanager_generator
@@ -158,6 +162,19 @@ public:
 	//! Parser for list layout manager generator.
 	vector<listlayoutmanager_generator
 	       > listlayout_parseconfig(const theme_parser_lock &lock);
+
+	//! Wrapper for listlayout_parseconfig()
+
+	//! Parses a parameter that represents a creator that receives a
+	//! a listlayoutmanager, and generates the list.
+	//!
+	//! Referenced from the theme file. Receives the name of the element
+	//! that specifies what gets created.
+
+	listlayoutmanager_generator
+	listlayout_parseconfig(const theme_parser_lock &lock,
+			       const char *element,
+			       const char *parent);
 
 	//! Parser for standard combobox layout manager generator.
 	vector<standard_comboboxlayoutmanager_generator
@@ -208,6 +225,9 @@ private:
 
 	//! Generate a single grid factory instruction.
 	gridfactory_generator gridfactory_parser(const theme_parser_lock &lock);
+
+	//! Generate a single menu bar factory instruction.
+	menubarfactory_generator menubarfactory_parser(const theme_parser_lock &lock);
 
 	//! Generate a single factory instruction.
 	factory_generator factory_parser(const theme_parser_lock &lock);
@@ -265,10 +285,22 @@ public:
 					       const char *element,
 					       const char *parent);
 
-	//! Return compiled book page factory generators.
+	//! Return compiled menu bar factory generators.
 
 	//! Extract single_value() from element, and look it up in
 	//! gridfactory_generators, returning the generators. If it doesn't
+	//! exist, search for them in uncompiled_elements, compile them, put
+	//! them into menubarfactory_generators, and return them.
+
+	const_vector<menubarfactory_generator
+	       > lookup_menubarfactory_generators(const theme_parser_lock &lock,
+					       const char *element,
+					       const char *parent);
+
+	//! Return compiled book page factory generators.
+
+	//! Extract single_value() from element, and look it up in
+	//! bookpagefactory_generators, returning the generators. If it doesn't
 	//! exist, search for them in uncompiled_elements, compile them, put
 	//! them into bookpagefactory_generators, and return them.
 
@@ -281,7 +313,7 @@ public:
 
 	//! If the generators are already compiled, return them. If not,
 	//! search for them in uncompiled_elements, compile them, put them
-	//! into gridfactory_generators, and return them.
+	//! into gridlayoutmanager_generators, and return them.
 
 	const_vector<gridlayoutmanager_generator>
 	lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
@@ -291,7 +323,7 @@ public:
 
 	//! If the generators are already compiled, return them. If not,
 	//! search for them in uncompiled_elements, compile them, put them
-	//! into gridfactory_generators, and return them.
+	//! into listlayoutmanager_generators, and return them.
 
 	const_vector<listlayoutmanager_generator>
 	lookup_listlayoutmanager_generators(const theme_parser_lock &lock,
@@ -300,7 +332,8 @@ public:
 	//! Return compiled combobox layout manager generators.
 
 	//! If the generators are already compiled, return them. If not,
-	//! search for them in uncompiled_elements, compile them, put them	//! into gridfactory_generators, and return them.
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into standard_comboboxlayoutmanager_generators, and return them.
 
 	const_vector<standard_comboboxlayoutmanager_generator>
 	lookup_standard_comboboxlayoutmanager_generators
@@ -310,7 +343,8 @@ public:
 	//! Return compiled combobox layout manager generators.
 
 	//! If the generators are already compiled, return them. If not,
-	//! search for them in uncompiled_elements, compile them, put them	//! into gridfactory_generators, and return them.
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into editable_comboboxlayoutmanager_generators, and return them.
 
 	const_vector<editable_comboboxlayoutmanager_generator>
 	lookup_editable_comboboxlayoutmanager_generators
@@ -321,7 +355,7 @@ public:
 
 	//! If the generators are already compiled, return them. If not,
 	//! search for them in uncompiled_elements, compile them, put them
-	//! into gridfactory_generators, and return them.
+	//! into booklayoutmanager_generators, and return them.
 
 	const_vector<booklayoutmanager_generator>
 	lookup_booklayoutmanager_generators(const theme_parser_lock &lock,

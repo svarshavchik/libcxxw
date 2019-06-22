@@ -12,6 +12,8 @@
 #include "x/w/canvas.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
+#include "x/w/menubarfactory.H"
+#include "x/w/menu.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
@@ -781,6 +783,8 @@ static radio_group lookup_radio_group(uielements &elements,
 
 #include "uicompiler.inc.H/factory_parse_parameters.H"
 #include "uicompiler.inc.H/factory_parser.H"
+#include "uicompiler.inc.H/menubarfactory_parse_parameters.H"
+#include "uicompiler.inc.H/menubarfactory_parser.H"
 
 std::tuple<text_param, label_config>
 uicompiler::get_label_parameters(const theme_parser_lock &lock)

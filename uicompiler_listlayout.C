@@ -245,6 +245,22 @@ static void process_new_items(const new_items_ret &ret,
 		elements.new_list_item_handles.emplace(*b++, h);
 }
 
+listlayoutmanager_generator
+uicompiler::listlayout_parseconfig(const theme_parser_lock &lock,
+				   const char *element,
+				   const char *parent)
+{
+	auto element_lock=lock->clone();
+	element_lock->get_xpath(element)->to_node();
+
+	return [generators=listlayout_parseconfig(element_lock)]
+		(const listlayoutmanager &layout, uielements &elements)
+	       {
+		       for (const auto &generator:*generators)
+			       generator(layout, elements);
+	       };
+}
+
 #include "uicompiler.inc.H/listlayout_parse_parameters.H"
 #include "uicompiler.inc.H/listlayout_parser.H"
 

@@ -92,6 +92,11 @@ public:
 			   const_vector<gridfactory_generator>
 			   > gridfactory_generators;
 
+	//! Generators used by the menu bar factory
+	std::unordered_map<std::string,
+			   const_vector<menubarfactory_generator>
+			   > menubarfactory_generators;
+
 	//! Generators used by the list layout manager
 
 	std::unordered_map<std::string,
