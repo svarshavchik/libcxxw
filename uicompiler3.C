@@ -12,6 +12,8 @@
 #include "x/w/appearance.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
+#include "x/w/menubarlayoutmanager.H"
+#include "x/w/menubarfactory.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
@@ -936,6 +938,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 				continue;
 			}
 
+			if (type == "menubar")
+			{
+				auto ret=menubarlayout_parseconfig(lock);
+				generators->menubarlayoutmanager_generators
+					.emplace(id, ret);
+				continue;
+			}
+
 			if (type == "list")
 			{
 				auto ret=listlayout_parseconfig(lock);
@@ -1351,6 +1361,45 @@ uicompiler::lookup_gridfactory_generators(const theme_parser_lock &lock,
 	return ret;
 }
 
+const_vector<menubarlayoutmanager_generator>
+uicompiler::lookup_menubarlayoutmanager_generators
+(const theme_parser_lock &lock,
+ const char *element,
+ const char *parent)
+{
+	auto name=single_value(lock, element, parent);
+
+	{
+		auto iter=generators->menubarlayoutmanager_generators
+			.find(name);
+
+		if (iter != generators->menubarlayoutmanager_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "layout"
+	    || iter->second->get_any_attribute("type") != "menubar")
+	{
+		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=menubarlayout_parseconfig(new_lock);
+
+	generators->menubarlayoutmanager_generators.emplace(name, ret);
+
+	return ret;
+}
+
 const_vector<menubarfactory_generator>
 uicompiler::lookup_menubarfactory_generators(const theme_parser_lock &lock,
 					     const char *element,
@@ -1725,6 +1774,53 @@ void uicompiler::compile_uncompiled_appearance(const std::string &name)
 		.emplace(name,
 			 compile_appearance(lock,
 					    lock->get_any_attribute("type")));
+}
+
+void uicompiler::menubarlayout_append_menus(const menubarlayoutmanager &layout,
+					    uielements &factories,
+					    const const_vector
+					    <menubarfactory_generator> &g)
+{
+	generate_menubarfactory(layout->append_menus(), factories, g);
+}
+
+void uicompiler::menubarlayout_append_right_menus
+(const menubarlayoutmanager &layout,
+ uielements &factories,
+ const const_vector <menubarfactory_generator> &g)
+{
+	generate_menubarfactory(layout->append_right_menus(), factories, g);
+}
+
+
+void uicompiler::menubarlayout_insert_menus(const menubarlayoutmanager &layout,
+					    uielements &factories,
+					    size_t pos,
+					    const const_vector
+					    <menubarfactory_generator> &g)
+{
+	generate_menubarfactory(layout->insert_menus(pos), factories, g);
+}
+
+void uicompiler::menubarlayout_insert_right_menus
+(const menubarlayoutmanager &layout,
+ uielements &factories,
+ size_t pos,
+ const const_vector <menubarfactory_generator> &g)
+{
+	generate_menubarfactory(layout->insert_right_menus(pos), factories, g);
+}
+
+void uicompiler::generate_menubarfactory(const menubarfactory &f,
+					 uielements &factories,
+					 const const_vector<
+					 menubarfactory_generator>
+					 &generators)
+{
+	for (const auto &g:*generators)
+	{
+		g(f, factories);
+	}
 }
 
 LIBCXXW_NAMESPACE_END

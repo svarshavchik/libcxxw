@@ -9,6 +9,8 @@
 #include <x/w/menubarfactoryfwd.H>
 #include <x/w/gridlayoutmanagerobj.H>
 #include <x/w/factoryfwd.H>
+#include <x/w/uielementsfwd.H>
+#include <x/w/uigeneratorsfwd.H>
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
@@ -55,6 +57,16 @@ public:
 	//! Remove the specified menu from the right edge of the menu bar.
 
 	void remove_right_menu(size_t pos);
+
+	//! Implement generate()
+
+	//! \see uigenerators
+
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements) override;
+
+	using layoutmanagerObj::generate;
 };
 
 LIBCXXW_NAMESPACE_END

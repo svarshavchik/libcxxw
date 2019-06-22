@@ -7,6 +7,8 @@
 
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/gridfactoryfwd.H"
+#include "x/w/menubarlayoutmanagerfwd.H"
+#include "x/w/menubarfactoryfwd.H"
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/booklayoutmanagerfwd.H"
 #include "x/w/bookpagefactoryfwd.H"
@@ -163,6 +165,10 @@ public:
 	vector<listlayoutmanager_generator
 	       > listlayout_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for menu bar layout manager generator.
+	vector<menubarlayoutmanager_generator
+	       > menubarlayout_parseconfig(const theme_parser_lock &lock);
+
 	//! Wrapper for listlayout_parseconfig()
 
 	//! Parses a parameter that represents a creator that receives a
@@ -236,6 +242,10 @@ private:
 	listlayoutmanager_generator
 	listlayout_parser(const theme_parser_lock &lock);
 
+	//! Generate a single menu bar layout manager instruction.
+	menubarlayoutmanager_generator
+	menubarlayout_parser(const theme_parser_lock &lock);
+
 	//! Generate a single standard combobox layout manager instruction.
 	standard_comboboxlayoutmanager_generator
 	standard_comboboxlayout_parser(const theme_parser_lock &lock);
@@ -282,6 +292,18 @@ public:
 
 	const_vector<gridfactory_generator
 	       > lookup_gridfactory_generators(const theme_parser_lock &lock,
+					       const char *element,
+					       const char *parent);
+
+	//! Return compiled menu bar factory generators.
+
+	//! Extract single_value() from element, and look it up in
+	//! gridfactory_generators, returning the generators. If it doesn't
+	//! exist, search for them in uncompiled_elements, compile them, put
+	//! them into menubarlayoutmanager_generators, and return them.
+
+	const_vector<menubarlayoutmanager_generator>
+	lookup_menubarlayoutmanager_generators(const theme_parser_lock &lock,
 					       const char *element,
 					       const char *parent);
 
@@ -427,6 +449,13 @@ private:
 					 <gridfactory_generator>
 					 &generators);
 
+	//! Execute a menu bar factory generator.
+	static void generate_menubarfactory(const menubarfactory &,
+					    uielements &,
+					    const const_vector
+					    <menubarfactory_generator>
+					    &generators);
+
 	//! Execute <append_pages>.
 
 	//! Executed by the compiled <append_pages>.
@@ -443,6 +472,40 @@ private:
 					    uielements &,
 					    const const_vector<
 					    bookpagefactory_generator> &);
+
+	//! Execute <append_menus>.
+
+	//! Executed by the compiled <append_menus>.
+	static void menubarlayout_append_menus(const menubarlayoutmanager &,
+					       uielements &,
+					       const const_vector
+					       <menubarfactory_generator> &);
+	//! Execute <append_right_menus>.
+
+	//! Executed by the compiled <append_right_menus>.
+	static void menubarlayout_append_right_menus
+	(const menubarlayoutmanager &,
+	 uielements &,
+	 const const_vector <menubarfactory_generator> &);
+
+	//! Execute <insert_menus>.
+
+	//! Executed by the compiled <insert_menus>.
+
+	static void menubarlayout_insert_menus(const menubarlayoutmanager &,
+					       uielements &,
+					       size_t,
+					       const const_vector
+					       <menubarfactory_generator> &);
+	//! Execute <insert_right_menus>.
+
+	//! Executed by the compiled <insert_right_menus>.
+
+	static void menubarlayout_insert_right_menus
+	(const menubarlayoutmanager &,
+	 uielements &,
+	 size_t,
+	 const const_vector <menubarfactory_generator> &);
 
 	//! Supported grid layout manager functionality.
 

@@ -10,6 +10,7 @@
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/booklayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/menubarlayoutmanagerfwd.H>
 #include <x/w/custom_comboboxlayoutmanagerfwd.H>
 #include <x/w/standard_comboboxlayoutmanagerfwd.H>
 #include <x/w/editable_comboboxlayoutmanagerfwd.H>
@@ -65,6 +66,12 @@ typedef functionref<void (const editable_comboboxlayoutmanager &, uielements &)
 //! \see uigenerators
 typedef functionref<void (const gridfactory &, uielements &)
 		    > gridfactory_generator;
+
+//! Generate something using a menu bar layout manager.
+
+//! \see uigenerators
+typedef functionref<void (const menubarlayoutmanager &, uielements &)
+		    > menubarlayoutmanager_generator;
 
 //! Generate something using a menu bar factory.
 

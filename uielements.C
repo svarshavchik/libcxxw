@@ -8,6 +8,7 @@
 #include "x/w/listitemhandle.H"
 #include "messages.H"
 #include "gridlayoutmanager.H"
+#include "x/w/menubarlayoutmanager.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
@@ -198,6 +199,26 @@ void editable_comboboxlayoutmanagerObj
 		       name.end()});
 
 	if (iter == generators->editable_comboboxlayoutmanager_generators.end())
+	{
+		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
+					   name));
+	}
+
+	auto me=ref{this};
+
+	for (const auto &g:*iter->second)
+		g(me, elements);
+}
+
+void menubarlayoutmanagerObj::generate(const std::string_view &name,
+				       const const_uigenerators &generators,
+				       uielements &elements)
+{
+	// TODO: C++20
+	auto iter=generators->menubarlayoutmanager_generators
+		.find({name.begin(), name.end()});
+
+	if (iter == generators->menubarlayoutmanager_generators.end())
 	{
 		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
 					   name));

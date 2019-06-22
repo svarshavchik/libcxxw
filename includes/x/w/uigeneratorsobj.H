@@ -117,6 +117,12 @@ public:
 					>
 			   > editable_comboboxlayoutmanager_generators;
 
+	//! Generators used by the menu bar layout manager
+
+	std::unordered_map<std::string,
+			   const_vector<menubarlayoutmanager_generator>
+			   > menubarlayoutmanager_generators;
+
 	//! Generators used by the book layout manager
 	std::unordered_map<std::string,
 			   const_vector<booklayoutmanager_generator>

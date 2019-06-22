@@ -2594,4 +2594,123 @@ List of values:
     </function>
   </parser>
 
+  <!-- menubarlayout -->
+
+  <parser>
+    <name>menubarlayout</name>
+
+    <parameter>
+      <type>menubarlayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>append_menus</name>
+      <invoke>menubarlayout_append_menus</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_menubarfactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>append_right_menus</name>
+      <invoke>menubarlayout_append_right_menus</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_menubarfactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>insert_menus</name>
+      <invoke>menubarlayout_insert_menus</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_menubarfactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>insert_right_menus</name>
+      <invoke>menubarlayout_insert_right_menus</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_menubarfactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_menu</name>
+      <invoke>remove_menu</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_right_menu</name>
+      <invoke>remove_right_menu</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+  </parser>
 </api>
