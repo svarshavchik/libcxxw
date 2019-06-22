@@ -90,10 +90,11 @@ class new_standard_comboboxlayoutmanager
 
 	//! Destructor
 	~new_standard_comboboxlayoutmanager() LIBCXX_PUBLIC;
-
+private:
 	//! Implement selection_factory()
-	focusable selection_factory(const factory &) const override;
-
+	focusable selection_factory(const factory &) const override
+		LIBCXX_HIDDEN;
+public:
 	//! Callback that gets invoked when the combo-box selection changes.
 
 	standard_combobox_selection_changed_t selection_changed;

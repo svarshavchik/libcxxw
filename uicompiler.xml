@@ -2041,6 +2041,8 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
+
+    <use_common>listlayout</use_common>
   </parser>
 
   <!-- editable combobox layout manager -->
@@ -2057,6 +2059,8 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
+
+    <use_common>standard_comboboxlayout</use_common>
   </parser>
 
   <!-- new_booklayoutmanager initialization -->
@@ -2337,7 +2341,8 @@ List of values:
       <parameter>
 	<name>axis</name>
 	<type>single_value</type>
-	<before-passing-parameter>lookup_synchronized_axis(elements, </before-passing-parameter>
+	<xpath>.</xpath>
+	<before-passing-parameter>uicompiler::lookup_synchronized_axis(elements, </before-passing-parameter>
 	<after-passing-parameter>)</after-passing-parameter>
       </parameter>
     </function>
@@ -2414,6 +2419,63 @@ List of values:
     </function>
   </parser>
 
+  <!-- new_custom_comboboxlayoutmanager initialization -->
+
+  <parser>
+    <name>new_custom_comboboxlayout</name>
+
+    <parameter>
+      <type>new_custom_comboboxlayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>optional</name>
+      <object>layout</object>
+      <invoke>selection_required=</invoke>
+      <parameter>
+	<name>flag</name>
+	<xpath>.</xpath>
+	<type>optional_constant&lt;false&gt;</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>synchronized_columns</name>
+      <object>layout</object>
+      <invoke>synchronized_columns=</invoke>
+
+      <parameter>
+	<name>axis</name>
+	<type>single_value</type>
+	<xpath>.</xpath>
+	<before-passing-parameter>uicompiler::lookup_synchronized_axis(elements, </before-passing-parameter>
+	<after-passing-parameter>)</after-passing-parameter>
+      </parameter>
+    </function>
+
+    <function>
+      <name>appearance</name>
+      <object>layout</object>
+      <invoke>appearance=</invoke>
+
+      <parameter>
+	<name>appearance</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>lookup_appearance&lt;const_combobox_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+  </parser>
+
   <!-- new_standard_comboboxlayoutmanager initialization -->
 
   <parser>
@@ -2428,6 +2490,7 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
+    <use_common>new_custom_comboboxlayout</use_common>
   </parser>
 
   <!-- new_editable_comboboxlayoutmanager initialization -->
@@ -2444,6 +2507,24 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
+
+    <use_common>new_custom_comboboxlayout</use_common>
+
+    <function>
+      <name>input_appearance</name>
+      <object>layout</object>
+      <invoke>input_appearance=</invoke>
+
+      <parameter>
+	<name>appearance</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>lookup_appearance&lt;const_input_field_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
   </parser>
 
 </api>

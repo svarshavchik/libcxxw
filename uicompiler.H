@@ -22,6 +22,7 @@
 #include "x/w/progressbarfwd.H"
 #include "x/w/uigenerators.H"
 #include "x/w/appearance.H"
+#include "x/w/synchronized_axisfwd.H"
 #include "theme_parser_lock.H"
 #include "uicompilerfwd.H"
 
@@ -178,6 +179,12 @@ public:
 	vector<new_listlayoutmanager_generator
 	       > new_listlayout_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for the new custom combobox layout manager generator
+
+	vector<new_custom_comboboxlayoutmanager_generator
+	       > new_custom_comboboxlayout_parseconfig(const theme_parser_lock
+						       &lock);
+
 	//! Parser for the new standard combobox layout manager generator
 
 	vector<new_standard_comboboxlayoutmanager_generator
@@ -232,6 +239,10 @@ private:
 	//! Generate a single new_listlayoutmanager instruction.
 	new_listlayoutmanager_generator
 	new_listlayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single new_custom_comboboxlayoutmanager instruction.
+	new_custom_comboboxlayoutmanager_generator
+	new_custom_comboboxlayout_parser(const theme_parser_lock &lock);
 
 	//! Generate a single new_standard_comboboxlayoutmanager instruction.
 	new_standard_comboboxlayoutmanager_generator
@@ -456,6 +467,11 @@ public:
 					  const factory &f,
 					  const scrollbar_config &config,
 					  const const_scrollbar_appearance &a);
+
+	//! Find or create a new synchronized axis object.
+	static synchronized_axis
+	lookup_synchronized_axis(uielements &elements,
+				 const std::string &name);
 
 	//! Execute <container>
 

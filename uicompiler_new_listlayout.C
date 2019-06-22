@@ -37,8 +37,8 @@ static list_selection_type_cb_t to_selection_type(const theme_parser_lock &lock,
 	return no_selection_type;
 }
 
-static synchronized_axis lookup_synchronized_axis(uielements &elements,
-						  const std::string &name)
+synchronized_axis uicompiler::lookup_synchronized_axis(uielements &elements,
+						       const std::string &name)
 {
 	auto iter=elements.new_synchronized_axis.find(name);
 

@@ -10,6 +10,7 @@
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/booklayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/custom_comboboxlayoutmanagerfwd.H>
 #include <x/w/standard_comboboxlayoutmanagerfwd.H>
 #include <x/w/editable_comboboxlayoutmanagerfwd.H>
 #include <x/w/gridfactoryfwd.H>
@@ -99,6 +100,17 @@ typedef functionref<void (const new_listlayoutmanager_plainptr &layout,
 			  uielements &elements)
 		    > new_listlayoutmanager_generator;
 
+//! Pseudo-ref used to initialize a new_custom_comboboxlayoutmanager parameter
+
+typedef new_custom_comboboxlayoutmanager
+*new_custom_comboboxlayoutmanager_plainptr;
+
+//! Generate something to initialize a new_custom_comboboxlayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_custom_comboboxlayoutmanager_plainptr &,
+			  uielements &elements)
+		    > new_custom_comboboxlayoutmanager_generator;
 
 //! Pseudo-ref used to initialize a new_standard_comboboxlayoutmanager parameter
 

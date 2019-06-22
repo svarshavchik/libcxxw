@@ -898,6 +898,7 @@ libcxxw_la_SOURCES=\
 	uicompiler_listlayout.C			    \
 	uicompiler_standard_comboboxlayout.C	    \
 	uicompiler_new_booklayout.C		    \
+	uicompiler_new_custom_comboboxlayout.C	    \
 	uicompiler_new_editable_comboboxlayout.C    \
 	uicompiler_new_listlayout.C		    \
 	uicompiler_new_standard_comboboxlayout.C    \
@@ -1347,6 +1348,7 @@ uicompiler_standard_comboboxlayout.lo        \
 uicompiler_editable_comboboxlayout.lo        \
 uicompiler_new_booklayout.lo    \
 uicompiler_new_listlayout.lo    \
+uicompiler_new_custom_comboboxlayout.lo    \
 uicompiler_new_standard_comboboxlayout.lo    \
 uicompiler_new_editable_comboboxlayout.lo    \
 	: uicompiler.stamp.inc.H

@@ -1,3 +1,7 @@
+2019-06-21  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Create combo-boxes using the theme file.
+
 2019-06-20  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* combo-box layout managers: renamed selection_changed() to
