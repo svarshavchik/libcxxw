@@ -73,6 +73,7 @@ object automatically becomes an effective no-op, and attempts to update the
 now non-existent list item do nothing. enabled() always returns false.
 get_item_layoutmanager() returns a null ptr.
 
+\note
 The new callback installed by on_status_update() gets immediately invoked
 with the trigger value of \ref initial "INSERT_LIBX_NAMESPACE::w::initial",
 reporting the list item's current selection status. The callback does not

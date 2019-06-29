@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<theme version="1"
+       xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <dim id="cell-padding">20</dim>
+
+  <layout id="main-window-grid" type="grid">
+    <append_row>
+      <name>main-window-contents</name>
+    </append_row>
+  </layout>
+
+  <factory id="main-window-contents" type="grid">
+    <padding>
+      <side>all</side>
+      <padding>cell-padding</padding>
+    </padding>
+    <element>
+      <label type="theme_text">Label</label>
+    </element>
+  </factory>
+
+  <layout type="menubar" id="main-window-menu">
+    <append_menus>
+      <name>main-window-menus</name>
+    </append_menus>
+
+    <append_right_menus>
+      <name>main-window-right-menus</name>
+    </append_right_menus>
+  </layout>
+
+  <factory type="menubar" id="main-window-menus">
+    <add>
+      <title>
+	<element>
+	  <label type="theme_text">File</label>
+	</element>
+      </title>
+      <menu>
+	<append_items>
+	  <items>
+	    <name>file_new</name>
+	    <label type="theme_text">New</label>
+	    <name>file_open</name>
+	    <label type="theme_text">Open</label>
+	    <name>file_close</name>
+	    <label type="theme_text">Close</label>
+	    <separator />
+	    <name>file_recent</name>
+	    <submenu>
+	      <append_items>
+		<items>
+		  <name>file_recent_file_1</name>
+		  <label type="theme_text">File 1</label>
+		  <name>file_recent_file_2</name>
+		  <label type="theme_text">File 2</label>
+		</items>
+	      </append_items>
+	    </submenu>
+	    <label type="theme_text">Recent</label>
+	    <name>file_automatic_close</name>
+	    <menuoption />
+	    <label type="theme_text">Automatic Close</label>
+	  </items>
+	</append_items>
+      </menu>
+    </add>
+  </factory>
+
+  <factory type="menubar" id="main-window-right-menus">
+    <add>
+      <title>
+	<element>
+	  <label type="theme_text">Help</label>
+	</element>
+      </title>
+      <menu>
+	<append_items>
+	  <items>
+	    <name>help_about</name>
+	    <label type="theme_text">About...</label>
+	  </items>
+	</append_items>
+      </menu>
+    </add>
+  </factory>
+</theme>

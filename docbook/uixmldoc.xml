@@ -259,7 +259,9 @@ See COPYING for distribution information.
 	</para>
 
 	<para>
-	  <classname>&ns;::w::uielements</classname>'s first member,
+	  An <classname>&ns;::w::uielements</classname> servers a dual
+	  purpose.
+	  Its first member,
 	  <varname>factories</varname> is a map. The map key's is a
 	  text string, a label. The keys' values are lambdas, or callable
 	  objects. The lambdas receive a &factory; as their parameter.
@@ -296,6 +298,15 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
 	</para>
       </listitem>
     </orderedlist>
+
+    <para>
+      <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
+      second purpose is to store widgets and other object that
+      <methodname>generate</methodname>() creates.
+      <classname>&ns;::w::uielements</classname>'s
+      various methods return different kinds of objects created
+      by <methodname>generate</methodname>().
+    </para>
   </section>
 
   <section id="uixmlwidgets">
@@ -1406,6 +1417,71 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 	    <para>
 	      Specifies an <link linkend="uixmllistitemvaluename">identifier
 		for the following list item</link>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <tag class='emptytag'>menuoption</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Specifies a
+	      <quote>menuoption</quote>
+	      <link linkend="menuattributes">menu attribute</link>, in a
+	      <link linkend="uixmlfactorymenubar"><tag class='attribute'>type</tag>=<quote>menubar</quote>
+		<tag class='element'>factory</tag>s</link>
+	      that creates menu items.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <tag class='element'>menuoption</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Specifies a
+	      <quote>submenu</quote>
+	      <link linkend="menuattributes">menu attribute</link>, in a
+	      <link linkend="uixmlfactorymenubar"><tag class='attribute'>type</tag>=<quote>menubar</quote>
+		<tag class='element'>factory</tag>s</link>
+	      that creates menu items.
+	      The following example in
+	      <link linkend="uixmlfactorymenubar"><filename>uigenerator6.C</filename></link>
+	      creates a <quote>Recent</quote> submenu:
+	    </para>
+
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<name>file_recent</name>
+<submenu>
+  <append_items>
+    <items>
+       <name>file_recent_file_1</name>
+       <label type="theme_text">File 1</label>
+       <name>file_recent_file_2</name>
+       <label type="theme_text">File 2</label>
+     </items>
+  </append_items>
+</submenu>
+<label type="theme_text">Recent</label>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      <tag class='element'>submenu</tag>, like any other item attribute,
+	      must precede it's list item, in this case a
+	      <quote>Recent</quote> <tag class='element'>label</tag>.
+	      <tag class='element'>submenu</tag> contains an inner list
+	      of <link linkend="uixmllistlayoutelements"><tag class='attribute'>type</tag>=<quote>list</quote>
+		<tag class='element'>layout</tag>
+		elements</link>; typically an
+	      <tag class='element'>append_items</tag> that defines the
+	      submenus's contents.
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -3491,6 +3567,180 @@ glm->generate("folders", generator, elements);</programlisting>
       The combo-box layout managers inherit from the list layout manager,
       and inherit the list layout manager's methods.
     </para>
+  </section>
+
+  <section id="uixmllayoutmenubar">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>menubar</quote>
+      <tag class='element'>layout</tag>s</title>
+
+    <para>
+      The contents of a
+      <tag class='element'>layout</tag>s of
+      <tag class='attribute'>type</tag>=<quote>menubar</quote>
+      specify the methods invoked by <link linkend="menubarlayoutmanager">menu
+	bar layout manager</link>'s <methodname>generate</methodname>():
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="menubar" id="mainmenubar">
+  <append_menus>
+    <name>mainmenu</name>
+  </append_menus>
+</layout>
+
+<factory type="menubar" id="mainmenu">
+
+<!-- ... -->
+
+</factory>
+
+// ....
+]]>
+main_window->get_menubarlayoutmanager()
+    ->generate("mainmenubar", generator, elements);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Using a main window's <methodname>get_menubarlayoutmanager</methodname>()
+      and invoking its
+      <link linkend="uixmlgenerate"><methodname>generate</methodname></link>()
+      executes the instruction from the
+      <tag class='element'>layout</tag>s of
+      <tag class='attribute'>type</tag>=<quote>menubar</quote>.
+      These <tag class='element'>layout</tag>s contain the following elements:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='attribute'>append_menus</tag>,
+	  <tag class='attribute'>insert_menus</tag>
+	  <tag class='attribute'>append_right_menus</tag>, and
+	  <tag class='attribute'>insert_right_menus</tag>
+	</term>
+
+	<listitem>
+	  <para>
+	    This is equivalent to invoking the corresponding
+	    <ulink url="&link-typedef-x--w-menubarlayoutmanager;"><classname>&ns;::w::menubarlayoutmanager</classname></ulink>
+	    method to create a new
+	    <ulink url="&link-typedef-x--w-menubarfactory;"><classname>&ns;::w::menubarfactory</classname></ulink>.
+	    The <tag class='element'>name</tag> specifies the
+	    <tag class='attribute'>id</tag> of a
+	    <tag class='element'>factory</tag> that generates the contents
+	    of the resulting
+	    <ulink url="&link-typedef-x--w-menubarfactory;"><classname>&ns;::w::menubarfactory</classname></ulink>.
+	    The <tag class='element'>position</tag> element specifies the
+	    insertion position parameter (for
+	    <tag class='element'>insert_menus</tag> and
+	    <tag class='element'>insert_right_menus</tag>).
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='attribute'>remove_menu</tag> and
+	  <tag class='attribute'>remove_right_menus</tag>
+	</term>
+	<listitem>
+	  <para>
+	    For completeness' sake,
+	    this is equivalent to invoking the corresponding
+	    <ulink url="&link-typedef-x--w-menubarlayoutmanager;"><classname>&ns;::w::menubarlayoutmanager</classname></ulink>
+	    method to remove a menu from the menu bar.
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<remove_menu>
+  <position>1</position>
+</remove_menu>
+]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	</listitem>
+	<para>
+	  The <tag class='element'>position</tag> element specifies which menu
+	  gets removed from the menu bar.
+	</para>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+  <section id="uixmlfactorymenubar">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>menubar</quote>
+      <tag class='element'>factory</tag>s</title>
+
+    <para>
+      The contents of a
+      <tag class='element'>factory</tag>s of
+      <tag class='attribute'>type</tag>=<quote>menubar</quote>
+      specify the
+      <ulink url="&link-typedef-x--w-menubarfactory;"><classname>&ns;::w::menubarfactory</classname></ulink>
+      methods that get invoked when generating the contents of a menu bar.
+    </para>
+
+    <para>
+      <ulink url="examples/uigenerator6.C"><filename>uigenerator6.C</filename></ulink>
+      gives an example of using a menu bar factory to create its menus from
+      <filename>uigenerator6.xml</filename>:
+    </para>
+
+    <blockquote>
+      <title><ulink url="examples/uigenerator6.xml">uigenerator6.xml</ulink></title>
+
+      <informalexample>
+	<programlisting><xi:include href="../examples/uigenerator6.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <section id="uixmlfactorymenubaradd">
+      <title>Adding menus</title>
+
+      <para>
+	<tag class='element'>add</tag> in a
+	<tag class='element'>factory</tag>s of
+	<tag class='attribute'>type</tag>=<quote>menubar</quote>
+	create a new menu, and must have a
+	<tag class='element'>title</tag> and a
+	<tag class='element'>menu</tag> element.
+      </para>
+
+      <para>
+	<tag class='element'>title</tag> sets the new menu's title, and
+	contains any element that's valid in a
+	<link linkend="uixmlfactoryelement">generic factory</link>.
+	The traditional menu title is a
+	<link linkend="uixmlfactorylabelelement"><tag class='element'>label</tag> element</link>.
+      </para>
+
+      <para>
+	The
+	<tag class='element'>menu</tag> element contains
+	<link linkend="uixmllistlayoutelements"><tag class='attribute'>type</tag>=<quote>list</quote>
+	  <tag class='element'>layout</tag> elements</link>.
+      </para>
+
+      <para>
+	In the general case, it's typically a single
+	<tag class='element'>append_items</tag> element, specifying a
+	<link linkend="uixmllistitemvaluename"><tag class='element'>name</tag></link>
+	of each menuitem.
+	<ulink url="examples/uigenerator6.xml">uigenerator6.xml</ulink>
+	provides an example of
+	<methodname>generate</methodname>()ing a menu and then using
+	<methodname>get_list_itemhandle</methodname> to retrive
+	a
+	<ulink url="&link-typedef-x--w-listitemhandle;"><classname>&ns;::w::listitemhandle</classname></ulink>
+	for each named menu itema and installing a &callback; that gets
+	invoked by selecting the menu item.
+      </para>
+    </section>
   </section>
 
   <section id="uixmlfactoryelement">
