@@ -15,6 +15,9 @@
 #include <x/w/listitemhandle.H>
 #include <x/w/uielements.H>
 #include <x/w/uigenerators.H>
+#include <x/w/menu.H>
+#include <x/w/copy_cut_paste_menu_items.H>
+#include <x/w/element_state.H>
 #include <x/w/screen_positions.H>
 #include <x/w/callback_trigger.H>
 #include <string>
@@ -37,6 +40,13 @@ static inline void create_main_window(const x::w::main_window &main_window,
 						 "uigenerator6.xml", pos);
 
 	x::w::uielements element_factory;
+
+	// Set "main" element to the main window.
+	//
+	// <append_copy_cut_paste> specifies that its attached element is
+	// "main".
+	element_factory.new_elements.emplace("main", main_window);
+
 	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
 
 	layout->generate("main-window-grid",
@@ -47,6 +57,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		main_window->get_menubarlayoutmanager();
 
 	mb->generate("main-window-menu", generator, element_factory);
+
+	// Attach callbacks for the menu items.
 
 	x::w::listitemhandle h=element_factory.get_listitemhandle("file_new");
 
@@ -138,6 +150,29 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				 return;
 
 			 std::cout << "Help/About" << std::endl;
+		 });
+
+	// In the theme file:
+	//
+	// <add id="file_menu"> adds the "File" menu.
+	//
+	// Before showing the file menu update() the copy/cut/paste menu items.
+
+	x::w::copy_cut_paste_menu_items ccp=
+		element_factory.new_copy_cut_paste_menu_items;
+
+	x::w::menu file_menu=element_factory.get_element("file_menu");
+
+	file_menu->on_popup_state_update
+		([ccp]
+		 (ONLY IN_THREAD,
+		  const x::w::element_state &state,
+		  const x::w::busy &mcguffin)
+		 {
+			 if (state.state_update == state.before_showing)
+			 {
+				 ccp->update();
+			 }
 		 });
 }
 

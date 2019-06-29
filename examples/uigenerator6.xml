@@ -16,7 +16,10 @@
       <padding>cell-padding</padding>
     </padding>
     <element>
-      <label type="theme_text">Label</label>
+      <input_field />
+      <config>
+	<columns>20</columns>
+      </config>
     </element>
   </factory>
 
@@ -31,7 +34,7 @@
   </layout>
 
   <factory type="menubar" id="main-window-menus">
-    <add>
+    <add id="file_menu">
       <title>
 	<element>
 	  <label type="theme_text">File</label>
@@ -46,7 +49,6 @@
 	    <label type="theme_text">Open</label>
 	    <name>file_close</name>
 	    <label type="theme_text">Close</label>
-	    <separator />
 	    <name>file_recent</name>
 	    <submenu>
 	      <append_items>
@@ -62,8 +64,12 @@
 	    <name>file_automatic_close</name>
 	    <menuoption />
 	    <label type="theme_text">Automatic Close</label>
+	    <separator />
 	  </items>
 	</append_items>
+	<append_copy_cut_paste>
+	  <parent>main</parent>
+	</append_copy_cut_paste>
       </menu>
     </add>
   </factory>

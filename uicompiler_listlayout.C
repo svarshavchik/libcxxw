@@ -258,6 +258,14 @@ uicompiler::listlayout_parseconfig(const theme_parser_lock &lock,
 	       };
 }
 
+static void append_copy_cut_paste(const listlayoutmanager &layout,
+				  uielements &elements,
+				  const std::string &parent)
+{
+	elements.new_copy_cut_paste_menu_items=
+		layout->append_copy_cut_paste(elements.get_element(parent));
+}
+
 #include "uicompiler.inc.H/listlayout_parse_parameters.H"
 #include "uicompiler.inc.H/listlayout_parser.H"
 

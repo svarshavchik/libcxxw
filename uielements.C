@@ -16,6 +16,7 @@
 #include "x/w/impl/container.H"
 #include "x/w/radio_group.H"
 #include "x/w/synchronized_axis.H"
+#include "x/w/copy_cut_paste_menu_items.H"
 #include "screen.H"
 #include "defaulttheme.H"
 

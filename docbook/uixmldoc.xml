@@ -3342,10 +3342,62 @@ glm->generate("option-list", generator, elements);</programlisting>
       <para>
 	<tag class='element'>autoselect</tag>
 	invokes the
-	<link linkend="list">list layout manager</link>
+	<link linkend="list">list layout manager</link>'s
 	<methodname>autoselect</methodname>()
 	method, with the value of the
 	<tag class='element'>position</tag> element giving its parameter.
+      </para>
+    </section>
+
+    <section id="uixmllayoutlistappendcopycutpaste">
+      <title><tag class='element'>append_copy_cut_paste</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<layout type="list" id="option-list">
+
+<!-- ... -->
+
+    <append_copy_cut_paste>
+      <parent>main</parent>
+    </appdn_copy_cut_paste>
+
+<!-- ... -->
+
+</layout>]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>append_copy_cut_paste</tag>
+	invokes the
+	<link linkend="list">list layout manager</link>
+	<methodname>append_copy_cut_paste</methodname>()
+	method, with the value of the
+	<tag class='element'>parent</tag> element giving the
+	value of the
+	<methodname>append_copy_cut_paste</methodname>()'s
+	parent element parameter.
+      </para>
+
+      <para>
+	<tag class='element'>parent</tag>'s value is
+	a name of an existing element in the
+	element factory object that
+	<link linkend="uixmlgenerate">gets passed to generate()</link>.
+	<link linkend="uixmlfactorymenubar"><filename>uigenerator6.C</filename></link>
+	gives an example of a typical implementation that stores
+	the main window widget in the element factory object as the
+	<quote>main</quote> element, and then specifying <quote>main</quote>
+	for the <tag class='element'>parent</tag> element.
+      </para>
+
+      <para>
+	<filename>uigenerator6.C</filename> gives an example of
+	retrieving the resulting
+	<link linkend="copycutpastemenuitems"><classname>&ns;::w::copy_cut_paste_menu_items</classname></link>
+	object and installing a status update for the <quote>File</quote>
+	menu, where the menu items appear, to <methodname>update</methodname>()
+	their status each time the menu gets shown.
       </para>
     </section>
   </section>

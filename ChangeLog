@@ -1,3 +1,7 @@
+2019-06-24  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Generate menu items using the theme file.
+
 2019-06-21  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Create combo-boxes using the theme file.

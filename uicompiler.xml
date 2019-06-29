@@ -1917,6 +1917,23 @@ List of values:
       <name>elements</name>
     </parameter>
 
+    <function>
+      <name>append_copy_cut_paste</name>
+      <invoke>append_copy_cut_paste</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>parent</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
 
     <function>
       <name>append_items</name>

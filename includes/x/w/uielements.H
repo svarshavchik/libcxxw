@@ -12,6 +12,7 @@
 #include <x/w/container.H>
 #include <x/w/radio_groupfwd.H>
 #include <x/w/synchronized_axisfwd.H>
+#include <x/w/copy_cut_paste_menu_items.H>
 #include <x/functionalrefptr.H>
 #include <unordered_map>
 #include <string>
@@ -142,6 +143,9 @@ struct uielements {
 
 	//! New list item handles
 	std::unordered_map<std::string, listitemhandle> new_list_item_handles;
+
+	//! New copy_cut_paste_menu_item
+	copy_cut_paste_menu_itemsptr new_copy_cut_paste_menu_items;
 
 	//! Return a created widget.
 
