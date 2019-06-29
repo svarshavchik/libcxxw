@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN copy_cut_paste_menu_itemsObj;
+class LIBCXX_PUBLIC copy_cut_paste_menu_itemsObj;
 
 /*! Standard "Copy"/"Cut"/"Paste" menu items.
 
