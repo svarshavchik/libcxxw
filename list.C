@@ -138,20 +138,23 @@ new_listlayoutmanager::create(const container_impl &parent_container) const
 	list_create_info lci{create_list_element_impl,
 			     create_listlayoutmanager_impl};
 
-	return create_impl(parent_container, synchronized_columns,
+	// The default container for the list's peephole.
+
+	auto focusable_container_impl=
+		ref<peepholed_container_impl_t>::create(parent_container);
+
+	return create_impl(focusable_container_impl, synchronized_columns,
 			   nullptr, lci);
 }
 
 focusable_container
-new_listlayoutmanager::create_impl(const container_impl &parent_container,
+new_listlayoutmanager::create_impl(const container_impl
+				   &focusable_container_impl,
 				   const synchronized_axis
 				   &list_synchronized_columns,
 				   table_create_info *tci,
 				   const list_create_info &lci) const
 {
-
-	auto focusable_container_impl=
-		ref<peepholed_container_impl_t>::create(parent_container);
 
 	containerptr internal_listcontainer;
 

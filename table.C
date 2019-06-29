@@ -732,6 +732,48 @@ struct LIBCXX_HIDDEN new_listlayoutmanager::table_create_info {
 	ptr<header_container_implObj> header_container_impl;
 };
 
+namespace {
+#if 0
+}
+#endif
+
+//! Table implementation object
+
+//! The list's default implementation object is peepholed_container_impl_t
+//! which is a nonrecursive_visibility object. For the table, we want
+//! to propagate show_all() to the table border's element, to show() the
+//! individual widgets that comprise the header row.
+//!
+//! We use the internal grid layout manager to obtain the (0, 0) cell, which
+//! is the header row container, and propagate show_all() there.
+
+class table_container_implObj : public container_elementObj<child_elementObj> {
+
+	typedef container_elementObj<child_elementObj> superclass_t;
+
+public:
+
+	using superclass_t::superclass_t;
+
+	void request_visibility_recursive(ONLY IN_THREAD, bool flag) override
+	{
+		invoke_layoutmanager
+			([&]
+			 (const ref<gridlayoutmanagerObj::implObj> &grid_impl)
+			 {
+				 grid_impl->get(0, 0)->impl
+					 ->request_visibility_recursive
+					 (IN_THREAD, flag);
+			 });
+		request_visibility(IN_THREAD, flag);
+	}
+};
+
+#if 0
+{
+#endif
+}
+
 focusable_container
 new_tablelayoutmanager::create(const container_impl &parent_container) const
 {
@@ -772,7 +814,12 @@ new_tablelayoutmanager::create(const container_impl &parent_container) const
 	list_create_info lci{create_list_element_impl,
 			     create_listlayoutmanager_impl};
 
-	return create_impl(parent_container,
+	// The default container for the list's peephole.
+
+	auto focusable_container_impl=
+		ref<table_container_implObj>::create(parent_container);
+
+	return create_impl(focusable_container_impl,
 			   axis, &tci, lci);
 }
 
@@ -961,7 +1008,7 @@ void new_tablelayoutmanager::create_table_header_row(const gridlayoutmanager
 	f->created_internally(header_border_container);
 
 	// There's an additional column for the vertical scrollbar.
-	// Put a dummy spacer in there.
+	// Put a dummy spacer in there
 	f->padding(0);
 	f->create_canvas()->show();
 
