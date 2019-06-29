@@ -1,3 +1,7 @@
+2019-06-28  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Generate tables using the theme file.
+
 2019-06-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* table.C: Fix show_all() on a table.

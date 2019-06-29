@@ -192,7 +192,7 @@ List of values:
 	<name>padding</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -218,7 +218,7 @@ List of values:
 	<name>padding</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -244,7 +244,7 @@ List of values:
 	<name>padding</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -270,7 +270,7 @@ List of values:
 	<name>padding</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -293,7 +293,7 @@ List of values:
 	<name>border</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_border</function>
+	  <function>compiler.generators-&gt;lookup_border</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -314,7 +314,7 @@ List of values:
 	<name>border</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_border</function>
+	  <function>compiler.generators-&gt;lookup_border</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -561,7 +561,7 @@ List of values:
 	<name>color</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_color</function>
+	  <function>compiler.generators-&gt;lookup_color</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -661,7 +661,7 @@ List of values:
 	<name>padding</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -682,7 +682,7 @@ List of values:
 	<name>padding</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -703,7 +703,7 @@ List of values:
 	<name>padding</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -724,7 +724,7 @@ List of values:
 	<name>padding</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -745,7 +745,7 @@ List of values:
 	<name>padding</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -794,7 +794,7 @@ List of values:
 	<name>border</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_border</function>
+	  <function>compiler.generators-&gt;lookup_border</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -815,7 +815,7 @@ List of values:
 	<name>border</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_border</function>
+	  <function>compiler.generators-&gt;lookup_border</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -836,7 +836,7 @@ List of values:
 	<name>border</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_border</function>
+	  <function>compiler.generators-&gt;lookup_border</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -857,7 +857,7 @@ List of values:
 	<name>border</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_border</function>
+	  <function>compiler.generators-&gt;lookup_border</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -878,7 +878,7 @@ List of values:
 	<name>border</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_border</function>
+	  <function>compiler.generators-&gt;lookup_border</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -987,7 +987,7 @@ List of values:
 	  <field>focus_border</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>lookup_appearance&lt;const_focus_border_appearance&gt;</function>
+	    <function>compiler.lookup_appearance&lt;const_focus_border_appearance&gt;</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1018,7 +1018,7 @@ List of values:
 	  <field>background_color</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>generators-&gt;lookup_color</function>
+	    <function>compiler.generators-&gt;lookup_color</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1028,7 +1028,7 @@ List of values:
 	  <field>width</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>generators-&gt;lookup_dim</function>
+	    <function>compiler.generators-&gt;lookup_dim</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1038,7 +1038,7 @@ List of values:
 	  <field>width.minimum</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>generators-&gt;lookup_dim</function>
+	    <function>compiler.generators-&gt;lookup_dim</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1048,7 +1048,7 @@ List of values:
 	  <field>width.preferred</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>generators-&gt;lookup_dim</function>
+	    <function>compiler.generators-&gt;lookup_dim</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1058,7 +1058,7 @@ List of values:
 	  <field>width.maximum</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>generators-&gt;lookup_dim</function>
+	    <function>compiler.generators-&gt;lookup_dim</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1068,7 +1068,7 @@ List of values:
 	  <field>height</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>generators-&gt;lookup_dim</function>
+	    <function>compiler.generators-&gt;lookup_dim</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1078,7 +1078,7 @@ List of values:
 	  <field>height.minimum</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>generators-&gt;lookup_dim</function>
+	    <function>compiler.generators-&gt;lookup_dim</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1088,7 +1088,7 @@ List of values:
 	  <field>height.preferred</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>generators-&gt;lookup_dim</function>
+	    <function>compiler.generators-&gt;lookup_dim</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1098,7 +1098,7 @@ List of values:
 	  <field>height.maximum</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>generators-&gt;lookup_dim</function>
+	    <function>compiler.generators-&gt;lookup_dim</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1142,7 +1142,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>get_appearance_base</function>
+	    <function>compiler.get_appearance_base</function>
 	  </lookup>
 	</member>
       </parameter>
@@ -1256,7 +1256,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>get_appearance_base</function>
+	    <function>compiler.get_appearance_base</function>
 	  </lookup>
 	</member>
       </parameter>
@@ -1288,7 +1288,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>get_appearance_base</function>
+	    <function>compiler.get_appearance_base</function>
 	  </lookup>
 	</member>
 	<member>
@@ -1327,7 +1327,7 @@ List of values:
 	<default_constructor_params>0</default_constructor_params>
 	<initialize_self />
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -1340,7 +1340,7 @@ List of values:
 	<initialize_self />
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -1374,7 +1374,7 @@ List of values:
 	<initialize_self />
 	<type>single_value</type>
 	<lookup>
-	  <function>lookup_appearance&lt;const_image_button_appearance&gt;</function>
+	  <function>compiler.lookup_appearance&lt;const_image_button_appearance&gt;</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -1415,7 +1415,7 @@ List of values:
 	<initialize_self />
 	<type>single_value</type>
 	<lookup>
-	  <function>lookup_appearance&lt;const_image_button_appearance&gt;</function>
+	  <function>compiler.lookup_appearance&lt;const_image_button_appearance&gt;</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -1441,7 +1441,7 @@ List of values:
 	<type>single_value</type>
 	<name>type</name>
 	<lookup>
-	  <function>lookup_container_generators</function>
+	  <function>compiler.lookup_container_generators</function>
 	  <parameter>lock</parameter>
 	  <parameter>single_value(lock, "progressbar", "container")</parameter>
 	  <default_params />
@@ -1472,7 +1472,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>get_appearance_base</function>
+	    <function>compiler.get_appearance_base</function>
 	  </lookup>
 	</member>
       </parameter>
@@ -1517,7 +1517,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>get_appearance_base</function>
+	    <function>compiler.get_appearance_base</function>
 	  </lookup>
 	</member>
       </parameter>
@@ -1592,7 +1592,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>get_appearance_base</function>
+	    <function>compiler.get_appearance_base</function>
 	  </lookup>
 	</member>
       </parameter>
@@ -1614,7 +1614,7 @@ List of values:
 	<name>scrollbar</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>lookup_scrollbar_type</function>
+	  <function>compiler.lookup_scrollbar_type</function>
 	</lookup>
       </parameter>
 
@@ -1656,7 +1656,7 @@ List of values:
 	  <field>minimum_size</field>
 	  <type>single_value</type>
 	  <lookup>
-	    <function>generators-&gt;lookup_dim</function>
+	    <function>compiler.generators-&gt;lookup_dim</function>
 	    <default_params />
 	  </lookup>
 	</member>
@@ -1670,7 +1670,7 @@ List of values:
 	<initialize_self />
 	<type>single_value</type>
 	<lookup>
-	  <function>lookup_appearance&lt;const_scrollbar_appearance&gt;</function>
+	  <function>compiler.lookup_appearance&lt;const_scrollbar_appearance&gt;</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -1725,7 +1725,7 @@ List of values:
 	<type>single_value</type>
 	<name>type</name>
 	<lookup>
-	  <function>lookup_container_generators</function>
+	  <function>compiler.lookup_container_generators</function>
 	  <parameter>lock</parameter>
 	  <parameter>single_value(lock, "name", "container")</parameter>
 	  <default_params />
@@ -1870,7 +1870,7 @@ List of values:
 	<name>appearance</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>lookup_appearance&lt;const_bookpage_appearance&gt;</function>
+	  <function>compiler.lookup_appearance&lt;const_bookpage_appearance&gt;</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2076,6 +2076,47 @@ List of values:
     <use_common>standard_comboboxlayout</use_common>
   </parser>
 
+  <!-- table layout manager -->
+
+  <parser>
+    <name>tablelayout</name>
+
+    <parameter>
+      <type>tablelayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <use_common>listlayout</use_common>
+
+    <function>
+      <name>replace_header</name>
+      <invoke>tablelayout_replace_header</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>column</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>header</name>
+	<type>compiler.factory_parseconfig</type>
+      </parameter>
+    </function>
+  </parser>
+
   <!-- new_booklayoutmanager initialization -->
 
   <parser>
@@ -2101,7 +2142,7 @@ List of values:
 	<xpath>.</xpath>
 	<type>single_value</type>
 	<lookup>
-	  <function>lookup_appearance&lt;const_book_appearance&gt;</function>
+	  <function>compiler.lookup_appearance&lt;const_book_appearance&gt;</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2172,7 +2213,7 @@ List of values:
 	<type>single_value</type>
 	<before-passing-parameter>{</before-passing-parameter>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2181,7 +2222,7 @@ List of values:
 	<name>preferred</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2191,7 +2232,7 @@ List of values:
 	<type>single_value</type>
 	<after-passing-parameter>}</after-passing-parameter>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2225,7 +2266,7 @@ List of values:
 	<type>single_value</type>
 	<before-passing-parameter>{</before-passing-parameter>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2234,7 +2275,7 @@ List of values:
 	<name>preferred</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2244,7 +2285,7 @@ List of values:
 	<type>single_value</type>
 	<after-passing-parameter>}</after-passing-parameter>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2324,7 +2365,7 @@ List of values:
 	<name>border</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>generators-&gt;lookup_border</function>
+	  <function>compiler.generators-&gt;lookup_border</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2375,7 +2416,7 @@ List of values:
 	<type>single_value</type>
 	<before-passing-parameter>std::tuple{</before-passing-parameter>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2385,7 +2426,7 @@ List of values:
 	<type>single_value</type>
 	<after-passing-parameter>}</after-passing-parameter>
 	<lookup>
-	  <function>generators-&gt;lookup_dim</function>
+	  <function>compiler.generators-&gt;lookup_dim</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2425,7 +2466,7 @@ List of values:
 	<xpath>.</xpath>
 	<type>single_value</type>
 	<lookup>
-	  <function>lookup_appearance&lt;const_list_appearance&gt;</function>
+	  <function>compiler.lookup_appearance&lt;const_list_appearance&gt;</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2482,7 +2523,7 @@ List of values:
 	<xpath>.</xpath>
 	<type>single_value</type>
 	<lookup>
-	  <function>lookup_appearance&lt;const_combobox_appearance&gt;</function>
+	  <function>compiler.lookup_appearance&lt;const_combobox_appearance&gt;</function>
 	  <default_params />
 	</lookup>
       </parameter>
@@ -2533,8 +2574,96 @@ List of values:
 	<xpath>.</xpath>
 	<type>single_value</type>
 	<lookup>
-	  <function>lookup_appearance&lt;const_input_field_appearance&gt;</function>
+	  <function>compiler.lookup_appearance&lt;const_input_field_appearance&gt;</function>
 	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+  </parser>
+
+    <!-- new_tablelayoutmanager initialization -->
+
+  <parser>
+    <name>new_tablelayout</name>
+
+    <parameter>
+      <type>new_tablelayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <use_common>new_listlayout</use_common>
+
+    <function>
+      <name>extra_table_appearance</name>
+      <object>layout</object>
+      <invoke>extra_table_appearance=</invoke>
+
+      <parameter>
+	<name>extra_table_appearance</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.lookup_appearance&lt;const_table_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>table_width</name>
+      <object>layout</object>
+      <invoke>table_width=</invoke>
+      <parameter>
+	<name>table_width</name>
+	<xpath>.</xpath>
+	<type>to_mm</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>maximum_table_width</name>
+      <object>layout</object>
+      <invoke>maximum_table_width=</invoke>
+      <parameter>
+	<name>maximum_table_width</name>
+	<xpath>.</xpath>
+	<type>to_mm</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>unlimited_table_width</name>
+      <object>layout</object>
+      <invoke>unlimited_table_width</invoke>
+    </function>
+
+    <function>
+      <name>adjustable_column_widths</name>
+      <object>layout</object>
+      <invoke>adjustable_column_widths=</invoke>
+      <parameter>
+	<name>adjustable_column_widths</name>
+	<xpath>.</xpath>
+	<type>optional_constant&lt;true&gt;</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>restore</name>
+      <object>layout</object>
+      <invoke>restore</invoke>
+      <parameter>
+	<name>restore</name>
+	<type>single_value</type>
+	<xpath>.</xpath>
+	<lookup>
+	  <function>restore_tablelayoutmanager_position</function>
+	  <prepend-parameter>compiler</prepend-parameter>
 	</lookup>
       </parameter>
     </function>
@@ -2583,7 +2712,7 @@ List of values:
 	<name>appearance</name>
 	<type>single_value</type>
 	<lookup>
-	  <function>lookup_appearance&lt;const_popup_list_appearance&gt;</function>
+	  <function>compiler.lookup_appearance&lt;const_popup_list_appearance&gt;</function>
 	  <default_params />
 	</lookup>
       </parameter>

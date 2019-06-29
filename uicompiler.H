@@ -100,6 +100,10 @@ public:
 	//! Saved screen positions that might be restored
 	const const_screen_positionsptr saved_positions;
 
+	//! Check that saved_positions were given, then return them.
+
+	const_screen_positions positions_to_restore() const;
+
 	//! Whether this is a custom theme compiler
 
 	//! Custom theme compilers will allow various entities (colors,
@@ -192,6 +196,10 @@ public:
 	       > editable_comboboxlayout_parseconfig(const theme_parser_lock
 						     &lock);
 
+	//! Parser for table layout manager generator.
+	vector<tablelayoutmanager_generator
+	       > tablelayout_parseconfig(const theme_parser_lock &lock);
+
 	//! Parser for the new book layout manager generator
 
 	vector<new_booklayoutmanager_generator
@@ -215,7 +223,13 @@ public:
 	//! Parser for the new editable combobox layout manager generator
 
 	vector<new_editable_comboboxlayoutmanager_generator
-	       > new_editable_comboboxlayout_parseconfig(const theme_parser_lock &lock);
+	       > new_editable_comboboxlayout_parseconfig(const theme_parser_lock
+							 &lock);
+
+	//! Parser for the new table layout manager generator
+
+	vector<new_tablelayoutmanager_generator
+	       > new_tablelayout_parseconfig(const theme_parser_lock &lock);
 private:
 	//! Implement <element>
 
@@ -254,6 +268,10 @@ private:
 	editable_comboboxlayoutmanager_generator
 	editable_comboboxlayout_parser(const theme_parser_lock &lock);
 
+	//! Generate a single table layout manager instruction.
+	tablelayoutmanager_generator
+	tablelayout_parser(const theme_parser_lock &lock);
+
 	//! Generate a single book layout manager instruction.
 	booklayoutmanager_generator
 	booklayout_parser(const theme_parser_lock &lock);
@@ -281,6 +299,10 @@ private:
 	//! Generate a single new_editable_comboboxlayoutmanager instruction.
 	new_editable_comboboxlayoutmanager_generator
 	new_editable_comboboxlayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single new_tablelayoutmanager instruction.
+	new_tablelayoutmanager_generator
+	new_tablelayout_parser(const theme_parser_lock &lock);
 
 public:
 	//! Return compiled grid factory generators.
@@ -382,6 +404,17 @@ public:
 	const_vector<booklayoutmanager_generator>
 	lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
+
+	//! Return compiled table layout manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into tablelayoutmanager_generators, and return them.
+
+	const_vector<tablelayoutmanager_generator>
+	lookup_tablelayoutmanager_generators(const theme_parser_lock &lock,
+					    const std::string &);
+
 private:
 	//! Execute <append_row>.
 
@@ -527,12 +560,17 @@ private:
 
 	struct editable_comboboxlayoutmanager_functions;
 
+	//! Supported table layout manager functionality.
+
+	struct tablelayoutmanager_functions;
+
 	//! All supported layout manager funcitonality.
 
 	typedef std::variant<gridlayoutmanager_functions,
 			     listlayoutmanager_functions,
 			     standard_comboboxlayoutmanager_functions,
 			     editable_comboboxlayoutmanager_functions,
+			     tablelayoutmanager_functions,
 			     booklayoutmanager_functions
 			     > layoutmanager_functions;
 

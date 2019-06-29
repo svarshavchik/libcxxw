@@ -14,6 +14,38 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct LIBCXX_HIDDEN new_tablelayoutmanager_restored_position;
+
+//! Restored table layout manager configuration
+
+//! Implements \ref new_tablelayoutmanager "new_tablelayoutmanager"'s
+//! restore() method.
+
+struct new_tablelayoutmanager_restored_position {
+
+	//! Restore previously save()d columns widths.
+
+	//! The 2nd parameter is a unique identifier/label for this table.
+	//! All tables should have unique identifiers. This label also gets
+	//! used when save()ing window's position.
+	void restore(const const_screen_positions &,
+		     const std::string_view &) LIBCXX_PUBLIC;
+
+	//! Table's name
+
+	//! \internal
+	//!
+	//! The name that was passed to restore().
+	std::string name;
+
+	//! Restored widths.
+
+	//! \internal
+	//!
+	//! Use restore() to populate this.
+	std::vector<dim_t> restored_widths;
+};
+
 //! Create a new table layout manager.
 
 //! A subclass of the \ref listlayoutmanager "list layout manager" that
@@ -36,7 +68,8 @@ LIBCXXW_NAMESPACE_START
 //!
 //! This is not a thread-safe object.
 
-class new_tablelayoutmanager : public new_listlayoutmanager {
+class new_tablelayoutmanager : public new_listlayoutmanager,
+			       public new_tablelayoutmanager_restored_position {
 
  public:
 
@@ -85,27 +118,15 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 
 	bool adjustable_column_widths=false;
 
-	//! Restore previously save()d columns widths.
+	using new_tablelayoutmanager_restored_position::restore;
 
-	//! The 2nd parameter is a unique identifier/label for this table.
-	//! All tables should have unique identifiers. This label also gets
-	//! used when save()ing window's position.
-	void restore(const const_screen_positions &,
-		     const std::string_view &) LIBCXX_PUBLIC;
+	//! Helper used by the theme parser.
 
-	//! Table's name
-
-	//! \internal
-	//!
-	//! The name that was passed to restore().
-	std::string name;
-
-	//! Restored widths.
-
-	//! \internal
-	//!
-	//! Use restore() to populate this.
-	std::vector<dim_t> restored_widths;
+	inline void restore(const new_tablelayoutmanager_restored_position &rp)
+	{
+		static_cast<new_tablelayoutmanager_restored_position &>(*this)
+			=rp;
+	}
 
  private:
 
@@ -113,19 +134,21 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 
 	//! \internal
 	focusable_container create(const container_impl &)
-		const override;
+		const override LIBCXX_HIDDEN;
  private:
 
 	//! Implement created_list_container().
 
 	//! \internal
-	virtual void created_list_container(const container_impl &,
-					    table_create_info *)
-		const override;
+	void created_list_container(const container_impl &,
+				    table_create_info *)
+		const override LIBCXX_HIDDEN;
+
 	//! Implement create_table_header_row()
 
 	void create_table_header_row(const gridlayoutmanager &,
-				     table_create_info *) const override;
+				     table_create_info *) const override
+		LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

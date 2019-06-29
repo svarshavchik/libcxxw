@@ -538,8 +538,9 @@ void tablelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
 	}
 }
 
-void new_tablelayoutmanager::restore(const const_screen_positions &pos,
-				     const std::string_view &name_arg)
+void new_tablelayoutmanager_restored_position
+::restore(const const_screen_positions &pos,
+	  const std::string_view &name_arg)
 {
 	name=name_arg;
 

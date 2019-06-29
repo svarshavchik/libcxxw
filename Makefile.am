@@ -903,6 +903,8 @@ libcxxw_la_SOURCES=\
 	uicompiler_new_editable_comboboxlayout.C    \
 	uicompiler_new_listlayout.C		    \
 	uicompiler_new_standard_comboboxlayout.C    \
+	uicompiler_new_tablelayout.C		    \
+	uicompiler_tablelayout.C		    \
 	uigenerators.C				    \
 	uielements.C				    \
 	windowobj.C				    \
@@ -1339,20 +1341,20 @@ uicompiler.stamp.inc.H: uicompiler.xml parseuicompiler.xsl
 	$(XSLTPROC) $(srcdir)/parseuicompiler.xsl $(srcdir)/uicompiler.xml
 	touch uicompiler.stamp.inc.H
 
-uicompiler.lo                   \
-uicompiler_booklayout.lo	\
-uicompiler_bookpagefactory.lo   \
-uicompiler_gridfactory.lo       \
-uicompiler_gridlayout.lo        \
-uicompiler_listlayout.lo        \
-uicompiler_menubarlayout.lo     \
-uicompiler_standard_comboboxlayout.lo        \
-uicompiler_editable_comboboxlayout.lo        \
-uicompiler_new_booklayout.lo    \
-uicompiler_new_listlayout.lo    \
-uicompiler_new_custom_comboboxlayout.lo    \
-uicompiler_new_standard_comboboxlayout.lo    \
-uicompiler_new_editable_comboboxlayout.lo    \
+uicompiler.lo					\
+uicompiler_booklayout.lo			\
+uicompiler_bookpagefactory.lo			\
+uicompiler_editable_comboboxlayout.lo		\
+uicompiler_gridfactory.lo			\
+uicompiler_gridlayout.lo			\
+uicompiler_listlayout.lo			\
+uicompiler_menubarlayout.lo			\
+uicompiler_new_booklayout.lo			\
+uicompiler_new_custom_comboboxlayout.lo		\
+uicompiler_new_editable_comboboxlayout.lo	\
+uicompiler_new_listlayout.lo			\
+uicompiler_new_standard_comboboxlayout.lo	\
+uicompiler_standard_comboboxlayout.lo		\
 	: uicompiler.stamp.inc.H
 
 clean-local:

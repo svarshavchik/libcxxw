@@ -979,6 +979,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 					.emplace(id, ret);
 				continue;
 			}
+
+			if (type == "table")
+			{
+				auto ret=tablelayout_parseconfig(lock);
+				generators->tablelayoutmanager_generators
+					.emplace(id, ret);
+				continue;
+			}
 		}
 		else if (name == "factory")
 		{
@@ -1286,6 +1294,40 @@ uicompiler::lookup_editable_comboboxlayoutmanager_generators(const theme_parser_
 	auto ret=editable_comboboxlayout_parseconfig(new_lock);
 
 	generators->editable_comboboxlayoutmanager_generators.emplace(name, ret);
+
+	return ret;
+}
+
+const_vector<tablelayoutmanager_generator>
+uicompiler::lookup_tablelayoutmanager_generators(const theme_parser_lock &lock,
+						const std::string &name)
+{
+	{
+		auto iter=generators->tablelayoutmanager_generators.find(name);
+
+		if (iter != generators->tablelayoutmanager_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "layout"
+	    || iter->second->get_any_attribute("type") != "table")
+	{
+		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=tablelayout_parseconfig(new_lock);
+
+	generators->tablelayoutmanager_generators.emplace(name, ret);
 
 	return ret;
 }

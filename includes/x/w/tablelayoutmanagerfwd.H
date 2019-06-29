@@ -125,6 +125,25 @@ the specified column. replace_header() returns a
 new one. Using the returned factory to create and show() a new widget
 replaces the existing column's header with a new one.
 
+\par Saving and restoring column widths
+
+\code
+INSERT_LIBX_NAMESPACE::new_tablelayoutmanager ntlm;
+
+ntlm.restore(pos, "main-table");
+\endcode
+
+Restores previously-saved widths of adjustable columns.
+A \ref screen_position "screen_positions" object must get constructed
+previously and used to restore() the table's \ref main_window "main_window".
+This restores the table's configuration alongside with the main window's.
+The second parameter is the new table's unique identifier label. This is
+an opaque text string that identifies this table. Multiple
+tables' configurations can be saved, with each table using a unique label.
+
+save()ing the main window's positions automatically saves the table's
+position.
+
 */
 
 typedef ref<tablelayoutmanagerObj> tablelayoutmanager;

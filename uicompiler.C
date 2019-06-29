@@ -17,6 +17,7 @@
 #include "x/w/listlayoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
+#include "x/w/tablelayoutmanager.H"
 #include "x/w/synchronized_axis.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
@@ -89,6 +90,46 @@ void uicompiler::wrong_appearance_type(const std::string_view &name,
 // its contents.
 //
 // - new_layoutmanager - returns the corresponding new layoutmanager object.
+//
+// Basic outline for setting up a new layout manager:
+//
+// - Define "new_{name}layoutmanager_plainptr" typedef in uigeneratorsfwd.H,
+// to be used as a pseudo-ref by the new_{name}layoutmanager generator.
+//
+// - Define "new_{name}layoutmanager_generator" typedef in uigeneratorsfwd.H
+//
+// - Define the parser in uicompiler.xml for new_{name}layout, create the
+// "uicompiler_new_{name}layout.C" module, adding it to the Makefile.
+//
+// - Define the parser in uicompiler.xml for {name}layout, create the
+// "uicompiler_{name}layout.C" module, adding it to the Makefile.
+//
+// - Define "{name}layoutmanager_generator" typedef in uigeneratorsfwd.H
+//
+// - Add {name}layoutmanager_generators map to uigeneratorsObj
+//
+// uicompiler.H:
+//
+// - Declare new_{name}layout_parseconfig() and new_{name}layout_parser()
+//
+// - Declare {name}layoutmanager_functions, and add it to the
+//   layoutmanager_functions variant.
+//
+// - Declare {name}layout_parseconfig() and {name}layout_parser()
+//
+// - Declare lookup_{name}layoutmanager_generators().
+//
+// uicompiler.C:
+//
+// - Define {name}layoutmanager_functions, and add it to get_layoutmanager().
+//
+// uicompiler3.C:
+//
+// - Add code to uicompiler's constructor to recognize the new <layout> type
+// and parse it.
+//
+// - Define lookup_{name}layoutmanager_generators().
+//
 
 // Grid layout manager functionality.
 
@@ -121,7 +162,8 @@ struct uicompiler::gridlayoutmanager_functions {
 				 new_gridlayoutmanager{});
 		}
 
-		inline new_gridlayoutmanager new_layoutmanager() const
+		inline new_gridlayoutmanager new_layoutmanager(uielements &)
+			const
 		{
 			return {};
 		}
@@ -195,7 +237,7 @@ struct uicompiler::listlayoutmanager_functions {
 						     uielements &factories)
 			const
 		{
-		        auto nlm=new_layoutmanager();
+		        auto nlm=new_layoutmanager(factories);
 
 			// Generate the contents of the new_listlayoutmanager.
 
@@ -213,7 +255,8 @@ struct uicompiler::listlayoutmanager_functions {
 				 nlm);
 		}
 
-		inline new_listlayoutmanager new_layoutmanager() const
+		inline new_listlayoutmanager new_layoutmanager(uielements &)
+			const
 		{
 			new_listlayoutmanager nlm{style};
 
@@ -232,6 +275,158 @@ struct uicompiler::listlayoutmanager_functions {
 		}
 	};
 };
+
+////////////////////////////////////////////////////////////////////////////
+//
+// Table layout manager functionality.
+//
+// Parse new table layout manager generators from <config>
+
+static const_vector<new_tablelayoutmanager_generator>
+create_newtablelayoutmanager_vector(uicompiler &compiler,
+				    const theme_parser_lock &orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	lock->get_xpath("config")->to_node();
+
+	return compiler.new_tablelayout_parseconfig(lock);
+}
+
+// Parse all header cell generators.
+
+static std::vector<const_vector<factory_generator>>
+create_table_header_generators(uicompiler &compiler,
+			       const theme_parser_lock &orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	auto xpath=lock->get_xpath("header");
+
+	size_t n=xpath->count();
+
+	std::vector<const_vector<factory_generator>> ret;
+
+	ret.reserve(n);
+
+	for (size_t i=1; i<=n; ++i)
+	{
+		xpath->to_node(i);
+
+		ret.push_back(compiler.factory_parseconfig(lock));
+	}
+
+	return ret;
+}
+
+struct uicompiler::tablelayoutmanager_functions {
+
+	// A vector of compiled grid layout manager generators
+
+	struct generators {
+
+		const listlayoutstyle_impl &style;
+
+		// Generators for the contents of the new_tablelayoutmanager
+
+		const_vector<new_tablelayoutmanager_generator
+			     > new_tablelayoutmanager_vector;
+
+		std::vector<const_vector<factory_generator>> header_generators;
+
+		// Generators for the contents of the list layout manager.
+		const_vector<tablelayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const theme_parser_lock &lock,
+			   const std::string &name)
+			: style{single_value_exists(lock, "style")
+				? list_style_by_name(lowercase_single_value
+						     (lock, "style",
+						      "container"))
+				: highlighted_list},
+			  new_tablelayoutmanager_vector
+			{
+			 create_newtablelayoutmanager_vector(compiler, lock)
+			},
+			  header_generators
+			{
+			 create_table_header_generators(compiler, lock)
+			},
+			  generator_vector
+			{
+			 compiler.lookup_tablelayoutmanager_generators(lock,
+								       name)
+			}
+		{
+		}
+
+		focusable_container create_container(const factory &f,
+						     uielements &factories)
+			const
+		{
+		        auto ntlm=new_layoutmanager(factories);
+
+			// Generate the contents of the new_tablelayoutmanager.
+
+			for (const auto &g:*new_tablelayoutmanager_vector)
+			{
+				g(&ntlm, factories);
+			}
+
+			if (ntlm.columns != header_generators.size())
+				throw EXCEPTION(gettextmsg
+						(_("number of <header>s (%1%) "
+						   "is different from "
+						   "<columns> (%2%)"),
+						 header_generators.size(),
+						 ntlm.columns));
+
+			return f->create_focusable_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 ntlm);
+		}
+
+		inline new_tablelayoutmanager
+		new_layoutmanager(uielements &factories) const
+		{
+			new_tablelayoutmanager ntlm
+				{
+				 [&, this]
+				 (const factory &f,
+				  size_t column)
+				 {
+					 for (const auto &g :
+						      *header_generators
+						      .at(column))
+					 {
+						 g(f, factories);
+					 }
+				 },
+				 style
+				};
+
+			return ntlm;
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			tablelayoutmanager llm=c->get_layoutmanager();
+
+			for (const auto &g:*generator_vector)
+			{
+				g(llm, factories);
+			}
+		}
+	};
+};
+
+
 
 // Parse generators for the contents of a new_standard_comboboxlayoutmanager
 
@@ -284,7 +479,7 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 						     uielements &factories)
 			const
 		{
-		        auto nlm=new_layoutmanager();
+		        auto nlm=new_layoutmanager(factories);
 
 			// Generate the contents of the new_standard_comboboxlayoutmanager.
 
@@ -302,8 +497,8 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 				 nlm);
 		}
 
-		inline new_standard_comboboxlayoutmanager new_layoutmanager()
-			const
+		inline new_standard_comboboxlayoutmanager
+		new_layoutmanager(uielements &) const
 		{
 			new_standard_comboboxlayoutmanager nlm;
 
@@ -375,7 +570,7 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 						     uielements &factories)
 			const
 		{
-		        auto nlm=new_layoutmanager();
+		        auto nlm=new_layoutmanager(factories);
 
 			// Generate the contents of the new_editable_comboboxlayoutmanager.
 
@@ -393,8 +588,8 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 				 nlm);
 		}
 
-		inline new_editable_comboboxlayoutmanager new_layoutmanager()
-			const
+		inline new_editable_comboboxlayoutmanager
+		new_layoutmanager(uielements &) const
 		{
 			new_editable_comboboxlayoutmanager nlm;
 
@@ -464,7 +659,7 @@ struct uicompiler::booklayoutmanager_functions {
 						     uielements &factories)
 			const
 		{
-		        auto nblm=new_layoutmanager();
+		        auto nblm=new_layoutmanager(factories);
 
 			// Generate the contents of the new_listlayoutmanager.
 
@@ -482,7 +677,8 @@ struct uicompiler::booklayoutmanager_functions {
 				 nblm);
 		}
 
-		inline new_booklayoutmanager new_layoutmanager() const
+		inline new_booklayoutmanager new_layoutmanager(uielements &)
+			const
 		{
 			return {};
 		}
@@ -539,10 +735,12 @@ element uicompiler::create_progressbar(const factory &generic_factory,
 		 {
 			 if constexpr (std::is_base_of_v<new_layoutmanager,
 				       std::remove_reference_t<
-				       decltype(generators.new_layoutmanager())
+				       decltype(generators.new_layoutmanager
+						(elements))
 				       >>)
 			 {
-				const auto &nlm=generators.new_layoutmanager();
+				const auto &nlm=
+					generators.new_layoutmanager(elements);
 
 				return generic_factory->create_progressbar
 					([&]
@@ -593,8 +791,20 @@ uicompiler::get_layoutmanager(const std::string &type)
 				editable_comboboxlayoutmanager_functions>{}
 		};
 
+	if (type == "table")
+		return layoutmanager_functions{
+			std::in_place_type_t<tablelayoutmanager_functions>{}
+		};
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a known layout/container"),
 				   type));
+}
+
+const_screen_positions uicompiler::positions_to_restore() const
+{
+	if (!saved_positions)
+		throw EXCEPTION(_("<restore> requires saved screen_positions"));
+
+	return saved_positions;
 }
 
 namespace {
@@ -613,20 +823,12 @@ static std::string get_id_to_restore(const theme_parser_lock &lock)
 	return id;
 }
 
-static const_screen_positions positions_to_restore(uicompiler &compiler)
-{
-	if (!compiler.saved_positions)
-		throw EXCEPTION(_("<restore> requires saved screen_positions"));
-
-	return compiler.saved_positions;
-}
-
 template<typename object_type>
 inline void invoke_restore(object_type &object,
 			   const theme_parser_lock &lock,
 			   uicompiler &compiler)
 {
-	object.restore(positions_to_restore(compiler),
+	object.restore(compiler.positions_to_restore(),
 		       get_id_to_restore(lock));
 }
 

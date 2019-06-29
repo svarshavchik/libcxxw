@@ -103,6 +103,12 @@ public:
 			   const_vector<listlayoutmanager_generator>
 			   > listlayoutmanager_generators;
 
+	//! Generators used by the table layout manager
+
+	std::unordered_map<std::string,
+			   const_vector<tablelayoutmanager_generator>
+			   > tablelayoutmanager_generators;
+
 	//! Generators used by the standard combobox layout manager
 
 	std::unordered_map<std::string,

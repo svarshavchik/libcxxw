@@ -133,6 +133,33 @@ pane container's tabbing order, they do not "interleave". For that reason
 it's preferred to have their tabbing order immediately follow or precede
 their pane container.
 
+\par Saving and restoring pane sizes
+
+\code
+INSERT_LIBX_NAMESPACE::new_panelayoutmanager nplm;
+
+config.restore(nplm, "main");
+\endcode
+
+Restores the previous sizes of the panes.
+A \ref screen_position "screen_positions" object must get constructed
+previously and used to restore() the
+\ref main_window "main_window".
+This restores the
+layout manager's panes' sizes alongside with the main window's.
+The second parameter is the new
+pane container's unique identifier label. This is
+an opaque text string that identifies this pane container. Multiple
+pane containers' configurations can be saved, with each
+pane container using a unique label.
+
+save()ing the main window's positions automatically saves the sizes of
+the panes in the container.
+
+\note
+Pane sizes can be effectively restoring only if the new pane container's
+creator lambda creates the same number of panes as there were previously.
+
 */
 
 typedef ref<panelayoutmanagerObj> panelayoutmanager;

@@ -14,6 +14,7 @@
 #include <x/w/custom_comboboxlayoutmanagerfwd.H>
 #include <x/w/standard_comboboxlayoutmanagerfwd.H>
 #include <x/w/editable_comboboxlayoutmanagerfwd.H>
+#include <x/w/tablelayoutmanagerfwd.H>
 #include <x/w/menubarfactoryfwd.H>
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/bookpagefactoryfwd.H>
@@ -46,6 +47,13 @@ typedef functionref<void (const gridlayoutmanager &, uielements &)
 
 typedef functionref<void (const listlayoutmanager &, uielements &)
 		    > listlayoutmanager_generator;
+
+//! Generate something in the table layout manager
+
+//! \see uigenerators
+
+typedef functionref<void (const tablelayoutmanager &, uielements &)
+		    > tablelayoutmanager_generator;
 
 //! Generate something in the standard combobox layout manager
 
@@ -149,6 +157,17 @@ typedef new_editable_comboboxlayoutmanager
 typedef functionref<void (const new_editable_comboboxlayoutmanager_plainptr &,
 			  uielements &elements)
 		    > new_editable_comboboxlayoutmanager_generator;
+
+//! Pseudo-ref used to initialize a new_tablelayoutmanager parameter
+
+typedef new_tablelayoutmanager *new_tablelayoutmanager_plainptr;
+
+//! Generate something to initialize a new_tablelayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_tablelayoutmanager_plainptr &layout,
+			  uielements &elements)
+		    > new_tablelayoutmanager_generator;
 
 class LIBCXX_PUBLIC uigeneratorsObj;
 class LIBCXX_PUBLIC uigeneratorsBase;

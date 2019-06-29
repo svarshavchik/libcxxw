@@ -188,6 +188,27 @@ callbacks the trouble of properly weakly-capturing their widget and
 recovering the weak reference before using it. That detail is already taken
 care of.
 
+\par Saving and restoring font picker configuration
+
+\code
+INSERT_LIBX_NAMESPACE::font_picker_config config;
+
+config.restore(pos, "title-font");
+\endcode
+
+Restores previously-saved font picker state.
+A \ref screen_position "screen_positions" object must get constructed
+previously and used to restore() the font picker's
+\ref main_window "main_window".
+This restores the font picker's state alongside with the main window's.
+The second parameter is the new font picker's unique identifier label. This is
+an opaque text string that identifies this font picker. Multiple
+font pickers' configurations can be saved, with each
+font picker using a unique label.
+
+save()ing the main window's positions automatically saves the font picker's
+state.
+
 */
 
 typedef ref<font_pickerObj> font_picker;

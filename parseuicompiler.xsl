@@ -221,12 +221,16 @@ If there's a <default_params>, we also append
 
     -->
     <xsl:if test="lookup">
-      <xsl:text>compiler.</xsl:text>
       <xsl:value-of select="lookup/function" />
       <xsl:text>(</xsl:text>
 
       <xsl:if test="$prepend-parameter != ''">
 	<xsl:value-of select="$prepend-parameter" />
+	<xsl:text>, </xsl:text>
+      </xsl:if>
+
+      <xsl:if test="lookup/prepend-parameter">
+	<xsl:value-of select="lookup/prepend-parameter" />
 	<xsl:text>, </xsl:text>
       </xsl:if>
     </xsl:if>
