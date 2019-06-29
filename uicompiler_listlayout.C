@@ -170,8 +170,8 @@ uicompiler::list_items_param_value(const theme_parser_lock &orig_lock,
 			// new items gets returned.
 
 			params->emplace_back
-				([gens=lookup_listlayoutmanager_generators
-				  (lock, single_value(lock, ".", element))]
+				([gens=listlayout_parseconfig(lock, ".",
+							      element)]
 				 (std::vector<list_item_param> &params,
 				  uielements &elements)
 				 {
@@ -180,13 +180,10 @@ uicompiler::list_items_param_value(const theme_parser_lock &orig_lock,
 						  {[gens, &elements]
 						   (const auto &lm)
 						   {
-							   for(auto &g:*gens)
-							   {
-								   g(lm,
-								     elements);
-							   }
+							   gens(lm, elements);
 						   }});
 				 });
+			continue;
 		}
 
 		throw EXCEPTION(gettextmsg(_("Unknown <%1%> element in <%2%>"),

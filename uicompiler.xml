@@ -2553,13 +2553,13 @@ List of values:
       <parameter>
 	<name>title</name>
 	<type>compiler.factory_parseconfig</type>
-	<factory_wrapper>title_factory</factory_wrapper>
+	<factory_wrapper>factory</factory_wrapper>
       </parameter>
 
       <parameter>
 	<name>menu</name>
 	<type>compiler.listlayout_parseconfig</type>
-	<factory_wrapper>layout</factory_wrapper>
+	<factory_wrapper>factory</factory_wrapper>
       </parameter>
 
       <parameter>
@@ -2583,13 +2583,13 @@ List of values:
       <parameter>
 	<name>title</name>
 	<type>compiler.factory_parseconfig</type>
-	<factory_wrapper>title_factory</factory_wrapper>
+	<factory_wrapper>factory</factory_wrapper>
       </parameter>
 
       <parameter>
 	<name>menu</name>
 	<type>compiler.listlayout_parseconfig</type>
-	<factory_wrapper>layout</factory_wrapper>
+	<factory_wrapper>factory</factory_wrapper>
       </parameter>
     </function>
   </parser>
