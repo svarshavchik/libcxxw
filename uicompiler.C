@@ -698,6 +698,71 @@ struct uicompiler::compiler_functions {
 
 		e->create_custom_tooltip(optional_tooltip);
 	}
+
+	//! Parse the optional context popup menu
+
+	typedef std::tuple<listlayoutmanager_generator,
+			   shortcut> contextpopup_t;
+
+	static std::optional<contextpopup_t>
+	get_optional_contextpopup(uicompiler &compiler,
+				  const theme_parser_lock &lock)
+	{
+		auto clone=lock->clone();
+
+		auto xpath=clone->get_xpath("context");
+
+		if (xpath->count() == 0)
+			return std::nullopt;
+
+		xpath->to_node();
+
+		return std::tuple{
+			compiler.listlayout_parseconfig(clone,
+							"menu",
+							"element"),
+				compiler.shortcut_value(clone,
+							"shortcut",
+							"element")
+		};
+	}
+
+	static void install_contextpopup(uielements &elements,
+					 const element &new_element,
+					 const contextpopup_t &popup_info)
+	{
+		const auto &[generator, sc]=popup_info;
+
+		// Determine whether the context popup has cut/copy/paste
+		// menu items, and if so we'll take care of update()ing them.
+
+		auto orig_ccp=elements.new_copy_cut_paste_menu_items;
+
+		elements.new_copy_cut_paste_menu_items=nullptr;
+
+		auto menu=new_element->create_popup_menu
+			([&]
+			 (const auto &lm)
+			 {
+				 generator(lm, elements);
+			 });
+
+		auto ccp=elements.new_copy_cut_paste_menu_items;
+		elements.new_copy_cut_paste_menu_items=orig_ccp;
+
+		new_element->install_contextpopup_callback
+			([menu, ccp]
+			 (ONLY IN_THREAD,
+			  const auto &me,
+			  const auto &trigger,
+			  const auto &mcguffin)
+			 {
+				 if (ccp)
+					 ccp->update(IN_THREAD);
+				 menu->show();
+			 },
+			 sc);
+	}
 };
 
 ///////////////////////////////////////////////////////////////////////////

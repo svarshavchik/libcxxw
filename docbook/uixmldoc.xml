@@ -3394,7 +3394,7 @@ glm->generate("option-list", generator, elements);</programlisting>
       <para>
 	<filename>uigenerator6.C</filename> gives an example of
 	retrieving the resulting
-	<link linkend="copycutpastemenuitems"><classname>&ns;::w::copy_cut_paste_menu_items</classname></link>
+	<link linkend="uixmllayoutlistappendcopycutpaste"><classname>&ns;::w::copy_cut_paste_menu_items</classname></link>
 	object and installing a status update for the <quote>File</quote>
 	menu, where the menu items appear, to <methodname>update</methodname>()
 	their status each time the menu gets shown.
@@ -3982,10 +3982,13 @@ layout_manager->generate("dialog", generators, elements);
     </para>
 
     <para>
-      These <tag class="element">element</tag> elements also have an optional
+      These <tag class="element">element</tag>s have an optional
       <tag class="attribute">tooltip</tag> attribute that
       <link linkend="uixmlelementtooltip">creates a tooltip for the
-	widget</link>.
+	widget</link> and an optional
+      <tag class="context">context</tag> that
+      <link linkend="uixmlelementcontext">creates a context popup menu
+	for the widget</link>.
     </para>
 
     <para>
@@ -4050,7 +4053,7 @@ layout_manager->generate("dialog", generators, elements);
   </section>
 
   <section id="uixmlelementtooltip">
-    <title><tag class='element'>tooltip</tag>s</title>
+    <title>Creating <tag class='element'>tooltip</tag>s</title>
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
@@ -4099,6 +4102,67 @@ layout_manager->generate("dialog", generators, elements);
       <tag class='element'>label</tag>. This is equivalent to using a widget's
       <methodname>create_tooltip</methodname>() to create a basic,
       label tooltip.
+    </para>
+  </section>
+
+  <section id="uixmlelementcontext">
+    <title>Creating <tag class='element'>context</tag> popup menus</title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<element id="input-field">
+
+  <input_field />
+  <config>
+     <!-- ... -->
+  </config>
+
+  <context>
+    <menu>
+      <append_items>
+        <items>
+          <label type='theme_text'>Reset</label>
+        </items>
+      </append_items>
+      <append_copy_cut_paste>
+        <parent>input-field</parent>
+      </append_copy_cut_paste>
+    </menu>
+
+    <shortcut type='theme_text'>Alt-I</shortcut>
+  </context>
+</element>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      All &supportedthemewidget;s have an optional
+      <tag class='element'>context</tag> element that uses
+      <methodname>create_popup_menu</methodname>() to create a
+      <link linkend="popupmenu">context popup menu</link>.
+      Its
+      <tag class='element'>menu</tag> element
+      <link linkend="uixmllistlayoutelements">generates the list layout
+	manager</link> for the context popup menu. An
+      optional <tag class='element'>shortcut</tag> contains a
+      &keyboard_shortcutvalue;.
+    </para>
+
+    <para>
+      An <tag class='element'>append_copy_cut_paste</tag> in the popup menu
+      <link linkend="uixmllayoutlistappendcopycutpaste">adds standard
+	<quote>Copy</quote>,
+	<quote>Cut</quote>, and
+	<quote>Paste</quote></link> menu items. Its
+      <tag class='element'>parent</tag> should be its element's
+      <tag class='attribute'>id</tag>.
+      The context popup automatically takes care of
+      <methodname>update</methodname>()ing these menu items before the
+      popup gets shown. It is not necessary to add the code for that, like
+      for
+      <quote>Copy</quote>,
+      <quote>Cut</quote>, and
+      <quote>Paste</quote> in the main application menu.
     </para>
   </section>
 

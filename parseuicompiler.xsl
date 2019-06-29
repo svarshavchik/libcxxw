@@ -378,8 +378,8 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
     <xsl:value-of select="$parameter_parser_name" />
     <xsl:text>(*this, lock)</xsl:text>
 <xsl:if test="new_element">
-  <xsl:text>,&#10;                   id=lock-&gt;get_any_attribute("id"),&#10;                   optional_tooltip=compiler_functions::get_optional_tooltip(*this, lock)</xsl:text>
-</xsl:if>
+  <xsl:text>,&#10;                   id=lock-&gt;get_any_attribute("id"),&#10;                   optional_tooltip=compiler_functions::get_optional_tooltip(*this, lock),
+                   optional_contextpopup=compiler_functions::get_optional_contextpopup(*this, lock)</xsl:text></xsl:if>
 <xsl:text>]
             (</xsl:text>
 	    <xsl:for-each select="../parameter">
@@ -457,8 +457,7 @@ The actual parameter we generate is
 		  <xsl:value-of select="after_invocation" />
 		  <xsl:text>;&#10;</xsl:text>
 		  <xsl:if test="new_element">
-		    <xsl:text>&#10;                compiler_functions::install_tooltip(new_element, optional_tooltip);&#10;                if (!id.empty())
-                    elements.new_elements.emplace(id, new_element);&#10;</xsl:text>
+		    <xsl:text>&#10;                elements.new_elements.emplace(id, new_element);&#10;                if (optional_contextpopup)&#10;                    compiler_functions::install_contextpopup(elements, new_element, *optional_contextpopup);&#10;                if (!id.empty())&#10;                    compiler_functions::install_tooltip(new_element, optional_tooltip);&#10;</xsl:text>
 		  </xsl:if>
 
 		  <xsl:text>            };

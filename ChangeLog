@@ -1,3 +1,7 @@
+2019-06-25  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Generate context popup menus using the theme file.
+
 2019-06-24  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Generate menu items using the theme file.

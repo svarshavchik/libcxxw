@@ -15,13 +15,37 @@
       <side>all</side>
       <padding>cell-padding</padding>
     </padding>
-    <element>
+
+    <!-- Put an input field element in the window -->
+
+    <element id="input-field">
       <input_field />
       <config>
 	<columns>20</columns>
       </config>
+
+      <!-- Right pointer button context popup menu for the input field -->
+
+      <context>
+	<menu>
+	  <append_items>
+	    <items>
+	      <label>Reset</label>
+	    </items>
+	  </append_items>
+	  <append_copy_cut_paste>
+	    <parent>input-field</parent>
+	  </append_copy_cut_paste>
+	</menu>
+
+	<!-- Context popup's optional keyboard shortcut -->
+
+	<shortcut>Alt-I</shortcut>
+      </context>
     </element>
   </factory>
+
+  <!-- Start building the window's menu bar -->
 
   <layout type="menubar" id="main-window-menu">
     <append_menus>
@@ -34,6 +58,13 @@
   </layout>
 
   <factory type="menubar" id="main-window-menus">
+
+    <!--
+	File menu. The code finishes the menu bar setup by installing a
+	callback that update()s the main menu's copy/cut/paste items whenever
+	file_menu pops up.
+    -->
+
     <add id="file_menu">
       <title>
 	<element>
@@ -41,6 +72,13 @@
 	</element>
       </title>
       <menu>
+
+	<!--
+	    List layout manager methods. <name> labels each menu item
+	    so that the code can find it and install the appropriate
+	    callback that gets invoked for each menu item.
+	-->
+
 	<append_items>
 	  <items>
 	    <name>file_new</name>
@@ -50,6 +88,9 @@
 	    <name>file_close</name>
 	    <label type="theme_text">Close</label>
 	    <name>file_recent</name>
+
+	    <!-- Submenu -->
+
 	    <submenu>
 	      <append_items>
 		<items>
@@ -61,18 +102,26 @@
 	      </append_items>
 	    </submenu>
 	    <label type="theme_text">Recent</label>
+
+	    <!-- Menu option followed by a separator -->
+
 	    <name>file_automatic_close</name>
 	    <menuoption />
 	    <label type="theme_text">Automatic Close</label>
 	    <separator />
 	  </items>
 	</append_items>
+
+	<!-- Append copy/cut/paste menu items, for the "main" window -->
+
 	<append_copy_cut_paste>
 	  <parent>main</parent>
 	</append_copy_cut_paste>
       </menu>
     </add>
   </factory>
+
+  <!-- "Help" menu on the right -->
 
   <factory type="menubar" id="main-window-right-menus">
     <add>
