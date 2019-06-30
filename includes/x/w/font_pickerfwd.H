@@ -197,7 +197,7 @@ config.restore(pos, "title-font");
 \endcode
 
 Restores previously-saved font picker state.
-A \ref screen_position "screen_positions" object must get constructed
+A \ref screen_positions "screen_positions" object must get constructed
 previously and used to restore() the font picker's
 \ref main_window "main_window".
 This restores the font picker's state alongside with the main window's.

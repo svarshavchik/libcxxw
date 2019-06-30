@@ -7,11 +7,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-filedirlist_managerObj::filedirlist_managerObj(const factory &f,
+filedirlist_managerObj::filedirlist_managerObj(const uielements &tmpl,
 					       const std::string
 					       &initial_directory,
 					       const file_dialog_config &config)
-	: impl(ref<implObj>::create(f, initial_directory, config))
+	: impl(ref<implObj>::create(tmpl, initial_directory, config))
 {
 }
 

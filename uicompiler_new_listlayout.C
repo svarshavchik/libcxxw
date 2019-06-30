@@ -52,6 +52,18 @@ synchronized_axis uicompiler::lookup_synchronized_axis(uielements &elements,
 	return g;
 }
 
+static inline
+void configure_synchronized_list_for_pane(new_listlayoutmanager *p)
+{
+	p->configure_for_pane(true);
+}
+
+static inline
+void configure_list_for_pane(new_listlayoutmanager *p)
+{
+	p->configure_for_pane(false);
+}
+
 #include "uicompiler.inc.H/new_listlayout_parse_parameters.H"
 #include "uicompiler.inc.H/new_listlayout_parser.H"
 

@@ -356,8 +356,9 @@ new_panelayoutmanager::new_panelayoutmanager(const new_panelayoutmanager &)
 new_panelayoutmanager &new_panelayoutmanager
 ::operator=(const new_panelayoutmanager &)=default;
 
-void new_panelayoutmanager::restore(const const_screen_positions &pos,
-				    const std::string_view &name_arg)
+void new_panelayoutmanager_restored_position
+::restore(const const_screen_positions &pos,
+	  const std::string_view &name_arg)
 {
 	name=name_arg;
 

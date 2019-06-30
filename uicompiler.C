@@ -18,6 +18,7 @@
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/tablelayoutmanager.H"
+#include "x/w/panelayoutmanager.H"
 #include "x/w/synchronized_axis.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
@@ -103,7 +104,8 @@ void uicompiler::wrong_appearance_type(const std::string_view &name,
 // - Define "new_{name}layoutmanager_generator" typedef in uigeneratorsfwd.H
 //
 // - Define the parser in uicompiler.xml for new_{name}layout, create the
-// "uicompiler_new_{name}layout.C" module, adding it to the Makefile.
+// "uicompiler_new_{name}layout.C" module, adding it to the Makefile
+// (including the dependency on uicompiler.stamp.inc.H).
 //
 // - Define the parser in uicompiler.xml for {name}layout, create the
 // "uicompiler_{name}layout.C" module, adding it to the Makefile.
@@ -134,6 +136,27 @@ void uicompiler::wrong_appearance_type(const std::string_view &name,
 //
 // - Define lookup_{name}layoutmanager_generators().
 //
+// {name}layoutmanager.C
+//
+// - Implement generate().
+//
+// Then define the factory:
+//
+// - Define {name}factory_generator typedef in uigeneratorsfwd.H
+//
+// - Add {name}factory_generators map to uigeneratorsObj
+//
+// - Add declarations for {name}factory_parseconfig() and
+//   {name}factory_parser() in uicompiler.H
+//
+// - Define the parser in uicompiler.xml for the {factory}, create the
+// "uicompiler_{factory}.C" module, adding it to the Makefile
+// (including the dependency on uicompiler.stamp.inc.H).
+//
+// - Add code to uicompiler's constructor to recognize the new <factory> type
+// and parse it.
+//
+// - Declare and define lookup_{factory}_generators().
 
 namespace {
 #if 0
@@ -356,8 +379,6 @@ create_table_header_generators(uicompiler &compiler,
 
 struct uicompiler::tablelayoutmanager_functions {
 
-	// A vector of compiled grid layout manager generators
-
 	struct generators : generators_base {
 
 		const listlayoutstyle_impl &style;
@@ -458,6 +479,95 @@ struct uicompiler::tablelayoutmanager_functions {
 			for (const auto &g:*generator_vector)
 			{
 				g(llm, factories);
+			}
+		}
+	};
+};
+
+////////////////////////////////////////////////////////////////////////////
+//
+// Pane layout manager functionality.
+//
+// Parse new pane layout manager generators from <config>
+
+static const_vector<new_panelayoutmanager_generator>
+create_newpanelayoutmanager_vector(uicompiler &compiler,
+				    const theme_parser_lock &orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	lock->get_xpath("config")->to_node();
+
+	return compiler.new_panelayout_parseconfig(lock);
+}
+
+struct uicompiler::panelayoutmanager_functions {
+
+	struct generators : generators_base {
+
+		// Generators for the contents of the new_tablelayoutmanager
+
+		const_vector<new_panelayoutmanager_generator
+			     > new_panelayoutmanager_vector;
+
+		// Generators for the contents of the pane layout manager.
+		const_vector<panelayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const theme_parser_lock &lock,
+			   const std::string &name)
+			: generators_base{name},
+			  new_panelayoutmanager_vector
+			{
+			 create_newpanelayoutmanager_vector(compiler, lock)
+			},
+			  generator_vector
+			{
+			 compiler.lookup_panelayoutmanager_generators(lock,
+								      name)
+			}
+		{
+		}
+
+		focusable_container create_container(const factory &f,
+						     uielements &factories)
+			const
+		{
+		        auto nplm=new_layoutmanager(factories);
+
+			// Generate the contents of the new_tablelayoutmanager.
+
+			for (const auto &g:*new_panelayoutmanager_vector)
+			{
+				g(&nplm, factories);
+			}
+
+			return f->create_focusable_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 nplm);
+		}
+
+		inline new_panelayoutmanager
+		new_layoutmanager(uielements &factories) const
+		{
+			new_panelayoutmanager nplm{ {} };
+
+			return nplm;
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			panelayoutmanager plm=
+				get_new_layoutmanager(c, factories);
+
+			for (const auto &g:*generator_vector)
+			{
+				g(plm, factories);
 			}
 		}
 	};
@@ -841,6 +951,11 @@ uicompiler::get_layoutmanager(const std::string &type)
 	if (type == "table")
 		return layoutmanager_functions{
 			std::in_place_type_t<tablelayoutmanager_functions>{}
+		};
+
+	if (type == "pane")
+		return layoutmanager_functions{
+			std::in_place_type_t<panelayoutmanager_functions>{}
 		};
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a known layout/container"),
 				   type));

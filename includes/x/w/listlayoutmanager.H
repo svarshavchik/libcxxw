@@ -306,6 +306,17 @@ public:
 	//! Destructor
 	~new_listlayoutmanager() LIBCXX_PUBLIC;
 
+	//! Configure this list or a table for a pane
+
+	//! Tailors the list for optimum apperance in a
+	//! \ref panelayoutmanager "pane container".
+	//!
+	//! Installs a new appearance object, sets variable_height().
+	//! If the synchronized_flag is set, sets the scrollbar visibility
+	//! to "always".
+
+	void configure_for_pane(bool synchronized=false);
+
 	//! Create the focusable container.
 
 	//! \internal

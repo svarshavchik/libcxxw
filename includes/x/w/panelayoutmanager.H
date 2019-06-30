@@ -17,6 +17,40 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct LIBCXX_HIDDEN new_panelayoutmanager_restored_position;
+
+//! Restored pane layout manager configuration
+
+//! Implements \ref new_panelayoutmanager "new_panelayoutmanager"'s
+//! restore() method.
+
+struct new_panelayoutmanager_restored_position {
+
+	//! Restore previously save()d pane sizes
+
+	//! The 2nd parameter is a unique identifier/label for this pane
+	//! containers. All pane container should have unique identifiers.
+	//! This label also gets used when save()ing window's position.
+
+	void restore(const const_screen_positions &,
+		     const std::string_view &) LIBCXX_PUBLIC;
+
+	//! Pane's name
+
+	//! \internal
+	//!
+	//! The name that was passed to restore().
+	std::string name;
+
+	//! Restored pane sizes
+
+	//! \internal
+	//!
+	//! Use restore() to populate this.
+	std::vector<dim_t> restored_sizes;
+
+};
+
 //! Create a new container with a \ref panelayoutmanager "pane layout manager".
 
 //! This parameter gets passed to a \ref factory "factory"'s
@@ -24,7 +58,8 @@ LIBCXXW_NAMESPACE_START
 //! pane layout manager.
 
 class new_panelayoutmanager :
-	public new_focusable_layoutmanager {
+	public new_focusable_layoutmanager,
+	public new_panelayoutmanager_restored_position {
 
 public:
 
@@ -62,35 +97,21 @@ public:
 	//! Default appearance.
 	const_pane_layout_appearance appearance;
 
-	//! Restore previously save()d pane sizes
-
-	//! The 2nd parameter is a unique identifier/label for this pane
-	//! containers. All pane container should have unique identifiers.
-	//! This label also gets used when save()ing window's position.
-
-	void restore(const const_screen_positions &,
-		     const std::string_view &) LIBCXX_PUBLIC;
-
-	//! Pane's name
-
-	//! \internal
-	//!
-	//! The name that was passed to restore().
-	std::string name;
-
-	//! Restored pane sizes
-
-	//! \internal
-	//!
-	//! Use restore() to populate this.
-	std::vector<dim_t> restored_sizes;
-
 	//! Create a container with the pane layout manager.
 
 	//! \internal
 	focusable_container
-		create(const container_impl &) const override;
+		create(const container_impl &) const override LIBCXX_HIDDEN;
 
+	using new_panelayoutmanager_restored_position::restore;
+
+	//! Helper used by the theme parser.
+
+	inline void restore(const new_panelayoutmanager_restored_position &rp)
+	{
+		static_cast<new_panelayoutmanager_restored_position &>(*this)
+			=rp;
+	}
 };
 
 LIBCXXW_NAMESPACE_END

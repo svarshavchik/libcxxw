@@ -6,10 +6,11 @@
 #define x_w_filedirlist_managerobj_h
 
 #include "dirlisting/filedirlist_managerfwd.H"
-#include "x/w/factory.H"
+#include "x/w/uielementsfwd.H"
 #include "x/w/file_dialog_configfwd.H"
 #include <x/pcrefwd.H>
 #include <x/functionalrefptrfwd.H>
+#include <x/obj.H>
 #include <string>
 
 LIBCXXW_NAMESPACE_START
@@ -28,11 +29,12 @@ class LIBCXX_HIDDEN filedirlist_managerObj : virtual public obj {
 
 	//! Constructor
 
-	//! Constructor takes a factory wheere it creates the display element,
+	//! Constructor takes the theme-generated elements containing the
+	//! pane container, with the directory and file list containers,
 	//! the initial directory for browsing, and R_OK or W_OK, indicating
 	//! whether this is to open an existing file or write/create a file.
 
-	filedirlist_managerObj(const factory &f,
+	filedirlist_managerObj(const uielements &tmpl,
 			       const std::string &initial_directory,
 			       const file_dialog_config &config);
 

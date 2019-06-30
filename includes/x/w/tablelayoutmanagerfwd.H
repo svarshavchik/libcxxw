@@ -134,7 +134,7 @@ ntlm.restore(pos, "main-table");
 \endcode
 
 Restores previously-saved widths of adjustable columns.
-A \ref screen_position "screen_positions" object must get constructed
+A \ref screen_positions "screen_positions" object must get constructed
 previously and used to restore() the table's \ref main_window "main_window".
 This restores the table's configuration alongside with the main window's.
 The second parameter is the new table's unique identifier label. This is

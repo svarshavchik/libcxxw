@@ -17,6 +17,7 @@
 #include "x/w/file_dialog_appearance.H"
 #include "x/w/pane_layout_appearance.H"
 #include "x/w/pane_appearance.H"
+#include "x/w/uielements.H"
 #include "messages.H"
 #include <x/weakcapture.H>
 #include <x/fileattr.H>
@@ -214,80 +215,58 @@ static void set_file_popup_contents(const ref<filedirlist_managerObj::implObj
 // subdirectories and files.
 
 static inline filedirlist_managerObj::implObj::init_args
-create_init_args(const factory &f,
+create_init_args(const uielements &tmpl,
 		 const std::string &initial_directory,
 		 const file_dialog_config &config)
 {
+	container pane_container=tmpl.get_element("directory-contents-pane");
+	container dc=tmpl.get_element("subdirectory-pane");
+	container fc=tmpl.get_element("file-pane");
+
 	auto current_selected=
 		ref<filedirlist_managerObj::implObj
 		    ::current_selected_callbackObj>::create();
 
-	new_panelayoutmanager nplm{{100}};
+	// nlm.appearance=config.appearance->dir_pane_list_appearance;
 
-	nplm.appearance=config.appearance->filedir_pane_appearance;
+	listlayoutmanager dcllm=tmpl.get_layoutmanager("subdirectory-pane");
 
-	auto pane_container=f->create_focusable_container([]
-							  (const auto &ignore)
-							  {
-							  }, nplm);
+	dcllm->on_current_list_item_changed
+		([current_selected]
+		 (ONLY IN_THREAD,
+		  const auto &info)
+		 {
+			 std::optional<size_t> selected;
 
-	panelayoutmanager plm=pane_container->get_layoutmanager();
+			 if (info.selected)
+				 selected=info.item_number;
 
-	auto pf=plm->append_panes();
+			 current_selected->current_callback.get()
+				 (IN_THREAD,
+				  filedirlist_current_list_item{
+					 filedirlist_entry_id::dir_section,
+						 selected},
+				  info.trigger);
+		 });
 
-	new_listlayoutmanager nlm{highlighted_list};
+	dcllm->selection_type
+		 ([current_selected]
+		  (ONLY IN_THREAD,
+		   const listlayoutmanager &ignore,
+		   size_t n,
+		   const callback_trigger_t &trigger,
+		   const busy &mcguffin)
+		  {
+			  current_selected->current_callback.get()
+				  (IN_THREAD,
+				   filedirlist_selected{
+					  filedirlist_entry_id::dir_section, n,
+						  mcguffin},
+				   trigger);
+		  });
 
-	nlm.columns=3;
+	//pf->appearance=config.appearance->dir_pane_appearance;
 
-	pf->configure_new_list(nlm, true);
-
-	nlm.appearance=config.appearance->dir_pane_list_appearance;
-
-	// Give all space to the first column, with the filename.
-	nlm.requested_col_widths.emplace(0, 100);
-
-	// The rightmost column, file size, is right-aligned.
-	nlm.col_alignments.emplace(2, halign::right);
-
-	nlm.current_list_item_changed=
-		[current_selected]
-		(ONLY IN_THREAD,
-		 const auto &info)
-		{
-			std::optional<size_t> selected;
-
-			if (info.selected)
-				selected=info.item_number;
-
-			current_selected->current_callback.get()
-				(IN_THREAD,
-				 filedirlist_current_list_item{
-					filedirlist_entry_id::dir_section,
-						selected},
-				 info.trigger);
-		};
-
-	nlm.selection_type=[current_selected]
-		(ONLY IN_THREAD,
-		 const listlayoutmanager &ignore,
-		 size_t n,
-		 const callback_trigger_t &trigger,
-		 const busy &mcguffin)
-		{
-			current_selected->current_callback.get()
-				(IN_THREAD,
-				 filedirlist_selected{
-					filedirlist_entry_id::dir_section, n,
-						mcguffin},
-				 trigger);
-		};
-
-	pf->appearance=config.appearance->dir_pane_appearance;
-	auto dc=pf->create_focusable_container([]
-					       (const auto &ignore)
-					       {
-					       },
-					       nlm);
 	dc->show();
 
 	// Create the directory list's right mouse button popup contents.
@@ -320,49 +299,46 @@ create_init_args(const factory &f,
 			 dir_popup->show_all();
 		 });
 
-	nlm.selection_type=[current_selected]
-		(ONLY IN_THREAD,
-		 const listlayoutmanager &ignore,
-		 size_t n,
-		 const callback_trigger_t &trigger,
-		 const busy &mcguffin)
-		{
-			current_selected->current_callback.get()
-				(IN_THREAD,
-				 filedirlist_selected{
-					filedirlist_entry_id::file_section, n,
-						mcguffin},
-				 trigger);
-		};
+	listlayoutmanager fcllm=tmpl.get_layoutmanager("file-pane");
 
-	nlm.current_list_item_changed=
-		[current_selected]
-		(ONLY IN_THREAD,
-		 const auto &info)
-		{
-			std::optional<size_t> selected;
+	fcllm->selection_type
+		([current_selected]
+		 (ONLY IN_THREAD,
+		  const listlayoutmanager &ignore,
+		  size_t n,
+		  const callback_trigger_t &trigger,
+		  const busy &mcguffin)
+		 {
+			 current_selected->current_callback.get()
+				 (IN_THREAD,
+				  filedirlist_selected{
+					 filedirlist_entry_id::file_section, n,
+						 mcguffin},
+				  trigger);
+		 });
 
-			if (info.selected)
-				selected=info.item_number;
+	fcllm->on_current_list_item_changed
+		([current_selected]
+		 (ONLY IN_THREAD,
+		  const auto &info)
+		 {
+			 std::optional<size_t> selected;
 
-			current_selected->current_callback.get()
-				(IN_THREAD,
-				 filedirlist_current_list_item{
-					filedirlist_entry_id::file_section,
-						selected},
-				 info.trigger);
-		};
-	pf->configure_new_list(nlm, true);
+			 if (info.selected)
+				 selected=info.item_number;
 
-	nlm.appearance=config.appearance->file_pane_list_appearance;
+			 current_selected->current_callback.get()
+				 (IN_THREAD,
+				  filedirlist_current_list_item{
+					 filedirlist_entry_id::file_section,
+						 selected},
+				  info.trigger);
+		 });
 
-	pf->appearance=config.appearance->file_pane_appearance;
+	// nlm.appearance=config.appearance->file_pane_list_appearance;
 
-	auto fc=pf->create_focusable_container([]
-					       (const auto &ignore)
-					       {
-					       },
-					       nlm);
+	// pf->appearance=config.appearance->file_pane_appearance;
+
 	fc->show();
 
 	// Create the file list's right mouse button popup contents.
@@ -418,11 +394,11 @@ listlayoutmanager filedirlist_managerObj::implObj::protected_info_t
 }
 
 filedirlist_managerObj::implObj
-::implObj(const factory &f,
+::implObj(const uielements &tmpl,
 	  const std::string &initial_directory,
 	  const file_dialog_config &config)
-	: implObj{create_init_args(f, initial_directory, config),
-		initial_directory, config}
+	: implObj{create_init_args(tmpl, initial_directory, config),
+		  initial_directory, config}
 {
 }
 
@@ -443,7 +419,7 @@ filedirlist_managerObj::implObj::implObj(const init_args &args,
 
 filedirlist_managerObj::implObj::~implObj()=default;
 
-void filedirlist_managerObj::implObj::constructor(const factory &,
+void filedirlist_managerObj::implObj::constructor(const uielements &,
 						  const std::string &,
 						  const file_dialog_config &)
 {

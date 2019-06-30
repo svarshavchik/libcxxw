@@ -153,6 +153,10 @@ public:
 	vector<gridfactory_generator
 	       > gridfactory_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for pane factory generator.
+	vector<panefactory_generator
+	       > panefactory_parseconfig(const theme_parser_lock &lock);
+
 	//! Parser for menu bar factory generator.
 	vector<menubarfactory_generator
 	       > menubarfactory_parseconfig(const theme_parser_lock &lock);
@@ -200,6 +204,11 @@ public:
 	vector<tablelayoutmanager_generator
 	       > tablelayout_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for the new pane layout manager generator
+
+	vector<panelayoutmanager_generator
+	       > panelayout_parseconfig(const theme_parser_lock &lock);
+
 	//! Parser for the new book layout manager generator
 
 	vector<new_booklayoutmanager_generator
@@ -230,6 +239,11 @@ public:
 
 	vector<new_tablelayoutmanager_generator
 	       > new_tablelayout_parseconfig(const theme_parser_lock &lock);
+
+	//! Parser for the new pane layout manager generator
+
+	vector<new_panelayoutmanager_generator
+	       > new_panelayout_parseconfig(const theme_parser_lock &lock);
 private:
 	//! Implement <element>
 
@@ -248,6 +262,9 @@ private:
 
 	//! Generate a single menu bar factory instruction.
 	menubarfactory_generator menubarfactory_parser(const theme_parser_lock &lock);
+
+	//! Generate a single pane factory instruction.
+	panefactory_generator panefactory_parser(const theme_parser_lock &lock);
 
 	//! Generate a single factory instruction.
 	factory_generator factory_parser(const theme_parser_lock &lock);
@@ -271,6 +288,10 @@ private:
 	//! Generate a single table layout manager instruction.
 	tablelayoutmanager_generator
 	tablelayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single panelayoutmanager instruction.
+	panelayoutmanager_generator
+	panelayout_parser(const theme_parser_lock &lock);
 
 	//! Generate a single book layout manager instruction.
 	booklayoutmanager_generator
@@ -303,6 +324,10 @@ private:
 	//! Generate a single new_tablelayoutmanager instruction.
 	new_tablelayoutmanager_generator
 	new_tablelayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single new_panelayoutmanager instruction.
+	new_panelayoutmanager_generator
+	new_panelayout_parser(const theme_parser_lock &lock);
 
 public:
 	//! Return compiled grid factory generators.
@@ -414,6 +439,27 @@ public:
 	const_vector<tablelayoutmanager_generator>
 	lookup_tablelayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
+
+	//! Return compiled pane layout manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into panelayoutmanager_generators, and return them.
+
+	const_vector<panelayoutmanager_generator>
+	lookup_panelayoutmanager_generators(const theme_parser_lock &lock,
+					    const std::string &);
+
+	//! Return compiled pane factory manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into panefactory_generators, and return them.
+
+	const_vector<panefactory_generator>
+	lookup_panefactory_generators(const theme_parser_lock &lock,
+				      const char *element,
+				      const char *parent);
 
 private:
 	//! Execute <append_row>.
@@ -564,6 +610,10 @@ private:
 
 	struct tablelayoutmanager_functions;
 
+	//! Supported pane layout manager functionality.
+
+	struct panelayoutmanager_functions;
+
 	//! All supported layout manager funcitonality.
 
 	typedef std::variant<gridlayoutmanager_functions,
@@ -571,6 +621,7 @@ private:
 			     standard_comboboxlayoutmanager_functions,
 			     editable_comboboxlayoutmanager_functions,
 			     tablelayoutmanager_functions,
+			     panelayoutmanager_functions,
 			     booklayoutmanager_functions
 			     > layoutmanager_functions;
 

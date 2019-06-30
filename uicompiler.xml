@@ -2117,6 +2117,161 @@ List of values:
     </function>
   </parser>
 
+  <!-- panelayoutmanager initialization -->
+
+  <parser>
+    <name>panelayout</name>
+
+    <parameter>
+      <type>panelayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>append_panes</name>
+      <invoke>panelayout_append_panes</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_panefactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>insert_panes</name>
+      <invoke>panelayout_insert_panes</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_panefactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>replace_panes</name>
+      <invoke>panelayout_replace_panes</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_panefactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_pane</name>
+      <invoke>remove_pane</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_all_panes</name>
+      <invoke>remove_all_panes</invoke>
+      <object>layout</object>
+    </function>
+
+    <function>
+      <name>replace_all_panes</name>
+      <invoke>panelayout_replace_all_panes</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_panefactory_generators</type>
+      </parameter>
+    </function>
+  </parser>
+
+  <!-- panelayoutfactory initialization -->
+
+  <parser>
+    <name>panefactory</name>
+
+    <parameter>
+      <type>panefactory</type>
+      <name>factory</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <use_common>factory</use_common>
+
+    <function>
+      <name>appearance</name>
+      <object>factory</object>
+      <invoke>appearance=</invoke>
+
+      <parameter>
+	<name>appearance</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.lookup_appearance&lt;const_pane_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>configure_for_new_list</name>
+      <object>factory</object>
+      <invoke>configure_for_new_list</invoke>
+    </function>
+  </parser>
+
   <!-- new_booklayoutmanager initialization -->
 
   <parser>
@@ -2471,6 +2626,25 @@ List of values:
 	</lookup>
       </parameter>
     </function>
+
+    <function>
+      <name>configure_for_pane</name>
+      <condition>
+	<exists>synchronized</exists>
+      </condition>
+      <invoke>configure_synchronized_list_for_pane</invoke>
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+    </function>
+
+    <function>
+      <name>configure_for_pane</name>
+      <invoke>configure_list_for_pane</invoke>
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+    </function>
   </parser>
 
   <!-- new_custom_comboboxlayoutmanager initialization -->
@@ -2663,6 +2837,125 @@ List of values:
 	<xpath>.</xpath>
 	<lookup>
 	  <function>restore_tablelayoutmanager_position</function>
+	  <prepend-parameter>compiler</prepend-parameter>
+	</lookup>
+      </parameter>
+    </function>
+  </parser>
+
+  <!-- new_panelayoutmanager initialization -->
+
+  <parser>
+    <name>new_panelayout</name>
+
+    <parameter>
+      <type>new_panelayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>size</name>
+      <object>layout</object>
+      <invoke>size=</invoke>
+      <parameter>
+	<name>size</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>minimum_size</name>
+      <object>layout</object>
+      <invoke>size.minimum=</invoke>
+      <parameter>
+	<name>size</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>preferred_size</name>
+      <object>layout</object>
+      <invoke>size.preferred=</invoke>
+      <parameter>
+	<name>size</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>maximum_size</name>
+      <object>layout</object>
+      <invoke>size.maximum=</invoke>
+      <parameter>
+	<name>size</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>horizontal</name>
+      <object>layout</object>
+      <invoke>horizontal</invoke>
+    </function>
+
+    <function>
+      <name>vertical</name>
+      <object>layout</object>
+      <invoke>vertical</invoke>
+    </function>
+
+    <function>
+      <name>appearance</name>
+      <object>layout</object>
+      <invoke>appearance=</invoke>
+
+      <parameter>
+	<name>appearance</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.lookup_appearance&lt;const_pane_layout_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>restore</name>
+      <object>layout</object>
+      <invoke>restore</invoke>
+      <parameter>
+	<name>restore</name>
+	<type>single_value</type>
+	<xpath>.</xpath>
+	<lookup>
+	  <function>restore_panelayoutmanager_position</function>
 	  <prepend-parameter>compiler</prepend-parameter>
 	</lookup>
       </parameter>

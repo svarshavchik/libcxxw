@@ -172,6 +172,10 @@ struct uielements {
 	//! Return a created listitemhandle
 	listitemhandle get_listitemhandle(const std::string_view &name)
 		const;
+
+	//! Return a created layoutmanager
+	layoutmanager get_layoutmanager(const std::string_view &name)
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

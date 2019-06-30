@@ -110,6 +110,15 @@ void new_listlayoutmanager::set_pane_theme()
 	appearance=list_appearance_base::list_pane_theme();
 }
 
+void new_listlayoutmanager::configure_for_pane(bool synchronized)
+{
+	variable_height();
+	set_pane_theme();
+
+	if (synchronized)
+		vertical_scrollbar=scrollbar_visibility::always;
+}
+
 focusable_container
 new_listlayoutmanager::create(const container_impl &parent_container) const
 {

@@ -39,11 +39,16 @@ public:
 	//! Destructor
 	~panefactoryObj() LIBCXX_HIDDEN;
 
-	//! Configure a new list or a table.
+	//! Configure this pane for a new list or table.
 
-	//! Configure a new list for best visual appearance.
 	//! Replaces appearance with pane_appearance::base::focusable_list(),
-	//! and installs a new appearance theme in the list as well.
+
+	void configure_for_new_list();
+
+	//! Configure a new list or a table in the pane
+
+	//! Calls configure_for_new-list(), then calls the
+	//! new_listlayoutmanager's configure_for_pane().
 
 	void configure_new_list(new_listlayoutmanager &,
 				bool synchronized=false);

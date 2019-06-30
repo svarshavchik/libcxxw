@@ -3203,9 +3203,28 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	    </para>
 	  </listitem>
 	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <tag class='element'>configure_for_pane</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      This configures the list
+	      (or a <link linkend="uixmllayoutnewtablelayoutmanager">table</link>)
+	      in a
+	      <link linkend="uixmlfactorypane">pane container</link>.
+	      An optional
+	      <tag class='emptytag'>synchronized</tag> flag indicates that
+	      the new list/table's columns are synchronized with another
+	      list/table in the same pane container.
+	    </para>
+	  </listitem>
+	</varlistentry>
       </variablelist>
     </section>
   </section>
+
   <section id="uixmllistlayoutelements">
     <title>
       <tag class='attribute'>type</tag>=<quote>list</quote>
@@ -3695,7 +3714,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	  <listitem>
 	    <para>
 	      Sets the
-	      <classname>&ns;::w::new_tablelayoutlayoutmanager</classname>'s
+	      <classname>&ns;::w::new_tablelayoutmanager</classname>'s
 	      <varname>table_width</varname> value:
 	    </para>
 	    <blockquote>
@@ -3716,7 +3735,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	  <listitem>
 	    <para>
 	      Sets the
-	      <classname>&ns;::w::new_tablelayoutlayoutmanager</classname>'s
+	      <classname>&ns;::w::new_tablelayoutmanager</classname>'s
 	      <varname>maximum_table_width</varname> value:
 	    </para>
 	    <blockquote>
@@ -3737,7 +3756,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	  <listitem>
 	    <para>
 	      Invokes
-	      <classname>&ns;::w::new_tablelayoutlayoutmanager</classname>'s
+	      <classname>&ns;::w::new_tablelayoutmanager</classname>'s
 	      <methodname>unlimited_table_width</methodname>() method.
 	    </para>
 	  </listitem>
@@ -3750,7 +3769,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	  <listitem>
 	    <para>
 	      This element sets
-	      <classname>&ns;::w::new_tablelayoutlayoutmanager</classname>'s
+	      <classname>&ns;::w::new_tablelayoutmanager</classname>'s
 	      <varname>adjustable_column_widths</varname> to
 	      <literal>true</literal>.
 	    </para>
@@ -3764,15 +3783,17 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	  <listitem>
 	    <para>
 	      Sets the
-	      <classname>&ns;::w::new_tablelayoutlayoutmanager</classname>'s
+	      <classname>&ns;::w::new_tablelayoutmanager</classname>'s
 	      <varname>extra_table_appearance</varname> value:
 	    </para>
 	    <blockquote>
 	      <informalexample>
 		<programlisting><![CDATA[
 <config>
-  <appearance>main-table</appearance>
+  <extra_table_appearance>main-table</extra_table_appearance>
 </config>
+
+<!-- ... -->
 
 <appearance id="main-table" type="table">
 
@@ -3796,7 +3817,7 @@ glm->generate("application-settings", generator, elements);</programlisting>
 	  </term>
 	  <listitem>
 	    <para>
-	      Calls <classname>&ns;::w::new_table_layoutmanager</classname>'s
+	      Calls <classname>&ns;::w::new_tablelayoutmanager</classname>'s
 	      <methodname>restore</methodname>() method. The
 	      <link linkend="uigenerator"><classname>&ns;::w::uigenerator</classname></link>
 	      must get constructed with a
@@ -3983,7 +4004,7 @@ main_window->get_menubarlayoutmanager()
       Using a main window's <methodname>get_menubarlayoutmanager</methodname>()
       and invoking its
       <link linkend="uixmlgenerate"><methodname>generate</methodname></link>()
-      executes the instruction from the
+      executes the instructions from the
       <tag class='element'>layout</tag>s of
       <tag class='attribute'>type</tag>=<quote>menubar</quote>.
       These <tag class='element'>layout</tag>s contain the following elements:
@@ -4116,6 +4137,370 @@ main_window->get_menubarlayoutmanager()
 	invoked by selecting the menu item.
       </para>
     </section>
+  </section>
+
+  <section id="uixmllayoutpane">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>pane</quote>
+      <tag class='element'>layout</tag>s</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="pane" id="mainpane">
+  <append_panes>
+    <name>mainpanecontents</name>
+  </append_panes>
+</layout>
+
+<factory type="pane" id="maincontents">
+
+<!-- ... -->
+
+</factory>
+
+// ....
+]]>
+&ns;::w::panelayoutmanager plm=container->get_layoutmanager();
+
+plm->generate("mainpane", generator, elements);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The contents of a
+      <tag class='element'>layout</tag>s with
+      <tag class='attribute'>type</tag>=<quote>pane</quote>
+      specify the <link linkend="panelayoutmanager">pane
+	layout manager</link> methods that get invoked to
+      <methodname>generate</methodname>() its contents.
+    </para>
+
+    <section id="uixmllayoutpanecreatecontainer">
+      <title>Creating
+	<tag class='attribute'>type</tag>=<quote>pane</quote>
+	<tag class='element'>layout</tag>s</title>
+
+      <para>
+	A <tag class='element'>container</tag> with a
+	<tag class='attribute'>type</tag>=<quote>pane</quote>
+	creates a container that uses the
+	<link linkend="panelayoutmanager">pane layout manager</link>.
+      </para>
+    </section>
+
+    <section id="uixmllayoutnewpanelayoutmanager">
+      <title>Initializing
+	<classname>&ns;::w::new_panelayoutmanager</classname></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<container>
+   <name>inventory</name>
+   <type>pane</type>
+   <config>
+     <vertical />
+     <size>inventory_width</size>
+   </config>
+</container>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	The
+	<tag class='element'>config</tag> element initializes the
+	<ulink url="&link-x--w--new-panelayoutmanager;"><classname>&ns;::w::new_panelayoutmanager</classname></ulink>
+	that creates the container:
+      </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term>
+	    <tag class='element'>minimum_size</tag>,
+	    <tag class='element'>preferred_size</tag>,
+	    <tag class='element'>maximum_size</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      These elements reference other
+	      <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>s
+	      in the theme file, defining the size of the pane container.
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <minimum_size>min-inventory</minimum_size>
+  <preferred_size>pref-inventory</preferred_size>
+  <maximum_size>max-inventory</maximum_size>
+</config>
+
+<dim id="min-inventory">100.0</dim>
+<dim id="pref-inventory">150.0</dim>
+<dim id="max-inventory">200.0</dim>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='element'>size</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      This is equivalent to specifying the same
+	      <tag class='element'>minimum_size</tag>,
+	      <tag class='element'>preferred_size</tag>, and
+	      <tag class='element'>maximum_size</tag>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='emptytag'>horizontal</tag> and
+	    <tag class='emptytag'>vertical</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Invokes the corresponding
+	      <classname>&ns;::w::new_panelayoutmanager</classname>
+	      method.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='element'>appearance</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Sets the
+	      <classname>&ns;::w::new_panelayoutmanager</classname>'s
+	      <varname>appearance</varname> value:
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <appearance>inventory-appearance</appearance>
+</config>
+
+<appearance id="inventory-appearance" type="pane">
+
+</appearance>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='element'>restore</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Calls <classname>&ns;::w::new_panelayoutmanager</classname>'s
+	      <methodname>restore</methodname>() method. The
+	      <link linkend="uigenerator"><classname>&ns;::w::uigenerator</classname></link>
+	      must get constructed with a
+	      <link linkend="screen_positions"><classname>&ns;::w::const_screen_positions</classname></link>
+	      parameter with preserved window positions.
+	    </para>
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<config>
+  <restore>inventory-settings</restore>
+</config>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      The value of the element specifies the pane container's unique
+	      label
+	      that gets passed to its <methodname>restore</methodname>()
+	      method.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+  </section>
+
+  <section id="uixmlpanelayoutelements">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>pane</quote>
+      <tag class='element'>layout</tag>
+      elements</title>
+
+    <section id="uixmllayoutpanecontents">
+      <title><tag class='element'>append_panes</tag>,
+	<tag class='element'>insert_panes</tag>,
+	<tag class='element'>replace_panes</tag>,
+	<tag class='element'>remove_pane</tag>,
+	<tag class='emptytag'>remove_all_panes</tag>, and
+	<tag class='element'>replace_all_panes</tag></title>
+
+      <para>
+	This is equivalent to invoking the corresponding
+	<ulink url="&link-typedef-x--w-panelayoutmanager;"><classname>&ns;::w::panelayoutmanager</classname></ulink>
+	method to modify the contents of the pane container.
+
+	<tag class='element'>append_panes</tag>,
+	<tag class='element'>insert_panes</tag>
+	<tag class='element'>replace_panes</tag>, and
+	<tag class='element'>replace_all_panes</tag>
+	have a <tag class='element'>name</tag> value that specifies the
+	<tag class='attribute'>id</tag> of a
+	<tag class='element'>factory</tag> that generates the contents
+	of the resulting
+	<ulink url="&link-typedef-x--w-panefactory;"><classname>&ns;::w::panefactory</classname></ulink>.
+	The <tag class='element'>position</tag> element specifies the
+	insertion position parameter (for
+	<tag class='element'>insert_panes</tag>) or the removal
+	positional parameter (for
+	<tag class='element'>remove_pane</tag>).
+      </para>
+    </section>
+  </section>
+
+  <section id="uixmlfactorypane">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>pane</quote>
+      <tag class='element'>factory</tag>s</title>
+
+    <para>
+      The contents of a
+      <tag class='element'>factory</tag>s of
+      <tag class='attribute'>type</tag>=<quote>pane</quote>
+      specify the
+      <ulink url="&link-typedef-x--w-panefactory;"><classname>&ns;::w::panefactory</classname></ulink>
+      methods that get invoked when generating the contents of a pane
+      container:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>appearance</tag>
+	</term>
+
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::panefactory</classname>'s
+	    <varname>appearance</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<factory type="pane" id="maincontents">
+
+  <!-- ... -->
+
+  <appearance>top-pane-appearance</appearance>
+
+  <!-- ... -->
+</factory>
+
+<appearance id="top-pane-appearance" type="pane">
+
+</appearance>
+]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	  <para>
+	    The value of the element specifies an
+	    <link linkend="uixmlappearance"><tag class='element'>appearance</tag></link>
+	    object of <tag class='attribute'>type</tag>=<quote>pane</quote>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>configure_for_new_list</tag>
+	  and inherited generic factory methods
+	</term>
+
+	<listitem>
+	  <para>
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<factory type="pane" id="maincontents">
+
+  <configure_for_new_list />
+
+  <container>
+    <type>list</type>
+    <name>inventory</name>
+    <config>
+       <columns>2</columns>
+       <synchronized_columns>stock</synchronized_columns>
+       <configure_for_pane>
+         <synchronized />
+       </configure_for_pane>
+    </config>
+  </container>
+
+  <configure_for_new_list />
+
+  <container>
+    <type>list</type>
+    <name>on_order</name>
+    <config>
+       <columns>2</columns>
+       <synchronized_columns>stock</synchronized_columns>
+       <configure_for_pane>
+         <synchronized />
+       </configure_for_pane>
+    </config>
+  </container>
+
+</factory>
+
+<layout type="list" id="inventory">
+
+  <!-- ... -->
+
+</layout>
+
+<layout type="list" id="on_order">
+
+  <!-- ... -->
+
+</layout>
+]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	  <para>
+	    A pane factory element contains any element that's valid in a
+	    <link linkend="uixmlfactoryelement">generic factory</link>.
+	    This creates a new pane.
+	    The new element is usually a
+	    <tag class='element'>container</tag>.
+	  </para>
+
+	  <para>
+	    <tag class='emptytag'>configure_for_new_list</tag> enables
+	    the <link linkend="paneconfigurelist">integrated appearance of
+	      lists and tables in panes</link>.
+	    A
+	    <tag class='emptytag'>configure_for_new_list</tag> in a pane
+	    factory followed by a list
+	    <tag class='element'>container</tag> whose
+	    <tag class='element'>config</tag>
+	    has a
+	    <tag class='element'>configure_for_pane</tag>
+	    is equivalent to using pane factory's
+	    <methodname>configure_new_list</methodname>() when creating
+	    the new list or table.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
   </section>
 
   <section id="uixmlfactoryelement">
@@ -4359,13 +4744,15 @@ layout_manager->generate("dialog", generators, elements);
 
     <para>
       <tag class='element'>container</tag> is
-      equivalent to invoking a <tag class='element'>name</tag>d
+      equivalent to invoking the <tag class='element'>name</tag>-d
       <tag class='element'>element</tag>
       callback, and having the callback
       create a new container with the appropriate &layoutmanager;,
       and then <methodname>generate</methodname>()ing its contents
       from the layout specified by the
-      <tag class='element'>name</tag> value.
+      <tag class='element'>name</tag> value (which serves the same
+      dual purpose as the <tag class='element'>element</tag>
+      element).
     </para>
 
     <para>

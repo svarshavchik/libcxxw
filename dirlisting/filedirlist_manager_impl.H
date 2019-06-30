@@ -8,6 +8,7 @@
 #include "dirlisting/filedirlist_manager.H"
 #include "dirlisting/filedircontentsfwd.H"
 #include "dirlisting/filedir_filefwd.H"
+#include "x/w/uielementsfwd.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/panelayoutmanager.H"
 #include "x/w/container.H"
@@ -223,7 +224,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	//! Constructor, phase 1.
 
-	implObj(const factory &f,
+	implObj(const uielements &tmpl,
 		const std::string &initial_directory,
 		const file_dialog_config &config);
 
@@ -249,7 +250,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 	//! starts monitoring the directory when the display element becomes
 	//! visible, and stops it when it's no longer visible.
 
-	void constructor(const factory &f,
+	void constructor(const uielements &,
 			 const std::string &,
 			 const file_dialog_config &);
 

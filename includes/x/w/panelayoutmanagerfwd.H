@@ -142,7 +142,7 @@ config.restore(nplm, "main");
 \endcode
 
 Restores the previous sizes of the panes.
-A \ref screen_position "screen_positions" object must get constructed
+A \ref screen_positions "screen_positions" object must get constructed
 previously and used to restore() the
 \ref main_window "main_window".
 This restores the
@@ -159,6 +159,15 @@ the panes in the container.
 \note
 Pane sizes can be effectively restoring only if the new pane container's
 creator lambda creates the same number of panes as there were previously.
+
+\par Generating content from an XML-based specification
+
+\code
+l->generate("pane-layout", generators, elements);
+\endcode
+
+generate() generates the contents of the pane from the
+loaded theme file. See the tutorial for more information.
 
 */
 

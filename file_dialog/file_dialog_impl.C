@@ -561,15 +561,6 @@ standard_dialog_elements_t file_dialogObj::init_args
 						create_filter_field(factory,
 								    conf);
 				}},
-		{"directory-contents-list",
-				[&, this]
-				(const auto &factory)
-				{
-					directory_contents_list=
-						filedirlist_manager
-						::create(factory,
-							 directory, conf);
-				}},
 		{"ok", dialog_ok_button(_("Ok"), ok_button, 0)},
 		{"cancel", dialog_cancel_button(_("Cancel"),
 						cancel_button,
@@ -797,6 +788,12 @@ file_dialog main_windowObj
 				 tmpl.get_element("directory-field");
 			 init_args.filename_field=
 				 tmpl.get_element("file-input-field");
+
+
+			 init_args.directory_contents_list=
+				 filedirlist_manager::create
+				 (tmpl,
+				  init_args.directory, conf);
 
 			 f->created_internally(c);
 

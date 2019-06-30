@@ -18,16 +18,16 @@ panefactoryObj::panefactoryObj(const panelayoutmanager &layout)
 
 panefactoryObj::~panefactoryObj()=default;
 
+void panefactoryObj::configure_for_new_list()
+{
+	appearance=pane_appearance_base::focusable_list();
+}
+
 void panefactoryObj::configure_new_list(new_listlayoutmanager &nlm,
 					bool synchronized)
 {
-	nlm.variable_height();
-	nlm.set_pane_theme();
-
-	if (synchronized)
-		nlm.vertical_scrollbar=scrollbar_visibility::always;
-
-	appearance=pane_appearance_base::focusable_list();
+	nlm.configure_for_pane(synchronized);
+	configure_for_new_list();
 }
 
 LIBCXXW_NAMESPACE_END

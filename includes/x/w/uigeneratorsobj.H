@@ -109,6 +109,17 @@ public:
 			   const_vector<tablelayoutmanager_generator>
 			   > tablelayoutmanager_generators;
 
+	//! Generators used by the pane factory
+	std::unordered_map<std::string,
+			   const_vector<panefactory_generator>
+			   > panefactory_generators;
+
+	//! Generators used by the pane layout manager
+
+	std::unordered_map<std::string,
+			   const_vector<panelayoutmanager_generator>
+			   > panelayoutmanager_generators;
+
 	//! Generators used by the standard combobox layout manager
 
 	std::unordered_map<std::string,

@@ -13,6 +13,7 @@
 #include "x/w/listlayoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
+#include "x/w/panelayoutmanager.H"
 #include "x/w/impl/container.H"
 #include "x/w/radio_group.H"
 #include "x/w/synchronized_axis.H"
@@ -70,6 +71,22 @@ element uielements::get_element(const std::string_view &name) const
 
 	if (iter == new_elements.end())
 		throw EXCEPTION(gettextmsg(_("Element %1% was not found"),
+					   name));
+
+	return iter->second;
+}
+
+
+layoutmanager uielements::get_layoutmanager(const std::string_view &name) const
+{
+	// TODO: C++20;
+
+	auto iter=new_layoutmanagers.find(std::string{name.begin(),
+							      name.end()});
+
+	if (iter == new_layoutmanagers.end())
+		throw EXCEPTION(gettextmsg(_("Layout manager"
+					     " %1% was not found"),
 					   name));
 
 	return iter->second;
@@ -166,6 +183,27 @@ void listlayoutmanagerObj::generate(const std::string_view &name,
 	for (const auto &g:*iter->second)
 		g(me, elements);
 }
+
+void panelayoutmanagerObj::generate(const std::string_view &name,
+				    const const_uigenerators &generators,
+				    uielements &elements)
+{
+	// TODO: C++20
+	auto iter=generators->panelayoutmanager_generators.find({name.begin(),
+								 name.end()});
+
+	if (iter == generators->panelayoutmanager_generators.end())
+	{
+		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
+					   name));
+	}
+
+	auto me=ref{this};
+
+	for (const auto &g:*iter->second)
+		g(me, elements);
+}
+
 
 void standard_comboboxlayoutmanagerObj
 ::generate(const std::string_view &name,

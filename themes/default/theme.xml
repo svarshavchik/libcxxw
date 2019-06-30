@@ -1986,10 +1986,88 @@ of wrappable labels used for the message.
       <halign>fill</halign>
     </halign>
 
-    <element>
-      <name>directory-contents-list</name>
-    </element>
+    <container>
+      <name>directory-contents-pane</name>
+      <type>pane</type>
+      <config>
+	<size>directory-pane-size</size>
+      </config>
+    </container>
   </factory>
+
+  <dim id="directory-pane-size">100.0</dim>
+
+  <!-- Container with two panes, subdirectories and files -->
+
+  <layout id="directory-contents-pane" type="pane">
+    <append_panes>
+      <name>create-directory-contents-pane</name>
+    </append_panes>
+  </layout>
+
+  <factory id="create-directory-contents-pane" type="pane">
+
+    <configure_for_new_list />
+    <appearance>std_file_dialog_dir</appearance>
+    <container>
+      <type>list</type>
+      <name>subdirectory-pane</name>
+      <config>
+	<columns>3</columns>
+	<configure_for_pane>
+	  <synchronized />
+	</configure_for_pane>
+	<synchronized_columns>directory-contents-pane</synchronized_columns>
+
+	<!-- Give all space to the first column, with the filename -->
+	<requested_col_width>
+	  <column>0</column>
+	  <percentage>100</percentage>
+	</requested_col_width>
+
+	<!-- The rightmost column, file size, is right-aligned -->
+
+	<col_alignment>
+	  <column>2</column>
+	  <halign>right</halign>
+	</col_alignment>
+      </config>
+    </container>
+
+    <configure_for_new_list />
+    <appearance>std_file_dialog_file</appearance>
+    <container>
+      <type>list</type>
+      <name>file-pane</name>
+      <config>
+	<columns>3</columns>
+	<configure_for_pane>
+	  <synchronized />
+	</configure_for_pane>
+	<synchronized_columns>directory-contents-pane</synchronized_columns>
+
+	<!-- Give all space to the first column, with the filename -->
+	<requested_col_width>
+	  <column>0</column>
+	  <percentage>100</percentage>
+	</requested_col_width>
+
+	<!-- The rightmost column, file size, is right-aligned -->
+
+	<col_alignment>
+	  <column>2</column>
+	  <halign>right</halign>
+	</col_alignment>
+      </config>
+    </container>
+  </factory>
+
+  <appearance id="std_file_dialog_dir" type="pane" from="file_dialog_dir" />
+  <appearance id="std_file_dialog_file" type="pane" from="file_dialog_file" />
+
+  <layout id="file-pane" type="list" />
+
+  <layout id="subdirectory-pane" type="list" />
 
   <!-- Font for the "Directory" name -->
 

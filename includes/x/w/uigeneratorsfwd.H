@@ -15,6 +15,8 @@
 #include <x/w/standard_comboboxlayoutmanagerfwd.H>
 #include <x/w/editable_comboboxlayoutmanagerfwd.H>
 #include <x/w/tablelayoutmanagerfwd.H>
+#include <x/w/panelayoutmanagerfwd.H>
+#include <x/w/panefactoryfwd.H>
 #include <x/w/menubarfactoryfwd.H>
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/bookpagefactoryfwd.H>
@@ -54,6 +56,13 @@ typedef functionref<void (const listlayoutmanager &, uielements &)
 
 typedef functionref<void (const tablelayoutmanager &, uielements &)
 		    > tablelayoutmanager_generator;
+
+//! Generate something in the pane layout manager
+
+//! \see uigenerators
+
+typedef functionref<void (const panelayoutmanager &, uielements &)
+		    > panelayoutmanager_generator;
 
 //! Generate something in the standard combobox layout manager
 
@@ -99,6 +108,11 @@ typedef functionref<void (const booklayoutmanager &, uielements &)
 typedef functionref<void (const bookpagefactory &, uielements &)
 		    > bookpagefactory_generator;
 
+//! Generate something using a pane factory.
+
+//! \see uigenerators
+typedef functionref<void (const panefactory &, uielements &)
+		    > panefactory_generator;
 
 //! Pseudo-ref used to initialize a new_booklayoutmanager parameter
 
@@ -168,6 +182,17 @@ typedef new_tablelayoutmanager *new_tablelayoutmanager_plainptr;
 typedef functionref<void (const new_tablelayoutmanager_plainptr &layout,
 			  uielements &elements)
 		    > new_tablelayoutmanager_generator;
+
+//! Pseudo-ref used to initialize a new_panelayoutmanager parameter
+
+typedef new_panelayoutmanager *new_panelayoutmanager_plainptr;
+
+//! Generate something to initialize a new_panelayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_panelayoutmanager_plainptr &layout,
+			  uielements &elements)
+		    > new_panelayoutmanager_generator;
 
 class LIBCXX_PUBLIC uigeneratorsObj;
 class LIBCXX_PUBLIC uigeneratorsBase;

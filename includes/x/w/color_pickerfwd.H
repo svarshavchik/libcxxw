@@ -131,7 +131,7 @@ config.restore(pos, "foreground-color");
 \endcode
 
 Restores previously-saved color picker state.
-A \ref screen_position "screen_positions" object must get constructed
+A \ref screen_positions "screen_positions" object must get constructed
 previously and used to restore() the color picker's
 \ref main_window "main_window".
 This restores the color picker's state alongside with the main window's.

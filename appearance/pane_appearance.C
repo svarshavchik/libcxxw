@@ -109,7 +109,7 @@ static const_pane_appearance create_file_dialog_dir()
 		([]
 		 (const auto &appearance)
 		 {
-			 appearance->size=30;
+			 appearance->size=25;
 		 });
 
 	return appearance;
@@ -121,7 +121,7 @@ static const_pane_appearance create_file_dialog_file()
 		([]
 		 (const auto &appearance)
 		 {
-			 appearance->size=50;
+			 appearance->size=75;
 		 });
 
 	return appearance;
