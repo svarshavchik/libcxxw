@@ -13,6 +13,7 @@
 #include <x/w/radio_groupfwd.H>
 #include <x/w/synchronized_axisfwd.H>
 #include <x/w/copy_cut_paste_menu_items.H>
+#include <x/w/layoutmanagerfwd.H>
 #include <x/functionalrefptr.H>
 #include <unordered_map>
 #include <string>
@@ -24,7 +25,9 @@ LIBCXXW_NAMESPACE_START
 Passed to a supported layout manager's generate(), to
 \ref uigenerators "generate the contents of the container from an XML template".
 
-The first element is a map. The key is the \<element>'s \<name> from the
+The widgets get created from the template. The first element of this object
+is a map for custom widget factories.
+The key is the custom \<element>'s \<name> from the
 XML template. The value is a lambda, or a callable object. \<element>
 invokes the lambda, passing to it a \ref factory "factory". The lambda
 is expected to use the factory to create a widget:
@@ -76,6 +79,12 @@ struct uielements {
 	//! generate() puts new elements that get created in here.
 
 	std::unordered_map<std::string, element> new_elements;
+
+	//! The new layout managers that get created.
+
+	//! generate() saved layout managers of created containers in here.
+
+	std::unordered_map<std::string, layoutmanager> new_layoutmanagers;
 
 	//! Container for the generated radio groups
 

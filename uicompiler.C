@@ -83,11 +83,15 @@ void uicompiler::wrong_appearance_type(const std::string_view &name,
 // a vector of compiled layout manager generator, and implements additional
 // functionality:
 //
+// - generators must inherit from generators_base. This captures the
+// new container's name.
+//
 // - create_container(): takes a factory object, and an elements object;
 // creates a container and generates its contents.
 //
-// - generate - takes a container, gets its layout manager, and generates
-// its contents.
+// - generate - takes a container, calls get_layoutmanager(), and generates
+// its contents. It calls get_new_layoutmanager() from generators_base(), which
+// captures the layout manager.
 //
 // - new_layoutmanager - returns the corresponding new layoutmanager object.
 //
@@ -131,20 +135,48 @@ void uicompiler::wrong_appearance_type(const std::string_view &name,
 // - Define lookup_{name}layoutmanager_generators().
 //
 
+namespace {
+#if 0
+}
+#endif
+
+struct generators_base {
+
+	std::string name;
+
+	generators_base(const std::string &name) : name{name} {}
+
+	layoutmanager get_new_layoutmanager(const container &new_container,
+					uielements &elements) const
+	{
+		auto lm=new_container->get_layoutmanager();
+
+		elements.new_layoutmanagers.emplace(name, lm);
+
+		return lm;
+	}
+};
+
+#if 0
+{
+#endif
+}
+
 // Grid layout manager functionality.
 
 struct uicompiler::gridlayoutmanager_functions {
 
 	// A vector of compiled grid layout manager generators
 
-	struct generators {
+	struct generators : generators_base {
 
 		const_vector<gridlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generator_vector{compiler
+			: generators_base{name},
+			  generator_vector{compiler
 					   .lookup_gridlayoutmanager_generators
 					   (lock, name)}
 		{
@@ -171,7 +203,8 @@ struct uicompiler::gridlayoutmanager_functions {
 		void generate(const container &c,
 			      uielements &factories) const
 		{
-			gridlayoutmanager glm=c->get_layoutmanager();
+			gridlayoutmanager glm=
+				get_new_layoutmanager(c, factories);
 
 			for (const auto &g:*generator_vector)
 			{
@@ -201,9 +234,9 @@ create_newlistlayoutmanager_vector(uicompiler &compiler,
 
 struct uicompiler::listlayoutmanager_functions {
 
-	// A vector of compiled grid layout manager generators
+	// A vector of compiled list layout manager generators
 
-	struct generators {
+	struct generators : generators_base {
 
 		const listlayoutstyle_impl &style;
 
@@ -218,7 +251,8 @@ struct uicompiler::listlayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: style{single_value_exists(lock, "style")
+			: generators_base{name},
+			  style{single_value_exists(lock, "style")
 				? list_style_by_name(lowercase_single_value
 						     (lock, "style",
 						      "container"))
@@ -266,7 +300,8 @@ struct uicompiler::listlayoutmanager_functions {
 		void generate(const container &c,
 			      uielements &factories) const
 		{
-			listlayoutmanager llm=c->get_layoutmanager();
+			listlayoutmanager llm=
+				get_new_layoutmanager(c, factories);
 
 			for (const auto &g:*generator_vector)
 			{
@@ -323,7 +358,7 @@ struct uicompiler::tablelayoutmanager_functions {
 
 	// A vector of compiled grid layout manager generators
 
-	struct generators {
+	struct generators : generators_base {
 
 		const listlayoutstyle_impl &style;
 
@@ -340,7 +375,8 @@ struct uicompiler::tablelayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: style{single_value_exists(lock, "style")
+			: generators_base{name},
+			  style{single_value_exists(lock, "style")
 				? list_style_by_name(lowercase_single_value
 						     (lock, "style",
 						      "container"))
@@ -416,7 +452,8 @@ struct uicompiler::tablelayoutmanager_functions {
 		void generate(const container &c,
 			      uielements &factories) const
 		{
-			tablelayoutmanager llm=c->get_layoutmanager();
+			tablelayoutmanager llm=
+				get_new_layoutmanager(c, factories);
 
 			for (const auto &g:*generator_vector)
 			{
@@ -450,9 +487,9 @@ create_newstandard_comboboxlayoutmanager_vector(uicompiler &compiler,
 
 struct uicompiler::standard_comboboxlayoutmanager_functions {
 
-	// A vector of compiled grid layout manager generators
+	// A vector of compiled standard combo-box layout manager generators
 
-	struct generators {
+	struct generators : generators_base {
 
 		// Generators for the contents of the new_standard_comboboxlayoutmanager
 
@@ -465,7 +502,8 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: new_standard_comboboxlayoutmanager_vector
+			: generators_base{name},
+			  new_standard_comboboxlayoutmanager_vector
 			{
 			 create_newstandard_comboboxlayoutmanager_vector(compiler, lock)
 			},
@@ -509,7 +547,7 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 			      uielements &factories) const
 		{
 			standard_comboboxlayoutmanager llm=
-				c->get_layoutmanager();
+				get_new_layoutmanager(c, factories);
 
 			for (const auto &g:*generator_vector)
 			{
@@ -541,9 +579,9 @@ create_neweditable_comboboxlayoutmanager_vector(uicompiler &compiler,
 
 struct uicompiler::editable_comboboxlayoutmanager_functions {
 
-	// A vector of compiled grid layout manager generators
+	// A vector of compiled editable combo-box layout manager generators
 
-	struct generators {
+	struct generators : generators_base {
 
 		// Generators for the contents of the new_editable_comboboxlayoutmanager
 
@@ -556,7 +594,8 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: new_editable_comboboxlayoutmanager_vector
+			: generators_base{name},
+			  new_editable_comboboxlayoutmanager_vector
 			{
 			 create_neweditable_comboboxlayoutmanager_vector(compiler, lock)
 			},
@@ -600,7 +639,7 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 			      uielements &factories) const
 		{
 			editable_comboboxlayoutmanager llm=
-				c->get_layoutmanager();
+				get_new_layoutmanager(c, factories);
 
 			for (const auto &g:*generator_vector)
 			{
@@ -633,7 +672,7 @@ struct uicompiler::booklayoutmanager_functions {
 
 	// A vector of compiler book layout manager generators
 
-	struct generators {
+	struct generators : generators_base {
 
 		// Generators for the contents of the new_booklayoutmanager
 
@@ -645,7 +684,8 @@ struct uicompiler::booklayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: new_booklayoutmanager_vector
+			: generators_base{name},
+			  new_booklayoutmanager_vector
 			{
 			 create_newbooklayoutmanager_vector(compiler, lock)
 			},
@@ -686,7 +726,8 @@ struct uicompiler::booklayoutmanager_functions {
 		void generate(const container &c,
 			      uielements &factories) const
 		{
-			booklayoutmanager blm=c->get_layoutmanager();
+			booklayoutmanager blm=
+				get_new_layoutmanager(c, factories);
 
 			for (const auto &g:*generator_vector)
 			{
@@ -707,6 +748,12 @@ template<typename variant_t> struct all_generators;
 template<typename ...Args> struct all_generators<std::variant<Args...>> {
 
 	typedef std::variant<typename Args::generators...> type;
+
+	typedef std::tuple<
+		std::enable_if_t<std::is_base_of_v<generators_base,
+						   typename Args::generators>>
+		...> generators_must_inherit_from_generators_base;
+
 };
 
 struct uicompiler::container_generators_t
