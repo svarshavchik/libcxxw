@@ -2272,6 +2272,88 @@ List of values:
     </function>
   </parser>
 
+  <!-- itemlayoutmanager initialization -->
+
+  <parser>
+    <name>itemlayout</name>
+
+    <parameter>
+      <type>itemlayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>append_item</name>
+      <invoke>append_item</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>item</name>
+	<type>compiler.factory_parseconfig</type>
+	<factory_wrapper>layout</factory_wrapper>
+      </parameter>
+
+      <parameter>
+	<member_name>appearance</member_name>
+	<name>appearance</name>
+	<object>const_item_button_appearance</object>
+	<type>single_value</type>
+	<default_constructor_params>const_item_button_appearance::base::theme()</default_constructor_params>
+	<initialize_self />
+	<lookup>
+	  <function>compiler.lookup_appearance&lt;const_item_button_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>insert_item</name>
+      <invoke>insert_item</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>item</name>
+	<type>compiler.factory_parseconfig</type>
+	<factory_wrapper>layout</factory_wrapper>
+      </parameter>
+
+      <parameter>
+	<member_name>appearance</member_name>
+	<name>appearance</name>
+	<object>const_item_button_appearance</object>
+	<type>single_value</type>
+	<default_constructor_params>const_item_button_appearance::base::theme()</default_constructor_params>
+	<initialize_self />
+	<lookup>
+	  <function>compiler.lookup_appearance&lt;const_item_button_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_item</name>
+      <invoke>remove_item</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+  </parser>
+
   <!-- new_booklayoutmanager initialization -->
 
   <parser>
@@ -2957,6 +3039,38 @@ List of values:
 	<lookup>
 	  <function>restore_panelayoutmanager_position</function>
 	  <prepend-parameter>compiler</prepend-parameter>
+	</lookup>
+      </parameter>
+    </function>
+  </parser>
+
+  <!-- new_itemlayoutmanager initialization -->
+
+  <parser>
+    <name>new_itemlayout</name>
+
+    <parameter>
+      <type>new_itemlayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>appearance</name>
+      <object>layout</object>
+      <invoke>appearance=</invoke>
+
+      <parameter>
+	<name>appearance</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.lookup_appearance&lt;const_item_layout_appearance&gt;</function>
+	  <default_params />
 	</lookup>
       </parameter>
     </function>

@@ -19,6 +19,7 @@
 #include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/tablelayoutmanager.H"
 #include "x/w/panelayoutmanager.H"
+#include "x/w/itemlayoutmanager.H"
 #include "x/w/synchronized_axis.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
@@ -138,9 +139,9 @@ void uicompiler::wrong_appearance_type(const std::string_view &name,
 //
 // {name}layoutmanager.C
 //
-// - Implement generate().
+// - Implement generate() (in uielements.C).
 //
-// Then define the factory:
+// Then define the factory (if applicable):
 //
 // - Define {name}factory_generator typedef in uigeneratorsfwd.H
 //
@@ -346,7 +347,11 @@ create_newtablelayoutmanager_vector(uicompiler &compiler,
 {
 	auto lock=orig_lock->clone();
 
-	lock->get_xpath("config")->to_node();
+	auto xpath=lock->get_xpath("config");
+
+	if (xpath->count() == 0) // None, return an empty vector.
+		return const_vector<new_tablelayoutmanager_generator>::create();
+	xpath->to_node();
 
 	return compiler.new_tablelayout_parseconfig(lock);
 }
@@ -496,7 +501,11 @@ create_newpanelayoutmanager_vector(uicompiler &compiler,
 {
 	auto lock=orig_lock->clone();
 
-	lock->get_xpath("config")->to_node();
+	auto xpath=lock->get_xpath("config");
+
+	if (xpath->count() == 0) // None, return an empty vector.
+		return const_vector<new_panelayoutmanager_generator>::create();
+	xpath->to_node();
 
 	return compiler.new_panelayout_parseconfig(lock);
 }
@@ -574,6 +583,98 @@ struct uicompiler::panelayoutmanager_functions {
 };
 
 
+////////////////////////////////////////////////////////////////////////////
+//
+// Item layout manager functionality.
+//
+// Parse new item layout manager generators from <config>
+
+static const_vector<new_itemlayoutmanager_generator>
+create_newitemlayoutmanager_vector(uicompiler &compiler,
+				    const theme_parser_lock &orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	auto xpath=lock->get_xpath("config");
+
+	if (xpath->count() == 0) // None, return an empty vector.
+		return const_vector<new_itemlayoutmanager_generator>::create();
+	xpath->to_node();
+
+	return compiler.new_itemlayout_parseconfig(lock);
+}
+
+struct uicompiler::itemlayoutmanager_functions {
+
+	struct generators : generators_base {
+
+		// Generators for the contents of the new_tablelayoutmanager
+
+		const_vector<new_itemlayoutmanager_generator
+			     > new_itemlayoutmanager_vector;
+
+		// Generators for the contents of the item layout manager.
+		const_vector<itemlayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const theme_parser_lock &lock,
+			   const std::string &name)
+			: generators_base{name},
+			  new_itemlayoutmanager_vector
+			{
+			 create_newitemlayoutmanager_vector(compiler, lock)
+			},
+			  generator_vector
+			{
+			 compiler.lookup_itemlayoutmanager_generators(lock,
+								      name)
+			}
+		{
+		}
+
+		focusable_container create_container(const factory &f,
+						     uielements &factories)
+			const
+		{
+		        auto nplm=new_layoutmanager(factories);
+
+			// Generate the contents of the new_tablelayoutmanager.
+
+			for (const auto &g:*new_itemlayoutmanager_vector)
+			{
+				g(&nplm, factories);
+			}
+
+			return f->create_focusable_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 nplm);
+		}
+
+		inline new_itemlayoutmanager
+		new_layoutmanager(uielements &factories) const
+		{
+			new_itemlayoutmanager nilm;
+
+			return nilm;
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			itemlayoutmanager plm=
+				get_new_layoutmanager(c, factories);
+
+			for (const auto &g:*generator_vector)
+			{
+				g(plm, factories);
+			}
+		}
+	};
+};
 
 // Parse generators for the contents of a new_standard_comboboxlayoutmanager
 
@@ -956,6 +1057,11 @@ uicompiler::get_layoutmanager(const std::string &type)
 	if (type == "pane")
 		return layoutmanager_functions{
 			std::in_place_type_t<panelayoutmanager_functions>{}
+		};
+
+	if (type == "item")
+		return layoutmanager_functions{
+			std::in_place_type_t<itemlayoutmanager_functions>{}
 		};
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a known layout/container"),
 				   type));

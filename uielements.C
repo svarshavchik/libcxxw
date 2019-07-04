@@ -14,6 +14,7 @@
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/panelayoutmanager.H"
+#include "x/w/itemlayoutmanager.H"
 #include "x/w/impl/container.H"
 #include "x/w/radio_group.H"
 #include "x/w/synchronized_axis.H"
@@ -204,6 +205,25 @@ void panelayoutmanagerObj::generate(const std::string_view &name,
 		g(me, elements);
 }
 
+void itemlayoutmanagerObj::generate(const std::string_view &name,
+				    const const_uigenerators &generators,
+				    uielements &elements)
+{
+	// TODO: C++20
+	auto iter=generators->itemlayoutmanager_generators.find({name.begin(),
+								 name.end()});
+
+	if (iter == generators->itemlayoutmanager_generators.end())
+	{
+		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
+					   name));
+	}
+
+	auto me=ref{this};
+
+	for (const auto &g:*iter->second)
+		g(me, elements);
+}
 
 void standard_comboboxlayoutmanagerObj
 ::generate(const std::string_view &name,

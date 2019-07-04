@@ -1,0 +1,132 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmllayoutitemelements">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>item</quote>
+    <tag class='element'>layout</tag>
+    elements</title>
+
+  <section id="uixmllayoutitemnewitems">
+    <title><tag class='element'>append_item</tag> and
+      <tag class='element'>insert_item</tag>
+    </title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="item" id="main-table">
+
+  <!-- ... -->
+
+  <append_item>
+    <item>
+      <element>
+	<label type='theme_text'>Lorem</label>
+      </element>
+    </item>
+  </append_item>
+
+  <insert_item>
+    <position>1</position>
+    <item>
+      <element>
+	<label type='theme_text'>Ipsum</label>
+      </element>
+    </item>
+  </insert_item>
+
+  </layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>append_item</tag> and
+      <tag class='element'>insert_item</tag>
+      invoke the corresponding
+      <link linkend="itemlayoutmanager">item layout manager</link> methods
+      that add new items to the.
+      The <tag class='element'>position</tag> value specifies the
+      insert position (for
+      <tag class='element'>insert_item</tag>).
+      The
+      <tag class='element'>item</tag> element contains a
+      single &themewidget;, typically a
+      <tag class='element'>label</tag>,
+      which defines the new item.
+    </para>
+
+    <section id="uixmllayoutitemnewitemsappearance">
+      <title>Custom new item appearance</title>
+
+      <para>
+	<tag class='element'>append_item</tag> and
+	<tag class='element'>insert_item</tag> have an optional
+	<tag class='element'>appearance</tag> that sets a non-default
+	appearance for the new item:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<append_item>
+  <item>
+    <element>
+      <label type='theme_text'>Lorem</label>
+    </element>
+  </item>
+  <appearance>custom-item</appearance>
+</append_item>
+
+<!-- ... -->
+
+<appearance id="custom-item" type="item_button">
+
+  <!-- ... -->
+
+</appearance>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	The value of the element specifies an
+	<link linkend="uixmlappearance"><tag class='element'>appearance</tag></link>
+	object of <tag class='attribute'>type</tag>=<quote>item_button</quote>.
+	This is equivalent to passing this optional parameter to
+	<methodname>append_item</methodname>() or
+	<methodname>insert_item</methodname>().
+      </para>
+    </section>
+  </section>
+
+  <section id="uixmllayoutitemremoveitem">
+    <title><tag class='element'>remove_item</tag>
+    </title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<remove_item>
+  <position>0</position>
+</remove_item>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>remove_item</tag>
+      invokes the corresponding
+      <link linkend="itemlayoutmanager">item layout manager</link>
+      method that removes an
+      an item.
+      The <tag class='element'>position</tag> value specifies the
+      position index of the item to remove.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

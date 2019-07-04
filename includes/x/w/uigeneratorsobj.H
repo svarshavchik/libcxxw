@@ -120,6 +120,12 @@ public:
 			   const_vector<panelayoutmanager_generator>
 			   > panelayoutmanager_generators;
 
+	//! Generators used by the item layout manager
+
+	std::unordered_map<std::string,
+			   const_vector<itemlayoutmanager_generator>
+			   > itemlayoutmanager_generators;
+
 	//! Generators used by the standard combobox layout manager
 
 	std::unordered_map<std::string,

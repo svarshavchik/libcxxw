@@ -79,6 +79,16 @@ public:
 	//! Install a new callback
 
 	void on_remove(const itemlayout_callback_t &callback);
+
+	//! Implement generate()
+
+	//! \see uigenerators
+
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements) override;
+
+	using layoutmanagerObj::generate;
 };
 
 LIBCXXW_NAMESPACE_END

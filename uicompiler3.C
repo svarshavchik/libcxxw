@@ -998,6 +998,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 					.emplace(id, ret);
 				continue;
 			}
+
+			if (type == "item")
+			{
+				auto ret=itemlayout_parseconfig(lock);
+				generators->itemlayoutmanager_generators
+					.emplace(id, ret);
+				continue;
+			}
 		}
 		else if (name == "factory")
 		{
@@ -1418,6 +1426,40 @@ uicompiler::lookup_panefactory_generators(const theme_parser_lock &lock,
 	auto ret=panefactory_parseconfig(new_lock);
 
 	generators->panefactory_generators.emplace(name, ret);
+
+	return ret;
+}
+
+const_vector<itemlayoutmanager_generator>
+uicompiler::lookup_itemlayoutmanager_generators(const theme_parser_lock &lock,
+						const std::string &name)
+{
+	{
+		auto iter=generators->itemlayoutmanager_generators.find(name);
+
+		if (iter != generators->itemlayoutmanager_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "layout"
+	    || iter->second->get_any_attribute("type") != "item")
+	{
+		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=itemlayout_parseconfig(new_lock);
+
+	generators->itemlayoutmanager_generators.emplace(name, ret);
 
 	return ret;
 }

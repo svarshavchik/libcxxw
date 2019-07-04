@@ -204,10 +204,15 @@ public:
 	vector<tablelayoutmanager_generator
 	       > tablelayout_parseconfig(const theme_parser_lock &lock);
 
-	//! Parser for the new pane layout manager generator
+	//! Parser for the pane layout manager generator
 
 	vector<panelayoutmanager_generator
 	       > panelayout_parseconfig(const theme_parser_lock &lock);
+
+	//! Parser for the item layout manager generator
+
+	vector<itemlayoutmanager_generator
+	       > itemlayout_parseconfig(const theme_parser_lock &lock);
 
 	//! Parser for the new book layout manager generator
 
@@ -244,6 +249,11 @@ public:
 
 	vector<new_panelayoutmanager_generator
 	       > new_panelayout_parseconfig(const theme_parser_lock &lock);
+
+	//! Parser for the new item layout manager generator
+
+	vector<new_itemlayoutmanager_generator
+	       > new_itemlayout_parseconfig(const theme_parser_lock &lock);
 private:
 	//! Implement <element>
 
@@ -289,6 +299,10 @@ private:
 	tablelayoutmanager_generator
 	tablelayout_parser(const theme_parser_lock &lock);
 
+	//! Generate a single itemlayoutmanager instruction.
+	itemlayoutmanager_generator
+	itemlayout_parser(const theme_parser_lock &lock);
+
 	//! Generate a single panelayoutmanager instruction.
 	panelayoutmanager_generator
 	panelayout_parser(const theme_parser_lock &lock);
@@ -328,6 +342,10 @@ private:
 	//! Generate a single new_panelayoutmanager instruction.
 	new_panelayoutmanager_generator
 	new_panelayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single new_itemlayoutmanager instruction.
+	new_itemlayoutmanager_generator
+	new_itemlayout_parser(const theme_parser_lock &lock);
 
 public:
 	//! Return compiled grid factory generators.
@@ -448,6 +466,16 @@ public:
 
 	const_vector<panelayoutmanager_generator>
 	lookup_panelayoutmanager_generators(const theme_parser_lock &lock,
+					    const std::string &);
+
+	//! Return compiled item layout manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into itemlayoutmanager_generators, and return them.
+
+	const_vector<itemlayoutmanager_generator>
+	lookup_itemlayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled pane factory manager generators.
@@ -614,6 +642,10 @@ private:
 
 	struct panelayoutmanager_functions;
 
+	//! Supported item layout manager functionality.
+
+	struct itemlayoutmanager_functions;
+
 	//! All supported layout manager funcitonality.
 
 	typedef std::variant<gridlayoutmanager_functions,
@@ -622,6 +654,7 @@ private:
 			     editable_comboboxlayoutmanager_functions,
 			     tablelayoutmanager_functions,
 			     panelayoutmanager_functions,
+			     itemlayoutmanager_functions,
 			     booklayoutmanager_functions
 			     > layoutmanager_functions;
 

@@ -1693,23 +1693,32 @@ layout->generate("main-window-grid",
     </section>
   </section>
 
-  &uixmllayoutgrid;
-  &uixmllayoutgridelements;
-  &uixmlfactorygrid;
   &uixmllayoutbook;
   &uixmlbooklayoutelements;
   &uixmlfactorybook;
-  &uixmllayoutlist;
-  &uixmllayoutlistelements;
+
   &uixmllayoutcombobox;
   &uixmllayoutcomboboxelements;
-  &uixmllayouttable;
-  &uixmllayouttableelements;
+
+  &uixmllayoutgrid;
+  &uixmllayoutgridelements;
+  &uixmlfactorygrid;
+
+  &uixmllayoutitem;
+  &uixmllayoutitemelements;
+
+  &uixmllayoutlist;
+  &uixmllayoutlistelements;
+
   &uixmllayoutmenubar;
   &uixmlfactorymenubar;
+
   &uixmllayoutpane;
   &uixmllayoutpaneelements;
   &uixmlfactorypane;
+
+  &uixmllayouttable;
+  &uixmllayouttableelements;
 
   <section id="uixmlfactoryelement">
     <title><tag class='element'>element</tag> and
