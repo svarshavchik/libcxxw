@@ -104,6 +104,7 @@
 <!ENTITY uixmlfactorygrid SYSTEM "uixmldocfactorygrid.xml">
 <!ENTITY uixmlfactorymenubar SYSTEM "uixmldocfactorymenubar.xml">
 <!ENTITY uixmlfactorypane SYSTEM "uixmldocfactorypane.xml">
+<!ENTITY uixmlfactorytoolbox SYSTEM "uixmldocfactorytoolbox.xml">
 <!ENTITY uixmllayoutbook SYSTEM "uixmldoclayoutbook.xml">
 <!ENTITY uixmllayoutcomboboxelements SYSTEM "uixmldoclayoutcomboboxelements.xml">
 <!ENTITY uixmllayoutcombobox SYSTEM "uixmldoclayoutcombobox.xml">
@@ -118,6 +119,8 @@
 <!ENTITY uixmllayoutpane SYSTEM "uixmldoclayoutpane.xml">
 <!ENTITY uixmllayouttableelements SYSTEM "uixmldoclayouttableelements.xml">
 <!ENTITY uixmllayouttable SYSTEM "uixmldoclayouttable.xml">
+<!ENTITY uixmllayouttoolboxelements SYSTEM "uixmldoclayouttoolboxelements.xml">
+<!ENTITY uixmllayouttoolbox SYSTEM "uixmldoclayouttoolbox.xml">
 <!ENTITY validatedinput SYSTEM "validatedinput.xml">
 <!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">
 

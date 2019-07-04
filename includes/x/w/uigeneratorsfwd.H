@@ -21,6 +21,8 @@
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/bookpagefactoryfwd.H>
 #include <x/w/itemlayoutmanagerfwd.H>
+#include <x/w/toolboxlayoutmanagerfwd.H>
+#include <x/w/toolboxfactoryfwd.H>
 #include <x/w/uielementsfwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/functionalrefptrfwd.H>
@@ -72,6 +74,13 @@ typedef functionref<void (const panelayoutmanager &, uielements &)
 typedef functionref<void (const itemlayoutmanager &, uielements &)
 		    > itemlayoutmanager_generator;
 
+//! Generate something in the toolbox layout manager
+
+//! \see uigenerators
+
+typedef functionref<void (const toolboxlayoutmanager &, uielements &)
+		    > toolboxlayoutmanager_generator;
+
 //! Generate something in the standard combobox layout manager
 
 //! \see uigenerators
@@ -121,6 +130,12 @@ typedef functionref<void (const bookpagefactory &, uielements &)
 //! \see uigenerators
 typedef functionref<void (const panefactory &, uielements &)
 		    > panefactory_generator;
+
+//! Generate something using a toolbox factory.
+
+//! \see uigenerators
+typedef functionref<void (const toolboxfactory &, uielements &)
+		    > toolboxfactory_generator;
 
 //! Pseudo-ref used to initialize a new_booklayoutmanager parameter
 
@@ -212,6 +227,17 @@ typedef new_itemlayoutmanager *new_itemlayoutmanager_plainptr;
 typedef functionref<void (const new_itemlayoutmanager_plainptr &layout,
 			  uielements &elements)
 		    > new_itemlayoutmanager_generator;
+
+//! Pseudo-ref used to initialize a new_toolboxlayoutmanager parameter
+
+typedef new_toolboxlayoutmanager *new_toolboxlayoutmanager_plainptr;
+
+//! Generate something to initialize a new_toolboxlayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_toolboxlayoutmanager_plainptr &layout,
+			  uielements &elements)
+		    > new_toolboxlayoutmanager_generator;
 
 class LIBCXX_PUBLIC uigeneratorsObj;
 class LIBCXX_PUBLIC uigeneratorsBase;

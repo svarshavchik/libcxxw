@@ -907,9 +907,12 @@ libcxxw_la_SOURCES=\
 	uicompiler_new_panelayout.C		    \
 	uicompiler_new_standard_comboboxlayout.C    \
 	uicompiler_new_tablelayout.C		    \
+	uicompiler_new_toolboxlayout.C		    \
 	uicompiler_panefactory.C		    \
 	uicompiler_panelayout.C			    \
 	uicompiler_tablelayout.C		    \
+	uicompiler_toolboxfactory.C		    \
+	uicompiler_toolboxlayout.C		    \
 	uigenerators.C				    \
 	uielements.C				    \
 	windowobj.C				    \
@@ -1363,9 +1366,12 @@ uicompiler_new_listlayout.lo			\
 uicompiler_new_panelayout.lo			\
 uicompiler_new_standard_comboboxlayout.lo	\
 uicompiler_new_tablelayout.lo			\
+uicompiler_new_toolboxlayout.lo			\
 uicompiler_panefactory.lo			\
 uicompiler_panelayout.lo			\
 uicompiler_standard_comboboxlayout.lo		\
+uicompiler_toolboxfactory.lo			\
+uicompiler_toolboxlayout.lo			\
 	: uicompiler.stamp.inc.H
 
 clean-local:

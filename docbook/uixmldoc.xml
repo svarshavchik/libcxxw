@@ -1720,6 +1720,10 @@ layout->generate("main-window-grid",
   &uixmllayouttable;
   &uixmllayouttableelements;
 
+  &uixmllayouttoolbox;
+  &uixmllayouttoolboxelements;
+  &uixmlfactorytoolbox;
+
   <section id="uixmlfactoryelement">
     <title><tag class='element'>element</tag> and
       <tag class='element'>container</tag> elements</title>

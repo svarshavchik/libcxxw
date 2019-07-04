@@ -50,6 +50,17 @@ See COPYING for distribution information.
 	  for numerical input fields, etc...
 	</para>
       </listitem>
+
+      <listitem>
+	<para>
+	  Create widgets
+	  <link linkend="uigenerator">from an <acronym>XML</acronym>
+	    stylesheet</link> that supports the majority of the C++ library
+	  API. Adjust the visual appearance of widgets simply by editing
+	  the stylesheet, without recompiling the code.
+	</para>
+      </listitem>
+
       <listitem>
 	<para>
 	  All widgets have full
@@ -73,13 +84,7 @@ See COPYING for distribution information.
 	  Fully scalable and themeable widgets use a
 	  <link linkend="sxg">library-specific
 	    scalable graphic format</link>, to fractionally scale the widgets
-	  to a targeted size. The library also implements an
-	  <link linkend="uigenerator"><acronym>XML</acronym>
-	    specification</link> for creating widgets. It's possible to
-	  make changes to the layout and the appearance of widgets without
-	  recompiling, but by updating the <acronym>XML</acronym> theme
-	  file.
-	</para>
+	  to a targeted size.</para>
       </listitem>
 
       <listitem>
@@ -115,9 +120,9 @@ See COPYING for distribution information.
       <para>
 	&app;'s core functionality is complete, and
 	<link linkend="INSTALL">is available for downloading</link>.
-	The most recent build of &app; implements additional APIs for
-	<link linkend="uigenerator">generating widgets from
-	  <acronym>XML</acronym> stylesheets</link>.
+	The most recent build of &app; completes the implementation of
+	<link linkend="uixmldoc"><acronym>XML</acronym>
+	  stylesheets for generating widgets</link>.
       </para>
     </section>
   </section>

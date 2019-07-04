@@ -1,3 +1,7 @@
+2019-07-04  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Generate toolbox containers using the theme file.
+
 2019-07-02  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Generate item containers using the theme file.

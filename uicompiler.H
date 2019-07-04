@@ -157,6 +157,10 @@ public:
 	vector<panefactory_generator
 	       > panefactory_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for toolbox factory generator.
+	vector<toolboxfactory_generator
+	       > toolboxfactory_parseconfig(const theme_parser_lock &lock);
+
 	//! Parser for menu bar factory generator.
 	vector<menubarfactory_generator
 	       > menubarfactory_parseconfig(const theme_parser_lock &lock);
@@ -214,6 +218,11 @@ public:
 	vector<itemlayoutmanager_generator
 	       > itemlayout_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for the toolbox layout manager generator
+
+	vector<toolboxlayoutmanager_generator
+	       > toolboxlayout_parseconfig(const theme_parser_lock &lock);
+
 	//! Parser for the new book layout manager generator
 
 	vector<new_booklayoutmanager_generator
@@ -254,6 +263,11 @@ public:
 
 	vector<new_itemlayoutmanager_generator
 	       > new_itemlayout_parseconfig(const theme_parser_lock &lock);
+
+	//! Parser for the new toolbox layout manager generator
+
+	vector<new_toolboxlayoutmanager_generator
+	       > new_toolboxlayout_parseconfig(const theme_parser_lock &lock);
 private:
 	//! Implement <element>
 
@@ -275,6 +289,10 @@ private:
 
 	//! Generate a single pane factory instruction.
 	panefactory_generator panefactory_parser(const theme_parser_lock &lock);
+
+	//! Generate a single toolbox factory instruction.
+	toolboxfactory_generator
+	toolboxfactory_parser(const theme_parser_lock &lock);
 
 	//! Generate a single factory instruction.
 	factory_generator factory_parser(const theme_parser_lock &lock);
@@ -302,6 +320,10 @@ private:
 	//! Generate a single itemlayoutmanager instruction.
 	itemlayoutmanager_generator
 	itemlayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single toolboxlayoutmanager instruction.
+	toolboxlayoutmanager_generator
+	toolboxlayout_parser(const theme_parser_lock &lock);
 
 	//! Generate a single panelayoutmanager instruction.
 	panelayoutmanager_generator
@@ -346,6 +368,10 @@ private:
 	//! Generate a single new_itemlayoutmanager instruction.
 	new_itemlayoutmanager_generator
 	new_itemlayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single new_toolboxlayoutmanager instruction.
+	new_toolboxlayoutmanager_generator
+	new_toolboxlayout_parser(const theme_parser_lock &lock);
 
 public:
 	//! Return compiled grid factory generators.
@@ -478,6 +504,16 @@ public:
 	lookup_itemlayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
 
+	//! Return compiled toolbox layout manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into toolboxlayoutmanager_generators, and return them.
+
+	const_vector<toolboxlayoutmanager_generator>
+	lookup_toolboxlayoutmanager_generators(const theme_parser_lock &lock,
+					    const std::string &);
+
 	//! Return compiled pane factory manager generators.
 
 	//! If the generators are already compiled, return them. If not,
@@ -486,6 +522,17 @@ public:
 
 	const_vector<panefactory_generator>
 	lookup_panefactory_generators(const theme_parser_lock &lock,
+				      const char *element,
+				      const char *parent);
+
+	//! Return compiled toolbox factory manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into toolboxfactory_generators, and return them.
+
+	const_vector<toolboxfactory_generator>
+	lookup_toolboxfactory_generators(const theme_parser_lock &lock,
 				      const char *element,
 				      const char *parent);
 
@@ -646,6 +693,10 @@ private:
 
 	struct itemlayoutmanager_functions;
 
+	//! Supported toolbox layout manager functionality.
+
+	struct toolboxlayoutmanager_functions;
+
 	//! All supported layout manager funcitonality.
 
 	typedef std::variant<gridlayoutmanager_functions,
@@ -655,6 +706,7 @@ private:
 			     tablelayoutmanager_functions,
 			     panelayoutmanager_functions,
 			     itemlayoutmanager_functions,
+			     toolboxlayoutmanager_functions,
 			     booklayoutmanager_functions
 			     > layoutmanager_functions;
 

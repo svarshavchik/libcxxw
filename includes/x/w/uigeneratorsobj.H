@@ -126,6 +126,12 @@ public:
 			   const_vector<itemlayoutmanager_generator>
 			   > itemlayoutmanager_generators;
 
+	//! Generators used by the toolbox layout manager
+
+	std::unordered_map<std::string,
+			   const_vector<toolboxlayoutmanager_generator>
+			   > toolboxlayoutmanager_generators;
+
 	//! Generators used by the standard combobox layout manager
 
 	std::unordered_map<std::string,
@@ -155,6 +161,12 @@ public:
 	std::unordered_map<std::string,
 			   const_vector<bookpagefactory_generator>
 			   > bookpagefactory_generators;
+
+	//! Generators used by the toolbox factory
+
+	std::unordered_map<std::string,
+			   const_vector<toolboxfactory_generator>
+			   > toolboxfactory_generators;
 
 	//! Tooltip generators
 	std::unordered_map<std::string,

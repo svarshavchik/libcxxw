@@ -1,0 +1,64 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmlfactorytoolbox">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>toolbox</quote>
+    <tag class='element'>factory</tag>s</title>
+
+  <para>
+    The contents of a
+    <tag class='element'>factory</tag>s of
+    <tag class='attribute'>type</tag>=<quote>toolbox</quote>
+    specify the
+    <ulink url="&link-typedef-x--w-toolboxfactory;"><classname>&ns;::w::toolboxfactory</classname></ulink>
+    methods that get invoked when generating the contents of a toolbox
+    container:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term>
+	Inherited generic factory methods
+      </term>
+
+      <listitem>
+	<para>
+	</para>
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+<factory type="tools" id="initial-tools">
+  <element id="rectangle">
+    <radio />
+    <appearance>rectangle-appearance</appearance>
+    <group>toolbox-group</group>
+  </element>
+  <element id="square">
+    <radio />
+    <appearance>square-appearance</appearance>
+    <group>toolbox-group</group>
+  </element>
+</factory>
+]]></programlisting>
+	  </informalexample>
+	</blockquote>
+	<para>
+	  A toolbox factory contains any element that's valid in a
+	  <link linkend="uixmlfactoryelement">generic factory</link>.
+	  This creates a new widget in the container.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

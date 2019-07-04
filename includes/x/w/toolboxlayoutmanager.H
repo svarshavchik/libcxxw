@@ -12,8 +12,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_PUBLIC new_toolboxlayoutmanager;
-
 //! Create a container that uses the toolbox layout manager.
 
 class new_toolboxlayoutmanager : public new_layoutmanager {
@@ -31,7 +29,7 @@ public:
 	//! Create a container with the toolbox layout manager.
 
 	//! \internal
-	layout_impl create(const container_impl &) const override LIBCXX_PUBLIC;
+	layout_impl create(const container_impl &) const override LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

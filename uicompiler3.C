@@ -1006,6 +1006,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 					.emplace(id, ret);
 				continue;
 			}
+
+			if (type == "toolbox")
+			{
+				auto ret=toolboxlayout_parseconfig(lock);
+				generators->toolboxlayoutmanager_generators
+					.emplace(id, ret);
+				continue;
+			}
 		}
 		else if (name == "factory")
 		{
@@ -1037,6 +1045,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			{
 				auto ret=panefactory_parseconfig(lock);
 				generators->panefactory_generators
+					.emplace(id, ret);
+				continue;
+			}
+
+			if (type == "toolbox")
+			{
+				auto ret=toolboxfactory_parseconfig(lock);
+				generators->toolboxfactory_generators
 					.emplace(id, ret);
 				continue;
 			}
@@ -1430,6 +1446,43 @@ uicompiler::lookup_panefactory_generators(const theme_parser_lock &lock,
 	return ret;
 }
 
+const_vector<toolboxfactory_generator>
+uicompiler::lookup_toolboxfactory_generators(const theme_parser_lock &lock,
+					     const char *element,
+					     const char *parent)
+{
+	auto name=single_value(lock, element, parent);
+
+	{
+		auto iter=generators->toolboxfactory_generators.find(name);
+
+		if (iter != generators->toolboxfactory_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "factory"
+	    || iter->second->get_any_attribute("type") != "toolbox")
+	{
+		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=toolboxfactory_parseconfig(new_lock);
+
+	generators->toolboxfactory_generators.emplace(name, ret);
+
+	return ret;
+}
+
 const_vector<itemlayoutmanager_generator>
 uicompiler::lookup_itemlayoutmanager_generators(const theme_parser_lock &lock,
 						const std::string &name)
@@ -1460,6 +1513,40 @@ uicompiler::lookup_itemlayoutmanager_generators(const theme_parser_lock &lock,
 	auto ret=itemlayout_parseconfig(new_lock);
 
 	generators->itemlayoutmanager_generators.emplace(name, ret);
+
+	return ret;
+}
+
+const_vector<toolboxlayoutmanager_generator>
+uicompiler::lookup_toolboxlayoutmanager_generators(const theme_parser_lock &lock,
+						   const std::string &name)
+{
+	{
+		auto iter=generators->toolboxlayoutmanager_generators.find(name);
+
+		if (iter != generators->toolboxlayoutmanager_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "layout"
+	    || iter->second->get_any_attribute("type") != "toolbox")
+	{
+		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=toolboxlayout_parseconfig(new_lock);
+
+	generators->toolboxlayoutmanager_generators.emplace(name, ret);
 
 	return ret;
 }

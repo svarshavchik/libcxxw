@@ -1,0 +1,98 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmllayouttoolbox">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>toolbox</quote>
+    <tag class='element'>layout</tag>s
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="toolbox" id="main-toolbox">
+  <append_tools>main-tools</append_tools>
+</layout>]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>layout</tag>s with
+    <tag class='attribute'>type</tag>=<quote>toolbox</quote>
+    specify the <link linkend="toolbox">toolbox
+      layout manager</link> methods that get invoked to
+    <methodname>generate</methodname>() its contents.
+  </para>
+
+  <section id="uixmllayouttoolboxcreatecontainer">
+    <title>Creating
+      <tag class='attribute'>type</tag>=<quote>toolbox</quote>
+      <tag class='element'>layout</tag>s</title>
+
+    <para>
+      A <tag class='element'>container</tag> with a
+      <tag class='attribute'>type</tag>=<quote>toolbox</quote>
+      creates a container that uses the
+      <link linkend="toolbox">toolbox layout manager</link>.
+    </para>
+  </section>
+
+  <section id="uixmllayoutnewtoolboxlayoutmanager">
+    <title>Initializing
+      <classname>&ns;::w::new_toolboxlayoutmanager</classname></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<container>
+  <name>tools</name>
+  <type>toolbox</type>
+  <config>
+    <default_width>2</default_width>
+  </config>
+</container>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The
+      <tag class='element'>config</tag> element initializes the
+      <ulink url="&link-x--w--new-toolboxlayoutmanager;"><classname>&ns;::w::new_toolboxlayoutmanager</classname></ulink>
+      that creates the container:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>default_width</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_tablelayoutmanager</classname>'s
+	    <varname>default_width</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <default_width>4</default_width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

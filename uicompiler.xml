@@ -2232,7 +2232,7 @@ List of values:
     </function>
   </parser>
 
-  <!-- panelayoutfactory initialization -->
+  <!-- panefactory initialization -->
 
   <parser>
     <name>panefactory</name>
@@ -2270,6 +2270,24 @@ List of values:
       <object>factory</object>
       <invoke>configure_for_new_list</invoke>
     </function>
+  </parser>
+
+  <!-- toolboxfactory initialization -->
+
+  <parser>
+    <name>toolboxfactory</name>
+
+    <parameter>
+      <type>toolboxfactory</type>
+      <name>factory</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <use_common>factory</use_common>
   </parser>
 
   <!-- itemlayoutmanager initialization -->
@@ -2349,6 +2367,89 @@ List of values:
 
       <parameter>
 	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+  </parser>
+
+  <!-- toolboxlayoutmanager initialization -->
+
+  <parser>
+    <name>toolboxlayout</name>
+
+    <parameter>
+      <type>toolboxlayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>append_tools</name>
+      <invoke>toollayout_append_tools</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_toolboxfactory_generators</type>
+      </parameter>
+    </function>
+    <function>
+      <name>insert_tools</name>
+      <invoke>toollayout_insert_tools</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_toolboxfactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_tool</name>
+      <invoke>remove_tool</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_tools</name>
+      <invoke>remove_tools</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>count</name>
 	<type>to_size_t</type>
       </parameter>
     </function>
@@ -3072,6 +3173,34 @@ List of values:
 	  <function>compiler.lookup_appearance&lt;const_item_layout_appearance&gt;</function>
 	  <default_params />
 	</lookup>
+      </parameter>
+    </function>
+  </parser>
+
+  <!-- new_toolboxlayoutmanager initialization -->
+
+  <parser>
+    <name>new_toolboxlayout</name>
+
+    <parameter>
+      <type>new_toolboxlayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>default_width</name>
+      <object>layout</object>
+      <invoke>default_width=</invoke>
+
+      <parameter>
+	<name>default_width</name>
+	<xpath>.</xpath>
+	<type>to_size_t</type>
       </parameter>
     </function>
   </parser>

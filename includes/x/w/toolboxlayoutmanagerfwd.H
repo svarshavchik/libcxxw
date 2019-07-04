@@ -13,6 +13,8 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC toolboxlayoutmanagerObj;
 
+class LIBCXX_PUBLIC new_toolboxlayoutmanager;
+
 class LIBCXX_HIDDEN toolbox_info;
 
 typedef mpobj<toolbox_info, std::recursive_mutex> toolbox_info_t;

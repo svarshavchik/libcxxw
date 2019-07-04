@@ -1,0 +1,61 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmltoolboxlayoutelements">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>toolbox</quote>
+    <tag class='element'>layout</tag>
+    elements</title>
+
+  <section id="uixmllayouttoolboxcontents">
+    <title><tag class='element'>append_tools</tag>,
+      <tag class='element'>insert_tools</tag>,
+      <tag class='element'>remove_tool</tag>, and
+      <tag class='element'>remove_tools</tag></title>
+
+    <para>
+      This is equivalent to invoking the corresponding
+      <ulink url="&link-typedef-x--w-toolboxlayoutmanager;"><classname>&ns;::w::toolboxlayoutmanager</classname></ulink>
+      method to modify the contents of the toolbox container.</para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout id="tools" type="toolbox">
+  <append_tools>
+    <name>initial-tools</name>
+  </append_tools>
+</layout>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>append_tools</tag> and
+      <tag class='element'>insert_tools</tag>
+      have a <tag class='element'>name</tag> value that specifies the
+      <tag class='attribute'>id</tag> of a
+      <tag class='element'>factory</tag> that generates the contents
+      of the resulting
+      <ulink url="&link-typedef-x--w-toolboxfactory;"><classname>&ns;::w::toolboxfactory</classname></ulink>.
+      The <tag class='element'>position</tag> element specifies the
+      insertion position parameter (for
+      <tag class='element'>insert_tools</tag>) or the removal
+      positional parameter (for
+      <tag class='element'>remove_tool</tag> and
+      <tag class='element'>remove_tools</tag>).
+      The <tag class='element'>count</tag> element specifies how many
+      <tag class='element'>remove_tools</tag> starting at the
+      <tag class='element'>position</tag>.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->
