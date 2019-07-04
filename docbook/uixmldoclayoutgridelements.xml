@@ -1,0 +1,389 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="uixmlgridlayoutelements">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>grid</quote>
+    <tag class='element'>layout</tag>
+    elements</title>
+
+  <section id="uixmllayoutgridbackgroundcolor">
+    <title><tag class='element'>background_color</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="grid" id="main-window-grid">
+
+  <!-- ... -->
+
+  <background_color>
+    <color>bgcolor</color>
+  </background>
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>background_color</tag>
+      invokes the grid layout manager's
+      <methodname>set_background_color</methodname>() method.
+    </para>
+  </section>
+
+  <section id="uixmllayoutgridremovebackgroundcolor">
+    <title><tag class='element'>remove_background_color</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="grid" id="main-window-grid">
+
+  <!-- ... -->
+
+  <remove_background_color />
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>remove_background_color</tag>
+      invokes the grid layout manager's
+      <methodname>remove_background_color</methodname>() method.
+    </para>
+  </section>
+
+  <section id="uixmllayoutgridhalign">
+    <title><tag class='element'>halign</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="grid" id="main-window-grid">
+
+  <!-- ... -->
+
+  <halign>
+    <col>0</col>
+    <halign>centered</halign>
+  </halign>
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>halign</tag>
+      invokes the grid layout manager's
+      <methodname>col_alignment</methodname>() method.
+      The
+      <tag class='element'>halign</tag> element contains an
+      &halignvalue;.
+    </para>
+  </section>
+
+  <section id="uixmllayoutgridvalign">
+    <title><tag class='element'>valign</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="grid" id="main-window-grid">
+
+  <!-- ... -->
+
+  <valign>
+    <row>0</row>
+    <valign>bottom</valign>
+  </valign>
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>valign</tag>
+      invokes the grid layout manager's
+      <methodname>row_alignment</methodname>() method.
+      The
+      <tag class='element'>valign</tag> element contains an &valignvalue;.
+    </para>
+  </section>
+
+  <section id="uixmllayoutgridpadding">
+    <title><tag class='element'>padding</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<dim id="cell-padding">4.0</dim>
+
+<layout type="grid" id="main-window-grid">
+
+  <!-- ... -->
+
+  <padding>
+    <side>top</side>
+    <row>0</row>
+    <padding>cell-padding</padding>
+  </padding>
+
+  <padding>
+    <side>bottom</side>
+    <row>0</row>
+    <padding>cell-padding</padding>
+  </padding>
+
+  <padding>
+    <side>left</side>
+    <col>0</col>
+    <padding>cell-padding</padding>
+  </padding>
+
+  <padding>
+    <side>right</side>
+    <col>0</col>
+    <padding>cell-padding</padding>
+  </padding>
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>padding</tag>
+      invokes the grid layout manager's
+      <methodname>row_top_padding</methodname>(),
+      <methodname>row_bottom_padding</methodname>(),
+      <methodname>col_left_padding</methodname>(), or
+      <methodname>col_right_padding</methodname>() method.
+    </para>
+  </section>
+
+  <section id="uixmllayoutgridborder">
+    <title><tag class='element'>default_col_border</tag>
+      and <tag class='element'>default_row_border</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<border id="thick">
+
+  <!-- .. -->
+
+</border>
+
+<layout type="grid" id="main-window-grid">
+
+  <!-- ... -->
+
+  <default_col_border>
+    <col>1</col>
+    <border>thick</border>
+  </default_col_border>
+
+  <default_row_border>
+    <row>1</row>
+    <border>thick</border>
+  </default_row_border>
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      These elements
+      invoke the grid layout manager's
+      <methodname>default_col_border()</methodname>() or
+      <methodname>default_row_border()</methodname>() method.
+    </para>
+  </section>
+
+  <section id="uixmllayoutgridpercent">
+    <title><tag class='element'>percent</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="grid" id="main-window-grid">
+
+  <!-- ... -->
+
+  <percent>
+    <col>0</col>
+    <percentage>50</percentage>
+  </percent>
+
+  <percent>
+    <row>0</row>
+    <percentage>50</percentage>
+  </percent>
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>percent</tag>
+      invokes the grid layout manager's
+      <methodname>requested_col_width</methodname>() or
+      <methodname>requested_row_height</methodname>() method.
+    </para>
+  </section>
+
+  <section id="uixmllayoutgridremovedefaults">
+    <title><tag class='element'>remove_col_defaults</tag> and
+      <tag class='element'>remove_row_defaults</tag></title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="grid" id="main-window-grid">
+
+  <!-- ... -->
+
+  <remove_col_defaults>
+    <col>0</col>
+  </remove_col_defaults>
+
+  <remove_row_defaults>
+    <row>0</row>
+  </remove_row_defaults>
+
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      These elements
+      invoke the grid layout manager's
+      <methodname>remove_col_defaults</methodname>() and
+      <methodname>remove_row_defaults</methodname>() methods.
+    </para>
+  </section>
+
+  <section id="uixmllayoutgridremove">
+    <title><tag class='element'>remove_all</tag>,
+      <tag class='element'>remove_row</tag>, and
+      <tag class='element'>remove_cell</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="grid" id="main-window-grid">
+
+  <!-- ... -->
+
+  <remove_all />
+
+  <remove_row>
+    <row>0</row>
+  </remove_row>
+
+  <remove_cell>
+    <row>0</row>
+    <col>0</col>
+  </remove_cell>
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      These elements
+      invoke the grid layout manager overloaded methods that remove
+      all existing contents, a single row, or a single cell.
+    </para>
+  </section>
+
+  <section id="uixmllayoutgridcreaterows">
+    <title><tag class='element'>append_row</tag>,
+      <tag class='element'>insert_row</tag>,
+      <tag class='element'>append_columns</tag>,
+      <tag class='element'>insert_columns</tag>,
+      <tag class='element'>replace_row</tag>, and
+      <tag class='element'>replace_cell</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="grid" id="main-window-grid">
+
+  <!-- ... -->
+
+  <append_row>
+    <name>statusbar</name>
+  </append_row>
+
+  <insert_row>
+    <row>1</row>
+    <name>statusbar</name>
+  </insert_row>
+
+  <append_columns>
+    <row>1</row>
+    <name>statusbar</name>
+  </append_columns>
+
+  <insert_columns>
+    <row>1</row>
+    <col>0</col>
+    <name>statusbar</name>
+  </insert_columns>
+
+  <replace_row>
+    <row>1</row>
+    <name>statusbar</name>
+  </replace_row>
+
+  <replace_cell>
+    <row>1</row>
+    <col>1</col>
+    <name>statusbar</name>
+  </replace_cell>
+
+  <!-- ... -->
+
+</layout>
+
+<!-- ... -->
+
+<factory type="grid" id="statusbar">
+
+  <!-- ... -->
+
+</factory>
+
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      These methods create a new grid factory using the corresponding
+      grid layout manager method; then use the referenced
+      <tag class='attribute'>type</tag>=<quote><literal>grid</literal></quote>
+      <tag class='element'>factory</tag> element to create new elements
+      in the grid layout manager's container using the new grid factory.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

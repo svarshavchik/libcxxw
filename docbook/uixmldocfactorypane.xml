@@ -1,0 +1,151 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmlfactorypane">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>pane</quote>
+    <tag class='element'>factory</tag>s</title>
+
+  <para>
+    The contents of a
+    <tag class='element'>factory</tag>s of
+    <tag class='attribute'>type</tag>=<quote>pane</quote>
+    specify the
+    <ulink url="&link-typedef-x--w-panefactory;"><classname>&ns;::w::panefactory</classname></ulink>
+    methods that get invoked when generating the contents of a pane
+    container:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term>
+	<tag class='element'>appearance</tag>
+      </term>
+
+      <listitem>
+	<para>
+	  Sets the
+	  <classname>&ns;::w::panefactory</classname>'s
+	  <varname>appearance</varname> value:
+	</para>
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+<factory type="pane" id="maincontents">
+
+  <!-- ... -->
+
+  <appearance>top-pane-appearance</appearance>
+
+  <!-- ... -->
+</factory>
+
+<appearance id="top-pane-appearance" type="pane">
+
+</appearance>
+]]></programlisting>
+	  </informalexample>
+	</blockquote>
+	<para>
+	  The value of the element specifies an
+	  <link linkend="uixmlappearance"><tag class='element'>appearance</tag></link>
+	  object of <tag class='attribute'>type</tag>=<quote>pane</quote>.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<tag class='emptytag'>configure_for_new_list</tag>
+	and inherited generic factory methods
+      </term>
+
+      <listitem>
+	<para>
+	</para>
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+<factory type="pane" id="maincontents">
+
+  <configure_for_new_list />
+
+  <container>
+    <type>list</type>
+    <name>inventory</name>
+    <config>
+      <columns>2</columns>
+      <synchronized_columns>stock</synchronized_columns>
+      <configure_for_pane>
+        <synchronized />
+      </configure_for_pane>
+    </config>
+  </container>
+
+  <configure_for_new_list />
+
+  <container>
+    <type>list</type>
+    <name>on_order</name>
+    <config>
+      <columns>2</columns>
+      <synchronized_columns>stock</synchronized_columns>
+      <configure_for_pane>
+        <synchronized />
+      </configure_for_pane>
+    </config>
+  </container>
+
+</factory>
+
+<layout type="list" id="inventory">
+
+  <!-- ... -->
+
+</layout>
+
+<layout type="list" id="on_order">
+
+  <!-- ... -->
+
+</layout>
+]]></programlisting>
+	  </informalexample>
+	</blockquote>
+	<para>
+	  A pane factory element contains any element that's valid in a
+	  <link linkend="uixmlfactoryelement">generic factory</link>.
+	  This creates a new pane.
+	  The new element is usually a
+	  <tag class='element'>container</tag>.
+	</para>
+
+	<para>
+	  <tag class='emptytag'>configure_for_new_list</tag> enables
+	  the <link linkend="paneconfigurelist">integrated appearance of
+	    lists and tables in panes</link>.
+	  A
+	  <tag class='emptytag'>configure_for_new_list</tag> in a pane
+	  factory followed by a list
+	  <tag class='element'>container</tag> whose
+	  <tag class='element'>config</tag>
+	  has a
+	  <tag class='element'>configure_for_pane</tag>
+	  is equivalent to using pane factory's
+	  <methodname>configure_new_list</methodname>() when creating
+	  the new list or table.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

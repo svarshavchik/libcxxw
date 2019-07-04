@@ -1,0 +1,85 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmllayouttableelements">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>table</quote>
+    <tag class='element'>layout</tag>
+    elements</title>
+
+  <section id="uixmllayouttablereplaceheader">
+    <title><tag class='element'>replace_header</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<replace_header>
+  <column>0</column>
+  <header>
+    <element>
+      <label>Column 2B</label>
+    </element>
+  </header>
+</replace_header>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <tag class='element'>replace_header</tag>
+      invokes the
+      <link linkend="tables">table layout manager</link>.
+      <methodname>replace_header</methodname>()
+      method, with the value of the
+      <tag class='element'>column</tag> element giving the
+      value of the
+      <methodname>replace_header</methodname>()'s
+      parent element parameter.
+      <methodname>replace_header</methodname>()'s returned &factory;
+      gets used to create a &themewidget; as specified by
+      the <tag class='element'>header</tag> element.
+      The usual table header theme widget is a
+      <link linkend="uixmlfactorylabelelement">plain label</link>.
+    </para>
+  </section>
+
+  <section id="uixmllayouttablelistitems">
+    <title><tag class='element'>append_items</tag>,
+      <tag class='element'>replace_all_items</tag>, and other
+      list layout manager methods
+    </title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="table" id="option-table">
+
+  <!-- ... -->
+
+  <append_items>
+    <items>
+
+      <!-- ... -->
+
+    </items>
+  </append_items>
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='attribute'>type</tag>=<quote>table</quote>
+      <tag class='element'>layout</tag>s also contain all elements that
+      <link linkend="uixmllayoutlist">appear in
+	<tag class='attribute'>type</tag>=<quote>table</quote>
+	<tag class='element'>layout</tag>s</link>.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

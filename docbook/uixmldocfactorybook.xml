@@ -1,0 +1,191 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmlfactorybook">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>book</quote>
+    <tag class='element'>factory</tag>s
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<factory type="book" id="settings">
+
+  <add>
+    <label>general-label</label>
+    <layout>options</layout>
+  </add>
+
+</factory>]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>factory</tag>s of
+    <tag class='attribute'>type</tag>=<quote>book</quote>
+    specify the methods invoked on a
+    <link linkend="bookpagefactory">book page factory</link>.
+  </para>
+
+  <section id="uixmlfactorybookhalign">
+    <title><tag class='element'>halign</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="book" id="settings">
+
+  <!-- ... -->
+
+  <halign>
+    <halign>right</halign>
+  </halign>
+
+  <!-- ... -->
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>halign</tag>
+      invokes the book page factory's
+      <methodname>halign</methodname>()
+      method.
+      The
+      <tag class='element'>halign</tag> element contains an &halignvalue;.
+    </para>
+  </section>
+
+  <section id="uixmlfactorybookvalign">
+    <title><tag class='element'>valign</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="book" id="settings">
+
+  <!-- ... -->
+
+  <valign>
+    <valign>middle</valign>
+  </valign>
+
+  <!-- ... -->
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>valign</tag>
+      invokes the book page factory's
+      <methodname>valign</methodname>()
+      method.
+      The
+      <tag class='element'>valign</tag> element contains an &valignvalue;.
+    </para>
+  </section>
+
+  <section id="uixmlfactorybooksetappearance">
+    <title><tag class='element'>set_appearance</tag></title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="book" id="settings">
+
+  <!-- ... -->
+
+  <set_appearance>
+    <appearance>booksettings</appearance>
+  </set_appearance>
+</factory>
+
+<!-- ... -->
+
+<appearance id="booksettings" type="bookpage" from="theme">
+</appearance>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <tag class='element'>set_appearance</tag>
+      invokes the book page factory's
+      <methodname>set_appearance</methodname>()
+      method.
+      The
+      <tag class='element'>appearance</tag> value gives the
+      <tag class='attribute'>id</tag> of a
+      <tag class='attribute'>type</tag>=<quote>bookpage</quote>
+      <link linkend="uixmlappearance">appearance object</link>.
+    </para>
+  </section>
+
+  <section id="uixmlfactorybookcontainer">
+    <title><tag class='element'>add</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="book" id="settings">
+
+  <!-- ... -->
+
+  <add>
+    <tab>
+      <element>
+        <label type='theme_text'>${context:settings-dialog}${decoration:underline}G${decoration:none}eneral settings</label>
+      </element>
+    </tab>
+    <shortcut type='theme_text'>${context:settings-dialog}Alt-G</shortcut>
+    <page>
+      <container>
+        <type>grid</type>
+        <name>general-settings</name>
+      </container>
+    </page>
+  </add>
+</factory>
+
+<layout type="grid" id="general-settings">
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <tag class='element'>add</tag>
+      invokes the book page factory's
+      <methodname>add</methodname>()
+      method, creating a new tab and a page in the book container.
+    </para>
+
+    <para>
+      The <tag class='element'>tab</tag> element creates the page's
+      tab, and must have exactly one &themewidgetorcontainer;. It's
+      usually a
+      <link linkend="uixmlfactorylabelelement">plain label</link>.
+    </para>
+
+    <para>
+      The <tag class='element'>page</tag> element creates the page itself,
+      and must have exactly one &themewidgetorcontainer;. It is usually
+      a &themecontainer;.
+    </para>
+
+    <para>
+      An optional <tag class='element'>shortcut</tag>
+      element contains the page's &keyboard_shortcutvalue;.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

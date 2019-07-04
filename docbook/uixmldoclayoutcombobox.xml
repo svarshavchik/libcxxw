@@ -1,0 +1,191 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmllayoutcombobox">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>standard_combobox</quote> and
+    <tag class='attribute'>type</tag>=<quote>editable_combobox</quote>
+    <tag class='element'>layout</tag>s
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="standard_combobox" id="option-list">
+  <append_items>
+
+    <!-- ... -->
+
+  </append_items>
+</layout>]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>layout</tag>s with
+    <tag class='attribute'>type</tag>=<quote>standard_combobox</quote> or
+    <tag class='attribute'>type</tag>=<quote>editable_combobox</quote>
+    specify the <link linkend="standard_comboboxlayoutmanager">standard</link>
+    or <link linkend="editable_combobox">editable</link>
+    combo-box
+    layout manager methods that get invoked to
+    <methodname>generate</methodname>() its contents.
+  </para>
+
+  <section id="uixmllayoutcomboboxcreatecontainer">
+    <title>Creating
+      <tag class='attribute'>type</tag>=<quote>standard_combobox</quote> and
+      <tag class='attribute'>type</tag>=<quote>editable_combobox</quote>
+      <tag class='element'>layout</tag>s</title>
+
+    <para>
+      A <tag class='element'>container</tag> with a
+      <tag class='attribute'>type</tag>=<quote>standard_combobox</quote> or
+      <tag class='attribute'>type</tag>=<quote>editable_combobox</quote>
+      creates a container that uses the corresponding
+      <link linkend="combobox">combo-box layout manager</link>.
+    </para>
+  </section>
+
+  <section id="uixmllayoutnewcomboboxlayoutmanager">
+    <title>Initializing
+      <classname>&ns;::w::new_standard_comboboxlayoutmanager</classname>
+      and
+      <classname>&ns;::w::new_editable_comboboxlayoutmanager</classname></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<container>
+  <name>folders</name>
+  <type>editable_combobox</type>
+  <config>
+    <optional />
+  </config>
+</container>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      An optional
+      <tag class='element'>config</tag> element sets non-default values
+      of the
+      <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>
+      or the
+      <ulink url="&link-x--w--new-editable-comboboxlayoutmanager;"><classname>&ns;::w::new_editable_comboboxlayoutmanager</classname></ulink>
+      that creates the container:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><tag class='emptytag'>optional</tag></term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <varname>selection_required</varname> flag to
+	    <literal>false</literal>:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <optional />
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>synchronized_columns</tag></term>
+	<listitem>
+	  <para>
+	    Initializes the
+	    <varname>synchronized_columns</varname> object:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <synchronized_columns>combobox_columns</synchronized_columns>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    All <methodname>generate</methodname>()d combo-boxes
+	    with the
+	    same <tag class='element'>synchronized_columns</tag> name
+	    have the
+	    <link linkend="panesynclists">same
+	      <classname>&ns;::w::synchronized_axis</classname>
+	      handle</link>.
+	    The element's name is an opaque label.
+	    <classname>&ns;::w::synchronized_axis</classname> objects
+	    get automatically created, internally, and associated with
+	    their name.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>appearance</tag> and
+	  <tag class='element'>input_appearance</tag> and
+
+	</term>
+	<listitem>
+	  <para>
+	    <tag class='element'>appearance</tag>
+	    sets
+	    <classname>&ns;::w::new_standard_comboboxlayoutmanager</classname>'s
+	    or
+	    <classname>&ns;::w::new_editable_comboboxlayoutmanager</classname>'s
+	    <varname>appearance</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <appearance>my_comboboxes</appearance>
+</config>
+
+<appearance id="my_comboboxes" type="combobox">
+
+  <!-- ... -->
+
+</appearance>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The value of the element specifies an
+	    <link linkend="uixmlappearance"><tag class='element'>appearance</tag></link>
+	    object of <tag class='attribute'>type</tag>=<quote>combobox</quote>.
+	  </para>
+
+	  <para>
+	    An editable combo-box also has an
+	    <tag class='element'>input_appearance</tag> for its
+	    <link linkend="inputfieldsandbuttons">input field</link>,
+	    referencing an
+	    <tag class='attribute'>type</tag>=<quote>input_field</quote>.
+	    appearance object.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

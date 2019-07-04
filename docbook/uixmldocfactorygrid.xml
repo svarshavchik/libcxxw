@@ -1,0 +1,275 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="uixmlfactorygrid">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>grid</quote>
+    <tag class='element'>factory</tag>s
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+  <padding>
+    <side>all</side>
+    <padding>2</padding>
+  </padding>
+
+  <element>
+    <name>label</name>
+  </element>
+
+</factory>]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>factory</tag>s of
+    <tag class='attribute'>type</tag>=<quote>grid</quote>
+    specify the methods invoked on a
+    <ulink url="&link-typedef-x--w-gridfactory;">grid
+      factory</ulink>.
+  </para>
+
+  <section id="uixmlfactorygridhalign">
+    <title><tag class='element'>halign</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+  <!-- ... -->
+
+  <halign>
+    <halign>right</halign>
+  </halign>
+
+  <!-- ... -->
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>halign</tag>
+      invokes the grid factory's
+      <methodname>halign</methodname>()
+      method.
+      The
+      <tag class='element'>halign</tag> element contains an &halignvalue;.
+    </para>
+  </section>
+
+  <section id="uixmlfactorygridvalign">
+    <title><tag class='element'>valign</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+  <!-- ... -->
+
+  <valign>
+    <valign>middle</valign>
+  </valign>
+
+  <!-- ... -->
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      The
+      <tag class='element'>valign</tag>
+      invokes the grid factory's
+      <methodname>valign</methodname>()
+      method.
+      The
+      <tag class='element'>valign</tag> element contains an &valignvalue;.
+    </para>
+  </section>
+
+  <section id="uixmlfactorygridpadding">
+    <title><tag class='element'>padding</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+  <!-- ... -->
+
+  <padding>
+    <side>all</side>
+    <padding>cell-padding</padding>
+  </padding>
+
+  <!-- ... -->
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>padding</tag>
+      invokes the grid factory's
+      <methodname>padding</methodname>(),
+      <methodname>left_padding</methodname>(),
+      <methodname>right_padding</methodname>(),
+      <methodname>top_padding</methodname>(), or
+      <methodname>bottom_padding</methodname>() method.
+      The <tag class='element'>side</tag> value is one of
+      <quote><literal>all</literal></quote>,
+      <quote><literal>left</literal></quote>,
+      <quote><literal>right</literal></quote>,
+      <quote><literal>top</literal></quote>, or
+      <quote><literal>bottom</literal></quote>.
+    </para>
+  </section>
+
+  <section id="uixmlfactorygridborder">
+    <title><tag class='element'>border</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+  <!-- ... -->
+
+  <border>
+    <side>all</side>
+    <border>thick-border</border>
+  </padding>
+
+
+  <!-- ... -->
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>border</tag>
+      invokes the grid factory's
+      <methodname>border</methodname>(),
+      <methodname>left_border</methodname>(),
+      <methodname>right_border</methodname>(),
+      <methodname>top_border</methodname>(), or
+      <methodname>bottom_border</methodname>() method.
+      The <tag class='element'>side</tag> value is one of
+      <quote><literal>all</literal></quote>,
+      <quote><literal>left</literal></quote>,
+      <quote><literal>right</literal></quote>,
+      <quote><literal>top</literal></quote>, or
+      <quote><literal>bottom</literal></quote>.
+    </para>
+  </section>
+
+  <section id="uixmlfactorygridspan">
+    <title><tag class='element'>colspan</tag> and
+      <tag class='element'>rowspan</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+  <!-- ... -->
+
+  <colspan>
+    <columns>2</columns>
+  </colspan>
+
+  <rowspan>
+    <rows>2</rows>
+  </rowspan>
+
+  <!-- ... -->
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>colspan</tag>
+      and
+      <tag class='element'>rowspan</tag>
+      invoke the grid factory's
+      <methodname>colspan</methodname>() and
+      <methodname>rowspan</methodname>() methods, respectively.
+    </para>
+  </section>
+
+  <section id="uixmlfactorygridremovewhenhidden">
+    <title><tag class='element'>remove_when_hidden</tag></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+  <!-- ... -->
+
+  <remove_when_hidden />
+
+  <!-- ... -->
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>remove_when_hidden</tag>
+      invokes the grid factory's
+      <methodname>remove_when_hidden</methodname>()
+      method.
+    </para>
+  </section>
+
+  <section id="uixmlfactorygridelement">
+    <title><tag class='element'>element</tag>s and
+      <tag class='element'>container</tag>s</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<factory type="grid" id="statusrow">
+
+  <!-- ... -->
+
+  <element>
+    <name>label</name>
+  </element>
+
+  <!-- ... -->
+
+  <container>
+    <type>grid</type>
+    <name>bottom-container</name>
+  </container>
+
+  <!-- ... -->
+
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>element</tag>s and
+      <tag class='element'>container</tag>s
+      use the factory to create a new
+      &themewidgetorcontainer;.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

@@ -1,0 +1,49 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmlpanelayoutelements">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>pane</quote>
+    <tag class='element'>layout</tag>
+    elements</title>
+
+  <section id="uixmllayoutpanecontents">
+    <title><tag class='element'>append_panes</tag>,
+      <tag class='element'>insert_panes</tag>,
+      <tag class='element'>replace_panes</tag>,
+      <tag class='element'>remove_pane</tag>,
+      <tag class='emptytag'>remove_all_panes</tag>, and
+      <tag class='element'>replace_all_panes</tag></title>
+
+    <para>
+      This is equivalent to invoking the corresponding
+      <ulink url="&link-typedef-x--w-panelayoutmanager;"><classname>&ns;::w::panelayoutmanager</classname></ulink>
+      method to modify the contents of the pane container.
+
+      <tag class='element'>append_panes</tag>,
+      <tag class='element'>insert_panes</tag>
+      <tag class='element'>replace_panes</tag>, and
+      <tag class='element'>replace_all_panes</tag>
+      have a <tag class='element'>name</tag> value that specifies the
+      <tag class='attribute'>id</tag> of a
+      <tag class='element'>factory</tag> that generates the contents
+      of the resulting
+      <ulink url="&link-typedef-x--w-panefactory;"><classname>&ns;::w::panefactory</classname></ulink>.
+      The <tag class='element'>position</tag> element specifies the
+      insertion position parameter (for
+      <tag class='element'>insert_panes</tag>) or the removal
+      positional parameter (for
+      <tag class='element'>remove_pane</tag>).
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

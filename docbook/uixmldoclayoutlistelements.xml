@@ -1,0 +1,203 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmllayoutlistelements">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>list</quote>
+    <tag class='element'>layout</tag>
+    elements</title>
+
+  <section id="uixmllayoutlistnewitems">
+    <title><tag class='element'>append_items</tag>,
+      <tag class='element'>replace_all_items</tag>,
+      <tag class='element'>insert_items</tag>, and
+      <tag class='element'>replace_items</tag>
+    </title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="list" id="option-list">
+
+  <!-- ... -->
+
+  <append_items>
+    <items>
+      <label>Option 1</label>
+      <label>Option 2</label>
+    </items>
+  </append_items>
+
+  <replace_all_items>
+    <items>
+      <label>Option 1</label>
+      <label>Option 2</label>
+    </items>
+  </replace_all_items>
+
+  <insert_items>
+    <position>1</position>
+    <items>
+      <label>Option 2(a)</label>
+    </items>
+  </insert_items>
+
+  <replace_items>
+    <position>2</position>
+    <items>
+      <label>Option 2(b)</label>
+    </items>
+  </replace_items>
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>append_items</tag>,
+      <tag class='element'>replace_all_items</tag>,
+      <tag class='element'>insert_items</tag>, and
+      <tag class='element'>replace_items</tag>
+      invoke the corresponding
+      <link linkend="list">list layout manager</link> methods that add
+      new items to the list.
+      The <tag class='element'>position</tag> value specifies the
+      insert or replacement position (for
+      <tag class='element'>insert_items</tag> and
+      <tag class='element'>replace_items</tag>).
+      The
+      <tag class='element'>items</tag> element contains the
+      &listitemparamvalueslist; which defines the new list items.
+    </para>
+  </section>
+
+  <section id="uixmllayoutlistremoveitems">
+    <title><tag class='element'>remove_item</tag> and
+      <tag class='element'>remove_items</tag>
+    </title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="list" id="option-list">
+
+  <!-- ... -->
+
+  <remove_item>
+    <position>0</position>
+  </remove_item>
+
+  <remove_items>
+    <position>1</position>
+    <count>2</count>
+  </remove_items>
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>remove_item</tag> and
+      <tag class='element'>remove_items</tag>
+      invoke the corresponding
+      <link linkend="list">list layout manager</link>
+      methods that remove
+      items from an existing list.
+      The <tag class='element'>position</tag> value specifies the
+      position index of the element to remove; or the first element
+      to remove, with
+      <tag class='element'>remove_items</tag>, and a
+      <tag class='element'>count</tag> giving the number of elements to
+      remove.
+    </para>
+  </section>
+
+  <section id="uixmllayoutlistautoselect">
+    <title><tag class='element'>autoselect</tag></title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="list" id="option-list">
+
+  <!-- ... -->
+
+  <autoselect>
+    <position>0</position>
+  </autoselect>
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>autoselect</tag>
+      invokes the
+      <link linkend="list">list layout manager</link>'s
+      <methodname>autoselect</methodname>()
+      method, with the value of the
+      <tag class='element'>position</tag> element giving its parameter.
+    </para>
+  </section>
+
+  <section id="uixmllayoutlistappendcopycutpaste">
+    <title><tag class='element'>append_copy_cut_paste</tag></title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="list" id="option-list">
+
+  <!-- ... -->
+
+  <append_copy_cut_paste>
+    <parent>main</parent>
+  </appdn_copy_cut_paste>
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>append_copy_cut_paste</tag>
+      invokes the
+      <link linkend="list">list layout manager</link>'s
+      <methodname>append_copy_cut_paste</methodname>()
+      method, with the value of the
+      <tag class='element'>parent</tag> element giving the
+      value of the
+      <methodname>append_copy_cut_paste</methodname>()'s
+      parent element parameter.
+    </para>
+
+    <para>
+      <tag class='element'>parent</tag>'s value is
+      a name of an existing element in the
+      element factory object that
+      <link linkend="uixmlgenerate">gets passed to generate()</link>.
+      <link linkend="uixmlfactorymenubar"><filename>uigenerator6.C</filename></link>
+      gives an example of a typical implementation that stores
+      the main window widget in the element factory object as the
+      <quote>main</quote> element, and then specifying <quote>main</quote>
+      for the <tag class='element'>parent</tag> element.
+    </para>
+
+    <para>
+      <filename>uigenerator6.C</filename> gives an example of
+      retrieving the resulting
+      <link linkend="uixmllayoutlistappendcopycutpaste"><classname>&ns;::w::copy_cut_paste_menu_items</classname></link>
+      object and installing a status update for the <quote>File</quote>
+      menu, where the menu items appear, to <methodname>update</methodname>()
+      their status each time the menu gets shown.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

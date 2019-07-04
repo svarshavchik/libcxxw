@@ -1,0 +1,114 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmllayoutmenubar">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>menubar</quote>
+    <tag class='element'>layout</tag>s</title>
+
+  <para>
+    The contents of a
+    <tag class='element'>layout</tag>s of
+    <tag class='attribute'>type</tag>=<quote>menubar</quote>
+    specify the methods invoked by <link linkend="menubarlayoutmanager">menu
+      bar layout manager</link>'s <methodname>generate</methodname>():
+  </para>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="menubar" id="mainmenubar">
+  <append_menus>
+    <name>mainmenu</name>
+  </append_menus>
+</layout>
+
+<factory type="menubar" id="mainmenu">
+
+  <!-- ... -->
+
+</factory>]]>
+
+// ...
+
+main_window->get_menubarlayoutmanager()
+&#32;&#32;&#32;&#32;->generate("mainmenubar", generator, elements);</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    Using a main window's <methodname>get_menubarlayoutmanager</methodname>()
+    and invoking its
+    <link linkend="uixmlgenerate"><methodname>generate</methodname></link>()
+    executes the instructions from the
+    <tag class='element'>layout</tag>s of
+    <tag class='attribute'>type</tag>=<quote>menubar</quote>.
+    These <tag class='element'>layout</tag>s contain the following elements:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term>
+	<tag class='attribute'>append_menus</tag>,
+	<tag class='attribute'>insert_menus</tag>
+	<tag class='attribute'>append_right_menus</tag>, and
+	<tag class='attribute'>insert_right_menus</tag>
+      </term>
+
+      <listitem>
+	<para>
+	  This is equivalent to invoking the corresponding
+	  <ulink url="&link-typedef-x--w-menubarlayoutmanager;"><classname>&ns;::w::menubarlayoutmanager</classname></ulink>
+	  method to create a new
+	  <ulink url="&link-typedef-x--w-menubarfactory;"><classname>&ns;::w::menubarfactory</classname></ulink>.
+	  The <tag class='element'>name</tag> specifies the
+	  <tag class='attribute'>id</tag> of a
+	  <tag class='element'>factory</tag> that generates the contents
+	  of the resulting
+	  <ulink url="&link-typedef-x--w-menubarfactory;"><classname>&ns;::w::menubarfactory</classname></ulink>.
+	  The <tag class='element'>position</tag> element specifies the
+	  insertion position parameter (for
+	  <tag class='element'>insert_menus</tag> and
+	  <tag class='element'>insert_right_menus</tag>).
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>
+	<tag class='attribute'>remove_menu</tag> and
+	<tag class='attribute'>remove_right_menus</tag>
+      </term>
+      <listitem>
+	<para>
+	  For completeness' sake,
+	  this is equivalent to invoking the corresponding
+	  <ulink url="&link-typedef-x--w-menubarlayoutmanager;"><classname>&ns;::w::menubarlayoutmanager</classname></ulink>
+	  method to remove a menu from the menu bar.
+	</para>
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+<remove_menu>
+  <position>1</position>
+</remove_menu>
+]]></programlisting>
+	  </informalexample>
+	</blockquote>
+      </listitem>
+      <para>
+	The <tag class='element'>position</tag> element specifies which menu
+	gets removed from the menu bar.
+      </para>
+    </varlistentry>
+  </variablelist>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

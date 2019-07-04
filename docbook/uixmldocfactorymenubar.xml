@@ -1,0 +1,84 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmlfactorymenubar">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>menubar</quote>
+    <tag class='element'>factory</tag>s</title>
+
+  <para>
+    The contents of a
+    <tag class='element'>factory</tag>s of
+    <tag class='attribute'>type</tag>=<quote>menubar</quote>
+    specify the
+    <ulink url="&link-typedef-x--w-menubarfactory;"><classname>&ns;::w::menubarfactory</classname></ulink>
+    methods that get invoked when generating the contents of a menu bar.
+  </para>
+
+  <para>
+    <ulink url="examples/uigenerator6.C"><filename>uigenerator6.C</filename></ulink>
+    gives an example of using a menu bar factory to create its menus from
+    <filename>uigenerator6.xml</filename>:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/uigenerator6.xml">uigenerator6.xml</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/uigenerator6.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="uixmlfactorymenubaradd">
+    <title>Adding menus</title>
+
+    <para>
+      <tag class='element'>add</tag> in a
+      <tag class='element'>factory</tag>s of
+      <tag class='attribute'>type</tag>=<quote>menubar</quote>
+      create a new menu, and must have a
+      <tag class='element'>title</tag> and a
+      <tag class='element'>menu</tag> element.
+    </para>
+
+    <para>
+      <tag class='element'>title</tag> sets the new menu's title, and
+      contains any element that's valid in a
+      <link linkend="uixmlfactoryelement">generic factory</link>.
+      The traditional menu title is a
+      <link linkend="uixmlfactorylabelelement"><tag class='element'>label</tag> element</link>.
+    </para>
+
+    <para>
+      The
+      <tag class='element'>menu</tag> element contains
+      <link linkend="uixmllayoutlistelements"><tag class='attribute'>type</tag>=<quote>list</quote>
+	<tag class='element'>layout</tag> elements</link>.
+    </para>
+
+    <para>
+      In the general case, it's typically a single
+      <tag class='element'>append_items</tag> element, specifying a
+      <link linkend="uixmllistitemvaluename"><tag class='element'>name</tag></link>
+      of each menuitem.
+      <ulink url="examples/uigenerator6.xml">uigenerator6.xml</ulink>
+      provides an example of
+      <methodname>generate</methodname>()ing a menu and then using
+      <methodname>get_list_itemhandle</methodname> to retrive
+      a
+      <ulink url="&link-typedef-x--w-listitemhandle;"><classname>&ns;::w::listitemhandle</classname></ulink>
+      for each named menu itema and installing a &callback; that gets
+      invoked by selecting the menu item.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

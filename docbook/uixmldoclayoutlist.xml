@@ -1,0 +1,593 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="uixmllayoutlist">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>list</quote>
+    <tag class='element'>layout</tag>s
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="list" id="option-list">
+  <append_items>
+
+    <!-- ... -->
+
+  </append_items>
+</layout>]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>layout</tag>s with
+    <tag class='attribute'>type</tag>=<quote>list</quote>
+    specify the <link linkend="listlayoutmanager">list
+      layout manager</link> methods that get invoked to
+    <methodname>generate</methodname>() its contents.
+  </para>
+
+  <section id="uixmllayoutlistcreatecontainer">
+    <title>Creating
+      <tag class='attribute'>type</tag>=<quote>list</quote>
+      <tag class='element'>layout</tag>s</title>
+
+    <para>
+      A <tag class='element'>container</tag> with a
+      <tag class='attribute'>type</tag>=<quote>list</quote>
+      creates a container that uses the
+      <link linkend="listlayoutmanager">list layout manager</link>.
+    </para>
+
+    <para>
+      <filename>uigenerator5.C</filename> is an example of creating
+      a list container using a theme file:
+    </para>
+
+    <blockquote>
+      <title><ulink url="examples/uigenerator5.C">uigenerator5.C</ulink></title>
+
+      <informalexample>
+	<programlisting><xi:include href="../examples/uigenerator5.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <blockquote>
+      <title><ulink url="examples/uigenerator5.xml">uigenerator5.xml</ulink></title>
+
+      <informalexample>
+	<programlisting><xi:include href="../examples/uigenerator5.xml" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+  </section>
+
+  <section id="uixmllayoutnewlistlayoutmanager">
+    <title>Initializing
+      <classname>&ns;::w::new_listlayoutmanager</classname>s</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<container>
+  <name>option-list</name>
+  <type>list</type>
+  <config>
+    <height>
+      <min_rows>4</min_rows>
+      <max_rows>4</max_rows>
+    </height>
+  </config>
+</container>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+
+    <para>
+      An optional
+      <tag class='element'>config</tag> element sets non-default values
+      of the
+      <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>
+      that creates the container:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><tag class='element'>selection_type</tag></term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    <varname>selection_type</varname>:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <selection_type>multiple</selection_type>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The value of a <tag class='element'>selection_type</tag>
+	    is one of:
+	    <quote>single</quote>,
+	    <quote>single_optional</quote>,
+	    <quote>multiple</quote>, or
+	    <quote>node</quote>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>height</tag></term>
+	<listitem>
+	  <para>
+	    This element invokes one of
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    overloaded
+	    <methodname>height</methodname>() methods:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <height>
+    <min_rows>4</min_rows>
+    <max_rows>4</max_rows>
+  </height>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    Specifies the list height in the range of a minimum and
+	    maximum number of rows, calculated using the default list font's
+	    height.
+	  </para>
+
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <height>
+    <variable />
+  </height>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    Invokes <methodname>variable_height</methodname>() method.
+	  </para>
+
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <height>
+    <min>list-min</min>
+    <preferred>list-preferred</preferred>
+    <max>list-max</max>
+  </height>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    A <tag class='element'>height</tag> element with an
+	    &dimaxisargvalue;
+	    invokes <methodname>height</methodname>() with this
+	    explicit value.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>width</tag></term>
+	<listitem>
+	  <para>
+	    Invokes one of
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    methods that specifies the list's width:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <width>
+    <default />
+  </width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    This invokes the <methodname>default_width</methodname>()
+	    method.
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <width>
+    <variable />
+  </width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	  <para>
+	    This invokes the <methodname>variable_width</methodname>()
+	    method.
+	  </para>
+
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <width>
+    <min>list-width-min</min>
+    <preferred>list-width-preferred</preferred>
+    <max>list-width-max</max>
+  </width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    A <tag class='element'>width</tag> element with an
+	    &dimaxisargvalue;
+	    invokes <methodname>width</methodname>() with this
+	    explicit value.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>columns</tag></term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    <varname>columns</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <columns>2</columns>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    This sets <varname>columns</varname> to <literal>2</literal>,
+	    creating a list with two columns.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>requested_col_width</tag></term>
+	<listitem>
+	  <para>
+	    Initializes
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    <varname>requested_col_widths</varname> map:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <requested_col_width>
+    <column>0</column>
+    <percentage>25</percentage>
+  </requested_col_width>
+  <requested_col_width>
+    <column>1</column>
+    <percentage>75</percentage>
+  </requested_col_width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    Each <tag class='element'>requested_col_width</tag>
+	    contains a <tag class='element'>column</tag> number and
+	    a <tag class='element'>percentage</tag> value from 0 to
+	    100.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>col_alignment</tag></term>
+	<listitem>
+	  <para>
+	    Initializes
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    <varname>col_alignments</varname> map:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <col_alignment>
+    <column>0</column>
+    <halign>right</halign>
+  </col_alignment>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    Each <tag class='element'>col_alignment</tag>
+	    contains a <tag class='element'>column</tag> number and
+	    an <tag class='element'>halign</tag>
+	    &halignvalue;.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>row_alignment</tag></term>
+	<listitem>
+	  <para>
+	    Initializes
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    <varname>row_alignments</varname> map:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <row_alignment>
+    <column>0</column>
+    <valign>middle</valign>
+  </row_alignment>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    Each <tag class='element'>col_alignment</tag>
+	    contains a <tag class='element'>column</tag> number and
+	    an <tag class='element'>valign</tag>
+	    &valignvalue;.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>column_border</tag></term>
+	<listitem>
+	  <para>
+	    Initializes
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    <varname>column_border</varname> map:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <column_border>
+    <column>1</column>
+    <border>divider</border>
+  </column_border>
+</config>
+
+<!-- ... -->
+
+<border id="divider">
+
+  <!-- ... -->
+
+</border>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    Each <tag class='element'>column_border</tag>
+	    contains a <tag class='element'>column</tag> number and
+	    a
+	    <link linkend="uixmldimcolorborders"><tag class='element'>border</tag>
+	      reference</link>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>minimum_column_width</tag></term>
+	<listitem>
+	  <para>
+	    Initializes
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    <varname>minimum_column_widths</varname> map:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <minimum_column_width>
+    <column>0</column>
+    <width>10.0</width>
+  </minimum_column_width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    Each <tag class='element'>minimum_column_width</tag>
+	    contains a <tag class='element'>column</tag> number and
+	    a
+	    <tag class='element'>width</tag> value.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>synchronized_columns</tag></term>
+	<listitem>
+	  <para>
+	    Initializes
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    <varname>synchronized_columns</varname> object:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <synchronized_columns>table_columns</synchronized_columns>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    All <methodname>generate</methodname>()d selection lists
+	    with the
+	    same <tag class='element'>synchronized_columns</tag> name
+	    have the
+	    <link linkend="panesynclists">same
+	      <classname>&ns;::w::synchronized_axis</classname>
+	      handle</link>.
+	    The element's name is an opaque label.
+	    <classname>&ns;::w::synchronized_axis</classname> objects
+	    get automatically created, internally, and associated with
+	    their name.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>lr_padding</tag></term>
+	<listitem>
+	  <para>
+	    Initializes
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    <varname>lr_paddings</varname> map:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <lr_padding>
+    <column>1</column>
+    <left>l-padding</left>
+    <right>r-padding</right>
+  </lr_padding>
+</config>
+
+<!-- ... -->
+
+<dim id="l-padding">0</dim>
+<dim id="r-padding">4</dim>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    Each <tag class='element'>lr_padding</tag>
+	    contains a <tag class='element'>column</tag> number; and
+	    a
+	    <tag class='element'>left</tag> and
+	    <tag class='element'>right</tag> values
+	    that reference
+	    <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>
+	    elements in the theme file.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>horizontal_scrollbar</tag> and
+	  <tag class='element'>vertical_scrollbar</tag></term>
+	<listitem>
+	  <para>
+	    These elements
+	    initialize the corresponding
+	    <classname>&ns;::w::new_listlayoutmanager</classname>
+	    members:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <vertical_scrollbar>always</vertical_scrollbar>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The
+	    <tag class='element'>horizontal_scrollbar</tag> and
+	    <tag class='element'>vertical_scrollbar</tag>
+	    elements contain &scrollbar_visibilityvalue;s.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>appearance</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_listlayoutmanager</classname>'s
+	    <varname>appearance</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <appearance>options</appearance>
+</config>
+
+<appearance id="options" type="list">
+
+  <!-- ... -->
+
+</appearance>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The value of the element specifies an
+	    <link linkend="uixmlappearance"><tag class='element'>appearance</tag></link>
+	    object of <tag class='attribute'>type</tag>=<quote>list</quote>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>configure_for_pane</tag>
+	</term>
+	<listitem>
+	  <para>
+	    This configures the list
+	    (or a <link linkend="uixmllayoutnewtablelayoutmanager">table</link>)
+	    in a
+	    <link linkend="uixmlfactorypane">pane container</link>.
+	    An optional
+	    <tag class='emptytag'>synchronized</tag> flag indicates that
+	    the new list/table's columns are synchronized with another
+	    list/table in the same pane container.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

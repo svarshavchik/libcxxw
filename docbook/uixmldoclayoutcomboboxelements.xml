@@ -1,0 +1,49 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="uixmllayoutcomboboxelements">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>standard_combobox</quote> and
+    <tag class='attribute'>type</tag>=<quote>editable_combobox</quote>
+    <tag class='element'>layout</tag>
+    elements</title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="standard_combobox" id="option-list">
+
+  <!-- ... -->
+
+  <append_items>
+    <items>
+      <label>Option 1</label>
+      <label>Option 2</label>
+    </items>
+  </append_items>
+
+</layout>]]></programlisting>
+    </informalexample>
+  </blockquote>
+  <para>
+    <tag class='attribute'>type</tag>=<quote>standard_combobox</quote> and
+    <tag class='attribute'>type</tag>=<quote>editable_combobox</quote>
+    <tag class='element'>layout</tag>
+    share the same elements
+    as <link linkend="uixmllayoutlistelements"><tag class='attribute'>type</tag>=<quote>list</quote>
+      <tag class='element'>layout</tag>s</link>.
+    The combo-box layout managers inherit from the list layout manager,
+    and inherit the list layout manager's methods.
+  </para>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

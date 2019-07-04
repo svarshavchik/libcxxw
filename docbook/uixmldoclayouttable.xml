@@ -1,0 +1,273 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmllayouttable">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>table</quote>
+    <tag class='element'>layout</tag>s
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="table" id="option-table">
+  <append_items>
+
+    <!-- ... -->
+
+  </append_items>
+</layout>]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>layout</tag>s with
+    <tag class='attribute'>type</tag>=<quote>table</quote>
+    specify the <link linkend="tables">table
+      layout manager</link> methods that get invoked to
+    <methodname>generate</methodname>() its contents.
+  </para>
+
+  <section id="uixmllayouttablecreatecontainer">
+    <title>Creating
+      <tag class='attribute'>type</tag>=<quote>table</quote>
+      <tag class='element'>layout</tag>s</title>
+
+    <para>
+      A <tag class='element'>container</tag> with a
+      <tag class='attribute'>type</tag>=<quote>table</quote>
+      creates a container that uses the
+      <link linkend="tables">table layout manager</link>.
+    </para>
+  </section>
+
+  <section id="uixmllayoutnewtablelayoutmanager">
+    <title>Initializing
+      <classname>&ns;::w::new_tablelayoutmanager</classname></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<container>
+  <name>option-table</name>
+  <type>table</type>
+  <config>
+    <columns>2</columns>
+  </config>
+  <header>
+    <element>
+      <label type='theme_text'>Name</label>
+    </element>
+  </header>
+  <header>
+    <element>
+      <label type='theme_text'>Value</label>
+    </element>
+  </header>
+</container>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The
+      <tag class='element'>config</tag> element initializes the
+      <ulink url="&link-x--w--new-tablelayoutmanager;"><classname>&ns;::w::new_tablelayoutmanager</classname></ulink>
+      that creates the container:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>table_width</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_tablelayoutmanager</classname>'s
+	    <varname>table_width</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <table_width>40</table_width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>maximum_table_width</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_tablelayoutmanager</classname>'s
+	    <varname>maximum_table_width</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <maximum_table_width>40</maximum_table_width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>unlimited_table_width</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Invokes
+	    <classname>&ns;::w::new_tablelayoutmanager</classname>'s
+	    <methodname>unlimited_table_width</methodname>() method.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>adjustable_column_widths</tag>
+	</term>
+	<listitem>
+	  <para>
+	    This element sets
+	    <classname>&ns;::w::new_tablelayoutmanager</classname>'s
+	    <varname>adjustable_column_widths</varname> to
+	    <literal>true</literal>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>extra_table_appearance</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_tablelayoutmanager</classname>'s
+	    <varname>extra_table_appearance</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <extra_table_appearance>main-table</extra_table_appearance>
+</config>
+
+<!-- ... -->
+
+<appearance id="main-table" type="table">
+
+  <!-- ... -->
+
+</appearance>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The value of the element specifies an
+	    <link linkend="uixmlappearance"><tag class='element'>appearance</tag></link>
+	    object of <tag class='attribute'>type</tag>=<quote>table</quote>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>restore</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Calls <classname>&ns;::w::new_tablelayoutmanager</classname>'s
+	    <methodname>restore</methodname>() method. The
+	    <link linkend="uigenerator"><classname>&ns;::w::uigenerator</classname></link>
+	    must get constructed with a
+	    <link linkend="screen_positions"><classname>&ns;::w::const_screen_positions</classname></link>
+	    parameter with preserved window positions.
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <restore>table-settings</restore>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The value of the element specifies the table's unique label
+	    that gets passed to its <methodname>restore</methodname>()
+	    method.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  Inherited list layout manager initialization configuration
+	</term>
+	<listitem>
+	  <para>
+	    <classname>&ns;::w::new_tablelayoutmanager</classname> inherits
+	    from
+	    <classname>&ns;::w::new_listlayoutmanager</classname>,
+	    and all
+	    <tag class='element'>config</tag> values that
+	    <link linkend="uixmllayoutnewlistlayoutmanager">initialize
+	      <classname>&ns;::w::new_listlayoutmanager</classname>s</link>
+	    also appear in a
+	    <tag class='attribute'>type</tag>=<quote>table</quote>
+	    <tag class='element'>container</tag>'s
+	    <tag class='element'>config</tag>.
+	  </para>
+
+	  <para>
+	    Of particular importance is the
+	    <tag class='element'>columns</tag> value that sets the
+	    number of columns in the table.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>
+      A list of
+      <tag class='element'>header</tag> values defines the contents of the
+      table's header row.
+      The internally-constructed
+      <classname>&ns;::w::new_tablelayoutmanager</classname>'s
+      <varname>header_factory</varname> uses the
+      <tag class='element'>header</tag>s to create the table's header
+      widgets.
+    </para>
+
+    <para>
+      The number of <tag class='element'>header</tag> values must be equal
+      to the table's
+      <tag class='element'>columns</tag> value.
+      Each <tag class='element'>header</tag> should create one
+      &themewidget;.
+      The usual table header theme widget is a
+      <link linkend="uixmlfactorylabelelement">plain label</link>.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

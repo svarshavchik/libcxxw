@@ -97,8 +97,25 @@
 <!ENTITY toolbox SYSTEM "toolboxlayoutmanager.xml">
 <!ENTITY uigenerator SYSTEM "uigenerator.xml">
 <!ENTITY uixmlappearance_list SYSTEM "../appearance/appearance_list.xml">
-
+<!ENTITY uixmlbooklayoutelements SYSTEM "uixmldocbooklayoutelements.xml">
+<!ENTITY uixmldocfactorygrid SYSTEM "uixmldocfactorygrid.xml">
 <!ENTITY uixmldoc SYSTEM "uixmldoc.xml">
+<!ENTITY uixmlfactorybook SYSTEM "uixmldocfactorybook.xml">
+<!ENTITY uixmlfactorygrid SYSTEM "uixmldocfactorygrid.xml">
+<!ENTITY uixmlfactorymenubar SYSTEM "uixmldocfactorymenubar.xml">
+<!ENTITY uixmlfactorypane SYSTEM "uixmldocfactorypane.xml">
+<!ENTITY uixmllayoutbook SYSTEM "uixmldoclayoutbook.xml">
+<!ENTITY uixmllayoutcomboboxelements SYSTEM "uixmldoclayoutcomboboxelements.xml">
+<!ENTITY uixmllayoutcombobox SYSTEM "uixmldoclayoutcombobox.xml">
+<!ENTITY uixmllayoutgridelements SYSTEM "uixmldoclayoutgridelements.xml">
+<!ENTITY uixmllayoutgrid SYSTEM "uixmldoclayoutgrid.xml">
+<!ENTITY uixmllayoutlistelements SYSTEM "uixmldoclayoutlistelements.xml">
+<!ENTITY uixmllayoutlist SYSTEM "uixmldoclayoutlist.xml">
+<!ENTITY uixmllayoutmenubar SYSTEM "uixmldoclayoutmenubar.xml">
+<!ENTITY uixmllayoutpaneelements SYSTEM "uixmldoclayoutpaneelements.xml">
+<!ENTITY uixmllayoutpane SYSTEM "uixmldoclayoutpane.xml">
+<!ENTITY uixmllayouttableelements SYSTEM "uixmldoclayouttableelements.xml">
+<!ENTITY uixmllayouttable SYSTEM "uixmldoclayouttable.xml">
 <!ENTITY validatedinput SYSTEM "validatedinput.xml">
 <!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">
 

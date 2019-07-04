@@ -1,0 +1,200 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmllayoutpane">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>pane</quote>
+    <tag class='element'>layout</tag>s</title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="pane" id="mainpane">
+  <append_panes>
+    <name>mainpanecontents</name>
+  </append_panes>
+</layout>
+
+<factory type="pane" id="maincontents">
+
+  <!-- ... -->
+
+</factory>
+
+// ....
+]]>
+&ns;::w::panelayoutmanager plm=container->get_layoutmanager();
+
+plm->generate("mainpane", generator, elements);</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>layout</tag>s with
+    <tag class='attribute'>type</tag>=<quote>pane</quote>
+    specify the <link linkend="panelayoutmanager">pane
+      layout manager</link> methods that get invoked to
+    <methodname>generate</methodname>() its contents.
+  </para>
+
+  <section id="uixmllayoutpanecreatecontainer">
+    <title>Creating
+      <tag class='attribute'>type</tag>=<quote>pane</quote>
+      <tag class='element'>layout</tag>s</title>
+
+    <para>
+      A <tag class='element'>container</tag> with a
+      <tag class='attribute'>type</tag>=<quote>pane</quote>
+      creates a container that uses the
+      <link linkend="panelayoutmanager">pane layout manager</link>.
+    </para>
+  </section>
+
+  <section id="uixmllayoutnewpanelayoutmanager">
+    <title>Initializing
+      <classname>&ns;::w::new_panelayoutmanager</classname></title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<container>
+  <name>inventory</name>
+  <type>pane</type>
+  <config>
+    <vertical />
+    <size>inventory_width</size>
+  </config>
+</container>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The
+      <tag class='element'>config</tag> element initializes the
+      <ulink url="&link-x--w--new-panelayoutmanager;"><classname>&ns;::w::new_panelayoutmanager</classname></ulink>
+      that creates the container:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>minimum_size</tag>,
+	  <tag class='element'>preferred_size</tag>,
+	  <tag class='element'>maximum_size</tag>
+	</term>
+	<listitem>
+	  <para>
+	    These elements reference other
+	    <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>s
+	    in the theme file, defining the size of the pane container.
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <minimum_size>min-inventory</minimum_size>
+  <preferred_size>pref-inventory</preferred_size>
+  <maximum_size>max-inventory</maximum_size>
+</config>
+
+<dim id="min-inventory">100.0</dim>
+<dim id="pref-inventory">150.0</dim>
+<dim id="max-inventory">200.0</dim>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>size</tag>
+	</term>
+	<listitem>
+	  <para>
+	    This is equivalent to specifying the same
+	    <tag class='element'>minimum_size</tag>,
+	    <tag class='element'>preferred_size</tag>, and
+	    <tag class='element'>maximum_size</tag>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='emptytag'>horizontal</tag> and
+	  <tag class='emptytag'>vertical</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Invokes the corresponding
+	    <classname>&ns;::w::new_panelayoutmanager</classname>
+	    method.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>appearance</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_panelayoutmanager</classname>'s
+	    <varname>appearance</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <appearance>inventory-appearance</appearance>
+</config>
+
+<appearance id="inventory-appearance" type="pane">
+
+</appearance>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>restore</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Calls <classname>&ns;::w::new_panelayoutmanager</classname>'s
+	    <methodname>restore</methodname>() method. The
+	    <link linkend="uigenerator"><classname>&ns;::w::uigenerator</classname></link>
+	    must get constructed with a
+	    <link linkend="screen_positions"><classname>&ns;::w::const_screen_positions</classname></link>
+	    parameter with preserved window positions.
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <restore>inventory-settings</restore>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The value of the element specifies the pane container's unique
+	    label
+	    that gets passed to its <methodname>restore</methodname>()
+	    method.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

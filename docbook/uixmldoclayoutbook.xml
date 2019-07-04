@@ -1,0 +1,84 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="uixmllayoutbook">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>book</quote>
+    <tag class='element'>layout</tag>s
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="book" id="application-settings">
+
+  <!-- ... -->
+
+</layout>
+
+<!-- in some factory... -->
+
+<container>
+  <name>application-settings</name>
+  <type>book</type>
+  <config>
+    <appearance>application-settings-appearance</appearance>
+  </config>
+</container>]]>
+
+&ns;::w::booklayoutmanager glm=container->get_layoutmanager();
+
+glm->generate("application-settings", generator, elements);</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>layout</tag>s of
+    <tag class='attribute'>type</tag>=<quote>book</quote>
+    specify the methods invoked by <link linkend="booklayoutmanager">book
+      layout manager</link>'s <methodname>generate</methodname>().
+  </para>
+
+  <section id="uixmllayoutbookcreatecontainer">
+    <title>Creating
+      <tag class='attribute'>type</tag>=<quote>book</quote>
+      <tag class='element'>layout</tag>s</title>
+
+    <para>
+      A <tag class='element'>container</tag> with a
+      <tag class='attribute'>type</tag>=<quote>book</quote>
+      creates a container that uses the
+      <link linkend="booklayoutmanager">book layout manager</link>.
+      An optional
+      <tag class='element'>config</tag> element sets non-default values
+      of the
+      <ulink url="&link-x--w--new-booklayoutmanager;"><classname>&ns;::w::new_booklayoutmanager</classname></ulink>
+      that creates the container:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><tag class='element'>appearance</tag></term>
+	<listitem>
+	  <para>
+	    Sets the book layout manager's
+	    <link linkend="uixmlappearance"><varname>appearance</varname></link>
+	    object.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->
