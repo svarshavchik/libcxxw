@@ -12,6 +12,7 @@
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/booklayoutmanagerfwd.H"
 #include "x/w/bookpagefactoryfwd.H"
+#include "x/w/pagefactoryfwd.H"
 #include "x/w/factoryfwd.H"
 #include "x/w/uielementsfwd.H"
 #include "x/w/shortcutfwd.H"
@@ -169,6 +170,10 @@ public:
 	vector<booklayoutmanager_generator
 	       > booklayout_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for page factory generator.
+	vector<pagefactory_generator
+	       > pagefactory_parseconfig(const theme_parser_lock &lock);
+
 	//! Parser for book page factory generator.
 	vector<bookpagefactory_generator
 	       > bookpagefactory_parseconfig(const theme_parser_lock &lock);
@@ -218,6 +223,11 @@ public:
 	vector<itemlayoutmanager_generator
 	       > itemlayout_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for the page layout manager generator
+
+	vector<pagelayoutmanager_generator
+	       > pagelayout_parseconfig(const theme_parser_lock &lock);
+
 	//! Parser for the toolbox layout manager generator
 
 	vector<toolboxlayoutmanager_generator
@@ -263,6 +273,11 @@ public:
 
 	vector<new_itemlayoutmanager_generator
 	       > new_itemlayout_parseconfig(const theme_parser_lock &lock);
+
+	//! Parser for the new page layout manager generator
+
+	vector<new_pagelayoutmanager_generator
+	       > new_pagelayout_parseconfig(const theme_parser_lock &lock);
 
 	//! Parser for the new toolbox layout manager generator
 
@@ -321,6 +336,10 @@ private:
 	itemlayoutmanager_generator
 	itemlayout_parser(const theme_parser_lock &lock);
 
+	//! Generate a single pagelayoutmanager instruction.
+	pagelayoutmanager_generator
+	pagelayout_parser(const theme_parser_lock &lock);
+
 	//! Generate a single toolboxlayoutmanager instruction.
 	toolboxlayoutmanager_generator
 	toolboxlayout_parser(const theme_parser_lock &lock);
@@ -332,6 +351,10 @@ private:
 	//! Generate a single book layout manager instruction.
 	booklayoutmanager_generator
 	booklayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single page factory instruction.
+	pagefactory_generator
+	pagefactory_parser(const theme_parser_lock &lock);
 
 	//! Generate a single book page factory instruction.
 	bookpagefactory_generator
@@ -368,6 +391,10 @@ private:
 	//! Generate a single new_itemlayoutmanager instruction.
 	new_itemlayoutmanager_generator
 	new_itemlayout_parser(const theme_parser_lock &lock);
+
+	//! Generate a single new_pagelayoutmanager instruction.
+	new_pagelayoutmanager_generator
+	new_pagelayout_parser(const theme_parser_lock &lock);
 
 	//! Generate a single new_toolboxlayoutmanager instruction.
 	new_toolboxlayoutmanager_generator
@@ -409,6 +436,18 @@ public:
 	       > lookup_menubarfactory_generators(const theme_parser_lock &lock,
 					       const char *element,
 					       const char *parent);
+
+	//! Return compiled page factory generators.
+
+	//! Extract single_value() from element, and look it up in
+	//! pagefactory_generators, returning the generators. If it doesn't
+	//! exist, search for them in uncompiled_elements, compile them, put
+	//! them into pagefactory_generators, and return them.
+
+	const_vector<pagefactory_generator>
+	lookup_pagefactory_generators(const theme_parser_lock &lock,
+				      const char *element,
+				      const char *parent);
 
 	//! Return compiled book page factory generators.
 
@@ -502,6 +541,16 @@ public:
 
 	const_vector<itemlayoutmanager_generator>
 	lookup_itemlayoutmanager_generators(const theme_parser_lock &lock,
+					    const std::string &);
+
+	//! Return compiled page layout manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into pagelayoutmanager_generators, and return them.
+
+	const_vector<pagelayoutmanager_generator>
+	lookup_pagelayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled toolbox layout manager generators.
@@ -693,6 +742,10 @@ private:
 
 	struct itemlayoutmanager_functions;
 
+	//! Supported page layout manager functionality.
+
+	struct pagelayoutmanager_functions;
+
 	//! Supported toolbox layout manager functionality.
 
 	struct toolboxlayoutmanager_functions;
@@ -706,6 +759,7 @@ private:
 			     tablelayoutmanager_functions,
 			     panelayoutmanager_functions,
 			     itemlayoutmanager_functions,
+			     pagelayoutmanager_functions,
 			     toolboxlayoutmanager_functions,
 			     booklayoutmanager_functions
 			     > layoutmanager_functions;

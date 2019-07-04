@@ -1,0 +1,89 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmllayoutpageelements">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>page</quote>
+    <tag class='element'>layout</tag>
+    elements</title>
+
+  <section id="uixmllayoutpagenewpages">
+    <title><tag class='element'>append</tag> and
+      <tag class='element'>insert</tag>
+    </title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<layout type="page" id="pages">
+
+  <!-- ... -->
+
+  <append>
+    <name>initial-pages</name>
+  </append>
+</layout>
+
+<layout type="page" id="more-pages">
+  <insert>
+    <position>0</position>
+    <name>extra-pages</name>
+  </insert>
+</layout>]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>append</tag> and
+      <tag class='element'>insert</tag>
+      invoke the corresponding
+      <link linkend="pagelayoutmanager">page layout manager</link> methods
+      that add new pages to the.
+      The <tag class='element'>position</tag> value specifies the
+      insert position (for
+      <tag class='element'>insert</tag>).
+      The
+      <tag class='element'>name</tag> element specifies
+      a
+      <tag class='attribute'>type</tag>=<quote>page</quote>
+      <tag class='element'>factory</tag> that creates the new pages.
+    </para>
+  </section>
+
+  <section id="uixmllayoutpageremovepage">
+    <title><tag class='element'>open</tag> and
+      <tag class='emptytag'>close</tag>
+    </title>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<open>
+  <position>0</position>
+</open>
+
+<!-- ... -->
+<close />
+
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>open</tag>
+      invokes the corresponding
+      <link linkend="pagelayoutmanager">page layout manager</link>
+      method.
+      The <tag class='element'>position</tag> value specifies the
+      position index of the page to open.
+      <tag class='emptytag'>close</tag> invokes
+      <methodname>close</methodname>().
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

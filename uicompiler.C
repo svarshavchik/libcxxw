@@ -20,6 +20,7 @@
 #include "x/w/tablelayoutmanager.H"
 #include "x/w/panelayoutmanager.H"
 #include "x/w/itemlayoutmanager.H"
+#include "x/w/pagelayoutmanager.H"
 #include "x/w/toolboxlayoutmanager.H"
 #include "x/w/synchronized_axis.H"
 #include "x/w/booklayoutmanager.H"
@@ -679,6 +680,98 @@ struct uicompiler::itemlayoutmanager_functions {
 
 ////////////////////////////////////////////////////////////////////////////
 //
+// Page layout manager functionality.
+//
+// Parse new page layout manager generators from <config>
+
+static const_vector<new_pagelayoutmanager_generator>
+create_newpagelayoutmanager_vector(uicompiler &compiler,
+				    const theme_parser_lock &orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	auto xpath=lock->get_xpath("config");
+
+	if (xpath->count() == 0) // None, return an empty vector.
+		return const_vector<new_pagelayoutmanager_generator>::create();
+	xpath->to_node();
+
+	return compiler.new_pagelayout_parseconfig(lock);
+}
+
+struct uicompiler::pagelayoutmanager_functions {
+
+	struct generators : generators_base {
+
+		// Generators for the contents of the new_tablelayoutmanager
+
+		const_vector<new_pagelayoutmanager_generator
+			     > new_pagelayoutmanager_vector;
+
+		// Generators for the contents of the page layout manager.
+		const_vector<pagelayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const theme_parser_lock &lock,
+			   const std::string &name)
+			: generators_base{name},
+			  new_pagelayoutmanager_vector
+			{
+			 create_newpagelayoutmanager_vector(compiler, lock)
+			},
+			  generator_vector
+			{
+			 compiler.lookup_pagelayoutmanager_generators(lock,
+								      name)
+			}
+		{
+		}
+
+		container create_container(const factory &f,
+					   uielements &factories) const
+		{
+		        auto nplm=new_layoutmanager(factories);
+
+			// Generate the contents of the new_tablelayoutmanager.
+
+			for (const auto &g:*new_pagelayoutmanager_vector)
+			{
+				g(&nplm, factories);
+			}
+
+			return f->create_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 nplm);
+		}
+
+		inline new_pagelayoutmanager
+		new_layoutmanager(uielements &factories) const
+		{
+			new_pagelayoutmanager nilm;
+
+			return nilm;
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			pagelayoutmanager plm=
+				get_new_layoutmanager(c, factories);
+
+			for (const auto &g:*generator_vector)
+			{
+				g(plm, factories);
+			}
+		}
+	};
+};
+
+////////////////////////////////////////////////////////////////////////////
+//
 // Toolbox layout manager functionality.
 //
 // Parse new toolbox layout manager generators from <config>
@@ -703,12 +796,12 @@ struct uicompiler::toolboxlayoutmanager_functions {
 
 	struct generators : generators_base {
 
-		// Generators for the contents of the new_tablelayoutmanager
+		// Generators for the contents of the new_toolboxlayoutmanager
 
 		const_vector<new_toolboxlayoutmanager_generator
 			     > new_toolboxlayoutmanager_vector;
 
-		// Generators for the contents of the item layout manager.
+		// Generators for the contents of the toolbox layout manager.
 		const_vector<toolboxlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
@@ -1151,6 +1244,11 @@ uicompiler::get_layoutmanager(const std::string &type)
 	if (type == "table")
 		return layoutmanager_functions{
 			std::in_place_type_t<tablelayoutmanager_functions>{}
+		};
+
+	if (type == "page")
+		return layoutmanager_functions{
+			std::in_place_type_t<pagelayoutmanager_functions>{}
 		};
 
 	if (type == "pane")

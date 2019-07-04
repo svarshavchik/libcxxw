@@ -20,7 +20,9 @@
 #include <x/w/menubarfactoryfwd.H>
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/bookpagefactoryfwd.H>
+#include <x/w/pagefactoryfwd.H>
 #include <x/w/itemlayoutmanagerfwd.H>
+#include <x/w/pagelayoutmanagerfwd.H>
 #include <x/w/toolboxlayoutmanagerfwd.H>
 #include <x/w/toolboxfactoryfwd.H>
 #include <x/w/uielementsfwd.H>
@@ -74,6 +76,13 @@ typedef functionref<void (const panelayoutmanager &, uielements &)
 typedef functionref<void (const itemlayoutmanager &, uielements &)
 		    > itemlayoutmanager_generator;
 
+//! Generate something in the page layout manager
+
+//! \see uigenerators
+
+typedef functionref<void (const pagelayoutmanager &, uielements &)
+		    > pagelayoutmanager_generator;
+
 //! Generate something in the toolbox layout manager
 
 //! \see uigenerators
@@ -124,6 +133,12 @@ typedef functionref<void (const booklayoutmanager &, uielements &)
 //! \see uigenerators
 typedef functionref<void (const bookpagefactory &, uielements &)
 		    > bookpagefactory_generator;
+
+//! Generate something using a book factory.
+
+//! \see uigenerators
+typedef functionref<void (const pagefactory &, uielements &)
+		    > pagefactory_generator;
 
 //! Generate something using a pane factory.
 
@@ -227,6 +242,17 @@ typedef new_itemlayoutmanager *new_itemlayoutmanager_plainptr;
 typedef functionref<void (const new_itemlayoutmanager_plainptr &layout,
 			  uielements &elements)
 		    > new_itemlayoutmanager_generator;
+
+//! Pseudo-ref used to initialize a new_pagelayoutmanager parameter
+
+typedef new_pagelayoutmanager *new_pagelayoutmanager_plainptr;
+
+//! Generate something to initialize a new_pagelayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_pagelayoutmanager_plainptr &layout,
+			  uielements &elements)
+		    > new_pagelayoutmanager_generator;
 
 //! Pseudo-ref used to initialize a new_toolboxlayoutmanager parameter
 

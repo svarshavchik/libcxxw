@@ -48,9 +48,7 @@ See COPYING for distribution information.
 
   <!-- ... -->
 
-  <halign>
-    <halign>right</halign>
-  </halign>
+  <halign>right</halign>
 
   <!-- ... -->
 
@@ -77,9 +75,7 @@ See COPYING for distribution information.
 
   <!-- ... -->
 
-  <valign>
-    <valign>middle</valign>
-  </valign>
+  <valign>middle</valign>
 
   <!-- ... -->
 

@@ -627,6 +627,7 @@ List of values:
       <parameter>
 	<name>halign</name>
 	<type>to_halign</type>
+	<xpath>.</xpath>
       </parameter>
     </function>
 
@@ -641,6 +642,7 @@ List of values:
       <parameter>
 	<name>valign</name>
 	<type>to_valign</type>
+	<xpath>.</xpath>
       </parameter>
     </function>
 
@@ -1819,6 +1821,54 @@ List of values:
     </function>
   </parser>
 
+  <!-- page factory -->
+
+  <parser>
+    <name>pagefactory</name>
+
+    <parameter>
+      <type>pagefactory</type>
+      <name>factory</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <use_common>factory</use_common>
+
+    <!-- halign -->
+
+    <function>
+      <name>halign</name>
+      <invoke>halign</invoke>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>halign</name>
+	<type>to_halign</type>
+	<xpath>.</xpath>
+      </parameter>
+    </function>
+
+    <!-- valign -->
+
+    <function>
+      <name>valign</name>
+      <invoke>valign</invoke>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>valign</name>
+	<type>to_valign</type>
+	<xpath>.</xpath>
+      </parameter>
+    </function>
+  </parser>
+
   <!-- book page factory -->
 
   <parser>
@@ -1844,6 +1894,7 @@ List of values:
 
       <parameter>
 	<name>halign</name>
+	<xpath>.</xpath>
 	<type>to_halign</type>
       </parameter>
     </function>
@@ -1858,6 +1909,7 @@ List of values:
 
       <parameter>
 	<name>valign</name>
+	<xpath>.</xpath>
 	<type>to_valign</type>
       </parameter>
     </function>
@@ -2370,6 +2422,93 @@ List of values:
 	<type>to_size_t</type>
       </parameter>
     </function>
+  </parser>
+
+  <!-- pagelayoutmanager initialization -->
+
+  <parser>
+    <name>pagelayout</name>
+
+    <parameter>
+      <type>pagelayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+
+    <function>
+      <name>append</name>
+      <invoke>pagelayout_append</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_pagefactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>insert</name>
+      <invoke>pagelayout_insert</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>compiler.lookup_pagefactory_generators</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove</name>
+      <invoke>remove</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>open</name>
+      <invoke>open</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>close</name>
+      <invoke>close</invoke>
+      <object>layout</object>
+    </function>
+
   </parser>
 
   <!-- toolboxlayoutmanager initialization -->
@@ -3175,6 +3314,22 @@ List of values:
 	</lookup>
       </parameter>
     </function>
+  </parser>
+
+  <!-- new_pagelayoutmanager initialization -->
+
+  <parser>
+    <name>new_pagelayout</name>
+
+    <parameter>
+      <type>new_pagelayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
   </parser>
 
   <!-- new_toolboxlayoutmanager initialization -->

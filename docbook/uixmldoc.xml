@@ -1713,6 +1713,10 @@ layout->generate("main-window-grid",
   &uixmllayoutmenubar;
   &uixmlfactorymenubar;
 
+  &uixmllayoutpage;
+  &uixmllayoutpageelements;
+  &uixmlfactorypage;
+
   &uixmllayoutpane;
   &uixmllayoutpaneelements;
   &uixmlfactorypane;

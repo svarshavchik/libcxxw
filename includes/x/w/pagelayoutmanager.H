@@ -47,7 +47,7 @@ public:
 
 	//! \internal
 
-	layout_impl create(const container_impl &) const override LIBCXX_PUBLIC;
+	layout_impl create(const container_impl &) const override LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

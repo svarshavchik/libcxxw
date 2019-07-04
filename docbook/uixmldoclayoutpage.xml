@@ -1,0 +1,66 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="uixmllayoutpage">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>page</quote>
+    <tag class='element'>layout</tag>s
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="page" id="pages">
+  <append>
+
+    <!-- ... -->
+
+  </append>
+</layout>]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>layout</tag>s with
+    <tag class='attribute'>type</tag>=<quote>page</quote>
+    specify the <link linkend="pagelayoutmanager">page
+      layout manager</link> methods that get invoked to
+    <methodname>generate</methodname>() its contents.
+  </para>
+
+  <section id="uixmllayoutpagecreatecontainer">
+    <title>Creating
+      <tag class='attribute'>type</tag>=<quote>page</quote>
+      <tag class='element'>layout</tag>s</title>
+
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<container>
+  <name>pages</name>
+  <type>page</type>
+</container>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A <tag class='element'>container</tag> with a
+      <tag class='attribute'>type</tag>=<quote>page</quote>
+      creates a container that uses the
+      <link linkend="pagelayoutmanager">page layout manager</link>.
+    </para>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

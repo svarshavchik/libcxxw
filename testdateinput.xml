@@ -78,9 +78,7 @@
   </layout>
 
   <factory type="grid" id="progressbar_label_row">
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
     <element>
       <label>10%</label>
     </element>

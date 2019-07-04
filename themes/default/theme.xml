@@ -1497,9 +1497,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <colspan>
       <columns>2</columns>
     </colspan>
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
     <border>
       <side>top</side>
@@ -1609,9 +1607,7 @@ of wrappable labels used for the message.
     <colspan>
       <columns>2</columns>
     </colspan>
-    <halign>
-      <halign>fill</halign>
-    </halign>
+    <halign>fill</halign>
 
     <border>
       <side>top</side>
@@ -1660,9 +1656,7 @@ of wrappable labels used for the message.
       <padding>no-padding</padding>
     </padding>
 
-    <halign>
-      <halign>fill</halign>
-    </halign>
+    <halign>fill</halign>
 
     <border>
       <side>top</side>
@@ -1893,9 +1887,7 @@ of wrappable labels used for the message.
       <padding>dialog-h-padding</padding>
     </padding>
 
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
     <element id="file-input-label">
       <label type='theme_text'>${context:file-dialog}File:</label>
@@ -1925,9 +1917,7 @@ of wrappable labels used for the message.
       <padding>dialog-h-padding</padding>
     </padding>
 
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
     <element id="directory-label">
       <label type='theme_text'>${context:file-dialog}Directory:</label>
@@ -1949,9 +1939,7 @@ of wrappable labels used for the message.
       <padding>dialog-h-padding</padding>
     </padding>
 
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
     <element id="filter-label">
       <label type='theme_text'>${context:file-dialog}Files:</label>
@@ -1982,9 +1970,7 @@ of wrappable labels used for the message.
       <padding>dialog-h-padding</padding>
     </padding>
 
-    <halign>
-      <halign>fill</halign>
-    </halign>
+    <halign>fill</halign>
 
     <container>
       <name>directory-contents-pane</name>
@@ -2576,9 +2562,7 @@ first column, to make the labels line up with their input fields.
     <colspan>
       <columns>2</columns>
     </colspan>
-    <halign>
-      <halign>left</halign>
-    </halign>
+    <halign>left</halign>
     <element id="hexadecimal">
       <checkbox>
 	<element>
@@ -2592,9 +2576,7 @@ first column, to make the labels line up with their input fields.
     <colspan>
       <columns>2</columns>
     </colspan>
-    <halign>
-      <halign>left</halign>
-    </halign>
+    <halign>left</halign>
     <element id="full-precision">
       <checkbox>
 	<element>
@@ -2610,9 +2592,7 @@ first column, to make the labels line up with their input fields.
     <colspan>
       <columns>2</columns>
     </colspan>
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
     <element id="error-message-field">
       <label> </label>
     </element>
@@ -2622,9 +2602,7 @@ first column, to make the labels line up with their input fields.
     <colspan>
       <columns>2</columns>
     </colspan>
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
 
     <container>
       <type>grid</type>
@@ -3056,9 +3034,7 @@ first column, to make the labels line up with their input fields.
   <!-- Select printer label and combo-box -->
 
   <factory type="grid" id="print-dialog-select-printer">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
     <element id="select-printer-label">
       <label type='theme_text'>${context:print-dialog}Printer:</label>
@@ -3086,21 +3062,15 @@ first column, to make the labels line up with their input fields.
   <!-- Number of copies label and input field row -->
 
   <factory type="grid" id="print-dialog-number-of-copies">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id="number-of-copies-label">
       <label type='theme_text'>${context:print-dialog}Number of copies:</label>
     </element>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id="number-of-copies-field">
       <input_field />
@@ -3176,9 +3146,7 @@ first column, to make the labels line up with their input fields.
       <padding>no-padding</padding>
     </padding>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id="page-range-radio-button">
       <radio>
@@ -3204,9 +3172,7 @@ first column, to make the labels line up with their input fields.
       <padding>no-padding</padding>
     </padding>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id="page-range-field">
       <input_field />
@@ -3218,21 +3184,15 @@ first column, to make the labels line up with their input fields.
   </factory>
 
   <factory type="grid" id="print-dialog-page-size">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id='page-size-label'>
       <label type='theme_text'>${context:print-dialog}Page Size:</label>
     </element>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element>
       <name>page-size-field</name>
@@ -3240,21 +3200,15 @@ first column, to make the labels line up with their input fields.
   </factory>
 
   <factory type="grid" id="print-dialog-duplex">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id='duplex-label'>
       <label type='theme_text'>${context:print-dialog}Duplex:</label>
     </element>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element>
       <name>duplex-field</name>
@@ -3262,21 +3216,15 @@ first column, to make the labels line up with their input fields.
   </factory>
 
   <factory type="grid" id="print-dialog-pages-per-side">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id='pages-per-side-label'>
       <label type='theme_text'>${context:print-dialog}Pages Per Side:</label>
     </element>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element>
       <name>pages-per-side-field</name>
@@ -3284,21 +3232,15 @@ first column, to make the labels line up with their input fields.
   </factory>
 
   <factory type="grid" id="print-dialog-orientation-requested">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id="orientation-label">
       <label type='theme_text'>${context:print-dialog}Orientation:</label>
     </element>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element>
       <name>orientation-field</name>
@@ -3308,21 +3250,15 @@ first column, to make the labels line up with their input fields.
   <!-- Finishings label and input field row -->
 
   <factory type="grid" id="print-dialog-finishings">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id='finishings-label'>
       <label type='theme_text'>${context:print-dialog}Finishing Process:</label>
     </element>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element>
       <name>finishings-field</name>
@@ -3332,21 +3268,15 @@ first column, to make the labels line up with their input fields.
   <!-- Print color mode label and input field row -->
 
   <factory type="grid" id="print-dialog-color-mode">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id="print-color-mode-label">
       <label type='theme_text'>${context:print-dialog}Color Mode:</label>
     </element>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element>
       <name>print-color-mode-field</name>
@@ -3356,21 +3286,15 @@ first column, to make the labels line up with their input fields.
   <!-- Print quality label and input field row -->
 
   <factory type="grid" id="print-dialog-quality">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id="print-quality-label">
       <label type='theme_text'>${context:print-dialog}Print Quality:</label>
     </element>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element>
       <name>print-quality-field</name>
@@ -3380,21 +3304,15 @@ first column, to make the labels line up with their input fields.
   <!-- Printer resolution label and input field row -->
 
   <factory type="grid" id="print-dialog-resolution">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element id="printer-resolution-label">
       <label type='theme_text'>${context:print-dialog}Resolution:</label>
     </element>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <element>
       <name>printer-resolution-field</name>
@@ -3542,9 +3460,7 @@ first column, to make the labels line up with their input fields.
   </layout>
 
   <factory type="grid" id="font-picker-popup-font-family-row">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
     <element id="font-family-label">
       <label type='theme_text'>${context:font-picker}Font:</label>
@@ -3556,9 +3472,7 @@ first column, to make the labels line up with their input fields.
   </factory>
 
   <factory type="grid" id="font-picker-popup-font-size-row">
-    <halign>
-      <halign>right</halign>
-    </halign>
+    <halign>right</halign>
 
     <element id="font-size-label">
       <label type='theme_text'>${context:font-picker}Size:</label>
@@ -3570,9 +3484,8 @@ first column, to make the labels line up with their input fields.
   </factory>
 
   <factory type="grid" id="font-picker-popup-font-preview-row">
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
+
     <colspan>
       <columns>2</columns>
     </colspan>
@@ -3663,9 +3576,8 @@ first column, to make the labels line up with their input fields.
 
   <factory type="grid" id="font-size-error-row">
 
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
+
     <colspan>
       <columns>2</columns>
     </colspan>

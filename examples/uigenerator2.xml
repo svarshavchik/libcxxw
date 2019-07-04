@@ -34,13 +34,9 @@
   <factory id="settings-pages" type="book">
 
     <!--             General        -->
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
 
-    <valign>
-      <valign>bottom</valign>
-    </valign>
+    <valign>bottom</valign>
 
     <add>
       <tab>
@@ -58,13 +54,9 @@
     </add>
 
     <!--             Network        -->
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
 
-    <valign>
-      <valign>bottom</valign>
-    </valign>
+    <valign>bottom</valign>
 
     <add>
       <tab>
@@ -83,13 +75,9 @@
 
     <!--             Local        -->
 
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
 
-    <valign>
-      <valign>bottom</valign>
-    </valign>
+    <valign>bottom</valign>
 
     <add>
       <tab>
@@ -108,13 +96,9 @@
 
     <!--             Progress        -->
 
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <add>
       <tab>
@@ -145,13 +129,9 @@
 
     <!--     Font and color     -->
 
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
 
-    <valign>
-      <valign>middle</valign>
-    </valign>
+    <valign>middle</valign>
 
     <add>
       <tab>
@@ -263,9 +243,7 @@ Placeholder</label>
   </layout>
 
   <factory id="progressbar_label_row" type="grid">
-    <halign>
-      <halign>center</halign>
-    </halign>
+    <halign>center</halign>
     <element id="progressbar_label">
       <label>0%</label>
     </element>

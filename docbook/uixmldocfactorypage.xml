@@ -1,0 +1,99 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmlfactorypage">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>page</quote>
+    <tag class='element'>factory</tag>s</title>
+
+  <para>
+    The contents of a
+    <tag class='element'>factory</tag>s of
+    <tag class='attribute'>type</tag>=<quote>page</quote>
+    specify the
+    <ulink url="&link-typedef-x--w-pagefactory;"><classname>&ns;::w::pagefactory</classname></ulink>
+    methods that get invoked when generating the contents of a page
+    container:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term>
+	<tag class='element'>halign</tag> and
+	<tag class='element'>valign</tag>
+      </term>
+
+      <listitem>
+	<para>
+	  These elements invoke the corresponding
+	  <classname>&ns;::w::pagefactory</classname>
+	  methods:
+	</para>
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+<factory type="page" id="maincontents">
+  <halign>center</halign>
+  <valign>middle</valign>
+
+  <!-- ... -->
+
+</factory>
+]]></programlisting>
+	  </informalexample>
+	</blockquote>
+	<para>
+	  These elements contain &halignvalue;s and
+	  &valignvalue;s.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>Inherited generic factory methods</term>
+
+      <listitem>
+	<para>
+	</para>
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+<factory type="page" id="pages">
+
+  <halign>center</halign>
+  <valign>middle</valign>
+
+  <container>
+    <type>grid</type>
+    <name>initial-options</name>
+  </container>
+</factory>
+
+<layout type="grid" id="initial-options">
+
+  <!-- ... -->
+
+</layout>]]></programlisting>
+	  </informalexample>
+	</blockquote>
+	<para>
+	  A page factory element contains any element that's valid in a
+	  <link linkend="uixmlfactoryelement">generic factory</link>.
+	  This creates a new page.
+	  The new element is usually a
+	  <tag class='element'>container</tag>.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

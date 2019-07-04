@@ -22,6 +22,7 @@
 #include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
+#include "x/w/pagelayoutmanager.H"
 #include "picture.H"
 #include "messages.H"
 #include "defaulttheme.H"
@@ -1007,6 +1008,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 				continue;
 			}
 
+			if (type == "page")
+			{
+				auto ret=pagelayout_parseconfig(lock);
+				generators->pagelayoutmanager_generators
+					.emplace(id, ret);
+				continue;
+			}
+
 			if (type == "toolbox")
 			{
 				auto ret=toolboxlayout_parseconfig(lock);
@@ -1037,6 +1046,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			{
 				auto ret=bookpagefactory_parseconfig(lock);
 				generators->bookpagefactory_generators
+					.emplace(id, ret);
+				continue;
+			}
+
+			if (type == "page")
+			{
+				auto ret=pagefactory_parseconfig(lock);
+				generators->pagefactory_generators
 					.emplace(id, ret);
 				continue;
 			}
@@ -1517,6 +1534,40 @@ uicompiler::lookup_itemlayoutmanager_generators(const theme_parser_lock &lock,
 	return ret;
 }
 
+const_vector<pagelayoutmanager_generator>
+uicompiler::lookup_pagelayoutmanager_generators(const theme_parser_lock &lock,
+						const std::string &name)
+{
+	{
+		auto iter=generators->pagelayoutmanager_generators.find(name);
+
+		if (iter != generators->pagelayoutmanager_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "layout"
+	    || iter->second->get_any_attribute("type") != "page")
+	{
+		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=pagelayout_parseconfig(new_lock);
+
+	generators->pagelayoutmanager_generators.emplace(name, ret);
+
+	return ret;
+}
+
 const_vector<toolboxlayoutmanager_generator>
 uicompiler::lookup_toolboxlayoutmanager_generators(const theme_parser_lock &lock,
 						   const std::string &name)
@@ -1694,6 +1745,43 @@ uicompiler::lookup_menubarfactory_generators(const theme_parser_lock &lock,
 	auto ret=menubarfactory_parseconfig(new_lock);
 
 	generators->menubarfactory_generators.emplace(name, ret);
+
+	return ret;
+}
+
+const_vector<pagefactory_generator>
+uicompiler::lookup_pagefactory_generators(const theme_parser_lock &lock,
+					      const char *element,
+					      const char *parent)
+{
+	auto name=single_value(lock, element, parent);
+
+	{
+		auto iter=generators->pagefactory_generators.find(name);
+
+		if (iter != generators->pagefactory_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "factory"
+	    || iter->second->get_any_attribute("type") != "page")
+	{
+		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=pagefactory_parseconfig(new_lock);
+
+	generators->pagefactory_generators.emplace(name, ret);
 
 	return ret;
 }

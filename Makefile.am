@@ -904,10 +904,13 @@ libcxxw_la_SOURCES=\
 	uicompiler_new_editable_comboboxlayout.C    \
 	uicompiler_new_itemlayout.C		    \
 	uicompiler_new_listlayout.C		    \
+	uicompiler_new_pagelayout.C		    \
 	uicompiler_new_panelayout.C		    \
 	uicompiler_new_standard_comboboxlayout.C    \
 	uicompiler_new_tablelayout.C		    \
 	uicompiler_new_toolboxlayout.C		    \
+	uicompiler_pagefactory.C		    \
+	uicompiler_pagelayout.C			    \
 	uicompiler_panefactory.C		    \
 	uicompiler_panelayout.C			    \
 	uicompiler_tablelayout.C		    \
@@ -1363,10 +1366,13 @@ uicompiler_new_custom_comboboxlayout.lo		\
 uicompiler_new_editable_comboboxlayout.lo	\
 uicompiler_new_itemlayout.lo			\
 uicompiler_new_listlayout.lo			\
+uicompiler_new_pagelayout.lo			\
 uicompiler_new_panelayout.lo			\
 uicompiler_new_standard_comboboxlayout.lo	\
 uicompiler_new_tablelayout.lo			\
 uicompiler_new_toolboxlayout.lo			\
+uicompiler_pagefactory.lo			\
+uicompiler_pagelayout.lo			\
 uicompiler_panefactory.lo			\
 uicompiler_panelayout.lo			\
 uicompiler_standard_comboboxlayout.lo		\

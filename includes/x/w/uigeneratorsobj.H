@@ -126,6 +126,12 @@ public:
 			   const_vector<itemlayoutmanager_generator>
 			   > itemlayoutmanager_generators;
 
+	//! Generators used by the page layout manager
+
+	std::unordered_map<std::string,
+			   const_vector<pagelayoutmanager_generator>
+			   > pagelayoutmanager_generators;
+
 	//! Generators used by the toolbox layout manager
 
 	std::unordered_map<std::string,
@@ -156,6 +162,11 @@ public:
 	std::unordered_map<std::string,
 			   const_vector<booklayoutmanager_generator>
 			   > booklayoutmanager_generators;
+
+	//! Generators used by the page factory
+	std::unordered_map<std::string,
+			   const_vector<pagefactory_generator>
+			   > pagefactory_generators;
 
 	//! Generators used by the book page factory
 	std::unordered_map<std::string,

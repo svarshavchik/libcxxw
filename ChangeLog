@@ -1,5 +1,10 @@
 2019-07-04  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Generate page containers using the theme file.
+
+	* Clean up <halign> and <valign> elements in theme files, removing
+	their redundant level.
+
 	* Generate toolbox containers using the theme file.
 
 2019-07-02  Sam Varshavchik  <mrsam@courier-mta.com>
