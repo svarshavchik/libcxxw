@@ -247,8 +247,7 @@ focusable_container new_itemlayoutmanager::create(const container_impl &parent)
 {
 	// The new container, and it's actual layout manager, the grid
 	// layout manager.
-	auto impl=ref<nonrecursive_visibilityObj<
-		container_elementObj<child_elementObj>>>::create
+	auto impl=ref<container_elementObj<child_elementObj>>::create
 		(parent,
 		 child_element_init_params{"background@libcxx.com",
 						   // The new container can be
