@@ -37,6 +37,16 @@ public:
 	//! Update the title
 
 	void update_title(ONLY IN_THREAD, const text_param &);
+
+	//! Implement generate()
+
+	//! \see uigenerators
+
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements) override;
+
+	using layoutmanagerObj::generate;
 };
 
 LIBCXXW_NAMESPACE_END

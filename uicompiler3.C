@@ -23,6 +23,7 @@
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
 #include "x/w/pagelayoutmanager.H"
+#include "x/w/borderlayoutmanager.H"
 #include "picture.H"
 #include "messages.H"
 #include "defaulttheme.H"
@@ -1023,6 +1024,14 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 					.emplace(id, ret);
 				continue;
 			}
+
+			if (type == "border")
+			{
+				auto ret=borderlayout_parseconfig(lock);
+				generators->borderlayoutmanager_generators
+					.emplace(id, ret);
+				continue;
+			}
 		}
 		else if (name == "factory")
 		{
@@ -1819,6 +1828,40 @@ uicompiler::lookup_bookpagefactory_generators(const theme_parser_lock &lock,
 	auto ret=bookpagefactory_parseconfig(new_lock);
 
 	generators->bookpagefactory_generators.emplace(name, ret);
+
+	return ret;
+}
+
+const_vector<borderlayoutmanager_generator>
+uicompiler::lookup_borderlayoutmanager_generators(const theme_parser_lock &lock,
+						  const std::string &name)
+{
+	{
+		auto iter=generators->borderlayoutmanager_generators.find(name);
+
+		if (iter != generators->borderlayoutmanager_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "layout"
+	    || iter->second->get_any_attribute("type") != "border")
+	{
+		throw EXCEPTION(gettextmsg(_("Border layout \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=borderlayout_parseconfig(new_lock);
+
+	generators->borderlayoutmanager_generators.emplace(name, ret);
 
 	return ret;
 }

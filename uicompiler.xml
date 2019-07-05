@@ -1821,6 +1821,34 @@ List of values:
     </function>
   </parser>
 
+  <!-- border layout manager parser -->
+
+  <parser>
+    <name>borderlayout</name>
+
+    <parameter>
+      <type>borderlayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>update_title</name>
+      <invoke>update_title</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>update_title</name>
+	<xpath>.</xpath>
+	<type>compiler.text_param_value</type>
+      </parameter>
+    </function>
+  </parser>
+
   <!-- page factory -->
 
   <parser>
@@ -3356,6 +3384,61 @@ List of values:
 	<name>default_width</name>
 	<xpath>.</xpath>
 	<type>to_size_t</type>
+      </parameter>
+    </function>
+  </parser>
+
+  <!-- new_borderlayoutmanager initialization -->
+
+  <parser>
+    <name>new_borderlayout</name>
+
+    <parameter>
+      <type>new_borderlayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>appearance</name>
+      <object>layout</object>
+      <invoke>appearance=</invoke>
+
+      <parameter>
+	<name>appearance</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.lookup_appearance&lt;const_frame_appearance&gt;</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>title</name>
+      <object>layout</object>
+      <invoke>title=</invoke>
+
+      <parameter>
+	<name>title</name>
+	<xpath>.</xpath>
+	<type>compiler.text_param_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>no_background</name>
+      <object>layout</object>
+      <invoke>no_background=</invoke>
+      <parameter>
+	<name>no_background</name>
+	<xpath>.</xpath>
+	<type>optional_constant&lt;true&gt;</type>
       </parameter>
     </function>
   </parser>

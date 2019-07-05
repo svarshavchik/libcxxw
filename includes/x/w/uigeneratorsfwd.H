@@ -25,6 +25,7 @@
 #include <x/w/pagelayoutmanagerfwd.H>
 #include <x/w/toolboxlayoutmanagerfwd.H>
 #include <x/w/toolboxfactoryfwd.H>
+#include <x/w/borderlayoutmanagerfwd.H>
 #include <x/w/uielementsfwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/functionalrefptrfwd.H>
@@ -152,6 +153,13 @@ typedef functionref<void (const panefactory &, uielements &)
 typedef functionref<void (const toolboxfactory &, uielements &)
 		    > toolboxfactory_generator;
 
+//! Generate something in the border layout manager
+
+//! \see uigenerators
+
+typedef functionref<void (const borderlayoutmanager &, uielements &)
+		    > borderlayoutmanager_generator;
+
 //! Pseudo-ref used to initialize a new_booklayoutmanager parameter
 
 typedef new_booklayoutmanager *new_booklayoutmanager_plainptr;
@@ -264,6 +272,17 @@ typedef new_toolboxlayoutmanager *new_toolboxlayoutmanager_plainptr;
 typedef functionref<void (const new_toolboxlayoutmanager_plainptr &layout,
 			  uielements &elements)
 		    > new_toolboxlayoutmanager_generator;
+
+//! Pseudo-ref used to initialize a new_borderlayoutmanager parameter
+
+typedef new_borderlayoutmanager *new_borderlayoutmanager_plainptr;
+
+//! Generate something to initialize a new_borderlayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_borderlayoutmanager_plainptr &layout,
+			  uielements &elements)
+		    > new_borderlayoutmanager_generator;
 
 class LIBCXX_PUBLIC uigeneratorsObj;
 class LIBCXX_PUBLIC uigeneratorsBase;

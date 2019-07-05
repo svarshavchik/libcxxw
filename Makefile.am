@@ -891,6 +891,7 @@ libcxxw_la_SOURCES=\
 	uicompiler2.C				    \
 	uicompiler3.C				    \
 	uicompiler_booklayout.C			    \
+	uicompiler_borderlayout.C		    \
 	uicompiler_bookpagefactory.C		    \
 	uicompiler_editable_comboboxlayout.C	    \
 	uicompiler_gridfactory.C		    \
@@ -900,6 +901,7 @@ libcxxw_la_SOURCES=\
 	uicompiler_menubarlayout.C		    \
 	uicompiler_standard_comboboxlayout.C	    \
 	uicompiler_new_booklayout.C		    \
+	uicompiler_new_borderlayout.C		    \
 	uicompiler_new_custom_comboboxlayout.C	    \
 	uicompiler_new_editable_comboboxlayout.C    \
 	uicompiler_new_itemlayout.C		    \
@@ -1355,6 +1357,7 @@ uicompiler.stamp.inc.H: uicompiler.xml parseuicompiler.xsl
 uicompiler.lo					\
 uicompiler_booklayout.lo			\
 uicompiler_bookpagefactory.lo			\
+uicompiler_borderlayout.lo			\
 uicompiler_editable_comboboxlayout.lo		\
 uicompiler_gridfactory.lo			\
 uicompiler_gridlayout.lo			\
@@ -1362,6 +1365,7 @@ uicompiler_itemlayout.lo			\
 uicompiler_listlayout.lo			\
 uicompiler_menubarlayout.lo			\
 uicompiler_new_booklayout.lo			\
+uicompiler_new_borderlayout.lo			\
 uicompiler_new_custom_comboboxlayout.lo		\
 uicompiler_new_editable_comboboxlayout.lo	\
 uicompiler_new_itemlayout.lo			\

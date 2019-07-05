@@ -1,5 +1,7 @@
 2019-07-04  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Generate border containers using the theme file.
+
 	* Generate page containers using the theme file.
 
 	* Clean up <halign> and <valign> elements in theme files, removing

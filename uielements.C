@@ -16,6 +16,7 @@
 #include "x/w/panelayoutmanager.H"
 #include "x/w/itemlayoutmanager.H"
 #include "x/w/pagelayoutmanager.H"
+#include "x/w/borderlayoutmanager.H"
 #include "x/w/toolboxlayoutmanager.H"
 #include "x/w/impl/container.H"
 #include "x/w/radio_group.H"
@@ -321,6 +322,26 @@ void menubarlayoutmanagerObj::generate(const std::string_view &name,
 		.find({name.begin(), name.end()});
 
 	if (iter == generators->menubarlayoutmanager_generators.end())
+	{
+		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
+					   name));
+	}
+
+	auto me=ref{this};
+
+	for (const auto &g:*iter->second)
+		g(me, elements);
+}
+
+void borderlayoutmanagerObj::generate(const std::string_view &name,
+				    const const_uigenerators &generators,
+				    uielements &elements)
+{
+	// TODO: C++20
+	auto iter=generators->borderlayoutmanager_generators.find({name.begin(),
+								   name.end()});
+
+	if (iter == generators->borderlayoutmanager_generators.end())
 	{
 		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
 					   name));

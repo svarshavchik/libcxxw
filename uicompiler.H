@@ -12,6 +12,7 @@
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/booklayoutmanagerfwd.H"
 #include "x/w/bookpagefactoryfwd.H"
+#include "x/w/borderlayoutmanagerfwd.H"
 #include "x/w/pagefactoryfwd.H"
 #include "x/w/factoryfwd.H"
 #include "x/w/uielementsfwd.H"
@@ -182,6 +183,10 @@ public:
 	vector<listlayoutmanager_generator
 	       > listlayout_parseconfig(const theme_parser_lock &lock);
 
+	//! Parser for border layout manager generator.
+	vector<borderlayoutmanager_generator
+	       > borderlayout_parseconfig(const theme_parser_lock &lock);
+
 	//! Parser for menu bar layout manager generator.
 	vector<menubarlayoutmanager_generator
 	       > menubarlayout_parseconfig(const theme_parser_lock &lock);
@@ -283,6 +288,11 @@ public:
 
 	vector<new_toolboxlayoutmanager_generator
 	       > new_toolboxlayout_parseconfig(const theme_parser_lock &lock);
+
+	//! Parser for the new border layout manager generator
+
+	vector<new_borderlayoutmanager_generator
+	       > new_borderlayout_parseconfig(const theme_parser_lock &lock);
 private:
 	//! Implement <element>
 
@@ -360,6 +370,10 @@ private:
 	bookpagefactory_generator
 	bookpagefactory_parser(const theme_parser_lock &lock);
 
+	//! Generate a single border layout manager instruction.
+	borderlayoutmanager_generator
+	borderlayout_parser(const theme_parser_lock &lock);
+
 	//! Generate a single new_booklayoutmanager instruction.
 	new_booklayoutmanager_generator
 	new_booklayout_parser(const theme_parser_lock &lock);
@@ -400,6 +414,9 @@ private:
 	new_toolboxlayoutmanager_generator
 	new_toolboxlayout_parser(const theme_parser_lock &lock);
 
+	//! Generate a single new_borderlayoutmanager instruction.
+	new_borderlayoutmanager_generator
+	new_borderlayout_parser(const theme_parser_lock &lock);
 public:
 	//! Return compiled grid factory generators.
 
@@ -562,6 +579,16 @@ public:
 	const_vector<toolboxlayoutmanager_generator>
 	lookup_toolboxlayoutmanager_generators(const theme_parser_lock &lock,
 					    const std::string &);
+
+	//! Return compiled border layout manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into borderlayoutmanager_generators, and return them.
+
+	const_vector<borderlayoutmanager_generator>
+	lookup_borderlayoutmanager_generators(const theme_parser_lock &lock,
+					      const std::string &);
 
 	//! Return compiled pane factory manager generators.
 
@@ -750,6 +777,10 @@ private:
 
 	struct toolboxlayoutmanager_functions;
 
+	//! Supported border layout manager functionality.
+
+	struct borderlayoutmanager_functions;
+
 	//! All supported layout manager funcitonality.
 
 	typedef std::variant<gridlayoutmanager_functions,
@@ -761,6 +792,7 @@ private:
 			     itemlayoutmanager_functions,
 			     pagelayoutmanager_functions,
 			     toolboxlayoutmanager_functions,
+			     borderlayoutmanager_functions,
 			     booklayoutmanager_functions
 			     > layoutmanager_functions;
 

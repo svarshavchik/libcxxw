@@ -163,6 +163,11 @@ public:
 			   const_vector<booklayoutmanager_generator>
 			   > booklayoutmanager_generators;
 
+	//! Generators used by the border layout manager
+	std::unordered_map<std::string,
+			   const_vector<borderlayoutmanager_generator>
+			   > borderlayoutmanager_generators;
+
 	//! Generators used by the page factory
 	std::unordered_map<std::string,
 			   const_vector<pagefactory_generator>

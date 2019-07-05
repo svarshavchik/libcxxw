@@ -15,8 +15,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_PUBLIC new_borderlayoutmanager;
-
 /*!
 Border layout manager properties.
 

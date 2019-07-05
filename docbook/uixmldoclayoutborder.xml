@@ -1,0 +1,122 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="uixmllayoutborder">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>border</quote>
+    <tag class='element'>layout</tag>s
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout type="border" id="application-options">
+
+  <!-- ... -->
+
+</layout>
+
+<!-- in some factory... -->
+
+<container>
+  <name>application-options</name>
+  <type>border</type>
+  <config>
+    <title type='theme_text'>Options</title>
+  </config>
+  <contents>
+    <container>
+      <name>options</name>
+      <type>grid</type>
+    </container>
+  </contents>
+  </context>
+</container>]]>
+
+&ns;::w::borderlayoutmanager glm=container->get_layoutmanager();
+
+glm->generate("application-options", generator, elements);</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>layout</tag>s of
+    <tag class='attribute'>type</tag>=<quote>border</quote>
+    specify the methods invoked by <link linkend="borderlayoutmanager">border
+      layout manager</link>'s <methodname>generate</methodname>().
+  </para>
+
+  <section id="uixmllayoutbordercreatecontainer">
+    <title>Creating
+      <tag class='attribute'>type</tag>=<quote>border</quote>
+      <tag class='element'>layout</tag>s</title>
+
+    <para>
+      A <tag class='element'>container</tag> with a
+      <tag class='attribute'>type</tag>=<quote>border</quote>
+      creates a container that uses the
+      <link linkend="borderlayoutmanager">border layout manager</link>.
+    </para>
+
+    <para>
+      The required <tag class='element'>contents</tag> element
+      contains any valid &themewidget;. This generates the contents of the
+      border container, and it typically contains a
+      &themecontainer;.
+    </para>
+
+    <para>
+      An optional
+      <tag class='element'>config</tag> element sets non-default values
+      of the
+      <ulink url="&link-x--w--new-borderlayoutmanager;"><classname>&ns;::w::new_borderlayoutmanager</classname></ulink>
+      that creates the container:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><tag class='element'>appearance</tag></term>
+	<listitem>
+	  <para>
+	    Sets the border layout manager's
+	    <link linkend="uixmlappearance"><varname>appearance</varname></link>
+	    object.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='element'>title</tag></term>
+	<listitem>
+	  <para>
+	    Sets the optional
+	    <varname>title</varname>.
+	    The contents of this element is a &text_paramvalue;.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><tag class='emptytag'>no_background</tag></term>
+	<listitem>
+	  <para>
+	    Sets the <varname>no_background</varname> to
+	    <literal>true</literal>.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

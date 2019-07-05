@@ -25,6 +25,7 @@
 #include "x/w/synchronized_axis.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
+#include "x/w/borderlayoutmanager.H"
 #include "x/w/shortcut.H"
 #include "x/w/border_arg.H"
 #include "x/w/text_param.H"
@@ -173,7 +174,7 @@ struct generators_base {
 	generators_base(const std::string &name) : name{name} {}
 
 	layoutmanager get_new_layoutmanager(const container &new_container,
-					uielements &elements) const
+					    uielements &elements) const
 	{
 		auto lm=new_container->get_layoutmanager();
 
@@ -1104,7 +1105,7 @@ struct uicompiler::booklayoutmanager_functions {
 		{
 		        auto nblm=new_layoutmanager(factories);
 
-			// Generate the contents of the new_listlayoutmanager.
+			// Generate the contents of the new_booklayoutmanager.
 
 			for (const auto &g:*new_booklayoutmanager_vector)
 			{
@@ -1130,6 +1131,119 @@ struct uicompiler::booklayoutmanager_functions {
 			      uielements &factories) const
 		{
 			booklayoutmanager blm=
+				get_new_layoutmanager(c, factories);
+
+			for (const auto &g:*generator_vector)
+			{
+				g(blm, factories);
+			}
+		}
+	};
+};
+
+// Border layout manager functionality
+// Parse generators for the contents of a new_listlayoutmanager
+
+static const_vector<new_borderlayoutmanager_generator>
+create_newborderlayoutmanager_vector(uicompiler &compiler,
+				   const theme_parser_lock &orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	auto xpath=lock->get_xpath("config");
+
+	if (xpath->count() == 0) // None, return an empty vector.
+		return const_vector<new_borderlayoutmanager_generator>::create();
+
+	xpath->to_node();
+
+	return compiler.new_borderlayout_parseconfig(lock);
+}
+
+// Parse the generator for the border's contents.
+
+static const_vector<factory_generator>
+create_border_contents_generators(uicompiler &compiler,
+				  const theme_parser_lock &orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	lock->get_xpath("contents")->to_node();
+
+	return compiler.factory_parseconfig(lock);
+}
+
+struct uicompiler::borderlayoutmanager_functions {
+
+	// A vector of compiler border layout manager generators
+
+	struct generators : generators_base {
+
+		// Generators for the contents of the new_borderlayoutmanager
+
+		const_vector<new_borderlayoutmanager_generator
+			     > new_borderlayoutmanager_vector;
+
+		const_vector<factory_generator> contents_generator_vector;
+
+		const_vector<borderlayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const theme_parser_lock &lock,
+			   const std::string &name)
+			: generators_base{name},
+			  new_borderlayoutmanager_vector
+			{
+			 create_newborderlayoutmanager_vector(compiler, lock)
+			},
+			  contents_generator_vector
+			{
+			 create_border_contents_generators(compiler, lock)
+			},
+			  generator_vector{compiler
+					   .lookup_borderlayoutmanager_generators
+					   (lock, name)}
+		{
+		}
+
+		container create_container(const factory &f,
+					   uielements &factories)
+			const
+		{
+		        auto nblm=new_layoutmanager(factories);
+
+			// Generate the contents of the new_borderlayoutmanager.
+
+			for (const auto &g:*new_borderlayoutmanager_vector)
+			{
+				g(&nblm, factories);
+			}
+
+			return f->create_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 nblm);
+		}
+
+		inline new_borderlayoutmanager new_layoutmanager(uielements &e)
+			const
+		{
+			return {[&, this]
+				(const factory &f)
+				{
+					for (const auto &g:
+						     *contents_generator_vector)
+						g(f, e);
+				}};
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			borderlayoutmanager blm=
 				get_new_layoutmanager(c, factories);
 
 			for (const auto &g:*generator_vector)
@@ -1265,6 +1379,12 @@ uicompiler::get_layoutmanager(const std::string &type)
 		return layoutmanager_functions{
 			std::in_place_type_t<toolboxlayoutmanager_functions>{}
 		};
+
+	if (type == "border")
+		return layoutmanager_functions{
+			std::in_place_type_t<borderlayoutmanager_functions>{}
+		};
+
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a known layout/container"),
 				   type));
 }

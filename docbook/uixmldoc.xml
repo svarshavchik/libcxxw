@@ -1694,8 +1694,11 @@ layout->generate("main-window-grid",
   </section>
 
   &uixmllayoutbook;
-  &uixmlbooklayoutelements;
+  &uixmllayoutbookelements;
   &uixmlfactorybook;
+
+  &uixmllayoutborder;
+  &uixmllayoutborderelements;
 
   &uixmllayoutcombobox;
   &uixmllayoutcomboboxelements;

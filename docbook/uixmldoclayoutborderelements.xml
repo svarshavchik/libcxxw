@@ -1,0 +1,37 @@
+<!--
+
+Copyright 2019 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+<section id="uixmlborderlayoutelements">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>border</quote>
+    <tag class='element'>layout</tag>
+    elements</title>
+
+  <section id="uixmllayoutborderupdate_title">
+    <title><tag class='element'>update_tiele</tag></title>
+
+    <para>
+      This is equivalent to invoking the
+      <ulink url="&link-typedef-x--w-borderlayoutmanager;"><classname>&ns;::w::borderlayoutmanager</classname></ulink>'s
+      <methodname>update_title</methodname>() method:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<update_title type='theme_text'>Dolor Sit Amet</update_title>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->
