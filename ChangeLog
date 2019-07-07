@@ -1,3 +1,9 @@
+0.25
+
+2019-07-07  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Fix menu popup visibility.
+
 2019-07-05  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Add creators lambda map to uielements.
