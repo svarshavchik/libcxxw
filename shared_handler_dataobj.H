@@ -163,6 +163,9 @@ public:
 
 	//! A dialog is being closed
 	void closing_dialog(ONLY IN_THREAD);
+
+	//! Whether any menu popups are opened
+	bool any_menu_popups_opened(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

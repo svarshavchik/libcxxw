@@ -47,6 +47,19 @@ class LIBCXX_HIDDEN menubar_hotspot_implObj
 	//! a menu popup.
 
 	bool focus_autorestorable(ONLY IN_THREAD) override;
+
+	//! Override pointer_focus
+
+	void pointer_focus(ONLY IN_THREAD,
+			   const callback_trigger_t &trigger) override;
+ private:
+
+	//! Most recent pointer focus status.
+
+	//! Used by the overridden pointer_focus() to detect when pointer
+	//! entered this menu button.
+
+	bool previous_pointer_focus=false;
 };
 
 LIBCXXW_NAMESPACE_END

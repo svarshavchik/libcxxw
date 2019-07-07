@@ -433,6 +433,20 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 				::base::submenu_theme(),
 			},
 			"Recent",
+
+
+			LIBCXX_NAMESPACE::w::submenu{
+				[](const LIBCXX_NAMESPACE::w::listlayoutmanager
+				   &m)
+				{
+					m->append_items({"Lorem",
+							 "Ipsum",
+							 "Dolor",
+							 "Sit",
+							 "Amet"});
+				}},
+			"Another submenu",
+
 			[=](THREAD_CALLBACK, const auto &ignore)
 			{
 				std::cout << "File->Quit selected" << std::endl;

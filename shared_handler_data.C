@@ -101,7 +101,13 @@ ref<obj> shared_handler_dataObj
 	auto nesting_level=popup->nesting_level;
 
 	hide_menu_popups_until(IN_THREAD,
-			       opened_menu_popups->lower_bound(nesting_level));
+			       // Note that the map uses a std::greater
+			       // comparator. So, the map is ordered from
+			       // the higher nesting level to the lowest, so
+			       // we're going to close all higher-nested popups
+			       // up to an including any other popup on the
+			       // same nesting level.
+			       opened_menu_popups->upper_bound(nesting_level));
 
 	opened_menu_popups->insert(nesting_level, mcguffin);
 
@@ -113,7 +119,27 @@ void shared_handler_dataObj
 		     const popupObj::handlerObj &popup)
 {
 	hide_menu_popups_until(IN_THREAD, opened_menu_popups
-			       ->lower_bound(popup.nesting_level));
+			       // Close all higher-nested popups, in addition
+			       // to this one. See the above comment for the
+			       // reason to use upper_bound(). Now, we
+			       // specifically don't want to include this
+			       // menu popup, by specifying popup.nesting_level.
+			       //
+			       // This is because this popup can be closing
+			       // because of another popup with the same
+			       // nesting level getting opened (this popup's
+			       // peer, a submenu of the same parent popup
+			       // menu). So, if we lazily specified this
+			       // popup's nesting level here, we'll be closing
+			       // that other popup too, because it is already
+			       // open by now. The sequence of events:
+			       //
+			       // 1. Cousin popup gets opened, it calls
+			       // opening_menu_popup, which closes this one.
+			       //
+			       // 2. We get here, the other popup is already
+			       // open.
+			       ->upper_bound(popup.nesting_level+1));
 }
 
 void shared_handler_dataObj::close_all_menu_popups(ONLY IN_THREAD)
@@ -382,6 +408,11 @@ void shared_handler_dataObj::opening_dialog(ONLY IN_THREAD)
 
 void shared_handler_dataObj::closing_dialog(ONLY IN_THREAD)
 {
+}
+
+bool shared_handler_dataObj::any_menu_popups_opened(ONLY IN_THREAD)
+{
+	return !opened_menu_popups->empty();
 }
 
 LIBCXXW_NAMESPACE_END
