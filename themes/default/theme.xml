@@ -3040,10 +3040,23 @@ first column, to make the labels line up with their input fields.
       <label type='theme_text'>${context:print-dialog}Printer:</label>
     </element>
 
-    <element>
+    <container>
+      <type>list</type>
       <name>select-printer-field</name>
-    </element>
+      <creator>select-printer-field</creator>
+      <style>highlight</style>
+
+      <config>
+	<selection_type>single</selection_type>
+	<height>
+	  <min_rows>4</min_rows>
+	  <max_rows>4</max_rows>
+	</height>
+      </config>
+    </container>
   </factory>
+
+  <layout id="select-printer-field" type="list" />
 
   <!--
       Currently selected printer info label, below the print selection combo
@@ -3194,10 +3207,16 @@ first column, to make the labels line up with their input fields.
 
     <valign>middle</valign>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>page-size-field</name>
-    </element>
+      <config>
+	<optional />
+      </config>
+    </container>
   </factory>
+
+  <layout id="page-size-field" type="standard_combobox" />
 
   <factory type="grid" id="print-dialog-duplex">
     <halign>right</halign>
@@ -3210,10 +3229,16 @@ first column, to make the labels line up with their input fields.
 
     <valign>middle</valign>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>duplex-field</name>
-    </element>
+      <config>
+	<optional />
+      </config>
+    </container>
   </factory>
+
+  <layout id="duplex-field" type="standard_combobox" />
 
   <factory type="grid" id="print-dialog-pages-per-side">
     <halign>right</halign>
@@ -3226,10 +3251,16 @@ first column, to make the labels line up with their input fields.
 
     <valign>middle</valign>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>pages-per-side-field</name>
-    </element>
+      <config>
+	<optional />
+      </config>
+    </container>
   </factory>
+
+  <layout id="pages-per-side-field" type="standard_combobox" />
 
   <factory type="grid" id="print-dialog-orientation-requested">
     <halign>right</halign>
@@ -3242,10 +3273,16 @@ first column, to make the labels line up with their input fields.
 
     <valign>middle</valign>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>orientation-field</name>
-    </element>
+      <config>
+	<optional />
+      </config>
+    </container>
   </factory>
+
+  <layout id="orientation-field" type="standard_combobox" />
 
   <!-- Finishings label and input field row -->
 
@@ -3260,10 +3297,16 @@ first column, to make the labels line up with their input fields.
 
     <valign>middle</valign>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>finishings-field</name>
-    </element>
+      <config>
+	<optional />
+      </config>
+    </container>
   </factory>
+
+  <layout id="finishings-field" type="standard_combobox" />
 
   <!-- Print color mode label and input field row -->
 
@@ -3278,10 +3321,16 @@ first column, to make the labels line up with their input fields.
 
     <valign>middle</valign>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>print-color-mode-field</name>
-    </element>
+      <config>
+	<optional />
+      </config>
+    </container>
   </factory>
+
+  <layout id="print-color-mode-field" type="standard_combobox" />
 
   <!-- Print quality label and input field row -->
 
@@ -3296,10 +3345,16 @@ first column, to make the labels line up with their input fields.
 
     <valign>middle</valign>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>print-quality-field</name>
-    </element>
+      <config>
+	<optional />
+      </config>
+    </container>
   </factory>
+
+  <layout id="print-quality-field" type="standard_combobox" />
 
   <!-- Printer resolution label and input field row -->
 
@@ -3314,10 +3369,16 @@ first column, to make the labels line up with their input fields.
 
     <valign>middle</valign>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>printer-resolution-field</name>
-    </element>
+      <config>
+	<optional />
+      </config>
+    </container>
   </factory>
+
+  <layout id="printer-resolution-field" type="standard_combobox" />
 
   <font id="printer_local_font" from="sans_serif" />
 

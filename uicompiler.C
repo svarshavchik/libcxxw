@@ -169,9 +169,13 @@ namespace {
 
 struct generators_base {
 
+	std::string creator;
 	std::string name;
 
-	generators_base(const std::string &name) : name{name} {}
+	generators_base(const theme_parser_lock &lock,
+			const std::string &name)
+		: creator{optional_value(lock, "creator", "container")},
+		  name{name} {}
 
 	layoutmanager get_new_layoutmanager(const container &new_container,
 					    uielements &elements) const
@@ -180,6 +184,18 @@ struct generators_base {
 
 		elements.new_layoutmanagers.emplace(name, lm);
 
+		if (!creator.empty())
+		{
+			auto iter=elements.creators.find(creator);
+
+			if (iter == elements.creators.end())
+				throw EXCEPTION(gettextmsg
+						(_("Container creator \"%1%\" "
+						   "was not found"),
+						 creator));
+
+			iter->second(new_container, lm);
+		}
 		return lm;
 	}
 };
@@ -202,7 +218,7 @@ struct uicompiler::gridlayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  generator_vector{compiler
 					   .lookup_gridlayoutmanager_generators
 					   (lock, name)}
@@ -278,7 +294,7 @@ struct uicompiler::listlayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  style{single_value_exists(lock, "style")
 				? list_style_by_name(lowercase_single_value
 						     (lock, "style",
@@ -404,7 +420,7 @@ struct uicompiler::tablelayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  style{single_value_exists(lock, "style")
 				? list_style_by_name(lowercase_single_value
 						     (lock, "style",
@@ -528,7 +544,7 @@ struct uicompiler::panelayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  new_panelayoutmanager_vector
 			{
 			 create_newpanelayoutmanager_vector(compiler, lock)
@@ -622,7 +638,7 @@ struct uicompiler::itemlayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  new_itemlayoutmanager_vector
 			{
 			 create_newitemlayoutmanager_vector(compiler, lock)
@@ -715,7 +731,7 @@ struct uicompiler::pagelayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  new_pagelayoutmanager_vector
 			{
 			 create_newpagelayoutmanager_vector(compiler, lock)
@@ -808,7 +824,7 @@ struct uicompiler::toolboxlayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  new_toolboxlayoutmanager_vector
 			{
 			 create_newtoolboxlayoutmanager_vector(compiler, lock)
@@ -906,7 +922,7 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  new_standard_comboboxlayoutmanager_vector
 			{
 			 create_newstandard_comboboxlayoutmanager_vector(compiler, lock)
@@ -998,7 +1014,7 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  new_editable_comboboxlayoutmanager_vector
 			{
 			 create_neweditable_comboboxlayoutmanager_vector(compiler, lock)
@@ -1088,7 +1104,7 @@ struct uicompiler::booklayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  new_booklayoutmanager_vector
 			{
 			 create_newbooklayoutmanager_vector(compiler, lock)
@@ -1191,7 +1207,7 @@ struct uicompiler::borderlayoutmanager_functions {
 		generators(uicompiler &compiler,
 			   const theme_parser_lock &lock,
 			   const std::string &name)
-			: generators_base{name},
+			: generators_base{lock, name},
 			  new_borderlayoutmanager_vector
 			{
 			 create_newborderlayoutmanager_vector(compiler, lock)

@@ -77,6 +77,7 @@ See COPYING for distribution information.
 <container>
   <name>option-list</name>
   <type>list</type>
+  <style>bullet</style>
   <config>
     <height>
       <min_rows>4</min_rows>
@@ -87,6 +88,20 @@ See COPYING for distribution information.
       </informalexample>
     </blockquote>
 
+    <para>
+      The optional
+      <tag class='element'>style</tag>'s value is
+      <quote>highlight</quote> (default) or <quote>bullet</quote>.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<config>
+  <selection_type>multiple</selection_type>
+</config>]]></programlisting>
+      </informalexample>
+    </blockquote>
 
     <para>
       An optional

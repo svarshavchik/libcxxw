@@ -25,7 +25,7 @@ LIBCXXW_NAMESPACE_START
 Passed to a supported layout manager's generate(), to
 \ref uigenerators "generate the contents of the container from an XML template".
 
-The widgets get created from the template. The first element of this object
+The widgets get created from the template. The first member of this object
 is a map for custom widget factories.
 The key is the custom \<element>'s \<name> from the
 XML template. The value is a lambda, or a callable object. \<element>
@@ -63,16 +63,27 @@ In the XML template, an
 
 results in the corresponding lambda getting invoked.
 
+The second member of this object is a map for custom layout manager
+
 */
 
 struct uielements {
 
-	//! Generators for new widgets.
+	//! Generators for factories
 
 	//! Referenced by name, from the template.
 
 	std::unordered_map<std::string,
 			   functionref<void (const factory &)>> factories;
+
+	//! Custom creators for new containers.
+
+	//! Referenced by name, from the template.
+
+	std::unordered_map<std::string,
+			   functionref<void (const container &,
+					     const layoutmanager &)>
+			   > creators;
 
 	//! The new elements that get created
 

@@ -40,9 +40,9 @@
 <!ENTITY supportedthemewidget "<link linkend='uixmlfactoryelement'>supported theme widget</link>">
 <!ENTITY template_mixin "<link linkend='mixintemplates'>template mixin</link>">
 <!ENTITY text_paramvalue "<link linkend='uixmltext_paramvalue'><classname>&ns;::w::text_param</classname></link> value">
-<!ENTITY themecontainer "<link linkend='uixmlfactoryelement'>theme container</link>">
+<!ENTITY themecontainer "<link linkend='uixmlfactorycontainer'>theme container</link>">
 <!ENTITY themewidget "<link linkend='uixmlfactoryelement'>theme widget</link>">
-<!ENTITY themewidgetorcontainer "<link linkend='uixmlfactoryelement'>theme widget or container</link>">
+<!ENTITY themewidgetorcontainer "theme <link linkend='uixmlfactoryelement'>widget</link> or <link linkend='uixmlfactorycontainer'>container</link>">
 <!ENTITY valignvalue "<link linkend='uixmlvalignvalue'><classname>&ns;::w::valign</classname></link> value">
 <!ENTITY xproto "<ulink url=&#34;http://www.x.org/releases/X11R7.7/doc/xproto/x11protocol.html&#34;>X protocol</ulink>">
 

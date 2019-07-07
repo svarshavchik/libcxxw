@@ -55,6 +55,7 @@ See COPYING for distribution information.
 <container>
   <name>option-table</name>
   <type>table</type>
+  <style>highlight</style>
   <config>
     <columns>2</columns>
   </config>
@@ -71,6 +72,12 @@ See COPYING for distribution information.
 </container>]]></programlisting>
       </informalexample>
     </blockquote>
+
+    <para>
+      The optional
+      <tag class='element'>style</tag>'s value is
+      <quote>highlight</quote> (default) or <quote>bullet</quote>.
+    </para>
 
     <para>
       The

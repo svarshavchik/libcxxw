@@ -167,148 +167,6 @@ standard_dialog_elements_t print_dialog_init_helper
 		  const ref<print_dialog_parentObj> &parent)
 {
 	return {
-		{"select-printer-field",
-				[&, this]
-				(const auto &factory)
-				{
-					new_listlayoutmanager nlm{
-						highlighted_list};
-
-					nlm.selection_type=
-						single_selection_type;
-
-					nlm.selection_changed=
-						[parent](THREAD_CALLBACK,
-							 const auto &info)
-						{
-							parent->printer_selected
-								(info);
-						};
-
-					nlm.appearance=conf.appearance
-						->printer_field_appearance;
-
-					nlm.height(4);
-
-					auto f=factory
-						->create_focusable_container
-						([](const auto &){}, nlm);
-
-					fields.selected_printer=f;
-				}},
-		{"orientation-field",
-				[&, this]
-				(const auto &factory)
-				{
-					new_standard_comboboxlayoutmanager nlm;
-
-					nlm.selection_required=false;
-					nlm.appearance=conf.appearance
-						->orientation_appearance;
-					auto f=factory
-						->create_focusable_container
-						([](const auto &){}, nlm);
-					fields.orientation_requested=f;
-				}},
-		{"duplex-field",
-				[&, this]
-				(const auto &factory)
-				{
-					new_standard_comboboxlayoutmanager nlm;
-
-					nlm.selection_required=false;
-					nlm.appearance=conf.appearance
-						->duplex_appearance;
-					auto f=factory
-						->create_focusable_container
-						([](const auto &){}, nlm);
-					fields.sides=f;
-				}},
-		{"pages-per-side-field",
-				[&, this]
-				(const auto &factory)
-				{
-					new_standard_comboboxlayoutmanager nlm;
-
-					nlm.selection_required=false;
-					nlm.appearance=conf.appearance
-						->pages_per_side_appearance;
-					auto f=factory
-						->create_focusable_container
-						([](const auto &){}, nlm);
-					fields.number_up=f;
-				}},
-		{"page-size-field",
-				[&, this]
-				(const auto &factory)
-				{
-					new_standard_comboboxlayoutmanager nlm;
-
-					nlm.selection_required=false;
-					nlm.appearance=conf.appearance
-						->page_size_appearance;
-
-					auto f=factory
-						->create_focusable_container
-						([](const auto &){}, nlm);
-					fields.page_size=f;
-				}},
-		{"finishings-field",
-				[&, this]
-				(const auto &factory)
-				{
-					new_standard_comboboxlayoutmanager nlm;
-
-					nlm.selection_required=false;
-					nlm.appearance=conf.appearance
-						->finishings_appearance;
-					auto f=factory
-						->create_focusable_container
-						([](const auto &){}, nlm);
-					fields.finishings=f;
-				}},
-		{"print-color-mode-field",
-				[&, this]
-				(const auto &factory)
-				{
-					new_standard_comboboxlayoutmanager nlm;
-
-					nlm.selection_required=false;
-					nlm.appearance=conf.appearance
-						->print_color_mode_appearance;
-					auto f=factory
-						->create_focusable_container
-						([](const auto &){}, nlm);
-					fields.print_color_mode=f;
-				}},
-		{"print-quality-field",
-				[&, this]
-				(const auto &factory)
-				{
-					new_standard_comboboxlayoutmanager nlm;
-
-					nlm.selection_required=false;
-					nlm.appearance=conf.appearance
-						->print_quality_appearance;
-					auto f=factory
-						->create_focusable_container
-						([](const auto &){}, nlm);
-					fields.print_quality=f;
-				}},
-		{"printer-resolution-field",
-				[&, this]
-				(const auto &factory)
-				{
-					new_standard_comboboxlayoutmanager nlm;
-
-					nlm.selection_required=false;
-					nlm.appearance=conf.appearance
-						->printer_resolution_appearance;
-					auto f=factory
-						->create_focusable_container
-						([](const auto &){}, nlm);
-					fields.printer_resolution=f;
-				}},
 		{"ok", dialog_ok_button(_("Print"), fields.ok_button, '\n')},
 		{"cancel", dialog_cancel_button(_("Cancel"),
 						fields.cancel_button,
@@ -354,7 +212,50 @@ print_dialog main_windowObj
 								future_parent)
 			 };
 
+			 tmpl.creators.emplace
+				 ("select-printer-field",
+				  [parent=future_parent]
+				  (const auto &,
+				   const listlayoutmanager &lm)
+				  {
+					  lm->on_selection_changed
+						  ([=]
+						   (THREAD_CALLBACK,
+						    const auto &info)
+						   {
+							   parent->printer_selected
+								   (info);
+						   });
+				  });
+
 			 args.dialog_window->generate("print-dialog", tmpl);
+
+			 helper.fields.selected_printer=
+				 tmpl.get_element("select-printer-field");
+
+			 helper.fields.orientation_requested=
+				 tmpl.get_element("orientation-field");
+
+			 helper.fields.sides=
+				 tmpl.get_element("duplex-field");
+
+			 helper.fields.number_up=
+				 tmpl.get_element("pages-per-side-field");
+
+			 helper.fields.page_size=
+				 tmpl.get_element("page-size-field");
+
+			 helper.fields.finishings=
+				 tmpl.get_element("finishings-field");
+
+			 helper.fields.print_color_mode=
+				 tmpl.get_element("print-color-mode-field");
+
+			 helper.fields.print_quality=
+				 tmpl.get_element("print-quality-field");
+
+			 helper.fields.printer_resolution=
+				 tmpl.get_element("printer-resolution-field");
 
 			 helper.fields.printer_info=
 				 tmpl.get_element("printer-info");
