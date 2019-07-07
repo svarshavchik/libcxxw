@@ -39,41 +39,6 @@ Border around the font preview box
     <type>border_arg</type>
   </field>
   <field>
-    <name>font_family_appearance</name>
-    <descr><![CDATA[
-Combo-box appearance
-]]></descr>
-    <ref>combobox</ref>
-  </field>
-  <field>
-    <name>font_size_appearance</name>
-    <descr><![CDATA[
-Combo-box appearance
-]]></descr>
-    <ref>combobox</ref>
-  </field>
-  <field>
-    <name>font_weight_appearance</name>
-    <descr><![CDATA[
-Combo-box appearance
-]]></descr>
-    <ref>combobox</ref>
-  </field>
-  <field>
-    <name>font_slant_appearance</name>
-    <descr><![CDATA[
-Combo-box appearance
-]]></descr>
-    <ref>combobox</ref>
-  </field>
-  <field>
-    <name>font_width_appearance</name>
-    <descr><![CDATA[
-Combo-box appearance
-]]></descr>
-    <ref>combobox</ref>
-  </field>
-  <field>
     <name>unsupported_option_color</name>
     <descr><![CDATA[
 Color for an unsupported font option, in one of the combo-boxes.

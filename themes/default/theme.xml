@@ -3527,10 +3527,13 @@ first column, to make the labels line up with their input fields.
       <label type='theme_text'>${context:font-picker}Font:</label>
     </element>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>font-family-combobox</name>
-    </element>
+    </container>
   </factory>
+
+  <layout id="font-family-combobox" type="standard_combobox" />
 
   <factory type="grid" id="font-picker-popup-font-size-row">
     <halign>right</halign>
@@ -3539,10 +3542,13 @@ first column, to make the labels line up with their input fields.
       <label type='theme_text'>${context:font-picker}Size:</label>
     </element>
 
-    <element>
+    <container>
+      <type>editable_combobox</type>
       <name>font-size-combobox</name>
-    </element>
+    </container>
   </factory>
+
+  <layout id="font-size-combobox" type="editable_combobox" />
 
   <factory type="grid" id="font-picker-popup-font-preview-row">
     <halign>center</halign>
@@ -3601,30 +3607,48 @@ first column, to make the labels line up with their input fields.
       <label type='theme_text'>${context:font-picker}Font Weight:</label>
     </element>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>font-weight-combobox</name>
-    </element>
+      <config>
+	<synchronized_columns>font-options</synchronized_columns>
+      </config>
+    </container>
   </factory>
+
+  <layout id="font-weight-combobox" type="standard_combobox" />
 
   <factory type="grid" id="font-picker-popup-font-slant-row">
     <element id="font-slant-label">
       <label type='theme_text'>${context:font-picker}Font Slant:</label>
     </element>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>font-slant-combobox</name>
-    </element>
+      <config>
+	<synchronized_columns>font-options</synchronized_columns>
+      </config>
+    </container>
   </factory>
+
+  <layout id="font-slant-combobox" type="standard_combobox" />
 
   <factory type="grid" id="font-picker-popup-font-width-row">
     <element id="font-width-label">
       <label type='theme_text'>${context:font-picker}Font Width:</label>
     </element>
 
-    <element>
+    <container>
+      <type>standard_combobox</type>
       <name>font-width-combobox</name>
-    </element>
+      <config>
+	<synchronized_columns>font-options</synchronized_columns>
+      </config>
+    </container>
   </factory>
+
+  <layout id="font-width-combobox" type="standard_combobox" />
 
   <!--
       The error row.

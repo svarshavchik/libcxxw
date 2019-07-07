@@ -417,69 +417,7 @@ standard_dialog_elements_t font_picker_init_helper
 		{"cancel", dialog_cancel_button(config.cancel_label,
 						cancel_button,
 						'\e')},
-
-		{"font-family-combobox",
-		 [&, this](const auto &f)
-		 {
-			 new_standard_comboboxlayoutmanager lm;
-
-			 lm.appearance=
-				 config.appearance->font_family_appearance;
-			 font_family=f->create_focusable_container
-				 ([](const auto &){},
-				  lm);
-		 }},
-
-		{"font-size-combobox",
-		 [&, this](const auto &f)
-		 {
-			 new_editable_comboboxlayoutmanager lm;
-
-			 lm.appearance=
-				 config.appearance->font_size_appearance;
-			 font_size=f->create_focusable_container
-				 ([](const auto &){}, lm);
-		 }},
-
-		{"font-weight-combobox",
-		 [&, same_width, this](const auto &f)
-		 {
-			 new_standard_comboboxlayoutmanager lm;
-
-			 lm.synchronized_columns=same_width;
-
-			 lm.appearance=
-				 config.appearance->font_weight_appearance;
-			 font_weight=f->create_focusable_container
-				 ([](const auto &){}, lm);
-		 }},
-
-		{"font-slant-combobox",
-		 [&, same_width, this](const auto &f)
-		 {
-			 new_standard_comboboxlayoutmanager lm;
-
-			 lm.synchronized_columns=same_width;
-			 lm.appearance=
-				 config.appearance->font_slant_appearance;
-
-			 font_slant=f->create_focusable_container
-				 ([](const auto &){}, lm);
-		 }},
-
-		{"font-width-combobox",
-		 [&, same_width, this](const auto &f)
-		 {
-			 new_standard_comboboxlayoutmanager lm;
-
-			 lm.synchronized_columns=same_width;
-			 lm.appearance=
-				 config.appearance->font_width_appearance;
-
-			 font_width=f->create_focusable_container
-				 ([](const auto &){}, lm);
-		 }},
-		{"font-preview", [&, same_width, this](const auto &f)
+		{"font-preview", [&, this](const auto &f)
 			{
 				preview_label=create_preview_label(f, config);
 			}},
@@ -532,6 +470,18 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 			 uielements tmpl{helper.create_elements(config)};
 
 			 glm->generate("font-picker-popup", tmpl);
+
+
+			 helper.font_family=
+				 tmpl.get_element("font-family-combobox");
+			 helper.font_size=
+				 tmpl.get_element("font-size-combobox");
+			 helper.font_weight=
+				 tmpl.get_element("font-weight-combobox");
+			 helper.font_slant=
+				 tmpl.get_element("font-slant-combobox");
+			 helper.font_width=
+				 tmpl.get_element("font-width-combobox");
 
 			 helper.font_size_error=
 				 tmpl.get_element("font-size-error");

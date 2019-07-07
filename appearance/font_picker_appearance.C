@@ -16,11 +16,6 @@ font_picker_appearance_properties::font_picker_appearance_properties()
 	: preview_width{"font_picker_preview_width"},
 	  preview_height{"font_picker_preview_height"},
 	  preview_border{"font_picker_preview_border"},
-	  font_family_appearance{combobox_appearance::base::theme()},
-	  font_size_appearance{combobox_appearance::base::theme()},
-	  font_weight_appearance{combobox_appearance::base::theme()},
-	  font_slant_appearance{combobox_appearance::base::theme()},
-	  font_width_appearance{combobox_appearance::base::theme()},
 	  unsupported_option_color{theme_color{
 			  "font_picker_unavailable_option_color"
 				  }},
