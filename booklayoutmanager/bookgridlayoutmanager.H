@@ -48,6 +48,11 @@ class LIBCXX_HIDDEN bookgridlayoutmanagerObj
 	{
 		return callback_under_lock;
 	}
+
+	//! Invoke the callback, for whatever reason.
+	void invoke_callback(ONLY IN_THREAD, book_lock &lock,
+			     size_t n,
+			     const callback_trigger_t &trigger);
 };
 
 LIBCXXW_NAMESPACE_END

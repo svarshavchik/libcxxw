@@ -1,5 +1,8 @@
 2019-09-21  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* book layout manager: implement initial invocation of on_opened()
+	callback.
+
 	* focus/focusable.C: add IN_THREAD overloads for various focusable
 	methods. Implement an optional ok_if_not_possible to request_focus().
 

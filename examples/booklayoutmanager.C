@@ -21,6 +21,7 @@
 #include <x/w/input_field.H>
 #include <x/w/input_field_config.H>
 #include <x/w/canvas.H>
+#include <x/w/callback_trigger.H>
 
 #include <iostream>
 #include "close_flag.H"
@@ -305,6 +306,16 @@ static void create_book(const x::w::booklayoutmanager &pl)
 		 (ONLY IN_THREAD,
 		  const x::w::book_status_info_t &info)
 		 {
+			 // If there's a page that's already open
+			 // (usually the case), the callback gets an
+			 // initial invocation, upon installation, reporting
+			 // which page is already open. Check the invocation
+			 // trigger for this possibility:
+
+			 if (info.trigger.index() ==
+			     x::w::callback_trigger_initial)
+				 return;
+
 			 // Page number that was opened.
 
 			 size_t n=info.opened;

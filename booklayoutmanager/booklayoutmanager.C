@@ -89,6 +89,16 @@ void booklayoutmanagerObj
 
 				 lock.layout_manager->impl->impl
 					 ->callback(lock)=cb;
+
+				 auto opened=me->book_pagelayoutmanager
+					 ->opened();
+
+				 if (!opened)
+					 return;
+
+				 lock.layout_manager->impl->impl
+					 ->invoke_callback
+					 (IN_THREAD, lock, *opened, initial{});
 			 });
 }
 
@@ -146,18 +156,8 @@ void booklayoutmanagerObj::open(ONLY IN_THREAD, size_t n,
 			->ensure_entire_visibility(IN_THREAD);
 	}
 
-	auto &cb=lock.layout_manager->impl->impl->callback(lock);
-
-	if (cb)
-	{
-		auto &e=lock.layout_manager->impl->impl->layout_container_impl
-			->container_element_impl();
-
-		try {
-			cb(IN_THREAD, book_status_info_t{lock, n, trigger,
-						busy_impl{e}});
-		} REPORT_EXCEPTIONS(&e);
-	}
+	lock.layout_manager->impl->impl->invoke_callback
+		(IN_THREAD, lock, n, trigger);
 }
 
 void booklayoutmanagerObj::close()

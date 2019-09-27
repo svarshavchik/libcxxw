@@ -240,6 +240,15 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 		([]
 		 (THREAD_CALLBACK, const auto &info)
 		 {
+			 if (info.trigger.index() ==
+			     LIBCXX_NAMESPACE::w::callback_trigger_initial)
+			 {
+				 std::cout << "Initial open: "
+					   << info.opened
+					   << std::endl;
+				 return;
+			 }
+
 			 auto n=info.opened;
 
 			 auto e=info.lock.layout_manager->get_page(n);
