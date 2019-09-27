@@ -17,11 +17,16 @@ LIBCXXW_NAMESPACE_START
 const_uigenerators uigeneratorsBase::create(const std::string_view &filename,
 					    const create_args_t &args)
 {
-	auto xml=xml::doc::create(filename, "nonet xinclude");
+	return create(xml::doc::create(filename, "nonet xinclude"),
+		      args);
+}
 
+const_uigenerators uigeneratorsBase::create(const xml::doc &parsed_xml,
+					    const create_args_t &args)
+{
 	auto g=ptrref_base::objfactory<uigenerators>::create();
 
-	theme_parser_lock lock{xml->readlock()};
+	theme_parser_lock lock{parsed_xml->readlock()};
 
 	if (lock->get_root())
 	{

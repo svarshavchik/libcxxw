@@ -14,6 +14,7 @@
 #include <x/optional_args.H>
 #include <x/refptr_traits.H>
 #include <x/messages.H>
+#include <x/xml/docfwd.H>
 #include <string_view>
 
 LIBCXXW_NAMESPACE_START
@@ -35,6 +36,11 @@ public:
 	static const_uigenerators create(const std::string_view &filename,
 					 const create_args_t &args);
 
+	//! Load template from a parsed XML document
+
+	static const_uigenerators create(const xml::doc &parsed_xml,
+					 const create_args_t &args);
+
 	//! Factory for objects.
 
 	//! Implements custom create().
@@ -52,6 +58,17 @@ public:
 		       Args && ...args)
 		{
 			return uigeneratorsBase::create(filename,
+							{std::forward<Args>
+							 (args)...});
+		}
+		//! Always return a const_uigenerators handle.
+
+		template<typename ...Args>
+		static inline const_uigenerators
+		create(const xml::doc &parsed_xml,
+		       Args && ...args)
+		{
+			return uigeneratorsBase::create(parsed_xml,
 							{std::forward<Args>
 							 (args)...});
 		}

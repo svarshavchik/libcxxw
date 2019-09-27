@@ -196,7 +196,7 @@ set_validator() returns a \ref validated_input_field "INSERT_LIBX_NAMESPACE::w::
 an object that represents the most recently validated contents of the
 text input field. set_validator() takes two closures as parameters.
 The first closure returns a \c std::optional<T>, where \c T is some
-data type that the entered text should get converted to. This constrols
+data type that the entered text should get converted to. This controls
 set_validator()'s return value as
 \c INSERT_LIBX_NAMESPACE::w::validated_input_field<T>.
 
