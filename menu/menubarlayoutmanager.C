@@ -81,12 +81,15 @@ class LIBCXX_HIDDEN menubarfactory_implObj : public menubarfactoryObj {
 
 	add_impl_t impl;
 
-	menu do_add(const function<menu_creator_t> &callback,
-		    const function<menu_content_creator_t> &content_callback,
-		    const const_popup_list_appearance &appearance)
+	menu do_add_impl(const function<menu_creator_t> &callback,
+			 const function<menu_content_creator_t>
+			 &content_callback,
+			 const shortcut &sc,
+			 const const_popup_list_appearance &appearance)
 		override
 	{
 		return impl(this->layout, callback, content_callback,
+			    sc,
 			    appearance);
 	}
 };
@@ -110,6 +113,7 @@ menubarfactory menubarlayoutmanagerObj::append_menus()
 		 (const menubarlayoutmanager &lm,
 		  const auto &creator,
 		  const auto &content_creator,
+		  const shortcut &sc,
 		  const const_popup_list_appearance &appearance)
 		 {
 			 menubar_lock lock{lm};
@@ -122,6 +126,7 @@ menubarfactory menubarlayoutmanagerObj::append_menus()
 					       creator,
 					       content_creator,
 					       appearance,
+					       sc,
 					       lock);
 
 			 ++lm->impl->info(lock.manager->grid_lock).divider_pos;
@@ -137,6 +142,7 @@ menubarfactory menubarlayoutmanagerObj::insert_menus(size_t pos)
 		 (const menubarlayoutmanager &lm,
 		  const auto &creator,
 		  const auto &content_creator,
+		  const shortcut &sc,
 		  const const_popup_list_appearance &appearance)
 		 mutable
 		 {
@@ -150,7 +156,7 @@ menubarfactory menubarlayoutmanagerObj::insert_menus(size_t pos)
 					       lm->impl->insert_columns(&*lm,
 									0, pos),
 					       creator, content_creator,
-					       appearance, lock);
+					       appearance, sc, lock);
 
 			 ++lm->impl->info(lock.manager->grid_lock).divider_pos;
 			 ++pos;
@@ -167,6 +173,7 @@ menubarfactory menubarlayoutmanagerObj::append_right_menus()
 		 (const menubarlayoutmanager &lm,
 		  const auto &creator,
 		  const auto &content_creator,
+		  const shortcut &sc,
 		  const const_popup_list_appearance &appearance)
 		 {
 			 menubar_lock lock{lm};
@@ -175,7 +182,7 @@ menubarfactory menubarlayoutmanagerObj::append_right_menus()
 					      lm->impl->append_columns(&*lm,
 								       0),
 					      creator, content_creator,
-					      appearance, lock);
+					      appearance, sc, lock);
 		 });
 }
 
@@ -187,6 +194,7 @@ menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
 		 (const menubarlayoutmanager &lm,
 		  const auto &creator,
 		  const auto &content_creator,
+		  const shortcut &sc,
 		  const const_popup_list_appearance &appearance)
 		 mutable
 		 {
@@ -203,7 +211,8 @@ menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
 							       ->grid_lock)
 						.divider_pos+1+pos),
 					       creator, content_creator,
-					       appearance, lock);
+					       appearance,
+					       sc, lock);
 			 ++pos;
 			 return mb;
 		 });

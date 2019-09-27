@@ -68,9 +68,12 @@
     <add id="file_menu">
       <title>
 	<element>
-	  <label type="theme_text">File</label>
+	  <label type="theme_text">${decoration:underline}F${decoration:none}ile</label>
 	</element>
       </title>
+
+      <!-- Optional keyboard shortcut for the menu -->
+      <shortcut type="theme_text">Alt-F</shortcut>
       <menu>
 
 	<!--
@@ -127,9 +130,11 @@
     <add>
       <title>
 	<element>
-	  <label type="theme_text">Help</label>
+	  <label type="theme_text">${decoration:underline}H${decoration:none}elp</label>
 	</element>
       </title>
+      <!-- Optional keyboard shortcut for the menu -->
+      <shortcut type="theme_text">Alt-H</shortcut>
       <menu>
 	<append_items>
 	  <items>

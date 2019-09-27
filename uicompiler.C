@@ -12,8 +12,6 @@
 #include "x/w/canvas.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
-#include "x/w/menubarfactory.H"
-#include "x/w/menu.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
@@ -1465,113 +1463,101 @@ scrollbar uicompiler::create_scrollbar(uicompiler::scrollbar_type type,
 		: f->create_vertical_scrollbar(config, a);
 }
 
-struct uicompiler::compiler_functions {
+functionptr<void (THREAD_CALLBACK, const tooltip_factory &)>
+uicompiler::compiler_functions::get_optional_tooltip(uicompiler &compiler,
+						     const theme_parser_lock
+						     &lock)
+{
+	functionptr<void (THREAD_CALLBACK,
+			  const tooltip_factory &)> optional_tooltip;
 
-	static functionptr<void (THREAD_CALLBACK,
-				 const tooltip_factory &)>
-	get_optional_tooltip(uicompiler &compiler,
-			     const theme_parser_lock &lock)
+	auto id=lock->get_any_attribute("tooltip");
+
+	if (!id.empty())
 	{
-		functionptr<void (THREAD_CALLBACK,
-				  const tooltip_factory &)> optional_tooltip;
+		auto iter=compiler.generators->tooltip_generators.find(id);
 
-		auto id=lock->get_any_attribute("tooltip");
-
-		if (!id.empty())
-		{
-			auto iter=compiler.generators
-				->tooltip_generators.find(id);
-
-			if (iter == compiler.generators
-			    ->tooltip_generators.end())
-				throw EXCEPTION(gettextmsg
-						(_("Tooltip \"%1%\" is not"
-						   " defined"),
-						 id));
-			optional_tooltip=iter->second;
-		}
-
-		return optional_tooltip;
+		if (iter == compiler.generators->tooltip_generators.end())
+			throw EXCEPTION(gettextmsg
+					(_("Tooltip \"%1%\" is not defined"),
+					 id));
+		optional_tooltip=iter->second;
 	}
 
-	//! Install the tooltip for the new element.
-	static void install_tooltip(const element &e,
-				    const functionptr
-				    <void (THREAD_CALLBACK,
-					   const tooltip_factory &)>
-				    &optional_tooltip)
-	{
-		if (!optional_tooltip)
-			return;
+	return optional_tooltip;
+}
 
-		e->create_custom_tooltip(optional_tooltip);
-	}
+void uicompiler::compiler_functions
+::install_tooltip(const element &e,
+		  const functionptr<void (THREAD_CALLBACK,
+					  const tooltip_factory &)>
+		  &optional_tooltip)
+{
+	if (!optional_tooltip)
+		return;
 
-	//! Parse the optional context popup menu
+	e->create_custom_tooltip(optional_tooltip);
+}
 
-	typedef std::tuple<listlayoutmanager_generator,
-			   shortcut> contextpopup_t;
+std::optional<uicompiler::compiler_functions::contextpopup_t>
+uicompiler::compiler_functions::get_optional_contextpopup
+(uicompiler &compiler, const theme_parser_lock &lock)
+{
+	auto clone=lock->clone();
 
-	static std::optional<contextpopup_t>
-	get_optional_contextpopup(uicompiler &compiler,
-				  const theme_parser_lock &lock)
-	{
-		auto clone=lock->clone();
+	auto xpath=clone->get_xpath("context");
 
-		auto xpath=clone->get_xpath("context");
+	if (xpath->count() == 0)
+		return std::nullopt;
 
-		if (xpath->count() == 0)
-			return std::nullopt;
+	xpath->to_node();
 
-		xpath->to_node();
+	return std::tuple{compiler.listlayout_parseconfig(clone,
+							  "menu",
+							  "element"),
+			compiler.shortcut_value(clone,
+						"shortcut",
+						"element")
+			};
+}
 
-		return std::tuple{
-			compiler.listlayout_parseconfig(clone,
-							"menu",
-							"element"),
-				compiler.shortcut_value(clone,
-							"shortcut",
-							"element")
-		};
-	}
+void uicompiler::compiler_functions
+::install_contextpopup(uielements &elements,
+		       const element &new_element,
+		       const contextpopup_t &popup_info)
+{
+	const auto &[generator, sc]=popup_info;
 
-	static void install_contextpopup(uielements &elements,
-					 const element &new_element,
-					 const contextpopup_t &popup_info)
-	{
-		const auto &[generator, sc]=popup_info;
+	// Determine whether the context popup has cut/copy/paste
+	// menu items, and if so we'll take care of update()ing them.
 
-		// Determine whether the context popup has cut/copy/paste
-		// menu items, and if so we'll take care of update()ing them.
+	auto orig_ccp=elements.new_copy_cut_paste_menu_items;
 
-		auto orig_ccp=elements.new_copy_cut_paste_menu_items;
+	elements.new_copy_cut_paste_menu_items=nullptr;
 
-		elements.new_copy_cut_paste_menu_items=nullptr;
+	auto menu=new_element->create_popup_menu
+		([&]
+		 (const auto &lm)
+		 {
+			 generator(lm, elements);
+		 });
 
-		auto menu=new_element->create_popup_menu
-			([&]
-			 (const auto &lm)
-			 {
-				 generator(lm, elements);
-			 });
+	auto ccp=elements.new_copy_cut_paste_menu_items;
+	elements.new_copy_cut_paste_menu_items=orig_ccp;
 
-		auto ccp=elements.new_copy_cut_paste_menu_items;
-		elements.new_copy_cut_paste_menu_items=orig_ccp;
-
-		new_element->install_contextpopup_callback
-			([menu, ccp]
-			 (ONLY IN_THREAD,
-			  const auto &me,
-			  const auto &trigger,
-			  const auto &mcguffin)
-			 {
-				 if (ccp)
-					 ccp->update(IN_THREAD);
-				 menu->show();
-			 },
-			 sc);
-	}
-};
+	new_element->install_contextpopup_callback
+		([menu, ccp]
+		 (ONLY IN_THREAD,
+		  const auto &me,
+		  const auto &trigger,
+		  const auto &mcguffin)
+		 {
+			 if (ccp)
+				 ccp->update(IN_THREAD);
+			 menu->show();
+		 },
+		 sc);
+}
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -1656,8 +1642,6 @@ static radio_group lookup_radio_group(uielements &elements,
 
 #include "uicompiler.inc.H/factory_parse_parameters.H"
 #include "uicompiler.inc.H/factory_parser.H"
-#include "uicompiler.inc.H/menubarfactory_parse_parameters.H"
-#include "uicompiler.inc.H/menubarfactory_parser.H"
 
 std::tuple<text_param, label_config>
 uicompiler::get_label_parameters(const theme_parser_lock &lock)

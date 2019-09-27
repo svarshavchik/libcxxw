@@ -3462,10 +3462,6 @@ List of values:
       <name>add</name>
       <new_element>1</new_element>
 
-      <condition>
-	<exists>appearance</exists>
-      </condition>
-
       <invoke>add</invoke>
 
       <object>factory</object>
@@ -3483,34 +3479,24 @@ List of values:
       </parameter>
 
       <parameter>
+	<name>shortcut</name>
+	<type>compiler.shortcut_value</type>
+      </parameter>
+
+      <parameter>
+	<member_name>appearance</member_name>
 	<name>appearance</name>
+	<object>const_popup_list_appearance</object>
+	<default_constructor_params>popup_list_appearance::base::menu_theme()</default_constructor_params>
+	<initialize_self />
 	<type>single_value</type>
 	<lookup>
+	  <modify />
 	  <function>compiler.lookup_appearance&lt;const_popup_list_appearance&gt;</function>
 	  <default_params />
 	</lookup>
       </parameter>
-    </function>
 
-    <function>
-      <name>add</name>
-      <new_element>1</new_element>
-
-      <invoke>add</invoke>
-
-      <object>factory</object>
-
-      <parameter>
-	<name>title</name>
-	<type>compiler.factory_parseconfig</type>
-	<factory_wrapper>factory</factory_wrapper>
-      </parameter>
-
-      <parameter>
-	<name>menu</name>
-	<type>compiler.listlayout_parseconfig</type>
-	<factory_wrapper>factory</factory_wrapper>
-      </parameter>
     </function>
   </parser>
 

@@ -91,6 +91,7 @@ menu menubarlayoutmanagerObj::implObj
       const function<menubarfactoryObj::menu_content_creator_t>
       &content_creator,
       const const_popup_list_appearance &new_popup_list_appearance,
+      const shortcut &sc,
       menubar_lock &lock)
 {
 	// Start by creating the popup first.
@@ -117,6 +118,9 @@ menu menubarlayoutmanagerObj::implObj
 			 appearance->menu_highlighted_color,
 			 appearance->menu_clicked_color,
 			 menu_impl);
+
+	if (sc)
+		hotspot_impl->install_shortcut(sc, hotspot_impl);
 
 	auto hotspot=focusable_owner_container::create(hotspot_impl,
 						       new_gridlayoutmanager{}

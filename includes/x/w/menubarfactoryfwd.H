@@ -48,6 +48,16 @@ The creator callback receives an
 \ref listlayoutmanager "INSERT_LIBX_NAMESPACE::w::listlayoutmanager"
 parameter, which it should use to populate the new menu.
 
+\par Optional parameters
+
+Both add() and add_text() have additional parameters. Each individual
+parameter is optional; any that get specified must appear in the following
+order:
+
+- a \ref shortcut "keyboard INSERT_LIBX_NAMESPACE::w::shortcut".
+
+- a \ref const_popup_list_appearance "non-default appearance object".
+
 */
 
 typedef ref<menubarfactoryObj> menubarfactory;

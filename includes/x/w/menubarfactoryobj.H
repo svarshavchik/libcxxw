@@ -11,7 +11,9 @@
 #include <x/w/popup_list_appearancefwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/menufwd.H>
+#include <x/w/shortcutfwd.H>
 #include <x/functional.H>
+#include <x/optional_argsfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -39,6 +41,9 @@ public:
 
 	typedef void menu_content_creator_t(const listlayoutmanager &);
 
+	//! Optional parameters when adding a menu
+	typedef optional_argconstrefs<shortcut,
+				      const_popup_list_appearance> extra_args_t;
 	//! Add a menubar item.
 
 	//! The first parameter is a callback that gets invoked, passing a
@@ -58,7 +63,9 @@ public:
 			      (std::forward<functor>(f)),
 			      make_function<menu_content_creator_t>
 			      (std::forward<content_functor>(cf)),
-			      std::forward<Args>(args)...);
+			      {
+			       std::forward<Args>(args)...
+			      });
 	}
 
 	//! Add a menu bar item that's plain text.
@@ -69,28 +76,28 @@ public:
 		return do_add_text(t,
 				   make_function<menu_content_creator_t>
 				   (std::forward<content_functor>(cf)),
-				   std::forward<Args>(args)...);
+				   {
+				    std::forward<Args>(args)...
+				   });
 	}
 
 	//! Type-erased add_text().
 	menu do_add_text(const text_param &t,
-			 const function<menu_content_creator_t> &cf);
-
-	//! Type-erased add_text().
-	menu do_add_text(const text_param &t,
 			 const function<menu_content_creator_t> &cf,
-			 const const_popup_list_appearance &appearance);
+			 const extra_args_t &args);
 
 	//! Type-erased add()
 
 	menu do_add(const function<menu_creator_t> &,
-		    const function<menu_content_creator_t> &);
+		    const function<menu_content_creator_t> &,
+		    const extra_args_t &args);
 
 	//! Type-erased add()
 
-	virtual menu do_add(const function<menu_creator_t> &,
-			    const function<menu_content_creator_t> &,
-			    const const_popup_list_appearance &)=0;
+	virtual menu do_add_impl(const function<menu_creator_t> &,
+				 const function<menu_content_creator_t> &,
+				 const shortcut &,
+				 const const_popup_list_appearance &)=0;
 };
 
 LIBCXXW_NAMESPACE_END

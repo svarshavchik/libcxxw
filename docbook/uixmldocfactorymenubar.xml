@@ -39,9 +39,11 @@ See COPYING for distribution information.
       <tag class='element'>add</tag> in a
       <tag class='element'>factory</tag>s of
       <tag class='attribute'>type</tag>=<quote>menubar</quote>
-      create a new menu, and must have a
+      creates a new menu, and must have a
       <tag class='element'>title</tag> and a
-      <tag class='element'>menu</tag> element.
+      <tag class='element'>menu</tag> element; in addition to the optional
+      <tag class='element'>shortcut</tag> and
+      <tag class='element'>appearance</tag> elements.
     </para>
 
     <para>
@@ -72,6 +74,17 @@ See COPYING for distribution information.
       <ulink url="&link-typedef-x--w-listitemhandle;"><classname>&ns;::w::listitemhandle</classname></ulink>
       for each named menu itema and installing a &callback; that gets
       invoked by selecting the menu item.
+    </para>
+
+    <para>
+      The optional
+      <tag class='element'>shortcut</tag>
+      element specifies the menu's
+      <link linkend="uixmlshortcutvalue">keyboard shortcut</link>
+      The optional
+      <tag class='element'>appearance</tag>
+      element specifies the menu's
+      <link linkend="uixmlappearance">appearance object</link>.
     </para>
   </section>
 </section>

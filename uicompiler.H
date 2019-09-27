@@ -988,7 +988,30 @@ public:
 private:
 	struct generate_info;
 
-	struct compiler_functions;
+	struct compiler_functions {
+		static functionptr<void (THREAD_CALLBACK,
+					 const tooltip_factory &)>
+		get_optional_tooltip(uicompiler &compiler,
+				     const theme_parser_lock &lock);
+
+		static void install_tooltip(const element &e,
+					    const functionptr
+					    <void (THREAD_CALLBACK,
+						   const tooltip_factory &)>
+					    &optional_tooltip);
+
+		typedef std::tuple<listlayoutmanager_generator,
+				   shortcut> contextpopup_t;
+
+		static std::optional<contextpopup_t>
+		get_optional_contextpopup(uicompiler &compiler,
+					  const theme_parser_lock &lock);
+
+		static void install_contextpopup(uielements &elements,
+						 const element &new_element,
+						 const contextpopup_t
+						 &popup_info);
+	};
 
 	std::tuple<text_param, label_config>
 	get_label_parameters(const theme_parser_lock &lock);

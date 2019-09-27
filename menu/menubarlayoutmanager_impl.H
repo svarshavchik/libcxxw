@@ -85,6 +85,7 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 		 const function<menubarfactoryObj::menu_content_creator_t>
 		 &content_creator,
 		 const const_popup_list_appearance &new_popup_list_appearance,
+		 const shortcut &sc,
 		 menubar_lock &lock);
 
 	//! Fix tabbing order of a newly-added element.

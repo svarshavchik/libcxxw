@@ -19,15 +19,8 @@ menubarfactoryObj::menubarfactoryObj(const menubarlayoutmanager &layout)
 menubarfactoryObj::~menubarfactoryObj()=default;
 
 menu menubarfactoryObj::do_add_text(const text_param &t,
-				    const function<menu_content_creator_t> &cf)
-{
-	return do_add_text(t, cf,
-			   popup_list_appearance::base::menu_theme());
-}
-
-menu menubarfactoryObj::do_add_text(const text_param &t,
 				    const function<menu_content_creator_t> &cf,
-				    const const_popup_list_appearance &menu_theme)
+				    const extra_args_t &args)
 {
 	return do_add(make_function<menu_creator_t>
 		      ([&](const auto &f)
@@ -35,14 +28,21 @@ menu menubarfactoryObj::do_add_text(const text_param &t,
 			       f->create_label(t);
 		       }),
 		      cf,
-		      menu_theme);
+		      args);
 }
 
 menu menubarfactoryObj::do_add(const function<menu_creator_t> &creator,
-			       const function<menu_content_creator_t> &ccreator)
+			       const function<menu_content_creator_t> &ccreator,
+			       const extra_args_t &args)
 {
-	return do_add(creator, ccreator,
-		      popup_list_appearance::base::menu_theme());
+	std::optional<shortcut> default_shortcut;
+	std::optional<const_popup_list_appearance> default_appearance;
+
+	return do_add_impl(creator, ccreator,
+			   optional_arg_or<shortcut>(args, default_shortcut),
+			   optional_arg_or<const_popup_list_appearance>
+			   (args, default_appearance,
+			    popup_list_appearance::base::menu_theme()));
 }
 
 

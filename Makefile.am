@@ -898,6 +898,7 @@ libcxxw_la_SOURCES=\
 	uicompiler_gridlayout.C			    \
 	uicompiler_itemlayout.C			    \
 	uicompiler_listlayout.C			    \
+	uicompiler_menubarfactory.C		    \
 	uicompiler_menubarlayout.C		    \
 	uicompiler_standard_comboboxlayout.C	    \
 	uicompiler_new_booklayout.C		    \
