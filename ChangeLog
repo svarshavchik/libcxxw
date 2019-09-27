@@ -2,6 +2,8 @@
 
 	* input_field/input_field.C: add validate_modified(); do not
 	validate disabled fields.
+	Add optional parameter to set() that specifies the set value's
+	validation status.
 
 2019-09-21  Sam Varshavchik  <mrsam@courier-mta.com>
 

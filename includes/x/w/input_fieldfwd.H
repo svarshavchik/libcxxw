@@ -45,11 +45,23 @@ This is a text input field, with a blinking cursor.
 \code
 f->set("Hello world");
 
-f->set_unicode(U"Hello world");
+f->set(U"Hello world");
 \endcode
 
 set() specifies the new contents of the input field.
-set_unicode() specifies the new contents as a unicode string.
+
+\code
+f->set("Hello world", true);
+\endcode
+
+Setting the optional second parameter to \c true indicates that
+the new value of the input field is a validated value, and the validator
+(see below) won't get invoked to validate this value (unless it's subsequently
+edited).
+
+The validator must set this flag if it chooses to update the value of this
+field to a canonical format, indicating that it should not be called to
+re-validate it, in an infinite loop.
 
 \code
 INSERT_LIBX_NAMESPACE::w::input_lock lock{f};
@@ -75,6 +87,13 @@ still retrieve the original contents. The input field, like all other
 widgets, gets updated by an internal execution thread, which
 might be busy with other things, before focusing its attention on
 updating the input field's contents.
+
+\code
+f->on_set(IN_THREAD, "");
+\endcode
+
+Overloaded set() methods that take an IN_THREAD handle from the internal
+connection thread update the input field immediately.
 
 \code
 f->on_change([]

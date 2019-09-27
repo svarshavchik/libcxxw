@@ -196,7 +196,9 @@ public:
 		    ::get(my_input_field_lock))
 			return;
 
-		my_input_field->set(s);
+		// We just validated this, so note this value as a validated
+		// one.
+		my_input_field->set(s, true);
 	}
 };
 

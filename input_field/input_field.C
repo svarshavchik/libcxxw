@@ -542,22 +542,40 @@ void input_fieldObj::on_spin(const hotspot_callback_t &a_cb,
 }
 
 
-void input_fieldObj::set(const std::string_view &str)
+void input_fieldObj::set(const std::string_view &str, bool validated)
 {
 	set(unicode::iconvert::tou::convert(std::string{str},
-					    unicode_locale_chset()).first);
+					    unicode_locale_chset()).first,
+	    validated);
 }
 
-void input_fieldObj::set(const std::u32string_view &str)
+void input_fieldObj::set(const std::u32string_view &str, bool validated)
 {
 	auto editor_impl=impl->editor_element->impl;
 
 	editor_impl->get_window_handler().thread()->run_as
-		([str=std::u32string{str}, editor_impl]
+		([str=std::u32string{str}, editor_impl, validated]
 		 (ONLY IN_THREAD)
 		 {
-			 editor_impl->set(IN_THREAD, str);
+			 editor_impl->set(IN_THREAD, str, validated);
 		 });
+}
+
+void input_fieldObj::set(ONLY IN_THREAD,
+			 const std::string_view &str, bool validated)
+{
+	impl->editor_element->impl->set
+		(IN_THREAD,
+		 unicode::iconvert::tou::convert(std::string{str},
+						 unicode_locale_chset()).first,
+		 validated);
+}
+
+void input_fieldObj::set(ONLY IN_THREAD,
+			 const std::u32string_view &str, bool validated)
+{
+	impl->editor_element->impl->set(IN_THREAD, std::u32string{str},
+					validated);
 }
 
 void input_fieldObj::on_change(const functionref<

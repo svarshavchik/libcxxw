@@ -706,7 +706,7 @@ class LIBCXX_HIDDEN editorObj::implObj
  public:
 	//! Set the current contents of the editor
 
-	void set(ONLY IN_THREAD, const std::u32string &string);
+	void set(ONLY IN_THREAD, const std::u32string &string, bool validated);
 
 	//! Set the current contents of the editor
 	virtual void set(ONLY IN_THREAD, const std::u32string &string,

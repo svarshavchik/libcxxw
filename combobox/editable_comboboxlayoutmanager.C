@@ -186,7 +186,7 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 				editor_impl->set(IN_THREAD,
 						 lock.item
 						 (info.list_item_status_info
-						  .item_number).string);
+						  .item_number).string, true);
 
 				// Make sure that any validation callback
 				// that gets installed into the input element

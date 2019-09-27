@@ -42,10 +42,18 @@ public:
 	~input_fieldObj() LIBCXX_HIDDEN;
 
 	//! Set the contents of the input field.
-	void set(const std::string_view &str);
+	void set(const std::string_view &str, bool validated=false);
 
 	//! Set the contents of the input field, as unicode.
-	void set(const std::u32string_view &str);
+	void set(const std::u32string_view &str, bool validated=false);
+
+	//! Set the contents of the input field.
+	void set(ONLY IN_THREAD,
+		 const std::string_view &str, bool validated=false);
+
+	//! Set the contents of the input field, as unicode.
+	void set(ONLY IN_THREAD,
+		 const std::u32string_view &str, bool validated=false);
 
 	//! Install a callback that gets invoked when the contents of the input field change.
 

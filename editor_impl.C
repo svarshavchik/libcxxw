@@ -2013,15 +2013,16 @@ editorObj::implObj::pos(selection_cursor_t::const_lock &cursor_lock)
 	return {p, p2};
 }
 
-void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string)
+void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
+			     bool validated)
 {
 	set(IN_THREAD, string, string.size(), string.size());
 
 	// draw_changes() was called, setting validation_required=true
+	//
+	// Reset it to the app's request.
 
-	// We ass-ume that since the app explicitly set() this, it does
-	// not need to be validated.
-	validation_required(IN_THREAD)=false;
+	validation_required(IN_THREAD)=!validated;
 }
 
 void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
