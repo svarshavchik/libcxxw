@@ -9,6 +9,8 @@
 #include <x/w/containerobj.H>
 #include <x/w/focusableobj.H>
 #include <x/w/factoryfwd.H>
+#include <x/w/connection_threadfwd.H>
+#include <x/w/callback_triggerfwd.H>
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
@@ -53,6 +55,17 @@ public:
 	//! immediately calling get_value() may not reflect the new value.
 
 	void set_value(size_t);
+
+	//! Set the image being shown by this image button.
+
+	//! \overload
+
+	void set_value(ONLY IN_THREAD, size_t n);
+
+	//! Set the image being shown by this image button.
+
+	void set_value(ONLY IN_THREAD, size_t n,
+		       const callback_trigger_t &trigger);
 
 	//! Install a new activation callback.
 

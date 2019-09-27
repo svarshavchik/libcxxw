@@ -71,6 +71,10 @@ typedef functionref<void (THREAD_CALLBACK, size_t,
 //!
 //! image_button->set_value(1);
 //!
+//! image_button->set_value(IN_THREAD, 1);
+//!
+//! image_button->set_value(IN_THREAD, 1, trigger);
+//!
 //! image_button->on_activate([]
 //!                           (ONLY IN_THREAD,
 //!                            size_t value,

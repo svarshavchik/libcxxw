@@ -62,6 +62,17 @@ void image_buttonObj::set_value(size_t n)
 		 });
 }
 
+void image_buttonObj::set_value(ONLY IN_THREAD, size_t n)
+{
+	set_value(IN_THREAD, n, {});
+}
+
+void image_buttonObj::set_value(ONLY IN_THREAD, size_t n,
+				const callback_trigger_t &trigger)
+{
+	impl->button->impl->set_image_number(IN_THREAD, trigger, n);
+}
+
 void image_buttonObj::on_activate(const image_button_callback_t &callback)
 {
 	element_impl e=impl->button->impl;

@@ -9,6 +9,7 @@
 #include <x/w/image_buttonobj.H>
 #include <x/w/image_button_appearance.H>
 #include <x/functionalrefptr.H>
+#include <x/w/callback_trigger.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START
