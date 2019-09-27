@@ -384,6 +384,9 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
 <xsl:if test="new_element">
   <xsl:text>,&#10;                   id=lock-&gt;get_any_attribute("id"),&#10;                   optional_tooltip=compiler_functions::get_optional_tooltip(*this, lock),
                    optional_contextpopup=compiler_functions::get_optional_contextpopup(*this, lock)</xsl:text></xsl:if>
+<xsl:if test="new_container">
+  <xsl:text>,&#10;                   optional_tooltip=compiler_functions::get_optional_tooltip(*this, lock),
+                   optional_contextpopup=compiler_functions::get_optional_contextpopup(*this, lock)</xsl:text></xsl:if>
 <xsl:text>]
             (</xsl:text>
 	    <xsl:for-each select="../parameter">
@@ -399,7 +402,7 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
 		</xsl:for-each>
 
 		<xsl:text>                </xsl:text>
-		<xsl:if test="new_element">
+		<xsl:if test="new_element or new_container">
 		  <xsl:text>element new_element=</xsl:text>
 		</xsl:if>
 		<xsl:value-of select="before_invocation" />
@@ -461,7 +464,10 @@ The actual parameter we generate is
 		  <xsl:value-of select="after_invocation" />
 		  <xsl:text>;&#10;</xsl:text>
 		  <xsl:if test="new_element">
-		    <xsl:text>&#10;                elements.new_elements.emplace(id, new_element);&#10;                if (optional_contextpopup)&#10;                    compiler_functions::install_contextpopup(elements, new_element, *optional_contextpopup);&#10;                if (!id.empty())&#10;                    compiler_functions::install_tooltip(new_element, optional_tooltip);&#10;</xsl:text>
+		    <xsl:text>&#10;                elements.new_elements.emplace(id, new_element);&#10;</xsl:text>
+		    </xsl:if>
+		    <xsl:if test="new_element or new_container">
+		    <xsl:text>                if (optional_contextpopup)&#10;                    compiler_functions::install_contextpopup(elements, new_element, *optional_contextpopup);&#10;                compiler_functions::install_tooltip(new_element, optional_tooltip);&#10;</xsl:text>
 		  </xsl:if>
 
 		  <xsl:text>            };

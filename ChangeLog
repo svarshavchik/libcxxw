@@ -1,3 +1,12 @@
+2019-09-19  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* uixml: <container>s may also specify optional tooltips and
+	context popup menus.
+
+2019-09-18  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* image_button: Implement IN_THREAD overloads for set_value().
+
 2019-09-16  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Specify keyboard shortcuts for menus.

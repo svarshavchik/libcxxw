@@ -1710,6 +1710,8 @@ List of values:
       <name>container</name>
       <invoke>create_container</invoke>
 
+      <new_container>1</new_container>
+
       <parameter>
 	<scalar>generic_factory</scalar>
       </parameter>

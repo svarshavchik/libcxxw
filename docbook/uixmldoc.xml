@@ -2095,6 +2095,27 @@ layout_manager->generate("dialog", generators, elements);
       <methodname>create_tooltip</methodname>() to create a basic,
       label tooltip.
     </para>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<container tooltip="container-tooltip">
+
+    ...
+
+</container>
+
+<tooltip type="label" id="container-tooltip">
+
+   ...
+
+</tooltip>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <tag class='element'>container</tag> elements also
+      have optional <tag class="attribute">tooltip</tag> attributes.
+    </para>
   </section>
 
   <section id="uixmlelementcontext">
@@ -2155,6 +2176,33 @@ layout_manager->generate("dialog", generators, elements);
       <quote>Copy</quote>,
       <quote>Cut</quote>, and
       <quote>Paste</quote> in the main application menu.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<container>
+  <type>grid</type>
+  <name>main_grid</name>
+
+  <context>
+    <menu>
+      <append_items>
+        <items>
+
+          ...
+
+        </items>
+      </append_items>
+    </menu>
+  </context>
+</container>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <tag class='element'>container</tag> elements also
+      have optional <tag class="element">context</tag> popup menus.
     </para>
   </section>
 

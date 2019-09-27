@@ -1607,22 +1607,24 @@ uicompiler::lookup_container_generators(const std::string &type,
 			  }, functions);
 }
 
-void uicompiler::create_container(const factory &f,
-				  uielements &factories,
-				  const std::string &name,
-				  const container_generators_t &generators)
+container uicompiler::create_container(const factory &f,
+				       uielements &factories,
+				       const std::string &name,
+				       const container_generators_t &generators)
 {
 	// std::visit needs a variant to work with.
 	const container_generators_t::variant_t &v=generators;
 
-	factories.new_elements.emplace
-		(name,
-		 std::visit([&]
-			    (const auto &generators) -> container
-			    {
-				    return generators
-					    .create_container(f, factories);
-			    }, v));
+	auto c=std::visit([&]
+			  (const auto &generators) -> container
+			  {
+				  return generators
+					  .create_container(f, factories);
+			  }, v);
+
+	factories.new_elements.emplace(name, c);
+
+	return c;
 }
 
 static radio_group lookup_radio_group(uielements &elements,

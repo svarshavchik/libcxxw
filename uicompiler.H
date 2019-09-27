@@ -26,6 +26,7 @@
 #include "x/w/progressbarfwd.H"
 #include "x/w/uigenerators.H"
 #include "x/w/appearance.H"
+#include "x/w/containerfwd.H"
 #include "x/w/synchronized_axisfwd.H"
 #include "theme_parser_lock.H"
 #include "uicompilerfwd.H"
@@ -833,10 +834,11 @@ public:
 	//! Execute <container>
 
 	//! In a factory.
-	static void create_container(const factory &f,
-				     uielements &elements,
-				     const std::string &name,
-				     const container_generators_t &generators);
+	static container create_container(const factory &f,
+					  uielements &elements,
+					  const std::string &name,
+					  const container_generators_t
+					  &generators);
 
 	static element
 	create_progressbar(const factory &generic_factory,
