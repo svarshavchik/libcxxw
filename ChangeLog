@@ -1,3 +1,8 @@
+2019-09-21  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* focus/focusable.C: add IN_THREAD overloads for various focusable
+	methods. Implement an optional ok_if_not_possible to request_focus().
+
 2019-09-19  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Fix race condition resulting in a deadlock if an exception

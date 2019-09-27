@@ -220,6 +220,14 @@ void focusableObj::get_focus_before(const focusable &other)
 		 });
 }
 
+void focusableObj::get_focus_before(ONLY IN_THREAD,
+				    const focusable &other)
+{
+	sanity_check(get_impl(), other->get_impl());
+
+	get_focus_before_in_thread(IN_THREAD, ref{this}, other);
+}
+
 void get_focus_before_in_thread(ONLY IN_THREAD,	const focusable &me,
 				const focusable &other)
 {
@@ -259,6 +267,14 @@ void focusableObj::get_focus_after(const focusable &other)
 		 {
 			 get_focus_after_in_thread(IN_THREAD, me, other);
 		 });
+}
+
+void focusableObj::get_focus_after(ONLY IN_THREAD,
+				   const focusable &other)
+{
+	sanity_check(get_impl(), other->get_impl());
+
+	get_focus_after_in_thread(IN_THREAD, ref{this}, other);
 }
 
 // Put me after 'other' in focus order.
@@ -319,9 +335,15 @@ void focusableObj::get_focus_first()
 		->run_as([me=focusable(this)]
 			 (ONLY IN_THREAD)
 			 {
-				 me->get_impl()->get_focusable_element()
-					 .get_focus_first(IN_THREAD, me);
+				 me->get_focus_first(IN_THREAD);
 			 });
+}
+
+void focusableObj::get_focus_first(ONLY IN_THREAD)
+{
+	auto me=ref{this};
+
+	me->get_impl()->get_focusable_element().get_focus_first(IN_THREAD, me);
 }
 
 void focusableObj::get_focus_after_me(const std::vector<focusable> &others)
@@ -329,14 +351,23 @@ void focusableObj::get_focus_after_me(const std::vector<focusable> &others)
 	sanity_check(get_impl(), others)->run_as
 		([me=focusable(this), others]
 		 (ONLY IN_THREAD)
-		 mutable
 		 {
-			 for (const auto &f:others)
-			 {
-				 get_focus_after_in_thread(IN_THREAD, f, me);
-				 me=f;
-			 }
+			 me->get_focus_after_me(IN_THREAD, others);
 		 });
+}
+
+void focusableObj::get_focus_after_me(ONLY IN_THREAD,
+				      const std::vector<focusable> &others)
+{
+	sanity_check(get_impl(), others);
+
+	auto me=ref{this};
+
+	for (const auto &f:others)
+	{
+		get_focus_after_in_thread(IN_THREAD, f, me);
+		me=f;
+	}
 }
 
 void focusableObj::get_focus_before_me(const std::vector<focusable> &others)
@@ -345,9 +376,19 @@ void focusableObj::get_focus_before_me(const std::vector<focusable> &others)
 		([me=focusable(this), others]
 		 (ONLY IN_THREAD)
 		 {
-			 for (const auto &f:others)
-				 get_focus_before_in_thread(IN_THREAD, f, me);
+			 me->get_focus_before_me(IN_THREAD, others);
 		 });
+}
+
+void focusableObj::get_focus_before_me(ONLY IN_THREAD,
+				       const std::vector<focusable> &others)
+{
+	sanity_check(get_impl(), others);
+
+	auto me=ref{this};
+
+	for (const auto &f:others)
+		get_focus_before_in_thread(IN_THREAD, f, me);
 }
 
 void focusableObj::on_keyboard_focus(const functionref<focus_callback_t> &cb)
@@ -360,7 +401,7 @@ void focusableObj::on_key_event(const functionref<key_event_callback_t> &cb)
 	get_impl()->get_focusable_element().on_key_event(cb);
 }
 
-void focusableObj::request_focus()
+void focusableObj::request_focus(bool ok_if_not_possible)
 {
 	// If request_focus() is invoked after using the layout manager to
 	// change something in the container, the request_focus() action
@@ -370,11 +411,19 @@ void focusableObj::request_focus()
 
 	get_impl()->get_focusable_element().THREAD
 		->get_batch_queue()
-		->run_as([impl=get_impl()]
+		->run_as([impl=get_impl(), ok_if_not_possible]
 			 (ONLY IN_THREAD)
 			 {
-				 impl->request_focus(IN_THREAD);
+				 impl->request_focus_if_possible
+					 (IN_THREAD,
+					  ok_if_not_possible);
 			 });
+}
+
+bool focusableObj::request_focus(ONLY IN_THREAD, bool ok_if_not_possible)
+{
+	return get_impl()->request_focus_if_possible(IN_THREAD,
+						     ok_if_not_possible);
 }
 
 void focusableObj::autofocus(bool flag)

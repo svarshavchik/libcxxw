@@ -75,7 +75,33 @@ public:
 	//! Request for keyboard focus to be moved to this widget.
 
 	//! No action takes place if this focusable is disabled.
-	void request_focus();
+	void request_focus(bool ok_if_not_possible=false);
+
+	//! This focusable should be tabbed to before the other one.
+
+	void get_focus_before(ONLY IN_THREAD, const focusable &other);
+
+	//! This focusable should be tabbed to after the other one
+
+	void get_focus_after(ONLY IN_THREAD, const focusable &other);
+
+	//! These focusables should be tabbed to after me.
+	void get_focus_after_me(ONLY IN_THREAD,
+				const std::vector<focusable> &others);
+
+	//! These focusables should be tabbed to before me.
+	void get_focus_before_me(ONLY IN_THREAD,
+				 const std::vector<focusable> &others);
+
+	//! This focusable should be the first tabbable focusable.
+	void get_focus_first(ONLY IN_THREAD);
+
+	//! Request for keyboard focus to be moved to this widget.
+
+	//! No action takes place if this focusable is disabled. Returns
+	//! true if focus was moved.
+	bool request_focus(ONLY IN_THREAD,
+			   bool ok_if_not_possible=false);
 
 	//! Return the set of real internal focusable widget implementations.
 

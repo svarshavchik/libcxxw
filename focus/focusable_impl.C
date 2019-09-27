@@ -541,27 +541,24 @@ void focusableObj::implObj::set_focus_only(ONLY IN_THREAD,
 				       trigger);
 }
 
-void focusableObj::implObj::request_focus(ONLY IN_THREAD)
+bool focusableObj::implObj::request_focus_if_possible(ONLY IN_THREAD,
+						      bool ok_if_not_possible)
 {
 	auto &e=get_focusable_element();
 
 	if (!e.enabled(IN_THREAD))
 	{
-		e.stop_message("Cannot set focus to requested display element");
-		return;
+		if (ok_if_not_possible)
+			return false;
+
+		e.stop_message("Cannot set keyboard focus to"
+			       " the requested widget");
+		return false;
 	}
 
 	set_focus_and_ensure_visibility(IN_THREAD, {});
-}
 
-void focusableObj::implObj::request_focus_quietly(ONLY IN_THREAD)
-{
-	auto &e=get_focusable_element();
-
-	if (!e.enabled(IN_THREAD))
-		return;
-
-	set_focus_and_ensure_visibility(IN_THREAD, {});
+	return true;
 }
 
 bool focusableObj::implObj::focus_autorestorable(ONLY IN_THREAD)

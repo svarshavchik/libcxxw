@@ -233,7 +233,8 @@ void popupObj::handlerObj::closing_popup(ONLY IN_THREAD)
 			immediate_parent->get_autorestorable_focusable();
 
 		if (autorestore_focus_to)
-			autorestore_focus_to->request_focus_quietly(IN_THREAD);
+			autorestore_focus_to->request_focus_if_possible
+				(IN_THREAD, true);
 	}
 }
 

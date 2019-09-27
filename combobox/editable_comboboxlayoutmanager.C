@@ -200,7 +200,8 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 
 				focusableObj &f=*current_selection;
 
-				f.get_impl()->request_focus_quietly(IN_THREAD);
+				f.get_impl()->request_focus_if_possible
+					(IN_THREAD, true);
 				editor_impl->validate_modified(IN_THREAD, {});
 			}
 		}

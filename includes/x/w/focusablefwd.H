@@ -42,9 +42,27 @@ f->get_focus_first();
 
 f->request_focus();
 
+f->request_focus(true);
+
 f->get_focus_after_me({other1, other2, other3});
 
 f->get_focus_before_me({other1, other2, other3});
+
+
+f->get_focus_after(IN_THREAD, other);
+
+f->get_focus_before(IN_THREAD, other);
+
+f->get_focus_first(IN_THREAD);
+
+bool flag=f->request_focus(IN_THREAD);
+
+bool flag=f->request_focus(IN_THREAD, true);
+
+f->get_focus_after_me(IN_THREAD, {other1, other2, other3});
+
+f->get_focus_before_me(IN_THREAD, {other1, other2, other3});
+
 
 \endcode
 
@@ -86,7 +104,13 @@ The behavior of having duplicate focusables in the vector, or having this
 focusable in the vector too, is unspecified.
 
 request_focus() moves the current keyboard focus to this focusable
-element, if it's enabled and visible.
+element, if it's enabled and visible. An optional bool parameter of true
+indicates that no error should be reported if the focusable element cannot
+receive focus (it is disabled on not visible).
+
+The IN_THREAD overloads can only be invoked in the connection thread.
+Additionally, the IN_THREAD overload returns an indication if the was was
+successfully moved.
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/focus.H>

@@ -62,7 +62,8 @@ void menubar_hotspot_implObj::pointer_focus(ONLY IN_THREAD,
 		{
 			focusableObj::implObj *i_am_focusable=this;
 
-			i_am_focusable->request_focus(IN_THREAD);
+			i_am_focusable->request_focus_if_possible(IN_THREAD,
+								  true);
 			my_popup_handler->request_visibility(IN_THREAD, true);
 		}
 	}

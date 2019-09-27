@@ -171,14 +171,12 @@ class focusableObj::implObj : virtual public obj {
 
 	//! If this focusable is enabled, then set_focus_and_ensure_visibility()
 
-	void request_focus(ONLY IN_THREAD);
-
-	//! Like request_focus(), but the request is internal
-
 	//! Don't gripe if this focusable is not eligible for keyboard focus,
-	//! just don't do it.
-
- 	void request_focus_quietly(ONLY IN_THREAD);
+	//! just don't do it, if ok_if_not_possible is requested.
+	//!
+	//! Returns true if focus has been moved.
+	bool request_focus_if_possible(ONLY IN_THREAD,
+				       bool ok_if_not_possible);
 
 	//! Whether this field is eligible to have its focus restored.
 
