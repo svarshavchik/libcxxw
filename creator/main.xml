@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<theme version="1"
+       xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <dim id="minimum_width">100</dim>
+  <dim id="minimum_height">20</dim>
+
+  <layout type="menubar" id="mainmenubar">
+    <append_menus>
+      <name>mainmenu</name>
+    </append_menus>
+  </layout>
+
+  <factory type="menubar" id="mainmenu">
+
+    <add id="file_menu">
+      <title>
+	<element>
+	  <label type="theme_text">${context:creator-menu}${decoration:underline}F${decoration:none}ile</label>
+	</element>
+      </title>
+      <shortcut type="theme_text">${context:creator-menu}Alt-F</shortcut>
+
+      <menu>
+	<append_items>
+	  <items>
+	    <name>file_new</name>
+	    <shortcut type="theme_text">${context:creator-menu}Alt-N</shortcut>
+	    <label type="theme_text">${context:creator-menu}New</label>
+	    <name>file_open</name>
+	    <shortcut type="theme_text">${context:creator-menu}Alt-O</shortcut>
+	    <label type="theme_text">${context:creator-menu}Open</label>
+	    <name>file_save</name>
+	    <shortcut type="theme_text">${context:creator-menu}Alt-S</shortcut>
+	    <label type="theme_text">${context:creator-menu}Save</label>
+	    <name>file_save_as</name>
+	    <label type="theme_text">${context:creator-menu}Save As...</label>
+	    <separator />
+	    <name>file_quit</name>
+	    <shortcut type="theme_text">${context:creator-menu}Alt-Q</shortcut>
+	    <label type="theme_text">${context:creator-menu}Quit</label>
+	  </items>
+	</append_items>
+      </menu>
+    </add>
+  </factory>
+
+  <layout type="grid" id="main">
+    <append_row>
+      <name>main_row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="main_row">
+    <container>
+      <type>book</type>
+      <name>main_book</name>
+    </container>
+  </factory>
+
+  <layout type="book" id="main_book">
+    <append_pages>
+      <name>initial_contents</name>
+    </append_pages>
+    <open>
+      <page>0</page>
+    </open>
+  </layout>
+
+  <factory type="book" id="initial_contents">
+    <add>
+      <tab>
+	<element>
+	  <label type='theme_text'>${context:creator-main}Preview</label>
+	</element>
+      </tab>
+      <shortcut type="theme_text">${context:creator-main}Alt-P</shortcut>
+      <page>
+	<container>
+	  <type>page</type>
+	  <name>preview_page</name>
+	</container>
+      </page>
+    </add>
+  </factory>
+
+  <!--
+      Preview page in the book. It itself consists of a page container,
+      which always shows page 0 with the preview.
+
+Page 1 is a canvas with fixed size. This sets the minimum dimensions of the
+entire window.
+
+  -->
+  <layout type="page" id="preview_page">
+    <append>
+      <name>preview_page_pages</name>
+    </append>
+
+    <open>
+      <position>0</position>
+    </open>
+  </layout>
+
+  <factory type="page" id="preview_page_pages">
+    <halign>center</halign>
+    <valign>middle</valign>
+
+    <container>
+      <type>grid</type>
+      <name>current_element</name>
+    </container>
+
+    <element id="minimum_size">
+      <canvas>
+	<width>minimum_width</width>
+	<height>minimum_height</height>
+      </canvas>
+    </element>
+  </factory>
+
+  <layout type="grid" id="current_element" />
+
+</theme>

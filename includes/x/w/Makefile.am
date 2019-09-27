@@ -15,8 +15,8 @@ BUILT_SOURCES=$(APPEARANCE_XML)
 dist-hook:
 	rm -f $(distdir)/*_inc.H
 	rm -f $(patsubst %,$(distdir)/%,$(APPEARANCE_XML))
-	rm -f all_appearances.H
-	rm -f all_appearancesfwd.H
+	rm -f $(distdir)/all_appearances.H
+	rm -f $(distdir)/all_appearancesfwd.H
 
 CLEANFILES = $(shell cd $(srcdir) && echo *_inc.H) $(APPEARANCE_XML)
 

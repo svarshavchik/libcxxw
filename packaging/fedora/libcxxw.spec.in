@@ -94,6 +94,7 @@ echo '%defattr(-,root,root,-)' >public-headers
 
 %if %do_compat
 rm -f $RPM_BUILD_ROOT%{_datadir}/applications/*
+rm -f $RPM_BUILD_ROOT%{_datadir}/libcxxw*/creator
 rm -f $RPM_BUILD_ROOT%{_bindir}/*
 rm -f $RPM_BUILD_ROOT%{_mandir}/*/*
 %endif
@@ -112,7 +113,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %else
 %{_datadir}/applications/*
-%{_bindir}/*
+%{_bindir}/cxxw
+%{_bindir}/cxxwtheme
 %{_mandir}/*/*
 %endif
 
@@ -128,6 +130,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/aclocal/*
 %{_datadir}/libcxxw*/*.mk
 %{_datadir}/libcxxw*/*.xsl
+
+%if %do_compat
+
+%else
+%{_bindir}/cxxwcreator
+%{_datadir}/libcxxw*/creator
+%endif
 
 %doc examples
 

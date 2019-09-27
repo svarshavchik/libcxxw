@@ -314,7 +314,7 @@ main_LDADD=-lcxxw -lcxx</programlisting>
 	<listitem>
 	  <para>
 	    This directory whose name includes the &app;'s and &libcxx;'s
-	    API/ABI version contains &app;'s visual schemes.
+	    API/ABI version contains &app;'s visual themes.
 	    Multiple concurrently-installed version of the &app;
 	    install their header files into different directories in
 	    <filename><replaceable>$includedir</replaceable></filename>.
@@ -326,6 +326,14 @@ main_LDADD=-lcxxw -lcxx</programlisting>
 	    A compatibility &app; library tries to use its corresponding
 	    theme with the same name as the primary's package, falling back
 	    to the default theme if necessary.
+	  </para>
+
+	  <para>
+	    The <filename>creator</filename> subdirectory contains additional
+	    UI theme files used by <command>cxxwcreator</command>. This
+	    directory does not get installed by the
+	    compatibility &app; library since it does not include the
+	    <command>cxxwcreator</command>.
 	  </para>
 	</listitem>
       </varlistentry>

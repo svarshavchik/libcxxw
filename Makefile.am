@@ -5,7 +5,7 @@ include $(shell pwd)/libcxxw.mk
 EXTRA_DIST =
 
 if LOCALTHEMEDIR
-CPPFLAGS += -DTHEMEDIR=\"@pwdthemes@\"
+CPPFLAGS += -DTHEMEDIR=\"@pwdthemes@\" -DCREATORDIR=\"@pwdcreator@\"
 endif
 
 AUTOMAKE_OPTIONS=subdir-objects
@@ -16,6 +16,8 @@ DISTCHECK_CONFIGURE_FLAGS=--with-pkgconfigdir='$$(prefix)/local/pkgconf'
 
 pkgdatainstdir=$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@
 pkgdatainst_DATA=extract-theme-text.xsl libcxxw.mk
+
+creatorinstdir=$(pkgdatainstdir)/creator
 
 BUILT_SOURCES =
 
@@ -52,7 +54,7 @@ STATICLINKFLAGS=-Wl,-ljpeg -Wl,-lgif -Wl,-lcourier-unicode -Wl,-lpthread @LIBCXX
 abilibdir=$(libdir)/libcxxw-@ABIVER@-@LIBCXX_VERSION@
 abilib_LTLIBRARIES=libcxxw.la libcxxwcups.la
 
-bin_PROGRAMS=cxxw cxxwtheme
+bin_PROGRAMS=cxxw cxxwtheme cxxwcreator
 
 CPPFLAGS += -I$(top_srcdir)/includes -I./includes -I$(top_srcdir) -I. \
             -DPKGDATADIR='"$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@"'
@@ -981,6 +983,22 @@ cxxw_LDFLAGS=$(TESTLINKTYPE)
 cxxwtheme_SOURCES=cxxwtheme.C
 cxxwtheme_LDADD=libcxxw.la -lcourier-unicode
 cxxwtheme_LDFLAGS=$(TESTLINKTYPE)
+
+
+$(call REFCOLLECTION_GEN,creator/appelements.inc.H,$(srcdir)/creator/appelements.xml)
+$(call EXTRACT_THEME_TEXT_GEN,creator.inc.C,creator/main.xml)
+
+creatorinst_DATA=creator/main.xml
+EXTRA_DIST += $(creatorinst_DATA)
+
+cxxwcreator_SOURCES=\
+	creator/app.C				\
+	creator/app.H				\
+	creator/cxxwcreator.C			\
+	#
+
+cxxwcreator_LDADD=libcxxw.la -lcxx
+cxxwcreator_LDFLAGS=$(TESTLINKTYPE)
 
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 

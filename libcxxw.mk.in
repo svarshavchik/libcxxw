@@ -29,6 +29,7 @@ LIBCXXW_CLEANFILES += $(1)
 LIBCXXW_SOURCES += $(2)
 
 $(1): $(2) $(LIBCXXW_XINCLUDEDIR)/libcxxw.mk $(LIBCXXW_XINCLUDEDIR)extract-theme-text.xsl
+	mkdir -p $(dir $(1))
 	$$(LIBCXX_XSLTPROC) $(LIBCXXW_XINCLUDEDIR)extract-theme-text.xsl $$< >$$@.tmp
 	mv -f $$@.tmp $$@
 endef

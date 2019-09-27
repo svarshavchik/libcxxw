@@ -121,7 +121,7 @@ AC_SUBST([XGETTEXT_EXTRA_OPTIONS])
 
 AC_ARG_WITH(testprograms, [AS_HELP_STRING([--with-testprograms],[Build internal test programs.])],[testprograms="$withval"])
 
-AC_ARG_WITH(localthemedir, [AS_HELP_STRING([--with-localthemedir],[Compile with -DTHEMEDIR=./themes (for testing purposes).])],[localthemedir="$withval"])
+AC_ARG_WITH(localthemedir, [AS_HELP_STRING([--with-localthemedir],[Compile with -DTHEMEDIR=./themes -DCREATORDIR=./creator (for testing purposes).])],[localthemedir="$withval"])
 
 BUILT_TESTPROGRAMS=""
 BUILT_INTERACTIVETESTPROGRAMS=""
@@ -155,7 +155,9 @@ AC_CONFIG_FILES([Makefile
 
 AM_CONDITIONAL([LOCALTHEMEDIR], [test "$localthemedir" = "yes" ])
 pwdthemes="`pwd`/themes"
+pwdcreator="`pwd`/creator"
 AC_SUBST(pwdthemes)
+AC_SUBST(pwdcreator)
 
 AC_SUBST([LIBTOOL_DEPS])
 AC_OUTPUT

@@ -1,0 +1,19 @@
+<!--
+
+UI elements generated from a theme file, and extracted from the uielements
+object and placed into discrete variables.
+
+-->
+
+<collection>
+  <name>app_elements_t</name>
+  <ref>
+    <type>x::w::main_window</type>
+    <name>main_window</name>
+  </ref>
+
+  <ref>
+    <type>x::w::const_uigenerators</type>
+    <name>main_generator</name>
+  </ref>
+</collection>

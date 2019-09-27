@@ -16,8 +16,7 @@ See COPYING for distribution information.
 <factory type="book" id="settings">
 
   <add>
-    <label>general-label</label>
-    <layout>options</layout>
+    <!-- ... -->
   </add>
 
 </factory>]]></programlisting>
