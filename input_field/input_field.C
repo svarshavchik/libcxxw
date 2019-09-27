@@ -574,6 +574,17 @@ void input_fieldObj::on_change(const functionref<
 		 });
 }
 
+bool input_fieldObj::validate_modified(ONLY IN_THREAD)
+{
+	return validate_modified(IN_THREAD, {});
+}
+
+bool input_fieldObj::validate_modified(ONLY IN_THREAD,
+				       const callback_trigger_t &trigger)
+{
+	return impl->editor_element->impl->validate_modified(IN_THREAD,
+							     trigger);
+}
 
 void input_fieldObj::on_autocomplete(const functionref<bool
 				     (THREAD_CALLBACK,

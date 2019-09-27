@@ -2072,7 +2072,7 @@ bool editorObj::implObj::ok_to_lose_focus(ONLY IN_THREAD,
 bool editorObj::implObj::validate_modified(ONLY IN_THREAD,
 					   const callback_trigger_t &trigger)
 {
-	if (!data(IN_THREAD).logical_inherited_visibility)
+	if (!enabled(IN_THREAD))
 		// We could be here because we're losing keyboard focus after
 		// we become invisible. Don't want to invoke validation in
 		// that case.

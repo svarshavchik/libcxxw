@@ -108,6 +108,16 @@ public:
 				  canonical_format_functor &&canonical_format,
 				  new_value_functor &&new_value);
 
+	//! Validate the input field, if needed.
+
+	//! Returns an indication if the input field is validated.
+	bool validate_modified(ONLY IN_THREAD);
+
+	//! Validate the input field, if needed.
+
+	//! Returns an indication if the input field is validated.
+	bool validate_modified(ONLY IN_THREAD, const callback_trigger_t &);
+
 	//! Override peepholed_focusable.
 	void do_get_impl(const function<internal_focusable_cb> &)
 		const override LIBCXX_HIDDEN;

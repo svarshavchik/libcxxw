@@ -308,6 +308,25 @@ set_validator() and set_string_validator() automatically trim off any
 leading and trailing whitespace in the typed in text before attempting
 to validate it.
 
+\code
+if (!f->validate_modified(IN_THREAD))
+{
+   // ...
+}
+\endcode
+
+Invoking validate_modified() manually triggers validation, if one is required.
+Returns an indication whether the input field passed validation. By default
+an input field passes validation if it is not visible, if it's disabled,
+or if it does not have a validation callback. If the validation callback
+already validated the field and it hasn't been modified at all, this
+returns true without invoking the callback again.
+
+validate_modified() is for use by keyboard shortcut-invoked callbacks.
+Validation takes place when tabbing out of the input field, so it's useful
+to invoke the validation callback from a keyboard shortcut, after the
+input field was modified but not yet validated.
+
 \par Input filters
 
 \code
