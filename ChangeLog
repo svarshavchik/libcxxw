@@ -1,5 +1,8 @@
 2019-09-19  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Fix race condition resulting in a deadlock if an exception
+	gets thrown in main window's creator.
+
 	* uixml: <container>s may also specify optional tooltips and
 	context popup menus.
 

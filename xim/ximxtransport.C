@@ -47,33 +47,41 @@ ximxtransportObj::ximxtransportObj(const ref<implObj> &impl)
 
 ximxtransportObj::~ximxtransportObj()
 {
-	if (impl->screenref->get_connection()->impl->is_connection_thread())
-	{
-		// Through a sequence of, I'm sure, a set of fascinating
-		// events the connection thread ended up owning the last
-		// reference to the last window.
-		//
-		// The Ibus XIM server is buggy, and fails to clean up
-		// after itself unless the client does an orderly
-		// disconnection. We're going out of our way to make sure
-		// we do an orderly disconnect. But to do this we need
-		// to wait until for things to naturally run its course,
-		// while the connection thread is running.
-		//
-		// We'll kick off a separate thread that will wait for the
-		// XIM transport to disconnect. The separate thread captures
-		// by value the refs to both impl and owner, which is also
-		// going to keep everything alive, until this is done.
+	// There are two possible race conditions here:
+	//
+	// 1) the connection thread ended up owning the last reference to
+	// the main window, or
+	//
+	// 2) the main thread still has some references to secondary objects
+	// that hold locks, such as layout manager objects, in automatic
+	// scope which are going to be destoryed, but not after the top level
+	// main window objects gets destroyed, and we're called as part of that
+	// operation. This can happen if, for example, a uielements gets
+	// constructed in auto scope first, then the mainwindow object, then
+	// the main window object's creator generates the main window's
+	// contents, which populates the uielements' contents with the
+	// constructed layout manager objects, and then an exception gets
+	// thrown, which unwinds everything.
+	//
+	// What we're trying to do here is an orderly shutdown of the X
+	// transport.
+	//
+	// The Ibus XIM server is buggy, and fails to clean up
+	// after itself unless the client does an orderly
+	// disconnection. We're going out of our way to make sure
+	// we do an orderly disconnect. But to do this we need
+	// to wait until for things to naturally run its course,
+	// while the connection thread is running.
+	//
+	// We'll kick off a separate thread that will wait for the
+	// XIM transport to disconnect. The separate thread captures
+	// by value the refs to both impl and owner, which is also
+	// going to keep everything alive, until this is done.
 
-		run_lambda([impl=this->impl, window_owner=this->window_owner]
-			   {
-				   impl->wait_until_disconnected(true);
-			   });
-	}
-	else
-	{
-		impl->wait_until_disconnected(false);
-	}
+	run_lambda([impl=this->impl, window_owner=this->window_owner]
+		   {
+			   impl->wait_until_disconnected();
+		   });
 }
 
 LIBCXXW_NAMESPACE_END

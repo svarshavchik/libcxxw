@@ -98,7 +98,7 @@ class LIBCXX_HIDDEN ximxtransportObj::implObj
 
 	//! This gets called before destroying this implementation object.
 
-	void wait_until_disconnected(bool in_helper_thread);
+	void wait_until_disconnected();
 
  private:
 

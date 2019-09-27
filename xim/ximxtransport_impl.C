@@ -150,13 +150,11 @@ void ximxtransportObj::implObj::xim_fully_connected(ONLY IN_THREAD)
 	LOG_DEBUG("Connection to the server is complete");
 }
 
-void ximxtransportObj::implObj
-::wait_until_disconnected(bool in_helper_thread)
+void ximxtransportObj::implObj::wait_until_disconnected()
 {
 	LOG_FUNC_SCOPE(transport_log);
 
-	LOG_DEBUG("Disconnecting"
-		  << (in_helper_thread ? " (using a helper thread)":""));
+	LOG_DEBUG("Disconnecting");
 
 	connection_state_t::lock lock{connection_state};
 

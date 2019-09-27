@@ -411,6 +411,8 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
+	std::optional<LIBCXX_NAMESPACE::w::layoutmanager> exceptiontest;
+
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([&]
 			 (const auto &main_window)
@@ -444,8 +446,10 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 					    {10.0 }});
 
 				 if (options.exceptiontest->value)
+				 {
+					 exceptiontest=m;
 					 throw EXCEPTION("Test");
-
+				 }
 				 main_window->appdata=e;
 			 });
 
