@@ -1096,14 +1096,29 @@ void elementObj::implObj::clear_to_color(ONLY IN_THREAD,
 #endif
 		draw_using_scratch_buffer
 			(IN_THREAD,
-			 []
-			 (const auto &, const auto &, const auto &)
+			 [this, &IN_THREAD, &di, &area]
+			 (const auto &pic, const auto &pix, const auto &gctx)
 			 {
+				 cleared_to_background_color(IN_THREAD,
+							     pic,
+							     pix,
+							     gctx,
+							     di,
+							     area);
 			 },
 			 area,
 			 di, background_color_di,
 			 clip);
 	}
+}
+
+void elementObj::implObj::cleared_to_background_color(ONLY IN_THREAD,
+						      const picture &,
+						      const pixmap &,
+						      const gc &,
+						      const draw_info &,
+						      const rectangle &)
+{
 }
 
 void elementObj::implObj::remove_background_color()

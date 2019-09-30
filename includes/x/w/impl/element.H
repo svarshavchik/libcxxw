@@ -910,6 +910,31 @@ class elementObj::implObj : public element_drawObj,
 			    const draw_info &background_color_di,
 			    const rectarea &areas);
 
+
+	//! clear_to_color() has cleared this area to the background color.
+
+	//! The default implementation of do_draw() calls clear_to_color().
+	//! clear_to_color() clears each area to draw to the background color,
+	//! and calls clear_to_color_area(), passing:
+	//!
+	//! - picture, pixmap, and a gc for a scratch buffer with the cleared
+	//! background color.
+	//!
+	//! - draw_info
+	//!
+	//! - which part of the element this is for. The coordinates are
+	//! absolute.
+	//!
+	//! The default implementation does nothing, hence the default behavior
+	//! is background color clear.
+
+	virtual void cleared_to_background_color(ONLY IN_THREAD,
+						 const picture &,
+						 const pixmap &,
+						 const gc &,
+						 const draw_info &,
+						 const rectangle &);
+
 	//! A new theme has been installed.
 
 	//! This is invoked from the window handler's theme_updated_event(),

@@ -64,44 +64,30 @@ void color_picker_squareObj::implObj
 	schedule_full_redraw(IN_THREAD);
 }
 
-void color_picker_squareObj::implObj::do_draw(ONLY IN_THREAD,
-					      const draw_info &di,
-					      const rectarea &areas)
+void color_picker_squareObj::implObj
+::cleared_to_background_color(ONLY IN_THREAD,
+			      const picture &pic,
+			      const pixmap &pix,
+			      const gc &context,
+			      const draw_info &di,
+			      const rectangle &r)
 {
-	clip_region_set clipped{IN_THREAD, *this, di};
+	// Clear to the fixed color. This is one
+	// RGB component.
+	pic->fill_rectangle(r, fixed_color);
 
-	for (const auto &r:areas)
-	{
-		draw_using_scratch_buffer
-			(IN_THREAD,
-			 [&, this]
-			 (const picture &pic,
-			  const pixmap &pix,
-			  const gc &context)
-			 {
-				 // Clear to the fixed color. This is one
-				 // RGB component.
-				 pic->fill_rectangle(r, fixed_color);
+	// Now add the horizontal and the vertical
+	// components.
 
-				 // Now add the horizontal and the vertical
-				 // components.
+	pic->composite(background_color_element<color_picker_h_gradient>
+		       ::get(IN_THREAD)->get_current_color(IN_THREAD),
+		       r.x, r.y, r,
+		       render_pict_op::op_add);
 
-				 pic->composite(background_color_element<
-						color_picker_h_gradient>
-						::get(IN_THREAD)
-						->get_current_color(IN_THREAD),
-						r.x, r.y, r,
-						render_pict_op::op_add);
-
-				 pic->composite(background_color_element<
-						color_picker_v_gradient>
-						::get(IN_THREAD)
-						->get_current_color(IN_THREAD),
-						r.x, r.y, r,
-						render_pict_op::op_add);
-			 },
-			 r, di, di, clipped);
-	}
+	pic->composite(background_color_element<color_picker_v_gradient>
+		       ::get(IN_THREAD)->get_current_color(IN_THREAD),
+		       r.x, r.y, r,
+		       render_pict_op::op_add);
 }
 
 LIBCXXW_NAMESPACE_END

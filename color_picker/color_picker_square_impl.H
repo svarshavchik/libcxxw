@@ -57,9 +57,12 @@ class color_picker_squareObj::implObj
 
 	//! Draw the color square.
 
-	void do_draw(ONLY IN_THREAD,
-		     const draw_info &di,
-		     const rectarea &areas) override;
+	void cleared_to_background_color(ONLY IN_THREAD,
+					 const picture &pic,
+					 const pixmap &pix,
+					 const gc &context,
+					 const draw_info &di,
+					 const rectangle &r) override;
 
 	//! Update my gradient.
 
