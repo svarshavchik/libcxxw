@@ -64,7 +64,8 @@ public:
 	void remove_items(ONLY IN_THREAD, size_t i, size_t n_items)
 		override;
 
-	using custom_comboboxlayoutmanagerObj::remove_items;
+	void remove_items(size_t item_number,
+			  size_t n_items) override;
 
 	//! Replace an item.
 

@@ -946,11 +946,19 @@ new_items_ret standard_comboboxlayoutmanagerObj
 	return lock.replace_items(IN_THREAD, i, items);
 }
 
+void standard_comboboxlayoutmanagerObj::remove_items(size_t item_number,
+						     size_t n_items)
+{
+	standard_combobox_lock lock{ref{this}};
+
+	lock.remove_items(item_number, n_items);
+}
+
 void standard_comboboxlayoutmanagerObj::remove_items(ONLY IN_THREAD,
 						     size_t i,
 						     size_t n_items)
 {
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+	standard_combobox_lock lock{ref{this}};
 
 	lock.remove_items(IN_THREAD, i, n_items);
 }
