@@ -194,7 +194,7 @@ richtextstring elementObj::implObj
 	// richtextstring's constructor.
 	std::unordered_map<size_t, richtextmeta> m;
 
-	auto screen_impl=get_screen()->impl;
+	auto s=get_screen();
 
 	for (const auto &p:all_positions)
 	{
@@ -239,8 +239,8 @@ richtextstring elementObj::implObj
 							return c;
 						}}, iter->second);
 
-				font.textcolor=screen_impl
-					->create_background_color(c);
+				font.textcolor=create_new_background_color
+					(s, c);
 				font.bg_color=background_colorptr();
 			}
 		}
@@ -250,9 +250,8 @@ richtextstring elementObj::implObj
 
 			if (iter != t.background_colors.end())
 			{
-				font.bg_color=screen_impl
-					->create_background_color
-					(iter->second);
+				font.bg_color=create_new_background_color
+					(s, iter->second);
 			}
 		}
 

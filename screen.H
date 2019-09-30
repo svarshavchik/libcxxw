@@ -44,6 +44,28 @@ current_border_impl get_cached_border(const screen &s,
 				      const border_arg &arg)
 		LIBCXX_HIDDEN;
 
+//! Create a cached gradient background color
+background_color create_new_gradient_background_color
+(const screen &s,
+ const background_color &base_color,
+ const const_picture &p) LIBCXX_HIDDEN;
+
+//! Create a background color from the current theme.
+
+//! This returns a background_color object. Its get_current_color()
+//! method returns the background color from the current theme. If
+//! the theme changes, the returned color will be from the new theme.
+//!
+//! The returned object holds a reference to this screen object.
+
+background_color create_new_background_color(const screen &s,
+					     const color_arg &color_name);
+
+//! Return a non-theme background_color object.
+
+background_color create_new_background_color(const screen &s,
+					     const const_picture &pic);
+
 //! xcb_screen_t owner.
 
 class LIBCXX_HIDDEN screenObj::implObj
@@ -252,24 +274,18 @@ class LIBCXX_HIDDEN screenObj::implObj
 						     dim_t h,
 						     render_repeat repeat);
 
-	//! Create a cached gradient background color
-	background_color create_gradient_background_color
-		(const background_color &base_color,
+	friend background_color create_new_gradient_background_color
+		(const screen &s,
+		 const background_color &base_color,
 		 const const_picture &p);
 
-	//! Create a background color from the current theme.
+	friend background_color
+		create_new_background_color(const screen &s,
+					    const color_arg &color_name);
 
-	//! This returns a background_color object. Its get_current_color()
-	//! method returns the background color from the current theme. If
-	//! the theme changes, the returned color will be from the new theme.
-	//!
-	//! The returned object holds a reference to this screen object.
-
-	background_color create_background_color(const color_arg &color_name);
-
-	//! Return a non-theme background_color object.
-
-	background_color create_background_color(const const_picture &pic);
+	friend background_color
+		create_new_background_color(const screen &s,
+					    const const_picture &pic);
 
 	friend current_border_impl get_cached_border(const screen &s,
 						     const border_arg &arg);

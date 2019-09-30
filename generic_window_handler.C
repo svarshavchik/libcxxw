@@ -67,12 +67,6 @@ static rectangle element_position(const rectangle &r)
 	return cpy;
 }
 
-static background_color default_background_color(const screen &s,
-						 const color_arg &color)
-{
-	return s->impl->create_background_color(color);
-}
-
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -134,8 +128,8 @@ create_extra_constructor_params(const generic_window_handler_constructor_params
 	const auto &parent_screen=params.parent_screen;
 
 	auto background_color_obj=
-		default_background_color(parent_screen,
-					 params.background_color);
+		create_new_background_color(parent_screen,
+					    params.background_color);
 
 	values_and_mask vm
 		{
@@ -216,8 +210,8 @@ generic_windowObj::handlerObj
 	  superclass_t
 	{
 	 params.background_color_obj,
-	 default_background_color(params.window_handler_params.screenref,
-				  params.appearance->modal_shade_color),
+	 create_new_background_color(params.window_handler_params.screenref,
+				     params.appearance->modal_shade_color),
 	 drawableObj::implObj::create_icon
 	 (create_icon_args_t
 		{
@@ -674,8 +668,9 @@ void generic_windowObj::handlerObj
 void generic_windowObj::handlerObj::remove_background_color(ONLY IN_THREAD)
 {
 	set_background_color(IN_THREAD,
-			     screenref->impl->create_background_color
-			     (original_background_color));
+			     create_new_background_color
+			     (screenref,
+			      original_background_color));
 }
 
 bool generic_windowObj::handlerObj::has_own_background_color(ONLY IN_THREAD)

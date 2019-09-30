@@ -45,20 +45,19 @@ sxg_parserObj::create_text_picture(const picture_info &info,
 		}
 
 		m.insert({s.size(),
-					richtextmeta{
-					screenref->impl
-						->create_background_color
-						(t.color.get_color
-						 (main->get_width(),
-						  main->get_height(),
-						  main->impl->get_screen()
-						  ->impl, theme)),
-						screenref->impl->fontcaches
-						->create_custom_font
-						(screenref,
-						 main->impl->font_alpha_depth(),
-						 f)
-						}});
+			  richtextmeta{create_new_background_color
+				       (screenref,
+					t.color.get_color
+					(main->get_width(),
+					 main->get_height(),
+					 main->impl->get_screen()
+					 ->impl, theme)),
+				       screenref->impl->fontcaches
+				       ->create_custom_font
+				       (screenref,
+					main->impl->font_alpha_depth(),
+					f)
+			  }});
 		s += t.text;
 	}
 

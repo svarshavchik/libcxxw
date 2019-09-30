@@ -6,10 +6,14 @@
 #include "x/w/impl/background_color.H"
 #include "x/w/picture.H"
 #include "x/w/impl/element.H"
+#include "x/w/screen.H"
 
 LIBCXXW_NAMESPACE_START
 
-background_colorObj::background_colorObj()=default;
+background_colorObj::background_colorObj(const screen &background_color_screen)
+	: background_color_screen{background_color_screen}
+{
+}
 
 background_colorObj::~background_colorObj()=default;
 

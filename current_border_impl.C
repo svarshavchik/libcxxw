@@ -42,10 +42,10 @@ convert_to_border_info(const screen &s,
 		       const const_defaulttheme &theme,
 		       const border_infomm &mm)
 {
-	border_info info{s->impl->create_background_color(mm.color1)};
+	border_info info{create_new_background_color(s, mm.color1)};
 
 	if (mm.color2)
-		info.color2=s->impl->create_background_color(*mm.color2);
+		info.color2=create_new_background_color(s, *mm.color2);
 
 	auto w=theme->get_theme_dim_t(mm.width, themedimaxis::width);
 	auto h=theme->get_theme_dim_t(mm.height, themedimaxis::height);

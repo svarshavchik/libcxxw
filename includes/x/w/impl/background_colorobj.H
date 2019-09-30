@@ -8,6 +8,7 @@
 #include <x/obj.H>
 #include <x/w/picturefwd.H>
 #include <x/w/elementobj.H>
+#include <x/w/screenfwd.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/defaultthemefwd.H>
 
@@ -21,8 +22,13 @@ LIBCXXW_NAMESPACE_START
 class background_colorObj : virtual public obj {
 
 public:
+	//! The screen this background color is from.
+
+	const screen background_color_screen;
+
 	//! Constructor
-	background_colorObj() LIBCXX_HIDDEN;
+	background_colorObj(const screen &background_color_screen)
+		LIBCXX_HIDDEN;
 
 	//! Destructor
 	~background_colorObj() LIBCXX_HIDDEN;

@@ -1117,8 +1117,8 @@ void elementObj::implObj::remove_background_color()
 void elementObj::implObj
 ::set_background_color(const color_arg &theme_color)
 {
-	set_background_color(get_screen()->impl
-			     ->create_background_color(theme_color));
+	set_background_color(create_new_background_color(get_screen(),
+							 theme_color));
 }
 
 void elementObj::implObj
@@ -1214,7 +1214,7 @@ fontcollection elementObj::implObj::create_fontcollection(const font &f,
 background_color elementObj::implObj
 ::create_background_color(const color_arg &color_name)
 {
-	return get_screen()->impl->create_background_color(color_name);
+	return create_new_background_color(get_screen(), color_name);
 }
 
 void elementObj::implObj::on_keyboard_focus(const

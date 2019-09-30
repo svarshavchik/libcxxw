@@ -585,8 +585,7 @@ void header_container_implObj
 		     highlight_width, 1);
 
 	set_background_color(IN_THREAD,
-			     get_screen()->impl
-			     ->create_background_color(p));
+			     create_new_background_color(get_screen(), p));
 	header_container_element->set_background_color(adjustable_header_color);
 }
 

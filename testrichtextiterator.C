@@ -20,7 +20,7 @@ void testrichtext1(const main_window &w,
 {
 	auto IN_THREAD=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%");
+	auto black=create_new_background_color(w->get_screen(), "0%");
 
 	richtextstring ustring{
 		U"Helloworld ",
@@ -283,7 +283,7 @@ void testrichtext2(const main_window &w,
 {
 	auto IN_THREAD=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%");
+	auto black=create_new_background_color(w->get_screen(), "0%");
 
 	const struct {
 		const char *orig;
@@ -395,7 +395,7 @@ void testrichtext3(const main_window &w,
 {
 	auto IN_THREAD=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%");
+	auto black=create_new_background_color(w->get_screen(), "0%");
 
 	const struct {
 		size_t pos1, pos2;
@@ -589,7 +589,7 @@ void testrichtext4(const main_window &w,
 {
 	auto IN_THREAD=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%");
+	auto black=create_new_background_color(w->get_screen(), "0%");
 
 	std::string test_string="12345 67890 ABCDEF\n" // 19 chars
 		"G\n"
@@ -663,7 +663,7 @@ void testrichtext5(const main_window &w,
 {
 	auto IN_THREAD=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%");
+	auto black=create_new_background_color(w->get_screen(), "0%");
 
 	std::string test_string=
 		"The quick brown fox jumped over the lazy dog's tail.";
@@ -720,7 +720,7 @@ void testrichtext6(const main_window &w,
 {
 	auto IN_THREAD=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%");
+	auto black=create_new_background_color(w->get_screen(), "0%");
 
 	richtextstring ustring{
 		U"Hello---world ",

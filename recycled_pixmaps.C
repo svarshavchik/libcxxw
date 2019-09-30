@@ -94,8 +94,9 @@ public:
 	//! Constructor
 	gradient_colorObj(const const_picture &gradient_color,
 			  const background_color &base_color)
-		: gradient_color{gradient_color},
-		  base_color{base_color}
+		: background_colorObj{base_color->background_color_screen},
+		gradient_color{gradient_color},
+		base_color{base_color}
 	{
 	}
 
@@ -152,7 +153,7 @@ protected:
 
 	// Updated fixed_color based on color
 
-	const_picture create_fixed_color(const ref<screenObj::implObj> &s)
+	const_picture create_fixed_color(const screen &s)
 	{
 		return std::visit([&, this](const auto &c)
 				  {
@@ -163,9 +164,9 @@ protected:
 public:
 	static inline const_picture
 	create_fixed_color(const rgb &r,
-			   const ref<screenObj::implObj> &s)
+			   const screen &s)
 	{
-		return s->create_solid_color_picture(r);
+		return s->impl->create_solid_color_picture(r);
 	}
 
 	// Before we know the dimensions of the
@@ -178,7 +179,7 @@ public:
 
 	static inline const_picture
 	create_fixed_color(const linear_gradient &g,
-			   const ref<screenObj::implObj> &s)
+			   const screen &s)
 	{
 		auto iter=g.gradient.find(0);
 
@@ -186,12 +187,12 @@ public:
 			throw EXCEPTION("Internal error: "
 					"invalid gradient parameter");
 
-		return s->create_solid_color_picture(iter->second);
+		return s->impl->create_solid_color_picture(iter->second);
 	}
 
 	static inline const_picture
 	create_fixed_color(const radial_gradient &g,
-			   const ref<screenObj::implObj> &s)
+			   const screen &s)
 	{
 		auto iter=g.gradient.find(0);
 
@@ -199,12 +200,12 @@ public:
 			throw EXCEPTION("Internal error: "
 					"invalid gradient parameter");
 
-		return s->create_solid_color_picture(iter->second);
+		return s->impl->create_solid_color_picture(iter->second);
 	}
 
 	static inline const_picture
 	create_fixed_color(const const_picture &c,
-			   const ref<screenObj::implObj> &s)
+			   const screen &s)
 	{
 
 		return c;
@@ -212,8 +213,9 @@ public:
 
 	template<typename Arg>
 	nontheme_background_colorObj(Arg &&arg,
-				     const ref<screenObj::implObj> &s)
-		: color{std::forward<Arg>(arg)},
+				     const screen &s)
+		: background_colorObj{s},
+		  color{std::forward<Arg>(arg)},
 		  fixed_color{create_fixed_color(s)}
 	{
 	}
@@ -245,19 +247,20 @@ private:
 					      dim_t e_height,
 					      const linear_gradient &g)
 	{
-		auto screen_impl=e.get_screen()->impl;
-
 		auto [x, y, width, height]=
 			get_gradient_params(IN_THREAD, e_width, e_height,
-					    screen_impl,
+					    background_color_screen->impl,
 					    g.fixed_width,
 					    g.fixed_height);
 
-		auto picture=screen_impl->create_linear_gradient_picture
+		auto picture=background_color_screen->impl
+			->create_linear_gradient_picture
 			(g, x, y, width, height, render_repeat::pad);
 
-		return screen_impl->create_gradient_background_color(ref(this),
-								     picture);
+		return create_new_gradient_background_color
+			(background_color_screen,
+			 ref{this},
+			 picture);
 	}
 
 	inline background_color make_gradient(ONLY IN_THREAD,
@@ -266,19 +269,20 @@ private:
 					      dim_t e_height,
 					      const radial_gradient &g)
 	{
-		auto screen_impl=e.get_screen()->impl;
-
 		auto [x, y, width, height]=
 			get_gradient_params(IN_THREAD,
-					    e_width, e_height, screen_impl,
+					    e_width, e_height,
+					    background_color_screen->impl,
 					    g.fixed_width,
 					    g.fixed_height);
 
-		auto picture=screen_impl->create_radial_gradient_picture
+		auto picture=background_color_screen->impl->create_radial_gradient_picture
 			(g, x, y, width, height, render_repeat::pad);
 
-		return screen_impl->create_gradient_background_color(ref(this),
-								     picture);
+		return create_new_gradient_background_color
+			(background_color_screen,
+			 ref{this},
+			 picture);
 	}
 
 public:
@@ -290,14 +294,12 @@ public:
 	{
 		return std::visit(visitor{
 				[&, this](const rgb &)
-					->background_color
 				{
-					return ref(this);
+					return background_color{this};
 				},
 				[&, this](const const_picture &)
-					->background_color
 				{
-					return ref(this);
+					return background_color{this};
 				},
 				[&, this](const linear_gradient &g)
 				{
@@ -379,23 +381,21 @@ private:
 class theme_background_colorObj : public nontheme_background_colorObj {
 
 	const std::string theme_color;
-	const ref<screenObj::implObj> screen;
 
  public:
 
 	// The constructor gets initializes with the current background color
 
 	theme_background_colorObj(const std::string &theme_color,
-				  const ref<screenObj::implObj> &screen,
+				  const screen &s,
 				  const const_defaulttheme &current_theme)
-		: nontheme_background_colorObj{
-		std::visit([&](const auto &c)
-			   {
-				   return color_t{c};
-			   }, current_theme->get_theme_color(theme_color)),
-			screen},
-		  theme_color{theme_color},
-		  screen{screen}
+		: nontheme_background_colorObj
+		{std::visit([&](const auto &c)
+			    {
+				    return color_t{c};
+			    }, current_theme->get_theme_color(theme_color)),
+		 s},
+		  theme_color{theme_color}
 	{
 	}
 
@@ -410,7 +410,7 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 				   this->color=c;
 			   }, new_theme->get_theme_color(theme_color));
 
-		fixed_color=create_fixed_color(screen);
+		fixed_color=create_fixed_color(background_color_screen);
 	}
 };
 
@@ -419,60 +419,60 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 #endif
 }
 
-background_color screenObj::implObj
-::create_background_color(const color_arg &color_name)
+background_color create_new_background_color(const screen &s,
+					     const color_arg &color_name)
 {
 	// We lock the current theme for the duration of this.
 
-	current_theme_t::lock lock{current_theme};
+	current_theme_t::lock lock{s->impl->current_theme};
 
-	return recycled_pixmaps_cache->theme_background_color_cache
+	return s->impl->recycled_pixmaps_cache->theme_background_color_cache
 		->find_or_create
 		(color_name,
-		 [&,this]
+		 [&]
 		 {
 			 return std::visit(visitor{
-				 [&,this](const std::string &name)
+				 [&](const std::string &name)
 					 ->background_color
 				 {
 					 return ref<theme_background_colorObj>
-						 ::create(name, ref(this),
-							  *lock);
+						 ::create(name, s, *lock);
 				 },
-				 [this](const auto &nontheme_color)
+				 [&](const auto &nontheme_color)
 					 ->background_color
 				 {
 					 return ref<nontheme_background_colorObj
 						    >::create(nontheme_color,
-							      ref(this));
+							      s);
 				 }}, color_name);
 		 });
 }
 
 
-background_color screenObj::implObj
-::create_background_color(const const_picture &pic)
+background_color create_new_background_color(const screen &s,
+					     const const_picture &pic)
 {
-	if (pic->impl->picture_xid.thread() != thread)
+	if (pic->impl->picture_xid.thread() != s->impl->thread)
 		throw EXCEPTION(_("Attempt to set a background color picture from a different screen."));
 
-	return recycled_pixmaps_cache->nontheme_background_color_cache
+	return s->impl->recycled_pixmaps_cache->nontheme_background_color_cache
 		->find_or_create
 		(pic,
-		 [&, this]
+		 [&]
 		 {
 			 return ref<nontheme_background_colorObj>
-				 ::create(pic, ref{this});
+				 ::create(pic, s);
 		 });
 }
 
-background_color screenObj::implObj
-::create_gradient_background_color(const background_color &base_color,
-				   const const_picture &p)
+background_color
+create_new_gradient_background_color(const screen &s,
+				     const background_color &base_color,
+				     const const_picture &p)
 {
-	return recycled_pixmaps_cache->gradient_cache->find_or_create
+	return s->impl->recycled_pixmaps_cache->gradient_cache->find_or_create
 		({base_color, p},
-		 [&, this]
+		 [&]
 		 {
 			 return ref<gradient_colorObj>::create(p, base_color);
 		 });
