@@ -29,25 +29,28 @@ public:
 	~listitemhandleObj() LIBCXX_HIDDEN;
 
 	//! Whether this list item is enabled.
-	virtual bool enabled() const=0;
+	virtual bool enabled() const LIBCXX_HIDDEN =0;
 
 	//! Enable or disable this list item.
-	virtual void enabled(bool)=0;
+	virtual void enabled(bool) LIBCXX_HIDDEN =0;
 
 	//! Return the menu item's layout manager.
-	virtual listlayoutmanagerptr get_item_layoutmanager() const=0;
+	virtual listlayoutmanagerptr get_item_layoutmanager()
+		const LIBCXX_HIDDEN =0;
 
 	//! Enable or disable this list item.
-	virtual void enabled(ONLY IN_THREAD, bool)=0;
+	virtual void enabled(ONLY IN_THREAD, bool) LIBCXX_HIDDEN =0;
 
 	//! Install a new status update callback.
 	virtual void on_status_update(const
-				      list_item_status_change_callback &)=0;
+				      list_item_status_change_callback &)
+		LIBCXX_HIDDEN =0;
 
 	//! Install a new status update callback.
 	virtual void on_status_update(ONLY IN_THREAD,
 				      const
-				      list_item_status_change_callback &)=0;
+				      list_item_status_change_callback &)
+		LIBCXX_HIDDEN =0;
 };
 
 LIBCXXW_NAMESPACE_END

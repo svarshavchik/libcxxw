@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN listitemhandleObj;
+class LIBCXX_PUBLIC listitemhandleObj;
 
 /*! A reference handle for an item in a \ref listlayoutmanager "list".
 
