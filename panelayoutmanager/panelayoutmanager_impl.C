@@ -95,18 +95,17 @@ panelayoutmanager panelayoutmanagerObj::implObj::create_panelayoutmanager()
 
 void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
 {
+	auto &e=pane_container_impl->container_element_impl();
+
 	// Create the implementation object for the slider element.
-	auto slider_border=
-		get_cached_border(pane_container_impl->container_element_impl()
-				  .get_screen(), appearance->slider);
+	auto slider_border=e.create_border(appearance->slider);
 
 	// Start with a focus frame.
 
 	auto ff=ref<pane_slider_focusframeObj>::create
 		(f->get_container_impl(),
 		 appearance,
-		 pane_container_impl->container_element_impl()
-		 .get_window_handler()
+		 e.get_window_handler()
 		 .create_icon({slider_cursor()})->create_cursor());
 
 

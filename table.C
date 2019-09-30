@@ -584,8 +584,11 @@ void header_container_implObj
 		     x, 0,
 		     highlight_width, 1);
 
+	auto &wh=container_element_impl().get_window_handler();
 	set_background_color(IN_THREAD,
-			     create_new_background_color(get_screen(), p));
+			     create_new_background_color(wh.screenref,
+							 wh.drawable_pictformat,
+							 p));
 	header_container_element->set_background_color(adjustable_header_color);
 }
 

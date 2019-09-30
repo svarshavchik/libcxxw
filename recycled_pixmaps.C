@@ -420,6 +420,7 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 }
 
 background_color create_new_background_color(const screen &s,
+					     const const_pictformat &pf,
 					     const color_arg &color_name)
 {
 	// We lock the current theme for the duration of this.
@@ -450,6 +451,7 @@ background_color create_new_background_color(const screen &s,
 
 
 background_color create_new_background_color(const screen &s,
+					     const const_pictformat &pf,
 					     const const_picture &pic)
 {
 	if (pic->impl->picture_xid.thread() != s->impl->thread)

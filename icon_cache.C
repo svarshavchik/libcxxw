@@ -1234,11 +1234,13 @@ std::vector<icon> drawableObj::implObj
 
 icon drawableObj::implObj::create_icon(const create_icon_args_t &args)
 {
-	return create_icon(args, get_screen());
+	return create_new_icon(get_screen(),
+			       drawable_pictformat, args);
 }
 
-icon drawableObj::implObj::create_icon(const create_icon_args_t &args,
-				       const screen &screenref)
+icon create_new_icon(const screen &screenref,
+		     const const_pictformat &drawable_pictformat,
+		     const create_icon_args_t &args)
 {
 	auto theme=screenref->impl->current_theme.get();
 

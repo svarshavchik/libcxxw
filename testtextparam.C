@@ -38,7 +38,11 @@ void testtextparam(const main_window &mw)
 	auto string=
 		mw->impl->handler
 		->create_richtextstring({create_new_background_color
-					 (mw->get_screen(),"0%"),
+					 (mw->get_screen(),
+					  mw->elementObj::impl
+					  ->get_window_handler()
+					  .drawable_pictformat,
+					  "0%"),
 					mw->impl->handler
 					->create_current_fontcollection
 					  (theme_font{"serif"})},

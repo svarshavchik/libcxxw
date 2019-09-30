@@ -91,7 +91,11 @@ void progressbar_sliderObj::update(ONLY IN_THREAD)
 				     render_pict_op::op_over);
 
 	set_background_color(IN_THREAD,
-			     create_new_background_color(s, h_picture));
+			     create_new_background_color
+			     (s,
+			      container_element_impl().get_window_handler()
+			      .drawable_pictformat,
+			      h_picture));
 }
 
 LIBCXXW_NAMESPACE_END

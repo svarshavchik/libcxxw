@@ -31,6 +31,7 @@
 #include <x/w/impl/element_draw.H>
 #include <x/w/impl/draw_info.H>
 #include <x/w/impl/background_colorfwd.H>
+#include <x/w/impl/current_border_implfwd.H>
 #include <x/w/impl/grabbed_pointerfwd.H>
 #include <x/w/impl/cursor_pointerfwd.H>
 #include <x/w/impl/metrics_horizvertobj.H>
@@ -1028,6 +1029,10 @@ class elementObj::implObj : public element_drawObj,
 	//! Shortcut for invoking the same screen method
 
 	background_color create_background_color(const color_arg &color_name);
+
+	//! Create a border for this element.
+
+	current_border_impl create_border(const border_arg &arg);
 
 	//! Create a \ref richtextstring "rich text string", based on a \ref text_param "text_param" and a default \ref richtextmeta "richtextmeta".
 

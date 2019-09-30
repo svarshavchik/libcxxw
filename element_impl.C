@@ -17,6 +17,7 @@
 #include "cursor_pointer.H"
 #include "run_as.H"
 #include "x/w/impl/background_color.H"
+#include "x/w/impl/current_border_impl.H"
 #include "x/w/impl/child_elementobj.H"
 #include "grabbed_pointer.H"
 #include "x/w/element_state.H"
@@ -1117,8 +1118,7 @@ void elementObj::implObj::remove_background_color()
 void elementObj::implObj
 ::set_background_color(const color_arg &theme_color)
 {
-	set_background_color(create_new_background_color(get_screen(),
-							 theme_color));
+	set_background_color(create_background_color(theme_color));
 }
 
 void elementObj::implObj
@@ -1214,7 +1214,18 @@ fontcollection elementObj::implObj::create_fontcollection(const font &f,
 background_color elementObj::implObj
 ::create_background_color(const color_arg &color_name)
 {
-	return create_new_background_color(get_screen(), color_name);
+	return create_new_background_color(get_screen(),
+					   get_window_handler()
+					   .drawable_pictformat,
+					   color_name);
+}
+
+current_border_impl elementObj::implObj
+::create_border(const border_arg &arg)
+{
+	auto &wh=get_window_handler();
+
+	return get_cached_border(wh.screenref, wh.drawable_pictformat, arg);
 }
 
 void elementObj::implObj::on_keyboard_focus(const

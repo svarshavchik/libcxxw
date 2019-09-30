@@ -127,8 +127,11 @@ create_extra_constructor_params(const generic_window_handler_constructor_params
 
 	const auto &parent_screen=params.parent_screen;
 
+	const auto &pf=parent_screen->impl->toplevelwindow_pictformat;
+
 	auto background_color_obj=
 		create_new_background_color(parent_screen,
+					    pf,
 					    params.background_color);
 
 	values_and_mask vm
@@ -156,14 +159,14 @@ create_extra_constructor_params(const generic_window_handler_constructor_params
 		{
 		 parent_screen,
 		 parent_screen->impl->xcb_screen->root, // parent
-		 parent_screen->impl->toplevelwindow_pictformat->depth, // depth
+		 pf->depth, // depth
 		 dimensions, // initial_position
 		 XCB_WINDOW_CLASS_INPUT_OUTPUT, // window_class
 		 parent_screen->impl->toplevelwindow_visual
 		 ->impl->visual_id, // visual
 		 vm, // events_and_mask
 		},
-		parent_screen->impl->toplevelwindow_pictformat,
+		pf,
 		params.nesting_level,
 		params.background_color,
 		background_color_obj,
@@ -211,19 +214,21 @@ generic_windowObj::handlerObj
 	{
 	 params.background_color_obj,
 	 create_new_background_color(params.window_handler_params.screenref,
+				     params.drawable_pictformat,
 				     params.appearance->modal_shade_color),
-	 drawableObj::implObj::create_icon
-	 (create_icon_args_t
+	 create_new_icon(params.window_handler_params.screenref,
+			 params.drawable_pictformat,
+			 create_icon_args_t
 		{
 		 params.appearance->disabled_mask,
 		 render_repeat::normal
-		},
-	  params.window_handler_params.screenref),
+		}),
 	 cursor_pointer::create
-	 (drawableObj::implObj::create_icon(create_icon_args_t{
-			 params.appearance->wait_cursor
-		 },
-		 params.window_handler_params.screenref)),
+	 (create_new_icon(params.window_handler_params.screenref,
+			  params.drawable_pictformat,
+			  create_icon_args_t{
+				  params.appearance->wait_cursor
+					  })),
 	 params.nesting_level,
 	 element_position(params.window_handler_params.initial_position),
 	 popupptr{},
@@ -670,6 +675,7 @@ void generic_windowObj::handlerObj::remove_background_color(ONLY IN_THREAD)
 	set_background_color(IN_THREAD,
 			     create_new_background_color
 			     (screenref,
+			      drawable_pictformat,
 			      original_background_color));
 }
 

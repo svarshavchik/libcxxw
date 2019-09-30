@@ -19,7 +19,11 @@ void testrichtext(const current_fontcollection &font1,
 {
 	auto IN_THREAD=w->get_screen()->impl->thread;
 
-	auto black=create_new_background_color(w->get_screen(), "0%");
+	auto black=create_new_background_color(w->get_screen(),
+					       w->elementObj::impl
+					       ->get_window_handler()
+					       .drawable_pictformat,
+					       "0%");
 
 	richtextstring ustring{
 		U"Hello world\nHello\nworld\n",
@@ -93,7 +97,10 @@ void testsplit(const current_fontcollection &font1,
 {
 	auto IN_THREAD=w->get_screen()->impl->thread;
 
-	auto black=create_new_background_color(w->get_screen(), "0%");
+	auto black=create_new_background_color(w->get_screen(),
+					       w->elementObj::impl
+					       ->get_window_handler()
+					       .drawable_pictformat, "0%");
 
 	richtextstring ustring{
 		U"A B C D E",
@@ -221,7 +228,10 @@ void testresolvedfonts(const current_fontcollection &font1,
 		       const main_window &w)
 {
 	auto IN_THREAD=w->get_screen()->impl->thread;
-	auto black=create_new_background_color(w->get_screen(), "0%");
+	auto black=create_new_background_color(w->get_screen(),
+					       w->elementObj::impl
+					       ->get_window_handler()
+					       .drawable_pictformat, "0%");
 
 	richtextstring ustring{
 		U"0123456789",

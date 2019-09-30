@@ -10,6 +10,7 @@
 #include <x/w/impl/connection_threadfwd.H>
 #include <x/w/defaultthemefwd.H>
 #include <x/w/border_arg.H>
+#include <x/w/pictformatfwd.H>
 #include <x/w/screenobj.H>
 #include <x/obj.H>
 
@@ -25,6 +26,9 @@ public:
 	//! My screen.
 	const screen s;
 
+	//! My picture format
+	const const_pictformat pf;
+
 private:
 	//! The border argument specification.
 	const border_arg arg;
@@ -39,6 +43,7 @@ private:
 
 	//! Internal constructor
 	current_border_implObj(const screen &s,
+			       const const_pictformat &pf,
 			       const border_arg &arg,
 			       const current_theme_t::lock &lock)
 		LIBCXX_HIDDEN;

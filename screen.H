@@ -21,6 +21,7 @@
 #include "screen_fontcachesfwd.H"
 #include "ellipsiscachefwd.H"
 #include "x/w/impl/border_implfwd.H"
+#include "x/w/impl/iconfwd.H"
 #include "border_cachefwd.H"
 #include "xid_t.H"
 #include "fonts/fontconfigfwd.H"
@@ -41,8 +42,15 @@ class render;
 //! Find or create a border.
 
 current_border_impl get_cached_border(const screen &s,
+				      const const_pictformat &pf,
 				      const border_arg &arg)
 		LIBCXX_HIDDEN;
+
+//! Create a new icon
+icon create_new_icon(const screen &screenref,
+		     const const_pictformat &drawable_pictformat,
+		     const create_icon_args_t &args) LIBCXX_HIDDEN;
+
 
 //! Create a cached gradient background color
 background_color create_new_gradient_background_color
@@ -59,11 +67,13 @@ background_color create_new_gradient_background_color
 //! The returned object holds a reference to this screen object.
 
 background_color create_new_background_color(const screen &s,
+					     const const_pictformat &pf,
 					     const color_arg &color_name);
 
 //! Return a non-theme background_color object.
 
 background_color create_new_background_color(const screen &s,
+					     const const_pictformat &pf,
 					     const const_picture &pic);
 
 //! xcb_screen_t owner.
@@ -281,13 +291,16 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	friend background_color
 		create_new_background_color(const screen &s,
+					    const const_pictformat &pf,
 					    const color_arg &color_name);
 
 	friend background_color
 		create_new_background_color(const screen &s,
+					    const const_pictformat &pf,
 					    const const_picture &pic);
 
 	friend current_border_impl get_cached_border(const screen &s,
+						     const const_pictformat &pf,
 						     const border_arg &arg);
 
 	/////////////////////////////////////////////////////////////////////

@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "x/w/pictformat.H"
 #include "x/w/impl/current_border_impl.H"
 #include "x/w/impl/border_impl.H"
 #include "screen.H"
@@ -39,13 +40,14 @@ get_border_infomm(const border_arg &arg,
 
 static inline border_info
 convert_to_border_info(const screen &s,
+		       const const_pictformat &pf,
 		       const const_defaulttheme &theme,
 		       const border_infomm &mm)
 {
-	border_info info{create_new_background_color(s, mm.color1)};
+	border_info info{create_new_background_color(s, pf, mm.color1)};
 
 	if (mm.color2)
-		info.color2=create_new_background_color(s, *mm.color2);
+		info.color2=create_new_background_color(s, pf, *mm.color2);
 
 	auto w=theme->get_theme_dim_t(mm.width, themedimaxis::width);
 	auto h=theme->get_theme_dim_t(mm.height, themedimaxis::height);
@@ -141,11 +143,12 @@ convert_to_border_info(const screen &s,
 
 static inline const_border_impl
 border_impl_from_arg(const screen &s,
+		     const const_pictformat &pf,
 		     const border_arg &arg,
 		     const const_defaulttheme &theme)
 {
 	auto b=border_impl::create(convert_to_border_info
-				   (s, theme,
+				   (s, pf, theme,
 				    get_border_infomm(arg, theme)));
 	b->calculate();
 	return b;
@@ -153,11 +156,13 @@ border_impl_from_arg(const screen &s,
 
 current_border_implObj
 ::current_border_implObj(const screen &s,
+			 const const_pictformat &pf,
 			 const border_arg &arg,
 			 const current_theme_t::lock &lock)
 	: s{s},
+	  pf{pf},
 	  arg{arg},
-	  border_thread_only{border_impl_from_arg(s, arg, *lock)}
+	  border_thread_only{border_impl_from_arg(s, pf, arg, *lock)}
 {
 }
 
@@ -167,7 +172,7 @@ current_border_implObj
 void current_border_implObj
 ::current_theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
-	border(IN_THREAD)=border_impl_from_arg(s, arg, new_theme);
+	border(IN_THREAD)=border_impl_from_arg(s, pf, arg, new_theme);
 }
 
 bool current_border_implObj::no_border(ONLY IN_THREAD) const

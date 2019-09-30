@@ -492,8 +492,8 @@ void gridlayoutmanagerObj::implObj
 current_border_impl gridlayoutmanagerObj::implObj
 ::get_current_border(const border_arg &arg)
 {
-	return get_cached_border(layout_container_impl->get_window_handler()
-				 .screenref, arg);
+	return layout_container_impl->container_element_impl()
+		.create_border(arg);
 }
 
 void gridlayoutmanagerObj::implObj

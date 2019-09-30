@@ -47,6 +47,7 @@ sxg_parserObj::create_text_picture(const picture_info &info,
 		m.insert({s.size(),
 			  richtextmeta{create_new_background_color
 				       (screenref,
+					main->impl->drawable_pictformat,
 					t.color.get_color
 					(main->get_width(),
 					 main->get_height(),

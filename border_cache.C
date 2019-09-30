@@ -21,6 +21,7 @@ border_cacheObj::border_cacheObj()
 border_cacheObj::~border_cacheObj()=default;
 
 current_border_impl get_cached_border(const screen &s,
+				      const const_pictformat &pf,
 				      const border_arg &arg)
 {
 	current_theme_t::lock lock{s->impl->current_theme};
@@ -29,7 +30,7 @@ current_border_impl get_cached_border(const screen &s,
 		(arg,
 		 [&]
 		 {
-			 return ref<current_border_implObj>::create(s, arg,
+			 return ref<current_border_implObj>::create(s, pf, arg,
 								    lock);
 		 });
 }

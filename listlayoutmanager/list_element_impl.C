@@ -139,8 +139,6 @@ class LIBCXX_HIDDEN list_element_synchronized_columnsObj
 static inline auto create_column_borders(elementObj::implObj &e,
 					 const new_listlayoutmanager &style)
 {
-	auto screenref=e.get_window_handler().get_screen();
-
 	std::unordered_map<size_t, current_border_impl> column_borders;
 
 	for (const auto &cb:style.column_borders)
@@ -151,8 +149,7 @@ static inline auto create_column_borders(elementObj::implObj &e,
 					  "and one less than the number of "
 					  "columns in the list."));
 		}
-		column_borders.emplace(cb.first,
-				       get_cached_border(screenref, cb.second));
+		column_borders.emplace(cb.first, e.create_border(cb.second));
 	}
 
 	return column_borders;
