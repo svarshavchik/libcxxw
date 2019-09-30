@@ -1294,6 +1294,12 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <dash>1</dash>
   </border>
 
+  <!-- Border around the alpha channel -->
+
+  <border id="color_picker_alpha_border" from="thin_0%">
+    <rounded />
+  </border>
+
   <!-- Item layout manager -->
 
   <border id="itembutton_border" from="thick_0%">
@@ -2277,23 +2283,23 @@ The left half of the color picker selector popup.
 
 The layout looks like this
 
-+===+===============================+
-|   | HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH|
-+===+===============================+
-|                                   |
-+=+=+===============================+
-|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
-|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
-|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
-|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
++===+===============================+===+
+|   | HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH|   |
++===+===============================+===+
+|                                       |
++=+=+===============================+=+=|
+|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS| |A|
+|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS| |A|
+|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS| |A|
+|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS| |A|
 
   .....
-|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
-+=+=+===============================+
-|                                   |
-+===+===============================+
-|   | CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC|
-+===+===============================+
+|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS| |A|
++=+=+===============================+=+=+
+|                                       |
++===+===============================+===+
+|   | CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC|   |
++===+===============================+===+
 
 H - the button that swaps the horizontal component with the third component.
 
@@ -2303,6 +2309,8 @@ S - the color_picker_square that displays the gradient of the horizontal
 and vertical components, with a fixed third component
 
 C - display-only strip that shows the third component's gradient.
+
+A - The alpha channel gradient
 
 An explicit row and column provides a buffer between the color_picker_square
 and the elements around it, for visual separation, and so that we can use
@@ -2365,11 +2373,17 @@ the grid layout manager's borders for it.
       </button>
       <shortcut>Alt-H</shortcut>
     </element>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <canvas />
+    </element>
   </factory>
 
   <factory type="grid" id="color-picker-left-container-top-spacing">
     <colspan>
-      <columns>3</columns>
+      <columns>5</columns>
     </colspan>
 
     <element>
@@ -2452,10 +2466,39 @@ the grid layout manager's borders for it.
     <element>
       <name>square</name>
     </element>
+
+    <element>
+      <canvas>
+	<width>color_picker_buffer_width</width>
+      </canvas>
+    </element>
+
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>left</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <container>
+      <type>page</type>
+      <name>color-picker-a-canvas-page-layout</name>
+    </container>
   </factory>
+
   <factory type="grid" id="color-picker-left-container-bottom-spacing">
     <colspan>
-      <columns>3</columns>
+      <columns>5</columns>
     </colspan>
 
     <element>
@@ -2464,6 +2507,37 @@ the grid layout manager's borders for it.
       </canvas>
     </element>
   </factory>
+
+  <layout type="page" id="color-picker-a-canvas-page-layout">
+    <append>
+      <name>color-picker-a-canvas-page</name>
+    </append>
+  </layout>
+
+  <factory type="page" id="color-picker-a-canvas-page">
+    <container>
+      <type>border</type>
+      <name>color-picker-a-canvas-border</name>
+      <config>
+	<appearance>color-picker-a-canvas-frame</appearance>
+	<no_background />
+      </config>
+
+      <contents>
+	<element id="a-canvas" tooltip="color-picker-a-button-tooltip">
+	  <name>alpha</name>
+	</element>
+      </contents>
+    </container>
+  </factory>
+
+  <layout type="border" id="color-picker-a-canvas-border" />
+
+  <appearance id="color-picker-a-canvas-frame" type="frame">
+    <border>color_picker_alpha_border</border>
+    <hpad>no-padding</hpad>
+    <vpad>no-padding</vpad>
+  </appearance>
 
   <factory type="grid" id="color-picker-left-container-bottom-row">
     <colspan>
@@ -2513,14 +2587,25 @@ the grid layout manager's borders for it.
 	<height>color_picker_strip_height</height>
       </canvas>
     </element>
+
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <canvas />
+    </element>
   </factory>
 
   <tooltip type="label" id="color-picker-h-button-tooltip">
-    <label>Click to select this color channel&#10;for adjustment (Alt-H)</label>
+    <label type='theme_text'>Click to select this color channel&#10;for adjustment (Alt-H)</label>
   </tooltip>
 
   <tooltip type="label" id="color-picker-v-button-tooltip">
-    <label>Click to select this color channel&#10; for adjustment (Alt-V)</label>
+    <label type='theme_text'>Click to select this color channel&#10; for adjustment (Alt-V)</label>
+  </tooltip>
+
+  <tooltip type="label" id="color-picker-a-button-tooltip">
+    <label type='theme_text'>Alpha Channel</label>
   </tooltip>
 
   <tooltip type="label" id="color-picker-fixed-canvas-tooltip">
@@ -2544,6 +2629,56 @@ first column, to make the labels line up with their input fields.
       <halign>right</halign>
     </halign>
 
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>3</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>4</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>5</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>6</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>7</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>8</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>9</row>
+      <valign>middle</valign>
+    </valign>
+
     <append_row>
       <name>color-picker-right-container-r-row</name>
     </append_row>
@@ -2554,6 +2689,10 @@ first column, to make the labels line up with their input fields.
 
     <append_row>
       <name>color-picker-right-container-b-row</name>
+    </append_row>
+
+    <append_row>
+      <name>color-picker-right-container-a-row</name>
     </append_row>
 
     <append_row>
@@ -2614,6 +2753,35 @@ first column, to make the labels line up with their input fields.
       <label type='theme_text'>${context:color-picker}B:</label>
     </element>
     <element id='b-input-field'>
+      <input_field />
+      <config>
+	<columns>6</columns>
+	<alignment>right</alignment>
+	<maximum_size>5</maximum_size>
+	<autoselect />
+	<set_default_spin_control_factories />
+      </config>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-right-container-a-row">
+    <element id='a-label'>
+      <label type='theme_text'>${context:color-picker}A:</label>
+    </element>
+    <container>
+      <type>page</type>
+      <name>color-picker-a-input-field-layout</name>
+    </container>
+  </factory>
+
+  <layout type="page" id="color-picker-a-input-field-layout">
+    <append>
+      <name>color-picker-a-input-field</name>
+    </append>
+  </layout>
+
+  <factory type="page" id="color-picker-a-input-field">
+    <element id='a-input-field'>
       <input_field />
       <config>
 	<columns>6</columns>

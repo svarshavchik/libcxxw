@@ -11,7 +11,7 @@ See COPYING for distribution information.
     elements</title>
 
   <section id="uixmllayoutborderupdate_title">
-    <title><tag class='element'>update_tiele</tag></title>
+    <title><tag class='element'>update_title</tag></title>
 
     <para>
       This is equivalent to invoking the

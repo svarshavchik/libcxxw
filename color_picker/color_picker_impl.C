@@ -6,6 +6,8 @@
 #include "popup/popup_attachedto_element.H"
 #include "color_picker/color_picker_impl.H"
 #include "color_picker/color_picker_square_impl.H"
+#include "color_picker/color_picker_alpha_canvas_impl.H"
+#include "color_picker/color_picker_current_canvas_impl.H"
 #include "image_button_internal.H"
 #include "popup/popup.H"
 #include "x/w/color_picker_config.H"
@@ -131,12 +133,15 @@ color_pickerObj::implObj::compute_hsv(const rgb &color)
 
 color_pickerObj::implObj::implObj(const popup_attachedto_element_impl &impl,
 				  const image_button_internal &popup_button,
-				  const element &current_color_element,
+				  const color_picker_current_canvas
+				  &current_color_element,
 
 				  const color_picker_config &config,
 				  const official_color &initial_color,
 				  const element &horiz_component_gradient,
 				  const element &vert_component_gradient,
+				  const color_picker_alpha_canvas
+				  &alpha_component_gradient,
 				  const element &fixed_component_gradient,
 				  const color_picker_square &variable_gradients,
 				  const label &error_message_field)
@@ -145,6 +150,7 @@ color_pickerObj::implObj::implObj(const popup_attachedto_element_impl &impl,
 
 	  horiz_component_gradient{horiz_component_gradient},
 	  vert_component_gradient{vert_component_gradient},
+	  alpha_component_gradient{alpha_component_gradient},
 	  fixed_component_gradient{fixed_component_gradient},
 	  variable_gradients{variable_gradients},
 	  error_message_field{error_message_field},
@@ -188,6 +194,7 @@ void color_pickerObj::implObj::set_color(ONLY IN_THREAD,
 	r_value->set(c.r);
 	g_value->set(c.g);
 	b_value->set(c.b);
+	a_value->set(c.a);
 	new_rgb_values(IN_THREAD);
 }
 
@@ -203,13 +210,28 @@ void color_pickerObj::implObj::update_fixed_component(ONLY IN_THREAD,
 	r_value->set(c.r);
 	g_value->set(c.g);
 	b_value->set(c.b);
+
 	new_rgb_values(IN_THREAD);
+}
+
+void color_pickerObj::implObj::update_alpha_component(ONLY IN_THREAD,
+						      rgb_component_t v,
+						      const callback_trigger_t
+						      &trigger)
+{
+	current_color(IN_THREAD).a=v;
+
+	a_value->set(v);
+	new_alpha_value(IN_THREAD);
 }
 
 void color_pickerObj::implObj::new_color(ONLY IN_THREAD,
 					 const callback_trigger_t &trigger)
 {
-	current_color_element->set_background_color(current_color(IN_THREAD));
+	current_color_element->impl->current_color(IN_THREAD)=
+		current_color(IN_THREAD);
+
+	current_color_element->impl->schedule_full_redraw(IN_THREAD);
 }
 
 void color_pickerObj::implObj::swap_horiz_gradient(ONLY IN_THREAD)
@@ -243,15 +265,30 @@ void color_pickerObj::implObj::refresh_variable_gradients(ONLY IN_THREAD)
 					 current_color(IN_THREAD),
 					 horiz_component(IN_THREAD),
 					 vert_component(IN_THREAD));
+
+	alpha_component_gradient->impl->update(IN_THREAD,
+					       current_color(IN_THREAD));
 }
 
 void color_pickerObj::implObj::new_rgb_values(ONLY IN_THREAD)
 {
+	new_rgba_values(IN_THREAD, true);
+}
+
+void color_pickerObj::implObj::new_alpha_value(ONLY IN_THREAD)
+{
+	new_rgba_values(IN_THREAD, false);
+}
+
+void color_pickerObj::implObj::new_rgba_values(ONLY IN_THREAD,
+					       bool update_hsv)
+{
 	auto r=r_value->validated_value.get();
 	auto g=g_value->validated_value.get();
 	auto b=b_value->validated_value.get();
+	auto a=a_value->validated_value.get();
 
-	if (!r || !g || !b)
+	if (!r || !g || !b || !a)
 		return; // Just in case, but shouldn't happen
 
 	// Update the gradient strips and gradient squares
@@ -260,9 +297,12 @@ void color_pickerObj::implObj::new_rgb_values(ONLY IN_THREAD)
 	c.r=*r;
 	c.g=*g;
 	c.b=*b;
+	c.a=*a;
 
 	refresh_component_gradients(IN_THREAD);
 	refresh_variable_gradients(IN_THREAD);
+
+	if (update_hsv)
 	{
 		auto [h, s, v]=compute_hsv(c);
 
@@ -396,6 +436,7 @@ void color_pickerObj::implObj::new_hsv_values(ONLY IN_THREAD)
 	r_value->set(c.r);
 	g_value->set(c.g);
 	b_value->set(c.b);
+	a_value->set(c.a);
 	current_color(IN_THREAD)=c;
 	refresh_component_gradients(IN_THREAD);
 	refresh_variable_gradients(IN_THREAD);
@@ -409,6 +450,7 @@ void color_pickerObj::implObj::reformat_values(ONLY IN_THREAD)
 	r_value->set(r_value->validated_value.get());
 	g_value->set(g_value->validated_value.get());
 	b_value->set(b_value->validated_value.get());
+	a_value->set(a_value->validated_value.get());
 
 	h_value->set(h_value->validated_value.get());
 	s_value->set(s_value->validated_value.get());
@@ -448,6 +490,7 @@ void color_pickerObj::implObj::popup_closed(ONLY IN_THREAD)
 	r_value->set(c.r);
 	g_value->set(c.g);
 	b_value->set(c.b);
+	a_value->set(c.a);
 	new_rgb_values(IN_THREAD);
 }
 

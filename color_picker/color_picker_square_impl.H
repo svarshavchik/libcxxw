@@ -9,6 +9,7 @@
 #include "x/w/impl/canvas.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "x/w/rgb.H"
+#include "x/w/scratch_bufferfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -28,6 +29,13 @@ class color_picker_squareObj::implObj
 					    color_picker_h_gradient,
 					    color_picker_v_gradient
 					    > superclass_t;
+
+	//! Helper scratch buffer for composing the square gradient
+	const scratch_buffer aux_scratch_buffer;
+
+	//! Helper scratch buffer for composing the square gradient
+	const scratch_buffer mask_scratch_buffer;
+
 	//! Fixed color value
 
 	//! This should have 0 for R, G, and B channels, except for the

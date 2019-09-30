@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<sxg>
+  <width>2</width>
+  <height>2</height>
+
+  <widthfactor>2</widthfactor>
+  <heightfactor>2</heightfactor>
+
+  <widthmm>3</widthmm>
+  <heightmm>3</heightmm>
+
+  <picture id="dark">
+    <type>rgb</type>
+    <color>30%</color>
+  </picture>
+
+  <picture id="light">
+    <type>rgb</type>
+    <color>70%</color>
+  </picture>
+
+  <render id="main">
+    <composite>
+      <op>src</op>
+      <src>
+	<picture>dark</picture>
+      </src>
+      <x>0</x>
+      <y>0</y>
+      <width>2</width>
+      <height>2</height>
+    </composite>
+
+    <composite>
+      <op>src</op>
+      <src>
+	<picture>light</picture>
+      </src>
+      <x>0</x>
+      <y>0</y>
+      <width>1</width>
+      <height>1</height>
+    </composite>
+
+    <composite>
+      <op>src</op>
+      <src>
+	<picture>light</picture>
+      </src>
+      <x>1</x>
+      <y>1</y>
+      <width>1</width>
+      <height>1</height>
+    </composite>
+  </render>
+</sxg>

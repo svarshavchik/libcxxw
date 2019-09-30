@@ -70,6 +70,10 @@ struct color_picker_config {
 	//! Set by restore().
 	std::string name;
 
+	//! Enable alpha channel picker
+
+	bool enable_alpha_channel=false;
+
 	//! Restore previously-saved color picker configuration.
 
 	//! This resets initial_color

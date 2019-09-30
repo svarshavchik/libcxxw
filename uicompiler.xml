@@ -1504,6 +1504,12 @@ List of values:
 	</member>
 
 	<member>
+	  <name>enable_alpha_channel</name>
+	  <field>enable_alpha_channel</field>
+	  <type>optional_constant&lt;true&gt;</type>
+	</member>
+
+	<member>
 	  <name>restore</name>
 
 	  <method_call>

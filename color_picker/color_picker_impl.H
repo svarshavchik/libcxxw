@@ -6,6 +6,8 @@
 #define color_picker_impl_h
 
 #include "color_picker/color_picker_squarefwd.H"
+#include "color_picker/color_picker_alpha_canvasfwd.H"
+#include "color_picker/color_picker_current_canvasfwd.H"
 #include "popup/popup_attachedto_elementfwd.H"
 #include "image_button_internalfwd.H"
 #include "x/w/impl/popup/popupfwd.H"
@@ -74,13 +76,16 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 	const image_button_internal popup_button;
 
 	//! Set this element's background color to the current color
-	const element current_color_element;
+	const color_picker_current_canvas current_color_element;
 
 	//! Show the horizontal component gradient color in this element.
 	const element horiz_component_gradient;
 
 	//! Show the vertical component gradient color in this element.
 	const element vert_component_gradient;
+
+	//! Alpha component gradient
+	const color_picker_alpha_canvas alpha_component_gradient;
 
 	//! Show the fixed component gradient color in this element
 	const element fixed_component_gradient;
@@ -94,12 +99,13 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 	//! Constructor
 	implObj(const popup_attachedto_element_impl &handler,
 		const image_button_internal &popup_button,
-		const element &current_color_element,
+		const color_picker_current_canvas &current_color_element,
 
 		const color_picker_config &config,
 		const official_color &initial_color,
 		const element &horiz_component_gradient,
 		const element &vert_component_gradient,
+		const color_picker_alpha_canvas &alpha_component_gradient,
 		const element &fixed_component_gradient,
 		const color_picker_square &variable_gradients,
 
@@ -167,6 +173,12 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 				    rgb_component_t v,
 				    const callback_trigger_t &trigger);
 
+	//! Update the alpha component
+
+	void update_alpha_component(ONLY IN_THREAD,
+				    rgb_component_t v,
+				    const callback_trigger_t &trigger);
+
 	//! Swap the horizontal component with the fixed component
 
 	void swap_horiz_gradient(ONLY IN_THREAD);
@@ -195,6 +207,16 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 	//! A new value was entered for R, G, or B.
 	void new_rgb_values(ONLY IN_THREAD);
 
+	//! A new value was entered for A
+	void new_alpha_value(ONLY IN_THREAD);
+
+ private:
+	//! A new value was entered for R, G, B, or A.
+
+	//! Entering a new alpha values does not update the HSV values.
+	void new_rgba_values(ONLY IN_THREAD, bool update_hsv);
+
+ public:
 	//! A new value was entered for H, S, or V.
 	void new_hsv_values(ONLY IN_THREAD);
 
@@ -213,6 +235,9 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 
 	//! The manually-entered blue component
 	validated_input_fieldptr<rgb_component_t> b_value;
+
+	//! The manually-entered alpha component
+	validated_input_fieldptr<rgb_component_t> a_value;
 
 	//! The manually-entered hue component
 	validated_input_fieldptr<rgb_component_t> h_value;

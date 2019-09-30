@@ -5,6 +5,8 @@
 #include "libcxxw_config.h"
 #include "color_picker/color_picker_square_impl.H"
 #include "x/w/impl/background_color_element.H"
+#include "x/w/impl/container.H"
+#include "x/w/scratch_buffer.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,7 +39,13 @@ color_picker_squareObj::implObj
 	: superclass_t{horizontal_gradient(horizontal_gradient_component),
 		vertical_gradient(vertical_gradient_component),
 		container, canvas_params},
-	fixed_color{fixed_color}
+	  aux_scratch_buffer{container->container_element_impl()
+			     .create_scratch_buffer
+			     ("color_picker_square_aux@libcxx.com")},
+	  mask_scratch_buffer{container->container_element_impl()
+			      .create_alpha_scratch_buffer
+			      ("color_picker_square_mask@libcxx.com")},
+	  fixed_color{fixed_color}
 {
 }
 
@@ -72,22 +80,74 @@ void color_picker_squareObj::implObj
 			      const draw_info &di,
 			      const rectangle &r)
 {
-	// Clear to the fixed color. This is one
-	// RGB component.
-	pic->fill_rectangle(r, fixed_color);
+	rectangle scratch_rect{0, 0, r.width, r.height};
 
-	// Now add the horizontal and the vertical
-	// components.
+	aux_scratch_buffer->get
+		(r.width, r.height,
+		 [&]
+		 (const auto &scratch_pic,
+		  const auto &scratch_pix,
+		  const auto &scratch_context)
+		 {
+			 // Fixed color, full opacity.
 
-	pic->composite(background_color_element<color_picker_h_gradient>
-		       ::get(IN_THREAD)->get_current_color(IN_THREAD),
-		       r.x, r.y, r,
-		       render_pict_op::op_add);
+			 auto solid_color=fixed_color;
 
-	pic->composite(background_color_element<color_picker_v_gradient>
-		       ::get(IN_THREAD)->get_current_color(IN_THREAD),
-		       r.x, r.y, r,
-		       render_pict_op::op_add);
+			 solid_color.a=rgb::maximum;
+
+			 scratch_pic->fill_rectangle(scratch_rect,
+						     solid_color);
+
+			 // Now add the horizontal and the vertical
+			 // components.
+
+			 scratch_pic->composite
+				 (background_color_element
+				  <color_picker_h_gradient>
+				  ::get(IN_THREAD)
+				  ->get_current_color(IN_THREAD),
+				  r.x, r.y, scratch_rect,
+				  render_pict_op::op_add);
+
+			 scratch_pic->composite
+				 (background_color_element
+				  <color_picker_v_gradient>
+				  ::get(IN_THREAD)
+				  ->get_current_color(IN_THREAD),
+				  r.x, r.y, scratch_rect,
+				  render_pict_op::op_add);
+
+			 // Prepare the alpha channel mask.
+
+			 mask_scratch_buffer->get
+				 (1, 1,
+				  [&]
+				  (const auto &mask_pic,
+				   const auto &mask_pix,
+				   const auto &mask_context)
+				  {
+					  rgb mask;
+
+					  mask.a=fixed_color.a;
+
+					  mask_pic->repeat
+						  (render_repeat::normal);
+
+					  mask_pic->fill_rectangle
+						  ({0, 0, 1, 1}, mask);
+
+					  pic->composite
+						  (scratch_pic,
+						   mask_pic,
+						   0, 0,
+						   0, 0,
+						   0, 0,
+						   scratch_rect.width,
+						   scratch_rect.height,
+						   render_pict_op::op_atop);
+				  });
+		 });
+
 }
 
 LIBCXXW_NAMESPACE_END

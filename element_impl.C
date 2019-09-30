@@ -1243,6 +1243,25 @@ current_border_impl elementObj::implObj
 	return get_cached_border(wh.screenref, wh.drawable_pictformat, arg);
 }
 
+scratch_buffer elementObj::implObj
+::create_scratch_buffer(const std::string &id)
+{
+	auto &wh=get_window_handler();
+
+	return wh.screenref->create_scratch_buffer(id, wh.drawable_pictformat);
+}
+
+scratch_buffer elementObj::implObj
+::create_alpha_scratch_buffer(const std::string &id, depth_t depth)
+{
+	auto &s=get_window_handler().screenref;
+
+	return s->create_scratch_buffer(id,
+					s->get_connection()->impl->render_info
+					.find_alpha_pictformat_by_depth
+					(depth));
+}
+
 void elementObj::implObj::on_keyboard_focus(const
 					    functionref<focus_callback_t>
 					    &callback)

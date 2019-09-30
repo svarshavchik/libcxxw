@@ -162,6 +162,18 @@ libcxxw_la_SOURCES=\
 	catch_exceptions.H			    \
 	child_element.C				    \
 	color_picker/color_picker.C		    \
+	color_picker/color_picker_alpha_canvas.C    \
+	color_picker/color_picker_alpha_canvas.H    \
+	color_picker/color_picker_alpha_canvas_impl.C \
+	color_picker/color_picker_alpha_canvas_impl.H \
+	color_picker/color_picker_alpha_canvasfwd.H \
+	color_picker/color_picker_alpha_canvasobj.H \
+	color_picker/color_picker_current_canvas.C  \
+	color_picker/color_picker_current_canvas.H  \
+	color_picker/color_picker_current_canvas_impl.C \
+	color_picker/color_picker_current_canvas_impl.H \
+	color_picker/color_picker_current_canvasfwd.H \
+	color_picker/color_picker_current_canvasobj.H \
 	color_picker/color_picker_impl.C	    \
 	color_picker/color_picker_impl.H	    \
 	color_picker/color_picker_selector.C	    \

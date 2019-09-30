@@ -16,7 +16,7 @@ See COPYING for distribution information.
       <programlisting><![CDATA[
 <layout type="border" id="application-options">
 
-  <!-- ... -->
+  <!-- Usually empty ... -->
 
 </layout>
 
@@ -61,6 +61,11 @@ glm->generate("application-options", generator, elements);</programlisting>
       <tag class='attribute'>type</tag>=<quote>border</quote>
       creates a container that uses the
       <link linkend="borderlayoutmanager">border layout manager</link>.
+
+      A <tag class='element'>layout</tag> with the same
+      <tag class='attribute'>id</tag> as the
+      <tag class='element'>name</tag> must exist, even if it's empty
+      (which it is, usually).
     </para>
 
     <para>

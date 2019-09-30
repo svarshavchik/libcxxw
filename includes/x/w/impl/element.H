@@ -1059,6 +1059,15 @@ class elementObj::implObj : public element_drawObj,
 
 	current_border_impl create_border(const border_arg &arg);
 
+	//! Helper for creating a new scratch buffer.
+
+	scratch_buffer create_scratch_buffer(const std::string &id);
+
+	//! Helper for creating a new alpha channel scratch buffer.
+
+	scratch_buffer create_alpha_scratch_buffer(const std::string &id,
+						   depth_t depth=8);
+
 	//! Create a \ref richtextstring "rich text string", based on a \ref text_param "text_param" and a default \ref richtextmeta "richtextmeta".
 
 	//! Converts between the library API version of a rich text string,

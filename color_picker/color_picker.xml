@@ -4,6 +4,10 @@
     <name>square</name>
     <type>element</type>
   </ref>
+  <ref>
+    <name>alpha</name>
+    <type>color_picker_alpha_canvas</type>
+  </ref>
 
   <ref>
     <name>cancel_button</name>

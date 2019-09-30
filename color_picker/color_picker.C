@@ -12,11 +12,15 @@
 #include "x/w/button.H"
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
+#include "x/w/pagelayoutmanager.H"
+#include "x/w/label.H"
 #include "screen_positions_impl.H"
 #include "popup/popup_attachedto_element.H"
 #include "color_picker/color_picker_impl.H"
 #include "color_picker/color_picker_selector_impl.H"
 #include "color_picker/color_picker_square_impl.H"
+#include "color_picker/color_picker_alpha_canvas_impl.H"
+#include "color_picker/color_picker_current_canvas_impl.H"
 #include "x/w/impl/always_visible.H"
 #include "x/w/impl/focus/focusable.H"
 #include "x/w/label.H"
@@ -189,16 +193,33 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 						 color_pickerObj
 						 ::implObj
 						 ::initial_vert_component,
-						 canvas_init_params{
+						 canvas_init_params
+						 {
 							 {config.appearance->picker_width},
 							 {config.appearance->picker_height},
-								 "color_picker_square@libcxx.com"});
+							 "color_picker_square@libcxx.com",
+							 {image_color{"color-picker-alpha-background"}}});
 
 				auto cps=color_picker_square::create(impl);
 				square=cps;
 				f->created_internally(cps);
 			}},
 
+		{"alpha", [&](const auto &f)
+			  {
+				  auto parent_container=f->get_container_impl();
+
+				  auto impl=ref<color_picker_alpha_canvasObj
+						::implObj>
+					  ::create(parent_container,
+						   config.initial_color);
+
+				  auto c=color_picker_alpha_canvas
+					  ::create(impl);
+
+				  f->created_internally(c);
+				  alpha=c;
+			  }},
 		{"ok", dialog_ok_button(_("Ok"),
 					ok_button,
 					0)},
@@ -208,62 +229,6 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 			};
 }
 
-//! Implementation object for the color picker's current color canvas.
-
-//! Use the canvas object that shows the currently picked color to implement
-//! save().
-
-class color_picker_current_canvas_implObj : public canvasObj::implObj {
-
-
-
-public:
-	color_picker_current_canvas_implObj(const container_impl &container,
-					    const std::string name,
-					    const color_pickerObj::implObj
-					    ::official_color &initial_color,
-					    const canvas_init_params &params)
-		: canvasObj::implObj{container, params},
-		  name{name},
-		  current_official_color{initial_color}
-	{
-	}
-
-	~color_picker_current_canvas_implObj()=default;
-
-	//! Name of this restore color picker
-	const std::string name;
-
-	//! This color picker's current official color.
-	const color_pickerObj::implObj::official_color current_official_color;
-
-	//! Implement save()
-	void save(ONLY IN_THREAD, const screen_positions &pos) override;
-
-};
-
-void color_picker_current_canvas_implObj::save(ONLY IN_THREAD,
-					       const screen_positions &pos)
-{
-	if (name.empty())
-		return;
-
-	auto writelock=pos->impl->create_writelock_for_saving("color", name);
-
-	auto color=current_official_color->official_color.get();
-
-	for (size_t i=0; i<4; ++i)
-	{
-		std::ostringstream o;
-
-		// Temporary hack, until to_chars() is added elsewhere.
-		o << number<rgb_component_t, void>{color.*(rgb_fields[i])};
-
-		writelock->create_child()
-			->element({rgb_channels[i]})->text(o.str())
-			->parent()->parent();
-	}
-}
 
 static inline canvas
 create_color_picker_canvas(const factory &f,
@@ -274,13 +239,14 @@ create_color_picker_canvas(const factory &f,
 	canvas_init_params ciparams{{config.appearance->width},
 				    {config.appearance->height}};
 
-	ciparams.background_color=config.initial_color;
+	ciparams.background_color=
+		image_color{"color-picker-alpha-background"};
 
-	auto impl=ref<color_picker_current_canvas_implObj>
+	auto impl=ref<color_picker_current_canvasObj::implObj>
 		::create(f->get_container_impl(), config.name, initial_color,
 			 ciparams);
 
-	auto canvas=canvas::create(impl);
+	auto canvas=color_picker_current_canvas::create(impl);
 
 	f->created_internally(canvas);
 
@@ -669,7 +635,7 @@ make_manual_input_validator(const uielements &tmpl,
 color_picker factoryObj
 ::create_color_picker(const color_picker_config &config)
 {
-	canvasptr color_picker_current;
+	color_picker_current_canvasptr color_picker_current;
 
 	ptr<color_picker_selectorObj::implObj> color_picker_selector_impl;
 
@@ -717,7 +683,26 @@ color_picker factoryObj
 
 	color_picker_popup_fields contents{helper};
 
+	if (config.enable_alpha_channel)
+	{
+		pagelayoutmanager plm=tmpl.get_layoutmanager
+			("color-picker-a-canvas-page-layout");
+
+		plm->open(0);
+
+		plm=tmpl.get_layoutmanager("color-picker-a-input-field-layout");
+
+		plm->open(0);
+	}
+	else
+	{
+		label l=tmpl.get_element("a-label");
+
+		l->update("");
+	}
+
 	auto fixed_canvas=tmpl.get_element("fixed-canvas");
+	color_picker_alpha_canvas alpha=contents.alpha;
 
 	// Capture the elements in the implementation object.
 
@@ -729,6 +714,7 @@ color_picker factoryObj
 			 initial_color,
 			 tmpl.get_element("h-canvas"),
 			 tmpl.get_element("v-canvas"),
+			 alpha,
 			 fixed_canvas,
 			 contents.square,
 			 tmpl.get_element("error-message-field"));
@@ -746,10 +732,15 @@ color_picker factoryObj
 		(tmpl, "b-input-field", wimpl,
 		 &color_pickerObj::implObj::new_rgb_values);
 
+	impl->a_value=make_manual_input_validator
+		(tmpl, "a-input-field", wimpl,
+		 &color_pickerObj::implObj::new_alpha_value);
+
 	// And set their initial values
 	impl->r_value->set(config.initial_color.r);
 	impl->g_value->set(config.initial_color.g);
 	impl->b_value->set(config.initial_color.b);
+	impl->a_value->set(config.initial_color.a);
 
 	// Install validators for manual H, S, and V fields.
 
@@ -907,6 +898,9 @@ color_picker factoryObj
 			 impl->swap_vert_gradient(IN_THREAD);
 		 });
 
+	// Clicking or dragging the button on the bottom fixed component
+	// strip adjusts the fixed component.
+
 	fixed_canvas->on_button_event
 		([get=make_weak_capture(impl, fixed_canvas)]
 		 (ONLY IN_THREAD,
@@ -959,6 +953,61 @@ color_picker factoryObj
 				  data.current_position.width);
 
 			 color_picker_impl->update_fixed_component
+				 (IN_THREAD, v, &me);
+		 });
+
+	alpha->on_button_event
+		([get=make_weak_capture(impl, alpha)]
+		 (ONLY IN_THREAD,
+		  const auto &be,
+		  bool activate_for,
+		  const auto &ignore)
+		 {
+			 auto got=get.get();
+
+			 if (!got)
+				 return false;
+
+			 auto &[color_picker_impl, alpha]=*got;
+
+			 if (be.press != activate_for || be.button != 1)
+				 return false;
+
+			 auto &data=alpha->impl->data(IN_THREAD);
+			 auto v=compute_from_click
+				 (alpha,
+				  data.last_motion_y,
+				  data.current_position.height);
+
+			 color_picker_impl->update_alpha_component
+				 (IN_THREAD, v, &be);
+
+			 return true;
+		 });
+
+	alpha->on_motion_event
+		([get=make_weak_capture(impl, alpha)]
+		 (ONLY IN_THREAD,
+		  const auto &me)
+		 {
+			 if (me.type != motion_event_type::real_motion ||
+			     !(me.mask.buttons & 1))
+				 return; // Dragging with button 1 pressed
+
+			 auto got=get.get();
+
+			 if (!got)
+				 return;
+
+			 auto &[color_picker_impl, alpha]=*got;
+
+			 auto &data=alpha->impl->data(IN_THREAD);
+			 auto v=compute_from_click
+				 (alpha,
+				  me.y,
+				  data.current_position.height);
+
+			 color_picker_impl->update_alpha_component
 				 (IN_THREAD, v, &me);
 		 });
 

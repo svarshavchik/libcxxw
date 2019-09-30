@@ -106,6 +106,7 @@ void testcolorpicker(const testcolorpicker_options &options)
 			 LIBCXX_NAMESPACE::w::color_picker_config cconfig;
 
 			 cconfig.restore(pos, "main_color");
+			 cconfig.enable_alpha_channel=true;
 
 			 auto cp=factory->create_color_picker(cconfig);
 

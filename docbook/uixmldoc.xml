@@ -2969,6 +2969,20 @@ layout_manager->generate("dialog", generators, elements);
 
       <varlistentry>
 	<term>
+	  <tag class='emptytag'>enable_alpha_channel</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::color_picker_config</classname>'s
+	    <varname>enable_alpha_channel</varname>
+	    setting to <literal>true</literal>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
 	  <tag class='emptytag'>restore</tag>
 	</term>
 	<listitem>

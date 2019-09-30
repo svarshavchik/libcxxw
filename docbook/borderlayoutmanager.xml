@@ -114,7 +114,7 @@ See COPYING for distribution information.
   </section>
 
   <section id="bordertitle">
-    <title>Setting the border title</title>
+    <title>Border title and background</title>
 
     <para>
       <link linkend="borderlayoutmanager"><filename>borderlayoutmanager.C</filename></link>
@@ -155,63 +155,73 @@ nblm.title("Hello world");</programlisting>
       has a slightly shaded, visually-highlighted background color.
     </para>
 
-    <para>
-      Without a title the border layout
-      manager automatically installs a theme-specified background color for
-      the widget in the border. Turn off this default behavior by
-      setting the <varname>no_background</varname> flag in the
-      <ulink url="&link-x--w--new-borderlayoutmanager;"><classname>&ns;::w::new_borderlayoutmanager</classname></ulink>.
-      This behavior gets automatically turned off when creating a border
-      with a title, which is why the right bordered widget has a plain
-      background color. There's no explicit border drawn under the title,
-      to serve as an explicit edge to the highlighted border. It would not
-      look good, so the highlighted background does not get installed when
-      the new border has a title.
-    </para>
+    <section id="borderbackground">
+      <title>Background colors and titles</title>
 
-    <blockquote>
-      <informalexample>
-	<programlisting>
+      <para>
+	The border layout manager uses a slightly non-standard approach
+	to background colors when no title gets specified.
+	Without a title the border layout
+	manager automatically installs a theme-specified background color for
+	the widget in the border.
+	Setting the <varname>no_background</varname> flag in the
+	<ulink url="&link-x--w--new-borderlayoutmanager;"><classname>&ns;::w::new_borderlayoutmanager</classname></ulink>
+	turn off this default behavior.
+      </para>
+
+      <para>
+	This behavior gets automatically turned off when creating a border
+	with a title, which is why the right bordered widget has a plain
+	background color. There's no explicit border drawn under the title,
+	to serve as an explicit edge to the highlighted border. It would not
+	look good, so the highlighted background does not get installed when
+	the new border has a title.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
 blm-&gt;update_title("Lorem Ipsum");</programlisting>
-      </informalexample>
-    </blockquote>
-
-    <para>
-      The border layout manager's <methodname>update_title</methodname>()
-      replaces the container's current title. The title should not be an
-      empty string, and bordered containers that got created without a title
-      should not use <methodname>update_title</methodname> to specify a
-      title after their creation. Adding or removing a title
-      requires resizing the container. This is because the title uses up.
-      additional vertical real estate; and the border layout manager does
-      not update the existing widget's background color either.
-    </para>
-
-    <note>
-      <para>
-	An untitled border widget's default background color gets set when
-	the bordered widget gets created. The border layout manager inherits
-	from the utility singleton layout manager object, which implements
-	methods for replacing the widget in the container. The default
-	bordered widget's background color gets installed only in the
-	border layout manager's container's initial widget. The singleton
-	layout manager's <methodname>replace</methodname>() should be
-	considered as undocumented.
-      </para>
+	</informalexample>
+      </blockquote>
 
       <para>
-	The established approach to modifying the contents of a bordered
-	widget is to use
-	<classname>&ns;::w::new_borderlayoutmanager</classname>'s
-	constructor's callback to create a discrete container, with a
-	stock grid layout manager, and use the grid layout manager to
-	control the contents inside the border.
-	The <link linkend="pagelayoutmanager">page</link>,
-	<link linkend="booklayoutmanager">book</link>, or event
-	<link linkend="panelayoutmanager">pane</link> layout managers are
-	other available options.
+	The border layout manager's <methodname>update_title</methodname>()
+	replaces the container's current title. The title should not be an
+	empty string, and bordered containers that got created without a title
+	should not use <methodname>update_title</methodname> to specify a
+	title after their creation. Adding or removing a title
+	requires resizing the container. This is because the title uses up.
+	additional vertical real estate; and the border layout manager does
+	not update the existing widget's background color either.
       </para>
-    </note>
+
+      <note>
+	<para>
+	  An untitled border widget's default background color gets set when
+	  the bordered widget gets created. The border layout manager inherits
+	  from the utility singleton layout manager object, which implements
+	  methods for replacing the widget in the container. The default
+	  bordered widget's background color gets installed only in the
+	  border layout manager's container's initial widget. The singleton
+	  layout manager's <methodname>replace</methodname>() should be
+	  considered as undocumented.
+	</para>
+
+	<para>
+	  The established approach to modifying the contents of a bordered
+	  widget is to use
+	  <classname>&ns;::w::new_borderlayoutmanager</classname>'s
+	  constructor's callback to create a discrete container, with a
+	  stock grid layout manager, and use the grid layout manager to
+	  control the contents inside the border.
+	  The <link linkend="pagelayoutmanager">page</link>,
+	  <link linkend="booklayoutmanager">book</link>, or event
+	  <link linkend="panelayoutmanager">pane</link> layout managers are
+	  other available options.
+	</para>
+      </note>
+    </section>
   </section>
 </chapter>
 <!--
