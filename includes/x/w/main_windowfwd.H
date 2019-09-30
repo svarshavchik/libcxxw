@@ -249,6 +249,41 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
     {
          // Cancel action.
     });
+
+INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
+    // Just a dialog label, the modal flag defaults to false.
+    "sitamet@example.com",
+
+    // Icon
+    "alert",
+
+    // The featured widget.
+    []
+    (const INSERT_LIBX_NAMESPACE::w::factory &factory)
+    {
+         factory->create_label("Lorem ipsum");
+    },
+    (ONLY IN_THREAD,
+     const INSERT_LIBX_NAMESPACE::w::ok_cancel_callback_args &args)
+    {
+         // Ok action.
+    },
+    (ONLY IN_THREAD,
+     const INSERT_LIBX_NAMESPACE::w::ok_cancel_callback_args &args)
+    {
+         // Ok2 action.
+    },
+    (ONLY IN_THREAD,
+     const INSERT_LIBX_NAMESPACE::w::ok_cancel_callback_args &args)
+    {
+         // Cancel action.
+    },
+
+    // Labels
+    "Ok",
+    "Ok2",
+    "Cancel",
+);
 \endcode
 
 create_ok_dialog() creates a \ref dialog "dialog" with only an "Ok" button.
@@ -260,6 +295,14 @@ The dialog shows an icon on its left side, the second parameter specifies
 one of the predefined icon names from the current theme. The second
 parameter is a callback lambda that creates the main contents of the
 dialog to show next to the icon, typically a short label.
+
+create_ok_dialog() and create_ok_cancel-dialog() have two overloaded version
+with two more parameters that give non-default labels for their buttons,
+in place of "Ok" and "Cancel".
+
+create_ok2_dialog() creates a dialog with two "Ok" buttons, and one cancel
+button; and a separate callback for each one. The labels for all three buttons
+are required.
 
 \code
 INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog

@@ -248,6 +248,23 @@ public:
 				const text_param &ok_label,
 				const text_param &cancel_label);
 
+	//! Create an OK or CANCEL dialog, with two OK buttons
+
+	dialog
+	create_ok2_cancel_dialog(const standard_dialog_args &args,
+				 const std::string &icon,
+				 const functionref<void (const factory &)>
+				 &content_factory,
+				 const ok_cancel_dialog_callback_t
+				 &ok_action,
+				 const ok_cancel_dialog_callback_t
+				 &ok2_action,
+				 const ok_cancel_dialog_callback_t
+				 &cancel_action,
+				 const text_param &ok_label,
+				 const text_param &ok2_label,
+				 const text_param &cancel_label);
+
 	//! Create a dialog with an input field.
 
 	input_dialog

@@ -1718,6 +1718,28 @@ of wrappable labels used for the message.
     </element>
   </factory>
 
+  <!-- A dialog with two "Ok" and one "Cancel" buttons -->
+
+  <layout type="grid" id="ok2-cancel-dialog">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>icon-and-message</name>
+    </append_row>
+
+    <append_row>
+      <name>ok2-cancel-button-container</name>
+    </append_row>
+  </layout>
+
   <!-- A dialog with an input field -->
 
   <layout type="grid" id="input-dialog">
@@ -1739,6 +1761,99 @@ of wrappable labels used for the message.
       <name>ok-cancel-button-container</name>
     </append_row>
   </layout>
+
+  <factory type="grid" id="ok2-cancel-button-container">
+    <padding>
+      <side>left</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <halign>fill</halign>
+
+    <border>
+      <side>top</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
+    <border>
+      <side>bottom</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
+    <border>
+      <side>left</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
+    <border>
+      <side>right</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
+    <container>
+      <type>grid</type>
+      <name>ok2-cancel-button-row</name>
+    </container>
+  </factory>
+
+  <layout type="grid" id="ok2-cancel-button-row">
+    <background_color>
+      <color>button-row-color</color>
+    </background_color>
+
+    <append_row>
+      <name>ok2-cancel-button</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="ok2-cancel-button">
+    <padding>
+      <side>left</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <element>
+      <name>cancel</name>
+    </element>
+
+    <element>
+      <canvas />
+    </element>
+
+    <element>
+      <name>ok2</name>
+    </element>
+
+    <padding>
+      <side>right</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <element>
+      <name>ok</name>
+    </element>
+  </factory>
+
+
+  <!-- Dialog container with an icon and some message -->
 
   <factory type="grid" id="icon-and-input-container">
     <padding>

@@ -568,6 +568,20 @@ dialog_ok_button(const text_param &label,
 	       };
 }
 
+static inline functionref<void (const factory &)>
+dialog_ok2_button(const text_param &label,
+		  buttonptr &ret)
+{
+	return [label, &ret](const factory &f)
+	       {
+		       ret=f->create_button
+			       (label,
+				{
+				 normal_button()
+				});
+	};
+}
+
 functionref<void (const factory &)>
 dialog_cancel_button(const text_param &label,
 		     buttonptr &ret,
@@ -894,6 +908,59 @@ dialog main_windowObj
 
 	return d;
 }
+
+
+dialog main_windowObj
+::create_ok2_cancel_dialog(const standard_dialog_args &args,
+			   const std::string &icon,
+			   const functionref<void (const factory &)>
+			   &content_factory,
+			   const ok_cancel_dialog_callback_t &ok_action,
+			   const ok_cancel_dialog_callback_t &ok2_action,
+			   const ok_cancel_dialog_callback_t &cancel_action,
+			   const text_param &ok_label,
+			   const text_param &ok2_label,
+			   const text_param &cancel_label)
+{
+	buttonptr ok_button;
+	buttonptr ok2_button;
+	buttonptr cancel_button;
+
+	auto d=create_dialog
+		(create_dialog_args{args},
+		 [&]
+		 (const dialog &d)
+		 {
+			 uielements tmpl
+				 {
+				  {
+				   {"icon", icon_element(icon)},
+				   {"message", content_factory},
+				   {"ok", dialog_ok_button(ok_label,
+							   ok_button,
+							   '\n')},
+				   {"ok2", dialog_ok2_button(ok2_label,
+							     ok2_button)},
+				   {"cancel", dialog_cancel_button
+				    (cancel_label,
+				     cancel_button, '\e')}
+				  }
+				 };
+
+			 d->dialog_window->generate("ok2-cancel-dialog", tmpl);
+		 });
+
+	auto me=ref{this};
+
+	hide_and_invoke_when_activated(me, d, ok_button, ok_action);
+	hide_and_invoke_when_activated(me, d, ok2_button, ok2_action);
+	hide_and_invoke_when_activated(me, d, cancel_button, cancel_action);
+	hide_and_invoke_when_closed(me, d, cancel_action);
+
+	return d;
+}
+
+
 
 input_dialog main_windowObj
 ::create_input_dialog(const standard_dialog_args &args,
