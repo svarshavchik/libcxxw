@@ -281,6 +281,12 @@ void file_dialogObj::implObj::selected(ONLY IN_THREAD,
 		access_denied(d, access_denied_message, filename);
 		return;
 	}
+
+	// In a Save-As dialog, after typing in the file's new name we don't
+	// want to see it come back if the same save-as dialog gets reopened.
+
+	filename_field->set(IN_THREAD, "");
+
 	ok_action(IN_THREAD,
 		  d, filename, mcguffin);
 }

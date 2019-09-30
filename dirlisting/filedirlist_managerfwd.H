@@ -61,7 +61,6 @@ typedef const_ptr<filedirlist_managerObj> const_filedirlist_managerptr;
 struct LIBCXX_HIDDEN filedirlist_entry_id;
 struct LIBCXX_HIDDEN filedirlist_selected;
 struct LIBCXX_HIDDEN filedirlist_selection;
-struct LIBCXX_HIDDEN popup_visibility;
 struct LIBCXX_HIDDEN filedirlist_mkdir;
 struct LIBCXX_HIDDEN filedirlist_rmdir;
 struct LIBCXX_HIDDEN filedirlist_rename;
