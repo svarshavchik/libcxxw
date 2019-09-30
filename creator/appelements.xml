@@ -16,4 +16,66 @@ object and placed into discrete variables.
     <type>x::w::const_uigenerators</type>
     <name>main_generator</name>
   </ref>
+
+  <ref>
+    <type>x::w::label</type>
+    <name>status</name>
+  </ref>
+
+  <!-- Menu item handles -->
+
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>file_save_menu_handle</name>
+  </ref>
+
+  <!-- Dimension page fields -->
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>dimension_name</name>
+  </ref>
+  <ref>
+    <type>x::w::label</type>
+    <name>dimension_new_name_label</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>dimension_new_name</name>
+  </ref>
+  <ref>
+    <type>x::w::image_button</type>
+    <name>dimension_value_option</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>dimension_value</name>
+  </ref>
+  <ref>
+    <type>x::w::image_button</type>
+    <name>dimension_scale_option</name>
+  </ref>
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>dimension_from_name</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>dimension_scale_value</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>dimension_update_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>dimension_reset_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>dimension_delete_button</name>
+  </ref>
 </collection>

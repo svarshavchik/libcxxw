@@ -4,6 +4,7 @@
 
   <dim id="minimum_width">100</dim>
   <dim id="minimum_height">20</dim>
+  <dim id="none">0</dim>
 
   <layout type="menubar" id="mainmenubar">
     <append_menus>
@@ -49,7 +50,16 @@
     <append_row>
       <name>main_row</name>
     </append_row>
+    <append_row>
+      <name>status_row</name>
+    </append_row>
   </layout>
+
+  <factory type="grid" id="status_row">
+    <element id="status">
+      <label type='theme_text'>Welcome to LibCXXW UI Creator</label>
+    </element>
+  </factory>
 
   <factory type="grid" id="main_row">
     <container>
@@ -71,7 +81,7 @@
     <add>
       <tab>
 	<element>
-	  <label type='theme_text'>${context:creator-main}Preview</label>
+	  <label type='theme_text'>${context:creator-main}${decoration:underline}P${decoration:none}review</label>
 	</element>
       </tab>
       <shortcut type="theme_text">${context:creator-main}Alt-P</shortcut>
@@ -79,6 +89,20 @@
 	<container>
 	  <type>page</type>
 	  <name>preview_page</name>
+	</container>
+      </page>
+    </add>
+    <add>
+      <tab>
+	<element>
+	  <label type='theme_text'>${context:creator-main}${decoration:underline}D${decoration:none}imensions</label>
+	</element>
+      </tab>
+      <shortcut type="theme_text">${context:creator-main}Alt-D</shortcut>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>dimensions_page</name>
 	</container>
       </page>
     </add>
@@ -121,4 +145,212 @@ entire window.
 
   <layout type="grid" id="current_element" />
 
+  <!-- Dimensions page -->
+
+  <layout type="grid" id="dimensions_page">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>3</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>dimension_name_row</name>
+    </append_row>
+    <append_row>
+      <name>new_dimension_name_row</name>
+    </append_row>
+    <append_row>
+      <name>dimension_value_row</name>
+    </append_row>
+    <append_row>
+      <name>dimension_buttons_row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="dimension_name_row">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>${context:creator}Name:</label>
+    </element>
+    <container>
+      <name>dimension_name_field</name>
+      <type>standard_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="dimension_name_field" type="standard_combobox" />
+
+  <factory type="grid" id="new_dimension_name_row">
+    <halign>right</halign>
+    <element id="dimension_new_name_label">
+      <label type='theme_text'>${context:creator}New name:</label>
+    </element>
+    <element id="dimension_new_name_field">
+      <input_field />
+        <config>
+	  <columns>30</columns>
+	</config>
+    </element>
+  </factory>
+
+  <factory type="grid" id="dimension_value_row">
+    <element>
+      <canvas/>
+    </element>
+    <padding>
+      <side>all</side>
+      <padding>none</padding>
+    </padding>
+    <container tooltip="dimension-value-tooltip">
+      <type>grid</type>
+      <name>dimension_value_grid</name>
+
+      <context>
+	<menu>
+	  <append_items>
+	    <items>
+	      <label>Foo</label>
+	    </items>
+	  </append_items>
+	</menu>
+      </context>
+    </container>
+  </factory>
+
+  <layout type="grid" id="dimension_value_grid">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>dimension_mm_row</name>
+    </append_row>
+
+    <append_row>
+      <name>dimension_scale_row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="dimension_mm_row">
+    <element id="dimension_value_option_field">
+      <radio>
+	<element>
+	  <label type="theme_text">${context:creator}Mm:</label>
+	</element>
+      </radio>
+      <group>dimension-type-group</group>
+    </element>
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+    <element id="dimension_value_field">
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+  </factory>
+
+  <tooltip type="label" id="dimension-value-tooltip">
+    <label type="theme_text">Specify the size in millimeters,&#10;or "inf" for an infinitely large size&#10;&#10;Alternatively: a scaled multiple&#10;of another size&#10;</label>
+  </tooltip>
+
+  <factory type="grid" id="dimension_scale_row">
+    <element id="dimension_scale_option_field">
+      <radio>
+	<element>
+	  <label type="theme_text">${context:creator}Scale:</label>
+	</element>
+      </radio>
+      <group>dimension-type-group</group>
+    </element>
+    <container>
+      <name>dimension_from_name_field</name>
+      <type>standard_combobox</type>
+    </container>
+    <element>
+      <label>*</label>
+    </element>
+    <element id="dimension_scale_value_field">
+      <input_field />
+      <config>
+	<columns>5</columns>
+      </config>
+    </element>
+  </factory>
+
+  <layout id="dimension_from_name_field" type="standard_combobox" />
+
+  <factory type="grid" id="dimension_buttons_row">
+    <halign>center</halign>
+    <padding>
+      <side>top</side>
+      <padding>none</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>none</padding>
+    </padding>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <halign>left</halign>
+    <container>
+      <name>dimensions_buttons_container</name>
+      <type>grid</type>
+    </container>
+  </factory>
+
+  <layout type="grid" id="dimensions_buttons_container">
+    <append_row>
+      <name>dimension_buttons</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="dimension_buttons">
+    <element id="dimension_update_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:dimension}${decoration:underline}U${decoration:none}pdate</label>
+	</element>
+      </button>
+      <config>
+	<appearance>default_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:dimension}Alt-U</shortcut>
+    </element>
+    <element id="dimension_reset_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:dimension}${decoration:underline}R${decoration:none}eset</label>
+	</element>
+      </button>
+      <config>
+	<appearance>default_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:dimension}Alt-R</shortcut>
+    </element>
+    <element id="dimension_delete_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:dimension}D${decoration:underline}e${decoration:none}lete</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:dimension}Alt-E</shortcut>
+    </element>
+  </factory>
 </theme>

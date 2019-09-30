@@ -994,6 +994,7 @@ EXTRA_DIST += $(creatorinst_DATA)
 cxxwcreator_SOURCES=\
 	creator/app.C				\
 	creator/app.H				\
+	creator/appdimension.C			\
 	creator/cxxwcreator.C			\
 	#
 

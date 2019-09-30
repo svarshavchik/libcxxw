@@ -1573,7 +1573,7 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 
 	<varlistentry>
 	  <term>
-	    <tag class='element'>menuoption</tag>
+	    <tag class='element'>submenu</tag>
 	  </term>
 	  <listitem>
 	    <para>
@@ -1679,7 +1679,7 @@ layout->generate("main-window-grid",
 	  value. This element assigns an identifer to the following list
 	  item. After generating the contents of a selection list,
 	  After the widgets get generated,
-	  <methodname>get_element</methodname>() retrieves a
+	  <methodname>get_listitemhandle</methodname>() retrieves a
 	  <ulink url="&link-typedef-x--w-listitemhandle;"><classname>&ns;::w::listitemhandle</classname></ulink>
 	  for the new list item specified by its name.
 	</para>

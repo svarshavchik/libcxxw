@@ -7,9 +7,9 @@
 #include <x/locale.H>
 #include <x/exception.H>
 
-void cxxwcreator()
+void cxxwcreator(int argc, char **argv)
 {
-	auto me=app::create();
+	auto me=app::create(argc, argv);
 
 	appsingleton me_singleton{me};
 
@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 {
 	x::locale::base::environment()->global();
 	try {
-		cxxwcreator();
+		cxxwcreator(argc, argv);
 	} catch (const x::exception &e)
 	{
 		e->caught();

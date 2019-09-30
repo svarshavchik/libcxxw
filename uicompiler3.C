@@ -30,14 +30,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-static void unknown_dim(const char *element, const std::string &id)
+static void unknown_dim(const std::string &id)
        __attribute__((noreturn));
 
-static void unknown_dim(const char *element, const std::string &id)
+static void unknown_dim(const std::string &id)
 {
-       throw EXCEPTION(gettextmsg(_("circular or non-existent dependency of dim %1%=%2%"),
-                                  element,
-                                  id));
+	throw EXCEPTION(gettextmsg(_("circular or non-existent dependency"
+				     " of dim %1%"),
+				   id));
 }
 
 static std::optional<color_arg>
@@ -648,7 +648,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 		auto id=lock->get_any_attribute("id");
 
 		if (generators->dims.find(id) == generators->dims.end())
-			unknown_dim("dim", id);
+			unknown_dim(id);
 	}
 
 	lock=root_lock.clone();
