@@ -1,8 +1,4 @@
 /*
-** Copyright 2017-2019 Double Precision, Inc.
-** See COPYING for distribution information.
-*/
-/*
 ** Copyright 2016-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
@@ -12,6 +8,8 @@
 
 #include <x/w/namespace.H>
 #include <x/w/theme_color.H>
+#include <x/w/dim_arg.H>
+#include <x/w/types.H>
 #include <variant>
 #include <string>
 #include <cstdint>
@@ -40,15 +38,76 @@ typedef std::unordered_map<size_t, rgb> rgb_gradient;
 struct linear_gradient;
 struct radial_gradient;
 
-//! A color can be specified as either a literal rgb value, or a theme color
+//! How to scale an icon.
 
-//! The background color for a widget may also be specified as a
-//! linear or a radial gradient. Gradient colors are ignored in all other
-//! situations (border colors, etc...), and fall back to using the #0 gradient
-//! color.
+//! Scale the icon size as close to the requested size as possible,
+//! to be at least as big as the requested size, or not bigger than
+//! the requested size.
 
-typedef std::variant<rgb, std::string, linear_gradient, radial_gradient
-		     > color_arg;
+enum class icon_scale { nearest, atleast, nomore};
+
+//! An image-based color specification
+
+struct image_color {
+
+	//! The name of the file
+
+	//! The filename must have a path component, even "./". Without
+	//! a path component this loads the image from the current theme
+	//!
+	//! The image file can be a gif, png, jpg, or the LibCXXw-specific
+	//! scalable X graphic image (sxg).
+	std::string name;
+
+	//! Repeat the image across the entire drawing area.
+
+	//! Can be used to selectively turn off repeat mode.
+	render_repeat repeat=render_repeat::normal;
+
+	//! Scale image to the given width
+
+	//! 0 specifies the original image width. Scaling is supported for
+	//! sxg files only.
+	dim_arg width=0;
+
+	//! Scale image to the given height
+
+	//! 0 specifies the original image height. Scaling is supported for
+	//! sxg files only.
+	dim_arg height=0;
+
+	//! Scaling adjustment
+
+	//! Used with sxg files only.
+
+	icon_scale scale=icon_scale::nearest;
+
+	//! Comparison operator
+	bool operator==(const image_color &o) const noexcept
+	{
+		return name == o.name &&
+			repeat == o.repeat &&
+			width == o.width &&
+			height == o.height &&
+			scale == o.scale;
+	}
+};
+
+//! A color specification
+
+//! One of the following:
+//!
+//! - a \ref rgb "solid color".
+//!
+//! - the name of a theme-specified color, as a \c std::string
+//!
+//! - a \ref linear_gradient "linear" or a \ref radial_gradient "radial"
+//! gradient color specification.
+//!
+//! - a \ref image_color "loaded image".
+
+typedef std::variant<rgb, std::string, linear_gradient, radial_gradient,
+		     image_color> color_arg;
 
 //! Text label colors
 

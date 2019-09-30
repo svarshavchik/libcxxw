@@ -7,6 +7,7 @@
 
 #include <x/w/defaultthemefwd.H>
 #include <x/w/connection_threadfwd.H>
+#include <x/w/rgbfwd.H>
 #include <x/w/dim_arg.H>
 #include <x/w/impl/iconfwd.H>
 #include <x/w/impl/pixmap_with_picturefwd.H>

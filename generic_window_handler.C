@@ -218,17 +218,12 @@ generic_windowObj::handlerObj
 				     params.appearance->modal_shade_color),
 	 create_new_icon(params.window_handler_params.screenref,
 			 params.drawable_pictformat,
-			 create_icon_args_t
-		{
-		 params.appearance->disabled_mask,
-		 render_repeat::normal
-		}),
+			 image_color{params.appearance->disabled_mask}),
 	 cursor_pointer::create
 	 (create_new_icon(params.window_handler_params.screenref,
 			  params.drawable_pictformat,
-			  create_icon_args_t{
-				  params.appearance->wait_cursor
-					  })),
+			  image_color{params.appearance->wait_cursor,
+					  render_repeat::none})),
 	 params.nesting_level,
 	 element_position(params.window_handler_params.initial_position),
 	 popupptr{},

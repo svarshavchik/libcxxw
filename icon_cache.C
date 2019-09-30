@@ -1232,7 +1232,7 @@ std::vector<icon> drawableObj::implObj
 	return icons;
 }
 
-icon drawableObj::implObj::create_icon(const create_icon_args_t &args)
+icon drawableObj::implObj::create_icon(const image_color &args)
 {
 	return create_new_icon(get_screen(),
 			       drawable_pictformat, args);
@@ -1240,7 +1240,7 @@ icon drawableObj::implObj::create_icon(const create_icon_args_t &args)
 
 icon create_new_icon(const screen &screenref,
 		     const const_pictformat &drawable_pictformat,
-		     const create_icon_args_t &args)
+		     const image_color &args)
 {
 	auto theme=screenref->impl->current_theme.get();
 
@@ -1254,7 +1254,7 @@ icon create_new_icon(const screen &screenref,
 
 	auto cached_pixmap_with_picture=
 		create_cached_pixmap_with_picture(screenref, pixmap_impl,
-						  args.icon_repeat);
+						  args.repeat);
 
 	return get_cached_icon(args.name, theme, cached_pixmap_with_picture,
 			       args.width, args.height,

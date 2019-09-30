@@ -49,7 +49,7 @@ current_border_impl get_cached_border(const screen &s,
 //! Create a new icon
 icon create_new_icon(const screen &screenref,
 		     const const_pictformat &drawable_pictformat,
-		     const create_icon_args_t &args) LIBCXX_HIDDEN;
+		     const image_color &args) LIBCXX_HIDDEN;
 
 
 //! Create a cached gradient background color
@@ -137,7 +137,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	const freetype ft;
 
- private:
 	//! A cache of solid color picture objects
 
 	//! Used by create_solid_color_picture().
@@ -152,8 +151,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Used by get_cached_border().
 
 	const border_cache screen_border_cache;
-
- public:
 
 	//! Font caches
 

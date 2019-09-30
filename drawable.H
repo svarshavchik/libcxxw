@@ -102,7 +102,7 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 	//! This drawable is used only to obtain the icon's pictformat, and
 	//! create_pixmap().
 
-	icon create_icon(const create_icon_args_t &);
+	icon create_icon(const image_color &);
 
  protected:
 
@@ -111,7 +111,7 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 	//! Used by generic_windowObj::handlerObj before it is currently
 	//! constructed, hence get_screen() is not yet overridden.
 
-	icon create_icon(const create_icon_args_t &,
+	icon create_icon(const image_color &,
 			 const screen &);
  public:
 	//! Create an icon, with dimensions specified in pixels

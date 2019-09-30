@@ -6,10 +6,7 @@
 #define x_w_impl_iconfwd_h
 
 #include <x/ptrfwd.H>
-#include <x/w/types.H>
-#include <x/w/constants_inc.H>
-#include <x/w/dim_arg.H>
-#include <string>
+#include <x/w/namespace.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,7 +14,7 @@ class LIBCXX_HIDDEN iconObj;
 
 //! A loaded icon.
 
-//! Holds a reference to an \ref icon_image.
+//! Holds a reference to an icon.
 //!
 //! After construction, at some point initialize() gets invoked from the
 //! connection thread, to finish initialization.
@@ -45,24 +42,6 @@ typedef const_ref<iconObj> const_icon;
 //! A nullable pointer reference to a constant \ref icon "icon".
 
 typedef const_ptr<iconObj> const_iconptr;
-
-//! How to scale an icon.
-
-//! Scale the icon size as close to the requested size as possible,
-//! to be at least as big as the requested size, or not bigger than
-//! the requested size.
-
-enum class icon_scale { nearest, atleast, nomore};
-
-//! Parameters to create_icon().
-
-struct create_icon_args_t {
-	std::string name;
-	render_repeat icon_repeat=render_repeat::none;
-	dim_arg width=0;
-	dim_arg height=0;
-	icon_scale scale=icon_scale::nearest;
-};
 
 LIBCXXW_NAMESPACE_END
 

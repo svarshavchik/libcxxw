@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/dim_arg_hash.H"
 #include "x/w/rgb_hash.H"
+#include "x/w/image_color_hash.H"
 #include "x/w/border_infomm_hash.H"
 #include "x/w/border_arg_hash.H"
 #include <x/refptr_hash.H>
@@ -38,6 +39,7 @@ size_t hash<LIBCXX_NAMESPACE::w::dim_arg>
 size_t hash<LIBCXX_NAMESPACE::w::color_arg>
 ::operator()(const LIBCXX_NAMESPACE::w::color_arg &r) const noexcept
 {
+
 	return visit(LIBCXX_NAMESPACE::visitor{
 			[]
 			(const LIBCXX_NAMESPACE::w::rgb &r)
@@ -47,14 +49,16 @@ size_t hash<LIBCXX_NAMESPACE::w::color_arg>
 			[this]
 			(const string &s)
 			{
-				return this->hash<string>::operator()(s);
+				std::hash<string> h;
+
+				return h(s);
 			},
 			[this]
 			(const LIBCXX_NAMESPACE::w::linear_gradient &g)
 			{
-				return this->hash<LIBCXX_NAMESPACE::w
-						  ::rgb_gradient>::operator()
-					(g.gradient) +
+				hash<LIBCXX_NAMESPACE::w::rgb_gradient> g_hash;
+
+				return g_hash(g.gradient) +
 					(size_t)(std::round(g.x1*256)) +
 					(size_t)(std::round(g.y1*65536)) +
 					(size_t)(std::round(g.x2*
@@ -70,9 +74,9 @@ size_t hash<LIBCXX_NAMESPACE::w::color_arg>
 			[this]
 			(const LIBCXX_NAMESPACE::w::radial_gradient &g)
 			{
-				return this->hash<LIBCXX_NAMESPACE::w
-						  ::rgb_gradient>::operator()
-					(g.gradient) +
+				hash<LIBCXX_NAMESPACE::w::rgb_gradient> g_hash;
+
+				return g_hash(g.gradient) +
 					(size_t)(std::round(g.inner_center_x
 							    *256)) +
 					(size_t)(std::round(g.inner_center_y
@@ -91,6 +95,13 @@ size_t hash<LIBCXX_NAMESPACE::w::color_arg>
 					+ (size_t)(std::round(g.fixed_height
 							      * 16));
 
+			},
+			[this]
+			(const LIBCXX_NAMESPACE::w::image_color &ic)
+			{
+				std::hash<LIBCXX_NAMESPACE::w::image_color> h;
+
+				return h(ic);
 			}},
 		r);
 }
@@ -137,9 +148,9 @@ size_t hash<LIBCXX_NAMESPACE::w::border_arg>
 			[this]
 			(const string &s)
 			{
-				hash<LIBCXX_NAMESPACE::w::color_arg> const &r=
-					*this;
-				return r.hash<string>::operator()(s);
+				hash<string> h;
+
+				return h(s);
 			}}, a);
 }
 
@@ -149,8 +160,8 @@ size_t hash<LIBCXX_NAMESPACE::w::rgb_gradient>
 {
 	size_t i=0;
 
-	std::hash<LIBCXX_NAMESPACE::w::rgb_gradient::key_type> k_h{};
-	std::hash<LIBCXX_NAMESPACE::w::rgb_gradient::mapped_type> v_h{};
+	hash<LIBCXX_NAMESPACE::w::rgb_gradient::key_type> k_h{};
+	hash<LIBCXX_NAMESPACE::w::rgb_gradient::mapped_type> v_h{};
 
 	for (const auto &kv:r)
 		i += k_h(kv.first)+v_h(kv.second);
@@ -158,6 +169,16 @@ size_t hash<LIBCXX_NAMESPACE::w::rgb_gradient>
 	return i;
 }
 
+size_t hash<LIBCXX_NAMESPACE::w::image_color>
+::operator()(const LIBCXX_NAMESPACE::w::image_color &c)
+	const noexcept
+{
+	return hash<string>::operator()(c.name) +
+		hash<LIBCXX_NAMESPACE::w::dim_arg>::operator()(c.width) +
+		hash<LIBCXX_NAMESPACE::w::dim_arg>::operator()(c.height) +
+		static_cast<size_t>(c.repeat) +
+		static_cast<size_t>(c.scale);
+}
 #if 0
 {
 #endif

@@ -6,6 +6,8 @@
 #include "recycled_pixmaps.H"
 #include "x/w/impl/scratch_buffer.H"
 #include "x/w/impl/background_color.H"
+#include "x/w/impl/icon.H"
+#include "x/w/impl/pixmap_with_picture.H"
 #include "screen.H"
 #include "x/w/impl/element.H"
 #include "x/w/pictformat.H"
@@ -31,7 +33,13 @@ recycled_pixmapsObj::recycled_pixmapsObj()
 		  theme_background_color_cache_t::create()},
 	  nontheme_background_color_cache{
 		  nontheme_background_color_cache_t::create()},
-	  gradient_cache{gradient_cache_t::create()}
+	  gradient_cache{gradient_cache_t::create()},
+	  image_background_color_cache{image_background_color_cache_t::create()
+	  },
+	  element_specific_image_background_color_cache
+	{
+	 element_specific_image_background_color_cache_t::create()
+	}
 {
 }
 
@@ -414,6 +422,150 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 	}
 };
 
+//////////////////////////////////////////////////////////////////////////
+//
+// A background color based on an icon.
+
+class icon_background_colorObj : public background_colorObj {
+
+	icon icon_handle;
+	bool initialized;
+public:
+	const icon &current_icon(ONLY IN_THREAD);
+
+	const icon_scale scale;
+
+	icon_background_colorObj(const icon &current_icon,
+				 icon_scale scale,
+				 const screen &s);
+
+	~icon_background_colorObj();
+
+	//! Override current_theme_updated
+
+	void current_theme_updated(ONLY IN_THREAD,
+				   const const_defaulttheme &new_theme)
+		override;
+
+	background_color get_background_color_for(ONLY IN_THREAD,
+						  elementObj::implObj &e,
+						  dim_t width,
+						  dim_t height) override;
+
+	bool is_scrollable_background() override;
+
+	const_picture get_current_color(ONLY IN_THREAD) override;
+
+	virtual background_color get_base_background_color()
+	{
+		return ref{this};
+	}
+};
+
+///////////////////////////////////////////////////////////////////////////
+//
+// An icon background color that's specific to an icon.
+//
+class element_specific_icon_background_colorObj
+	: public icon_background_colorObj {
+
+public:
+	const ref<icon_background_colorObj> base_color;
+
+	element_specific_icon_background_colorObj
+	(const ref<icon_background_colorObj> &base_color,
+	 const icon &current_icon);
+
+	~element_specific_icon_background_colorObj();
+
+	background_color get_base_background_color() override
+	{
+		return base_color;
+	}
+};
+
+icon_background_colorObj::icon_background_colorObj(const icon &current_icon,
+						   icon_scale scale,
+						   const screen &s)
+	: background_colorObj{s},
+	  icon_handle{current_icon},
+	  scale{scale}
+{
+}
+
+icon_background_colorObj::~icon_background_colorObj()=default;
+
+const icon &icon_background_colorObj::current_icon(ONLY IN_THREAD)
+{
+	if (!initialized)
+	{
+		initialized=true;
+		icon_handle=icon_handle->initialize(IN_THREAD);
+	}
+	return icon_handle;
+}
+
+void icon_background_colorObj
+::current_theme_updated(ONLY IN_THREAD,
+			const const_defaulttheme &new_theme)
+{
+	icon_handle=current_icon(IN_THREAD)
+		->theme_updated(IN_THREAD, new_theme);
+}
+
+background_color icon_background_colorObj
+::get_background_color_for(ONLY IN_THREAD,
+			   elementObj::implObj &e,
+			   dim_t width,
+			   dim_t height)
+{
+	if (current_icon(IN_THREAD)->image->repeat != render_repeat::none)
+		return background_color{this};
+
+	auto base=get_base_background_color();
+
+	return background_color_screen->impl->recycled_pixmaps_cache
+		->element_specific_image_background_color_cache
+		->find_or_create
+		({base, width, height},
+		 [&, this]
+		 {
+			 auto resized_icon=
+				 current_icon(IN_THREAD)
+				 ->resize(IN_THREAD,
+					  width, height, scale);
+
+			 return ref<element_specific_icon_background_colorObj>
+				 ::create(base, resized_icon);
+		 });
+}
+
+bool icon_background_colorObj::is_scrollable_background()
+{
+	return false;
+}
+
+const_picture icon_background_colorObj::get_current_color(ONLY IN_THREAD)
+{
+	return current_icon(IN_THREAD)->image->icon_picture;
+}
+
+
+element_specific_icon_background_colorObj
+::element_specific_icon_background_colorObj
+(const ref<icon_background_colorObj> &base_color,
+ const icon &current_icon)
+	: icon_background_colorObj{current_icon,
+				   base_color->scale,
+				   base_color->background_color_screen},
+	  base_color{base_color}
+{
+}
+
+element_specific_icon_background_colorObj
+::~element_specific_icon_background_colorObj()=default;
+
+
 #if 0
 {
 #endif
@@ -434,10 +586,26 @@ background_color create_new_background_color(const screen &s,
 		 {
 			 return std::visit(visitor{
 				 [&](const std::string &name)
-					 ->background_color
+				 ->background_color
 				 {
 					 return ref<theme_background_colorObj>
 						 ::create(name, s, *lock);
+				 },
+				 [&](const image_color &ic)
+				 ->background_color
+				 {
+					 return s->impl->recycled_pixmaps_cache
+						 ->image_background_color_cache
+						 ->find_or_create
+						 ({ic, pf},
+						  [&]
+						  {
+							  auto i=create_new_icon
+								  (s, pf, ic);
+
+							  return ref<icon_background_colorObj>
+								  ::create(i, ic.scale, s);
+						  });
 				 },
 				 [&](const auto &nontheme_color)
 					 ->background_color
@@ -509,6 +677,21 @@ size_t recycled_pixmapsObj::gradient_key_hash
 {
 	return std::hash<background_color>::operator()(k.base_background) +
 		std::hash<const_picture>::operator()(k.gradient_picture);
+}
+
+size_t recycled_pixmapsObj::image_color_key_hash
+::operator()(const image_color_key &v) const noexcept
+{
+	return std::hash<image_color>::operator()(v.key_image_color) +
+		std::hash<const_pictformat>::operator()(v.key_pictformat);
+}
+
+size_t recycled_pixmapsObj::element_specific_image_key_hash
+::operator()(const element_specific_image_key &v) const noexcept
+{
+	return std::hash<background_color>::operator()(v.key_background_color)+
+		std::hash<dim_t>::operator()(v.width) +
+		std::hash<dim_t>::operator()(v.height);
 }
 
 LIBCXXW_NAMESPACE_END

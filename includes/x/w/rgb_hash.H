@@ -7,6 +7,7 @@
 #define x_w_rgbhash_H
 
 #include <x/w/rgb.H>
+#include <x/w/image_color_hash.H>
 #include <functional>
 #include <variant>
 
@@ -34,9 +35,7 @@ namespace std {
 
 	//! Specialization of \c std::hash for \c INSERT_LIBX_NAMESPACE::w::color_arg
 	template<>
-	struct hash<LIBCXX_NAMESPACE::w::color_arg>
-		: public hash<string>,
-		  public hash<LIBCXX_NAMESPACE::w::rgb_gradient> {
+	struct hash<LIBCXX_NAMESPACE::w::color_arg> {
 
 		size_t operator()(const LIBCXX_NAMESPACE::w::color_arg &r)
 			const noexcept;
