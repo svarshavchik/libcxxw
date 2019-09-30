@@ -184,9 +184,9 @@ create_peephole_toplevel_impl(const container_impl &toplevel,
 			 current_border_implptr border_impl;
 
 			 if (border)
-				 border_impl=toplevel->container_element_impl()
-					 .get_screen()->impl
-					 ->get_cached_border(*border);
+				 border_impl=get_cached_border
+					 (toplevel->container_element_impl()
+					  .get_screen(), *border);
 
 
 

@@ -23,7 +23,7 @@ class current_border_implObj: virtual public obj {
 
 public:
 	//! My screen.
-	const ref<screenObj::implObj> screen;
+	const screen s;
 
 private:
 	//! The border argument specification.
@@ -38,7 +38,7 @@ private:
 	THREAD_DATA_ONLY(border);
 
 	//! Internal constructor
-	current_border_implObj(const ref<screenObj::implObj> &screen,
+	current_border_implObj(const screen &s,
 			       const border_arg &arg,
 			       const current_theme_t::lock &lock)
 		LIBCXX_HIDDEN;

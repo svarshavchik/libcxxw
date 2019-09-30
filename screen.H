@@ -38,6 +38,12 @@ LIBCXXW_NAMESPACE_START
 
 class render;
 
+//! Find or create a border.
+
+current_border_impl get_cached_border(const screen &s,
+				      const border_arg &arg)
+		LIBCXX_HIDDEN;
+
 //! xcb_screen_t owner.
 
 class LIBCXX_HIDDEN screenObj::implObj
@@ -111,7 +117,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	//! The custom border cache.
 
-	//! Used by get_custom_border().
+	//! Used by get_cached_border().
 
 	const border_cache screen_border_cache;
 
@@ -265,9 +271,8 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	background_color create_background_color(const const_picture &pic);
 
-	//! Find or create a custom border.
-
-	current_border_impl get_cached_border(const border_arg &);
+	friend current_border_impl get_cached_border(const screen &s,
+						     const border_arg &arg);
 
 	/////////////////////////////////////////////////////////////////////
 	//

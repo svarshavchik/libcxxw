@@ -38,14 +38,14 @@ get_border_infomm(const border_arg &arg,
 //! Now take a border_infomm and convert it to a border_info
 
 static inline border_info
-convert_to_border_info(const ref<screenObj::implObj> &s,
+convert_to_border_info(const screen &s,
 		       const const_defaulttheme &theme,
 		       const border_infomm &mm)
 {
-	border_info info{s->create_background_color(mm.color1)};
+	border_info info{s->impl->create_background_color(mm.color1)};
 
 	if (mm.color2)
-		info.color2=s->create_background_color(*mm.color2);
+		info.color2=s->impl->create_background_color(*mm.color2);
 
 	auto w=theme->get_theme_dim_t(mm.width, themedimaxis::width);
 	auto h=theme->get_theme_dim_t(mm.height, themedimaxis::height);
@@ -140,24 +140,24 @@ convert_to_border_info(const ref<screenObj::implObj> &s,
 // Convert a border_arg to a border_impl object.
 
 static inline const_border_impl
-border_impl_from_arg(const ref<screenObj::implObj> &screen,
+border_impl_from_arg(const screen &s,
 		     const border_arg &arg,
 		     const const_defaulttheme &theme)
 {
 	auto b=border_impl::create(convert_to_border_info
-				   (screen, theme,
+				   (s, theme,
 				    get_border_infomm(arg, theme)));
 	b->calculate();
 	return b;
 }
 
 current_border_implObj
-::current_border_implObj(const ref<screenObj::implObj> &screen,
+::current_border_implObj(const screen &s,
 			 const border_arg &arg,
 			 const current_theme_t::lock &lock)
-	: screen(screen),
-	  arg(arg),
-	  border_thread_only(border_impl_from_arg(screen, arg, *lock))
+	: s{s},
+	  arg{arg},
+	  border_thread_only{border_impl_from_arg(s, arg, *lock)}
 {
 }
 
@@ -167,7 +167,7 @@ current_border_implObj
 void current_border_implObj
 ::current_theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 {
-	border(IN_THREAD)=border_impl_from_arg(screen, arg, new_theme);
+	border(IN_THREAD)=border_impl_from_arg(s, arg, new_theme);
 }
 
 bool current_border_implObj::no_border(ONLY IN_THREAD) const
