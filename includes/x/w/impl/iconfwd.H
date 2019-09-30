@@ -2,13 +2,13 @@
 ** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef iconfwd_h
-#define iconfwd_h
+#ifndef x_w_impl_iconfwd_h
+#define x_w_impl_iconfwd_h
 
 #include <x/ptrfwd.H>
-#include "x/w/types.H"
-#include "x/w/constants_inc.H"
-#include "x/w/dim_arg.H"
+#include <x/w/types.H>
+#include <x/w/constants_inc.H>
+#include <x/w/dim_arg.H>
 #include <string>
 
 LIBCXXW_NAMESPACE_START

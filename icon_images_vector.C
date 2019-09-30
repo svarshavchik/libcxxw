@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "icon_images_vector.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 
 LIBCXXW_NAMESPACE_START
 

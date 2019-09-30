@@ -5,7 +5,7 @@
 #ifndef icon_images_vector_h
 #define icon_images_vector_h
 
-#include "iconfwd.H"
+#include "x/w/impl/iconfwd.H"
 #include "x/w/impl/connection_threadfwd.H"
 #include "x/w/defaultthemefwd.H"
 #include <vector>

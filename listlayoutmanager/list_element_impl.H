@@ -13,7 +13,7 @@
 #include "x/w/impl/focus/focusable_elementfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "x/w/impl/themedim_elementfwd.H"
-#include "iconfwd.H"
+#include "x/w/impl/iconfwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/themeborder_elementfwd.H"
 #include "x/w/listlayoutmanagerfwd.H"

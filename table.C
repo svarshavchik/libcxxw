@@ -27,7 +27,7 @@
 #include "x/w/impl/richtext/richtext.H"
 #include "cursor_pointer_element.H"
 #include "generic_window_handler.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "screen.H"
 #include "defaulttheme.H"
 #include <X11/keysym.h>

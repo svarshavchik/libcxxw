@@ -13,7 +13,7 @@
 #include "grabbed_pointer.H"
 #include "messages.H"
 #include "shared_handler_data.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
 #include "x/w/key_event.H"

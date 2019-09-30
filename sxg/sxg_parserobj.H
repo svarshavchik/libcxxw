@@ -7,7 +7,7 @@
 
 #include "sxg/sxg_parserfwd.H"
 #include "x/w/defaultthemefwd.H"
-#include "iconfwd.H"
+#include "x/w/impl/iconfwd.H"
 #include "x/w/impl/background_colorfwd.H"
 #include "x/w/screenfwd.H"
 #include "x/w/screenobj.H"

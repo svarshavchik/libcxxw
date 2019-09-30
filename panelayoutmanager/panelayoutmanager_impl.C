@@ -16,7 +16,7 @@
 #include "screen_positions_impl.H"
 #include "straight_border_impl.H"
 #include "generic_window_handler.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "cursor_pointer.H"
 #include "x/w/impl/background_color.H"
 #include "peephole/peephole.H"

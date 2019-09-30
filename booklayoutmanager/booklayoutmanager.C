@@ -17,7 +17,7 @@
 #include "x/w/impl/layoutmanager.H"
 #include "image_button.H"
 #include "image_button_internal_impl.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/container_visible_element.H"
 #include "x/w/impl/child_element.H"

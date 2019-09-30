@@ -4,8 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "popup_imagebutton_impl.H"
-#include "pixmap_with_picture.H"
-#include "icon.H"
+#include "x/w/impl/pixmap_with_picture.H"
+#include "x/w/impl/icon.H"
 #include "x/w/metrics/axis.H"
 #include <X11/keysym.h>
 

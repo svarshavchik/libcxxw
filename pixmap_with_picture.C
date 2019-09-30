@@ -4,7 +4,7 @@
 */
 
 #include "libcxxw_config.h"
-#include "pixmap_with_picture.H"
+#include "x/w/impl/pixmap_with_picture.H"
 #include "pixmap.H"
 #include "x/w/picture.H"
 

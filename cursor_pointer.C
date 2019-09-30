@@ -4,8 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "cursor_pointer.H"
-#include "icon.H"
-#include "pixmap_with_picture.H"
+#include "x/w/impl/icon.H"
+#include "x/w/impl/pixmap_with_picture.H"
 #include "defaulttheme.H"
 #include "screen.H"
 #include "cursor_pointer_cache.H"

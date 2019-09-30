@@ -17,7 +17,7 @@
 #include "generic_window_handler.H"
 #include "popup/popup_handler.H"
 #include "popup/popup_impl.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 
 LIBCXXW_NAMESPACE_START
 

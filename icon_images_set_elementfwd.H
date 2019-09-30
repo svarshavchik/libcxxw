@@ -5,7 +5,7 @@
 #ifndef icon_images_set_elementfwd_h
 #define icon_images_set_elementfwd_h
 
-#include "iconfwd.H"
+#include "x/w/impl/iconfwd.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/defaultthemefwd.H"
 #include <x/ptrfwd.H>

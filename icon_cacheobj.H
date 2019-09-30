@@ -7,8 +7,8 @@
 
 #include "x/w/defaultthemefwd.H"
 #include "icon_cachefwd.H"
-#include "pixmap_with_picturefwd.H"
-#include "iconobj.H"
+#include "x/w/impl/pixmap_with_picturefwd.H"
+#include "x/w/impl/iconobj.H"
 #include "sxg/sxg_parserfwd.H"
 #include "sxg/sxg_parserobj.H"
 #include "x/w/pixmapfwd.H"

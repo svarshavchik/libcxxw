@@ -420,9 +420,6 @@ libcxxw_la_SOURCES=\
 	hotspot_elementfwd.H			    \
 	hotspot_impl.C				    \
 	icon.C					    \
-	icon.H					    \
-	iconfwd.H				    \
-	iconobj.H				    \
 	icon_cache.C				    \
 	icon_cache.H				    \
 	icon_cachefwd.H				    \
@@ -694,9 +691,6 @@ libcxxw_la_SOURCES=\
 	pixmap_loader.C				    \
 	pixmap_loader.H				    \
 	pixmap_with_picture.C			    \
-	pixmap_with_picture.H			    \
-	pixmap_with_picturefwd.H		    \
-	pixmap_with_pictureobj.H		    \
 	popup_imagebutton.C			    \
 	popup_imagebutton.H			    \
 	popup_imagebutton_impl.C		    \

@@ -4,10 +4,10 @@
 */
 #include "libcxxw_config.h"
 #include "themeiconpixmapobj.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "drawable.H"
 #include "pixmap.H"
-#include "pixmap_with_picture.H"
+#include "x/w/impl/pixmap_with_picture.H"
 #include "x/w/dim_arg.H"
 
 LIBCXXW_NAMESPACE_START

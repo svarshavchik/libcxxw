@@ -9,7 +9,7 @@
 #include "x/w/impl/always_visible_element.H"
 #include "hotspot_element.H"
 #include "icon_images_vector_element.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "radio_group.H"
 #include "busy.H"
 #include "catch_exceptions.H"

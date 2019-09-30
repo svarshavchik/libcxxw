@@ -5,9 +5,9 @@
 #include "libcxxw_config.h"
 #include "listlayoutmanager/list_cellimage.H"
 #include "richtext/richtext_draw_boundaries.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "icon_images_vector.H"
-#include "pixmap_with_picture.H"
+#include "x/w/impl/pixmap_with_picture.H"
 #include "x/w/pixmap.H"
 #include "x/w/picture.H"
 

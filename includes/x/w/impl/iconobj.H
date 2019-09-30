@@ -2,15 +2,15 @@
 ** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef iconobj_H
-#define iconobj_H
+#ifndef x_w_impl_iconobj_H
+#define x_w_impl_iconobj_H
 
-#include "x/w/defaultthemefwd.H"
-#include "iconfwd.H"
-#include "pixmap_with_picturefwd.H"
-#include "x/w/connection_threadfwd.H"
-#include "x/w/impl/cursor_pointerfwd.H"
-#include "x/w/dim_arg.H"
+#include <x/w/defaultthemefwd.H>
+#include <x/w/connection_threadfwd.H>
+#include <x/w/dim_arg.H>
+#include <x/w/impl/iconfwd.H>
+#include <x/w/impl/pixmap_with_picturefwd.H>
+#include <x/w/impl/cursor_pointerfwd.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START;
@@ -42,21 +42,23 @@ public:
 	//! receives its supposedly new icon takes care of its obligation
 	//! to call initialize().
 
-	virtual icon initialize(ONLY IN_THREAD);
+	virtual icon initialize(ONLY IN_THREAD)
+		LIBCXX_PUBLIC;
 
 	//! Display theme was updated.
 
 	//! The default implementation returns the same object.
 	virtual icon theme_updated(ONLY IN_THREAD,
-				   const const_defaulttheme &new_theme);
+				   const const_defaulttheme &new_theme)
+		LIBCXX_PUBLIC;
 
 	//! Resize this icon, if this is a resizable icon.
 	virtual icon resize(ONLY IN_THREAD, dim_t w, dim_t h,
-			    icon_scale scale);
+			    icon_scale scale) LIBCXX_PUBLIC;
 
 	//! Create a cursor pointer from this icon.
 
-	cursor_pointer create_cursor();
+	cursor_pointer create_cursor() LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

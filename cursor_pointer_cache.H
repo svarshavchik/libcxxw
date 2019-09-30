@@ -9,7 +9,7 @@
 #include <x/ref.H>
 #include "cursor_pointer_cachefwd.H"
 #include "cursor_pointer_cacheobj.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "cursor_pointer.H"
 #include <x/weakunordered_multimap.H>
 

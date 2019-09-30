@@ -8,7 +8,7 @@
 #include "x/w/impl/child_element.H"
 #include "x/w/image.H"
 #include "connection_thread.H"
-#include "iconfwd.H"
+#include "x/w/impl/iconfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

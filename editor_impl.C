@@ -31,7 +31,7 @@
 #include "messages.H"
 #include "connection_thread.H"
 #include "generic_window_handler.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "catch_exceptions.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"

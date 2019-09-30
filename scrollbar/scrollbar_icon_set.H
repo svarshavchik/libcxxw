@@ -6,8 +6,8 @@
 #define scrollbar_icon_set_h
 
 #include "x/w/namespace.H"
-#include "iconfwd.H"
-#include "iconobj.H"
+#include "x/w/impl/iconfwd.H"
+#include "x/w/impl/iconobj.H"
 #include "x/w/connection_threadfwd.H"
 #include "icon_images_set_elementfwd.H"
 

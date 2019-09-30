@@ -10,7 +10,7 @@
 #include "defaulttheme.H"
 #include "pictformat.H"
 #include "pixmap_extractor.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "icon_images_set_element.H"
 #include "busy.H"
 #include "cursor_pointer_element.H"

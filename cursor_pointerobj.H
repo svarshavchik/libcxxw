@@ -6,7 +6,7 @@
 #define cursor_pointerobj_h
 
 #include "x/w/impl/cursor_pointerfwd.H"
-#include "iconfwd.H"
+#include "x/w/impl/iconfwd.H"
 #include "x/w/defaultthemefwd.H"
 #include "xid_t.H"
 #include "x/w/connection_threadfwd.H"

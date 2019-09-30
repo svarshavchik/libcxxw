@@ -5,7 +5,7 @@
 #ifndef icon_images_set_element_h
 #define icon_images_set_element_h
 
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "x/w/connection_threadfwd.H"
 #include "icon_images_set_elementfwd.H"
 #include <utility>

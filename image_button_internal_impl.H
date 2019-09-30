@@ -11,7 +11,7 @@
 #include "x/w/impl/always_visible_elementfwd.H"
 #include "image_button_internal.H"
 #include "icon_images_vector_elementfwd.H"
-#include "iconfwd.H"
+#include "x/w/impl/iconfwd.H"
 #include "image.H"
 #include "hotspot_elementfwd.H"
 #include <vector>

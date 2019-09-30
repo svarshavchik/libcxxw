@@ -10,7 +10,7 @@
 #include "x/w/picturefwd.H"
 #include "x/w/screenfwd.H"
 #include "x/w/dim_arg.H"
-#include "iconfwd.H"
+#include "x/w/impl/iconfwd.H"
 #include "xid_t.H"
 
 #include <xcb/xproto.h>

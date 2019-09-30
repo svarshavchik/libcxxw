@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "icon.H"
-#include "pixmap_with_picture.H"
+#include "x/w/impl/icon.H"
+#include "x/w/impl/pixmap_with_picture.H"
 #include "pixmap.H"
 #include "defaulttheme.H"
 #include "screen.H"

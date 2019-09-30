@@ -5,9 +5,9 @@
 #ifndef themeiconobj_H
 #define themeiconobj_H
 
-#include "iconobj.H"
+#include "x/w/impl/iconobj.H"
 #include "x/w/defaultthemefwd.H"
-#include "pixmap_with_picturefwd.H"
+#include "x/w/impl/pixmap_with_picturefwd.H"
 #include <string>
 
 LIBCXXW_NAMESPACE_START;

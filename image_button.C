@@ -9,7 +9,7 @@
 #include "x/w/focus_border_appearance.H"
 #include "x/w/impl/focus/standard_focusframecontainer_element.H"
 #include "x/w/impl/focus/standard_focusframecontainer_element_impl.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "busy.H"
 #include "xid_t.H"
 #include "connection_thread.H"

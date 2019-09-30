@@ -4,14 +4,14 @@
 */
 #include "libcxxw_config.h"
 #include "image.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 
 #include "x/w/pixmap.H"
 #include "x/w/picture.H"
 #include "x/w/rectangle.H"
 #include "x/w/impl/container.H"
 #include "x/w/impl/metrics_horizvert.H"
-#include "pixmap_with_picture.H"
+#include "x/w/impl/pixmap_with_picture.H"
 
 LIBCXXW_NAMESPACE_START
 

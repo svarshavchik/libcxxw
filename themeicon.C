@@ -6,7 +6,7 @@
 #include "themeiconobj.H"
 #include "defaulttheme.H"
 #include "pixmap.H"
-#include "pixmap_with_picture.H"
+#include "x/w/impl/pixmap_with_picture.H"
 #include "screen.H"
 #include "x/w/dim_arg.H"
 

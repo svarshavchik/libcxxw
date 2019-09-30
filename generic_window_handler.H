@@ -12,7 +12,7 @@
 #include "shared_handler_datafwd.H"
 #include "drawable.H"
 #include "picture.H"
-#include "iconfwd.H"
+#include "x/w/impl/iconfwd.H"
 #include "icon_images_set_elementfwd.H"
 #include "cursor_pointer_elementfwd.H"
 #include "shortcut/installed_shortcutfwd.H"

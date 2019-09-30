@@ -2,11 +2,11 @@
 ** Copyright 2017-2019 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef x_w_pixmap_with_pictureobj_h
-#define x_w_pixmap_with_pictureobj_h
+#ifndef x_w_impl_pixmap_with_pictureobj_h
+#define x_w_impl_pixmap_with_pictureobj_h
 
-#include "pixmap_with_picturefwd.H"
-#include "x/w/pixmapobj.H"
+#include <x/w/impl/pixmap_with_picturefwd.H>
+#include <x/w/pixmapobj.H>
 
 LIBCXXW_NAMESPACE_START
 

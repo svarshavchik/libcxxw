@@ -21,7 +21,7 @@
 #include "popup/popup_handler.H"
 #include "menu/menu_popup.H"
 #include "x/w/impl/richtext/richtextstring.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include "messages.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/text_paramfwd.H"

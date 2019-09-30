@@ -5,7 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "cursor_pointer_cache.H"
-#include "icon.H"
+#include "x/w/impl/icon.H"
 #include <x/refptr_hash.H>
 
 LIBCXXW_NAMESPACE_START
