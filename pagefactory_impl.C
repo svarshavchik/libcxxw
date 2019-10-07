@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "pagefactory_impl.H"
+#include "pagelayoutcontainer_impl.H"
 #include "x/w/impl/container.H"
 
 LIBCXXW_NAMESPACE_START

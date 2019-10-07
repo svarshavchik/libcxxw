@@ -853,6 +853,12 @@ libcxxw_la_SOURCES=\
 	pagefactory.C				    \
 	pagefactory_impl.C			    \
 	pagefactory_impl.H			    \
+	pagelayoutcontainer.C			    \
+	pagelayoutcontainer.H			    \
+	pagelayoutcontainer_impl.C		    \
+	pagelayoutcontainer_impl.H		    \
+	pagelayoutcontainerfwd.H		    \
+	pagelayoutcontainerobj.H		    \
 	pagelayoutmanager.C			    \
 	pagelayoutmanager_impl.C		    \
 	pagelayoutmanager_impl.H		    \

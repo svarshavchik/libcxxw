@@ -5,8 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "pagefactory_impl.H"
-#include "x/w/impl/container_element.H"
-#include "x/w/impl/always_visible.H"
+#include "pagelayoutcontainer_impl.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/singletonlayoutmanager.H"
 
@@ -38,9 +37,8 @@ container_impl pagefactoryObj::get_container_impl()
 	// the initial state is still disabled.
 	implObj::info_t::lock lock{impl->info};
 
-	container_impl factory_container_impl=
-		ref<always_visibleObj<container_elementObj<child_elementObj>,
-				      false>>
+	auto factory_container_impl=
+		ref<pagelayoutcontainerObj::implObj>
 		::create(impl->lm->layoutmanagerObj::impl
 			 ->layout_container_impl);
 
@@ -94,14 +92,15 @@ void pagefactoryObj::created(const element &e)
 	// Make sure that any thrown exception, after construction of the
 	// container object, destroys the implementation object too.
 
-	container_impl container_impl=lock->prev_container_impl;
+	ref<pagelayoutcontainerObj::implObj>
+		container_impl=lock->prev_container_impl;
 	lock->prev_container_impl=nullptr;
 
 	// Finish the job started in get_container_impl(), above.
 
 	auto lm_impl=ref<singletonlayoutmanagerObj::implObj>
 		::create(container_impl, e, halign::fill, valign::fill);
-	auto c=container::create(container_impl, lm_impl);
+	auto c=pagelayoutcontainer::create(container_impl, lm_impl);
 
 	// Reset the factory's locked element properties after constructing
 	// the switch_element_info, so that if created_under_lock() blows up,

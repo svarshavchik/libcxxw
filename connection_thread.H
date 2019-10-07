@@ -211,12 +211,24 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! A container for elements that need to be redrawn.
 
-	typedef std::unordered_set<ref<elementObj::implObj>
-				   > elements_to_redraw_set;
+	typedef std::unordered_set<element_impl> elements_to_redraw_set;
 
-
-	//! Elements that need to be redrawn
+	//! Widgets that need to be redrawn
 	elements_to_redraw_set *elements_to_redraw_thread_only;
+
+	//! Temporary container used to order widget for redrawing
+	typedef std::vector<std::tuple<dim_squared_t, element_impl>
+			    > elements_redraw_list_t;
+
+	//! Temporary container used to order widget for redrawing
+	typedef std::vector<std::tuple<size_t, element_impl>
+			    > elements_hier_redraw_list_t;
+
+	//! Temporary list of widges to redraw
+	elements_redraw_list_t *elements_redraw_list;
+
+	//! Temporary list of widges to redraw
+	elements_hier_redraw_list_t *elements_hier_redraw_list;
 
 	//! Draw elements.
 	bool redraw_elements(ONLY IN_THREAD, int &poll_for);

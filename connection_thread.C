@@ -45,6 +45,8 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 
 	element_set_t visibility_updated;
 	elements_to_redraw_set elements_to_redraw;
+	elements_redraw_list_t my_elements_redraw_list;
+	elements_hier_redraw_list_t my_elements_hier_redraw_list;
 	containers_2_recalculate_map containers_2_recalculate;
 	containers_2_batch_recalculate_set containers_2_batch_recalculate;
 	elements_2_batch_showhide_map elements_2_batch_showhide;
@@ -61,6 +63,9 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	window_handlers_thread_only= &window_handlers;
 	destroyed_xids_thread_only= &destroyed_xids;
 	elements_to_redraw_thread_only= &elements_to_redraw;
+	elements_redraw_list= &my_elements_redraw_list;
+	elements_hier_redraw_list= &my_elements_hier_redraw_list;
+
 	containers_2_recalculate_thread_only= &containers_2_recalculate;
 	containers_2_batch_recalculate_thread_only=
 		&containers_2_batch_recalculate;

@@ -9,6 +9,7 @@
 #include "x/w/impl/container.H"
 #include "x/w/impl/layoutmanager.H"
 #include "catch_exceptions.H"
+#include <x/sentry.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -287,12 +288,20 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 	// cleared by their container's background color, because it is now
 	// empty).
 	//
-	// So what we do is drain elements_to-redraw into the redraw_list,
-	// together with their size, then sort everytihng by size.
-	std::vector<std::tuple<dim_squared_t,
-			       ref<elementObj::implObj>>> redraw_list;
+	// So what we do is drain elements_to-redraw into the redraw lists,
+	// sorted.
+	//
+	// We need to make sure that the redraw lists are cleared no matter
+	// how we end up returning from this function. We can't leave
+	// references to any elements remain after we're done here, so use
+	// a sentry object.
 
-	redraw_list.reserve(elements_to_redraw(IN_THREAD)->size());
+	auto s=make_sentry([this]
+			   {
+				   elements_redraw_list->clear();
+				   elements_hier_redraw_list->clear();
+			   });
+	s.guard();
 
 	for (auto b=elements_to_redraw(IN_THREAD)->begin(),
 		     e=elements_to_redraw(IN_THREAD)->end(); b != e; ++b)
@@ -305,14 +314,35 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 		auto &position=p->data(IN_THREAD).current_position;
 
 		// explicit_redraw() removes itself from elements_to_redraw.
-		redraw_list.emplace_back(position.width * position.height, p);
 
+		if (p->data(IN_THREAD).redraw_strategy ==
+		    redraw_strategy_t::by_nesting_level)
+		{
+			p->data(IN_THREAD).redraw_strategy=
+				redraw_strategy_t::by_size;
+			elements_hier_redraw_list->emplace_back
+				(p->nesting_level, p);
+		}
+		else
+		{
+			elements_redraw_list->emplace_back
+				(position.width * position.height, p);
+		}
 		flag=true;
 	}
 
-	std::sort(redraw_list.begin(), redraw_list.end());
+	// Sort whatever list we have. Redraw the hierarchical ones first,
+	// they take priority, then the rest of the crowd.
 
-	for (const auto &p:redraw_list)
+	std::sort(elements_hier_redraw_list->begin(),
+		  elements_hier_redraw_list->end());
+	std::sort(elements_redraw_list->begin(),
+		  elements_redraw_list->end());
+
+	for (const auto &p:*elements_hier_redraw_list)
+		std::get<1>(p)->explicit_redraw(IN_THREAD);
+
+	for (const auto &p:*elements_redraw_list)
 		std::get<1>(p)->explicit_redraw(IN_THREAD);
 
 	return flag;

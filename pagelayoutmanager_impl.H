@@ -9,6 +9,7 @@
 #include "x/w/containerfwd.H"
 #include "x/w/alignment.H"
 #include "x/w/impl/layoutmanager.H"
+#include "pagelayoutcontainerfwd.H"
 #include <optional>
 #include <unordered_map>
 #include <x/mpobj.H>
@@ -20,8 +21,8 @@ LIBCXXW_NAMESPACE_START
 
 struct LIBCXX_HIDDEN switch_element_info {
 
-	//! The internally-create container wrapper, for layout manager's use.
-	container the_container;
+	//! The internally-created container wrapper, for layout manager's use.
+	pagelayoutcontainer the_container;
 
 	//! The official element, that was created by the factory.
 
