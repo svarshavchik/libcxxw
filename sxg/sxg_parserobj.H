@@ -24,6 +24,7 @@
 #include "x/w/gcobj.H"
 #include "x/w/alignment.H"
 #include "x/w/font.H"
+#include "theme_parser_lockfwd.H"
 
 #include <x/obj.H>
 #include <x/vector.H>
@@ -32,8 +33,6 @@
 #include <optional>
 
 LIBCXXW_NAMESPACE_START;
-
-class theme_parser_lock;
 
 //! A parsed SXG file
 
@@ -235,7 +234,7 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 		color_info() {}
 
-		color_info(const theme_parser_lock &lock);
+		color_info(const ui::parser_lock &lock);
 
 		const_picture get_color(dim_t width,
 					dim_t height,
@@ -678,7 +677,7 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 	//! Internal parsing function.
 
 	template<typename value_type>
-		static void get_width_height(const theme_parser_lock
+		static void get_width_height(const ui::parser_lock
 					     &parent,
 					     points_t &points,
 					     const char *width_elem,
@@ -689,33 +688,33 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 	//! Internal parsing function.
 	template<typename value_type>
-		static void get_width_height(const theme_parser_lock
+		static void get_width_height(const ui::parser_lock
 					     &parent,
 					     points_t &points,
 					     value_type &width,
 					     value_type &height);
 
 	//! Internal parsing function.
-	bool parse_root(const theme_parser_lock &root);
+	bool parse_root(const ui::parser_lock &root);
 
 	//! Internal parsing function.
-	static void get_xy_value(const theme_parser_lock &parent,
+	static void get_xy_value(const ui::parser_lock &parent,
 				 const char *name,
 				 xy_t &xy);
 
 	//! Internal parsing function.
-	static void get_xy(const theme_parser_lock &lock,
+	static void get_xy(const ui::parser_lock &lock,
 			   points_t &points,
 			   xy_t &x,
 			   xy_t &y);
 
 	//! Internal parsing function.
-	static bool optional_xy(const theme_parser_lock &render_element,
+	static bool optional_xy(const ui::parser_lock &render_element,
 				points_t &points,
 				xy_t &x, xy_t &y);
 
 	//! Internal parsing function.
-	static bool get_fill_style_pixmap(const theme_parser_lock &lock,
+	static bool get_fill_style_pixmap(const ui::parser_lock &lock,
 					  points_t &points,
 					  const char *name,
 					  std::string &pixmap,
@@ -724,94 +723,94 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 	//! Internal parsing function.
 	static size_type_t
-		parse_size_type_t(const theme_parser_lock &parent);
+		parse_size_type_t(const ui::parser_lock &parent);
 
 	//! Internal parsing function.
-	void parse_pixmaps(const theme_parser_lock &root);
+	void parse_pixmaps(const ui::parser_lock &root);
 
 	//! Internal parsing function.
-	void parse_pictures(const theme_parser_lock &root);
+	void parse_pictures(const ui::parser_lock &root);
 
 	struct parse_render_gc_info;
 
 	//! Internal parsing function.
 	ref<sxg_operationObj>
-		parse_gc(const theme_parser_lock &lock);
+		parse_gc(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	ref<sxg_operationObj>
-		parse_gc(const theme_parser_lock &lock,
+		parse_gc(const ui::parser_lock &lock,
 			 const std::string &id,
 			 const parse_render_gc_info &info);
 
 
 	//! Internal parsing function.
 	ref<gc_operationObj>
-		parse_gc_op(const theme_parser_lock &lock,
+		parse_gc_op(const ui::parser_lock &lock,
 			    const std::string &id,
 			    const parse_render_gc_info &info);
 
 	//! Internal parsing function.
 	ref<gc_operationObj>
-		parse_gc_fill(const theme_parser_lock &lock);
+		parse_gc_fill(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	static ref<gc_operationObj>
-		parse_gc_function(const theme_parser_lock &lock);
+		parse_gc_function(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	static ref<gc_operationObj>
-		parse_gc_foreground(const theme_parser_lock &lock);
+		parse_gc_foreground(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	static ref<gc_operationObj>
-		parse_gc_background(const theme_parser_lock &lock);
+		parse_gc_background(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	static ref<gc_operationObj>
-		parse_gc_fill_arc_mode(const theme_parser_lock &lock);
+		parse_gc_fill_arc_mode(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	ref<gc_operationObj>
-		parse_gc_arcs(const theme_parser_lock &lock);
+		parse_gc_arcs(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	static ref<gc_operationObj>
-		parse_gc_line_width(const theme_parser_lock &lock);
+		parse_gc_line_width(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	static ref<gc_operationObj>
-		parse_gc_line_style(const theme_parser_lock &lock);
+		parse_gc_line_style(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	static ref<gc_operationObj>
-		parse_gc_cap_style(const theme_parser_lock &lock);
+		parse_gc_cap_style(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	static ref<gc_operationObj>
-		parse_gc_join_style(const theme_parser_lock &lock);
+		parse_gc_join_style(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	ref<gc_operationObj>
-		parse_gc_fill_style(const theme_parser_lock &lock);
+		parse_gc_fill_style(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	static ref<gc_operationObj>
-		parse_gc_dashes(const theme_parser_lock &lock);
+		parse_gc_dashes(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	ref<gc_operationObj>
-		parse_gc_clear(const theme_parser_lock &lock);
+		parse_gc_clear(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	ref<gc_operationObj>
-		parse_gc_clip(const theme_parser_lock &lock,
+		parse_gc_clip(const ui::parser_lock &lock,
 			      const std::string &id,
 			      const parse_render_gc_info &info);
 
 	//! Internal parsing function.
 	ref<sxg_parserObj::gc_operationObj>
-		parse_gc_line(const theme_parser_lock &lock);
+		parse_gc_line(const ui::parser_lock &lock);
 
 	struct sxg_rectangle;
 	struct sxg_arc_info;
@@ -819,20 +818,20 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 	struct sxg_triangle;
 
 	vector<sxg_rectangle>
-		parse_rectangles(const theme_parser_lock &lock);
+		parse_rectangles(const ui::parser_lock &lock);
 
 	//! Internal parsing function.
 	ref<sxg_operationObj>
-		parse_render(const theme_parser_lock &render_element);
+		parse_render(const ui::parser_lock &render_element);
 
 	//! Internal parsing function.
 	ref<sxg_operationObj>
-		parse_render(const theme_parser_lock &render_element,
+		parse_render(const ui::parser_lock &render_element,
 			     const std::string &id,
 			     const parse_render_gc_info &info);
 
 	//! Internal parsing function.
-	static bool parse_src_mask(const theme_parser_lock &render_element,
+	static bool parse_src_mask(const ui::parser_lock &render_element,
 				   points_t &points,
 				   const char *what,
 				   const char *pic_or_pixmap,
@@ -842,29 +841,29 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 	//! Internal parsing function.
 	ref<render_operationObj>
-		parse_render_composite(const theme_parser_lock &render_element);
+		parse_render_composite(const ui::parser_lock &render_element);
 
 	//! Internal parsing function.
-	static void parse_text_picture(const theme_parser_lock &lock,
+	static void parse_text_picture(const ui::parser_lock &lock,
 				       picture_info &info);
 
 	//! Internal parsing function.
 	static ref<render_operationObj>
-		parse_render_repeat(const theme_parser_lock &render_element);
+		parse_render_repeat(const ui::parser_lock &render_element);
 
 	//! Internal parsing function.
 	ref<render_operationObj>
-		parse_render_clip(const theme_parser_lock &render_element,
+		parse_render_clip(const ui::parser_lock &render_element,
 				  const std::string &id,
 				  const parse_render_gc_info &info);
 
 	//! Internal parsing function.
 	ref<render_operationObj>
-		parse_render_fill(const theme_parser_lock &render_element);
+		parse_render_fill(const ui::parser_lock &render_element);
 
 	//! Internal parsing function.
 	ref<render_operationObj>
-		parse_render_triangles(const theme_parser_lock &render_element);
+		parse_render_triangles(const ui::parser_lock &render_element);
 
 	//! Internal typedef alias
 	typedef void (pictureObj::*pic_func_no_mask)(const pictureObj::point *,
@@ -884,28 +883,28 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 	//! Internal parsing function.
 	ref<render_operationObj>
-		parse_render_tri(const theme_parser_lock &render_element,
+		parse_render_tri(const ui::parser_lock &render_element,
 				 pic_func_no_mask func_1,
 				 pic_func_mask func_2);
 
 	//! Internal parsing function.
 	ref<render_operationObj>
-		parse_render_op(const theme_parser_lock &render_element,
+		parse_render_op(const ui::parser_lock &render_element,
 				const std::string &id,
 				const parse_render_gc_info &info);
 
 	//! Internal parsing function.
-	void parse_fonts(const theme_parser_lock &root);
+	void parse_fonts(const ui::parser_lock &root);
 
 	//! Internal parsing function.
-	void parse_operations(const theme_parser_lock &root);
+	void parse_operations(const ui::parser_lock &root);
 
 	//! Internal parsing function.
-	void get_points(const theme_parser_lock &root,
+	void get_points(const ui::parser_lock &root,
 			const char *element);
 
 	//! Internal parsing function.
-	void get_dimensions(const theme_parser_lock &root,
+	void get_dimensions(const ui::parser_lock &root,
 			    const char *element);
 };
 

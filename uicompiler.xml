@@ -18,7 +18,7 @@ uicompiler::<name>_parser()
 
 [objectname]_parser()'s first parameter is
 
-const theme_parser_lock &lock
+const ui::parser_lock &lock
 
 Each <parser> element contains a list of <parameter> elements.
 [objectname]_parser() returns a
@@ -29,7 +29,7 @@ functionref<void (const [parameter]/[type] &)>, using each <parameter>'s
 Additionally, a parseconfig wrapper also gets robogenerated:
 
 vector<functionref< ...>>
- <name>_parseconfig(const theme_parser_lock &lock)
+ <name>_parseconfig(const ui::parser_lock &lock)
 {
     auto config=vector<functionref< ... >>::create();
 

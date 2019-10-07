@@ -25,6 +25,8 @@
 #include "x/w/pagelayoutmanager.H"
 #include "x/w/borderlayoutmanager.H"
 #include "x/w/impl/uixmlparser.H"
+#include <x/functional.H>
+#include <x/visitor.H>
 #include "picture.H"
 #include "messages.H"
 #include "defaulttheme.H"
@@ -42,7 +44,7 @@ static void unknown_dim(const std::string &id)
 }
 
 static std::optional<color_arg>
-get_color(const theme_parser_lock &lock,
+get_color(const ui::parser_lock &lock,
 	  const char *xpath_name,
 	  const uigenerators &generators,
 	  bool allowthemerefs)
@@ -63,7 +65,7 @@ get_color(const theme_parser_lock &lock,
 
 // Look up a dimension, when parsing something else.
 
-static void update_dim_if_given(const theme_parser_lock &lock,
+static void update_dim_if_given(const ui::parser_lock &lock,
 				const char *size_node,
 				const char *scale_node,
 				dim_arg &size,
@@ -128,7 +130,7 @@ ui::parsed_dim ui::parse_dim(const xml::doc::base::readlock &lock)
 }
 
 static inline std::optional<double>
-parse_dim_value(const theme_parser_lock &lock,
+parse_dim_value(const ui::parser_lock &lock,
 		const std::unordered_map<std::string, double> &existing_dims,
 		const char *descr,
 		const std::string &id)
@@ -171,339 +173,159 @@ parse_dim_value(const theme_parser_lock &lock,
 	return v;
 }
 
-static inline bool scale_theme_color(theme_parser_lock &lock,
-				     const std::string &id,
-				     const std::string &scale,
-				     rgb &color,
-				     std::unordered_map<std::string,
-				     theme_color_t> &parsed_colors)
-{
-	std::istringstream s;
+struct LIBCXX_HIDDEN parse_gradient_values;
 
-	imbue i_parse{lock.c_locale, s};
+struct parse_gradient_values {
 
-	for (size_t i=0; i<4; ++i)
+	rgb_gradient &gradient;
+	std::unordered_map<std::string, theme_color_t> &parsed_colors;
+	bool &all_found;
+
+	parse_gradient_values(rgb_gradient &gradient,
+			      std::unordered_map<std::string, theme_color_t
+			      > &parsed_colors,
+			      bool &all_found)
+		: gradient{gradient},
+		  parsed_colors{parsed_colors},
+		  all_found{all_found}
 	{
-		auto attribute=lock.clone();
-
-		auto xpath=attribute->get_xpath(rgb_channels[i]);
-
-		if (xpath->count() == 0)
-			continue;
-
-		xpath->to_node();
-
-		s.seekg(0);
-		s.str(attribute->get_text());
-
-		double v;
-
-		s >> v;
-
-		if (s.fail())
-			throw EXCEPTION(gettextmsg(_("could not parse color id=%1%"),
-						   id));
-
-		if (v < 0)
-			throw EXCEPTION(gettextmsg(_("negative color value for id=%1%"),
-						   id));
-		rgb_component_t c;
-
-		if (scale.empty())
-		{
-			if (v > 1)
-				v=1;
-			c=v * rgb::maximum;
-		}
-		else
-		{
-			v *= color.*(rgb_fields[i]);
-
-			if (v > rgb::maximum)
-				v=rgb::maximum;
-			c=v;
-		}
-
-		color.*(rgb_fields[i])=c;
+		all_found=true;
 	}
 
-	return true;
-}
-
-static bool parse_gradients(theme_parser_lock &lock,
-			    rgb_gradient &gradient,
-			    std::unordered_map<std::string,
-			    theme_color_t> &parsed_colors,
-			    const std::string &id);
-
-static inline bool scale_theme_color(theme_parser_lock &lock,
-				     const std::string &id,
-				     const std::string &scale,
-				     linear_gradient &color,
-				     std::unordered_map<std::string,
-				     theme_color_t> &parsed_colors)
-{
-	static const char * const coords[]={"x1",
-					    "y1",
-					    "x2",
-					    "y2",
-					    "widthmm",
-					    "heightmm"};
-
-	static const double minvalue[]={0,0,0,0,-999,-999};
-	static const double maxvalue[]={1,1,1,1,999,999};
-
-	static double linear_gradient::* const fields[]={
-		&linear_gradient::x1,
-		&linear_gradient::y1,
-		&linear_gradient::x2,
-		&linear_gradient::y2,
-		&linear_gradient::fixed_width,
-		&linear_gradient::fixed_height};
-
-	std::istringstream s(lock->get_text());
-
-	imbue i_parse{lock.c_locale, s};
-
-	for (size_t i=0; i<6; i++)
+	void operator()(size_t n, const std::string &v)
 	{
-		auto attribute=lock.clone();
-
-		auto xpath=attribute->get_xpath(coords[i]);
-
-		if (xpath->count() == 0)
-			continue;
-
-		xpath->to_node();
-
-		s.seekg(0);
-		s.str(attribute->get_text());
-
-		double v;
-
-		s >> v;
-
-		if (s.fail())
-			throw EXCEPTION(gettextmsg
-					(_("could not parse %2% for id=%1%"),
-					 id, coords[i]));
-
-		if (v < minvalue[i] || v>maxvalue[i])
-			throw EXCEPTION(gettextmsg
-					(_("%2% for id=%1% must be between %3%"
-					   " and %4%"),
-					 id, coords[i],
-					 minvalue[i], maxvalue[i]));
-
-		color.*(fields[i])=v;
-	}
-
-	bool flag;
-
-	try {
-		flag=parse_gradients(lock, color.gradient, parsed_colors, id);
-	} catch (const exception &e) {
-		std::ostringstream o;
-
-		o << e;
-
-		throw EXCEPTION(gettextmsg
-				(_("gradient id=%1% is not valid: %2%"),
-				 id, o.str()));
-	}
-
-	return flag;
-}
-
-static inline bool scale_theme_color(theme_parser_lock &lock,
-				     const std::string &id,
-				     const std::string &scale,
-				     radial_gradient &color,
-				     std::unordered_map<std::string,
-				     theme_color_t> &parsed_colors)
-{
-	static const char * const coords[]={"inner_x",
-					    "inner_y",
-					    "outer_x",
-					    "outer_y",
-					    "inner_radius",
-					    "outer_radius",
-					    "widthmm",
-					    "heightmm"};
-
-	static const double minvalue[]={0,0,0,0,0,0,-999,-999};
-	static const double maxvalue[]={1,1,1,1,999,999,999,999};
-
-	static double radial_gradient::* const fields[]={
-		&radial_gradient::inner_center_x,
-		&radial_gradient::inner_center_y,
-		&radial_gradient::outer_center_x,
-		&radial_gradient::outer_center_y,
-		&radial_gradient::inner_radius,
-		&radial_gradient::outer_radius,
-		&radial_gradient::fixed_width,
-		&radial_gradient::fixed_height};
-
-	std::istringstream s;
-
-	imbue i_parse{lock.c_locale, s};
-
-	for (size_t i=0; i<6; i++)
-	{
-		auto attribute=lock.clone();
-
-		auto xpath=attribute->get_xpath(coords[i]);
-
-		if (xpath->count() == 0)
-			continue;
-
-		xpath->to_node();
-
-		s.seekg(0);
-		s.str(attribute->get_text());
-
-		double v;
-
-		s >> v;
-
-		if (s.fail())
-			throw EXCEPTION(gettextmsg
-					(_("could not parse %2% for id=%1%"),
-					 id, coords[i]));
-
-		if (v < minvalue[i] || v>maxvalue[i])
-			throw EXCEPTION(gettextmsg
-					(_("%2% for id=%1% must be between %3%"
-					   " and %4%"),
-					 id, coords[i],
-					 minvalue[i], maxvalue[i]));
-
-		color.*(fields[i])=v;
-	}
-
-	static const char * const raxises[]={"inner_radius_axis",
-					     "outer_radius_axis"};
-
-	static radial_gradient::radius_axis radial_gradient::* const rfields[]={
-		&radial_gradient::inner_radius_axis,
-		&radial_gradient::outer_radius_axis};
-
-	for (size_t i=0; i<2; i++)
-	{
-		if (!single_value_exists(lock, raxises[i]))
-			continue;
-
-		auto s=lowercase_single_value(lock, raxises[i], "color");
-
-		if (s.empty())
-			continue;
-
-		if (s == "horizontal")
-		{
-			color.*(rfields[i])=radial_gradient::horizontal;
-		}
-		else if (s == "vertical")
-		{
-			color.*(rfields[i])=radial_gradient::vertical;
-		}
-		else if (s == "shortest")
-		{
-			color.*(rfields[i])=radial_gradient::shortest;
-		}
-		else if (s == "longest")
-		{
-			color.*(rfields[i])=radial_gradient::longest;
-		}
-		else
-			throw EXCEPTION(gettextmsg
-					(_("%1% is not a valid value for %2%"
-					   ", id=%3%"),
-					 s, raxises[i], id));
-	}
-
-	bool flag;
-
-	try {
-		flag=parse_gradients(lock, color.gradient, parsed_colors, id);
-	} catch (const exception &e) {
-		std::ostringstream o;
-
-		o << e;
-
-		throw EXCEPTION(gettextmsg
-				(_("gradient id=%1% is not valid: %2%"),
-				 id, o.str()));
-	}
-
-	return flag;
-}
-
-static bool parse_gradients(theme_parser_lock &lock,
-			    rgb_gradient &parsed_gradient,
-			    std::unordered_map<std::string,
-			    theme_color_t> &parsed_colors,
-			    const std::string &id)
-{
-	auto gradients=lock.clone();
-
-	auto xpath=gradients->get_xpath("gradient");
-
-	size_t n=xpath->count();
-
-	std::istringstream s;
-
-	imbue i_parse{lock.c_locale, s};
-
-	for (size_t i=0; i<n; ++i)
-	{
-		xpath->to_node(i+1);
-
-		auto gradient=gradients.clone();
-
-		auto vxpath=gradient->get_xpath("value");
-
-		vxpath->to_node();
-
-		unsigned n;
-
-		s.seekg(0);
-		s.str(gradient->get_text());
-
-		s >> n;
-
-		if (s.fail())
-			throw EXCEPTION(gettextmsg
-					(_("could not parse <value>"
-					   " for id=%1%"),
-					 id));
-
-		gradient=gradients.clone();
-		vxpath=gradient->get_xpath("color");
-		vxpath->to_node();
-
-		auto s=gradient->get_text();
-
-		if (s.empty())
-			continue;
-
-		auto iter=parsed_colors.find(s);
+		auto iter=parsed_colors.find(v);
 
 		if (iter == parsed_colors.end())
-			return false; // Not yet parsed
+		{
+			all_found=false;
+			return; // Not yet parsed
+		}
 
 		if (!std::holds_alternative<rgb>(iter->second))
 			throw EXCEPTION(gettextmsg
-					(_("gradient id=%1% cannot use color "
-					   "%2"), id, s));
-		parsed_gradient.emplace(n, std::get<rgb>(iter->second));
-	}
+					(_("gradient cannot use color "
+					   "%1%, only an rgb color"),
+					 v));
 
-	valid_gradient(parsed_gradient);
-	return true;
+		gradient.emplace(n, std::get<rgb>(iter->second));
+	}
+};
+
+static inline bool
+parse_color(const ui::parser_lock &lock,
+	    const std::string &id,
+	    std::unordered_map<std::string, theme_color_t> &parsed_colors)
+{
+	auto parsed_color=ui::parse_color(lock);
+
+	return std::visit
+		(visitor
+		 {[&]
+		  (const rgb &c)
+		  {
+			  parsed_colors.emplace(id, c);
+			  return true;
+		  },
+		  [&]
+		  (const ui::parsed_scaled_color &c)
+		  {
+			  auto iter=parsed_colors.find(c.from_name);
+
+			  if (iter == parsed_colors.end())
+				  return false;
+
+			  static std::optional<double>
+				  ui::parsed_scaled_color::*
+				  const fields[4]=
+				  {
+				   &ui::parsed_scaled_color::r,
+				   &ui::parsed_scaled_color::g,
+				   &ui::parsed_scaled_color::b,
+				   &ui::parsed_scaled_color::a
+				  };
+
+			  if (!std::holds_alternative<rgb>(iter->second))
+			  {
+				  // Must not specify any actual scaling.
+				  // This is done as a means of copying
+				  // the color, only.
+				  for (size_t i=0; i<4; ++i)
+					  if (c.*(fields[i]))
+						  throw EXCEPTION
+							  (_("scaled color must"
+							     " be an"
+							     " rgb color"));
+
+				  parsed_colors.emplace(id, iter->second);
+				  return true;
+			  }
+
+			  auto v=std::get<rgb>(iter->second);
+
+			  for (size_t i=0; i<4; ++i)
+			  {
+				  auto &s=c.*(fields[i]);
+
+				  if (!s)
+					  continue;
+
+				  auto sv=*s * v.*(rgb_fields[i]);
+				  if (sv > rgb::maximum)
+					  sv=rgb::maximum;
+				  v.*(rgb_fields[i])=sv;
+			  }
+			  parsed_colors.emplace(id, v);
+			  return true;
+		  },
+		  [&]
+		  (const ui::parse_linear_gradient &c)
+		  {
+			  theme_color_t v{std::in_place_type_t<linear_gradient>
+					  {}};
+
+			  auto &lg=std::get<linear_gradient>(v);
+
+			  bool found;
+
+			  c.parse(lock, lg,
+				  parse_gradient_values{lg.gradient,
+								parsed_colors,
+								found});
+
+			  if (!found)
+				  return false;
+
+			  valid_gradient(lg.gradient);
+
+			  parsed_colors.emplace(id, std::move(v));
+			  return true;
+		  },
+		  [&]
+		  (const ui::parse_radial_gradient &c)
+		  {
+			  theme_color_t v{std::in_place_type_t<radial_gradient>
+					  {}};
+
+			  auto &rg=std::get<radial_gradient>(v);
+
+			  bool found;
+
+			  c.parse(lock, rg,
+				  parse_gradient_values{rg.gradient,
+								parsed_colors,
+								found});
+			  if (!found)
+				  return false;
+
+			  valid_gradient(rg.gradient);
+
+			  parsed_colors.emplace(id, std::move(v));
+			  return true;
+		  }}, parsed_color);
 }
 
-
-uicompiler::uicompiler(const theme_parser_lock &root_lock,
+uicompiler::uicompiler(const ui::parser_lock &root_lock,
 		       const uigenerators &generators,
 		       const const_screen_positionsptr &saved_positions,
 		       bool allowthemerefs)
@@ -544,54 +366,25 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			    generators->colors.end())
 				continue; // Did this one already.
 
-			auto scale=lock->get_any_attribute("scale");
+			bool flag;
 
-			theme_color_t new_color;
-
-			if (!scale.empty())
+			try {
+				flag=parse_color(lock, id,
+						 generators->colors);
+			} catch (const exception &e)
 			{
-				auto iter=generators->colors.find(scale);
+				std::ostringstream o;
 
-				if (iter == generators->colors.end())
-					continue; // Not yet.
+				o << e;
 
-				new_color=iter->second;
+				throw EXCEPTION(gettextmsg
+						(_("Cannot parse color id="
+						   "\"%1%\": %2%"),
+						 id, o.str()));
 			}
-			else
-			{
-				auto type=lock->get_any_attribute("type");
-
-				if (type.empty()) type="rgb";
-
-				if (type != "rgb" && type != "linear_gradient"
-				    && type != "radial_gradient")
-					throw EXCEPTION
-						(gettextmsg
-						 (_("Unknown type=%1% specified"
-						    " for id=%2%"),
-						  type, id));
-				if (type == "linear_gradient")
-					new_color=linear_gradient{};
-				if (type == "radial_gradient")
-					new_color=radial_gradient{};
-			}
-
-			bool flag=std::visit
-				([&]
-				 (auto &c)
-				 {
-					 return scale_theme_color
-						 (lock, id,
-						  scale, c,
-						  generators->colors);
-				 }, new_color);
 
 			if (flag)
-			{
-				generators->colors.insert({id, new_color});
 				parsed=true;
-			}
-
 		}
 	} while (parsed);
 
@@ -1099,7 +892,7 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 	}
 }
 
-void uicompiler::do_load_fonts(const theme_parser_lock &lock,
+void uicompiler::do_load_fonts(const ui::parser_lock &lock,
 			       const function<void (const std::string &,
 						    const font &)> &install,
 			       const function<std::optional<font>
@@ -1241,7 +1034,7 @@ void uicompiler::generate(const factory &f,
 }
 
 const_vector<gridlayoutmanager_generator>
-uicompiler::lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_gridlayoutmanager_generators(const ui::parser_lock &lock,
 						const std::string &name)
 {
 	{
@@ -1275,7 +1068,7 @@ uicompiler::lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
 }
 
 const_vector<listlayoutmanager_generator>
-uicompiler::lookup_listlayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_listlayoutmanager_generators(const ui::parser_lock &lock,
 						const std::string &name)
 {
 	{
@@ -1309,7 +1102,7 @@ uicompiler::lookup_listlayoutmanager_generators(const theme_parser_lock &lock,
 }
 
 const_vector<standard_comboboxlayoutmanager_generator>
-uicompiler::lookup_standard_comboboxlayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_standard_comboboxlayoutmanager_generators(const ui::parser_lock &lock,
 						const std::string &name)
 {
 	{
@@ -1343,7 +1136,7 @@ uicompiler::lookup_standard_comboboxlayoutmanager_generators(const theme_parser_
 }
 
 const_vector<editable_comboboxlayoutmanager_generator>
-uicompiler::lookup_editable_comboboxlayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_editable_comboboxlayoutmanager_generators(const ui::parser_lock &lock,
 						const std::string &name)
 {
 	{
@@ -1377,7 +1170,7 @@ uicompiler::lookup_editable_comboboxlayoutmanager_generators(const theme_parser_
 }
 
 const_vector<tablelayoutmanager_generator>
-uicompiler::lookup_tablelayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_tablelayoutmanager_generators(const ui::parser_lock &lock,
 						const std::string &name)
 {
 	{
@@ -1411,7 +1204,7 @@ uicompiler::lookup_tablelayoutmanager_generators(const theme_parser_lock &lock,
 }
 
 const_vector<panelayoutmanager_generator>
-uicompiler::lookup_panelayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_panelayoutmanager_generators(const ui::parser_lock &lock,
 						const std::string &name)
 {
 	{
@@ -1445,7 +1238,7 @@ uicompiler::lookup_panelayoutmanager_generators(const theme_parser_lock &lock,
 }
 
 const_vector<panefactory_generator>
-uicompiler::lookup_panefactory_generators(const theme_parser_lock &lock,
+uicompiler::lookup_panefactory_generators(const ui::parser_lock &lock,
 					  const char *element,
 					  const char *parent)
 {
@@ -1482,7 +1275,7 @@ uicompiler::lookup_panefactory_generators(const theme_parser_lock &lock,
 }
 
 const_vector<toolboxfactory_generator>
-uicompiler::lookup_toolboxfactory_generators(const theme_parser_lock &lock,
+uicompiler::lookup_toolboxfactory_generators(const ui::parser_lock &lock,
 					     const char *element,
 					     const char *parent)
 {
@@ -1519,7 +1312,7 @@ uicompiler::lookup_toolboxfactory_generators(const theme_parser_lock &lock,
 }
 
 const_vector<itemlayoutmanager_generator>
-uicompiler::lookup_itemlayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_itemlayoutmanager_generators(const ui::parser_lock &lock,
 						const std::string &name)
 {
 	{
@@ -1553,7 +1346,7 @@ uicompiler::lookup_itemlayoutmanager_generators(const theme_parser_lock &lock,
 }
 
 const_vector<pagelayoutmanager_generator>
-uicompiler::lookup_pagelayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_pagelayoutmanager_generators(const ui::parser_lock &lock,
 						const std::string &name)
 {
 	{
@@ -1587,7 +1380,7 @@ uicompiler::lookup_pagelayoutmanager_generators(const theme_parser_lock &lock,
 }
 
 const_vector<toolboxlayoutmanager_generator>
-uicompiler::lookup_toolboxlayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_toolboxlayoutmanager_generators(const ui::parser_lock &lock,
 						   const std::string &name)
 {
 	{
@@ -1621,7 +1414,7 @@ uicompiler::lookup_toolboxlayoutmanager_generators(const theme_parser_lock &lock
 }
 
 const_vector<booklayoutmanager_generator>
-uicompiler::lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_booklayoutmanager_generators(const ui::parser_lock &lock,
 						const std::string &name)
 {
 	{
@@ -1655,7 +1448,7 @@ uicompiler::lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
 }
 
 const_vector<gridfactory_generator>
-uicompiler::lookup_gridfactory_generators(const theme_parser_lock &lock,
+uicompiler::lookup_gridfactory_generators(const ui::parser_lock &lock,
 					  const char *element,
 					  const char *parent)
 {
@@ -1693,7 +1486,7 @@ uicompiler::lookup_gridfactory_generators(const theme_parser_lock &lock,
 
 const_vector<menubarlayoutmanager_generator>
 uicompiler::lookup_menubarlayoutmanager_generators
-(const theme_parser_lock &lock,
+(const ui::parser_lock &lock,
  const char *element,
  const char *parent)
 {
@@ -1731,7 +1524,7 @@ uicompiler::lookup_menubarlayoutmanager_generators
 }
 
 const_vector<menubarfactory_generator>
-uicompiler::lookup_menubarfactory_generators(const theme_parser_lock &lock,
+uicompiler::lookup_menubarfactory_generators(const ui::parser_lock &lock,
 					     const char *element,
 					     const char *parent)
 {
@@ -1768,7 +1561,7 @@ uicompiler::lookup_menubarfactory_generators(const theme_parser_lock &lock,
 }
 
 const_vector<pagefactory_generator>
-uicompiler::lookup_pagefactory_generators(const theme_parser_lock &lock,
+uicompiler::lookup_pagefactory_generators(const ui::parser_lock &lock,
 					      const char *element,
 					      const char *parent)
 {
@@ -1805,7 +1598,7 @@ uicompiler::lookup_pagefactory_generators(const theme_parser_lock &lock,
 }
 
 const_vector<bookpagefactory_generator>
-uicompiler::lookup_bookpagefactory_generators(const theme_parser_lock &lock,
+uicompiler::lookup_bookpagefactory_generators(const ui::parser_lock &lock,
 					      const char *element,
 					      const char *parent)
 {
@@ -1842,7 +1635,7 @@ uicompiler::lookup_bookpagefactory_generators(const theme_parser_lock &lock,
 }
 
 const_vector<borderlayoutmanager_generator>
-uicompiler::lookup_borderlayoutmanager_generators(const theme_parser_lock &lock,
+uicompiler::lookup_borderlayoutmanager_generators(const ui::parser_lock &lock,
 						  const std::string &name)
 {
 	{
@@ -1971,7 +1764,7 @@ void uicompiler::booklayout_insert_pages(const booklayoutmanager &blm,
 	}
 }
 
-factory_generator uicompiler::factory_parseconfig(const theme_parser_lock &lock,
+factory_generator uicompiler::factory_parseconfig(const ui::parser_lock &lock,
 						  const char *element,
 						  const char *parent)
 {
@@ -1988,28 +1781,28 @@ factory_generator uicompiler::factory_parseconfig(const theme_parser_lock &lock,
 
 // Additional helpers used by appearance_parser
 
-color_arg uicompiler::to_color_arg(const theme_parser_lock &lock,
+color_arg uicompiler::to_color_arg(const ui::parser_lock &lock,
 				   const char *element, const char *parent)
 {
 	return generators->lookup_color(single_value(lock, ".", parent),
 				       allowthemerefs, element);
 }
 
-border_arg uicompiler::to_border_arg(const theme_parser_lock &lock,
+border_arg uicompiler::to_border_arg(const ui::parser_lock &lock,
 				     const char *element, const char *parent)
 {
 	return generators->lookup_border(single_value(lock, ".", parent),
 					allowthemerefs, element);
 }
 
-dim_arg uicompiler::to_dim_arg(const theme_parser_lock &lock,
+dim_arg uicompiler::to_dim_arg(const ui::parser_lock &lock,
 			       const char *element, const char *parent)
 {
 	return generators->lookup_dim(single_value(lock, ".", parent),
 				     allowthemerefs, element);
 }
 
-font_arg uicompiler::to_font_arg(const theme_parser_lock &lock,
+font_arg uicompiler::to_font_arg(const ui::parser_lock &lock,
 				 const char *element, const char *parent)
 {
 	return generators->lookup_font(single_value(lock, ".", parent),
@@ -2026,7 +1819,7 @@ void cannot_convert_color_arg(const char *element, const char *parent)
 			 element, parent));
 }
 
-text_color_arg uicompiler::to_text_color_arg(const theme_parser_lock &lock,
+text_color_arg uicompiler::to_text_color_arg(const ui::parser_lock &lock,
 					     const char *element,
 					     const char *parent)
 {
@@ -2062,7 +1855,7 @@ text_color_arg uicompiler::to_text_color_arg(const color_arg &color,
 			}}, color);
 }
 
-text_param uicompiler::text_param_value(const theme_parser_lock &lock,
+text_param uicompiler::text_param_value(const ui::parser_lock &lock,
 					const char *element,
 					const char *parent)
 {
@@ -2073,7 +1866,7 @@ text_param uicompiler::text_param_value(const theme_parser_lock &lock,
 	return t;
 }
 
-shortcut uicompiler::shortcut_value(const theme_parser_lock &lock,
+shortcut uicompiler::shortcut_value(const ui::parser_lock &lock,
 				    const char *element,
 				    const char *parent)
 {
@@ -2133,7 +1926,7 @@ shortcut uicompiler::shortcut_value(const theme_parser_lock &lock,
 	return shortcut("-"); // Throws an exception.
 }
 
-rgb uicompiler::rgb_value(const theme_parser_lock &lock,
+rgb uicompiler::rgb_value(const ui::parser_lock &lock,
 			   const char *element, const char *parent)
 {
 	auto c=generators->lookup_color(single_value(lock, element, parent),
@@ -2146,7 +1939,7 @@ rgb uicompiler::rgb_value(const theme_parser_lock &lock,
 	return std::get<rgb>(c);
 }
 
-font uicompiler::font_value(const theme_parser_lock &lock,
+font uicompiler::font_value(const ui::parser_lock &lock,
 			    const char *element, const char *parent)
 {
 	auto c=generators->lookup_font(single_value(lock, element, parent),

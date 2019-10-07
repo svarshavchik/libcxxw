@@ -308,7 +308,7 @@ Called from a for-each loop over <parameter>s. Generate parameter list.
 
     <xsl:text>static auto </xsl:text>
     <xsl:value-of select="$parameter_parser_name" />
-    <xsl:text>(uicompiler &amp;compiler, const theme_parser_lock &amp;orig_lock)&#10;{&#10;</xsl:text>
+    <xsl:text>(uicompiler &amp;compiler, const ui::parser_lock &amp;orig_lock)&#10;{&#10;</xsl:text>
     <xsl:if test="count(parameter[count(scalar)=0]) &gt; 0">
       <xsl:text>    auto &amp;lock=orig_lock;&#10;</xsl:text>
     </xsl:if>
@@ -506,7 +506,7 @@ to generate a single element in the factory.
 	href="uicompiler.inc.H/{name}_parser.H"
 	method="text">
     <xsl:text>&#10;functionref&lt;void (</xsl:text><xsl:for-each select="parameter">
-<xsl:call-template name="declare-parameter" /></xsl:for-each>)&gt;&#10;      uicompiler::<xsl:value-of select="name" />_parser(const theme_parser_lock &amp;lock)
+<xsl:call-template name="declare-parameter" /></xsl:for-each>)&gt;&#10;      uicompiler::<xsl:value-of select="name" />_parser(const ui::parser_lock &amp;lock)
 {
     auto name=lock->name();
 <exsl:document
@@ -549,7 +549,7 @@ to generate a single element in the factory.
 </xsl:choose>
 vector&lt;functionref&lt;void (<xsl:for-each select="parameter">
 <xsl:call-template name="declare-parameter" /></xsl:for-each>)&gt;&gt;
-uicompiler::<xsl:value-of select="name" />_parseconfig(const theme_parser_lock &amp;lock)
+uicompiler::<xsl:value-of select="name" />_parseconfig(const ui::parser_lock &amp;lock)
 {
     auto config=vector&lt;functionref&lt;void (<xsl:for-each select="parameter">
 <xsl:call-template name="declare-parameter" /></xsl:for-each>)&gt;&gt;

@@ -45,7 +45,8 @@
 #include "x/w/font_picker.H"
 #include "x/w/font_picker_config.H"
 #include "x/w/scrollbar.H"
-#include "theme_parser_lock.H"
+#include "theme_parser_lockfwd.H"
+#include "x/w/impl/uixmlparser.H"
 #include "messages.H"
 #include <x/functionalrefptr.H>
 #include <x/visitor.H>
@@ -170,7 +171,7 @@ struct generators_base {
 	std::string creator;
 	std::string name;
 
-	generators_base(const theme_parser_lock &lock,
+	generators_base(const ui::parser_lock &lock,
 			const std::string &name)
 		: creator{optional_value(lock, "creator", "container")},
 		  name{name} {}
@@ -214,7 +215,7 @@ struct uicompiler::gridlayoutmanager_functions {
 		const_vector<gridlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  generator_vector{compiler
@@ -259,7 +260,7 @@ struct uicompiler::gridlayoutmanager_functions {
 
 static const_vector<new_listlayoutmanager_generator>
 create_newlistlayoutmanager_vector(uicompiler &compiler,
-				   const theme_parser_lock &orig_lock)
+				   const ui::parser_lock &orig_lock)
 {
 	auto lock=orig_lock->clone();
 
@@ -290,7 +291,7 @@ struct uicompiler::listlayoutmanager_functions {
 		const_vector<listlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  style{single_value_exists(lock, "style")
@@ -360,7 +361,7 @@ struct uicompiler::listlayoutmanager_functions {
 
 static const_vector<new_tablelayoutmanager_generator>
 create_newtablelayoutmanager_vector(uicompiler &compiler,
-				    const theme_parser_lock &orig_lock)
+				    const ui::parser_lock &orig_lock)
 {
 	auto lock=orig_lock->clone();
 
@@ -377,7 +378,7 @@ create_newtablelayoutmanager_vector(uicompiler &compiler,
 
 static std::vector<const_vector<factory_generator>>
 create_table_header_generators(uicompiler &compiler,
-			       const theme_parser_lock &orig_lock)
+			       const ui::parser_lock &orig_lock)
 {
 	auto lock=orig_lock->clone();
 
@@ -416,7 +417,7 @@ struct uicompiler::tablelayoutmanager_functions {
 		const_vector<tablelayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  style{single_value_exists(lock, "style")
@@ -514,7 +515,7 @@ struct uicompiler::tablelayoutmanager_functions {
 
 static const_vector<new_panelayoutmanager_generator>
 create_newpanelayoutmanager_vector(uicompiler &compiler,
-				    const theme_parser_lock &orig_lock)
+				    const ui::parser_lock &orig_lock)
 {
 	auto lock=orig_lock->clone();
 
@@ -540,7 +541,7 @@ struct uicompiler::panelayoutmanager_functions {
 		const_vector<panelayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  new_panelayoutmanager_vector
@@ -608,7 +609,7 @@ struct uicompiler::panelayoutmanager_functions {
 
 static const_vector<new_itemlayoutmanager_generator>
 create_newitemlayoutmanager_vector(uicompiler &compiler,
-				    const theme_parser_lock &orig_lock)
+				    const ui::parser_lock &orig_lock)
 {
 	auto lock=orig_lock->clone();
 
@@ -634,7 +635,7 @@ struct uicompiler::itemlayoutmanager_functions {
 		const_vector<itemlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  new_itemlayoutmanager_vector
@@ -701,7 +702,7 @@ struct uicompiler::itemlayoutmanager_functions {
 
 static const_vector<new_pagelayoutmanager_generator>
 create_newpagelayoutmanager_vector(uicompiler &compiler,
-				    const theme_parser_lock &orig_lock)
+				    const ui::parser_lock &orig_lock)
 {
 	auto lock=orig_lock->clone();
 
@@ -727,7 +728,7 @@ struct uicompiler::pagelayoutmanager_functions {
 		const_vector<pagelayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  new_pagelayoutmanager_vector
@@ -793,7 +794,7 @@ struct uicompiler::pagelayoutmanager_functions {
 
 static const_vector<new_toolboxlayoutmanager_generator>
 create_newtoolboxlayoutmanager_vector(uicompiler &compiler,
-				    const theme_parser_lock &orig_lock)
+				    const ui::parser_lock &orig_lock)
 {
 	auto lock=orig_lock->clone();
 
@@ -820,7 +821,7 @@ struct uicompiler::toolboxlayoutmanager_functions {
 		const_vector<toolboxlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  new_toolboxlayoutmanager_vector
@@ -887,7 +888,7 @@ struct uicompiler::toolboxlayoutmanager_functions {
 
 static const_vector<new_standard_comboboxlayoutmanager_generator>
 create_newstandard_comboboxlayoutmanager_vector(uicompiler &compiler,
-						const theme_parser_lock
+						const ui::parser_lock
 						&orig_lock)
 {
 	auto lock=orig_lock->clone();
@@ -918,7 +919,7 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 		const_vector<standard_comboboxlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  new_standard_comboboxlayoutmanager_vector
@@ -979,7 +980,7 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 
 static const_vector<new_editable_comboboxlayoutmanager_generator>
 create_neweditable_comboboxlayoutmanager_vector(uicompiler &compiler,
-						const theme_parser_lock
+						const ui::parser_lock
 						&orig_lock)
 {
 	auto lock=orig_lock->clone();
@@ -1010,7 +1011,7 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 		const_vector<editable_comboboxlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  new_editable_comboboxlayoutmanager_vector
@@ -1072,7 +1073,7 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 
 static const_vector<new_booklayoutmanager_generator>
 create_newbooklayoutmanager_vector(uicompiler &compiler,
-				   const theme_parser_lock &orig_lock)
+				   const ui::parser_lock &orig_lock)
 {
 	auto lock=orig_lock->clone();
 
@@ -1100,7 +1101,7 @@ struct uicompiler::booklayoutmanager_functions {
 		const_vector<booklayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  new_booklayoutmanager_vector
@@ -1160,7 +1161,7 @@ struct uicompiler::booklayoutmanager_functions {
 
 static const_vector<new_borderlayoutmanager_generator>
 create_newborderlayoutmanager_vector(uicompiler &compiler,
-				   const theme_parser_lock &orig_lock)
+				   const ui::parser_lock &orig_lock)
 {
 	auto lock=orig_lock->clone();
 
@@ -1178,7 +1179,7 @@ create_newborderlayoutmanager_vector(uicompiler &compiler,
 
 static const_vector<factory_generator>
 create_border_contents_generators(uicompiler &compiler,
-				  const theme_parser_lock &orig_lock)
+				  const ui::parser_lock &orig_lock)
 {
 	auto lock=orig_lock->clone();
 
@@ -1203,7 +1204,7 @@ struct uicompiler::borderlayoutmanager_functions {
 		const_vector<borderlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
 			  new_borderlayoutmanager_vector
@@ -1416,7 +1417,7 @@ namespace {
 }
 #endif
 
-static std::string get_id_to_restore(const theme_parser_lock &lock)
+static std::string get_id_to_restore(const ui::parser_lock &lock)
 {
 	auto id=lock->get_any_attribute("id");
 
@@ -1429,7 +1430,7 @@ static std::string get_id_to_restore(const theme_parser_lock &lock)
 
 template<typename object_type>
 inline void invoke_restore(object_type &object,
-			   const theme_parser_lock &lock,
+			   const ui::parser_lock &lock,
 			   uicompiler &compiler)
 {
 	object.restore(compiler.positions_to_restore(),
@@ -1465,7 +1466,7 @@ scrollbar uicompiler::create_scrollbar(uicompiler::scrollbar_type type,
 
 functionptr<void (THREAD_CALLBACK, const tooltip_factory &)>
 uicompiler::compiler_functions::get_optional_tooltip(uicompiler &compiler,
-						     const theme_parser_lock
+						     const ui::parser_lock
 						     &lock)
 {
 	functionptr<void (THREAD_CALLBACK,
@@ -1501,7 +1502,7 @@ void uicompiler::compiler_functions
 
 std::optional<uicompiler::compiler_functions::contextpopup_t>
 uicompiler::compiler_functions::get_optional_contextpopup
-(uicompiler &compiler, const theme_parser_lock &lock)
+(uicompiler &compiler, const ui::parser_lock &lock)
 {
 	auto clone=lock->clone();
 
@@ -1585,7 +1586,7 @@ void uicompiler::compiler_functions
 
 uicompiler::container_generators_t
 uicompiler::lookup_container_generators(const std::string &type,
-					const theme_parser_lock &lock,
+					const ui::parser_lock &lock,
 					const std::string &name,
 					bool,
 					const char *tag)
@@ -1646,7 +1647,7 @@ static radio_group lookup_radio_group(uielements &elements,
 #include "uicompiler.inc.H/factory_parser.H"
 
 std::tuple<text_param, label_config>
-uicompiler::get_label_parameters(const theme_parser_lock &lock)
+uicompiler::get_label_parameters(const ui::parser_lock &lock)
 {
 	return get_create_label_parameters(*this, lock);
 }

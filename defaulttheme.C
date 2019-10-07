@@ -4,7 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "defaulttheme.H"
-#include "theme_parser_lock.H"
+#include "theme_parser_lockfwd.H"
+#include "x/w/impl/uixmlparser.H"
 #include "configfile.H"
 #include "x/w/rgb.H"
 #include "x/w/border_infomm.H"
@@ -316,7 +317,7 @@ parse_available_theme_options(const xml::doc &theme_configfile)
 {
 	std::vector<theme_option> opts;
 
-	theme_parser_lock lock{theme_configfile->readlock()};
+	ui::parser_lock lock{theme_configfile->readlock()};
 
 	if (lock->get_root())
 	{
@@ -508,7 +509,7 @@ void defaultthemeObj::constructor(const xcb_screen_t *screen,
 				  const config &theme_config)
 {
 	try {
-		theme_parser_lock
+		ui::parser_lock
 			lock{theme_config.theme_configfile->readlock()};
 
 		uicompiler compiler{lock, uigenerators{this}, {}, false};
@@ -697,7 +698,7 @@ font defaultthemeObj::get_theme_font(const std::string &id) const
 //////////////////////////////////////////////////////////////////////////////
 
 
-std::string single_value(const theme_parser_lock &lock,
+std::string single_value(const ui::parser_lock &lock,
 			 const char *element,
 			 const char *parent)
 {
@@ -713,7 +714,7 @@ std::string single_value(const theme_parser_lock &lock,
 	return v->get_text();
 }
 
-std::string optional_value(const theme_parser_lock &lock,
+std::string optional_value(const ui::parser_lock &lock,
 			   const char *element,
 			   const char *parent)
 {
@@ -733,7 +734,7 @@ std::string optional_value(const theme_parser_lock &lock,
 	return v->get_text();
 }
 
-std::string lowercase_single_value(const theme_parser_lock &lock,
+std::string lowercase_single_value(const ui::parser_lock &lock,
 				   const char *element,
 				   const char *xpath)
 {
@@ -744,7 +745,7 @@ std::string lowercase_single_value(const theme_parser_lock &lock,
 	return s;
 }
 
-scrollbar_visibility to_scrollbar_visibility(const theme_parser_lock &lock,
+scrollbar_visibility to_scrollbar_visibility(const ui::parser_lock &lock,
 					     const char *element,
 					     const char *parent)
 {
@@ -768,7 +769,7 @@ scrollbar_visibility to_scrollbar_visibility(const theme_parser_lock &lock,
 			 s, parent));
 }
 
-bool single_value_exists(const theme_parser_lock &lock,
+bool single_value_exists(const ui::parser_lock &lock,
 			 const char *element)
 {
 	auto v=lock.clone();
@@ -779,7 +780,7 @@ bool single_value_exists(const theme_parser_lock &lock,
 }
 
 template<typename to_value_t>
-static to_value_t to_value(const theme_parser_lock &lock,
+static to_value_t to_value(const ui::parser_lock &lock,
 			   const std::string &value,
 			   const char *element)
 {
@@ -797,28 +798,28 @@ static to_value_t to_value(const theme_parser_lock &lock,
 	return v;
 }
 
-double to_mm(const theme_parser_lock &lock,
+double to_mm(const ui::parser_lock &lock,
 	     const char *element, const char *parent)
 {
 	return to_value<double>(lock,
 				single_value(lock, element, parent), element);
 }
 
-dim_t to_dim_t(const theme_parser_lock &lock,
+dim_t to_dim_t(const ui::parser_lock &lock,
 	       const char *element, const char *parent)
 {
 	return to_value<dim_t>(lock,
 			       single_value(lock, element, parent), element);
 }
 
-size_t to_size_t(const theme_parser_lock &lock,
+size_t to_size_t(const ui::parser_lock &lock,
 		 const char *element, const char *parent)
 {
 	return to_value<size_t>(lock,
 				single_value(lock, element, parent), element);
 }
 
-int to_percentage_t(const theme_parser_lock &lock,
+int to_percentage_t(const ui::parser_lock &lock,
 		    const char *element, const char *parent)
 {
 	int v=to_value<int>(lock,
@@ -831,7 +832,7 @@ int to_percentage_t(const theme_parser_lock &lock,
 	return v;
 }
 
-halign to_halign(const theme_parser_lock &lock,
+halign to_halign(const ui::parser_lock &lock,
 		 const char *element, const char *parent)
 {
 	auto value=single_value(lock, element, parent);
@@ -864,7 +865,7 @@ halign to_halign(const theme_parser_lock &lock,
 	return v;
 }
 
-valign to_valign(const theme_parser_lock &lock,
+valign to_valign(const ui::parser_lock &lock,
 		 const char *element, const char *parent)
 {
 	auto value=single_value(lock, element, parent);

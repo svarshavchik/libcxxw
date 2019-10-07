@@ -904,6 +904,7 @@ libcxxw_la_SOURCES=\
 	uicompiler.C				    \
 	uicompiler2.C				    \
 	uicompiler3.C				    \
+	uicompiler4.C				    \
 	uicompiler_booklayout.C			    \
 	uicompiler_borderlayout.C		    \
 	uicompiler_bookpagefactory.C		    \

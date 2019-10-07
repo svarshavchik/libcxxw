@@ -28,7 +28,8 @@
 #include "x/w/appearance.H"
 #include "x/w/containerfwd.H"
 #include "x/w/synchronized_axisfwd.H"
-#include "theme_parser_lock.H"
+#include "theme_parser_lockfwd.H"
+#include "x/w/impl/uixmlparser.H"
 #include "uicompilerfwd.H"
 
 #include <x/vector.H>
@@ -62,7 +63,7 @@ public:
 	//! "allowthemerefs" gets set to false when parsing the default
 	//! theme, and true when parsing a user-specified layout/theme.
 
-	uicompiler(const theme_parser_lock &lock,
+	uicompiler(const ui::parser_lock &lock,
 		   const uigenerators &generators,
 		   const const_screen_positionsptr &saved_positions,
 		   bool allowthemerefs);
@@ -74,7 +75,7 @@ public:
 	//! install_functor gets invoked to save the new font definition.
 
 	template<typename install_functor, typename lookup_functor>
-		static void load_fonts(const theme_parser_lock &lock,
+		static void load_fonts(const ui::parser_lock &lock,
 				       install_functor &&install,
 				       lookup_functor &&lookup)
 	{
@@ -89,7 +90,7 @@ public:
 
 	//! Type-erased do_load_fonts
 
-	static void do_load_fonts(const theme_parser_lock &lock,
+	static void do_load_fonts(const ui::parser_lock &lock,
 				  const function<void(const std::string &,
 						      const font &)> &install,
 				  const function<std::optional<font>
@@ -129,16 +130,16 @@ private:
 	//! already been generated it gets plucked from the generators,
 	//! otherwise it's removed from uncompiled_elements and compiled,
 	//! recursively.
-	std::unordered_map<std::string, theme_parser_lock> uncompiled_elements;
+	std::unordered_map<std::string, ui::parser_lock> uncompiled_elements;
 
 public:
 	//! Parser for grid layout manager generator.
 	vector<gridlayoutmanager_generator
-	       > gridlayout_parseconfig(const theme_parser_lock &lock);
+	       > gridlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for base factory generator.
 	vector<factory_generator
-	       > factory_parseconfig(const theme_parser_lock &lock);
+	       > factory_parseconfig(const ui::parser_lock &lock);
 
 	//! Wrapper for factory_parseconfig()
 
@@ -148,49 +149,49 @@ public:
 	//! Referenced from the theme file. Receives the name of the element
 	//! that specifies what gets created.
 
-	factory_generator factory_parseconfig(const theme_parser_lock &lock,
+	factory_generator factory_parseconfig(const ui::parser_lock &lock,
 					      const char *element,
 					      const char *parent);
 
 	//! Parser for grid factory generator.
 	vector<gridfactory_generator
-	       > gridfactory_parseconfig(const theme_parser_lock &lock);
+	       > gridfactory_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for pane factory generator.
 	vector<panefactory_generator
-	       > panefactory_parseconfig(const theme_parser_lock &lock);
+	       > panefactory_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for toolbox factory generator.
 	vector<toolboxfactory_generator
-	       > toolboxfactory_parseconfig(const theme_parser_lock &lock);
+	       > toolboxfactory_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for menu bar factory generator.
 	vector<menubarfactory_generator
-	       > menubarfactory_parseconfig(const theme_parser_lock &lock);
+	       > menubarfactory_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for book layout manager generator.
 	vector<booklayoutmanager_generator
-	       > booklayout_parseconfig(const theme_parser_lock &lock);
+	       > booklayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for page factory generator.
 	vector<pagefactory_generator
-	       > pagefactory_parseconfig(const theme_parser_lock &lock);
+	       > pagefactory_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for book page factory generator.
 	vector<bookpagefactory_generator
-	       > bookpagefactory_parseconfig(const theme_parser_lock &lock);
+	       > bookpagefactory_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for list layout manager generator.
 	vector<listlayoutmanager_generator
-	       > listlayout_parseconfig(const theme_parser_lock &lock);
+	       > listlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for border layout manager generator.
 	vector<borderlayoutmanager_generator
-	       > borderlayout_parseconfig(const theme_parser_lock &lock);
+	       > borderlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for menu bar layout manager generator.
 	vector<menubarlayoutmanager_generator
-	       > menubarlayout_parseconfig(const theme_parser_lock &lock);
+	       > menubarlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Wrapper for listlayout_parseconfig()
 
@@ -201,99 +202,99 @@ public:
 	//! that specifies what gets created.
 
 	listlayoutmanager_generator
-	listlayout_parseconfig(const theme_parser_lock &lock,
+	listlayout_parseconfig(const ui::parser_lock &lock,
 			       const char *element,
 			       const char *parent);
 
 	//! Parser for standard combobox layout manager generator.
 	vector<standard_comboboxlayoutmanager_generator
-	       > standard_comboboxlayout_parseconfig(const theme_parser_lock
+	       > standard_comboboxlayout_parseconfig(const ui::parser_lock
 						     &lock);
 
 	//! Parser for editable combobox layout manager generator.
 	vector<editable_comboboxlayoutmanager_generator
-	       > editable_comboboxlayout_parseconfig(const theme_parser_lock
+	       > editable_comboboxlayout_parseconfig(const ui::parser_lock
 						     &lock);
 
 	//! Parser for table layout manager generator.
 	vector<tablelayoutmanager_generator
-	       > tablelayout_parseconfig(const theme_parser_lock &lock);
+	       > tablelayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the pane layout manager generator
 
 	vector<panelayoutmanager_generator
-	       > panelayout_parseconfig(const theme_parser_lock &lock);
+	       > panelayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the item layout manager generator
 
 	vector<itemlayoutmanager_generator
-	       > itemlayout_parseconfig(const theme_parser_lock &lock);
+	       > itemlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the page layout manager generator
 
 	vector<pagelayoutmanager_generator
-	       > pagelayout_parseconfig(const theme_parser_lock &lock);
+	       > pagelayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the toolbox layout manager generator
 
 	vector<toolboxlayoutmanager_generator
-	       > toolboxlayout_parseconfig(const theme_parser_lock &lock);
+	       > toolboxlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the new book layout manager generator
 
 	vector<new_booklayoutmanager_generator
-	       > new_booklayout_parseconfig(const theme_parser_lock &lock);
+	       > new_booklayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the new list layout manager generator
 
 	vector<new_listlayoutmanager_generator
-	       > new_listlayout_parseconfig(const theme_parser_lock &lock);
+	       > new_listlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the new custom combobox layout manager generator
 
 	vector<new_custom_comboboxlayoutmanager_generator
-	       > new_custom_comboboxlayout_parseconfig(const theme_parser_lock
+	       > new_custom_comboboxlayout_parseconfig(const ui::parser_lock
 						       &lock);
 
 	//! Parser for the new standard combobox layout manager generator
 
 	vector<new_standard_comboboxlayoutmanager_generator
-	       > new_standard_comboboxlayout_parseconfig(const theme_parser_lock &lock);
+	       > new_standard_comboboxlayout_parseconfig(const ui::parser_lock &lock);
 	//! Parser for the new editable combobox layout manager generator
 
 	vector<new_editable_comboboxlayoutmanager_generator
-	       > new_editable_comboboxlayout_parseconfig(const theme_parser_lock
+	       > new_editable_comboboxlayout_parseconfig(const ui::parser_lock
 							 &lock);
 
 	//! Parser for the new table layout manager generator
 
 	vector<new_tablelayoutmanager_generator
-	       > new_tablelayout_parseconfig(const theme_parser_lock &lock);
+	       > new_tablelayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the new pane layout manager generator
 
 	vector<new_panelayoutmanager_generator
-	       > new_panelayout_parseconfig(const theme_parser_lock &lock);
+	       > new_panelayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the new item layout manager generator
 
 	vector<new_itemlayoutmanager_generator
-	       > new_itemlayout_parseconfig(const theme_parser_lock &lock);
+	       > new_itemlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the new page layout manager generator
 
 	vector<new_pagelayoutmanager_generator
-	       > new_pagelayout_parseconfig(const theme_parser_lock &lock);
+	       > new_pagelayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the new toolbox layout manager generator
 
 	vector<new_toolboxlayoutmanager_generator
-	       > new_toolboxlayout_parseconfig(const theme_parser_lock &lock);
+	       > new_toolboxlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the new border layout manager generator
 
 	vector<new_borderlayoutmanager_generator
-	       > new_borderlayout_parseconfig(const theme_parser_lock &lock);
+	       > new_borderlayout_parseconfig(const ui::parser_lock &lock);
 private:
 	//! Implement <element>
 
@@ -305,119 +306,119 @@ private:
 
 	//! Generate a single grid layout manager instruction.
 	gridlayoutmanager_generator
-	gridlayout_parser(const theme_parser_lock &lock);
+	gridlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single grid factory instruction.
-	gridfactory_generator gridfactory_parser(const theme_parser_lock &lock);
+	gridfactory_generator gridfactory_parser(const ui::parser_lock &lock);
 
 	//! Generate a single menu bar factory instruction.
-	menubarfactory_generator menubarfactory_parser(const theme_parser_lock &lock);
+	menubarfactory_generator menubarfactory_parser(const ui::parser_lock &lock);
 
 	//! Generate a single pane factory instruction.
-	panefactory_generator panefactory_parser(const theme_parser_lock &lock);
+	panefactory_generator panefactory_parser(const ui::parser_lock &lock);
 
 	//! Generate a single toolbox factory instruction.
 	toolboxfactory_generator
-	toolboxfactory_parser(const theme_parser_lock &lock);
+	toolboxfactory_parser(const ui::parser_lock &lock);
 
 	//! Generate a single factory instruction.
-	factory_generator factory_parser(const theme_parser_lock &lock);
+	factory_generator factory_parser(const ui::parser_lock &lock);
 
 	//! Generate a single list layout manager instruction.
 	listlayoutmanager_generator
-	listlayout_parser(const theme_parser_lock &lock);
+	listlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single menu bar layout manager instruction.
 	menubarlayoutmanager_generator
-	menubarlayout_parser(const theme_parser_lock &lock);
+	menubarlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single standard combobox layout manager instruction.
 	standard_comboboxlayoutmanager_generator
-	standard_comboboxlayout_parser(const theme_parser_lock &lock);
+	standard_comboboxlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single editable combobox layout manager instruction.
 	editable_comboboxlayoutmanager_generator
-	editable_comboboxlayout_parser(const theme_parser_lock &lock);
+	editable_comboboxlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single table layout manager instruction.
 	tablelayoutmanager_generator
-	tablelayout_parser(const theme_parser_lock &lock);
+	tablelayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single itemlayoutmanager instruction.
 	itemlayoutmanager_generator
-	itemlayout_parser(const theme_parser_lock &lock);
+	itemlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single pagelayoutmanager instruction.
 	pagelayoutmanager_generator
-	pagelayout_parser(const theme_parser_lock &lock);
+	pagelayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single toolboxlayoutmanager instruction.
 	toolboxlayoutmanager_generator
-	toolboxlayout_parser(const theme_parser_lock &lock);
+	toolboxlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single panelayoutmanager instruction.
 	panelayoutmanager_generator
-	panelayout_parser(const theme_parser_lock &lock);
+	panelayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single book layout manager instruction.
 	booklayoutmanager_generator
-	booklayout_parser(const theme_parser_lock &lock);
+	booklayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single page factory instruction.
 	pagefactory_generator
-	pagefactory_parser(const theme_parser_lock &lock);
+	pagefactory_parser(const ui::parser_lock &lock);
 
 	//! Generate a single book page factory instruction.
 	bookpagefactory_generator
-	bookpagefactory_parser(const theme_parser_lock &lock);
+	bookpagefactory_parser(const ui::parser_lock &lock);
 
 	//! Generate a single border layout manager instruction.
 	borderlayoutmanager_generator
-	borderlayout_parser(const theme_parser_lock &lock);
+	borderlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_booklayoutmanager instruction.
 	new_booklayoutmanager_generator
-	new_booklayout_parser(const theme_parser_lock &lock);
+	new_booklayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_listlayoutmanager instruction.
 	new_listlayoutmanager_generator
-	new_listlayout_parser(const theme_parser_lock &lock);
+	new_listlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_custom_comboboxlayoutmanager instruction.
 	new_custom_comboboxlayoutmanager_generator
-	new_custom_comboboxlayout_parser(const theme_parser_lock &lock);
+	new_custom_comboboxlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_standard_comboboxlayoutmanager instruction.
 	new_standard_comboboxlayoutmanager_generator
-	new_standard_comboboxlayout_parser(const theme_parser_lock &lock);
+	new_standard_comboboxlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_editable_comboboxlayoutmanager instruction.
 	new_editable_comboboxlayoutmanager_generator
-	new_editable_comboboxlayout_parser(const theme_parser_lock &lock);
+	new_editable_comboboxlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_tablelayoutmanager instruction.
 	new_tablelayoutmanager_generator
-	new_tablelayout_parser(const theme_parser_lock &lock);
+	new_tablelayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_panelayoutmanager instruction.
 	new_panelayoutmanager_generator
-	new_panelayout_parser(const theme_parser_lock &lock);
+	new_panelayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_itemlayoutmanager instruction.
 	new_itemlayoutmanager_generator
-	new_itemlayout_parser(const theme_parser_lock &lock);
+	new_itemlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_pagelayoutmanager instruction.
 	new_pagelayoutmanager_generator
-	new_pagelayout_parser(const theme_parser_lock &lock);
+	new_pagelayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_toolboxlayoutmanager instruction.
 	new_toolboxlayoutmanager_generator
-	new_toolboxlayout_parser(const theme_parser_lock &lock);
+	new_toolboxlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_borderlayoutmanager instruction.
 	new_borderlayoutmanager_generator
-	new_borderlayout_parser(const theme_parser_lock &lock);
+	new_borderlayout_parser(const ui::parser_lock &lock);
 public:
 	//! Return compiled grid factory generators.
 
@@ -427,7 +428,7 @@ public:
 	//! them into gridfactory_generators, and return them.
 
 	const_vector<gridfactory_generator
-	       > lookup_gridfactory_generators(const theme_parser_lock &lock,
+	       > lookup_gridfactory_generators(const ui::parser_lock &lock,
 					       const char *element,
 					       const char *parent);
 
@@ -439,7 +440,7 @@ public:
 	//! them into menubarlayoutmanager_generators, and return them.
 
 	const_vector<menubarlayoutmanager_generator>
-	lookup_menubarlayoutmanager_generators(const theme_parser_lock &lock,
+	lookup_menubarlayoutmanager_generators(const ui::parser_lock &lock,
 					       const char *element,
 					       const char *parent);
 
@@ -451,7 +452,7 @@ public:
 	//! them into menubarfactory_generators, and return them.
 
 	const_vector<menubarfactory_generator
-	       > lookup_menubarfactory_generators(const theme_parser_lock &lock,
+	       > lookup_menubarfactory_generators(const ui::parser_lock &lock,
 					       const char *element,
 					       const char *parent);
 
@@ -463,7 +464,7 @@ public:
 	//! them into pagefactory_generators, and return them.
 
 	const_vector<pagefactory_generator>
-	lookup_pagefactory_generators(const theme_parser_lock &lock,
+	lookup_pagefactory_generators(const ui::parser_lock &lock,
 				      const char *element,
 				      const char *parent);
 
@@ -475,7 +476,7 @@ public:
 	//! them into bookpagefactory_generators, and return them.
 
 	const_vector<bookpagefactory_generator>
-	lookup_bookpagefactory_generators(const theme_parser_lock &lock,
+	lookup_bookpagefactory_generators(const ui::parser_lock &lock,
 					  const char *element,
 					  const char *parent);
 
@@ -486,7 +487,7 @@ public:
 	//! into gridlayoutmanager_generators, and return them.
 
 	const_vector<gridlayoutmanager_generator>
-	lookup_gridlayoutmanager_generators(const theme_parser_lock &lock,
+	lookup_gridlayoutmanager_generators(const ui::parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled list layout manager generators.
@@ -496,7 +497,7 @@ public:
 	//! into listlayoutmanager_generators, and return them.
 
 	const_vector<listlayoutmanager_generator>
-	lookup_listlayoutmanager_generators(const theme_parser_lock &lock,
+	lookup_listlayoutmanager_generators(const ui::parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled combobox layout manager generators.
@@ -507,7 +508,7 @@ public:
 
 	const_vector<standard_comboboxlayoutmanager_generator>
 	lookup_standard_comboboxlayoutmanager_generators
-	(const theme_parser_lock &lock,
+	(const ui::parser_lock &lock,
 	 const std::string &);
 
 	//! Return compiled combobox layout manager generators.
@@ -518,7 +519,7 @@ public:
 
 	const_vector<editable_comboboxlayoutmanager_generator>
 	lookup_editable_comboboxlayoutmanager_generators
-	(const theme_parser_lock &lock,
+	(const ui::parser_lock &lock,
 	 const std::string &);
 
 	//! Return compiled book layout manager generators.
@@ -528,7 +529,7 @@ public:
 	//! into booklayoutmanager_generators, and return them.
 
 	const_vector<booklayoutmanager_generator>
-	lookup_booklayoutmanager_generators(const theme_parser_lock &lock,
+	lookup_booklayoutmanager_generators(const ui::parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled table layout manager generators.
@@ -538,7 +539,7 @@ public:
 	//! into tablelayoutmanager_generators, and return them.
 
 	const_vector<tablelayoutmanager_generator>
-	lookup_tablelayoutmanager_generators(const theme_parser_lock &lock,
+	lookup_tablelayoutmanager_generators(const ui::parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled pane layout manager generators.
@@ -548,7 +549,7 @@ public:
 	//! into panelayoutmanager_generators, and return them.
 
 	const_vector<panelayoutmanager_generator>
-	lookup_panelayoutmanager_generators(const theme_parser_lock &lock,
+	lookup_panelayoutmanager_generators(const ui::parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled item layout manager generators.
@@ -558,7 +559,7 @@ public:
 	//! into itemlayoutmanager_generators, and return them.
 
 	const_vector<itemlayoutmanager_generator>
-	lookup_itemlayoutmanager_generators(const theme_parser_lock &lock,
+	lookup_itemlayoutmanager_generators(const ui::parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled page layout manager generators.
@@ -568,7 +569,7 @@ public:
 	//! into pagelayoutmanager_generators, and return them.
 
 	const_vector<pagelayoutmanager_generator>
-	lookup_pagelayoutmanager_generators(const theme_parser_lock &lock,
+	lookup_pagelayoutmanager_generators(const ui::parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled toolbox layout manager generators.
@@ -578,7 +579,7 @@ public:
 	//! into toolboxlayoutmanager_generators, and return them.
 
 	const_vector<toolboxlayoutmanager_generator>
-	lookup_toolboxlayoutmanager_generators(const theme_parser_lock &lock,
+	lookup_toolboxlayoutmanager_generators(const ui::parser_lock &lock,
 					    const std::string &);
 
 	//! Return compiled border layout manager generators.
@@ -588,7 +589,7 @@ public:
 	//! into borderlayoutmanager_generators, and return them.
 
 	const_vector<borderlayoutmanager_generator>
-	lookup_borderlayoutmanager_generators(const theme_parser_lock &lock,
+	lookup_borderlayoutmanager_generators(const ui::parser_lock &lock,
 					      const std::string &);
 
 	//! Return compiled pane factory manager generators.
@@ -598,7 +599,7 @@ public:
 	//! into panefactory_generators, and return them.
 
 	const_vector<panefactory_generator>
-	lookup_panefactory_generators(const theme_parser_lock &lock,
+	lookup_panefactory_generators(const ui::parser_lock &lock,
 				      const char *element,
 				      const char *parent);
 
@@ -609,7 +610,7 @@ public:
 	//! into toolboxfactory_generators, and return them.
 
 	const_vector<toolboxfactory_generator>
-	lookup_toolboxfactory_generators(const theme_parser_lock &lock,
+	lookup_toolboxfactory_generators(const ui::parser_lock &lock,
 				      const char *element,
 				      const char *parent);
 
@@ -808,7 +809,7 @@ public:
 
 	container_generators_t
 	lookup_container_generators(const std::string &name,
-				    const theme_parser_lock &lock,
+				    const ui::parser_lock &lock,
 				    const std::string &type,
 				    bool,
 				    const char *tag);
@@ -847,23 +848,23 @@ public:
 			   const progressbar_config &config);
 
 	//! Parse a color_arg value for an appearance in the theme file.
-	color_arg to_color_arg(const theme_parser_lock &lock,
+	color_arg to_color_arg(const ui::parser_lock &lock,
 			       const char *element, const char *parent);
 
 	//! Parse a border_arg value for an appearance in the theme file.
-	border_arg to_border_arg(const theme_parser_lock &lock,
+	border_arg to_border_arg(const ui::parser_lock &lock,
 				 const char *element, const char *parent);
 
 	//! Parse a dim_arg value for an appearance in the theme file.
-	dim_arg to_dim_arg(const theme_parser_lock &lock,
+	dim_arg to_dim_arg(const ui::parser_lock &lock,
 			   const char *element, const char *parent);
 
 	//! Parse a font_arg value for an appearance in the theme file.
-	font_arg to_font_arg(const theme_parser_lock &lock,
+	font_arg to_font_arg(const ui::parser_lock &lock,
 			     const char *element, const char *parent);
 
 	//! Parse a text_color_arg value for an appearance in the theme file.
-	text_color_arg to_text_color_arg(const theme_parser_lock &lock,
+	text_color_arg to_text_color_arg(const ui::parser_lock &lock,
 					 const char *element,
 					 const char *parent);
 
@@ -874,25 +875,25 @@ public:
 						const char *parent);
 
 	//! Parse a text_param value
-	text_param text_param_value(const theme_parser_lock &lock,
+	text_param text_param_value(const ui::parser_lock &lock,
 				    const char *element,
 				    const char *parent);
 
 	//! Parse a shortcut value
-	shortcut shortcut_value(const theme_parser_lock &lock,
+	shortcut shortcut_value(const ui::parser_lock &lock,
 				const char *element,
 				const char *parent);
 
 	//! Parse an rgb value
 
 	//! Used only by the color picker.
-	rgb rgb_value(const theme_parser_lock &lock,
+	rgb rgb_value(const ui::parser_lock &lock,
 		      const char *element, const char *parent);
 
 	//! Parse a font value
 
 	//! Used only by the font picker.
-	font font_value(const theme_parser_lock &lock,
+	font font_value(const ui::parser_lock &lock,
 			const char *element, const char *parent);
 
 
@@ -919,7 +920,7 @@ public:
 	};
 
 	//! Parse list_item_params
-	list_items_params list_items_param_value(const theme_parser_lock &lock,
+	list_items_params list_items_param_value(const ui::parser_lock &lock,
 						 const char *element,
 						 const char *parent);
 
@@ -938,7 +939,7 @@ private:
 	//! otherwise it's removed from uncompiled_appearances and compiled,
 	//! recursively.
 	std::unordered_map<std::string,
-			   theme_parser_lock> uncompiled_appearances;
+			   ui::parser_lock> uncompiled_appearances;
 
 	//! Return a compiled appearance
 
@@ -960,7 +961,7 @@ private:
 
 	//! "type" is it's type attribute.
 
-	const_appearance compile_appearance(const theme_parser_lock &parent,
+	const_appearance compile_appearance(const ui::parser_lock &parent,
 					    const std::string &type);
 
 	//! lookup_appearance() found a wrong appearance.
@@ -994,7 +995,7 @@ private:
 		static functionptr<void (THREAD_CALLBACK,
 					 const tooltip_factory &)>
 		get_optional_tooltip(uicompiler &compiler,
-				     const theme_parser_lock &lock);
+				     const ui::parser_lock &lock);
 
 		static void install_tooltip(const element &e,
 					    const functionptr
@@ -1007,7 +1008,7 @@ private:
 
 		static std::optional<contextpopup_t>
 		get_optional_contextpopup(uicompiler &compiler,
-					  const theme_parser_lock &lock);
+					  const ui::parser_lock &lock);
 
 		static void install_contextpopup(uielements &elements,
 						 const element &new_element,
@@ -1016,7 +1017,7 @@ private:
 	};
 
 	std::tuple<text_param, label_config>
-	get_label_parameters(const theme_parser_lock &lock);
+	get_label_parameters(const ui::parser_lock &lock);
 
 public:
 #include "uicompiler_appearance_proto.inc.H"

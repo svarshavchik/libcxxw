@@ -26,7 +26,7 @@ defined in appearance/*.xml
     <xsl:text>
 LIBCXXW_NAMESPACE_START
 
-const_appearance uicompiler::compile_appearance(const theme_parser_lock &amp;parent,
+const_appearance uicompiler::compile_appearance(const ui::parser_lock &amp;parent,
                                                 const std::string &amp;type)
 {
 </xsl:text>
@@ -240,7 +240,7 @@ const_</xsl:text>
 
 const_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance uicompiler::get_appearance(const theme_parser_lock &amp;parent,
+    <xsl:text>_appearance uicompiler::get_appearance(const ui::parser_lock &amp;parent,
     const const_</xsl:text>
     <xsl:value-of select="name"/>
     <xsl:text>_appearance &amp;appearance)

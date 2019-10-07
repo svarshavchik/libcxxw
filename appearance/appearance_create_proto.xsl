@@ -35,7 +35,7 @@ defined in appearance/*.xml
     <xsl:text>_appearance &amp;, const std::string &amp;);
 //! Appearance generator&#10;&#10;const_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance get_appearance(const theme_parser_lock &amp;,
+    <xsl:text>_appearance get_appearance(const ui::parser_lock &amp;,
     const const_</xsl:text>
     <xsl:value-of select="name"/>
     <xsl:text>_appearance &amp;);&#10;</xsl:text>

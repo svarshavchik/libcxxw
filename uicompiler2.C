@@ -37,8 +37,8 @@ appearance_type uicompiler::get_compiled_appearance(const std::string &name)
 // pull in the entire xml/doc file for everyone who includes uicompiler.H.
 
 struct uicompiler::generate_info {
-	const theme_parser_lock &parent;
-	const theme_parser_lock &lock;
+	const ui::parser_lock &parent;
+	const ui::parser_lock &lock;
 	xml::doc::base::xpath &xpath;
 };
 

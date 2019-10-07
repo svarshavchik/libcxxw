@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 /* selection_type */
 
-static list_selection_type_cb_t to_selection_type(const theme_parser_lock &lock,
+static list_selection_type_cb_t to_selection_type(const ui::parser_lock &lock,
 						  const char *element,
 						  const char *parent)
 {

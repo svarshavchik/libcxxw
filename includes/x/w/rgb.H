@@ -138,6 +138,13 @@ constexpr rgb purple{rgb::maximum/2+1, 0, rgb::maximum/2+1};
 
 std::ostream &operator<<(std::ostream &, const rgb &);
 
+//! Values of a \ref linear_gradient "linear gradient".
+
+struct linear_gradient_values {
+	double x1=0, y1=0, x2=1, y2=1;
+	double fixed_width=0, fixed_height=0;
+};
+
 //! A linear gradient for a widget's background color.
 
 //! Define a linear gradient from (x1, y1) to (x2, y2). Closely modeled on
@@ -156,9 +163,7 @@ std::ostream &operator<<(std::ostream &, const rgb &);
 //! Negative fixed width and height anchors
 //! the virtual (0, 0)-(1, 1) coordinate space to the opposite corner.
 
-struct linear_gradient {
-	double x1=0, y1=0, x2=1, y2=1;
-	double fixed_width=0, fixed_height=0;
+struct linear_gradient : linear_gradient_values {
 
 	rgb_gradient gradient;
 
@@ -169,6 +174,38 @@ struct linear_gradient {
 			fixed_height == o.fixed_height &&
 			gradient == o.gradient;
 	}
+};
+
+//! Values of a \ref radial_gradient "radial gradient".
+
+struct radial_gradient_values {
+
+	double inner_center_x=.5,
+		inner_center_y=.5,
+		outer_center_x=.5,
+		outer_center_y=.5,
+
+		inner_radius=0,
+		outer_radius=.5;
+
+	enum radius_axis {
+			  //! The widget's width
+			  horizontal,
+
+			  //! The widget's height
+			  vertical,
+
+			  //! The widget's width or height, whichever's the shortest
+			  shortest,
+
+			  //! The widget's width or height, whichever's the longest
+			  longest
+	};
+
+	radius_axis inner_radius_axis=shortest;
+	radius_axis outer_radius_axis=longest;
+
+	double fixed_width=0, fixed_height=0;
 };
 
 //! A radial gradient for a widget's background color.
@@ -204,34 +241,7 @@ struct linear_gradient {
 //! Negative fixed width and height anchors
 //! the virtual (0, 0)-(1, 1) coordinate space to the opposite corner.
 
-struct radial_gradient {
-
-	double inner_center_x=.5,
-		inner_center_y=.5,
-		outer_center_x=.5,
-		outer_center_y=.5,
-
-		inner_radius=0,
-		outer_radius=.5;
-
-	enum radius_axis {
-			  //! The widget's width
-			  horizontal,
-
-			  //! The widget's height
-			  vertical,
-
-			  //! The widget's width or height, whichever's the shortest
-			  shortest,
-
-			  //! The widget's width or height, whichever's the longest
-			  longest
-	};
-
-	radius_axis inner_radius_axis=shortest;
-	radius_axis outer_radius_axis=longest;
-
-	double fixed_width=0, fixed_height=0;
+struct radial_gradient : radial_gradient_values {
 
 	rgb_gradient gradient;
 

@@ -19,13 +19,15 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN theme_parser_lock;
+namespace ui {
+	class parser_lock;
+}
 
 //! Read a single value.
 
 //! When parsing XML-specified layouts,
 //! this reads a required xpath.
-std::string single_value(const theme_parser_lock &lock,
+std::string single_value(const ui::parser_lock &lock,
 			 const char *element,
 			 const char *parent) LIBCXX_HIDDEN;
 
@@ -33,7 +35,7 @@ std::string single_value(const theme_parser_lock &lock,
 
 //! When parsing XML-specified layouts,
 //! this reads an optional xpath if it exists, else returns an empty string.
-std::string optional_value(const theme_parser_lock &lock,
+std::string optional_value(const ui::parser_lock &lock,
 			   const char *element,
 			   const char *parent) LIBCXX_HIDDEN;
 
@@ -42,7 +44,7 @@ std::string optional_value(const theme_parser_lock &lock,
 
 //! When parsing XML-specified layouts,
 //! this reads a single_value() and converts it to lowercase.
-std::string lowercase_single_value(const theme_parser_lock &lock,
+std::string lowercase_single_value(const ui::parser_lock &lock,
 				   const char *element,
 				   const char *xpath) LIBCXX_HIDDEN;
 
@@ -50,18 +52,18 @@ std::string lowercase_single_value(const theme_parser_lock &lock,
 
 //! When parsing XML-specified layouts,
 //! this checks whether the given xpath exists.
-bool single_value_exists(const theme_parser_lock &lock,
+bool single_value_exists(const ui::parser_lock &lock,
 			 const char *element) LIBCXX_HIDDEN;
 
 template<auto v>
-constexpr auto optional_constant(const theme_parser_lock &lock,
+constexpr auto optional_constant(const ui::parser_lock &lock,
 				 const char *element,
 				 const char *parent)
 	LIBCXX_HIDDEN;
 
 //! If the given xpath exists, return a constant.
 
-template<auto v> constexpr auto optional_constant(const theme_parser_lock &lock,
+template<auto v> constexpr auto optional_constant(const ui::parser_lock &lock,
 						  const char *element,
 						  const char *parent)
 {
@@ -74,7 +76,7 @@ template<auto v> constexpr auto optional_constant(const theme_parser_lock &lock,
 //! When parsing XML-specified layouts,
 //! this reads a scrollbar_visibility value.
 
-scrollbar_visibility to_scrollbar_visibility(const theme_parser_lock &,
+scrollbar_visibility to_scrollbar_visibility(const ui::parser_lock &,
 					     const char *element,
 					     const char *parent) LIBCXX_HIDDEN;
 
@@ -82,42 +84,42 @@ scrollbar_visibility to_scrollbar_visibility(const theme_parser_lock &,
 
 //! When parsing XML-specified layouts,
 //! this reads a dim_t value.
-dim_t to_dim_t(const theme_parser_lock &lock,
+dim_t to_dim_t(const ui::parser_lock &lock,
 	       const char *element, const char *parent) LIBCXX_HIDDEN;
 
 //! Read a value.
 
 //! When parsing XML-specified layouts,
 //! this reads a size_t value.
-size_t to_size_t(const theme_parser_lock &lock,
+size_t to_size_t(const ui::parser_lock &lock,
 		 const char *element, const char *parent) LIBCXX_HIDDEN;
 
 //! Read a value.
 
 //! When parsing XML-specified layouts,
 //! this reads a number between 0-100.
-int to_percentage_t(const theme_parser_lock &lock,
+int to_percentage_t(const ui::parser_lock &lock,
 		    const char *element, const char *parent) LIBCXX_HIDDEN;
 
 //! Read a value.
 
 //! When parsing XML-specified layouts,
 //! this reads an halign value.
-halign to_halign(const theme_parser_lock &lock,
+halign to_halign(const ui::parser_lock &lock,
 		 const char *element, const char *parent) LIBCXX_HIDDEN;
 
 //! Read a value.
 
 //! When parsing XML-specified layouts,
 //! this reads an halign value.
-valign to_valign(const theme_parser_lock &lock,
+valign to_valign(const ui::parser_lock &lock,
 		 const char *element, const char *parent) LIBCXX_HIDDEN;
 
 //! Read a value.
 
 //! When parsing XML-specified layouts,
 //! this reads a millimeter size value.
-double to_mm(const theme_parser_lock &lock,
+double to_mm(const ui::parser_lock &lock,
 	     const char *element, const char *parent) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END

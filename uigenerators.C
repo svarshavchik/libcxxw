@@ -7,7 +7,8 @@
 #include "x/w/all_appearances.H"
 #include "uicompiler.H"
 #include "messages.H"
-#include "theme_parser_lock.H"
+#include "theme_parser_lockfwd.H"
+#include "x/w/impl/uixmlparser.H"
 #include <x/xml/doc.H>
 #include <x/messages.H>
 #include <functional>
@@ -26,7 +27,7 @@ const_uigenerators uigeneratorsBase::create(const xml::doc &parsed_xml,
 {
 	auto g=ptrref_base::objfactory<uigenerators>::create();
 
-	theme_parser_lock lock{parsed_xml->readlock()};
+	ui::parser_lock lock{parsed_xml->readlock()};
 
 	if (lock->get_root())
 	{

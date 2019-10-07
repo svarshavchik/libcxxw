@@ -12,7 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 uicompiler::list_items_params
-uicompiler::list_items_param_value(const theme_parser_lock &orig_lock,
+uicompiler::list_items_param_value(const ui::parser_lock &orig_lock,
 				   const char *element,
 				   const char *parent)
 {
@@ -243,7 +243,7 @@ static void process_new_items(const new_items_ret &ret,
 }
 
 listlayoutmanager_generator
-uicompiler::listlayout_parseconfig(const theme_parser_lock &lock,
+uicompiler::listlayout_parseconfig(const ui::parser_lock &lock,
 				   const char *element,
 				   const char *parent)
 {
