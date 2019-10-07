@@ -24,6 +24,7 @@
 #include "x/w/bookpagefactory.H"
 #include "x/w/pagelayoutmanager.H"
 #include "x/w/borderlayoutmanager.H"
+#include "x/w/impl/uixmlparser.H"
 #include "picture.H"
 #include "messages.H"
 #include "defaulttheme.H"
@@ -108,50 +109,58 @@ static void update_dim_if_given(const theme_parser_lock &lock,
 }
 
 // Parse the dims in the config file
+//! Parsed <dim> value in the UI theme file
+
+struct parsed_dim {
+	//! Value of the scale attribute, if not empty.
+	std::string scale;
+
+	//! <dim>'s value.
+	std::string value;
+};
+
+ui::parsed_dim ui::parse_dim(const xml::doc::base::readlock &lock)
+{
+	parsed_dim v{lock->get_any_attribute("scale"),
+		     lock->get_text()};
+
+	return v;
+}
 
 static inline std::optional<double>
-parse_dim(const theme_parser_lock &lock,
-	  const std::unordered_map<std::string, double> &existing_dims,
-	  const char *descr,
-	  const std::string &id)
+parse_dim_value(const theme_parser_lock &lock,
+		const std::unordered_map<std::string, double> &existing_dims,
+		const char *descr,
+		const std::string &id)
 {
-	auto scale=lock->get_any_attribute("scale");
+	auto parsed_dim=ui::parse_dim(lock);
 
 	double v;
 
+	if (parsed_dim.value == "inf")
 	{
-		auto t=lock->get_text();
-
-		if (t == "inf")
-		{
-			return NAN;
-		}
-
-		std::istringstream i(lock->get_text());
-
-		imbue i_parse{lock.c_locale, i};
-
-		i >> v;
-
-		if (i.fail())
-			throw EXCEPTION(gettextmsg(_("could not parse %1% id=%2%"),
-						   descr,
-						   id));
-
-		if (v < 0)
-			throw EXCEPTION(gettextmsg(_("%1% id=%2% cannot be negative"),
-						   descr,
-						   id));
-
-		char p=0;
-
-		if (i >> p && p == 'p')
-			v= -v;
+		return NAN;
 	}
 
-	if (!scale.empty())
+	std::istringstream i{parsed_dim.value};
+
+	imbue i_parse{lock.c_locale, i};
+
+	i >> v;
+
+	if (i.fail())
+		throw EXCEPTION(gettextmsg(_("could not parse %1% id=%2%"),
+					   descr,
+					   id));
+
+	if (v < 0)
+		throw EXCEPTION(gettextmsg(_("%1% id=%2% cannot be negative"),
+					   descr,
+					   id));
+
+	if (!parsed_dim.scale.empty())
 	{
-		auto iter=existing_dims.find(scale);
+		auto iter=existing_dims.find(parsed_dim.scale);
 
 		if (iter == existing_dims.end())
 			return std::nullopt; // Not yet.
@@ -630,8 +639,8 @@ uicompiler::uicompiler(const theme_parser_lock &root_lock,
 			if (generators->dims.find(id) != generators->dims.end())
 				continue; // Did this one already.
 
-			auto value=parse_dim(lock,
-					     generators->dims, "dim", id);
+			auto value=parse_dim_value(lock,
+						   generators->dims, "dim", id);
 
 			if (!value)
 				continue;
