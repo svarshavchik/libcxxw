@@ -22,10 +22,10 @@ class LIBCXX_HIDDEN richtext_implObj;
 typedef mpobj<ref<richtext_implObj>, std::recursive_mutex
 	      > internal_richtext_impl_t;
 
-//! Lock the \ref input_field "input field" in order to access its contents.
+//! Lock on a constant \ref input_field "input field"
 
 //! \code
-//! INSERT_LIBX_NAMESPACE::w::input_lock lock{f};
+//! INSERT_LIBX_NAMESPACE::w::const_input_lock lock{f};
 //!
 //! std::string contents=lock.get();
 //!
@@ -57,31 +57,34 @@ typedef mpobj<ref<richtext_implObj>, std::recursive_mutex
 //! the starting or the ending position, whichever one the cursor is at.
 //! The second value returned by pos() is the other position.
 //! selection.
+//!
+//! \see input_lock
 
-class input_lock : public internal_richtext_impl_t::lock {
+class const_input_lock : public internal_richtext_impl_t::lock {
 
  public:
 
 	//! Hold a reference on the input field
 
-	const const_input_field my_input_field;
+	const const_input_field locked_input_field;
 
 	//! Constructor
 	template<typename ref_type,
 		 typename=typename refptr_traits<ref_type>::base_t>
-		inline input_lock(const ref_type &r) : input_lock(*r)
+	inline const_input_lock(const ref_type &r) : const_input_lock{*r}
 	{
 	}
 
 	//! Constructor
-	input_lock(const input_fieldObj &) LIBCXX_PUBLIC;
+	const_input_lock(const input_fieldObj &) LIBCXX_PUBLIC;
 
 	//! Constructor
-	input_lock(const editable_comboboxlayoutmanagerObj &) LIBCXX_PUBLIC;
+	const_input_lock(const editable_comboboxlayoutmanagerObj &)
+		LIBCXX_PUBLIC;
 
 	//! Destructor
 
-	~input_lock() LIBCXX_PUBLIC;
+	~const_input_lock() LIBCXX_PUBLIC;
 
 	//! Return the size of the input field.
 
@@ -104,6 +107,41 @@ class input_lock : public internal_richtext_impl_t::lock {
 	//! Return the current contents of the input field, as unicode.
 	std::u32string get_unicode() const LIBCXX_PUBLIC;
 
+};
+
+//! Lock the \ref input_field "input field" in order to access its contents.
+
+//! Most functionality inherited from \ref const_input_lock "const_input_lock"
+//! which implements non-mutating operations on the input field. With a mutable
+//! input field provides a mutable \c locked_input_field to access the underlying
+//! widget's mutable methods.
+//!
+//! \see const_input_lock
+
+class input_lock : public const_input_lock {
+
+ public:
+
+	//! A mutable alias to the same input field.
+
+	const input_field locked_input_field;
+
+	//! Constructor
+	template<typename ref_type,
+		 typename=typename refptr_traits<ref_type>::base_t>
+	inline input_lock(const ref_type &r) : input_lock{*r}
+	{
+	}
+
+	//! Destructor
+	~input_lock() LIBCXX_PUBLIC;
+
+	//! Constructor
+	input_lock(input_fieldObj &) LIBCXX_PUBLIC;
+
+	//! Constructor
+	input_lock(editable_comboboxlayoutmanagerObj &)
+		LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

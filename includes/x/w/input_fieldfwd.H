@@ -648,6 +648,7 @@ using const_validated_input_field=const_ref<validated_input_fieldObj<type>>;
 template<typename type>
 using const_validated_input_fieldptr=const_ptr<validated_input_fieldObj<type>>;
 
+class LIBCXX_HIDDEN const_input_lock;
 class LIBCXX_HIDDEN input_lock;
 
 //! Identifies what kind of a change the input field change callback gets invoked for.

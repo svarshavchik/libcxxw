@@ -27,34 +27,42 @@ input_fieldObj::implObj::~implObj()=default;
 
 /////////////////////////////////////////////////////////////////////////
 
-input_lock::input_lock(const input_fieldObj &my_input_field)
-	: internal_richtext_impl_t::lock(my_input_field.impl->editor_element
-					 ->impl->text->impl),
-	my_input_field(const_input_field{&my_input_field})
+input_lock::input_lock(input_fieldObj &locked_input_field)
+	: const_input_lock{locked_input_field},
+	  locked_input_field{input_field{&locked_input_field}}
 {
 }
 
 input_lock::~input_lock()=default;
 
-size_t input_lock::size() const
+const_input_lock::const_input_lock(const input_fieldObj &locked_input_field)
+	: internal_richtext_impl_t::lock(locked_input_field.impl->editor_element
+					 ->impl->text->impl),
+	locked_input_field(const_input_field{&locked_input_field})
 {
-	return my_input_field->impl->editor_element->impl->size();
 }
 
-std::tuple<size_t, size_t> input_lock::pos() const
+const_input_lock::~const_input_lock()=default;
+
+size_t const_input_lock::size() const
 {
-	return my_input_field->impl->editor_element->impl->pos();
+	return locked_input_field->impl->editor_element->impl->size();
 }
 
-std::string input_lock::get() const
+std::tuple<size_t, size_t> const_input_lock::pos() const
+{
+	return locked_input_field->impl->editor_element->impl->pos();
+}
+
+std::string const_input_lock::get() const
 {
 	return unicode::iconvert::fromu::convert(get_unicode(),
 						 unicode::utf_8).first;
 }
 
-std::u32string input_lock::get_unicode() const
+std::u32string const_input_lock::get_unicode() const
 {
-	return my_input_field->impl->editor_element->impl->get();
+	return locked_input_field->impl->editor_element->impl->get();
 }
 
 

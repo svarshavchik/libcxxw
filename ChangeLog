@@ -1,3 +1,8 @@
+2019-10-08  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* includes/x/w/input_field_lock.H: Implement discrete input_lock
+	and const_input_lock objects.
+
 2019-09-29  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* color_picker: Optionally adjust the colors' alpha channel.
