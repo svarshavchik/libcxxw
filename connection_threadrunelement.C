@@ -274,46 +274,22 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 {
 	bool flag=false;
 
-	// When a lot of elements are scheduled for redrawing, redrawing the
-	// smallest elements first has better visual results. This tends to
-	// redraw individual elements first, then the remaining parts of their
-	// containers second.
-	//
-	// One frequent source for large redraws is resizing the top level
-	// window, which repositions all elements. If the container gets redrawn
-	// first, there's a noticable flicker until we get around to drawing
-	// the small elements, shifted over in their new position as a result
-	// of the window size changing (with their former position getting
-	// cleared by their container's background color, because it is now
-	// empty).
-	//
-	// So what we do is drain elements_to-redraw into the redraw_list,
-	// together with their size, then sort everytihng by size.
-	std::vector<std::tuple<dim_squared_t,
-			       ref<elementObj::implObj>>> redraw_list;
-
-	redraw_list.reserve(elements_to_redraw(IN_THREAD)->size());
-
 	for (auto b=elements_to_redraw(IN_THREAD)->begin(),
-		     e=elements_to_redraw(IN_THREAD)->end(); b != e; ++b)
+		     e=elements_to_redraw(IN_THREAD)->end(); b != e; )
 	{
 		auto p=*b;
+
+		++b;
 
 		if (resize_pending(IN_THREAD, p, poll_for))
 			continue;
 
-		auto &position=p->data(IN_THREAD).current_position;
-
-		// explicit_redraw() removes itself from elements_to_redraw.
-		redraw_list.emplace_back(position.width * position.height, p);
+		try {
+			p->explicit_redraw(IN_THREAD);
+		} CATCH_EXCEPTIONS;
 
 		flag=true;
 	}
-
-	std::sort(redraw_list.begin(), redraw_list.end());
-
-	for (const auto &p:redraw_list)
-		std::get<1>(p)->explicit_redraw(IN_THREAD);
 
 	// Now that's everything's been drawn to each window's pixmap buffer,
 	// flush all the redrawn areas.
