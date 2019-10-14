@@ -39,11 +39,6 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	//! Information about this row.
 
 	struct protected_data {
-		//! Needs to be redrawn.
-
-		//! This is set after enabled or selected is changed
-		bool redraw_needed=false;
-
 		//! Row type
 		list_row_type_t row_type=list_row_type_t::enabled;
 

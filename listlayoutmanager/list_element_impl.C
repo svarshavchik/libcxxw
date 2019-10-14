@@ -1186,33 +1186,14 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 {
 	create_textlist_info_lock lock{IN_THREAD, *this};
 
-	lock->row_redraw_needed=false; // We're taking care of everything now.
-
-	do_draw(IN_THREAD, di, areas, lock, false);
+	do_draw(IN_THREAD, di, areas, lock);
 }
 
-void list_elementObj::implObj::redraw_needed_rows(ONLY IN_THREAD)
-{
-	create_textlist_info_lock lock{IN_THREAD, *this};
-
-	if (!lock->row_redraw_needed)
-		return;
-
-	lock->row_redraw_needed=false;
-
-	if (!data(IN_THREAD).logical_inherited_visibility)
-		return; // Don't bother if we're not visible.
-
-	const auto &di=get_draw_info(IN_THREAD);
-
-	do_draw(IN_THREAD, di, di.entire_area(), lock, true);
-}
 
 void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				       const draw_info &di,
 				       const rectarea &areas,
-				       textlist_info_lock &our_lock,
-				       bool only_whats_needed)
+				       textlist_info_lock &our_lock)
 {
 	auto &lock=our_lock.lock;
 
@@ -1266,12 +1247,6 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 			if (iter->y >= last_y)
 				break;
 
-			if (only_whats_needed)
-			{
-				if (!iter->extra->data(lock).redraw_needed)
-					continue;
-			}
-
 			auto rect=do_draw_row(IN_THREAD, di, clipped, bounds,
 					      lock, iter-b, false);
 
@@ -1279,9 +1254,6 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 			row_height=rect.height;
 			end_y=coord_t::truncate(rect.y+rect.height);
 		}
-
-		if (only_whats_needed)
-			return;
 
 		// We need to draw any separator borders in any extra space
 		// where we did not draw any rows. We will intelligently pick
@@ -1329,17 +1301,38 @@ void list_elementObj::implObj::redraw_rows(ONLY IN_THREAD,
 					   size_t row_number2,
 					   bool make_sure_row2_is_visible)
 {
-	const auto &di=get_draw_info(IN_THREAD);
+	dim_t v_padding=list_v_padding(IN_THREAD);
+	auto &width=data(IN_THREAD).current_position.width;
 
-	richtext_draw_boundaries bounds{di, di.entire_area()};
-	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
+	if (row_number2 < lock->row_infos.size())
+	{
+		auto &r=lock->row_infos.at(row_number2);
 
-	do_draw_row(IN_THREAD, di, clipped, bounds, lock, row_number2,
-		    make_sure_row2_is_visible);
+		coord_t y=r.y;
 
-	if (row_number1 != row_number2)
-		do_draw_row(IN_THREAD, di, clipped, bounds, lock, row_number1,
-			    false);
+		rectangle entire_row{0, y, width,
+				     dim_t::truncate(r.height +
+						     v_padding + v_padding)};
+
+		if (make_sure_row2_is_visible)
+			ensure_visibility(IN_THREAD, entire_row);
+
+		schedule_redraw(IN_THREAD, entire_row);
+	}
+
+	if (row_number1 != row_number2 &&
+	    row_number1 < lock->row_infos.size())
+	{
+		auto &r=lock->row_infos.at(row_number1);
+
+		coord_t y=r.y;
+
+		rectangle entire_row{0, y, width,
+				     dim_t::truncate(r.height +
+						     v_padding + v_padding)};
+
+		schedule_redraw(IN_THREAD, entire_row);
+	}
 }
 
 
@@ -1354,8 +1347,6 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 	clip_region_set clip{IN_THREAD, get_window_handler(), di};
 
 	auto &r=lock->row_infos.at(row_number);
-
-	r.extra->data(lock).redraw_needed=false;
 
 	if (r.extra->data(lock).row_type == list_row_type_t::separator)
 	{
@@ -2043,7 +2034,8 @@ void list_elementObj::implObj
 		return;
 
 	r.extra->data(lock).selected=selected_flag;
-	r.extra->data(lock).redraw_needed=true;
+
+	redraw_rows(IN_THREAD, lock, i);
 
 	try {
 		list_style.selected_changed(&lock->cells.at(i*columns),
@@ -2051,7 +2043,6 @@ void list_elementObj::implObj
 	} REPORT_EXCEPTIONS(this);
 
 	notify_callbacks(IN_THREAD, lm, ll, r, i, selected_flag, trigger);
-	schedule_row_redraw(lock);
 }
 
 void list_elementObj::implObj
@@ -2144,9 +2135,8 @@ void list_elementObj::implObj::enabled(ONLY IN_THREAD,
 		return;
 
 	r.row_type=new_type;
-	r.redraw_needed=true;
 
-	schedule_row_redraw(lock.lock);
+	redraw_rows(IN_THREAD, lock.lock, extra->current_row_number(IN_THREAD));
 }
 
 void list_elementObj::implObj
@@ -2201,20 +2191,6 @@ void list_elementObj::implObj
 			 i,
 			 info.extra->data(lock.lock).selected,
 			 initial{});
-}
-
-void list_elementObj::implObj::schedule_row_redraw(listimpl_info_t::lock &lock)
-{
-	if (lock->row_redraw_needed)
-		return; // Don't bother.
-
-	lock->row_redraw_needed=true;
-
-	THREAD->run_as([me=ref(this)]
-		       (ONLY IN_THREAD)
-		       {
-			       me->redraw_needed_rows(IN_THREAD);
-		       });
 }
 
 size_t list_elementObj::implObj::size()
@@ -2278,16 +2254,13 @@ void list_elementObj::implObj::unselect(ONLY IN_THREAD,
 {
 	list_lock ll{lm};
 
-	if (unselect(IN_THREAD, lm, ll))
-		schedule_row_redraw(ll);
+	unselect(IN_THREAD, lm, ll);
 }
 
-bool list_elementObj::implObj::unselect(ONLY IN_THREAD,
+void list_elementObj::implObj::unselect(ONLY IN_THREAD,
 					const listlayoutmanager &lm,
 					list_lock &ll)
 {
-	bool unselected=false;
-
 	listimpl_info_t::lock &lock=ll;
 
 	callback_trigger_t internal;
@@ -2303,20 +2276,18 @@ bool list_elementObj::implObj::unselect(ONLY IN_THREAD,
 		if (r.extra->data(lock).selected)
 		{
 			r.extra->data(lock).selected=false;
-			r.extra->data(lock).redraw_needed=true;
+
+			redraw_rows(IN_THREAD, lock, i);
 
 			try {
 				list_style.selected_changed
 					(&lock->cells.at(i*columns),
 					 false);
 			} CATCH_EXCEPTIONS;
-			unselected=true;
 			notify_callbacks(IN_THREAD,
 					 lm, ll, r, i, false, internal);
 		}
 	}
-
-	return unselected;
 }
 
 std::chrono::milliseconds list_elementObj::implObj

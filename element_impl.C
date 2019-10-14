@@ -466,8 +466,9 @@ bool elementObj::implObj::can_be_under_pointer(ONLY IN_THREAD) const
 
 bool elementObj::implObj::full_redraw_scheduled(ONLY IN_THREAD)
 {
-	if (!data(IN_THREAD).areas_to_redraw)
-		return true; // Fast check.
+	if (data(IN_THREAD).areas_to_redraw &&
+	    !data(IN_THREAD).areas_to_redraw->empty())
+		return false; // Fast check.
 
 	auto elements_to_redraw=IN_THREAD->elements_to_redraw(IN_THREAD);
 

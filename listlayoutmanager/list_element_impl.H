@@ -192,9 +192,6 @@ struct listimpl_info_s {
 
 	//! Whether we need to redraw ourselves, after recalculating.
 	bool full_redraw_needed=false;
-
-	//! Whether we need to redraw because some item status changed.
-	bool row_redraw_needed=false;
 };
 
 //! list_elementObj superclass
@@ -515,27 +512,15 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
  private:
 
-	//! Redraw only those rows whose status has changed.
-
-	void redraw_needed_rows(ONLY IN_THREAD);
-
 	//! Redraw all visible rows.
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectarea &areas,
-		     textlist_info_lock &lock,
-		     bool only_whats_needed);
+		     textlist_info_lock &lock);
 
 	//! Unselect all rows, after acquiring a lock.
 
-	//! Returns true if at least one row was unselected, and
-	//! schedule_row_redraw() must be called.
-	//!
-	//! unselect() is also called from remove_rows(), which is going
-	//! to nuke everything from high orbit, and doesn't need to call
-	//! schedule_row_redraw().
-
-	bool unselect(THREAD_CALLBACK,
+	void unselect(THREAD_CALLBACK,
 		      const listlayoutmanager &,
 		      list_lock &);
 
