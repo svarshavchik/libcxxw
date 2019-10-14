@@ -1248,7 +1248,7 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				break;
 
 			auto rect=do_draw_row(IN_THREAD, di, clipped, bounds,
-					      lock, iter-b, false);
+					      lock, iter-b);
 
 			drawn.push_back(rect);
 			row_height=rect.height;
@@ -1341,8 +1341,7 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 						clip_region_set &clipped,
 						richtext_draw_boundaries &bounds,
 						listimpl_info_t::lock &lock,
-						size_t row_number,
-						bool make_sure_row_is_visible)
+						size_t row_number)
 {
 	clip_region_set clip{IN_THREAD, get_window_handler(), di};
 
@@ -1412,8 +1411,7 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 
 
 		return do_draw_row(IN_THREAD, cpy, clipped, bounds,
-				   lock, row_number, r,
-				   make_sure_row_is_visible);
+				   lock, row_number, r);
 	}
 
 	if (r.extra->data(lock).selected)
@@ -1429,12 +1427,10 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 			 ::get(IN_THREAD));
 
 		return do_draw_row(IN_THREAD, cpy, clipped, bounds, lock,
-				   row_number, r,
-				   make_sure_row_is_visible);
+				   row_number, r);
 	}
 
-	return do_draw_row(IN_THREAD, di, clipped, bounds, lock, row_number, r,
-			   make_sure_row_is_visible);
+	return do_draw_row(IN_THREAD, di, clipped, bounds, lock, row_number, r);
 }
 
 rectangle list_elementObj::implObj
@@ -1444,8 +1440,7 @@ rectangle list_elementObj::implObj
 	      richtext_draw_boundaries &bounds,
 	      listimpl_info_t::lock &lock,
 	      size_t row_number,
-	      const list_row_info_t &r,
-	      bool make_sure_row_is_visible)
+	      const list_row_info_t &r)
 {
 	rectarea drawn_columns;
 
@@ -1458,11 +1453,8 @@ rectangle list_elementObj::implObj
 	rectangle entire_row{0, y, di.absolute_location.width,
 			dim_t::truncate(r.height + v_padding + v_padding)};
 
-	if (make_sure_row_is_visible)
-		ensure_visibility(IN_THREAD, entire_row);
-
 	if (full_redraw_scheduled(IN_THREAD))
-		// Don't bother, ensure_visibility() punted us.
+		// Don't bother.
 		return entire_row;
 
 	// Indentation level:

@@ -740,8 +740,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			      clip_region_set &clipped,
 			      richtext_draw_boundaries &bounds,
 			      listimpl_info_t::lock &lock,
-			      size_t row_number,
-			      bool make_sure_row_is_visible);
+			      size_t row_number);
 
 	//! Draw an individual row.
 	rectangle do_draw_row(ONLY IN_THREAD,
@@ -750,8 +749,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			      richtext_draw_boundaries &bounds,
 			      listimpl_info_t::lock &lock,
 			      size_t row_number,
-			      const list_row_info_t &r,
-			      bool make_sure_row_is_visible);
+			      const list_row_info_t &r);
 
 	// Draw the borders in this row.
 
