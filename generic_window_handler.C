@@ -207,6 +207,8 @@ generic_windowObj::handlerObj
 	 IN_THREAD,window_handlerObj::id(),
 	 params.drawable_pictformat->impl->id
 	},
+	  // We can now construct our graphic context.
+	  gcObj::handlerObj{static_cast<drawableObj::implObj &>(*this)},
 	// And now, the element that represents the window itself, and
 	// all the theme-based resources: background colors, icons, and
 	// masks
@@ -236,6 +238,13 @@ generic_windowObj::handlerObj
 				     params.window_handler_params
 				     .events_and_mask.m.at(XCB_CW_EVENT_MASK)},
 	  current_position{params.window_handler_params.initial_position},
+	  window_pixmap_thread_only
+	{params.window_handler_params.screenref
+	 ->create_pixmap(params.drawable_pictformat,
+			 params.window_handler_params.screenref
+			 ->width_in_pixels()/4,
+			 params.window_handler_params.screenref
+			 ->height_in_pixels()/4)},
 	  handler_data{handler_data},
 	  my_popups{my_popups_t::create()},
 	  original_background_color{params.background_color_arg},
@@ -283,6 +292,10 @@ void generic_windowObj::handlerObj::installed(ONLY IN_THREAD)
 	}
 
 	update_wm_hints(IN_THREAD);
+
+	// Default graphic context configuration.
+	gcObj::handlerObj::configure_gc(ref{this},
+					gc::base::properties{});
 
 	// Drag and drop version 5
 
@@ -686,6 +699,8 @@ bool generic_windowObj::handlerObj::has_own_background_color(ONLY IN_THREAD)
 void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 {
 	has_exposed(IN_THREAD)=true;
+	update_window_pixmap_and_picture(IN_THREAD,
+					 data(IN_THREAD).current_position);
 
 	if (exposure_rectangles(IN_THREAD).full_exposure)
 	{
@@ -1286,12 +1301,26 @@ void generic_windowObj::handlerObj::grab(ONLY IN_THREAD)
 void generic_windowObj::handlerObj::process_map_notify_event(ONLY IN_THREAD)
 {
 	// If exposure processing follows, preclear the window.
-
 	should_preclear_exposed(IN_THREAD)=true;
+	has_mapped(IN_THREAD)=true;
+
+	// This has the effect of sending an InternAtom reques to the server
+	// If the server sends exposure events immediately after MapNotify,
+	// those are only on the way and we'll get them before the reply
+	// to InternAtom. libxcb will effectively buffer up everything it
+	// gets until the reply to InternAtom is received, so we'll have
+	// all the exposure events collected and we'll process them and then
+	// we'll flush_redrawn_areas().
+	//
+	// It's possible that MapNotify event will cause something to be
+	// explicitly drawn ASAP, and this approach will coalesce that
+	// together with everything when we flush_redrawn_areas().
+	(void)IN_THREAD->info->get_atom("ATOM", true);
 }
 
 void generic_windowObj::handlerObj::process_unmap_notify_event(ONLY IN_THREAD)
 {
+	has_mapped(IN_THREAD)=false;
 }
 
 void generic_windowObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
@@ -1388,6 +1417,8 @@ void generic_windowObj::handlerObj::do_process_configure_notify(ONLY IN_THREAD)
 
 		if (has_exposed(IN_THREAD))
 		{
+			update_window_pixmap_and_picture(IN_THREAD, r);
+
 			exposure_rectangles(IN_THREAD).full_exposure=true;
 			exposure_rectangles(IN_THREAD).complete=true;
 
@@ -1439,6 +1470,65 @@ void generic_windowObj::handlerObj::do_process_configure_notify(ONLY IN_THREAD)
 		absolute_location_updated(IN_THREAD,
 					  absolute_location_update_reason
 					  ::external);
+}
+
+void generic_windowObj::handlerObj
+::update_window_pixmap_and_picture(ONLY IN_THREAD, const rectangle &r)
+{
+	auto current_width=window_pixmap(IN_THREAD)->get_width();
+
+	auto current_height=window_pixmap(IN_THREAD)->get_height();
+
+	// If the new window's size is at least as big as the pixmap, we're
+	// good, but if the new size is much smaller, we'll go ahead and
+	// resize to a smaller pixmap.
+
+	if (current_width >= r.width &&
+	    current_width >= r.height &&
+
+	    current_width - r.width < r.width &&
+	    current_height - r.width < r.height)
+		return;
+
+	if (current_width < r.width || current_width - r.width > r.width)
+		current_width=r.width;
+
+	if (current_height < r.height || current_height - r.height > r.height)
+		current_height=r.height;
+
+	auto new_pixmap=create_pixmap(current_width, current_height);
+
+#if 0
+	// This should not be needed.
+	for (const auto &a:window_drawnarea(IN_THREAD))
+	{
+		copy_configured(a, a.x, a.y,
+				window_pixmap(IN_THREAD)->impl,
+				new_pixmap->impl);
+	}
+#endif
+	window_pixmap(IN_THREAD)=new_pixmap;
+}
+
+void generic_windowObj::handlerObj::flush_redrawn_areas(ONLY IN_THREAD)
+{
+	// Wait for the initial exposure.
+	if (!has_exposed(IN_THREAD) || !has_mapped(IN_THREAD))
+		return;
+
+	// This combines duplicates and merges them.
+
+	auto combined=add(window_drawnarea(IN_THREAD),
+			  window_drawnarea(IN_THREAD));
+
+	window_drawnarea(IN_THREAD).clear();
+
+	for (const auto &r:combined)
+	{
+		copy_configured(r, r.x, r.y,
+				window_pixmap(IN_THREAD)->impl,
+				ref<drawableObj::implObj>{this});
+	}
 }
 
 void generic_windowObj::handlerObj::current_position_updated(ONLY IN_THREAD)
@@ -2133,6 +2223,21 @@ void generic_windowObj::handlerObj
 	callback(hints);
 
 	xcb_icccm_set_wm_hints(c, id(), &hints);
+}
+
+////////////////////////////////////////////////////////////////////
+//
+// Inherited from gcObj::handlerObj
+
+drawableObj::implObj &generic_windowObj::handlerObj::get_drawable_impl()
+{
+	return *this;
+}
+
+const drawableObj::implObj &generic_windowObj::handlerObj::get_drawable_impl()
+	const
+{
+	return *this;
 }
 
 ////////////////////////////////////////////////////////////////////

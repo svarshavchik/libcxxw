@@ -92,10 +92,21 @@ public:
 
 	void fill_arcs(const xcb_arc_t *, size_t);
 
+	//! Configure properties, then invoke copy_configured().
+
+	//! All users call this, to lock the GC and configure it.
+	//! flush_redrawn_areas uses the GC that's attached to the window
+	//! and is preconfigured with the default values when
+	//! it is installed(); so it calls copy_configured() directly.
 	void copy(const rectangle &, coord_t, coord_t,
 		  const const_ref<drawableObj::implObj> &src,
 		  const ref<drawableObj::implObj> &dst,
 		  const gcObj::properties &props);
+
+	//! Invoke xcb_copy_area().
+	void copy_configured(const rectangle &, coord_t, coord_t,
+			     const const_ref<drawableObj::implObj> &src,
+			     const ref<drawableObj::implObj> &dst);
 
 };
 

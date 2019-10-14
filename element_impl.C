@@ -7,6 +7,7 @@
 #include "defaulttheme.H"
 #include "inherited_visibility_info.H"
 #include "screen.H"
+#include "pixmap.H"
 #include "connection_thread.H"
 #include "batch_queue.H"
 #include "generic_window_handler.H"
@@ -800,7 +801,7 @@ clip_region_set::clip_region_set(ONLY IN_THREAD,
 {
 	// Our window inherits from pictureObj::implObj.
 
-	h.set_clip_rectangles(di.element_viewport);
+	// h.set_clip_rectangles(di.element_viewport);
 }
 
 void elementObj::implObj
@@ -1003,6 +1004,7 @@ void elementObj::implObj
 						      clipped,
 						      di,
 						      area_picture,
+						      area_pixmap,
 						      rect);
 		 });
 
@@ -1013,12 +1015,11 @@ void elementObj::implObj
 			 const clip_region_set &set,
 			 const draw_info &di,
 			 const picture &contents,
+			 const pixmap &contents_pixmap,
 			 const rectangle &rect)
 {
-	rectangle cpy=rect;
-
-	cpy.x = coord_t::truncate(cpy.x + di.absolute_location.x);
-	cpy.y = coord_t::truncate(cpy.y + di.absolute_location.y);
+	coord_t abs_x = coord_t::truncate(rect.x + di.absolute_location.x);
+	coord_t abs_y = coord_t::truncate(rect.y + di.absolute_location.y);
 
 	auto &wh=get_window_handler();
 
@@ -1037,7 +1038,7 @@ void elementObj::implObj
 					  xy.first, xy.second,
 					  rect.x, rect.y,
 					  0, 0,
-					  cpy.width, cpy.height,
+					  rect.width, rect.height,
 					  render_pict_op::op_over);
 	}
 
@@ -1048,15 +1049,48 @@ void elementObj::implObj
 	{
 		contents->composite(wh.shaded_color(IN_THREAD)
 				    ->get_current_color(IN_THREAD),
-				    cpy.x,
-				    cpy.y,
-				    {0, 0, cpy.width, cpy.height},
+				    rect.x,
+				    rect.y,
+				    {0, 0, rect.width, rect.height},
 				    render_pict_op::op_atop);
 	}
 
-	// generic_window_handler inherits from pictureObj::implObj
-	wh.composite(contents->impl, 0, 0, cpy);
+	// generic_window_handler inherits from gcObj::handlerObj, and
+	// its graphic context is configured with default values.
+	//
+	// First, copy this scratch buffer's contents to the window's
+	// pixmap buffer, then insert the copied areas' coordinates into
+	// the window_drawnarea.
+	//
+	// We are told that contents specifies the rectangle whose top
+	// left corner is (rect.x, rect.y) of this widget.
+	//
+	// We added di.absolute_location to those coordinates to compute
+	// where this rectangle is in this window.
+	//
+	// We need to intersect those coordinates with the viewport in
+	// order to determine which parts to clip out.
+
+	auto clipped_area=intersect(di.element_viewport,
+				    {abs_x, abs_y, rect.width, rect.height});
+
+	for (const auto &a:clipped_area)
+	{
+		// (0, 0) in <contents> is abs_x, abs_y. So this is what
+		// we're copying to the window_pixmap.
+
+		wh.copy_configured({coord_t::truncate(a.x-abs_x),
+				    coord_t::truncate(a.y-abs_y),
+				    a.width, a.height},
+			a.x, a.y,
+			contents_pixmap->impl,
+			wh.window_pixmap(IN_THREAD)->impl);
+
+		// And update this accordingly.
+		wh.window_drawnarea(IN_THREAD).push_back(a);
+	}
 }
+
 void elementObj::implObj::clear_to_color(ONLY IN_THREAD,
 					 const draw_info &di,
 					 const rectarea &areas)

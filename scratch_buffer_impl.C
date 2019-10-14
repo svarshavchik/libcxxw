@@ -53,12 +53,16 @@ void scratch_bufferObj::implObj
 		// Hmm, let's leave room for growth.
 
 		if (minimum_width > current_width)
-			current_width = dim_t::truncate(minimum_width * 2);
+			current_width = dim_t::truncate(minimum_width
+							+ (minimum_width-
+							   current_width)/4);
 		else
 			minimum_width=current_width;
 
 		if (minimum_height > current_height)
-			current_height = dim_t::truncate(minimum_height * 2);
+			current_height = dim_t::truncate(minimum_height
+							+ (minimum_height-
+							   current_height)/4);
 		else
 			minimum_height=current_height;
 	}

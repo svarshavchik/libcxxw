@@ -903,6 +903,9 @@ class elementObj::implObj : public element_drawObj,
 				    //! further modifications.
 				    const picture &contents,
 
+				    //! Picture's pixmap.
+				    const pixmap &contents_pixmap,
+
 				    //! Which portion of this widget is drawn.
 
 				    //! The subclass draws a portion of the

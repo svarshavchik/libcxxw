@@ -220,11 +220,20 @@ void gcObj::handlerObj::copy(const rectangle &rect,
 			     const ref<drawableObj::implObj> &dst,
 			     const gcObj::properties &props)
 {
+	configure_gc config{ref{this}, props};
+
+	copy_configured(rect, to_x, to_y, src, dst);
+}
+
+void gcObj::handlerObj::copy_configured(const rectangle &rect,
+					coord_t to_x, coord_t to_y,
+					const const_ref<drawableObj::implObj>
+					&src,
+					const ref<drawableObj::implObj> &dst)
+{
 	if (src->thread_ != dst->thread_ ||
 	    src->drawable_pictformat != dst->drawable_pictformat)
 		throw EXCEPTION(_("copy() to_drawable is not compatible"));
-
-	configure_gc config{ref{this}, props};
 
 	xcb_copy_area(src->thread_->info->conn,
 		      src->drawable_id,

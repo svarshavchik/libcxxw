@@ -495,5 +495,8 @@ bool window_handlerObj::will_accept_transferred_focus(ONLY IN_THREAD)
 	return false;
 }
 
+void window_handlerObj::flush_redrawn_areas(ONLY IN_THREAD)
+{
+}
 
 LIBCXXW_NAMESPACE_END

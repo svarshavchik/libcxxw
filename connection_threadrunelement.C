@@ -345,6 +345,11 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 	for (const auto &p:*elements_redraw_list)
 		std::get<1>(p)->explicit_redraw(IN_THREAD);
 
+	// Now that's everything's been drawn to each window's pixmap buffer,
+	// flush all the redrawn areas.
+	for (const auto &wh:*window_handlers(IN_THREAD))
+		wh.second->flush_redrawn_areas(IN_THREAD);
+
 	return flag;
 }
 

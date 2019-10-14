@@ -12,6 +12,7 @@
 #include "shared_handler_datafwd.H"
 #include "drawable.H"
 #include "picture.H"
+#include "gc.H"
 #include "x/w/impl/iconfwd.H"
 #include "icon_images_set_elementfwd.H"
 #include "cursor_pointer_elementfwd.H"
@@ -70,6 +71,9 @@ class generic_windowObj::handlerObj
 
 // The picture for the window
 	  public pictureObj::implObj::fromDrawableObj,
+// The graphic context for the window
+
+	  public gcObj::handlerObj,
 
 // The container
 	  public background_color_elementObj<icon_images_set_elementObj<
@@ -99,6 +103,12 @@ class generic_windowObj::handlerObj
 	coord_t root_y_thread_only; //!< y coordinate on the root window
 
  public:
+
+	// Resolve some ambiguities.
+
+	using window_handlerObj::conn;
+	using window_handlerObj::thread;
+
 	//! x & y coordinates on the root window.
 
 	//! This is a mutex-protected copy of root_x and root_y. root_x and
@@ -164,10 +174,35 @@ class generic_windowObj::handlerObj
 
 	std::vector<stabilized_callback_t> stabilized_callbacks_thread_only;
 
+	//! Backing store where the window's contents get built first,
+
+	//! Then copied to the window's drawable in flush_redrawn-areas.
+
+	pixmap window_pixmap_thread_only;
+
+	//! Which parts of the window_pixmap are dirty.
+
+	rectarea window_drawnarea_thread_only;
+
+	//! Update window_pixmap to reflect the window's current size.
+
+	//! Invoked from do_process_configure_notify, unless the window
+	//! has not been exposed yet. Then invoked from
+	//! process_collected_exposures(), in order to catch up because of
+	//! that.
+	void update_window_pixmap_and_picture(ONLY IN_THREAD,
+					      const rectangle &);
+
+	//! Copy window_drawnarea to the window's drawable.
+	void flush_redrawn_areas(ONLY IN_THREAD) override;
+
  public:
 	THREAD_DATA_ONLY(resizing);
 	THREAD_DATA_ONLY(resizing_timeout);
 	THREAD_DATA_ONLY(stabilized_callbacks);
+
+	THREAD_DATA_ONLY(window_pixmap);
+	THREAD_DATA_ONLY(window_drawnarea);
 
 	//! Determine whether we expect to be resized by the window manager.
 
@@ -233,6 +268,9 @@ class generic_windowObj::handlerObj
 
 	//! Whether this window has been exposed
 	bool has_exposed_thread_only=false;
+
+	//! Whether this window has been mapped
+	bool has_mapped_thread_only=false;
 
 	//! Whether exposure processing should_preclear_entirely_exposed_element
 	bool should_preclear_exposed_thread_only=false;
@@ -376,6 +414,7 @@ class generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(frame_extents);
 	THREAD_DATA_ONLY(current_pointer_grab);
 	THREAD_DATA_ONLY(has_exposed);
+	THREAD_DATA_ONLY(has_mapped);
 	THREAD_DATA_ONLY(should_preclear_exposed);
 	THREAD_DATA_ONLY(current_theme);
 
@@ -849,6 +888,14 @@ public:
 	//! This is invoked from the constructor, so it's not necessary
 	//! to flush the connection, something else will flush it.
 	void set_window_state_in_constructor(const std::string_view &);
+
+	// Inherited from gcObj::handlerObj
+
+	//! Return myself.
+	drawableObj::implObj &get_drawable_impl() override;
+
+	//! Return myseltf.
+	const drawableObj::implObj &get_drawable_impl() const override;
 
 	////////////////////////////////////////////////////////////////////
 	//

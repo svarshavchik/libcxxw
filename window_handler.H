@@ -464,6 +464,9 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! keyboard focus.
 
 	virtual bool will_accept_transferred_focus(ONLY IN_THREAD);
+
+	//! Flush all redrawn areas
+	virtual void flush_redrawn_areas(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END
