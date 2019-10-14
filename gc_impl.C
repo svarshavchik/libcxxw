@@ -14,20 +14,38 @@
 LIBCXXW_NAMESPACE_START
 
 gcObj::implObj::implObj(const ref<drawableObj::implObj> &drawable)
-	: xidObj(drawable->get_screen()->get_connection()->impl->thread),
-	  drawable(drawable)
+	: handlerObj{*drawable},
+	  drawable{drawable}
 {
-	xcb_create_gc(conn(), gc_id(),
-		      drawable->drawable_id, 0, nullptr);
 }
 
-gcObj::implObj::~implObj()
+gcObj::implObj::~implObj()=default;
+
+drawableObj::implObj &gcObj::implObj::get_drawable_impl()
+{
+	return *drawable;
+}
+
+const drawableObj::implObj &gcObj::implObj::get_drawable_impl() const
+{
+	return *drawable;
+}
+
+
+gcObj::handlerObj::handlerObj(const drawableObj::implObj &drawable)
+	: xidObj(drawable.thread_)
+{
+	xcb_create_gc(conn(), gc_id(),
+		      drawable.drawable_id, 0, nullptr);
+}
+
+gcObj::handlerObj::~handlerObj()
 {
 	xcb_free_gc(conn(), gc_id());
 }
 
-gcObj::implObj::configure_gc::configure_gc(const ref<implObj> &implArg,
-					   const gcObj::properties &propsArg)
+gcObj::handlerObj::configure_gc::configure_gc(const ref<handlerObj> &implArg,
+					      const gcObj::properties &propsArg)
 	: impl(implArg), props(propsArg),
 	  lock(impl->configured_properties)
 {
@@ -43,14 +61,14 @@ gcObj::implObj::configure_gc::configure_gc(const ref<implObj> &implArg,
 	lock->configured_dashes_offset=propsArg.dashes_offset;
 }
 
-gcObj::implObj::configure_gc::~configure_gc()=default;
+gcObj::handlerObj::configure_gc::~configure_gc()=default;
 
-void gcObj::implObj::change_gc_locked(const gcObj::properties &props)
+void gcObj::handlerObj::change_gc_locked(const gcObj::properties &props)
 {
 	if (!props.references.mask.null())
 	{
 		if (props.references.mask->impl->get_screen()->impl !=
-		    drawable->get_screen()->impl)
+		    get_drawable_impl().get_screen()->impl)
 			throw EXCEPTION("Attempting to set graphic context mask pixmap from a different root window");
 		if (props.references.mask->impl->get_depth() != 1)
 			throw EXCEPTION("Graphic context mask must have depth of 1");
@@ -59,18 +77,18 @@ void gcObj::implObj::change_gc_locked(const gcObj::properties &props)
 	if (!props.references.tile.null())
 	{
 		if (props.references.tile->impl->get_screen()->impl !=
-		    drawable->get_screen()->impl)
+		    get_drawable_impl().get_screen()->impl)
 			throw EXCEPTION("Attempting to set graphic context tile pixmap from a different root window");
 
 		if (props.references.tile->impl->get_depth() !=
-		    drawable->get_depth())
+		    get_drawable_impl().get_depth())
 			throw EXCEPTION("Tile pixmap has wrong depth");
 	}
 
 	if (!props.references.stipple.null())
 	{
 		if (props.references.stipple->impl->get_screen()->impl !=
-		    drawable->get_screen()->impl)
+		    get_drawable_impl().get_screen()->impl)
 			throw EXCEPTION("Attempting to set graphic context stipple pixmap from a different root window");
 		if (props.references.stipple->impl->get_depth() != 1)
 			throw EXCEPTION("Stipple pixmap must have depth of 1");
@@ -116,30 +134,30 @@ void gcObj::implObj::change_gc_locked(const gcObj::properties &props)
 }
 
 
-void gcObj::implObj::fill_rectangles(const xcb_rectangle_t *rectangles,
+void gcObj::handlerObj::fill_rectangles(const xcb_rectangle_t *rectangles,
 				     size_t rectangles_size)
 {
 	if (!rectangles || !rectangles_size)
 		return;
 
-	xcb_poly_fill_rectangle(conn(), drawable->drawable_id,
+	xcb_poly_fill_rectangle(conn(), get_drawable_impl().drawable_id,
 				gc_id(),
 				rectangles_size, rectangles);
 }
 
-void gcObj::implObj::segments(const xcb_segment_t *segments,
+void gcObj::handlerObj::segments(const xcb_segment_t *segments,
 			      size_t segments_size)
 {
 	if (!segments || !segments_size)
 		return;
 
-	xcb_poly_segment(conn(), drawable->drawable_id,
+	xcb_poly_segment(conn(), get_drawable_impl().drawable_id,
 			 gc_id(), segments_size,
 			 segments);
 }
 
 
-void gcObj::implObj::points(const xcb_point_t *points,
+void gcObj::handlerObj::points(const xcb_point_t *points,
 			    size_t points_size,
 			    gcObj::polyfill fill_type)
 {
@@ -149,24 +167,25 @@ void gcObj::implObj::points(const xcb_point_t *points,
 	switch (fill_type) {
 	case polyfill::none:
 		xcb_poly_line(conn(), XCB_COORD_MODE_ORIGIN,
-			      drawable->drawable_id, gc_id(), points_size, points);
+			      get_drawable_impl().drawable_id, gc_id(),
+			      points_size, points);
 		break;
 	case polyfill::complex:
-		xcb_fill_poly(conn(), drawable->drawable_id,
+		xcb_fill_poly(conn(), get_drawable_impl().drawable_id,
 			      gc_id(),
 			      XCB_POLY_SHAPE_COMPLEX,
 			      XCB_COORD_MODE_ORIGIN,
 			      points_size, points);
 		break;
 	case polyfill::nonconvex:
-		xcb_fill_poly(conn(), drawable->drawable_id,
+		xcb_fill_poly(conn(), get_drawable_impl().drawable_id,
 			      gc_id(),
 			      XCB_POLY_SHAPE_NONCONVEX,
 			      XCB_COORD_MODE_ORIGIN,
 			      points_size, points);
 		break;
 	case polyfill::convex:
-		xcb_fill_poly(conn(), drawable->drawable_id,
+		xcb_fill_poly(conn(), get_drawable_impl().drawable_id,
 			      gc_id(),
 			      XCB_POLY_SHAPE_CONVEX,
 			      XCB_COORD_MODE_ORIGIN,
@@ -176,28 +195,30 @@ void gcObj::implObj::points(const xcb_point_t *points,
 }
 
 
-void gcObj::implObj::draw_arcs(const xcb_arc_t *arcs, size_t arc_size)
+void gcObj::handlerObj::draw_arcs(const xcb_arc_t *arcs, size_t arc_size)
 {
 	if (!arcs || !arc_size)
 		return;
 
-	xcb_poly_arc(conn(), drawable->drawable_id, gc_id(), arc_size, arcs);
+	xcb_poly_arc(conn(), get_drawable_impl().drawable_id, gc_id(),
+		     arc_size, arcs);
 }
 
 
-void gcObj::implObj::fill_arcs(const xcb_arc_t *arcs, size_t arc_size)
+void gcObj::handlerObj::fill_arcs(const xcb_arc_t *arcs, size_t arc_size)
 {
 	if (!arcs || !arc_size)
 		return;
 
-	xcb_poly_fill_arc(conn(), drawable->drawable_id, gc_id(), arc_size, arcs);
+	xcb_poly_fill_arc(conn(), get_drawable_impl().drawable_id, gc_id(),
+			  arc_size, arcs);
 }
 
-void gcObj::implObj::copy(const rectangle &rect,
-			  coord_t to_x, coord_t to_y,
-			  const const_ref<drawableObj::implObj> &src,
-			  const ref<drawableObj::implObj> &dst,
-			  const gcObj::properties &props)
+void gcObj::handlerObj::copy(const rectangle &rect,
+			     coord_t to_x, coord_t to_y,
+			     const const_ref<drawableObj::implObj> &src,
+			     const ref<drawableObj::implObj> &dst,
+			     const gcObj::properties &props)
 {
 	if (src->thread_ != dst->thread_ ||
 	    src->drawable_pictformat != dst->drawable_pictformat)

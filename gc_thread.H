@@ -12,12 +12,12 @@
 
 LIBCXXW_NAMESPACE_START
 
-inline connection_thread gcObj::implObj::thread() const
+inline connection_thread gcObj::handlerObj::thread() const
 {
-	return drawable->thread_;
+	return this->thread_;
 }
 
-inline xcb_connection_t *gcObj::implObj::conn() const
+inline xcb_connection_t *gcObj::handlerObj::conn() const
 {
 	return thread()->info->conn;
 }

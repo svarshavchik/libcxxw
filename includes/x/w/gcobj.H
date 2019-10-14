@@ -27,6 +27,7 @@ class gcObj : virtual public obj {
 
 public:
 	class LIBCXX_HIDDEN implObj;
+	class LIBCXX_HIDDEN handlerObj;
 
 	inline const drawable &get_drawable() { return gc_drawable; }
 
@@ -126,7 +127,7 @@ public:
 		bool has_cliprects=false;
 
 	public:
-		friend class LIBCXX_HIDDEN implObj;
+		friend class handlerObj;
 
 		//! Specification for dashed lines
 		std::vector<uint8_t> dashes;

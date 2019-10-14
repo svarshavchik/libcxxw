@@ -16,13 +16,20 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN gcObj::implObj : public xidObj {
+//! The GC handler object
 
- public:
+//! Implement the underlying GC protocol functions.
+//!
+//! The subclass implements get_drawable_impl() and returns the GC's drawable.
+//!
+//! The constructor gets a reference to the drawable that's not stashed anywhere
+//! and is used only by the constructor.
+
+class gcObj::handlerObj : public xidObj {
+
+public:
 
 	inline xcb_gcontext_t gc_id() const { return id_; }
-
-	const ref<drawableObj::implObj> drawable;
 
 	connection_thread thread() const;
 	xcb_connection_t *conn() const;
@@ -45,20 +52,29 @@ class LIBCXX_HIDDEN gcObj::implObj : public xidObj {
 
 	class configure_gc {
 
-		ref<implObj> impl;
+		ref<handlerObj> impl;
 		const gcObj::properties &props;
 
 		configured_properties_t::lock lock;
 
 	public:
-		configure_gc(const ref<implObj> &implArg,
+		configure_gc(const ref<handlerObj> &implArg,
 			     const gcObj::properties &propsArg);
 
 		~configure_gc();
 	};
 
-	implObj(const ref<drawableObj::implObj> &drawable);
-	~implObj();
+	//! Constructor
+	handlerObj(const drawableObj::implObj &drawable);
+
+	//! Destructor
+	~handlerObj();
+
+	//! Return my drawable
+	virtual drawableObj::implObj &get_drawable_impl()=0;
+
+	//! Return my drawable
+	virtual const drawableObj::implObj &get_drawable_impl() const=0;
 
 	// Specify value change in a map, keyed by GC property, value is the
 	// GC value
@@ -81,6 +97,32 @@ class LIBCXX_HIDDEN gcObj::implObj : public xidObj {
 		  const ref<drawableObj::implObj> &dst,
 		  const gcObj::properties &props);
 
+};
+
+//! GC implementation object
+
+//! Inherits from the handler object, that implements all functionality.
+//! Owns a reference to our drawable, and implements get_drawable_impl().
+
+class gcObj::implObj : public handlerObj {
+
+public:
+
+	//! Our held reference on the drawable
+
+	const ref<drawableObj::implObj> drawable;
+
+	//! Constructor
+	implObj(const ref<drawableObj::implObj> &drawable);
+
+	//! Destructor
+	~implObj();
+
+	//! Implement get_drawable_impl().
+	drawableObj::implObj &get_drawable_impl() override;
+
+	//! Implement get_drawable_impl().
+	const drawableObj::implObj &get_drawable_impl() const override;
 };
 
 LIBCXXW_NAMESPACE_END
