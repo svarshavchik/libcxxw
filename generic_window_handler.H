@@ -272,9 +272,6 @@ class generic_windowObj::handlerObj
 	//! Whether this window has been mapped
 	bool has_mapped_thread_only=false;
 
-	//! Whether exposure processing should_preclear_entirely_exposed_element
-	bool should_preclear_exposed_thread_only=false;
-
 	//! Window manager's frame size and screen geometry.
 	struct frame_extents_t {
 
@@ -415,7 +412,6 @@ class generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(current_pointer_grab);
 	THREAD_DATA_ONLY(has_exposed);
 	THREAD_DATA_ONLY(has_mapped);
-	THREAD_DATA_ONLY(should_preclear_exposed);
 	THREAD_DATA_ONLY(current_theme);
 
 	//! Invoked after the handler gets installed.

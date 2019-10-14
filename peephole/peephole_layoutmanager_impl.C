@@ -594,7 +594,22 @@ bool peepholelayoutmanagerObj::implObj
 
 	auto scrolled_rectangle=viewport_rectangle;
 
-	// 4) The scrolling distance fits within the viewport.
+	// 4) The display is not shaded, and the display element is not
+	// to be drawn as disabled.
+
+	auto &wh=peephole_element_impl->get_window_handler();
+
+	if (peephole_element_impl->draw_to_window_picture_as_disabled(IN_THREAD)
+	    || wh.is_shade_busy())
+		return false;
+
+	// 5) There is nothing we scheduled for redrawing.
+
+	if (!intersect(wh.window_drawnarea(IN_THREAD), viewport_rectangle)
+	    .empty())
+		return false;
+
+	// 6) The scrolling distance fits within the viewport.
 
 	dim_t shift_left=0, shift_right=0, shift_up=0, shift_down=0;
 
@@ -655,6 +670,7 @@ bool peepholelayoutmanagerObj::implObj
 	std::cout << "    (" << e.objname() << ")" << std::endl;
 	std::cout << "TO: " << scrolled_rectangle << std::endl;
 #endif
+
 	auto after_scroll_rectangle_set=intersect(di.element_viewport,
 						  scrolled_rectangle);
 
@@ -693,22 +709,13 @@ bool peepholelayoutmanagerObj::implObj
 #endif
 	// Effect the scroll using xcb_copy-area
 
-	peephole_element_impl->element_scratch_buffer->get
-		(0, 0,
-		 [&, this]
-		 (const picture &,
-		  const pixmap &,
-		  const gc &gc)
-		 {
-			 ref<drawableObj::implObj> window_drawable
-				 {&peephole_element_impl->get_window_handler()};
+	ref<drawableObj::implObj> window_drawable{&wh};
 
-			 gc->impl->copy(scrolled_from,
-					scrolled_to.x,
-					scrolled_to.y,
-					window_drawable,
-					window_drawable, {});
-		 });
+	wh.copy(scrolled_from,
+		scrolled_to.x,
+		scrolled_to.y,
+		window_drawable,
+		window_drawable, {});
 
 	// Notify the element via scroll_by_parent_container before
 	// invoking exposure_event_recursive() in order to redraw everything
@@ -716,7 +723,7 @@ bool peepholelayoutmanagerObj::implObj
 
 	peephole_element_impl->scroll_by_parent_container(IN_THREAD, r.x, r.y);
 	if (!redrawn.empty())
-		e.exposure_event_recursively_top_down(IN_THREAD, redrawn);
+		e.exposure_event_recursive(IN_THREAD, redrawn);
 
 	return true;
 }

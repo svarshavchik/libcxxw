@@ -773,14 +773,6 @@ class elementObj::implObj : public element_drawObj,
 
 	void explicit_redraw(ONLY IN_THREAD);
 
-	//! Redraw exposed contents, top to bottom.
-
-	//! This is more visually appealing.
-
-	void exposure_event_recursively_top_down(ONLY IN_THREAD,
-						 const rectarea &r)
-		LIBCXX_HIDDEN;
-
 	//! Exposure event handling.
 
 	//! We get areas to redraw for this widget. Invoke draw(),
@@ -789,26 +781,8 @@ class elementObj::implObj : public element_drawObj,
 	//! given rectarea intersected with the child's viewport.
 
 	void exposure_event_recursive(ONLY IN_THREAD,
-				      const rectarea &areas,
-				      std::queue<std::tuple<element_impl,
-				      rectarea>> &exposure_queue)
+				      const rectarea &areas)
 		LIBCXX_HIDDEN;
-
-	//! Should clear to background color when exposure_event_recursive
-
-	//! During exposure processing of a complex popup or window that
-	//! takes a fraction of a second to draw it is visually better to
-	//! preclear the entirety of it, to its background color.
-	//!
-	//! Even if it takes only a fraction of a second, it still looks
-	//! sloppy if different parts of the window take a fraction of a second
-	//! to get filled in over its background.
-	//!
-	//! exposure_event_recursive() progressively draws containers first,
-	//! then the elements in the container. The widget that represents
-	//! the main contents of the window overrides should_preclear and
-	//! returns true,
-	virtual bool should_preclear_entirely_exposed_element(ONLY IN_THREAD);
 
 	//! Draw the widget.
 

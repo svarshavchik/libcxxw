@@ -721,7 +721,7 @@ void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 			});
 		exposure_rectangles(IN_THREAD).full_exposure=false;
 	}
-	exposure_event_recursively_top_down
+	exposure_event_recursive
 		(IN_THREAD,
 		 exposure_rectangles(IN_THREAD).rectangles);
 	invoke_stabilized(IN_THREAD);
@@ -730,7 +730,7 @@ void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 void generic_windowObj::handlerObj
 ::process_collected_graphics_exposures(ONLY IN_THREAD)
 {
-	exposure_event_recursively_top_down
+	exposure_event_recursive
 		(IN_THREAD,
 		 graphics_exposure_rectangles(IN_THREAD).rectangles);
 }
@@ -1300,8 +1300,6 @@ void generic_windowObj::handlerObj::grab(ONLY IN_THREAD)
 
 void generic_windowObj::handlerObj::process_map_notify_event(ONLY IN_THREAD)
 {
-	// If exposure processing follows, preclear the window.
-	should_preclear_exposed(IN_THREAD)=true;
 	has_mapped(IN_THREAD)=true;
 
 	// This has the effect of sending an InternAtom reques to the server
@@ -1421,10 +1419,6 @@ void generic_windowObj::handlerObj::do_process_configure_notify(ONLY IN_THREAD)
 
 			exposure_rectangles(IN_THREAD).full_exposure=true;
 			exposure_rectangles(IN_THREAD).complete=true;
-
-			// Should not preclear top level elements, to avoid
-			// flickering.
-			should_preclear_exposed(IN_THREAD)=false;
 		}
 	}
 	if (error)

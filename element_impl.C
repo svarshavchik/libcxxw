@@ -804,29 +804,8 @@ clip_region_set::clip_region_set(ONLY IN_THREAD,
 	// h.set_clip_rectangles(di.element_viewport);
 }
 
-void elementObj::implObj
-::exposure_event_recursively_top_down(ONLY IN_THREAD,
-				      const rectarea &r)
-{
-	std::queue<std::tuple<element_impl, rectarea>> q;
-
-	q.emplace(ref{this}, r);
-
-	while (!q.empty())
-	{
-		auto &[impl, s]=q.front();
-
-		impl->exposure_event_recursive(IN_THREAD, s, q);
-
-		q.pop();
-	}
-}
-
 void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
-						   const rectarea &areas,
-						   std::queue<std::tuple
-						   <element_impl, rectarea>
-						   > &q)
+						   const rectarea &areas)
 {
 	auto &current_position=data(IN_THREAD).current_position;
 
@@ -834,6 +813,9 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		return;
 
 	if (data(IN_THREAD).removed)
+		return;
+
+	if (areas.empty())
 		return;
 
 	auto &di=get_draw_info(IN_THREAD);
@@ -861,37 +843,6 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 				 -di.absolute_location.x,
 				 -di.absolute_location.y);
 
-	if (draw_area.size() == 1)
-	{
-		auto &r=*draw_area.begin();
-
-		if (r.x == 0 && r.y == 0 &&
-		    r.width == current_position.width &&
-		    r.height == current_position.height)
-		{
-			// The entire element is exposed. It looks better
-			// for a popup to have its entire area immediately
-			// cleared, before proceeding and rendering all the
-			// elements inside the popup. A complicated popup
-			// will take noticably longer to render, and it looks
-			// sloppy to have the popup drawn, rectangle by
-			// rectangle. This clears the top level popup element
-			// (well, the element inside the real top level popup
-			// element, which contains the popup's borders)
-			// to the popup's background color, and we'll proceed
-			// and draw what's inside the popup.
-
-			if (should_preclear_entirely_exposed_element(IN_THREAD)
-			    &&
-			    get_window_handler()
-			    .should_preclear_exposed(IN_THREAD))
-				clear_to_color(IN_THREAD,
-					       get_draw_info(IN_THREAD),
-					       draw_area);
-		}
-	}
-
-
 #ifdef DEBUG_EXPOSURE_CALCULATIONS
 
 	std::cout << "    Draw:" << std::endl;
@@ -900,20 +851,8 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		std::cout << "        " << r << std::endl;
 #endif
 
-	if (draw_area.empty())
-		return;
-
-	// If there's a queued redraw, we'll just redraw it right now, and
-	// forget it.
-
-	if (full_redraw_scheduled(IN_THREAD))
-	{
-		explicit_redraw(IN_THREAD);
-	}
-	else
-	{
-		draw(IN_THREAD, di, draw_area);
-	}
+	for (const auto &d:draw_area)
+		schedule_redraw(IN_THREAD, d);
 
 	// Now, we need to recursively propagate this event.
 
@@ -921,14 +860,9 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		       [&]
 		       (const element &e)
 		       {
-			       q.emplace(e->impl, areas);
+			       e->impl->exposure_event_recursive(IN_THREAD,
+								 areas);
 		       });
-}
-
-bool elementObj::implObj
-::should_preclear_entirely_exposed_element(ONLY IN_THREAD)
-{
-	return false;
 }
 
 void elementObj::implObj::draw(ONLY IN_THREAD,

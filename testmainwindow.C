@@ -51,19 +51,10 @@ sausage_factory_t sausages;
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 									\
-		/* The initial clear to background color, upon exposure	\
-		   does not count.*/					\
-									\
-		if (!lock->initial_clear_to_color)			\
-		{							\
-			lock->number_of_areas += areas.size();		\
-			LOG_CLEAR_TO_COLOR_AREAS();			\
-			lock->number_of_calls++;			\
-			lock.notify_all();				\
-		}							\
-									\
-		lock->initial_clear_to_color=false;			\
-									\
+		lock->number_of_areas += areas.size();		\
+		LOG_CLEAR_TO_COLOR_AREAS();			\
+		lock->number_of_calls++;			\
+		lock.notify_all();				\
 	} while(0)
 
 #define CLEAR_TO_COLOR_RECT() do {					\
@@ -76,18 +67,10 @@ sausage_factory_t sausages;
 		   starting at (0, 0).					\
 		*/							\
 									\
-		if (!lock->initial_clear_to_color_rect ||		\
-		    area.x != 0 || area.y != 0)				\
-		{							\
-			auto cpy=area;					\
-			cpy.x = coord_t::truncate(cpy.x+		\
-						  di.absolute_location.x); \
-			cpy.y = coord_t::truncate(cpy.y+		\
-						  di.absolute_location.y); \
-			lock->drawn_rectangles.push_back(cpy);		\
-		}							\
-									\
-		lock->initial_clear_to_color_rect=false;		\
+		auto cpy=area;						\
+		cpy.x = coord_t::truncate(cpy.x+di.absolute_location.x); \
+		cpy.y = coord_t::truncate(cpy.y+di.absolute_location.y); \
+		lock->drawn_rectangles.push_back(cpy);			\
 	} while(0)
 
 #define REQUEST_VISIBILITY_LOG(w,h) do {				\
