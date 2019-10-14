@@ -4,6 +4,7 @@
 #include "x/w/uielements.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/input_field_lock.H"
+#include "x/w/impl/uixmlparser.H"
 #include "messages.H"
 #include <x/messages.H>
 #include <x/xml/escape.H>
@@ -236,22 +237,21 @@ void appObj::dimension_selected(ONLY IN_THREAD,
 			// We expect one to be there, of course.
 			xpath->to_node(1);
 
-			auto scale_from=
-				current_value->get_any_attribute("scale");
+			auto d=x::w::ui::parse_dim(current_value);
 
-			if (!scale_from.empty())
+			if (!d.scale.empty())
 			{
 				auto pos=std::lower_bound(lock->ids.begin(),
 							  lock->ids.end(),
-							  scale_from);
+							  d.scale);
 				if (pos != lock->ids.end() &&
-				    *pos == scale_from)
+				    *pos == d.scale)
 				{
 					orig_params.scale_from=
 						pos-lock->ids.begin();
 				}
 			}
-			orig_params.value=current_value->get_text();
+			orig_params.value=d.value;
 
 			dimension_new_name_label->hide(IN_THREAD);
 			dimension_new_name->hide(IN_THREAD);
@@ -660,7 +660,9 @@ void appObj::dimension_update(const update_callback_t &callback)
 			dimension_name->get_layoutmanager(),
 			from_name_lm=dimension_from_name->get_layoutmanager();
 
-		auto i=insert_pos-lock->ids.begin()+1;
+		size_t p=insert_pos-lock->ids.begin();
+
+		auto i=p+1;
 		// Pos 0 is new dimension
 
 		lock->ids.insert(insert_pos, id);
@@ -670,6 +672,8 @@ void appObj::dimension_update(const update_callback_t &callback)
 		from_name_lm=dimension_from_name->get_layoutmanager();
 		from_name_lm->insert_items(i, {id});
 
+		if (lock->from_index && *lock->from_index >= p)
+			++*lock->from_index;
 		name_lm->autoselect(i);
 		status->update(_("Created new dimension"));
 	}
