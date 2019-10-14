@@ -9,7 +9,6 @@
 #include "x/w/containerfwd.H"
 #include "x/w/alignment.H"
 #include "pagelayoutmanager_impl.H"
-#include "pagelayoutcontainerobj.H"
 #include <x/mpobj.H>
 #include <optional>
 
@@ -39,7 +38,7 @@ class LIBCXX_HIDDEN pagefactoryObj::implObj : virtual public obj {
 	struct info_s {
 
 		//! Most recent intermediate container for the new element.
-		ptr<pagelayoutcontainerObj::implObj> prev_container_impl;
+		container_implptr prev_container_impl;
 
 		//! Alignment for the next element to be created.
 		LIBCXXW_NAMESPACE::halign horizontal_alignment=

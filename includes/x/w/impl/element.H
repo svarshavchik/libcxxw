@@ -91,34 +91,6 @@ LIBCXXW_NAMESPACE_START
 
 class clip_region_set;
 
-//! Strategy for redrawing thie element together with others
-
-enum class redraw_strategy_t
-	{
-	 //! Draw smallest elements first, by area
-
-	 //! Heuristically, in popup windows you get a better visual effect
-	 //! by drawing the elements first, than their containers, so we
-	 //! heurstically order the redrawing order from smallest to largest
-	 //! elements.
-	 by_size,
-
-	 //! Draw elements by nesting level
-
-	 //! And in some contexts it's better to clear the containers first,
-	 //! then draw the elements in the container.
-	 //!
-	 //! Page container have better visual presentation if they are
-	 //! cleared completely first, before the elements in the page
-	 //! get drawn.
-	 //!
-	 //! This takes care only of the connection thread's strategy for
-	 //! individually drawing elements. The page container's draw()
-	 //! handles the reset of the details.
-
-	 by_nesting_level,
-	};
-
 //! Base class for widget implementation.
 
 //! Stuff that all widgets have.
@@ -182,9 +154,6 @@ class elementObj::implObj : public element_drawObj,
 		//! schedule_full_redraw() is called, this is removed.
 
 		std::optional<rectarea> areas_to_redraw=rectarea{};
-
-		//! In what order should this element be redrawn.
-		redraw_strategy_t redraw_strategy=redraw_strategy_t::by_size;
 
 		////////////////////////////////////////////////////////////
 		//
