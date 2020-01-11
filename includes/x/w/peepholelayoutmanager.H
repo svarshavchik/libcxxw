@@ -119,7 +119,10 @@ public:
 
 private:
 	//! Internal implementation
-	focusable_container create(const container_impl &) const override
+	focusable_container create(const container_impl &,
+				   const function<void
+				   (const focusable_container &)>
+				   &creator) const override
 		LIBCXX_HIDDEN;
 };
 

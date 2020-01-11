@@ -777,7 +777,10 @@ public:
 }
 
 focusable_container
-new_tablelayoutmanager::create(const container_impl &parent_container) const
+new_tablelayoutmanager::create(const container_impl &parent_container,
+			       const function<void
+			       (const focusable_container &)>
+			       &creator) const
 {
 	auto axis_impl=table_synchronized_axis::create(*this);
 	auto axis=synchronized_axis::create(axis_impl);
@@ -822,7 +825,7 @@ new_tablelayoutmanager::create(const container_impl &parent_container) const
 		ref<table_container_implObj>::create(parent_container);
 
 	return create_impl(focusable_container_impl,
-			   axis, &tci, lci);
+			   axis, &tci, lci, creator);
 }
 
 void new_tablelayoutmanager::created_list_container(const container_impl

@@ -120,7 +120,9 @@ void new_listlayoutmanager::configure_for_pane(bool synchronized)
 }
 
 focusable_container
-new_listlayoutmanager::create(const container_impl &parent_container) const
+new_listlayoutmanager::create(const container_impl &parent_container,
+			      const function<void
+			      (const focusable_container &)> &creator) const
 {
 	auto create_list_element_impl=
 		make_function< ref<list_elementObj::implObj>
@@ -153,7 +155,7 @@ new_listlayoutmanager::create(const container_impl &parent_container) const
 		ref<peepholed_container_impl_t>::create(parent_container);
 
 	return create_impl(focusable_container_impl, synchronized_columns,
-			   nullptr, lci);
+			   nullptr, lci, creator);
 }
 
 focusable_container
@@ -162,7 +164,10 @@ new_listlayoutmanager::create_impl(const container_impl
 				   const synchronized_axis
 				   &list_synchronized_columns,
 				   table_create_info *tci,
-				   const list_create_info &lci) const
+				   const list_create_info &lci,
+				   const function<void
+				   (const focusable_container &)>
+				   &creator) const
 {
 
 	containerptr internal_listcontainer;
@@ -253,8 +258,11 @@ new_listlayoutmanager::create_impl(const container_impl
 
 	create_table_header_row(lm, tci);
 
-	return ref<listObj>::create(internal_listcontainer, peephole_info,
+	auto c=ref<listObj>::create(internal_listcontainer, peephole_info,
 				    lm->impl);
+
+	creator(c);
+	return c;
 }
 
 void new_listlayoutmanager::created_list_container(const container_impl &,

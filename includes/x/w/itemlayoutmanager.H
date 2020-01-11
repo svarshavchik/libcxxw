@@ -50,7 +50,10 @@ public:
 	//! Create a new container that uses the item layout manager
 
 	//! \internal
-	focusable_container create(const container_impl &)
+	focusable_container create(const container_impl &parent,
+				   const function<void
+				   (const focusable_container &)>
+				   &creator)
 		const override LIBCXX_HIDDEN;
 };
 

@@ -398,17 +398,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	mpobj<weakptr<batch_queueptr>> current_batch_queue;
 
-	// Containers queued up for batch recalculation
-
-	containers_2_batch_recalculate_set *containers_2_batch_recalculate_thread_only;
-	//! Which elements need to have their visibility updated in bulk
-	elements_2_batch_showhide_map *elements_2_batch_showhide_thread_only;
-
-
  public:
-	THREAD_DATA_ONLY(containers_2_batch_recalculate);
-	THREAD_DATA_ONLY(elements_2_batch_showhide);
-
 	//! Same as run_as, but the job goes into the batch queue, instead.
 
 	template<typename T>

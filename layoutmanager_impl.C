@@ -55,7 +55,21 @@ void layoutmanagerObj::implObj::needs_recalculation()
 
 void layoutmanagerObj::implObj::needs_recalculation(const batch_queue &queue)
 {
-	queue->schedule_for_recalculation(ref<implObj>(this));
+	// This is called from the public object. Existance of a public
+	// object blocks all container recalculation and update processing.
+	//
+	// We must mark that this container needs_recalculation. For the
+	// currect sequence of events to occur, the queue object must
+	// continue to exist until this container is marked for
+	// recalculation, so we capture it by value, and note that
+	// this container needs_recalculation IN_THREAD; and only then
+	// the queue object goes out of scope and gets destroyed.
+
+	run_as([queue,me=ref{this}]
+	       (ONLY IN_THREAD)
+	       {
+		       me->needs_recalculation(IN_THREAD);
+	       });
 }
 
 void layoutmanagerObj::implObj::child_metrics_updated(ONLY IN_THREAD)

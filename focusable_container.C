@@ -21,8 +21,8 @@ factoryObj::do_create_focusable_container(const function<void
 					  const new_focusable_layoutmanager
 					  &layout_manager)
 {
-	auto c=layout_manager.create(get_container_impl());
-	creator(c);
+	auto c=layout_manager.create(get_container_impl(),
+				     creator);
 	created(c);
 	return c;
 }

@@ -7,5 +7,14 @@
     <longopt>editable</longopt>
     <descr>Editable combo-box</descr>
   </option>
+
+  <option>
+    <name>layout</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>l</opt>
+    <longopt>layout</longopt>
+    <descr>Test layout recalculation</descr>
+  </option>
   <defaultoptions />
 </optclass>

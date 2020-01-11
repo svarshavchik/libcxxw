@@ -435,7 +435,9 @@ create_panecontainer_impl(const container_impl &parent,
 }
 
 focusable_container
-new_panelayoutmanager::create(const container_impl &parent)
+new_panelayoutmanager::create(const container_impl &parent,
+			      const function<void
+			      (const focusable_container &)>  &creator)
 	const
 {
 	auto impl=create_panecontainer_impl(parent, *this);
@@ -466,6 +468,7 @@ new_panelayoutmanager::create(const container_impl &parent)
 	// Initial slider.
 	lm_impl->create_slider(lm_impl->create_slider_factory(&*lm, 0));
 
+	creator(c);
 	return c;
 }
 

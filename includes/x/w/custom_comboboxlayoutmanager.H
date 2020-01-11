@@ -218,7 +218,10 @@ class new_custom_comboboxlayoutmanager
 	//! Create the focusable container.
 
 	//! \internal
-	focusable_container create(const container_impl &)
+	focusable_container create(const container_impl &,
+				   const function<void
+				   (const focusable_container &)>
+				   &creator)
 		const override;
 
  protected:

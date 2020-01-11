@@ -101,7 +101,9 @@ public:
 
 	//! \internal
 	focusable_container
-		create(const container_impl &) const override LIBCXX_HIDDEN;
+		create(const container_impl &,
+		       const function<void (const focusable_container &)>
+		       &creator) const override LIBCXX_HIDDEN;
 
 	using new_panelayoutmanager_restored_position::restore;
 

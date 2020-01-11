@@ -76,17 +76,21 @@ void create_peepholes(const main_window &mw)
 
 	nsplm.width({20, 100, 300});
 
-	f->create_focusable_container([]
+	bool created=false;
+	f->create_focusable_container([&]
 				      (const focusable_container &c)
 				      {
 					      peepholelayoutmanager lm
 						      {c->get_layoutmanager()};
 
 					      container pc{lm->get()};
+					      created=true;
 				      },
 				      nsplm)
 		->show();
 
+	if (!created)
+		throw EXCEPTION("Did not execute the creator");
 	f=glm->append_row();
 
 	f->padding(20);

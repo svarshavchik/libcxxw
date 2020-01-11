@@ -320,7 +320,10 @@ public:
 	//! Create the focusable container.
 
 	//! \internal
-	focusable_container create(const container_impl &)
+	focusable_container create(const container_impl &parent,
+				   const function<void
+				   (const focusable_container &)>
+				   &creator)
 		const override LIBCXX_HIDDEN;
 
 	struct LIBCXX_HIDDEN table_create_info;
@@ -332,7 +335,10 @@ public:
 	focusable_container create_impl(const container_impl &,
 					const synchronized_axis &,
 					table_create_info *,
-					const list_create_info &)
+					const list_create_info &,
+					const function<void
+					(const focusable_container &)>
+					&creator)
 		const;
  public:
 	//! Implemented in \ref new_tablelayoutmanager "new_tablelayoutmanager".

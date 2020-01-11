@@ -11,6 +11,7 @@
 #include "x/w/popup_list_appearancefwd.H"
 #include "x/w/elementfwd.H"
 #include <x/weakptr.H>
+#include <x/mpobj.H>
 #include <functional>
 
 LIBCXXW_NAMESPACE_START
@@ -41,9 +42,9 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
 
 	//! Set the current selection element's metrics.
 
-	weakptr<elementptr> current_combobox_selection_element_thread_only;
+	typedef mpobj<weakptr<elementptr>> current_combobox_selection_element_t;
 
-	THREAD_DATA_ONLY(current_combobox_selection_element);
+	current_combobox_selection_element_t current_combobox_selection_element;
 
  public:
 

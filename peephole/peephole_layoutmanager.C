@@ -175,7 +175,10 @@ struct new_peephole_info {
 }
 
 focusable_container
-new_scrollable_peepholelayoutmanager::create(const container_impl &parent) const
+new_scrollable_peepholelayoutmanager::create(const container_impl &parent,
+					     const function<void
+					     (const focusable_container &)>
+					     &creator) const
 {
 	auto grid_container_impl=
 		ref<container_elementObj<child_elementObj>>::create(parent);
@@ -238,12 +241,15 @@ new_scrollable_peepholelayoutmanager::create(const container_impl &parent) const
 				 appearance->vertical_scrollbar
 		 });
 
-	return ref<peephole_focusable_containerObj>
+	auto c=ref<peephole_focusable_containerObj>
 		::create(grid_container_impl,
 			 glm_impl,
 			 layout_impl,
 			 horizontal_scrollbar,
 			 vertical_scrollbar);
+
+	creator(c);
+	return c;
 }
 
 layout_impl new_peepholelayoutmanager::create(const container_impl &) const

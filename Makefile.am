@@ -1560,6 +1560,7 @@ test:
 	./testtoolbox --norestore -w=4 --testmetrics
 	./testtoolbox --testmetrics
 	./testtoolbox --norestore --testthemescale
+	./testcombobox -l
 
 .PHONY: rpm
 

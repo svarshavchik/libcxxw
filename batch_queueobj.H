@@ -23,10 +23,6 @@ class LIBCXX_HIDDEN batch_queueObj : virtual public obj {
 	//! My logger
 	LOG_CLASS_SCOPE;
 
-	//! Something was scheduled...
-
-	mpobj<bool> something_scheduled;
-
 	//! Batched
  public:
 
@@ -41,14 +37,6 @@ class LIBCXX_HIDDEN batch_queueObj : virtual public obj {
 	//! The destructor schedules all the jobs.
 
 	~batch_queueObj();
-
-	//! Schedule a container for recalculation
-
-	//! All layout managers gets collected, and a single run_as()
-	//! call gets batched, to invoke needs_recalculation() on all of them
-	//! in one shot.
-
-	void schedule_for_recalculation(const layout_impl &);
 
 	//! Schedule an element to have its visibility update.
 

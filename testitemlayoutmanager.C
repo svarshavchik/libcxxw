@@ -70,14 +70,17 @@ auto create_mainwindow(const main_window &mw)
 
 	new_itemlayoutmanager nilm;
 
+	bool initialized=false;
 	auto container=f->create_focusable_container
-		([]
+		([&]
 		 (const auto &c)
 		 {
-			 // Initially nothing here
+			 initialized=true;
 		 },
 		 nilm);
 
+	if (!initialized)
+		throw EXCEPTION("itemlayoutmanager creator not called");
 
 	field->on_validate
 		([objects=make_weak_capture(container, field)]

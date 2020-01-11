@@ -34,7 +34,10 @@ public:
 	~new_focusable_layoutmanager();
 
 	//! Internal implementation
-	virtual focusable_container create(const container_impl &)
+	virtual focusable_container create(const container_impl &parent,
+					   const function<void
+					   (const focusable_container
+					    &)> &creator)
 		const=0;
 };
 

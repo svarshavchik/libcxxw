@@ -590,7 +590,10 @@ new_booklayoutmanager &new_booklayoutmanager
 ::operator=(const new_booklayoutmanager &)=default;
 
 focusable_container
-new_booklayoutmanager::create(const container_impl &parent) const
+new_booklayoutmanager::create(const container_impl &parent,
+			      const function<void
+			      (const focusable_container &)>
+			      &creator) const
 {
 	// Our container implementation is nothing special.
 
@@ -855,7 +858,10 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	factory->border(appearance->border);
 	factory->created_internally(current_page_container);
 
-	return ref<book_focusable_containerObj>::create(c, grid);
+	auto new_c=ref<book_focusable_containerObj>::create(c, grid);
+
+	creator(new_c);
+	return new_c;
 }
 
 //////////////////////////////////////////////////////////////////////////////

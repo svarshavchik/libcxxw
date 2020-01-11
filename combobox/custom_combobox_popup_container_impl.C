@@ -52,7 +52,7 @@ bool custom_combobox_popup_containerObj::implObj
 void custom_combobox_popup_containerObj::implObj
 ::update_current_selection_metrics(ONLY IN_THREAD)
 {
-	auto e=current_combobox_selection_element(IN_THREAD).getptr();
+	auto e=current_combobox_selection_element.get().getptr();
 
 	if (e)
 		e->get_minimum_override_element_impl()
@@ -66,15 +66,7 @@ void custom_combobox_popup_containerObj::implObj
 void custom_combobox_popup_containerObj::implObj
 ::set_current_combobox_selection_element_and_button(const element &e)
 {
-	e->impl->THREAD->run_as
-		([me=ref<implObj>(this), e]
-		 (ONLY IN_THREAD)
-		 {
-			 me->current_combobox_selection_element(IN_THREAD)=e;
-
-			 // If there's anything here, keep it updated.
-			 me->update_current_selection_metrics(IN_THREAD);
-		 });
+	current_combobox_selection_element=e;
 }
 
 LIBCXXW_NAMESPACE_END

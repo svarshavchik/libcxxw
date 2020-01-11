@@ -8,6 +8,7 @@
 #include "returned_pointer.H"
 #include "catch_exceptions.H"
 #include "window_handler.H"
+#include "batch_queue.H"
 #include <x/sysexception.H>
 #include <x/functionalrefptr.H>
 #include <x/mcguffinmultimap.H>
@@ -60,10 +61,26 @@ bool connection_threadObj
 	{
 		poll_for= -1;
 
+		// If there's a batch queue object, it will block all
+		// further processing.
+
+		auto b=current_batch_queue.get().getptr();
+
+		if (b)
+		{
+			while (!msgqueue->empty())
+				msgqueue.event();
+			// Drained the message queue, wait for an event,
+			// there will be at least one from the batch queue's
+			// destructor.
+			return true;
+		}
+
 		if (recalculate_containers(IN_THREAD, poll_for))
 			continue;
 
-		if (process_element_position_updated(IN_THREAD, poll_for))
+		if (process_element_position_updated(IN_THREAD,
+						     poll_for))
 			continue;
 
 		if (process_visibility_updated(IN_THREAD, poll_for))

@@ -25,19 +25,25 @@
 #include "x/w/input_field_lock.H"
 #include "x/w/shortcut.H"
 #include "x/w/singletonlayoutmanager.H"
+#include "x/w/element_state.H"
 #include <string>
 #include <iostream>
 #include <algorithm>
 #include <utility>
+#include <set>
 #include "testcombobox.inc.H"
 
 using namespace LIBCXX_NAMESPACE;
 using namespace LIBCXX_NAMESPACE::w;
 
+typedef mpobj<std::set<rectangle>> all_sizes_t;
+
 class close_flagObj : public obj {
 
 public:
 	mpcobj<bool> flag;
+
+	all_sizes_t all_sizes;
 
 	close_flagObj() : flag{false} {}
 	~close_flagObj()=default;
@@ -426,6 +432,101 @@ void testcombobox(const testcombobox_options &options)
 	}
 }
 
+static void reset_layout(const gridlayoutmanager &glm)
+{
+	auto factory=glm->insert_row(0);
+
+	factory->create_focusable_container
+		([]
+		 (const auto &new_container)
+		 {
+			 editable_comboboxlayoutmanager lm=
+				 new_container->get_layoutmanager();
+
+			 lm->replace_all_items
+				 ({
+				   {"Lorem ipsum"},
+				   {"dolor sit"},
+				   {"consectetur adipisicing elid set do"},
+				 });
+		 },
+		 new_editable_comboboxlayoutmanager{});
+}
+
+void testcombobox_layout()
+{
+	destroy_callback::base::guard guard;
+
+	auto close_flag=close_flag_ref::create();
+
+	auto main_window=main_window::create
+		([&]
+		 (const auto &main_window)
+		 {
+			 gridlayoutmanager layout
+				 {
+				  main_window->get_layoutmanager()
+				 };
+
+			 reset_layout(layout);
+		 },
+		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
+
+
+	main_window->set_window_title("Ten seconds");
+
+	guard(main_window->connection_mcguffin());
+
+	main_window->on_disconnect([]
+				   {
+					   _exit(1);
+				   });
+
+	main_window->on_delete
+		([close_flag]
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
+		 {
+			 close_flag->close();
+		 });
+
+	main_window->show_all();
+
+	mpcobj<bool>::lock lock{close_flag->flag};
+
+	lock.wait_for(std::chrono::seconds(5),
+		      [&] { return *lock; });
+
+	if (*lock)
+		return;
+
+	main_window->on_state_update
+		([close_flag]
+		 (ONLY IN_THREAD,
+		  const auto &s,
+		  const auto &busy)
+		 {
+			 all_sizes_t::lock lock{close_flag->all_sizes};
+			 lock->insert(s.current_position);
+		 });
+
+	{
+		gridlayoutmanager glm=
+			main_window->get_layoutmanager();
+		glm->remove_rows(0, 1);
+
+		reset_layout(glm);
+		main_window->show_all();
+	}
+	lock.wait_for(std::chrono::seconds(5),
+		      [&] { return *lock; });
+
+	auto n=close_flag->all_sizes.get().size();
+
+	if (n != 1)
+		throw EXCEPTION("Unexpected resize");
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -436,7 +537,10 @@ int main(int argc, char **argv)
 
 		options.parse(argc, argv);
 
-		testcombobox(options);
+		if (options.layout->value)
+			testcombobox_layout();
+		else
+			testcombobox(options);
 	} catch (const exception &e)
 	{
 		e->caught();

@@ -51,7 +51,9 @@ class new_booklayoutmanager
 
 	//! \internal
 	focusable_container
-		create(const container_impl &) const override;
+		create(const container_impl &,
+		       const function<void (const focusable_container &)>
+		       &creator) const override;
 };
 
 //! Lock the book layout manager.

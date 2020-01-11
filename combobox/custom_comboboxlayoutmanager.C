@@ -367,7 +367,8 @@ combobox_create_list(const container_impl &peephole_container,
 }
 
 focusable_container new_custom_comboboxlayoutmanager
-::create(const container_impl &parent) const
+::create(const container_impl &parent,
+	 const function<void (const focusable_container &)> &creator) const
 {
 	// Start by creating the popup first.
 
@@ -601,6 +602,7 @@ focusable_container new_custom_comboboxlayoutmanager
 				  });
 		 });
 
+	creator(c);
 	return c;
 }
 

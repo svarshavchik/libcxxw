@@ -247,7 +247,10 @@ public:
 // containing a peephole. The peephole contains the real container that's
 // managed by the item layout manager.
 
-focusable_container new_itemlayoutmanager::create(const container_impl &parent)
+focusable_container
+new_itemlayoutmanager::create(const container_impl &parent,
+			      const function<void
+			      (const focusable_container &)> &creator)
 	const
 {
 	// The new container, and it's actual layout manager, the grid
@@ -336,7 +339,10 @@ focusable_container new_itemlayoutmanager::create(const container_impl &parent)
 				 appearance->vertical_scrollbar
 		 });
 
-	return ref<item_containerObj>::create(impl, grid_impl, itemlm_implptr);
+	auto c=ref<item_containerObj>::create(impl, grid_impl, itemlm_implptr);
+
+	creator(c);
+	return c;
 }
 
 LIBCXXW_NAMESPACE_END
