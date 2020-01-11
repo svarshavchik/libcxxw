@@ -239,7 +239,7 @@ xcb_atom_t connection_infoObj::get_atom(const std::string_view &name,
 						   name.data()),
 				   error.addressof()));
 
-	if (error)
+	if (error || !value)
 		return XCB_NONE;
 
 	return value->atom;

@@ -90,7 +90,7 @@ builtin_atoms::builtin_atoms(xcb_connection_t *conn)
 		}
 		else
 		{
-			(this->*atoms[i].atom_value)=value->atom;
+			(this->*atoms[i].atom_value)=value ? value->atom:0;
 		}
 	}
 
