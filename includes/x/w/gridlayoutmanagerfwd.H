@@ -141,6 +141,40 @@ elementptr e=gridlayout->get(row, col);
 get() returns the element at the given grid coordinates. A \c nullptr
 widget gets returned if no element exists at the given coordinates.
 
+\par Resorting rows
+
+\code
+std::vector<size_t> index;
+
+l->resort_rows(index);
+\endcode
+
+resort_rows() moves the rows in the grid. The index vector's size must
+match the number of rows in the grid. The index vector's values must consist
+of strictly increasing values, starting at 0, in some particular order,
+meaning that: for a grid of 8 rows, the index vector must contain values
+0 through 7.
+
+resort_rows() reorders the rows as if the index vector gets
+sorted in its natural order, and the corresponding rows get
+repositioned accordingly. For example, when the index vector contains
+the values:
+
+\code
+std::vector<size_t> index={6, 1, 2, 0, 4, 5, 3, 7};
+
+l->resort_rows(index);
+\endcode
+
+This ends up moving the cells in the first row, row \#0 to row \#6,
+row \#6 to \#3, and row \#3 to row \#0.
+
+The results are unspecified if the index vector fails to meet the stated
+requirements.
+
+\note All \ref focusable "focusable" widgets in the resorted rows remain
+in the same tabbing order.
+
 \par Row and column defaults
 
 \code

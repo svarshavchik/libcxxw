@@ -14,6 +14,7 @@
 #include "metrics_grid_pos.H"
 #include "x/w/impl/current_border_impl.H"
 #include "messages.H"
+#include <x/algorithm.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -88,6 +89,27 @@ gridfactory gridlayoutmanagerObj::insert_columns(size_t row, size_t col)
 gridfactory gridlayoutmanagerObj::replace_cell(size_t row, size_t col)
 {
 	return impl->replace_cell(this, row, col);
+}
+
+void gridlayoutmanagerObj::resort_rows(const std::vector<size_t> &v)
+{
+	grid_map_t::lock grid_lock{impl->grid_map};
+
+	if ((*grid_lock)->elements.size() != v.size())
+		throw EXCEPTION(_("Number of rows in the grid is not the same"
+				  " as the number of rows to resort"));
+
+	(*grid_lock)->elements_have_been_modified();
+
+	auto v_copy=v;
+
+	sort_by(v_copy,
+		[&]
+		(size_t a, size_t b)
+		{
+			std::swap( (*grid_lock)->elements.at(a),
+				   (*grid_lock)->elements.at(b));
+		});
 }
 
 void gridlayoutmanagerObj::remove()

@@ -496,7 +496,7 @@ meaning that: for a list of 8 items, the index vector must contain values
 0 through 7.
 
 resort_items() reorders the items in its list as if the index vector gets
-sorted in its natural order, and the corresponding item in the list gets
+sorted in its natural order, and the corresponding items in the list get
 repositioned accordingly. For example, when the index vector contains
 the values:
 

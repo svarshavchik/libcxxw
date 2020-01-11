@@ -168,6 +168,9 @@ public:
 	//! Set the container's background color
 	void remove_background_color();
 
+	//! Resort the rows
+	void resort_rows(const std::vector<size_t> &);
+
 	//! Implement generate()
 
 	//! \see uigenerators
