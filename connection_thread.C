@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "connection_thread.H"
+#include "connection_thread_debug.H"
 #include "window_handler.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
@@ -115,7 +116,12 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 				// to politely stop.
 				continue;
 
-			if (poll(pfd, n_poll, poll_for) < 0)
+			CONNECTION_THREAD_POLL_START(info->conn);
+
+			auto res=poll(pfd, n_poll, poll_for);
+
+			CONNECTION_THREAD_POLL_END();
+			if (res < 0)
 			{
 				if (errno != EINTR && errno != EAGAIN &&
 				    errno != EWOULDBLOCK)
@@ -127,6 +133,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 
 			if (pfd[0].revents & POLLIN)
 				msgqueue->get_eventfd()->event();
+
 		} CATCH_EXCEPTIONS;
 	} while (!stop_received);
 }
@@ -177,6 +184,8 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 			try {
 				w.process_configure_notify(IN_THREAD);
 			} CATCH_EXCEPTIONS;
+
+			CONNECTION_THREAD_ACTION("configure notify");
 
 			processed_buffered_event=true;
 		}
@@ -234,6 +243,7 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 				w.process_collected_exposures(IN_THREAD);
 			} CATCH_EXCEPTIONS;
 
+			CONNECTION_THREAD_ACTION("exposure processing");
 			exposure_rectangles.rectangles.clear();
 			processed_buffered_event=true;
 		}
@@ -251,6 +261,7 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 					(IN_THREAD);
 			} CATCH_EXCEPTIONS;
 
+			CONNECTION_THREAD_ACTION("graphics exposure processing");
 			graphics_exposure_rectangles.rectangles.clear();
 			processed_buffered_event=true;
 		}

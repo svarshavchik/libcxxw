@@ -222,6 +222,8 @@ libcxxw_la_SOURCES=\
 	connection_threadevent.C		    \
 	connection_threadrun.C			    \
 	connection_threadrunelement.C		    \
+	connection_thread_debug.C		    \
+	connection_thread_debug.H		    \
 	container.C				    \
 	container_impl.H			    \
 	container_impl.C			    \

@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "connection_info.H"
 #include "connection_thread.H"
+#include "connection_thread_debug.H"
 #include "returned_pointer.H"
 #include "catch_exceptions.H"
 #include "window_handler.H"
@@ -68,12 +69,19 @@ bool connection_threadObj
 
 		if (b)
 		{
+			bool flag=true;
+
 			while (!msgqueue->empty())
+			{
+				CONNECTION_THREAD_ACTION("batch event");
 				msgqueue.event();
+				flag=false;
+			}
+			CONNECTION_THREAD_ACTION("batch wait");
 			// Drained the message queue, wait for an event,
 			// there will be at least one from the batch queue's
 			// destructor.
-			return true;
+			return flag;
 		}
 
 		if (recalculate_containers(IN_THREAD, poll_for))
@@ -95,6 +103,7 @@ bool connection_threadObj
 
 		if (!msgqueue->empty())
 		{
+			CONNECTION_THREAD_ACTION("event");
 			msgqueue.event();
 			continue;
 		}
@@ -118,7 +127,10 @@ bool connection_threadObj
 			try {
 				if (handler.second->process_focus_updates
 				    (IN_THREAD))
+				{
+					CONNECTION_THREAD_ACTION("delayed focus");
 					processed_focus_updates=true;
+				}
 			} CATCH_EXCEPTIONS;
 		}
 
@@ -153,6 +165,8 @@ bool connection_threadObj
 					  << (int)(event->response_type & ~0x80)
 					  << (event->response_type & 0x80
 					      ? " (SendEvent)":""));
+
+				CONNECTION_THREAD_ACTION("X event");
 
 				run_event(IN_THREAD, event);
 				continue;
@@ -204,6 +218,7 @@ bool connection_threadObj
 				  << (event->response_type & 0x80
 				      ? " (SendEvent)":""));
 
+			CONNECTION_THREAD_ACTION("X event");
 			run_event(IN_THREAD, event);
 			return false;
 		}
@@ -214,11 +229,17 @@ bool connection_threadObj
 		// do this after we redraw, and flush, the display.
 
 		if (process_buffered_motion_event(IN_THREAD))
+		{
+			CONNECTION_THREAD_ACTION("buffered motion");
 			return false;
+		}
 	}
 
 	if (run_idle(IN_THREAD))
+	{
+		CONNECTION_THREAD_ACTION("idle");
 		return false;
+	}
 	return true;
 }
 
@@ -285,6 +306,7 @@ bool connection_threadObj::invoke_scheduled_callbacks(ONLY IN_THREAD,
 			} CATCH_EXCEPTIONS;
 			invoked=true;
 			p=nullptr;
+			CONNECTION_THREAD_ACTION("scheduled event");
 
 			// At this point, if the iterator hasn't reached
 			// end, b->first must be greater than now.

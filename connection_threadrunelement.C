@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "connection_thread.H"
+#include "connection_thread_debug.H"
 #include "generic_window_handler.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
@@ -155,6 +156,8 @@ bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
 		 (const auto &e)
 		 {
 			 flag=true;
+			 CONNECTION_THREAD_ACTION_FOR("process visibility",
+						      &*e);
 
 			 LOG_TRACE("update_visibility: " << e->objname()
 				   << "(" << &*e << ")");
@@ -205,6 +208,8 @@ bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 					 });
 			} CATCH_EXCEPTIONS;
 
+			CONNECTION_THREAD_ACTION_FOR("recalculate",
+						     &*container);
 			flag=true;
 			// Ok, we can get rid of this.
 
@@ -264,6 +269,8 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 					 e->process_same_position(IN_THREAD);
 				 }
 			 } CATCH_EXCEPTIONS;
+			 CONNECTION_THREAD_ACTION_FOR("process position",
+						      &*e);
 			 flag=true;
 		 });
 
@@ -288,6 +295,7 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 			p->explicit_redraw(IN_THREAD);
 		} CATCH_EXCEPTIONS;
 
+		CONNECTION_THREAD_ACTION_FOR("redraw", &*p);
 		flag=true;
 	}
 
