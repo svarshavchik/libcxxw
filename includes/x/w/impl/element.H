@@ -128,7 +128,7 @@ class elementObj::implObj : public element_drawObj,
 		//!
 		//! This is the element's previous position. If its
 		//! current_position really changes, we call process_updated
-		//! position() and update it afte process_updated_position()
+		//! position() and update it after process_updated_position()
 		//! returns. If it's the same we call process_same_position()
 		//! instead.
 

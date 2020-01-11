@@ -164,8 +164,7 @@ void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 	// We can get here after a new element was create()d. We need to
 	// position this element.
 
-	recalculate(IN_THREAD, get_element_impl().data(IN_THREAD)
-		    .current_position, list_impl);
+	recalculate(IN_THREAD, list_impl);
 }
 
 void singletonlayoutmanagerObj::implObj
@@ -193,16 +192,30 @@ void singletonlayoutmanagerObj::implObj
 {
 	auto lei=get_list_element_impl(IN_THREAD);
 
-	recalculate(IN_THREAD, position, get_list_element_impl(IN_THREAD));
+	// We track the container's position ourselves.
+	// It is possible that the container's size changes, and then
+	// gets restored to what it was before.
+	//
+	// recalculate() gets called as a result of the child's metrics
+	// changing, and it sees a temporary-resized position.
+	//
+	// However when the container's size gets restored,
+	// process_updated_position() never gets called, because
+	// position update processing only calls process_update_position()
+	// when it's different from previous_position.
+
+	container_updated_position=position;
+
+	recalculate(IN_THREAD, get_list_element_impl(IN_THREAD));
 }
 
 void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD,
-						     const rectangle &position,
 						     const element_impl &lei)
 {
 	// If our own width/height is 0, don't bother updating the element's
 	// position. This is used by the page layout manager to hide us.
-	if (position.width == 0 || position.height == 0)
+	if (container_updated_position.width == 0 ||
+	    container_updated_position.height == 0)
 		return;
 
 	auto lp=get_left_padding(IN_THREAD);
@@ -214,11 +227,11 @@ void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD,
 	dim_t w_overhead=dim_t::truncate(lp+get_right_padding(IN_THREAD));
 	dim_t h_overhead=dim_t::truncate(tp+get_bottom_padding(IN_THREAD));
 
-	dim_t usable_width=position.width > w_overhead
-		? position.width-w_overhead:dim_t{0};
+	dim_t usable_width=container_updated_position.width > w_overhead
+		? container_updated_position.width-w_overhead:dim_t{0};
 
-	dim_t usable_height=position.height > h_overhead
-		? position.height-h_overhead:dim_t{0};
+	dim_t usable_height=container_updated_position.height > h_overhead
+		? container_updated_position.height-h_overhead:dim_t{0};
 
 	// Position the element within the usable area based on the requested
 	// alignment.

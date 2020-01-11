@@ -23,6 +23,9 @@ class singletonlayoutmanagerObj::implObj :
 	//! when it gets around to it will remove the old widget.
 	typedef mpobj<std::deque<element>> current_element_t;
 
+	//! My container's current position
+	rectangle container_updated_position;
+
 	//! The current widget.
 
 	current_element_t current_element;
@@ -141,8 +144,8 @@ public:
 				      const rectangle &position) override;
 
 private:
-	void recalculate(ONLY IN_THREAD, const rectangle &,
-			 const element_impl &);
+	//! Internal recalculate() implementation.
+	void recalculate(ONLY IN_THREAD, const element_impl &);
 };
 
 LIBCXXW_NAMESPACE_END
