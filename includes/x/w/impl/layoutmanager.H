@@ -185,14 +185,6 @@ class layoutmanagerObj::implObj : virtual public obj {
 
 	virtual void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme);
 
- protected:
-
-	//! Invokes the container's widget function of the same name.
-
-	void current_position_updated(ONLY IN_THREAD);
-
- public:
-
 	//! This widget wants to make sure that part of it is visible.
 
 	//! An element's ensure_visibility() winds up here.

@@ -68,11 +68,6 @@ void layoutmanagerObj::implObj::needs_recalculation(ONLY IN_THREAD)
 	layout_container_impl->needs_recalculation(IN_THREAD);
 }
 
-void layoutmanagerObj::implObj::current_position_updated(ONLY IN_THREAD)
-{
-	get_element_impl().current_position_updated(IN_THREAD);
-}
-
 void layoutmanagerObj::implObj::process_same_position(ONLY IN_THREAD,
 						      const rectangle &position)
 {
