@@ -27,6 +27,7 @@
 #include "selection/current_selection_paste_handler.H"
 #include "x/w/impl/focus/focusable.H"
 #include "grabbed_pointer.H"
+#include "x/w/impl/focus/delayed_input_focus.H"
 #include "xim/ximclient.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
@@ -1781,6 +1782,26 @@ void generic_windowObj::handlerObj
 ::set_keyboard_focus_to(ONLY IN_THREAD, const focusable_impl &element,
 			const callback_trigger_t &trigger)
 {
+	// Clear any delayed input focus mcguffin.
+	//
+	// The fact that we're here must mean that it's getting the input
+	// focus, or someone else decided to get the input focus first.
+
+	auto mcguffin=scheduled_input_focus(IN_THREAD).getptr();
+
+	if (mcguffin)
+	{
+		auto f=mcguffin->me(IN_THREAD).getptr();
+
+		if (f)
+		{
+			f->delayed_input_focus_mcguffin(IN_THREAD)=nullptr;
+#ifdef TEST_UNINSTALL_DELAYED_MCGUFFIN
+			TEST_UNINSTALL_DELAYED_MCGUFFIN();
+#endif
+		}
+	}
+
 	auto old_focus=most_recent_keyboard_focus(IN_THREAD);
 
 	if (old_focus == element)

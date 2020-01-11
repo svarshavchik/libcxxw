@@ -55,9 +55,9 @@ f->get_focus_before(IN_THREAD, other);
 
 f->get_focus_first(IN_THREAD);
 
-bool flag=f->request_focus(IN_THREAD);
+f->request_focus(IN_THREAD);
 
-bool flag=f->request_focus(IN_THREAD, true);
+f->request_focus(IN_THREAD, true);
 
 f->get_focus_after_me(IN_THREAD, {other1, other2, other3});
 
@@ -105,8 +105,15 @@ focusable in the vector too, is unspecified.
 
 request_focus() moves the current keyboard focus to this focusable
 element, if it's enabled and visible. An optional bool parameter of true
-indicates that no error should be reported if the focusable element cannot
-receive focus (it is disabled on not visible).
+indicates that nothing should happen if the focusable element cannot
+receive focus (it is disabled on not visible). By default, if the widget
+cannot received keyboard focus it's presumed this is because it's just
+been created, and all the moving pieces to make it visible and ready to
+receive input focus have not occured yet, and the keyboard focus change
+will occur as soon as the widget finishes initializing. Note that if the
+widget is explicitly disabled, this ends up building a mousetrap that gets
+sprung when the widget gets enabled later (unless some other widget
+requests keyboard focus first, explicitly or implicitly).
 
 The IN_THREAD overloads can only be invoked in the connection thread.
 Additionally, the IN_THREAD overload returns an indication if the was was

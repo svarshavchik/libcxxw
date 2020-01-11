@@ -106,12 +106,24 @@ bool connection_threadObj
 
 		expire_incremental_updates(IN_THREAD, poll_for);
 
+		bool processed_focus_updates=false;
+
 		for (const auto &handler:*window_handlers_thread_only)
+		{
 			try {
 				handler.second->timeout_selection_request
 					(IN_THREAD, poll_for);
 			} CATCH_EXCEPTIONS;
 
+			try {
+				if (handler.second->process_focus_updates
+				    (IN_THREAD))
+					processed_focus_updates=true;
+			} CATCH_EXCEPTIONS;
+		}
+
+		if (processed_focus_updates)
+			continue;
 
 		// Check if the connection errored out, if not, check for
 		// a message.

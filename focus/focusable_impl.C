@@ -8,6 +8,7 @@
 #include "x/w/motion_event.H"
 #include "x/w/main_window.H"
 #include "x/w/impl/focus/focusable.H"
+#include "x/w/impl/focus/delayed_input_focus.H"
 #include "focus/label_for.H"
 #include "generic_window_handler.H"
 #include "x/w/impl/child_element.H"
@@ -541,24 +542,55 @@ void focusableObj::implObj::set_focus_only(ONLY IN_THREAD,
 				       trigger);
 }
 
-bool focusableObj::implObj::request_focus_if_possible(ONLY IN_THREAD,
-						      bool ok_if_not_possible)
+bool generic_windowObj::handlerObj::process_focus_updates(ONLY IN_THREAD)
+{
+	auto mcguffin=scheduled_input_focus(IN_THREAD).getptr();
+
+	if (mcguffin)
+	{
+		auto f=mcguffin->me(IN_THREAD).getptr();
+
+		if (f)
+		{
+			auto &impl=*f;
+
+			if (impl.get_focusable_element().enabled(IN_THREAD))
+			{
+				// set_keyboard_focus_to will clear the
+				// mcguffin.
+
+				impl.set_focus_and_ensure_visibility(IN_THREAD,
+								     {});
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void focusableObj::implObj::request_focus_if_possible(ONLY IN_THREAD,
+						      bool now_or_never)
 {
 	auto &e=get_focusable_element();
 
 	if (!e.enabled(IN_THREAD))
 	{
-		if (ok_if_not_possible)
-			return false;
+		if (now_or_never)
+			return;
 
-		e.stop_message("Cannot set keyboard focus to"
-			       " the requested widget");
-		return false;
+		auto mcguffin=delayed_input_focus::create(ref{this});
+
+		delayed_input_focus_mcguffin(IN_THREAD)=mcguffin;
+
+		get_focusable_element().get_window_handler()
+			.scheduled_input_focus(IN_THREAD)=mcguffin;
+#ifdef TEST_INSTALLED_DELAYED_MCGUFFIN
+		TEST_INSTALLED_DELAYED_MCGUFFIN();
+#endif
+		return;
 	}
 
 	set_focus_and_ensure_visibility(IN_THREAD, {});
-
-	return true;
 }
 
 bool focusableObj::implObj::focus_autorestorable(ONLY IN_THREAD)

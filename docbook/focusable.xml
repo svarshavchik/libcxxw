@@ -63,11 +63,34 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    <methodname>request_focus</methodname>() warps the keyboard input focus
-    to the given focusable, if it's enabled.
-    <methodname>request_focus</methodname>() gets ignored if the given
-    focusable widget is not visible or if it is not enabled.
+    <methodname>request_focus</methodname>() explicitly moves the keyboard
+    input focus to the given focusable widget.
   </para>
+
+  <note>
+    <para>
+      A widgets that are disabled or not visible cannot receive keyboard
+      focus. In that case the keyboard focus gets moved whenever the
+      widget can receive keyboard focus,
+      unless a different widget requests keyboard focus first.
+    </para>
+
+    <para>
+      <methodname>request_focus</methodname>() takes an optional parameter.
+      A <literal>true</literal> value results in the keyboard focus
+      moving to the focusable widget if it's eligible to receive keyboard
+      focus at this time, otherwise this gets ignored and no delayed
+      keyboard focus movement takes place.
+    </para>
+
+    <para>
+      The default behavior makes it possible to create a new widget, make
+      it visible and immediately set the keyboard focus to the new widget.
+      It takes some time for the &connection_thread; to prepare the new
+      widget and draw it; and the default behavior produces the expected
+      results.
+    </para>
+  </note>
 
   <para>
     <methodname>on_keyboard_focus</methodname>() and

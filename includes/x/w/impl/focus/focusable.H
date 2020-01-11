@@ -7,6 +7,7 @@
 
 #include <x/w/focusableobj.H>
 #include <x/w/elementobj.H>
+#include <x/w/impl/focus/delayed_input_focusfwd.H>
 #include <x/w/impl/focus/focusablefwd.H>
 #include <x/w/impl/focus/label_forfwd.H>
 #include <x/w/impl/connection_threadfwd.H>
@@ -88,11 +89,15 @@ class focusableObj::implObj : virtual public obj {
 
 	my_labels_t my_labels_thread_only;
 
+	//! Mcguffin for a delayed input focus change.
+
+	delayed_input_focusptr delayed_input_focus_mcguffin_thread_only;
  public:
 
 	THREAD_DATA_ONLY(focusable_fields_iter);
 	THREAD_DATA_ONLY(in_focusable_fields);
 	THREAD_DATA_ONLY(my_labels);
+	THREAD_DATA_ONLY(delayed_input_focus_mcguffin);
 
 	//! Candidate for receiving focus automatically when shown.
 
@@ -171,12 +176,15 @@ class focusableObj::implObj : virtual public obj {
 
 	//! If this focusable is enabled, then set_focus_and_ensure_visibility()
 
-	//! Don't gripe if this focusable is not eligible for keyboard focus,
-	//! just don't do it, if ok_if_not_possible is requested.
+	//! Do nothing if now_or_never is set, and this widget cannot
+	//! have keyboard input focus.
 	//!
-	//! Returns true if focus has been moved.
-	bool request_focus_if_possible(ONLY IN_THREAD,
-				       bool ok_if_not_possible);
+	//! Otherwise a delayed_input_focus mcguffin gets installed so that
+	//! the widget gets the input focus as soon as it can, unless another
+	//! widget requests input focus first.
+
+	void request_focus_if_possible(ONLY IN_THREAD,
+				       bool now_or_never);
 
 	//! Whether this field is eligible to have its focus restored.
 

@@ -499,4 +499,9 @@ void window_handlerObj::flush_redrawn_areas(ONLY IN_THREAD)
 {
 }
 
+bool window_handlerObj::process_focus_updates(ONLY IN_THREAD)
+{
+	return false;
+}
+
 LIBCXXW_NAMESPACE_END

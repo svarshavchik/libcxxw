@@ -311,6 +311,7 @@ libcxxw_la_SOURCES=\
 	focusable_owner_container.H		    \
 	focusable_owner_containerfwd.H		    \
 	focusable_owner_containerobj.H		    \
+	focus/delayed_input_focus.C		    \
 	focus/element_focusable.C		    \
 	focus/focusable.C			    \
 	focus/focusable_container.C		    \

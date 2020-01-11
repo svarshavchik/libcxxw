@@ -75,7 +75,7 @@ public:
 	//! Request for keyboard focus to be moved to this widget.
 
 	//! No action takes place if this focusable is disabled.
-	void request_focus(bool ok_if_not_possible=false);
+	void request_focus(bool now_or_never=false);
 
 	//! This focusable should be tabbed to before the other one.
 
@@ -100,8 +100,8 @@ public:
 
 	//! No action takes place if this focusable is disabled. Returns
 	//! true if focus was moved.
-	bool request_focus(ONLY IN_THREAD,
-			   bool ok_if_not_possible=false);
+	void request_focus(ONLY IN_THREAD,
+			   bool now_or_never=false);
 
 	//! Return the set of real internal focusable widget implementations.
 

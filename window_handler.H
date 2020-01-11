@@ -370,6 +370,17 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! Checks if the conversion timed out.
 
 	void timeout_selection_request(ONLY IN_THREAD, int &poll_for);
+
+	//! Called by the connection thread.
+
+	//! Implemented in generic_window_handler to check if it's now
+	//! possible to move input focus to the requested widget.
+	//!
+	//! Returns true if input focus was moved. The default implementation
+	//! returns false.
+
+	virtual bool process_focus_updates(ONLY IN_THREAD);
+
 	//! Potentially convert the requested selection.
 
 	//! The subclass that calls convert_selection() must implement

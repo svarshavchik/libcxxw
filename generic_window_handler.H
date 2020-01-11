@@ -18,6 +18,7 @@
 #include "cursor_pointer_elementfwd.H"
 #include "shortcut/installed_shortcutfwd.H"
 #include "selection/current_selectionfwd.H"
+#include "x/w/impl/focus/delayed_input_focusfwd.H"
 #include "x/w/impl/selection/current_selection_handlerfwd.H"
 #include "x/w/impl/background_colorfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
@@ -300,6 +301,10 @@ class generic_windowObj::handlerObj
 	//! The current pointer grab.
 
 	weakptr<grabbed_pointerptr> current_pointer_grab_thread_only;
+
+	//! The widget that has requested input focus.
+
+	weakptr<delayed_input_focusptr> scheduled_input_focus_thread_only;
  public:
 
 	//! Determine which element is receiving pointer events now.
@@ -410,6 +415,8 @@ class generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(has_focus);
 	THREAD_DATA_ONLY(frame_extents);
 	THREAD_DATA_ONLY(current_pointer_grab);
+	THREAD_DATA_ONLY(scheduled_input_focus);
+
 	THREAD_DATA_ONLY(has_exposed);
 	THREAD_DATA_ONLY(has_mapped);
 	THREAD_DATA_ONLY(current_theme);
@@ -519,6 +526,12 @@ public:
 
 	void focusable_initialized(ONLY IN_THREAD,
 				   focusableObj::implObj &fimpl) override;
+
+	//! Check if input focus can be moved to the widget that requested it.
+
+	//! Checks if there's a delayed_input_focus, and whether this
+	//! widget can now handle it.
+	bool process_focus_updates(ONLY IN_THREAD) override;
 
  private:
 	//! Most recent popup where the pointer motion event went to.
