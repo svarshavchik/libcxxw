@@ -45,9 +45,9 @@ void focusable_labelObj::implObj::keyboard_focus(ONLY IN_THREAD,
 	}
 }
 
-void focusable_labelObj::implObj::current_position_updated(ONLY IN_THREAD)
+void focusable_labelObj::implObj::process_updated_position(ONLY IN_THREAD)
 {
-	superclass_t::current_position_updated(IN_THREAD);
+	superclass_t::process_updated_position(IN_THREAD);
 	report_current_cursor_position_if_active(IN_THREAD);
 }
 

@@ -45,11 +45,11 @@ class LIBCXX_HIDDEN focusable_labelObj::implObj
 	void keyboard_focus(ONLY IN_THREAD,
 			    const callback_trigger_t &trigger) override;
 
-	//! Override current_position_updated()
+	//! Override process_updated_position()
 
 	//! Call report_current_cursor_position_if_active().
 
-	void current_position_updated(ONLY IN_THREAD) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! report_current_cursor_position() when we have input focus.
 
