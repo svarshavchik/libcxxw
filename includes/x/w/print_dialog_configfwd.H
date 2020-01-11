@@ -9,6 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct LIBCXX_PUBLIC print_dialog_config_settings;
 struct print_dialog_config;
 
 LIBCXXW_NAMESPACE_END

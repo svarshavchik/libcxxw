@@ -30,11 +30,13 @@ struct dialog_args {
 void hide_and_invoke_when_activated(const main_window &parent_window,
 				    const dialog &d,
 				    const hotspot &button,
-				    const ok_cancel_dialog_callback_t &action);
+				    const ok_cancel_dialog_callback_t &action)
+	LIBCXX_PUBLIC;
 
 void hide_and_invoke_when_closed(const main_window &parent_window,
 				 const dialog &d,
-				 const ok_cancel_dialog_callback_t &action);
+				 const ok_cancel_dialog_callback_t &action)
+	LIBCXX_PUBLIC;
 
 functionref<void (const factory &)>
 dialog_ok_button(const text_param &label,

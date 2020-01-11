@@ -9,7 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct color_picker_config;
+struct LIBCXX_PUBLIC color_picker_config;
 
 LIBCXXW_NAMESPACE_END
 

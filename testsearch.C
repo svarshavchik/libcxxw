@@ -11,6 +11,7 @@
 #include <x/destroy_callback.H>
 
 #include "x/w/connection_threadfwd.H"
+#include "x/w/listlayoutmanagerfwd.H"
 
 #define x_w_text_param_H
 #define x_w_listlayoutmanager_h

@@ -1107,6 +1107,7 @@ testcombobox_LDFLAGS=$(TESTLINKTYPE)
 
 testcustomcanvas_SOURCES=testcustomcanvas.C
 testcustomcanvas_LDADD=libcxxw.la
+testcustomcanvas_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testdateinput_SOURCES=testdateinput.C
 testdateinput_LDADD=libcxxw.la

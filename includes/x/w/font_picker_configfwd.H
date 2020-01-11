@@ -9,6 +9,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct LIBCXX_PUBLIC font_picker_config_settings;
+
 struct font_picker_config;
 
 LIBCXXW_NAMESPACE_END

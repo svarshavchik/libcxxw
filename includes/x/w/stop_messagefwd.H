@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct stop_message_config;
+struct LIBCXX_PUBLIC stop_message_config;
 
 LIBCXXW_NAMESPACE_END
 

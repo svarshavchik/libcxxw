@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Queue of containers to recalculate in batch.
 
-class LIBCXX_HIDDEN containers_2_batch_recalculate_set {
+class containers_2_batch_recalculate_set {
 
 public:
 
@@ -31,7 +31,7 @@ public:
 
 //! Queue of elements whose visibility should be updated in bulk
 
-class LIBCXX_HIDDEN elements_2_batch_showhide_map {
+class elements_2_batch_showhide_map {
 
 public:
 	//! Constructor

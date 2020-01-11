@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct alert_message_config;
+struct LIBCXX_PUBLIC alert_message_config;
 
 LIBCXXW_NAMESPACE_END
 

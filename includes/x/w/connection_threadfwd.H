@@ -10,7 +10,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-class connection_threadObj;
+class LIBCXX_HIDDEN connection_threadObj;
+class LIBCXX_HIDDEN containers_2_recalculate_map;
+class LIBCXX_HIDDEN containers_2_batch_recalculate_set;
+class LIBCXX_HIDDEN elements_2_batch_showhide_map;
+
 
 //! Internal library execution thread.
 

@@ -295,7 +295,7 @@ public:
 // set of all containers, with that nesting level, that may need to be
 // recalculated
 
-class LIBCXX_HIDDEN containers_2_recalculate_map
+class containers_2_recalculate_map
 	: public std::map<size_t,
 			  std::unordered_set<container_impl>>
 {

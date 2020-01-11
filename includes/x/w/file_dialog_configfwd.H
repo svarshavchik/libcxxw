@@ -9,7 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct file_dialog_config;
+struct LIBCXX_PUBLIC file_dialog_config;
 
 LIBCXXW_NAMESPACE_END
 

@@ -33,10 +33,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-class containers_2_recalculate_map;
-class containers_2_batch_recalculate_set;
-class elements_2_batch_showhide_map;
-
 //! The connection thread. Handles X server events. Does everything.
 class LIBCXX_HIDDEN connection_threadObj
 	: public threadmsgdispatcherObj {
