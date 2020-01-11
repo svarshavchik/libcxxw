@@ -10,15 +10,18 @@
 #include "x/w/file_dialog_config.H"
 #include "x/w/file_dialog.H"
 #include "x/w/label.H"
+#include "catch_exceptions.H"
 #include "messages.H"
 
 #include <x/config.H>
 #include <x/messages.H>
 #include <x/locale.H>
 #include <x/to_string.H>
+#include <x/imbue.H>
 #include <sstream>
 #include <cstdlib>
 #include <cmath>
+#include <iterator>
 
 #ifndef CREATORDIR
 #define CREATORDIR PKGDATADIR "/creator"
@@ -36,7 +39,7 @@ static x::xml::doc new_theme_file()
 	return d;
 }
 
-appObj::init_args::init_args(int argc, char **argv)
+appObj::init_args::init_args()
 	: configfile{x::configdir("cxxwcreator@libcxx.com") + "/windows"},
 	  theme{new_theme_file()},
 	  label_filter
@@ -54,12 +57,6 @@ appObj::init_args::init_args(int argc, char **argv)
 	 }
 	}
 {
-	if (argc > 1)
-	{
-		theme=appObj::load_file(argv[1]);
-
-		filename=argv[1];
-	}
 }
 
 // Helper for installing a main menu action.
@@ -80,9 +77,9 @@ static void install_menu_event(x::w::uielements &ui,
 		 });
 }
 
-inline appObj::init_args appObj::create_init_args(int argc, char **argv)
+inline appObj::init_args appObj::create_init_args()
 {
-	appObj::init_args args{argc, argv};
+	appObj::init_args args;
 
 	auto pos=x::w::screen_positions::create(args.configfile);
 
@@ -235,12 +232,15 @@ inline appObj::init_args appObj::create_init_args(int argc, char **argv)
 
 			 appObj::dimension_elements_initialize
 				 (args.elements, ui, args);
+
+			 appObj::colors_elements_initialize
+				 (args.elements, ui, args);
 		 });
 
 	return args;
 }
 
-appObj::appObj(int argc, char **argv) : appObj{create_init_args(argc, argv)}
+appObj::appObj() : appObj{create_init_args()}
 {
 }
 
@@ -248,7 +248,7 @@ appObj::appObj(int argc, char **argv) : appObj{create_init_args(argc, argv)}
 //
 // Returns a double as a string.
 
-static auto fmtdblval(double d)
+std::string appObj::fmtdblval(double d)
 {
 	std::stringstream o;
 
@@ -328,7 +328,8 @@ static inline auto value_validator(const x::w::input_field &field,
 				{
 					if (v >= 0 && v < 10000)
 					{
-						double_value=fmtdblval(v);
+						double_value=
+							appObj::fmtdblval(v);
 						return ret;
 					}
 				}
@@ -393,6 +394,65 @@ static inline auto dimension_scale_value_validator(const x::w::input_field
 			       &appObj::dimension_scale_value_entered);
 }
 
+static auto color_scale_value_validator(const x::w::input_field &field)
+{
+	return value_validator(field, true,
+			       _txt("Invalid scaling value"),
+			       &appObj::color_updated);
+}
+
+struct all_gradient_values : x::w::linear_gradient_values,
+			     x::w::radial_gradient_values {};
+
+static const x::w::validated_input_field<double>
+color_gradient_value_validator(const x::w::input_field &field,
+			       double all_gradient_values::*default_value)
+{
+	return field->set_string_validator
+		([default_value]
+		 (ONLY IN_THREAD,
+		  const std::string &value,
+		  double *parsed_value,
+		  const x::w::input_field &field,
+		  const auto &trigger) -> std::optional<double>
+		 {
+			 if (parsed_value)
+			 {
+				 auto s=appObj::fmtdblval(*parsed_value);
+
+				 std::istringstream i{s};
+
+				 x::imbue imbued{x::locale::base::global(), i};
+
+				 i >> *parsed_value;
+
+				 return *parsed_value;
+			 }
+
+			 if (value.empty())
+			 {
+				 all_gradient_values default_values;
+
+				 return default_values.*default_value;
+			 }
+
+			 field->stop_message(_("Invalid value"));
+
+			 return std::nullopt;
+		 },
+		 [default_value]
+		 (double v) -> std::string
+		 {
+			 all_gradient_values default_values;
+
+			 return appObj::fmtdblval(v);
+		 },
+		 []
+		 (ONLY IN_THREAD, const std::optional<double> &v)
+		 {
+			 appinvoke(&appObj::color_updated, IN_THREAD);
+		 });
+}
 
 appObj::appObj(init_args &&args)
 	: app_elements_t{std::move(args.elements)},
@@ -407,7 +467,74 @@ appObj::appObj(init_args &&args)
 	  dimension_value_validated{dimension_value_validator
 				    (dimension_value)},
 	  dimension_scale_value_validated{dimension_scale_value_validator
-					  (dimension_scale_value)}
+					  (dimension_scale_value)},
+	  color_scaled_r_validated(color_scale_value_validator
+				   (color_scaled_page_r)),
+	  color_scaled_g_validated(color_scale_value_validator
+				   (color_scaled_page_g)),
+	  color_scaled_b_validated(color_scale_value_validator
+				   (color_scaled_page_b)),
+	  color_scaled_a_validated(color_scale_value_validator
+				   (color_scaled_page_a)),
+
+
+	  color_linear_x1_validated(color_gradient_value_validator
+				    (color_linear_x1,
+				     &all_gradient_values::x1)),
+	  color_linear_y1_validated(color_gradient_value_validator
+				    (color_linear_y1,
+				     &all_gradient_values::y1)),
+	  color_linear_x2_validated(color_gradient_value_validator
+				    (color_linear_x2,
+				     &all_gradient_values::x2)),
+	  color_linear_y2_validated(color_gradient_value_validator
+				    (color_linear_y2,
+				     &all_gradient_values::y2)),
+	  color_linear_width_validated(color_gradient_value_validator
+				       (color_linear_width,
+					&all_gradient_values
+					::linear_gradient_values::fixed_width)),
+	  color_linear_height_validated(color_gradient_value_validator
+					(color_linear_height,
+					 &all_gradient_values
+					 ::linear_gradient_values::fixed_height)
+					),
+
+	  color_radial_inner_x_validated(color_gradient_value_validator
+					 (color_radial_inner_x,
+					  &all_gradient_values::inner_center_x)
+					 ),
+	  color_radial_inner_y_validated(color_gradient_value_validator
+					 (color_radial_inner_y,
+					  &all_gradient_values::inner_center_y)
+					 ),
+	  color_radial_inner_radius_validated(color_gradient_value_validator
+					      (color_radial_inner_radius,
+					       &all_gradient_values
+					       ::inner_radius)),
+	  color_radial_outer_x_validated(color_gradient_value_validator
+					 (color_radial_outer_x,
+					  &all_gradient_values
+					  ::outer_center_x)),
+	  color_radial_outer_y_validated(color_gradient_value_validator
+					 (color_radial_outer_y,
+					  &all_gradient_values
+					  ::outer_center_y)),
+	  color_radial_outer_radius_validated(color_gradient_value_validator
+					    (color_radial_outer_radius,
+					     &all_gradient_values::outer_radius)
+					      ),
+	  color_radial_fixed_width_validated(color_gradient_value_validator
+					     (color_radial_fixed_width,
+					      &all_gradient_values::
+					      radial_gradient_values::
+					      fixed_width)
+					     ),
+	  color_radial_fixed_height_validated(color_gradient_value_validator
+					      (color_radial_fixed_height,
+					       &all_gradient_values::
+					       radial_gradient_values::
+					       fixed_height))
 {
 	loaded_file();
 	main_window->get_menubar()->show();
@@ -419,6 +546,7 @@ void appObj::loaded_file()
 	update_title();
 	enable_disable_menus();
 	dimension_initialize();
+	colors_initialize();
 }
 
 // Update the main window title's after loading or saving a file.
@@ -469,8 +597,31 @@ void appObj::update_theme(ONLY IN_THREAD, const x::w::busy &mcguffin,
 		  (const x::xml::doc &new_theme)
 		  {
 			  try {
+				  // Try to reparse the proposed theme file.
+				  //
+				  // We save and reread it with xinclude
+				  // enable, and then try to parse that
+				  // version.
+				  std::stringstream s;
+
+				  new_theme->readlock()
+					  ->save_to(std::ostreambuf_iterator
+						    {s.rdbuf()}, true);
+
+				  auto n=themename.get();
+
+				  if (n.empty())
+					  n="theme.xml";
+
+				  auto test_theme=x::xml::doc::create
+					  (std::istreambuf_iterator
+					   {s.rdbuf()},
+					   std::istreambuf_iterator<char>{},
+					   n,
+					   "noblanks xinclude");
+
 				  (void)x::w::uigenerators
-					  ::create(new_theme);
+					  ::create(test_theme);
 
 				  theme=new_theme;
 				  edited=true;
@@ -623,26 +774,48 @@ void appObj::open_file()
 		->dialog_window->show_all();
 }
 
+void appObj::open_initial_file(ONLY IN_THREAD,
+			       const std::string &filename)
+{
+	using x::exception;
+
+	try {
+		open_dialog_closed(IN_THREAD, filename);
+	} REPORT_EXCEPTIONS(main_window);
+}
+
 void appObj::open_dialog_closed(ONLY IN_THREAD,
 				const std::string &filename)
 {
 	theme=load_file(filename);
 	themename=filename;
 	loaded_file();
-	status->update(_("File opened"));
+
+	auto n=themename.get();
+
+	n=n.substr(n.rfind('/')+1);
+
+	status->update((std::string)x::gettextmsg(_("Opened %1%"), n));
 }
 
 x::xml::doc appObj::load_file(const std::string &filename)
 {
-	auto theme=x::xml::doc::create(filename, "noblanks");
+	// Attempt to load this thing with xinclude, first, and parse it.
+	//
+	// If ok, load it without xinclude.
+
+	auto theme=x::xml::doc::create(filename, "noblanks xinclude");
 
 	auto lock=theme->readlock();
 	if (!lock->get_root() ||
 	    lock->name() != "theme")
 		throw EXCEPTION(x::gettextmsg
-				(_("%1% does not appear to be"
-				   " a theme file"), filename));
-	return theme;
+                               (_("%1% does not appear to be"
+                                  " a theme file"), filename));
+
+	(void)x::w::uigenerators::create(theme);
+
+	return x::xml::doc::create(filename, "noblanks");
 }
 
 void appObj::ifnotedited(void (appObj::*whattodo)(),

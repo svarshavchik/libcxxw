@@ -408,16 +408,30 @@ void focusableObj::request_focus(bool ok_if_not_possible)
 	// may depend on the results of the layout manager changes. Therefore
 	// we must schedule this to be batch-executed, after the batch job
 	// finishes.
-
+	//
+	// But that's not enough. If request_focus() gets called immediately
+	// after creating the focusable element, it is necessary to show()
+	// the element first, but the requires visibility processing to
+	// occur, so we'll schedule request_focus_if_possible for idle
+	// processing.
 	get_impl()->get_focusable_element().THREAD
 		->get_batch_queue()
-		->run_as([impl=get_impl(), ok_if_not_possible]
-			 (ONLY IN_THREAD)
-			 {
-				 impl->request_focus_if_possible
-					 (IN_THREAD,
-					  ok_if_not_possible);
-			 });
+		->run_as
+		([impl=get_impl(), ok_if_not_possible]
+		 (ONLY IN_THREAD)
+		 {
+			 impl->get_focusable_element()
+				 .get_window_handler()
+				 .get_screen()->get_connection()
+				 ->in_thread_idle
+				 ([impl, ok_if_not_possible]
+				  (ONLY IN_THREAD)
+				  {
+					  impl->request_focus_if_possible
+						  (IN_THREAD,
+						   ok_if_not_possible);
+				  });
+		 });
 }
 
 bool focusableObj::request_focus(ONLY IN_THREAD, bool ok_if_not_possible)

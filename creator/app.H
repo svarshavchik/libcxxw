@@ -5,6 +5,7 @@
 #include <x/ref.H>
 #include <x/refptr_traits.H>
 #include <x/singletonptr.H>
+#include <x/functional.H>
 #include <x/functionalrefptr.H>
 #include <x/eventqueue.H>
 #include <x/mpobj.H>
@@ -20,9 +21,16 @@
 #include "x/w/label.H"
 #include "x/w/standard_comboboxlayoutmanagerfwd.H"
 #include "x/w/listitemhandle.H"
+#include "x/w/color_picker.H"
 #include "x/w/impl/connection_threadfwd.H"
+#include "x/w/impl/uixmlparser.H"
 
 #include "creator/appelements.inc.H"
+#include <variant>
+#include <optional>
+#include <string>
+#include <map>
+#include <vector>
 
 class appObj;
 
@@ -41,13 +49,13 @@ class appObj : public app_elements_t, virtual public x::obj {
 
 public:
 	//! Constructor
-	appObj(int argc, char **argv);
+	appObj();
 
 private:
 
 	struct LIBCXX_HIDDEN init_args;
 
-	static init_args create_init_args(int argc, char **argv) LIBCXX_HIDDEN;
+	static init_args create_init_args() LIBCXX_HIDDEN;
 
 	//! Parameters for an internal constructor
 	struct init_args {
@@ -61,7 +69,7 @@ private:
 		x::functionref<x::w::input_field_filter_callback_t
 			       > label_filter;
 
-		init_args(int argc, char **argv);
+		init_args();
 	};
 
 	//! Internal constructor
@@ -92,6 +100,9 @@ private:
 
 	void enable_disable_menus();
 public:
+	//! Format double value to three deicmal points.
+	static std::string fmtdblval(double d);
+
 	//! Main application loop
 	void mainloop();
 
@@ -133,16 +144,69 @@ public:
 	x::mpobj<bool> edited=false;
 
 	//! Dimensions page: validated new name field
-	const x::w::validated_input_field<std::string
-					  > dimension_new_name_validated;
+	const x::w::validated_input_field<
+		std::string> dimension_new_name_validated,
 
 	//! Dimensions page: validated value field.
-	const x::w::validated_input_field<std::string
-					  > dimension_value_validated;
+		dimension_value_validated,
 
 	//! Dimensions page: validated scale field.
-	const x::w::validated_input_field<std::string
-					  > dimension_scale_value_validated;
+		dimension_scale_value_validated,
+
+	//! Colors page: validated R scale value.
+		color_scaled_r_validated,
+
+	//! Colors page: validated G scale value.
+		color_scaled_g_validated,
+
+	//! Colors page: validated B scale value.
+		color_scaled_b_validated,
+
+	//! Colors page: validated A scale value.
+		color_scaled_a_validated;
+
+	//! Colors page: linear gradient value
+	const x::w::validated_input_field<
+		double> color_linear_x1_validated,
+
+	//! Colors page: linear gradient value
+		color_linear_y1_validated,
+
+	//! Colors page: linear gradient value
+		color_linear_x2_validated,
+
+	//! Colors page: linear gradient value
+		color_linear_y2_validated,
+
+	//! Colors page: linear gradient value
+		color_linear_width_validated,
+
+	//! Colors page: linear gradient value
+		color_linear_height_validated,
+
+	//! Colors page: radial gradient value
+		color_radial_inner_x_validated,
+
+	//! Colors page: radial gradient value
+		color_radial_inner_y_validated,
+
+	//! Colors page: radial gradient value
+		color_radial_inner_radius_validated,
+
+	//! Colors page: radial gradient value
+		color_radial_outer_x_validated,
+
+	//! Colors page: radial gradient value
+		color_radial_outer_y_validated,
+
+	//! Colors page: radial gradient value
+		color_radial_outer_radius_validated,
+
+	//! Colors page: radial gradient value
+		color_radial_fixed_width_validated,
+
+	//! Colors page: radial gradient value
+		color_radial_fixed_height_validated;
 
 	//////////////////////////////////////////////////////////////////////
 	//
@@ -184,6 +248,11 @@ public:
 
 	//! Show the file open dialog
 	void open_file();
+
+	//! Load the initial file, that was passed in as a parameter.
+
+	void open_initial_file(ONLY IN_THREAD,
+			       const std::string &filename);
 
 	//! File open dialog was closed
 	void open_dialog_closed(ONLY IN_THREAD,
@@ -370,6 +439,158 @@ public:
 	//! Delete dimension
 	void dimension_delete(const update_callback_t &callback);
 
+
+	/////////////////////////////////////////////////////////////////
+	//
+	// Colors page.
+
+	//! Installs callbacks.
+
+	static void colors_elements_initialize(app_elements_tptr &,
+					       x::w::uielements &,
+					       init_args &);
+
+	//! Initialize the dimension page after loading/creating a new theme.
+
+	void colors_initialize();
+
+	//! We load the gradient colors as is.
+	typedef std::map<size_t, std::string> loaded_color_gradient_t;
+
+	//! Loaded linear gradient
+	struct loaded_linear_gradient : x::w::linear_gradient_values {
+
+		loaded_color_gradient_t gradient;
+	};
+
+	//! Loaded radial gradient
+	struct loaded_radial_gradient : x::w::radial_gradient_values {
+
+		loaded_color_gradient_t gradient;
+	};
+
+
+	//! Loaded color
+
+	//! Verbatim loaded rgb value, or a parsed scaled color, or a gradient.
+
+	typedef std::variant<x::w::rgb, x::w::ui::parsed_scaled_color,
+			     loaded_linear_gradient,
+			     loaded_radial_gradient> loaded_color_t;
+
+	//! Original dimension parameters
+
+	struct colors_orig_params {
+		size_t index; //!< Which original dimension
+		loaded_color_t loaded_color;
+	};
+
+	//! Validated and saved parameters.
+	struct colors_save_params {
+
+		std::string color_new_name; //!< When creating a new one.
+		loaded_color_t color_new_value; //!< The new value
+	};
+
+	//! Colors metadata
+	struct colors_info_s {
+
+		//! Cached: selected index of an existing color.
+		std::optional<colors_orig_params> current_selection;
+
+		//! Cached: selected index of an existing colors.
+		//! std::optional<colors_orig_params> current_selection;
+
+		//! Cached: selected index of an existing "from" colors.
+		std::optional<size_t> from_index;
+
+		//! The existing colors.
+		std::vector<std::string> ids;
+
+		//! Updated colors save params.
+
+		//! This is updated every time something changes on the
+		//! colors. The "Save" button simply takes this to the bank.
+
+		std::optional<colors_save_params> save_params;
+	};
+
+	//! Thread-safe container for colors metadata.
+
+	typedef x::mpobj<colors_info_s,
+			 std::recursive_mutex> colors_info_t;
+
+	//! Current colors
+	colors_info_t colors_info;
+
+	//! Something was selected or unselected in the color combo-box
+
+	void color_selected(ONLY IN_THREAD,
+			    const
+			    x::w::standard_combobox_selection_changed_info_t
+			    &info);
+
+	//! Reset all fields to their original values, for the current color
+	void color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock);
+
+	//! The currently displayed color has been updated in some way.
+	void color_updated(ONLY IN_THREAD);
+
+private:
+
+	//! The currently displayed color has been updated in some way.
+	void color_updated_locked(ONLY IN_THREAD,
+				  colors_info_t::lock &);
+
+	//! Invoked by "Add" button on a color gradient tab.
+
+	//! Adds another row for a gradient color. Returns the input field
+	//! for the gradient number input field
+
+	x::w::input_field
+	color_add_gradient_row(ONLY IN_THREAD,
+			       const x::w::container &container,
+			       const x::w::gridlayoutmanager &glm);
+
+	//! Determine whether the gradient "Add" button should be enabled.
+
+	//! Disable the "Add" button if there's any existing gradient
+	//! color that failed validation.
+
+	void color_add_enable_disable(ONLY IN_THREAD,
+				      const x::w::container &container,
+				      const x::w::gridlayoutmanager &glm);
+
+	//! Enable or disable the "Add" button.
+
+	void color_add_enable_disable(ONLY IN_THREAD,
+				      const x::w::container &container,
+				      const x::w::gridlayoutmanager &glm,
+				      bool enabled);
+
+	//! Helper class for creating new gradient color rows.
+
+	struct color_create_gradient_row;
+
+	//! Helper function for extracting gradient values and colors.
+
+	template<typename F>
+	static bool parse_gradient_rows(const x::w::container &container,
+					const x::w::gridlayoutmanager &glm,
+					F &&f)
+	{
+		return do_parse_gradient_rows(container, glm,
+					      x::make_function<void
+					      (size_t,
+					       const std::string &)>
+					      (std::forward<F>(f)));
+	}
+
+	static bool do_parse_gradient_rows(const x::w::container &container,
+					   const x::w::gridlayoutmanager &glm,
+					   const x::function<void
+					   (size_t,
+					    const std::string &)> &parser);
 private:
 
 	//! The app is running.

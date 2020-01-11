@@ -123,7 +123,10 @@ with the cursor at the end of the field. The callback receives a
 Returning \c true from this callback results in the contents of the
 input field getting updated.
 
-\see factory
+\note
+The
+\ref new_editable_comboboxlayoutmanager "editable combo-box layout manager"
+installs an autocomplete callback into its input field.
 
 \par Validation
 

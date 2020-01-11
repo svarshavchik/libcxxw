@@ -16,20 +16,18 @@ class LIBCXX_PUBLIC pagefactoryObj;
 
 This factory is returned by \ref pagelayoutmanager "INSERT_LIBX_NAMESPACE::w::pagelayoutmanager"'s
 append() and insert() methods. It inherits from the
-\ref factory "standard factory object", and provides the additional
+\ref factory "standard factory object", and implements additional
 halign() and valign() methods.
 
 The page layout manager automatically sizes the container to accomodate
-the largest element in the container, even when it is visible; so switching
-to a different element does not change the layout of the widgets
+the largest widget in the container, even when it's not visible; so switching
+to a different widget does not change the layout of other widgets
 in the window.
 
-Other, smaller elements in the switched container appear in the center of
-the container by default. When creating new widget, invoking
-halign() and/or valign() specifies that the next widget created
-by the factory gets positioned in the switched container, when the element
-is visible, according to the
-specified alignment if it's not the largest element in the switch.
+Calling halign() and valign() before creating new widgets specifies how
+narrow or shorter widges get accomodated in the page that's sized for
+the largest widget. By default all widgets get centered on their respective
+pages.
 
 */
 

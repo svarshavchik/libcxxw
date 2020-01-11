@@ -9,9 +9,20 @@
 
 void cxxwcreator(int argc, char **argv)
 {
-	auto me=app::create(argc, argv);
+	auto me=app::create();
 
 	appsingleton me_singleton{me};
+
+	if (argc > 1)
+	{
+		me->main_window->in_thread_idle
+			([name=argv[1]]
+			 (ONLY IN_THREAD)
+			 {
+				 appinvoke(&appObj::open_initial_file,
+					   IN_THREAD, name);
+			 });
+	}
 
 	me->mainloop();
 }

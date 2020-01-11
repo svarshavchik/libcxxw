@@ -23,7 +23,7 @@ that uses an editable \ref input_field "input_field" instead of a read-only
 label for the currently selected combo-box item.
 
 Typing in the combo-box's input field auto-completes the closest matching
-list item, if possible; but it;s possible to type in something that does
+list item, if possible; but it's possible to type in something that does
 not match any combo-box list item.
 
 \ref new_editable_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager"

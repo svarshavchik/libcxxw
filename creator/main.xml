@@ -81,20 +81,6 @@
     <add>
       <tab>
 	<element>
-	  <label type='theme_text'>${context:creator-main}${decoration:underline}P${decoration:none}review</label>
-	</element>
-      </tab>
-      <shortcut type="theme_text">${context:creator-main}Alt-P</shortcut>
-      <page>
-	<container>
-	  <type>page</type>
-	  <name>preview_page</name>
-	</container>
-      </page>
-    </add>
-    <add>
-      <tab>
-	<element>
 	  <label type='theme_text'>${context:creator-main}${decoration:underline}D${decoration:none}imensions</label>
 	</element>
       </tab>
@@ -106,44 +92,21 @@
 	</container>
       </page>
     </add>
+    <add>
+      <tab>
+	<element>
+	  <label type='theme_text'>${context:creator-main}${decoration:underline}C${decoration:none}olors</label>
+	</element>
+      </tab>
+      <shortcut type="theme_text">${context:creator-main}Alt-C</shortcut>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>colors_page</name>
+	</container>
+      </page>
+    </add>
   </factory>
-
-  <!--
-      Preview page in the book. It itself consists of a page container,
-      which always shows page 0 with the preview.
-
-Page 1 is a canvas with fixed size. This sets the minimum dimensions of the
-entire window.
-
-  -->
-  <layout type="page" id="preview_page">
-    <append>
-      <name>preview_page_pages</name>
-    </append>
-
-    <open>
-      <position>0</position>
-    </open>
-  </layout>
-
-  <factory type="page" id="preview_page_pages">
-    <halign>center</halign>
-    <valign>middle</valign>
-
-    <container>
-      <type>grid</type>
-      <name>current_element</name>
-    </container>
-
-    <element id="minimum_size">
-      <canvas>
-	<width>minimum_width</width>
-	<height>minimum_height</height>
-      </canvas>
-    </element>
-  </factory>
-
-  <layout type="grid" id="current_element" />
 
   <!-- Dimensions page -->
 
@@ -351,6 +314,693 @@ entire window.
 	<appearance>normal_theme</appearance>
       </config>
       <shortcut type='theme_text'>${context:dimension}Alt-E</shortcut>
+    </element>
+  </factory>
+
+  <!-- Colors page -->
+
+  <!-- Divide into top and main section, vertically stacked -->
+  <layout type="grid" id="colors_page">
+    <append_row>
+      <name>color-top-row</name>
+    </append_row>
+    <append_row>
+      <name>color-main-row</name>
+    </append_row>
+  </layout>
+
+  <!-- Top section, a container with name and new name inputs -->
+
+  <factory type="grid" id="color-top-row">
+    <halign>center</halign>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <container>
+      <type>grid</type>
+      <name>color-top-row-container</name>
+    </container>
+  </factory>
+
+  <layout type="grid" id="color-top-row-container">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>color-name-row</name>
+    </append_row>
+    <append_row>
+      <name>new-color-name-row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="color-name-row">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>${context:creator}Name:</label>
+    </element>
+    <container>
+      <name>color-name-field</name>
+      <type>standard_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="color-name-field" type="standard_combobox" />
+
+  <factory type="grid" id="new-color-name-row">
+    <halign>right</halign>
+    <element id="color-new-name-label">
+      <label type='theme_text'>${context:creator}New name:</label>
+    </element>
+    <element id="color-new-name-field">
+      <input_field />
+        <config>
+	  <columns>30</columns>
+	</config>
+    </element>
+  </factory>
+
+  <!-- Main section: radio buttons on the left, open individual pages on the
+       right
+  -->
+
+  <factory type="grid" id="color-main-row">
+    <halign>right</halign>
+    <valign>middle</valign>
+    <container>
+      <type>grid</type>
+      <name>color-left-side</name>
+    </container>
+    <padding>
+      <side>left</side>
+      <padding>color-type-padding</padding>
+    </padding>
+    <valign>middle</valign>
+    <container>
+      <type>page</type>
+      <name>color-right-side-page</name>
+    </container>
+  </factory>
+
+  <!-- Padding between radio buttons and the type -->
+
+  <dim id="color-type-padding">10</dim>
+
+  <layout type="grid" id="color-left-side">
+    <append_row>
+      <name>color-basic-option-row</name>
+    </append_row>
+    <append_row>
+      <name>color-scaled-option-row</name>
+    </append_row>
+    <append_row>
+      <name>color-linear-gradient-option-row</name>
+    </append_row>
+    <append_row>
+      <name>color-radial-gradient-option-row</name>
+    </append_row>
+  </layout>
+
+  <!-- Basic color page -->
+  <factory type="grid" id="color-basic-option-row">
+    <element id="color-basic-option-radio">
+      <radio>
+	<element>
+	  <label type="theme_text">${context:creator}Basic Color</label>
+	</element>
+      </radio>
+      <group>color-type-group</group>
+    </element>
+  </factory>
+
+  <!-- Scaled color page -->
+  <factory type="grid" id="color-scaled-option-row">
+    <element id="color-scaled-option-radio">
+      <radio>
+	<element>
+	  <label type="theme_text">${context:creator}Scaled Color</label>
+	</element>
+      </radio>
+      <group>color-type-group</group>
+    </element>
+  </factory>
+
+  <!-- Linear gradient color page -->
+
+  <factory type="grid" id="color-linear-gradient-option-row">
+    <element id="color-linear-gradient-option-radio">
+      <radio>
+	<element>
+	  <label type="theme_text">${context:creator}Linear Gradient</label>
+	</element>
+      </radio>
+      <group>color-type-group</group>
+    </element>
+  </factory>
+
+  <!-- Radial gradient color page -->
+
+  <factory type="grid" id="color-radial-gradient-option-row">
+    <element id="color-radial-gradient-option-radio">
+      <radio>
+	<element>
+	  <label type="theme_text">${context:creator}Radial Gradient</label>
+	</element>
+      </radio>
+      <group>color-type-group</group>
+    </element>
+  </factory>
+
+  <layout type="page" id="color-right-side-page">
+    <append>
+      <name>color-option-pages</name>
+    </append>
+  </layout>
+
+  <factory type="page" id="color-option-pages">
+    <element id="color-basic">
+      <color_picker />
+      <config>
+	<enable_alpha_channel />
+      </config>
+    </element>
+
+    <container>
+      <type>grid</type>
+      <name>color-scaled-page-contents</name>
+    </container>
+
+    <container>
+      <type>grid</type>
+      <name>color-linear-page-contents</name>
+    </container>
+
+    <container>
+      <type>grid</type>
+      <name>color-radial-page-contents</name>
+    </container>
+  </factory>
+
+  <!-- Avoid hardcoding page numbers in the code -->
+
+  <layout type="page" id="color-right-side-page-open-basic">
+    <open>
+      <position>0</position>
+    </open>
+  </layout>
+  <layout type="page" id="color-right-side-page-open-scaled">
+    <open>
+      <position>1</position>
+    </open>
+  </layout>
+  <layout type="page" id="color-right-side-page-open-linear">
+    <open>
+      <position>2</position>
+    </open>
+  </layout>
+  <layout type="page" id="color-right-side-page-open-radial">
+    <open>
+      <position>3</position>
+    </open>
+  </layout>
+
+  <!-- Scaled Color -->
+
+  <layout id="color-scaled-page-contents" type="grid">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>3</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>4</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>color-scaled-page-contents-from</name>
+    </append_row>
+    <append_row>
+      <name>color-scaled-page-contents-r</name>
+    </append_row>
+    <append_row>
+      <name>color-scaled-page-contents-g</name>
+    </append_row>
+    <append_row>
+      <name>color-scaled-page-contents-b</name>
+    </append_row>
+    <append_row>
+      <name>color-scaled-page-contents-a</name>
+    </append_row>
+  </layout>
+
+  <factory id="color-scaled-page-contents-from" type="grid">
+    <element>
+      <label type='theme_text'>${context:creator}Scaled From:</label>
+    </element>
+    <container>
+      <name>color-scaled-page-from</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="color-scaled-page-from" type="editable_combobox" />
+
+  <factory id="color-scaled-page-contents-r" type="grid">
+    <element>
+      <label type='theme_text'>${context:creator}Scale R:</label>
+    </element>
+
+    <element id='color-scaled-page-contents-r-value-field'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+  </factory>
+
+  <factory id="color-scaled-page-contents-g" type="grid">
+    <element>
+      <label type='theme_text'>${context:creator}Scale G:</label>
+    </element>
+
+    <element id='color-scaled-page-contents-g-value-field'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+  </factory>
+
+  <factory id="color-scaled-page-contents-b" type="grid">
+    <element>
+      <label type='theme_text'>${context:creator}Scale B:</label>
+    </element>
+
+    <element id='color-scaled-page-contents-b-value-field'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+  </factory>
+
+  <factory id="color-scaled-page-contents-a" type="grid">
+    <element>
+      <label type='theme_text'>${context:creator}Scale A:</label>
+    </element>
+
+    <element id='color-scaled-page-contents-a-value-field'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+  </factory>
+
+  <!-- Linear Gradient -->
+
+  <layout id="color-linear-page-contents" type="grid">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>color-linear-page-contents-first</name>
+    </append_row>
+    <append_row>
+      <name>color-linear-page-contents-second</name>
+    </append_row>
+    <append_row>
+      <name>color-linear-page-contents-fixed</name>
+    </append_row>
+    <append_row>
+      <name>color-linear-page-values</name>
+    </append_row>
+  </layout>
+
+  <factory id="color-linear-page-contents-first" type="grid">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>X1:</label>
+    </element>
+
+    <element id='color-linear-x1'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>Y1:</label>
+    </element>
+
+    <element id='color-linear-y1'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+  </factory>
+
+  <factory id="color-linear-page-contents-second" type="grid">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>X2:</label>
+    </element>
+
+    <element id='color-linear-x2'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>Y2:</label>
+    </element>
+
+    <element id='color-linear-y2'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+  </factory>
+
+  <factory id="color-linear-page-contents-fixed" type="grid">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>W:</label>
+    </element>
+
+    <element id='color-linear-width'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>H:</label>
+    </element>
+
+    <element id='color-linear-height'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+  </factory>
+
+  <factory id="color-linear-page-values" type="grid">
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+    <halign>center</halign>
+    <container>
+      <type>grid</type>
+      <name>color-linear-page-values-grid</name>
+    </container>
+  </factory>
+
+  <layout id="color-linear-page-values-grid" type="grid">
+    <append_row>
+      <name>color-gradient-table-header</name>
+    </append_row>
+    <append_row>
+      <name>color-gradient-table-linear-footer</name>
+    </append_row>
+  </layout>
+
+  <!-- Radial Gradient -->
+
+  <layout id="color-radial-page-contents" type="grid">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>color-radial-page-contents-inner</name>
+    </append_row>
+    <append_row>
+      <name>color-radial-page-contents-outer</name>
+    </append_row>
+    <append_row>
+      <name>color-radial-page-fixed</name>
+    </append_row>
+    <append_row>
+      <name>color-radial-page-values</name>
+    </append_row>
+  </layout>
+
+  <factory id="color-radial-page-contents-inner" type="grid">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>Inner X:</label>
+    </element>
+
+    <element id='color-radial-inner-x'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>Y:</label>
+    </element>
+
+    <element id='color-radial-inner-y'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>Radius:</label>
+    </element>
+
+    <element id='color-radial-inner-radius'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+
+
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>Axis:</label>
+    </element>
+
+    <container>
+      <type>standard_combobox</type>
+      <name>color-radial-inner-axis</name>
+    </container>
+  </factory>
+
+  <layout type="standard_combobox" id="color-radial-inner-axis">
+    <append_items>
+      <items>
+	<label type="theme_text">horizontal</label>
+	<label type="theme_text">vertical</label>
+	<label type="theme_text">shortest</label>
+	<label type="theme_text">longest</label>
+      </items>
+    </append_items>
+  </layout>
+
+  <factory id="color-radial-page-contents-outer" type="grid">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>Outer X:</label>
+    </element>
+
+    <element id='color-radial-outer-x'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>Y:</label>
+    </element>
+
+    <element id='color-radial-outer-y'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>Radius:</label>
+    </element>
+
+    <element id='color-radial-outer-radius'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+
+
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>Axis:</label>
+    </element>
+
+    <container>
+      <type>standard_combobox</type>
+      <name>color-radial-outer-axis</name>
+    </container>
+  </factory>
+
+  <layout type="standard_combobox" id="color-radial-outer-axis">
+    <append_items>
+      <items>
+	<label type="theme_text">horizontal</label>
+	<label type="theme_text">vertical</label>
+	<label type="theme_text">shortest</label>
+	<label type="theme_text">longest</label>
+      </items>
+    </append_items>
+  </layout>
+
+  <factory id="color-radial-page-fixed" type="grid">
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">Fixed Width:</label>
+    </element>
+    <element id='color-radial-fixed-width'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+    <element>
+      <label type="theme_text">Height:</label>
+    </element>
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+    <element id='color-radial-fixed-height'>
+      <input_field />
+      <config>
+	<columns>10</columns>
+      </config>
+    </element>
+  </factory>
+
+  <factory id="color-radial-page-values" type="grid">
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+    <halign>center</halign>
+    <container>
+      <type>grid</type>
+      <name>color-radial-page-values-grid</name>
+    </container>
+  </factory>
+
+  <layout id="color-radial-page-values-grid" type="grid">
+    <append_row>
+      <name>color-gradient-table-header</name>
+    </append_row>
+    <append_row>
+      <name>color-gradient-table-radial-footer</name>
+    </append_row>
+  </layout>
+
+  <factory id="color-gradient-table-header" type="grid">
+    <element>
+      <label type="theme_text">${context:creator}Value</label>
+    </element>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <label type="theme_text">${context:creator}Color</label>
+    </element>
+  </factory>
+
+  <factory id="color-gradient-table-linear-footer" type="grid">
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+
+    <element id="color-add-linear-gradient-button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:color}${decoration:underline}A${decoration:none}dd</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:addcolor}Alt-A</shortcut>
+    </element>
+  </factory>
+
+  <factory id="color-gradient-table-radial-footer" type="grid">
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+    <element id="color-add-radial-gradient-button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:color}${decoration:underline}A${decoration:none}dd</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:addcolor}Alt-A</shortcut>
     </element>
   </factory>
 </theme>

@@ -25,7 +25,7 @@ struct editable_combobox_selection_changed_info_t
 	const editable_comboboxlayoutmanager &lm;
 };
 
-/*! Create an editable combobox.
+/*! Create an editable combo-box.
 
 Passed to create_focusable_container() to create a focusable container
 with a \ref editable_comboboxlayoutmanager "editable combo-box layout manager".

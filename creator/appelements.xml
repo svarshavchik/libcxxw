@@ -78,4 +78,167 @@ object and placed into discrete variables.
     <type>x::w::button</type>
     <name>dimension_delete_button</name>
   </ref>
+
+  <!-- Color page fields -->
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>color_name</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_new_name</name>
+  </ref>
+
+  <ref>
+    <type>x::w::label</type>
+    <name>color_new_name_label</name>
+  </ref>
+
+  <ref>
+    <type>x::w::container</type>
+    <name>color_right_side_page</name>
+  </ref>
+
+  <ref>
+    <type>x::w::image_button</type>
+    <name>color_basic_option_radio</name>
+  </ref>
+  <ref>
+    <type>x::w::image_button</type>
+    <name>color_scaled_option_radio</name>
+  </ref>
+  <ref>
+    <type>x::w::image_button</type>
+    <name>color_linear_gradient_option_radio</name>
+  </ref>
+  <ref>
+    <type>x::w::image_button</type>
+    <name>color_radial_gradient_option_radio</name>
+  </ref>
+
+  <!-- Basic color -->
+
+  <ref>
+    <type>x::w::color_picker</type>
+    <name>color_basic</name>
+  </ref>
+
+  <!-- Scaled color -->
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>color_scaled_page_from</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_scaled_page_r</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_scaled_page_g</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_scaled_page_b</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_scaled_page_a</name>
+  </ref>
+
+  <!-- Linear gradient color -->
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_linear_x1</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_linear_y1</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_linear_x2</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_linear_y2</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_linear_width</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_linear_height</name>
+  </ref>
+
+  <!-- Radial gradient color -->
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_radial_inner_x</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_radial_inner_y</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_radial_inner_radius</name>
+  </ref>
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>color_radial_inner_axis</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_radial_outer_x</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_radial_outer_y</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_radial_outer_radius</name>
+  </ref>
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>color_radial_outer_axis</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_radial_fixed_width</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>color_radial_fixed_height</name>
+  </ref>
+
+  <ref>
+    <type>x::w::container</type>
+    <name>color_linear_page_values_grid</name>
+  </ref>
+
+  <ref>
+    <type>x::w::container</type>
+    <name>color_radial_page_values_grid</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>color_add_linear_gradient_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>color_add_radial_gradient_button</name>
+  </ref>
 </collection>

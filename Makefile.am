@@ -1002,6 +1002,7 @@ cxxwcreator_SOURCES=\
 	creator/app.C				\
 	creator/app.H				\
 	creator/appdimension.C			\
+	creator/appcolors.C			\
 	creator/cxxwcreator.C			\
 	#
 
