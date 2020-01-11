@@ -1450,7 +1450,7 @@ void generic_windowObj::handlerObj::do_process_configure_notify(ONLY IN_THREAD)
 	// that its parent element's position remains unchanged, so
 	// update_current_position() won't trickle down to it.
 
-	if (old_x != root_x(IN_THREAD) || old_y != root_x(IN_THREAD))
+	if (old_x != root_x(IN_THREAD) || old_y != root_y(IN_THREAD))
 		absolute_location_updated(IN_THREAD,
 					  absolute_location_update_reason
 					  ::external);

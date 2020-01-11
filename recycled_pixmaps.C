@@ -429,7 +429,7 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 class icon_background_colorObj : public background_colorObj {
 
 	icon icon_handle;
-	bool initialized;
+	bool initialized=false;
 public:
 	const icon &current_icon(ONLY IN_THREAD);
 
