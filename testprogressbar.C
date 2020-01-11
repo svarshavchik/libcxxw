@@ -19,11 +19,16 @@
 #include "x/w/progressbar.H"
 
 x::mpobj<int> slider_counter=0;
-x::mpobj<int> label_counter=0;
+x::mpcobj<int> label_counter=0;
 
 #define TEST_SLIDER_GRADIENT() do { slider_counter=slider_counter.get()+1; } \
 	while(0);
-#define TEST_TEXTLABEL_DRAW() do { label_counter=label_counter.get()+1; } \
+#define TEST_TEXTLABEL_DRAW() do {				\
+		x::mpcobj<int>::lock lock{label_counter};	\
+								\
+		++*lock;					\
+		lock.notify_all();				\
+	}							\
 	while(0);
 
 #include "progressbar_slider.C"
@@ -33,6 +38,16 @@ x::mpobj<int> label_counter=0;
 
 #include <string>
 #include <iostream>
+
+void wait_for_label_draw(int value)
+{
+	x::mpcobj<int>::lock lock{label_counter};
+
+	lock.wait([&]
+		  {
+			  return *lock>=value;
+		  });
+}
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -140,6 +155,7 @@ static void testnormalize(const std::vector<size_t> &indexes,
 
 void testprogressbar()
 {
+	alarm(60);
 	testnormalize({}, 2);
 	testnormalize({0}, 2);
 	testnormalize({100}, 2);
@@ -199,12 +215,15 @@ void testprogressbar()
 
 	int v=0;
 
+	int redraw_counter=0;
 	while (1)
 	{
-		lock.wait_for(std::chrono::seconds(1),
-			      [&] { return *lock; });
-		if (*lock) return;
-
+		wait_for_label_draw(++redraw_counter);
+		lock.wait_for(std::chrono::milliseconds(100),
+			      [&]
+			      {
+				      return *lock;
+			      });
 		if (v >= 100)
 			break;
 		v += 5;
@@ -219,6 +238,9 @@ void testprogressbar()
 				   l->update(txt);
 			   });
 	}
+
+	lock.wait_for(std::chrono::seconds(3),
+		      [&] { return *lock; });
 
 	if (label_counter.get() != 21)
 		throw EXCEPTION("Label was redrawn " <<

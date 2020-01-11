@@ -16,14 +16,15 @@ LIBCXXW_NAMESPACE_START
 
 //! A lock on the \ref menubarlayoutmanager "menu bar".
 
-//! The actual lock is gridlayoutmanagerObj::grid_lock.
-
 class menubar_lock {
 
 public:
 	//! The locked menu bar.
 
 	const menubarlayoutmanager manager;
+
+	//! The actual lock
+	grid_map_t::lock grid_lock;
 
 	//! Constructor
 	menubar_lock(const menubarlayoutmanager &manager);

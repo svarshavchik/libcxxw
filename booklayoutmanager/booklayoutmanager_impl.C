@@ -61,8 +61,7 @@ booklayoutmanagerObj::implObj::book_pagetabgridlayoutmanager()
 pagetabptr booklayoutmanagerObj::implObj::get_pagetab(book_lock &lock,
 						      size_t index)
 {
-	return get_pagetab(lock.layout_manager->book_pagetabgridlayoutmanager
-			   ->grid_lock, index);
+	return get_pagetab(lock.grid_lock, index);
 }
 
 pagetabptr booklayoutmanagerObj::implObj::get_pagetab(grid_map_t::lock &lock,

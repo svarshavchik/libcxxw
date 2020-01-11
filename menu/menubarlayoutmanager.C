@@ -17,7 +17,8 @@
 LIBCXXW_NAMESPACE_START
 
 menubar_lock::menubar_lock(const menubarlayoutmanager &manager)
-	: manager{manager}
+	: manager{manager},
+	  grid_lock{manager->impl->grid_map}
 {
 }
 
@@ -25,12 +26,12 @@ menubar_lock::~menubar_lock()=default;
 
 size_t menubar_lock::menus() const
 {
-	return manager->impl->info(manager->grid_lock).divider_pos;
+	return manager->impl->info(grid_lock).divider_pos;
 }
 
 size_t menubar_lock::right_menus() const
 {
-	return (*manager->grid_lock)->cols(0)-menus()-1;
+	return (*grid_lock)->cols(0)-menus()-1;
 }
 
 menu menubar_lock::get_menu(size_t n) const
@@ -38,7 +39,7 @@ menu menubar_lock::get_menu(size_t n) const
 	if (n >= menus())
 		throw EXCEPTION(_("Menu does not exist"));
 
-	return (*manager->grid_lock)->get(0, n);
+	return (*grid_lock)->get(0, n);
 }
 
 menu menubar_lock::get_right_menu(size_t n) const
@@ -46,7 +47,7 @@ menu menubar_lock::get_right_menu(size_t n) const
 	if (n >= right_menus())
 		throw EXCEPTION(_("Menu does not exist"));
 
-	return (*manager->grid_lock)->get(0, menus()+1+n);
+	return (*grid_lock)->get(0, menus()+1+n);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -121,7 +122,7 @@ menubarfactory menubarlayoutmanagerObj::append_menus()
 			 auto mb=lm->impl->add(&*lm,
 					       lm->impl->insert_columns
 					       (&*lm, 0, lm->impl->info
-						(lock.manager->grid_lock)
+						(lock.grid_lock)
 						.divider_pos),
 					       creator,
 					       content_creator,
@@ -129,7 +130,7 @@ menubarfactory menubarlayoutmanagerObj::append_menus()
 					       sc,
 					       lock);
 
-			 ++lm->impl->info(lock.manager->grid_lock).divider_pos;
+			 ++lm->impl->info(lock.grid_lock).divider_pos;
 			 return mb;
 		 });
 }
@@ -148,7 +149,7 @@ menubarfactory menubarlayoutmanagerObj::insert_menus(size_t pos)
 		 {
 			 menubar_lock lock{lm};
 
-			 if (pos > lm->impl->info(lock.manager->grid_lock)
+			 if (pos > lm->impl->info(lock.grid_lock)
 			     .divider_pos)
 				 throw EXCEPTION(_("Existing menu does not exist."));
 
@@ -158,7 +159,7 @@ menubarfactory menubarlayoutmanagerObj::insert_menus(size_t pos)
 					       creator, content_creator,
 					       appearance, sc, lock);
 
-			 ++lm->impl->info(lock.manager->grid_lock).divider_pos;
+			 ++lm->impl->info(lock.grid_lock).divider_pos;
 			 ++pos;
 
 			 return mb;
@@ -201,14 +202,13 @@ menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
 			 menubar_lock lock{lm};
 
 			 if (pos > lm->cols(0)-lm->impl->info
-			     (lock.manager->grid_lock).divider_pos)
+			     (lock.grid_lock).divider_pos)
 				 throw EXCEPTION(_("Existing menu does not exist."));
 
 			 auto mb=lm->impl->add(&*lm,
 					       lm->impl->insert_columns
 					       (&*lm, 0,
-						lm->impl->info(lock.manager
-							       ->grid_lock)
+						lm->impl->info(lock.grid_lock)
 						.divider_pos+1+pos),
 					       creator, content_creator,
 					       appearance,
@@ -227,9 +227,9 @@ void menubarlayoutmanagerObj::remove_menu(size_t pos)
 		throw EXCEPTION(gettextmsg(_("Menu #%1% does not exist"),
 					   pos));
 
-	impl->remove(lock.manager->grid_lock, 0, pos);
+	impl->remove(0, pos);
 
-	--impl->info(lock.manager->grid_lock).divider_pos;
+	--impl->info(lock.grid_lock).divider_pos;
 }
 
 void menubarlayoutmanagerObj::remove_right_menu(size_t pos)
@@ -240,8 +240,8 @@ void menubarlayoutmanagerObj::remove_right_menu(size_t pos)
 		throw EXCEPTION(gettextmsg(_("Menu #%1% does not exist"),
 					   pos));
 
-	impl->remove(lock.manager->grid_lock, 0,
-		     impl->info(lock.manager->grid_lock)
+	impl->remove(0,
+		     impl->info(lock.grid_lock)
 		     .divider_pos+1+pos);
 }
 

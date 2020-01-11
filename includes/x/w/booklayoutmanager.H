@@ -58,12 +58,11 @@ class new_booklayoutmanager
 
 //! Lock the book layout manager.
 
-//! Formal blocking modifications to the contents of the book.
+//! Formal blocking of modifications to the contents of the book.
 //!
-//! The constructed booklayoutmanager already acquires a lock, indirectly,
-//! via its reference to the internal pagetabgridlayoutmanager, which is
-//! a subclass of the \ref gridlayoutmanager "gridlayoutmanager", whose
-//! instance owns a \c grid_map_t::lock.
+//! This is done by acquiring a \c grid_map_t::lock on the internal
+//! pagetabgridlayoutmanager, which is
+//! a subclass of the \ref gridlayoutmanager "gridlayoutmanager".
 //!
 //! This declares a formal lock, in case the internal locking mechanism
 //! changes in the future.
@@ -74,6 +73,9 @@ public:
 
 	//! My layout manager.
 	const const_booklayoutmanager layout_manager;
+
+	//! My lock
+	grid_map_t::lock grid_lock;
 
 	//! Constructor
 	book_lock(const const_booklayoutmanager &layout_manager);

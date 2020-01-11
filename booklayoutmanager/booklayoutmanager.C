@@ -867,7 +867,9 @@ new_booklayoutmanager::create(const container_impl &parent,
 //////////////////////////////////////////////////////////////////////////////
 
 book_lock::book_lock(const const_booklayoutmanager &layout_manager)
-	: layout_manager{layout_manager}
+	: layout_manager{layout_manager},
+	  grid_lock{layout_manager->book_pagetabgridlayoutmanager
+		    ->impl->grid_map}
 {
 }
 

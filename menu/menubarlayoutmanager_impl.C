@@ -60,7 +60,7 @@ void menubarlayoutmanagerObj::implObj::check_if_borders_changed()
 	if (should_be_present != info(grid_lock).borders_present)
 	{
 		if (should_be_present)
-			default_row_border(grid_lock, 1,
+			default_row_border(1,
 					   appearance->menubar_border);
 		else
 			(*grid_lock)->remove_all_defaults();
@@ -77,9 +77,11 @@ void menubarlayoutmanagerObj::implObj::initialize(menubarlayoutmanagerObj
 						  *public_object,
 						  menubar_lock &lock)
 {
+	grid_map_t::lock grid_lock{public_object->impl->grid_map};
+
 	auto f=append_row(public_object);
 
-	row_alignment(public_object->grid_lock, 0, valign::middle);
+	row_alignment(0, valign::middle);
 	f->padding(0);
 	f->create_canvas();
 }

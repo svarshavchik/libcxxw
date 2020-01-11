@@ -43,14 +43,12 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Set requested column width.
 
 	//! \see gridlayoutmanager
-	static void requested_col_width(grid_map_t::lock &grid_lock,
-					size_t col, int percentage);
+	void requested_col_width(size_t col, int percentage);
 
 	//! Set requested row height.
 
 	//! \see gridlayoutmanager
-	static void requested_row_height(grid_map_t::lock &grid_lock,
-					 size_t row, int percentage);
+	void requested_row_height(size_t row, int percentage);
 
 	//! Create a gridfactory for me.
 
@@ -88,8 +86,8 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Remove one or more elements from a row.
 
-	static void remove(grid_map_t::lock &lock, size_t row,
-			   size_t col, size_t n_elements=1);
+	void remove(size_t row,
+		    size_t col, size_t n_elements=1);
 
 	//! Remove the entire row.
 	void remove_row(size_t row);
@@ -98,15 +96,13 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	void remove_rows(size_t row, size_t n);
 
 	//! Remove everything.
-	void remove_all_rows(grid_map_t::lock &lock);
+	void remove_all_rows();
 
 	//! Set default row alignment.
-	static void row_alignment(grid_map_t::lock &lock,
-				  size_t row, valign alignment);
+	void row_alignment(size_t row, valign alignment);
 
 	//! Set default column alignment.
-	static void col_alignment(grid_map_t::lock &lock,
-				  size_t col, halign alignment);
+	void col_alignment(size_t col, halign alignment);
 
 	//! Set default padding.
 	void row_top_padding_set(size_t row,
@@ -183,6 +179,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	std::optional<std::tuple<size_t, size_t>>
 		lookup_row_col(const ref<elementObj::implObj> &e);
 
+#if 0
 	//! Look up which row and column this element is in.
 
 	//! Returns [row, col] if the element was found.
@@ -190,7 +187,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	static std::optional<std::tuple<size_t, size_t>>
 		lookup_row_col(grid_map_t::lock &lock,
 			       const ref<elementObj::implObj> &e);
-
+#endif
 	//! New container metrics have been calculated.
 
 	//! Call set_element_metrics() on the container, accordingly.
@@ -214,10 +211,11 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	grid_map_t grid_map;
 
 	//! Insert a new grid element.
-	void insert(grid_map_t::lock &lock,
-		    const element &new_element,
-		    new_grid_element_info &info,
-		    bool replace_existing);
+	static void insert(grid_map_t::lock &lock,
+			   const container_impl &layout_container_impl,
+			   const element &new_element,
+			   new_grid_element_info &info,
+			   bool replace_existing);
 
 	//! Construct a new border object.
 
@@ -225,13 +223,11 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Implement default_row_border()
 
-	void default_row_border(grid_map_t::lock &lock,
-				size_t row, const border_arg &arg);
+	void default_row_border(size_t row, const border_arg &arg);
 
 	//! Implement default_col_border()
 
-	void default_col_border(grid_map_t::lock &lock,
-				size_t col, const border_arg &arg);
+	void default_col_border(size_t col, const border_arg &arg);
 
 	class elementsObj;
 

@@ -1105,7 +1105,7 @@ template<>
 void panelayoutmanagerObj::implObj::orientation<horizontal>
 ::remove_elements(grid_map_t::lock &lock, size_t n, size_t c)
 {
-	remove(lock, 0, n, c);
+	remove(0, n, c);
 }
 
 template<>

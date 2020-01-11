@@ -48,6 +48,8 @@ void panefactory_implObj::created_at(const element &e, size_t position)
 
 	lock->reset();
 
+	grid_map_t::lock grid_lock{layout->impl->grid_map};
+
 	created_pane_peephole=layout->impl
 		->created_pane_peephole(layout,
 					info,
@@ -55,7 +57,7 @@ void panefactory_implObj::created_at(const element &e, size_t position)
 					*this,
 					e,
 					position,
-					layout->grid_lock);
+					grid_lock);
 
 	appearance=pane_appearance::base::theme();
 }
