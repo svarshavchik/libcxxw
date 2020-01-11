@@ -431,12 +431,6 @@ class generic_windowObj::handlerObj
 	//
 	// Inherited from elementObj::implObj
 
-	//! Return myself.
-	generic_windowObj::handlerObj &get_window_handler() override;
-
-	//! Return myself.
-	const generic_windowObj::handlerObj &get_window_handler() const override;
-
 	//! Implement get_draw_info().
 
 	draw_info &get_draw_info(ONLY IN_THREAD)

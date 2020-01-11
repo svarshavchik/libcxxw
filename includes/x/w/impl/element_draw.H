@@ -67,6 +67,7 @@ class element_drawObj : public get_window_handlerObj,
 			virtual public obj {
 
 public:
+	using get_window_handlerObj::get_window_handlerObj;
 
 	//! Signature of draw_using_scratch_buffer()'s callback.
 	typedef void scratch_buffer_draw_func_t(const picture &,

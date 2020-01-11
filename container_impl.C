@@ -16,20 +16,12 @@
 
 LIBCXXW_NAMESPACE_START
 
-containerObj::implObj::implObj()=default;
+containerObj::implObj::implObj(get_window_handlerObj &parent_get_window_handler)
+	: get_window_handlerObj{parent_get_window_handler.get_window_handler()}
+{
+}
 
 containerObj::implObj::~implObj()=default;
-
-generic_windowObj::handlerObj &containerObj::implObj::get_window_handler()
-{
-	return container_element_impl().get_window_handler();
-}
-
-const generic_windowObj::handlerObj &containerObj::implObj::get_window_handler()
-	const
-{
-	return container_element_impl().get_window_handler();
-}
 
 void containerObj::implObj
 ::install_layoutmanager(const layout_impl &impl)

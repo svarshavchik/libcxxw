@@ -88,13 +88,6 @@ public:
 	//
 	// Inherited from elementObj:
 
-	//! Invoke parent_element->get_window_handler().
-	generic_windowObj::handlerObj &get_window_handler() override LIBCXX_PUBLIC;
-
-	//! Invoke parent_element->get_window_handler().
-	const generic_windowObj::handlerObj &get_window_handler() const
-		override LIBCXX_PUBLIC;
-
 	//! Redraw my container after my position is updated.
 
 	//! The container is responsible for clearing parts of it that are

@@ -381,6 +381,7 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Constructor
 	implObj(size_t nesting_level,
+		generic_windowObj::handlerObj &generic_window_handler,
 		const rectangle &initial_position,
 		const popupptr &attached_popup,
 		const metrics::horizvert_axi &initial_metrics,

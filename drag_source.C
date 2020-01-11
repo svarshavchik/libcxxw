@@ -595,7 +595,7 @@ void generic_windowObj::handlerObj
 
 	if (event->type == IN_THREAD->info->atoms_info.XdndFinished)
 	{
-		get_window_handler().selection_discard
+		selection_discard
 			(IN_THREAD,
 			 IN_THREAD->info->atoms_info.XdndSelection);
 		LOG_DEBUG("XdndFinished processed");

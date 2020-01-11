@@ -38,6 +38,7 @@ child_elementObj::child_elementObj(const container_impl &child_container,
 						: color_arg{rgb{}}),
 		       child_container->container_element_impl()
 		       .nesting_level+1,
+		       child_container->get_window_handler(),
 		       rectangle{0, 0, 0, 0},
 		       init_params.attached_popup,
 		// The container will position me later
@@ -54,17 +55,6 @@ child_elementObj::child_elementObj(const container_impl &child_container,
 }
 
 child_elementObj::~child_elementObj()=default;
-
-generic_windowObj::handlerObj &child_elementObj::get_window_handler()
-{
-	return child_container->get_window_handler();
-}
-
-const generic_windowObj::handlerObj &child_elementObj::get_window_handler()
-	const
-{
-	return child_container->get_window_handler();
-}
 
 void child_elementObj::process_updated_position(ONLY IN_THREAD)
 {

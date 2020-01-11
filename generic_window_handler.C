@@ -228,6 +228,7 @@ generic_windowObj::handlerObj
 			  image_color{params.appearance->wait_cursor,
 					  render_repeat::none})),
 	 params.nesting_level,
+	 *this,
 	 element_position(params.window_handler_params.initial_position),
 	 popupptr{},
 	 metrics::horizvert_axi{{0,0,0},{0,0,0}},
@@ -364,18 +365,6 @@ void generic_windowObj::handlerObj
 ////////////////////////////////////////////////////////////////////
 //
 // Inherited from elementObj::implObj
-
-generic_windowObj::handlerObj &
-generic_windowObj::handlerObj::get_window_handler()
-{
-	return *this;
-}
-
-const generic_windowObj::handlerObj &
-generic_windowObj::handlerObj::get_window_handler() const
-{
-	return *this;
-}
 
 draw_info &generic_windowObj::handlerObj::get_draw_info(ONLY IN_THREAD)
 {

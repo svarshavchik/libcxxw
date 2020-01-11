@@ -9,6 +9,16 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Constructor
+
+template<typename element_impl>
+template<typename ...Args>
+container_elementObj<element_impl>::container_elementObj(Args && ...args)
+	: element_impl{std::forward<Args>(args)...},
+	  containerObj::implObj{static_cast<element_impl &>(*this)}
+{
+}
+
 //! Override inherited_visibility_updated().
 
 //! Forwarded to containerObj::implObj.

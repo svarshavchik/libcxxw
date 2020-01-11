@@ -37,7 +37,7 @@ public:
 
 	//! Constructor
 
-	implObj();
+	implObj(get_window_handlerObj &parent_get_window_handler);
 
 	//! Destructor
 
@@ -54,13 +54,6 @@ public:
 	//! Must be implement in a subclass
 
 	virtual const elementObj::implObj &container_element_impl() const=0;
-
-	//! Return my window
-	generic_windowObj::handlerObj &get_window_handler() override;
-
-	//! Return my window
-	const generic_windowObj::handlerObj &get_window_handler() const
-		override;
 
 	//! The mutex-protected container for the layout manager implementation.
 

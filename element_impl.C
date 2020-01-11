@@ -49,13 +49,16 @@ LIBCXXW_NAMESPACE_START
 // #define DEBUG_EXPOSURE_CALCULATIONS
 
 elementObj::implObj::implObj(size_t nesting_level,
+			     generic_windowObj::handlerObj
+			     &generic_window_handler,
 			     const rectangle &initial_position,
 			     const popupptr &attached_popup,
 			     const metrics::horizvert_axi &initial_metrics,
 			     const screen &my_screen,
 			     const const_pictformat &my_pictformat,
 			     const std::string &scratch_buffer_id)
-	: metrics::horizvertObj(initial_metrics),
+	: element_drawObj{generic_window_handler},
+	  metrics::horizvertObj(initial_metrics),
 	data_thread_only
 	({
 	  initial_position, initial_position, attached_popup

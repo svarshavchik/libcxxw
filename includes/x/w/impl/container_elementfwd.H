@@ -32,7 +32,10 @@ class container_elementObj : public element_impl,
 
 public:
 
-	using element_impl::element_impl;
+	using containerObj::implObj::get_window_handler;
+
+	template<typename ...Args>
+	container_elementObj(Args && ...args);
 
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
