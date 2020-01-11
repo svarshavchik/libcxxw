@@ -257,4 +257,24 @@ new_editable_comboboxlayoutmanager
 		::create(i.container_impl, *this);
 }
 
+input_field focusable_containerObj::editable_combobox_input_field()
+{
+	return combobox_current_selection();
+}
+
+const_input_field focusable_containerObj::editable_combobox_input_field() const
+{
+	return combobox_current_selection();
+}
+
+std::string focusable_containerObj::editable_combobox_get() const
+{
+	return const_input_lock{editable_combobox_input_field()}.get();
+}
+
+std::u32string focusable_containerObj::editable_combobox_get_unicode() const
+{
+	return const_input_lock{editable_combobox_input_field()}.get_unicode();
+}
+
 LIBCXXW_NAMESPACE_END

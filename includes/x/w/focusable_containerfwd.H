@@ -19,6 +19,32 @@ class LIBCXX_PUBLIC focusable_containerObj;
 //!
 //! Use the \ref factory "factory"'s create_focusable_container() to
 //! create these widgets, instead of create_container().
+//!
+//! \par Combo-box helpers
+//!
+//! The following helper functions require the focusable container with
+//! the appropriate layout manager, otherwise an exception gets thrown.
+//!
+//! \code
+//! auto e=container->combobox_current_selection();
+//! \endcode
+//!
+//! This is equivalent to using get_layoutmanager() to obtain the combo-box
+//! layout manager, then using current_selection() to retrieve the combo-box's
+//! \ref element "element widget" that represents the combo-box's current value.
+//!
+//! \code
+//! auto f=container->editable_combobox_input_field();
+//!
+//! std::string s=container->editable_combobox_get();
+//!
+//! std::u32string us=container->editable_combobox_get_unicode();
+//! \endcode
+//!
+//! This is equivalent to using get_layoutmanager() to obtain the
+//! \ref editable_combobox_layoutmanager "editable combo-box layout manager"
+//! and then using it to retrieve the \ref input_field "text input field",
+//! or its contents.
 
 typedef ref<focusable_containerObj> focusable_container;
 

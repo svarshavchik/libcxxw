@@ -6,8 +6,11 @@
 #define x_w_focusable_containerobj_h
 
 #include <x/w/focusable_containerfwd.H>
+#include <x/w/elementfwd.H>
+#include <x/w/input_fieldfwd.H>
 #include <x/w/containerobj.H>
 #include <x/w/focusableobj.H>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,6 +26,30 @@ public:
 	//! Destructor
 
 	~focusable_containerObj();
+
+	//! If this is a combo-box return its current selection.
+
+	element combobox_current_selection();
+
+	//! If this is a combo-box return its current selection.
+
+	const_element combobox_current_selection() const;
+
+	//! If this is an editable combo-box return the editable input field.
+
+	input_field editable_combobox_input_field();
+
+	//! If this is an editable combo-box return the editable input field.
+
+	const_input_field editable_combobox_input_field() const;
+
+	//! If this is an editable combo-box return the current input.
+
+	std::string editable_combobox_get() const;
+
+	//! If this is an editable combo-box return the current input.
+
+	std::u32string editable_combobox_get_unicode() const;
 };
 
 LIBCXXW_NAMESPACE_END

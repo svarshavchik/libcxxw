@@ -665,4 +665,18 @@ void custom_comboboxlayoutmanagerObj
 	not_allowed();
 }
 
+element focusable_containerObj::combobox_current_selection()
+{
+	custom_comboboxlayoutmanager lm=get_layoutmanager();
+
+	return lm->current_selection();
+}
+
+const_element focusable_containerObj::combobox_current_selection() const
+{
+	const_custom_comboboxlayoutmanager lm=get_layoutmanager();
+
+	return lm->current_selection();
+}
+
 LIBCXXW_NAMESPACE_END
