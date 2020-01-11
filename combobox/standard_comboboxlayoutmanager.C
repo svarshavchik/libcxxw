@@ -1113,9 +1113,21 @@ custom_combobox_selection_changed_t new_standard_comboboxlayoutmanager
 }
 
 void standard_comboboxlayoutmanagerObj
-::selection_changed(const standard_combobox_selection_changed_t &cb)
+::on_selection_changed(const standard_combobox_selection_changed_t &cb)
 {
+	if (!impl->selection_changed_enabled)
+		throw EXCEPTION(_("This standard combo-box layoutmanager"
+				  " function is disabled in editable"
+				  " combo-boxes"));
+
 	impl->selection_changed=cb;
+}
+
+void standard_comboboxlayoutmanagerObj
+::on_selection_changed(ONLY IN_THREAD,
+		       const standard_combobox_selection_changed_t &cb)
+{
+	on_selection_changed(cb);
 }
 
 ref<custom_comboboxlayoutmanagerObj::implObj>
@@ -1124,7 +1136,7 @@ new_standard_comboboxlayoutmanager
 {
 	return ref<standard_comboboxlayoutmanagerObj::implObj>
 		::create(i.container_impl, *this,
-			 selection_changed);
+			 selection_changed, true);
 }
 
 LIBCXXW_NAMESPACE_END

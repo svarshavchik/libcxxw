@@ -19,12 +19,13 @@ editable_comboboxlayoutmanagerObj::implObj
 ::implObj(const ref<custom_combobox_containerObj::implObj> &container_impl,
 	  const new_editable_comboboxlayoutmanager &style)
 	: standard_comboboxlayoutmanagerObj::implObj
-	(container_impl, style,
+	{container_impl, style,
 	 // Dummy selection changed
 	 // callback for the parent
 	 // standard combobox class.
-	 noop_standard_selection_changed),
-	selection_changed{style.selection_changed}
+	 noop_standard_selection_changed,
+	 false},
+	  selection_changed{style.selection_changed}
 {
 }
 

@@ -103,7 +103,13 @@ public:
 	text_param item(size_t i) const;
 
 	//! Install a new selection changed callback.
-	void selection_changed(const standard_combobox_selection_changed_t &);
+	void on_selection_changed(const standard_combobox_selection_changed_t &)
+		;
+
+	//! Install a new selection changed callback.
+	void on_selection_changed(ONLY IN_THREAD,
+				  const standard_combobox_selection_changed_t &)
+		;
 
 	//! Implement generate()
 

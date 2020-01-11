@@ -41,7 +41,7 @@ void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 	x::w::standard_comboboxlayoutmanager dimension_name_lm=
 		dimension_name->get_layoutmanager();
 
-	dimension_name_lm->selection_changed
+	dimension_name_lm->on_selection_changed
 		([]
 		 (ONLY IN_THREAD,
 		  const auto &info)
@@ -53,7 +53,7 @@ void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 	x::w::standard_comboboxlayoutmanager dimension_scaled_name_lm=
 		dimension_from_name->get_layoutmanager();
 
-	dimension_scaled_name_lm->selection_changed
+	dimension_scaled_name_lm->on_selection_changed
 		([]
 		 (ONLY IN_THREAD,
 		  const auto &info)

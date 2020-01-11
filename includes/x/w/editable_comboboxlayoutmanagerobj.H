@@ -34,7 +34,12 @@ public:
 	~editable_comboboxlayoutmanagerObj() LIBCXX_HIDDEN;
 
 	//! Install a new selection changed callback.
-	void selection_changed(const editable_combobox_selection_changed_t &);
+	void on_selection_changed(const editable_combobox_selection_changed_t &)
+		;
+	//! Install a new selection changed callback.
+	void on_selection_changed(ONLY IN_THREAD,
+				  const editable_combobox_selection_changed_t &)
+		;
 
 	//! Implement generate()
 

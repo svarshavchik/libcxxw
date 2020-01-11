@@ -535,7 +535,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 	standard_comboboxlayoutmanager ff_lm=
 		font_picker_impl->popup_fields.font_family->get_layoutmanager();
 
-	ff_lm->selection_changed
+	ff_lm->on_selection_changed
 		([wimpl]
 		 (ONLY IN_THREAD, const auto &info)
 		 {
@@ -672,7 +672,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 		standard_comboboxlayoutmanager{
 			(font_picker_impl->popup_fields.*(f.value_combobox))
 				->get_layoutmanager()}
-		->selection_changed
+		->on_selection_changed
 			  ([wimpl, fptr=&f]
 			   (ONLY IN_THREAD, const auto &info)
 			   {

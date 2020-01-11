@@ -32,6 +32,9 @@ class LIBCXX_HIDDEN standard_comboboxlayoutmanagerObj::implObj
 	//! Current selection changed callback.
 	mpobj<standard_combobox_selection_changed_t> selection_changed;
 
+	//! Turned off in editable combo-boxes.
+	const bool selection_changed_enabled;
+
 	//! The items are accessed only while holding a lock.
 	friend class standard_combobox_lock;
 	friend class const_standard_combobox_lock;
@@ -40,7 +43,8 @@ class LIBCXX_HIDDEN standard_comboboxlayoutmanagerObj::implObj
 	implObj(const ref<custom_combobox_containerObj::implObj>
 		&container_impl,
 		const new_custom_comboboxlayoutmanager &style,
-		const standard_combobox_selection_changed_t &selection_changed);
+		const standard_combobox_selection_changed_t &selection_changed,
+		bool selection_changed_enabled);
 
 	//! Destructor
 	~implObj();

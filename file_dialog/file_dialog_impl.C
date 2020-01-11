@@ -1125,7 +1125,7 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 		// Callback to invoke manager->chfilter() whenever the filename
 		// filter combobox dropdown changes.
 
-		lm->selection_changed
+		lm->on_selection_changed
 			([filters=create_pcre_filters(conf.filename_filters),
 			  manager=impl->directory_contents_list]
 			 (ONLY IN_THREAD,

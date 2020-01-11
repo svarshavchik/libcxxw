@@ -79,10 +79,16 @@ class LIBCXX_HIDDEN custom_comboboxlayoutmanagerObj::implObj
 	//! Current selection callback.
 	mpobj<custom_combobox_selection_changed_t> selection_changed;
 
+	//! Whether selection_changed callback changing is enabled
+
+	//! Turned off in standard combo-boxes.
+	const bool selection_changed_enabled;
+
 	//! Constructor
 	implObj(const ref<custom_combobox_containerObj::implObj>
 		&combo_container_impl,
-		const new_custom_comboboxlayoutmanager &style);
+		const new_custom_comboboxlayoutmanager &style,
+		bool selection_changed_enabled);
 
 	//! Destructor
 	~implObj();

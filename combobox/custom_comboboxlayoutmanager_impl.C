@@ -13,10 +13,12 @@ LIBCXXW_NAMESPACE_START
 custom_comboboxlayoutmanagerObj::implObj
 ::implObj(const ref<custom_combobox_containerObj::implObj>
 	  &combo_container_impl,
-	  const new_custom_comboboxlayoutmanager &style)
+	  const new_custom_comboboxlayoutmanager &style,
+	  bool selection_changed_enabled)
 	: gridlayoutmanagerObj::implObj{combo_container_impl, {}},
 	combo_container_impl{combo_container_impl},
-	selection_changed{style.get_selection_changed()}
+	  selection_changed{style.get_selection_changed()},
+	  selection_changed_enabled{selection_changed_enabled}
 {
 }
 

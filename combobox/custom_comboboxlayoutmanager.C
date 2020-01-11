@@ -609,6 +609,9 @@ focusable_container new_custom_comboboxlayoutmanager
 void custom_comboboxlayoutmanagerObj
 ::on_selection_changed(const custom_combobox_selection_changed_t &cb)
 {
+	if (!impl->selection_changed_enabled)
+		throw EXCEPTION(_("This custom combo-box layoutmanager function"
+				  " is disabled in standard combo-boxes"));
 	impl->selection_changed=cb;
 }
 
@@ -624,7 +627,7 @@ ref<custom_comboboxlayoutmanagerObj::implObj
 	const
 {
 	return ref<custom_comboboxlayoutmanagerObj::implObj>
-		::create(i.container_impl, *this);
+		::create(i.container_impl, *this, true);
 }
 
 static void not_allowed() __attribute__((noreturn));

@@ -237,9 +237,16 @@ custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 }
 
 void editable_comboboxlayoutmanagerObj
-::selection_changed(const editable_combobox_selection_changed_t &cb)
+::on_selection_changed(const editable_combobox_selection_changed_t &cb)
 {
 	impl->selection_changed=cb;
+}
+
+void editable_comboboxlayoutmanagerObj
+::on_selection_changed(ONLY IN_THREAD,
+		       const editable_combobox_selection_changed_t &cb)
+{
+	on_selection_changed(cb);
 }
 
 ref<custom_comboboxlayoutmanagerObj::implObj>
