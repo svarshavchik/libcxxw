@@ -127,8 +127,7 @@ gridfactory gridlayoutmanagerObj::implObj
 ::create_gridfactory(gridlayoutmanagerObj *public_object,
 		     size_t row, size_t col, bool replace_existing)
 {
-	return gridfactory::create(layoutmanager{public_object},
-				   public_object->impl,
+	return gridfactory::create(ref{public_object},
 				   ref<gridfactoryObj::implObj>::create
 				   (row, col, *public_object->grid_lock,
 				    public_object->impl

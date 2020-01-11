@@ -16,13 +16,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-gridfactoryObj::gridfactoryObj(const layoutmanager &layout,
-			       const ref<gridlayoutmanagerObj::implObj> &gridlayout,
+gridfactoryObj::gridfactoryObj(const gridlayoutmanager &layout,
 			       const ref<implObj> &impl)
-	: layout(layout),
-	  gridlayout(gridlayout),
-	  lock(gridlayout->grid_map),
-	  impl(impl)
+	: layout{layout},
+	  impl{impl}
 {
 }
 
@@ -42,7 +39,7 @@ elementObj::implObj &gridfactoryObj::get_element_impl()
 
 void gridfactoryObj::border_set(const border_arg &arg)
 {
-	auto border_impl=gridlayout->get_current_border(arg);
+	auto border_impl=layout->impl->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_border=lock->right_border=lock->top_border=
@@ -51,7 +48,7 @@ void gridfactoryObj::border_set(const border_arg &arg)
 
 void gridfactoryObj::left_border_set(const border_arg &arg)
 {
-	auto border_impl=gridlayout->get_current_border(arg);
+	auto border_impl=layout->impl->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_border=border_impl;
@@ -59,7 +56,7 @@ void gridfactoryObj::left_border_set(const border_arg &arg)
 
 void gridfactoryObj::right_border_set(const border_arg &arg)
 {
-	auto border_impl=gridlayout->get_current_border(arg);
+	auto border_impl=layout->impl->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->right_border=border_impl;
@@ -67,7 +64,7 @@ void gridfactoryObj::right_border_set(const border_arg &arg)
 
 void gridfactoryObj::top_border_set(const border_arg &arg)
 {
-	auto border_impl=gridlayout->get_current_border(arg);
+	auto border_impl=layout->impl->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->top_border=border_impl;
@@ -75,7 +72,7 @@ void gridfactoryObj::top_border_set(const border_arg &arg)
 
 void gridfactoryObj::bottom_border_set(const border_arg &arg)
 {
-	auto border_impl=gridlayout->get_current_border(arg);
+	auto border_impl=layout->impl->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->bottom_border=border_impl;
@@ -164,7 +161,8 @@ void gridfactoryObj::created(const element &new_element)
 {
 	implObj::new_grid_element_t::lock element_lock(impl->new_grid_element);
 
-	gridlayout->insert(lock, new_element, *element_lock, impl->replacing);
+	layout->impl->insert(layout->grid_lock, new_element,
+			     *element_lock, impl->replacing);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -25,13 +25,7 @@ LIBCXXW_NAMESPACE_START
 class gridfactoryObj : public factoryObj {
 
 	//! The public layout manager
-	const layoutmanager layout;
-
-	//! This internal object.
-	const ref<gridlayoutmanagerObj::implObj> gridlayout;
-
-	//! The internal lock
-	grid_map_t::lock lock;
+	const gridlayoutmanager layout;
 
  public:
 
@@ -43,8 +37,7 @@ class gridfactoryObj : public factoryObj {
 
 	//! Constructor
 
-	gridfactoryObj(const layoutmanager &layout,
-		       const ref<gridlayoutmanagerObj::implObj> &gridlayout,
+	gridfactoryObj(const gridlayoutmanager &layout,
 		       const ref<implObj> &implArg) LIBCXX_HIDDEN;
 
 	//! Destructor
