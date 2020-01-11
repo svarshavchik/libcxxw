@@ -24,6 +24,7 @@
 #include <x/w/text_paramfwd.H>
 #include <x/w/impl/clock.H>
 #include <x/w/impl/connection_threadfwd.H>
+#include <x/w/impl/updated_position_infofwd.H>
 #include <x/w/defaultthemefwd.H>
 #include <x/w/fontcollectionfwd.H>
 #include <x/w/impl/richtext/richtextstringfwd.H>
@@ -534,7 +535,8 @@ class elementObj::implObj : public element_drawObj,
 	//! Overridden by containers, which notify their layout manager,
 	//! before invoking notify_updated_position().
 
-	virtual void process_updated_position(ONLY IN_THREAD);
+	virtual void process_updated_position(ONLY IN_THREAD,
+					      updated_position_info &info);
 
 	//! Invoked by the connection thread.
 

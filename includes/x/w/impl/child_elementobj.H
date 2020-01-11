@@ -93,7 +93,8 @@ public:
 	//! The container is responsible for clearing parts of it that are
 	//! not covered by any widget.
 
-	void process_updated_position(ONLY IN_THREAD) override;
+	void process_updated_position(ONLY IN_THREAD,
+				      updated_position_info &info) override;
 
 	//! Use parent widget's background color.
 

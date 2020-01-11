@@ -113,11 +113,12 @@ void background_color_1elementObj<element_impl, tag>
 
 template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>
-::process_updated_position(ONLY IN_THREAD)
+::process_updated_position(ONLY IN_THREAD,
+			   updated_position_info &info)
 {
 	background_color_element<tag>::set_background_color_for_element
 		(IN_THREAD);
-	element_impl::process_updated_position(IN_THREAD);
+	element_impl::process_updated_position(IN_THREAD, info);
 }
 
 //! Override invoke_element_state_updates

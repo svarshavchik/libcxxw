@@ -62,11 +62,11 @@ void container_elementObj<element_impl>::do_draw(ONLY IN_THREAD,
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::process_updated_position(ONLY IN_THREAD)
+::process_updated_position(ONLY IN_THREAD,
+			   updated_position_info &info)
 {
 	containerObj::implObj::process_updated_position(IN_THREAD);
-	element_impl::process_updated_position(IN_THREAD);
-	element_impl::schedule_redraw_recursively(IN_THREAD);
+	element_impl::process_updated_position(IN_THREAD, info);
 }
 
 //! Override process_same_position().

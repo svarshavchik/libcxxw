@@ -6,6 +6,7 @@
 #define x_w_impl_background_color_elementfwd_H
 
 #include <x/w/impl/background_colorfwd.H>
+#include <x/w/impl/updated_position_infofwd.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/defaultthemefwd.H>
 #include <x/w/rgb.H>
@@ -150,7 +151,8 @@ class background_color_1elementObj
 	//! If the widget is visible, call
 	//! set_background_color_for_element().
 
-	void process_updated_position(ONLY IN_THREAD) override;
+	void process_updated_position(ONLY IN_THREAD,
+				      updated_position_info &info) override;
 
 	//! Override invoke_element_state_updates
 

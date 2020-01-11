@@ -9,7 +9,10 @@
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
 #include "x/w/impl/layoutmanager.H"
+#include "x/w/impl/updated_position_info.H"
 #include "catch_exceptions.H"
+#include <x/refptr_hash.H>
+#include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
 
@@ -231,6 +234,11 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 {
 	bool flag=false;
 
+	// Per-window updated_position_info
+	std::unordered_map<ref<generic_windowObj::handlerObj>,
+			   updated_position_info>
+		window_updated_position_info;
+
 	// We start with the "highest", or the topmost element waiting for
 	// its updated position to be processed, since when its resized it'll
 	// usually update the position of all elements inside it, which have
@@ -260,7 +268,18 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 
 					 auto new_position=
 						 data.current_position;
-					 e->process_updated_position(IN_THREAD);
+
+
+					 auto &info=
+						 window_updated_position_info
+						 [ref{&e->get_window_handler()
+							      }];
+
+					 e->process_updated_position
+						 (IN_THREAD, info);
+					 e->schedule_redraw_recursively
+						 (IN_THREAD);
+
 					 data.previous_position=
 						 new_position;
 				 }

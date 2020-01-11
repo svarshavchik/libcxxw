@@ -36,10 +36,11 @@ void background_color_element_recalculatedObj<element_impl>
 
 template<typename element_impl>
 void background_color_element_recalculatedObj<element_impl>
-::process_updated_position(ONLY IN_THREAD)
+::process_updated_position(ONLY IN_THREAD,
+			   updated_position_info &info)
 {
 	recalculated_flag=false;
-	element_impl::process_updated_position(IN_THREAD);
+	element_impl::process_updated_position(IN_THREAD, info);
 	if (recalculated_flag)
 		all_background_colors_were_recalculated(IN_THREAD);
 }

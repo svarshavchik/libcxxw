@@ -414,7 +414,9 @@ void generic_windowObj::handlerObj::background_color_changed(ONLY IN_THREAD)
 				current_background_color(IN_THREAD));
 }
 
-void generic_windowObj::handlerObj::process_updated_position(ONLY IN_THREAD)
+void generic_windowObj::handlerObj
+::process_updated_position(ONLY IN_THREAD,
+			   updated_position_info &info)
 {
 	// If we have the misfortune of dealing with a gradient color,
 	// we may need to update our background-pixel whenever the
@@ -424,7 +426,7 @@ void generic_windowObj::handlerObj::process_updated_position(ONLY IN_THREAD)
 	// processing the position update, and see if it changed after
 	// processing it.
 	auto old_background_color=current_background_color(IN_THREAD);
-	superclass_t::process_updated_position(IN_THREAD);
+	superclass_t::process_updated_position(IN_THREAD, info);
 
 	auto new_background_color=current_background_color(IN_THREAD);
 

@@ -45,7 +45,8 @@ public:
 					  inherited_visibility_info &info)
 		override;
 
-	void process_updated_position(ONLY IN_THREAD) override;
+	void process_updated_position(ONLY IN_THREAD,
+				      updated_position_info &) override;
 
 	void process_same_position(ONLY IN_THREAD) override;
 

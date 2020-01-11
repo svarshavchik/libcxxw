@@ -716,7 +716,8 @@ bool elementObj::implObj::update_position_processing_scheduled(ONLY IN_THREAD)
 					    element_impl(this));
 }
 
-void elementObj::implObj::process_updated_position(ONLY IN_THREAD)
+void elementObj::implObj::process_updated_position(ONLY IN_THREAD,
+						   updated_position_info &info)
 {
 	schedule_full_redraw(IN_THREAD);
 
