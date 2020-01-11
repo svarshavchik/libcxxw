@@ -71,8 +71,8 @@ class itemlayoutmanagerObj::implObj : public layoutmanagerObj::implObj {
 	//! Number of items.
 	size_t size();
 
-	//! Remove an existing item.
-	void remove_item(size_t i);
+	//! Remove existing items.
+	void remove_items(size_t i, size_t n);
 
 	//! Return an existing item
 	element get_item(size_t);

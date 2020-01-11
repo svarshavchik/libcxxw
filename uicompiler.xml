@@ -531,6 +531,24 @@ List of values:
       </parameter>
     </function>
 
+    <!-- remove_rows -->
+
+    <function>
+      <name>remove_rows</name>
+      <object>layout</object>
+      <invoke>remove_rows</invoke>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>count</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
     <!-- remove_cell -->
 
     <function>
@@ -2455,6 +2473,22 @@ List of values:
 
       <parameter>
 	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>remove_items</name>
+      <invoke>remove_items</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>position</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>count</name>
 	<type>to_size_t</type>
       </parameter>
     </function>

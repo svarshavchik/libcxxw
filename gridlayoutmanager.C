@@ -106,6 +106,11 @@ void gridlayoutmanagerObj::remove_row(size_t row)
 	impl->remove_row(row);
 }
 
+void gridlayoutmanagerObj::remove_rows(size_t row, size_t n)
+{
+	impl->remove_rows(row, n);
+}
+
 size_t gridlayoutmanagerObj::rows() const
 {
 	return (*grid_lock)->rows();

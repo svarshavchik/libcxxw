@@ -125,10 +125,14 @@ the space from the removed element.
 
 \code
 gridlayout->remove_row(2);
+gridlayout->remove_rows(2, 3);
 \endcode
 
 \c remove_row() removes all elements in an existing row, and the row itself,
 from the grid.
+
+The second parameter to \c remove_rows() specifies the nmber of rows to
+remove starting with the row specified by the first parameter.
 
 \code
 elementptr e=gridlayout->get(row, col);

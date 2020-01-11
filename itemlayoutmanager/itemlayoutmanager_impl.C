@@ -274,17 +274,23 @@ size_t itemlayoutmanagerObj::implObj::size()
 	return item_info_t::lock{item_info}->all_buttons.size();
 }
 
-void itemlayoutmanagerObj::implObj::remove_item(size_t i)
+void itemlayoutmanagerObj::implObj::remove_items(size_t i, size_t n)
 {
 	item_info_t::lock lock{item_info};
 
-	if (i >= lock->all_buttons.size())
+	size_t s=lock->all_buttons.size();
+
+	if (i >= s)
 		throw EXCEPTION(gettextmsg(_("Item #%1% does not exist"), i));
+
+	if (s-i < n)
+		n=s-i;
 
 	auto iter=lock->all_buttons.begin()+i;
 
-	lock->removed_buttons.push_back(*iter);
-	lock->all_buttons.erase(iter);
+	lock->removed_buttons.insert(lock->removed_buttons.end(),
+				     iter, iter+n);
+	lock->all_buttons.erase(iter, iter+n);
 
 	// Keep track of the indexes.
 

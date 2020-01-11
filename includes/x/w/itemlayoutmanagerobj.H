@@ -39,6 +39,11 @@ public:
 	//! Remove an existing item
 	void remove_item(size_t);
 
+	//! Remove existing items
+
+	//! Multiple items version of remove_item().
+	void remove_items(size_t, size_t);
+
 	//! Return an existing item
 	element get_item(size_t) const;
 

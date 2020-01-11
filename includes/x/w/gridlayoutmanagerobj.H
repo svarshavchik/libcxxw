@@ -91,6 +91,12 @@ public:
 
 	void remove_row(size_t row);
 
+	//! Remove rows
+
+	//! Multiple rows version of remove_row().
+
+	void remove_rows(size_t row, size_t n);
+
 	//! How many rows there are here.
 	size_t rows() const;
 

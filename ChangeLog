@@ -1,3 +1,7 @@
+2019-10-14  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* grid and item layout managers: remove_rows() and remove_items().
+
 2019-10-08  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* includes/x/w/input_field_lock.H: Implement discrete input_lock

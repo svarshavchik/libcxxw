@@ -278,7 +278,8 @@ See COPYING for distribution information.
 
   <section id="uixmllayoutgridremove">
     <title><tag class='element'>remove_all</tag>,
-      <tag class='element'>remove_row</tag>, and
+      <tag class='element'>remove_row</tag>,
+      <tag class='element'>remove_rows</tag>, and
       <tag class='element'>remove_cell</tag></title>
 
     <blockquote>
@@ -293,6 +294,11 @@ See COPYING for distribution information.
   <remove_row>
     <row>0</row>
   </remove_row>
+
+  <remove_rows>
+    <row>0</row>
+    <count>4</count>
+  </remove_rows>
 
   <remove_cell>
     <row>0</row>

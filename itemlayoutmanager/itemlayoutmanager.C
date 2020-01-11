@@ -132,7 +132,12 @@ void itemlayoutmanagerObj::on_remove(const itemlayout_callback_t &callback)
 
 void itemlayoutmanagerObj::remove_item(size_t i)
 {
-	impl->remove_item(i);
+	impl->remove_items(i, 1);
+}
+
+void itemlayoutmanagerObj::remove_items(size_t i, size_t n)
+{
+	impl->remove_items(i, n);
 }
 
 element itemlayoutmanagerObj::get_item(size_t i) const

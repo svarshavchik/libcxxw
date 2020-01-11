@@ -101,25 +101,32 @@ See COPYING for distribution information.
   </section>
 
   <section id="uixmllayoutitemremoveitem">
-    <title><tag class='element'>remove_item</tag>
-    </title>
+    <title><tag class='element'>remove_item</tag> and
+      <tag class='element'>remove_items</tag></title>
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
 <remove_item>
   <position>0</position>
 </remove_item>
+
+
+<remove_items>
+  <position>0</position>
+  <count>4</count>
+</remove_items>
+
 ]]></programlisting>
       </informalexample>
     </blockquote>
     <para>
-      <tag class='element'>remove_item</tag>
-      invokes the corresponding
+      <tag class='element'>remove_item</tag> and
+      <tag class='element'>remove_items</tag>
+      invoke the corresponding
       <link linkend="itemlayoutmanager">item layout manager</link>
-      method that removes an
-      an item.
+      methods that remove items from the container.
       The <tag class='element'>position</tag> value specifies the
-      position index of the item to remove.
+      position index of the first item to remove.
     </para>
   </section>
 </section>
