@@ -616,7 +616,9 @@ void elementObj::implObj::update_current_position(ONLY IN_THREAD,
 }
 
 std::optional<rectangle>
-elementObj::implObj::has_scrollable_window_pixmap_rectangle(ONLY IN_THREAD)
+elementObj::implObj
+::has_scrollable_window_pixmap_rectangle(ONLY IN_THREAD,
+					 bool my_nonscrollable_background_is_ok)
 {
 	std::optional<rectangle> ret;
 
@@ -630,7 +632,15 @@ elementObj::implObj::has_scrollable_window_pixmap_rectangle(ONLY IN_THREAD)
 		return ret;
 
 	if (!current_background_color(IN_THREAD)->is_scrollable_background())
-		return ret;
+	{
+		// If this is our own background color, and the optional flag
+		// is set to true, we're ok here.
+		//
+		// Otherwise we bail out.
+		if (! (my_nonscrollable_background_is_ok &&
+		       has_own_background_color(IN_THREAD)))
+			return ret;
+	}
 
 	auto &di=get_draw_info(IN_THREAD);
 
@@ -654,7 +664,8 @@ elementObj::implObj::has_scrollable_window_pixmap_rectangle(ONLY IN_THREAD)
 
 	// 3) There is nothing we scheduled for redrawing.
 
-	if (!intersect(wh.window_drawnarea(IN_THREAD), viewport_rectangle)
+	if (!my_nonscrollable_background_is_ok
+	    && !intersect(wh.window_drawnarea(IN_THREAD), viewport_rectangle)
 	    .empty())
 		return ret;
 

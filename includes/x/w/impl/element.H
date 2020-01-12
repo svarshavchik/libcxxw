@@ -474,9 +474,21 @@ class elementObj::implObj : public element_drawObj,
 	//! This is used when scrolling a widget in a peephole, for example.
 	//! This is a shortcut to determine whether we can
 	//! scroll_window_pixmap() directly, for this.
-
+	//!
+	//! One of the criteria is that the widget's background color must
+	//! be a solid color (a scrollable background), and cannot be
+	//! a gradient or a picture.
+	//!
+	//! However this is also used when determining if it's possible to
+	//! avoid redrawing the widget from scratch when moving it inside
+	//! the window. In which case, if the non-scrollable background is
+	//! the widget's own background it can still be scrolled, but if
+	//! it is drawn on top of its parent widget's non-scrollable background
+	//! it cannot be moved.
 	std::optional<rectangle>
-	has_scrollable_window_pixmap_rectangle(ONLY IN_THREAD);
+	has_scrollable_window_pixmap_rectangle
+	(ONLY IN_THREAD,
+	 bool my_nonscrollable_background_is_ok);
 
 	//! The parent container is scrolling us.
 

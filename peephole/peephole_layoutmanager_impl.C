@@ -579,7 +579,8 @@ bool peepholelayoutmanagerObj::implObj
 	// 3) The element is eligible for scrolling
 
 	auto has_scrollable_window_pixmap_rectangle=
-		e.has_scrollable_window_pixmap_rectangle(IN_THREAD);
+		e.has_scrollable_window_pixmap_rectangle(IN_THREAD,
+							 false);
 
 	if (!has_scrollable_window_pixmap_rectangle)
 		return false;
