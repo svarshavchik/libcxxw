@@ -617,9 +617,16 @@ class elementObj::implObj : public element_drawObj,
 	//!
 	//! Overridden by containers, which notify their layout manager,
 	//! before invoking notify_updated_position().
+	//!
+	//! redraw_after_process_updated_position() must be invoked when
+	//! we return.
 
-	virtual void process_updated_position(ONLY IN_THREAD,
-					      updated_position_info &info);
+	virtual void process_updated_position(ONLY IN_THREAD);
+
+	//! Do we need to redraw ourselves after we process_updated_position?
+
+	void redraw_after_process_updated_position(ONLY IN_THREAD,
+						   updated_position_info &info);
 
 	//! Invoked by the connection thread.
 

@@ -1174,13 +1174,11 @@ dim_t list_elementObj::implObj
 	return minimum_width;
 }
 
-void list_elementObj::implObj::process_updated_position(ONLY IN_THREAD,
-							updated_position_info
-							&info)
+void list_elementObj::implObj::process_updated_position(ONLY IN_THREAD)
 
 {
 	recalculate(IN_THREAD);
-	superclass_t::process_updated_position(IN_THREAD, info);
+	superclass_t::process_updated_position(IN_THREAD);
 }
 
 void list_elementObj::implObj::do_draw(ONLY IN_THREAD,

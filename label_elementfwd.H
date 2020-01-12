@@ -72,8 +72,7 @@ public:
 	//! Override process_updated_position()
 
 	//! Call the superclass, then rewrap_due_to_updated_position().
-	void process_updated_position(ONLY IN_THREAD,
-				      updated_position_info &)
+	void process_updated_position(ONLY IN_THREAD)
 		override;
 
 	//! Override process_buton_event().

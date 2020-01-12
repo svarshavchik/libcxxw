@@ -56,10 +56,9 @@ child_elementObj::child_elementObj(const container_impl &child_container,
 
 child_elementObj::~child_elementObj()=default;
 
-void child_elementObj::process_updated_position(ONLY IN_THREAD,
-						updated_position_info &info)
+void child_elementObj::process_updated_position(ONLY IN_THREAD)
 {
-	superclass_t::process_updated_position(IN_THREAD, info);
+	superclass_t::process_updated_position(IN_THREAD);
 	child_container->container_element_impl()
 		.schedule_full_redraw(IN_THREAD);
 }

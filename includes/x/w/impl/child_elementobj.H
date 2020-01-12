@@ -93,8 +93,7 @@ public:
 	//! The container is responsible for clearing parts of it that are
 	//! not covered by any widget.
 
-	void process_updated_position(ONLY IN_THREAD,
-				      updated_position_info &info) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! Implement get_parent_element_impl();
 

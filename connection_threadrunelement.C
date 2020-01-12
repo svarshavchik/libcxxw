@@ -315,7 +315,9 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 
 			auto new_position=data.current_position;
 
-			e->process_updated_position(IN_THREAD, info);
+			e->process_updated_position(IN_THREAD);
+			e->redraw_after_process_updated_position(IN_THREAD,
+								 info);
 
 			data.previous_position=new_position;
 
@@ -384,7 +386,9 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 
 				auto new_position=data.current_position;
 
-				e->process_updated_position(IN_THREAD, info);
+				e->process_updated_position(IN_THREAD);
+				e->redraw_after_process_updated_position
+					(IN_THREAD, info);
 
 				// If the widget's position has changed
 				// we need to have this widget and all

@@ -880,8 +880,7 @@ void elementObj::implObj::element_name(std::ostream &o)
 	o << s.substr(0, s.find('>'));
 }
 
-void elementObj::implObj::process_updated_position(ONLY IN_THREAD,
-						   updated_position_info &info)
+void elementObj::implObj::process_updated_position(ONLY IN_THREAD)
 {
 	// Position gets factored into cached_draw_info, so this may no
 	// longer be valid.
@@ -890,9 +889,14 @@ void elementObj::implObj::process_updated_position(ONLY IN_THREAD,
 				    ::something_changed);
 
 	update_attachedto_info(IN_THREAD);
+}
 
+void elementObj::implObj
+::redraw_after_process_updated_position(ONLY IN_THREAD,
+					updated_position_info &info)
+{
 	// If our position relative to our parent container has changed,
-	// we need to notify any child element of this container, if tihs
+	// we need to notify any child element of this container, if this
 	// element is a container, that their absolute_location_updated().
 
 	if (data(IN_THREAD).previous_position.x !=

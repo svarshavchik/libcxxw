@@ -416,8 +416,7 @@ class generic_windowObj::handlerObj
 	void background_color_changed(ONLY IN_THREAD) override;
 
 	//! Override process_updated_position().
-	void process_updated_position(ONLY IN_THREAD,
-				      updated_position_info &) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! Override get_parent_element_impl();
 

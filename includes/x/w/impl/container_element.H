@@ -69,11 +69,10 @@ redraw_priority_t container_elementObj<element_impl>
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::process_updated_position(ONLY IN_THREAD,
-			   updated_position_info &info)
+::process_updated_position(ONLY IN_THREAD)
 {
 	containerObj::implObj::process_updated_position(IN_THREAD);
-	element_impl::process_updated_position(IN_THREAD, info);
+	element_impl::process_updated_position(IN_THREAD);
 }
 
 //! Override process_same_position().

@@ -218,8 +218,7 @@ class LIBCXX_HIDDEN header_container_implObj
 	//! Override theme_updated()
 
 	//! We may need to update_custom_highlight_background_color().
-	void process_updated_position(ONLY IN_THREAD,
-				      updated_position_info &info) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! Remove dragging pointer, and call stop_adjusting().
 	void undrag(ONLY IN_THREAD);
@@ -332,11 +331,9 @@ void header_container_implObj::theme_updated(ONLY IN_THREAD,
 	update_custom_highlight_background_color(IN_THREAD);
 }
 
-void header_container_implObj::process_updated_position(ONLY IN_THREAD,
-							updated_position_info
-							&info)
+void header_container_implObj::process_updated_position(ONLY IN_THREAD)
 {
-	superclass_t::process_updated_position(IN_THREAD, info);
+	superclass_t::process_updated_position(IN_THREAD);
 	update_custom_highlight_background_color(IN_THREAD);
 }
 

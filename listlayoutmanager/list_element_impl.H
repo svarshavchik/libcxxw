@@ -381,8 +381,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Override process_updated_position().
 
 	//! Calls recalculate().
-	void process_updated_position(ONLY IN_THREAD,
-				      updated_position_info &info) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! Override do_draw.
 

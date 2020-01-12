@@ -44,8 +44,7 @@ public:
 	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
 		override;
 
-	void process_updated_position(ONLY IN_THREAD,
-				      updated_position_info &) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	void invoke_element_state_updates(ONLY IN_THREAD,
 					  element_state::state_update_t)

@@ -151,8 +151,7 @@ class background_color_1elementObj
 	//! If the widget is visible, call
 	//! set_background_color_for_element().
 
-	void process_updated_position(ONLY IN_THREAD,
-				      updated_position_info &info) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! Override invoke_element_state_updates
 

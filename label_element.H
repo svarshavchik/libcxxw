@@ -70,10 +70,9 @@ void label_elementObj<element_impl>
 
 template<typename element_impl>
 void label_elementObj<element_impl>
-::process_updated_position(ONLY IN_THREAD,
-			   updated_position_info &info)
+::process_updated_position(ONLY IN_THREAD)
 {
-	element_impl::process_updated_position(IN_THREAD, info);
+	element_impl::process_updated_position(IN_THREAD);
 	textlabelObj::implObj::process_updated_position(IN_THREAD);
 }
 

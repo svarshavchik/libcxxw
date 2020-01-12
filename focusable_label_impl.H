@@ -49,8 +49,7 @@ class LIBCXX_HIDDEN focusable_labelObj::implObj
 
 	//! Call report_current_cursor_position_if_active().
 
-	void process_updated_position(ONLY IN_THREAD,
-				      updated_position_info &info) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! report_current_cursor_position() when we have input focus.
 
