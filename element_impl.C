@@ -9,6 +9,7 @@
 #include "screen.H"
 #include "pixmap.H"
 #include "connection_thread.H"
+#include "connection_thread_debug.H"
 #include "batch_queue.H"
 #include "generic_window_handler.H"
 #include "x/w/impl/draw_info.H"

@@ -175,6 +175,10 @@ class LIBCXX_HIDDEN connection_threadObj
 	typedef std::unordered_set<ref<elementObj::implObj>
 				   > elements_to_redraw_set;
 
+	//! Invoke timeout_selection_request and process_focus_updates.
+
+	bool process_selection_and_focus_updates(ONLY IN_THREAD,
+						 int &poll_for);
 
 	//! Elements that need to be redrawn
 	elements_to_redraw_set *elements_to_redraw_thread_only;

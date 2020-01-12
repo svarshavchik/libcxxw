@@ -4,6 +4,10 @@
 */
 #include "libcxxw_config.h"
 #include "connection_thread_debug.H"
+#include "screen.H"
+#include "connection_thread.H"
+#include "connection_info.H"
+#include "x/w/impl/element.H"
 #include <unordered_set>
 #include <iostream>
 #include <string_view>
@@ -223,6 +227,55 @@ void connection_thread_poll_end()
 	connection_thread_action(0);
 	if (write(1, "---\n", 4) < 0)
 		;
+}
+
+static uint64_t counter_i=0;
+
+CONNECTION_TRAFFIC::CONNECTION_TRAFFIC(const std::string &n,
+				       elementObj::implObj &e)
+	: CONNECTION_TRAFFIC{n, *e.get_screen()->impl->thread}
+{
+}
+
+CONNECTION_TRAFFIC::CONNECTION_TRAFFIC(const std::string &n,
+				       connection_threadObj &thr)
+	: n{n}, i{counter_i++}
+{
+#if TRACK_TOTALS
+	c=thr.info->conn;
+
+	xcb_flush(c);
+	r=xcb_total_read(c);
+	w=xcb_total_written(c);
+#endif
+}
+
+CONNECTION_TRAFFIC::~CONNECTION_TRAFFIC()
+{
+#if TRACK_TOTALS
+	xcb_flush(c);
+	auto dr=xcb_total_read(c)-r;
+	auto dw=xcb_total_written(c)-w;
+
+	if (dr == 0 && dw == 0)
+		return;
+
+	char buffer[512];
+
+	auto b=buffer;
+	auto e=buffer+sizeof(buffer);
+
+	APPEND_N(i);
+	APPEND_S(": ");
+	APPEND_S(n.c_str());
+	APPEND_S(": total_read=");
+	APPEND_N(dr);
+	APPEND_S(": total_written=");
+	APPEND_N(dw);
+	APPEND_S("\n");
+	if (write(1, buffer, b-buffer) < 0)
+		;
+#endif
 }
 #endif
 

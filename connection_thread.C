@@ -180,6 +180,8 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 
 		if (w.pending_configure_notify_event(IN_THREAD))
 		{
+			CONNECTION_TRAFFIC_LOG("configure notify", *this);
+
 			// One or more ConfigureNotify events were received.
 			w.pending_configure_notify_event(IN_THREAD)=false;
 
@@ -238,6 +240,8 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 
 		if (process_exposure)
 		{
+			CONNECTION_TRAFFIC_LOG("exposure processing", *this);
+
 			// Exposure events were received, and the last one
 			// had a 0 count.
 
@@ -258,6 +262,8 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 		if (!graphics_exposure_rectangles.rectangles.empty() &&
 		    graphics_exposure_rectangles.complete)
 		{
+			CONNECTION_TRAFFIC_LOG("graphics exposure processing",
+					       *this);
 			try {
 				w.process_collected_graphics_exposures
 					(IN_THREAD);

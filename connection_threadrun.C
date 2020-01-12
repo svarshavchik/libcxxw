@@ -69,6 +69,8 @@ bool connection_threadObj
 
 		if (b)
 		{
+			CONNECTION_TRAFFIC_LOG("batch event", *this);
+
 			bool flag=true;
 
 			while (!msgqueue->empty())
@@ -103,6 +105,7 @@ bool connection_threadObj
 
 		if (!msgqueue->empty())
 		{
+			CONNECTION_TRAFFIC_LOG("event", *this);
 			CONNECTION_THREAD_ACTION("event");
 			msgqueue.event();
 			continue;
@@ -115,26 +118,7 @@ bool connection_threadObj
 
 		expire_incremental_updates(IN_THREAD, poll_for);
 
-		bool processed_focus_updates=false;
-
-		for (const auto &handler:*window_handlers_thread_only)
-		{
-			try {
-				handler.second->timeout_selection_request
-					(IN_THREAD, poll_for);
-			} CATCH_EXCEPTIONS;
-
-			try {
-				if (handler.second->process_focus_updates
-				    (IN_THREAD))
-				{
-					CONNECTION_THREAD_ACTION("delayed focus");
-					processed_focus_updates=true;
-				}
-			} CATCH_EXCEPTIONS;
-		}
-
-		if (processed_focus_updates)
+		if (process_selection_and_focus_updates(IN_THREAD, poll_for))
 			continue;
 
 		// Check if the connection errored out, if not, check for
@@ -167,6 +151,7 @@ bool connection_threadObj
 					      ? " (SendEvent)":""));
 
 				CONNECTION_THREAD_ACTION("X event");
+				CONNECTION_TRAFFIC_LOG("X event", *this);
 
 				run_event(IN_THREAD, event);
 				continue;
@@ -243,6 +228,36 @@ bool connection_threadObj
 	return true;
 }
 
+bool connection_threadObj::process_selection_and_focus_updates(ONLY IN_THREAD,
+							       int &poll_for)
+{
+	CONNECTION_TRAFFIC_LOG("window handlers", *this);
+
+	bool processed_focus_updates=false;
+
+	for (const auto &handler:*window_handlers_thread_only)
+	{
+		try {
+			handler.second
+				->timeout_selection_request
+				(IN_THREAD, poll_for);
+		} CATCH_EXCEPTIONS;
+
+		try {
+			if (handler.second
+			    ->process_focus_updates
+			    (IN_THREAD))
+			{
+				CONNECTION_THREAD_ACTION
+					("delayed focus");
+				processed_focus_updates=true;
+			}
+		} CATCH_EXCEPTIONS;
+	}
+
+	return processed_focus_updates;
+}
+
 // Insert a new callback
 
 ref<obj> connection_threadObj
@@ -265,6 +280,8 @@ ref<obj> connection_threadObj
 bool connection_threadObj::invoke_scheduled_callbacks(ONLY IN_THREAD,
 						      int &poll_for)
 {
+	CONNECTION_TRAFFIC_LOG("invoke scheduled", *this);
+
 	bool invoked=false;
 
 	// Scan the scheduled_callbacks list.

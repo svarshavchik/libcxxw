@@ -109,6 +109,8 @@ void connection_threadObj
 bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
 						      int &poll_for)
 {
+	CONNECTION_TRAFFIC_LOG("process visibility", *this);
+
 	bool flag=false;
 
 	// Start with the lower-most elements and work our way up to the
@@ -138,6 +140,8 @@ bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
 
 bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 {
+	CONNECTION_TRAFFIC_LOG("recalculate", *this);
+
 	bool flag=false;
 
 	for (auto b=containers_2_recalculate_thread_only->begin(),
@@ -270,6 +274,8 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 							    int &poll_for)
 {
+	CONNECTION_TRAFFIC_LOG("process position", *this);
+
 	bool flag=false;
 
 	std::unordered_set<element_impl> redrawn;
@@ -316,6 +322,8 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 
 bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 {
+	CONNECTION_TRAFFIC_LOG("redraw", *this);
+
 	bool flag=false;
 
 	for (auto b=elements_to_redraw(IN_THREAD)->begin(),
@@ -330,6 +338,8 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 			continue;
 
 		try {
+			CONNECTION_TRAFFIC_LOG("   redraw("
+					       + p->objname() + ")", *this);
 			p->explicit_redraw(IN_THREAD);
 		} CATCH_EXCEPTIONS;
 

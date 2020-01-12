@@ -6,6 +6,7 @@
 #define connection_thread_debug_h
 
 #include "x/w/namespace.H"
+#include "x/w/elementobj.H"
 #include <xcb/xcb.h>
 
 LIBCXXW_NAMESPACE_START
@@ -25,12 +26,33 @@ void connection_thread_poll_end() LIBCXX_HIDDEN;
 #define CONNECTION_THREAD_POLL_START(c) connection_thread_poll_start(c)
 #define CONNECTION_THREAD_POLL_END() connection_thread_poll_end()
 
+class CONNECTION_TRAFFIC {
+
+	std::string n;
+	uint64_t i;
+	uint64_t r, w;
+	xcb_connection_t *c;
+
+public:
+	CONNECTION_TRAFFIC(const std::string &n,
+			   elementObj::implObj &e);
+
+	CONNECTION_TRAFFIC(const std::string &n,
+			   connection_threadObj &c);
+	~CONNECTION_TRAFFIC();
+};
+
+#define CONNECTION_TRAFFIC_LOG(n, x) \
+	CONNECTION_TRAFFIC connection_traffic_log{(n),(x)};
+
 #else
 
 #define CONNECTION_THREAD_ACTION(what) do{}while(0)
 #define CONNECTION_THREAD_ACTION_FOR(what,ptr) do{}while(0)
 #define CONNECTION_THREAD_POLL_START(c) do{}while(0)
 #define CONNECTION_THREAD_POLL_END() do{}while(0)
+
+#define CONNECTION_TRAFFIC_LOG(n, x) do{}while(0)
 
 #endif
 
