@@ -34,6 +34,10 @@ void runtests()
 			      (char32_t)( '0' + ((y / 10) % 10)),
 			      (char32_t)('0' + (y % 10)), '/', 0};
 
+	auto os="01.01."+std::to_string(y);
+
+	std::u32string uos{os.begin(), os.end()};
+
 	const struct {
 		const char32_t *date_format;
 		const char32_t *initial_contents;
@@ -85,7 +89,7 @@ void runtests()
 		   },
 
 		   {U"mm.dd.YYYY", U"", 0, 0, y2cslash,
-		    0, 0, U"01.01.2019",
+		    0, 0, uos.c_str(),
 		   },
 
 		   // 11
