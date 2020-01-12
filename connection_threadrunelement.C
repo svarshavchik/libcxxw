@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "connection_thread.H"
 #include "connection_thread_debug.H"
+#include "element_position_updated.H"
 #include "generic_window_handler.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
@@ -33,12 +34,12 @@ bool connection_threadObj::is_element_in_set(element_set_t &s,
 	return (iter->second.find(i) != iter->second.end());
 }
 
-bool connection_threadObj::resize_pending(ONLY IN_THREAD,
-					  const element_impl &e,
-					  int &poll_for)
-{
-	auto &wh=e->get_window_handler();
+// If we expect the widget's window to get resized we'll skip some
+// processing until it does.
 
+static bool resize_pending(ONLY IN_THREAD,
+			   generic_windowObj::handlerObj &wh, int &poll_for)
+{
 	if (!wh.resizing(IN_THREAD))
 		return false;
 
@@ -51,9 +52,16 @@ bool connection_threadObj::resize_pending(ONLY IN_THREAD,
 		return false;
 	}
 
-	compute_poll_until(now, wh.resizing_timeout(IN_THREAD), poll_for);
+	connection_threadObj::compute_poll_until(now,
+						 wh.resizing_timeout(IN_THREAD),
+						 poll_for);
 
 	return true;
+}
+
+static bool resize_pending(ONLY IN_THREAD, const element_impl &e, int &poll_for)
+{
+	return resize_pending(IN_THREAD, e->get_window_handler(), poll_for);
 }
 
 void connection_threadObj
@@ -94,47 +102,6 @@ void connection_threadObj
 
 		if (last_set.empty())
 			iter=s.erase(iter);
-	}
-}
-
-void connection_threadObj
-::do_highest_sizable_element_first(ONLY IN_THREAD,
-				   element_set_t &s,
-				   int &poll_for,
-				   const function<void (const element_impl &)>
-				   &f)
-{
-	// Start at the end of the nesting level map, work our way up.
-
-	auto iter=s.begin();
-
-	while (iter != s.end())
-	{
-		auto &first_set=iter->second;
-
-		auto p=iter++;
-
-		// Work our way through all elements at this nesting level.
-
-		auto b=first_set.begin(), e=first_set.end();
-
-		while (b != e)
-		{
-			auto element=*b;
-
-			if (resize_pending(IN_THREAD, element, poll_for))
-			{
-				++b;
-				continue;
-			}
-
-			b=first_set.erase(b);
-
-			f(element);
-		}
-
-		if (first_set.empty())
-			s.erase(p);
 	}
 }
 
@@ -186,8 +153,8 @@ bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 			auto container=*first;
 
 			if (resize_pending(IN_THREAD,
-					   ref(&container
-					       ->container_element_impl()),
+					   container->container_element_impl()
+					   .get_window_handler(),
 					   poll_for))
 				continue;
 
@@ -234,11 +201,6 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 {
 	bool flag=false;
 
-	// Per-window updated_position_info
-	std::unordered_map<ref<generic_windowObj::handlerObj>,
-			   updated_position_info>
-		window_updated_position_info;
-
 	// We start with the "highest", or the topmost element waiting for
 	// its updated position to be processed, since when its resized it'll
 	// usually update the position of all elements inside it, which have
@@ -246,52 +208,88 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 	// immediately, right here, and so process everyone's updated position
 	// in one pass.
 
-	highest_sizable_elements_first
-		(IN_THREAD,
-		 *element_position_updated(IN_THREAD),
-		 poll_for,
-		 [&]
-		 (const auto &e)
-		 {
-			 try {
-				 auto &data=e->data(IN_THREAD);
+	auto &set=element_position_updated(IN_THREAD)->set(IN_THREAD);
 
-				 // NOTE: scroll_by_parent_container()
-				 // short-circuits this processing.
+	for (auto level_b=set.begin(), level_e=set.end(), p=level_b;
+	     level_b != level_e; level_b=p)
+	{
+		++p;
 
-				 if (data.current_position !=
-				     data.previous_position)
-				 {
-					 // Make sure that previous_position
-					 // gets what current_position is,
-					 // *right now*.
+		// Process each container's repositioned widgets.
+		for (auto parent_b=level_b->second.begin(),
+			     parent_e=level_b->second.end(), p=parent_b;
+		     parent_b != parent_e; parent_b=p)
+		{
+			++p;
 
-					 auto new_position=
-						 data.current_position;
+			updated_position_info info;
 
+			// Process each widget, one at a time.
 
-					 auto &info=
-						 window_updated_position_info
-						 [ref{&e->get_window_handler()
-							      }];
+			for (auto e_b=parent_b->second.begin(),
+				     e_e=parent_b->second.end(),
+				     p=e_b;
+			     e_b != e_e; e_b=p)
+			{
+				++p;
 
-					 e->process_updated_position
-						 (IN_THREAD, info);
-					 e->schedule_redraw_recursively
-						 (IN_THREAD);
+				auto &e=*e_b;
 
-					 data.previous_position=
-						 new_position;
-				 }
-				 else
-				 {
-					 e->process_same_position(IN_THREAD);
-				 }
-			 } CATCH_EXCEPTIONS;
-			 CONNECTION_THREAD_ACTION_FOR("process position",
-						      &*e);
-			 flag=true;
-		 });
+				if (resize_pending(IN_THREAD,
+						   e->get_window_handler(),
+						   poll_for))
+					// Everyone is in the same container.
+					break;
+
+				try {
+					auto &data=e->data(IN_THREAD);
+
+					// NOTE: scroll_by_parent_container()
+					// short-circuits this processing.
+
+					if (data.current_position !=
+					    data.previous_position)
+					{
+						// Make sure that
+						// previous_position gets
+						// what current_position is,
+						// *right now*.
+
+						auto new_position=
+							data.current_position;
+
+						e->process_updated_position
+							(IN_THREAD, info);
+						e->schedule_redraw_recursively
+							(IN_THREAD);
+
+						data.previous_position=
+							new_position;
+					}
+					else
+					{
+						e->process_same_position
+							(IN_THREAD);
+					}
+				} CATCH_EXCEPTIONS;
+				CONNECTION_THREAD_ACTION_FOR("process position",
+							     &*e);
+				flag=true;
+
+				parent_b->second.erase(e_b);
+			}
+
+			// If we processed all widgets in this container,
+			// delete it off the list.
+			if (parent_b->second.empty())
+				level_b->second.erase(parent_b);
+		}
+
+		// If we processed all widgets at this nesting level, remove
+		// it.
+		if (level_b->second.empty())
+			set.erase(level_b);
+	}
 
 	return flag;
 }

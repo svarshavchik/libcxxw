@@ -96,6 +96,10 @@ public:
 	void process_updated_position(ONLY IN_THREAD,
 				      updated_position_info &info) override;
 
+	//! Implement get_parent_element_impl();
+
+	implObj *get_parent_element_impl() const override;
+
 	//! Use parent widget's background color.
 
 	void remove_background_color(ONLY IN_THREAD) override;

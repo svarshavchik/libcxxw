@@ -702,20 +702,6 @@ void elementObj::implObj::element_name(std::ostream &o)
 	o << s.substr(0, s.find('>'));
 }
 
-void elementObj::implObj::schedule_update_position_processing(ONLY IN_THREAD)
-{
-	IN_THREAD->insert_element_set(*IN_THREAD->element_position_updated
-				      (IN_THREAD),
-				      element_impl(this));
-}
-
-bool elementObj::implObj::update_position_processing_scheduled(ONLY IN_THREAD)
-{
-	return IN_THREAD->is_element_in_set(*IN_THREAD->element_position_updated
-					    (IN_THREAD),
-					    element_impl(this));
-}
-
 void elementObj::implObj::process_updated_position(ONLY IN_THREAD,
 						   updated_position_info &info)
 {

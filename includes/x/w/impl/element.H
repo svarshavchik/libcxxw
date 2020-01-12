@@ -972,6 +972,17 @@ class elementObj::implObj : public element_drawObj,
 		return data(IN_THREAD).initialized;
 	}
  public:
+	//! Return a pointer to my parent widget.
+
+	//! Implement in child_elementObj, and generic_windowObj::handlerObj
+	//! which returns NULL.
+	//!
+	//! This is used for process_element_position_updated when it
+	//! stores a reference to this widget. Because child widgets own
+	//! references to their parents, this native pointer will remain
+	//! valid.
+	virtual implObj *get_parent_element_impl() const=0;
+
 	//! Invoke a lambda for each child widget.
 
 	template<typename functor_type>

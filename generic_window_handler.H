@@ -401,6 +401,10 @@ class generic_windowObj::handlerObj
 	void process_updated_position(ONLY IN_THREAD,
 				      updated_position_info &) override;
 
+	//! Override get_parent_element_impl();
+
+	elementObj::implObj *get_parent_element_impl() const override;
+
  private:
 	void update_background_pixel(ONLY IN_THREAD,
 				     const background_color &);

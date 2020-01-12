@@ -6,6 +6,7 @@
 #include "connection_thread.H"
 #include "connection_thread_debug.H"
 #include "window_handler.H"
+#include "element_position_updated.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
 #include "batch_queue.H"
@@ -48,7 +49,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	elements_to_redraw_set elements_to_redraw;
 	containers_2_recalculate_map containers_2_recalculate;
 
-	element_set_t element_position_updated;
+	element_position_updated_t element_position_updated;
 	scheduled_callbacks_t scheduled_callbacks=
 		scheduled_callbacks_t::create();
 	incremental_selection_update_info pending_incremental_updates;

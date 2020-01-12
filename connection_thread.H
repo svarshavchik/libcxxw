@@ -6,6 +6,7 @@
 #define connection_thread_h
 
 #include "window_handlerfwd.H"
+#include "element_position_updatedfwd.H"
 #include "xid_t_fwd.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/clock.H"
@@ -117,28 +118,6 @@ class LIBCXX_HIDDEN connection_threadObj
 						(f));
 	}
 
-	//! Invoke a closure for each element in a set, highest to lowest.
-
-	//! Invokes the closure for each element starting with the elements
-	//! with the lowest nesting_level (lowest nesting_level means
-	//! elements that are the most top-level elements).
-	//!
-	//! Skips any elements whose window is resize_pending (updating the
-	//! poll_for accordingly).
-
-	template<typename functor>
-		static inline
-		void highest_sizable_elements_first(ONLY IN_THREAD,
-						    element_set_t &s,
-						    int &poll_for,
-						    functor &&f)
-	{
-		do_highest_sizable_element_first(IN_THREAD, s, poll_for,
-						 make_function
-						 <void (const element_impl &)>
-						 (f));
-	}
-
 	//! Type-erased lowest_sizable_element_first().
 
 	static void do_lowest_sizable_element_first
@@ -147,21 +126,6 @@ class LIBCXX_HIDDEN connection_threadObj
 		 int &poll_for,
 		 const function<void (const element_impl &)> &f);
 
-	//! Type-erased highest_sizable_element_first().
-
-	static void do_highest_sizable_element_first
-		(ONLY IN_THREAD,
-		 element_set_t &s,
-		 int &poll_for,
-		 const function<void (const element_impl &)> &f);
-
-	//! Check whether the element's window is about to be resized
-
-	//! If so, lowest_sizable_element_first() and
-	//! highest_sizable_element_first() skips this element.
-
-	static bool resize_pending(ONLY IN_THREAD, const element_impl &,
-				   int &poll_for);
 
 	//! A list of elements that have requested their visibility to be changed.
 
@@ -229,7 +193,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! process_updated_position() immediately, they get cached here, and
 	//! processed.
 
-	element_set_t *element_position_updated_thread_only;
+	element_position_updated_t *element_position_updated_thread_only;
 
 	//! Process an element's position.
 	bool process_element_position_updated(ONLY IN_THREAD, int &poll_for);
