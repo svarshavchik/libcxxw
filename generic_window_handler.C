@@ -242,11 +242,7 @@ generic_windowObj::handlerObj
 	  current_position{params.window_handler_params.initial_position},
 	  window_pixmap_thread_only
 	{params.window_handler_params.screenref
-	 ->create_pixmap(params.drawable_pictformat,
-			 params.window_handler_params.screenref
-			 ->width_in_pixels()/4,
-			 params.window_handler_params.screenref
-			 ->height_in_pixels()/4)},
+	 ->create_pixmap(params.drawable_pictformat, 0, 0)},
 	  handler_data{handler_data},
 	  my_popups{my_popups_t::create()},
 	  original_background_color{params.background_color_arg},
@@ -1461,38 +1457,118 @@ void generic_windowObj::handlerObj::do_process_configure_notify(ONLY IN_THREAD)
 void generic_windowObj::handlerObj
 ::update_window_pixmap_and_picture(ONLY IN_THREAD, const rectangle &r)
 {
-	auto current_width=window_pixmap(IN_THREAD)->get_width();
+	auto window_pixmap_width=window_pixmap(IN_THREAD)->get_width();
+	auto window_pixmap_height=window_pixmap(IN_THREAD)->get_height();
 
-	auto current_height=window_pixmap(IN_THREAD)->get_height();
+	auto current_width=window_pixmap_width;
+	auto current_height=window_pixmap_height;
+
+#define DEBUG_WINDOW_PIXMAP_RESIZE 0
+
+#if DEBUG_WINDOW_PIXMAP_RESIZE
+	std::cout << "Pixmap size should be "
+		  << r.width << "x" << r.height << std::endl
+		  << "Current pixmap size is "
+		  << current_width << "x" << current_height
+		  << std::endl
+		  << "Current window size is "
+		  << data(IN_THREAD).current_position.width
+		  << "x"
+		  << data(IN_THREAD).current_position.height
+		  << std::endl;
+#endif
 
 	// If the new window's size is at least as big as the pixmap, we're
 	// good, but if the new size is much smaller, we'll go ahead and
 	// resize to a smaller pixmap.
 
 	if (current_width >= r.width &&
-	    current_width >= r.height &&
+	    current_height >= r.height &&
 
 	    current_width - r.width < r.width &&
-	    current_height - r.width < r.height)
+	    current_height - r.height < r.height)
 		return;
 
-	if (current_width < r.width || current_width - r.width > r.width)
-		current_width=r.width;
+	// New size is larger than the old size:
+	//
+	// Make the new window_pixmap even bigger, to accomodate further
+	// expansion (we're manually resizing the window), but:
+	//
+	// If the current size is 0 this must be the initial window size,
+	// so size the window_pixmap to the initial window size, otherwise
+	// add half the window size, for the extra room.
+	//
+	// New size is much smaller than the old size:
+	//
+	// Set the new window_pixmap's size to be halfway between the old
+	// size and the new size. This heuristically lets up keep enough
+	// of the old contents in the backing store to be able to efficiently
+	// scroll widgets, if the shrinkage is due to the widgets moving.
 
-	if (current_height < r.height || current_height - r.height > r.height)
-		current_height=r.height;
+	if (current_width < r.width)
+	{
+		if (current_width > 0)
+			current_width=current_width/2;
+		else
+			current_width=0;
+
+		current_width=
+			dim_t::truncate(current_width+r.width);
+	}
+	else if (current_width - r.width > r.width)
+	{
+		current_width=
+			dim_t::truncate(r.width + (current_width-r.width)/2);
+
+		if (current_width < data(IN_THREAD).current_position.width)
+			current_width=data(IN_THREAD).current_position.width;
+	}
+
+	if (current_height < r.height)
+	{
+		if (current_height > 0)
+			current_height=current_height/2;
+		else
+			current_height=0;
+
+		current_height=
+			dim_t::truncate(current_height+r.height);
+	}
+	else if (current_height - r.height > r.height)
+	{
+		current_height=
+			dim_t::truncate(r.height + (current_height-r.height)/2);
+		if (current_height < data(IN_THREAD).current_position.height)
+			current_height=data(IN_THREAD).current_position.height;
+	}
 
 	auto new_pixmap=create_pixmap(current_width, current_height);
 
-#if 0
-	// This should not be needed.
-	for (const auto &a:window_drawnarea(IN_THREAD))
+#if DEBUG_WINDOW_PIXMAP_RESIZE
+	std::cout << "New pixmap size is "
+		  << current_width << "x" << current_height
+		  << std::endl << std::endl;
+#endif
+
+	// Copy over the contents of the pixmap, for optimized scrolling
+	// purposes. That is, if the pixmap is not the initial empty one.
+
+	if (window_pixmap_width > 0 && window_pixmap_height > 0)
 	{
-		copy_configured(a, a.x, a.y,
+		// But copy the smaller of the new and the old size
+		if (window_pixmap_width > current_width)
+			window_pixmap_width=current_width;
+
+		if (window_pixmap_height > current_height)
+			window_pixmap_height=current_height;
+
+		copy_configured({0, 0,
+				 window_pixmap_width, window_pixmap_height},
+				0, 0,
 				window_pixmap(IN_THREAD)->impl,
 				new_pixmap->impl);
 	}
-#endif
+
 	window_pixmap(IN_THREAD)=new_pixmap;
 }
 

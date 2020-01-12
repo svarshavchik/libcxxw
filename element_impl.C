@@ -648,6 +648,18 @@ elementObj::implObj::has_scrollable_window_pixmap_rectangle(ONLY IN_THREAD)
 	    .empty())
 		return ret;
 
+	// 4) If the window is being resized, make sure we haven't lost
+	// the info already.
+
+	auto pixmap_width=wh.window_pixmap(IN_THREAD)->get_width();
+	auto pixmap_height=wh.window_pixmap(IN_THREAD)->get_height();
+
+	if (pixmap_width < dim_t::truncate(viewport_rectangle.x+
+					   viewport_rectangle.width) ||
+	    pixmap_height < dim_t::truncate(viewport_rectangle.y+
+					    viewport_rectangle.height))
+		return std::nullopt;
+
 	ret=viewport_rectangle;
 	return ret;
 }
