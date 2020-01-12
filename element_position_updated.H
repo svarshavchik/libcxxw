@@ -8,10 +8,11 @@
 #include "x/w/namespace.H"
 #include "x/w/elementobj.H"
 #include "element_position_updatedfwd.H"
-#include "element_position_updated_setfwd.H"
 #include "x/w/impl/connection_threadfwd.H"
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
+#include <x/refptr_hash.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -31,16 +32,9 @@ public:
 	//! process_updated_position()/process_same_position() gets invoked
 	//! starting with the top-level widgets first (smaller to higher
 	//! nesting levels).
-	//!
-	//! The second level container is a map of each repositioned widget's
-	//! parent widget, and all repositioned widgets in that container
-	//! get dropped into a set of them. We end up with sets of
-	//! repositioned widgets in each container.
 
 	typedef std::map<size_t,
-			 std::unordered_map<elementObj::implObj *,
-					    element_position_updated_set_t>
-			 > set_t;
+			 std::unordered_set<element_impl>> set_t;
 private:
 
 	//! Container fo the repositioned widgets

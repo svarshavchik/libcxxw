@@ -41,10 +41,10 @@ static LIBCXX_NAMESPACE::mpcobj<size_t> state_change{0};
 
 #include "element_impl.C"
 
-#define DEBUG_FLUSH_REDRAWN_AREAS() do {			  \
-		if (!DEBUG)					  \
-			return;					  \
-		std::cout << "FLUSH: " << r << std::endl;	  \
+#define DEBUG_FLUSH_REDRAWN_AREAS() do {				\
+		if (!DEBUG)						\
+			return;						\
+		std::cout << "FLUSH: " << r << std::endl;		\
 		flush_counter_t::lock l{flush_counter};			\
 		l->push_back(r);					\
 		l.notify_all();						\
@@ -55,6 +55,15 @@ static LIBCXX_NAMESPACE::mpcobj<size_t> state_change{0};
 #define DEBUG_POINTER_MOTION_EVENT() return
 
 #include "generic_window_handler.C"
+
+#define DEBUG_MOVE_LOG() do {			\
+		std::cout << "MOVE " << e->objname()		\
+			  << ": " << move_info.scroll_from	\
+			  << " -> " << move_info.move_to_x	\
+			  << ", " << move_info.move_to_y	\
+			  << std::endl;				\
+	} while (0)
+#include "connection_threadrunelement.C"
 
 struct strict_weak_order {
 	LIBCXX_NAMESPACE::w::rectangle a, b;
@@ -187,6 +196,8 @@ static void sanity_check()
 				LIBCXX_NAMESPACE::w::updated_position_move_info
 					mva, mvb;
 
+				mva.scroll_from={0,0,1,1};
+				mvb.scroll_from={0,0,1,1};
 				mva.move_to_x=swo_test.a.x;
 				mva.move_to_y=swo_test.a.y;
 				mvb.move_to_x=swo_test.b.x;
@@ -313,12 +324,11 @@ void testupdatedposition()
 		lock.wait_for(std::chrono::seconds(3),
 			      [&]
 			      {
-				      if (lock->empty())
-					      return false;
+				      auto rect=add(*lock, *lock);
 
-				      if (lock->size() > 1 ||
-					  (*lock)[0].x != 0 ||
-					  (*lock)[0].y != 0)
+				      if (rect.size() != 1 ||
+					  rect[0].x != 0 ||
+					  rect[0].y != 0)
 				      {
 					      throw EXCEPTION
 						      ("Unexpected flush");
@@ -350,7 +360,21 @@ void testupdatedposition()
 
 		auto f=layout->insert_row(0);
 
-		f->create_label("Ok")->show_all();
+		f->border("thin_0%").create_container
+			([]
+			 (const auto &c)
+			 {
+				 LIBCXX_NAMESPACE::w::gridlayoutmanager glm=
+					 c->get_layoutmanager();
+
+				 auto f=glm->append_row();
+
+				 f->create_label("Foo");
+				 f=glm->append_row();
+				 f->create_label("Bar");
+			 },
+			 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{})
+			->show_all();
 	}
 
 	// Wait for the window to resize.
@@ -379,7 +403,9 @@ void testupdatedposition()
 		    rect[0].x != 0 ||
 		    rect[0].y != 0)
 		{
-			throw EXCEPTION("Did not flush everytihng?");
+			for (const auto &r:rect)
+				std::cout << "NO (1): " << r << std::endl;
+			throw EXCEPTION("Did not flush everything?");
 		}
 
 		lock->clear();
@@ -396,6 +422,10 @@ void testupdatedposition()
 	{
 		LIBCXX_NAMESPACE::w::gridlayoutmanager
 			layout=main_window->get_layoutmanager();
+
+		LIBCXX_NAMESPACE::w::container c=layout->get(0, 0);
+
+		layout=c->get_layoutmanager();
 
 		layout->remove_row(0);
 	}
@@ -421,10 +451,17 @@ void testupdatedposition()
 		auto rect=add(*lock, *lock);
 
 		if (rect.size() != 1 ||
-		    rect[0].x != 0 ||
-		    rect[0].y != 0)
+		    rect[0].x != 0 /* ||
+				      rect[0].y != 0
+
+				      smart enough not to redraw the top
+				      border
+				   */
+		    )
 		{
-			throw EXCEPTION("Did not flush everytihng?");
+			for (const auto &r:rect)
+				std::cout << "NO(2): " << r << std::endl;
+			throw EXCEPTION("Did not flush everything?");
 		}
 
 		lock->clear();

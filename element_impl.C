@@ -622,7 +622,7 @@ void elementObj::implObj::update_current_position(ONLY IN_THREAD,
 
 void
 elementObj::implObj::can_be_moved(ONLY IN_THREAD,
-				  std::unordered_set<element_impl>::iterator
+				  all_updated_position_widgets_t_iterator
 				  my_move_iterator,
 				  updated_position_container_t &move_container)
 {
@@ -665,7 +665,7 @@ elementObj::implObj::can_be_moved(ONLY IN_THREAD,
 		return;
 	}
 
-	move_container.emplace_back(my_move_iterator,
+	move_container.emplace_back(std::move(my_move_iterator),
 				    updated_position_move_info{
 					    *rectangle, rectangle->x,
 						    rectangle->y} );

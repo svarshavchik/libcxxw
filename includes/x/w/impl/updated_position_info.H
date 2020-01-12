@@ -38,33 +38,67 @@ struct updated_position_move_info {
 		static bool sort_for_nw(const updated_position_move_info &a,
 					const updated_position_move_info &b)
 		{
-			return (a.move_to_x < b.move_to_x ||
-				(a.move_to_x == b.move_to_x &&
-				 a.move_to_y < b.move_to_y));
+			if (coord_t::truncate(a.move_to_x+
+					      a.scroll_from.width)
+			    <= b.move_to_x)
+				return true;
+
+			if (coord_t::truncate(a.move_to_y+
+					      a.scroll_from.height)
+			    <= b.move_to_y)
+				return true;
+
+			return false;
 		}
 
 		static bool sort_for_ne(const updated_position_move_info &a,
 					const updated_position_move_info &b)
 		{
-			return (a.move_to_x > b.move_to_x ||
-				(a.move_to_x == b.move_to_x &&
-				 a.move_to_y < b.move_to_y));
+			if (a.move_to_x >=
+			    coord_t::truncate(b.move_to_x+
+						   b.scroll_from.width))
+				return true;
+
+			if (coord_t::truncate(a.move_to_y+
+					      a.scroll_from.height)
+			    <= b.move_to_y)
+				return true;
+
+			return false;
+
 		}
 
 		static bool sort_for_sw(const updated_position_move_info &a,
 					const updated_position_move_info &b)
 		{
-			return (a.move_to_x < b.move_to_x ||
-				(a.move_to_x == b.move_to_x &&
-				 a.move_to_y > b.move_to_y));
+			if (coord_t::truncate(a.move_to_x+
+					      a.scroll_from.width)
+			    <= b.move_to_x)
+				return true;
+
+			if (a.move_to_y >=
+			    coord_t::truncate(b.move_to_y+
+					      b.scroll_from.height))
+				return true;
+
+			return false;
+
 		}
 
 		static bool sort_for_se(const updated_position_move_info &a,
 					const updated_position_move_info &b)
 		{
-			return (a.move_to_x > b.move_to_x ||
-				(a.move_to_x == b.move_to_x &&
-				 a.move_to_y > b.move_to_y));
+			if (a.move_to_x >=
+			    coord_t::truncate(b.move_to_x+
+						   b.scroll_from.width))
+				return true;
+
+			if (a.move_to_y >=
+			    coord_t::truncate(b.move_to_y+
+					      b.scroll_from.height))
+				return true;
+
+			return false;
 		}
 
 		typedef std::tuple<

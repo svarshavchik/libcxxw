@@ -535,7 +535,7 @@ class elementObj::implObj : public element_drawObj,
 	//! last call for the move express!
 
 	void can_be_moved(ONLY IN_THREAD,
-			  std::unordered_set<element_impl>::iterator
+			  all_updated_position_widgets_t_iterator
 			  my_move_iterator,
 			  updated_position_container_t &move_container);
 

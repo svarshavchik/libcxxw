@@ -6,7 +6,6 @@
 #include "connection_thread.H"
 #include "connection_thread_debug.H"
 #include "element_position_updated.H"
-#include "element_position_updated_set.H"
 #include "generic_window_handler.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
@@ -200,41 +199,36 @@ bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 	return flag;
 }
 
-inline bool connection_threadObj::process_container_widget_positions_updated
-(ONLY IN_THREAD, element_position_updated_set_t &widgets, int &poll_for,
+// Factored out for readability.
+
+inline rectarea connection_threadObj::move_updated_position_widgets
+(ONLY IN_THREAD,
+ updated_position_info &info,
+ const ref<generic_windowObj::handlerObj> &wh,
+ all_updated_position_widgets_t &widgets,
  std::unordered_set<element_impl> &moved,
  std::unordered_set<element_impl> &to_redraw,
- std::unordered_set<element_impl> &to_redraw_recursively,
- std::unordered_map<ref<generic_windowObj::handlerObj>, rectarea> &to_flush)
+ std::unordered_set<element_impl> &to_redraw_recursively)
 {
-	widgets.resize_pending=false;
-	if (widgets.elements.empty())
-		return false;
+	// All the moved area.
 
-	bool flag=false;
-
-	// These are all in the same container, same window.
-	auto wh=ref{&(*widgets.elements.begin())->get_window_handler()};
-
-	// The set is not empty. Check if the container's window is expected
-	// to be resized soon, if so we'll wait, because this could be a moot
-	// point.
-
-	if (resize_pending(IN_THREAD, *wh, poll_for))
-	{
-		widgets.resize_pending=true;
-		return false;
-	}
+	rectarea to_flush;
 
 	// Find widgets whose contents can_be_moved(), as is.
 
 	updated_position_container_t move_container;
 
-	for (auto e_b=widgets.elements.begin(),
-		     e_e=widgets.elements.end(); e_b != e_e; ++e_b)
-	{
-		(*e_b)->can_be_moved(IN_THREAD, e_b, move_container);
-	}
+	for (auto level_b=widgets.begin(),
+		     level_e=widgets.end(); level_b != level_e; ++level_b)
+		for (auto iter_b=level_b->second.begin(),
+			     iter_e=level_b->second.end();
+		     iter_b != iter_e; ++iter_b)
+		{
+			auto &[e,position,moved_flag]=*iter_b;
+
+			e->can_be_moved(IN_THREAD, {level_b, iter_b},
+					move_container);
+		}
 
 	// Now figure out which way we're moving the movable widgets
 
@@ -298,30 +292,29 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 	// their existing contents directly copied in the window_pixmap,
 	// instead of redrawing them from scratch.
 
-	updated_position_info info;
-
 	for (const auto &w:move_container)
 	{
 		const auto &[iterator, move_info]=w;
 
-		const auto &e=*iterator;
+		const auto &[all_levels_iterator, level_iterator]=iterator;
+
+		auto &[e, new_position, widget_moved]=*level_iterator;
+
 		auto &data=e->data(IN_THREAD);
 
 		try {
-			// Make sure that
-			// previous_position gets
-			// what current_position is,
-			// *right now*.
-
-			auto new_position=data.current_position;
-
-			e->process_updated_position(IN_THREAD);
+			// This widget was process_updated_position()'ed,
+			// so we must call this:
 			e->redraw_after_process_updated_position(IN_THREAD,
 								 info);
-
-			data.previous_position=new_position;
+			// We will remove it from the window_buckets below.
 
 		} CATCH_EXCEPTIONS;
+
+		// Make sure that previous_position gets
+		// what current_position is, *right now*.
+
+		data.previous_position=new_position;
 
 		// Copy the widget in the window_pixmap, then
 		// insert the new widget position into to_flush.
@@ -339,89 +332,55 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 				    move_info.move_to_y,
 				    pixmap_impl,
 				    pixmap_impl);
-		to_flush[wh].push_back
+		to_flush.push_back
 			({move_info.move_to_x,
 			  move_info.move_to_y,
 			  move_info.scroll_from.width,
 			  move_info.scroll_from.height});
-
+#ifdef DEBUG_MOVE_LOG
+		DEBUG_MOVE_LOG();
+#endif
 		// Record this widget as being moved, and remove the widgetr
 		// from widgets.elements, since we processed it here. All
 		// other widgets.elements can processed below.
 		moved.insert(e);
+		widget_moved=true;
 		CONNECTION_THREAD_ACTION_FOR("process position", &*e);
-		flag=true;
-
-		widgets.elements.erase(iterator);
 	}
 
-	info.moved_how=info.moved_without_contents;
+	return to_flush;
+}
 
-	// Process each widget, one at a time, removing each
-	// widget from the widgets set, after it is notified.
+namespace {
+#if 0
+}
+#endif
 
-	auto e_b=widgets.elements.begin();
-	auto e_e=widgets.elements.end();
+//! Helper class used to find all repositionable widgets.
 
-	// Now go through the set, removing elements after notifying them.
+//! All widgets in the same window get bucketed together.
 
-	for (auto p=e_b; e_b != e_e; e_b=p)
+struct reposition_bucket {
+
+	//! If the window's resize_pending(), skip all of its widgets
+
+	//! The widgets list will be empty.
+	const bool resize_pending_flag;
+
+	//! All widgets that can be repositioned here.
+	all_updated_position_widgets_t widgets;
+
+	reposition_bucket(ONLY IN_THREAD,
+			  const ref<generic_windowObj::handlerObj> &wh,
+			  int &poll_for)
+		: resize_pending_flag{resize_pending(IN_THREAD, *wh, poll_for)}
 	{
-		++p;
-
-		auto &e=*e_b;
-
-		try {
-			auto &data=e->data(IN_THREAD);
-
-			// NOTE: scroll_by_parent_container()
-			// short-circuits this processing.
-
-			if (data.current_position != data.previous_position)
-			{
-				// Make sure that
-				// previous_position gets
-				// what current_position is,
-				// *right now*.
-
-				auto new_position=data.current_position;
-
-				e->process_updated_position(IN_THREAD);
-				e->redraw_after_process_updated_position
-					(IN_THREAD, info);
-
-				// If the widget's position has changed
-				// we need to have this widget and all
-				// of its inner widgets redrawn, this
-				// widget needs to_redraw_recursively.
-				//
-				// if the widget's position has not changed,
-				// only its size changed, we only need
-				// to_redraw the widget itself. Any child
-				// widget's redrawing needs will be determined
-				// separately, on their own merits.
-				if (data.previous_position.x != new_position.x
-				    ||
-				    data.previous_position.y != new_position.y)
-					to_redraw_recursively.insert(e);
-				else
-					to_redraw.insert(e);
-
-				data.previous_position=new_position;
-			}
-			else
-			{
-				e->process_same_position(IN_THREAD);
-			}
-		} CATCH_EXCEPTIONS;
-		CONNECTION_THREAD_ACTION_FOR("process position",
-					     &*e);
-		flag=true;
-
-		widgets.elements.erase(e_b);
 	}
+};
 
-	return flag;
+#if 0
+{
+#endif
 }
 
 bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
@@ -444,6 +403,9 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 	// immediately, right here, and so process everyone's updated position
 	// in one pass.
 
+	std::unordered_map<ref<generic_windowObj::handlerObj>,
+			   reposition_bucket> window_buckets;
+
 	auto &set=element_position_updated(IN_THREAD)->set(IN_THREAD);
 
 	for (auto level_b=set.begin(), level_e=set.end(), p=level_b;
@@ -458,15 +420,45 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 		{
 			++p;
 
-			if (process_container_widget_positions_updated
-			    (IN_THREAD, parent_b->second, poll_for,
-			     moved, to_redraw, to_redraw_recursively, to_flush))
-				flag=true;
+			auto e=*parent_b;
 
-			// If we processed all widgets in this container,
-			// delete it off the list.
-			if (parent_b->second.elements.empty())
-				level_b->second.erase(parent_b);
+			// If this widget's window is resize_pending(), skip
+			// it entirely.
+			auto wh=ref{&e->get_window_handler()};
+
+			auto &bucket=window_buckets.try_emplace
+				(wh, IN_THREAD, wh, poll_for).first->second;
+
+			if (bucket.resize_pending_flag)
+				continue;
+
+			// One way or another this widget's getting processed.
+			//
+			// So remove it from this nesting level's width.
+			level_b->second.erase(parent_b);
+
+			auto &data=e->data(IN_THREAD);
+
+			try {
+				// NOTE: scroll_by_parent_container()
+				// short-circuits this processing.
+
+				if (data.current_position
+				    != data.previous_position)
+				{
+					bucket.widgets[e->nesting_level]
+						.emplace_back
+						(e, data.current_position,
+						 false);
+
+					e->process_updated_position(IN_THREAD);
+				}
+				else
+				{
+					e->process_same_position(IN_THREAD);
+				}
+			} CATCH_EXCEPTIONS;
+			flag=true;
 		}
 
 		// If we processed all widgets at this nesting level, remove
@@ -474,6 +466,65 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 		if (level_b->second.empty())
 			set.erase(level_b);
 	}
+
+	// We now go through all window_buckets, and see which widgets'
+	// in each window can be moved without redrawing its contents.
+	//
+	// move_updated_position_widgets() will remove each moved widget
+	// from its window_bucket, and we handle the rest below.
+
+	updated_position_info info;
+
+	for (auto &bucket:window_buckets)
+	{
+		to_flush.emplace
+			(bucket.first,
+			 move_updated_position_widgets(IN_THREAD,
+						       info,
+						       bucket.first,
+						       bucket.second.widgets,
+						       moved,
+						       to_redraw,
+						       to_redraw_recursively));
+	}
+
+	// For all remaining widgets, we will redraw them.
+	info.moved_how=info.moved_without_contents;
+
+	for (auto &bucket:window_buckets)
+		for (auto &level:bucket.second.widgets)
+			for (auto &widget:level.second)
+			{
+				auto &[e, new_position, moved] = widget;
+
+				if (moved)
+					// move_updated_position-widgets
+					// handled this one.
+					continue;
+				auto &data=e->data(IN_THREAD);
+
+				e->redraw_after_process_updated_position
+					(IN_THREAD, info);
+
+				// If the widget's position has changed
+				// we need to have this widget and all
+				// of its inner widgets redrawn, this
+				// widget needs to_redraw_recursively.
+				//
+				// if the widget's position has not changed,
+				// only its size changed, we only need
+				// to_redraw the widget itself. Any child
+				// widget's redrawing needs will be determined
+				// separately, on their own merits.
+				if (data.previous_position.x != new_position.x
+				    ||
+				    data.previous_position.y != new_position.y)
+					to_redraw_recursively.insert(e);
+				else
+					to_redraw.insert(e);
+
+				data.previous_position=new_position;
+			}
 
 	// Immediately flush the areas that were moved.
 	// This gives better results when a window gets resized because
@@ -505,8 +556,10 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 	{
 		e->schedule_redraw_recursively(IN_THREAD, moved);
 	}
+
 	return flag;
 }
+
 
 bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 {

@@ -7,7 +7,6 @@
 #include "connection_thread_debug.H"
 #include "window_handler.H"
 #include "element_position_updated.H"
-#include "element_position_updated_set.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
 #include "batch_queue.H"

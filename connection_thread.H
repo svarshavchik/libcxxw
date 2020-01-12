@@ -7,10 +7,10 @@
 
 #include "window_handlerfwd.H"
 #include "element_position_updatedfwd.H"
-#include "element_position_updated_setfwd.H"
 #include "xid_t_fwd.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/clock.H"
+#include "x/w/impl/updated_position_infofwd.H"
 #include "x/w/batch_queuefwd.H"
 #include "x/w/elementobj.H"
 #include "x/w/generic_windowobj.H"
@@ -207,19 +207,20 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! as appropriate.
 	bool process_element_position_updated(ONLY IN_THREAD, int &poll_for);
 
-	//! Notify widgets in the same container of their updated positions.
+	//! Determine which widgets can have thjeir contents moved directly.
 
-	//! Internally used by process_element_position_updated() for
-	//! all widgets in the same container.
+	//! Internally used by process_element_position_updated() to
+	//! find all widgets whose image can be moved directly in the window
+	//! without redrawing them from scratch.
 
-	bool process_container_widget_positions_updated
+	rectarea move_updated_position_widgets
 		(ONLY IN_THREAD,
-		 element_position_updated_set_t &widgets, int &poll_for,
+		 updated_position_info &info,
+		 const ref<generic_windowObj::handlerObj> &window,
+		 all_updated_position_widgets_t &widgets,
 		 std::unordered_set<element_impl> &moved,
 		 std::unordered_set<element_impl> &to_redraw,
-		 std::unordered_set<element_impl> &to_redraw_recursively,
-		 std::unordered_map<ref<generic_windowObj::handlerObj>,
-		 rectarea> &to_flush);
+		 std::unordered_set<element_impl> &to_redraw_recursively);
 
 	//! tick_clock_t's time_point.
 

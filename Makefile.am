@@ -296,8 +296,6 @@ libcxxw_la_SOURCES=\
 	element_position_updated.C		    \
 	element_position_updated.H		    \
 	element_position_updatedfwd.H		    \
-	element_position_updated_set.H		    \
-	element_position_updated_setfwd.H	    \
 	ellipsiscache.C				    \
 	ellipsiscache.H				    \
 	ellipsiscachefwd.H			    \
