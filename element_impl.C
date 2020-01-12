@@ -875,7 +875,8 @@ clip_region_set::clip_region_set(ONLY IN_THREAD,
 }
 
 void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
-						   const rectarea &areas)
+						   const rectarea &areas,
+						   bool was_already_exposed)
 {
 	auto &current_position=data(IN_THREAD).current_position;
 
@@ -921,8 +922,23 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		std::cout << "        " << r << std::endl;
 #endif
 
-	for (const auto &d:draw_area)
-		schedule_redraw(IN_THREAD, d);
+	if (was_already_exposed && !full_redraw_scheduled(IN_THREAD))
+	{
+		auto &wh=get_window_handler();
+
+		for (auto &a:draw_area)
+		{
+			a.x = coord_t::truncate(a.x + di.absolute_location.x);
+			a.y = coord_t::truncate(a.y + di.absolute_location.y);
+
+			wh.window_drawnarea(IN_THREAD).push_back(a);
+		}
+	}
+	else
+		for (const auto &d:draw_area)
+		{
+			schedule_redraw(IN_THREAD, d);
+		}
 
 	// Now, we need to recursively propagate this event.
 
@@ -930,8 +946,10 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		       [&]
 		       (const element &e)
 		       {
-			       e->impl->exposure_event_recursive(IN_THREAD,
-								 areas);
+			       e->impl->exposure_event_recursive
+				       (IN_THREAD,
+					areas,
+					was_already_exposed);
 		       });
 }
 

@@ -812,7 +812,8 @@ class elementObj::implObj : public element_drawObj,
 	//! given rectarea intersected with the child's viewport.
 
 	void exposure_event_recursive(ONLY IN_THREAD,
-				      const rectarea &areas)
+				      const rectarea &areas,
+				      bool was_already_exposed)
 		LIBCXX_HIDDEN;
 
 	//! Draw the widget.

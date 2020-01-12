@@ -686,6 +686,8 @@ bool generic_windowObj::handlerObj::has_own_background_color(ONLY IN_THREAD)
 
 void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 {
+	bool was_already_exposed=has_exposed(IN_THREAD);
+
 	has_exposed(IN_THREAD)=true;
 	update_window_pixmap_and_picture(IN_THREAD,
 					 data(IN_THREAD).current_position);
@@ -711,7 +713,8 @@ void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 	}
 	exposure_event_recursive
 		(IN_THREAD,
-		 exposure_rectangles(IN_THREAD).rectangles);
+		 exposure_rectangles(IN_THREAD).rectangles,
+		 was_already_exposed);
 	invoke_stabilized(IN_THREAD);
 }
 
@@ -720,7 +723,8 @@ void generic_windowObj::handlerObj
 {
 	exposure_event_recursive
 		(IN_THREAD,
-		 graphics_exposure_rectangles(IN_THREAD).rectangles);
+		 graphics_exposure_rectangles(IN_THREAD).rectangles,
+		 false);
 }
 
 void generic_windowObj::handlerObj::theme_updated_event(ONLY IN_THREAD)
