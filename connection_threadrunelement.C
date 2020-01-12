@@ -195,7 +195,8 @@ bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 }
 
 inline bool connection_threadObj::process_container_widget_positions_updated
-(ONLY IN_THREAD, element_position_updated_set_t &widgets, int &poll_for)
+(ONLY IN_THREAD, element_position_updated_set_t &widgets, int &poll_for,
+ std::unordered_set<element_impl> &redrawn)
 {
 	widgets.resize_pending=false;
 	if (widgets.elements.empty())
@@ -246,7 +247,8 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 				auto new_position=data.current_position;
 
 				e->process_updated_position(IN_THREAD, info);
-				e->schedule_redraw_recursively(IN_THREAD);
+				e->schedule_redraw_recursively(IN_THREAD,
+							       redrawn);
 
 				data.previous_position=new_position;
 			}
@@ -270,6 +272,8 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 {
 	bool flag=false;
 
+	std::unordered_set<element_impl> redrawn;
+
 	// We start with the "highest", or the topmost element waiting for
 	// its updated position to be processed, since when its resized it'll
 	// usually update the position of all elements inside it, which have
@@ -292,7 +296,7 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 			++p;
 
 			if (process_container_widget_positions_updated
-			    (IN_THREAD, parent_b->second, poll_for))
+			    (IN_THREAD, parent_b->second, poll_for, redrawn))
 				flag=true;
 
 			// If we processed all widgets in this container,

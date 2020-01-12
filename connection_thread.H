@@ -209,7 +209,8 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	bool process_container_widget_positions_updated
 		(ONLY IN_THREAD,
-		 element_position_updated_set_t &widgets, int &poll_for);
+		 element_position_updated_set_t &widgets, int &poll_for,
+		 std::unordered_set<element_impl> &redrawn);
 
 	//! tick_clock_t's time_point.
 

@@ -405,15 +405,23 @@ void elementObj::implObj::schedule_redraw_recursively()
 	THREAD->run_as([me=ref(this)]
 		       (ONLY IN_THREAD)
 		       {
-			       me->schedule_redraw_recursively(IN_THREAD);
+			       std::unordered_set<element_impl> none;
+
+			       me->schedule_redraw_recursively(IN_THREAD,
+							       none);
 		       });
 }
 
-void elementObj::implObj::schedule_redraw_recursively(ONLY IN_THREAD)
+void elementObj::implObj
+::schedule_redraw_recursively(ONLY IN_THREAD,
+			      std::unordered_set<element_impl> &scheduled)
 {
 	if (data(IN_THREAD).current_position.width == 0 ||
 	    data(IN_THREAD).current_position.height == 0)
 		return; // Nothing to redraw.
+
+	if (!scheduled.insert(ref{this}).second)
+		return;
 
 	schedule_full_redraw(IN_THREAD);
 
@@ -421,7 +429,8 @@ void elementObj::implObj::schedule_redraw_recursively(ONLY IN_THREAD)
 		       [&]
 		       (const element &e)
 		       {
-			       e->impl->schedule_redraw_recursively(IN_THREAD);
+			       e->impl->schedule_redraw_recursively(IN_THREAD,
+								    scheduled);
 		       });
 }
 

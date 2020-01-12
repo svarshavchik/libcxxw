@@ -67,6 +67,8 @@ void focusableObj::implObj::focusable_deinitialize(ONLY IN_THREAD)
 
 	// Remove all of my labels, redrawing them if needed.
 
+	std::unordered_set<element_impl> redrawn;
+
 	for (const auto &labels: *my_labels(IN_THREAD))
 	{
 		auto label_for=labels.getptr();
@@ -94,7 +96,7 @@ void focusableObj::implObj::focusable_deinitialize(ONLY IN_THREAD)
 					 return;
 
 				 label_element->schedule_redraw_recursively
-					 (IN_THREAD);
+					 (IN_THREAD, redrawn);
 			 });
 	}
 
@@ -147,6 +149,8 @@ void focusableObj::implObj::set_enabled(ONLY IN_THREAD, bool flag)
 
 	// Redraw all my labels too.
 
+	std::unordered_set<element_impl> redrawn;
+
 	for (const auto &labels: *my_labels(IN_THREAD))
 	{
 		auto label_for=labels.getptr();
@@ -159,7 +163,8 @@ void focusableObj::implObj::set_enabled(ONLY IN_THREAD, bool flag)
 			 (const auto &label_element,
 			  const auto &thats_me)
 			 {
-				 label_element->schedule_redraw_recursively(IN_THREAD);
+				 label_element->schedule_redraw_recursively
+					 (IN_THREAD, redrawn);
 			 });
 	}
 
@@ -272,7 +277,9 @@ void elementObj::label_for(const focusable &f)
 			 if (before == after)
 				 return;
 
-			 me->impl->schedule_redraw_recursively(IN_THREAD);
+			 std::unordered_set<element_impl> redrawn;
+			 me->impl->schedule_redraw_recursively(IN_THREAD,
+							       redrawn);
 		 });
 }
 

@@ -761,7 +761,11 @@ class elementObj::implObj : public element_drawObj,
 
 	//! schedule_full_redraw() this one, and all child elements.
 
-	void schedule_redraw_recursively(ONLY IN_THREAD);
+	//! Each element is added to the scheduled list, and recursion stops
+	//! if it's already there.
+	void schedule_redraw_recursively(ONLY IN_THREAD,
+					 std::unordered_set<element_impl
+					 > &scheduled);
 
 	//! This element's enabled status has changed.
 
