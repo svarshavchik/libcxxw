@@ -692,27 +692,6 @@ void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 	update_window_pixmap_and_picture(IN_THREAD,
 					 data(IN_THREAD).current_position);
 
-	if (exposure_rectangles(IN_THREAD).full_exposure)
-	{
-#if 0
-		// This is an exposure after a resize. Because we set a
-		// gravity for our window's pixels we'll only be notified
-		// about newly-exposed areas of our window, and the window
-		// shrunk we won't get any exposures at all, and we get
-		// here without any actual exposure rectangles. So, we can
-		// pretty much ignore everything in rectangles, and put
-		// a single rectangle in here.
-
-		exposure_rectangles(IN_THREAD).rectangles.clear();
-		exposure_rectangles(IN_THREAD).rectangles.push_back
-			({
-			  0, 0,
-			  data(IN_THREAD).current_position.width,
-			  data(IN_THREAD).current_position.height
-			});
-#endif
-		exposure_rectangles(IN_THREAD).full_exposure=false;
-	}
 	exposure_event_recursive
 		(IN_THREAD,
 		 exposure_rectangles(IN_THREAD).rectangles,
@@ -1409,17 +1388,8 @@ void generic_windowObj::handlerObj::do_process_configure_notify(ONLY IN_THREAD)
 	if (data(IN_THREAD).current_position.width != r.width ||
 	    data(IN_THREAD).current_position.height != r.height)
 	{
-		// We've already been exposed, so we expect to have exposure
-		// processing. to take place. Set full_exposure to indicate
-		// that this is what needs to happen.
-
 		if (has_exposed(IN_THREAD))
-		{
 			update_window_pixmap_and_picture(IN_THREAD, r);
-
-			exposure_rectangles(IN_THREAD).full_exposure=true;
-			exposure_rectangles(IN_THREAD).complete=true;
-		}
 	}
 	if (error)
 		throw EXCEPTION(connection_error(error));
@@ -1565,15 +1535,15 @@ void generic_windowObj::handlerObj
 	// Copy over the contents of the pixmap, for optimized scrolling
 	// purposes. That is, if the pixmap is not the initial empty one.
 
+	// But copy the smaller of the new and the old size
+	if (window_pixmap_width > current_width)
+		window_pixmap_width=current_width;
+
+	if (window_pixmap_height > current_height)
+		window_pixmap_height=current_height;
+
 	if (window_pixmap_width > 0 && window_pixmap_height > 0)
 	{
-		// But copy the smaller of the new and the old size
-		if (window_pixmap_width > current_width)
-			window_pixmap_width=current_width;
-
-		if (window_pixmap_height > current_height)
-			window_pixmap_height=current_height;
-
 		copy_configured({0, 0,
 				 window_pixmap_width, window_pixmap_height},
 				0, 0,

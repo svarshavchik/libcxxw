@@ -219,27 +219,11 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 
 		auto &exposure_rectangles=w.exposure_rectangles(IN_THREAD);
 
-		// If we are expecting a full_exposure, we'll do exposure
-		// processing even if the rectangle set is empty.
-		//
-		// But if we received some exposure rectangles, then we
-		// will wait for exposure processing until
-		// exposure_rectangles.complete, even if we're expecting
-		// to do a full_exposure.
-
-		bool process_exposure=false;
-
-		if (exposure_rectangles.rectangles.empty())
+		if (!exposure_rectangles.rectangles.empty() &&
+		    exposure_rectangles.complete)
 		{
-			process_exposure=exposure_rectangles.full_exposure;
-		}
-		else
-		{
-			process_exposure=exposure_rectangles.complete;
-		}
+			exposure_rectangles.complete=false;
 
-		if (process_exposure)
-		{
 			CONNECTION_TRAFFIC_LOG("exposure processing", *this);
 
 			// Exposure events were received, and the last one

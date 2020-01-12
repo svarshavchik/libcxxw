@@ -178,18 +178,27 @@ void connection_threadObj::run_event(ONLY IN_THREAD,
 		{
 			GET_MSG(configure_notify_event);
 
+			// A ConfigureNotify event might be followed by
+			// Expose events.
+			//
+			// We want to collect and process the expose events
+			// before processing the pending configure notify
+			// events. What we do is have XCB send an InternAtom
+			// request and wait for its response, in the meantime
+			// XCB will collect any other events, so when
+			// the InternAtom request comes back we'll be sure
+			// and have the Expose events, if any, teed up to
+			// be processed.
+
+			(void)info->get_atom("ATOM", false);
+
 			FIND_HANDLER(window);
 
 			// We save and buffer the ConfigureNotify event in
 			// each window. We buffer them because resizing the
 			// window can generate a bunch of these, and we want
 			// to delay actually processing them until we drain
-			// all the messages from the server. However, since
-			// the windows' bit-gravity is NONE, we expect that
-			// each ConfigureNotify to a different size is going
-			// to generate Exposure. This gets handled in
-			// configure_notify_received(), so we have to
-			// call it.
+			// all the messages from the server.
 
 			rectangle r{msg->x, msg->y, msg->width, msg->height};
 			iter->second->pending_configure_notify_event(IN_THREAD)=

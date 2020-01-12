@@ -92,9 +92,6 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 		rectarea rectangles;
 
-		//! The next exposure event processing should be a full exposure
-		bool full_exposure=false;
-
 		//! Count on the most recent Exposure event was 0
 
 		//! Updated by connection_thread, which uses it, as part of its
