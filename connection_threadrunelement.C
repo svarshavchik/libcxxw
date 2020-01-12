@@ -196,6 +196,74 @@ bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 	return flag;
 }
 
+inline bool connection_threadObj::process_container_widget_positions_updated
+(ONLY IN_THREAD,
+ std::unordered_set<element_impl> &widgets, int &poll_for)
+{
+	if (widgets.empty())
+		return false;
+
+	bool flag=false;
+
+	updated_position_info info;
+
+	// Process each widget, one at a time, removing each
+	// widget from the widgets set, after it is notified.
+
+	auto e_b=widgets.begin();
+	auto e_e=widgets.end();
+
+	// The set is not empty. Check if the container's window is expected
+	// to be resized soon, if so we'll wait, because this could be a moot
+	// point.
+
+	if (resize_pending(IN_THREAD, (*e_b)->get_window_handler(),
+			    poll_for))
+		return false;
+
+	// Now go through the set, removing elements after notifying them.
+
+	for (auto p=e_b; e_b != e_e; e_b=p)
+	{
+		++p;
+
+		auto &e=*e_b;
+
+		try {
+			auto &data=e->data(IN_THREAD);
+
+			// NOTE: scroll_by_parent_container()
+			// short-circuits this processing.
+
+			if (data.current_position != data.previous_position)
+			{
+				// Make sure that
+				// previous_position gets
+				// what current_position is,
+				// *right now*.
+
+				auto new_position=data.current_position;
+
+				e->process_updated_position(IN_THREAD, info);
+				e->schedule_redraw_recursively(IN_THREAD);
+
+				data.previous_position=new_position;
+			}
+			else
+			{
+				e->process_same_position(IN_THREAD);
+			}
+		} CATCH_EXCEPTIONS;
+		CONNECTION_THREAD_ACTION_FOR("process position",
+					     &*e);
+		flag=true;
+
+		widgets.erase(e_b);
+	}
+
+	return flag;
+}
+
 bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 							    int &poll_for)
 {
@@ -222,62 +290,9 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 		{
 			++p;
 
-			updated_position_info info;
-
-			// Process each widget, one at a time.
-
-			for (auto e_b=parent_b->second.begin(),
-				     e_e=parent_b->second.end(),
-				     p=e_b;
-			     e_b != e_e; e_b=p)
-			{
-				++p;
-
-				auto &e=*e_b;
-
-				if (resize_pending(IN_THREAD,
-						   e->get_window_handler(),
-						   poll_for))
-					// Everyone is in the same container.
-					break;
-
-				try {
-					auto &data=e->data(IN_THREAD);
-
-					// NOTE: scroll_by_parent_container()
-					// short-circuits this processing.
-
-					if (data.current_position !=
-					    data.previous_position)
-					{
-						// Make sure that
-						// previous_position gets
-						// what current_position is,
-						// *right now*.
-
-						auto new_position=
-							data.current_position;
-
-						e->process_updated_position
-							(IN_THREAD, info);
-						e->schedule_redraw_recursively
-							(IN_THREAD);
-
-						data.previous_position=
-							new_position;
-					}
-					else
-					{
-						e->process_same_position
-							(IN_THREAD);
-					}
-				} CATCH_EXCEPTIONS;
-				CONNECTION_THREAD_ACTION_FOR("process position",
-							     &*e);
+			if (process_container_widget_positions_updated
+			    (IN_THREAD, parent_b->second, poll_for))
 				flag=true;
-
-				parent_b->second.erase(e_b);
-			}
 
 			// If we processed all widgets in this container,
 			// delete it off the list.

@@ -195,8 +195,20 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	element_position_updated_t *element_position_updated_thread_only;
 
-	//! Process an element's position.
+	//! Notify widgets with updated positions.
+
+	//! Invokes process_updated_position() or process_same_position(),
+	//! as appropriate.
 	bool process_element_position_updated(ONLY IN_THREAD, int &poll_for);
+
+	//! Notify widgets in the same container of their updated positions.
+
+	//! Internally used by process_element_position_updated() for
+	//! all widgets in the same container.
+
+	bool process_container_widget_positions_updated
+		(ONLY IN_THREAD,
+		 std::unordered_set<element_impl> &widgets, int &poll_for);
 
 	//! tick_clock_t's time_point.
 
