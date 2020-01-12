@@ -10,7 +10,17 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Extra parameter to process_updated_position()
+
 struct updated_position_info {
+
+	enum moved_how_t
+		{
+		 moved_with_contents,
+		 moved_without_contents,
+		};
+
+	moved_how_t moved_how=moved_with_contents;
 };
 
 struct updated_position_move_info {

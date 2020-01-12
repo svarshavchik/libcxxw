@@ -213,8 +213,6 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 
 	bool flag=false;
 
-	updated_position_info info;
-
 	// These are all in the same container, same window.
 	auto wh=ref{&(*widgets.elements.begin())->get_window_handler()};
 
@@ -300,6 +298,8 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 	// their existing contents directly copied in the window_pixmap,
 	// instead of redrawing them from scratch.
 
+	updated_position_info info;
+
 	for (const auto &w:move_container)
 	{
 		const auto &[iterator, move_info]=w;
@@ -352,6 +352,8 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 
 		widgets.elements.erase(iterator);
 	}
+
+	info.moved_how=info.moved_without_contents;
 
 	// Process each widget, one at a time, removing each
 	// widget from the widgets set, after it is notified.

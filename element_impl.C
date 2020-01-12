@@ -895,6 +895,11 @@ void elementObj::implObj::process_updated_position(ONLY IN_THREAD,
 			 {
 				 e->impl->absolute_location_updated
 					 (IN_THREAD,
+					  info.moved_how ==
+					  info.moved_with_contents ?
+					  absolute_location_update_reason
+					  ::scrolled
+					  :
 					  absolute_location_update_reason
 					  ::internal);
 			 });
