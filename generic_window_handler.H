@@ -205,6 +205,11 @@ class generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(window_pixmap);
 	THREAD_DATA_ONLY(window_drawnarea);
 
+	//! Copy window_drawnarea to the window's drawable.
+
+	void flush_redrawn_areas(ONLY IN_THREAD,
+				 rectarea &redrawn);
+
 	//! Direct scroll
 
 	//! Used to scroll parts of window directly, after it was

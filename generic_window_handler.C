@@ -1606,16 +1606,23 @@ void generic_windowObj::handlerObj::scroll_window_pixmap(ONLY IN_THREAD,
 
 void generic_windowObj::handlerObj::flush_redrawn_areas(ONLY IN_THREAD)
 {
+	flush_redrawn_areas(IN_THREAD, window_drawnarea(IN_THREAD));
+}
+
+void generic_windowObj::handlerObj::flush_redrawn_areas(ONLY IN_THREAD,
+							rectarea &redrawn)
+{
 	// Wait for the initial exposure.
 	if (!has_exposed(IN_THREAD) || !has_mapped(IN_THREAD))
 		return;
 
 	// This combines duplicates and merges them.
 
-	auto combined=add(window_drawnarea(IN_THREAD),
-			  window_drawnarea(IN_THREAD));
+	auto combined=add(redrawn, redrawn);
 
-	window_drawnarea(IN_THREAD).clear();
+	redrawn.clear();
+
+	ref<drawableObj::implObj> me{this};
 
 	for (const auto &r:combined)
 	{
@@ -1623,8 +1630,7 @@ void generic_windowObj::handlerObj::flush_redrawn_areas(ONLY IN_THREAD)
 		DEBUG_FLUSH_REDRAWN_AREAS();
 #endif
 		copy_configured(r, r.x, r.y,
-				window_pixmap(IN_THREAD)->impl,
-				ref<drawableObj::implObj>{this});
+				window_pixmap(IN_THREAD)->impl, me);
 	}
 }
 
