@@ -7,6 +7,7 @@
 
 #include "window_handlerfwd.H"
 #include "element_position_updatedfwd.H"
+#include "element_position_updated_setfwd.H"
 #include "xid_t_fwd.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/clock.H"
@@ -208,7 +209,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	bool process_container_widget_positions_updated
 		(ONLY IN_THREAD,
-		 std::unordered_set<element_impl> &widgets, int &poll_for);
+		 element_position_updated_set_t &widgets, int &poll_for);
 
 	//! tick_clock_t's time_point.
 

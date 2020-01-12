@@ -6,6 +6,7 @@
 #include "connection_thread.H"
 #include "connection_thread_debug.H"
 #include "element_position_updated.H"
+#include "element_position_updated_set.H"
 #include "generic_window_handler.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
@@ -59,11 +60,6 @@ static bool resize_pending(ONLY IN_THREAD,
 	return true;
 }
 
-static bool resize_pending(ONLY IN_THREAD, const element_impl &e, int &poll_for)
-{
-	return resize_pending(IN_THREAD, e->get_window_handler(), poll_for);
-}
-
 void connection_threadObj
 ::do_lowest_sizable_element_first(ONLY IN_THREAD,
 				  element_set_t &s,
@@ -89,7 +85,9 @@ void connection_threadObj
 		{
 			auto element=*b;
 
-			if (resize_pending(IN_THREAD, element, poll_for))
+			if (resize_pending(IN_THREAD,
+					   element->get_window_handler(),
+					   poll_for))
 			{
 				++b;
 				continue;
@@ -197,10 +195,10 @@ bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 }
 
 inline bool connection_threadObj::process_container_widget_positions_updated
-(ONLY IN_THREAD,
- std::unordered_set<element_impl> &widgets, int &poll_for)
+(ONLY IN_THREAD, element_position_updated_set_t &widgets, int &poll_for)
 {
-	if (widgets.empty())
+	widgets.resize_pending=false;
+	if (widgets.elements.empty())
 		return false;
 
 	bool flag=false;
@@ -210,8 +208,8 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 	// Process each widget, one at a time, removing each
 	// widget from the widgets set, after it is notified.
 
-	auto e_b=widgets.begin();
-	auto e_e=widgets.end();
+	auto e_b=widgets.elements.begin();
+	auto e_e=widgets.elements.end();
 
 	// The set is not empty. Check if the container's window is expected
 	// to be resized soon, if so we'll wait, because this could be a moot
@@ -219,7 +217,10 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 
 	if (resize_pending(IN_THREAD, (*e_b)->get_window_handler(),
 			    poll_for))
+	{
+		widgets.resize_pending=true;
 		return false;
+	}
 
 	// Now go through the set, removing elements after notifying them.
 
@@ -258,7 +259,7 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 					     &*e);
 		flag=true;
 
-		widgets.erase(e_b);
+		widgets.elements.erase(e_b);
 	}
 
 	return flag;
@@ -296,7 +297,7 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 
 			// If we processed all widgets in this container,
 			// delete it off the list.
-			if (parent_b->second.empty())
+			if (parent_b->second.elements.empty())
 				level_b->second.erase(parent_b);
 		}
 
@@ -320,7 +321,8 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 
 		++b;
 
-		if (resize_pending(IN_THREAD, p, poll_for))
+		if (resize_pending(IN_THREAD, p->get_window_handler(),
+				   poll_for))
 			continue;
 
 		try {
