@@ -135,6 +135,30 @@ class elementObj::implObj : public element_drawObj,
 
 		rectangle previous_position;
 
+		//! Whether this widget's contents can be moved directly
+
+		//! Helps in avoiding redrawing of the widget in its new
+		//! position, from scratch. Computed by
+		//! update_current_position() using
+		//! has_scrollable_window_pixmap_rectangle().
+		//!
+		//! Represents that this rectangle in the window_pixmap
+		//! contains valid contents of this widget that can be copied
+		//! to this widget's new position instead of redrawing the
+		//! widget from scratch.
+		//!
+		//! This is cleared when we detect that this is no longer
+		//! the case:
+		//!
+		//! In background_color_changed() and theme_updated, since
+		//! the widget's contents are no longer true.
+		//!
+		//! Finally, can_be_moved() gets invoked during position
+		//! processing. can_be_moved() factors in the current
+		//! value of movable_rectangle, if there is one, then
+		//! clears it.
+		std::optional<rectangle> movable_rectangle;
+
 		//! This element's attached popup.
 		popupptr attached_popup;
 

@@ -62,7 +62,7 @@ elementObj::implObj::implObj(size_t nesting_level,
 	  metrics::horizvertObj(initial_metrics),
 	data_thread_only
 	({
-	  initial_position, initial_position, attached_popup
+	  initial_position, initial_position, std::nullopt, attached_popup
 	}),
 	nesting_level(nesting_level),
 	element_scratch_buffer(my_screen->impl->create_scratch_buffer
@@ -609,6 +609,19 @@ void elementObj::implObj::update_current_position(ONLY IN_THREAD,
 	if (r == current_data.current_position)
 		return;
 
+	// previous_position is the widget's original position.
+	// update_current_position() can be called more than once, on the
+	// first call current_position is the same as the previous_position,
+	// check has_scrollable_window_pixmap_rectangle().
+
+	if (current_data.current_position ==
+	    current_data.previous_position)
+	{
+		current_data.movable_rectangle=
+			has_scrollable_window_pixmap_rectangle(IN_THREAD,
+							       true);
+	}
+
 	current_data.current_position=r;
 
 	notify_updated_position(IN_THREAD);
@@ -726,6 +739,10 @@ void elementObj::implObj
 ::absolute_location_updated(ONLY IN_THREAD,
 			    absolute_location_update_reason reason)
 {
+#if 0
+	data(IN_THREAD).movable_rectangle.reset();
+#endif
+
 	if (reason == absolute_location_update_reason::internal)
 	{
 		invalidate_cached_draw_info(IN_THREAD, {});
@@ -1211,6 +1228,8 @@ void elementObj::implObj::background_color_changed(ONLY IN_THREAD)
 {
 	schedule_full_redraw(IN_THREAD);
 
+	data(IN_THREAD).movable_rectangle.reset();
+
 	// background color factors into the cached_draw_info, so
 	// something_changed.
 	invalidate_cached_draw_info(IN_THREAD,
@@ -1231,6 +1250,8 @@ void elementObj::implObj::background_color_changed(ONLY IN_THREAD)
 void elementObj::implObj::theme_updated(ONLY IN_THREAD,
 					const const_defaulttheme &new_theme)
 {
+	data(IN_THREAD).movable_rectangle.reset();
+
 	invalidate_cached_draw_info(IN_THREAD,
 				    draw_info_invalidation_reason
 				    ::recursive_invalidation);
