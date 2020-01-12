@@ -508,7 +508,10 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 {
 	CONNECTION_TRAFFIC_LOG("redraw", *this);
 
-	bool flag=false;
+	std::vector<std::tuple<element_impl, redraw_priority_t>
+		    > redraw_queue;
+
+	redraw_queue.reserve(elements_to_redraw(IN_THREAD)->size());
 
 	for (auto b=elements_to_redraw(IN_THREAD)->begin(),
 		     e=elements_to_redraw(IN_THREAD)->end(); b != e; )
@@ -520,6 +523,38 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 		if (resize_pending(IN_THREAD, p->get_window_handler(),
 				   poll_for))
 			continue;
+
+		redraw_queue.push_back
+			(std::tuple{p, p->get_redraw_priority(IN_THREAD) -
+					p->get_window_handler().nesting_level
+					* 16});
+	}
+
+	std::sort(redraw_queue.begin(),
+		  redraw_queue.end(),
+		  []
+		  (const auto &a,
+		   const auto &b)
+		  {
+			  return std::get<redraw_priority_t>(a) <
+				  std::get<redraw_priority_t>(b);
+		  });
+
+	bool flag=false;
+
+	for (auto b=redraw_queue.begin(), e=redraw_queue.end(),
+		     cur_priority=b; b != e; ++b)
+	{
+		if (std::get<redraw_priority_t>(*cur_priority) !=
+		    std::get<redraw_priority_t>(*b))
+		{
+			for (const auto &wh:*window_handlers(IN_THREAD))
+				wh.second->flush_redrawn_areas(IN_THREAD);
+
+			cur_priority=b;
+		}
+
+		auto &p=std::get<element_impl>(*b);
 
 		try {
 			CONNECTION_TRAFFIC_LOG("   redraw("

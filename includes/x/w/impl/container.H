@@ -15,6 +15,7 @@
 #include <x/w/impl/draw_infofwd.H>
 #include <x/w/impl/inherited_visibility_infofwd.H>
 #include <x/w/impl/get_window_handler.H>
+#include <x/w/impl/redraw_priority.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
 
@@ -150,6 +151,12 @@ public:
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectarea &areas);
+
+	//! Return the container's redraw priority
+
+	//! The default implementation returns clear_area, the container
+	//! itself only clears the areas not used by any child widgets.
+	redraw_priority_t get_redraw_priority(ONLY IN_THREAD);
 
 	//! Forcibly redraw the entire container.
 

@@ -47,6 +47,13 @@ void container_elementObj<element_impl>::do_draw(ONLY IN_THREAD,
 	containerObj::implObj::do_draw(IN_THREAD, di, areas);
 }
 
+template<typename element_impl>
+redraw_priority_t container_elementObj<element_impl>
+::get_redraw_priority(ONLY IN_THREAD)
+{
+	return containerObj::implObj::get_redraw_priority(IN_THREAD);
+}
+
 //! Override process_updated_position().
 
 //! Forwarded to containerObj::implObj to make any required changes to the

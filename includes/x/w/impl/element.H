@@ -22,6 +22,7 @@
 #include <x/w/focusableobj.H>
 #include <x/w/font_arg.H>
 #include <x/w/text_paramfwd.H>
+#include <x/w/impl/redraw_priority.H>
 #include <x/w/impl/clock.H>
 #include <x/w/impl/connection_threadfwd.H>
 #include <x/w/impl/updated_position_infofwd.H>
@@ -861,6 +862,9 @@ class elementObj::implObj : public element_drawObj,
 	//! the widget is visible).
 
 	void explicit_redraw(ONLY IN_THREAD);
+
+	//! This widget's redrawing priority
+	virtual redraw_priority_t get_redraw_priority(ONLY IN_THREAD);
 
 	//! Exposure event handling.
 

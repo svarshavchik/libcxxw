@@ -147,6 +147,11 @@ void container_clear_padding(ONLY IN_THREAD,
 		.clear_to_color(IN_THREAD, clip, di, child_di, padding);
 }
 
+redraw_priority_t containerObj::implObj::get_redraw_priority(ONLY IN_THREAD)
+{
+	return clear_area;
+}
+
 void containerObj::implObj::do_draw(ONLY IN_THREAD)
 {
 	const auto &di=container_element_impl().get_draw_info(IN_THREAD);

@@ -1072,6 +1072,11 @@ void elementObj::implObj::draw(ONLY IN_THREAD,
 	drawn(IN_THREAD);
 }
 
+redraw_priority_t elementObj::implObj::get_redraw_priority(ONLY IN_THREAD)
+{
+	return DO_NOT_DRAW(IN_THREAD) ? clear_area:widget_area;
+}
+
 void elementObj::implObj::drawn(ONLY IN_THREAD)
 {
 	data(IN_THREAD).movable_rectangle=

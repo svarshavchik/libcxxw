@@ -41,6 +41,8 @@ public:
 		     const draw_info &di,
 		     const rectarea &areas) override;
 
+	redraw_priority_t get_redraw_priority(ONLY IN_THREAD) override;
+
 	void inherited_visibility_updated(ONLY IN_THREAD,
 					  inherited_visibility_info &info)
 		override;
