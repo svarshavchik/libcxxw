@@ -10,8 +10,8 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include <x/mpobj.H>
-
 #include "textlabel.H"
+#include "x/w/picturefwd.H"
 static bool override_truncatable=false;
 
 LIBCXX_NAMESPACE::mpobj<int> redraw_counter=0;
@@ -32,8 +32,24 @@ void count_label_redraws(ONLY IN_THREAD, x::w::textlabelObj::implObj &me)
 	do {					\
 		count_label_redraws(IN_THREAD, *this);	\
 	} while(0)
+
+
+static const LIBCXX_NAMESPACE::w::pictureObj *current_bgcolor;
+static std::atomic<bool> bgcolor_caching_failed;
+
+#define DEBUG_LINEAR_GRADIENT_CREATED() do {				\
+		current_bgcolor=&*picture;				\
+	} while(0)
+
+#define DEBUG_DRAW_USING_SCRATCH_BUFFER() do {				\
+		if ( current_bgcolor != &*di.window_background_color)	\
+			bgcolor_caching_failed=true;			\
+	} while(0)
+
 #define DEBUG_INITIAL_METRICS
 #include "textlabel_impl.C"
+#include "recycled_pixmaps.C"
+#include "element_impl.C"
 #include "x/w/main_window.H"
 #include "x/w/label.H"
 #include "x/w/gridlayoutmanager.H"
@@ -169,6 +185,8 @@ void testlabel(const testlabel_options &options)
 			}
 			lock.wait_for(std::chrono::seconds(1),
 				      [&] { return *lock; });
+			if ((bool)bgcolor_caching_failed)
+				throw EXCEPTION("Wrong background color");
 		}
 
 		auto n=redraw_counter.get();

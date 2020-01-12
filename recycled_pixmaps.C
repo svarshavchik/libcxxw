@@ -265,6 +265,10 @@ private:
 			->create_linear_gradient_picture
 			(g, x, y, width, height, render_repeat::pad);
 
+#ifdef DEBUG_LINEAR_GRADIENT_CREATED
+		DEBUG_LINEAR_GRADIENT_CREATED();
+#endif
+
 		return create_new_gradient_background_color
 			(background_color_screen,
 			 ref{this},

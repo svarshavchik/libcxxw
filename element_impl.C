@@ -900,6 +900,10 @@ void elementObj::implObj
 	if (di.no_viewport())
 		return;
 
+#ifdef DEBUG_DRAW_USING_SCRATCH_BUFFER
+	DEBUG_DRAW_USING_SCRATCH_BUFFER();
+#endif
+
 	buffer->get
 		(rect.width,
 		 rect.height,
