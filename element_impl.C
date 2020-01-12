@@ -614,19 +614,6 @@ void elementObj::implObj::update_current_position(ONLY IN_THREAD,
 	if (r == current_data.current_position)
 		return;
 
-	// previous_position is the widget's original position.
-	// update_current_position() can be called more than once, on the
-	// first call current_position is the same as the previous_position,
-	// check has_scrollable_window_pixmap_rectangle().
-
-	if (current_data.current_position ==
-	    current_data.previous_position)
-	{
-		current_data.movable_rectangle=
-			has_scrollable_window_pixmap_rectangle(IN_THREAD,
-							       true);
-	}
-
 	current_data.current_position=r;
 
 	notify_updated_position(IN_THREAD);
@@ -1061,6 +1048,14 @@ void elementObj::implObj::draw(ONLY IN_THREAD,
 		clear_to_color(IN_THREAD, di, areas);
 	else
 		do_draw(IN_THREAD, di, areas);
+
+	drawn(IN_THREAD);
+}
+
+void elementObj::implObj::drawn(ONLY IN_THREAD)
+{
+	data(IN_THREAD).movable_rectangle=
+		has_scrollable_window_pixmap_rectangle(IN_THREAD, true);
 }
 
 void elementObj::implObj::do_draw(ONLY IN_THREAD,

@@ -204,7 +204,8 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 (ONLY IN_THREAD, element_position_updated_set_t &widgets, int &poll_for,
  std::unordered_set<element_impl> &moved,
  std::unordered_set<element_impl> &to_redraw,
- std::unordered_set<element_impl> &to_redraw_recursively)
+ std::unordered_set<element_impl> &to_redraw_recursively,
+ std::unordered_map<ref<generic_windowObj::handlerObj>, rectarea> &to_flush)
 {
 	widgets.resize_pending=false;
 	if (widgets.elements.empty())
@@ -321,9 +322,7 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 		} CATCH_EXCEPTIONS;
 
 		// Copy the widget in the window_pixmap, then
-		// insert the new widget position into the window_drawnarea,
-		// we're going to leverage flush_redrawn_areas() to move it
-		// into the actual window drawable.
+		// insert the new widget position into to_flush.
 		//
 		// We can't simply copy the contents of the window drawable
 		// directly. It's possible that the window became smaller
@@ -338,7 +337,7 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 				    move_info.move_to_y,
 				    pixmap_impl,
 				    pixmap_impl);
-		wh->window_drawnarea(IN_THREAD).push_back
+		to_flush[wh].push_back
 			({move_info.move_to_x,
 			  move_info.move_to_y,
 			  move_info.scroll_from.width,
@@ -429,6 +428,8 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 	std::unordered_set<element_impl> moved;
 	std::unordered_set<element_impl> to_redraw;
 	std::unordered_set<element_impl> to_redraw_recursively;
+	std::unordered_map<ref<generic_windowObj::handlerObj>,
+			   rectarea> to_flush;
 
 	// We start with the "highest", or the topmost element waiting for
 	// its updated position to be processed, since when its resized it'll
@@ -453,7 +454,7 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 
 			if (process_container_widget_positions_updated
 			    (IN_THREAD, parent_b->second, poll_for,
-			     moved, to_redraw, to_redraw_recursively))
+			     moved, to_redraw, to_redraw_recursively, to_flush))
 				flag=true;
 
 			// If we processed all widgets in this container,
@@ -466,6 +467,25 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 		// it.
 		if (level_b->second.empty())
 			set.erase(level_b);
+	}
+
+	// Immediately flush the areas that were moved.
+	// This gives better results when a window gets resized because
+	// widgets were inserted in the middle, somewhere. The moved areas
+	// get redrawn quickly, and more expensive redraws get done
+	// afterwards.
+
+	for (auto &flush_windows:to_flush)
+	{
+		flush_windows.first->flush_redrawn_areas(IN_THREAD,
+							 flush_windows.second);
+	}
+
+	// If the moved element needs to get moved again, make sure it
+	// knows it has a scrollable rectangle, once more.
+	for (auto &moved_element:moved)
+	{
+		moved_element->drawn(IN_THREAD);
 	}
 
 	// Now that we moved all widgets, schedule their redrawal, as

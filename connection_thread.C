@@ -257,7 +257,7 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 		// Same logic for graphics exposures
 
 		auto &graphics_exposure_rectangles=
-			w.exposure_rectangles(IN_THREAD);
+			w.graphics_exposure_rectangles(IN_THREAD);
 
 		if (!graphics_exposure_rectangles.rectangles.empty() &&
 		    graphics_exposure_rectangles.complete)

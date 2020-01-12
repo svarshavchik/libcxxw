@@ -694,6 +694,7 @@ void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 
 	if (exposure_rectangles(IN_THREAD).full_exposure)
 	{
+#if 0
 		// This is an exposure after a resize. Because we set a
 		// gravity for our window's pixels we'll only be notified
 		// about newly-exposed areas of our window, and the window
@@ -709,6 +710,7 @@ void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 			  data(IN_THREAD).current_position.width,
 			  data(IN_THREAD).current_position.height
 			});
+#endif
 		exposure_rectangles(IN_THREAD).full_exposure=false;
 	}
 	exposure_event_recursive
@@ -989,6 +991,9 @@ bool generic_windowObj::handlerObj
 bool generic_windowObj::handlerObj::handle_key_event(ONLY IN_THREAD,
 						     const key_event &ke)
 {
+#ifdef DEBUG_KEY_EVENT
+	DEBUG_KEY_EVENT();
+#endif
 	// If there's an element with a focus, delegate this to it. If
 	// it doesn't process the key event, it'll eventually percolate back
 	// to us.
@@ -1174,6 +1179,9 @@ void generic_windowObj::handlerObj
 		  bool buttonpress,
 		  bool was_grabbed)
 {
+#ifdef DEBUG_BUTTON_EVENT
+	DEBUG_BUTTON_EVENT();
+#endif
 	auto &keysyms=
 		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
 
@@ -1622,6 +1630,22 @@ void generic_windowObj::handlerObj::flush_redrawn_areas(ONLY IN_THREAD,
 
 	redrawn.clear();
 
+	// If these rectangles are queued up to be redrawn due to exposure,
+	// we'll remove them from the list of exposed rectangles.
+	//
+	// We want to do it this way instead of subtracting exposure and
+	// graphics_exposure rectangles from the redrawn rectangles because,
+	// for better visual appearance, we want to immediately draw
+	// widgets moved by process_container_widget_positions_updated().
+
+	exposure_rectangles(IN_THREAD).rectangles=
+		subtract(exposure_rectangles(IN_THREAD).rectangles,
+			 combined);
+
+	graphics_exposure_rectangles(IN_THREAD).rectangles=
+		subtract(graphics_exposure_rectangles(IN_THREAD).rectangles,
+			 combined);
+
 	ref<drawableObj::implObj> me{this};
 
 	for (const auto &r:combined)
@@ -1947,6 +1971,9 @@ void generic_windowObj::handlerObj
 ::pointer_motion_event(ONLY IN_THREAD,
 		       const xcb_motion_notify_event_t *event)
 {
+#ifdef DEBUG_POINTER_MOTION_EVENT
+	DEBUG_POINTER_MOTION_EVENT();
+#endif
 	auto &keysyms=
 		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
 

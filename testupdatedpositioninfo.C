@@ -21,7 +21,12 @@
 LIBCXX_NAMESPACE::w::elementObj::implObj *DEBUG;
 
 static LIBCXX_NAMESPACE::mpcobj<size_t> button_draw_counter{0};
-static LIBCXX_NAMESPACE::mpcobj<size_t> flush_counter{0};
+
+typedef LIBCXX_NAMESPACE::mpcobj<LIBCXX_NAMESPACE::w::rectarea> flush_counter_t;
+
+static flush_counter_t flush_counter;
+
+static LIBCXX_NAMESPACE::mpcobj<size_t> state_change{0};
 
 #define DEBUG_EXPLICIT_REDRAW() do {					\
 		if (this == DEBUG)				\
@@ -40,11 +45,15 @@ static LIBCXX_NAMESPACE::mpcobj<size_t> flush_counter{0};
 		if (!DEBUG)					  \
 			return;					  \
 		std::cout << "FLUSH: " << r << std::endl;	  \
-		LIBCXX_NAMESPACE::mpcobj<size_t>::lock			\
-			l{flush_counter};				\
-		++*l;							\
+		flush_counter_t::lock l{flush_counter};			\
+		l->push_back(r);					\
 		l.notify_all();						\
 	} while(0);
+
+#define DEBUG_KEY_EVENT() return true
+#define DEBUG_BUTTON_EVENT() return
+#define DEBUG_POINTER_MOTION_EVENT() return
+
 #include "generic_window_handler.C"
 
 struct strict_weak_order {
@@ -196,6 +205,25 @@ static void sanity_check()
 	}
 }
 
+void wait_for_idle(const LIBCXX_NAMESPACE::w::main_window &mw)
+{
+	auto flag=LIBCXX_NAMESPACE::ref<close_flagObj>::create();
+
+	mw->in_thread_idle([flag]
+			   (ONLY IN_THREAD)
+			   {
+				   flag->close();
+			   });
+
+	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{flag->flag};
+
+	lock.wait([&]
+		  {
+			  return *lock;
+		  });
+	std::cout << "Done" << std::endl;
+}
+
 void testupdatedposition()
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
@@ -243,6 +271,79 @@ void testupdatedposition()
 			throw EXCEPTION("Did not execute the initial draw");
 	}
 
+	// Install a state update, wait for the initial one.
+	main_window->on_state_update
+		([]
+		 (ONLY IN_THREAD,
+		  const auto &state,
+		  const auto &)
+		 {
+			 LIBCXX_NAMESPACE::mpcobj<size_t>::lock
+				 lock{state_change};
+
+			 std::cout << "State: " << state << std::endl;
+			 ++*lock;
+			 lock.notify_all();
+		 });
+
+	{
+		LIBCXX_NAMESPACE::mpcobj<size_t>::lock lock{state_change};
+
+		lock.wait_for(std::chrono::seconds(5),
+			      [&]
+			      {
+				      return *lock == 1;
+			      });
+
+		if (*lock != 1)
+			throw EXCEPTION("Did not get the initial state");
+	}
+
+	// Wait for things to settle down.
+
+	wait_for_idle(main_window);
+
+	// And we expect to be exactly one flush.
+
+	{
+		flush_counter_t::lock lock{flush_counter};
+
+		bool flag=false;
+
+		lock.wait_for(std::chrono::seconds(3),
+			      [&]
+			      {
+				      if (lock->empty())
+					      return false;
+
+				      if (lock->size() > 1 ||
+					  (*lock)[0].x != 0 ||
+					  (*lock)[0].y != 0)
+				      {
+					      throw EXCEPTION
+						      ("Unexpected flush");
+				      }
+				      lock->clear();
+				      return flag=true;
+			      });
+
+		if (!flag)
+			throw EXCEPTION("Did not receive exactly one initial "
+					"flush");
+
+		lock->clear();
+
+		// A brief delay.
+
+		lock.wait_for(std::chrono::seconds(2),
+			      []
+			      {
+				      return false;
+			      });
+	}
+
+	// Insert "Ok", shifting the button down.
+
 	{
 		LIBCXX_NAMESPACE::w::gridlayoutmanager
 			layout=main_window->get_layoutmanager();
@@ -251,14 +352,94 @@ void testupdatedposition()
 
 		f->create_label("Ok")->show_all();
 	}
-	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 
-	lock.wait_for(std::chrono::seconds(5), [&] { return *lock; });
+	// Wait for the window to resize.
+
+	{
+		LIBCXX_NAMESPACE::mpcobj<size_t>::lock lock{state_change};
+
+		lock.wait_for(std::chrono::seconds(5),
+			      [&]
+			      {
+				      return *lock == 2;
+			      });
+
+		if (*lock != 2)
+			throw EXCEPTION("Did not get the 1st resized state");
+	}
+
+	wait_for_idle(main_window);
+
+	{
+		flush_counter_t::lock lock{flush_counter};
+
+		auto rect=add(*lock, *lock);
+
+		if (rect.size() != 1 ||
+		    rect[0].x != 0 ||
+		    rect[0].y != 0)
+		{
+			throw EXCEPTION("Did not flush everytihng?");
+		}
+
+		lock->clear();
+
+		// A brief delay.
+
+		lock.wait_for(std::chrono::seconds(2),
+			      []
+			      {
+				      return false;
+			      });
+	}
+
+	{
+		LIBCXX_NAMESPACE::w::gridlayoutmanager
+			layout=main_window->get_layoutmanager();
+
+		layout->remove_row(0);
+	}
+
+	{
+		LIBCXX_NAMESPACE::mpcobj<size_t>::lock lock{state_change};
+
+		lock.wait_for(std::chrono::seconds(5),
+			      [&]
+			      {
+				      return *lock == 3;
+			      });
+
+		if (*lock != 3)
+			throw EXCEPTION("Did not get the 2nd resized state");
+	}
+
+	wait_for_idle(main_window);
+
+	{
+		flush_counter_t::lock lock{flush_counter};
+
+		auto rect=add(*lock, *lock);
+
+		if (rect.size() != 1 ||
+		    rect[0].x != 0 ||
+		    rect[0].y != 0)
+		{
+			throw EXCEPTION("Did not flush everytihng?");
+		}
+
+		lock->clear();
+
+		// A brief delay.
+
+		lock.wait_for(std::chrono::seconds(2),
+			      []
+			      {
+				      return false;
+			      });
+	}
 
 	if (button_draw_counter.get() != 1)
 		throw EXCEPTION("DREW BUTTON expected to happen only once.");
-	if (flush_counter.get() != 2)
-		throw EXCEPTION("Expected to flush only twice");
 }
 
 int main()

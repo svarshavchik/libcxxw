@@ -13,6 +13,7 @@
 #include "x/w/impl/clock.H"
 #include "x/w/batch_queuefwd.H"
 #include "x/w/elementobj.H"
+#include "x/w/generic_windowobj.H"
 #include "connection_info.H"
 #include "x/w/rectangle.H"
 #include <x/threadmsgdispatcher.H>
@@ -216,7 +217,9 @@ class LIBCXX_HIDDEN connection_threadObj
 		 element_position_updated_set_t &widgets, int &poll_for,
 		 std::unordered_set<element_impl> &moved,
 		 std::unordered_set<element_impl> &to_redraw,
-		 std::unordered_set<element_impl> &to_redraw_recursively);
+		 std::unordered_set<element_impl> &to_redraw_recursively,
+		 std::unordered_map<ref<generic_windowObj::handlerObj>,
+		 rectarea> &to_flush);
 
 	//! tick_clock_t's time_point.
 

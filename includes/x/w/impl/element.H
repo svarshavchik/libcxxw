@@ -873,6 +873,12 @@ class elementObj::implObj : public element_drawObj,
 		  const draw_info &di,
 		  const rectarea &areas) LIBCXX_HIDDEN;
 
+	//! Widget has been drawn.
+
+	//! Invoked by draw().
+
+	void drawn(ONLY IN_THREAD) LIBCXX_HIDDEN;
+
 	//! Draw the widget.
 
 	//! The default implementation invokes clear_to_color().
