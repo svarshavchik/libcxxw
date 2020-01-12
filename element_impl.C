@@ -605,6 +605,53 @@ void elementObj::implObj::update_current_position(ONLY IN_THREAD,
 	current_position_updated(IN_THREAD);
 }
 
+std::optional<rectangle>
+elementObj::implObj::has_scrollable_window_pixmap_rectangle(ONLY IN_THREAD)
+{
+	std::optional<rectangle> ret;
+
+	if (!data(IN_THREAD).logical_inherited_visibility)
+		return ret;
+
+	if (!data(IN_THREAD).areas_to_redraw)
+		return ret;
+
+	if (!data(IN_THREAD).areas_to_redraw->empty())
+		return ret;
+
+	if (!current_background_color(IN_THREAD)->is_scrollable_background())
+		return ret;
+
+	auto &di=get_draw_info(IN_THREAD);
+
+	// 1) The peephole is unobstructed.
+	//
+	// Look at the element_viewport. Unobstructed means exactly one
+	// rectangle in there.
+	if (di.element_viewport.size() != 1)
+		return ret;
+
+	auto &viewport_rectangle=*di.element_viewport.begin();
+
+	// 2) The display is not shaded, and the display element is not
+	// to be drawn as disabled.
+
+	auto &wh=get_window_handler();
+
+	if (draw_to_window_picture_as_disabled(IN_THREAD)
+	    || wh.is_shade_busy())
+		return ret;
+
+	// 3) There is nothing we scheduled for redrawing.
+
+	if (!intersect(wh.window_drawnarea(IN_THREAD), viewport_rectangle)
+	    .empty())
+		return ret;
+
+	ret=viewport_rectangle;
+	return ret;
+}
+
 void elementObj::implObj::scroll_by_parent_container(ONLY IN_THREAD,
 						     coord_t x,
 						     coord_t y)

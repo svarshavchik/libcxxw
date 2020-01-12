@@ -1496,6 +1496,34 @@ void generic_windowObj::handlerObj
 	window_pixmap(IN_THREAD)=new_pixmap;
 }
 
+void generic_windowObj::handlerObj::scroll_window_pixmap(ONLY IN_THREAD,
+							 const rectangle &r,
+							 coord_t scrolled_to_x,
+							 coord_t scrolled_to_y)
+{
+	// Effect the scroll using xcb_copy-area
+
+	auto window_drawable=ref{this};
+
+	gcObj::properties props;
+
+	copy(r,
+	     scrolled_to_x,
+	     scrolled_to_y,
+	     window_drawable,
+	     window_drawable, props);
+
+	auto &pixmap_impl=window_pixmap(IN_THREAD)->impl;
+
+	copy(r,
+	     scrolled_to_x,
+	     scrolled_to_y,
+	     pixmap_impl,
+	     pixmap_impl,
+	     props);
+}
+
+
 void generic_windowObj::handlerObj::flush_redrawn_areas(ONLY IN_THREAD)
 {
 	// Wait for the initial exposure.

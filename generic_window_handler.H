@@ -205,6 +205,19 @@ class generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(window_pixmap);
 	THREAD_DATA_ONLY(window_drawnarea);
 
+	//! Direct scroll
+
+	//! Used to scroll parts of window directly, after it was
+	//! determine that this area is eligible to be scrolled.
+	//!
+	//! Scrolls the underlying pixels in the window, as well as the
+	//! backing window_pixmap.
+
+	void scroll_window_pixmap(ONLY IN_THREAD,
+				  const rectangle &r,
+				  coord_t scrolled_to_x,
+				  coord_t scrolled_to_y);
+
 	//! Determine whether we expect to be resized by the window manager.
 
 	//! If our current size is outside of our minimum or maximum size we

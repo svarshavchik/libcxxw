@@ -564,11 +564,6 @@ bool peepholelayoutmanagerObj::implObj
 
 	auto &e=get_element_impl();
 
-	if (!e.data(IN_THREAD).logical_inherited_visibility)
-		return false;
-
-	if (!e.current_background_color(IN_THREAD)->is_scrollable_background())
-		return false;
 
 	// 1) The element's size doesn't change.
 	if (element_current_position.width != r.width ||
@@ -581,35 +576,19 @@ bool peepholelayoutmanagerObj::implObj
 	    element_current_position.y == r.y)
 		return false;
 
-	auto &di=e.get_draw_info(IN_THREAD);
+	// 3) The element is eligible for scrolling
 
-	// 3) The peephole is unobstructed.
-	//
-	// Look at the element_viewport. Unobstructed means exactly one
-	// rectangle in there.
-	if (di.element_viewport.size() != 1)
+	auto has_scrollable_window_pixmap_rectangle=
+		e.has_scrollable_window_pixmap_rectangle(IN_THREAD);
+
+	if (!has_scrollable_window_pixmap_rectangle)
 		return false;
 
-	auto &viewport_rectangle=*di.element_viewport.begin();
+	auto &viewport_rectangle=*has_scrollable_window_pixmap_rectangle;
 
 	auto scrolled_rectangle=viewport_rectangle;
 
-	// 4) The display is not shaded, and the display element is not
-	// to be drawn as disabled.
-
-	auto &wh=peephole_element_impl->get_window_handler();
-
-	if (peephole_element_impl->draw_to_window_picture_as_disabled(IN_THREAD)
-	    || wh.is_shade_busy())
-		return false;
-
-	// 5) There is nothing we scheduled for redrawing.
-
-	if (!intersect(wh.window_drawnarea(IN_THREAD), viewport_rectangle)
-	    .empty())
-		return false;
-
-	// 6) The scrolling distance fits within the viewport.
+	// 4) The scrolling distance fits within the viewport.
 
 	dim_t shift_left=0, shift_right=0, shift_up=0, shift_down=0;
 
@@ -666,10 +645,13 @@ bool peepholelayoutmanagerObj::implObj
 		  << std::endl;
 	std::cout << "NEW POSITION: " << r << std::endl;
 
-	std::cout << "SCROLL VIEWPORT: " << viewport_rectangle << std::endl;
+	std::cout << "SCROLL VIEWPORT: "
+		  << *di.element_viewport_rectangle.begin() << std::endl;
 	std::cout << "    (" << e.objname() << ")" << std::endl;
 	std::cout << "TO: " << scrolled_rectangle << std::endl;
 #endif
+
+	auto &di=e.get_draw_info(IN_THREAD);
 
 	auto after_scroll_rectangle_set=intersect(di.element_viewport,
 						  scrolled_rectangle);
@@ -707,15 +689,11 @@ bool peepholelayoutmanagerObj::implObj
 	for (const auto &r:redrawn)
 		std::cout << " " << r << std::endl;
 #endif
-	// Effect the scroll using xcb_copy-area
-
-	ref<drawableObj::implObj> window_drawable{&wh};
-
-	wh.copy(scrolled_from,
-		scrolled_to.x,
-		scrolled_to.y,
-		window_drawable,
-		window_drawable, {});
+	peephole_element_impl->get_window_handler()
+		.scroll_window_pixmap(IN_THREAD,
+				      scrolled_from,
+				      scrolled_to.x,
+				      scrolled_to.y);
 
 	// Notify the element via scroll_by_parent_container before
 	// invoking exposure_event_recursive() in order to redraw everything

@@ -466,6 +466,18 @@ class elementObj::implObj : public element_drawObj,
 	void update_current_position(ONLY IN_THREAD,
 				     const rectangle &r);
 
+	//! Whether this widget can be scrolled or repositioned directly.
+
+	//! If so, returns this widget viewport, in the window, that
+	//! can be scrolled or moved.
+	//!
+	//! This is used when scrolling a widget in a peephole, for example.
+	//! This is a shortcut to determine whether we can
+	//! scroll_window_pixmap() directly, for this.
+
+	std::optional<rectangle>
+	has_scrollable_window_pixmap_rectangle(ONLY IN_THREAD);
+
 	//! The parent container is scrolling us.
 
 	//! This is semantically equivalent to update_current_position(),
