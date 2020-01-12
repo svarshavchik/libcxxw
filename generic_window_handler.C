@@ -1431,9 +1431,12 @@ void generic_windowObj::handlerObj::do_process_configure_notify(ONLY IN_THREAD)
 	// update_current_position() won't trickle down to it.
 
 	if (old_x != root_x(IN_THREAD) || old_y != root_y(IN_THREAD))
-		absolute_location_updated(IN_THREAD,
-					  absolute_location_update_reason
-					  ::external);
+	{
+		absolute_location_updated(IN_THREAD);
+		redraw_after_absolute_location_updated
+			(IN_THREAD,
+			 absolute_location_update_reason::external);
+	}
 }
 
 void generic_windowObj::handlerObj

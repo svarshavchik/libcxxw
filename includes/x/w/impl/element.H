@@ -548,24 +548,34 @@ class elementObj::implObj : public element_drawObj,
 
 	void scroll_by_parent_container(ONLY IN_THREAD, coord_t x, coord_t y);
 
-	//! What is the reason for updating the absolute location only.
+	//! The top level window's position changed, but not its size
+
+	//! So nothing has to be recalculated, however popups need to know
+	//! about this.
+	//!
+	//! Propagate absolute_location_updated() to all elements.
+	//!
+	//! redraw_after_absolute_location_updated() must be invoked when
+	//! we return.
+
+	virtual void absolute_location_updated(ONLY IN_THREAD);
+
+	//! What was the reason for updating the absolute location only.
 
 	enum class absolute_location_update_reason {
 		external, //!< Our top level window has moved
 		scrolled, //!< The widget was scrolled by its parent
 		internal  //!< The widget moved, but without changing its size
 	};
-	//! The top level window's position changed, but not its size
 
-	//! So nothing has to be recalculated, however popups need to know
-	//! about this.
-	//!
-	//! Propagate absolute_location_updated() to all elements. If the
-	//! absolute_location_update_reason is internal, we need to redraw
-	//! ourselves. If it's external, somebody took care of that.
-	virtual void absolute_location_updated(ONLY IN_THREAD,
-					       absolute_location_update_reason
-					       reason);
+	//! Ok, now invalidate, and possibly redraw ourselves.
+
+	//! If the absolute_location_update_reason is internal, we need to
+	//! redraw ourselves. If it's external, somebody took care of that.
+
+	void redraw_after_absolute_location_updated
+	(ONLY IN_THREAD,
+	 absolute_location_update_reason reason);
 
 	//! This element's current_position has been updated.
 

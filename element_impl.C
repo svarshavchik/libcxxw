@@ -786,8 +786,9 @@ void elementObj::implObj::scroll_by_parent_container(ONLY IN_THREAD,
 		current_position;
 	notify_updated_position(IN_THREAD);
 
-	absolute_location_updated(IN_THREAD,
-				  absolute_location_update_reason::scrolled);
+	absolute_location_updated(IN_THREAD);
+	redraw_after_absolute_location_updated
+		(IN_THREAD, absolute_location_update_reason::scrolled);
 }
 
 void elementObj::implObj::current_position_updated(ONLY IN_THREAD)
@@ -805,13 +806,25 @@ void elementObj::implObj::current_position_updated(ONLY IN_THREAD)
 }
 
 void elementObj::implObj
-::absolute_location_updated(ONLY IN_THREAD,
-			    absolute_location_update_reason reason)
+::absolute_location_updated(ONLY IN_THREAD)
 {
 #if 0
 	data(IN_THREAD).movable_rectangle.reset();
 #endif
 
+	for_each_child(IN_THREAD,
+		       [&]
+		       (const element &e)
+		       {
+			       e->impl->absolute_location_updated(IN_THREAD);
+		       });
+	update_attachedto_info(IN_THREAD);
+}
+
+void elementObj::implObj
+::redraw_after_absolute_location_updated(ONLY IN_THREAD,
+					 absolute_location_update_reason reason)
+{
 	if (reason == absolute_location_update_reason::internal)
 	{
 		invalidate_cached_draw_info(IN_THREAD, {});
@@ -828,10 +841,9 @@ void elementObj::implObj
 		       [&]
 		       (const element &e)
 		       {
-			       e->impl->absolute_location_updated(IN_THREAD,
-								  reason);
+			       e->impl->redraw_after_absolute_location_updated
+				       (IN_THREAD, reason);
 		       });
-	update_attachedto_info(IN_THREAD);
 }
 
 std::string elementObj::implObj::element_name()
@@ -893,7 +905,10 @@ void elementObj::implObj::process_updated_position(ONLY IN_THREAD,
 			 [&]
 			 (const element &e)
 			 {
-				 e->impl->absolute_location_updated
+				 auto &impl=e->impl;
+
+				 impl->absolute_location_updated(IN_THREAD);
+				 impl->redraw_after_absolute_location_updated
 					 (IN_THREAD,
 					  info.moved_how ==
 					  info.moved_with_contents ?

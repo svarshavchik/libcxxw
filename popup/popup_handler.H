@@ -162,8 +162,7 @@ public:
 
 	//! Override absolute_location_updated
 
-	void absolute_location_updated(ONLY IN_THREAD,
-				       absolute_location_update_reason reason)
+	void absolute_location_updated(ONLY IN_THREAD)
 		override;
 
  private:

@@ -95,11 +95,9 @@ void popupObj::handlerObj::set_default_wm_hints(ONLY IN_THREAD,
 	hints.input=1;
 }
 
-void popupObj::handlerObj
-::absolute_location_updated(ONLY IN_THREAD,
-			    absolute_location_update_reason reason)
+void popupObj::handlerObj::absolute_location_updated(ONLY IN_THREAD)
 {
-	superclass_t::absolute_location_updated(IN_THREAD, reason);
+	superclass_t::absolute_location_updated(IN_THREAD);
 
 	// The layoutmanager is toplevelpeephole_layoutmanagerObj.
 	//
