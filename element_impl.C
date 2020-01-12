@@ -21,6 +21,7 @@
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/current_border_impl.H"
 #include "x/w/impl/child_elementobj.H"
+#include "x/w/impl/updated_position_info.H"
 #include "grabbed_pointer.H"
 #include "x/w/element_state.H"
 #include "x/w/scratch_buffer.H"
@@ -41,6 +42,7 @@
 #include <x/weakcapture.H>
 #include <x/strtok.H>
 #include <x/join.H>
+#include <x/refptr_hash.H>
 #include <algorithm>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
@@ -498,6 +500,9 @@ void elementObj::implObj::explicit_redraw(ONLY IN_THREAD)
 	if (data(IN_THREAD).removed)
 		return;
 
+#ifdef DEBUG_EXPLICIT_REDRAW
+	DEBUG_EXPLICIT_REDRAW();
+#endif
 	// Invoke draw() to refresh the contents of this disiplay element.
 
 	auto &di=get_draw_info(IN_THREAD);
@@ -626,6 +631,83 @@ void elementObj::implObj::update_current_position(ONLY IN_THREAD,
 
 	notify_updated_position(IN_THREAD);
 	current_position_updated(IN_THREAD);
+}
+
+void
+elementObj::implObj::can_be_moved(ONLY IN_THREAD,
+				  std::unordered_set<element_impl>::iterator
+				  my_move_iterator,
+				  updated_position_container_t &move_container)
+{
+	auto &p=data(IN_THREAD).previous_position;
+	auto &c=data(IN_THREAD).current_position;
+
+	// There better be a movable_rectangle here, and in all cases, this
+	// is the end of the road, in terms of position update processing.
+	// we clear the movable_rectangle at this point.
+
+	auto rectangle=data(IN_THREAD).movable_rectangle;
+
+	data(IN_THREAD).movable_rectangle.reset();
+
+	if (p == c) return; // Will eventually call process_same_position
+
+	// Size must be unchanged, and there must be a movable_rectangle.
+	if (p.width != c.width || p.height != c.height)
+		return;
+
+	if (!rectangle)
+		return;
+
+	// Sanity check on the coordinates of the movable_rectangle
+
+	if (rectangle->x < 0 || rectangle->y < 0)
+	{
+		return;
+	}
+
+	dim_t max_x=dim_t::truncate(rectangle->x+rectangle->width);
+	dim_t max_y=dim_t::truncate(rectangle->y+rectangle->height);
+
+	auto window_map_impl=
+		get_window_handler().window_pixmap(IN_THREAD)->impl;
+
+	if (window_map_impl->width < max_x ||
+	    window_map_impl->height < max_y)
+	{
+		return;
+	}
+
+	move_container.emplace_back(my_move_iterator,
+				    updated_position_move_info{
+					    *rectangle, rectangle->x,
+						    rectangle->y} );
+
+	auto &[iter, upmi]=*--move_container.end();
+
+	// The movable_rectangle is the old position. Adjust the rectangle
+	// in the move container to be the new position the pixels get moved to.
+	//
+	// If the old position is less than the new one, so rectangle
+	// gets adjusted bigger, else smaller.
+
+	if (p.x < c.x)
+		upmi.move_to_x =
+			coord_t::truncate(upmi.move_to_x
+					  +dim_t::truncate(c.x-p.x));
+	else
+		upmi.move_to_x =
+			coord_t::truncate(upmi.move_to_x
+					  -dim_t::truncate(p.x-c.x));
+
+	if (p.y < c.y)
+		upmi.move_to_y =
+			coord_t::truncate(upmi.move_to_y
+					  +dim_t::truncate(c.y-p.y));
+	else
+		upmi.move_to_y =
+			coord_t::truncate(upmi.move_to_y
+					  -dim_t::truncate(p.y-c.y));
 }
 
 std::optional<rectangle>
@@ -802,8 +884,6 @@ void elementObj::implObj::element_name(std::ostream &o)
 void elementObj::implObj::process_updated_position(ONLY IN_THREAD,
 						   updated_position_info &info)
 {
-	schedule_full_redraw(IN_THREAD);
-
 	// Position gets factored into cached_draw_info, so this may no
 	// longer be valid.
 	invalidate_cached_draw_info(IN_THREAD,

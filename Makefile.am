@@ -1084,6 +1084,7 @@ testinputfield					\
 	testpane					\
 	testtoolbox					\
 	testtooltip					\
+	testupdatedpositioninfo				\
 	testwordwrappablelabel				\
 	#
 
@@ -1264,6 +1265,10 @@ $(call OPTIONS_GEN,testtoolboxoptions.H,testtoolboxoptions.xml)
 testtoolbox_SOURCES=testtoolbox.C
 testtoolbox_LDADD=libcxxw.la
 testtoolbox_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testupdatedpositioninfo_SOURCES=testupdatedpositioninfo.C
+testupdatedpositioninfo_LDADD=libcxxw.la
+testupdatedpositioninfo_LDFLAGS=-static $(STATICLINKFLAGS)
 
 $(call OPTIONS_GEN,testtooltip.H,testtooltip.xml)
 testtooltip_SOURCES=testtooltip.C testtooltip.H

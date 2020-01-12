@@ -514,6 +514,30 @@ class elementObj::implObj : public element_drawObj,
 	(ONLY IN_THREAD,
 	 bool my_nonscrollable_background_is_ok);
 
+	//! Determine whether this widget's contents can be moved
+
+	//! This is called during position update processing to determine
+	//! if the widget has already been drawn, so instead of redrawing
+	//! the widget from scratch in its new position it's possible
+	//! to just copy the widget in the window_pixmap to its new position.
+	//!
+	//! Compares previous_position and updated_position. If the width
+	//! and the height are the same, then we do further sanity checks,
+	//! such as whether there is a movable_rectangle (we already determined
+	//! that), and several other things.
+	//!
+	//! If everything looks good, my_move_iterator and some additional
+	//! metadata get opcied into the move_container, indicating what, when
+	//! where, and how this widget can_be_moved().
+	//!
+	//! In all cases, any movable_rectangle gets removed, this is the
+	//! last call for the move express!
+
+	void can_be_moved(ONLY IN_THREAD,
+			  std::unordered_set<element_impl>::iterator
+			  my_move_iterator,
+			  updated_position_container_t &move_container);
+
 	//! The parent container is scrolling us.
 
 	//! This is semantically equivalent to update_current_position(),

@@ -86,6 +86,7 @@ suppressfile*
 /testtooltip
 /testtooltip.H
 /testunfocus
+/testupdatedpositioninfo
 /m4
 /xml
 /xtest

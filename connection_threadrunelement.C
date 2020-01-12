@@ -12,9 +12,11 @@
 #include "x/w/impl/container.H"
 #include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/updated_position_info.H"
+#include "pixmap.H"
 #include "catch_exceptions.H"
 #include <x/refptr_hash.H>
 #include <unordered_map>
+#include <algorithm>
 
 LIBCXXW_NAMESPACE_START
 
@@ -200,7 +202,9 @@ bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 
 inline bool connection_threadObj::process_container_widget_positions_updated
 (ONLY IN_THREAD, element_position_updated_set_t &widgets, int &poll_for,
- std::unordered_set<element_impl> &redrawn)
+ std::unordered_set<element_impl> &moved,
+ std::unordered_set<element_impl> &to_redraw,
+ std::unordered_set<element_impl> &to_redraw_recursively)
 {
 	widgets.resize_pending=false;
 	if (widgets.elements.empty())
@@ -210,22 +214,151 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 
 	updated_position_info info;
 
-	// Process each widget, one at a time, removing each
-	// widget from the widgets set, after it is notified.
-
-	auto e_b=widgets.elements.begin();
-	auto e_e=widgets.elements.end();
+	// These are all in the same container, same window.
+	auto wh=ref{&(*widgets.elements.begin())->get_window_handler()};
 
 	// The set is not empty. Check if the container's window is expected
 	// to be resized soon, if so we'll wait, because this could be a moot
 	// point.
 
-	if (resize_pending(IN_THREAD, (*e_b)->get_window_handler(),
-			    poll_for))
+	if (resize_pending(IN_THREAD, *wh, poll_for))
 	{
 		widgets.resize_pending=true;
 		return false;
 	}
+
+	// Find widgets whose contents can_be_moved(), as is.
+
+	updated_position_container_t move_container;
+
+	for (auto e_b=widgets.elements.begin(),
+		     e_e=widgets.elements.end(); e_b != e_e; ++e_b)
+	{
+		(*e_b)->can_be_moved(IN_THREAD, e_b, move_container);
+	}
+
+	// Now figure out which way we're moving the movable widgets
+
+	updated_position_move_info::summary move_summary;
+
+	for (const auto &w:move_container)
+		std::get<1>(w).where([&]
+				     (auto direction)
+				     {
+					     ++(move_summary.*direction);
+				     });
+	move_summary.set_chosen();
+
+	// Now, remove everything from move_container except widgets moving
+	// in the chosen direction.
+
+	auto [chosen_direction,
+	      chosen_direction_comparator]=move_summary.chosen;
+
+	move_container.erase
+		(std::remove_if
+		 (move_container.begin(),
+		  move_container.end(),
+		  [&]
+		  (const auto &w)
+		  {
+			  bool do_remove=true;
+
+			  std::get<1>(w).where
+				  ([&]
+				   (auto direction)
+				   {
+					   if (direction == chosen_direction)
+						   do_remove=false;
+				   });
+
+			  return do_remove;
+		  }), move_container.end());
+
+	// Sort the widgets to move in the right order.
+	//
+	// If we're moving the widgets in the north-westerly direction we
+	// want to move them starting with the most north-western widget,
+	// and so on. It's possible that some other widget that's also being
+	// moved north-west ends up in the same position, so we want to
+	// move the most north-western one first, and then move the other one
+	// into the space that got vacated.
+
+	std::sort(move_container.begin(),
+		  move_container.end(),
+		  [=]
+		  (const auto &a, const auto &b)
+		  {
+			  const auto &[a_iterator, a_info]=a;
+			  const auto &[b_iterator, b_info]=b;
+
+			  return chosen_direction_comparator(a_info, b_info);
+		  });
+
+	// Now, all the widgets in the move_container can be moved and have
+	// their existing contents directly copied in the window_pixmap,
+	// instead of redrawing them from scratch.
+
+	for (const auto &w:move_container)
+	{
+		const auto &[iterator, move_info]=w;
+
+		const auto &e=*iterator;
+		auto &data=e->data(IN_THREAD);
+
+		try {
+			// Make sure that
+			// previous_position gets
+			// what current_position is,
+			// *right now*.
+
+			auto new_position=data.current_position;
+
+			e->process_updated_position(IN_THREAD, info);
+
+			data.previous_position=new_position;
+
+		} CATCH_EXCEPTIONS;
+
+		// Copy the widget in the window_pixmap, then
+		// insert the new widget position into the window_drawnarea,
+		// we're going to leverage flush_redrawn_areas() to move it
+		// into the actual window drawable.
+		//
+		// We can't simply copy the contents of the window drawable
+		// directly. It's possible that the window became smaller
+		// and we are now moving the widget into the smaller space,
+		// and we still have the pixels cached in the window_pixmap,
+		// but they're no longer in the drawable!
+
+		auto &pixmap_impl=
+			wh->window_pixmap(IN_THREAD)->impl;
+		wh->copy_configured(move_info.scroll_from,
+				    move_info.move_to_x,
+				    move_info.move_to_y,
+				    pixmap_impl,
+				    pixmap_impl);
+		wh->window_drawnarea(IN_THREAD).push_back
+			({move_info.move_to_x,
+			  move_info.move_to_y,
+			  move_info.scroll_from.width,
+			  move_info.scroll_from.height});
+
+		// Record this widget as being moved, and remove the widgetr
+		// from widgets.elements, since we processed it here. All
+		// other widgets.elements can processed below.
+		moved.insert(e);
+		CONNECTION_THREAD_ACTION_FOR("process position", &*e);
+		flag=true;
+
+		widgets.elements.erase(iterator);
+	}
+
+	// Process each widget, one at a time, removing each
+	// widget from the widgets set, after it is notified.
+
+	auto e_b=widgets.elements.begin();
+	auto e_e=widgets.elements.end();
 
 	// Now go through the set, removing elements after notifying them.
 
@@ -251,8 +384,23 @@ inline bool connection_threadObj::process_container_widget_positions_updated
 				auto new_position=data.current_position;
 
 				e->process_updated_position(IN_THREAD, info);
-				e->schedule_redraw_recursively(IN_THREAD,
-							       redrawn);
+
+				// If the widget's position has changed
+				// we need to have this widget and all
+				// of its inner widgets redrawn, this
+				// widget needs to_redraw_recursively.
+				//
+				// if the widget's position has not changed,
+				// only its size changed, we only need
+				// to_redraw the widget itself. Any child
+				// widget's redrawing needs will be determined
+				// separately, on their own merits.
+				if (data.previous_position.x != new_position.x
+				    ||
+				    data.previous_position.y != new_position.y)
+					to_redraw_recursively.insert(e);
+				else
+					to_redraw.insert(e);
 
 				data.previous_position=new_position;
 			}
@@ -278,7 +426,9 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 
 	bool flag=false;
 
-	std::unordered_set<element_impl> redrawn;
+	std::unordered_set<element_impl> moved;
+	std::unordered_set<element_impl> to_redraw;
+	std::unordered_set<element_impl> to_redraw_recursively;
 
 	// We start with the "highest", or the topmost element waiting for
 	// its updated position to be processed, since when its resized it'll
@@ -302,7 +452,8 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 			++p;
 
 			if (process_container_widget_positions_updated
-			    (IN_THREAD, parent_b->second, poll_for, redrawn))
+			    (IN_THREAD, parent_b->second, poll_for,
+			     moved, to_redraw, to_redraw_recursively))
 				flag=true;
 
 			// If we processed all widgets in this container,
@@ -317,6 +468,17 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 			set.erase(level_b);
 	}
 
+	// Now that we moved all widgets, schedule their redrawal, as
+	// needed.
+	for (const auto &e:to_redraw)
+	{
+		e->schedule_full_redraw(IN_THREAD);
+	}
+
+	for (const auto &e:to_redraw_recursively)
+	{
+		e->schedule_redraw_recursively(IN_THREAD, moved);
+	}
 	return flag;
 }
 
@@ -351,7 +513,6 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 	// flush all the redrawn areas.
 	for (const auto &wh:*window_handlers(IN_THREAD))
 		wh.second->flush_redrawn_areas(IN_THREAD);
-
 	return flag;
 }
 
