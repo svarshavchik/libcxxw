@@ -325,6 +325,12 @@ inline rectarea connection_threadObj::move_updated_position_widgets
 		// and we still have the pixels cached in the window_pixmap,
 		// but they're no longer in the drawable!
 
+		wh->drawing_to_window_picture(IN_THREAD,
+					      {move_info.move_to_x,
+					       move_info.move_to_y,
+					       move_info.scroll_from.width,
+					       move_info.scroll_from.height
+					      });
 		auto &pixmap_impl=
 			wh->window_pixmap(IN_THREAD)->impl;
 		wh->copy_configured(move_info.scroll_from,

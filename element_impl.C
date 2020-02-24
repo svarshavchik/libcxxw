@@ -362,31 +362,53 @@ void elementObj::implObj
 void elementObj::implObj::schedule_full_redraw(ONLY IN_THREAD)
 {
 	if (!get_window_handler().has_exposed(IN_THREAD))
+	{
+		data(IN_THREAD).movable_rectangle.reset();
 		return;
-
+	}
 	if (data(IN_THREAD).current_position.width == 0 ||
 	    data(IN_THREAD).current_position.height == 0)
 		return; // Nothing to redraw.
 
 	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(element_impl{this});
 	data(IN_THREAD).areas_to_redraw.reset();
+	data(IN_THREAD).movable_rectangle.reset();
 }
 
 void elementObj::implObj::schedule_redraw(ONLY IN_THREAD,
 					  const rectangle &area)
 {
 	if (!get_window_handler().has_exposed(IN_THREAD))
+	{
+		data(IN_THREAD).movable_rectangle.reset();
 		return;
-
+	}
 	if (DO_NOT_DRAW(IN_THREAD))
+	{
+		data(IN_THREAD).movable_rectangle.reset();
 		return;
-
+	}
 	if (data(IN_THREAD).current_position.width == 0 ||
 	    data(IN_THREAD).current_position.height == 0)
 		return; // Nothing to redraw.
 
 	if (!data(IN_THREAD).areas_to_redraw)
 		return; // Full redraw pending.
+
+	if (area.x <= 0 && area.y <= 0)
+	{
+		dim_t right{dim_t::truncate(area.x+area.width)};
+		dim_t bottom{dim_t::truncate(area.y+area.height)};
+
+		if (right >= data(IN_THREAD).current_position.width &&
+		    bottom >= data(IN_THREAD).current_position.height)
+		{
+			schedule_full_redraw(IN_THREAD); // Just do everything
+			return;
+		}
+	}
+
+	data(IN_THREAD).movable_rectangle.reset();
 
 	auto &areas=*data(IN_THREAD).areas_to_redraw;
 	auto b=areas.begin(), e=areas.end();
@@ -508,6 +530,7 @@ void elementObj::implObj::explicit_redraw(ONLY IN_THREAD)
 	auto &di=get_draw_info(IN_THREAD);
 
 	rectarea what_to_redraw;
+	bool fully_redrawn=false;
 
 	if (data(IN_THREAD).areas_to_redraw)
 	{
@@ -518,11 +541,15 @@ void elementObj::implObj::explicit_redraw(ONLY IN_THREAD)
 	{
 		what_to_redraw=di.entire_area();
 		data(IN_THREAD).areas_to_redraw=rectarea{}; // Resets it.
+		fully_redrawn=true;
 	}
 
 	// Simulate an exposure of the entire element.
 
 	draw(IN_THREAD, di, what_to_redraw);
+
+	if (fully_redrawn)
+		drawn(IN_THREAD);
 }
 
 void elementObj::implObj
@@ -843,6 +870,8 @@ void elementObj::implObj
 					    draw_info_invalidation_reason
 					    ::recursive_invalidation);
 	}
+	data(IN_THREAD).movable_rectangle.reset();
+
 	for_each_child(IN_THREAD,
 		       [&]
 		       (const element &e)
@@ -1036,23 +1065,31 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		std::cout << "        " << r << std::endl;
 #endif
 
-	if (was_already_exposed && !full_redraw_scheduled(IN_THREAD))
-	{
-		auto &wh=get_window_handler();
-
-		for (auto &a:draw_area)
-		{
-			a.x = coord_t::truncate(a.x + di.absolute_location.x);
-			a.y = coord_t::truncate(a.y + di.absolute_location.y);
-
-			wh.window_drawnarea(IN_THREAD).push_back(a);
-		}
-	}
+	if (full_redraw_scheduled(IN_THREAD))
+		;
 	else
+	{
+		if (data(IN_THREAD).movable_rectangle)
+		{
+			const auto &already_drawn=
+				data(IN_THREAD).movable_rectangle->r;
+
+			auto &window_drawnarea=
+				get_window_handler()
+				.window_drawnarea(IN_THREAD);
+
+			window_drawnarea.insert(window_drawnarea.end(),
+						already_drawn);
+
+			draw_area=subtract(draw_area,
+					   { already_drawn });
+		}
+
 		for (const auto &d:draw_area)
 		{
 			schedule_redraw(IN_THREAD, d);
 		}
+	}
 
 	// Now, we need to recursively propagate this event.
 
@@ -1078,8 +1115,6 @@ void elementObj::implObj::draw(ONLY IN_THREAD,
 		clear_to_color(IN_THREAD, di, areas);
 	else
 		do_draw(IN_THREAD, di, areas);
-
-	drawn(IN_THREAD);
 }
 
 redraw_priority_t elementObj::implObj::get_redraw_priority(ONLY IN_THREAD)
@@ -1229,6 +1264,8 @@ void elementObj::implObj
 
 	for (const auto &a:clipped_area)
 	{
+		wh.drawing_to_window_picture(IN_THREAD, a);
+
 		// (0, 0) in <contents> is abs_x, abs_y. So this is what
 		// we're copying to the window_pixmap.
 

@@ -205,6 +205,16 @@ class generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(window_pixmap);
 	THREAD_DATA_ONLY(window_drawnarea);
 
+	//! Make sure that the window_pixmap has been resized.
+
+	//! Invoked from draw_to_window_picture. Certain sequences of events
+	//! may result in window_pixmap not yet been resized to accomodate
+	//! a larger window. But we're now drawing in it, so we need to make
+	//! sure it is.
+
+	void drawing_to_window_picture(ONLY IN_THREAD,
+				       const rectangle &rect);
+
 	//! Copy window_drawnarea to the window's drawable.
 
 	void flush_redrawn_areas(ONLY IN_THREAD,

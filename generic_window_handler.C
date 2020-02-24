@@ -1439,6 +1439,25 @@ void generic_windowObj::handlerObj::do_process_configure_notify(ONLY IN_THREAD)
 }
 
 void generic_windowObj::handlerObj
+::drawing_to_window_picture(ONLY IN_THREAD,
+			    const rectangle &rect)
+{
+	dim_t right=dim_t::truncate(rect.x+rect.width);
+	dim_t bottom=dim_t::truncate(rect.y+rect.height);
+
+	auto &current_impl=window_pixmap(IN_THREAD)->impl;
+
+	if (current_impl->width >= right &&
+	    current_impl->height >= bottom)
+		return;
+
+	elementObj::implObj &me=*this;
+
+	update_window_pixmap_and_picture(IN_THREAD,
+					 me.data(IN_THREAD).current_position);
+}
+
+void generic_windowObj::handlerObj
 ::update_window_pixmap_and_picture(ONLY IN_THREAD, const rectangle &r)
 {
 	auto window_pixmap_width=window_pixmap(IN_THREAD)->get_width();
