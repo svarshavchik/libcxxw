@@ -47,22 +47,22 @@ public:
 	parser_lock clone() const;
 };
 
-//! Parsed <dim> value in the UI theme file
+//! Parsed \<dim> value in the UI theme file
 
 struct parsed_dim {
 	//! Value of the scale attribute, if not empty.
 	std::string scale;
 
-	//! <dim>'s value.
+	//! \<dim>'s value.
 	std::string value;
 };
 
-//! Load the values from a <dim>
+//! Load the values from a \<dim>
 parsed_dim parse_dim(const xml::doc::base::readlock &lock);
 
-//! A <color> with a "scale" attribute
+//! A \<color> with a "scale" attribute
 
-//! Variant value returned by parse_color() for a <color> entry with a
+//! Variant value returned by parse_color() for a \<color> entry with a
 //! scale= attribute.
 //!
 //! \see parse_color
@@ -72,10 +72,27 @@ struct parsed_scaled_color {
 	//! Non-empty "scale" value.
 
 	std::string from_name;
-	std::optional<double> r, //!< <r> value, if present
-		g, //! <g> value, if present
-		b, //! <b> value, if present
-		a; //! <a> value, if present
+	std::optional<double> r, //!< \<r> value, if present
+		g, //! \<g> value, if present
+		b, //! \<b> value, if present
+		a; //! \<a> value, if present
+
+	//! Comparison operator
+
+	inline bool operator==(const parsed_scaled_color &o) const
+	{
+		return from_name == o.from_name
+			&& r == o.r
+			&& g == o.g
+			&& b == o.b
+			&& a == o.a;
+	}
+
+	//! Comparison operator
+	inline bool operator!=(const parsed_scaled_color &o) const
+	{
+		return !operator==(o);
+	}
 };
 
 //! Common superclass of parse_linear_gradient and parse_radial_gradient
@@ -90,9 +107,9 @@ struct parse_gradient {
 				   > &cb) const;
 };
 
-//! A <color> that specifies a linear gradient.
+//! A \<color> that specifies a linear gradient.
 
-//! Variant value returned by parse_color() for a <color> entry with a
+//! Variant value returned by parse_color() for a \<color> entry with a
 //! type=linear_gradient attribute.
 //!
 //! \see parse_color
@@ -118,9 +135,9 @@ struct parse_linear_gradient : parse_gradient {
 		const;
 };
 
-//! A <color> that specifies a radial gradient.
+//! A \<color> that specifies a radial gradient.
 
-//! Variant value returned by parse_color() for a <color> entry with a
+//! Variant value returned by parse_color() for a \<color> entry with a
 //! type=radial_gradient attribute.
 //!
 //! \see parse_color
@@ -146,9 +163,9 @@ struct parse_radial_gradient : parse_gradient {
 		const;
 };
 
-//! Type of a <color> entry in the theme file
+//! Type of a \<color> entry in the theme file
 
-//! Variant returned by parse_color() indicating what kind of a <color>
+//! Variant returned by parse_color() indicating what kind of a \<color>
 //! entry gets parsed here.
 //!
 //! \see parse_color().
@@ -156,35 +173,35 @@ struct parse_radial_gradient : parse_gradient {
 typedef std::variant<rgb, parsed_scaled_color, parse_linear_gradient,
 		     parse_radial_gradient> parse_color_t;
 
-//! Parse a <color> entry in the theme file.
+//! Parse a \<color> entry in the theme file.
 
-//! parse_color() returns a variant that indicates the type of the <color>
+//! parse_color() returns a variant that indicates the type of the \<color>
 //! entry at the position given by the lock:
 //!
 //! - a solid color returns an \ref rgb "solid color RGB value", already
 //!   parsed
 //!
-//! - a <color> with a "scale" attribute returns a
+//! - a \<color> with a "scale" attribute returns a
 //! \ref parsed_scaled_color "parsed_scaled_color" object, giving the
 //! value of the scale attribute, and whatever r/g/b/a scale value were
 //! specified.
 //!
-//! - a <color> with a "type" of "linear_gradient" returns a
+//! - a \<color> with a "type" of "linear_gradient" returns a
 //! \ref parse_linear_gradient "parse_linear_gradient" object that further
 //! parses the color as follows: it's parse() method gets invoked with the
 //! same lock, a \ref linear_gradient_values "linear_gradient_values" object,
-//! which gets initialized from the <color>, and a callable object. parse()
-//! invokes the callable object for each individual <gradient>, and
-//! receives two parameters: the <value>, a \c size_t, and the <color>,
+//! which gets initialized from the \<color>, and a callable object. parse()
+//! invokes the callable object for each individual \<gradient>, and
+//! receives two parameters: the <value>, a \c size_t, and the \<color>,
 //! a \c std::string.
 //!
-//! - a <color> with a "type" of "radial_gradient" returns a
+//! - a \<color> with a "type" of "radial_gradient" returns a
 //! \ref parse_radial_gradient "parse_radial_gradient" object that further
 //! parses the color as follows: it's parse() method gets invoked with the
 //! same lock, a \ref radial_gradient_values "radial_gradient_values" object,
-//! which gets initialized from the <color>, and a callable object. parse()
-//! invokes the callable object for each individual <gradient>, and
-//! receives two parameters: the <value>, a \c size_t, and the <color>,
+//! which gets initialized from the \<color>, and a callable object. parse()
+//! invokes the callable object for each individual \<gradient>, and
+//! receives two parameters: the <value>, a \c size_t, and the \<color>,
 //! a \c std::string.
 
 parse_color_t parse_color(const parser_lock &lock);

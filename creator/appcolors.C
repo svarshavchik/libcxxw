@@ -12,12 +12,18 @@
 #include "x/w/focusable_container.H"
 #include "x/w/label.H"
 #include "x/w/button.H"
+#include "x/w/uigeneratorsfwd.H"
 #include "messages.H"
 #include <x/messages.H>
 #include <x/visitor.H>
 #include <x/xml/escape.H>
 #include <x/weakcapture.H>
+#include <x/locale.H>
+#include <x/imbue.H>
 #include <functional>
+#include <algorithm>
+#include <iomanip>
+#include <limits>
 
 // Common initialization logic for color type radio buttons:
 //
@@ -225,6 +231,16 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 		color_add_radial_gradient_button;
 	elements.color_radial_page_values_grid=color_radial_page_values_grid;
 
+	color_new_name->on_validate([]
+				    (ONLY IN_THREAD,
+				     const auto &trigger)
+				    {
+					    appinvoke(&appObj::color_updated,
+						      IN_THREAD);
+
+					    return true;
+				    });
+
 	// Callbacks on various combo-boxes
 
 	x::w::standard_comboboxlayoutmanager color_name_lm=
@@ -242,26 +258,67 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 	install_color_standard_combobox_layoutmanager(color_radial_inner_axis);
 	install_color_standard_combobox_layoutmanager(color_radial_outer_axis);
 
-	x::w::editable_comboboxlayoutmanager color_scaled_page_from_lm=
-		color_scaled_page_from->get_layoutmanager();
-
-	color_scaled_page_from_lm->on_selection_changed
+	color_scaled_page_from->editable_combobox_input_field()
+		->on_validate
 		([]
 		 (ONLY IN_THREAD,
 		  const auto &info)
 		 {
-			 if (info.list_item_status_info.selected)
-				 appinvoke(&appObj::color_updated, IN_THREAD);
+			 appinvoke(&appObj::color_updated, IN_THREAD);
+			 return true;
 		 });
-}
 
-// Create an xpath for a particular color.
-static auto get_xpath_for(const x::xml::doc::base::readlock &lock,
-			  const std::string &id)
-{
-	return lock->get_xpath("/theme/color[@id='" +
-			       x::xml::escapestr(id, true) +
-			       "']");
+	x::w::button color_update_button=
+		ui.get_element("color_update_button");
+	x::w::button color_reset_button=
+		ui.get_element("color_reset_button");
+	x::w::button color_delete_button=
+		ui.get_element("color_delete_button");
+
+	elements.color_update_button=color_update_button;
+	elements.color_reset_button=color_reset_button;
+	elements.color_delete_button=color_delete_button;
+
+	color_update_button->on_activate
+		([]
+		 (ONLY IN_THREAD,
+		  const auto &trigger,
+		  const auto &busy)
+		 {
+			 appinvoke(&appObj::update_theme,
+				   IN_THREAD, busy,
+				   &appObj::color_validate,
+				   &appObj::color_update);
+		 });
+
+	color_reset_button->on_activate
+		([]
+		 (ONLY IN_THREAD,
+		  const auto &trigger,
+		  const auto &mcguffin)
+		 {
+			 appinvoke([&]
+				   (auto *app)
+				   {
+					   colors_info_t::lock
+						   lock{app->colors_info};
+
+					   app->color_selected_locked
+						   (IN_THREAD, lock);
+				   });
+		 });
+
+	color_delete_button->on_activate
+		([]
+		 (ONLY IN_THREAD,
+		  const auto &trigger,
+		  const auto &busy)
+		 {
+			 appinvoke(&appObj::update_theme,
+				   IN_THREAD, busy,
+				   &appObj::color_ok_to_delete,
+				   &appObj::color_delete);
+		 });
 }
 
 void appObj::colors_initialize()
@@ -305,10 +362,6 @@ void appObj::colors_initialize()
 	lm->replace_all_items(combobox_items);
 
 	lm->autoselect(0);
-
-	lm=color_scaled_page_from->get_layoutmanager();
-	combobox_items.erase(combobox_items.begin());
-	lm->replace_all_items(combobox_items);
 }
 
 void appObj::color_selected(ONLY IN_THREAD,
@@ -318,20 +371,41 @@ void appObj::color_selected(ONLY IN_THREAD,
 {
 	colors_info_t::lock lock{colors_info};
 
-	size_t n=info.list_item_status_info.item_number;
-
 	if (!info.list_item_status_info.selected)
 	{
-		// When a selection is changed, the old value is always
-		// deselected first. So, hook this to clear and reset things.
-
-		color_new_name->set("");
-		color_new_name_label->hide(IN_THREAD);
-		color_new_name->hide(IN_THREAD);
+		color_unselected_locked(IN_THREAD, lock);
 		return;
 	}
 
-	if (n == 0) // New color entry
+	size_t n=info.list_item_status_info.item_number;
+
+	if (n == 0)
+		lock->current_selection.reset();
+	else
+	{
+		lock->current_selection.emplace();
+		auto &orig_params=*lock->current_selection;
+		orig_params.index=--n;
+	}
+	color_selected_locked(IN_THREAD, lock);
+}
+
+void appObj::color_unselected_locked(ONLY IN_THREAD,
+				     colors_info_t::lock &lock)
+{
+	// When a selection is changed, the old value is always
+	// deselected first. So, hook this to clear and reset things.
+
+	color_new_name->set("");
+	color_new_name_label->hide(IN_THREAD);
+	color_new_name->hide(IN_THREAD);
+	return;
+}
+
+void appObj::color_selected_locked(ONLY IN_THREAD,
+				   colors_info_t::lock &lock)
+{
+	if (!lock->current_selection) // New color entry
 	{
 		lock->current_selection.reset();
 		color_new_name_label->show(IN_THREAD);
@@ -341,14 +415,15 @@ void appObj::color_selected(ONLY IN_THREAD,
 		return;
 	}
 
-	lock->current_selection.emplace();
 	auto &orig_params=*lock->current_selection;
-	orig_params.index=--n;
+
+	const size_t n=orig_params.index;
 
 	auto current_value=theme.get()->readlock();
 	current_value->get_root();
 
 	auto xpath=get_xpath_for(current_value,
+				 "color",
 				 n < lock->ids.size()
 				 ? lock->ids[n]
 				 : "" /* Boom, on next line */);
@@ -407,57 +482,113 @@ void appObj::color_selected(ONLY IN_THREAD,
 }
 
 static const struct {
+	const char name[2];
 	std::optional<double> x::w::ui::parsed_scaled_color::*field;
-	const x::w::validated_input_field<std::string> appObj::*validator;
+	const x::w::validated_input_field<std::optional<double>
+					  > appObj::*validator;
 } scaled_color_fields[]={
-			 {&x::w::ui::parsed_scaled_color::r,
+			 {"r",
+			  &x::w::ui::parsed_scaled_color::r,
 			  &appObj::color_scaled_r_validated},
-			 {&x::w::ui::parsed_scaled_color::g,
+			 {"g",
+			  &x::w::ui::parsed_scaled_color::g,
 			  &appObj::color_scaled_g_validated},
-			 {&x::w::ui::parsed_scaled_color::g,
-			  &appObj::color_scaled_g_validated},
-			 {&x::w::ui::parsed_scaled_color::a,
+			 {"b",
+			  &x::w::ui::parsed_scaled_color::b,
+			  &appObj::color_scaled_b_validated},
+			 {"a",
+			  &x::w::ui::parsed_scaled_color::a,
 			  &appObj::color_scaled_a_validated},
 };
 
 static const struct {
+	const char name[9];
 	double x::w::linear_gradient_values::*field;
+	x::w::input_field appObj::*input_field;
 	const x::w::validated_input_field<double> appObj::*validator;
 } linear_gradient_color_fields[]={
-				  {&x::w::linear_gradient_values::x1,
+				  {"x1",
+				   &x::w::linear_gradient_values::x1,
+				   &appObj::color_linear_x1,
 				   &appObj::color_linear_x1_validated},
-				  {&x::w::linear_gradient_values::y1,
+				  {"y1",
+				   &x::w::linear_gradient_values::y1,
+				   &appObj::color_linear_y1,
 				   &appObj::color_linear_y1_validated},
-				  {&x::w::linear_gradient_values::x2,
+				  {"x2",
+				   &x::w::linear_gradient_values::x2,
+				   &appObj::color_linear_x2,
 				   &appObj::color_linear_x2_validated},
-				  {&x::w::linear_gradient_values::y2,
+				  {"y2",
+				   &x::w::linear_gradient_values::y2,
+				   &appObj::color_linear_y2,
 				   &appObj::color_linear_y2_validated},
-				  {&x::w::linear_gradient_values::fixed_width,
+				  {"widthmm",
+				   &x::w::linear_gradient_values::fixed_width,
+				   &appObj::color_linear_width,
 				   &appObj::color_linear_width_validated},
-				  {&x::w::linear_gradient_values::fixed_height,
+				  {"heightmm",
+				   &x::w::linear_gradient_values::fixed_height,
+				   &appObj::color_linear_height,
 				   &appObj::color_linear_height_validated}};
 
 static const struct {
+	char name[14];
 	double x::w::radial_gradient_values::*field;
+	x::w::input_field appObj::*input_field;
 	const x::w::validated_input_field<double> appObj::*validator;
 } radial_gradient_color_fields[]={
-				  {&x::w::radial_gradient_values::inner_center_x,
+				  {"inner_x",
+				   &x::w::radial_gradient_values::inner_center_x,
+				   &appObj::color_radial_inner_x,
 				   &appObj::color_radial_inner_x_validated},
-				  {&x::w::radial_gradient_values::inner_center_y,
+				  {"inner_y",
+				   &x::w::radial_gradient_values::inner_center_y,
+				   &appObj::color_radial_inner_y,
 				   &appObj::color_radial_inner_y_validated},
-				  {&x::w::radial_gradient_values::inner_radius,
+				  {"inner_radius",
+				   &x::w::radial_gradient_values::inner_radius,
+				   &appObj::color_radial_inner_radius,
 				   &appObj::color_radial_inner_radius_validated},
-				  {&x::w::radial_gradient_values::outer_center_x,
+				  {"outer_x",
+				   &x::w::radial_gradient_values::outer_center_x,
+				   &appObj::color_radial_outer_x,
 				   &appObj::color_radial_outer_x_validated},
-				  {&x::w::radial_gradient_values::outer_center_y,
+				  {"outer_y",
+				   &x::w::radial_gradient_values::outer_center_y,
+				   &appObj::color_radial_outer_y,
 				   &appObj::color_radial_outer_y_validated},
-				  {&x::w::radial_gradient_values::outer_radius,
+				  {"outer_radius",
+				   &x::w::radial_gradient_values::outer_radius,
+				   &appObj::color_radial_outer_radius,
 				   &appObj::color_radial_outer_radius_validated},
-				  {&x::w::radial_gradient_values::fixed_width,
+				  {"widthmm",
+				   &x::w::radial_gradient_values::fixed_width,
+				   &appObj::color_radial_fixed_width,
 				   &appObj::color_radial_fixed_width_validated},
-				  {&x::w::radial_gradient_values::fixed_height,
+				  {"heightmm",
+				   &x::w::radial_gradient_values::fixed_height,
+				   &appObj::color_radial_fixed_height,
 				   &appObj::color_radial_fixed_height_validated},
 };
+
+static const struct {
+
+	char name[18];
+	x::w::radial_gradient_values::radius_axis
+	x::w::radial_gradient_values::*field;
+	x::w::focusable_container appObj::*combobox;
+} radial_gradient_color_axises[]=
+	{
+	 {"inner_radius_axis",
+	  &x::w::radial_gradient_values::inner_radius_axis,
+	  &appObj::color_radial_inner_axis
+	 },
+	 {"outer_radius_axis",
+	  &x::w::radial_gradient_values::outer_radius_axis,
+	  &appObj::color_radial_outer_axis
+	 },
+	};
 
 struct appObj::color_create_gradient_row {
 
@@ -481,7 +612,57 @@ struct appObj::color_create_gradient_row {
 		    lock->current_selection->index < ids.size())
 			ids.erase(ids.begin() + lock->current_selection->index);
 
-		existing_colors={ ids.begin(), ids.end() };
+		existing_colors.reserve(x::w::n_rgb_colors + ids.size()+1);
+
+		existing_colors.insert(existing_colors.end(),
+				       x::w::rgb_color_names,
+				       x::w::rgb_color_names+
+				       x::w::n_rgb_colors);
+		existing_colors.emplace_back(x::w::separator{});
+		existing_colors.insert(existing_colors.end(),
+				       ids.begin(),
+				       ids.end());
+	}
+
+	static void autoselect_existing_color
+	(ONLY IN_THREAD,
+	 x::w::editable_comboboxlayoutmanager &lm,
+	 const std::vector<std::string> &ids,
+	 const std::string &color,
+	 bool autoselect_if_custom)
+	{
+		if (color.empty())
+			return;
+
+		auto iter=std::lower_bound(ids.begin(), ids.end(), color);
+
+		if (iter != ids.end() && *iter == color)
+		{
+			lm->autoselect(IN_THREAD,
+				       iter-ids.begin()
+				       + x::w::n_rgb_colors+1, {});
+			return;
+		}
+
+		auto std_iter=std::find(x::w::rgb_color_names,
+					x::w::rgb_color_names+
+					x::w::n_rgb_colors,
+					color);
+
+		if (std_iter != x::w::rgb_color_names+
+		    x::w::n_rgb_colors)
+		{
+			lm->autoselect(IN_THREAD,
+				       std_iter-x::w::rgb_color_names, {});
+			return;
+		}
+
+		if (autoselect_if_custom)
+		{
+			x::w::input_lock i_lock{lm};
+			i_lock.locked_input_field->set(IN_THREAD,
+						       color);
+		}
 	}
 
 	// Shared code that adds a row with inputs for a new gradient color
@@ -496,11 +677,12 @@ struct appObj::color_create_gradient_row {
 
 	std::tuple<x::w::input_field,
 		   x::w::button>
-	add(const x::w::container &container,
-	    const x::w::gridlayoutmanager &glm,
-	    const x::w::gridfactory &f,
-	    std::optional<size_t> initial_value,
-	    const std::string &initial_color);
+		add(ONLY IN_THREAD,
+		    const x::w::container &container,
+		    const x::w::gridlayoutmanager &glm,
+		    const x::w::gridfactory &f,
+		    std::optional<size_t> initial_value,
+		    const std::string &initial_color);
 
 private:
 
@@ -539,8 +721,22 @@ void appObj::color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock)
 	loaded_radial_gradient reset_radial_gradient;
 
 	reset_linear_gradient.gradient=
-		reset_radial_gradient.gradient={{0, "50%"},
-						{100, "100%"}};
+		{
+		 {0, x::w::rgb_color_names[0]},
+		 {100, x::w::rgb_color_names[1]},
+		};
+
+	for (size_t i=0; i<x::w::n_rgb_colors; ++i)
+	{
+		if (x::w::rgb_colors[i] == x::w::black)
+			reset_linear_gradient.gradient[0]=
+				x::w::rgb_color_names[i];
+		if (x::w::rgb_colors[i] == x::w::white)
+			reset_linear_gradient.gradient[100]=
+				x::w::rgb_color_names[i];
+	}
+	reset_radial_gradient.gradient=
+		reset_linear_gradient.gradient;
 
 	// Check the currently selected color type, and have it update one
 	// of the above defaults.
@@ -578,47 +774,6 @@ void appObj::color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock)
 	// First, the basic color.
 	color_basic->current_color(IN_THREAD, reset_rgb_color);
 
-	// Now the scaled color.
-
-	{
-		x::w::editable_comboboxlayoutmanager lm=
-			color_scaled_page_from->get_layoutmanager();
-
-		x::w::input_lock scaled_color_lock{lm};
-
-		scaled_color_lock.locked_input_field
-			->set(IN_THREAD, reset_scaled_color.from_name);
-
-		if (reset_scaled_color.from_name.empty())
-		{
-			lm->unselect(IN_THREAD);
-		}
-		else
-		{
-			auto iter=std::lower_bound
-				(lock->ids.begin(),
-				 lock->ids.end(),
-				 reset_scaled_color.from_name);
-
-			if (iter != lock->ids.end() &&
-			    *iter == reset_scaled_color.from_name)
-			{
-				lm->autoselect(IN_THREAD,
-					       iter-lock->ids.begin(), {});
-			}
-		}
-
-		for (const auto &field:scaled_color_fields)
-		{
-			std::string s;
-
-			if (reset_scaled_color.*(field.field))
-				s=fmtdblval(*(reset_scaled_color.*
-					      (field.field)));
-
-			(this->*(field.validator))->set(s);
-		}
-	}
 
 	// The linear gradient
 
@@ -629,18 +784,12 @@ void appObj::color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock)
 	for (const auto &f:radial_gradient_color_fields)
 		(this->*(f.validator))->set(reset_radial_gradient.*(f.field));
 
+	for (const auto &f:radial_gradient_color_axises)
 	{
 		x::w::standard_comboboxlayoutmanager lm=
-			color_radial_inner_axis->get_layoutmanager();
+			(this->*f.combobox)->get_layoutmanager();
 		lm->autoselect(IN_THREAD, static_cast<size_t>
-			       (reset_radial_gradient.inner_radius_axis), {});
-	}
-
-	{
-		x::w::standard_comboboxlayoutmanager lm=
-			color_radial_outer_axis->get_layoutmanager();
-		lm->autoselect(IN_THREAD, static_cast<size_t>
-			       (reset_radial_gradient.outer_radius_axis), {});
+			       (reset_radial_gradient.*(f.field)), {});
 	}
 
 	// Values of linear and radial gradients.
@@ -677,7 +826,8 @@ void appObj::color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock)
 			auto f=glm->insert_row(row++);
 
 			const auto &[input_field, delete_button] =
-				create_gradient_row.add(values.list_container,
+				create_gradient_row.add(IN_THREAD,
+							values.list_container,
 							glm,
 							f,
 							v.first,
@@ -727,7 +877,72 @@ void appObj::color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock)
 					  });
 			 });
 	}
+
+
+	// Now the scaled color.
+
+	{
+		x::w::editable_comboboxlayoutmanager lm=
+			color_scaled_page_from->get_layoutmanager();
+
+		x::w::input_lock scaled_color_lock{lm};
+
+		lm->replace_all_items(IN_THREAD,
+				      create_gradient_row.existing_colors);
+
+		scaled_color_lock.locked_input_field
+			->set(IN_THREAD, reset_scaled_color.from_name,
+			      !reset_scaled_color.from_name.empty());
+
+		if (reset_scaled_color.from_name.empty())
+		{
+			lm->unselect(IN_THREAD);
+		}
+		else
+		{
+			color_create_gradient_row::autoselect_existing_color
+				(IN_THREAD,
+				 lm,
+				 create_gradient_row.ids,
+				 reset_scaled_color.from_name,
+				 false);
+		}
+
+		for (const auto &field:scaled_color_fields)
+		{
+			std::optional<double> v;
+
+			if (reset_scaled_color.*(field.field))
+			{
+				auto s=fmtdblval(*(reset_scaled_color.*
+						   (field.field)));
+
+				std::istringstream i{s};
+
+				v.emplace(0);
+
+				i >> *v;
+			}
+			(this->*(field.validator))->set(v);
+		}
+	}
+
+
+
+
 	selected_option->set_value(IN_THREAD, 1);
+
+	// The "Add" buttons should always be enabled now.
+
+	color_add_button_enable_disable
+		(IN_THREAD,
+		 color_linear_page_values_grid->get_layoutmanager(), true);
+
+	color_add_button_enable_disable
+		(IN_THREAD,
+		 color_radial_page_values_grid->get_layoutmanager(), true);
+
+	// And do color update processing.
 	color_updated_locked(IN_THREAD, lock);
 }
 
@@ -743,7 +958,8 @@ appObj::color_add_gradient_row(ONLY IN_THREAD,
 	color_create_gradient_row create_gradient_row{lock};
 
 	const auto &[input_field, delete_button]=
-		create_gradient_row.add(container, glm,
+		create_gradient_row.add(IN_THREAD,
+					container, glm,
 					f,
 					std::nullopt,
 					"");
@@ -777,6 +993,7 @@ bool appObj::do_parse_gradient_rows(const x::w::container &container,
 	{
 		x::w::input_field f=glm->get(i, 0);
 
+		// We store the validator here.
 		x::w::validated_input_field<size_t> validator=f->appdata;
 
 		auto v=validator->validated_value.get();
@@ -786,12 +1003,8 @@ bool appObj::do_parse_gradient_rows(const x::w::container &container,
 
 		parser(*v,
 		       // Cell 1 is the combo-box with the color's value.
-
-		       x::w::input_lock{
-			       x::w::editable_comboboxlayoutmanager{
-				       x::w::focusable_container{glm->get(i, 1)}
-				       ->get_layoutmanager()
-						 }}.get());
+		       x::w::focusable_container{glm->get(i, 1)}
+		       ->editable_combobox_get());
 	}
 
 	return true;
@@ -802,14 +1015,22 @@ void appObj::color_add_enable_disable(ONLY IN_THREAD,
 				      const x::w::gridlayoutmanager &glm,
 				      bool enable_disable)
 {
-	x::w::button b=glm->get(glm->rows()-1, 0);
-
-	b->set_enabled(IN_THREAD, enable_disable);
+	color_add_button_enable_disable(IN_THREAD, glm, enable_disable);
 	color_updated(IN_THREAD);
 }
 
+void appObj::color_add_button_enable_disable(ONLY IN_THREAD,
+					     const x::w::gridlayoutmanager &glm,
+					     bool enable_disable)
+{
+	x::w::button b=glm->get(glm->rows()-1, 0);
+
+	b->set_enabled(IN_THREAD, enable_disable);
+}
+
 std::tuple<x::w::input_field, x::w::button>
-appObj::color_create_gradient_row::add(const x::w::container &container,
+appObj::color_create_gradient_row::add(ONLY IN_THREAD,
+				       const x::w::container &container,
 				       const x::w::gridlayoutmanager &glm,
 				       const x::w::gridfactory &f,
 				       std::optional<size_t> initial_value,
@@ -861,20 +1082,28 @@ appObj::color_create_gradient_row::add(const x::w::container &container,
 
 			 auto &[row, col]=*rowcol;
 
-			 size_t real_row=1;
+			 // 1) Check for dupes
+			 // 2) Figure out where this index value should go,
+			 //    keeping all rows in sorted order.
 
-			 for (size_t i=1, n=glm->rows()-1; i<n; ++i)
+			 size_t real_row=1; // Where we think this row belongs.
+
+			 auto n=glm->rows();
+
+			 for (size_t i=1; i+1<n; ++i)
 			 {
 				 if (i == row)
-					 continue;
+					 continue; // This is me.
 
 				 x::w::input_field f=glm->get(i, 0);
 
+				 // We store the validator here
 				 x::w::validated_input_field<size_t>
 					 validator=f->appdata;
 
 				 auto v=validator->validated_value.get();
 
+				 // Not validated, pretend it's not there.
 				 if (!v)
 					 continue;
 				 if (*v == *parsed_value)
@@ -885,11 +1114,55 @@ appObj::color_create_gradient_row::add(const x::w::container &container,
 					 return std::nullopt;
 				 }
 
+				 // As long as we see a smaller value,
+				 // make a very adamant statement that this
+				 // value belongs on the next line.
+
 				 if (*v < *parsed_value)
 					 real_row=i+1;
 			 }
 
-			 std::cout << "Insert " << real_row << std::endl;
+			 if (real_row != row)
+			 {
+				 // Ok, move the row.
+				 //
+				 // Start by creating the sort_by index.
+
+				 std::vector<size_t> indexes;
+
+				 indexes.resize(n);
+				 size_t i=0;
+				 std::generate_n(indexes.begin(), n,
+						 [&]
+						 {
+							 return i++;
+						 });
+
+				 indexes.erase(indexes.begin()+row);
+
+				 if (real_row > row)
+					 --real_row; // erase() moved it.
+
+				 indexes.insert(indexes.begin()+real_row,
+						row);
+
+				 glm->resort_rows(indexes);
+
+				 // Update tabbing order.
+				 //
+				 // There's always a focusable element on
+				 // the next row. It could be the "Add"
+				 // button.
+
+				 x::w::focusable next_focusable=
+					 glm->get(real_row+1, 0);
+
+				 next_focusable->get_focus_before_me
+					 ({ glm->get(real_row, 0),
+					    glm->get(real_row, 1),
+					    glm->get(real_row, 2)
+					 });
+			 }
 			 return *parsed_value;
 		 },
 		 []
@@ -951,22 +1224,11 @@ appObj::color_create_gradient_row::add(const x::w::container &container,
 			 x::w::editable_comboboxlayoutmanager l=
 				 c->get_layoutmanager();
 
-			 l->append_items(existing_colors);
+			 l->append_items(IN_THREAD, existing_colors);
 
-			 auto b=ids.begin();
-			 auto e=ids.end();
-			 auto iter=std::lower_bound(b, e, initial_color);
-
-			 if (iter != ids.end() && *iter == initial_color)
-			 {
-				 l->autoselect(iter-b);
-			 }
-			 else if (!initial_color.empty())
-			 {
-				 x::w::input_lock i_lock{l};
-				 i_lock.locked_input_field
-					 ->set(initial_color);
-			 }
+			 autoselect_existing_color(IN_THREAD,
+						   l, ids, initial_color,
+						   true);
 
 			 x::w::input_field f=l->current_selection();
 			 f->on_validate
@@ -1048,7 +1310,664 @@ void appObj::color_updated(ONLY IN_THREAD)
 void appObj::color_updated_locked(ONLY IN_THREAD,
 				  colors_info_t::lock &lock)
 {
-	static int counter=0;
+	lock->save_params.reset();
+	lock->save_params.emplace();
 
-	std::cout << "Color updated " << ++counter << std::endl;
+	if (!color_updated_locked(IN_THREAD, lock, *lock->save_params))
+		lock->save_params.reset();
+
+	color_enable_disable_buttons(IN_THREAD, lock);
+}
+
+void appObj::color_enable_disable_buttons(ONLY IN_THREAD,
+					  colors_info_t::lock &lock)
+{
+	if (!lock->save_params)
+	{
+		// Something is not validated.
+
+		color_delete_button->set_enabled(IN_THREAD, false);
+		color_update_button->set_enabled(IN_THREAD, false);
+		color_reset_button->set_enabled(IN_THREAD, true);
+		return;
+	}
+
+	// Delete button is always available if an existing color is
+	// being edited.
+	color_delete_button->set_enabled(IN_THREAD,
+					 lock->current_selection
+					 ? true:false);
+
+	if (lock->current_selection &&
+	    lock->current_selection->loaded_color ==
+	    lock->save_params->color_new_value)
+	{
+		// Color is unchanged, nothing to update or reset.
+
+		color_update_button->set_enabled(IN_THREAD, false);
+		color_reset_button->set_enabled(IN_THREAD, false);
+		return;
+	}
+
+	// Color is changed, can update or reset.
+	color_update_button->set_enabled(IN_THREAD, true);
+	color_reset_button->set_enabled(IN_THREAD, true);
+}
+
+namespace {
+#if 0
+}
+#endif
+
+struct parse_gradient_color_grid {
+
+	const x::w::gridlayoutmanager glm;
+
+	parse_gradient_color_grid(const x::w::container &list_container)
+		: glm{list_container->get_layoutmanager()}
+	{
+	}
+
+	typedef void callback_t(const x::w::input_field &,
+				const x::w::focusable_container &c,
+				const x::w::validated_input_field<size_t>);
+
+	template<typename callback>
+	void operator()(callback &&cb)
+	{
+		extract(x::make_function<callback_t>(std::forward<callback>
+						     (cb)));
+	}
+
+	void extract(const x::function<callback_t> &cb)
+	{
+		size_t n=glm->rows();
+
+		// Skip header, delete button row
+		for (size_t i=1; i+1<n; ++i)
+		{
+			x::w::focusable_container value_field=glm->get(i, 0);
+
+			cb(value_field,
+			   glm->get(i, 1),
+			   value_field->appdata);
+		}
+	}
+};
+
+#if 0
+{
+#endif
+}
+
+static bool update_gradient_color_values(const x::w::container &list_container,
+					 appObj::loaded_color_gradient_t &g)
+{
+	bool flag=true;
+
+	parse_gradient_color_grid parser{list_container};
+
+	parser([&]
+	       (const auto &value_field,
+		const auto &color_field,
+		const auto &value_validator)
+	       {
+		       if (!flag)
+			       return;
+
+		       auto value=value_validator->validated_value.get();
+
+		       if (!value)
+		       {
+			       flag=false;
+			       return;
+		       }
+
+		       auto color=color_field->editable_combobox_get();
+
+		       if (color.empty())
+		       {
+			       flag=false;
+			       return;
+		       }
+
+		       g.emplace(*value, color);
+	       });
+
+	return flag;
+}
+
+static const struct {
+	const x::w::validated_input_field<std::optional<double>>
+	appObj::*validated_value;
+	x::w::input_field appObj::*input_field;
+
+	std::optional<double>
+	x::w::ui::parsed_scaled_color::*field;
+} scaled_fields[]={
+	    {&appObj::color_scaled_r_validated,
+	     &appObj::color_scaled_page_r,
+	     &x::w::ui::parsed_scaled_color::r},
+	    {&appObj::color_scaled_g_validated,
+	     &appObj::color_scaled_page_g,
+	     &x::w::ui::parsed_scaled_color::g},
+	    {&appObj::color_scaled_b_validated,
+	     &appObj::color_scaled_page_b,
+	     &x::w::ui::parsed_scaled_color::b},
+	    {&appObj::color_scaled_a_validated,
+	     &appObj::color_scaled_page_a,
+	     &x::w::ui::parsed_scaled_color::a}
+};
+
+bool appObj::color_updated_locked(ONLY IN_THREAD,
+				  colors_info_t::lock &lock,
+				  colors_save_params &params)
+{
+	params.color_new_name.clear();
+
+	if (!lock->current_selection)
+	{
+		x::w::input_lock lock{color_new_name};
+
+		params.color_new_name=lock.get();
+
+		if (params.color_new_name.empty())
+			return false;
+	}
+
+	// Scaled color
+
+	if (color_scaled_option_radio->get_value())
+	{
+		auto &scaled_color=
+			params.color_new_value
+			.emplace<x::w::ui::parsed_scaled_color>();
+
+		scaled_color.from_name=
+			color_scaled_page_from->editable_combobox_get();
+
+		if (scaled_color.from_name.empty())
+			return false;
+
+		for (const auto &f:scaled_fields)
+		{
+			auto v=(this->*(f.validated_value))
+				->validated_value.get();
+			if (!v)
+				return false;
+
+			scaled_color.*(f.field)=*v;
+		}
+
+		return true;
+	}
+
+	// Linear gradient
+
+	if (color_linear_gradient_option_radio->get_value())
+	{
+		auto &gradient_color=
+			params.color_new_value
+			.emplace<loaded_linear_gradient>();
+
+		static const struct {
+			const x::w::validated_input_field<double>
+			appObj::*validated_value;
+			double loaded_linear_gradient::*field;
+		} fields[]={
+			    {&appObj::color_linear_x1_validated,
+			     &loaded_linear_gradient::x1},
+			    {&appObj::color_linear_y1_validated,
+			     &loaded_linear_gradient::y1},
+			    {&appObj::color_linear_x2_validated,
+			     &loaded_linear_gradient::x2},
+			    {&appObj::color_linear_y2_validated,
+			     &loaded_linear_gradient::y2},
+			    {&appObj::color_linear_width_validated,
+			     &loaded_linear_gradient::fixed_width},
+			    {&appObj::color_linear_height_validated,
+			     &loaded_linear_gradient::fixed_height},
+		};
+
+		for (const auto &f:fields)
+		{
+			auto v=(this->*(f.validated_value))
+				->validated_value.get();
+			if (!v)
+				return false;
+
+			gradient_color.*(f.field)=*v;
+		}
+
+		return update_gradient_color_values
+			(color_linear_page_values_grid,
+			 gradient_color.gradient);
+	}
+
+	// Radial gradient
+
+	if (color_radial_gradient_option_radio->get_value())
+	{
+		auto &gradient_color=
+			params.color_new_value
+			.emplace<loaded_radial_gradient>();
+
+		static const struct {
+			const x::w::validated_input_field<double>
+			appObj::*validated_value;
+			double loaded_radial_gradient::*field;
+		} fields[]={
+			    {&appObj::color_radial_inner_x_validated,
+			     &loaded_radial_gradient::inner_center_x},
+			    {&appObj::color_radial_inner_y_validated,
+			     &loaded_radial_gradient::inner_center_y},
+			    {&appObj::color_radial_outer_x_validated,
+			     &loaded_radial_gradient::outer_center_x},
+			    {&appObj::color_radial_outer_y_validated,
+			     &loaded_radial_gradient::outer_center_y},
+			    {&appObj::color_radial_inner_radius_validated,
+			     &loaded_radial_gradient::inner_radius},
+			    {&appObj::color_radial_outer_radius_validated,
+			     &loaded_radial_gradient::outer_radius},
+			    {&appObj::color_radial_fixed_width_validated,
+			     &loaded_radial_gradient::fixed_width},
+			    {&appObj::color_radial_fixed_height_validated,
+			     &loaded_radial_gradient::fixed_height},
+		};
+
+		for (const auto &f:fields)
+		{
+			auto v=(this->*(f.validated_value))
+				->validated_value.get();
+			if (!v)
+				return false;
+
+			gradient_color.*(f.field)=*v;
+		}
+
+		for (const auto &f:radial_gradient_color_axises)
+		{
+			x::w::standard_comboboxlayoutmanager lm=
+				(this->*(f.combobox))->get_layoutmanager();
+
+			auto s=lm->selected();
+
+			if (s)
+				gradient_color.*(f.field)=
+					static_cast<x::w::radial_gradient_values
+						    ::radius_axis>(*s);
+		}
+		if (!update_gradient_color_values
+		    (color_radial_page_values_grid,
+		     gradient_color.gradient))
+			return false;
+		return true;
+	}
+
+
+	// Must be basic color
+
+	params.color_new_value=color_basic->current_color();
+	return true;
+}
+
+static bool validate_gradient_color_values(ONLY IN_THREAD,
+					   const x::w::container
+					   &list_container)
+{
+	bool flag=true;
+
+	parse_gradient_color_grid parser{list_container};
+
+	parser([&]
+	       (const auto &value_field,
+		const auto &color_field,
+		const auto &value_validator)
+	       {
+		       if (!flag)
+			       return;
+
+		       if (!value_field->validate_modified(IN_THREAD))
+		       {
+			       flag=false;
+			       return;
+		       }
+
+		       if (color_field->editable_combobox_get().empty())
+		       {
+			       color_field->request_focus();
+			       color_field->stop_message
+				       (_("Select or enter a name"));
+			       flag=false;
+			       return;
+		       }
+	       });
+
+	return flag;
+}
+
+bool appObj::color_validate(ONLY IN_THREAD)
+{
+	if (color_scaled_option_radio->get_value())
+	{
+		if (color_scaled_page_from->editable_combobox_get().empty())
+		{
+			color_scaled_page_from->request_focus();
+			color_scaled_page_from->stop_message
+				(_("Select or enter a name"));
+			return false;
+		}
+
+		for (const auto &scaled_field_info:scaled_fields)
+		{
+			if (! (this->*(scaled_field_info.input_field))
+			    ->validate_modified(IN_THREAD))
+				return false;
+		}
+	}
+	if (color_linear_gradient_option_radio->get_value())
+	{
+		for (const auto &linear_field_info
+			     : linear_gradient_color_fields)
+		{
+			if (!(this->*(linear_field_info.input_field))
+			    ->validate_modified(IN_THREAD))
+				return false;
+		}
+		return validate_gradient_color_values
+			(IN_THREAD, color_linear_page_values_grid);
+	}
+	if (color_radial_gradient_option_radio->get_value())
+	{
+		for (const auto &radial_field_info
+			     : radial_gradient_color_fields)
+		{
+			if (!(this->*(radial_field_info.input_field))
+			    ->validate_modified(IN_THREAD))
+				return false;
+		}
+		return validate_gradient_color_values
+			(IN_THREAD, color_radial_page_values_grid);
+	}
+	return true;
+}
+
+// TODO: when gcc implements to_chars for doubles.
+
+static std::string double_color(double v)
+{
+	std::ostringstream o;
+
+	x::imbue o_format{x::locale::base::c(), o};
+
+	o << std::setprecision(std::numeric_limits<x::w::rgb_component_t>
+			       ::digits10+1) << v;
+
+	return o.str();
+}
+
+static std::string fractional_color(x::w::rgb_component_t c)
+{
+	return double_color(c / (double)x::w::rgb::maximum);
+}
+
+namespace {
+#if 0
+}
+#endif
+
+// Helper visitor for writing out a new color.
+//
+// Factored out from color_update readability.
+
+struct color_update_impl {
+
+	x::xml::doc::base::writelock &doc_lock;
+
+	void operator()(const x::w::rgb &c) const;
+	void operator()(const x::w::ui::parsed_scaled_color &c) const;
+	void operator()(const appObj::loaded_linear_gradient &c) const;
+	void operator()(const appObj::loaded_radial_gradient &c) const;
+
+	void gradient(const appObj::loaded_color_gradient_t &g) const;
+};
+
+void color_update_impl::operator()(const x::w::rgb &c) const
+{
+	doc_lock->create_child()->element({"r"})->text(fractional_color(c.r));
+	doc_lock->get_parent();
+	doc_lock->get_parent();
+	doc_lock->create_child()->element({"g"})->text(fractional_color(c.g));
+	doc_lock->get_parent();
+	doc_lock->get_parent();
+	doc_lock->create_child()->element({"b"})->text(fractional_color(c.b));
+	doc_lock->get_parent();
+	doc_lock->get_parent();
+	doc_lock->create_child()->element({"a"})->text(fractional_color(c.a));
+}
+
+void color_update_impl::operator()(const x::w::ui::parsed_scaled_color &c)
+	const
+{
+	doc_lock->create_child()->attribute({"scale",c.from_name});
+
+	for (const auto &field:scaled_color_fields)
+	{
+		auto &v=c.*(field.field);
+
+		if (!v)
+			continue;
+
+		doc_lock->create_child()->element({field.name})
+			->text(double_color(*v));
+		doc_lock->get_parent();
+		doc_lock->get_parent();
+	}
+}
+
+void color_update_impl::operator()(const appObj::loaded_linear_gradient &c)
+	const
+{
+	doc_lock->create_child()->attribute({"type", "linear_gradient"});
+
+	x::w::linear_gradient_values default_values;
+
+	for (const auto &field:linear_gradient_color_fields)
+	{
+		auto &v=c.*(field.field);
+
+		if (v == default_values.*(field.field))
+			continue;
+
+		doc_lock->create_child()->element({field.name})
+			->text(double_color(v));
+		doc_lock->get_parent();
+		doc_lock->get_parent();
+	}
+	gradient(c.gradient);
+}
+
+void color_update_impl::operator()(const appObj::loaded_radial_gradient &c)
+	const
+{
+	doc_lock->create_child()->attribute({"type", "radial_gradient"});
+
+	x::w::radial_gradient_values default_values;
+
+	for (const auto &field:radial_gradient_color_fields)
+	{
+		auto &v=c.*(field.field);
+
+		if (v == default_values.*(field.field))
+			continue;
+
+		doc_lock->create_child()->element({field.name})
+			->text(double_color(v));
+		doc_lock->get_parent();
+		doc_lock->get_parent();
+	}
+
+	for (const auto &field:radial_gradient_color_axises)
+	{
+		if (c.*(field.field) == default_values.*(field.field))
+			continue;
+
+		auto xml=
+			doc_lock->create_child()->element({field.name});
+
+		switch (c.*(field.field)) {
+		case x::w::radial_gradient_values::horizontal:
+			xml->text("horizontal");
+			break;
+		case x::w::radial_gradient_values::vertical:
+			xml->text("vertical");
+			break;
+		case x::w::radial_gradient_values::shortest:
+			xml->text("shortest");
+			break;
+		case x::w::radial_gradient_values::longest:
+			xml->text("longest");
+			break;
+		}
+
+		doc_lock->get_parent();
+		doc_lock->get_parent();
+	}
+	gradient(c.gradient);
+}
+
+void color_update_impl::gradient(const appObj::loaded_color_gradient_t &g) const
+{
+	for (const auto &v:g)
+	{
+		doc_lock->create_child()->element({"gradient"})
+			->element({"value"})
+			->text(v.first);
+		doc_lock->get_parent();
+		doc_lock->get_parent();
+		doc_lock->create_child()->element({"color"})
+			->text(v.second);
+		doc_lock->get_parent();
+		doc_lock->get_parent();
+		doc_lock->get_parent();
+	}
+}
+
+#if 0
+{
+#endif
+}
+
+void appObj::color_update(ONLY IN_THREAD,
+			  const update_callback_t &callback)
+{
+	colors_info_t::lock lock{colors_info};
+
+	if (!lock->save_params)
+		return;
+
+	auto &save_params=*lock->save_params;
+
+	std::string id=save_params.color_new_name;
+	bool is_new=true;
+
+	if (lock->current_selection)
+	{
+		id=lock->ids.at(lock->current_selection->index);
+		is_new=false;
+	}
+
+	if (std::find(x::w::rgb_color_names,
+		      x::w::rgb_color_names+x::w::n_rgb_colors, id)
+	    != x::w::rgb_color_names+x::w::n_rgb_colors)
+	{
+		main_window->stop_message(_("This is a predefined color name"));
+		return;
+	}
+
+	auto created_update=create_update("color", id, is_new);
+
+	if (!created_update)
+		return;
+
+	auto &[doc_lock, new_color]=*created_update;
+
+	std::visit(color_update_impl{doc_lock},
+		   save_params.color_new_value);
+
+	if (!callback(doc_lock->clone_document()))
+		return;
+
+	// Update accepted.
+
+	if (is_new)
+	{
+		update_new_element(id, lock->ids, color_name);
+	}
+}
+
+bool appObj::color_ok_to_delete(ONLY IN_THREAD)
+{
+	return true; // This is validated by the enabled status
+}
+
+void appObj::color_delete(ONLY IN_THREAD,
+			  const update_callback_t &callback)
+{
+	colors_info_t::lock lock{colors_info};
+
+	if (!lock->current_selection)
+		return;
+
+	auto index=lock->current_selection->index;
+	auto id=lock->ids.at(index);
+
+	auto new_doc=theme.get()->readlock()->clone_document();
+
+	auto doc_lock=new_doc->writelock();
+
+	while (1)
+	{
+		doc_lock->get_root();
+
+		auto xpath=get_xpath_for(doc_lock, "color", id);
+
+		if (xpath->count() <= 0)
+			break;
+
+		xpath->to_node(1);
+		doc_lock->remove();
+	}
+
+	if (!callback(doc_lock->clone_document()))
+		return;
+
+	lock->ids.erase(lock->ids.begin()+index);
+
+	x::w::standard_comboboxlayoutmanager name_lm=
+		color_name->get_layoutmanager();
+
+	name_lm->remove_item(index+1);
+
+	lock->current_selection.reset();
+	color_reset_values(IN_THREAD, lock);
+	name_lm->autoselect(0);
+
+	// autoselect(0) queues up a request.
+	// When it gets processed, the color new name field gets show()n.
+	// We want to request focus for that after all that processing also
+	// gets done:
+
+	main_window->in_thread_idle
+		([]
+		 (ONLY IN_THREAD)
+		 {
+			 appinvoke([]
+				   (appObj *me)
+				   {
+					   me->color_new_name
+						   ->request_focus();
+				   });
+		 });
+	status->update(_("Deleted"));
 }

@@ -143,6 +143,21 @@ std::ostream &operator<<(std::ostream &, const rgb &);
 struct linear_gradient_values {
 	double x1=0, y1=0, x2=1, y2=1;
 	double fixed_width=0, fixed_height=0;
+
+	//! Comparison operator
+	inline bool operator==(const linear_gradient_values &o) const
+	{
+		return x1 == o.x1 && y1 == o.y1 &&
+			x2 == o.x2 && y2 == o.y2 &&
+			fixed_width == o.fixed_width &&
+			fixed_height == o.fixed_height;
+	}
+
+	//! Comparison operator
+	inline bool operator!=(const linear_gradient_values &o) const
+	{
+		return !operator==(o);
+	}
 };
 
 //! A linear gradient for a widget's background color.
@@ -166,14 +181,6 @@ struct linear_gradient_values {
 struct linear_gradient : linear_gradient_values {
 
 	rgb_gradient gradient;
-
-	bool operator==(const linear_gradient &o) const noexcept
-	{
-		return x1 == o.x1 && y1 == o.y1 && x2 == o.x2 && y2 == o.y2 &&
-			fixed_width == o.fixed_width &&
-			fixed_height == o.fixed_height &&
-			gradient == o.gradient;
-	}
 };
 
 //! Values of a \ref radial_gradient "radial gradient".
@@ -206,6 +213,27 @@ struct radial_gradient_values {
 	radius_axis outer_radius_axis=longest;
 
 	double fixed_width=0, fixed_height=0;
+
+	//! Comparison operator
+	inline bool operator==(const radial_gradient_values &o) const
+	{
+		return inner_center_x == o.inner_center_x &&
+			inner_center_y == o.inner_center_y &&
+			outer_center_x == o.outer_center_x &&
+			outer_center_y == o.outer_center_y &&
+			inner_radius == o.inner_radius &&
+			outer_radius == o.outer_radius &&
+			inner_radius_axis == o.inner_radius_axis &&
+			outer_radius_axis == o.outer_radius_axis &&
+			fixed_width == o.fixed_width &&
+			fixed_height == o.fixed_height;
+	}
+
+	//! Comparison operator
+	inline bool operator!=(const radial_gradient_values &o) const
+	{
+		return !operator==(o);
+	}
 };
 
 //! A radial gradient for a widget's background color.

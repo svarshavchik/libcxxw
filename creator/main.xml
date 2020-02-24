@@ -268,7 +268,7 @@
     <colspan>
       <columns>2</columns>
     </colspan>
-    <halign>left</halign>
+    <halign>center</halign>
     <container>
       <name>dimensions_buttons_container</name>
       <type>grid</type>
@@ -289,7 +289,7 @@
 	</element>
       </button>
       <config>
-	<appearance>default_theme</appearance>
+	<appearance>normal_theme</appearance>
       </config>
       <shortcut type='theme_text'>${context:dimension}Alt-U</shortcut>
     </element>
@@ -300,7 +300,7 @@
 	</element>
       </button>
       <config>
-	<appearance>default_theme</appearance>
+	<appearance>normal_theme</appearance>
       </config>
       <shortcut type='theme_text'>${context:dimension}Alt-R</shortcut>
     </element>
@@ -326,6 +326,9 @@
     </append_row>
     <append_row>
       <name>color-main-row</name>
+    </append_row>
+    <append_row>
+      <name>color-bottom-row</name>
     </append_row>
   </layout>
 
@@ -1003,4 +1006,70 @@
       <shortcut type='theme_text'>${context:addcolor}Alt-A</shortcut>
     </element>
   </factory>
+
+  <!-- Bottom section: update/delete/reset buttons -->
+
+  <factory id="color-bottom-row" type="grid">
+    <halign>center</halign>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+
+    <padding>
+      <side>top</side>
+      <padding>none</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>none</padding>
+    </padding>
+    <container>
+      <type>grid</type>
+      <name>color-bottom-row-container</name>
+    </container>
+  </factory>
+
+  <layout id="color-bottom-row-container" type="grid">
+    <append_row>
+      <name>color_buttons</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="color_buttons">
+    <element id="color_update_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:color}${decoration:underline}U${decoration:none}pdate</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:color}Alt-U</shortcut>
+    </element>
+    <element id="color_reset_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:color}${decoration:underline}R${decoration:none}eset</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:color}Alt-R</shortcut>
+    </element>
+    <element id="color_delete_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:color}D${decoration:underline}e${decoration:none}lete</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:color}Alt-E</shortcut>
+    </element>
+  </factory>
+
 </theme>

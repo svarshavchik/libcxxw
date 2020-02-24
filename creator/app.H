@@ -76,7 +76,7 @@ private:
 	appObj(init_args &&);
 
 	//! UI event queue type
-	typedef x::eventqueue< x::functionref<void (const app &)>> eventqueue_t;
+	typedef x::eventqueue< x::functionref<void ()>> eventqueue_t;
 
 	//! UI events
 	const eventqueue_t eventqueue=eventqueue_t::create();
@@ -182,7 +182,8 @@ public:
 	void update_theme(ONLY IN_THREAD,
 			  const x::w::busy &mcguffin,
 			  bool (appObj::*validator)(ONLY IN_THREAD),
-			  void (appObj::*callback)(const update_callback_t &));
+			  void (appObj::*callback)(ONLY IN_THREAD,
+						   const update_callback_t &));
 
 	//! Filename
 	x::mpobj<std::string> themename;
@@ -198,8 +199,9 @@ public:
 		dimension_value_validated,
 
 	//! Dimensions page: validated scale field.
-		dimension_scale_value_validated,
+		dimension_scale_value_validated;
 
+	const x::w::validated_input_field<std::optional<double>>
 	//! Colors page: validated R scale value.
 		color_scaled_r_validated,
 
@@ -478,14 +480,15 @@ public:
 	bool dimension_validate(ONLY IN_THREAD);
 
 	//! Save/update dimension
-	void dimension_update(const update_callback_t &callback);
+	void dimension_update(ONLY IN_THREAD,
+			      const update_callback_t &callback);
 
 	//! Verify that it's ok to delete the current shown dimension
 	bool dimension_ok_to_delete(ONLY IN_THREAD);
 
 	//! Delete dimension
-	void dimension_delete(const update_callback_t &callback);
-
+	void dimension_delete(ONLY IN_THREAD,
+			      const update_callback_t &callback);
 
 	/////////////////////////////////////////////////////////////////
 	//
@@ -508,12 +511,38 @@ public:
 	struct loaded_linear_gradient : x::w::linear_gradient_values {
 
 		loaded_color_gradient_t gradient;
+
+		//! Comparison operator
+		inline bool operator==(const loaded_linear_gradient &o) const
+		{
+			return x::w::linear_gradient_values::operator==(o) &&
+				gradient == o.gradient;
+		}
+
+		//! Comparison operator
+		inline bool operator!=(const loaded_linear_gradient &o) const
+		{
+			return !operator==(o);
+		}
 	};
 
 	//! Loaded radial gradient
 	struct loaded_radial_gradient : x::w::radial_gradient_values {
 
 		loaded_color_gradient_t gradient;
+
+		//! Comparison operator
+		inline bool operator==(const loaded_radial_gradient &o) const
+		{
+			return x::w::radial_gradient_values::operator==(o) &&
+				gradient == o.gradient;
+		}
+
+		//! Comparison operator
+		inline bool operator!=(const loaded_radial_gradient &o) const
+		{
+			return !operator==(o);
+		}
 	};
 
 
@@ -572,11 +601,29 @@ public:
 
 	//! Something was selected or unselected in the color combo-box
 
+	//! Invokes either color_unselected() or color_reset().
+
 	void color_selected(ONLY IN_THREAD,
 			    const
 			    x::w::standard_combobox_selection_changed_info_t
 			    &info);
 
+private:
+
+	//! color_selected() was invoked for an unselection
+
+	//! Before a new color, or "New Color" gets selected in the combo-box
+	//! the previous selection gets unselected.
+
+	void color_unselected_locked(ONLY IN_THREAD,
+				     colors_info_t::lock &lock);
+
+	//! A new color was selected from the color name combo-box.
+
+	//! Or the Reset button was pressed.
+	void color_selected_locked(ONLY IN_THREAD,
+				   colors_info_t::lock &);
+public:
 	//! Reset all fields to their original values, for the current color
 	void color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock);
 
@@ -588,6 +635,23 @@ private:
 	//! The currently displayed color has been updated in some way.
 	void color_updated_locked(ONLY IN_THREAD,
 				  colors_info_t::lock &);
+
+	//! Invoke by color_updated_locked to create colors_save_params
+
+	//! color_updated_locked() creates a new colors_save_params, if needed
+	//! and invokes this. \c false gets returned if the color parameters
+	//! are not valid; color_updated_locked() clears save_params
+
+	bool color_updated_locked(ONLY IN_THREAD,
+				  colors_info_t::lock &lock,
+				  colors_save_params &);
+
+	//! Update the status of update, reset, and delete buttons
+
+	//! Whether they should be enabled or disabled is determined by the
+	//! current state.
+	void color_enable_disable_buttons(ONLY IN_THREAD,
+					  colors_info_t::lock &lock);
 
 	//! Invoked by "Add" button on a color gradient tab.
 
@@ -610,11 +674,25 @@ private:
 
 	//! Enable or disable the "Add" button.
 
+	//! Calls color_add_enable_disable_button(), then color_updated().
+
 	void color_add_enable_disable(ONLY IN_THREAD,
 				      const x::w::container &container,
 				      const x::w::gridlayoutmanager &glm,
 				      bool enabled);
+private:
 
+	//! Change the status of the Add button.
+
+	//! Receives either color_linear_page_values_grid's or
+	//! color_radial_page_values_grid's layout manager, and enables
+	//! or disables the "Add" button.
+
+	void color_add_button_enable_disable(ONLY IN_THREAD,
+					     const x::w::gridlayoutmanager &glm,
+					     bool enable_disable);
+
+public:
 	//! Helper class for creating new gradient color rows.
 
 	struct color_create_gradient_row;
@@ -638,6 +716,20 @@ private:
 					   const x::function<void
 					   (size_t,
 					    const std::string &)> &parser);
+	//! Validate parameters for save/update
+	bool color_validate(ONLY IN_THREAD);
+
+	//! Save/update color
+	void color_update(ONLY IN_THREAD,
+			  const update_callback_t &callback);
+
+	//! Verify that it's ok to delete the current shown color
+	bool color_ok_to_delete(ONLY IN_THREAD);
+
+	//! Delete color
+	void color_delete(ONLY IN_THREAD,
+			  const update_callback_t &callback);
+
 private:
 
 	//! The app is running.

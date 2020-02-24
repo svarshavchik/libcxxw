@@ -548,7 +548,8 @@ bool appObj::dimension_update_save_params(ONLY IN_THREAD,
 	return true;
 }
 
-void appObj::dimension_update(const update_callback_t &callback)
+void appObj::dimension_update(ONLY IN_THREAD,
+			      const update_callback_t &callback)
 {
 	dimension_info_t::lock lock{dimension_info};
 
@@ -617,7 +618,8 @@ bool appObj::dimension_ok_to_delete(ONLY IN_THREAD)
 	return true; // This is validated by the enabled status
 }
 
-void appObj::dimension_delete(const update_callback_t &callback)
+void appObj::dimension_delete(ONLY IN_THREAD,
+			      const update_callback_t &callback)
 {
 	dimension_info_t::lock lock{dimension_info};
 

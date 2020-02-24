@@ -254,8 +254,6 @@ std::string appObj::fmtdblval(double d)
 {
 	std::stringstream o;
 
-	x::imbue imbued{x::locale::base::global(), o};
-
 	o << std::fixed << std::setprecision(3) << d;
 
 	o >> d;
@@ -319,7 +317,6 @@ static inline auto value_validator(const x::w::input_field &field,
 			double v;
 
 			std::istringstream i{value};
-			x::imbue i_locale{x::locale::base::global(), i};
 
 			i >> v;
 
@@ -398,9 +395,63 @@ static inline auto dimension_scale_value_validator(const x::w::input_field
 
 static auto color_scale_value_validator(const x::w::input_field &field)
 {
-	return value_validator(field, true,
-			       _txt("Invalid scaling value"),
-			       &appObj::color_updated);
+	return field->set_validator
+		([]
+		 (ONLY IN_THREAD,
+		  const std::string &value,
+		  const x::w::input_field &me,
+		  const auto &trigger) -> std::optional<std::optional<double>>
+		 {
+			 if (value.empty())
+				 return std::optional<double>{};
+
+			 double parsed_value;
+
+			 {
+				 std::istringstream i{value};
+
+				 i >> parsed_value;
+
+				 if (i.fail() || !(i.get(), i.eof()))
+				 {
+					 me->stop_message(_("Invalid value"));
+					 return std::nullopt;
+				 }
+			 }
+
+			 if (parsed_value < 0)
+			 {
+				 me->stop_message(_("Value cannot be"
+						    " negative"));
+				 return std::nullopt;
+			 }
+
+			 std::istringstream i{appObj::fmtdblval(parsed_value)};
+
+			 std::optional<std::optional<double>> ret;
+
+			 auto &valid_value=ret.emplace();
+
+			 valid_value.emplace(0);
+
+			 i >> *valid_value;
+
+			 return ret;
+		 },
+		 []
+		 (const auto &v) -> std::string
+		 {
+			 if (v)
+			 {
+				 return appObj::fmtdblval(*v);
+			 }
+			 return "";
+		 },
+		 []
+		 (ONLY IN_THREAD, const auto &v)
+		 {
+			 appinvoke(&appObj::color_updated, IN_THREAD);
+		 });
 }
 
 struct all_gradient_values : x::w::linear_gradient_values,
@@ -424,8 +475,6 @@ color_gradient_value_validator(const x::w::input_field &field,
 
 				 std::istringstream i{s};
 
-				 x::imbue imbued{x::locale::base::global(), i};
-
 				 i >> *parsed_value;
 
 				 return *parsed_value;
@@ -445,8 +494,6 @@ color_gradient_value_validator(const x::w::input_field &field,
 		 [default_value]
 		 (double v) -> std::string
 		 {
-			 all_gradient_values default_values;
-
 			 return appObj::fmtdblval(v);
 		 },
 		 []
@@ -583,18 +630,20 @@ void appObj::mainloop()
 	app me{this};
 
 	while (running)
-		eventqueue->pop()(me);
+		eventqueue->pop()();
 }
 
 void appObj::update_theme(ONLY IN_THREAD, const x::w::busy &mcguffin,
 			  bool (appObj::*validator)(ONLY IN_THREAD),
-			  void (appObj::*callback)(const update_callback_t &))
+			  void (appObj::*callback)(ONLY IN_THREAD,
+						   const update_callback_t &))
 {
 	if (!(this->*validator)(IN_THREAD))
 		return;
 
 	(this->*callback)
-		(x::make_function<bool (const x::xml::doc &)>
+		(IN_THREAD,
+		 x::make_function<bool (const x::xml::doc &)>
 		 ([this]
 		  (const x::xml::doc &new_theme)
 		  {
@@ -875,9 +924,12 @@ void appObj::new_file()
 void appObj::stoprunning()
 {
 	eventqueue->event([]
-			  (const app &a)
 			  {
-				  a->running=false;
+				  appinvoke([]
+					    (auto *a)
+					    {
+						    a->running=false;
+					    });
 			  });
 }
 

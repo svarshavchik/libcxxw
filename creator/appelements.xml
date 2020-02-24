@@ -241,4 +241,19 @@ object and placed into discrete variables.
     <type>x::w::button</type>
     <name>color_add_radial_gradient_button</name>
   </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>color_update_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>color_reset_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>color_delete_button</name>
+  </ref>
 </collection>
