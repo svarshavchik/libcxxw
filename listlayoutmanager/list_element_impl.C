@@ -2028,7 +2028,12 @@ void list_elementObj::implObj
 
 	r.extra->data(lock).selected=selected_flag;
 
-	redraw_rows(IN_THREAD, lock, i);
+	redraw_rows(IN_THREAD, lock, i, i,
+		    selected_flag &&
+		    (
+		     trigger.index() == callback_trigger_key_event ||
+		     trigger.index() == callback_trigger_button_event
+		     ));
 
 	try {
 		list_style.selected_changed(&lock->cells.at(i*columns),

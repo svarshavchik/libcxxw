@@ -642,16 +642,6 @@ bool peepholelayoutmanagerObj::implObj
 
 	// The intersection between the two of them would be the portion of the
 	// peephole viewport that gets scrolled AFTER it is scrolled.
-#if 0
-	std::cout << "CURRENT POSITION: " << element_current_position
-		  << std::endl;
-	std::cout << "NEW POSITION: " << r << std::endl;
-
-	std::cout << "SCROLL VIEWPORT: "
-		  << *di.element_viewport_rectangle.begin() << std::endl;
-	std::cout << "    (" << e.objname() << ")" << std::endl;
-	std::cout << "TO: " << scrolled_rectangle << std::endl;
-#endif
 
 	auto &di=e.get_draw_info(IN_THREAD);
 
@@ -681,16 +671,11 @@ bool peepholelayoutmanagerObj::implObj
 	// scroll, because it was vacated by the scrolled content.
 
 	auto redrawn=subtract(di.element_viewport, {scrolled_to});
-#if 0
-	std::cout << "MOVE: " << element_current_position
-		  << " -> " << r
-		  << std::endl;
-	std::cout << "SCROLL: " << scrolled_from << " -> " << scrolled_to
-		  << std::endl;
-	std::cout << "REDRAW " << e.objname() << ":" << std::endl;
-	for (const auto &r:redrawn)
-		std::cout << " " << r << std::endl;
+
+#ifdef DEBUG_SCROLL
+	DEBUG_SCROLL();
 #endif
+
 	peephole_element_impl->get_window_handler()
 		.scroll_window_pixmap(IN_THREAD,
 				      scrolled_from,

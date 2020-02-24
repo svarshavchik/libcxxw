@@ -1,0 +1,11 @@
+<optclass name="testscrollbar_options">
+  <option>
+    <name>testscroll</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>t</opt>
+    <longopt>testscroll</longopt>
+    <descr>Automated test</descr>
+  </option>
+  <defaultoptions />
+</optclass>

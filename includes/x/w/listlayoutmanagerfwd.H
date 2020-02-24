@@ -597,6 +597,10 @@ overload of each method is the implemention method that executes the
 operation, and can be invoked directly when executing another callback
 in the connection thread.
 
+Using selected() to select a list item and passing a key or a button
+event for the optional trigger parameter results in the selected list item
+getting scrolled into view, if applicable.
+
 \par Creating handles for new list items
 
 \code

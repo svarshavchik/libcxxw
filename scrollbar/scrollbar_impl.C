@@ -447,6 +447,10 @@ void scrollbarObj::implObj::do_draw(ONLY IN_THREAD,
 			 },
 			 high, di, di, clipped);
 	}
+
+#ifdef DEBUG_SCROLL
+	DEBUG_SCROLL();
+#endif
 }
 
 void scrollbarObj::implObj::draw_scroll_low(ONLY IN_THREAD)

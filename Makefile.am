@@ -1216,7 +1216,9 @@ testrichtextiterator_LDFLAGS=-static $(STATICLINKFLAGS)
 testrichtextstring_SOURCES=testrichtextstring.C
 testrichtextstring_LDADD=-lcxx
 
-testscrollbar_SOURCES=testscrollbar.C
+$(call OPTIONS_GEN,testscrollbar.inc.H,testscrollbar.xml)
+
+testscrollbar_SOURCES=testscrollbar.C testscrollbar.inc.H
 testscrollbar_LDADD=libcxxw.la
 testscrollbar_LDFLAGS=-static $(STATICLINKFLAGS)
 
@@ -1560,6 +1562,7 @@ test:
 	./testmainwindow --usetheme --nopadding
 	./testmainwindow --themescale
 	./testmainwindow --themescale --nopadding
+	./testscrollbar --testscroll
 	./testlabel
 	./testlabel --truncatable
 	LC_ALL=ru_RU.UTF-8 ./testtooltip --width=25
