@@ -110,6 +110,30 @@ class elementObj::implObj : public element_drawObj,
 
 	struct LIBCXX_HIDDEN data_thread_only_t;
 
+	struct LIBCXX_HIDDEN movable_rectangle_t;
+
+	//! Information about the movable/scrollable rectangle in this widget.
+
+	//! The value returned by has_scrollable_window_pixmap_rectangle().
+	struct movable_rectangle_t {
+
+		//! This widget's scrollable or movable rectangle
+		rectangle r;
+
+		//! Whether the rectangle can actually be moved.
+
+		//! Otherwise this rectangle still exist in window_pixmap,
+		//! but cannot be moved for some reason.
+
+		bool is_movable;
+
+		//! Constructor
+		movable_rectangle_t(const rectangle &r) : r{r},
+							  is_movable(false)
+		{
+		}
+	};
+
 	//! Most of the stuff is for the connection thread's consumption, only.
 
 	struct data_thread_only_t {
@@ -143,7 +167,8 @@ class elementObj::implObj : public element_drawObj,
 		//! update_current_position() using
 		//! has_scrollable_window_pixmap_rectangle().
 		//!
-		//! Represents that this rectangle in the window_pixmap
+		//! This is set with is_movable=true in order to
+		//! represent that this rectangle in the window_pixmap
 		//! contains valid contents of this widget that can be copied
 		//! to this widget's new position instead of redrawing the
 		//! widget from scratch.
@@ -158,7 +183,12 @@ class elementObj::implObj : public element_drawObj,
 		//! processing. can_be_moved() factors in the current
 		//! value of movable_rectangle, if there is one, then
 		//! clears it.
-		std::optional<rectangle> movable_rectangle;
+		//!
+		//! When this widget has a valid rectangle in the window_pixmap
+		//! but it cannot be scrolled for some other reason, this
+		//! is set but with is_movable=false.
+
+		std::optional<movable_rectangle_t> movable_rectangle;
 
 		//! This element's attached popup.
 		popupptr attached_popup;
@@ -494,7 +524,7 @@ class elementObj::implObj : public element_drawObj,
 	//! Whether this widget can be scrolled or repositioned directly.
 
 	//! If so, returns this widget viewport, in the window, that
-	//! can be scrolled or moved.
+	//! can be scrolled or moved, with is_movable.
 	//!
 	//! This is used when scrolling a widget in a peephole, for example.
 	//! This is a shortcut to determine whether we can
@@ -510,7 +540,8 @@ class elementObj::implObj : public element_drawObj,
 	//! the widget's own background it can still be scrolled, but if
 	//! it is drawn on top of its parent widget's non-scrollable background
 	//! it cannot be moved.
-	std::optional<rectangle>
+
+	std::optional<movable_rectangle_t>
 	has_scrollable_window_pixmap_rectangle
 	(ONLY IN_THREAD,
 	 bool my_nonscrollable_background_is_ok);

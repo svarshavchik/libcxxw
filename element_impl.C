@@ -643,18 +643,18 @@ elementObj::implObj::can_be_moved(ONLY IN_THREAD,
 	if (p.width != c.width || p.height != c.height)
 		return;
 
-	if (!rectangle)
+	if (!rectangle || !rectangle->is_movable)
 		return;
 
 	// Sanity check on the coordinates of the movable_rectangle
 
-	if (rectangle->x < 0 || rectangle->y < 0)
+	if (rectangle->r.x < 0 || rectangle->r.y < 0)
 	{
 		return;
 	}
 
-	dim_t max_x=dim_t::truncate(rectangle->x+rectangle->width);
-	dim_t max_y=dim_t::truncate(rectangle->y+rectangle->height);
+	dim_t max_x=dim_t::truncate(rectangle->r.x+rectangle->r.width);
+	dim_t max_y=dim_t::truncate(rectangle->r.y+rectangle->r.height);
 
 	auto window_map_impl=
 		get_window_handler().window_pixmap(IN_THREAD)->impl;
@@ -667,8 +667,8 @@ elementObj::implObj::can_be_moved(ONLY IN_THREAD,
 
 	move_container.emplace_back(std::move(my_move_iterator),
 				    updated_position_move_info{
-					    *rectangle, rectangle->x,
-						    rectangle->y} );
+					    rectangle->r, rectangle->r.x,
+						    rectangle->r.y} );
 
 	auto &[iter, upmi]=*--move_container.end();
 
@@ -697,12 +697,12 @@ elementObj::implObj::can_be_moved(ONLY IN_THREAD,
 					  -dim_t::truncate(p.y-c.y));
 }
 
-std::optional<rectangle>
+std::optional<elementObj::implObj::movable_rectangle_t>
 elementObj::implObj
 ::has_scrollable_window_pixmap_rectangle(ONLY IN_THREAD,
 					 bool my_nonscrollable_background_is_ok)
 {
-	std::optional<rectangle> ret;
+	std::optional<movable_rectangle_t> ret;
 
 	if (!data(IN_THREAD).logical_inherited_visibility)
 		return ret;
@@ -712,6 +712,19 @@ elementObj::implObj
 
 	if (!data(IN_THREAD).areas_to_redraw->empty())
 		return ret;
+
+	auto &di=get_draw_info(IN_THREAD);
+
+	// 1) The peephole is unobstructed.
+	//
+	// Look at the element_viewport. Unobstructed means exactly one
+	// rectangle in there.
+	if (di.element_viewport.size() != 1)
+		return ret;
+
+	ret.emplace(*di.element_viewport.begin());
+
+	auto &viewport_rectangle=ret->r;
 
 	if (!current_background_color(IN_THREAD)->is_scrollable_background())
 	{
@@ -723,17 +736,6 @@ elementObj::implObj
 		       has_own_background_color(IN_THREAD)))
 			return ret;
 	}
-
-	auto &di=get_draw_info(IN_THREAD);
-
-	// 1) The peephole is unobstructed.
-	//
-	// Look at the element_viewport. Unobstructed means exactly one
-	// rectangle in there.
-	if (di.element_viewport.size() != 1)
-		return ret;
-
-	auto &viewport_rectangle=*di.element_viewport.begin();
 
 	// 2) The display is not shaded, and the display element is not
 	// to be drawn as disabled.
@@ -761,9 +763,13 @@ elementObj::implObj
 					   viewport_rectangle.width) ||
 	    pixmap_height < dim_t::truncate(viewport_rectangle.y+
 					    viewport_rectangle.height))
-		return std::nullopt;
+	{
+		ret.reset();
+		return ret;
+	}
 
-	ret=viewport_rectangle;
+	ret->is_movable=true;
+
 	return ret;
 }
 

@@ -582,10 +582,11 @@ bool peepholelayoutmanagerObj::implObj
 		e.has_scrollable_window_pixmap_rectangle(IN_THREAD,
 							 false);
 
-	if (!has_scrollable_window_pixmap_rectangle)
+	if (!has_scrollable_window_pixmap_rectangle ||
+	    !has_scrollable_window_pixmap_rectangle->is_movable)
 		return false;
 
-	auto &viewport_rectangle=*has_scrollable_window_pixmap_rectangle;
+	auto &viewport_rectangle=has_scrollable_window_pixmap_rectangle->r;
 
 	auto scrolled_rectangle=viewport_rectangle;
 
