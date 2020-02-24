@@ -36,6 +36,16 @@ LIBCXXW_NAMESPACE_START
 
 typedef std::variant<rgb, linear_gradient, radial_gradient> theme_color_t;
 
+//! HTML 3.2 rgb color names
+
+extern const char * const rgb_color_names[];
+
+//! HTML 3.2 rgb colors
+extern const rgb rgb_colors[];
+
+//! How many rgb_colors there are.
+extern const size_t n_rgb_colors;
+
 //! Generate something using a base factory.
 
 //! \see uigenerators

@@ -85,6 +85,16 @@ public:
 	//! Destructor
 	~appObj();
 
+	////////////////////////////////////////////////////
+
+	//! Construct an xpath for an element in the theme file.
+
+	//! They all follow the "/theme/{type}[@id="{name}"]" pattern.
+
+	static x::xml::doc::base::xpath
+	get_xpath_for(const x::xml::doc::base::readlock &lock,
+		      const char *type,
+		      const std::string &id);
 private:
 
 	//! Update everything, after a new file is loaded or created.
@@ -108,6 +118,43 @@ public:
 
 	//! Currently loaded theme file
 	x::mpobj<x::xml::doc> theme;
+
+	//! What's returned by create_update()
+
+	//! It returns a new write lock on the new, cloned, theme document,
+	//! and the node for the created empty <type id={id}> placeholder.
+	//!
+	//! Nothing gets returned for an error.
+
+	typedef std::optional<std::tuple<x::xml::doc::base::writelock,
+					 x::xml::doc::base::createnode>
+			      > create_update_t;
+
+	//! Add or update a theme element.
+
+	//! Common logic when creating or updating something in the theme.
+	//!
+	//! Takes a "dim", or "color", etc..., its @id value and whether this
+	//! should be a new element, and constructs a
+	//!
+	//! <type id={id}>
+	//!
+	//! node.
+	//!
+	//! Returns nothing for an error.
+
+	create_update_t create_update(const char *type,
+				      const std::string &id,
+				      bool is_new);
+
+	//! Common logic when creating a new element
+
+	//! Inserts the new element's id into the list of existing_ids,
+	//! and a combo-box with the list.
+	static size_t
+	update_new_element(const std::string &new_id,
+			   std::vector<std::string> &existing_ids,
+			   const x::w::focusable_container &id_combo);
 
 	//! Signature of a callback used by update_theme.
 

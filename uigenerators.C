@@ -48,30 +48,50 @@ const_uigenerators uigeneratorsBase::create(const xml::doc &parsed_xml,
 	return g;
 }
 
+const char * const rgb_color_names[]={"transparent",
+				      "black",
+				      "gray",
+				      "silver",
+				      "white",
+				      "maroon",
+				      "red",
+				      "olive",
+				      "yellow",
+				      "green",
+				      "lime",
+				      "teal",
+				      "aqua",
+				      "navy",
+				      "blue",
+				      "fuchsia",
+				      "purple"};
+
+//! HTML 3.2 rgb colors
+const rgb rgb_colors[]={transparent,
+			black,
+			gray,
+			silver,
+			white,
+			maroon,
+			red,
+			olive,
+			yellow,
+			green,
+			lime,
+			teal,
+			aqua,
+			navy,
+			blue,
+			fuchsia,
+			purple};
+
+const size_t n_rgb_colors=sizeof(rgb_colors)/sizeof(rgb_colors[0]);
+
 uigeneratorsObj::uigeneratorsObj()
-	: 	// Install default HTML 3.2 colors
-
-	colors{
-	       {"transparent", transparent},
-	       {"black", black},
-	       {"gray", gray},
-	       {"silver", silver},
-	       {"white", white},
-	       {"maroon", maroon},
-	       {"red", red},
-	       {"olive", olive},
-	       {"yellow", yellow},
-	       {"green", green},
-	       {"lime", lime},
-	       {"teal", teal},
-	       {"aqua", aqua},
-	       {"navy", navy},
-	       {"blue", blue},
-	       {"fuchsia", fuchsia},
-	       {"purple", purple}}
 {
+	for (size_t i=0; i<n_rgb_colors; ++i)
+		colors.emplace(rgb_color_names[i], rgb_colors[i]);
 }
-
 
 uigeneratorsObj::~uigeneratorsObj()=default;
 

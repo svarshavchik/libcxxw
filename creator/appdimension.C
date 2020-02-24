@@ -7,7 +7,6 @@
 #include "x/w/impl/uixmlparser.H"
 #include "messages.H"
 #include <x/messages.H>
-#include <x/xml/escape.H>
 #include <cmath>
 #include <set>
 
@@ -137,15 +136,6 @@ void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 	elements.dimension_delete_button=dimension_delete_button;
 }
 
-// Create an xpath for a particular dim.
-static auto get_xpath_for(const x::xml::doc::base::readlock &lock,
-			  const std::string &id)
-{
-	return lock->get_xpath("/theme/dim[@id='" +
-			       x::xml::escapestr(id, true) +
-			       "']");
-}
-
 void appObj::dimension_initialize()
 {
 	dimension_info_t::lock lock{dimension_info};
@@ -230,6 +220,7 @@ void appObj::dimension_selected(ONLY IN_THREAD,
 			current_value->get_root();
 
 			auto xpath=get_xpath_for(current_value,
+						 "dim",
 						 n < lock->ids.size()
 						 ? lock->ids[n]
 						 : "" /* Boom, on next line */);
@@ -557,25 +548,6 @@ bool appObj::dimension_update_save_params(ONLY IN_THREAD,
 	return true;
 }
 
-// Helper for creating a new <dim>
-//
-// If there are existing dims, create the new dim just before the first one.
-//
-// Otherwise create one as the first element, lock is positioned at /theme.
-
-static inline auto create_new_dim(const x::xml::doc::base::writelock &lock,
-				  const x::xml::doc::base::xpath &existing_dims,
-				  const std::string &name)
-{
-	if (existing_dims->count() > 0)
-	{
-		existing_dims->to_node(1);
-		return lock->create_previous_sibling();
-	}
-
-	return lock->create_child();
-}
-
 void appObj::dimension_update(const update_callback_t &callback)
 {
 	dimension_info_t::lock lock{dimension_info};
@@ -584,12 +556,6 @@ void appObj::dimension_update(const update_callback_t &callback)
 		return;
 
 	auto &save_params=*lock->save_params;
-
-	auto new_doc=theme.get()->readlock()->clone_document();
-
-	auto doc_lock=new_doc->writelock();
-
-	doc_lock->get_root();
 
 	std::string id=save_params.dimension_new_name;
 	bool is_new=true;
@@ -600,35 +566,12 @@ void appObj::dimension_update(const update_callback_t &callback)
 		is_new=false;
 	}
 
-	auto xpath=get_xpath_for(doc_lock, id);
+	auto created_update=create_update("dim", id, is_new);
 
-	// This one already exists?
+	if (!created_update)
+		return;
 
-	if (xpath->count() > 0)
-	{
-		if (is_new) // It shouldn't
-		{
-			std::string error=
-				x::gettextmsg(_("Dimension %1% "
-						"already exists"), id);
-			main_window->stop_message(error);
-
-			return;
-		}
-
-		xpath->to_node(1); // Remove existing dim
-		doc_lock->remove();
-	}
-
-	doc_lock->get_xpath("/theme")->to_node();
-	xpath=doc_lock->get_xpath("dim");
-
-	auto new_dim=create_new_dim(doc_lock,
-				    xpath,
-				    save_params.dimension_new_name);
-
-	new_dim=new_dim->element({"dim"})->create_child()
-		->attribute({"id", id});
+	auto &[doc_lock, new_dim]=*created_update;
 
 	if (save_params.value == "inf")
 		new_dim->text("inf");
@@ -649,32 +592,17 @@ void appObj::dimension_update(const update_callback_t &callback)
 
 	if (is_new)
 	{
-		// Move the focus here first.
-		dimension_name->request_focus();
-
-		auto insert_pos=std::lower_bound(lock->ids.begin(),
-						 lock->ids.end(),
-						 id);
-
-		x::w::standard_comboboxlayoutmanager name_lm=
-			dimension_name->get_layoutmanager(),
-			from_name_lm=dimension_from_name->get_layoutmanager();
-
-		size_t p=insert_pos-lock->ids.begin();
-
-		auto i=p+1;
-		// Pos 0 is new dimension
-
-		lock->ids.insert(insert_pos, id);
-		name_lm->insert_items(i, {id});
+		auto i=update_new_element(id, lock->ids,
+					  dimension_name);
 
 		// Insert the new value in the from scale combo-box too.
-		from_name_lm=dimension_from_name->get_layoutmanager();
+		x::w::standard_comboboxlayoutmanager
+			from_name_lm=dimension_from_name->get_layoutmanager();
+
 		from_name_lm->insert_items(i, {id});
 
-		if (lock->from_index && *lock->from_index >= p)
+		if (lock->from_index && *lock->from_index >= i-1)
 			++*lock->from_index;
-		name_lm->autoselect(i);
 		status->update(_("Created new dimension"));
 	}
 	else
@@ -707,7 +635,7 @@ void appObj::dimension_delete(const update_callback_t &callback)
 	{
 		doc_lock->get_root();
 
-		auto xpath=get_xpath_for(doc_lock, id);
+		auto xpath=get_xpath_for(doc_lock, "dim", id);
 
 		if (xpath->count() <= 0)
 			break;

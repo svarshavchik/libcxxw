@@ -10,6 +10,7 @@
 #include "x/w/file_dialog_config.H"
 #include "x/w/file_dialog.H"
 #include "x/w/label.H"
+#include "x/w/standard_comboboxlayoutmanager.H"
 #include "catch_exceptions.H"
 #include "messages.H"
 
@@ -18,6 +19,7 @@
 #include <x/locale.H>
 #include <x/to_string.H>
 #include <x/imbue.H>
+#include <x/xml/escape.H>
 #include <sstream>
 #include <cstdlib>
 #include <cmath>
@@ -877,4 +879,99 @@ void appObj::stoprunning()
 			  {
 				  a->running=false;
 			  });
+}
+
+x::xml::doc::base::xpath
+appObj::get_xpath_for(const x::xml::doc::base::readlock &lock,
+		      const char *type,
+		      const std::string &id)
+{
+	return lock->get_xpath("/theme/" + std::string{type} + "[@id='" +
+			       x::xml::escapestr(id, true) +
+			       "']");
+}
+
+// Helper for creating a new <element>
+//
+// If there are existing ones, create the new one just before the first one.
+//
+// Otherwise create one as the first element, lock is positioned at /theme.
+
+static inline auto new_element(const x::xml::doc::base::writelock &lock,
+			       const x::xml::doc::base::xpath &existing)
+{
+	if (existing->count() > 0)
+	{
+		existing->to_node(1);
+		return lock->create_previous_sibling();
+	}
+
+	return lock->create_child();
+}
+
+appObj::create_update_t appObj::create_update(const char *type,
+					      const std::string &id,
+					      bool is_new)
+{
+	auto new_doc=theme.get()->readlock()->clone_document();
+
+	auto doc_lock=new_doc->writelock();
+
+	doc_lock->get_root();
+
+	auto xpath=get_xpath_for(doc_lock, type, id);
+
+	// This one already exists?
+
+	if (xpath->count() > 0)
+	{
+		if (is_new) // It shouldn't
+		{
+			std::string error=
+				x::gettextmsg(_("%1% %2% "
+						"already exists"), type, id);
+			main_window->stop_message(error);
+
+			return std::nullopt;
+		}
+
+		xpath->to_node(1); // Remove existing dim
+		doc_lock->remove();
+	}
+
+	doc_lock->get_xpath("/theme")->to_node();
+	xpath=doc_lock->get_xpath(type);
+
+	auto new_dim=new_element(doc_lock, xpath);
+
+	return std::tuple{doc_lock,
+			new_dim->element({type})->create_child()
+			->attribute({"id", id})};
+}
+
+size_t
+appObj::update_new_element(const std::string &new_id,
+			   std::vector<std::string> &existing_ids,
+			   const x::w::focusable_container &id_combo)
+{
+	// Move the focus here first.
+	id_combo->request_focus();
+
+	auto insert_pos=std::lower_bound(existing_ids.begin(),
+					 existing_ids.end(),
+					 new_id);
+
+	x::w::standard_comboboxlayoutmanager id_lm=
+		id_combo->get_layoutmanager();
+
+	size_t p=insert_pos-existing_ids.begin();
+
+	auto i=p+1;
+	// Pos 0 is new dimension
+
+	existing_ids.insert(insert_pos, new_id);
+	id_lm->insert_items(i, {new_id});
+	id_lm->autoselect(i);
+
+	return i;
 }
