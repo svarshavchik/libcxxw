@@ -1161,7 +1161,7 @@ testfocusrestore_LDFLAGS=$(TESTLINKTYPE)
 
 testgrid_SOURCES=testgrid.C
 testgrid_LDADD=libcxxw.la
-testgrid_LDFLAGS=-static
+testgrid_LDFLAGS=-static $(STATICLINKFLAGS)
 
 $(call OPTIONS_GEN,testlabel.inc.H,testlabel.xml)
 testlabel_SOURCES=testlabel.C

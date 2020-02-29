@@ -620,7 +620,8 @@ private:
 
 	//! A new color was selected from the color name combo-box.
 
-	//! Or the Reset button was pressed.
+	//! Or the Reset button was pressed. Always invokes color_reset_values
+	//! when done.
 	void color_selected_locked(ONLY IN_THREAD,
 				   colors_info_t::lock &);
 public:
