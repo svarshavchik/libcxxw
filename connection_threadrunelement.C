@@ -483,21 +483,28 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 
 	for (auto &bucket:window_buckets)
 	{
-		to_flush.emplace
-			(bucket.first,
-			 move_updated_position_widgets(IN_THREAD,
-						       info,
-						       bucket.first,
-						       bucket.second.widgets,
-						       moved,
-						       to_redraw,
-						       to_redraw_recursively));
+		if (bucket.second.resize_pending_flag)
+			continue;
+
+		auto r=move_updated_position_widgets(IN_THREAD,
+						     info,
+						     bucket.first,
+						     bucket.second.widgets,
+						     moved,
+						     to_redraw,
+						     to_redraw_recursively);
+
+		if (!r.empty())
+			to_flush.emplace(bucket.first, std::move(r));
 	}
 
 	// For all remaining widgets, we will redraw them.
 	info.moved_how=info.moved_without_contents;
 
 	for (auto &bucket:window_buckets)
+	{
+		if (bucket.second.resize_pending_flag)
+			continue;
 		for (auto &level:bucket.second.widgets)
 			for (auto &widget:level.second)
 			{
@@ -531,7 +538,7 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 
 				data.previous_position=new_position;
 			}
-
+	}
 	// Immediately flush the areas that were moved.
 	// This gives better results when a window gets resized because
 	// widgets were inserted in the middle, somewhere. The moved areas
@@ -611,8 +618,20 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 		if (std::get<redraw_priority_t>(*cur_priority) !=
 		    std::get<redraw_priority_t>(*b))
 		{
+#if 0
+			// This is disabled. If flushing occurs at priority
+			// order, flush_redrawn_areas will have fewer
+			// opportunities to coalesce adjacent rectangles into
+			// a single flush operation.
+			//
+			// This can be determined by looking at how many
+			// get copied by flush_redrawn_areas when using
+			// a creator to look at a color gradient and adding
+			// a row.
+
 			for (const auto &wh:*window_handlers(IN_THREAD))
 				wh.second->flush_redrawn_areas(IN_THREAD);
+#endif
 
 			cur_priority=b;
 		}
