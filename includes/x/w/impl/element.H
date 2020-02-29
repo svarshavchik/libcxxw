@@ -893,11 +893,20 @@ class elementObj::implObj : public element_drawObj,
 
 	bool full_redraw_scheduled(ONLY IN_THREAD);
 
+	//! Forcibly redraw everything in this widget
+
+	//! Not only areas_to_redraw, but everything, including child widges.
+
+	void explicit_redraw_recursively(ONLY IN_THREAD);
+
 	//! Forcibly redraw this widget
 
 	//! If this widget is not visible, calls clear_to_color().
 	//! Otherwise calls draw() (which then has to call do_draw(), because
 	//! the widget is visible).
+	//!
+	//! explicit_redraw() only redraws the areas_to_redraw which were
+	//! requested to be redrawn.
 
 	void explicit_redraw(ONLY IN_THREAD);
 

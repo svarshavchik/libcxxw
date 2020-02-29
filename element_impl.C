@@ -513,6 +513,19 @@ bool elementObj::implObj::full_redraw_scheduled(ONLY IN_THREAD)
 	return elements_to_redraw->find(ref{this}) != elements_to_redraw->end();
 }
 
+void elementObj::implObj::explicit_redraw_recursively(ONLY IN_THREAD)
+{
+	schedule_full_redraw(IN_THREAD);
+	explicit_redraw(IN_THREAD);
+
+	for_each_child(IN_THREAD,
+		       [&]
+		       (const element &e)
+		       {
+			       e->impl->explicit_redraw_recursively(IN_THREAD);
+		       });
+}
+
 void elementObj::implObj::explicit_redraw(ONLY IN_THREAD)
 {
 	// Remove myself from the connection thread's list.
@@ -835,6 +848,7 @@ void elementObj::implObj::current_position_updated(ONLY IN_THREAD)
 		       (const element &e)
 		       {
 			       e->impl->current_position_updated(IN_THREAD);
+
 		       });
 }
 

@@ -181,6 +181,9 @@ class generic_windowObj::handlerObj
 
 	pixmap window_pixmap_thread_only;
 
+	//! window_pixmap's picture
+	picture window_picture_thread_only;
+
 	//! Which parts of the window_pixmap are dirty.
 
 	rectarea window_drawnarea_thread_only;
@@ -203,6 +206,7 @@ class generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(stabilized_callbacks);
 
 	THREAD_DATA_ONLY(window_pixmap);
+	THREAD_DATA_ONLY(window_picture);
 	THREAD_DATA_ONLY(window_drawnarea);
 
 	//! Make sure that the window_pixmap has been resized.
@@ -701,24 +705,43 @@ public:
 	void button_release_event(ONLY IN_THREAD,
 				  const xcb_button_release_event_t *event) override;
 
-	class busy_shadeObj;
-	class busy_waitObj;
-
+	//! Shade and busy mcguffin objects
 	struct busy_mcguffins_s {
 
-		weakptr<ptr<busy_shadeObj>> shade;
-		weakptr<ptr<busy_waitObj>> wait_cursor;
+		//! The currently-advertised shade mcguffins
+		weakptr<ptr<obj>> shade;
+
+		//! All shade mcguffin(s) in existence.
+
+		//! A race condition can destroy and create a new shade
+		//! mcguffin before we had the chance to remove the actual
+		//! shade from the window.
+		//!
+		//! Keep track of all shade mcguffins here, to correctly
+		//! sequence shading and unshading of the window.
+		std::list<ref<obj>> all_shade_mcguffins;
+
+		//! The currently-advertised wait cursor mcguffin.
+		weakptr<ptr<obj>> wait_cursor;
 	};
 
 	typedef mpobj<busy_mcguffins_s> busy_mcguffins_t;
 
-	//! Busy mcguffin.
+	//! The busy mcguffins.
 
 	busy_mcguffins_t busy_mcguffins;
 
 	//! Construct a busy mcguffin that shades this window.
 
 	ref<obj> get_shade_busy_mcguffin();
+
+	//! Shade mcguffin has been destroyed
+
+	//! Invoked from the shade mcguffin's destructor. If another
+	//! shade mcguffin has not been created yet.
+
+	void shade_mcguffin_destroyed(ONLY IN_THREAD,
+				      std::list<ref<obj>>::iterator iterator);
 
 	//! Construct a busy mcguffin that puts up a "wait" cursor.
 

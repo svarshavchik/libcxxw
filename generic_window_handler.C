@@ -243,6 +243,8 @@ generic_windowObj::handlerObj
 	  window_pixmap_thread_only
 	{params.window_handler_params.screenref
 	 ->create_pixmap(params.drawable_pictformat, 0, 0)},
+	  window_picture_thread_only{window_pixmap_thread_only
+				     ->create_picture()},
 	  handler_data{handler_data},
 	  my_popups{my_popups_t::create()},
 	  original_background_color{params.background_color_arg},
@@ -738,24 +740,49 @@ void generic_windowObj::handlerObj::theme_updated(ONLY IN_THREAD,
 // The destructor schedules a redraw of the entire window, when the
 // shade mcguffin gets destroyed.
 
-class LIBCXX_HIDDEN generic_windowObj::handlerObj::busy_shadeObj
-	: virtual public obj {
+namespace {
+#if 0
+}
+#endif
+
+class busy_shadeObj : virtual public obj {
 
  public:
+	//! My window
 	const weakptr<ptr<generic_windowObj::handlerObj>> handler;
 
+	//! The mcguffin that gets inserted into all_shade_mcguffins
+	const ref<obj> mcguffin;
+
+	//! The mcguffin's iterator in the handler's all_shade_mcguffins.
+
+	//! This iterator is initialized while holding a lock on the
+	//! busy_mcguffins, and gets sequenced accordingly.
+
+	std::list<ref<obj>>::iterator iterator;
+
+	//! Constructor
 	busy_shadeObj(const ref<generic_windowObj::handlerObj> &handler)
-		: handler(handler)
+		: handler{handler}, mcguffin{ref<obj>::create()}
 	{
 	}
 
+	//! Destructor
 	~busy_shadeObj()
 	{
 		auto p=handler.getptr();
 
 		if (!p)
 			return;
-		p->schedule_redraw_recursively();
+
+		// Remove the shade in the connection thread.
+		p->thread()->run_as
+			([me=ref{&*p}, iterator=this->iterator]
+			 (ONLY IN_THREAD)
+			 {
+				 me->shade_mcguffin_destroyed(IN_THREAD,
+							      iterator);
+			 });
 	}
 };
 
@@ -763,14 +790,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj::busy_shadeObj
 
 // The destructor calls update_displayed_cursor_pointer.
 
-class LIBCXX_HIDDEN generic_windowObj::handlerObj::busy_waitObj
-	: virtual public obj {
+class busy_waitObj : virtual public obj {
 
  public:
 	const weakptr<ptr<generic_windowObj::handlerObj>> handler;
 
 	busy_waitObj(const ref<generic_windowObj::handlerObj> &handler)
-		: handler(handler)
+		: handler{handler}
 	{
 	}
 
@@ -786,7 +812,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj::busy_waitObj
 		if (!p)
 			return;
 
-		auto h=ref(&*p);
+		auto h=ref{&*p};
 
 		h->thread()->run_as
 			([h]
@@ -797,6 +823,11 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj::busy_waitObj
 	}
 };
 
+#if 0
+{
+#endif
+}
+
 ref<obj> generic_windowObj::handlerObj::get_shade_busy_mcguffin()
 {
 	if (drawable_pictformat->alpha_depth == 0)
@@ -804,16 +835,87 @@ ref<obj> generic_windowObj::handlerObj::get_shade_busy_mcguffin()
 
 	busy_mcguffins_t::lock lock{busy_mcguffins};
 
+	// If there's a main mcguffin object, return it.
 	auto p=lock->shade.getptr();
 
 	if (p) return p;
 
-	auto n=ref<busy_shadeObj>::create(ref(this));
+	auto n=ref<busy_shadeObj>::create(ref{this});
 
 	lock->shade=n;
 
-	schedule_redraw_recursively();
+	// Do the rest of the work in the connection thread
+	//
+	// The lambda captures n, so the new shade mcguffin is guaranteed
+	// to remain in scope until the lambda gets executed.
+	thread()->run_as
+		([n, me=ref{this}]
+		 (ONLY IN_THREAD)
+		 {
+			 busy_mcguffins_t::lock lock{me->busy_mcguffins};
+
+			 // Is this the first shade mcguffin?
+
+			 bool was_empty=lock->all_shade_mcguffins.empty();
+
+			 lock->all_shade_mcguffins.push_front(n->mcguffin);
+
+			 n->iterator=lock->all_shade_mcguffins.begin();
+
+			 if (!was_empty)
+				 return;
+
+			 // Instead of redrawing each element, we'll just
+			 // compose the shade directly into the window_pixmap,
+			 // then flush_redrawn_areas.
+
+			 rectangle r{
+				     0, 0,
+				     me->window_pixmap(IN_THREAD)->get_width(),
+				     me->window_pixmap(IN_THREAD)->get_height()
+			 };
+
+			 me->window_picture(IN_THREAD)->composite
+				 (me->shaded_color(IN_THREAD)
+				  ->get_current_color(IN_THREAD),
+				  0, 0, r,
+				  render_pict_op::op_atop);
+
+			 rectarea rr{r};
+
+			 me->flush_redrawn_areas(IN_THREAD, rr);
+		 });
+
 	return n;
+}
+
+void generic_windowObj::handlerObj
+::shade_mcguffin_destroyed(ONLY IN_THREAD,
+			   std::list<ref<obj>>::iterator iterator)
+{
+	// The shade mcguffin has been destroyed. It is possible for race
+	// conditions to cause more than one shade mcguffin to exist at the
+	// same time.
+	//
+	// This is why shade mcguffins' construction inserts each new shade
+	// mcguffin's into all_shade_mcguffins. Here, one shade mcguffin
+	// has been destroyed. If the list of all_shade_mcguffins is now
+	// empty, this must be the last one of them.
+	//
+	// get_shade_busy_mcguffin() composes the shade into the window
+	// when the first shade mcguffin is created, and now we will
+	// unshade by redrawing everything.
+
+	{
+		busy_mcguffins_t::lock lock{busy_mcguffins};
+
+		lock->all_shade_mcguffins.erase(iterator);
+
+		if (!lock->all_shade_mcguffins.empty())
+			return;
+	}
+
+	explicit_redraw_recursively(IN_THREAD);
 }
 
 ref<obj> generic_windowObj::handlerObj::get_wait_busy_mcguffin()
@@ -834,14 +936,32 @@ ref<obj> generic_windowObj::handlerObj::get_wait_busy_mcguffin()
 
 bool generic_windowObj::handlerObj::is_input_busy()
 {
+	// We consider input to be blocked if either the wait cursor
+	// or the wait_cursor exists, or if all_shade_mcguffins exist.
+	//
+	// We want input blocked as soon as someone creates a shade
+	// mcguffin, except that all_shade_mcguffins doesn't get a new
+	// mcguffin until that process concludes in the connection thread.
+	//
+	// So we check both: shade_mcguffin and all_shade_mcguffins.
+
 	busy_mcguffins_t::lock lock{busy_mcguffins};
 
-	return !!lock->shade.getptr() || !!lock->wait_cursor.getptr();
+	return !!lock->shade.getptr()
+		|| !lock->all_shade_mcguffins.empty()
+		|| !!lock->wait_cursor.getptr();
 }
 
 bool generic_windowObj::handlerObj::is_shade_busy()
 {
-	return !!busy_mcguffins_t::lock{busy_mcguffins}->shade.getptr();
+	// This is called from drawn_to_window_picture() to determine whether
+	// a shade needs to be composed on top of the drawn content. Whether
+	// a shade is drawn is controlled by non-empty all_shade_mcguffins
+	// list, so this is what we check here.
+
+	busy_mcguffins_t::lock lock{busy_mcguffins};
+
+	return !lock->all_shade_mcguffins.empty();
 }
 
 bool generic_windowObj::handlerObj::is_wait_busy()
@@ -1572,6 +1692,7 @@ void generic_windowObj::handlerObj
 				new_pixmap->impl);
 	}
 
+	window_picture(IN_THREAD)=new_pixmap->create_picture();
 	window_pixmap(IN_THREAD)=new_pixmap;
 }
 
