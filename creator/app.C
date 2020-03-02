@@ -933,8 +933,8 @@ void appObj::stoprunning()
 			  });
 }
 
-x::xml::doc::base::xpath
-appObj::get_xpath_for(const x::xml::doc::base::readlock &lock,
+x::xml::xpath
+appObj::get_xpath_for(const x::xml::readlock &lock,
 		      const char *type,
 		      const std::string &id)
 {
@@ -949,8 +949,8 @@ appObj::get_xpath_for(const x::xml::doc::base::readlock &lock,
 //
 // Otherwise create one as the first element, lock is positioned at /theme.
 
-static inline auto new_element(const x::xml::doc::base::writelock &lock,
-			       const x::xml::doc::base::xpath &existing)
+static inline auto new_element(const x::xml::writelock &lock,
+			       const x::xml::xpath &existing)
 {
 	if (existing->count() > 0)
 	{

@@ -1,5 +1,5 @@
 /*
-** Copyright 2018-2019 Double Precision, Inc.
+** Copyright 2018-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -41,6 +41,7 @@
 #include "gridlayoutmanager.H"
 #include <fontconfig/fontconfig.h>
 #include <x/weakptr.H>
+#include <x/xml/xpath.H>
 #include <charconv>
 LIBCXXW_NAMESPACE_START
 

@@ -1,5 +1,5 @@
 /*
-** Copyright 2018-2019 Double Precision, Inc.
+** Copyright 2018-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -9,6 +9,7 @@
 #include "screen_positions_impl.H"
 #include "catch_exceptions.H"
 #include <x/exception.H>
+#include <x/xml/xpath.H>
 #include <algorithm>
 
 LIBCXXW_NAMESPACE_START

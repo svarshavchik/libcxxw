@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2019 Double Precision, Inc.
+** Copyright 2017-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -14,6 +14,8 @@
 #include "x/w/impl/themedim_axis_element.H"
 #include "defaulttheme.H"
 #include "screen.H"
+
+#include <x/xml/xpath.H>
 
 LIBCXXW_NAMESPACE_START
 

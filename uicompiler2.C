@@ -1,5 +1,5 @@
 /*
-** Copyright 2019 Double Precision, Inc.
+** Copyright 2019-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -7,6 +7,7 @@
 #include "x/w/uigenerators.H"
 #include "x/w/all_appearances.H"
 #include "messages.H"
+#include <x/xml/xpath.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -39,7 +40,7 @@ appearance_type uicompiler::get_compiled_appearance(const std::string &name)
 struct uicompiler::generate_info {
 	const ui::parser_lock &parent;
 	const ui::parser_lock &lock;
-	xml::doc::base::xpath &xpath;
+	xml::xpath &xpath;
 };
 
 template<typename T> appearance_wrapper<T>::~appearance_wrapper()=default;

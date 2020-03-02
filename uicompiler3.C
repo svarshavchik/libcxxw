@@ -1,5 +1,5 @@
 /*
-** Copyright 2019 Double Precision, Inc.
+** Copyright 2019-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -27,6 +27,7 @@
 #include "x/w/impl/uixmlparser.H"
 #include <x/functional.H>
 #include <x/visitor.H>
+#include <x/xml/xpath.H>
 #include "picture.H"
 #include "messages.H"
 #include "defaulttheme.H"
@@ -121,7 +122,7 @@ struct parsed_dim {
 	std::string value;
 };
 
-ui::parsed_dim ui::parse_dim(const xml::doc::base::readlock &lock)
+ui::parsed_dim ui::parse_dim(const xml::readlock &lock)
 {
 	parsed_dim v{lock->get_any_attribute("scale"),
 		     lock->get_text()};

@@ -1,5 +1,5 @@
 /*
-** Copyright 2019 Double Precision, Inc.
+** Copyright 2019-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -8,6 +8,7 @@
 #include "messages.H"
 #include "defaulttheme.H"
 #include <x/imbue.H>
+#include <x/xml/xpath.H>
 #include <sstream>
 
 LIBCXXW_NAMESPACE_START

@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2019 Double Precision, Inc.
+** Copyright 2017-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -23,6 +23,7 @@
 #include "x/w/impl/background_color.H"
 #include <x/locale.H>
 #include <x/imbue.H>
+#include <x/xml/xpath.H>
 #include <courier-unicode.h>
 #include <sstream>
 #include <cmath>

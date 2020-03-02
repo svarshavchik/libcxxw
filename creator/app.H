@@ -11,6 +11,9 @@
 #include <x/mpobj.H>
 #include <x/functional.H>
 #include <x/xml/doc.H>
+#include <x/xml/readlock.H>
+#include <x/xml/writelock.H>
+#include <x/xml/xpath.H>
 #include "x/w/main_window.H"
 #include "x/w/uigenerators.H"
 #include "x/w/file_dialogfwd.H"
@@ -91,8 +94,8 @@ public:
 
 	//! They all follow the "/theme/{type}[@id="{name}"]" pattern.
 
-	static x::xml::doc::base::xpath
-	get_xpath_for(const x::xml::doc::base::readlock &lock,
+	static x::xml::xpath
+	get_xpath_for(const x::xml::readlock &lock,
 		      const char *type,
 		      const std::string &id);
 private:
@@ -126,8 +129,8 @@ public:
 	//!
 	//! Nothing gets returned for an error.
 
-	typedef std::optional<std::tuple<x::xml::doc::base::writelock,
-					 x::xml::doc::base::createnode>
+	typedef std::optional<std::tuple<x::xml::writelock,
+					 x::xml::createnode>
 			      > create_update_t;
 
 	//! Add or update a theme element.

@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2019 Double Precision, Inc.
+** Copyright 2017-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef x_w_uixmlparser_h
@@ -8,6 +8,7 @@
 #include <x/w/namespace.H>
 #include <x/w/rgb.H>
 #include <x/xml/doc.H>
+#include <x/xml/readlock.H>
 #include <x/locale.H>
 #include <x/functional.H>
 #include <string>
@@ -28,17 +29,17 @@ namespace ui {
 //! numerical values in the XML file. It's convenient to swallow
 //! the XML document's read lock, and attach a locale object, in this manner.
 
-class parser_lock : public xml::doc::base::readlock {
+class parser_lock : public xml::readlock {
 
 public:
 
 	const_locale c_locale;
 
 	//! Constructor
-	parser_lock(const xml::doc::base::readlock &l);
+	parser_lock(const xml::readlock &l);
 
 	//! Constructor
-	parser_lock(const xml::doc::base::readlock &l,
+	parser_lock(const xml::readlock &l,
 		    const const_locale &c_locale);
 	//! Destructor
 	~parser_lock();
@@ -58,7 +59,7 @@ struct parsed_dim {
 };
 
 //! Load the values from a \<dim>
-parsed_dim parse_dim(const xml::doc::base::readlock &lock);
+parsed_dim parse_dim(const xml::readlock &lock);
 
 //! A \<color> with a "scale" attribute
 

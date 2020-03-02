@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2019 Double Precision, Inc.
+** Copyright 2017-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef x_w_focusable_containerfwd_h
@@ -42,7 +42,7 @@ class LIBCXX_PUBLIC focusable_containerObj;
 //! \endcode
 //!
 //! This is equivalent to using get_layoutmanager() to obtain the
-//! \ref editable_combobox_layoutmanager "editable combo-box layout manager"
+//! \ref editable_comboboxlayoutmanager "editable combo-box layout manager"
 //! and then using it to retrieve the \ref input_field "text input field",
 //! or its contents.
 

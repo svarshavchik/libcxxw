@@ -1,5 +1,5 @@
 /*
-** Copyright 2018-2019 Double Precision, Inc.
+** Copyright 2018-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -10,6 +10,7 @@
 #include "messages.H"
 #include "x/w/dialog.H"
 #include <x/xml/doc.H>
+#include <x/xml/xpath.H>
 #include <x/exception.H>
 #include <x/logger.H>
 #include <x/property_value.H>
@@ -82,7 +83,7 @@ std::string saved_element_to_xpath(const std::string_view &type,
 	return s;
 }
 
-xml::doc::base::writelock
+xml::writelock
 screen_positionsObj::implObj
 ::create_writelock_for_saving(const std::string_view &type,
 			      const std::string_view &name_s)

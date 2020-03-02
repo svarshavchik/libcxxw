@@ -1,5 +1,5 @@
 /*
-** Copyright 2018-2019 Double Precision, Inc.
+** Copyright 2018-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -38,6 +38,8 @@
 #include <x/chrcasecmp.H>
 #include <x/weakcapture.H>
 #include <x/weakptr.H>
+#include <x/xml/readlock.H>
+#include <x/xml/xpath.H>
 #include <cmath>
 #include <limits>
 #include <sstream>

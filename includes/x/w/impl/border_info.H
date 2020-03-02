@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2019 Double Precision, Inc.
+** Copyright 2017-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef x_w_impl_border_info_h

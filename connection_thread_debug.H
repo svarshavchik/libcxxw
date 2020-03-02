@@ -1,5 +1,5 @@
 /*
-** Copyright 2019 Double Precision, Inc.
+** Copyright 2019-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef connection_thread_debug_h

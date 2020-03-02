@@ -1,5 +1,5 @@
 /*
-** Copyright 2019 Double Precision, Inc.
+** Copyright 2019-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef screen_positions_impl_h
@@ -9,6 +9,7 @@
 #include "x/w/main_window.H"
 
 #include <x/xml/doc.H>
+#include <x/xml/writelock.H>
 #include <x/sharedlock.H>
 
 #include <optional>
@@ -54,7 +55,7 @@ class screen_positionsObj::implObj : public sharedlockObj {
 
 	//! Create a new node when saving something.
 
-	xml::doc::base::writelock
+	xml::writelock
 	create_writelock_for_saving(const std::string_view &type,
 				    const std::string_view &name);
 

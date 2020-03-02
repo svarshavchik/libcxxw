@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2019 Double Precision, Inc.
+** Copyright 2017-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -30,6 +30,7 @@
 #include <x/singleton.H>
 #include <x/messages.H>
 #include <x/functionalrefptr.H>
+#include <x/xml/xpath.H>
 #include <sstream>
 #include <cmath>
 #include <algorithm>

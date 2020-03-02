@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <x/pwd.H>
+#include <x/xml/writelock.H>
+#include <x/xml/xpath.H>
 
 namespace LIBCXX_NAMESPACE {
 	namespace w {
@@ -55,7 +57,7 @@ xml::doc read_config()
 
 	if (!lock->get_root())
 		lock->create_child()
-			->element(xml::doc::base::newelement("cxxw"));
+			->element(xml::new_element("cxxw"));
 
 	return doc;
 }

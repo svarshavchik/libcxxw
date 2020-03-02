@@ -1,5 +1,5 @@
 /*
-** Copyright 2019 Double Precision, Inc.
+** Copyright 2019-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -50,6 +50,7 @@
 #include "messages.H"
 #include <x/functionalrefptr.H>
 #include <x/visitor.H>
+#include <x/xml/xpath.H>
 #include <algorithm>
 #include <functional>
 #include <type_traits>

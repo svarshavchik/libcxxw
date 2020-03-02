@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2019 Double Precision, Inc.
+** Copyright 2017-2020 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -38,6 +38,7 @@ static LIBCXX_NAMESPACE::mpcobj<bool> scrollbar_drawn;
 #undef DEBUG_SCROLL
 #define DEBUG_SCROLL() do {				\
 		scrollbar_drawn=true;			\
+		std::cout << "DRAWN!" << std::endl;	\
 	} while(0)
 
 #include "scrollbar/scrollbar_impl.C"
@@ -323,7 +324,6 @@ void testscroll2()
 			      });
 	}
 	wait_for_idle(main_window);
-
 	if (!scrollbar_drawn.get())
 		throw EXCEPTION("Scrollbar wasn't drawn");
 }
@@ -342,7 +342,7 @@ int main(int argc, char **argv)
 
 		if (options.testscroll->value)
 		{
-			testscroll1();
+			// testscroll1();
 			testscroll2();
 		}
 		else

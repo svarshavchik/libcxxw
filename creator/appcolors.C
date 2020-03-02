@@ -1794,7 +1794,7 @@ namespace {
 
 struct color_update_impl {
 
-	x::xml::doc::base::writelock &doc_lock;
+	x::xml::writelock &doc_lock;
 
 	void operator()(const x::w::rgb &c) const;
 	void operator()(const x::w::ui::parsed_scaled_color &c) const;
