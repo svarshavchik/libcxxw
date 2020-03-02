@@ -295,6 +295,13 @@ void elementObj::implObj
 	data(IN_THREAD).logical_inherited_visibility=logical_flag;
 	data(IN_THREAD).reported_inherited_visibility=reported_flag;
 
+	// background_color in get_draw_info_from-scratch() has a dependency
+	// on logical_inherited_visibility, which is changed here.
+
+	invalidate_cached_draw_info
+		(IN_THREAD,
+		 draw_info_invalidation_reason::something_changed);
+
 	if (!reported_flag)
 	{
 		unschedule_hover_action(IN_THREAD);
