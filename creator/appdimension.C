@@ -183,7 +183,7 @@ void appObj::dimension_initialize()
 		dimension_from_name->get_layoutmanager();
 	from_lm->replace_all_items(combobox_items);
 
-	// Can only do this after both combo-boxes are initializes, due
+	// Can only do this after both combo-boxes are initialized, due
 	// to the selection callback that expects everything to be there.
 	lm->autoselect(0);
 }

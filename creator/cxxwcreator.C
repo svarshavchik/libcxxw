@@ -13,16 +13,18 @@ void cxxwcreator(int argc, char **argv)
 
 	appsingleton me_singleton{me};
 
+	std::string initial_file;
+
 	if (argc > 1)
-	{
-		me->main_window->in_thread_idle
-			([name=argv[1]]
-			 (ONLY IN_THREAD)
-			 {
-				 appinvoke(&appObj::open_initial_file,
-					   IN_THREAD, name);
-			 });
-	}
+		initial_file=argv[1];
+
+	me->main_window->in_thread
+		([name=initial_file]
+		 (ONLY IN_THREAD)
+		 {
+			 appinvoke(&appObj::open_initial_file,
+				   IN_THREAD, name);
+		 });
 
 	me->mainloop();
 }

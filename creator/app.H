@@ -22,6 +22,7 @@
 #include "x/w/image_button.H"
 #include "x/w/button.H"
 #include "x/w/label.H"
+#include "x/w/canvas.H"
 #include "x/w/standard_comboboxlayoutmanagerfwd.H"
 #include "x/w/listitemhandle.H"
 #include "x/w/color_picker.H"
@@ -303,6 +304,7 @@ public:
 
 	//! Load the initial file, that was passed in as a parameter.
 
+	//! An empty string indicates no file was passed in.
 	void open_initial_file(ONLY IN_THREAD,
 			       const std::string &filename);
 
@@ -561,7 +563,7 @@ public:
 
 	struct colors_orig_params {
 		size_t index; //!< Which original dimension
-		loaded_color_t loaded_color;
+		loaded_color_t loaded_color; //!< The original color
 	};
 
 	//! Validated and saved parameters.

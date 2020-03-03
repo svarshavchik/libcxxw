@@ -12,8 +12,9 @@
 #include "x/w/focusable_container.H"
 #include "x/w/label.H"
 #include "x/w/button.H"
-#include "x/w/uigeneratorsfwd.H"
+#include "x/w/uigenerators.H"
 #include "messages.H"
+#include "catch_exceptions.H"
 #include <x/messages.H>
 #include <x/visitor.H>
 #include <x/xml/escape.H>
@@ -243,6 +244,14 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 
 					    return true;
 				    });
+
+	// Preview canvas.
+
+	elements.color_preview_cell_border_container=
+		ui.get_element("color-preview-cell-border-container");
+
+	elements.color_preview_cell_canvas=
+		ui.get_element("color-preview-cell-canvas");
 
 	// Callbacks on various combo-boxes
 
@@ -821,6 +830,7 @@ void appObj::color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock)
 	auto selected_option=color_basic_option_radio;
 
 	if (lock->current_selection)
+	{
 		std::visit
 			(x::visitor
 			 {[&, this](const x::w::rgb &c)
@@ -845,6 +855,7 @@ void appObj::color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock)
 					  color_radial_gradient_option_radio;
 			  }},
 			 lock->current_selection->loaded_color);
+	}
 
 	// We can now use the defaults to populate each color type's page.
 	//
@@ -1401,6 +1412,24 @@ void appObj::color_updated_locked(ONLY IN_THREAD,
 	if (!color_updated_locked(IN_THREAD, lock, *lock->save_params))
 		lock->save_params.reset();
 
+	if (lock->current_selection)
+	{
+		using x::exception;
+
+		try {
+			auto generator=
+				x::w::uigenerators::create(theme.get());
+
+			auto preview_color=
+				generator->lookup_color
+				(lock->ids.at(lock->current_selection->index),
+				 false, "current_color");
+			color_preview_cell_canvas
+				->set_background_color(IN_THREAD,
+						       preview_color);
+		} REPORT_EXCEPTIONS(main_window);
+	}
+
 	color_enable_disable_buttons(IN_THREAD, lock);
 }
 
@@ -1414,6 +1443,7 @@ void appObj::color_enable_disable_buttons(ONLY IN_THREAD,
 		color_delete_button->set_enabled(IN_THREAD, false);
 		color_update_button->set_enabled(IN_THREAD, false);
 		color_reset_button->set_enabled(IN_THREAD, true);
+		color_preview_cell_border_container->hide(IN_THREAD);
 		return;
 	}
 
@@ -1431,12 +1461,15 @@ void appObj::color_enable_disable_buttons(ONLY IN_THREAD,
 
 		color_update_button->set_enabled(IN_THREAD, false);
 		color_reset_button->set_enabled(IN_THREAD, false);
+		color_preview_cell_border_container->show(IN_THREAD);
+
 		return;
 	}
 
 	// Color is changed, can update or reset.
 	color_update_button->set_enabled(IN_THREAD, true);
 	color_reset_button->set_enabled(IN_THREAD, true);
+	color_preview_cell_border_container->hide(IN_THREAD);
 }
 
 namespace {
@@ -1972,11 +2005,13 @@ void appObj::color_update(ONLY IN_THREAD,
 	if (!callback(doc_lock->clone_document()))
 		return;
 
-	// Update accepted.
-
 	if (is_new)
 	{
 		update_new_element(id, lock->ids, color_name);
+	}
+	else
+	{
+		color_selected_locked(IN_THREAD, lock);
 	}
 }
 

@@ -118,6 +118,16 @@ object and placed into discrete variables.
     <name>color_radial_gradient_option_radio</name>
   </ref>
 
+  <ref>
+    <type>x::w::container</type>
+    <name>color_preview_cell_border_container</name>
+  </ref>
+
+  <ref>
+    <type>x::w::canvas</type>
+    <name>color_preview_cell_canvas</name>
+  </ref>
+
   <!-- Basic color -->
 
   <ref>

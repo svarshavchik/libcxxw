@@ -20,6 +20,7 @@
 #include <x/to_string.H>
 #include <x/imbue.H>
 #include <x/xml/escape.H>
+#include <x/sentry.H>
 #include <sstream>
 #include <cstdlib>
 #include <cmath>
@@ -585,9 +586,6 @@ appObj::appObj(init_args &&args)
 					       radial_gradient_values::
 					       fixed_height))
 {
-	loaded_file();
-	main_window->get_menubar()->show();
-	main_window->show_all();
 }
 
 void appObj::loaded_file()
@@ -831,7 +829,25 @@ void appObj::open_initial_file(ONLY IN_THREAD,
 	using x::exception;
 
 	try {
-		open_dialog_closed(IN_THREAD, filename);
+		// Show the main window after the initial file is opened.
+		//
+		// Make sure that this happens
+		// even when an exception gets thrown, but if all goes well
+		// do it after the loaded file is fully grokked, so use a
+		// sentry object.
+
+		auto sentry=x::make_sentry
+			([&]
+			 {
+				 main_window->get_menubar()->show(IN_THREAD);
+				 main_window->show_all(IN_THREAD);
+			 });
+
+		sentry.guard();
+		if (filename.empty())
+			loaded_file();
+		else
+			open_dialog_closed(IN_THREAD, filename);
 	} REPORT_EXCEPTIONS(main_window);
 }
 

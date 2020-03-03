@@ -415,6 +415,34 @@
   <dim id="color-type-padding">10</dim>
 
   <layout type="grid" id="color-left-side">
+
+    <!-- The left side has radio buttons and the color preview below it -->
+
+    <append_row>
+      <name>color-left-side-radio-buttons-grid</name>
+    </append_row>
+
+    <append_row>
+      <name>color-left-side-preview-cell</name>
+    </append_row>
+  </layout>
+
+  <!-- Radio button grid on the left side -->
+
+  <factory type="grid" id="color-left-side-radio-buttons-grid">
+    <padding>
+      <side>all</side>
+      <padding>none</padding>
+    </padding>
+    <halign>center</halign>
+    <container>
+      <type>grid</type>
+      <name>color-left-side-radio-buttons</name>
+    </container>
+  </factory>
+
+  <!-- Vertical list of radio buttons -->
+  <layout type="grid" id="color-left-side-radio-buttons">
     <append_row>
       <name>color-basic-option-row</name>
     </append_row>
@@ -478,6 +506,44 @@
       <group>color-type-group</group>
     </element>
   </factory>
+
+  <dim id="color-preview-cell-canvas-width">20</dim>
+  <dim id="color-preview-cell-canvas-height">20</dim>
+
+  <factory type="grid" id="color-left-side-preview-cell">
+    <padding>
+      <side>left</side>
+      <padding>none</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>none</padding>
+    </padding>
+    <padding>
+      <side>top</side>
+      <padding>color-type-padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>none</padding>
+    </padding>
+    <halign>center</halign>
+    <container>
+      <name>color-preview-cell-border-container</name>
+      <type>border</type>
+
+      <contents>
+	<element id="color-preview-cell-canvas">
+	  <canvas>
+	    <width>color-preview-cell-canvas-width</width>
+	    <height>color-preview-cell-canvas-height</height>
+	  </canvas>
+	</element>
+      </contents>
+    </container>
+  </factory>
+
+  <layout type="border" id="color-preview-cell-border-container" />
 
   <layout type="page" id="color-right-side-page">
     <append>
