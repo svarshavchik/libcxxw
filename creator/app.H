@@ -102,7 +102,7 @@ public:
 private:
 
 	//! Update everything, after a new file is loaded or created.
-	void loaded_file();
+	void loaded_file(ONLY IN_THREAD);
 
 	//! Update the application title
 
@@ -277,30 +277,34 @@ public:
 private:
 	//! We know what we want to do after saving the file.
 	void do_file_save_event(ONLY IN_THREAD,
-				void (appObj::*what_to_do_next)());
+				void (appObj::*what_to_do_next)
+				(ONLY IN_THREAD));
 
 	//! We know what we want to do after save-as dialog closes.
 	void do_file_save_as_event(ONLY IN_THREAD,
-				   void (appObj::*what_to_do_next)());
+				   void (appObj::*what_to_do_next)
+				   (ONLY IN_THREAD));
 public:
 	//! File new event
 	void file_new_event(ONLY IN_THREAD);
 	//! File save dialog closed
-	void do_check_and_file_save(std::string,
-				    void (appObj::*what_to_do_next)());
+	void do_check_and_file_save(ONLY IN_THREAD,
+				    std::string,
+				    void (appObj::*what_to_do_next)
+				    (ONLY IN_THREAD));
 
 	//! File save dialog closed, checked for overwriting, ok to save now
-	void do_file_save(const std::string &filename,
-			  void (appObj::*what_to_do_next)());
+	void do_file_save(ONLY IN_THREAD, const std::string &filename,
+			  void (appObj::*what_to_do_next)(ONLY IN_THREAD));
 
 	//! What do_file_save calls when only saving a file, and nothing more.
-	void only_save();
+	void only_save(ONLY IN_THREAD);
 
 	//! File open event
 	void file_open_event(ONLY IN_THREAD);
 
 	//! Show the file open dialog
-	void open_file();
+	void open_file(ONLY IN_THREAD);
 
 	//! Load the initial file, that was passed in as a parameter.
 
@@ -323,7 +327,7 @@ public:
 private:
 	//! Stashed pointer to pick up after "Save As" closes.
 
-	void (appObj::*what_to_do_after_save_as_thread_only)();
+	void (appObj::*what_to_do_after_save_as_thread_only)(ONLY IN_THREAD);
 
 public:
 	THREAD_DATA_ONLY(what_to_do_after_save_as);
@@ -341,16 +345,17 @@ private:
 	//! The buttons save the file first, then do whattodo, go ahead and
 	//! do whattodo without saving, and cancel.
 
-	void ifnotedited(void (appObj::*whattodo)(),
+	void ifnotedited(ONLY IN_THREAD,
+			 void (appObj::*whattodo)(ONLY IN_THREAD),
 			 const char *ok_label,
 			 const char *ok2_label,
 			 const char *cancel_label);
 
 	//! The end of the road for a file_quit_event
-	void stoprunning();
+	void stoprunning(ONLY IN_THREAD);
 
 	//! Create a new file
-	void new_file();
+	void new_file(ONLY IN_THREAD);
 
 	//////////////////////////////////////////////////////////////////
 	//
@@ -370,7 +375,7 @@ private:
 
 	//! Initialize the dimension page after loading/creating a new theme.
 
-	void dimension_initialize();
+	void dimension_initialize(ONLY IN_THREAD);
 
 private:
 	/////////////////////////////////////////////////////////////////////
@@ -507,7 +512,7 @@ public:
 
 	//! Initialize the dimension page after loading/creating a new theme.
 
-	void colors_initialize();
+	void colors_initialize(ONLY IN_THREAD);
 
 	//! We load the gradient colors as is.
 	typedef std::map<size_t, std::string> loaded_color_gradient_t;

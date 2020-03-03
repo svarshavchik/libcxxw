@@ -333,7 +333,7 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 		 });
 }
 
-void appObj::colors_initialize()
+void appObj::colors_initialize(ONLY IN_THREAD)
 {
 	colors_info_t::lock lock{colors_info};
 
@@ -373,10 +373,10 @@ void appObj::colors_initialize()
 	x::w::standard_comboboxlayoutmanager lm=
 		color_name->get_layoutmanager();
 
-	lm->replace_all_items(combobox_items);
+	lm->replace_all_items(IN_THREAD, combobox_items);
 
 	// The autoselect will initialize the rest.
-	lm->autoselect(0);
+	lm->autoselect(IN_THREAD, 0, {});
 }
 
 void appObj::color_selected(ONLY IN_THREAD,

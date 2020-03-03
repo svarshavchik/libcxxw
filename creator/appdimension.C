@@ -136,7 +136,7 @@ void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 	elements.dimension_delete_button=dimension_delete_button;
 }
 
-void appObj::dimension_initialize()
+void appObj::dimension_initialize(ONLY IN_THREAD)
 {
 	dimension_info_t::lock lock{dimension_info};
 
@@ -174,18 +174,18 @@ void appObj::dimension_initialize()
 	combobox_items.insert(combobox_items.end(),
 			      lock->ids.begin(),
 			      lock->ids.end());
-	lm->replace_all_items(combobox_items);
+	lm->replace_all_items(IN_THREAD, combobox_items);
 
 	// The same list goes into the from scale dropdown.
 
 	combobox_items[0]=_("-- Scaled Dimension --");
 	x::w::standard_comboboxlayoutmanager from_lm=
 		dimension_from_name->get_layoutmanager();
-	from_lm->replace_all_items(combobox_items);
+	from_lm->replace_all_items(IN_THREAD, combobox_items);
 
 	// Can only do this after both combo-boxes are initialized, due
 	// to the selection callback that expects everything to be there.
-	lm->autoselect(0);
+	lm->autoselect(IN_THREAD, 0, {});
 }
 
 void appObj::dimension_selected(ONLY IN_THREAD,

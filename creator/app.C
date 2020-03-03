@@ -588,12 +588,12 @@ appObj::appObj(init_args &&args)
 {
 }
 
-void appObj::loaded_file()
+void appObj::loaded_file(ONLY IN_THREAD)
 {
 	update_title();
 	enable_disable_menus();
-	dimension_initialize();
-	colors_initialize();
+	dimension_initialize(IN_THREAD);
+	colors_initialize(IN_THREAD);
 }
 
 // Update the main window title's after loading or saving a file.
@@ -696,13 +696,13 @@ void appObj::file_save_event(ONLY IN_THREAD)
 }
 
 void appObj::do_file_save_event(ONLY IN_THREAD,
-				void (appObj::*what_to_do_next)())
+				void (appObj::*what_to_do_next)(ONLY IN_THREAD))
 {
 	auto filename=themename.get();
 
 	if (!filename.empty())
 	{
-		do_file_save(filename, what_to_do_next);
+		do_file_save(IN_THREAD, filename, what_to_do_next);
 		return;
 	}
 
@@ -715,7 +715,8 @@ void appObj::file_save_as_event(ONLY IN_THREAD)
 }
 
 void appObj::do_file_save_as_event(ONLY IN_THREAD,
-				   void (appObj::*what_to_do_next)())
+				   void (appObj::*what_to_do_next)
+				   (ONLY IN_THREAD))
 {
 	what_to_do_after_save_as(IN_THREAD)=what_to_do_next;
 	main_window->get_dialog("filesave@creator.w.libcxx.com")
@@ -725,11 +726,14 @@ void appObj::do_file_save_as_event(ONLY IN_THREAD,
 void appObj::save_dialog_closed(ONLY IN_THREAD,
 				const std::string &filename)
 {
-	do_check_and_file_save(filename, what_to_do_after_save_as(IN_THREAD));
+	do_check_and_file_save(IN_THREAD,
+			       filename, what_to_do_after_save_as(IN_THREAD));
 }
 
-void appObj::do_check_and_file_save(std::string filename,
-				    void (appObj::*what_to_do_next)())
+void appObj::do_check_and_file_save(ONLY IN_THREAD,
+				    std::string filename,
+				    void (appObj::*what_to_do_next)
+				    (ONLY IN_THREAD))
 {
 	// Warn if the file exists.
 
@@ -751,6 +755,7 @@ void appObj::do_check_and_file_save(std::string filename,
 				 unlink(filename.c_str());
 
 				 appinvoke(&appObj::do_file_save,
+					   IN_THREAD,
 					   filename,
 					   what_to_do_next);
 			 },
@@ -767,11 +772,12 @@ void appObj::do_check_and_file_save(std::string filename,
 	if (filename.find('.', filename.rfind('/')+1) == filename.npos)
 		filename += ".xml";
 
-	do_file_save(filename, what_to_do_next);
+	do_file_save(IN_THREAD, filename, what_to_do_next);
 }
 
-void appObj::do_file_save(const std::string &filename,
-			  void (appObj::*what_to_do_next)())
+void appObj::do_file_save(ONLY IN_THREAD,
+			  const std::string &filename,
+			  void (appObj::*what_to_do_next)(ONLY IN_THREAD))
 {
 	theme.get()->readlock()->save_file(filename, true);
 
@@ -779,10 +785,10 @@ void appObj::do_file_save(const std::string &filename,
 	edited=false;
 	update_title();
 	enable_disable_menus();
-	(this->*what_to_do_next)();
+	(this->*what_to_do_next)(IN_THREAD);
 }
 
-void appObj::only_save()
+void appObj::only_save(ONLY IN_THREAD)
 {
 	status->update(_("File saved"));
 }
@@ -795,7 +801,8 @@ void appObj::enable_disable_menus()
 
 void appObj::file_quit_event(ONLY IN_THREAD)
 {
-	ifnotedited(&appObj::stoprunning,
+	ifnotedited(IN_THREAD,
+		    &appObj::stoprunning,
 		    _("Save And Quit"),
 		    _("Quit Only"),
 		    _("Cancel"));
@@ -803,7 +810,8 @@ void appObj::file_quit_event(ONLY IN_THREAD)
 
 void appObj::file_new_event(ONLY IN_THREAD)
 {
-	ifnotedited(&appObj::new_file,
+	ifnotedited(IN_THREAD,
+		    &appObj::new_file,
 		    _("Save Changes"),
 		    _("Discard Changes"),
 		    _("Cancel"));
@@ -811,13 +819,14 @@ void appObj::file_new_event(ONLY IN_THREAD)
 
 void appObj::file_open_event(ONLY IN_THREAD)
 {
-	ifnotedited(&appObj::open_file,
+	ifnotedited(IN_THREAD,
+		    &appObj::open_file,
 		    _("Save Changes"),
 		    _("Discard Changes"),
 		    _("Cancel"));
 }
 
-void appObj::open_file()
+void appObj::open_file(ONLY IN_THREAD)
 {
 	main_window->get_dialog("fileopen@creator.w.libcxx.com")
 		->dialog_window->show_all();
@@ -829,23 +838,11 @@ void appObj::open_initial_file(ONLY IN_THREAD,
 	using x::exception;
 
 	try {
-		// Show the main window after the initial file is opened.
-		//
-		// Make sure that this happens
-		// even when an exception gets thrown, but if all goes well
-		// do it after the loaded file is fully grokked, so use a
-		// sentry object.
+		main_window->get_menubar()->show(IN_THREAD);
+		main_window->show_all(IN_THREAD);
 
-		auto sentry=x::make_sentry
-			([&]
-			 {
-				 main_window->get_menubar()->show(IN_THREAD);
-				 main_window->show_all(IN_THREAD);
-			 });
-
-		sentry.guard();
 		if (filename.empty())
-			loaded_file();
+			loaded_file(IN_THREAD);
 		else
 			open_dialog_closed(IN_THREAD, filename);
 	} REPORT_EXCEPTIONS(main_window);
@@ -856,7 +853,7 @@ void appObj::open_dialog_closed(ONLY IN_THREAD,
 {
 	theme=load_file(filename);
 	themename=filename;
-	loaded_file();
+	loaded_file(IN_THREAD);
 
 	auto n=themename.get();
 
@@ -885,14 +882,15 @@ x::xml::doc appObj::load_file(const std::string &filename)
 	return x::xml::doc::create(filename, "noblanks");
 }
 
-void appObj::ifnotedited(void (appObj::*whattodo)(),
+void appObj::ifnotedited(ONLY IN_THREAD,
+			 void (appObj::*whattodo)(ONLY IN_THREAD),
 			 const char *ok_label,
 			 const char *ok2_label,
 			 const char *cancel_label)
 {
 	if (!edited.get())
 	{
-		(this->*whattodo)();
+		(this->*whattodo)(IN_THREAD);
 		return;
 	}
 
@@ -915,7 +913,7 @@ void appObj::ifnotedited(void (appObj::*whattodo)(),
 		 (ONLY IN_THREAD,
 		  const auto &ignore)
 		 {
-			 appinvoke(whattodo);
+			 appinvoke(whattodo, IN_THREAD);
 		 },
 		 []
 		 (ONLY IN_THREAD,
@@ -928,16 +926,16 @@ void appObj::ifnotedited(void (appObj::*whattodo)(),
 	return;
 }
 
-void appObj::new_file()
+void appObj::new_file(ONLY IN_THREAD)
 {
 	theme=new_theme_file();
 	themename="";
 	edited=false;
 	status->update(_("New theme file created"));
-	loaded_file();
+	loaded_file(IN_THREAD);
 }
 
-void appObj::stoprunning()
+void appObj::stoprunning(ONLY IN_THREAD)
 {
 	eventqueue->event([]
 			  {
