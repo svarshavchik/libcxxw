@@ -84,6 +84,7 @@ custom LibCXXW display elements.
 rm -rf $RPM_BUILD_ROOT
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 RPM_BUILD_ROOT="$RPM_BUILD_ROOT" desktop-file-install cxxwtheme.desktop
+RPM_BUILD_ROOT="$RPM_BUILD_ROOT" desktop-file-install cxxwcreator.desktop
 rm -f $RPM_BUILD_ROOT/%{_libdir}/*/*.la
 
 echo '%defattr(-,root,root,-)' >public-headers
@@ -112,7 +113,7 @@ rm -rf $RPM_BUILD_ROOT
 %if %do_compat
 
 %else
-%{_datadir}/applications/*
+%{_datadir}/applications/cxxwtheme.desktop
 %{_bindir}/cxxw
 %{_bindir}/cxxwtheme
 %{_mandir}/*/*
@@ -136,6 +137,7 @@ rm -rf $RPM_BUILD_ROOT
 %else
 %{_bindir}/cxxwcreator
 %{_datadir}/libcxxw*/creator
+%{_datadir}/applications/cxxwcreator.desktop
 %endif
 
 %doc examples

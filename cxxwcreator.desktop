@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=LibCXXW Creator
+Comment=Editor for LibCXXW Theme Files
+Exec=cxxwcreator
+Icon=document-new
+Terminal=false
+Type=Application
+Categories=Development;GUIDesigner;
