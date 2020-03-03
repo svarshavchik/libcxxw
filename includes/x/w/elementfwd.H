@@ -88,7 +88,11 @@ auto p=e->set_background_color(INSERT_LIBX_NAMESPACE::w::rgb(INSERT_LIBX_NAMESPA
 
 e->set_background_color("action_color1");
 
+e->set_background_color(IN_THREAD, "action_color1");
+
 e->remove_background_color();
+
+e->remove_background_color(IN_THREAD);
 \endcode
 
 set_background_color() sets this element's background to an

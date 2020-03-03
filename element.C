@@ -193,6 +193,12 @@ void elementObj::exception_message(const exception &e)
 	impl->exception_message(e);
 }
 
+void elementObj::set_background_color(ONLY IN_THREAD,
+				      const color_arg &name)
+{
+	impl->set_background_color(IN_THREAD, name);
+}
+
 void elementObj::set_background_color(const color_arg &name)
 {
 	impl->set_background_color(name);
@@ -201,6 +207,11 @@ void elementObj::set_background_color(const color_arg &name)
 void elementObj::remove_background_color()
 {
 	impl->remove_background_color();
+}
+
+void elementObj::remove_background_color(ONLY IN_THREAD)
+{
+	impl->remove_background_color(IN_THREAD);
 }
 
 void elementObj::on_state_update(const functionref<element_state_callback_t>

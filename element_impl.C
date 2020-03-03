@@ -1383,6 +1383,14 @@ void elementObj::implObj
 }
 
 void elementObj::implObj
+::set_background_color(ONLY IN_THREAD,
+		       const color_arg &theme_color)
+{
+	set_background_color(IN_THREAD,
+			     create_background_color(theme_color));
+}
+
+void elementObj::implObj
 ::set_background_color(const background_color &c)
 {
 	THREAD->run_as([impl=ref<implObj>(this), c]

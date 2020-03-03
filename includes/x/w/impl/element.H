@@ -381,11 +381,12 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Use a standard background color for this widget.
 
-	//! If there's no background color of the given name, use the
-	//! default value.
-
 	void set_background_color(const color_arg &theme_color);
 
+	//! Use a standard background color for this widget.
+
+	void set_background_color(ONLY IN_THREAD,
+				  const color_arg &theme_color);
 	//! Set the background color.
 
 	//! Schedules the virtual method to be invoked by the connection thread.

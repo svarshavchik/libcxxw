@@ -106,9 +106,17 @@ public:
 
 	void set_background_color(const color_arg &name);
 
+	//! Use a standard background color for this widget.
+
+	void set_background_color(ONLY IN_THREAD, const color_arg &name);
+
 	//! Remove this widget's custom background color.
 
 	void remove_background_color();
+
+	//! Remove this widget's custom background color.
+
+	void remove_background_color(ONLY IN_THREAD);
 
 	//! Install a state update callback.
 	void on_state_update(const functionref<element_state_callback_t> &);
