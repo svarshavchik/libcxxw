@@ -709,6 +709,40 @@
       <row>0</row>
       <valign>middle</valign>
     </valign>
+    <halign>
+      <col>0</col>
+      <halign>center</halign>
+    </halign>
+    <append_row>
+      <name>color-linear-page-contents-top</name>
+    </append_row>
+    <append_row>
+      <name>color-linear-page-values</name>
+    </append_row>
+  </layout>
+
+  <factory id="color-linear-page-contents-top" type="grid">
+    <container>
+      <type>grid</type>
+      <name>color-linear-page-contents-top-grid</name>
+    </container>
+  </factory>
+
+  <dim id="color-gradient-values-padding">6</dim>
+
+  <layout id="color-linear-page-contents-top-grid" type="grid">
+    <halign>
+      <col>0</col>
+      <halign>right</halign>
+    </halign>
+    <halign>
+      <col>2</col>
+      <halign>right</halign>
+    </halign>
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
     <valign>
       <row>1</row>
       <valign>middle</valign>
@@ -717,6 +751,11 @@
       <row>2</row>
       <valign>middle</valign>
     </valign>
+    <padding>
+      <side>left</side>
+      <col>2</col>
+      <padding>color-gradient-values-padding</padding>
+    </padding>
     <append_row>
       <name>color-linear-page-contents-first</name>
     </append_row>
@@ -726,13 +765,9 @@
     <append_row>
       <name>color-linear-page-contents-fixed</name>
     </append_row>
-    <append_row>
-      <name>color-linear-page-values</name>
-    </append_row>
   </layout>
 
   <factory id="color-linear-page-contents-first" type="grid">
-    <halign>right</halign>
     <element>
       <label type='theme_text'>X1:</label>
     </element>
@@ -744,7 +779,6 @@
       </config>
     </element>
 
-    <halign>right</halign>
     <element>
       <label type='theme_text'>Y1:</label>
     </element>
@@ -758,7 +792,6 @@
   </factory>
 
   <factory id="color-linear-page-contents-second" type="grid">
-    <halign>right</halign>
     <element>
       <label type='theme_text'>X2:</label>
     </element>
@@ -770,7 +803,6 @@
       </config>
     </element>
 
-    <halign>right</halign>
     <element>
       <label type='theme_text'>Y2:</label>
     </element>
@@ -784,7 +816,6 @@
   </factory>
 
   <factory id="color-linear-page-contents-fixed" type="grid">
-    <halign>right</halign>
     <element>
       <label type='theme_text'>W:</label>
     </element>
@@ -796,7 +827,6 @@
       </config>
     </element>
 
-    <halign>right</halign>
     <element>
       <label type='theme_text'>H:</label>
     </element>
@@ -810,10 +840,6 @@
   </factory>
 
   <factory id="color-linear-page-values" type="grid">
-    <colspan>
-      <columns>3</columns>
-    </colspan>
-    <halign>center</halign>
     <container>
       <type>grid</type>
       <name>color-linear-page-values-grid</name>
@@ -840,10 +866,66 @@
       <row>1</row>
       <valign>middle</valign>
     </valign>
+    <append_row>
+      <name>color-radial-page-contents-top</name>
+    </append_row>
+    <append_row>
+      <name>color-radial-page-values</name>
+    </append_row>
+  </layout>
+
+  <factory id="color-radial-page-contents-top" type="grid">
+    <container>
+      <type>grid</type>
+      <name>color-radial-page-contents-top-grid</name>
+    </container>
+  </factory>
+
+  <layout id="color-radial-page-contents-top-grid" type="grid">
+    <halign>
+      <col>0</col>
+      <halign>right</halign>
+    </halign>
+    <halign>
+      <col>2</col>
+      <halign>right</halign>
+    </halign>
+    <halign>
+      <col>4</col>
+      <halign>right</halign>
+    </halign>
+    <halign>
+      <col>6</col>
+      <halign>right</halign>
+    </halign>
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
     <valign>
       <row>2</row>
       <valign>middle</valign>
     </valign>
+    <padding>
+      <side>left</side>
+      <col>2</col>
+      <padding>color-gradient-values-padding</padding>
+    </padding>
+    <padding>
+      <side>left</side>
+      <col>4</col>
+      <padding>color-gradient-values-padding</padding>
+    </padding>
+    <padding>
+      <side>left</side>
+      <col>6</col>
+      <padding>color-gradient-values-padding</padding>
+    </padding>
+
     <append_row>
       <name>color-radial-page-contents-inner</name>
     </append_row>
@@ -853,13 +935,9 @@
     <append_row>
       <name>color-radial-page-fixed</name>
     </append_row>
-    <append_row>
-      <name>color-radial-page-values</name>
-    </append_row>
   </layout>
 
   <factory id="color-radial-page-contents-inner" type="grid">
-    <halign>right</halign>
     <element>
       <label type='theme_text'>Inner X:</label>
     </element>
@@ -871,7 +949,6 @@
       </config>
     </element>
 
-    <halign>right</halign>
     <element>
       <label type='theme_text'>Y:</label>
     </element>
@@ -883,7 +960,6 @@
       </config>
     </element>
 
-    <halign>right</halign>
     <element>
       <label type='theme_text'>Radius:</label>
     </element>
@@ -895,8 +971,6 @@
       </config>
     </element>
 
-
-    <halign>right</halign>
     <element>
       <label type='theme_text'>Axis:</label>
     </element>
@@ -919,7 +993,6 @@
   </layout>
 
   <factory id="color-radial-page-contents-outer" type="grid">
-    <halign>right</halign>
     <element>
       <label type='theme_text'>Outer X:</label>
     </element>
@@ -931,7 +1004,6 @@
       </config>
     </element>
 
-    <halign>right</halign>
     <element>
       <label type='theme_text'>Y:</label>
     </element>
@@ -943,7 +1015,6 @@
       </config>
     </element>
 
-    <halign>right</halign>
     <element>
       <label type='theme_text'>Radius:</label>
     </element>
@@ -955,8 +1026,6 @@
       </config>
     </element>
 
-
-    <halign>right</halign>
     <element>
       <label type='theme_text'>Axis:</label>
     </element>
@@ -982,7 +1051,6 @@
     <colspan>
       <columns>3</columns>
     </colspan>
-    <halign>right</halign>
     <element>
       <label type="theme_text">Fixed Width:</label>
     </element>
