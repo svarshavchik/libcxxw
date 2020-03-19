@@ -1330,6 +1330,8 @@ includes/x/w/all_appearancesfwd.H: \
           appearance/appearance_parser.xml \
               >includes/x/w/all_appearancesfwd.H.tmp
 	mv -f includes/x/w/all_appearancesfwd.H.tmp includes/x/w/all_appearancesfwd.H
+CLEANFILES += includes/x/w/all_appearancesfwd.H
+
 
 includes/x/w/all_appearances.H: \
 	all_appearances.xsl appearance/appearance_parser.xml
@@ -1337,6 +1339,8 @@ includes/x/w/all_appearances.H: \
           appearance/appearance_parser.xml \
               >includes/x/w/all_appearances.H.tmp
 	mv -f includes/x/w/all_appearances.H.tmp includes/x/w/all_appearances.H
+
+CLEANFILES += includes/x/w/all_appearances.H
 
 uicompiler_appearance_proto.inc.H: \
 	appearance/appearance_create_proto.xsl appearance/appearance_parser.xml
