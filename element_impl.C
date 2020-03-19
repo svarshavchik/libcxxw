@@ -854,8 +854,11 @@ void elementObj::implObj::current_position_updated(ONLY IN_THREAD)
 		       [&]
 		       (const element &e)
 		       {
-			       e->impl->current_position_updated(IN_THREAD);
-
+			       e->impl->absolute_location_updated(IN_THREAD);
+			       e->impl->redraw_after_absolute_location_updated
+				       (IN_THREAD,
+					absolute_location_update_reason
+					::internal);
 		       });
 }
 

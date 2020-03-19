@@ -120,9 +120,12 @@ See COPYING for distribution information.
       <para>
 	&app;'s core functionality is complete, and
 	<link linkend="INSTALL">is available for downloading</link>.
-	The most recent build of &app; completes the implementation of
-	<link linkend="uixmldoc"><acronym>XML</acronym>
-	  stylesheets for generating widgets</link>.
+	The most recent build of &app; adds an initial implementation of the
+	<link linkend="uixmldoc"><command>cxxwcreator</command></link>
+	tool,
+	adds alpha channel support to the
+	<link linkend="fontcolorpickers">color picker widget</link>,
+	and optimizes window refreshes and redrawing.
       </para>
     </section>
   </section>

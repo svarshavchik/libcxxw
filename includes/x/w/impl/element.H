@@ -613,7 +613,8 @@ class elementObj::implObj : public element_drawObj,
 	//! This element's current_position has been updated.
 
 	//! Invoke schedule_update_position_processing(), then recursively
-	//! invoke current_position_updated() for any and all child elements.
+	//! absolute_location_updated() (and
+	//! redraw_after_absolute_location_updated) for all child elements.
 	//! The net effective is that this element, and its child elements,
 	//! are scheduled to be redrawn.
 	//!
