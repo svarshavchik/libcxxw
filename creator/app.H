@@ -285,6 +285,12 @@ private:
 				   void (appObj::*what_to_do_next)
 				   (ONLY IN_THREAD));
 public:
+	//! We might be very busy.
+
+	//! Shows the "wait" cursor, until the connection thread is idle.
+
+	void busy();
+
 	//! File new event
 	void file_new_event(ONLY IN_THREAD);
 	//! File save dialog closed

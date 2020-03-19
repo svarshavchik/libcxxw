@@ -422,6 +422,7 @@ void appObj::color_unselected_locked(ONLY IN_THREAD,
 void appObj::color_selected_locked(ONLY IN_THREAD,
 				   colors_info_t::lock &lock)
 {
+	busy();
 	if (!lock->current_selection) // New color entry
 	{
 		// Clear and show the new name field.
@@ -571,7 +572,7 @@ static const struct {
 	  &x::w::linear_gradient_values::fixed_height,
 	  &appObj::color_linear_height,
 	  &appObj::color_linear_height_validated,
-	  &appObj::loaded_linear_gradient::fixed_width}
+	  &appObj::loaded_linear_gradient::fixed_height}
 	};
 
 
@@ -1462,7 +1463,6 @@ void appObj::color_enable_disable_buttons(ONLY IN_THREAD,
 		color_update_button->set_enabled(IN_THREAD, false);
 		color_reset_button->set_enabled(IN_THREAD, false);
 		color_preview_cell_border_container->show(IN_THREAD);
-
 		return;
 	}
 

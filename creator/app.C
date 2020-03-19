@@ -1041,3 +1041,13 @@ appObj::update_new_element(const std::string &new_id,
 
 	return i;
 }
+
+void appObj::busy()
+{
+	auto mcguffin=main_window->get_wait_busy_mcguffin();
+
+	main_window->in_thread_idle([mcguffin]
+				    (ONLY IN_THREAD)
+				    {
+				    });
+}
