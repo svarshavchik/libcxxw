@@ -28,6 +28,8 @@
 #include <x/functional.H>
 #include <x/visitor.H>
 #include <x/xml/xpath.H>
+#include <x/imbue.H>
+#include <x/visitor.H>
 #include "picture.H"
 #include "messages.H"
 #include "defaulttheme.H"
@@ -42,73 +44,6 @@ static void unknown_dim(const std::string &id)
 	throw EXCEPTION(gettextmsg(_("circular or non-existent dependency"
 				     " of dim %1%"),
 				   id));
-}
-
-static std::optional<color_arg>
-get_color(const ui::parser_lock &lock,
-	  const char *xpath_name,
-	  const uigenerators &generators,
-	  bool allowthemerefs)
-{
-	auto color_node=lock.clone();
-
-	auto xpath=color_node->get_xpath(xpath_name);
-
-	if (xpath->count() == 0)
-		return std::nullopt;
-
-	xpath->to_node();
-
-	auto name=color_node->get_text();
-
-	return generators->lookup_color(name, allowthemerefs, xpath_name);
-}
-
-// Look up a dimension, when parsing something else.
-
-static void update_dim_if_given(const ui::parser_lock &lock,
-				const char *size_node,
-				const char *scale_node,
-				dim_arg &size,
-				unsigned &scale,
-				const char *descr,
-				const std::string &id,
-				const uigenerators &generators,
-				bool allowthemerefs)
-{
-	if (single_value_exists(lock, size_node))
-	{
-		auto t=single_value(lock, size_node, descr);
-
-		std::istringstream i{t};
-
-		double v;
-
-		i >> v;
-
-		if (i.fail())
-		{
-			size=generators->lookup_dim(t, allowthemerefs, descr);
-		}
-		else
-		{
-			size=v;
-		}
-	}
-
-	if (single_value_exists(lock, scale_node))
-	{
-		auto t=single_value(lock, scale_node, descr);
-
-		std::istringstream i{t};
-
-		// The contents of this node must be a scaling factor.
-		i >> scale;
-
-		if (i.fail())
-			throw EXCEPTION(gettextmsg(_("Cannot parse %1% (%2%)"),
-						   descr, id));
-	}
 }
 
 // Parse the dims in the config file
@@ -326,6 +261,353 @@ parse_color(const ui::parser_lock &lock,
 		  }}, parsed_color);
 }
 
+namespace ui {
+#if 0
+}
+#endif
+
+void parse_border::parse(const ui::parser_lock &lock)
+{
+	auto from_attr=lock->get_any_attribute("from");
+
+	if (!from_attr.empty())
+		from(from_attr);
+
+	std::string color1_value{parse_color(lock, "color")};
+
+	std::string color2_value;
+
+	if (!color1_value.empty())
+	{
+		color2_value=parse_color(lock, "color2");
+		color(color1_value, color2_value);
+	}
+
+	// Parse border dimensions
+
+	static const struct {
+		const char *value_field;
+		const char *scale_field;
+		void (parse_border::*value_callback)(std::string &);
+		void (parse_border::*scale_callback)(unsigned);
+	} border_dims[]=
+		  {
+		   {"width", "width_scale",
+		    &parse_border::width,
+		    &parse_border::width_scale
+		   },
+		   {"height", "height_scale",
+		    &parse_border::height,
+		    &parse_border::height_scale
+		   },
+		   {"hradius", "hradius_scale",
+		    &parse_border::hradius,
+		    &parse_border::hradius_scale
+		   },
+		   {"vradius", "vradius_scale",
+		    &parse_border::vradius,
+		    &parse_border::vradius_scale
+		   },
+		  };
+
+	for (const auto &d:border_dims)
+	{
+		if (single_value_exists(lock, d.value_field))
+		{
+			auto t=single_value(lock, d.value_field, "border");
+			(this->*(d.value_callback))(t);
+		}
+
+		if (single_value_exists(lock, d.scale_field))
+		{
+			auto t=single_value(lock, d.scale_field, "border");
+
+			std::istringstream i{t};
+
+			imbue im{lock.c_locale, i};
+
+			unsigned scale;
+
+			// The contents of this node must be a scaling factor.
+			i >> scale;
+
+			if (i.fail())
+				throw EXCEPTION(_("Cannot parse width_scale"));
+
+			(this->*(d.scale_callback))(scale);
+		}
+	}
+
+	// <rounded> sets the radii both to 1.
+
+	if (single_value_exists(lock, "rounded"))
+	{
+		rounded(single_value(lock, "rounded", "border") != "0");
+	}
+
+	// Alternatively, hradius and vradius will set them
+	// to at least 2.
+
+	auto dash_nodes=lock.clone();
+
+	auto xpath=dash_nodes->get_xpath("dash");
+
+	size_t n=xpath->count();
+
+	std::vector<double> dash_values;
+
+	if (n)
+	{
+		dash_values.clear();
+		dash_values.reserve(n);
+
+		for (size_t i=0; i<n; ++i)
+		{
+			xpath->to_node(i+1);
+
+			dim_t mm;
+
+			auto t=dash_nodes->get_text();
+
+			if (t.empty())
+				continue;
+
+			std::istringstream is{t};
+
+			imbue i_parse{dash_nodes.c_locale, is};
+
+			double v;
+
+			is >> v;
+
+			if (is.fail())
+				throw EXCEPTION(_("Cannot parse dash "
+						  "values"));
+
+			dash_values.push_back(v);
+		}
+
+		dashes(dash_values);
+	}
+}
+
+std::string parse_border::parse_color(const ui::parser_lock &lock,
+				      const char *xpath_name)
+{
+	std::string s;
+
+	auto color_node=lock.clone();
+
+	auto xpath=color_node->get_xpath(xpath_name);
+
+	if (xpath->count())
+	{
+		xpath->to_node();
+
+		s=color_node->get_text();
+	}
+	return s;
+}
+#if 0
+{
+#endif
+}
+
+namespace {
+#if 0
+}
+#endif
+
+//! Implement border parsing for loaded theme file.
+struct parse_theme_border : ui::parse_border {
+
+	//! \<border> being parsed
+	const ui::parser_lock &lock;
+
+	//! Loaded generators
+	const uigenerators generators;
+
+	//! Border ID
+	const std::string id;
+
+	//! flag
+	const bool allowthemerefs;
+
+	//! from was not currently found.
+	bool notfound=false;
+
+	//! Newly-parsed border.
+	border_infomm new_border;
+
+	//! This is a new border. from() resets it to false.
+	bool created_border=true;
+
+	//! Constructor
+	parse_theme_border(const ui::parser_lock &lock,
+			   const uigenerators &generators,
+			   const std::string &id,
+			   bool allowthemerefs)
+		: lock{lock}, generators{generators},
+		  id{id}, allowthemerefs{allowthemerefs}
+	{
+		parse(lock);
+	}
+
+private:
+
+	//! Callback
+	void from(std::string &) override;
+
+	//! Callback
+	void color(std::string &,
+		   std::string &) override;
+
+	//! Helper used by dim callbacks.
+	void save_dim_arg(std::string &,
+			  dim_arg border_infomm::*,
+			  const char *name);
+	//! Callback
+	void width(std::string &) override;
+	//! Callback
+	void width_scale(unsigned) override;
+	//! Callback
+	void height(std::string &) override;
+	//! Callback
+	void height_scale(unsigned) override;
+
+	//! Callback
+	void hradius(std::string &) override;
+	//! Callback
+	void hradius_scale(unsigned) override;
+
+	//! Callback
+	void vradius(std::string &) override;
+	//! Callback
+	void vradius_scale(unsigned) override;
+
+	//! Callback
+	void rounded(bool) override;
+	//! Callback
+	void dashes(std::vector<double> &) override;
+};
+
+void parse_theme_border::from(std::string &from_attr)
+{
+	auto iter=generators->borders.find(from_attr);
+
+	if (iter == generators->borders.end())
+	{
+		notfound=true;
+		return;
+	}
+
+	new_border=iter->second;
+	created_border=false;
+}
+
+void parse_theme_border::color(std::string &color1,
+			       std::string &color2)
+{
+	// If we copied the border from another from, then
+	// unless the following values are given, don't
+	// touch the colors.
+
+	if (color1.empty())
+	{
+		if (created_border)
+		{
+			throw EXCEPTION(gettextmsg
+					(_("<color> not specified for "
+					   "%1"), id));
+		}
+		return;
+	}
+	new_border.color1=generators->lookup_color(color1,
+						   allowthemerefs,
+						   "color");
+	if (!color2.empty())
+		new_border.color2=generators->lookup_color(color2,
+							   allowthemerefs,
+							   "color2");
+}
+
+void parse_theme_border::save_dim_arg(std::string &d,
+				      dim_arg border_infomm::*arg,
+				      const char *name)
+{
+	std::istringstream i{d};
+
+	imbue im{lock.c_locale, i};
+
+	double v;
+
+	i >> v;
+
+	if (i.fail())
+	{
+		new_border.*arg=generators->lookup_dim(d, allowthemerefs, name);
+	}
+	else
+	{
+		new_border.*arg=v;
+	}
+}
+
+void parse_theme_border::width(std::string &d)
+{
+	save_dim_arg(d, &border_infomm::width, "width");
+}
+
+void parse_theme_border::width_scale(unsigned s)
+{
+	new_border.width_scale=s;
+}
+
+void parse_theme_border::height(std::string &d)
+{
+	save_dim_arg(d, &border_infomm::height, "height");
+}
+
+void parse_theme_border::height_scale(unsigned s)
+{
+	new_border.height_scale=s;
+}
+
+void parse_theme_border::hradius(std::string &d)
+{
+	save_dim_arg(d, &border_infomm::hradius, "hradius");
+}
+
+void parse_theme_border::hradius_scale(unsigned s)
+{
+	new_border.hradius_scale=s;
+}
+
+void parse_theme_border::vradius(std::string &d)
+{
+	save_dim_arg(d, &border_infomm::vradius, "vradius");
+}
+
+void parse_theme_border::vradius_scale(unsigned s)
+{
+	new_border.vradius_scale=s;
+}
+
+void parse_theme_border::rounded(bool flag)
+{
+	new_border.rounded=flag;
+}
+
+void parse_theme_border::dashes(std::vector<double> &values)
+{
+	new_border.dashes=std::move(values);
+}
+
+#if 0
+{
+#endif
+}
+
 uicompiler::uicompiler(const ui::parser_lock &root_lock,
 		       const uigenerators &generators,
 		       const const_screen_positionsptr &saved_positions,
@@ -482,130 +764,28 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			    generators->borders.end())
 				continue; // Did this one already.
 
-			border_infomm new_border;
+			try {
+				parse_theme_border
+					parser{lock, generators, id,
+					       allowthemerefs};
 
-			auto from=lock->get_any_attribute("from");
+				if (parser.notfound)
+					continue;
 
-			bool created_border=true;
+				generators->borders.emplace(id,
+							    parser.new_border);
 
-			if (!from.empty())
+			} catch (const exception &e)
 			{
-				auto iter=generators->borders.find(from);
+				std::ostringstream o;
 
-				if (iter == generators->borders.end())
-					continue; // Not yet parsed
-
-				new_border=iter->second;
-				created_border=false;
-			}
-
-			// If we copied the border from another from, then
-			// unless the following values are given, don't
-			// touch the colors.
-
-			auto color1=get_color(lock, "color", generators,
-					      allowthemerefs);
-
-			if (color1)
-			{
-				new_border.color1= *color1;
-
-				new_border.color2=get_color(lock, "color2",
-							    generators,
-							    allowthemerefs);
-			}
-			else if (created_border)
-			{
+				o << e;
 				throw EXCEPTION(gettextmsg
-						(_("<color> not specified for "
-						   "%1"), id));
+						(_("Cannot parse border id="
+						   "\"%1%\": %2%"),
+						 id, o.str()));
 			}
 
-			update_dim_if_given(lock, "width", "width_scale",
-					    new_border.width,
-					    new_border.width_scale,
-					    "border", id,
-					    generators,
-					    allowthemerefs);
-
-			update_dim_if_given(lock, "height", "height_scale",
-					    new_border.height,
-					    new_border.height_scale,
-					    "border", id,
-					    generators,
-					    allowthemerefs);
-
-			// <rounded> sets the radii both to 1.
-
-			if (single_value_exists(lock, "rounded"))
-			{
-				auto rounded=single_value(lock, "rounded",
-							  "border");
-
-				new_border.rounded=rounded != "0";
-			}
-
-			// Alternatively, hradius and vradius will set them
-			// to at least 2.
-
-			update_dim_if_given(lock, "hradius", "hradius_scale",
-					    new_border.hradius,
-					    new_border.hradius_scale,
-					    "border", id,
-					    generators,
-					    allowthemerefs);
-
-			update_dim_if_given(lock, "vradius", "vradius_scale",
-					    new_border.vradius,
-					    new_border.vradius_scale,
-					    "border", id,
-					    generators,
-					    allowthemerefs);
-
-			{
-				auto dash_nodes=lock.clone();
-
-				auto xpath=dash_nodes->get_xpath("dash");
-
-				size_t n=xpath->count();
-
-				if (n)
-				{
-					new_border.dashes.clear();
-					new_border.dashes.reserve(n);
-				}
-
-				for (i=0; i<n; ++i)
-				{
-					xpath->to_node(i+1);
-
-					dim_t mm;
-
-					auto t=dash_nodes->get_text();
-
-					if (t.empty())
-						continue;
-
-					std::istringstream i{t};
-
-					imbue i_parse{dash_nodes.c_locale, i};
-
-					double v;
-
-					i >> v;
-
-					if (i.fail())
-						throw EXCEPTION
-							(gettextmsg
-							 (_("Cannot parse dash "
-							    "values of border "
-							    "%1%"), id));
-
-					new_border.dashes.push_back(v);
-				}
-			}
-
-			generators->borders.emplace(id, new_border);
 			parsed=true;
 		}
 	} while (parsed);

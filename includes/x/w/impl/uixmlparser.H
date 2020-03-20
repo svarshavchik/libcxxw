@@ -207,6 +207,85 @@ typedef std::variant<rgb, parsed_scaled_color, parse_linear_gradient,
 
 parse_color_t parse_color(const parser_lock &lock);
 
+//! Parse a \<border> entry in the theme file.
+
+//! Construct this object and invoke parse() to parse the \<border> entry,
+//! which invokes the following:
+//!
+//! - from(): if a "from" attribute was found.
+//!
+//! - color(): The \<color> entry if it exists, with an empty string for
+//! "color2" if one was not specified.
+//!
+//! - rounded(): Called if a \<rounded> exists.
+//!
+//! - dashes(): Called if one or more \<dash> exists.
+//!
+//! - width(), height(), hradius(), vradius(),
+//!   width_scale(), height_scale(), hradius_scale(), vradius_scale(): called
+//!   if the corresponding elements exist.
+
+struct parse_border {
+
+	//! Parse the \<border> element.
+	void parse(const ui::parser_lock &lock);
+
+	//! Invoked by parse()
+
+	//! The implementation can move the string that it gets as a parameter.
+	virtual void from(std::string &)=0;
+
+	//! Invoked by parse()
+
+	//! The implementation can move the strings that it gets as parameters.
+	virtual void color(std::string &color,
+			   std::string &color2)=0;
+
+	//! Invoked by parse()
+
+	//! The implementation can move the string that it gets as a parameter.
+	virtual void width(std::string &)=0;
+	//! Invoked by parse()
+	virtual void width_scale(unsigned)=0;
+
+	//! Invoked by parse()
+
+	//! The implementation can move the string that it gets as a parameter.
+
+	//! The implementation can move the string that it gets as a parameter.
+	virtual void height(std::string &)=0;
+	//! Invoked by parse()
+	virtual void height_scale(unsigned)=0;
+
+	//! Invoked by parse()
+
+	//! The implementation can move the string that it gets as a parameter.
+	virtual void hradius(std::string &)=0;
+	//! Invoked by parse()
+	virtual void hradius_scale(unsigned)=0;
+
+	//! Invoked by parse()
+
+	//! The implementation can move the string that it gets as a parameter.
+	virtual void vradius(std::string &)=0;
+	//! Invoked by parse()
+	virtual void vradius_scale(unsigned)=0;
+
+	//! Invoked by parse()
+	virtual void rounded(bool)=0;
+	//! Invoked by parse()
+
+	//! The implementation can move the vector that it gets as a parameter.
+	virtual void dashes(std::vector<double> &)=0;
+
+private:
+
+	//! Internal helper for parsing colors.
+	static std::string parse_color(const ui::parser_lock &lock,
+				       const char *xpath_name);
+
+};
+
 #if 0
 {
 #endif
