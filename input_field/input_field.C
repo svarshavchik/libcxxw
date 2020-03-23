@@ -14,6 +14,7 @@
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
+#include "x/w/impl/richtext/richtext.H"
 #include "generic_window_handler.H"
 #include "connection_thread.H"
 #include "peephole/peephole.H"
@@ -557,25 +558,44 @@ void input_fieldObj::set(const std::u32string_view &str, bool validated)
 		([str=std::u32string{str}, editor_impl, validated]
 		 (ONLY IN_THREAD)
 		 {
-			 editor_impl->set(IN_THREAD, str, validated);
+			 // This invokes the on_change() callback. Editable
+			 // combo-box's on_change() callback constructor
+			 // the layout manager callback if the input field
+			 // gets set(), so we should lock the editor element
+			 // first, here.
+
+			 internal_richtext_impl_t::lock
+				 lock{editor_impl->text->impl};
+
+			 editor_impl->set(IN_THREAD, str, validated,
+					  user_mod{});
 		 });
 }
 
 void input_fieldObj::set(ONLY IN_THREAD,
 			 const std::string_view &str, bool validated)
 {
+	// This invokes the on_change() callback. Editable
+	// combo-box's on_change() callback constructor
+	// the layout manager callback if the input field
+	// gets set(), so we should lock the editor element
+	// first, here.
+
+	internal_richtext_impl_t::lock
+		lock{impl->editor_element->impl->text->impl};
+
 	impl->editor_element->impl->set
 		(IN_THREAD,
 		 unicode::iconvert::tou::convert(std::string{str},
 						 unicode_locale_chset()).first,
-		 validated);
+		 validated, user_mod{});
 }
 
 void input_fieldObj::set(ONLY IN_THREAD,
 			 const std::u32string_view &str, bool validated)
 {
 	impl->editor_element->impl->set(IN_THREAD, std::u32string{str},
-					validated);
+					validated, user_mod{});
 }
 
 void input_fieldObj::on_change(const functionref<

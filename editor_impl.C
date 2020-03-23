@@ -146,6 +146,31 @@ create_initial_string(editorObj::implObj::init_args &args,
 
 ////////////////////////////////////////////////////////////////////////////
 
+// Avoid explicit conversion to the callback_trigger_t parameter to
+// modifying_text's constructor. The trigger object must exist until
+// the modifying_text helper object gets destroyed
+
+namespace {
+#if 0
+}
+#endif
+
+struct trigger_parameter {
+
+	const callback_trigger_t &trigger;
+
+	trigger_parameter(const callback_trigger_t &trigger)
+		: trigger{trigger}
+	{
+	}
+};
+
+#if 0
+{
+#endif
+}
+
+
 // Helper object constructed on the stack before modifying the edited text.
 //
 // The constructor turns off the blinking cursor.
@@ -160,12 +185,15 @@ protected:
 public:
 	selection_cursor_t::lock cursor_lock;
 	const input_change_type change_type;
+	const callback_trigger_t &trigger;
 
 	modifying_text(ONLY IN_THREAD, editorObj::implObj &me,
-		       input_change_type change_type)
+		       input_change_type change_type,
+		       const trigger_parameter &trigger)
 		: IN_THREAD{IN_THREAD}, me{me},
 		  cursor_lock{IN_THREAD, me},
-		  change_type{change_type}
+		  change_type{change_type},
+		  trigger{trigger.trigger}
 	{
 		// Make sure blinking is turned off.
 		me.unblink(IN_THREAD);
@@ -185,7 +213,8 @@ public:
 		{
 			me.draw_changes(IN_THREAD, cursor_lock,
 					change_type,
-					me.deleted_count, me.inserted_count);
+					me.deleted_count, me.inserted_count,
+					trigger);
 		}
 
 		if (me.current_keyboard_focus(IN_THREAD))
@@ -219,17 +248,19 @@ struct editorObj::implObj::moving_cursor :
 
 	bool &moved;
 	moving_cursor(ONLY IN_THREAD, editorObj::implObj &me,
-		      const input_mask &mask, bool &moved)
-		: moving_cursor(IN_THREAD, me,
+		      const input_mask &mask, bool &moved,
+		      const trigger_parameter &trigger)
+		: moving_cursor{IN_THREAD, me,
 				mask.shift || (mask.buttons & 1), false,
-				moved)
+				moved, trigger}
 	{
 	}
 
 	moving_cursor(ONLY IN_THREAD, editorObj::implObj &me,
 		      bool selection_in_progress,
 		      bool processing_clear,
-		      bool &moved)
+		      bool &moved,
+		      const trigger_parameter &trigger)
 		: modifying_text{IN_THREAD, me,
 				 // If there's an autocomplete callback, and
 				 // it returns something to autocomplete,
@@ -241,7 +272,8 @@ struct editorObj::implObj::moving_cursor :
 				 // the input_change_type is set.
 				 //
 				 // Otherwise, this is not used, at all.
-				 input_change_type::set},
+				 input_change_type::set,
+				 trigger},
 		  old_cursor{me.cursor->clone()},
 		moved{moved}
 	{
@@ -339,11 +371,14 @@ public:
 	{
 		bool ignored;
 
+		callback_trigger_t trigger{cut_copy_paste{}};
+
 		// Leverage moving_cursor for all the heavy lifting.
 		//
 		// We pretend that we're moving the cursor without
 		// a selection in progress, that's all.
-		moving_cursor dummy{IN_THREAD, *me, false, true, ignored};
+		moving_cursor dummy{IN_THREAD, *me, false, true, ignored,
+				    trigger};
 
 		me->current_primary_selection=nullptr;
 	}
@@ -583,7 +618,7 @@ void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
 	{
 		if (current_keyboard_focus(IN_THREAD))
 		{
-			select_all(IN_THREAD);
+			select_all(IN_THREAD, trigger);
 			autoselected=true;
 		}
 		else if (autoselected)
@@ -606,7 +641,8 @@ void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
 
 		bool ignored;
 
-		moving_cursor moving{IN_THREAD, *this, false, false, ignored};
+		moving_cursor moving{IN_THREAD, *this, false, false, ignored,
+				     trigger};
 	}
 }
 
@@ -753,7 +789,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 		if (ke.unicode == 1) // CTRL-A
 		{
-			select_all(IN_THREAD);
+			select_all(IN_THREAD, &ke);
 			return true;
 		}
 
@@ -773,39 +809,54 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 	case XK_Left:
 	case XK_KP_Left:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke, moved};
+			callback_trigger_t trigger{&ke};
+
+			moving_cursor moving{IN_THREAD, *this, ke, moved,
+					     trigger};
 			cursor->prev(IN_THREAD);
 		}
 		return moved;
 	case XK_Right:
 	case XK_KP_Right:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke, moved};
+			callback_trigger_t trigger{&ke};
+
+			moving_cursor moving{IN_THREAD, *this, ke, moved,
+					     trigger};
 			cursor->next(IN_THREAD);
 		}
 		return moved;
 	case XK_Up:
 	case XK_KP_Up:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke, moved};
+			callback_trigger_t trigger{&ke};
+
+			moving_cursor moving{IN_THREAD, *this, ke, moved,
+					     trigger};
 			cursor->up(IN_THREAD);
 		}
 		return moved;
 	case XK_Down:
 	case XK_KP_Down:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke, moved};
+			callback_trigger_t trigger{&ke};
+
+			moving_cursor moving{IN_THREAD, *this, ke, moved,
+					     trigger};
 			cursor->down(IN_THREAD);
 		}
 		return moved;
 	case XK_Delete:
 	case XK_KP_Delete:
-		delete_char_or_selection(IN_THREAD, ke);
+		delete_char_or_selection(IN_THREAD, ke, &ke);
 		return true;
 	case XK_Page_Up:
 	case XK_KP_Page_Up:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke, moved};
+			callback_trigger_t trigger{&ke};
+
+			moving_cursor moving{IN_THREAD, *this, ke, moved,
+					     trigger};
 			cursor->page_up(IN_THREAD,
 					bounds(get_draw_info(IN_THREAD)
 					       .element_viewport).height);
@@ -814,7 +865,10 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 	case XK_Page_Down:
 	case XK_KP_Page_Down:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke, moved};
+			callback_trigger_t trigger{&ke};
+
+			moving_cursor moving{IN_THREAD, *this, ke, moved,
+					     trigger};
 			cursor->page_down(IN_THREAD,
 					  bounds(get_draw_info(IN_THREAD)
 						 .element_viewport).height);
@@ -822,20 +876,26 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 		return moved;
 	case XK_Home:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke, moved};
+			callback_trigger_t trigger{&ke};
+
+			moving_cursor moving{IN_THREAD, *this, ke, moved,
+					     trigger};
 			cursor->start_of_line();
 		}
 		return moved;
 	case XK_End:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke, moved};
+			callback_trigger_t trigger{&ke};
+
+			moving_cursor moving{IN_THREAD, *this, ke, moved,
+					     trigger};
 			cursor->end_of_line();
 		}
 		return moved;
 	case XK_KP_Home:
-		return to_begin(IN_THREAD, ke);
+		return to_begin(IN_THREAD, ke, &ke);
 	case XK_KP_End:
-		return to_end(IN_THREAD, ke);
+		return to_end(IN_THREAD, ke, &ke);
 	case XK_Insert:
 	case XK_KP_Insert:
 		if (ke.shift)
@@ -847,7 +907,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 	if ((!config.oneline() && ke.unicode == '\n') || ke.unicode >= ' ')
 	{
-		insert(IN_THREAD, {&ke.unicode, 1});
+		insert(IN_THREAD, {&ke.unicode, 1}, &ke);
 		return true;
 	}
 
@@ -864,8 +924,11 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 	if (ke.unicode == '\b')
 	{
+		callback_trigger_t trigger{&ke};
+
 		modifying_text modifying{IN_THREAD, *this,
-					 input_change_type::deleted};
+					 input_change_type::deleted,
+					 trigger};
 		delete_selection_info del_info{IN_THREAD, *this, modifying};
 
 		auto starting_pos=del_info.starting_pos;
@@ -1217,19 +1280,22 @@ bool editorObj::implObj::uses_input_method()
 bool editorObj::implObj::pasted(ONLY IN_THREAD,
 				const std::u32string_view &str)
 {
-	insert(IN_THREAD, str);
+	callback_trigger_t trigger{cut_copy_paste{}};
+
+	insert(IN_THREAD, str, trigger);
 	scroll_cursor_into_view(IN_THREAD);
 	return true;
 }
 
 void editorObj::implObj::insert(ONLY IN_THREAD,
-				const std::u32string_view &str)
+				const std::u32string_view &str,
+				const callback_trigger_t &trigger)
 {
 	if (str.empty())
 		return;
 
 	modifying_text modifying{IN_THREAD, *this,
-				 input_change_type::inserted};
+				 input_change_type::inserted, trigger};
 	delete_selection_info del_info{IN_THREAD, *this, modifying};
 
 	update_content(IN_THREAD, modifying,
@@ -1253,7 +1319,8 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 				      selection_cursor_t::lock &cursor_lock,
 				      input_change_type change_made,
 				      size_t deleted,
-				      size_t inserted)
+				      size_t inserted,
+				      const callback_trigger_t &trigger)
 {
 	recalculate(IN_THREAD);
 
@@ -1274,14 +1341,15 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 
 	validation_required(IN_THREAD)=true;
 
-	try {
-		auto &cb=on_change(IN_THREAD);
+	auto &cb=on_change(IN_THREAD);
 
-		if (cb)
-			cb(IN_THREAD, input_change_info_t{change_made,
-						inserted, deleted,
-						size()});
-	} REPORT_EXCEPTIONS(this);
+	if (cb)
+	{
+		try {
+			cb(IN_THREAD, input_change_info_t
+			   {change_made, inserted, deleted, size(), trigger});
+		} REPORT_EXCEPTIONS(this);
+	}
 
 	// Invoke the autocomplete callback if the conditions are right.
 
@@ -1297,16 +1365,17 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 
 		bool flag=false;
 
-		try {
-			auto &cb=on_autocomplete(IN_THREAD);
+		auto &cb=on_autocomplete(IN_THREAD);
 
-			if (cb)
+		if (cb)
+		{
+			try {
 				flag=cb(IN_THREAD, info);
-		} REPORT_EXCEPTIONS(this);
-
+			} REPORT_EXCEPTIONS(this);
+		}
 		if (flag)
 			set(IN_THREAD, info.string, info.string.size(),
-			    info.selection_start);
+			    info.selection_start, trigger);
 	}
 }
 
@@ -1439,7 +1508,10 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 
 		if (!grab_inprogress(IN_THREAD))
 		{
-			moving_cursor moving{IN_THREAD, *this, be, ignored};
+			callback_trigger_t trigger{&be};
+
+			moving_cursor moving{IN_THREAD, *this, be, ignored,
+					     trigger};
 
 			cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
 
@@ -1495,8 +1567,10 @@ void editorObj::implObj::report_motion_event(ONLY IN_THREAD,
 	{
 		bool ignored;
 		{
+			callback_trigger_t trigger{&me};
+
 			moving_cursor moving{IN_THREAD, *this, me.mask,
-					ignored};
+					     ignored, trigger};
 			cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
 		}
 
@@ -1552,7 +1626,10 @@ editorObj::implObj::drop(ONLY IN_THREAD,
 
 	bool moved=false;
 	{
-		moving_cursor moving{IN_THREAD, *this, false, false, moved};
+		callback_trigger_t trigger{cut_copy_paste{}};
+
+		moving_cursor moving{IN_THREAD, *this, false, false, moved,
+				     trigger};
 
 		cursor->swap(dragged_pos);
 		set_focus_only(IN_THREAD, {});
@@ -1817,8 +1894,11 @@ bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
 		break;
 	case cut_or_copy_op::cut:
 		{
+			callback_trigger_t trigger{cut_copy_paste{}};
+
 			modifying_text modifying{IN_THREAD, *this,
-						 input_change_type::deleted};
+						 input_change_type::deleted,
+						 trigger};
 
 			delete_selection_info del_info{IN_THREAD, *this,
 						       modifying};
@@ -1908,45 +1988,50 @@ void editorObj::implObj::remove_secondary_selection(ONLY IN_THREAD)
 	get_window_handler().selection_discard(IN_THREAD, selection);
 }
 
-bool editorObj::implObj::to_begin(ONLY IN_THREAD, const input_mask &mask)
+bool editorObj::implObj::to_begin(ONLY IN_THREAD, const input_mask &mask,
+				  const callback_trigger_t &trigger)
 {
 	bool moved;
 	{
-		moving_cursor moving{IN_THREAD, *this, mask, moved};
+		moving_cursor moving{IN_THREAD, *this, mask, moved, trigger};
 
 		cursor->swap(cursor->begin());
 	}
 	return moved;
 }
 
-bool editorObj::implObj::to_end(ONLY IN_THREAD, const input_mask &mask)
+bool editorObj::implObj::to_end(ONLY IN_THREAD, const input_mask &mask,
+				const callback_trigger_t &trigger)
 {
 	bool moved;
 
 	{
-		moving_cursor moving{IN_THREAD, *this, mask, moved};
+		moving_cursor moving{IN_THREAD, *this, mask, moved, trigger};
 
 		cursor->swap(cursor->end());
 	}
 	return moved;
 }
 
-void editorObj::implObj::select_all(ONLY IN_THREAD)
+void editorObj::implObj::select_all(ONLY IN_THREAD,
+				    const callback_trigger_t &trigger)
 {
 	input_mask mask;
 
-	to_begin(IN_THREAD, mask);
+	to_begin(IN_THREAD, mask, trigger);
 
 	mask.shift=true;
 
-	to_end(IN_THREAD, mask);
+	to_end(IN_THREAD, mask, trigger);
 }
 
 void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
-						  const input_mask &mask)
+						  const input_mask &mask,
+						  const callback_trigger_t
+						  &trigger)
 {
 	modifying_text modifying{IN_THREAD, *this,
-				 input_change_type::deleted};
+				 input_change_type::deleted, trigger};
 	delete_selection_info del_info{IN_THREAD, *this, modifying};
 
 	if (del_info.n > 0)
@@ -2014,9 +2099,10 @@ editorObj::implObj::pos(selection_cursor_t::const_lock &cursor_lock)
 }
 
 void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
-			     bool validated)
+			     bool validated,
+			     const callback_trigger_t &trigger)
 {
-	set(IN_THREAD, string, string.size(), string.size());
+	set(IN_THREAD, string, string.size(), string.size(), trigger);
 
 	// draw_changes() was called, setting validation_required=true
 	//
@@ -2026,7 +2112,8 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 }
 
 void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
-			     size_t cursor_pos, size_t selection_pos)
+			     size_t cursor_pos, size_t selection_pos,
+			     const callback_trigger_t &trigger)
 {
 	size_t s=string.size();
 
@@ -2043,7 +2130,7 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 	bool ignored;
 
 	moving_cursor moving{IN_THREAD, *this, will_have_selection, false,
-			ignored};
+			     ignored, trigger};
 	selection_cursor_t::lock &cursor_lock=moving.cursor_lock;
 
 	size_t deleted=cursor->end()->pos();

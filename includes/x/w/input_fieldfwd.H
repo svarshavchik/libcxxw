@@ -10,6 +10,7 @@
 #include <x/w/callback_triggerfwd.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/factoryfwd.H>
+#include <x/w/callback_triggerfwd.H>
 #include <x/ptrfwd.H>
 #include <string>
 
@@ -692,6 +693,10 @@ struct input_change_info_t {
 
 	//! How many unicode characters there are now.
 	size_t size;
+
+	//! Additional context on the reason for this on_change() invocation.
+
+	const callback_trigger_t &trigger;
 };
 
 //! Information passed to the input_field's on_autocomplete() callback.

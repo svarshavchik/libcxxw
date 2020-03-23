@@ -62,7 +62,8 @@ public:
 
 	//! Invoke request_or_abort_search() if necessary.
 	void set(ONLY IN_THREAD, const std::u32string &string,
-		 size_t cursor_pos, size_t selection_pos)
+		 size_t cursor_pos, size_t selection_pos,
+		 const callback_trigger_t &trigger)
 		override;
 
 private:

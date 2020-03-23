@@ -157,9 +157,11 @@ bool editor_search_implObj::process_button_event(ONLY IN_THREAD,
 }
 
 void editor_search_implObj::set(ONLY IN_THREAD, const std::u32string &string,
-				size_t cursor_pos, size_t selection_pos)
+				size_t cursor_pos, size_t selection_pos,
+				const callback_trigger_t &trigger)
 {
-	superclass_t::set(IN_THREAD, string, cursor_pos, selection_pos);
+	superclass_t::set(IN_THREAD, string, cursor_pos, selection_pos,
+			  trigger);
 
 	text_state new_state{IN_THREAD, *this};
 
@@ -268,7 +270,7 @@ void editor_search_implObj
 	const auto &s=most_recent_search_results(IN_THREAD)[item_number];
 
 	// We override set(), so must go straight to the horse's mouth.
-	editorObj::implObj::set(IN_THREAD, s, s.size(), s.size());
+	editorObj::implObj::set(IN_THREAD, s, s.size(), s.size(), trigger);
 
 	validation_required(IN_THREAD)=true;
 	validate_modified(IN_THREAD, trigger);

@@ -155,6 +155,34 @@ focusable new_editable_comboboxlayoutmanager
 			 return flag;
 		 });
 
+	// If the contents of the input field get set(), we want to unselect()
+	// any selection.
+	input_field->on_change
+		([container_impl=make_weak_capture(f->get_container_impl())]
+		 (ONLY IN_THREAD,
+		  auto &onchange_info) {
+
+			 if (onchange_info.trigger.index() !=
+			     callback_trigger_user_mod)
+				 return;
+
+			 auto got=container_impl.get();
+
+			 if (!got)
+				 return;
+
+			 auto &[container]=*got;
+
+			 container->invoke_layoutmanager
+				 ([&]
+				  (const auto &impl)
+				  {
+					  editable_comboboxlayoutmanager lm=
+						  impl->create_public_object();
+
+					  lm->unselect(IN_THREAD);
+				  });
+		 });
 	return input_field;
 }
 
@@ -192,7 +220,9 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 				editor_impl->set(IN_THREAD,
 						 lock.item
 						 (info.list_item_status_info
-						  .item_number).string, true);
+						  .item_number).string, true,
+						 info.list_item_status_info
+						 .trigger);
 
 				// Make sure that any validation callback
 				// that gets installed into the input element

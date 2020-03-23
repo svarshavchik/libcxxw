@@ -558,7 +558,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 			  selection_cursor_t::lock &cursor_lock,
 			  input_change_type change_made,
 			  size_t deleted,
-			  size_t inserted);
+			  size_t inserted,
+			  const callback_trigger_t &trigger);
 
 	//! Draw a fragment range.
 	void draw_between(ONLY IN_THREAD,
@@ -674,19 +675,25 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Insert text at current position.
 
 	void insert(ONLY IN_THREAD,
-		    const std::u32string_view &str);
+		    const std::u32string_view &str,
+		    const callback_trigger_t &trigger);
 
 	//! Move cursor to the beginning of the text.
-	bool to_begin(ONLY IN_THREAD, const input_mask &mask);
+	bool to_begin(ONLY IN_THREAD, const input_mask &mask,
+		      const callback_trigger_t &trigger);
 
 	//! Move cursor to the end of the text.
-	bool to_end(ONLY IN_THREAD, const input_mask &mask);
+	bool to_end(ONLY IN_THREAD, const input_mask &mask,
+		    const callback_trigger_t &trigger);
 
 	//! Select the entire text.
-	void select_all(ONLY IN_THREAD);
+	void select_all(ONLY IN_THREAD,
+			const callback_trigger_t &trigger);
 
 	//! What happens when DEL is pressed.
-	void delete_char_or_selection(ONLY IN_THREAD, const input_mask &mask);
+	void delete_char_or_selection(ONLY IN_THREAD,
+				      const input_mask &mask,
+				      const callback_trigger_t &trigger);
 
  public:
 
@@ -706,11 +713,13 @@ class LIBCXX_HIDDEN editorObj::implObj
  public:
 	//! Set the current contents of the editor
 
-	void set(ONLY IN_THREAD, const std::u32string &string, bool validated);
+	void set(ONLY IN_THREAD, const std::u32string &string, bool validated,
+		 const callback_trigger_t &trigger);
 
 	//! Set the current contents of the editor
 	virtual void set(ONLY IN_THREAD, const std::u32string &string,
-			 size_t cursor_pos, size_t selection_pos);
+			 size_t cursor_pos, size_t selection_pos,
+			 const callback_trigger_t &trigger);
 
 	//! Whether we're cool with giving up focus.
 	bool ok_to_lose_focus(ONLY IN_THREAD,

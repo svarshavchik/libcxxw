@@ -27,6 +27,13 @@ struct prev_key {};
 
 struct next_key {};
 
+//! Placeholder for a \ref callback_trigger_cut_copy_paste "cut/copy/paste event".
+struct cut_copy_paste {};
+
+//! Placeholder for a \ref callback_trigger_user_mod "user modify event".
+
+struct user_mod {};
+
 //! \ref callback_trigger_t "callback_trigger_t" is not copyable.
 
 struct callback_trigger_is_not_copyable {
@@ -56,6 +63,8 @@ typedef std::variant<std::monostate,
 		     initial,
 		     prev_key,
 		     next_key,
+		     cut_copy_paste,
+		     user_mod,
 		     callback_trigger_is_not_copyable
 		     > callback_trigger_t;
 
@@ -115,6 +124,22 @@ constexpr size_t callback_trigger_prev=5;
 //! was pressed.
 
 constexpr size_t callback_trigger_next=6;
+
+//! \ref callback_trigger_t "callback_trigger_t" indicating a cut/copy/paste operation
+
+//! std::variant index used in the following circumstances:
+//!
+//! - cut, copy, or paste operation
+constexpr size_t callback_trigger_cut_copy_paste=7;
+
+//! \ref callback_trigger_t "callback_trigger_t" indicating an user modification
+
+//! std::variant index used in the following circumstances:
+//!
+//! - \ref input_field "input field" has been modified by calling set(). This
+//! trigger is seen by the input field's on_change() callback.
+
+constexpr size_t callback_trigger_user_mod=8;
 
 LIBCXXW_NAMESPACE_END
 
