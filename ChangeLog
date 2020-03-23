@@ -1,5 +1,9 @@
 2020-03-20  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* combobox/editable_comboboxlayoutmanager: setting the input field
+	to one of the values automatically selects it in the combo-box
+	dropdown.
+
 	* Implements an IN_THREAD version of set() for validated input
 	fields.
 

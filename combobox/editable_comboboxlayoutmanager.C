@@ -187,8 +187,35 @@ focusable new_editable_comboboxlayoutmanager
 						  // Input field cleared.
 					  }
 
+					  // Directly updated by calling
+					  // set(). If it's not empty,
+					  // call search() to find this item,
+					  // and select the corresponding item.
+
+					  else if (lm->size())
+					  {
+						  size_t found;
+
+						  standard_combobox_lock
+							  lock{lm};
+
+						  if (lock.search
+						      (0,
+						       lm->get_unicode(),
+						       found,
+						       false))
+						  {
+							  if (!lm->selected
+							      (found))
+								  lm->autoselect
+									  (found)
+									  ;
+							  return;
+						  }
+					  }
 
 					  lm->unselect(IN_THREAD);
+
 				  });
 		 });
 	return input_field;
