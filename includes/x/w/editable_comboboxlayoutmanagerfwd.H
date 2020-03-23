@@ -31,6 +31,29 @@ creates a
 \ref focusable_container "focusable container" that uses the editable
 combo-box layout manager.
 
+This subclass also implements access to the underlying
+ \ref input_field "input_field", inheriting the following methods:
+
+- set() updates the contents of the input field, and on_validate()
+installs the input field's validation callbacks. None of the other
+callback from the underlying input field are available,
+they are appropriated by the editable combo-box.
+
+- size(), pos(), get(), and get_unicode() are inherited from the internal
+\ref const_input_lock "const_input_lock".
+
+\code
+layout_manager->on_validate([]
+                           (ONLY IN_THREAD,
+                            const INSERT_LIBX_NAMESPACE::w::editable_comboboxlayoutmanager &lm)
+                           {
+                             std::string t=lm->get();
+
+                             return true;
+                          });
+\endcode
+\endcode
+
 */
 
 typedef ref<editable_comboboxlayoutmanagerObj> editable_comboboxlayoutmanager;

@@ -35,14 +35,6 @@ public:
 
 	const_element combobox_current_selection() const;
 
-	//! If this is an editable combo-box return the editable input field.
-
-	input_field editable_combobox_input_field();
-
-	//! If this is an editable combo-box return the editable input field.
-
-	const_input_field editable_combobox_input_field() const;
-
 	//! If this is an editable combo-box return the current input.
 
 	std::string editable_combobox_get() const;

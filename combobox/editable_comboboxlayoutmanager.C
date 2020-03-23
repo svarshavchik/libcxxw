@@ -10,6 +10,7 @@
 #include "x/w/input_field_lock.H"
 #include "x/w/impl/container.H"
 #include "busy.H"
+#include "catch_exceptions.H"
 #include <x/weakcapture.H>
 #include <x/visitor.H>
 
@@ -19,23 +20,17 @@ editable_comboboxlayoutmanagerObj
 ::editable_comboboxlayoutmanagerObj(const ref<implObj> &impl,
 				    const ref<listlayoutmanagerObj::implObj>
 				    &list_layout_impl)
-	: standard_comboboxlayoutmanagerObj(impl, list_layout_impl),
-	  impl(impl)
+	: input_lock
+	{
+	 // See current_selection()
+	 input_field{impl->get(0, 0)}
+	},
+	  standard_comboboxlayoutmanagerObj{impl, list_layout_impl},
+	  impl{impl}
 {
 }
 
 editable_comboboxlayoutmanagerObj::~editable_comboboxlayoutmanagerObj()=default;
-
-input_lock::input_lock(editable_comboboxlayoutmanagerObj &e)
-	: const_input_lock{e},
-	locked_input_field{input_field{e.current_selection()}}
-{
-}
-
-const_input_lock::const_input_lock(const editable_comboboxlayoutmanagerObj &e)
-	: const_input_lock{const_input_field{e.current_selection()}}
-{
-}
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -162,10 +157,6 @@ focusable new_editable_comboboxlayoutmanager
 		 (ONLY IN_THREAD,
 		  auto &onchange_info) {
 
-			 if (onchange_info.trigger.index() !=
-			     callback_trigger_user_mod)
-				 return;
-
 			 auto got=container_impl.get();
 
 			 if (!got)
@@ -179,6 +170,23 @@ focusable new_editable_comboboxlayoutmanager
 				  {
 					  editable_comboboxlayoutmanager lm=
 						  impl->create_public_object();
+
+					  // If set() was called, we clear
+					  // any selected item.
+					  //
+					  // autocomplete does not get called
+					  // when the input field is cleared,
+					  // so we check that here.
+
+					  if (onchange_info.trigger.index() !=
+					      callback_trigger_user_mod)
+					  {
+						  if (lm->size())
+							  return;
+
+						  // Input field cleared.
+					  }
+
 
 					  lm->unselect(IN_THREAD);
 				  });
@@ -260,6 +268,12 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 	};
 
 
+void editable_comboboxlayoutmanagerObj
+::on_validate(const functionref<input_field_validation_callback_t> &cb)
+{
+	locked_input_field->on_validate(cb);
+}
+
 custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 ::get_selection_changed() const
 {
@@ -287,24 +301,18 @@ new_editable_comboboxlayoutmanager
 		::create(i.container_impl, *this);
 }
 
-input_field focusable_containerObj::editable_combobox_input_field()
-{
-	return combobox_current_selection();
-}
-
-const_input_field focusable_containerObj::editable_combobox_input_field() const
-{
-	return combobox_current_selection();
-}
-
 std::string focusable_containerObj::editable_combobox_get() const
 {
-	return const_input_lock{editable_combobox_input_field()}.get();
+	x::w::const_editable_comboboxlayoutmanager lm=get_layoutmanager();
+
+	return lm->get();
 }
 
 std::u32string focusable_containerObj::editable_combobox_get_unicode() const
 {
-	return const_input_lock{editable_combobox_input_field()}.get_unicode();
+	x::w::const_editable_comboboxlayoutmanager lm=get_layoutmanager();
+
+	return lm->get_unicode();
 }
 
 LIBCXXW_NAMESPACE_END

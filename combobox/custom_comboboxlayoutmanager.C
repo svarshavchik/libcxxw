@@ -54,7 +54,9 @@ element custom_comboboxlayoutmanagerObj::current_selection()
 {
 	// The current selection element is always position (0, 0)
 	// in the internally-managed grid.
-
+	//
+	// The same thing is done in editable_comboboxlayoutmanagerObj's
+	// constructor, which needs a peek at its input field.
 	return impl->get(0, 0);
 }
 

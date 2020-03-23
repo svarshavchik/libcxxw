@@ -57,12 +57,12 @@ public:
 	//! The mixin's widget has been initialized
 
 	//! Invokes theme_updated().
-	void initialize(ONLY IN_THREAD);
+	void initialize(ONLY IN_THREAD) LIBCXX_PUBLIC;
 
 	//! The theme was updated.
 
 	//! Invokes the cached font's theme_updated().
-	void theme_updated(ONLY IN_THREAD);
+	void theme_updated(ONLY IN_THREAD) LIBCXX_PUBLIC;
 };
 
 //! Attach a tag to a theme_fontObj

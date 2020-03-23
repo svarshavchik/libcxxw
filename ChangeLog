@@ -1,3 +1,11 @@
+2020-03-20  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Removes usage of input_lock with editable combo-boxes, replaced
+	by having editable_comboboxlayoutmanager inherit methods that access
+	the underlying input field from the widget itself.
+
+0.26
+
 2020-02-16  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Using a key/button to select a list item explicitly scrolls it into

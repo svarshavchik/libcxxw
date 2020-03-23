@@ -39,7 +39,7 @@ class scratch_buffer_draw_impl {
 	//! Reinvoke do_draw(), after locking area_scratch
 	void get_scratch_buffer(ONLY IN_THREAD,
 				elementObj::implObj &element,
-				const draw_info &di);
+				const draw_info &di) LIBCXX_PUBLIC;
 
 	//! Implement do_draw(), with a convenient scratch buffer.
 	virtual void do_draw(ONLY IN_THREAD,

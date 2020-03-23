@@ -483,6 +483,8 @@ struct input_field_filter_info {
 	virtual void select_all() const LIBCXX_PUBLIC=0;
 };
 
+#include <x/w/editable_comboboxlayoutmanager_input_field.H>
+
 LIBCXXW_NAMESPACE_END
 
 #endif

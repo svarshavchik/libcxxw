@@ -270,15 +270,16 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 	install_color_standard_combobox_layoutmanager(color_radial_inner_axis);
 	install_color_standard_combobox_layoutmanager(color_radial_outer_axis);
 
-	color_scaled_page_from->editable_combobox_input_field()
-		->on_validate
-		([]
-		 (ONLY IN_THREAD,
-		  const auto &info)
-		 {
-			 appinvoke(&appObj::color_updated, IN_THREAD);
-			 return true;
-		 });
+	x::w::editable_comboboxlayoutmanager
+	{color_scaled_page_from->get_layoutmanager()}
+	->on_validate
+		  ([]
+		   (ONLY IN_THREAD,
+		    const auto &info)
+		   {
+			   appinvoke(&appObj::color_updated, IN_THREAD);
+			   return true;
+		   });
 
 	x::w::button color_update_button=
 		ui.get_element("color_update_button");
@@ -747,8 +748,7 @@ struct appObj::color_create_gradient_row {
 		// now we can do what we're told by manually setting
 		// the input field manually.
 
-		x::w::input_lock i_lock{lm};
-		i_lock.locked_input_field->set(IN_THREAD, color);
+		lm->set(IN_THREAD, color);
 	}
 
 	// Shared code that adds a row with inputs for a new gradient color
@@ -974,14 +974,11 @@ void appObj::color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock)
 		x::w::editable_comboboxlayoutmanager lm=
 			color_scaled_page_from->get_layoutmanager();
 
-		x::w::input_lock scaled_color_lock{lm};
-
 		lm->replace_all_items(IN_THREAD,
 				      create_gradient_row.existing_colors);
 
-		scaled_color_lock.locked_input_field
-			->set(IN_THREAD, reset_scaled_color.from_name,
-			      !reset_scaled_color.from_name.empty());
+		lm->set(IN_THREAD, reset_scaled_color.from_name,
+			!reset_scaled_color.from_name.empty());
 
 		if (reset_scaled_color.from_name.empty())
 		{

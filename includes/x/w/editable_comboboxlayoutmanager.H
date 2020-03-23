@@ -115,6 +115,8 @@ protected:
 		const override;
 };
 
+#include <x/w/editable_comboboxlayoutmanager_input_field.H>
+
 LIBCXXW_NAMESPACE_END
 
 #endif

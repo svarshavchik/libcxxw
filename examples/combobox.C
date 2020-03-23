@@ -344,17 +344,17 @@ void create_combobox(const options &opts)
 
 	x::w::focusable_container combobox=main_window->appdata;
 
-	// For an editable combobox, the layout manager can be used to
-	// construct an input_lock, providing access to the contents of the
+	// The editable combo-box implements most methods that access
+	// the underlying contents of the locked input field like get()
+	// (via the input_lock) and set().
 	// input field.
 
 	if (opts.editable->value)
 	{
 		x::w::editable_comboboxlayoutmanager lm=
 			combobox->get_layoutmanager();
-		x::w::input_lock lock{lm};
 
-		std::cout << "Final contents: " << lock.get() << std::endl;
+		std::cout << "Final contents: " << lm->get() << std::endl;
 	}
 
 	x::w::standard_comboboxlayoutmanager lm=

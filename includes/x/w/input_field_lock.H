@@ -9,7 +9,6 @@
 #include <x/mpobj.H>
 #include <x/refptr_traits.H>
 #include <x/w/input_fieldfwd.H>
-#include <x/w/editable_comboboxlayoutmanagerfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -62,25 +61,14 @@ typedef mpobj<ref<richtext_implObj>, std::recursive_mutex
 
 class const_input_lock : public internal_richtext_impl_t::lock {
 
- public:
+public:
 
 	//! Hold a reference on the input field
 
 	const const_input_field locked_input_field;
 
 	//! Constructor
-	template<typename ref_type,
-		 typename=typename refptr_traits<ref_type>::base_t>
-	inline const_input_lock(const ref_type &r) : const_input_lock{*r}
-	{
-	}
-
-	//! Constructor
-	const_input_lock(const input_fieldObj &) LIBCXX_PUBLIC;
-
-	//! Constructor
-	const_input_lock(const editable_comboboxlayoutmanagerObj &)
-		LIBCXX_PUBLIC;
+	const_input_lock(const const_input_field &) LIBCXX_PUBLIC;
 
 	//! Destructor
 
@@ -127,21 +115,10 @@ class input_lock : public const_input_lock {
 	const input_field locked_input_field;
 
 	//! Constructor
-	template<typename ref_type,
-		 typename=typename refptr_traits<ref_type>::base_t>
-	inline input_lock(const ref_type &r) : input_lock{*r}
-	{
-	}
+	input_lock(const input_field &) LIBCXX_PUBLIC;
 
 	//! Destructor
 	~input_lock() LIBCXX_PUBLIC;
-
-	//! Constructor
-	input_lock(input_fieldObj &) LIBCXX_PUBLIC;
-
-	//! Constructor
-	input_lock(editable_comboboxlayoutmanagerObj &)
-		LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

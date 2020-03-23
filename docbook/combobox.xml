@@ -243,7 +243,7 @@ auto container=factory->create_focusable_container([]
 // ...
 x::w::editable_comboboxlayoutmanager lm=container->get_layoutmanager();
 
-x::w::input_lock lock{lm};</programlisting>
+std::string s=lm->get();</programlisting>
       </informalexample>
     </blockquote>
 
@@ -254,20 +254,21 @@ x::w::input_lock lock{lm};</programlisting>
       to <methodname>create_focusable_container</methodname>() constructs an
       <classname>&ns;::w::focusable_container</classname> whose layout manager
       is an
-      <ulink url="&link-typedef-x--w-editable-comboboxlayoutmanager;"><classname>&ns;:;w::editable_comboboxlayoutmanager</classname></ulink>.
+      <ulink url="&link-typedef-x--w-editable-comboboxlayoutmanager;"><classname>&ns;::w::editable_comboboxlayoutmanager</classname></ulink>.
     </para>
 
     <para>
-      <classname>&ns;:;w::editable_comboboxlayoutmanager</classname> is
+      <classname>&ns;::w::editable_comboboxlayoutmanager</classname> is
       a subclass of a
       <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standard_comboboxlayoutmanager</classname></ulink>
       and inherits all of its methods.
-      Additionally, an
-      <classname>&ns;:;w::editable_comboboxlayoutmanager</classname>
-      can be passed as a parameter to an
-      <link linkend="input_field"><classname>&ns;::w::input_lock</classname></link>'s
-      constructor in order to access the contents of combo-box's
-      <classname>&ns;::w::input_field</classname>.
+      Additionally, it inherits several methods from the underlying
+      <link linkend="input_field"><classname>&ns;::w::input_field</classname></link>,
+      and its associated <classname>&ns;::w::input_lock</classname>
+      (which is held, internally, by the
+      <classname>&ns;::w::editable_comboboxlayoutmanager</classname>),
+      like <methodname>get</methodname>() and
+      <methodname>set</methodname>();
     </para>
   </section>
 

@@ -38,7 +38,8 @@ class scratch_and_mask_buffer_draw_impl {
 				     const pixmap &area_pixmap,
 				     const gc &area_gc,
 				     const clip_region_set &clipped,
-				     const rectangle &area_entire_rect);
+				     const rectangle &area_entire_rect)
+		LIBCXX_PUBLIC;
 
 	//! Implement do_draw(), with a convenient scratch buffer.
 	virtual void do_draw(ONLY IN_THREAD,

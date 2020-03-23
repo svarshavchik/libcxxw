@@ -36,13 +36,13 @@ public:
 
 	clip_region_set(ONLY IN_THREAD,
 			elementObj::implObj &,
-			const draw_info &di);
+			const draw_info &di) LIBCXX_PUBLIC;
 
 	//! Constructor - install clip mask for drawing.
 
 	clip_region_set(ONLY IN_THREAD,
 			generic_windowObj::handlerObj &,
-			const draw_info &di);
+			const draw_info &di) LIBCXX_PUBLIC;
 
 	clip_region_set(const clip_region_set &)=delete;
 

@@ -7,14 +7,26 @@
 
 #include <x/w/editable_comboboxlayoutmanagerfwd.H>
 #include <x/w/standard_comboboxlayoutmanagerobj.H>
+#include <x/w/input_field_lock.H>
+#include <x/w/input_fieldfwd.H>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 
 //! \see editable_comboboxlayoutmanager
+//!
+//! Inherits from input_lock first, so that the editor element gets locked
+//! first, before the list item layout manager's lock gets created.
+//!
+//! The internal on_change() callback gets invoked if set() gets called
+//! here, with editor locked, and constructs its own public object.
+//!
+//! This maintains the same locking order.
 
 class editable_comboboxlayoutmanagerObj :
+	private input_lock,
 	public standard_comboboxlayoutmanagerObj {
 
 public:
@@ -50,6 +62,29 @@ public:
 		      uielements &elements) override;
 
 	using standard_comboboxlayoutmanagerObj::generate;
+
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Access the underlying input field.
+
+	using input_lock::size;
+	using input_lock::pos;
+	using input_lock::get;
+	using input_lock::get_unicode;
+
+	//! Forward set() to the underlying input field
+
+	template<typename ...Args> struct set_args_t;
+
+	template<typename ...Args>
+	typename set_args_t<Args...>::void_t set(Args && ...args);
+
+	//! Contents of the input field were updated directly
+
+	//! Equivalent to on_validate() for the underlying in put field.
+
+	void on_validate(const functionref<input_field_validation_callback_t>
+			 &);
 };
 
 LIBCXXW_NAMESPACE_END
