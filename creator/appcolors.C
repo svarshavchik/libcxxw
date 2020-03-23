@@ -1322,8 +1322,7 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 			 autoselect_existing_color(IN_THREAD,
 						   l, ids, initial_color);
 
-			 x::w::input_field f=l->current_selection();
-			 f->on_validate
+			 l->on_validate
 				 ([]
 				  (ONLY IN_THREAD,
 				   const auto &trigger)

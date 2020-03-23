@@ -52,7 +52,9 @@ layout_manager->on_validate([]
                              return true;
                           });
 \endcode
-\endcode
+
+This is eqiuvalent to invoking on_validate() on the undertlying input field.
+Additionally, set_validator() and set_string_validator() are also available.
 
 */
 

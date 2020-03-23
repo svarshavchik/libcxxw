@@ -269,10 +269,28 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 				editor_impl->validation_required(IN_THREAD)=
 					true;
 
-				focusableObj &f=*current_selection;
+				// Move the focus back to the current_selection
+				// if this is the result of key or button
+				// activity. Otherwise, it's possible that
+				// this is because this combo-box was set(),
+				// if so don't mess with the input focus.
 
-				f.get_impl()->request_focus_if_possible
-					(IN_THREAD, true);
+				switch (info.list_item_status_info.trigger
+					.index()) {
+				default:
+					break;
+				case callback_trigger_key_event:
+				case callback_trigger_button_event:
+				case callback_trigger_motion_event:
+				case callback_trigger_next:
+				case callback_trigger_prev:
+
+					focusableObj &f=*current_selection;
+
+					f.get_impl()->request_focus_if_possible
+						(IN_THREAD, true);
+				}
+
 				editor_impl->validate_modified(IN_THREAD, {});
 			}
 		}

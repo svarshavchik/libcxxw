@@ -81,10 +81,31 @@ public:
 
 	//! Contents of the input field were updated directly
 
-	//! Equivalent to on_validate() for the underlying in put field.
+	//! Equivalent to on_validate() for the underlying input field.
 
 	void on_validate(const functionref<input_field_validation_callback_t>
 			 &);
+
+	//! Install a validator
+
+	//! Equivalent to calling set_validator() for the underlying
+	//! input_field.
+	template<typename ...Args>
+	auto set_validator(Args && ...args);
+
+	//! Install a validator
+
+	//! Equivalent to calling set_validator() for the underlying
+	//! input_field.
+	template<typename ...Args>
+	auto set_string_validator(Args && ...args);
+
+	//! Check validation status
+
+	//! Equivalent to calling validate_modified() for the underlying
+	//! input_field.
+	template<typename ...Args>
+	bool validate_modified(Args && ...args);
 };
 
 LIBCXXW_NAMESPACE_END

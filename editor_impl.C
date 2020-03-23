@@ -1355,8 +1355,21 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 
 	size_t s=size();
 
+	bool is_delete_or_backspace=false;
+
+	if (std::holds_alternative<const key_event *>(trigger))
+	{
+		auto &ke=std::get<const key_event *>(trigger);
+
+		if (ke && (ke->keysym == XK_Delete ||
+			   ke->keysym == XK_KP_Delete ||
+			   ke->unicode == '\b'))
+			is_delete_or_backspace=true;
+	}
+
 	if (change_made != input_change_type::set &&
 	    s > 0 && cursor->pos() == s &&
+	    !is_delete_or_backspace &&
 	    (!cursor_lock.cursor || cursor_lock.cursor->pos() == cursor->pos()))
 	{
 		busy_impl mcguffin{*this};

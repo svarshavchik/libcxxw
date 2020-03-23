@@ -34,10 +34,10 @@ public:
 	~custom_comboboxlayoutmanagerObj() LIBCXX_HIDDEN;
 
 	//! Return the widget that represents the current selection.
-	element current_selection();
+	virtual element current_selection();
 
 	//! Return the widget that represents the current selection.
-	const_element current_selection() const;
+	virtual const_element current_selection() const;
 
 	//! Install a new selection changed callback.
 	void on_selection_changed(const custom_combobox_selection_changed_t &);

@@ -36,6 +36,18 @@ public:
 	//! Destructor
 	~standard_comboboxlayoutmanagerObj() LIBCXX_HIDDEN;
 
+	//! Override current_selection()
+
+	//! The standard combo-box's current selection is internal, and
+	//! inaccessible. This throws an exception.
+	element current_selection() override;
+
+	//! Override current_selection()
+
+	//! The standard combo-box's current selection is internal, and
+	//! inaccessible. This throws an exception.
+	const_element current_selection() const override;
+
 	//! Append a new item to the combo-box.
 
 	new_items_ret append_items(const std::vector<list_item_param> &items)

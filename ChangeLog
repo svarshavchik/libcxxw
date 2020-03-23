@@ -1,3 +1,12 @@
+2020-03-21  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* editor_impl.C: Do not invoke the autocomplete callback in response
+	to a backspace or delete.
+
+	* combobox/editable_comboboxlayoutmanager.C: Reset focus after
+	combo-box selection is made only if it's because of a key or button
+	event.
+
 2020-03-20  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* combobox/editable_comboboxlayoutmanager: setting the input field

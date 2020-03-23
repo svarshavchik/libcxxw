@@ -1139,4 +1139,16 @@ new_standard_comboboxlayoutmanager
 			 selection_changed, true);
 }
 
+element standard_comboboxlayoutmanagerObj::current_selection()
+{
+	throw EXCEPTION(_("Standard combo-box current selection widgets are"
+			  " not accessible"));
+}
+
+const_element standard_comboboxlayoutmanagerObj::current_selection() const
+{
+	throw EXCEPTION(_("Standard combo-box current selection widgets are"
+			  " not accessible"));
+}
+
 LIBCXXW_NAMESPACE_END
