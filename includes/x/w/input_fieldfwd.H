@@ -205,10 +205,6 @@ INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_field=field->set_
                  std::cout << "No new value" << std::endl;
          });
 
-// ...
-
-std::optional<int> value=validated_vield->validated_value.get();
-
 \endcode
 
 set_validator() uses on_validate() to provide a consistent input validation
@@ -617,10 +613,6 @@ typedef const_ptr<input_fieldObj> const_input_fieldptr;
 //!              },
 //!              []
 //!              (int n) { return std::to_string(n) });
-//!
-//! // ...
-//! std::optional<int> last_value=value->validated_value.get()
-//!
 //! \endcode
 //!
 //! \ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>"
@@ -629,10 +621,26 @@ typedef const_ptr<input_fieldObj> const_input_fieldptr;
 //! holds the most recently entered value into the input field.
 //! The callback installed by
 //! set_validator() and set_string_validator() owns a reference to this object.
+//!
+//! \code
+//! std::optional<int> last_value=value->validated_value.get()
+//!
+//! value->set(5);
+//!
+//! value->set(IN_THREAD, 5);
+//!
+//! value->set(std::nullopt);
+//! \endcode
+//!
 //! Its sole \c validated_value member is the most recently entered value.
 //! Generally, no value gets returned before the first value gets entered into
-//! the input field, or if the entered
-//! contents could not be validated.
+//! the input field, or if the entered contents could not be validated.
+//!
+//! Do not modify the \c validated_value, call set() to modify it and update
+//! the visible input field contents.
+//!
+//! The new value is also a \c std::optional, with a std::nullopt indicated
+//! an unvalidated (non-entered) initial value for the field.
 
 template<typename type>
 using validated_input_field=ref<validated_input_fieldObj<type>>;

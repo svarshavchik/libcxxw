@@ -1,5 +1,8 @@
 2020-03-20  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Implements an IN_THREAD version of set() for validated input
+	fields.
+
 	* Removes usage of input_lock with editable combo-boxes, replaced
 	by having editable_comboboxlayoutmanager inherit methods that access
 	the underlying input field from the widget itself.
