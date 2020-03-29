@@ -7,6 +7,7 @@
 #include "x/w/impl/uixmlparser.H"
 #include "messages.H"
 #include <x/messages.H>
+#include <x/mpthreadlock.H>
 #include <cmath>
 #include <set>
 
@@ -97,7 +98,6 @@ void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 		 {
 			 appinvoke(&appObj::update_theme,
 				   IN_THREAD, busy,
-				   &appObj::dimension_validate,
 				   &appObj::dimension_update);
 
 		 });
@@ -119,7 +119,6 @@ void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 		 {
 			 appinvoke(&appObj::update_theme,
 				   IN_THREAD, busy,
-				   &appObj::dimension_ok_to_delete,
 				   &appObj::dimension_delete);
 		 });
 
@@ -428,13 +427,6 @@ void appObj::dimension_scale_option_selected(ONLY IN_THREAD)
 	dimension_value->set("");
 }
 
-bool appObj::dimension_validate(ONLY IN_THREAD)
-{
-	return dimension_new_name->validate_modified(IN_THREAD) &&
-		dimension_value->validate_modified(IN_THREAD) &&
-		dimension_scale_value->validate_modified(IN_THREAD);
-}
-
 void appObj::dimension_field_updated(ONLY IN_THREAD)
 {
 	dimension_info_t::lock lock{dimension_info};
@@ -513,13 +505,33 @@ bool appObj::dimension_update_save_params(ONLY IN_THREAD,
 	return true;
 }
 
-void appObj::dimension_update(ONLY IN_THREAD,
-			      const update_callback_t &callback)
+appObj::get_updatecallbackptr appObj::dimension_update(ONLY IN_THREAD)
 {
 	dimension_info_t::lock lock{dimension_info};
 
+	bool validated=dimension_new_name->validate_modified(IN_THREAD) &&
+		dimension_value->validate_modified(IN_THREAD) &&
+		dimension_scale_value->validate_modified(IN_THREAD);
+
+	if (!validated)
+		return nullptr;
+
+	return [validated, saved_lock=lock.threadlock(x::ref{this})]
+		(appObj *me)
+	       {
+		       dimension_info_t::lock lock{saved_lock};
+
+		       return me->dimension_update2(lock);
+	       };
+}
+
+appObj::update_callback_t appObj::dimension_update2(dimension_info_t::lock
+						     &lock)
+{
+	appObj::update_callback_t ret;
+
 	if (!lock->save_params)
-		return;
+		return ret;
 
 	auto &save_params=*lock->save_params;
 
@@ -535,7 +547,7 @@ void appObj::dimension_update(ONLY IN_THREAD,
 	auto created_update=create_update("dim", id, is_new);
 
 	if (!created_update)
-		return;
+		return ret;
 
 	auto &[doc_lock, new_dim]=*created_update;
 
@@ -551,21 +563,42 @@ void appObj::dimension_update(ONLY IN_THREAD,
 		new_dim->text(save_params.value);
 	}
 
-	if (!callback(doc_lock->clone_document()))
-		return;
+	ret.emplace(doc_lock,
+		    [=, saved_lock=lock.threadlock(x::ref{this})]
+		    (appObj *me,
+		     const x::ref<x::obj> &busy_mcguffin)
+		    {
+			    dimension_info_t::lock lock{saved_lock};
 
+			    me->dimension_update2(lock, id, is_new,
+						  busy_mcguffin);
+		    });
+
+	return ret;
+}
+
+void appObj::dimension_update2(dimension_info_t::lock &lock,
+			       const std::string &id,
+			       bool is_new,
+			       const x::ref<x::obj> &busy_mcguffin)
+{
 	// Update accepted.
 
 	if (is_new)
 	{
-		auto i=update_new_element(id, lock->ids,
-					  dimension_name);
-
 		// Insert the new value in the from scale combo-box too.
 		x::w::standard_comboboxlayoutmanager
 			from_name_lm=dimension_from_name->get_layoutmanager();
 
-		from_name_lm->insert_items(i, {id});
+
+		auto i=update_new_element(id, lock->ids,
+					  dimension_name,
+					  [&]
+					  (size_t i)
+					  {
+						  from_name_lm->insert_items
+							  (i, {id});
+					  });
 
 		if (lock->from_index && *lock->from_index >= i-1)
 			++*lock->from_index;
@@ -576,20 +609,34 @@ void appObj::dimension_update(ONLY IN_THREAD,
 		dimension_reset_values(lock);
 		status->update(_("Dimension updated"));
 	}
+
+	main_window->in_thread
+		([busy_mcguffin]
+		 (ONLY IN_THREAD)
+		 {
+		 });
 }
 
-bool appObj::dimension_ok_to_delete(ONLY IN_THREAD)
-{
-	return true; // This is validated by the enabled status
-}
-
-void appObj::dimension_delete(ONLY IN_THREAD,
-			      const update_callback_t &callback)
+appObj::get_updatecallbackptr appObj::dimension_delete(ONLY IN_THREAD)
 {
 	dimension_info_t::lock lock{dimension_info};
 
+	return [saved_lock=lock.threadlock(x::ref{this})]
+		(appObj *me)
+	       {
+		       dimension_info_t::lock lock{saved_lock};
+
+		       return me->dimension_delete2(lock);
+	       };
+}
+
+appObj::update_callback_t appObj::dimension_delete2(dimension_info_t::lock
+						     &lock)
+{
+	appObj::update_callback_t ret;
+
 	if (!lock->current_selection)
-		return;
+		return ret;
 
 	auto index=lock->current_selection->index;
 	auto id=lock->ids.at(index);
@@ -611,9 +658,24 @@ void appObj::dimension_delete(ONLY IN_THREAD,
 		doc_lock->remove();
 	}
 
-	if (!callback(doc_lock->clone_document()))
-		return;
+	ret.emplace(doc_lock,
+		    [=, saved_lock=lock.threadlock(x::ref{this})]
+		    (appObj *me,
+		     const x::ref<x::obj> &busy_mcguffin)
+		    {
+			    dimension_info_t::lock lock{saved_lock};
 
+			    me->dimension_delete2(lock, index,
+						  busy_mcguffin);
+		    });
+
+	return ret;
+}
+
+void appObj::dimension_delete2(dimension_info_t::lock &lock,
+			       size_t index,
+			       const x::ref<x::obj> &busy_mcguffin)
+{
 	lock->ids.erase(lock->ids.begin()+index);
 
 	x::w::standard_comboboxlayoutmanager name_lm=
@@ -633,15 +695,20 @@ void appObj::dimension_delete(ONLY IN_THREAD,
 	// gets done:
 
 	main_window->in_thread_idle
-		([]
+		([busy_mcguffin]
 		 (ONLY IN_THREAD)
 		 {
-			 appinvoke([]
+			 appinvoke([&]
 				   (appObj *me)
 				   {
 					   me->dimension_new_name
 						   ->request_focus();
+					   me->status->update(_("Deleted"));
+					   me->main_window->in_thread_idle
+						   ([busy_mcguffin]
+						    (ONLY IN_THREAD)
+						    {
+						    });
 				   });
 		 });
-	status->update(_("Deleted"));
 }

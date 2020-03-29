@@ -216,35 +216,97 @@ public:
 			   std::vector<std::string> &existing_ids,
 			   const x::w::focusable_container &id_combo);
 
-	//! Signature of a callback used by update_theme.
+	//! Invoke a callback before auto-selecting the new element
 
-	typedef x::function<bool (const x::xml::doc &)> update_callback_t;
+	//! Invokes the closure before calling autoselect() on the combo-box.
+	template<typename F>
+	static inline size_t
+	update_new_element(const std::string &new_id,
+			   std::vector<std::string> &existing_ids,
+			   const x::w::focusable_container &id_combo,
+			   F &&f)
+	{
+		return do_update_new_element(new_id, existing_ids, id_combo,
+					     x::make_function<void (size_t)>
+					     (std::forward<F>(f)));
+	}
+
+	//! Type-erase update_new_element
+	static size_t
+	do_update_new_element(const std::string &new_id,
+			      std::vector<std::string> &existing_ids,
+			      const x::w::focusable_container &id_combo,
+			      const x::function<void (size_t)> &f);
+
+
+	//! Signature of the callback used by update_theme.
+
+	typedef std::optional<
+		std::tuple<
+			x::xml::readlock,
+			x::functionref<void (appObj *, const x::ref<x::obj> &)>
+			>> update_callback_t;
+
+	//! Callable object used by update_theme()
+	typedef x::functionref<update_callback_t (appObj *)
+		> get_updatecallback;
+
+	//! Callable object used by update_theme()
+	typedef x::functionptr<update_callback_t (appObj *)
+		> get_updatecallbackptr;
 
 	//! Update the theme
 
-	//! Invoked by various update buttons.
+	//! Invoked by various update and delete buttons.
+
+	//! Receives a get_updatecallbackptr, a callable object that returns
+	//! a possibly-null callable object. This gets called immediately.
 	//!
-	//! Invoke the update's button callback, passing to it two callbacks:
+	//! A null return from the callback results in no further option
+	//! (UI values fail validation).
 	//!
-	//! A) Validate input fields and verify that they're valid.
+	//! Otherwise, the returned object returns a second callable object.
+	//! The second callable object gets invoked in the main execution
+	//! thread, via appinvoke, and not the connection thread that
+	//! invoked update_theme() (which resumes processing, immediately.
+	//! The second callable object receives an appObj pointer, it gets
+	//! executed via appinvoke().
 	//!
-	//! B) If the first callbacks returns true, the second callback
-	//! gets invoked, and gets an opaque closure, that
-	//! receives an x::xml::doc as a parameter. This callback is
-	//! is responsible for invoking the closure to
-	//! "propose" its update.
+	//! The second callable object returns a tuple with two values:
 	//!
-	//! The closure returns true to indicate that the updated was valid,
-	//! and the callback is free to then apply the update to its UI.
+	//! 1) An XML read lock,
 	//!
-	//! The closure must receive an x::xml::doc without any locks, because
-	//! it will be parsed.
+	//! 2) A third callable object.
+	//!
+	//! The XML read lock is a lock on an updated XML document that reflects
+	//! the updated UI value.
+	//!
+	//! If the updated XML document fails to be loaded by the uigenerator
+	//! (invalid value), no further action takes place. Otherwise it gets
+	//! installed as the new theme, and the third callable object gets
+	//! invoked.
+	//!
+	//! The third callable object gets invoked with two parameters:
+	//! an appObj pointer (also being executed via appinvoke);
+	//! and an opaque mcguffin.
+	//!
+	//! The opaque mcguffin is the busy mcguffin for the connection thread
+	//! that blocks all pointer and keyboard event processing. The
+	//! busy mcguffin gets constructed by update_theme, up front, and this
+	//! is the means to block pointer and keyboard event processing until
+	//! the entire update process is complete.
+
 	void update_theme(ONLY IN_THREAD,
 			  const x::w::busy &mcguffin,
-			  bool (appObj::*validator)(ONLY IN_THREAD),
-			  void (appObj::*callback)(ONLY IN_THREAD,
-						   const update_callback_t &));
+			  get_updatecallbackptr
+			  (appObj::*callback)(ONLY IN_THREAD));
 
+private:
+	//! Invoked by update_theme() in the main execution thread.
+	void update_theme2(const x::functionref<update_callback_t(appObj *)
+			   > &,
+			   const x::ref<x::obj> &mcguffin);
+public:
 	//! Filename
 	x::mpobj<std::string> themename;
 
@@ -491,8 +553,8 @@ private:
 
 	//! Thread-safe container for dimension metadata.
 
-	typedef x::mpobj<dimension_info_s,
-			 std::recursive_mutex> dimension_info_t;
+	typedef x::mptobj<dimension_info_s,
+			  std::recursive_mutex> dimension_info_t;
 
 	//! Enable or disable the reset button.
 	void dimension_enable_disable_buttons(dimension_info_t::lock &lock);
@@ -545,19 +607,33 @@ private:
 					  dimension_info_t::lock &lock);
 
 public:
-	//! Validate parameters for save/update
-	bool dimension_validate(ONLY IN_THREAD);
+	//! Save/update dimension, invoked from update_theme().
+	get_updatecallbackptr dimension_update(ONLY IN_THREAD);
 
-	//! Save/update dimension
-	void dimension_update(ONLY IN_THREAD,
-			      const update_callback_t &callback);
+private:
 
-	//! Verify that it's ok to delete the current shown dimension
-	bool dimension_ok_to_delete(ONLY IN_THREAD);
+	//! Continue dimension_update processing, in the main execution thread
+	update_callback_t dimension_update2(dimension_info_t::lock &lock);
 
-	//! Delete dimension
-	void dimension_delete(ONLY IN_THREAD,
-			      const update_callback_t &callback);
+	//! Finish dimension_update processing, in the main execution thread
+	void dimension_update2(dimension_info_t::lock &lock,
+			       const std::string &id,
+			       bool is_new,
+			       const x::ref<x::obj> &busy_mcguffin);
+public:
+	//! Delete dimension, invoked from update_theme().
+	get_updatecallbackptr dimension_delete(ONLY IN_THREAD);
+
+private:
+
+	//! Continue dimension_delete processing, in the main execution thread
+	update_callback_t dimension_delete2(dimension_info_t::lock &lock);
+
+	//! Finish dimension_delete processing, in the main execution thread
+	void dimension_delete2(dimension_info_t::lock &lock,
+			       size_t index,
+			       const x::ref<x::obj> &busy_mcguffin);
+public:
 
 	/////////////////////////////////////////////////////////////////
 	//
@@ -669,8 +745,8 @@ public:
 
 	//! Thread-safe container for colors metadata.
 
-	typedef x::mpobj<colors_info_s,
-			 std::recursive_mutex> colors_info_t;
+	typedef x::mptobj<colors_info_s,
+			  std::recursive_mutex> colors_info_t;
 
 	//! Current colors
 	colors_info_t colors_info;
@@ -793,21 +869,38 @@ public:
 					   const x::function<void
 					   (size_t,
 					    const std::string &)> &parser);
-	//! Validate parameters for save/update
-	bool color_validate(ONLY IN_THREAD);
 
-	//! Save/update color
-	void color_update(ONLY IN_THREAD,
-			  const update_callback_t &callback);
+	//! Save/update color, invoked from update_theme().
 
-	//! Verify that it's ok to delete the current shown color
-	bool color_ok_to_delete(ONLY IN_THREAD);
-
-	//! Delete color
-	void color_delete(ONLY IN_THREAD,
-			  const update_callback_t &callback);
+	get_updatecallbackptr color_update(ONLY IN_THREAD);
 
 private:
+
+	//! Continue color_update(), in the main execution thread.
+	update_callback_t color_update2(colors_info_t::lock &lock);
+
+	//! Finalize color_update(), in the main execution thread.
+	void color_update2(colors_info_t::lock &,
+			   const std::string &,
+			   bool,
+			   const x::ref<x::obj> &);
+
+	//! Finish color_update(), in the connection thread.
+	void color_update3(ONLY IN_THREAD, const x::ref<x::obj> &busy_mcguffin);
+
+public:
+	//! Delete color, invoked from update_theme().
+	get_updatecallbackptr color_delete(ONLY IN_THREAD);
+
+private:
+
+	//! Continue color_delete(), in the main execution thread.
+	update_callback_t color_delete2(colors_info_t::lock &lock);
+
+	//! Finish color_delete(), in the main execution thread.
+	void color_delete2(colors_info_t::lock &lock,
+			   size_t index,
+			   const x::ref<x::obj> &busy_mcguffin);
 
 	//! The app is running.
 
@@ -818,16 +911,6 @@ private:
 
 // The singleton instance of the app object.
 typedef x::singletonptr<appObj> appsingleton;
-
-//! app events
-
-//! Constructs the app singleton
-//! then (attempt to) instantiate the app singleton,
-//! then put an event closure into the event queue, to be executed
-//! by the main application thread that loops and plucks events
-//! off the event queue.
-
-void appevent(const x::functionref<void (const app &)> &);
 
 // Helper for invoking something in the app object.
 

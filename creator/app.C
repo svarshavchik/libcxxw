@@ -631,63 +631,62 @@ void appObj::mainloop()
 		eventqueue->pop()();
 }
 
-void appObj::update_theme(ONLY IN_THREAD, const x::w::busy &mcguffin,
-			  bool (appObj::*validator)(ONLY IN_THREAD),
-			  void (appObj::*callback)(ONLY IN_THREAD,
-						   const update_callback_t &))
+void appObj::update_theme(ONLY IN_THREAD,
+			  const x::w::busy &mcguffin,
+			  get_updatecallbackptr
+			  (appObj::*callback)(ONLY IN_THREAD))
 {
-	if (!(this->*validator)(IN_THREAD))
+	auto callbackptr=(this->*callback)(IN_THREAD);
+
+	if (!callbackptr)
 		return;
 
-	(this->*callback)
-		(IN_THREAD,
-		 x::make_function<bool (const x::xml::doc &)>
-		 ([this]
-		  (const x::xml::doc &new_theme)
-		  {
-			  try {
-				  // Try to reparse the proposed theme file.
-				  //
-				  // We save and reread it with xinclude
-				  // enable, and then try to parse that
-				  // version.
-				  std::stringstream s;
+	eventqueue->event
+		([callback=get_updatecallback{callbackptr},
+		  iambusy=mcguffin.get_wait_busy_mcguffin()]
+		 {
+			 appinvoke(&appObj::update_theme2, callback,
+				   iambusy);
+		 });
+}
 
-				  new_theme->readlock()
-					  ->save_to(std::ostreambuf_iterator
-						    {s.rdbuf()}, true);
+void appObj::update_theme2(const x::functionref<update_callback_t (appObj *)
+			   > &callback,
+			   const x::ref<x::obj> &mcguffin)
+{
+	auto ret=callback(this);
 
-				  auto n=themename.get();
+	if (!ret)
+		return;
 
-				  if (n.empty())
-					  n="theme.xml";
+	auto &[lock, callback2]=*ret;
 
-				  auto test_theme=x::xml::doc::create
-					  (std::istreambuf_iterator
-					   {s.rdbuf()},
-					   std::istreambuf_iterator<char>{},
-					   n,
-					   "noblanks xinclude");
+	auto new_theme=lock->clone_document();
 
-				  (void)x::w::uigenerators
-					  ::create(test_theme);
+	try {
+		// Try to reparse the proposed theme file.
 
-				  theme=new_theme;
-				  edited=true;
-				  enable_disable_menus();
-			  } catch (const x::exception &e)
-			  {
-				  std::ostringstream o;
+		(void)x::w::uigenerators::create(new_theme);
 
-				  o << _("This change cannot be made for the"
-					 " following reason:\n\n")
-				    << e;
+		theme=new_theme;
+		edited=true;
+		enable_disable_menus();
 
-				  main_window->stop_message(o.str());
-				  return false;
-			  }
-			  return true;
-		  }));
+		callback2(this, mcguffin);
+	} catch (const x::exception &e)
+	{
+		std::ostringstream o;
+
+		o << _("This change cannot be made for the"
+		       " following reason:\n\n")
+		  << e;
+
+		main_window->stop_message(o.str());
+		main_window->in_thread_idle([mcguffin]
+					    (ONLY IN_THREAD)
+					    {
+					    });
+	}
 }
 
 void appObj::file_save_event(ONLY IN_THREAD)
@@ -1020,6 +1019,19 @@ appObj::update_new_element(const std::string &new_id,
 			   std::vector<std::string> &existing_ids,
 			   const x::w::focusable_container &id_combo)
 {
+	return update_new_element(new_id, existing_ids, id_combo,
+				  []
+				  (auto ignore)
+				  {
+				  });
+}
+
+size_t
+appObj::do_update_new_element(const std::string &new_id,
+			      std::vector<std::string> &existing_ids,
+			      const x::w::focusable_container &id_combo,
+			      const x::function<void (size_t)> &callback)
+{
 	// Move the focus here first.
 	id_combo->request_focus();
 
@@ -1037,6 +1049,7 @@ appObj::update_new_element(const std::string &new_id,
 
 	existing_ids.insert(insert_pos, new_id);
 	id_lm->insert_items(i, {new_id});
+	callback(i);
 	id_lm->autoselect(i);
 
 	return i;

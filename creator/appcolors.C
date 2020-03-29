@@ -21,6 +21,7 @@
 #include <x/weakcapture.H>
 #include <x/locale.H>
 #include <x/imbue.H>
+#include <x/mpthreadlock.H>
 #include <functional>
 #include <algorithm>
 #include <iomanip>
@@ -300,7 +301,6 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 		 {
 			 appinvoke(&appObj::update_theme,
 				   IN_THREAD, busy,
-				   &appObj::color_validate,
 				   &appObj::color_update);
 		 });
 
@@ -329,7 +329,6 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 		 {
 			 appinvoke(&appObj::update_theme,
 				   IN_THREAD, busy,
-				   &appObj::color_ok_to_delete,
 				   &appObj::color_delete);
 		 });
 }
@@ -1720,55 +1719,6 @@ static bool validate_gradient_color_values(ONLY IN_THREAD,
 	return flag;
 }
 
-bool appObj::color_validate(ONLY IN_THREAD)
-{
-	// Figure out which color we have currently selected, and validate
-	// just those fields
-
-	if (color_scaled_option_radio->get_value())
-	{
-		if (color_scaled_page_from->editable_combobox_get().empty())
-		{
-			color_scaled_page_from->request_focus();
-			color_scaled_page_from->stop_message
-				(_("Select or enter a name"));
-			return false;
-		}
-
-		for (const auto &scaled_field_info:scaled_fields)
-		{
-			if (! (this->*(scaled_field_info.input_field))
-			    ->validate_modified(IN_THREAD))
-				return false;
-		}
-	}
-	if (color_linear_gradient_option_radio->get_value())
-	{
-		for (const auto &linear_field_info
-			     : linear_gradient_color_fields)
-		{
-			if (!(this->*(linear_field_info.input_field))
-			    ->validate_modified(IN_THREAD))
-				return false;
-		}
-		return validate_gradient_color_values
-			(IN_THREAD, color_linear_page_values_grid);
-	}
-	if (color_radial_gradient_option_radio->get_value())
-	{
-		for (const auto &radial_field_info
-			     : radial_gradient_color_fields)
-		{
-			if (!(this->*(radial_field_info.input_field))
-			    ->validate_modified(IN_THREAD))
-				return false;
-		}
-		return validate_gradient_color_values
-			(IN_THREAD, color_radial_page_values_grid);
-	}
-	return true;
-}
-
 // TODO: when gcc implements to_chars for doubles.
 
 static std::string double_color(double v)
@@ -1941,13 +1891,72 @@ void color_update_impl::gradient(const appObj::loaded_color_gradient_t &g) const
 #endif
 }
 
-void appObj::color_update(ONLY IN_THREAD,
-			  const update_callback_t &callback)
+appObj::get_updatecallbackptr appObj::color_update(ONLY IN_THREAD)
 {
+	// Figure out which color we have currently selected, and validate
+	// just those fields
+
+	if (color_scaled_option_radio->get_value())
+	{
+		if (color_scaled_page_from->editable_combobox_get().empty())
+		{
+			color_scaled_page_from->request_focus();
+			color_scaled_page_from->stop_message
+				(_("Select or enter a name"));
+			return nullptr;
+		}
+
+		for (const auto &scaled_field_info:scaled_fields)
+		{
+			if (! (this->*(scaled_field_info.input_field))
+			    ->validate_modified(IN_THREAD))
+				return nullptr;
+		}
+	}
+	if (color_linear_gradient_option_radio->get_value())
+	{
+		for (const auto &linear_field_info
+			     : linear_gradient_color_fields)
+		{
+			if (!(this->*(linear_field_info.input_field))
+			    ->validate_modified(IN_THREAD))
+				return nullptr;
+		}
+		if (!validate_gradient_color_values
+		    (IN_THREAD, color_linear_page_values_grid))
+			return nullptr;
+	}
+	if (color_radial_gradient_option_radio->get_value())
+	{
+		for (const auto &radial_field_info
+			     : radial_gradient_color_fields)
+		{
+			if (!(this->*(radial_field_info.input_field))
+			    ->validate_modified(IN_THREAD))
+				return nullptr;
+		}
+		if (!validate_gradient_color_values
+		    (IN_THREAD, color_radial_page_values_grid))
+			return nullptr;
+	}
+
 	colors_info_t::lock lock{colors_info};
 
+	return [saved_lock=lock.threadlock(x::ref{this})]
+		(appObj *me)
+	       {
+		       colors_info_t::lock lock{saved_lock};
+
+		       return me->color_update2(lock);
+	       };
+}
+
+appObj::update_callback_t appObj::color_update2(colors_info_t::lock &lock)
+{
+	update_callback_t ret;
+
 	if (!lock->save_params)
-		return;
+		return ret;
 
 	auto &save_params=*lock->save_params;
 
@@ -1965,45 +1974,87 @@ void appObj::color_update(ONLY IN_THREAD,
 	    != x::w::rgb_color_names+x::w::n_rgb_colors)
 	{
 		main_window->stop_message(_("This is a predefined color name"));
-		return;
+		return ret;
 	}
 
 	// Create a new <color> node.
 	auto created_update=create_update("color", id, is_new);
 
 	if (!created_update)
-		return;
+		return ret;
 
 	auto &[doc_lock, new_color]=*created_update;
 
 	std::visit(color_update_impl{doc_lock},
 		   save_params.color_new_value);
 
-	if (!callback(doc_lock->clone_document()))
-		return;
+	ret.emplace(doc_lock,
+		    [=, saved_lock=lock.threadlock(x::ref{this})]
+		    (appObj *me,
+		     const x::ref<x::obj> &busy_mcguffin)
+		    {
+			    colors_info_t::lock lock{saved_lock};
 
+			    me->color_update2(lock, id, is_new,
+					      busy_mcguffin);
+		    });
+
+	return ret;
+}
+
+void appObj::color_update2(colors_info_t::lock &lock,
+			   const std::string &id,
+			   bool is_new,
+			   const x::ref<x::obj> &busy_mcguffin)
+{
 	if (is_new)
 	{
 		update_new_element(id, lock->ids, color_name);
+		return;
 	}
-	else
-	{
-		color_selected_locked(IN_THREAD, lock);
-	}
+
+	main_window->in_thread
+		([busy_mcguffin]
+		 (ONLY IN_THREAD)
+		 {
+			 appinvoke(&appObj::color_update3,
+				   IN_THREAD,
+				   busy_mcguffin);
+		 });
 }
 
-bool appObj::color_ok_to_delete(ONLY IN_THREAD)
-{
-	return true; // This is validated by the enabled status
-}
-
-void appObj::color_delete(ONLY IN_THREAD,
-			  const update_callback_t &callback)
+void appObj::color_update3(ONLY IN_THREAD, const x::ref<x::obj> &busy_mcguffin)
 {
 	colors_info_t::lock lock{colors_info};
 
+	color_selected_locked(IN_THREAD, lock);
+	status->update(_("Color updated"));
+
+	main_window->in_thread_idle([busy_mcguffin]
+				    (ONLY IN_THREAD)
+				    {
+				    });
+}
+
+appObj::get_updatecallbackptr appObj::color_delete(ONLY IN_THREAD)
+{
+	colors_info_t::lock lock{colors_info};
+
+	return [saved_lock=lock.threadlock(x::ref{this})]
+		(appObj *me)
+	       {
+		       colors_info_t::lock lock{saved_lock};
+
+		       return me->color_delete2(lock);
+	       };
+}
+
+appObj::update_callback_t appObj::color_delete2(colors_info_t::lock &lock)
+{
+	update_callback_t ret;
+
 	if (!lock->current_selection)
-		return;
+		return ret;
 
 	// Locate what we need to delete.
 	auto index=lock->current_selection->index;
@@ -2026,9 +2077,24 @@ void appObj::color_delete(ONLY IN_THREAD,
 		doc_lock->remove();
 	}
 
-	if (!callback(doc_lock->clone_document()))
-		return;
+	ret.emplace(doc_lock,
+		    [=, saved_lock=lock.threadlock(x::ref{this})]
+		    (appObj *me,
+		     const x::ref<x::obj> &busy_mcguffin)
+		    {
+			    colors_info_t::lock lock{saved_lock};
 
+			    me->color_delete2(lock, index,
+					      busy_mcguffin);
+		    });
+
+	return ret;
+}
+
+void appObj::color_delete2(colors_info_t::lock &lock,
+			   size_t index,
+			   const x::ref<x::obj> &busy_mcguffin)
+{
 	// Update the loaded list of colors we store here,
 	// and set the current color combo-box dropdown to "New Color".
 
@@ -2040,7 +2106,7 @@ void appObj::color_delete(ONLY IN_THREAD,
 	name_lm->remove_item(index+1);
 
 	lock->current_selection.reset();
-	color_reset_values(IN_THREAD, lock);
+
 	name_lm->autoselect(0);
 
 	// autoselect(0) queues up a request.
@@ -2049,15 +2115,26 @@ void appObj::color_delete(ONLY IN_THREAD,
 	// gets done:
 
 	main_window->in_thread_idle
-		([]
+		([busy_mcguffin]
 		 (ONLY IN_THREAD)
 		 {
-			 appinvoke([]
+			 appinvoke([&]
 				   (appObj *me)
 				   {
+					   colors_info_t::lock
+						   lock{me->colors_info};
+					   me->color_reset_values(IN_THREAD,
+								  lock);
+
 					   me->color_new_name
 						   ->request_focus();
+					   me->status->update(_("Deleted"));
+
+					   me->main_window->in_thread_idle
+						   ([busy_mcguffin]
+						    (ONLY IN_THREAD)
+						    {
+						    });
 				   });
 		 });
-	status->update(_("Deleted"));
 }
