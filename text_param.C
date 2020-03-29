@@ -74,7 +74,7 @@ text_param &text_param::operator()(const std::u32string_view &s)
 	return *this;
 }
 
-text_param &text_param::operator()(const explicit_font &f)
+text_param &text_param::operator()(explicit_font f)
 {
 	return operator()(font_arg{f.f});
 }
@@ -85,7 +85,7 @@ text_param &text_param::operator()(const theme_font &f)
 }
 
 //! Use this font for all text going forward.
-text_param &text_param::operator()(const explicit_font_arg &f)
+text_param &text_param::operator()(explicit_font_arg f)
 {
 	auto s=string.size();
 

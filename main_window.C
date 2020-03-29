@@ -570,14 +570,16 @@ dialog_ok_button(const text_param &label,
 
 static inline functionref<void (const factory &)>
 dialog_ok2_button(const text_param &label,
-		  buttonptr &ret)
+		  buttonptr &ret,
+		  const shortcut &sc)
 {
-	return [label, &ret](const factory &f)
+	return [label, &ret, &sc](const factory &f)
 	       {
 		       ret=f->create_button
 			       (label,
 				{
-				 normal_button()
+				 normal_button(),
+				 sc
 				});
 	};
 }
@@ -909,7 +911,6 @@ dialog main_windowObj
 	return d;
 }
 
-
 dialog main_windowObj
 ::create_ok2_cancel_dialog(const standard_dialog_args &args,
 			   const std::string &icon,
@@ -921,6 +922,25 @@ dialog main_windowObj
 			   const text_param &ok_label,
 			   const text_param &ok2_label,
 			   const text_param &cancel_label)
+{
+	return create_ok2_cancel_dialog(args, icon, content_factory,
+					ok_action, ok2_action, cancel_action,
+					ok_label, ok2_label, cancel_label,
+					{});
+}
+
+dialog main_windowObj
+::create_ok2_cancel_dialog(const standard_dialog_args &args,
+			   const std::string &icon,
+			   const functionref<void (const factory &)>
+			   &content_factory,
+			   const ok_cancel_dialog_callback_t &ok_action,
+			   const ok_cancel_dialog_callback_t &ok2_action,
+			   const ok_cancel_dialog_callback_t &cancel_action,
+			   const text_param &ok_label,
+			   const text_param &ok2_label,
+			   const text_param &cancel_label,
+			   const shortcut &ok2_shortcut)
 {
 	buttonptr ok_button;
 	buttonptr ok2_button;
@@ -940,7 +960,8 @@ dialog main_windowObj
 							   ok_button,
 							   '\n')},
 				   {"ok2", dialog_ok2_button(ok2_label,
-							     ok2_button)},
+							     ok2_button,
+							     ok2_shortcut)},
 				   {"cancel", dialog_cancel_button
 				    (cancel_label,
 				     cancel_button, '\e')}

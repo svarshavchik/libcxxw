@@ -52,18 +52,18 @@ theme_text::theme_text(theme_text &&)=default;
 theme_text &theme_text::operator=(const theme_text &)=default;
 theme_text &theme_text::operator=(theme_text &&)=default;
 
-text_param &text_param::operator()(const theme_text &text)
+text_param &text_param::operator()(explicit_theme_text text)
 {
 	std::u32string utext;
 
-	if (text.generators->catalog)
+	if (text.t.generators->catalog)
 	{
-		utext=text.generators->catalog->get_unicode(text.text);
+		utext=text.t.generators->catalog->get_unicode(text.t.text);
 	}
 	else
 	{
-		unicode::iconvert::tou::convert(text.text.begin(),
-						text.text.end(),
+		unicode::iconvert::tou::convert(text.t.text.begin(),
+						text.t.text.end(),
 						unicode_locale_chset(),
 						utext);
 	}
@@ -148,15 +148,15 @@ text_param &text_param::operator()(const theme_text &text)
 		if (name == U"color:")
 		{
 			operator()(uicompiler::to_text_color_arg
-				   (text.generators->lookup_color(value, true,
-								  "${color}"),
+				   (text.t.generators->lookup_color(value, true,
+								    "${color}"),
 				    "${color}", "text_param"));
 			continue;
 		}
 		else if (name == U"font:")
 		{
-			operator()(text.generators->lookup_font(value, true,
-								"${font}"));
+			operator()(text.t.generators->lookup_font(value, true,
+								  "${font}"));
 			continue;
 		}
 		else if (name == U"decoration:")

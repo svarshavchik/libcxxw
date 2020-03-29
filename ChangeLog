@@ -1,3 +1,8 @@
+2020-03-29  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* create_ok2_cancel_dialog: Add optional keyboard shortcut
+	to the 2nd ok button.
+
 2020-03-22  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* borderlayoutmanager_impl.C: Fix incorrect scratch buffer usage,

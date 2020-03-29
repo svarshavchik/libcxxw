@@ -250,7 +250,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
          // Cancel action.
     });
 
-INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
+INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok2_cancel_dialog(
     // Just a dialog label, the modal flag defaults to false.
     "sitamet@example.com",
 
@@ -302,7 +302,8 @@ in place of "Ok" and "Cancel".
 
 create_ok2_dialog() creates a dialog with two "Ok" buttons, and one cancel
 button; and a separate callback for each one. The labels for all three buttons
-are required.
+are required. create_ok2_dialog() can include one optional parameter,
+a \ref shortcut "keyboard shortcut" for the 2nd "Ok" button.
 
 \code
 INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog

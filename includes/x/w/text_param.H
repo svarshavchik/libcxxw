@@ -376,13 +376,13 @@ public:
 	};
 
 	//! Use this font for all text going forward.
-	text_param &operator()(const explicit_font &f);
+	text_param &operator()(explicit_font f);
 
 	//! Use this font for all text going forward.
 	text_param &operator()(const theme_font &f);
 
 	//! Use this font for all text going forward.
-	text_param &operator()(const explicit_font_arg &f);
+	text_param &operator()(explicit_font_arg f);
 
 	//! Use this color for all text going forward.
 	text_param &operator()(const text_color_arg &);
@@ -396,8 +396,22 @@ public:
 	//! End of hotspot.
 	text_param &operator()(std::nullptr_t);
 
+	//! Helper class to avoid ambiguous resolution failures.
+
+	//! A theme_text has a constructor that takes a string. Nothing wrong
+	//! with the constructor participating in implicit construction of
+	//! a font. However, our operator() accepts both theme_text and strings.
+	//! This results in ambiguous overloads.
+
+	class explicit_theme_text {
+
+	public:
+		const theme_text &t;
+
+		inline explicit_theme_text(const theme_text &t) : t{t} {}
+	};
 	//! Add text referencing colors and fonts from a theme file.
-	text_param &operator()(const theme_text &);
+	text_param &operator()(explicit_theme_text);
 
 	//! Variadic list of parameters to the \c () operator.
 
