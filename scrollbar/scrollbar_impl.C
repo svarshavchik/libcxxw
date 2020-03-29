@@ -744,14 +744,19 @@ bool scrollbarObj::implObj::process_button_event(ONLY IN_THREAD,
 					}
 				}
 			}
+
+#if 0
 			else
 			{
 				// Drag released with pointer outside of the
 				// slider.
+				//
+				// -- This proved to be counter-intuitive
 				if (was_dragging &&
 				    dragged_value != state(IN_THREAD).value)
 					abort_dragging(IN_THREAD);
 			}
+#endif
 		}
 		draw_slider(IN_THREAD);
 		return true;
