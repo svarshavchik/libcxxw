@@ -1051,3 +1051,70 @@ void appObj::busy()
 				    {
 				    });
 }
+
+void appObj::enable_disable_urd(bool is_updating,
+				bool has_valid_value,
+				bool unchanged_value,
+				const x::w::button &u_button,
+				const x::w::button &d_button,
+				const x::w::button &r_button)
+{
+	// Step 1: determine if there's something to save.
+
+	bool unsaved;
+
+	if (!is_updating)
+	{
+		// New object. If there's something valid, that's good enough.
+
+		unsaved=has_valid_value;
+	}
+	else
+	{
+		// Updating an existing object. There must be a valid value,
+		// and it's different.
+
+		unsaved=has_valid_value && !unchanged_value ? true:false;
+	}
+
+	bool unchanged=false;
+
+	// Step 2: if there's something to save, both update and reset
+	// buttons are enabled.
+	if (unsaved)
+	{
+		u_button->set_enabled(true);
+		r_button->set_enabled(true);
+	}
+	else
+	{
+		// There's nothing to save. If an existing object is being
+		// updated, turn off the update button. Turn off the reset
+		// button unless there was a validation error.
+		//
+		// If this is a new object the update button stays disabled
+		// and the reset button is enabled.
+
+		if (is_updating)
+		{
+			u_button->set_enabled(false);
+
+			if (has_valid_value)
+			{
+				r_button->set_enabled(false);
+				unchanged=true;
+			}
+			else
+			{
+				r_button->set_enabled(true);
+			}
+		}
+		else
+		{
+			u_button->set_enabled(false);
+			r_button->set_enabled(true);
+		}
+	}
+
+	d_button->set_enabled(unchanged);
+}

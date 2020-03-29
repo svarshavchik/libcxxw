@@ -1433,39 +1433,20 @@ void appObj::color_updated_locked(ONLY IN_THREAD,
 void appObj::color_enable_disable_buttons(ONLY IN_THREAD,
 					  colors_info_t::lock &lock)
 {
-	if (!lock->save_params)
+	enable_disable_urd(lock,
+			   color_update_button,
+			   color_delete_button,
+			   color_reset_button);
+
+	if (lock->current_selection && lock->save_params &&
+	    *lock->save_params == *lock->current_selection)
 	{
-		// Something is not validated.
-
-		color_delete_button->set_enabled(IN_THREAD, false);
-		color_update_button->set_enabled(IN_THREAD, false);
-		color_reset_button->set_enabled(IN_THREAD, true);
-		color_preview_cell_border_container->hide(IN_THREAD);
-		return;
-	}
-
-	// Delete button is always available if an existing color is
-	// being edited.
-	color_delete_button->set_enabled(IN_THREAD,
-					 lock->current_selection
-					 ? true:false);
-
-	if (lock->current_selection &&
-	    lock->current_selection->loaded_color ==
-	    lock->save_params->color_new_value)
-	{
-		// Color is unchanged, nothing to update or reset.
-
-		color_update_button->set_enabled(IN_THREAD, false);
-		color_reset_button->set_enabled(IN_THREAD, false);
 		color_preview_cell_border_container->show(IN_THREAD);
-		return;
 	}
-
-	// Color is changed, can update or reset.
-	color_update_button->set_enabled(IN_THREAD, true);
-	color_reset_button->set_enabled(IN_THREAD, true);
-	color_preview_cell_border_container->hide(IN_THREAD);
+	else
+	{
+		color_preview_cell_border_container->hide(IN_THREAD);
+	}
 }
 
 namespace {

@@ -296,47 +296,12 @@ void appObj::dimension_reset()
 	}
 }
 
-bool appObj::dimension_unsaved_values(dimension_info_t::lock &lock)
-{
-	if (!lock->current_selection)
-		return lock->save_params ? true:false; // New selection
-
-	if (lock->save_params && *lock->current_selection == *lock->save_params)
-		return false;
-
-	return true;
-}
-
 void appObj::dimension_enable_disable_buttons(dimension_info_t::lock &lock)
 {
-	bool unchanged=false;
-
-	if (dimension_unsaved_values(lock))
-	{
-		dimension_update_button->set_enabled(true);
-		dimension_reset_button->set_enabled(true);
-	}
-	else
-	{
-		if (lock->current_selection)
-		{
-			// No changes
-
-			dimension_update_button->set_enabled(false);
-			dimension_reset_button->set_enabled(false);
-			unchanged=true;
-		}
-		else
-		{
-			// New dimension. Values not valid, so no update,
-			// but a reset is available.
-
-			dimension_update_button->set_enabled(false);
-			dimension_reset_button->set_enabled(true);
-		}
-	}
-
-	dimension_delete_button->set_enabled(unchanged);
+	enable_disable_urd(lock,
+			   dimension_update_button,
+			   dimension_delete_button,
+			   dimension_reset_button);
 }
 
 void appObj::dimension_reset_values(dimension_info_t::lock &lock)

@@ -113,6 +113,62 @@ private:
 	//! Disable/enable menu items based on what things are now.
 
 	void enable_disable_menus();
+
+	//! Compute the logic to enable and disable update/delete/reset buttons
+
+	//! The individual tabs tell us:
+	//!
+	//! - is_updating: whether an existing value is being updated.
+	//!
+	//! - has_valid_value: whether the widgets on the tab are valid.
+	//!
+	//! - unchanged_value: only when is_updating and has_valid_value:
+	//!   whether the valid value is the same as the original value
+	//!
+	//! - the updated, delete, and reset buttons.
+
+	static void enable_disable_urd(bool is_updating,
+				       bool has_valid_value,
+				       bool unchanged_value,
+				       const x::w::button &u_button,
+				       const x::w::button &d_button,
+				       const x::w::button &r_button);
+
+	//! Compute the logic to enable and disable update/delete/reset buttons
+
+	//! Template function overload that computes is_updating,
+	//! has_valid_value, and unchanged_value parameters based on a state
+	//! of a locked status object.
+	//!
+	//! The first template parameter is a lock, dereferencing it produces:
+	//!
+	//! - current_selection: a std::optional indicating the presence of
+	//! an existing object whose value is getting updated, else this must
+	//! be a new object.
+	//!
+	//! - save_params: a std::optional with the value of the new or
+	//! updated object.
+	//!
+	//! The optional save_params object must have a defined == operator
+	//! for comparing it to the current selection object.
+
+	template<typename lock_type>
+	static inline void enable_disable_urd(lock_type &lock,
+					      const x::w::button &u_button,
+					      const x::w::button &d_button,
+					      const x::w::button &r_button)
+	{
+		enable_disable_urd((lock->current_selection ? true:false),
+				   (lock->save_params ? true:false),
+				   (lock->save_params &&
+				    lock->current_selection &&
+				    *lock->save_params ==
+				    *lock->current_selection),
+				   u_button,
+				   d_button,
+				   r_button);
+	}
+
 public:
 	//! Format double value to three deicmal points.
 	static std::string fmtdblval(double d);
@@ -387,6 +443,14 @@ private:
 	/////////////////////////////////////////////////////////////////////
 	// metadata about the dimensions page.
 
+	//! Original dimension parameters
+
+	struct dimension_orig_params {
+		size_t index; //!< Which original dimension
+		std::optional<size_t> scale_from; //!< If not empty
+		std::string value; //!< Original value
+	};
+
 	//! New values entered for the new or updated dimension.
 
 	struct dimension_save_params {
@@ -396,18 +460,10 @@ private:
 		std::optional<size_t> scale_from; //!< If not empty
 
 		std::string value; //!< Dimension value
-	};
-
-	//! Original dimension parameters
-
-	struct dimension_orig_params {
-		size_t index; //!< Which original dimension
-		std::optional<size_t> scale_from; //!< If not empty
-		std::string value; //!< Original value
 
 		//! Whether the saved parameters are the same as the orig ones
 
-		bool operator==(const dimension_save_params &orig)
+		bool operator==(const dimension_orig_params &orig)
 		{
 			return scale_from == orig.scale_from &&
 				value == orig.value;
@@ -437,9 +493,6 @@ private:
 
 	typedef x::mpobj<dimension_info_s,
 			 std::recursive_mutex> dimension_info_t;
-
-	//! Whether something was edited but not saved
-	bool dimension_unsaved_values(dimension_info_t::lock &lock);
 
 	//! Enable or disable the reset button.
 	void dimension_enable_disable_buttons(dimension_info_t::lock &lock);
@@ -582,6 +635,13 @@ public:
 
 		std::string color_new_name; //!< When creating a new one.
 		loaded_color_t color_new_value; //!< The new value
+
+		//! Whether the saved parameters are the same as the orig ones
+
+		bool operator==(const colors_orig_params &orig)
+		{
+			return color_new_value == orig.loaded_color;
+		}
 	};
 
 	//! Colors metadata
