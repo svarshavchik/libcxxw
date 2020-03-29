@@ -581,7 +581,7 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 			  const pixmap &pm,
 			  const gc &c)
 			 {
-				 bordercontainer_impl->h_mask_buffer
+				 bordercontainer_impl->v_mask_buffer
 					 ->get
 					 (r.width,
 					  r.height,

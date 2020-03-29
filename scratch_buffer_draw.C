@@ -4,8 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/impl/scratch_buffer_draw.H"
-#include "x/w/impl/scratch_buffer.H"
 #include "x/w/impl/child_element.H"
+#include "scratch_buffer.H"
 #include "generic_window_handler.H"
 #include "x/w/picture.H"
 #include "x/w/pixmap.H"

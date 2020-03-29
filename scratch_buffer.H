@@ -15,6 +15,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+#define SCRATCH_BUFFER_DEBUG 0
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // "Internal" implementation details.
@@ -41,6 +43,9 @@ class scratch_bufferObj::implObj : virtual public obj {
 	//! The scratch buffer's pictformat.
 	const const_pictformat scratch_pictformat;
 
+#if SCRATCH_BUFFER_DEBUG
+	const std::string identifier;
+#endif
 	//! The scratch buffer's screen
 	const screen scratch_screen;
 
@@ -49,6 +54,7 @@ class scratch_bufferObj::implObj : virtual public obj {
 public:
 	//! Constructor
 	implObj(const const_pictformat &scratch_pictformat,
+		const std::string &identifier,
 		const screen &scratch_screen);
 
 	//! Destructor

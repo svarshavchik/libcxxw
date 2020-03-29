@@ -10,7 +10,6 @@
 #include <x/w/gc.H>
 #include <x/w/impl/draw_info.H>
 #include <x/w/impl/scratch_buffer_drawfwd.H>
-#include <x/w/impl/scratch_buffer.H>
 
 LIBCXXW_NAMESPACE_START
 

@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "scratch_buffer.H"
 #include "recycled_pixmaps.H"
-#include "x/w/impl/scratch_buffer.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/icon.H"
 #include "x/w/impl/pixmap_with_picture.H"
@@ -64,6 +64,7 @@ scratch_buffer screenObj::implObj
 				 {
 					 auto i=ref<scratch_bufferObj::implObj>
 						 ::create(pf,
+							  identifier,
 							  public_object);
 
 					 return scratch_buffer::create(i);

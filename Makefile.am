@@ -783,6 +783,7 @@ libcxxw_la_SOURCES=\
 	richtext/text_hotspot.C			    \
 	run_as.H				    \
 	scratch_buffer.C			    \
+	scratch_buffer.H			    \
 	scratch_buffer_impl.C			    \
 	scratch_buffer_draw.C			    \
 	scratch_and_mask_buffer_draw.C		    \
