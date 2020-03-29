@@ -1810,14 +1810,16 @@ void generic_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
 		 (pos.height > hv->vert.maximum())
 		 );
 
-	if (flag == resizing(IN_THREAD))
+	if (flag == is_resizing(IN_THREAD))
 		return;
 
-	resizing(IN_THREAD)=flag;
-
-	if (flag)
+	if (!flag)
 	{
-		resizing_timeout(IN_THREAD)=
+		resizing(IN_THREAD)=not_resizing{};
+	}
+	else
+	{
+		resizing(IN_THREAD)=
 			tick_clock_t::now()+
 			std::chrono::duration_cast<tick_clock_t::duration>
 			(std::chrono::milliseconds(resize_timeout.get()));
@@ -1827,7 +1829,7 @@ void generic_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
 
 void generic_windowObj::handlerObj::invoke_stabilized(ONLY IN_THREAD)
 {
-	if (resizing(IN_THREAD) || !data(IN_THREAD).requested_visibility)
+	if (is_resizing(IN_THREAD) || !data(IN_THREAD).requested_visibility)
 		return;
 
 	auto callbacks=stabilized_callbacks(IN_THREAD);

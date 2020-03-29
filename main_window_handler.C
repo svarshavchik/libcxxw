@@ -435,7 +435,7 @@ void main_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
 {
 	if (!preferred_dimensions_set(IN_THREAD))
 	{
-		resizing(IN_THREAD)=false;
+		resizing(IN_THREAD)=not_resizing{};
 		return;
 	}
 

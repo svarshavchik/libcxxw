@@ -257,6 +257,16 @@ typedef ref<gridlayoutmanagerObj> gridlayoutmanager;
 
 typedef const_ref<gridlayoutmanagerObj> const_gridlayoutmanager;
 
+//! A nullable pointer reference to a \ref gridlayoutmanager "grid layout manager".
+
+typedef ptr<gridlayoutmanagerObj> gridlayoutmanagerptr;
+
+//! A nullable pointer reference to a constant \ref gridlayoutmanager "grid layout manager".
+
+//! \see gridlayoutmanager
+
+typedef const_ptr<gridlayoutmanagerObj> const_gridlayoutmanagerptr;
+
 class LIBCXX_HIDDEN new_gridlayoutmanager;
 
 LIBCXXW_NAMESPACE_END

@@ -13,6 +13,8 @@
 #include <x/threads/run.H>
 
 #include "x/w/main_window.H"
+#include "x/w/booklayoutmanager.H"
+#include "x/w/bookpagefactory.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/screen.H"
@@ -100,19 +102,25 @@ focusable_container create_combobox(const factory &f,
 		([]
 		 (const auto &new_container) {
 
-			standard_comboboxlayoutmanager lm=new_container
-				->get_layoutmanager();
+			 new_container->in_thread_idle
+				 ([new_container]
+				  (ONLY IN_THREAD)
+				  {
+					  standard_comboboxlayoutmanager lm=new_container
+						  ->get_layoutmanager();
 
-			lm->replace_all_items({
-					{"Lorem ipsum"},
-					{"dolor sit"},
-					{"ament"},
-					{"consectetur"},
-					{"adipisicing"},
-					{"elid set"},
-					{"do"},
-					{"eiusmod tempor"},
-						});
+					  lm->replace_all_items
+						  ({
+						    {"Lorem ipsum"},
+						    {"dolor sit"},
+						    {"ament"},
+						    {"consectetur"},
+						    {"adipisicing"},
+						    {"elid set"},
+						    {"do"},
+						    {"eiusmod tempor"},
+						  });
+				  });
 		}, ncc);
 }
 
@@ -198,6 +206,43 @@ static void do_resort(ONLY IN_THREAD,
 		 });
 }
 
+gridlayoutmanager create_book(const x::w::focusable_container &c)
+{
+	gridlayoutmanagerptr glm;
+
+	booklayoutmanager blm=c->get_layoutmanager();
+
+	auto f=blm->append();
+
+	f->add("Initial",
+	       []
+	       (const auto &f)
+	       {
+		       f->create_container
+			       ([]
+				(const auto &c)
+				{
+				},
+				new_gridlayoutmanager{});
+	       });
+
+	blm->open(0);
+	f->add("Main",
+	       [&]
+	       (const auto &f)
+	       {
+		       f->create_container
+			       ([&]
+				(const auto &c)
+				{
+					glm=c->get_layoutmanager();
+				},
+				new_gridlayoutmanager{});
+	       });
+
+	return glm;
+}
+
 void testcombobox(const testcombobox_options &options)
 {
 	destroy_callback::base::guard guard;
@@ -214,6 +259,20 @@ void testcombobox(const testcombobox_options &options)
 				 {
 				  main_window->get_layoutmanager()
 				 };
+
+
+			 if (options.book->value)
+			 {
+				 auto f=layout->append_row();
+
+				 f->create_focusable_container
+					 ([&]
+					  (const auto &c)
+					  {
+						  layout=create_book(c);
+					  },
+					  new_booklayoutmanager{});
+			 }
 
 			 auto factory=layout->append_row();
 

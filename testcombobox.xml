@@ -16,5 +16,14 @@
     <longopt>layout</longopt>
     <descr>Test layout recalculation</descr>
   </option>
+
+  <option>
+    <name>book</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>b</opt>
+    <longopt>book</longopt>
+    <descr>Put the combo-box inside the book layout manager</descr>
+  </option>
   <defaultoptions />
 </optclass>

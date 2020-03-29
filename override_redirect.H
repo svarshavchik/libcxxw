@@ -132,13 +132,12 @@ public:
 
 	//! Override update_resizing_timeout().
 
-	//! set_override_redirected-window_position() may end up
-	//! adjusting our position outside of the requested metrics.
+	//! Overrides generic_window_handler logic, since our
+	//! set_override_redirected_window_position() is out own window manager
+	//! that we do not need to wait for.
 
 	void update_resizing_timeout(ONLY IN_THREAD) override
 	{
-		this->resizing(IN_THREAD)=
-			!this->data(IN_THREAD).requested_visibility;
 	}
 };
 

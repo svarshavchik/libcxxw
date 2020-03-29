@@ -14,8 +14,10 @@
 #include "pixmap.H"
 #include "catch_exceptions.H"
 #include <x/refptr_hash.H>
+#include <x/visitor.H>
 #include <unordered_map>
 #include <algorithm>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -42,23 +44,29 @@ bool connection_threadObj::is_element_in_set(element_set_t &s,
 static bool resize_pending(ONLY IN_THREAD,
 			   generic_windowObj::handlerObj &wh, int &poll_for)
 {
-	if (!wh.resizing(IN_THREAD))
-		return false;
+	return std::visit(visitor{
+			[](const not_resizing &)
+			{
+				return false;
+			}, [&](const tick_clock_t::time_point &resizing_timeout)
+			{
+				auto now=tick_clock_t::now();
 
-	auto now=tick_clock_t::now();
+				if (now >= resizing_timeout)
+				{
+					wh.resizing(IN_THREAD)=not_resizing{};
+					wh.invoke_stabilized(IN_THREAD);
+					return false;
+				}
 
-	if (now >= wh.resizing_timeout(IN_THREAD))
-	{
-		wh.resizing(IN_THREAD)=false;
-		wh.invoke_stabilized(IN_THREAD);
-		return false;
-	}
+				connection_threadObj::compute_poll_until
+					(now,
+					 resizing_timeout,
+					 poll_for);
 
-	connection_threadObj::compute_poll_until(now,
-						 wh.resizing_timeout(IN_THREAD),
-						 poll_for);
-
-	return true;
+				return true;
+			}},
+		wh.resizing(IN_THREAD));
 }
 
 void connection_threadObj
@@ -85,14 +93,6 @@ void connection_threadObj
 		while (b != e)
 		{
 			auto element=*b;
-
-			if (resize_pending(IN_THREAD,
-					   element->get_window_handler(),
-					   poll_for))
-			{
-				++b;
-				continue;
-			}
 
 			b=last_set.erase(b);
 

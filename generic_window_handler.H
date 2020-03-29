@@ -48,6 +48,7 @@
 
 #include <chrono>
 #include <optional>
+#include <variant>
 
 LIBCXXW_NAMESPACE_START
 
@@ -55,6 +56,18 @@ struct background_color_tag;
 struct shaded_color_tag;
 struct disabled_mask_tag;
 
+//! Tag: window is not being resized
+
+struct LIBCXX_HIDDEN not_resizing {};
+
+//! Indicates window resizing status.
+
+//! It's either not_resizing, or we're waiting for the window manager to
+//! resize it, but we'll give up hoping after a timeout expires and we'll
+//! go ahead and finish our own processing, at that time.
+
+typedef std::variant<not_resizing,
+		     tick_clock_t::time_point> resizing_t;
 
 //! Common logic for generic input/output windows.
 
@@ -161,15 +174,10 @@ class generic_windowObj::handlerObj
  private:
 	//! Whether we expect the window manager to resize us, shortly.
 
-	//! update_resizing_timeout() sets this flag if it believes that
-	//! we will be resized soon.
-	bool resizing_thread_only=false;
-
-	//! When we give up the hope of the window manager resizing us.
-
-	//! update_resizing_timeout() sets this when it determines that
-	//! the window manager should resize us soon.
-	tick_clock_t::time_point resizing_timeout_thread_only;
+	//! update_resizing_timeout() sets a time_point if it believes that
+	//! we will be resized soon, but we'll give up this hope at this
+	//! time.
+	resizing_t resizing_thread_only=not_resizing{};
 
 	//! Window size and position stabilized callbacks.
 
@@ -202,7 +210,17 @@ class generic_windowObj::handlerObj
 
  public:
 	THREAD_DATA_ONLY(resizing);
-	THREAD_DATA_ONLY(resizing_timeout);
+
+	//! Whether this window is being resized
+
+	//! Either by a window, or by ourselves (this is an override-redirected
+	//! popup).
+
+	inline bool is_resizing(ONLY IN_THREAD)
+	{
+		return !std::holds_alternative<not_resizing>
+			(resizing(IN_THREAD));
+	}
 	THREAD_DATA_ONLY(stabilized_callbacks);
 
 	THREAD_DATA_ONLY(window_pixmap);
