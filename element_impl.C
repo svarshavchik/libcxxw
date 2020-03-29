@@ -525,6 +525,11 @@ void elementObj::implObj::explicit_redraw_recursively(ONLY IN_THREAD)
 	schedule_full_redraw(IN_THREAD);
 	explicit_redraw(IN_THREAD);
 
+	auto &di=get_draw_info(IN_THREAD);
+
+	if (di.element_viewport.empty())
+		return;
+
 	for_each_child(IN_THREAD,
 		       [&]
 		       (const element &e)
