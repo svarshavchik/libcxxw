@@ -379,6 +379,37 @@ public:
 	//! Colors page: radial gradient value
 		color_radial_fixed_height_validated;
 
+	const x::w::validated_input_field<
+		std::variant<std::string, double>
+		//! Borders page: border_size
+
+		> border_width_validated,
+
+	//! Borders page: border_size
+		border_height_validated,
+
+	//! Borders page: border_size
+		border_hradius_validated,
+
+	//! Borders page: border_size
+		border_vradius_validated;
+
+	//! Borders page: scaled border size
+	const x::w::validated_input_field<
+		std::optional<unsigned>
+		> border_width_scale_validated,
+	//! Borders page: scaled border size
+		border_height_scale_validated,
+	//! Borders page: scaled border size
+		border_hradius_scale_validated,
+	//! Borders page: scaled border size
+		border_vradius_scale_validated;
+
+	//! Borders page: border dashes
+	const x::w::validated_input_field<
+		std::vector<double>
+		> border_dashes_field_validated;
+
 	//////////////////////////////////////////////////////////////////////
 	//
 	// Events from the UI. They invoke appevent to send the event to
@@ -473,7 +504,8 @@ private:
 			 void (appObj::*whattodo)(ONLY IN_THREAD),
 			 const char *ok_label,
 			 const char *ok2_label,
-			 const char *cancel_label);
+			 const char *cancel_label,
+			 const char *ok2_shortcut);
 
 	//! The end of the road for a file_quit_event
 	void stoprunning(ONLY IN_THREAD);
@@ -566,6 +598,7 @@ private:
 	void dimension_reset_values(dimension_info_t::lock &lock);
 public:
 
+	//! Current dimension data
 	dimension_info_t dimension_info;
 
 	//! Something was selected or unselected in the dimension combo-box
@@ -770,6 +803,9 @@ private:
 	void color_unselected_locked(ONLY IN_THREAD,
 				     colors_info_t::lock &lock);
 
+	//! Reset button
+	void color_reset(ONLY IN_THREAD);
+
 	//! A new color was selected from the color name combo-box.
 
 	//! Or the Reset button was pressed. Always invokes color_reset_values
@@ -906,7 +942,204 @@ private:
 
 	//! Cleared by file_quit_event(), to stop the main execution thread.
 	bool running=true;
+public:
 
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Borders page.
+
+	//! Installs callbacks.
+
+	static void borders_elements_initialize(app_elements_tptr &,
+						x::w::uielements &,
+						init_args &);
+
+	//! Initialize the dimension page after loading/creating a new theme.
+
+	void borders_initialize(ONLY IN_THREAD);
+
+public:
+	//! Parsed border
+
+	struct loaded_border_t {
+
+		//! Parsed border value
+		std::string from;
+
+		//! Parsed border value
+		std::string color;
+		//! Parsed border value
+		std::string color2;
+
+		//! Parsed border value
+		std::string width;
+		//! Parsed border value
+		std::optional<unsigned> width_scale;
+
+		//! Parsed border value
+		std::string height;
+		//! Parsed border value
+		std::optional<unsigned> height_scale;
+
+		//! Parsed border value
+		std::string hradius;
+		//! Parsed border value
+		std::optional<unsigned> hradius_scale;
+
+		//! Parsed border value
+		std::string vradius;
+		//! Parsed border value
+		std::optional<unsigned> vradius_scale;
+
+		//! Parsed border value
+		std::optional<bool> rounded;
+
+		//! Parsed border value
+		std::optional<std::vector<double>> dashes;
+
+		//! Comparison operator
+
+		bool operator==(const loaded_border_t &other) const
+		{
+			return from == other.from &&
+				color == other.color &&
+				color2 == other.color2 &&
+				width == other.width &&
+				width_scale == other.width_scale &&
+				height == other.height &&
+				height_scale == other.height_scale &&
+				hradius == other.hradius &&
+				hradius_scale == other.hradius_scale &&
+				vradius == other.vradius &&
+				vradius_scale == other.vradius_scale &&
+				rounded == other.rounded &&
+				dashes == other.dashes;
+		}
+	};
+
+	//! Original border parameters
+
+	struct border_orig_params {
+		size_t index; //!< Which original border
+
+		loaded_border_t loaded_border; //!< The original border
+	};
+
+	//! Validated and saved parameters.
+
+	struct border_save_params {
+		std::string border_new_name;  //!< When creating a new one.
+		loaded_border_t border_new_value; //!< The new value
+
+		//! Check if the new value is unchanged
+		bool operator==(const border_orig_params &orig) const
+		{
+			return border_new_value == orig.loaded_border;
+		}
+	};
+
+	//! Borders metadata
+	struct border_info_s {
+
+		//! Cached: selected index of an existing border.
+		std::optional<border_orig_params> current_selection;
+
+		//! The existing borders.
+		std::vector<std::string> ids;
+
+		//! This is updated every time something changes on the
+		//! borders page. The "Save" button simply takes this to
+		//! the bank.
+
+		std::optional<border_save_params> save_params;
+	};
+
+	//! Thread-safe container for borders metadata.
+
+	typedef x::mptobj<border_info_s, std::recursive_mutex> border_info_t;
+
+	//! Current border data
+	border_info_t border_info;
+
+	//! Internally the border size gets stored as a variant parameter.
+
+	//! Convert it to visual representation.
+	static std::string border_format_size(const std::variant<std::string,
+					      double> &);
+private:
+	//! Initialize the dimension page after loading/creating a new theme.
+
+	void borders_initialize(ONLY IN_THREAD, border_info_t::lock &lock);
+public:
+	//! Something was selected or unselected in the border combo-box
+
+	void border_selected(ONLY IN_THREAD,
+			     const
+			     x::w::standard_combobox_selection_changed_info_t
+			     &);
+
+	//! "Reset" button
+	void border_reset(ONLY IN_THREAD);
+
+	//! A new border was selected in the border combo-box
+
+	//! Or the Reset button was pressed. Always invokes border_reset_values
+	//! when done.
+	void border_selected_locked(ONLY IN_THREAD,
+				    border_info_t::lock &lock);
+
+	//! Reset all fields to their original values, for the current border
+	void border_reset_values(ONLY IN_THREAD,
+				 border_info_t::lock &lock);
+
+	//! Enable/disable elements
+	void border_enable_disable_buttons(ONLY IN_THREAD,
+					   border_info_t::lock &lock);
+
+	//! Enable/disable elements
+
+	//! Invoked from UI callback.
+	static void border_enable_disable(ONLY IN_THREAD);
+
+	//! Enable/disable elements
+
+	//! Invoked from UI callback.
+	static void border_enable_disable_later();
+
+	//! Save/update border, invoked from update_theme().
+
+	get_updatecallbackptr border_update(ONLY IN_THREAD);
+
+private:
+
+	//! Continue border_update(), in the main execution thread.
+
+	update_callback_t border_update2(border_info_t::lock &lock);
+
+	//! Finalize border_update(), in the main execution thread.
+
+	void border_update2(border_info_t::lock &lock,
+			    const std::string &id,
+			    bool is_new,
+			    const x::ref<x::obj> &busy_mcguffin);
+
+	//! Finish border_update(), in the connection thread.
+	void border_update3(ONLY IN_THREAD,
+			    const x::ref<x::obj> &busy_mcguffin);
+
+public:
+	//! Delete border, invoked from update_theme().
+	get_updatecallbackptr border_delete(ONLY IN_THREAD);
+
+private:
+
+	//! Continue border_delete(), in the main execution thread.
+	update_callback_t border_delete2(border_info_t::lock &lock);
+
+	//! Finish border_delete(), in the main execution thread.
+	void border_delete2(border_info_t::lock &lock,
+			    size_t index,
+			    const x::ref<x::obj> &busy_mcguffin);
 };
 
 // The singleton instance of the app object.

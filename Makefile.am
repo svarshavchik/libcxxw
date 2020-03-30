@@ -1007,8 +1007,9 @@ EXTRA_DIST += $(creatorinst_DATA)
 cxxwcreator_SOURCES=\
 	creator/app.C				\
 	creator/app.H				\
-	creator/appdimension.C			\
 	creator/appcolors.C			\
+	creator/appborders.C			\
+	creator/appdimension.C			\
 	creator/cxxwcreator.C			\
 	#
 
@@ -1017,7 +1018,7 @@ cxxwcreator_LDFLAGS=$(TESTLINKTYPE)
 
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
-man_MANS=cxxwtheme.1
+man_MANS=cxxwtheme.1 cxxwcreator.1
 
 EXTRA_DIST += config.rpath m4/ChangeLog COPYING \
 	pic_constants.xml gc_constants.xml constants.xsl \
@@ -1485,11 +1486,11 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml docbook/xmllinks*.
 	mv html.tmp html
 
 $(man_MANS): man.stamp
-	touch $@
+	test -f $@ && touch $@
 
 CLEANFILES += $(man_MANS)
 
-man.stamp: $(wildcard docbook/cxxwtheme.xml)
+man.stamp: docbook/cxxwtheme.xml docbook/cxxwcreator.xml
 	set -e; rm -rf manpages; \
 	$(XSLTPROC) --nonet -o manpages/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl docbook/book.xml; \
 	mv -f manpages/* . ; touch man.stamp

@@ -266,4 +266,121 @@ object and placed into discrete variables.
     <type>x::w::button</type>
     <name>color_delete_button</name>
   </ref>
+
+  <!-- Borders page fields -->
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>border_name</name>
+  </ref>
+  <ref>
+    <type>x::w::label</type>
+    <name>border_new_name_label</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>border_new_name</name>
+  </ref>
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>border_from_name</name>
+  </ref>
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>border_color</name>
+  </ref>
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>border_color2</name>
+  </ref>
+
+  <ref>
+    <type>x::w::image_button</type>
+    <name>border_rounded_corner_default</name>
+  </ref>
+
+  <ref>
+    <type>x::w::image_button</type>
+    <name>border_rounded_corner_yes</name>
+  </ref>
+
+  <ref>
+    <type>x::w::image_button</type>
+    <name>border_rounded_corner_no</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>border_width</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>border_width_scale</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>border_height</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>border_height_scale</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>border_hradius</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>border_hradius_scale</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>border_vradius</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>border_vradius_scale</name>
+  </ref>
+
+  <ref>
+    <type>x::w::image_button</type>
+    <name>border_dashes_option</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>border_dashes_field</name>
+  </ref>
+
+  <ref>
+    <type>x::w::container</type>
+    <name>border_preview_cell_border_container</name>
+  </ref>
+
+  <ref>
+    <type>x::w::container</type>
+    <name>border_preview</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>border_update_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>border_reset_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>border_delete_button</name>
+  </ref>
 </collection>

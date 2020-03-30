@@ -116,7 +116,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/applications/cxxwtheme.desktop
 %{_bindir}/cxxw
 %{_bindir}/cxxwtheme
-%{_mandir}/*/*
+%{_mandir}/*/cxxwtheme*
 %endif
 
 %files cups
@@ -136,6 +136,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %else
 %{_bindir}/cxxwcreator
+%{_mandir}/*/cxxwcreator*
 %{_datadir}/libcxxw*/creator
 %{_datadir}/applications/cxxwcreator.desktop
 %endif

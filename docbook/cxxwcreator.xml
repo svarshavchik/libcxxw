@@ -1,0 +1,60 @@
+<!--
+
+Copyright 2020 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<refentry id="cxxwcreator.1">
+  <info>
+    <author>
+      <firstname>Sam</firstname>
+      <surname>Varshavchik</surname>
+      <contrib>Author</contrib>
+    </author>
+    <productname>&app;</productname>
+  </info>
+
+  <refmeta>
+    <refentrytitle>cxxwcreator</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class='manual'>&appshort;</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>cxxwcreator</refname>
+    <refpurpose> &appshort; UI creator</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis id="cxxwcreatorcmd">
+      <command>cxxwcreator</command>
+      <arg choice='opt'>themefile</arg>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1 id="cxxwcreatordesc">
+    <title>Description</title>
+
+    <para>
+      <command>cxxwcreator</command> loads an existing &app; UI theme
+      file, or creates a new one, and provides an interactive way to
+      modify the XML-based specification of &appshort;'s UI.
+    </para>
+  </refsect1>
+  <refsect1 id="cxxwcreatorbugs">
+    <title>Bugs</title>
+
+    <para>
+      This is a work in progress, supporting only a small subset of
+      &appshort;'s UI theme file objects.
+    </para>
+  </refsect1>
+</refentry>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "appendix" "refentry")
+End:
+-->

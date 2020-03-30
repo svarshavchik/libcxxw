@@ -106,6 +106,20 @@
 	</container>
       </page>
     </add>
+    <add>
+      <tab>
+	<element>
+	  <label type='theme_text'>${context:creator-main}${decoration:underline}B${decoration:none}orders</label>
+	</element>
+      </tab>
+      <shortcut type="theme_text">${context:creator-main}Alt-B</shortcut>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>borders_page</name>
+	</container>
+      </page>
+    </add>
   </factory>
 
   <!-- Dimensions page -->
@@ -322,30 +336,30 @@
   <!-- Divide into top and main section, vertically stacked -->
   <layout type="grid" id="colors_page">
     <append_row>
-      <name>color-top-row</name>
+      <name>colors-top-row</name>
     </append_row>
     <append_row>
-      <name>color-main-row</name>
+      <name>colors-main-row</name>
     </append_row>
     <append_row>
-      <name>color-bottom-row</name>
+      <name>colors-bottom-row</name>
     </append_row>
   </layout>
 
   <!-- Top section, a container with name and new name inputs -->
 
-  <factory type="grid" id="color-top-row">
+  <factory type="grid" id="colors-top-row">
     <halign>center</halign>
     <colspan>
       <columns>2</columns>
     </colspan>
     <container>
       <type>grid</type>
-      <name>color-top-row-container</name>
+      <name>colors-top-row-container</name>
     </container>
   </factory>
 
-  <layout type="grid" id="color-top-row-container">
+  <layout type="grid" id="colors-top-row-container">
     <valign>
       <row>0</row>
       <valign>middle</valign>
@@ -392,7 +406,7 @@
        right
   -->
 
-  <factory type="grid" id="color-main-row">
+  <factory type="grid" id="colors-main-row">
     <halign>right</halign>
     <valign>middle</valign>
     <container>
@@ -1143,7 +1157,7 @@
 
   <!-- Bottom section: update/delete/reset buttons -->
 
-  <factory id="color-bottom-row" type="grid">
+  <factory id="colors-bottom-row" type="grid">
     <halign>center</halign>
     <colspan>
       <columns>2</columns>
@@ -1160,17 +1174,17 @@
     </padding>
     <container>
       <type>grid</type>
-      <name>color-bottom-row-container</name>
+      <name>colors-bottom-row-container</name>
     </container>
   </factory>
 
-  <layout id="color-bottom-row-container" type="grid">
+  <layout id="colors-bottom-row-container" type="grid">
     <append_row>
-      <name>color_buttons</name>
+      <name>colors-buttons</name>
     </append_row>
   </layout>
 
-  <factory type="grid" id="color_buttons">
+  <factory type="grid" id="colors-buttons">
     <element id="color_update_button">
       <button>
 	<element>
@@ -1194,6 +1208,594 @@
       <shortcut type='theme_text'>${context:color}Alt-R</shortcut>
     </element>
     <element id="color_delete_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:color}D${decoration:underline}e${decoration:none}lete</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:color}Alt-E</shortcut>
+    </element>
+  </factory>
+
+  <!-- Borders page -->
+
+  <layout type="grid" id="borders_page">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>borders-top-half</name>
+    </append_row>
+    <append_row>
+      <name>borders-sizes-row</name>
+    </append_row>
+    <append_row>
+      <name>borders-bottom-row</name>
+    </append_row>
+  </layout>
+
+  <!-- Border: Top half, preview on the left, border properties on the right -->
+
+  <factory type="grid" id="borders-top-half">
+    <halign>center</halign>
+    <container>
+      <name>border_preview_cell_border_container</name>
+      <type>border</type>
+      <config>
+	<title type='theme_text'>${context:creator}Preview</title>
+	<appearance>border-preview-frame-appearance</appearance>
+      </config>
+      <contents>
+	<container>
+	  <name>border_preview_grid</name>
+	  <type>grid</type>
+	</container>
+      </contents>
+    </container>
+    <container>
+      <name>borders_details</name>
+      <type>grid</type>
+    </container>
+  </factory>
+
+  <layout type="border" id="border_preview_cell_border_container" />
+
+  <appearance type="frame" id="border-preview-frame-appearance">
+    <hpad>border-preview-frame-pad</hpad>
+    <vpad>border-preview-frame-pad</vpad>
+  </appearance>
+
+  <dim id="border-preview-frame-pad">2</dim>
+
+  <!--
+      Inside the border_preview_cell_border_container there's a grid three
+      rows and three columns with the preview border container in the
+      center square. The outer squares provide extra padding such as the
+      center square has room to grow and shrink.
+
+      This allows for borders of varying sizes to slightly grow and shrink in
+      the border_preview_cell_border_container, without changing the metrics.
+
+  -->
+
+  <layout id="border_preview_grid" type="grid">
+    <append_row>
+      <name>border_preview_grid_top_bottom_row</name>
+    </append_row>
+    <append_row>
+      <name>border_preview_grid_middle_row</name>
+    </append_row>
+    <append_row>
+      <name>border_preview_grid_top_bottom_row</name>
+    </append_row>
+  </layout>
+
+  <factory id="border_preview_grid_top_bottom_row" type="grid">
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+    <element>
+      <canvas>
+	<width>border-preview-cell-canvas-padded-width</width>
+	<height>none</height>
+      </canvas>
+    </element>
+  </factory>
+
+  <factory id="border_preview_grid_middle_row" type="grid">
+    <element>
+      <canvas>
+	<width>none</width>
+	<height>border-preview-cell-canvas-padded-height</height>
+      </canvas>
+    </element>
+    <halign>center</halign>
+    <valign>middle</valign>
+    <container>
+      <name>border_preview</name>
+      <type>border</type>
+      <contents>
+	<element>
+	  <canvas>
+	    <width>border-preview-cell-canvas-width</width>
+	    <height>border-preview-cell-canvas-height</height>
+	  </canvas>
+	</element>
+      </contents>
+    </container>
+    <element>
+      <canvas>
+	<width>none</width>
+	<height>border-preview-cell-canvas-padded-height</height>
+      </canvas>
+    </element>
+  </factory>
+
+  <!-- Size of the preview border -->
+
+  <dim id="border-preview-cell-canvas-width">20</dim>
+  <dim id="border-preview-cell-canvas-height">20</dim>
+
+  <!-- Size of the padding for the preview border, should be slightly more -->
+
+  <dim id="border-preview-cell-canvas-padded-width">30</dim>
+  <dim id="border-preview-cell-canvas-padded-height">30</dim>
+
+  <layout type="border" id="border_preview" />
+
+  <!-- Border: border details -->
+
+  <layout type="grid" id="borders_details">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>3</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>4</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>5</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>6</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>7</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>borders-name-row</name>
+    </append_row>
+    <append_row>
+      <name>new-borders-name-row</name>
+    </append_row>
+    <append_row>
+      <name>borders-from-row</name>
+    </append_row>
+    <append_row>
+      <name>borders-color-row</name>
+    </append_row>
+    <append_row>
+      <name>borders-color2-row</name>
+    </append_row>
+    <append_row>
+      <name>borders-dashes-option-row</name>
+    </append_row>
+    <append_row>
+      <name>borders-dashes-row</name>
+    </append_row>
+    <append_row>
+      <name>borders-rounded-row</name>
+    </append_row>
+  </layout>
+
+  <!-- Border: Name -->
+  <factory type="grid" id="borders-name-row">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>${context:creator}Name:</label>
+    </element>
+    <container>
+      <name>border_name_field</name>
+      <type>standard_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="border_name_field" type="standard_combobox" />
+
+  <!-- Border: New name -->
+  <factory type="grid" id="new-borders-name-row">
+    <halign>right</halign>
+    <element id="border_new_name_label">
+      <label type='theme_text'>${context:creator}New name:</label>
+    </element>
+    <element id="border_new_name_field">
+      <input_field />
+        <config>
+	  <columns>30</columns>
+	</config>
+    </element>
+  </factory>
+
+  <!-- Border: From -->
+  <factory type="grid" id="borders-from-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}From:</label>
+    </element>
+    <container>
+      <name>border_from_name</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="border_from_name" type="editable_combobox" />
+
+  <!-- Border: Color -->
+
+  <factory type="grid" id="borders-color-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Color:</label>
+    </element>
+    <container>
+      <name>border_color</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="border_color" type="editable_combobox" />
+
+  <!-- Border: 2nd color -->
+
+  <factory type="grid" id="borders-color2-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}2nd Color:</label>
+    </element>
+    <container>
+      <name>border_color2</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="border_color2" type="editable_combobox" />
+
+
+  <!-- Border: Dashed option -->
+
+  <factory type="grid" id="borders-dashes-option-row">
+    <element>
+      <canvas />
+    </element>
+    <element id="border_dashes_option">
+      <checkbox>
+	<element>
+	  <label type="theme_text">Dashes</label>
+	</element>
+      </checkbox>
+    </element>
+  </factory>
+
+  <!-- Border: Dashes -->
+
+  <factory type="grid" id="borders-dashes-row">
+    <halign>right</halign>
+
+    <element>
+      <label type="theme_text">${context:creator}Dash Size(s):</label>
+    </element>
+
+    <element id="border_dashes_field">
+      <input_field />
+        <config>
+	  <columns>20</columns>
+	</config>
+    </element>
+  </factory>
+
+  <!-- Border: Rounded corners -->
+
+  <factory type="grid" id="borders-rounded-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Rounded Corners:</label>
+    </element>
+    <padding>
+      <side>all</side>
+      <padding>none</padding>
+    </padding>
+    <container>
+      <name>border_rounded_corner_container</name>
+      <type>grid</type>
+    </container>
+  </factory>
+
+  <layout type="grid" id="border_rounded_corner_container">
+    <append_row>
+      <name>border_rounded_corner_default_row</name>
+    </append_row>
+    <append_row>
+      <name>border_rounded_corner_yes_row</name>
+    </append_row>
+    <append_row>
+      <name>border_rounded_corner_no_row</name>
+    </append_row>
+  </layout>
+  <factory type="grid" id="border_rounded_corner_default_row">
+    <element id="border_rounded_corner_default">
+      <radio>
+	<element>
+	  <label type="theme_text">${context:creator}Default</label>
+	</element>
+      </radio>
+      <group>border-rounded-corner-group</group>
+    </element>
+  </factory>
+
+  <factory type="grid" id="border_rounded_corner_yes_row">
+    <element id="border_rounded_corner_yes">
+      <radio>
+	<element>
+	  <label type="theme_text">${context:creator}Yes</label>
+	</element>
+      </radio>
+      <group>border-rounded-corner-group</group>
+    </element>
+  </factory>
+
+  <factory type="grid" id="border_rounded_corner_no_row">
+    <element id="border_rounded_corner_no">
+      <radio>
+	<element>
+	  <label type="theme_text">${context:creator}No</label>
+	</element>
+      </radio>
+      <group>border-rounded-corner-group</group>
+    </element>
+  </factory>
+
+  <!-- Border: Sizes section -->
+  <factory type="grid" id="borders-sizes-row">
+    <padding>
+      <side>all</side>
+      <padding>none</padding>
+    </padding>
+    <halign>center</halign>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+
+    <container>
+      <name>border-sizes-container</name>
+      <type>border</type>
+      <config>
+	<title type='theme_text'>${context:creator}Border Size</title>
+      </config>
+      <contents>
+	<container>
+	  <name>borders-sizes-rows</name>
+	  <type>grid</type>
+	</container>
+      </contents>
+    </container>
+  </factory>
+
+  <layout id="border-sizes-container" type="border" />
+
+  <!-- Rows for border sizes -->
+
+  <layout id="borders-sizes-rows" type="grid">
+
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>3</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>border_sizes_width</name>
+    </append_row>
+    <append_row>
+      <name>border_sizes_height</name>
+    </append_row>
+    <append_row>
+      <name>border_sizes_hradius</name>
+    </append_row>
+    <append_row>
+      <name>border_sizes_vradius</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="border_sizes_width">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Width:</label>
+    </element>
+    <container>
+      <name>border_width</name>
+      <type>editable_combobox</type>
+    </container>
+
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Scale Width:</label>
+    </element>
+    <element id="border_width_scale">
+      <input_field />
+        <config>
+	  <columns>10</columns>
+	</config>
+    </element>
+  </factory>
+
+  <layout id="border_width" type="editable_combobox" />
+
+  <factory type="grid" id="border_sizes_height">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Height:</label>
+    </element>
+    <container>
+      <name>border_height</name>
+      <type>editable_combobox</type>
+    </container>
+
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Scale Height:</label>
+    </element>
+    <element id="border_height_scale">
+      <input_field />
+        <config>
+	  <columns>10</columns>
+	</config>
+    </element>
+  </factory>
+
+  <layout id="border_height" type="editable_combobox" />
+
+  <factory type="grid" id="border_sizes_hradius">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Corner Radius (H):</label>
+    </element>
+    <container>
+      <name>border_hradius</name>
+      <type>editable_combobox</type>
+    </container>
+
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Scale Radius (H):</label>
+    </element>
+    <element id="border_hradius_scale">
+      <input_field />
+        <config>
+	  <columns>10</columns>
+	</config>
+    </element>
+  </factory>
+
+  <layout id="border_hradius" type="editable_combobox" />
+
+  <factory type="grid" id="border_sizes_vradius">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Corner Radius (V):</label>
+    </element>
+    <container>
+      <name>border_vradius</name>
+      <type>editable_combobox</type>
+    </container>
+
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Scale Radius (V):</label>
+    </element>
+    <element id="border_vradius_scale">
+      <input_field />
+        <config>
+	  <columns>10</columns>
+	</config>
+    </element>
+  </factory>
+
+  <layout id="border_vradius" type="editable_combobox" />
+
+  <!-- Bottom section: update/delete/reset buttons -->
+
+  <factory id="borders-bottom-row" type="grid">
+    <halign>center</halign>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+
+    <padding>
+      <side>top</side>
+      <padding>none</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>none</padding>
+    </padding>
+    <container>
+      <type>grid</type>
+      <name>borders-bottom-row-container</name>
+    </container>
+  </factory>
+
+  <layout id="borders-bottom-row-container" type="grid">
+    <append_row>
+      <name>borders-buttons</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="borders-buttons">
+    <element id="border_update_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:color}${decoration:underline}U${decoration:none}pdate</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:color}Alt-U</shortcut>
+    </element>
+    <element id="border_reset_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:color}${decoration:underline}R${decoration:none}eset</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:color}Alt-R</shortcut>
+    </element>
+    <element id="border_delete_button">
       <button>
 	<element>
 	  <label type="theme_text">${context:color}D${decoration:underline}e${decoration:none}lete</label>

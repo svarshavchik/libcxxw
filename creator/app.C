@@ -11,6 +11,9 @@
 #include "x/w/file_dialog.H"
 #include "x/w/label.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
+#include "x/w/editable_comboboxlayoutmanager.H"
+#include "x/w/shortcut.H"
+#include "x/w/theme_text.H"
 #include "catch_exceptions.H"
 #include "messages.H"
 
@@ -21,10 +24,14 @@
 #include <x/imbue.H>
 #include <x/xml/escape.H>
 #include <x/sentry.H>
+#include <x/strtok.H>
+#include <x/visitor.H>
+#include <x/weakcapture.H>
 #include <sstream>
 #include <cstdlib>
 #include <cmath>
 #include <iterator>
+#include <functional>
 
 #ifndef CREATORDIR
 #define CREATORDIR PKGDATADIR "/creator"
@@ -238,6 +245,9 @@ inline appObj::init_args appObj::create_init_args()
 
 			 appObj::colors_elements_initialize
 				 (args.elements, ui, args);
+
+			 appObj::borders_elements_initialize
+				 (args.elements, ui, args);
 		 });
 
 	return args;
@@ -254,6 +264,8 @@ appObj::appObj() : appObj{create_init_args()}
 std::string appObj::fmtdblval(double d)
 {
 	std::stringstream o;
+
+	x::imbue im{x::locale::base::c(), o};
 
 	o << std::fixed << std::setprecision(3) << d;
 
@@ -504,6 +516,239 @@ color_gradient_value_validator(const x::w::input_field &field,
 		 });
 }
 
+std::string appObj::border_format_size(const std::variant<std::string,
+				       double> &v)
+{
+	return std::visit
+		(x::visitor{
+			[](const std::string &s)
+			{
+				return s;
+			},[](double v)
+			  {
+				  return appObj::fmtdblval(v);
+			  }},
+			v);
+}
+
+static const x::w::validated_input_field<
+	std::variant<std::string, double>
+	> border_size_validator(const x::w::focusable_container &field)
+{
+	x::w::editable_comboboxlayoutmanager lm=field->get_layoutmanager();
+
+	return lm->set_validator
+		([field=x::make_weak_capture(field)]
+		 (ONLY IN_THREAD,
+		  const std::string &value,
+		  const auto &me,
+		  const auto &trigger)
+		 {
+			 std::optional<std::variant<std::string, double>>
+				 ret{value};
+
+			 auto got=field.get();
+
+			 if (!got)
+			 {
+				 // Being destroyed
+
+				 return ret;
+			 }
+
+			 auto &[field]=*got;
+
+			 x::w::editable_comboboxlayoutmanager lm=
+				 field->get_layoutmanager();
+
+			 if (lm->selected())
+			 {
+				 // Some item is selected, don't bother
+				 // checking.
+				 return ret;
+			 }
+
+			 if (value.empty())
+			 {
+				 return ret;
+			 }
+
+			 // Nothing is selected, must be a mm value.
+
+			 std::istringstream i{x::trim(value)};
+
+			 double v;
+
+			 i >> v;
+
+			 if (!i.fail() && (i.get(), i.eof()))
+			 {
+				 if (v >= 0 && v < 10000)
+				 {
+					 auto s=appObj::fmtdblval(v);
+
+					 std::istringstream i{s};
+
+					 i >> v;
+
+					 ret=v;
+
+					 return ret;
+				 }
+			 }
+
+			 field->stop_message(_("Invalid size, must be a "
+					       "defined dimension or a "
+					       "numeric value in millimeters"));
+
+			 ret.reset();
+			 return ret;
+		 },
+		 []
+		 (const auto &v)
+		 {
+			 return appObj::border_format_size(v);
+		 },
+		 []
+		 (ONLY IN_THREAD, const auto &ignore)
+		 {
+			 appObj::border_enable_disable_later();
+		 });
+}
+
+// Validator for the "scaled" fields on the border page, that have an
+// optional "unsigned" value.
+
+static const x::w::validated_input_field<std::optional<unsigned>>
+border_size_scale_validator(const x::w::input_field &field)
+{
+	return field->set_validator
+		([]
+		 (ONLY IN_THREAD,
+		  const std::string &value,
+		  const auto &me,
+		  const auto &trigger)
+		 -> std::optional<std::optional<unsigned>> {
+
+			std::optional<std::optional<unsigned>> ret;
+
+			if (value.empty())
+			{
+				ret.emplace();
+
+				appObj::border_enable_disable_later();
+				return ret;
+			}
+
+			unsigned v;
+
+			std::istringstream i{x::trim(value)};
+
+			i >> v;
+
+			if (!i.fail() && (i.get(), i.eof()))
+			{
+				if (v >= 0 && v < 10000)
+				{
+					ret.emplace()=v;
+					appObj::border_enable_disable_later();
+					return ret;
+				}
+			}
+
+			me->stop_message(_("Scale value not a non-negative"
+					   " integer"));
+			return ret;
+		},
+		 []
+		 (const std::optional<unsigned> &v) -> std::string
+		 {
+			 std::string s;
+
+			 if (v)
+				 s=x::value_string<unsigned>
+					 ::to_string(*v, x::locale::base::c());
+
+			 return s;
+		 });
+}
+
+static inline x::w::validated_input_field<std::vector<double>>
+create_border_dashes_field_validator(const x::w::input_field &field)
+{
+	return field->set_validator
+		([]
+		 (ONLY IN_THREAD,
+		  const std::string &value,
+		  const auto &me,
+		  const auto &trigger)
+		 -> std::optional<std::vector<double>> {
+
+			std::optional<std::vector<double>> ret;
+
+			auto &v=ret.emplace();
+
+			std::istringstream i{value};
+
+			while (1)
+			{
+				auto c=i.peek();
+
+				if (c == ' ' || c == '\t' ||
+				    c == ';' ||
+				    c == '\n' || c == '\r')
+				{
+					i.get();
+					continue;
+				}
+
+				if (i.eof())
+				{
+					appObj::border_enable_disable_later();
+					return ret;
+				}
+
+				double n;
+
+				if (!(i >> n))
+					break;
+
+				std::istringstream rounded{appObj::fmtdblval(n)};
+
+				x::imbue im{x::locale::base::c(), rounded};
+
+				if (!(rounded >> n))
+					break;
+
+				if (n <= 0)
+					break;
+				v.push_back(n);
+			}
+
+			me->stop_message(_("Cannot parse a list of non-negative "
+					   "values in millimeters"));
+			return ret;
+		},
+		 []
+		 (const std::optional<std::vector<double>> &v) -> std::string
+		 {
+			 std::ostringstream o;
+
+			 const char *p="";
+
+			 if (v)
+			 {
+				 for (auto n:*v)
+				 {
+					 o << p << appObj::fmtdblval(n);
+					 p="; ";
+				 }
+			 }
+
+			 return o.str();
+		 });
+}
+
 appObj::appObj(init_args &&args)
 	: app_elements_t{std::move(args.elements)},
 	  configfile{args.configfile},
@@ -518,73 +763,90 @@ appObj::appObj(init_args &&args)
 				    (dimension_value)},
 	  dimension_scale_value_validated{dimension_scale_value_validator
 					  (dimension_scale_value)},
-	  color_scaled_r_validated(color_scale_value_validator
-				   (color_scaled_page_r)),
-	  color_scaled_g_validated(color_scale_value_validator
-				   (color_scaled_page_g)),
-	  color_scaled_b_validated(color_scale_value_validator
-				   (color_scaled_page_b)),
-	  color_scaled_a_validated(color_scale_value_validator
-				   (color_scaled_page_a)),
+	  color_scaled_r_validated{color_scale_value_validator
+				   (color_scaled_page_r)},
+	  color_scaled_g_validated{color_scale_value_validator
+				   (color_scaled_page_g)},
+	  color_scaled_b_validated{color_scale_value_validator
+				   (color_scaled_page_b)},
+	  color_scaled_a_validated{color_scale_value_validator
+				   (color_scaled_page_a)},
 
 
-	  color_linear_x1_validated(color_gradient_value_validator
+	  color_linear_x1_validated{color_gradient_value_validator
 				    (color_linear_x1,
-				     &all_gradient_values::x1)),
-	  color_linear_y1_validated(color_gradient_value_validator
+				     &all_gradient_values::x1)},
+	  color_linear_y1_validated{color_gradient_value_validator
 				    (color_linear_y1,
-				     &all_gradient_values::y1)),
-	  color_linear_x2_validated(color_gradient_value_validator
+				     &all_gradient_values::y1)},
+	  color_linear_x2_validated{color_gradient_value_validator
 				    (color_linear_x2,
-				     &all_gradient_values::x2)),
-	  color_linear_y2_validated(color_gradient_value_validator
+				     &all_gradient_values::x2)},
+	  color_linear_y2_validated{color_gradient_value_validator
 				    (color_linear_y2,
-				     &all_gradient_values::y2)),
-	  color_linear_width_validated(color_gradient_value_validator
+				     &all_gradient_values::y2)},
+	  color_linear_width_validated{color_gradient_value_validator
 				       (color_linear_width,
 					&all_gradient_values
-					::linear_gradient_values::fixed_width)),
-	  color_linear_height_validated(color_gradient_value_validator
+					::linear_gradient_values::fixed_width)},
+	  color_linear_height_validated{color_gradient_value_validator
 					(color_linear_height,
 					 &all_gradient_values
 					 ::linear_gradient_values::fixed_height)
-					),
+	  },
 
-	  color_radial_inner_x_validated(color_gradient_value_validator
+	  color_radial_inner_x_validated{color_gradient_value_validator
 					 (color_radial_inner_x,
 					  &all_gradient_values::inner_center_x)
-					 ),
-	  color_radial_inner_y_validated(color_gradient_value_validator
+	  },
+	  color_radial_inner_y_validated{color_gradient_value_validator
 					 (color_radial_inner_y,
 					  &all_gradient_values::inner_center_y)
-					 ),
-	  color_radial_inner_radius_validated(color_gradient_value_validator
+	  },
+	  color_radial_inner_radius_validated{color_gradient_value_validator
 					      (color_radial_inner_radius,
 					       &all_gradient_values
-					       ::inner_radius)),
-	  color_radial_outer_x_validated(color_gradient_value_validator
+					       ::inner_radius)},
+	  color_radial_outer_x_validated{color_gradient_value_validator
 					 (color_radial_outer_x,
 					  &all_gradient_values
-					  ::outer_center_x)),
-	  color_radial_outer_y_validated(color_gradient_value_validator
+					  ::outer_center_x)},
+	  color_radial_outer_y_validated{color_gradient_value_validator
 					 (color_radial_outer_y,
 					  &all_gradient_values
-					  ::outer_center_y)),
-	  color_radial_outer_radius_validated(color_gradient_value_validator
-					    (color_radial_outer_radius,
-					     &all_gradient_values::outer_radius)
-					      ),
-	  color_radial_fixed_width_validated(color_gradient_value_validator
+					  ::outer_center_y)},
+	  color_radial_outer_radius_validated{color_gradient_value_validator
+					      (color_radial_outer_radius,
+					       &all_gradient_values::outer_radius)
+	  },
+	  color_radial_fixed_width_validated{color_gradient_value_validator
 					     (color_radial_fixed_width,
 					      &all_gradient_values::
 					      radial_gradient_values::
 					      fixed_width)
-					     ),
-	  color_radial_fixed_height_validated(color_gradient_value_validator
+	  },
+	  color_radial_fixed_height_validated{color_gradient_value_validator
 					      (color_radial_fixed_height,
 					       &all_gradient_values::
 					       radial_gradient_values::
-					       fixed_height))
+					       fixed_height)
+	  },
+
+	  border_width_validated{border_size_validator(border_width)},
+	  border_height_validated{border_size_validator(border_height)},
+	  border_hradius_validated{border_size_validator(border_hradius)},
+	  border_vradius_validated{border_size_validator(border_vradius)},
+
+	  border_width_scale_validated{border_size_scale_validator
+			  (border_width_scale)},
+	  border_height_scale_validated{border_size_scale_validator
+			  (border_height_scale)},
+	  border_hradius_scale_validated{border_size_scale_validator
+			  (border_hradius_scale)},
+	  border_vradius_scale_validated{border_size_scale_validator
+			  (border_vradius_scale)},
+	  border_dashes_field_validated{create_border_dashes_field_validator
+					(border_dashes_field)}
 {
 }
 
@@ -594,6 +856,7 @@ void appObj::loaded_file(ONLY IN_THREAD)
 	enable_disable_menus();
 	dimension_initialize(IN_THREAD);
 	colors_initialize(IN_THREAD);
+	borders_initialize(IN_THREAD);
 }
 
 // Update the main window title's after loading or saving a file.
@@ -803,8 +1066,9 @@ void appObj::file_quit_event(ONLY IN_THREAD)
 	ifnotedited(IN_THREAD,
 		    &appObj::stoprunning,
 		    _("Save And Quit"),
-		    _("Quit Only"),
-		    _("Cancel"));
+		    _("${decoration:underline}Q${decoration:none}uit Only"),
+		    _("Cancel"),
+		    _("Alt-Q"));
 }
 
 void appObj::file_new_event(ONLY IN_THREAD)
@@ -812,8 +1076,9 @@ void appObj::file_new_event(ONLY IN_THREAD)
 	ifnotedited(IN_THREAD,
 		    &appObj::new_file,
 		    _("Save Changes"),
-		    _("Discard Changes"),
-		    _("Cancel"));
+		    _("${decoration:underline}D${decoration:none}iscard Changes"),
+		    _("Cancel"),
+		    _("Alt-D"));
 }
 
 void appObj::file_open_event(ONLY IN_THREAD)
@@ -821,8 +1086,9 @@ void appObj::file_open_event(ONLY IN_THREAD)
 	ifnotedited(IN_THREAD,
 		    &appObj::open_file,
 		    _("Save Changes"),
-		    _("Discard Changes"),
-		    _("Cancel"));
+		    _("${decoration:underline}D${decoration:none}iscard Changes"),
+		    _("Cancel"),
+		    _("Alt-D"));
 }
 
 void appObj::open_file(ONLY IN_THREAD)
@@ -885,7 +1151,8 @@ void appObj::ifnotedited(ONLY IN_THREAD,
 			 void (appObj::*whattodo)(ONLY IN_THREAD),
 			 const char *ok_label,
 			 const char *ok2_label,
-			 const char *cancel_label)
+			 const char *cancel_label,
+			 const char *ok2_shortcut)
 {
 	if (!edited.get())
 	{
@@ -919,9 +1186,10 @@ void appObj::ifnotedited(ONLY IN_THREAD,
 		  const auto &ignore)
 		 {
 		 },
-		 ok_label,
-		 ok2_label,
-		 cancel_label)->dialog_window->show_all();
+		 x::w::theme_text{ok_label},
+		 x::w::theme_text{ok2_label},
+		 x::w::theme_text{cancel_label},
+		 {ok2_shortcut})->dialog_window->show_all();
 	return;
 }
 

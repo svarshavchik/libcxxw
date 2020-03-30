@@ -1,6 +1,7 @@
 /*.bz2
 /*.gz
 /*.sig
+/*.[123456789]
 *.inc.[CH]
 *.msgs.H
 INSTALL
@@ -19,7 +20,6 @@ configure
 /cxxw
 /cxxwoptions.H
 /cxxwtheme
-/cxxwtheme.1
 /cxxwcreator
 /depcomp
 .dirstamp
@@ -38,6 +38,7 @@ configure
 /libcxxw*mk
 libtool
 ltmain.sh
+/manpages
 man.stamp
 missing
 /rpm

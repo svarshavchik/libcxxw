@@ -85,6 +85,27 @@ static void install_color_standard_combobox_layoutmanager
 		 });
 }
 
+// Other pages' static widgets that enumerate available colors
+
+namespace {
+#if 0
+}
+#endif
+
+struct other_color_widget {
+	x::w::focusable_container appObj::*widget;
+};
+
+static const other_color_widget other_color_widgets[]=
+	{
+	 { &appObj::border_color },
+	 { &appObj::border_color2 },
+	};
+#if 0
+{
+#endif
+}
+
 void appObj::colors_elements_initialize(app_elements_tptr &elements,
 					x::w::uielements &ui,
 					init_args &args)
@@ -310,15 +331,7 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 		  const auto &trigger,
 		  const auto &mcguffin)
 		 {
-			 appinvoke([&]
-				   (auto *app)
-				   {
-					   colors_info_t::lock
-						   lock{app->colors_info};
-
-					   app->color_selected_locked
-						   (IN_THREAD, lock);
-				   });
+			 appinvoke(&appObj::color_reset, IN_THREAD);
 		 });
 
 	color_delete_button->on_activate
@@ -364,12 +377,13 @@ void appObj::colors_initialize(ONLY IN_THREAD)
 	// by all loaded colors.
 	std::vector<x::w::list_item_param> combobox_items;
 
-	combobox_items.reserve(lock->ids.size()+1);
+	combobox_items.reserve(lock->ids.size()+1+x::w::n_rgb_colors);
 
 	combobox_items.push_back(_("-- New Color --"));
 	combobox_items.insert(combobox_items.end(),
 			      lock->ids.begin(),
 			      lock->ids.end());
+
 	x::w::standard_comboboxlayoutmanager lm=
 		color_name->get_layoutmanager();
 
@@ -377,6 +391,33 @@ void appObj::colors_initialize(ONLY IN_THREAD)
 
 	// The autoselect will initialize the rest.
 	lm->autoselect(IN_THREAD, 0, {});
+
+	// Initialize widgets on other pages with standard colors and the
+	// current colors.
+
+	combobox_items[0]=x::w::separator{};
+	combobox_items.insert(combobox_items.begin(),
+			      x::w::rgb_color_names,
+			      x::w::rgb_color_names+
+			      x::w::n_rgb_colors);
+
+	for (const auto &other:other_color_widgets)
+	{
+		lm= (this->*(other.widget))->get_layoutmanager();
+		lm->replace_all_items(combobox_items);
+	}
+}
+
+void appObj::color_reset(ONLY IN_THREAD)
+{
+	colors_info_t::lock lock{colors_info};
+
+	color_selected_locked(IN_THREAD, lock);
+
+	if (lock->current_selection)
+		color_name->request_focus();
+	else
+		color_new_name->request_focus();
 }
 
 void appObj::color_selected(ONLY IN_THREAD,
@@ -430,6 +471,7 @@ void appObj::color_selected_locked(ONLY IN_THREAD,
 		lock->current_selection.reset();
 		color_new_name_label->show(IN_THREAD);
 		color_new_name->show(IN_THREAD);
+		color_new_name->set(IN_THREAD, "");
 		color_basic_option_radio->set_value(IN_THREAD, 1);
 		color_reset_values(IN_THREAD, lock);
 		return;
@@ -2009,7 +2051,26 @@ void appObj::color_update2(colors_info_t::lock &lock,
 {
 	if (is_new)
 	{
-		update_new_element(id, lock->ids, color_name);
+		auto n=update_new_element(id, lock->ids, color_name);
+
+		std::vector<x::w::list_item_param>
+			new_item{ {lock->ids.at(n-1)}};
+
+		for (const auto &other:other_color_widgets)
+		{
+			x::w::editable_comboboxlayoutmanager lm=
+				(this->*(other.widget))->get_layoutmanager();
+
+			// n-1 is the index. There's n_rgb_colors at the
+			// beginning, plus a separator line.
+			lm->insert_items(n + x::w::n_rgb_colors, new_item );
+		}
+
+		status->update(_("Created new color"));
+		main_window->in_thread_idle([busy_mcguffin]
+					    (ONLY IN_THREAD)
+					    {
+					    });
 		return;
 	}
 
@@ -2108,6 +2169,15 @@ void appObj::color_delete2(colors_info_t::lock &lock,
 	lock->current_selection.reset();
 
 	name_lm->autoselect(0);
+
+	for (const auto &other:other_color_widgets)
+	{
+		name_lm=(this->*(other.widget))->get_layoutmanager();
+
+		// There's n_rgb_colors standard colors at the beginning,
+		// then a separator
+		name_lm->remove_item(index + x::w::n_rgb_colors+1);
+	}
 
 	// autoselect(0) queues up a request.
 	// When it gets processed, the color new name field gets show()n.

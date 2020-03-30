@@ -3,6 +3,7 @@
 #include "creator/app.H"
 #include "x/w/uielements.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
+#include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/impl/uixmlparser.H"
 #include "messages.H"
@@ -10,6 +11,29 @@
 #include <x/mpthreadlock.H>
 #include <cmath>
 #include <set>
+
+// Other pages' static widgets that enumerate available dimensions
+
+namespace {
+#if 0
+}
+#endif
+
+struct other_dimension_widget {
+	x::w::focusable_container appObj::*widget;
+};
+
+static const other_dimension_widget other_dimension_widgets[]=
+	{
+	 { &appObj::border_width },
+	 { &appObj::border_height },
+	 { &appObj::border_hradius },
+	 { &appObj::border_vradius },
+	};
+#if 0
+{
+#endif
+}
 
 void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 					   x::w::uielements &ui,
@@ -185,6 +209,15 @@ void appObj::dimension_initialize(ONLY IN_THREAD)
 	// Can only do this after both combo-boxes are initialized, due
 	// to the selection callback that expects everything to be there.
 	lm->autoselect(IN_THREAD, 0, {});
+
+	// Initialize widgets on other pages.
+	combobox_items.erase(combobox_items.begin());
+	for (const auto &other:other_dimension_widgets)
+	{
+		x::w::editable_comboboxlayoutmanager lm=
+			(this->*(other.widget))->get_layoutmanager();
+		lm->replace_all_items(combobox_items);
+	}
 }
 
 void appObj::dimension_selected(ONLY IN_THREAD,
@@ -211,6 +244,15 @@ void appObj::dimension_selected(ONLY IN_THREAD,
 		}
 		else
 		{
+
+			// Disable the corresponding item in the from scale
+			// combo-box.
+			//
+			// Not IN THREAD because we can be here after creating
+			// a new dimension, and from_name's combo-box has not
+			// been updated yet.
+			lm->enabled(n, false);
+
 			lock->current_selection.emplace();
 			auto &orig_params=*lock->current_selection;
 			orig_params.index=--n;
@@ -246,10 +288,6 @@ void appObj::dimension_selected(ONLY IN_THREAD,
 			dimension_new_name_label->hide(IN_THREAD);
 			dimension_new_name->hide(IN_THREAD);
 			dimension_delete_button->set_enabled(true);
-
-			// Disable the corresponding item in the from scale
-			// combo-box.
-			lm->enabled(n, false);
 		}
 		dimension_reset_values(lock);
 	}
@@ -602,6 +640,18 @@ void appObj::dimension_update2(dimension_info_t::lock &lock,
 
 		if (lock->from_index && *lock->from_index >= i-1)
 			++*lock->from_index;
+
+		std::vector<x::w::list_item_param>
+			new_item{ {lock->ids.at(i-1)}};
+
+		for (const auto &other:other_dimension_widgets)
+		{
+			x::w::standard_comboboxlayoutmanager lm=
+				(this->*(other.widget))->get_layoutmanager();
+
+			lm->insert_items(i-1, new_item );
+		}
+
 		status->update(_("Created new dimension"));
 	}
 	else
@@ -688,6 +738,13 @@ void appObj::dimension_delete2(dimension_info_t::lock &lock,
 	lock->current_selection.reset();
 	dimension_reset_values(lock);
 	name_lm->autoselect(0);
+
+	for (const auto &other:other_dimension_widgets)
+	{
+		name_lm=(this->*(other.widget))->get_layoutmanager();
+
+		name_lm->remove_item(index);
+	}
 
 	// autoselect(0) queues up a request.
 	// When it gets processed, the dimension new name field gets show()n.

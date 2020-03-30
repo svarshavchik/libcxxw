@@ -62,6 +62,7 @@
 <!ENTITY customfontrendering SYSTEM "customfontrendering.xml">
 <!ENTITY customintro SYSTEM "customintro.xml">
 <!ENTITY cxxwtheme SYSTEM "cxxwtheme.xml">
+<!ENTITY cxxwcreator SYSTEM "cxxwcreator.xml">
 <!ENTITY dateinputfield SYSTEM "dateinputfield.xml">
 <!ENTITY dialogs SYSTEM "dialogs.xml">
 <!ENTITY filteredinput SYSTEM "filteredinput.xml">
@@ -211,6 +212,7 @@ See COPYING for distribution information.
     <title>Manual pages</title>
 
     &cxxwtheme;
+    &cxxwcreator;
   </appendix>
 
   <appendix id="COPYING">
