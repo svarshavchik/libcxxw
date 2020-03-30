@@ -1873,6 +1873,58 @@ List of values:
 	<type>compiler.text_param_value</type>
       </parameter>
     </function>
+
+    <function>
+      <name>update_border</name>
+      <invoke>update_border</invoke>
+      <object>layout</object>
+      <parameter>
+	<name>left_border</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_border</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>update_borders</name>
+      <invoke>update_borders</invoke>
+      <object>layout</object>
+      <parameter>
+	<name>left_border</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_border</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+      <parameter>
+	<name>right_border</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_border</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+      <parameter>
+	<name>top_border</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_border</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+      <parameter>
+	<name>bottom_border</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_border</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
   </parser>
 
   <!-- page factory -->

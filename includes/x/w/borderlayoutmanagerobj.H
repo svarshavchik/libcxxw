@@ -38,6 +38,29 @@ public:
 
 	void update_title(ONLY IN_THREAD, const text_param &);
 
+	//! Update the border
+	void update_border(const border_arg &new_border);
+
+	//! Update the border
+	void update_border(ONLY IN_THREAD, const border_arg &new_border);
+
+	//! Update all borders
+
+	//! Specify individual borders for each side.
+	void update_borders(const border_arg &new_left_border,
+			    const border_arg &new_right_border,
+			    const border_arg &new_top_border,
+			    const border_arg &new_bottom_border);
+
+	//! Update all borders
+
+	//! Specify individual borders for each side.
+	void update_borders(ONLY IN_THREAD,
+			    const border_arg &new_left_border,
+			    const border_arg &new_right_border,
+			    const border_arg &new_top_border,
+			    const border_arg &new_bottom_border);
+
 	//! Implement generate()
 
 	//! \see uigenerators
