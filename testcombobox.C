@@ -66,9 +66,9 @@ static const char *moretext[]={
 	"labore et dolore",
 	"magna"
 	"aliqua",
-	"Ut enim ad",
-	"minim veniam",
-	"quis nostrud",
+	"Ut enim ad"
+	"minim veniam"
+	"quis nostrud"
 	"exercitation"
 	"ullamco",
 	"laboris nisi",

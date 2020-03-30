@@ -226,6 +226,7 @@ void textlabelObj::implObj::set_minimum_override(ONLY IN_THREAD,
 {
 	min_horiz_override=horiz_override;
 	min_vert_override=vert_override;
+	recalculate(IN_THREAD);
 }
 
 void textlabelObj::implObj

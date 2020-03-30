@@ -1,5 +1,7 @@
 2020-03-29  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* textlabel_impl.C: Fix metrics calculation bug.
+
 	* create_ok2_cancel_dialog: Add optional keyboard shortcut
 	to the 2nd ok button.
 
