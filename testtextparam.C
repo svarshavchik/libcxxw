@@ -12,10 +12,12 @@
 #include "x/w/text_param_literals.H"
 #include "x/w/theme_text.H"
 #include "x/w/uigenerators.H"
+#include "x/w/shortcut.H"
 #include "screen.H"
 #include "main_window.H"
 #include "main_window_handler.H"
 #include "x/w/impl/background_color.H"
+#include <X11/keysym.h>
 
 #include <x/messages.H>
 #include <x/locale.H>
@@ -126,16 +128,40 @@ void testthemetext3()
 		throw EXCEPTION("Comment failed");
 }
 
+void testshortcut()
+{
+	shortcut w{'W'};
+
+	if (w.unicode != 'W')
+		throw EXCEPTION("char32_t shortcut constructor failed");
+
+	shortcut alth{"Alt", 'H'};
+
+	if (std::u32string{alth} != U"Alt-H")
+		throw EXCEPTION("2 arg shortcut constructor failed");
+
+	shortcut f1{"F1"};
+
+	if (f1.keysym != XK_F1)
+		throw EXCEPTION("F1 shortcut constructor failed");
+
+	shortcut altf2{"${context}Alt-F2"};
+
+	if (std::u32string{altf2} != U"Alt-F2")
+		throw EXCEPTION("shortcut with label constructor failed");
+
+}
+
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::locale::base::environment()->global();
+		locale::base::environment()->global();
 
-		auto options=LIBCXX_NAMESPACE::option::list::create();
+		auto options=option::list::create();
 
 		options->addDefaultOptions();
 
-		auto parser=LIBCXX_NAMESPACE::option::parser::create();
+		auto parser=option::parser::create();
 
 		parser->setOptions(options);
 
@@ -144,7 +170,7 @@ int main(int argc, char **argv)
 		if (flag == 0)
 			flag=parser->validate();
 
-		if (flag == LIBCXX_NAMESPACE::option::parser::base::err_builtin)
+		if (flag == option::parser::base::err_builtin)
 			exit(0);
 
 		auto mw=main_window::create([&]
@@ -157,7 +183,8 @@ int main(int argc, char **argv)
 		testthemetext();
 		testthemetext2();
 		testthemetext3();
-	} catch (const LIBCXX_NAMESPACE::exception &e)
+		testshortcut();
+	} catch (const exception &e)
 	{
 		e->caught();
 		exit(1);

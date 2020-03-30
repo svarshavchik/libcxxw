@@ -2051,60 +2051,7 @@ shortcut uicompiler::shortcut_value(const ui::parser_lock &lock,
 				    const char *element,
 				    const char *parent)
 {
-	// Parse it as a text_param, in order to get ${context:id} for
-	// free.
-
-	text_param t;
-
-	t(theme_text{optional_value(lock, element, parent), generators});
-
-	// But make sure we won't parse fonts, or such...
-	if (t.undecorated())
-	{
-		if (t.string.empty())
-			return shortcut{};
-
-		// t.string is unicode. Figure out which constructor of
-		// shortcut we should use.
-
-		if (t.string.size() == 1)
-			return shortcut(t.string[0]);
-
-		size_t after_dash=t.string.find_last_of('-')+1;
-
-		if (t.string.size()-after_dash == 1)
-		{
-			// "Ctrl-Shift-X", for example.
-
-			auto b=t.string.begin();
-			auto e=t.string.begin()+after_dash;
-
-			if (std::find_if(b, e,
-					 []
-					 (auto c)
-					 {
-						 return c < 0 || c >= 0x80;
-					 }) == e)
-			{
-				return shortcut{std::string{b, e}, *e};
-			}
-		}
-
-		auto b=t.string.begin();
-		auto e=t.string.end();
-
-		if (std::find_if(b, e,
-				 []
-				 (auto c)
-				 {
-					 return c < 0 || c >= 0x80;
-				 }) == e)
-		{
-			return shortcut{std::string{b, e}};
-		}
-	}
-
-	return shortcut("-"); // Throws an exception.
+	return optional_value(lock, element, parent);
 }
 
 rgb uicompiler::rgb_value(const ui::parser_lock &lock,

@@ -61,6 +61,23 @@ public:
 	shortcut(const std::string_view &modifier,
 		 char32_t unicode);
 
+	//! Internal helper
+
+	struct shortcut_parse_info {
+
+		//! Shortcut prefix
+		std::string_view prefix;
+
+		//! Shortcut key
+		std::string_view key;
+
+		//! Constructor
+		shortcut_parse_info(const std::string_view &);
+
+		//! Delete copy constructor
+		shortcut_parse_info(const shortcut_parse_info &)=delete;
+	};
+
 	//! Specify a shortcut as a single string.
 
 	//! The constructor's parameter must be one of the following:
@@ -77,8 +94,31 @@ public:
 	//!
 	//! The specified string may also have a "modifier-" prefix, example:
 	//! "shift-F1".
+	//!
+	//! The specified string may also have a leading "${  }" prefix,
+	//! such as:
+	//!
+	//! "${context:creator}Alt-F"
+	//!
+	//! This prefix gets stripped off, and ignored. This can be used with
+	//! gettext to provide localization of different shortcut keys that
+	//! have the same localized value, such as
+	//!
+	//! "${context:file_menu}Alt-F"  (for "File")
+	//!
+	//! and
+	//!
+	//! "${context:edit_menu}Alt-F"  (for "Find")
+	//!
+	//! Localized "File" and "Find" strings may then have different
+	//! localized shortcuts.
 
-	shortcut(const std::string_view &string);
+	template<typename T,
+		 typename=decltype(shortcut_parse_info{std::declval<T>()})>
+	shortcut(T && string)
+		: shortcut{shortcut_parse_info{std::forward<T>(string)}}
+	{
+	}
 
 	//! Standard shortcut keysym
 
@@ -88,10 +128,10 @@ public:
 
 	static uint32_t shortcut_keysym(uint32_t);
 private:
+
 	//! Internal constructor
 
-	shortcut(size_t p,
-		 const std::string_view &string);
+	shortcut(shortcut_parse_info);
 public:
 
 	//! Whether a key event matches this shortcut.

@@ -38,6 +38,8 @@
 #include "x/w/metrics/axis.H"
 #include "x/w/element_state.H"
 #include "x/w/scrollbar_appearance.H"
+#include "x/w/text_param_literals.H"
+#include "x/w/theme_text.H"
 #include "configfile.H"
 #include "messages.H"
 
@@ -59,6 +61,8 @@
 #include <unistd.h>
 
 LOG_FUNC_SCOPE_DECL("cxxwtheme", cxxwLog);
+
+#define T(str) w::theme_text{str}
 
 #define SCALE_INC 25
 
@@ -660,7 +664,7 @@ static w::container create_main_window(const w::main_window &mw)
 				 }, {
 					 LIBCXX_NAMESPACE::w::default_button(),
 						 LIBCXX_NAMESPACE::w::shortcut
-					 {"Alt", 's'}
+					 {_("${context:cxxwtheme_save}Alt-S")}
 				 })->on_activate
 				 ([conn]
 				  (THREAD_CALLBACK,
@@ -692,21 +696,23 @@ static w::container create_main_window(const w::main_window &mw)
 
 	auto mbf=mb->append_menus();
 
-	mbf->add_text("File",
+	mbf->add_text(T(_("${context:cxxwtheme}File")),
 		      [&]
 		      (const auto &lm)
 		      {
 			      file_menu(mw, lm);
-		      });
+		      },
+		      w::shortcut{_("${context:cxxwtheme_file}Alt-F")});
 
 	mbf=mb->append_right_menus();
 
-	mbf->add_text("Help",
+	mbf->add_text(T(_("${context:cxxwtheme}Help")),
 		      [&]
 		      (const auto &lm)
 		      {
 			      help_menu(mw, lm);
-		      });
+		      },
+		      w::shortcut{_("${context:cxxwtheme_save}Alt-H")});
 
 	mw->get_menubar()->show();
 
@@ -742,7 +748,7 @@ static void file_menu(const w::main_window &mw,
 		 []
 		 (const auto &f)
 		 {
-			 f->create_label("Choose ok, or cancel, below");
+			 f->create_label(T(_("${context:cxxwtheme}Choose ok, or cancel, below")));
 		 },
 		 []
 		 (THREAD_CALLBACK, const auto &ignore)
@@ -759,7 +765,7 @@ static void file_menu(const w::main_window &mw,
 		 []
 		 (const auto &f)
 		 {
-			 f->create_label("What is your name?");
+			 f->create_label(T(_("${context:cxxwtheme}What is your name?")));
 		 },
 		 "",
 		 {},
@@ -778,41 +784,41 @@ static void file_menu(const w::main_window &mw,
 			{
 				file_new->dialog_window->show_all();
 			},
-			"New",
+			T(_("${context:cxxwtheme}New")),
 			[file_open](THREAD_CALLBACK,
 				    const w::list_item_status_info_t &info)
 			{
 				file_open->dialog_window->show_all();
 			},
-			"Open",
+			T(_("${context:cxxwtheme}Open")),
 			[file_ok_cancel](THREAD_CALLBACK,
 					 const w::list_item_status_info_t &info)
 			{
 				file_ok_cancel->dialog_window->show_all();
 			},
-			"Ok/Cancel",
+			T(_("${context:cxxwtheme}Ok/Cancel")),
 			[file_input_dialog](THREAD_CALLBACK,
 					    const w::list_item_status_info_t &info)
 			{
 				file_input_dialog->input_dialog_field->set("");
 				file_input_dialog->dialog_window->show_all();
 			},
-			w::shortcut{"Alt",'I'},
-			"Input something",
+			w::shortcut{_("${context:cxxwtheme_input}Alt-I")},
+			T(_("${context:cxxwtheme}Input something")),
 
 			w::separator{},
 
 			w::menuoption{},
-			"Option",
+			T(_("${context:cxxwtheme}Option")),
 
 			w::submenu{[](const auto &submenu_lm)
 				{
 					submenu_lm->append_items
-						({"Submenu item 1",
-						  "Submenu item 2",
-						  "Submenu item 3"});
+						({T(_("${context:cxxwtheme}Submenu item 1")),
+						  T(_("${context:cxxwtheme}Submenu item 2")),
+						  T(_("${context:cxxwtheme}Submenu item 3"))});
 				}},
-			"Submenu"
+			T(_("${context:cxxwtheme}Submenu"))
 		    });
 
 }
@@ -840,7 +846,8 @@ static void help_menu(const w::main_window &mw,
 			{
 				help_about->dialog_window->show_all();
 			},
-			"About"});
+			w::shortcut{_("${context:cxxwtheme_save}F1")},
+			T(_("${context:cxxwtheme}About"))});
 }
 
 

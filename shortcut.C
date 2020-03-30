@@ -11,6 +11,7 @@
 #include <X11/keysym.h>
 #include <cstring>
 #include <algorithm>
+#include <charconv>
 
 LIBCXXW_NAMESPACE_START
 
@@ -74,53 +75,70 @@ shortcut::shortcut(const std::string_view &modifier,
 {
 }
 
-static inline size_t last_dash(const std::string_view &string)
+shortcut::shortcut_parse_info
+::shortcut_parse_info(const std::string_view &string)
+	: key{string}
 {
-	auto last_dash=string.rfind('-');
+	// gettext label:
+	const char *p=key.begin();
+	const char *q=key.end();
 
-	if (last_dash == string.npos)
-		last_dash=0;
+	if (p != q && *p =='$' && ++p != q && *p == '{')
+	{
+		while (p != q)
+			if (*p++ == '}')
+			{
+				key=std::string_view{p,
+						     static_cast<size_t>(q-p)};
+				break;
+			}
+	}
 
-	return last_dash;
+	auto last_dash=key.rfind('-');
+
+	if (last_dash != key.npos)
+	{
+		if (last_dash + 1 < key.size())
+		{
+			prefix=key.substr(0, last_dash);
+			key=key.substr(++last_dash);
+		}
+	}
 }
 
-shortcut::shortcut(const std::string_view &string)
-	: shortcut(last_dash(string), string)
+shortcut::shortcut(shortcut_parse_info info)
+	: input_mask{info.prefix}
 {
-}
-
-shortcut::shortcut(size_t dash_pos,
-		   const std::string_view &string)
-	: input_mask(string.substr(0, dash_pos))
-{
-	if (string.empty())
+	if (info.prefix.empty() && info.key.empty())
 		return;
 
-	if (dash_pos < string.size() && string[dash_pos] == '-')
-		++dash_pos;
-
-	if (dash_pos < string.size())
+	if (!info.key.empty())
 	{
-		auto key=string.substr(dash_pos);
-
-		auto ustr=unicode::iconvert::tou::convert(std::string{key},
+		auto ustr=unicode::iconvert::tou::convert(std::string{info.key},
 							  unicode::utf_8)
 			.first;
 
-		if (ustr.size() == 1)
+		if (ustr.size() == 1 && ordinal())
 		{
+			// Require a modifier for a single key.
 			unicode=ustr.at(0);
 			return;
 		}
-		if (key[0] == 'f' || key[0] == 'F')
+
+		if (info.key[0] == 'f' || info.key[0] == 'F')
 		{
-			std::istringstream i{std::string{key.substr(1)}};
+			const char *p=info.key.begin();
+
+			++p;
+
+			const char *q=info.key.end();
 
 			int n;
 
-			i >> n;
+			auto ret=std::from_chars(p, q, n);
 
-			if (!i.fail() && n >= 1 && n <= 35)
+			if (ret.ec == std::errc{} &&
+			    n >= 1 && n <= 35)
 			{
 				keysym=XK_F1-1+n;
 				unicode=0;
@@ -211,13 +229,14 @@ shortcut::operator std::u32string() const
 		if (keysym < XK_F1 || keysym > XK_F35)
 			throw EXCEPTION(_("No description available for the shortcut"));
 
-		std::ostringstream o;
+		char fkey[8]={'F'};
 
-		o << 'F' << (keysym-XK_F1+1);
+		auto ret=std::to_chars(fkey+1, fkey+6, (keysym-XK_F1+1));
 
-		std::string f=o.str();
+		if (ret.ec != std::errc{})
+			throw EXCEPTION(_("Cannot convert FK number"));
 
-		s.insert(s.end(), f.begin(), f.end());
+		s.insert(s.end(), fkey, ret.ptr);
 	}
 
 	return s;

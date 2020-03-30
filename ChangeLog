@@ -1,3 +1,7 @@
+2020-03-30  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* shortcut: Ignore '${...}' prefixes, for internationalization.
+
 2020-03-29  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Border layout manager: implement update_border/update_borders.
