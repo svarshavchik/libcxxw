@@ -719,21 +719,10 @@ void appObj::border_reset_values(ONLY IN_THREAD,
 void appObj::border_enable_disable_buttons(ONLY IN_THREAD,
 					   border_info_t::lock &lock)
 {
-	// Disable color2 if there is no color
-
-	if (x::w::editable_comboboxlayoutmanager{
-			border_color->get_layoutmanager()
-				}->get().empty())
-	{
-		border_color2->set_enabled(IN_THREAD, false);
-	}
-	else
-	{
-		border_color2->set_enabled(IN_THREAD, true);
-	}
-
 	// Dashes option
-	if (border_dashes_option->get_value())
+	bool dashes=border_dashes_option->get_value();
+
+	if (dashes)
 	{
 		border_dashes_field->set_enabled(IN_THREAD, true);
 	}
@@ -748,9 +737,23 @@ void appObj::border_enable_disable_buttons(ONLY IN_THREAD,
 	lock->save_params.reset();
 	lock->save_params.emplace();
 
-	bool good_save_params=true;
-
 	auto &save_params=*lock->save_params;
+
+	save_params.border_new_value.color=
+		x::trim(border_color->editable_combobox_get());
+
+	// Disable color2 if there is no color or no dashes.
+
+	if (save_params.border_new_value.color.empty() || !dashes)
+	{
+		border_color2->set_enabled(IN_THREAD, false);
+	}
+	else
+	{
+		border_color2->set_enabled(IN_THREAD, true);
+	}
+
+	bool good_save_params=true;
 
 	if (!lock->current_selection)
 	{
@@ -765,9 +768,6 @@ void appObj::border_enable_disable_buttons(ONLY IN_THREAD,
 
 	save_params.border_new_value.from=
 		x::trim(border_from_name->editable_combobox_get());
-
-	save_params.border_new_value.color=
-		x::trim(border_color->editable_combobox_get());
 
 	if (!save_params.border_new_value.color.empty())
 		save_params.border_new_value.color2=

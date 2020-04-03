@@ -213,16 +213,6 @@
     <container tooltip="dimension-value-tooltip">
       <type>grid</type>
       <name>dimension_value_grid</name>
-
-      <context>
-	<menu>
-	  <append_items>
-	    <items>
-	      <label>Foo</label>
-	    </items>
-	  </append_items>
-	</menu>
-      </context>
     </container>
   </factory>
 
@@ -1431,13 +1421,13 @@
       <name>borders-color-row</name>
     </append_row>
     <append_row>
-      <name>borders-color2-row</name>
-    </append_row>
-    <append_row>
       <name>borders-dashes-option-row</name>
     </append_row>
     <append_row>
       <name>borders-dashes-row</name>
+    </append_row>
+    <append_row>
+      <name>borders-color2-row</name>
     </append_row>
     <append_row>
       <name>borders-rounded-row</name>
@@ -1508,7 +1498,7 @@
     <element>
       <label type="theme_text">${context:creator}2nd Color:</label>
     </element>
-    <container>
+    <container tooltip="border-color2-tooltip">
       <name>border_color2</name>
       <type>editable_combobox</type>
     </container>
@@ -1516,6 +1506,9 @@
 
   <layout id="border_color2" type="editable_combobox" />
 
+  <tooltip type="label" id="border-color2-tooltip">
+    <label type="theme_text">Optional alternate color&#10;for dashed borders</label>
+  </tooltip>
 
   <!-- Border: Dashed option -->
 
@@ -1541,13 +1534,17 @@
       <label type="theme_text">${context:creator}Dash Size(s):</label>
     </element>
 
-    <element id="border_dashes_field">
+    <element id="border_dashes_field" tooltip="border-dashes-field-tooltip">
       <input_field />
         <config>
 	  <columns>20</columns>
 	</config>
     </element>
   </factory>
+
+  <tooltip type="label" id="border-dashes-field-tooltip">
+    <label type="theme_text">Length in millimeters, separate&#10;multiple values with semicolons or spaces</label>
+  </tooltip>
 
   <!-- Border: Rounded corners -->
 
@@ -1677,7 +1674,7 @@
     <element>
       <label type="theme_text">${context:creator}Width:</label>
     </element>
-    <container>
+    <container tooltip="border-size-tooltip">
       <name>border_width</name>
       <type>editable_combobox</type>
     </container>
@@ -1701,7 +1698,7 @@
     <element>
       <label type="theme_text">${context:creator}Height:</label>
     </element>
-    <container>
+    <container tooltip="border-size-tooltip">
       <name>border_height</name>
       <type>editable_combobox</type>
     </container>
@@ -1725,7 +1722,7 @@
     <element>
       <label type="theme_text">${context:creator}Corner Radius (H):</label>
     </element>
-    <container>
+    <container tooltip="border-size-tooltip">
       <name>border_hradius</name>
       <type>editable_combobox</type>
     </container>
@@ -1749,7 +1746,7 @@
     <element>
       <label type="theme_text">${context:creator}Corner Radius (V):</label>
     </element>
-    <container>
+    <container tooltip="border-size-tooltip">
       <name>border_vradius</name>
       <type>editable_combobox</type>
     </container>
@@ -1767,6 +1764,10 @@
   </factory>
 
   <layout id="border_vradius" type="editable_combobox" />
+
+  <tooltip type="label" id="border-size-tooltip">
+    <label type="theme_text">Select a predefined dimension or&#10;enter a numerical value in millimeters</label>
+  </tooltip>
 
   <!-- Bottom section: update/delete/reset buttons -->
 

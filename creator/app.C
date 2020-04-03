@@ -658,7 +658,7 @@ border_size_scale_validator(const x::w::input_field &field)
 				}
 			}
 
-			me->stop_message(_("Scale value not a non-negative"
+			me->stop_message(_("Scale value must be a non-negative"
 					   " integer"));
 			return ret;
 		},
