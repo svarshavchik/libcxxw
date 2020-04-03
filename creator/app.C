@@ -229,6 +229,8 @@ inline appObj::init_args appObj::create_init_args()
 					    &appObj::file_save_as_event);
 			 install_menu_event(ui, "file_quit",
 					    &appObj::file_quit_event);
+			 install_menu_event(ui, "help_about",
+					    &appObj::help_about);
 
 			 args.elements.file_save_menu_handle=
 				 ui.get_listitemhandle("file_save");
@@ -1059,6 +1061,24 @@ void appObj::enable_disable_menus()
 {
 	file_save_menu_handle->enabled(themename.get().size() > 0 &&
 				       edited.get());
+}
+
+void appObj::help_about(ONLY IN_THREAD)
+{
+	auto help_about=main_window->create_ok_dialog
+		({"help_about@cxxwcreator.w.libcxx.com", true},
+		 "alert",
+		 []
+		 (const auto &f)
+		 {
+			 f->create_label("LibCXXW creator version " VERSION);
+		 },
+		 []
+		 (THREAD_CALLBACK, const auto &)
+		 {
+		 });
+
+	help_about->dialog_window->show_all();
 }
 
 void appObj::file_quit_event(ONLY IN_THREAD)

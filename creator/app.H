@@ -479,6 +479,9 @@ public:
 	//! File quit event.
 	void file_quit_event(ONLY IN_THREAD);
 
+	//! Help/About event
+	void help_about(ONLY IN_THREAD);
+
 private:
 	//! Stashed pointer to pick up after "Save As" closes.
 

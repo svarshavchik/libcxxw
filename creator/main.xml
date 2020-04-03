@@ -10,6 +10,9 @@
     <append_menus>
       <name>mainmenu</name>
     </append_menus>
+    <append_right_menus>
+      <name>help</name>
+    </append_right_menus>
   </layout>
 
   <factory type="menubar" id="mainmenu">
@@ -40,6 +43,28 @@
 	    <name>file_quit</name>
 	    <shortcut type="theme_text">${context:creator-menu}Alt-Q</shortcut>
 	    <label type="theme_text">${context:creator-menu}Quit</label>
+	  </items>
+	</append_items>
+      </menu>
+    </add>
+  </factory>
+
+  <factory type="menubar" id="help">
+
+    <add>
+      <title>
+	<element>
+	  <label type="theme_text">${context:creator-menu}${decoration:underline}H${decoration:none}elp</label>
+	</element>
+      </title>
+      <shortcut type="theme_text">${context:creator-menu}Alt-H</shortcut>
+
+      <menu>
+	<append_items>
+	  <items>
+	    <name>help_about</name>
+	    <shortcut type="theme_text">${context:creator-menu}F1</shortcut>
+	    <label type="theme_text">${context:creator-menu}About</label>
 	  </items>
 	</append_items>
       </menu>
