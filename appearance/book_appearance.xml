@@ -4,14 +4,14 @@
   <field>
     <name>background_color</name>
     <descr><![CDATA[
-Background color around the currently visible page.
+Background color around the currently visible page
 ]]></descr>
     <type>color_arg</type>
   </field>
   <field>
     <name>border</name>
     <descr><![CDATA[
-Border around the currently visible page.
+Border around the currently visible page
 ]]></descr>
     <type>border_arg</type>
   </field>
@@ -25,14 +25,14 @@ Tab strip background color
   <field>
     <name>tab_border</name>
     <descr><![CDATA[
-Border around the tabs.
+Border around the tabs
 ]]></descr>
     <type>border_arg</type>
   </field>
   <field>
     <name>scroll_button_height</name>
     <descr><![CDATA[
-How big the scroll buttons are.
+How big the scroll buttons are
 ]]></descr>
     <type>dim_arg</type>
   </field>

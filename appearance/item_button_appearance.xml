@@ -5,7 +5,6 @@
     <name>button_border</name>
     <descr><![CDATA[
 Border around buttons
-
 ]]></descr>
     <type>border_arg</type>
   </field>
@@ -13,7 +12,6 @@ Border around buttons
     <name>itembutton_h_padding</name>
     <descr><![CDATA[
 Padding between the border and the button's label
-
 ]]></descr>
     <type>dim_arg</type>
   </field>
@@ -21,7 +19,6 @@ Padding between the border and the button's label
     <name>itembutton_v_padding</name>
     <descr><![CDATA[
 Padding between the border and the button's label
-
 ]]></descr>
     <type>dim_arg</type>
   </field>
@@ -29,14 +26,13 @@ Padding between the border and the button's label
     <name>itembutton_background_color</name>
     <descr><![CDATA[
 Button background color
-
 ]]></descr>
     <type>color_arg</type>
   </field>
   <field>
     <name>item_image_button_appearance</name>
     <descr><![CDATA[
-Close image button appearance.
+Close image button appearance
 ]]></descr>
     <ref>image_button</ref>
   </field>

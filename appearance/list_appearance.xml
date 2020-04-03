@@ -7,7 +7,7 @@
   <field>
     <name>list_border</name>
     <descr><![CDATA[
-The border around the list.
+The border around the list
 ]]></descr>
     <type>border_arg</type>
   </field>
@@ -19,8 +19,7 @@ Input focus border around the list.
 This is usually list_theme().
 Note that if the list has column_borders, they connect to the
 input focus frame, so this should be visible, use visible_list_theme()
-to have a focus border that's always visually visible.
-
+to have a focus border that's always visually visible
 ]]></descr>
     <ref>focus_border</ref>
   </field>
@@ -43,14 +42,14 @@ Padding above and below each list item
   <field>
     <name>h_padding</name>
     <descr><![CDATA[
-Default padding before and after each list item.
+Default padding before and after each list item
 ]]></descr>
     <type>dim_arg</type>
   </field>
   <field>
     <name>indent</name>
     <descr><![CDATA[
-When using hierarchical indentations, indentation increment.
+When using hierarchical indentations, indentation increment
 ]]></descr>
     <type>dim_arg</type>
   </field>
@@ -67,7 +66,7 @@ Background color
     <descr><![CDATA[
 Selected color
 
-Used only by a \c INSERT_LIBX_NAMESPACE::w::highlighted_list.
+Used only by a \c INSERT_LIBX_NAMESPACE::w::highlighted_list
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -76,7 +75,7 @@ Used only by a \c INSERT_LIBX_NAMESPACE::w::highlighted_list.
     <descr><![CDATA[
 Highlighted color
 
-Item's color when the pointer button #1 is pressed on top of it.
+Item's color when the pointer button #1 is pressed on top of it
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -86,7 +85,7 @@ Item's color when the pointer button #1 is pressed on top of it.
 Currently selected color
 
 Item's color when the pointer is hovering on top of it, without
-the button being pressed.
+the button being pressed
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -98,7 +97,6 @@ Unmarked list icon
 In a bulleted list, the icon next to an unmarked item. This
 should be a transparent image that's the same size as the
 marked icon
-
 ]]></descr>
     <type>std::string</type>
   </field>
@@ -107,7 +105,7 @@ marked icon
     <descr><![CDATA[
 Marked list icon
 
-Indicates that the item is selected, in a bulleted list.
+Indicates that the item is selected, in a bulleted list
 ]]></descr>
     <type>std::string</type>
   </field>
@@ -127,8 +125,7 @@ List contents appearance
 
 The label_font and label_color control the default font and color
 of the items in the list. Coincidentally, in combo-boxes this
-also controls the popup window's appearance.
-
+also controls the popup window's appearance
 ]]></descr>
     <ref>generic_window</ref>
   </field>

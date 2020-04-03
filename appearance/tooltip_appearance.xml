@@ -8,8 +8,7 @@
 Border for the new tooltip
 
 Used when the display has an alpha channel.
-Typically a slightly rounded border.
-
+Typically a slightly rounded border
 ]]></descr>
     <ref>tooltip_border</ref>
   </field>
@@ -19,8 +18,7 @@ Typically a slightly rounded border.
 Border for the new tooltip
 
 Used when the display does not have an alpha channel.
-Typically a square border.
-
+Typically a square border
 ]]></descr>
     <ref>tooltip_border</ref>
   </field>

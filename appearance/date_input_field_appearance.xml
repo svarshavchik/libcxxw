@@ -18,22 +18,21 @@ Pressed button image
   <field>
     <name>popup_button_focus_border</name>
     <descr><![CDATA[
-Focus border for the popup button.
+Focus border for the popup button
 ]]></descr>
     <ref>focus_border</ref>
   </field>
   <field>
     <name>day_highlight_fg</name>
     <descr><![CDATA[
-Foreground color: day of month highlighted by pointer or keyboard.
+Foreground color: day of month highlighted by pointer or keyboard
 ]]></descr>
     <type>text_color_arg</type>
   </field>
   <field>
     <name>day_highlight_bg</name>
     <descr><![CDATA[
-Background color: day of month highlighted by pointer or keyboard.
-
+Background color: day of month highlighted by pointer or keyboard
 ]]></descr>
     <type>text_color_arg</type>
   </field>
@@ -54,44 +53,42 @@ Font color for the current month's name (and year)
   <field>
     <name>day_of_week_font</name>
     <descr><![CDATA[
-Font for the days of week column titles.
-
+Font for the days of week column titles
 ]]></descr>
     <type>font_arg</type>
   </field>
   <field>
     <name>day_of_week_font_color</name>
     <descr><![CDATA[
-Font color for the days of week column titles.
-
+Font color for the days of week column titles
 ]]></descr>
     <type>text_color_arg</type>
   </field>
   <field>
     <name>previous_year_appearance</name>
     <descr><![CDATA[
-Appearance of the button on the date popup.
+Appearance of the button on the date popup
 ]]></descr>
     <ref>image_button</ref>
   </field>
   <field>
     <name>previous_month_appearance</name>
     <descr><![CDATA[
-Appearance of the button on the date popup.
+Appearance of the button on the date popup
 ]]></descr>
     <ref>image_button</ref>
   </field>
   <field>
     <name>next_month_appearance</name>
     <descr><![CDATA[
-Appearance of the button on the date popup.
+Appearance of the button on the date popup
 ]]></descr>
     <ref>image_button</ref>
   </field>
   <field>
     <name>next_year_appearance</name>
     <descr><![CDATA[
-Appearance of the button on the date popup.
+Appearance of the button on the date popup
 ]]></descr>
     <ref>image_button</ref>
   </field>
@@ -116,15 +113,14 @@ Appearance of the input field element itself
 
 The default input field appearance, except there's no border
 (the date input field provides it, and the date input field
-has its own background color.
-
+has its own background color
 ]]></descr>
     <ref>input_field</ref>
   </field>
   <field>
     <name>input_field_font</name>
     <descr><![CDATA[
-Input field's font.
+Input field's font
 ]]></descr>
     <type>font_arg</type>
   </field>
@@ -139,7 +135,6 @@ Input field's font's color
     <name>border</name>
     <descr><![CDATA[
 Border
-
 ]]></descr>
     <type>border_arg</type>
   </field>

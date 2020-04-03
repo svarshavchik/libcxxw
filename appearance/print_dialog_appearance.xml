@@ -4,14 +4,14 @@
   <field>
     <name>printer_remote_font</name>
     <descr><![CDATA[
-Font of names of remote printers.
+Font of names of remote printers
 ]]></descr>
     <type>font_arg</type>
   </field>
   <field>
     <name>printer_local_font</name>
     <descr><![CDATA[
-Font of names of local printers.
+Font of names of local printers
 ]]></descr>
     <type>font_arg</type>
   </field>

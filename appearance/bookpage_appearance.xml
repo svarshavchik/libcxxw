@@ -25,7 +25,7 @@ Color of the tab when it has keyboard or pointer focus
   <field>
     <name>active_color</name>
     <descr><![CDATA[
-Color of the tab when it's been activated.
+Color of the tab when it's been activated
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -46,14 +46,14 @@ Default font's color
   <field>
     <name>horiz_padding</name>
     <descr><![CDATA[
-Tab padding.
+Tab padding
 ]]></descr>
     <type>dim_arg</type>
   </field>
   <field>
     <name>vert_padding</name>
     <descr><![CDATA[
-Padding for an individual tab.
+Padding for an individual tab
 ]]></descr>
     <type>dim_arg</type>
   </field>

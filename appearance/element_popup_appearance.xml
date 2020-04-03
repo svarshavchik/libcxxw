@@ -32,14 +32,14 @@ Popup background color
   <field>
     <name>button_focus_border</name>
     <descr><![CDATA[
-Button focus border.
+Button focus border
 ]]></descr>
     <ref>focus_border</ref>
   </field>
   <field>
     <name>toplevel_appearance</name>
     <descr><![CDATA[
-Generic appearance of the top-level window that makes up the popup.
+Generic appearance of the top-level window that makes up the popup
 ]]></descr>
     <ref>generic_window</ref>
   </field>

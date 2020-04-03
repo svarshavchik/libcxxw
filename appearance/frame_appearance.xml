@@ -4,8 +4,7 @@
   <field>
     <name>border</name>
     <descr><![CDATA[
-The border around the frame.
-
+The border around the frame
 ]]></descr>
     <type>border_arg</type>
   </field>
@@ -23,7 +22,7 @@ Disable automatic background.
 
 Frame background color
 
-If no_background is not set, the frame's background.
+If no_background is not set, the frame's background
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -31,7 +30,6 @@ If no_background is not set, the frame's background.
     <name>hpad</name>
     <descr><![CDATA[
 Extra padding between the border and the element in the container
-
 ]]></descr>
     <type>dim_arg</type>
   </field>

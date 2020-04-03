@@ -4,7 +4,7 @@
   <field>
     <name>header_color</name>
     <descr><![CDATA[
-Background color for the header row.
+Background color for the header row
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -14,15 +14,14 @@ Background color for the header row.
 Background color for the header row being adjusted.
 
 Header row's temporary background color when a border is being
-dragged, when adjustable_column_widths is set.
+dragged, when adjustable_column_widths is set
 ]]></descr>
     <type>color_arg</type>
   </field>
   <field>
     <name>adjustable_header_highlight_color</name>
     <descr><![CDATA[
-Highlighted backround color for the border being adjusted.
-
+Highlighted backround color for the border being adjusted
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -38,8 +37,7 @@ pixmap that spans the width of the header row. The highlight_color
 gets positioned behind the border being dragged. In order for
 the calculations to work out, this must correspond to the
 highlight_color (i.e. if the highlight_color is a 4mm wide
-gradient, this must be "4".
-
+gradient, this must be "4"
 ]]></descr>
     <type>dim_arg</type>
   </field>
@@ -48,15 +46,14 @@ gradient, this must be "4".
     <descr><![CDATA[
 Horizontal movement before column dragging starts
 
-Avoids quick errant clicks from dragging columns.
+Avoids quick errant clicks from dragging columns
 ]]></descr>
     <type>dim_arg</type>
   </field>
   <field>
     <name>adjust_cursor</name>
     <descr><![CDATA[
-Pointer image on top of an adjustable column divider.
-
+Pointer image on top of an adjustable column divider
 ]]></descr>
     <type>std::string</type>
   </field>

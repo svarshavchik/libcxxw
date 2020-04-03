@@ -14,21 +14,21 @@ Image for the "scroll to the beginning" button
   <field>
     <name>knob_start</name>
     <descr><![CDATA[
-Head end part of the scrollbar's knob.
+Head end part of the scrollbar's knob
 ]]></descr>
     <type>std::string</type>
   </field>
   <field>
     <name>knob_handle</name>
     <descr><![CDATA[
-Middle part of the scrollbar's knob.
+Middle part of the scrollbar's knob
 ]]></descr>
     <type>std::string</type>
   </field>
   <field>
     <name>knob_end</name>
     <descr><![CDATA[
-Tail end part of the scrollbar's knob.
+Tail end part of the scrollbar's knob
 ]]></descr>
     <type>std::string</type>
   </field>

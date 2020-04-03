@@ -5,7 +5,6 @@
     <name>combobox_border</name>
     <descr><![CDATA[
 Border around the combo-box's current element and button
-
 ]]></descr>
     <type>border_arg</type>
   </field>

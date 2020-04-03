@@ -5,7 +5,7 @@
   <field>
     <name>invisible_pointer</name>
     <descr><![CDATA[
-Pointer image while typing, invisible pointer.
+Pointer image while typing, invisible pointer
 ]]></descr>
     <type>std::string</type>
   </field>
@@ -26,22 +26,21 @@ Pointer image while dragging non-droppable text
   <field>
     <name>border</name>
     <descr><![CDATA[
-The input field's border.
-
+The input field's border
 ]]></descr>
     <type>border_arg</type>
   </field>
   <field>
     <name>focus_border</name>
     <descr><![CDATA[
-Input focus border for the input field.
+Input focus border for the input field
 ]]></descr>
     <ref>focus_border</ref>
   </field>
   <field>
     <name>focusable_padding</name>
     <descr><![CDATA[
-Padding between the focus border and the peephole.
+Padding between the focus border and the peephole
 ]]></descr>
     <type>dim_arg</type>
   </field>
@@ -79,8 +78,7 @@ Background color
 Background color when the input field is disabled.
 
 Typical disabled element shading is not sufficient to distingish
-the visibility change.
-
+the visibility change
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -98,7 +96,6 @@ Free-play before dragging operation commences
 
 How far the pointer must move before drag operation starts.
 Avoids overhead when a pointer button click slips
-
 ]]></descr>
     <type>dim_arg</type>
   </field>
@@ -109,7 +106,6 @@ Free-play before dragging operation commences
 
 How far the pointer must move before drag operation starts.
 Avoids overhead when a pointer button click slips
-
 ]]></descr>
     <type>dim_arg</type>
   </field>
@@ -122,8 +118,7 @@ Appearance of spinner buttons
 The spinner buttons' borders should be based on our border.
 Use update_spinner_buttons() to install a new appearance object,
 that comes from the default button appearance them, with our
-borders.
-
+borders
 ]]></descr>
     <ref>button</ref>
   </field>
@@ -136,15 +131,14 @@ Appearance of spinner buttons
 The spinner buttons' borders should be based on our border.
 Use update_spinner_buttons() to install a new appearance object,
 that comes from the default button appearance them, with our
-borders.
+borders
 ]]></descr>
     <ref>button</ref>
   </field>
   <field>
     <name>search_popup_appearance</name>
     <descr><![CDATA[
-Appearance of the list search popup.
-
+Appearance of the list search popup
 ]]></descr>
     <ref>popup_list</ref>
   </field>
@@ -165,16 +159,14 @@ Vertical scrollbar appearance
   <field>
     <name>spin_decrement</name>
     <descr><![CDATA[
-Image icon for the "decrement" spin control button.
-
+Image icon for the "decrement" spin control button
 ]]></descr>
     <type>std::string</type>
   </field>
   <field>
     <name>spin_increment</name>
     <descr><![CDATA[
-Image icon for the "increment" spin control button.
-
+Image icon for the "increment" spin control button
 ]]></descr>
     <type>std::string</type>
   </field>

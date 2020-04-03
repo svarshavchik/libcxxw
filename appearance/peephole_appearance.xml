@@ -12,32 +12,28 @@ Optional border
   <field>
     <name>left_padding</name>
     <descr><![CDATA[
-Extra padding for the element in the peephole.
-
+Extra padding for the element in the peephole
 ]]></descr>
     <type>dim_arg</type>
   </field>
   <field>
     <name>right_padding</name>
     <descr><![CDATA[
-Extra padding for the element in the peephole.
-
+Extra padding for the element in the peephole
 ]]></descr>
     <type>dim_arg</type>
   </field>
   <field>
     <name>top_padding</name>
     <descr><![CDATA[
-Extra padding for the element in the peephole.
-
+Extra padding for the element in the peephole
 ]]></descr>
     <type>dim_arg</type>
   </field>
   <field>
     <name>bottom_padding</name>
     <descr><![CDATA[
-Extra padding for the element in the peephole.
-
+Extra padding for the element in the peephole
 ]]></descr>
     <type>dim_arg</type>
   </field>

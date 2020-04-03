@@ -18,7 +18,7 @@ Window's vertical scrollbar appearance
   <field>
     <name>background_color</name>
     <descr><![CDATA[
-Main window's background color.
+Main window's background color
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -39,14 +39,14 @@ Generic top level window appearance
   <field>
     <name>menu_highlighted_color</name>
     <descr><![CDATA[
-Menu button has input or pointer focus.
+Menu button has input or pointer focus
 ]]></descr>
     <type>color_arg</type>
   </field>
   <field>
     <name>menu_clicked_color</name>
     <descr><![CDATA[
-Menu button is clicked.
+Menu button is clicked
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -60,7 +60,7 @@ Input focus border for menu buttons
   <field>
     <name>menubar_border</name>
     <descr><![CDATA[
-Border between the menu bar and the main window.
+Border between the menu bar and the main window
 ]]></descr>
     <type>border_arg</type>
   </field>
@@ -68,15 +68,13 @@ Border between the menu bar and the main window.
     <name>icon</name>
     <descr><![CDATA[
 Default window titlebar icon
-
 ]]></descr>
     <type>std::string</type>
   </field>
   <field>
     <name>icon_sizes</name>
     <descr><![CDATA[
-Icon sizes.
-
+Icon sizes
 ]]></descr>
     <vector>1</vector>
     <type>dim_t</type>

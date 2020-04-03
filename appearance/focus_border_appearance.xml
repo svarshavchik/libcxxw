@@ -18,7 +18,7 @@
     <descr><![CDATA[
 Default focus off border
 
-It must be the same size as the focus_on border.
+It must be the same size as the focus_on border
 ]]></descr>
     <type>border_arg</type>
   </field>

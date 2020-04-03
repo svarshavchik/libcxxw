@@ -21,7 +21,7 @@ Image button's focus border.
 
 Defaults to
 \ref focus_border_appearance "INSERT_LIBX_NAMESPACE::w::focus_border_appearance::base::theme()",
-and can be set to visible_theme().
+and can be set to visible_theme()
 ]]></descr>
     <ref>focus_border</ref>
   </field>
@@ -35,8 +35,7 @@ Specifies filenames the checkbox images get loaded from.
 Filenames without a path component get searched for in the
 current display theme's directory, and NOT the current
 directory.
-All images' sizes should be the same.
-
+All images' sizes should be the same
 ]]></descr>
     <vector>1</vector>
     <type>std::string</type>

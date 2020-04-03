@@ -4,8 +4,7 @@
   <field>
     <name>border</name>
     <descr><![CDATA[
-The border around the progress bar.
-
+The border around the progress bar
 ]]></descr>
     <type>border_arg</type>
   </field>
@@ -13,7 +12,6 @@ The border around the progress bar.
     <name>minimum_width</name>
     <descr><![CDATA[
 The minimum width of the progress bar
-
 ]]></descr>
     <type>dim_arg</type>
   </field>
@@ -21,7 +19,6 @@ The minimum width of the progress bar
     <name>background_color</name>
     <descr><![CDATA[
 Background color
-
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -29,22 +26,20 @@ Background color
     <name>foreground_color</name>
     <descr><![CDATA[
 Foreground color (default color for text labels)
-
 ]]></descr>
     <type>color_arg</type>
   </field>
   <field>
     <name>label_font</name>
     <descr><![CDATA[
-Default text label font.
+Default text label font
 ]]></descr>
     <type>font_arg</type>
   </field>
   <field>
     <name>slider_color</name>
     <descr><![CDATA[
-The progress bar's slider's color.
-
+The progress bar's slider's color
 ]]></descr>
     <type>color_arg</type>
   </field>

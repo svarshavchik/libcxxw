@@ -4,14 +4,14 @@
   <field>
     <name>border</name>
     <descr><![CDATA[
-Pane border.
+Pane border
 ]]></descr>
     <type>border_arg</type>
   </field>
   <field>
     <name>slider</name>
     <descr><![CDATA[
-Border used to draw the slider.
+Border used to draw the slider
 ]]></descr>
     <type>border_arg</type>
   </field>

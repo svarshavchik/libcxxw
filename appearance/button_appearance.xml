@@ -19,7 +19,7 @@ Normal button background color
   <field>
     <name>selected_color</name>
     <descr><![CDATA[
-Background color when the button has input focus.
+Background color when the button has input focus
 ]]></descr>
     <type>color_arg</type>
   </field>
@@ -33,28 +33,28 @@ Background color when the button is activated
   <field>
     <name>left_border</name>
     <descr><![CDATA[
-Button's border.
+Button's border
 ]]></descr>
     <type>border_arg</type>
   </field>
   <field>
     <name>right_border</name>
     <descr><![CDATA[
-Button's border.
+Button's border
 ]]></descr>
     <type>border_arg</type>
   </field>
   <field>
     <name>top_border</name>
     <descr><![CDATA[
-Button's border.
+Button's border
 ]]></descr>
     <type>border_arg</type>
   </field>
   <field>
     <name>bottom_border</name>
     <descr><![CDATA[
-Button's border.
+Button's border
 ]]></descr>
     <type>border_arg</type>
   </field>

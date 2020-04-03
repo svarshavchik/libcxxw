@@ -41,7 +41,7 @@ Border around the font preview box
   <field>
     <name>unsupported_option_color</name>
     <descr><![CDATA[
-Color for an unsupported font option, in one of the combo-boxes.
+Color for an unsupported font option, in one of the combo-boxes
 ]]></descr>
     <type>text_color_arg</type>
   </field>
