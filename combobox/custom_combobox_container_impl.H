@@ -48,6 +48,10 @@ class LIBCXX_HIDDEN custom_combobox_containerObj::implObj
 	//! Override label_theme_font()
 
 	font_arg label_theme_font() const override;
+
+	//! Override hover_element_impl()
+
+	element_impl hover_element_impl() override;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -9,6 +9,7 @@
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
 #include "x/w/custom_comboboxlayoutmanager.H"
+#include "gridlayoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -38,6 +39,23 @@ custom_combobox_containerObj::implObj::~implObj()=default;
 font_arg custom_combobox_containerObj::implObj::label_theme_font() const
 {
 	return label_font;
+}
+
+element_impl custom_combobox_containerObj::implObj::hover_element_impl()
+{
+	auto hover_impl=element_impl{this};
+
+	invoke_layoutmanager
+		([&]
+		 (const ref<gridlayoutmanagerObj::implObj> &lm)
+		 {
+			 auto e=lm->get(0, 0);
+
+			 if (e)
+				 hover_impl=e->impl;
+		 });
+
+	return hover_impl;
 }
 
 LIBCXXW_NAMESPACE_END

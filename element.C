@@ -265,7 +265,8 @@ void elementObj::create_custom_tooltip(const functionref<void
 		([impl=this->impl, tooltip_factory]
 		 (ONLY IN_THREAD)
 		 {
-			 impl->data(IN_THREAD).tooltip_factory=tooltip_factory;
+			 impl->hover_element_impl()->data(IN_THREAD)
+				 .tooltip_factory=tooltip_factory;
 		 });
 }
 
@@ -282,8 +283,10 @@ void elementObj::remove_tooltip() const
 
 void elementObj::remove_tooltip(ONLY IN_THREAD) const
 {
-	impl->data(IN_THREAD).tooltip_factory=nullptr;
-	impl->data(IN_THREAD).attached_popup=nullptr;
+	auto hover_impl=impl->hover_element_impl();
+
+	hover_impl->data(IN_THREAD).tooltip_factory=nullptr;
+	hover_impl->data(IN_THREAD).attached_popup=nullptr;
 }
 
 container elementObj

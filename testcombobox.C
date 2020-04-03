@@ -281,6 +281,7 @@ void testcombobox(const testcombobox_options &options)
 			 else
 				 combobox=create_standard_combobox(factory);
 
+			 combobox->create_tooltip("Tooltip!");
 			 factory=layout->append_row();
 
 			 factory->halign(halign::fill)

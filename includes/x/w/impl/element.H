@@ -1543,6 +1543,15 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual std::chrono::milliseconds hover_action_delay(ONLY IN_THREAD);
 
+	//! Element for installed hover action
+
+	//! Return this element by default. Overridden by combo-box containers.
+	//! Combo-boxes attach the popups to their containers, and the
+	//! hover actions (tooltips) are attached to the combo-box current
+	//! elements
+
+	virtual element_impl hover_element_impl();
+
 	//! The pointer has hovered over this element, so do something.
 
 	//! A widget that implements a hover-triggered action

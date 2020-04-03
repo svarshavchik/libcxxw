@@ -1748,6 +1748,11 @@ void elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 	}
 }
 
+element_impl elementObj::implObj::hover_element_impl()
+{
+	return ref{this};
+}
+
 void elementObj::implObj::schedule_hover_action(ONLY IN_THREAD)
 {
 	auto &d=data(IN_THREAD);
