@@ -383,4 +383,35 @@ object and placed into discrete variables.
     <type>x::w::button</type>
     <name>border_delete_button</name>
   </ref>
+
+  <!-- Appearance pages fields -->
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>appearance_name</name>
+  </ref>
+  <ref>
+    <type>x::w::label</type>
+    <name>appearance_new_name_label</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>appearance_new_name</name>
+  </ref>
+  <ref>
+    <type>x::w::label</type>
+    <name>appearance_new_name_label2</name>
+  </ref>
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>appearance_new_type</name>
+  </ref>
+  <ref>
+    <type>x::w::label</type>
+    <name>appearance_new_name_label3</name>
+  </ref>
+  <ref>
+    <type>x::w::button</type>
+    <name>appearance_new_create</name>
+  </ref>
 </collection>

@@ -67,6 +67,26 @@ appObj::init_args::init_args()
 	 }
 	}
 {
+
+	auto appearances=x::xml::doc::create(CREATORDIR "/appearances.xml");
+
+	auto appearance_type=appearances->readlock();
+
+	appearance_type->get_root();
+	auto xpath=appearance_type->get_xpath("/root/appearance");
+
+	size_t n=xpath->count();
+
+	for (size_t i=1; i<=n; i++)
+	{
+		xpath->to_node(i);
+
+		auto name=appearance_type->clone();
+
+		name->get_xpath("name")->to_node();
+
+		appearance_types.emplace(name->get_text(), appearance_type);
+	}
 }
 
 // Helper for installing a main menu action.
@@ -249,6 +269,9 @@ inline appObj::init_args appObj::create_init_args()
 				 (args.elements, ui, args);
 
 			 appObj::borders_elements_initialize
+				 (args.elements, ui, args);
+
+			 appObj::appearances_elements_initialize
 				 (args.elements, ui, args);
 		 });
 
@@ -752,10 +775,11 @@ create_border_dashes_field_validator(const x::w::input_field &field)
 }
 
 appObj::appObj(init_args &&args)
-	: app_elements_t{std::move(args.elements)},
+	: const_app_elements_t{std::move(args.elements)},
 	  configfile{args.configfile},
 	  theme{args.theme},
 	  themename{args.filename},
+	  appearance_types{std::move(args.appearance_types)},
 
 	  /////////////////////////////////////////////////////////////////////
 	  // Dimension element callbacks.
@@ -859,6 +883,7 @@ void appObj::loaded_file(ONLY IN_THREAD)
 	dimension_initialize(IN_THREAD);
 	colors_initialize(IN_THREAD);
 	borders_initialize(IN_THREAD);
+	appearances_initialize(IN_THREAD);
 }
 
 // Update the main window title's after loading or saving a file.

@@ -145,6 +145,20 @@
 	</container>
       </page>
     </add>
+    <add>
+      <tab>
+	<element>
+	  <label type='theme_text'>${context:creator-main}${decoration:underline}A${decoration:none}ppearances</label>
+	</element>
+      </tab>
+      <shortcut type="theme_text">${context:creator-main}Alt-A</shortcut>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>appearances_page</name>
+	</container>
+      </page>
+    </add>
   </factory>
 
   <!-- Dimensions page -->
@@ -1833,5 +1847,79 @@
       <shortcut type='theme_text'>${context:color}Alt-E</shortcut>
     </element>
   </factory>
+
+  <!-- Appearances page -->
+
+  <layout type="grid" id="appearances_page">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>appearances-name-row</name>
+    </append_row>
+    <append_row>
+      <name>new-appearances-name-row</name>
+    </append_row>
+  </layout>
+
+  <!-- Appearance: Name -->
+  <factory type="grid" id="appearances-name-row">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>${context:creator}Name:</label>
+    </element>
+    <colspan>
+      <columns>5</columns>
+    </colspan>
+    <container>
+      <name>appearance_name_field</name>
+      <type>standard_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="appearance_name_field" type="standard_combobox" />
+
+  <!-- Appearance: New name -->
+
+  <factory type="grid" id="new-appearances-name-row">
+    <halign>right</halign>
+    <element id="appearance_new_name_label">
+      <label type='theme_text'>${context:creator}New name:</label>
+    </element>
+    <element id="appearance_new_name_field">
+      <input_field />
+        <config>
+	  <columns>30</columns>
+	</config>
+    </element>
+    <element id="appearance_new_name_label2">
+      <label>(</label>
+    </element>
+    <container>
+      <name>appearance_new_type_field</name>
+      <type>standard_combobox</type>
+    </container>
+    <element id="appearance_new_name_label3">
+      <label>)</label>
+    </element>
+    <element id="appearance_new_create">
+      <button>
+	<element>
+	  <label type="theme_text">${context:appearance}Create</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+    </element>
+  </factory>
+
+  <layout id="appearance_new_type_field" type="standard_combobox" />
 
 </theme>

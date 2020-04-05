@@ -40,12 +40,14 @@ class appObj;
 
 typedef x::ref<appObj> app;
 
+typedef const app_elements_t const_app_elements_t;
+
 //! Singleton application class.
 
 //! Inherits from UI elements, the UI elements in the app window, mostly
 //! the main menu.
 
-class appObj : public app_elements_t, virtual public x::obj {
+class appObj : public const_app_elements_t, virtual public x::obj {
 
 	//! My configuration file
 
@@ -69,7 +71,7 @@ private:
 		std::string filename;
 		x::xml::doc theme;
 		app_elements_tptr elements;
-
+		std::map<std::string, const x::xml::readlock> appearance_types;
 		x::functionref<x::w::input_field_filter_callback_t
 			       > label_filter;
 
@@ -309,6 +311,9 @@ private:
 public:
 	//! Filename
 	x::mpobj<std::string> themename;
+
+	//! All supported appearance types, by their name.
+	const std::map<std::string, const x::xml::readlock> appearance_types;
 
 	//! Whether the theme file has been modified
 	x::mpobj<bool> edited=false;
@@ -681,7 +686,7 @@ public:
 					       x::w::uielements &,
 					       init_args &);
 
-	//! Initialize the dimension page after loading/creating a new theme.
+	//! Initialize the colors page after loading/creating a new theme.
 
 	void colors_initialize(ONLY IN_THREAD);
 
@@ -1143,6 +1148,104 @@ private:
 	void border_delete2(border_info_t::lock &lock,
 			    size_t index,
 			    const x::ref<x::obj> &busy_mcguffin);
+
+public:
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Borders page.
+
+	//! Installs callbacks.
+
+	static void appearances_elements_initialize(app_elements_tptr &elements,
+						    x::w::uielements &ui,
+						    init_args &args);
+	//! Original appearance parameters
+
+	struct appearance_orig_params {
+		size_t index; //!< Which original appearance
+	};
+
+	//! Validated and saved parameters.
+
+	struct appearance_save_params {
+		std::string appearance_new_name;  //!< When creating a new one.
+		// loaded_appearance_t appearance_new_value; //!< The new value
+
+		//! Check if the new value is unchanged
+		//bool operator==(const appearance_orig_params &orig) const
+		//{
+		//	return appearance_new_value == orig.loaded_appearance;
+		//}
+	};
+
+	//! Appearances metadata
+	struct appearance_info_s {
+
+		//! Cached: selected index of an existing appearance.
+		std::optional<appearance_orig_params> current_selection;
+
+		//! New appearance name
+		std::string new_appearance_name;
+
+		//! New appearance type
+		std::string new_appearance_type;
+
+		//! The existing appearances.
+		std::vector<std::string> ids;
+
+		//! The existing appearance types
+		std::vector<std::string> types;
+
+		//! This is updated every time something changes on the
+		//! appearances page. The "Save" button simply takes this to
+		//! the bank.
+
+		std::optional<appearance_save_params> save_params;
+	};
+
+	//! Thread-safe container for appearances metadata.
+
+	typedef x::mptobj<appearance_info_s,
+			  std::recursive_mutex> appearance_info_t;
+
+	//! Current appearance data
+	appearance_info_t appearance_info;
+
+	//! Initialize the colors page after loading/creating a new theme.
+
+	void appearances_initialize(ONLY IN_THREAD);
+
+	//! Something was selected or unselected in the appearance combo-box
+
+	void appearance_selected
+	(ONLY IN_THREAD,
+	 const
+	 x::w::standard_combobox_selection_changed_info_t &info);
+
+	//! Something was selected or unselected in the new appearance type combo-box
+
+	void new_appearance_type_selected
+	(ONLY IN_THREAD,
+	 const
+	 x::w::standard_combobox_selection_changed_info_t &info);
+
+	//! Enable/disable elements
+
+	//! Invoked from UI callback.
+	void appearance_enable_disable_buttons(ONLY IN_THREAD,
+					       appearance_info_t::lock &lock);
+
+	//! Create a new appearance object, invoked from update_theme().
+	get_updatecallbackptr appearance_create(ONLY IN_THREAD);
+
+private:
+
+	//! Continue appearance_create(), in the main execution thread.
+	update_callback_t appearance_create2(appearance_info_t::lock &lock);
+
+	//! Finish appearance_create(), in the main execution thread.
+	void appearance_create2(appearance_info_t::lock &lock,
+				const x::ref<x::obj> &busy_mcguffin);
 };
 
 // The singleton instance of the app object.

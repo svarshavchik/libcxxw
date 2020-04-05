@@ -1504,7 +1504,9 @@ struct parse_gradient_color_grid {
 
 	const x::w::gridlayoutmanager glm;
 
-	parse_gradient_color_grid(const x::w::container &list_container)
+	parse_gradient_color_grid(const x::w::container &list_container,
+				  // Prove lock ownership
+				  appObj::colors_info_t::lock &)
 		: glm{list_container->get_layoutmanager()}
 	{
 	}
@@ -1545,11 +1547,14 @@ struct parse_gradient_color_grid {
 // fields. Return true if all gradient values and colors have been validated.
 
 static bool update_gradient_color_values(const x::w::container &list_container,
-					 appObj::loaded_color_gradient_t &g)
+					 appObj::loaded_color_gradient_t &g,
+
+					 // Prove lock ownership
+					 appObj::colors_info_t::lock &lock)
 {
 	bool flag=true;
 
-	parse_gradient_color_grid parser{list_container};
+	parse_gradient_color_grid parser{list_container, lock};
 
 	parser([&]
 	       (const auto &value_field,
@@ -1678,7 +1683,7 @@ bool appObj::color_updated_locked(ONLY IN_THREAD,
 
 		return update_gradient_color_values
 			(color_linear_page_values_grid,
-			 gradient_color.gradient);
+			 gradient_color.gradient, lock);
 	}
 
 	// Radial gradient
@@ -1713,7 +1718,7 @@ bool appObj::color_updated_locked(ONLY IN_THREAD,
 		}
 		if (!update_gradient_color_values
 		    (color_radial_page_values_grid,
-		     gradient_color.gradient))
+		     gradient_color.gradient, lock))
 			return false;
 		return true;
 	}
@@ -1728,11 +1733,14 @@ bool appObj::color_updated_locked(ONLY IN_THREAD,
 
 static bool validate_gradient_color_values(ONLY IN_THREAD,
 					   const x::w::container
-					   &list_container)
+					   &list_container,
+
+					   // Prove lock ownership
+					   appObj::colors_info_t::lock &lock)
 {
 	bool flag=true;
 
-	parse_gradient_color_grid parser{list_container};
+	parse_gradient_color_grid parser{list_container, lock};
 
 	parser([&]
 	       (const auto &value_field,
@@ -1935,6 +1943,8 @@ void color_update_impl::gradient(const appObj::loaded_color_gradient_t &g) const
 
 appObj::get_updatecallbackptr appObj::color_update(ONLY IN_THREAD)
 {
+	colors_info_t::lock lock{colors_info};
+
 	// Figure out which color we have currently selected, and validate
 	// just those fields
 
@@ -1965,7 +1975,7 @@ appObj::get_updatecallbackptr appObj::color_update(ONLY IN_THREAD)
 				return nullptr;
 		}
 		if (!validate_gradient_color_values
-		    (IN_THREAD, color_linear_page_values_grid))
+		    (IN_THREAD, color_linear_page_values_grid, lock))
 			return nullptr;
 	}
 	if (color_radial_gradient_option_radio->get_value())
@@ -1978,11 +1988,9 @@ appObj::get_updatecallbackptr appObj::color_update(ONLY IN_THREAD)
 				return nullptr;
 		}
 		if (!validate_gradient_color_values
-		    (IN_THREAD, color_radial_page_values_grid))
+		    (IN_THREAD, color_radial_page_values_grid, lock))
 			return nullptr;
 	}
-
-	colors_info_t::lock lock{colors_info};
 
 	return [saved_lock=lock.threadlock(x::ref{this})]
 		(appObj *me)

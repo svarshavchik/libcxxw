@@ -17,6 +17,7 @@ config.sub
 configure
 /ABOUT-NLS
 /compile
+/creator/appearances.xml
 /cxxw
 /cxxwoptions.H
 /cxxwtheme

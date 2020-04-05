@@ -1001,12 +1001,14 @@ cxxwtheme_LDFLAGS=$(TESTLINKTYPE)
 $(call REFCOLLECTION_GEN,creator/appelements.inc.H,$(srcdir)/creator/appelements.xml)
 $(call EXTRACT_THEME_TEXT_GEN,creator.inc.C,creator/main.xml)
 
-creatorinst_DATA=creator/main.xml
+creatorinst_DATA=creator/main.xml creator/appearances.xml
 EXTRA_DIST += $(creatorinst_DATA)
+EXTRA_DIST += creator/appearances.xsl
 
 cxxwcreator_SOURCES=\
 	creator/app.C				\
 	creator/app.H				\
+	creator/appappearances.C		\
 	creator/appcolors.C			\
 	creator/appborders.C			\
 	creator/appdimension.C			\
@@ -1321,10 +1323,18 @@ appearance/appearance_parser.xml: $(ALL_APPEARANCES_XML)
 	echo "<root xmlns:xi='http://www.w3.org/2003/XInclude'>" >>appearance/appearance_parser.xml.tmp
 	for f in $(ALL_APPEARANCES) ; \
         do \
-		echo "<xi:include href='$(abs_top_srcdir)/appearance/$${f}_appearance.xml' xpointer='xpointer(/appearance)' />" >>appearance/appearance_parser.xml.tmp ; \
+		echo "<xi:include href='$(srcdir)/../appearance/$${f}_appearance.xml' xpointer='xpointer(/appearance)' />" >>appearance/appearance_parser.xml.tmp ; \
 	done
 	echo '</root>' >>appearance/appearance_parser.xml.tmp
 	mv -f appearance/appearance_parser.xml.tmp appearance/appearance_parser.xml
+
+CLEANFILES += creator/appearances.xml
+
+creator/appearances.xml: appearance/appearance_parser.xml \
+	creator/appearances.xsl
+	xsltproc -xinclude $(srcdir)/creator/appearances.xsl \
+		appearance/appearance_parser.xml >creator/appearances.xml.tmp
+	mv -f creator/appearances.xml.tmp creator/appearances.xml
 
 includes/x/w/all_appearancesfwd.H: \
 	all_appearancesfwd.xsl appearance/appearance_parser.xml
@@ -1370,7 +1380,7 @@ CLEANFILES += \
         $(XIM_AUTOGEN)
 
 dist-hook:
-	rm -f $(distdir)/appearance/appearance_parser.xml
+	rm -f $(patsubst %,$(distdir)/%, $(BUILT_SOURCES))
 
 includes/x/w/constants_inc.H: genconstants
 	./genconstants >$@.tmp
