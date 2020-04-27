@@ -184,4 +184,9 @@ text_param &text_param::operator()(explicit_theme_text text)
 	return *this;
 }
 
+std::u32string theme_text::get_unicode() const
+{
+	return text_param{*this}.string;
+}
+
 LIBCXXW_NAMESPACE_END

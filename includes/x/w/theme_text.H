@@ -133,6 +133,15 @@ struct theme_text {
 
 	//! The generator
 	const_uigenerators generators;
+
+	//! Return the plain Unicode string.
+
+	//! This provides a convenient shortcut for embedding gettext-ized
+	//! strings with context indicators:
+	//!
+	//! theme_text(_("${context:menu}Open")).get_unicode();
+
+	std::u32string get_unicode() const;
 };
 
 LIBCXXW_NAMESPACE_END
