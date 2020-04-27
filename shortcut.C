@@ -149,6 +149,12 @@ shortcut::shortcut(shortcut_parse_info info)
 		for (auto &c:ustr)
 			c=unicode_lc(c);
 
+		if (ustr == U"esc")
+		{
+			unicode='\e';
+			return;
+		}
+
 		for (const auto &sk:special_keys)
 		{
 			size_t l=strlen(sk.name);
@@ -211,7 +217,10 @@ shortcut::operator std::u32string() const
 
 	if (unicode)
 	{
-		s.push_back(unicode);
+		if (unicode == '\e')
+			s=U"Esc";
+		else
+			s.push_back(unicode);
 	}
 	else
 	{
