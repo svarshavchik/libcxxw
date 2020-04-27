@@ -1452,6 +1452,8 @@ $(GET_LAYOUTMANAGERS_BUILT): get_layoutmanagers.stamp.inc.H
 	touch $@
 BUILT_SOURCES += $(GET_LAYOUTMANAGERS_BUILT)
 
+EXTRA_DIST += get_layoutmanagers_h.xsl
+
 get_layoutmanagers.stamp.inc.H: get_layoutmanagers_h.xsl uicompiler.xml
 	$(MKDIR_P) includes/x/w
 	$(XSLTPROC) $(srcdir)/get_layoutmanagers_h.xsl $(srcdir)/uicompiler.xml
@@ -1513,7 +1515,7 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml docbook/xmllinks*.
 $(man_MANS): man.stamp
 	test -f $@ && touch $@
 
-CLEANFILES += $(man_MANS)
+CLEANFILES += $(man_MANS) man.stamp
 
 man.stamp: docbook/cxxwtheme.xml docbook/cxxwcreator.xml
 	set -e; rm -rf manpages; \

@@ -30,6 +30,7 @@ noinst_PROGRAMS=\
 	menu					\
 	pagelayoutmanager			\
 	panelayoutmanager			\
+	passwordinput				\
 	peepholelayoutmanager			\
 	popupmenu1				\
 	popupmenu2				\
@@ -141,6 +142,9 @@ pagelayoutmanager_LDADD=-lcxxw -lcxx
 $(call OPTIONS_GEN,panelayoutmanager.H,panelayoutmanager.xml)
 panelayoutmanager_SOURCES=panelayoutmanager.C close_flag.H
 panelayoutmanager_LDADD=-lcxxw -lcxx
+
+passwordinput_SOURCES=passwordinput.C close_flag.H
+passwordinput_LDADD=-lcxxw -lcxx
 
 peepholelayoutmanager_SOURCES=peepholelayoutmanager.C close_flag.H
 peepholelayoutmanager_LDADD=-lcxxw -lcxx

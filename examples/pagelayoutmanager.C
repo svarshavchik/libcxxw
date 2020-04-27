@@ -183,7 +183,7 @@ static auto create_page(const x::w::pagelayoutmanager &pl)
 		([&]
 		 (const auto &container)
 		 {
-			 address1=address_tab(container->get_layoutmanager());
+			 address1=address_tab(container->gridlayout());
 		 },
 		 x::w::new_gridlayoutmanager{})
 		->show_all();
@@ -199,7 +199,7 @@ static auto create_page(const x::w::pagelayoutmanager &pl)
 		([&]
 		 (const auto &container)
 		 {
-			 phone=phone_tab(container->get_layoutmanager());
+			 phone=phone_tab(container->gridlayout());
 		 },
 		 x::w::new_gridlayoutmanager{})
 		->show_all();
@@ -304,8 +304,10 @@ static void create_mainwindow(const x::w::main_window &mw)
 	** and the input field.
 	**
 	** The callbacks cannot capture the pagelayoutmanager itself, they
-	** capture the container by value, and use get_layoutmanager()
-	** when needed. Most layout managers acquire a lock on their container,
+	** capture the container by value, and use
+	** get_layoutmanager()/pagelayout() when needed.
+	**
+	** Most layout managers acquire a lock on their container,
 	** that may block the internal library execution thread from
 	** updating the display, and all instantiated layout managers
 	** enable buffering of internal processing. For efficiency, the
@@ -320,7 +322,7 @@ static void create_mainwindow(const x::w::main_window &mw)
 	** install. This blocks processing and make the display appear to
 	** freeze. For that reason, always capture the container (when a
 	** circular reference won't be created, and use a weak capture
-	** otherwise) then get_layoutmanager() only when needed.
+	** otherwise) then get_layoutmanager()/pagelayout() only when needed.
 	**
 	** Neither the paged container -- nor any of the display elements
 	** in the paged container, such as the captured input_fields --
@@ -335,7 +337,7 @@ static void create_mainwindow(const x::w::main_window &mw)
 				  const auto &trigger, const auto &busy)
 				 {
 					 x::w::pagelayoutmanager pl=
-						 pg->get_layoutmanager();
+						 pg->pagelayout();
 
 					 pl->open(0);
 					 firstname->request_focus();
@@ -345,8 +347,7 @@ static void create_mainwindow(const x::w::main_window &mw)
 				    (ONLY IN_THREAD,
 				     const auto &trigger, const auto &busy)
 				    {
-					    x::w::pagelayoutmanager pl=
-						    pg->get_layoutmanager();
+					    auto pl=pg->pagelayout();
 
 					    pl->open(1);
 					    address1->request_focus();
@@ -356,8 +357,7 @@ static void create_mainwindow(const x::w::main_window &mw)
 				  (ONLY IN_THREAD,
 				   const auto &trigger, const auto &busy)
 				  {
-					  x::w::pagelayoutmanager pl=
-						  pg->get_layoutmanager();
+					  auto pl=pg->pagelayout();
 
 					  pl->open(2);
 					  phone->request_focus();
@@ -371,8 +371,7 @@ static void create_mainwindow(const x::w::main_window &mw)
 				  (ONLY IN_THREAD,
 				   const auto &trigger, const auto &busy)
 				  {
-					  x::w::pagelayoutmanager pl=
-						  pg->get_layoutmanager();
+					  auto pl=pg->pagelayout();
 
 					  pl->close();
 				  });

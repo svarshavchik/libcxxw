@@ -136,7 +136,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 	// Make the window wider than the menu bar, so there's some empty
 	// space between the left menus and the right Help menu.
 
-	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 	x::w::gridfactory factory=layout->append_row();
 	factory->top_padding(5);
         factory->bottom_padding(5);
@@ -316,9 +316,9 @@ void file_menu(const x::w::main_window &main_window,
 			(ONLY IN_THREAD,
 			 const auto &info)
 			{
-				auto l=view_menu->get_layoutmanager();
+				auto l=view_menu->listlayout();
 
-				l->enabled(view_options_item_number,
+				l->enabled(IN_THREAD, view_options_item_number,
 					   !l->enabled(view_options_item_number));
 				std::cout << "\"Options\" is now enabled: "
 					  << l->enabled(view_options_item_number) << std::endl;

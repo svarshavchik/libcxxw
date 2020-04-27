@@ -24,8 +24,7 @@
 
 x::w::input_field create_mainwindow(const x::w::main_window &main_window)
 {
-	x::w::gridlayoutmanager
-		layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	layout->row_alignment(0, x::w::valign::middle);
 

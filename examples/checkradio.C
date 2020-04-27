@@ -84,7 +84,7 @@ void train_radio_callback(const x::w::image_button &train,
 void create_mainwindow(const x::w::main_window &main_window,
 		       buttons_t &buttons)
 {
-	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	static const char * const days_of_week[]={
 		"Sunday",

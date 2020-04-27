@@ -47,7 +47,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	// "main".
 	element_factory.new_elements.emplace("main", main_window);
 
-	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	layout->generate("main-window-grid",
 			 generator, element_factory);

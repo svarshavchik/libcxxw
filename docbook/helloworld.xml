@@ -431,7 +431,8 @@ while (!appdata->close_flag)
 
       <para>
 	<ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>
-	is an example of a container.
+	is an example of a
+	<ulink url="&link-typedef-x--w-container;">container</ulink>.
 	A container is a widget which contains other widgets. Each container has a &layoutmanager; that controls the
 	position and the behavior of the elemnts in the container.
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
@@ -780,6 +781,20 @@ while (!appdata->close_flag)
 	explicitly specifies the grid layout manager for its main window, so
 	its <methodname>get_layoutmanager</methodname>() returns a
 	<ulink url="&link-typedef-x--w-gridlayoutmanager;"><classname>&ns;::w::gridlayoutmanager</classname></ulink>.
+      </para>
+
+      <para>
+	For convenience, methods named after each layout manager invoke
+	<methodname>get_layoutmanager</methodname>() and convert the result
+	to the appropriate layout manager type.
+	<methodname>gridlayout</methodname>() calls
+	<methodname>get_layoutmanager</methodname>() and
+	returns a <link linkend="gridlayoutmanager"><classname>&ns;::w::gridlayoutmanager</classname></link>;
+	<methodname>borderlayout</methodname>() calls
+	<methodname>get_layoutmanager</methodname>() and
+	returns a <link linkend="borderlayoutmanager"><classname>&ns;::w::borderlayoutmanager</classname></link>;
+	and so on. An exception gets thrown if the container uses a different
+	layout mangaer.
       </para>
 
       <note>

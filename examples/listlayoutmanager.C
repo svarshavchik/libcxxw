@@ -56,7 +56,7 @@ static const char *next_lorem_ipsum()
 static inline void create_main_window(const x::w::main_window &main_window,
 				      const options &opts)
 {
-	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	x::w::gridfactory factory=layout->append_row();
 
@@ -164,7 +164,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		 {
 			 // Initialize the contents of the list container.
 
-			 x::w::listlayoutmanager l=list_container->get_layoutmanager();
+			 x::w::listlayoutmanager l=
+				 list_container->listlayout();
 
 			 // append_items()'s parameter is a
 			 // std::vector<x::w::list_item_param>.
@@ -283,8 +284,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		  const x::w::busy &busy_mcguffin)
 		 mutable
 		 {
-			 x::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 // insert_items() inserts new items before an
 			 // existing list item.
@@ -327,8 +327,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &busy_mcguffin)
 		 {
-			 x::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 // insert_items() and append_items() take
 			 // a std::vector of list_item_param-s as parameters.
@@ -348,8 +347,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &busy_mcguffin)
 		 {
-			 x::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 // If the list is non-empty, remove the first list
 			 // item.
@@ -365,8 +363,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &busy_mcguffin)
 		 {
-			 x::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 if (l->size() == 0)
 				 return;
@@ -383,8 +380,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &busy_mcguffin)
 		 {
-			 x::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 lorem_ipsum_idx=(size_t)-1;
 

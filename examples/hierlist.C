@@ -53,7 +53,7 @@ static const char *next_lorem_ipsum()
 
 static inline void create_main_window(const x::w::main_window &main_window)
 {
-	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	x::w::gridfactory factory=layout->append_row();
 
@@ -181,8 +181,7 @@ static inline void create_main_window(const x::w::main_window &main_window)
 			 // Initial contents of the list, the initial
 			 // item, the top of the fake tree.
 
-			 x::w::listlayoutmanager ll=
-				 fc->get_layoutmanager();
+			 auto ll=fc->listlayout();
 
 			 ll->append_items({"bullet2.sxg"_image,
 					   lorem_ipsum[0]});

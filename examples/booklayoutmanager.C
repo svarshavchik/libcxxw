@@ -37,7 +37,7 @@
 
 static void name_tab(const x::w::container &container)
 {
-	x::w::gridlayoutmanager glm=container->get_layoutmanager();
+	auto glm=container->gridlayout();
 
 	auto f=glm->append_row();
 
@@ -85,7 +85,7 @@ static void name_tab(const x::w::container &container)
 
 static void address_tab(const x::w::container &container)
 {
-	x::w::gridlayoutmanager glm=container->get_layoutmanager();
+	auto glm=container->gridlayout();
 
 	auto f=glm->append_row();
 
@@ -142,7 +142,7 @@ static void address_tab(const x::w::container &container)
 
 static void phone_tab(const x::w::container &container)
 {
-	x::w::gridlayoutmanager glm=container->get_layoutmanager();
+	auto glm=container->gridlayout();
 
 	auto f=glm->append_row();
 
@@ -340,7 +340,7 @@ static void create_book(const x::w::booklayoutmanager &pl)
 */
 static void create_mainwindow(const x::w::main_window &mw)
 {
-	x::w::gridlayoutmanager glm=mw->get_layoutmanager();
+	auto glm=mw->gridlayout();
 
 	auto gf=glm->append_row();
 
@@ -357,9 +357,7 @@ static void create_mainwindow(const x::w::main_window &mw)
 		([&]
 		 (const auto &s)
 		 {
-			 x::w::booklayoutmanager pl=s->get_layoutmanager();
-
-			 create_book(pl);
+			 create_book(s->booklayout());
 		 },
 		 x::w::new_booklayoutmanager{});
 

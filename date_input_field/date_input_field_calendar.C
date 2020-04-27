@@ -161,7 +161,6 @@ static void calendar_grid(const gridlayoutmanager &glm,
 			if (reached_end_of_month ||
 			    current_date.get_day_of_week() != day_of_week)
 			{
-				l->update("");
 				l->hide();
 				continue;
 			}

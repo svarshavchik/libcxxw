@@ -129,7 +129,7 @@ public:
 			LIBCXX_NAMESPACE::w::menubar_lock
 			{
 			 main_window->get_menubarlayoutmanager()
-			}.get_menu(1)->get_layoutmanager();
+			}.get_menu(1)->listlayout();
 
 		view_menu->selected(0, flag);
 	}

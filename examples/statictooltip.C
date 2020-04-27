@@ -416,8 +416,7 @@ private:
 				 [&]
 				 (const x::w::container &c)
 				 {
-					 x::w::gridlayoutmanager glm=
-						 c->get_layoutmanager();
+					 auto glm=c->gridlayout();
 					 auto f=glm->append_row();
 
 					 f->halign(x::w::halign::right);
@@ -461,8 +460,7 @@ private:
 
 			// Then, append another line to the tooltip popup.
 
-			x::w::gridlayoutmanager glm=
-				opened_tooltip->tooltip->get_layoutmanager();
+			auto glm=opened_tooltip->tooltip->gridlayout();
 
 			auto f=glm->append_row();
 			f->halign(x::w::halign::right);
@@ -562,8 +560,7 @@ x::w::validated_input_field<double>
 create_mainwindow(const x::w::main_window &main_window,
 		  const close_flag_ref &close_signal)
 {
-	x::w::gridlayoutmanager
-		layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	layout->row_alignment(0, x::w::valign::middle);
 

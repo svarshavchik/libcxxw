@@ -338,9 +338,7 @@ void testcustomcanvas()
 		([&]
 		 (const auto &main_window)
 		 {
-			 x::w::gridlayoutmanager layout{
-				 main_window->get_layoutmanager()
-			 };
+			 auto layout=main_window->gridlayout();
 
 			 auto factory=layout->append_row();
 			 factory->padding(0);

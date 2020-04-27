@@ -49,8 +49,7 @@ static void replace_all(const x::w::container &c,
 static x::w::scrollbar_visibility
 get_scrollbar_visibility(const x::w::container &container)
 {
-	x::w::standard_comboboxlayoutmanager lm=
-		container->get_layoutmanager();
+	auto lm=container->standard_comboboxlayout();
 
 	auto selected=lm->selected();
 
@@ -87,7 +86,7 @@ static void create_main_window(const x::w::main_window &mw,
 	if (opts.horizontal->value)
 		npl.horizontal();
 
-	x::w::gridlayoutmanager layout=mw->get_layoutmanager();
+	auto layout=mw->gridlayout();
 	auto factory=layout->append_row();
 
 	auto pane=factory->colspan(2)
@@ -132,8 +131,7 @@ static void create_main_window(const x::w::main_window &mw,
 		([&]
 		 (const auto &c)
 		 {
-			 x::w::standard_comboboxlayoutmanager lm=
-			 c->get_layoutmanager();
+			 auto lm=c->standard_comboboxlayout();
 
 			 lm->append_items({ "Hide",
 					 "Always",
@@ -220,10 +218,9 @@ static void create_main_window(const x::w::main_window &mw,
 		       (ONLY IN_THREAD,
 			const auto &trigger,
 			const auto &busy) {
-			       	x::w::panelayoutmanager
-					lm=pane->get_layoutmanager();
+			       auto lm=pane->panelayout();
 
-				lm->remove_all_panes();
+			       lm->remove_all_panes();
 		       });
 
 	factory=layout->append_row();
@@ -267,7 +264,7 @@ static void create_main_window(const x::w::main_window &mw,
 static void insert(const x::w::container &c,
 		   x::w::scrollbar_visibility v)
 {
-	x::w::panelayoutmanager lm=c->get_layoutmanager();
+	x::w::panelayoutmanager lm=c->panelayout();
 
 	// insert_panes() returns a factory that creates new panes before
 	// an existing pane. Create a new pane before the first existing
@@ -354,7 +351,7 @@ static void insert(const x::w::container &c,
 static void append(const x::w::container &c,
 		   x::w::scrollbar_visibility v)
 {
-	x::w::panelayoutmanager lm=c->get_layoutmanager();
+	x::w::panelayoutmanager lm=c->panelayout();
 
 	// append_factory() returns a factory that adds a new pane after all
 	// existing panes, if any.
@@ -392,7 +389,7 @@ static void append(const x::w::container &c,
 
 static void remove_first(const x::w::container &c)
 {
-	x::w::panelayoutmanager lm=c->get_layoutmanager();
+	auto lm=c->panelayout();
 
 	if (lm->size() > 0)
 		lm->remove_pane(0);
@@ -400,7 +397,7 @@ static void remove_first(const x::w::container &c)
 
 static void remove_last(const x::w::container &c)
 {
-	x::w::panelayoutmanager lm=c->get_layoutmanager();
+	auto lm=c->panelayout();
 
 	auto s=lm->size();
 
@@ -411,7 +408,7 @@ static void remove_last(const x::w::container &c)
 static void replace_first(const x::w::container &c,
 			  x::w::scrollbar_visibility v)
 {
-	x::w::panelayoutmanager lm=c->get_layoutmanager();
+	auto lm=c->panelayout();
 
 	// replace_panes() returns a factory that replaces an existing
 	// pane with the new pane, rather than inserting or appending a new
@@ -457,7 +454,7 @@ static void replace_first(const x::w::container &c,
 static void replace_all(const x::w::container &c,
 			x::w::scrollbar_visibility v)
 {
-	x::w::panelayoutmanager lm=c->get_layoutmanager();
+	auto lm=c->panelayout();
 
 	// replace_all_panes() is equivalent to calling
 	// the pane layout manager's remove_all_panes()
@@ -517,7 +514,7 @@ static void replace_all(const x::w::container &c,
 
 static void insert_list(const x::w::container &c)
 {
-	x::w::panelayoutmanager lm=c->get_layoutmanager();
+	auto lm=c->panelayout();
 
 	x::w::panefactory f=lm->insert_panes(0);
 

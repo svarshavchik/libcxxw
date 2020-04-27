@@ -217,10 +217,10 @@ void testprintdialog()
 		::create([&]
 			 (const auto &main_window)
 			 {
-				 x::w::gridlayoutmanager
-				     layout=main_window->get_layoutmanager();
+				 auto layout=main_window->gridlayout();
+
 				 x::w::gridfactory factory=
-				     layout->append_row();
+					 layout->append_row();
 
 				 initialize_mainwindow(factory);
 

@@ -74,9 +74,7 @@ focusable_impl focusable_labelObj::get_impl() const
 ref<elementObj::implObj> focusable_labelObj
 ::get_minimum_override_element_impl()
 {
-	borderlayoutmanager blm=get_layoutmanager();
-
-	return blm->get()->impl;
+	return borderlayout()->get()->impl;
 }
 
 LIBCXXW_NAMESPACE_END

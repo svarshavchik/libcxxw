@@ -213,8 +213,7 @@ static void search_function(const x::w::input_field_search_info &search_info)
 void create_mainwindow(const x::w::main_window &main_window,
 		       const close_flag_ref &close_flag)
 {
-	x::w::gridlayoutmanager
-		layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	x::w::gridfactory factory=layout->append_row();
 

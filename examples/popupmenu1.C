@@ -27,7 +27,7 @@
 
 void create_mainwindow(const x::w::main_window &main_window)
 {
-	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 	x::w::gridfactory factory=layout->append_row();
 
 	// Besides the right alignment, set the vertical alignment of the

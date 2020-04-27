@@ -62,8 +62,7 @@ typedef x::ref<random_color_sourceObj> random_color_source;
 auto create_mainwindow(const x::w::main_window &main_window,
 		       const x::w::screen_positions &pos)
 {
-	x::w::gridlayoutmanager
-		layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	layout->col_alignment(0, x::w::halign::right);
 

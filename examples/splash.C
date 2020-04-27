@@ -26,7 +26,7 @@
 
 void create_splash(const x::w::main_window &main_window)
 {
-	x::w::gridlayoutmanager glm=main_window->get_layoutmanager();
+	auto glm=main_window->gridlayout();
 
 	x::w::gridfactory f=glm->append_row();
 

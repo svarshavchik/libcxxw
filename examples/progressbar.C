@@ -40,7 +40,7 @@ static auto initialize_progressbar(const x::w::factory &f)
 			 // grid layout manager. Put one element into the
 			 // progress bar, our label.
 
-			 x::w::gridlayoutmanager glm=pb->get_layoutmanager();
+			 auto glm=pb->gridlayout();
 
 			 auto f=glm->append_row();
 
@@ -62,7 +62,7 @@ static auto initialize_progressbar(const x::w::factory &f)
 	return pb;
 }
 
-void testprogressbar()
+void showprogressbar()
 {
 	x::destroy_callback::base::guard guard;
 
@@ -72,10 +72,9 @@ void testprogressbar()
 		::create([]
 			 (const auto &main_window)
 			 {
-				 x::w::gridlayoutmanager
-				     layout=main_window->get_layoutmanager();
+				 auto layout=main_window->gridlayout();
 				 x::w::gridfactory factory=
-				     layout->append_row();
+					 layout->append_row();
 
 				 initialize_progressbar(factory);
 			 });
@@ -86,17 +85,9 @@ void testprogressbar()
 	// Both the main window and the progress bar containers are grid
 	// layout managers, with one display element: row 0, column 0.
 
-	x::w::progressbar pb=
-		x::w::gridlayoutmanager
-		{
-			main_window->get_layoutmanager()
-		}->get(0, 0);
+	x::w::progressbar pb=main_window->gridlayout()->get(0, 0);
 
-	x::w::label l=
-		x::w::gridlayoutmanager
-		{
-			pb->get_layoutmanager()
-		}->get(0, 0);
+	x::w::label l=pb->gridlayout()->get(0, 0);
 
 	main_window->set_window_title("Progress bar!");
 	main_window->set_window_class("main",
@@ -167,7 +158,7 @@ void testprogressbar()
 int main(int argc, char **argv)
 {
 	try {
-		testprogressbar();
+		showprogressbar();
 	} catch (const x::exception &e)
 	{
 		e->caught();

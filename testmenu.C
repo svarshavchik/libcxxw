@@ -300,7 +300,7 @@ void add_recent(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
 
-	lock.get_menu(0)->get_layoutmanager()->get_item_layoutmanager(6)
+	lock.get_menu(0)->listlayout()->get_item_layoutmanager(6)
 		->append_items
 		({
 			[s](THREAD_CALLBACK, const auto &info)
@@ -397,7 +397,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 			[=](THREAD_CALLBACK, const auto &ignore)
 			{
-				auto l=view_menu->get_layoutmanager();
+				auto l=view_menu->listlayout();
 
 				l->enabled(view_options_item,
 					   !l->enabled(view_options_item));

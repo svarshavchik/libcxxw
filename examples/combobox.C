@@ -86,7 +86,7 @@ std::vector<x::w::list_item_param> days_of_week()
 static inline void create_main_window(const x::w::main_window &main_window,
 				      const options &opts)
 {
-	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	layout->row_alignment(0, x::w::valign::middle);
 
@@ -111,7 +111,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 // standard_comboboxlayoutmanager to initialize it.
 
 			 x::w::standard_comboboxlayoutmanager lm=
-				 container->get_layoutmanager();
+				 container->standard_comboboxlayout();
 
 			 lm->replace_all_items(days_of_week());
 		 });
@@ -156,8 +156,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 				    o << "Append " << ++counter;
 
-				    x::w::standard_comboboxlayoutmanager lm=
-					    combobox->get_layoutmanager();
+				    auto lm=combobox->standard_comboboxlayout();
 
 				    lm->append_items(IN_THREAD, {o.str()});
 			    });
@@ -178,8 +177,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 				    o << "Insert " << ++counter << std::endl;
 
-				    x::w::standard_comboboxlayoutmanager lm=
-					    combobox->get_layoutmanager();
+				    auto lm=combobox->standard_comboboxlayout();
 
 				    lm->insert_items(IN_THREAD, 0, {o.str()});
 			    });
@@ -197,8 +195,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			     const x::w::busy &ignore)
 			    mutable
 			    {
-				    x::w::standard_comboboxlayoutmanager lm=
-					    combobox->get_layoutmanager();
+				    auto lm=combobox->standard_comboboxlayout();
 
 				    // Instantiating a standard_combo_box
 				    // blocks all other execution threads from
@@ -243,8 +240,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			     const x::w::callback_trigger_t &trigger,
 			     const x::w::busy &ignore)
 			    {
-				    x::w::standard_comboboxlayoutmanager lm=
-					    combobox->get_layoutmanager();
+				    auto lm=combobox->standard_comboboxlayout();
 
 				    if (lm->size() == 0)
 					    return;
@@ -261,8 +257,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			     const x::w::callback_trigger_t &trigger,
 			     const x::w::busy &ignore)
 			    {
-				    x::w::standard_comboboxlayoutmanager lm=
-					    combobox->get_layoutmanager();
+				    auto lm=combobox->standard_comboboxlayout();
 
 				    lm->replace_all_items(IN_THREAD,
 							  days_of_week());
@@ -279,8 +274,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			     const x::w::callback_trigger_t &trigger,
 			     const x::w::busy &ignore)
 			    {
-				    x::w::standard_comboboxlayoutmanager lm=
-					    combobox->get_layoutmanager();
+				    auto lm=combobox->standard_comboboxlayout();
 
 				    std::vector<size_t> n;
 
@@ -351,14 +345,12 @@ void create_combobox(const options &opts)
 
 	if (opts.editable->value)
 	{
-		x::w::editable_comboboxlayoutmanager lm=
-			combobox->get_layoutmanager();
+		auto lm=combobox->editable_comboboxlayout();
 
 		std::cout << "Final contents: " << lm->get() << std::endl;
 	}
 
-	x::w::standard_comboboxlayoutmanager lm=
-		combobox->get_layoutmanager();
+	auto lm=combobox->standard_comboboxlayout();
 
 	std::optional<size_t> selection=lm->selected();
 

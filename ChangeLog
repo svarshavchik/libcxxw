@@ -1,3 +1,8 @@
+2020-04-19  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* container-><name>layout(): get_layoutmanager() shortcuts for all
+	individual layout managers.
+
 2020-04-12  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* listlayoutmanager/list_element_impl.C: keyboard navigation generates

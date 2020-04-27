@@ -252,8 +252,7 @@ void busythreadObj::mainloop(msgqueue_auto &q)
 static inline void create_main_window(const x::w::main_window &main_window,
 				      const x::ref<busythreadObj> &mythread)
 {
-	x::w::gridlayoutmanager
-		layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 	x::w::gridfactory factory=layout->append_row();
 
 	// Create two buttons. Install a callback that executes when

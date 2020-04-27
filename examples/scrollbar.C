@@ -136,7 +136,7 @@ typedef x::ref<volume_infoObj> volume_info;
 
 void initialize_volume_control(const x::w::main_window &main_window)
 {
-	x::w::gridlayoutmanager	layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 	x::w::gridfactory factory=layout->append_row();
 
 	auto vi=volume_info::create();
@@ -161,8 +161,7 @@ void initialize_volume_control(const x::w::main_window &main_window)
 		([&]
 		 (const auto &container)
 		 {
-			 x::w::gridlayoutmanager glm=
-				 container->get_layoutmanager();
+			 auto glm=container->gridlayout();
 
 			 glm->row_alignment(0, x::w::valign::middle);
 

@@ -27,9 +27,7 @@ LIBCXXW_NAMESPACE_START
 void main_windowObj::generate(const std::string_view &name,
 			      uielements &info)
 {
-	gridlayoutmanager glm=get_layoutmanager();
-
-	glm->generate(name, info);
+	gridlayout()->generate(name, info);
 }
 
 dialogObj::dialogObj(const dialog_args &args)

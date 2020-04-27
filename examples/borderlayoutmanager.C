@@ -25,7 +25,7 @@
 
 static void create_main_window(const x::w::main_window &mw)
 {
-	x::w::gridlayoutmanager glm=mw->get_layoutmanager();
+	auto glm=mw->gridlayout();
 
 	// Two sample containers with the border layout manager. One of them
 	// will have a title.

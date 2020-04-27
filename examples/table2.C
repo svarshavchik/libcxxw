@@ -113,8 +113,7 @@ auto create_process_table(const x::w::main_window &mw,
 		([&]
 		 (const x::w::focusable_container &c)
 		 {
-			 x::w::tablelayoutmanager lm=
-				 c->get_layoutmanager();
+			 x::w::tablelayoutmanager lm=c->tablelayout();
 
 			 // The tablelayoutmanager inherits from the
 			 // listlayoutmanager. Just like with selection lists,
@@ -189,8 +188,7 @@ void testlist()
 		 [&]
 		 (const auto &main_window)
 		 {
-			 x::w::gridlayoutmanager
-				 layout=main_window->get_layoutmanager();
+			 auto layout=main_window->gridlayout();
 			 x::w::gridfactory factory=
 				     layout->append_row();
 
@@ -244,7 +242,7 @@ void testlist()
 
 	my_appdata appdata=main_window->appdata;
 
-	x::w::tablelayoutmanager tlm=appdata->main_table->get_layoutmanager();
+	auto tlm=appdata->main_table->tablelayout();
 
 	pos->save(configfile);
 }

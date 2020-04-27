@@ -113,8 +113,7 @@ public:
 		//
 		// We must use the same locking order here, to avoid the
 		// deadlock.
-		x::w::itemlayout_lock i_lock
-			{toppings_list->get_layoutmanager()};
+		x::w::itemlayout_lock i_lock{toppings_list->itemlayout()};
 
 		toppings_t::lock t_lock{toppings};
 
@@ -207,8 +206,7 @@ auto create_mainwindow(const x::w::main_window &main_window)
 {
 	// Create the main application window and its important display
 	// elements.
-	x::w::gridlayoutmanager
-		layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	layout->row_alignment(0, x::w::valign::middle);
 

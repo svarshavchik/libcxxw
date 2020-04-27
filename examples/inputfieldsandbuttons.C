@@ -73,8 +73,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 	inputfieldsptr new_inputfields;
 
-	x::w::gridlayoutmanager
-		layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	// The main window's grid will have two columns. The first column
 	// in each row will have a label, the second column will have a
@@ -162,7 +161,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 		 {
 			 // Get the grid layout manager for the container.
 
-			 x::w::gridlayoutmanager layout=container->get_layoutmanager();
+			 auto layout=container->gridlayout();
 			 auto factory=layout->append_row();
 
 			 // Cancel button, on the beginning of the row.

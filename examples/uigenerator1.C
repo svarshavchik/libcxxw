@@ -103,9 +103,8 @@ static inline void create_main_window(const x::w::main_window &main_window)
 				    []
 				    (const auto &container)
 				    {
-					    x::w::standard_comboboxlayoutmanager
-						    lm=container
-						    ->get_layoutmanager();
+					    auto lm=container
+						    ->standard_comboboxlayout();
 
 					    lm->replace_all_items
 						    (days_of_week());
@@ -163,7 +162,7 @@ static inline void create_main_window(const x::w::main_window &main_window)
 		 }
 		};
 
-	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	layout->generate("main-window-grid",
 			 generator, element_factory);

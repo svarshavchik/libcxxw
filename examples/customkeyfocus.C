@@ -434,9 +434,7 @@ void testcustomfocus(const options &opts)
 						 x::w::rgb::maximum/2,
 						 x::w::rgb::maximum/2});
 
-			 x::w::gridlayoutmanager layout{
-				 main_window->get_layoutmanager()
-			 };
+			 auto layout=main_window->gridlayout();
 
 			 layout->col_alignment(0, x::w::halign::center);
 			 auto factory=layout->append_row();

@@ -41,7 +41,7 @@ x::w::container create_popup_menu(const x::w::element &my_element);
 
 void create_mainwindow(const x::w::main_window &main_window)
 {
-	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 	x::w::gridfactory factory=layout->append_row();
 
 	auto label=factory->padding(3).create_label({

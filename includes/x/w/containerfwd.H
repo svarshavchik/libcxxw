@@ -28,6 +28,17 @@ class LIBCXX_PUBLIC containerObj;
 //!
 //! get_layoutmanager() returns the container's
 //! \ref layoutmanager "layout manager".
+//!
+//! \code
+//! auto manager=container->gridlayout();
+//! \endcode
+//!
+//! gridlayout(), tablelayout(), and other aliases are shortcuts for
+//! calling get_layoutmanager() and converting it to the corresponding
+//! type, such as \ref gridlayoutmanager "INSERT_LIBX_NAMESPACE::w::gridlayoutmanager"
+//! and \ref tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::tablelayoutmanager".
+//!
+//! And exception gets thrown if the container uses a different layout manager.
 
 typedef ref<containerObj> container;
 

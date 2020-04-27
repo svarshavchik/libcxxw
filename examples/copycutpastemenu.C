@@ -215,7 +215,7 @@ x::ref<my_appObj> create_mainwindow(const x::w::main_window &mw)
 		 });
 
 	mw->get_menubar()->show();
-	x::w::gridlayoutmanager layout=mw->get_layoutmanager();
+	auto layout=mw->gridlayout();
 
 	layout->row_alignment(0, x::w::valign::middle);
 

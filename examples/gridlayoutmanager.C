@@ -49,8 +49,7 @@ static inline void insert_column(const appdata &my_appdata,
 
 	o << counter;
 
-	x::w::gridlayoutmanager
-		l=my_appdata->horizontal_container->get_layoutmanager();
+	auto l=my_appdata->horizontal_container->gridlayout();
 
 	// First time, there are no rows, so append one. Otherwise insert
 	// the new label at the beginning of the row.
@@ -68,8 +67,7 @@ static inline void insert_column(const appdata &my_appdata,
 
 static inline void remove_column(const appdata &my_appdata)
 {
-	x::w::gridlayoutmanager
-		l=my_appdata->horizontal_container->get_layoutmanager();
+	auto l=my_appdata->horizontal_container->gridlayout();
 
 	if (l->rows() == 0)
 		return; // No first row.
@@ -97,8 +95,7 @@ static inline void insert_row(const appdata &my_appdata,
 
 	// The main window's grid layout manager.
 
-	x::w::gridlayoutmanager l=
-		my_appdata->vertical_container->get_layoutmanager();
+	auto l=my_appdata->vertical_container->gridlayout();
 
 	// So, we're inserting row #1.
 
@@ -140,8 +137,7 @@ static inline void insert_row(const appdata &my_appdata,
 
 static inline void remove_row(const appdata &my_appdata)
 {
-	x::w::gridlayoutmanager l=
-		my_appdata->vertical_container->get_layoutmanager();
+	auto l=my_appdata->vertical_container->gridlayout();
 
 	if (l->rows() == 0)
 		return; // No row.
@@ -159,8 +155,7 @@ static inline void remove_row(const appdata &my_appdata)
 
 static void update_button_state(const appdata &my_appdata)
 {
-	x::w::gridlayoutmanager l=
-		my_appdata->horizontal_container->get_layoutmanager();
+	auto l=my_appdata->horizontal_container->gridlayout();
 
 	my_appdata->remove_column->set_enabled(l->rows() && l->cols(0));
 
@@ -175,8 +170,7 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 {
 	mainwindowfieldsptr fields;
 
-	x::w::gridlayoutmanager
-		layout=main_window->get_layoutmanager();
+	auto layout=main_window->gridlayout();
 
 	// The main window is divided into three parts. The top part
 	// will have elements that get added horizontally across, with
@@ -222,8 +216,7 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 			 // The creator for the button row container. Create
 			 // the buttons.
 
-			 x::w::gridlayoutmanager layout=
-				 button_row->get_layoutmanager();
+			 auto layout=button_row->gridlayout();
 
 			 auto factory=layout->append_row();
 

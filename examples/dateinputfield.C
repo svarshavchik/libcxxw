@@ -95,7 +95,7 @@ typedef x::ref<currently_shown_datesObj> currently_shown_dates;
 static std::tuple<x::w::date_input_field, x::w::date_input_field
 		  > create_main_window(const x::w::main_window &mw)
 {
-	x::w::gridlayoutmanager lm=mw->get_layoutmanager();
+	auto lm=mw->gridlayout();
 
 	auto f=lm->append_row();
 

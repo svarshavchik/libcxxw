@@ -219,9 +219,8 @@ void testcustomelement()
 		 (const auto &main_window)
 		 {
 			 main_window->remove_background_color();
-			 x::w::gridlayoutmanager layout{
-				 main_window->get_layoutmanager()
-			 };
+
+			 auto layout=main_window->gridlayout();
 
 			 layout->col_alignment(0, x::w::halign::center);
 

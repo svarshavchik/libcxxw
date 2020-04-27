@@ -40,16 +40,6 @@ layout_impl menuObj::get_layout_impl() const
 	return impl->menu_popup->get_layout_impl();
 }
 
-listlayoutmanager menuObj::get_layoutmanager()
-{
-	return focusable_containerObj::get_layoutmanager();
-}
-
-const_listlayoutmanager menuObj::get_layoutmanager() const
-{
-	return focusable_containerObj::get_layoutmanager();
-}
-
 void menuObj::on_popup_state_update(const functionref<element_state_callback_t>
 				    &callback)
 {

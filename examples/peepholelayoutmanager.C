@@ -28,7 +28,7 @@
 // Create a single row of ten buttons.
 void create_peepholed_buttons(const x::w::container &c)
 {
-	x::w::gridlayoutmanager glm=c->get_layoutmanager();
+	auto glm=c->gridlayout();
 
 	auto f=glm->append_row();
 
@@ -142,7 +142,7 @@ void create_peepholes(const x::w::main_window &mw)
 
 			 x::w::container c=plm->get();
 
-			 x::w::gridlayoutmanager glm=c->get_layoutmanager();
+			 auto glm=c->gridlayout();
 
 			 // The buttons are all in row 0.
 			 //

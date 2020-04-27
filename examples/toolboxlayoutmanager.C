@@ -114,7 +114,7 @@ public:
 		auto view_menu=x::w::menubar_lock
 			{
 			 main_window->get_menubarlayoutmanager()
-			}.get_menu(1)->get_layoutmanager();
+			}.get_menu(1)->listlayout();
 
 		view_menu->selected(0, flag);
 	}
@@ -191,7 +191,7 @@ static void create_toolbox_contents(const x::w::toolboxlayoutmanager &tlm)
 		b->on_activate
 			([i]
 			 (THREAD_CALLBACK,
-			  size_t,
+			  size_t n,
 			  const auto &trigger,
 			  const auto &mcguffin)
 			 {
@@ -199,6 +199,9 @@ static void create_toolbox_contents(const x::w::toolboxlayoutmanager &tlm)
 				 if (std::holds_alternative<x::w::initial>
 				     (trigger))
 					 return;
+
+				 if (n == 0)
+					 return; // Deselected
 
 				 std::cout << "Tool "
 					   << (i+1)
@@ -213,7 +216,7 @@ static void create_main_window(const x::w::main_window &mw,
 			       x::w::dialogptr &toolbox_dialog,
 			       const x::w::screen_positions &pos)
 {
-	x::w::gridlayoutmanager glm=mw->get_layoutmanager();
+	auto glm=mw->gridlayout();
 
 	// Create a canvas element, to give the window some size.
 	x::w::canvas_config config;
@@ -253,7 +256,7 @@ static void create_main_window(const x::w::main_window &mw,
 		 (const x::w::dialog &d)
 		 {
 			 create_toolbox_contents(d->dialog_window
-						 ->get_layoutmanager());
+						 ->toolboxlayout());
 		 });
 
 	// Set the X window type and class, and hints. Most window manager

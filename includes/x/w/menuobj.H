@@ -42,12 +42,6 @@ public:
 	layout_impl get_layout_impl() const override
 		LIBCXX_HIDDEN;
 
-	//! Return this menu's layout manager.
-	listlayoutmanager get_layoutmanager();
-
-	//! Return this menu's layout manager.
-	const_listlayoutmanager get_layoutmanager() const;
-
 	//! Install a state update callback for the menu popup.
 	void on_popup_state_update(const functionref<element_state_callback_t>
 				   &callback);

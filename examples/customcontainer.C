@@ -178,9 +178,7 @@ void testcustomcontainer()
 		([&]
 		 (const auto &main_window)
 		 {
-			 x::w::gridlayoutmanager layout{
-				 main_window->get_layoutmanager()
-			 };
+			 auto layout=main_window->gridlayout();
 
 			 auto factory=layout->append_row();
 
@@ -199,9 +197,7 @@ void testcustomcontainer()
 			 // to complete the process, we should initialize
 			 // the new container's contents.
 
-			 x::w::gridlayoutmanager custom_grid_layout{
-				 new_container->get_layoutmanager()
-			 };
+			 auto custom_grid_layout=new_container->gridlayout();
 
 			 auto inner_factory=custom_grid_layout->append_row();
 

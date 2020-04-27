@@ -50,6 +50,12 @@ void testlabel()
 				 // Since we specified a gridlayoutmanager
 				 // for this window (see below), this is what
 				 // get_layoutmanager() will give us, here.
+				 //
+				 // Alternatively,
+				 //
+				 // auto layout=main_window->gridlayout();
+				 //
+				 // does the same thing:
 				 x::w::gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
 
