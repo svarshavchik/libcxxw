@@ -56,7 +56,7 @@ void focusable_elementObj<element_impl>::creating_focusable_element()
 	this->creating_focusable_child_element();
 }
 
-//! Button 1 or 3 press set_focus_only().
+//! Forward button events to the focusable, to deal with.
 
 template<typename element_impl>
 bool focusable_elementObj<element_impl>
@@ -64,18 +64,18 @@ bool focusable_elementObj<element_impl>
 		       const button_event &be,
 		       xcb_timestamp_t timestamp)
 {
-	bool flag=false;
+	return this->focusable_process_button_event(IN_THREAD, be, timestamp);
+}
 
-	if ((be.button == 1 || be.button == 3) && this->activate_for(be))
-	{
-		this->set_focus_only(IN_THREAD, &be);
-		flag=true;
-	}
+//! Invoked from focusable_process_button_event() to run it up the flagpole.
 
-	if (element_impl::process_button_event(IN_THREAD, be, timestamp))
-		flag=true;
-
-	return flag;
+template<typename element_impl>
+bool focusable_elementObj<element_impl>
+::forward_process_button_event(ONLY IN_THREAD,
+			       const button_event &be,
+			       xcb_timestamp_t timestamp)
+{
+	return element_impl::process_button_event(IN_THREAD, be, timestamp);
 }
 
 //! Override set_inherited_visibility().

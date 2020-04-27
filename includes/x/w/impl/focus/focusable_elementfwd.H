@@ -42,6 +42,11 @@ class focusable_elementObj : public element_impl,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 
+	bool forward_process_button_event(ONLY IN_THREAD,
+					  const button_event &be,
+					  xcb_timestamp_t timestamp) override
+		LIBCXX_HIDDEN;
+
 	void set_inherited_visibility_flag(ONLY IN_THREAD, bool, bool) override;
 };
 

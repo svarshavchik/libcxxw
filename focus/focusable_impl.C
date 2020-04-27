@@ -340,7 +340,7 @@ bool elementObj::implObj::process_button_event(ONLY IN_THREAD,
 {
 	bool processed=false;
 
-	if (data(IN_THREAD).label_for && !be.redirected)
+	if (data(IN_THREAD).label_for && !be.redirect_info.event_redirected)
 	{
 		data(IN_THREAD).label_for->with_link
 			(IN_THREAD, [&, this]
@@ -358,8 +358,7 @@ bool elementObj::implObj::process_button_event(ONLY IN_THREAD,
 				 auto itsoverthere=
 					 fe.get_absolute_location(IN_THREAD);
 
-				 auto updated_event=be;
-				 updated_event.redirected=true;
+				 be.redirect_info.event_redirected=true;
 
 				 auto x=this->data(IN_THREAD).last_motion_x;
 				 auto y=this->data(IN_THREAD).last_motion_y;
@@ -386,7 +385,7 @@ bool elementObj::implObj::process_button_event(ONLY IN_THREAD,
 
 				 processed=fe
 					 .process_button_event(IN_THREAD,
-							       updated_event,
+							       be,
 							       timestamp);
 			 });
 	}
@@ -535,6 +534,28 @@ void focusableObj::implObj::prev_focus(ONLY IN_THREAD,
 	// it has nowhere else to go. As such, we give up.
 
 	wh.unset_keyboard_focus(IN_THREAD, trigger);
+}
+
+bool focusableObj::implObj
+::focusable_process_button_event(ONLY IN_THREAD,
+				 const button_event &be,
+				 xcb_timestamp_t timestamp)
+{
+	bool flag=false;
+
+	if ((be.button == 1 || be.button == 3) &&
+	    !be.redirect_info.focus_redirected &&
+	    get_focusable_element().activate_for(be))
+	{
+		be.redirect_info.focus_redirected=true;
+		set_focus_only(IN_THREAD, &be);
+		flag=true;
+	}
+
+	if (forward_process_button_event(IN_THREAD, be, timestamp))
+		flag=true;
+
+	return flag;
 }
 
 void focusableObj::implObj::set_focus_only(ONLY IN_THREAD,

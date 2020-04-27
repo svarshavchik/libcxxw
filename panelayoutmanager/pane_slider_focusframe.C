@@ -16,6 +16,7 @@
 #include "x/w/motion_event.H"
 #include "x/w/pane_layout_appearance.H"
 #include "x/w/focus_border_appearance.H"
+#include "focus/label_for.H"
 #include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
@@ -59,9 +60,13 @@ bool pane_slider_focusframeObj::process_button_event(ONLY IN_THREAD,
 						     const button_event &be,
 						     xcb_timestamp_t timestamp)
 {
+	// Capture the redirect flag before forwarding process_button_event,
+	// because the redirect flag can get set in there, and then we
+	// get here. This is the only right sequence for this.
+	bool was_redirected=be.redirect_info.event_redirected;
 	bool flag=superclass_t::process_button_event(IN_THREAD, be, timestamp);
 
-	if (be.button == 1 && !be.redirected)
+	if (be.button == 1 && !was_redirected)
 	{
 		if (be.press)
 		{

@@ -23,7 +23,8 @@ public:
 	button_event(uint16_t SETofKEYBUTMASK, const keysyms &k,
 		     int button,
 		     bool press,
-		     unsigned click_count) LIBCXX_HIDDEN;
+		     unsigned click_count,
+		     button_event_redirect_info &redirect_info) LIBCXX_HIDDEN;
 
 	//! Destructor
 	~button_event() LIBCXX_HIDDEN;
@@ -32,7 +33,8 @@ public:
 	bool press; //!< Press or release
 	unsigned click_count; //!< Consecutive click counter
 
-	bool redirected=false; //!< Internal flag, don't touch.
+	//! Focus redirection tracker, for internal use.
+	button_event_redirect_info &redirect_info;
 };
 
 

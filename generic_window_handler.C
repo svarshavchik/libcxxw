@@ -25,6 +25,7 @@
 #include "x/w/impl/popup/popup.H"
 #include "cursor_pointer.H"
 #include "selection/current_selection_paste_handler.H"
+#include "focus/label_for.H"
 #include "x/w/impl/focus/focusable.H"
 #include "grabbed_pointer.H"
 #include "x/w/impl/focus/delayed_input_focus.H"
@@ -1281,8 +1282,10 @@ void generic_windowObj::handlerObj
 	auto &keysyms=
 		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
 
+	button_event_redirect_info redirect_info;
+
 	button_event be{event->state, keysyms, event->detail, buttonpress,
-			click_count};
+			click_count, redirect_info};
 
 	motion_event me{be, (activate_for(be)
 			     ? motion_event_type::button_action_event

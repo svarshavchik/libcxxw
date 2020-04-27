@@ -14,6 +14,7 @@
 #include <array>
 #include <utility>
 #include <x/weaklist.H>
+#include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -243,6 +244,24 @@ class focusableObj::implObj : virtual public obj {
 
 	//! Make sure we do not have input focus
 	void unfocus(ONLY IN_THREAD) LIBCXX_HIDDEN;
+
+	//! Process a button even in this widget.
+
+	//! Button 1 or 3 results in a call to set_focus_only().
+
+	bool focusable_process_button_event(ONLY IN_THREAD,
+					    const button_event &be,
+					    xcb_timestamp_t timestamp);
+
+	//! Forward the button event to the widget.
+
+	//! Implemented in focusable_element, to continue passing along
+	//! this event.
+	virtual bool forward_process_button_event(ONLY IN_THREAD,
+						  const button_event &be,
+						  xcb_timestamp_t timestamp)
+		LIBCXX_HIDDEN=0;
+
 
  protected:
 

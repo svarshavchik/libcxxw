@@ -11,11 +11,13 @@ button_event::button_event(uint16_t SETofKEYBUTMASK,
 			   const keysyms &k,
 			   int button,
 			   bool press,
-			   unsigned click_count)
+			   unsigned click_count,
+			   button_event_redirect_info &redirect_info)
 	: input_mask{SETofKEYBUTMASK, k},
 	  button{button},
 	  press{press},
-	  click_count{click_count}
+	  click_count{click_count},
+	  redirect_info{redirect_info}
 {
 }
 

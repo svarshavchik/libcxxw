@@ -9,7 +9,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class button_event;
+class LIBCXX_PUBLIC button_event;
+struct LIBCXX_HIDDEN button_event_redirect_info;
 
 LIBCXXW_NAMESPACE_END
 
