@@ -1,3 +1,8 @@
+2020-04-05  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* listlayoutmanager/listlayoutstyle.C: Replace empty strings with
+	newline chars, so that the list item has non-0 height.
+
 2020-03-30  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* combobox: fix tooltips in combo-boxes.
