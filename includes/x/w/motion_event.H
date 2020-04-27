@@ -19,6 +19,7 @@ enum class motion_event_type {
 	button_event,		//!< X & Y coordinates for a button event.
 	button_action_event,	//!< X & Y cooridnates for a button event that activates something.
 	enter_event,		//!< Pointer entered this display event.
+	keyboard_action_event,  //!< Simulated motion by keyboard activity
 };
 
 //! A motion event.

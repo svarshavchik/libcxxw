@@ -185,18 +185,18 @@ class LIBCXX_HIDDEN contextmenu_popup_handlerObj
 
 		if (eptr)
 		{
-			auto &wh=eptr->get_window_handler();
+			auto &e=*eptr;
 
-			auto r=wh.elementObj::implObj
-				::get_absolute_location_on_screen(IN_THREAD);
+			auto r=e.get_absolute_location_on_screen
+				(IN_THREAD);
 
 			r.x=coord_t::truncate(r.x+
-					      wh.data(IN_THREAD).last_motion_x);
+					      e.data(IN_THREAD).last_motion_x);
 			r.y=coord_t::truncate(r.y+
-					      wh.data(IN_THREAD).last_motion_y);
+					      e.data(IN_THREAD).last_motion_y);
+
 			r.width=1;
 			r.height=1;
-
 			update_attachedto_element_position(IN_THREAD, r);
 		}
 

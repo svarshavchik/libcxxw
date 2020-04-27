@@ -1928,6 +1928,29 @@ void list_elementObj::implObj
 	current_keyed_element(lock)={};
 	redraw_rows(IN_THREAD, lock, row_number1, row_number,
 		    make_sure_row_is_visible);
+
+	// If the current element was set by keyboard action, generate a
+	// fake motion event so that any popup menu gets opened in the
+	// middle of this list item.
+
+	if (current_element(lock) &&
+	    *current_element(lock) < lock->row_infos.size() &&
+	    std::holds_alternative<const key_event *>(trigger))
+	{
+		auto &r=lock->row_infos.at(*current_element(lock));
+
+		const dim_t v_padding=list_v_padding(IN_THREAD);
+
+		motion_event me{*std::get<const key_event *>(trigger),
+				motion_event_type::keyboard_action_event,
+				coord_t::truncate
+				(data(IN_THREAD).current_position.width/2),
+				r.y + dim_t::truncate(r.height +
+						v_padding + v_padding)/2};
+
+		superclass_t::report_motion_event(IN_THREAD, me);
+	}
+
 }
 
 void list_elementObj::implObj::click(ONLY IN_THREAD,

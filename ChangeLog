@@ -1,5 +1,9 @@
 2020-04-12  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* listlayoutmanager/list_element_impl.C: keyboard navigation generates
+	fake motion events so that menu popups appear on top of the current
+	list item.
+
 	* docbook/uixmldoc.xml: Optional id of <context> popups.
 
 2020-04-05  Sam Varshavchik  <mrsam@courier-mta.com>
