@@ -120,7 +120,23 @@ void elementObj::implObj::removed_from_container(ONLY IN_THREAD)
 		       {
 			       e->impl->removed_from_container(IN_THREAD);
 		       });
-	set_inherited_visibility_flag(IN_THREAD, false, false);
+
+
+	if (data(IN_THREAD).reported_inherited_visibility)
+	{
+		// Must do this immediately. If this is a focusable element,
+		// the focusable owner destructor will schedule a
+		// focusable_deinitialize(IN_THREAD) call, after which
+		// we shouldn't touch this object. If we call
+		// request_visibility(), who knows what else can happen...
+		//
+		// But don't do this unless we're currently reported as
+		// being visible. Popups override this, and reset the
+		// keyboard focus in their parent, when they think they're
+		// getting closed. If the popup is already unmapped, or was
+		// never mapped with in the first place, this creates noise.
+		set_inherited_visibility_flag(IN_THREAD, false, false);
+	}
 
 	get_window_handler().removing_element_from_window(IN_THREAD,
 							  ref(this));

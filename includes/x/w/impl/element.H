@@ -242,7 +242,7 @@ class elementObj::implObj : public element_drawObj,
 
 		//! reported_inherited_visibility is always the same as
 		//! logical_inherited_visibility except for top level display
-		//! elements, because top_level-always_visible(). Top level
+		//! elements, because top_level_always_visible(). Top level
 		//! elements are always considered to be visible, and their
 		//! logical_inherited_visibility is always true, only their
 		//! reported_inherited_visibility gets updated in response
@@ -258,6 +258,10 @@ class elementObj::implObj : public element_drawObj,
 		//! - when reporting the visibility status of a widget,
 		//! so that the visibility report reflects the top level
 		//! widget's visibility.
+		//!
+		//! - in removed_from_container, to determine whether or not
+		//! it needs to synthesize a fake hide event, as the
+		//! widget is getting removed.
 
 		bool reported_inherited_visibility=false;
 
