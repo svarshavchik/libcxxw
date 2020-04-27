@@ -7,6 +7,7 @@
 #include "defaulttheme.H"
 #include "x/w/uielements.H"
 #include "x/w/uigenerators.H"
+#include "x/w/element_state.H"
 #include "x/w/label.H"
 #include "x/w/focusable_label.H"
 #include "x/w/canvas.H"
@@ -1513,10 +1514,12 @@ uicompiler::compiler_functions::get_optional_contextpopup
 		return std::nullopt;
 
 	xpath->to_node();
+	auto id=clone->get_any_attribute("id");
 
 	return std::tuple{compiler.listlayout_parseconfig(clone,
 							  "menu",
 							  "element"),
+			id,
 			compiler.shortcut_value(clone,
 						"shortcut",
 						"element")
@@ -1528,7 +1531,7 @@ void uicompiler::compiler_functions
 		       const element &new_element,
 		       const contextpopup_t &popup_info)
 {
-	const auto &[generator, sc]=popup_info;
+	const auto &[generator, id, sc]=popup_info;
 
 	// Determine whether the context popup has cut/copy/paste
 	// menu items, and if so we'll take care of update()ing them.
@@ -1544,18 +1547,36 @@ void uicompiler::compiler_functions
 			 generator(lm, elements);
 		 });
 
+	if (!id.empty())
+		elements.new_elements.emplace(id, menu);
+
 	auto ccp=elements.new_copy_cut_paste_menu_items;
 	elements.new_copy_cut_paste_menu_items=orig_ccp;
 
+	// Install an on_state_update that automatically calls
+	// copy/cut/paste update() before the popup gets shown.
+
+	if (ccp)
+		menu->on_state_update
+			([ccp=copy_cut_paste_menu_items{ccp}]
+			 (ONLY IN_THREAD,
+			  const auto &new_state,
+			  const auto &busy)
+			 {
+				 if (new_state.state_update ==
+				     new_state.before_showing)
+				 {
+					 ccp->update(IN_THREAD);
+				 }
+			 });
+
 	new_element->install_contextpopup_callback
-		([menu, ccp]
+		([menu]
 		 (ONLY IN_THREAD,
 		  const auto &me,
 		  const auto &trigger,
 		  const auto &mcguffin)
 		 {
-			 if (ccp)
-				 ccp->update(IN_THREAD);
 			 menu->show();
 		 },
 		 sc);

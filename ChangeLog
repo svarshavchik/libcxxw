@@ -1,3 +1,7 @@
+2020-04-12  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* docbook/uixmldoc.xml: Optional id of <context> popups.
+
 2020-04-05  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* listlayoutmanager/list_element_impl.C: Do not deselect the current

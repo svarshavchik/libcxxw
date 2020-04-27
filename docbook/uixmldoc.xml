@@ -2138,7 +2138,7 @@ layout_manager->generate("dialog", generators, elements);
      <!-- ... -->
   </config>
 
-  <context>
+  <context id="popup">
     <menu>
       <append_items>
         <items>
@@ -2167,6 +2167,23 @@ layout_manager->generate("dialog", generators, elements);
 	manager</link> for the context popup menu. An
       optional <tag class='element'>shortcut</tag> contains a
       &keyboard_shortcutvalue;.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+&ns;::w::container popup=elements.get_element("popup");
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      <tag class='element'>context</tag>'s optional
+      <tag class='attribute'>id</tag> attribute gives
+      the popup menu container's identifier, making it possible
+      to
+      <link linkend="uixmlfactorycontainer">retrieve the container</link>
+      from
+      <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>.
     </para>
 
     <para>

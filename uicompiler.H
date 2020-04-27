@@ -1004,6 +1004,7 @@ private:
 					    &optional_tooltip);
 
 		typedef std::tuple<listlayoutmanager_generator,
+				   std::string,
 				   shortcut> contextpopup_t;
 
 		static std::optional<contextpopup_t>
