@@ -393,7 +393,7 @@ void elementObj::implObj::schedule_redraw(ONLY IN_THREAD,
 	if (DO_NOT_DRAW(IN_THREAD))
 	{
 		data(IN_THREAD).movable_rectangle.reset();
-		return;
+		// Still fall through, in order to clear us.
 	}
 	if (data(IN_THREAD).current_position.width == 0 ||
 	    data(IN_THREAD).current_position.height == 0)
@@ -893,13 +893,18 @@ void elementObj::implObj
 		schedule_full_redraw(IN_THREAD);
 	}
 
+	data(IN_THREAD).movable_rectangle.reset();
+
 	if (reason == absolute_location_update_reason::scrolled)
 	{
 		invalidate_cached_draw_info(IN_THREAD,
 					    draw_info_invalidation_reason
 					    ::recursive_invalidation);
+
+		// Scrolling should be logically equivalent to fully drawing it
+		// (relied upon by the peephole layout manager)
+		drawn(IN_THREAD);
 	}
-	data(IN_THREAD).movable_rectangle.reset();
 
 	for_each_child(IN_THREAD,
 		       [&]
@@ -1048,7 +1053,7 @@ clip_region_set::clip_region_set(ONLY IN_THREAD,
 
 void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 						   const rectarea &areas,
-						   bool was_already_exposed)
+						   exposure_type type)
 {
 	auto &current_position=data(IN_THREAD).current_position;
 
@@ -1098,7 +1103,8 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		;
 	else
 	{
-		if (data(IN_THREAD).movable_rectangle)
+		if (data(IN_THREAD).movable_rectangle &&
+		    type == exposure_type::actual_exposure)
 		{
 			const auto &already_drawn=
 				data(IN_THREAD).movable_rectangle->r;
@@ -1129,7 +1135,7 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 			       e->impl->exposure_event_recursive
 				       (IN_THREAD,
 					areas,
-					was_already_exposed);
+					type);
 		       });
 }
 

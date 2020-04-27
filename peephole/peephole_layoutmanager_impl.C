@@ -549,11 +549,13 @@ void peepholelayoutmanagerObj::implObj
 bool peepholelayoutmanagerObj::implObj
 ::attempt_scroll_to(ONLY IN_THREAD, const rectangle &r)
 {
-	if (disable_fast_scroll.get())
-		return false;
-
 	auto peephole_element_impl=
 		element_in_peephole->get_peepholed_element()->impl;
+
+	peephole_element_impl->data(IN_THREAD).movable_rectangle.reset();
+
+	if (disable_fast_scroll.get())
+		return false;
 
 	auto &element_current_position=
 		peephole_element_impl->data(IN_THREAD).current_position;
@@ -688,7 +690,8 @@ bool peepholelayoutmanagerObj::implObj
 
 	peephole_element_impl->scroll_by_parent_container(IN_THREAD, r.x, r.y);
 	if (!redrawn.empty())
-		e.exposure_event_recursive(IN_THREAD, redrawn, false);
+		e.exposure_event_recursive(IN_THREAD, redrawn,
+					   e.exposure_type::scrolled);
 
 	return true;
 }

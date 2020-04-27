@@ -601,6 +601,13 @@ class elementObj::implObj : public element_drawObj,
 		internal  //!< The widget moved, but without changing its size
 	};
 
+	//! What was the reason for collecting exposure_event_recursive
+
+	enum class exposure_type {
+	       actual_exposure, //!< The X server told us so.
+	       scrolled,       //!< We were scrolled
+	};
+
 	//! Ok, now invalidate, and possibly redraw ourselves.
 
 	//! If the absolute_location_update_reason is internal, we need to
@@ -924,7 +931,7 @@ class elementObj::implObj : public element_drawObj,
 
 	void exposure_event_recursive(ONLY IN_THREAD,
 				      const rectarea &areas,
-				      bool was_already_exposed)
+				      exposure_type type)
 		LIBCXX_HIDDEN;
 
 	//! Draw the widget.
