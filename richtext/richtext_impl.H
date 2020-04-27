@@ -200,6 +200,9 @@ public:
 	dim_t real_maximum_width=0;
 
 	//! Optional logical text width. Used in first_xpos().
+
+	//! This is used in list_celltext, for table list labels, to override
+	//! the label's logical width.
 	std::optional<dim_t> text_width;
 
 	//! Computed height of tallest fragment
@@ -210,17 +213,28 @@ public:
 
 	dim_t width() const
 	{
-		return std::max(std::max(minimum_width_override,
-					 minimum_width),
-					 real_width);
+		// Our opening bid is the computed minimum width.
+		// Or the minimum width override.
+		//
+		// If the real width is larger, that is of course our width.
+		//
+		// But if word_wrap_width is non-0, then this can be slightly
+		// larger than the current real width, but if we are being
+		// rendered with a center alignment, we should use
+		// word_wrap_width as our official width.
+
+		return std::max({minimum_width_override,
+				 minimum_width,
+				 word_wrap_width,
+				 real_width});
 	}
 
 	//! Return real_maximum_width or minimum_width, if not wrapped.
 	dim_t maximum_width_if_not_wrapped() const
 	{
-		return std::max(std::max(minimum_width_override,
-					 minimum_width),
-				real_maximum_width);
+		return std::max({minimum_width_override,
+				 minimum_width,
+				 real_maximum_width});
 	}
 
 	//! Computed height of this text  above the baseline of the last text paragraph
