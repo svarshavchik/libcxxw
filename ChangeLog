@@ -1,5 +1,8 @@
 2020-04-05  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* listlayoutmanager/list_element_impl.C: Do not deselect the current
+	element when pointer focus is lost.
+
 	* listlayoutmanager/listlayoutstyle.C: Replace empty strings with
 	newline chars, so that the list item has non-0 height.
 
