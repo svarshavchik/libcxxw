@@ -69,13 +69,9 @@ void color_picker_current_canvasObj::implObj
 
 	for (size_t i=0; i<4; ++i)
 	{
-		std::ostringstream o;
-
-		// Temporary hack, until to_chars() is added elsewhere.
-		o << number<rgb_component_t, void>{color.*(rgb_fields[i])};
-
 		writelock->create_child()
-			->element({rgb_channels[i]})->text(o.str())
+			->element({rgb_channels[i]})
+			->text(color.*(rgb_fields[i]))
 			->parent()->parent();
 	}
 }

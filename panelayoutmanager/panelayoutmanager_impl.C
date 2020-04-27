@@ -805,11 +805,8 @@ void panelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
 	{
 		pane_peephole_container container=get_element(grid_lock, i*2);
 
-		std::ostringstream o;
-
-		o << container->peephole_size.get();
-
-		writelock->create_child()->element({"size"})->text(o.str())
+		writelock->create_child()->element({"size"})
+			->text(container->peephole_size.get())
 			->parent()->parent();
 	}
 }

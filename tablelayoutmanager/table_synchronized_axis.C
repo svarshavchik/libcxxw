@@ -530,11 +530,8 @@ void tablelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
 
 	for (const auto &m:**lock)
 	{
-		std::ostringstream o;
-
-		o << m.minimum();
-
-		writelock->create_child()->element({"width"})->text(o.str())
+		writelock->create_child()->element({"width"})
+			->text(m.minimum())
 			->parent()->parent();
 	}
 }

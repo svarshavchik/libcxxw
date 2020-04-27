@@ -147,25 +147,23 @@ void main_windowObj::save(ONLY IN_THREAD,
 
 	auto r=handler->current_position.get();
 
+	// A window or a dialog can be created but never shown, so its
+	// screen position will not get initialized. Avoid saving this
+	// window's coordinates, in this case.
+
+	if (handler->has_exposed(IN_THREAD))
 	{
 		auto lock=pos->impl
 			->create_writelock_for_saving("window",
 						      handler->window_id);
 
-		std::ostringstream x, y, width, height;
-
-		x << wx;
-		y << wy;
-		width << r.width;
-		height << r.height;
-
-		auto window=lock->create_child()->element({"x"})->text(x.str());
+		auto window=lock->create_child()->element({"x"})->text(wx);
 		window=window->parent()->create_next_sibling()->element({"y"})
-			->create_child()->text(y.str());
+			->create_child()->text(wy);
 		window=window->parent()->create_next_sibling()
-			->element({"width"})->create_child()->text(width.str());
+			->element({"width"})->create_child()->text(r.width);
 		window->parent()->create_next_sibling()->element({"height"})
-			->create_child()->text(height.str());
+			->create_child()->text(r.height);
 
 		if (preserve_screen_number_prop.get())
 		{
