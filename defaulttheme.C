@@ -833,6 +833,9 @@ int to_percentage_t(const ui::parser_lock &lock,
 	return v;
 }
 
+const char halign_names[4][8]={"left", "center", "right", "fill"};
+const char valign_names[4][8]={"top", "middle", "bottom", "right"};
+
 halign to_halign(const ui::parser_lock &lock,
 		 const char *element, const char *parent)
 {
@@ -841,29 +844,12 @@ halign to_halign(const ui::parser_lock &lock,
 	std::transform(value.begin(), value.end(), value.begin(),
 		       chrcasecmp::tolower);
 
-	halign v;
+	for (size_t i=0; i<4; i++)
+		if (value == halign_names[i])
+			return static_cast<halign>(i);
 
-	if (value == "left")
-	{
-		v=halign::left;
-	}
-	else if (value == "center")
-	{
-		v=halign::center;
-	}
-	else if (value == "right")
-	{
-		v=halign::right;
-	}
-	else if (value == "fill")
-	{
-		v=halign::fill;
-	}
-	else
-		throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
-					   value, element));
-
-	return v;
+	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
+				   value, element));
 }
 
 valign to_valign(const ui::parser_lock &lock,
@@ -874,29 +860,12 @@ valign to_valign(const ui::parser_lock &lock,
 	std::transform(value.begin(), value.end(), value.begin(),
 		       chrcasecmp::tolower);
 
-	valign v;
+	for (size_t i=0; i<4; i++)
+		if (value == valign_names[i])
+			return static_cast<valign>(i);
 
-	if (value == "top")
-	{
-		v=valign::top;
-	}
-	else if (value == "middle")
-	{
-		v=valign::middle;
-	}
-	else if (value == "bottom")
-	{
-		v=valign::bottom;
-	}
-	else if (value == "fill")
-	{
-		v=valign::fill;
-	}
-	else
-		throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
-					   value, element));
-
-	return v;
+	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
+				   value, element));
 }
 
 const char *defaultthemeObj::default_cut_paste_selection() const
