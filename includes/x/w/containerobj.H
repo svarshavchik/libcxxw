@@ -9,6 +9,7 @@
 #include <x/w/layoutmanagerfwd.H>
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/elementobj.H>
+#include <x/w/get_layoutmanagersfwd.inc.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -53,6 +54,9 @@ public:
 
 	//! Destructor
 	~containerObj();
+
+#include <x/w/get_layoutmanagers.inc.H>
+
 };
 
 //! Alias

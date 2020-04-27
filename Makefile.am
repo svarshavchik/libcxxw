@@ -1246,7 +1246,7 @@ CLEANFILES += $(XTEST_MO_DIR)/$(XTEST_MO_FILE)
 EXTRA_DIST += testmessages.po
 
 $(XTEST_MO_DIR)/$(XTEST_MO_FILE): testmessages.po
-	mkdir -p $(XTEST_MO_DIR)
+	$(MKDIR_P) $(XTEST_MO_DIR)
 	rm -f $(XTEST_MO_DIR)/$(XTEST_MO_FILE)
 	msgfmt -o $(XTEST_MO_DIR)/$(XTEST_MO_FILE).tmp $(srcdir)/testmessages.po
 	mv $(XTEST_MO_DIR)/$(XTEST_MO_FILE).tmp $(XTEST_MO_DIR)/$(XTEST_MO_FILE)
@@ -1442,8 +1442,23 @@ uicompiler_toolboxfactory.lo			\
 uicompiler_toolboxlayout.lo			\
 	: uicompiler.stamp.inc.H
 
+GET_LAYOUTMANAGERS_BUILT=			\
+	get_layoutmanager.inc.C			\
+	get_layoutmanager.inc.H			\
+	includes/x/w/get_layoutmanagers.inc.H 	\
+	includes/x/w/get_layoutmanagersfwd.inc.H
+
+$(GET_LAYOUTMANAGERS_BUILT): get_layoutmanagers.stamp.inc.H
+	touch $@
+BUILT_SOURCES += $(GET_LAYOUTMANAGERS_BUILT)
+
+get_layoutmanagers.stamp.inc.H: get_layoutmanagers_h.xsl uicompiler.xml
+	$(MKDIR_P) includes/x/w
+	$(XSLTPROC) $(srcdir)/get_layoutmanagers_h.xsl $(srcdir)/uicompiler.xml
+	touch get_layoutmanagers.stamp.inc.H
+
 clean-local:
-	rm -rf uicompiler.stamp.inc.H uicompiler.inc.H
+	rm -rf uicompiler.stamp.inc.H uicompiler.inc.H get_layoutmanagers.stamp.inc.H
 
 genconstants_SOURCES=genconstants.C
 
@@ -1468,7 +1483,7 @@ DOCS_SRC = $(shell find includes -name '*.H' -print)
 $(foreach f,$(patsubst html/%,%,$(ALL_DOCS)),$(eval $(call install_docimage,$(f))))
 
 html/index.html: html/ref/index.html $(wildcard docbook/*.xml docbook/xmllinks*.xsl) appearance/appearance_list.xml
-	mkdir -p docbook
+	$(MKDIR_P) docbook
 	echo '<tags>' >docbook/entities.tmp
 	$(XSLTPROC) --stringparam 'path' '/ref' $(srcdir)/docbook/xmllinks-extract.xsl ../libcxx/xml/index.xml >>docbook/entities.tmp
 	$(XSLTPROC) --stringparam 'path' 'ref' $(srcdir)/docbook/xmllinks-extract.xsl xml/index.xml >>docbook/entities.tmp
@@ -1477,7 +1492,7 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml docbook/xmllinks*.
 	$(XSLTPROC) $(srcdir)/docbook/xmllinks-generate.xsl docbook/entities.tmp2 >docbook/entities
 	rm -f docbook/entities.tmp docbook/entities.tmp2
 	rm -rf html.tmp
-	mkdir -p html.tmp
+	$(MKDIR_P) html.tmp
 	$(XSLTPROC) --nonet -o html.tmp/ --xinclude \
 		--stringparam use.id.as.filename 1 \
 		--stringparam html.stylesheet book.css \
@@ -1508,7 +1523,7 @@ man.stamp: docbook/cxxwtheme.xml docbook/cxxwcreator.xml
 
 html/ref/index.html: $(DOCS_SRC) Doxyfile
 	rm -rf html/ref
-	mkdir -p html/ref
+	$(MKDIR_P) html/ref
 	doxygen; c=$$?;	perl -p -i -e 's/INSERT_LIBX_NAMESPACE/x/g' html/ref/*.html; exit $$c
 endif
 
@@ -1599,7 +1614,7 @@ test:
 dist: $(BUILT_SOURCES)
 
 rpm: dist
-	mkdir -p rpm
+	$(MKDIR_P) rpm
 	rm -rf rpm/SRPMS/*
 	rm -rf rpm/RPMS/*
 	rm -rf rpm/BUILD/*

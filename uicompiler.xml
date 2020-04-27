@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2017-2019 Double Precision, Inc.
+Copyright 2017-2020 Double Precision, Inc.
 See COPYING for distribution information.
 
 XML-based definition of a template-driven object initialization,
@@ -11,6 +11,9 @@ Transformed by the "parseuicompiler.xsl" stylesheet.
 The top level element is <api>.
 
 <api> contains a list of <parser>s.
+
+A <parser> for a layoutmanager has a "layoutmanager=1" attribute, this is
+used by get_layoutmanagers.xsl
 
 Each <parser>'s <name> robo-generates a
 
@@ -119,7 +122,7 @@ List of values:
 -->
 
 <api xmlns:xi="http://www.w3.org/2003/XInclude">
-  <parser>
+  <parser layoutmanager="1">
     <name>gridlayout</name>
 
     <parameter>
@@ -1764,7 +1767,7 @@ List of values:
 
   <!-- book layout manager parser -->
 
-  <parser>
+  <parser layoutmanager="1">
     <name>booklayout</name>
 
     <parameter>
@@ -1849,7 +1852,7 @@ List of values:
 
   <!-- border layout manager parser -->
 
-  <parser>
+  <parser layoutmanager="1">
     <name>borderlayout</name>
 
     <parameter>
@@ -2062,7 +2065,7 @@ List of values:
 
   <!-- list layout manager -->
 
-  <parser>
+  <parser layoutmanager="1">
     <name>listlayout</name>
 
     <parameter>
@@ -2200,7 +2203,7 @@ List of values:
 
   <!-- standard combobox layout manager -->
 
-  <parser>
+  <parser layoutmanager="1">
     <name>standard_comboboxlayout</name>
 
     <parameter>
@@ -2218,7 +2221,7 @@ List of values:
 
   <!-- editable combobox layout manager -->
 
-  <parser>
+  <parser layoutmanager="1">
     <name>editable_comboboxlayout</name>
 
     <parameter>
@@ -2236,7 +2239,7 @@ List of values:
 
   <!-- table layout manager -->
 
-  <parser>
+  <parser layoutmanager="1">
     <name>tablelayout</name>
 
     <parameter>
@@ -2277,7 +2280,7 @@ List of values:
 
   <!-- panelayoutmanager initialization -->
 
-  <parser>
+  <parser layoutmanager="1">
     <name>panelayout</name>
 
     <parameter>
@@ -2450,7 +2453,7 @@ List of values:
 
   <!-- itemlayoutmanager initialization -->
 
-  <parser>
+  <parser layoutmanager="1">
     <name>itemlayout</name>
 
     <parameter>
@@ -2548,7 +2551,7 @@ List of values:
 
   <!-- pagelayoutmanager initialization -->
 
-  <parser>
+  <parser layoutmanager="1">
     <name>pagelayout</name>
 
     <parameter>
@@ -2635,7 +2638,7 @@ List of values:
 
   <!-- toolboxlayoutmanager initialization -->
 
-  <parser>
+  <parser layoutmanager="1">
     <name>toolboxlayout</name>
 
     <parameter>

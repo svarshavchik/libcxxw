@@ -11,6 +11,7 @@
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/child_element.H"
 #include "run_as.H"
+#include "get_layoutmanagers.inc.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -70,5 +71,7 @@ container factoryObj
 	created(c);
 	return c;
 }
+
+#include "get_layoutmanagers.inc.C"
 
 LIBCXXW_NAMESPACE_END
