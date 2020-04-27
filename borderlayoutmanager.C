@@ -114,7 +114,7 @@ void borderlayoutmanagerObj::update_title(const text_param &title)
 			 borderlayoutmanager blm=
 				 impl->create_public_object();
 
-			 blm->update_title(title);
+			 blm->update_title(IN_THREAD, title);
 		 });
 }
 
