@@ -267,6 +267,12 @@ class elementObj::implObj : public element_drawObj,
 
 		//! Whether the widget has been removed from its container.
 
+		//! This is set to true in removed_from_container(), which
+		//! gets scheduled to be called IN_THREAD from the public
+		//! object's destructor.
+		//!
+		//! It is not set anywhere else.
+
 		bool removed=false;
 
 		//! Whether this widget is "enabled".
@@ -475,14 +481,6 @@ class elementObj::implObj : public element_drawObj,
 	//! Runs removed_from_container() IN_THREAD.
 
 	void removed_from_container() LIBCXX_HIDDEN;
-
-	//! Set by removed_from_container(), which is only called in destructor.
-
-	//! removed_from_container() gets called from elementObj's
-	//! and containerObj's destructor. This flag gets checked,
-	//! removede_from_container() bails out if it is already set.
-
-	bool removed_from_container_was_called_in_destructor=false;
 
 	//! The container has removed this widget.
 

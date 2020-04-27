@@ -102,19 +102,17 @@ void elementObj::implObj::removed_from_container()
 
 void elementObj::implObj::removed_from_container(ONLY IN_THREAD)
 {
-	if (removed_from_container_was_called_in_destructor)
-		return;
-
-	removed_from_container_was_called_in_destructor=true;
-
-	// Who knows, maybe we haven't been initialized yet?
-
-	initialize_if_needed(IN_THREAD);
-
 	if (data(IN_THREAD).removed)
 		return;
 
 	data(IN_THREAD).removed=true;
+
+	// Who knows, maybe we haven't been initialized yet?
+
+	try {
+		initialize_if_needed(IN_THREAD);
+	} CATCH_EXCEPTIONS;
+
 	removed(IN_THREAD);
 	for_each_child(IN_THREAD,
 		       [&]

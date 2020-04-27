@@ -59,7 +59,7 @@ void containerObj::implObj::removed_from_container(ONLY IN_THREAD)
 	try {
 		auto &e=container_element_impl();
 
-		if (e.removed_from_container_was_called_in_destructor)
+		if (e.data(IN_THREAD).removed)
 			return; // Already did this.
 
 		e.elementObj::implObj
