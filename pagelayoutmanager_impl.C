@@ -175,28 +175,6 @@ void pagelayoutmanagerObj::implObj
 		// Take this opportunity to welcome the new elements.
 		impl->initialize_if_needed(IN_THREAD);
 
-		// If there is no current element, take the opportunity this
-		// loops presents to hide everything.
-		//
-		// Merely turning off visibility is insufficient. The
-		// display element still takes up space and its location
-		// which logically overlaps all others' is going to get
-		// cleared with the container's background color.
-		//
-		// So in addition to hiding it we must size it to 0 width
-		// and height.
-		//
-		// Sizing it to 0 width and height alone will not be
-		// sufficient either. If it contains focusable fields,
-		// they would still be logically visible, and tabbable.
-
-		if (!lock->current_element)
-		{
-			impl->request_visibility(IN_THREAD, false);
-			impl->update_current_position
-				(IN_THREAD, {0, 0, 0, 0});
-		}
-
 		auto hv=impl->get_horizvert(IN_THREAD);
 
 		mhoriz(hv->horiz);
@@ -215,35 +193,48 @@ void pagelayoutmanagerObj::implObj
 		my_metrics->set_element_metrics(IN_THREAD,
 						mhoriz, mvert);
 
-	if (!lock->current_element)
-		return;
 
-	// A current element is being shown. Go through all elements,
-	// and hide all except the one that's shown. And for the one
-	// that's shown, figure out how it should be positioned inside me.
-
-	size_t j=*lock->current_element;
+	// Go through all elements, and reset their position.
 
 	size_t i=0;
 
 	for (const auto &e:lock->elements)
 	{
-		if (i != j)
-		{
-			e.the_container->elementObj::impl
-				->request_visibility(IN_THREAD, false);
-			e.the_container->elementObj::impl
-				->update_current_position
-				(IN_THREAD, {0, 0, 0, 0});
-			++i;
-			continue;
-		}
-
 		// The open bit for the element's size is this container's
 		// current size.
 
 		auto w=position.width;
 		auto h=position.height;
+
+		if (!lock->current_element ||
+		    *lock->current_element != i)
+		{
+			// This page is not visible. Set the shim container's
+			// size to 0x0 pixels, effectively hiding everything
+			// on the page.
+			//
+			// Sizing it to 0 width and height alone will not be
+			// sufficient. If the page contains focusable fields
+			// they'll still be logically visible and tabbable,
+			// so we must do both, size the sim container to 0
+			// width and height, and mark it as invisible.
+			e.the_container->elementObj::impl
+				->request_visibility(IN_THREAD, false);
+			e.the_container->elementObj::impl
+				->update_current_position
+				(IN_THREAD, {0, 0, 0, 0});
+		}
+		else
+		{
+			// The the_container to be the size of the visible
+			// page, we will compute the page widget's actual
+			// size and position below.
+			e.the_container->elementObj::impl
+				->update_current_position
+				(IN_THREAD, {0, 0, w, h});
+			e.the_container->elementObj::impl
+				->request_visibility(IN_THREAD, true);
+		}
 
 		// If the element's minimum size is larger, increase
 		// the proposed element size. This should be
@@ -278,10 +269,10 @@ void pagelayoutmanagerObj::implObj
 					    e.horizontal_alignment,
 					    e.vertical_alignment);
 
-		e.the_container->elementObj::impl->update_current_position
-			(IN_THREAD, aligned);
-		e.the_container->elementObj::impl
-			->request_visibility(IN_THREAD, true);
+		// Position the page widget.
+
+		e.the_element->impl
+			->update_current_position(IN_THREAD, aligned);
 		++i;
 	}
 }

@@ -47,13 +47,16 @@ void listlayoutmanagerObj::implObj::child_metrics_updated(ONLY IN_THREAD)
 		->set_element_metrics(IN_THREAD, hv->horiz, hv->vert);
 }
 
+// Override singletonlayoutmanager's recalculate() that attempts to
+// compute the child element's size ...
 void listlayoutmanagerObj::implObj
-::process_updated_position(ONLY IN_THREAD,
-			   const rectangle &position)
+::recalculate(ONLY IN_THREAD, const element_impl &impl)
 {
 	// ... and then size the child element to match our size.
-	list_element_singleton->impl->update_current_position(IN_THREAD, {
-			0, 0, position.width, position.height});
+	impl->update_current_position(IN_THREAD, {
+			0, 0,
+			container_updated_position.width,
+			container_updated_position.height});
 }
 
 void listlayoutmanagerObj::implObj

@@ -83,6 +83,58 @@ pagefactoryObj &pagefactoryObj::valign(LIBCXXW_NAMESPACE::valign a)
 	return *this;
 }
 
+namespace {
+#if 0
+}
+#endif
+
+//! Override singletonlayoutmanager's recalculate()
+
+//! This is the singleton layout manager for the container shim that's the
+//! parent container for each page. The page layout manager uses this container
+//! to effect showing and hiding the pages, by setting the container's size
+//! to 0, and by managing the size and the position of each individual
+//! page element.
+//!
+//! Override recalculate(), and forward it to the parent page layout manager.
+//! The shim's recalculate() gets triggered when the page element's metrics
+//! change, and the page layout manager will factor this in.
+
+class dummy_singletonlayoutmanagerObj :
+	public singletonlayoutmanagerObj::implObj {
+
+	// Weakly capture the page layout manager, to avoid circular refs.
+
+	const weakptr<ptr<pagelayoutmanagerObj::implObj>> lm_impl;
+
+public:
+	//! Constructor
+	dummy_singletonlayoutmanagerObj(const container_impl &container_impl,
+					const element &initial_element,
+					const ref<pagelayoutmanagerObj::implObj>
+					&lm_impl)
+		: singletonlayoutmanagerObj::implObj{container_impl,
+						     initial_element,
+						     halign::fill,
+						     valign::fill},
+		  lm_impl{lm_impl}
+	{
+	}
+
+private:
+	void recalculate(ONLY IN_THREAD, const element_impl &) override
+	{
+		auto lm=lm_impl.getptr();
+		if (lm)
+			lm->recalculate(IN_THREAD);
+	}
+};
+
+#if 0
+{
+#endif
+}
+
 void pagefactoryObj::created(const element &e)
 {
 	implObj::info_t::lock lock{impl->info};
@@ -99,8 +151,8 @@ void pagefactoryObj::created(const element &e)
 
 	// Finish the job started in get_container_impl(), above.
 
-	auto lm_impl=ref<singletonlayoutmanagerObj::implObj>
-		::create(container_impl, e, halign::fill, valign::fill);
+	auto lm_impl=ref<dummy_singletonlayoutmanagerObj>
+		::create(container_impl, e, impl->lm->impl);
 	auto c=container::create(container_impl, lm_impl);
 
 	// Reset the factory's locked element properties after constructing

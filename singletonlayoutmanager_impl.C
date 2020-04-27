@@ -212,8 +212,8 @@ void singletonlayoutmanagerObj::implObj
 void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD,
 						     const element_impl &lei)
 {
-	// If our own width/height is 0, don't bother updating the element's
-	// position. This is used by the page layout manager to hide us.
+	// Do not update child element's position until ours' is.
+
 	if (container_updated_position.width == 0 ||
 	    container_updated_position.height == 0)
 		return;

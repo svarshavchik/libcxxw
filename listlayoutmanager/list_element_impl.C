@@ -889,6 +889,18 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 
 	tallest_row_height(IN_THREAD)={0, 0};
 
+	// If there are no rows to compute the tallest_row_height,
+	// use the default item label font, for this purpose.
+
+	if (n == 0)
+	{
+		tallest_row_height(IN_THREAD).with_padding=
+			dim_t::truncate
+			((tallest_row_height(IN_THREAD).without_padding=
+			  itemlabel_meta.getfont()
+			  ->fc(IN_THREAD)->height()) + v_padding_times_two);
+	}
+
 	for (size_t i=0; i<n; ++i, ++row)
 	{
 		row->y=y;

@@ -57,11 +57,11 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
 	void child_metrics_updated(ONLY IN_THREAD) override;
 
-	//! Implement process_updated_position().
+	//! Override recalculate()
 
 	//! textlist_element() is sized to match our dimensions.
-	void process_updated_position(ONLY IN_THREAD,
-				      const rectangle &position) override;
+	void recalculate(ONLY IN_THREAD,
+			 const element_impl &impl) override;
 
 	//! Implement theme_updated().
 
