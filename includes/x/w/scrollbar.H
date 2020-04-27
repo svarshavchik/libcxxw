@@ -108,6 +108,11 @@ enum class scrollbar_visibility {
 	automatic_reserved
 };
 
+//! scrollbar_visibility text strings
+
+//! Mostly for internal use.
+extern const char scrollbar_visibility_names[4][20];
+
 LIBCXXW_NAMESPACE_END
 
 #endif

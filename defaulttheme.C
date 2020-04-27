@@ -746,23 +746,18 @@ std::string lowercase_single_value(const ui::parser_lock &lock,
 	return s;
 }
 
+const char scrollbar_visibility_names[4][20]=
+	{"never", "always", "automatic", "automatic_reserved"};
+
 scrollbar_visibility to_scrollbar_visibility(const ui::parser_lock &lock,
 					     const char *element,
 					     const char *parent)
 {
 	auto s=lowercase_single_value(lock, ".", parent);
 
-	if (s == "never")
-		return scrollbar_visibility::never;
-
-	if (s == "always")
-		return scrollbar_visibility::always;
-
-	if (s == "automatic")
-		return scrollbar_visibility::automatic;
-
-	if (s == "automatic_reserved")
-		return scrollbar_visibility::automatic_reserved;
+	for (size_t i=0; i<4; i++)
+		if (s == scrollbar_visibility_names[i])
+			return static_cast<scrollbar_visibility>(i);
 
 	throw EXCEPTION(gettextmsg
 			(_("Scrollbar visibility \"%1%\" (%2%) cannot be "
