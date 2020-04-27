@@ -2526,7 +2526,7 @@ dim_t generic_windowObj::handlerObj::get_width() const
 
 dim_t generic_windowObj::handlerObj::get_height() const
 {
-	return mpobj<rectangle>::lock(current_position)->width;
+	return mpobj<rectangle>::lock(current_position)->height;
 }
 
 void generic_windowObj::handlerObj
