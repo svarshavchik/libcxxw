@@ -10,6 +10,7 @@
 LIBCXXW_NAMESPACE_START
 
 struct LIBCXX_PUBLIC uielements;
+struct named_element_factory;
 
 LIBCXXW_NAMESPACE_END
 

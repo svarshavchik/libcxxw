@@ -22,8 +22,10 @@
 #include "x/w/radio_group.H"
 #include "x/w/synchronized_axis.H"
 #include "x/w/copy_cut_paste_menu_items.H"
+#include "x/w/focusable.H"
 #include "screen.H"
 #include "defaulttheme.H"
+#include "uicompiler.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -128,145 +130,155 @@ synchronized_axis uielements
 
 /////////////////////////////////////////////////////////////////////////////
 
-void gridlayoutmanagerObj::generate(const std::string_view &name,
-				    const const_uigenerators &generators,
-				    uielements &elements)
-{
-	// TODO: C++20
-	auto iter=generators->gridlayoutmanager_generators.find({name.begin(),
-								 name.end()});
+namespace {
+#if 0
+}
+#endif
 
-	if (iter == generators->gridlayoutmanager_generators.end())
+//! Sentry object for layout managers and factories generate() methods.
+
+//! All generate()rs construct this in auto scope, passing to the
+//! template constructor: the forwarded uielements object, this,
+//! the container in uielements that contains the generator, and the
+//! forwarded name.
+//!
+//! The template function looks up the named generator and runs it.
+
+struct generate_sentry {
+	uielements &elements;
+
+	template<typename layout, typename container_type>
+	generate_sentry(uielements &elements,
+			layout *me,
+			const container_type &generators,
+			const std::string_view &name)
+		: generate_sentry(elements)
+	{
+		// TODO: C++20
+		auto iter=generators.find({name.begin(), name.end()});
+
+		if (iter == generators.end())
+			layout_not_found(name);
+
+		// Run the generator
+		auto ref_me=ref{me};
+
+		for (const auto &g:*iter->second)
+			g(ref_me, elements);
+
+		finish();
+	}
+
+	static void layout_not_found(const std::string_view &name)
+		__attribute__((noreturn))
 	{
 		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
 					   name));
 	}
 
-	auto me=ref{this};
+	// Delegated constructor
+	generate_sentry(uielements &elements) : elements{elements}
+	{
+		// Just in case there's some junk here.
+		elements.element_factories_to_generate.clear();
+	}
 
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	~generate_sentry()
+	{
+		// Clean up after ourselves
+		elements.element_factories_to_generate.clear();
+	}
+
+	void finish()
+	{
+		// Run any element factory generators we picked up along
+		// the way.
+		//
+		// generate_factory() stashed away the element factory
+		// in element_factories_to_generate. The main generator
+		// is done now, so we can run it.
+
+		const uielements *me=&elements;
+
+		for (const auto &g:elements.element_factories_to_generate)
+			for (const auto &f:*g.second)
+				f(me);
+	}
+};
+
+#if 0
+{
+#endif
+}
+
+void gridlayoutmanagerObj::generate(const std::string_view &name,
+				    const const_uigenerators &generators,
+				    uielements &elements)
+{
+	generate_sentry sentry{elements,
+			       this,
+			       generators->gridlayoutmanager_generators,
+			       name};
 }
 
 void booklayoutmanagerObj::generate(const std::string_view &name,
 				    const const_uigenerators &generators,
 				    uielements &elements)
 {
-	// TODO: C++20
-	auto iter=generators->booklayoutmanager_generators.find({name.begin(),
-								 name.end()});
-
-	if (iter == generators->booklayoutmanager_generators.end())
-	{
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-	}
-
-	auto me=ref{this};
-
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	generate_sentry sentry{elements,
+			       this,
+			       generators->booklayoutmanager_generators,
+			       name};
 }
 
 void listlayoutmanagerObj::generate(const std::string_view &name,
 				    const const_uigenerators &generators,
 				    uielements &elements)
 {
-	// TODO: C++20
-	auto iter=generators->listlayoutmanager_generators.find({name.begin(),
-								 name.end()});
-
-	if (iter == generators->listlayoutmanager_generators.end())
-	{
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-	}
-
-	auto me=ref{this};
-
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	generate_sentry sentry{elements,
+			       this,
+			       generators->listlayoutmanager_generators,
+			       name};
 }
 
 void panelayoutmanagerObj::generate(const std::string_view &name,
 				    const const_uigenerators &generators,
 				    uielements &elements)
 {
-	// TODO: C++20
-	auto iter=generators->panelayoutmanager_generators.find({name.begin(),
-								 name.end()});
-
-	if (iter == generators->panelayoutmanager_generators.end())
-	{
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-	}
-
-	auto me=ref{this};
-
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	generate_sentry sentry{elements,
+			       this,
+			       generators->panelayoutmanager_generators,
+			       name};
 }
 
 void itemlayoutmanagerObj::generate(const std::string_view &name,
 				    const const_uigenerators &generators,
 				    uielements &elements)
 {
-	// TODO: C++20
-	auto iter=generators->itemlayoutmanager_generators.find({name.begin(),
-								 name.end()});
-
-	if (iter == generators->itemlayoutmanager_generators.end())
-	{
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-	}
-
-	auto me=ref{this};
-
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	generate_sentry sentry{elements,
+			       this,
+			       generators->itemlayoutmanager_generators,
+			       name};
 }
 
 void pagelayoutmanagerObj::generate(const std::string_view &name,
 				    const const_uigenerators &generators,
 				    uielements &elements)
 {
-	// TODO: C++20
-	auto iter=generators->pagelayoutmanager_generators.find({name.begin(),
-								 name.end()});
-
-	if (iter == generators->pagelayoutmanager_generators.end())
-	{
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-	}
-
-	auto me=ref{this};
-
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	generate_sentry sentry{elements,
+			       this,
+			       generators->pagelayoutmanager_generators,
+			       name};
 }
 
 void toolboxlayoutmanagerObj::generate(const std::string_view &name,
 				       const const_uigenerators &generators,
 				       uielements &elements)
 {
-	// TODO: C++20
-	auto iter=generators->toolboxlayoutmanager_generators
-		.find({name.begin(),
-		       name.end()});
-
-	if (iter == generators->toolboxlayoutmanager_generators.end())
-	{
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-	}
-
-	auto me=ref{this};
-
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	generate_sentry sentry{elements,
+			       this,
+			       generators->toolboxlayoutmanager_generators,
+			       name};
 }
 
 void standard_comboboxlayoutmanagerObj
@@ -274,21 +286,11 @@ void standard_comboboxlayoutmanagerObj
 	   const const_uigenerators &generators,
 	   uielements &elements)
 {
-	// TODO: C++20
-	auto iter=generators->standard_comboboxlayoutmanager_generators
-		.find({name.begin(),
-		       name.end()});
-
-	if (iter == generators->standard_comboboxlayoutmanager_generators.end())
-	{
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-	}
-
-	auto me=ref{this};
-
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	generate_sentry sentry
+		{elements,
+		 this,
+		 generators->standard_comboboxlayoutmanager_generators,
+		 name};
 }
 
 void editable_comboboxlayoutmanagerObj
@@ -296,61 +298,157 @@ void editable_comboboxlayoutmanagerObj
 	   const const_uigenerators &generators,
 	   uielements &elements)
 {
-	// TODO: C++20
-	auto iter=generators->editable_comboboxlayoutmanager_generators
-		.find({name.begin(),
-		       name.end()});
-
-	if (iter == generators->editable_comboboxlayoutmanager_generators.end())
-	{
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-	}
-
-	auto me=ref{this};
-
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	generate_sentry sentry
+		{elements,
+		 this,
+		 generators->editable_comboboxlayoutmanager_generators,
+		 name};
 }
 
 void menubarlayoutmanagerObj::generate(const std::string_view &name,
 				       const const_uigenerators &generators,
 				       uielements &elements)
 {
-	// TODO: C++20
-	auto iter=generators->menubarlayoutmanager_generators
-		.find({name.begin(), name.end()});
-
-	if (iter == generators->menubarlayoutmanager_generators.end())
-	{
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
-	}
-
-	auto me=ref{this};
-
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	generate_sentry sentry{elements,
+			       this,
+			       generators->menubarlayoutmanager_generators,
+			       name};
 }
 
 void borderlayoutmanagerObj::generate(const std::string_view &name,
 				    const const_uigenerators &generators,
 				    uielements &elements)
 {
-	// TODO: C++20
-	auto iter=generators->borderlayoutmanager_generators.find({name.begin(),
-								   name.end()});
+	generate_sentry sentry{elements,
+			       this,
+			       generators->borderlayoutmanager_generators,
+			       name};
+}
 
-	if (iter == generators->borderlayoutmanager_generators.end())
+void uielements::generate_factory(const named_element_factory &name_and_factory)
+{
+	element_factories_to_generate
+		.insert_or_assign(name_and_factory.name,
+				  name_and_factory.generator);
+}
+
+void uielements::generate(const std::string_view &name,
+			  const const_uigenerators &generators)
+{
+	// TODO: C++20
+	auto iter=generators->elements_generators.find({name.begin(),
+							name.end()});
+
+	if (iter == generators->elements_generators.end())
 	{
-		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
-					   name));
+		throw EXCEPTION(gettextmsg
+				(_("Elements factory %1% not defined."),
+				 name));
 	}
 
-	auto me=ref{this};
+	auto me=this;
 
-	for (const auto &g:*iter->second)
-		g(me, elements);
+	for (const auto &g: *iter->second)
+		g(me);
+}
+
+static focusable get_focusable(const uielements &uie,
+			       const std::string &name)
+{
+	auto e=uie.get_element(name);
+
+	if (!e->isa<focusable>())
+	{
+		throw EXCEPTION(gettextmsg
+				(_("Element %1% is not a focusable widget"),
+				 name));
+	}
+
+	return e;
+}
+
+static std::vector<focusable> get_focusables(const uielements &uie,
+					     const std::vector<std::string>
+					     &names)
+{
+	std::vector<focusable> focusables;
+
+	focusables.reserve(names.size());
+
+	for (const auto &name:names)
+		focusables.emplace_back(get_focusable(uie, name));
+
+	return focusables;
+}
+
+void uielements::get_focus_first(const std::string &focusable_value) const
+{
+	get_focusable(*this, focusable_value)->get_focus_first();
+}
+
+void uielements::get_focus_before(const std::string &focusable_value,
+				  const std::string &before_focusable_value)
+	const
+{
+	get_focusable(*this, focusable_value)
+		->get_focus_before(get_focusable(*this,
+						 before_focusable_value));
+}
+
+void uielements::get_focus_after(const std::string &focusable_value,
+				 const std::string &after_focusable_value) const
+{
+	get_focusable(*this, focusable_value)
+		->get_focus_after(get_focusable(*this,
+						after_focusable_value));
+}
+
+void uielements::get_focus_before_me(const std::string &focusable_value,
+				     const std::vector<std::string>
+				     &other_focusables_value)
+	const
+{
+	get_focusable(*this, focusable_value)
+		->get_focus_before_me(get_focusables(*this,
+						     other_focusables_value));
+}
+
+void uielements::get_focus_after_me(const std::string &focusable_value,
+				    const std::vector<std::string>
+				    &other_focusables_value)
+	const
+{
+	get_focusable(*this, focusable_value)
+		->get_focus_after_me(get_focusables(*this,
+						    other_focusables_value));
+}
+
+void uielements::request_focus(const std::string &focusable_value,
+			       bool now_or_never)
+	const
+{
+	get_focusable(*this, focusable_value)->request_focus(now_or_never);
+}
+
+
+void uielements::show_all(const std::string &element_value) const
+{
+	get_element(element_value)->show_all();
+}
+
+void uielements::hide_all(const std::string &element_value) const
+{
+	get_element(element_value)->hide_all();
+}
+
+void uielements::show(const std::string &element_value) const
+{
+	get_element(element_value)->show();
+}
+
+void uielements::hide(const std::string &element_value) const
+{
+	get_element(element_value)->hide();
 }
 
 LIBCXXW_NAMESPACE_END

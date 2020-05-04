@@ -295,6 +295,11 @@ public:
 
 	vector<new_borderlayoutmanager_generator
 	       > new_borderlayout_parseconfig(const ui::parser_lock &lock);
+
+	//! Parser for uielements-based generator
+	vector<elements_generator>
+	elements_parseconfig(const ui::parser_lock &lock);
+
 private:
 	//! Implement <element>
 
@@ -419,6 +424,12 @@ private:
 	//! Generate a single new_borderlayoutmanager instruction.
 	new_borderlayoutmanager_generator
 	new_borderlayout_parser(const ui::parser_lock &lock);
+
+	//! Generate a single uielements instruction.
+	elements_generator
+	elements_parser(const ui::parser_lock &lock);
+
+
 public:
 	//! Return compiled grid factory generators.
 
@@ -613,6 +624,17 @@ public:
 	lookup_toolboxfactory_generators(const ui::parser_lock &lock,
 				      const char *element,
 				      const char *parent);
+
+	//! Return compiled elements factory generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into elements_generators, and return them.
+
+	const_vector<elements_generator>
+	lookup_elements_generators(const ui::parser_lock &lock,
+				   const char *element,
+				   const char *parent);
 
 private:
 	//! Execute <append_row>.
@@ -1015,6 +1037,10 @@ private:
 						 const element &new_element,
 						 const contextpopup_t
 						 &popup_info);
+
+		static std::optional<named_element_factory>
+		get_optional_elements(uicompiler &compiler,
+				    const ui::parser_lock &lock);
 	};
 
 	std::tuple<text_param, label_config>

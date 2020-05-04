@@ -31,6 +31,14 @@ std::string single_value(const ui::parser_lock &lock,
 			 const char *element,
 			 const char *parent) LIBCXX_HIDDEN;
 
+//! Read multiple values
+
+//! When parsing XML-specified layouts,
+//! this reads collects zero or more elements into a vector.
+std::vector<std::string> multiple_values(const ui::parser_lock &lock,
+					 const char *element,
+					 const char *parent) LIBCXX_HIDDEN;
+
 //! Read an option value.
 
 //! When parsing XML-specified layouts,
@@ -54,6 +62,16 @@ std::string lowercase_single_value(const ui::parser_lock &lock,
 //! this checks whether the given xpath exists.
 bool single_value_exists(const ui::parser_lock &lock,
 			 const char *element) LIBCXX_HIDDEN;
+
+//! Read a single value.
+
+//! \overload
+inline bool single_value_exists(const ui::parser_lock &lock,
+				const char *element,
+				const char *parent)
+{
+	return single_value_exists(lock, element);
+}
 
 template<auto v>
 constexpr auto optional_constant(const ui::parser_lock &lock,

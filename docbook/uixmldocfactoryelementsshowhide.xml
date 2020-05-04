@@ -1,0 +1,40 @@
+<!--
+
+Copyright 2020 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="uixmlfactoryelementsshowhide">
+  <title>
+    <tag class='element'>show</tag>,
+    <tag class='element'>hide</tag>,
+    <tag class='element'>show_all</tag>, and
+    <tag class='element'>hide_all</tag>
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<factory id="initialize-focus" type="elements">
+  <show_all>
+    <name>new-page</name>
+  </show_all>
+</factory>]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    These elements reference widgets by name.
+    <tag class='element'>name</tag> references any
+    <methodname>generate</methodname>()-ed widget, by name; and this
+    invokes the widget's corresponding method.
+  </para>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

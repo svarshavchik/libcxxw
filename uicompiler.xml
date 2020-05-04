@@ -3716,4 +3716,151 @@ List of values:
       </parameter>
     </function>
   </parser>
+
+  <!-- Parser for uielements -->
+
+  <parser>
+    <name>elements</name>
+    <parameter>
+      <type>uielements * const</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>get_focus_first</name>
+      <invoke>get_focus_first</invoke>
+      <object>elements</object>
+
+      <parameter>
+	<name>focusable</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>get_focus_before</name>
+      <invoke>get_focus_before</invoke>
+      <object>elements</object>
+
+      <parameter>
+	<name>focusable</name>
+	<type>single_value</type>
+      </parameter>
+
+      <parameter>
+	<name>before_focusable</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>get_focus_after</name>
+      <invoke>get_focus_after</invoke>
+      <object>elements</object>
+
+      <parameter>
+	<name>focusable</name>
+	<type>single_value</type>
+      </parameter>
+
+      <parameter>
+	<name>after_focusable</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>get_focus_before_me</name>
+      <invoke>get_focus_before_me</invoke>
+      <object>elements</object>
+
+      <parameter>
+	<name>focusable</name>
+	<type>single_value</type>
+      </parameter>
+
+      <parameter>
+	<name>other_focusables</name>
+	<type>multiple_values</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>get_focus_after_me</name>
+      <invoke>get_focus_after_me</invoke>
+      <object>elements</object>
+
+      <parameter>
+	<name>focusable</name>
+	<type>single_value</type>
+      </parameter>
+
+      <parameter>
+	<name>other_focusables</name>
+	<type>multiple_values</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>request_focus</name>
+      <invoke>request_focus</invoke>
+      <object>elements</object>
+
+      <parameter>
+	<name>focusable</name>
+	<type>single_value</type>
+      </parameter>
+
+      <parameter>
+	<name>now_or_never</name>
+	<type>single_value_exists</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>show_all</name>
+      <invoke>show_all</invoke>
+      <object>elements</object>
+
+      <parameter>
+	<name>element</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>hide_all</name>
+      <invoke>hide_all</invoke>
+      <object>elements</object>
+
+      <parameter>
+	<name>element</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>show</name>
+      <invoke>show</invoke>
+      <object>elements</object>
+
+      <parameter>
+	<name>element</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>hide</name>
+      <invoke>hide</invoke>
+      <object>elements</object>
+
+      <parameter>
+	<name>element</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+  </parser>
+
 </api>

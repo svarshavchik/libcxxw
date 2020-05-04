@@ -74,7 +74,11 @@ public:
 
 	//! Request for keyboard focus to be moved to this widget.
 
-	//! No action takes place if this focusable is disabled.
+	//! No action takes place if this focusable is currently disabled, and
+	//! the focus move gets delayed until the widget becomes enabled.
+	//! A subsequent explicit or implicit focus change will supercede
+	//! the delayed action. An optional true parameter forces the focus
+	//! change to occur immediately, if ever, and not delay it otherwise.
 	void request_focus(bool now_or_never=false);
 
 	//! This focusable should be tabbed to before the other one.

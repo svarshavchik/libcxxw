@@ -294,6 +294,13 @@ typedef functionref<void (const new_borderlayoutmanager_plainptr &layout,
 			  uielements &elements)
 		    > new_borderlayoutmanager_generator;
 
+
+
+//! Generate something using already-generated elements
+
+//! \see uigenerators
+typedef functionref<void (const uielements * const &)> elements_generator;
+
 class LIBCXX_PUBLIC uigeneratorsObj;
 class LIBCXX_PUBLIC uigeneratorsBase;
 

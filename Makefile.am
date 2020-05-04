@@ -909,6 +909,7 @@ libcxxw_la_SOURCES=\
 	uicompiler_borderlayout.C		    \
 	uicompiler_bookpagefactory.C		    \
 	uicompiler_editable_comboboxlayout.C	    \
+	uicompiler_elements.C			    \
 	uicompiler_gridfactory.C		    \
 	uicompiler_gridlayout.C			    \
 	uicompiler_itemlayout.C			    \

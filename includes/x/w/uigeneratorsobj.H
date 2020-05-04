@@ -189,6 +189,14 @@ public:
 			   functionref<void (THREAD_CALLBACK,
 					     const tooltip_factory &)>
 			   > tooltip_generators;
+
+	//! Generic elements generators
+
+	std::unordered_map<std::string,
+			   const_vector<elements_generator>
+			   > elements_generators;
+
+
 };
 
 LIBCXXW_NAMESPACE_END

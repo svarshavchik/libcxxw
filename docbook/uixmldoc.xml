@@ -485,6 +485,136 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
       with references to colors and fonts defined in the theme file or the
       default display theme.
     </para>
+
+    <section id="uixmlwidgetsgenerate">
+      <title>Steps for creating generic widgets from a theme file</title>
+
+      <variablelist>
+	<varlistentry>
+	  <term>Create a generator and an element container</term>
+
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting>
+&ns;:w::const_uigenerators generator=
+    &ns;::w::const_uigenerators::create("themefile.xml");
+
+&ns;::w::uielements widgets;</programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      The first step is the same as when
+	      <link linkend="uixmlgenerate">using named callbacks</link>.
+	      A <ulink url="&link-typedef-x--w-uigenerators;"><classname>&ns;::w::const_uigenerators</classname></ulink>
+	      object gets created, which loads the theme file and compiles it.
+	      An <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
+	      object gets constructed, which receives the new widgets.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>Call a layout manager's or a factory's <methodname>generate</methodname>()</term>
+
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting>
+&ns;::w::gridlayoutmanager lm=container->gridlayout();
+
+lm->generate("bottom-part", generator, widgets);</programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      A &layoutmanager;'s or a &factory;'s
+	      <methodname>generate</methodname>() processes a
+	      <tag class='element'>layout</tag> or a
+	      <tag class='element'>factory</tag> with a matching
+	      <tag class='attribute'>id</tag> and type.
+	      The above example will process the following
+	      <acronym>XML</acronym> from the theme file:
+	    </para>
+
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+<layout id="bottom-part" type="grid">
+
+<!-- ... -->
+</layout>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      The first step is the same as when
+	      <link linkend="uixmlgenerate">using named callbacks</link>.
+	      A <ulink url="&link-typedef-x--w-uigenerators;"><classname>&ns;::w::const_uigenerators</classname></ulink>
+	      object gets created, which loads the theme file and compiles it.
+	      An <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
+	      object gets constructed, which receives the new widgets.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>Fetch the created widgets</term>
+
+	  <listitem>
+	    <blockquote>
+	      <informalexample>
+		<programlisting>
+&ns;::w::button ok_button=widgets.get_element("ok-button");
+		</programlisting>
+	      </informalexample>
+	    </blockquote>
+	    <para>
+	      <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
+	      <methodname>get_element</methodname>() returns a created
+	      widget. The above example returns the widget created by
+	      the following
+	      <acronym>XML</acronym> in the theme file
+	    </para>
+
+	    <blockquote>
+	      <informalexample>
+		<programlisting><![CDATA[
+    <element id="ok-button">
+      <button>
+	<element>
+	  <label type="theme_text">Ok</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut>Enter</shortcut>
+    </element>]]></programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      Other useful
+	      <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
+	      methods include
+	      <methodname>get_layoutmanager</methodname>(),
+	      and
+	      <methodname>get_listitemhandle</methodname>().
+	      All new objects created by processing the theme file are
+	      referenced by their names.
+	      <methodname>generate</methodname>() creates them and places
+	      them in the
+	      <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
+	      container. The container's method throw an exception if the
+	      referenced widget or other object with the given name does not
+	      exist.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
   </section>
 
   <section id="uixmldimcolorborders">
@@ -2037,8 +2167,8 @@ layout_manager->generate("dialog", generators, elements);
       <methodname>get_element</methodname>() retrieves the created widget
       with the specified <tag class="attribute">id</tag>.
       Duplicate <tag class="attribute">id</tag>s get ignored;
-      <methodname>get_element</methodname>() returns the first widget with
-      the specified <tag class="attribute">id</tag>.
+      <methodname>get_element</methodname>() returns the most recently-created
+      widget with the specified <tag class="attribute">id</tag>.
     </para>
 
     <para>
@@ -2050,6 +2180,128 @@ layout_manager->generate("dialog", generators, elements);
       <link linkend="uixmlelementcontext">creates a context popup menu
 	for the widget</link>.
     </para>
+  </section>
+
+  <section id="uixmlfactoryelements">
+    <title>
+      <tag class='attribute'>type</tag>=<quote>elements</quote>
+      <tag class='element'>factory</tag>s</title>
+
+    <para>
+      The contents of a
+      <tag class='element'>factory</tag>s of
+      <tag class='attribute'>type</tag>=<quote>elements</quote>
+      specify miscellaneous operations on widgets that were created by
+      other factories and layout managers that
+      <link linkend="uixmlwidgetgenerate">generated from a theme file</link>.
+    </para>
+
+    <section id="uixmlfactoryelementsmanual">
+      <title>Manual processing of an elements factory</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="elements" id="initialize-dialog">
+
+  <!-- ... -->
+
+  <request_focus>
+    <focusable>name</focusable>
+  </request_focus>
+
+  <!-- ... -->
+</factory>
+]]>
+
+&ns;::w::uielements widgets;
+
+widgets.generate("initialize-dialog", generators);
+</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	A <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
+	<methodname>generator</methodname>() processes the
+	<tag class='element'>factory</tag>
+	of <tag class='attribute'>type</tag>=<quote>elements</quote> and
+	the given <replaceable>id</replaceable>.
+	The <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
+	presumably holds widgets and other objects already created by other
+	<tag class='element'>layout</tag>s and
+	<tag class='element'>factory</tag>s, and
+	a
+	<tag class='element'>factory</tag> of
+	<tag class='attribute'>type</tag>=<quote>elements</quote>'s
+	typical use case is to invoke methods common to all widgets and other
+	objects.
+      </para>
+    </section>
+
+    <section id="uixmlfactoryelementsauto">
+      <title>Processing an elements factory after creating a new widget or container</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<factory type="elements" id="initialize-dialog">
+
+  <!-- ... -->
+
+  <request_focus>
+    <focusable>name</focusable>
+  </request_focus>
+
+  <!-- ... -->
+</factory>
+
+
+   <!-- somewhere else, in another factory: -->
+
+    <element id="name">
+      <input_field />
+        <config>
+	  <columns>30</columns>
+	</config>
+
+	<elements>initialize-dialog</elements>
+    </element>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	An <tag class='element'>element</tag> or a
+	<tag class='element'>container</tag> has an optional
+	<tag class='element'>elements</tag> that gives the
+	<tag class='attribute'>id</tag>
+	of a <tag class='element'>factory</tag> of
+	<tag class='attribute'>type</tag>=<quote>elements</quote>.
+	The <tag class='attribute'>type</tag>=<quote>elements</quote> factory
+	gets processed <emphasis>after</emphasis>
+	<link linkend="uixmlwidgetsgenerate"><methodname>generate</methodname>()
+	  the layout or factory</link> with the
+	<tag class='element'>element</tag>/<tag class='element'>container</tag>
+	that referenced the elements factory.
+      </para>
+
+      <para>
+	The <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>
+	contains the generated widgets, by name. And the elements factory
+	theme referenced the generated widgets by name. The elements factory
+	invokes common methods shared by all, or most, widgets, such as
+	setting the input focus, or showing or hiding them. This makes it
+	possible to use the theme file to create widgets and
+	<methodname>show</methodname>() them, automatically. Since the
+	element factory runs after all widgets get
+	<methodname>generate</methodname>(), referencing an element factory
+	that <methodname>show_all</methodname>()s the container its referenced
+	from results in creating all widgets in the container, and then showing
+	them.
+      </para>
+    </section>
+
+    &uixmlfactoryelementsshowhide;
+    &uixmlfactoryelementsfocus;
   </section>
 
   <section id="uixmlelementtooltip">

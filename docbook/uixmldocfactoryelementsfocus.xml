@@ -1,0 +1,77 @@
+<!--
+
+Copyright 2020 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="uixmlfactoryelementsfocus">
+  <title>
+    <tag class='element'>get_focus_first</tag>,
+    <tag class='element'>get_focus_before</tag>,
+    <tag class='element'>get_focus_after</tag>,
+    <tag class='element'>get_focus_before_me</tag>,
+    <tag class='element'>get_focus_after_me</tag>, and
+    <tag class='element'>request_focus</tag>
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<factory id="initialize-focus" type="elements">
+  <get_focus_after>
+    <focusable>name_input_field</focusable>
+    <after_focusable>name_radio_button_option</after_focusable>
+  </get_focus_after>
+
+  <request_focus>
+    <focusable>name_input_field</focusable>
+  </request_focus>
+</factory>]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    These elements reference focusable widgets by name.
+    <tag class='element'>get_focus_first</tag>,
+    <tag class='element'>get_focus_before</tag>,
+    <tag class='element'>get_focus_after</tag>,
+    <tag class='element'>get_focus_before_me</tag>,
+    <tag class='element'>get_focus_after_me</tag>, and
+    <tag class='element'>request_focus</tag>
+    require
+    <tag class='element'>focusable</tag> that specifies
+    a <link linkend="focusable">focusable widget</link> whose method of
+    the same name gets invoked.
+  </para>
+
+  <para>
+    <tag class='element'>request_focus</tag>'s optional
+    <tag class='emptytag'>now_or_never</tag> sets this method's optional
+    parameter.
+  </para>
+
+  <para>
+    <tag class='element'>get_focus_before</tag> and
+    <tag class='element'>get_focus_after</tag> also require
+    <tag class='element'>before_focusable</tag> or
+    <tag class='element'>after_focusable</tag>, respectively, that names
+    the other focusable widget.
+  </para>
+
+  <para>
+    <tag class='element'>get_focus_before_me</tag> and
+    <tag class='element'>get_focus_after_me</tag> require one or more
+    <tag class='element'>other_focusables</tag>.
+    Each <tag class='element'>other_focusables</tag> names one focusable
+    widget; this forms the corresponding method's
+    <classname>std::vector</classname> parameter.
+  </para>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

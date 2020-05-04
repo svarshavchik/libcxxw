@@ -109,14 +109,14 @@ indicates that nothing should happen if the focusable element cannot
 receive focus (it is disabled on not visible). By default, if the widget
 cannot received keyboard focus it's presumed this is because it's just
 been created, and all the moving pieces to make it visible and ready to
-receive input focus have not occured yet, and the keyboard focus change
-will occur as soon as the widget finishes initializing. Note that if the
-widget is explicitly disabled, this ends up building a mousetrap that gets
+receive input focus did not happen yet, and the keyboard focus change
+occurs as soon as the widget is visible and enabled. Note that this builds
+a mousetrap if the widget is explicitly not focusable. The mousetrap gets
 sprung when the widget gets enabled later (unless some other widget
 requests keyboard focus first, explicitly or implicitly).
 
 The IN_THREAD overloads can only be invoked in the connection thread.
-Additionally, the IN_THREAD overload returns an indication if the was was
+Additionally, the IN_THREAD overloads return an indication if the focus was
 successfully moved.
 
 \code

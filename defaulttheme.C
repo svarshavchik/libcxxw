@@ -715,6 +715,30 @@ std::string single_value(const ui::parser_lock &lock,
 	return v->get_text();
 }
 
+std::vector<std::string> multiple_values(const ui::parser_lock &lock,
+					 const char *element,
+					 const char *parent)
+{
+	std::vector<std::string> ret;
+
+	auto v=lock.clone();
+
+	auto xpath=v->get_xpath(element);
+
+	auto n=xpath->count();
+
+	ret.reserve(n);
+
+	for (auto i=n*0; ++i <= n; )
+	{
+		xpath->to_node(i);
+
+		ret.emplace_back(v->get_text());
+	}
+
+	return ret;
+}
+
 std::string optional_value(const ui::parser_lock &lock,
 			   const char *element,
 			   const char *parent)

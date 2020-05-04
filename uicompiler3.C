@@ -144,7 +144,7 @@ struct parse_gradient_values {
 					   "%1%, only an rgb color"),
 					 v));
 
-		gradient.emplace(n, std::get<rgb>(iter->second));
+		gradient.insert_or_assign(n, std::get<rgb>(iter->second));
 	}
 };
 
@@ -160,7 +160,7 @@ parse_color(const ui::parser_lock &lock,
 		 {[&]
 		  (const rgb &c)
 		  {
-			  parsed_colors.emplace(id, c);
+			  parsed_colors.insert_or_assign(id, c);
 			  return true;
 		  },
 		  [&]
@@ -193,7 +193,7 @@ parse_color(const ui::parser_lock &lock,
 							     " be an"
 							     " rgb color"));
 
-				  parsed_colors.emplace(id, iter->second);
+				  parsed_colors.insert_or_assign(id, iter->second);
 				  return true;
 			  }
 
@@ -211,7 +211,7 @@ parse_color(const ui::parser_lock &lock,
 					  sv=rgb::maximum;
 				  v.*(rgb_fields[i])=sv;
 			  }
-			  parsed_colors.emplace(id, v);
+			  parsed_colors.insert_or_assign(id, v);
 			  return true;
 		  },
 		  [&]
@@ -234,7 +234,7 @@ parse_color(const ui::parser_lock &lock,
 
 			  valid_gradient(lg.gradient);
 
-			  parsed_colors.emplace(id, std::move(v));
+			  parsed_colors.insert_or_assign(id, std::move(v));
 			  return true;
 		  },
 		  [&]
@@ -256,7 +256,7 @@ parse_color(const ui::parser_lock &lock,
 
 			  valid_gradient(rg.gradient);
 
-			  parsed_colors.emplace(id, std::move(v));
+			  parsed_colors.insert_or_assign(id, std::move(v));
 			  return true;
 		  }}, parsed_color);
 }
@@ -772,7 +772,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 				if (parser.notfound)
 					continue;
 
-				generators->borders.emplace(id,
+				generators->borders.insert_or_assign(id,
 							    parser.new_border);
 
 			} catch (const exception &e)
@@ -811,7 +811,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 		   [&]
 		   (const std::string &id, const font &new_font)
 		   {
-			   generators->fonts.emplace(id, new_font);
+			   generators->fonts.insert_or_assign(id, new_font);
 		   },
 		   [&]
 		   (const std::string &from) -> std::optional<font>
@@ -842,7 +842,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			throw EXCEPTION(_("Missing <appearance> "
 					  "\"id\" element"));
 
-		uncompiled_appearances.emplace(id, lock->clone());
+		uncompiled_appearances.insert_or_assign(id, lock->clone());
 	}
 
 	// Compile the appearances
@@ -878,7 +878,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 
 		const auto &[text, config]=tooltip_info;
 
-		generators->tooltip_generators.emplace
+		generators->tooltip_generators.insert_or_assign
 			(id, create_label_tooltip(text, config));
 	}
 
@@ -900,7 +900,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			throw EXCEPTION(_("Missing <layout> or <factory>"
 					  " \"id\""));
 
-		uncompiled_elements.emplace(id, lock->clone());
+		uncompiled_elements.insert_or_assign(id, lock->clone());
 	}
 
 	// Keep compiling, one at a time, until all done.
@@ -922,7 +922,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=gridlayout_parseconfig(lock);
 				generators->gridlayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -930,7 +930,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=menubarlayout_parseconfig(lock);
 				generators->menubarlayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -938,7 +938,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=listlayout_parseconfig(lock);
 				generators->listlayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -947,7 +947,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 				auto ret=standard_comboboxlayout_parseconfig
 					(lock);
 				generators->standard_comboboxlayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -956,7 +956,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 				auto ret=editable_comboboxlayout_parseconfig
 					(lock);
 				generators->editable_comboboxlayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -964,7 +964,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=booklayout_parseconfig(lock);
 				generators->booklayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -972,7 +972,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=tablelayout_parseconfig(lock);
 				generators->tablelayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -980,7 +980,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=panelayout_parseconfig(lock);
 				generators->panelayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -988,7 +988,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=itemlayout_parseconfig(lock);
 				generators->itemlayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -996,7 +996,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=pagelayout_parseconfig(lock);
 				generators->pagelayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -1004,7 +1004,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=toolboxlayout_parseconfig(lock);
 				generators->toolboxlayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -1012,7 +1012,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=borderlayout_parseconfig(lock);
 				generators->borderlayoutmanager_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 		}
@@ -1022,7 +1022,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=gridfactory_parseconfig(lock);
 				generators->gridfactory_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -1030,7 +1030,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=menubarfactory_parseconfig(lock);
 				generators->menubarfactory_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -1038,7 +1038,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=bookpagefactory_parseconfig(lock);
 				generators->bookpagefactory_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -1046,7 +1046,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=pagefactory_parseconfig(lock);
 				generators->pagefactory_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -1054,7 +1054,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=panefactory_parseconfig(lock);
 				generators->panefactory_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
 				continue;
 			}
 
@@ -1062,7 +1062,16 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 			{
 				auto ret=toolboxfactory_parseconfig(lock);
 				generators->toolboxfactory_generators
-					.emplace(id, ret);
+					.insert_or_assign(id, ret);
+				continue;
+			}
+
+			if (type == "elements")
+			{
+				auto ret=elements_parseconfig(lock);
+
+				generators->elements_generators
+					.insert_or_assign(id, ret);
 				continue;
 			}
 		}
@@ -1243,7 +1252,7 @@ uicompiler::lookup_gridlayoutmanager_generators(const ui::parser_lock &lock,
 
 	auto ret=gridlayout_parseconfig(new_lock);
 
-	generators->gridlayoutmanager_generators.emplace(name, ret);
+	generators->gridlayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1277,7 +1286,7 @@ uicompiler::lookup_listlayoutmanager_generators(const ui::parser_lock &lock,
 
 	auto ret=listlayout_parseconfig(new_lock);
 
-	generators->listlayoutmanager_generators.emplace(name, ret);
+	generators->listlayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1311,7 +1320,7 @@ uicompiler::lookup_standard_comboboxlayoutmanager_generators(const ui::parser_lo
 
 	auto ret=standard_comboboxlayout_parseconfig(new_lock);
 
-	generators->standard_comboboxlayoutmanager_generators.emplace(name, ret);
+	generators->standard_comboboxlayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1345,7 +1354,7 @@ uicompiler::lookup_editable_comboboxlayoutmanager_generators(const ui::parser_lo
 
 	auto ret=editable_comboboxlayout_parseconfig(new_lock);
 
-	generators->editable_comboboxlayoutmanager_generators.emplace(name, ret);
+	generators->editable_comboboxlayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1379,7 +1388,7 @@ uicompiler::lookup_tablelayoutmanager_generators(const ui::parser_lock &lock,
 
 	auto ret=tablelayout_parseconfig(new_lock);
 
-	generators->tablelayoutmanager_generators.emplace(name, ret);
+	generators->tablelayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1413,7 +1422,7 @@ uicompiler::lookup_panelayoutmanager_generators(const ui::parser_lock &lock,
 
 	auto ret=panelayout_parseconfig(new_lock);
 
-	generators->panelayoutmanager_generators.emplace(name, ret);
+	generators->panelayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1450,7 +1459,7 @@ uicompiler::lookup_panefactory_generators(const ui::parser_lock &lock,
 
 	auto ret=panefactory_parseconfig(new_lock);
 
-	generators->panefactory_generators.emplace(name, ret);
+	generators->panefactory_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1487,7 +1496,7 @@ uicompiler::lookup_toolboxfactory_generators(const ui::parser_lock &lock,
 
 	auto ret=toolboxfactory_parseconfig(new_lock);
 
-	generators->toolboxfactory_generators.emplace(name, ret);
+	generators->toolboxfactory_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1521,7 +1530,7 @@ uicompiler::lookup_itemlayoutmanager_generators(const ui::parser_lock &lock,
 
 	auto ret=itemlayout_parseconfig(new_lock);
 
-	generators->itemlayoutmanager_generators.emplace(name, ret);
+	generators->itemlayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1555,7 +1564,7 @@ uicompiler::lookup_pagelayoutmanager_generators(const ui::parser_lock &lock,
 
 	auto ret=pagelayout_parseconfig(new_lock);
 
-	generators->pagelayoutmanager_generators.emplace(name, ret);
+	generators->pagelayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1589,7 +1598,7 @@ uicompiler::lookup_toolboxlayoutmanager_generators(const ui::parser_lock &lock,
 
 	auto ret=toolboxlayout_parseconfig(new_lock);
 
-	generators->toolboxlayoutmanager_generators.emplace(name, ret);
+	generators->toolboxlayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1623,7 +1632,7 @@ uicompiler::lookup_booklayoutmanager_generators(const ui::parser_lock &lock,
 
 	auto ret=booklayout_parseconfig(new_lock);
 
-	generators->booklayoutmanager_generators.emplace(name, ret);
+	generators->booklayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1660,7 +1669,7 @@ uicompiler::lookup_gridfactory_generators(const ui::parser_lock &lock,
 
 	auto ret=gridfactory_parseconfig(new_lock);
 
-	generators->gridfactory_generators.emplace(name, ret);
+	generators->gridfactory_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1699,7 +1708,7 @@ uicompiler::lookup_menubarlayoutmanager_generators
 
 	auto ret=menubarlayout_parseconfig(new_lock);
 
-	generators->menubarlayoutmanager_generators.emplace(name, ret);
+	generators->menubarlayoutmanager_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1736,7 +1745,7 @@ uicompiler::lookup_menubarfactory_generators(const ui::parser_lock &lock,
 
 	auto ret=menubarfactory_parseconfig(new_lock);
 
-	generators->menubarfactory_generators.emplace(name, ret);
+	generators->menubarfactory_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1773,7 +1782,7 @@ uicompiler::lookup_pagefactory_generators(const ui::parser_lock &lock,
 
 	auto ret=pagefactory_parseconfig(new_lock);
 
-	generators->pagefactory_generators.emplace(name, ret);
+	generators->pagefactory_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1810,7 +1819,7 @@ uicompiler::lookup_bookpagefactory_generators(const ui::parser_lock &lock,
 
 	auto ret=bookpagefactory_parseconfig(new_lock);
 
-	generators->bookpagefactory_generators.emplace(name, ret);
+	generators->bookpagefactory_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -1844,7 +1853,44 @@ uicompiler::lookup_borderlayoutmanager_generators(const ui::parser_lock &lock,
 
 	auto ret=borderlayout_parseconfig(new_lock);
 
-	generators->borderlayoutmanager_generators.emplace(name, ret);
+	generators->borderlayoutmanager_generators.insert_or_assign(name, ret);
+
+	return ret;
+}
+
+const_vector<elements_generator>
+uicompiler::lookup_elements_generators(const ui::parser_lock &lock,
+				       const char *element,
+				       const char *parent)
+{
+	auto name=single_value(lock, element, parent);
+
+	{
+		auto iter=generators->elements_generators.find(name);
+
+		if (iter != generators->elements_generators.end())
+			return iter->second;
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "factory"
+	    || iter->second->get_any_attribute("type") != "pane")
+	{
+		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=elements_parseconfig(new_lock);
+
+	generators->elements_generators.insert_or_assign(name, ret);
 
 	return ret;
 }
@@ -2092,10 +2138,10 @@ void uicompiler::compile_uncompiled_appearance(const std::string &name)
 
 	uncompiled_appearances.erase(iter);
 
-	generators->loaded_appearances
-		.emplace(name,
-			 compile_appearance(lock,
-					    lock->get_any_attribute("type")));
+	generators->loaded_appearances.insert_or_assign
+		(name,
+		 compile_appearance(lock,
+				    lock->get_any_attribute("type")));
 }
 
 void uicompiler::menubarlayout_append_menus(const menubarlayoutmanager &layout,

@@ -240,7 +240,7 @@ static void process_new_items(const new_items_ret &ret,
 	auto b=params.labels->begin();
 
 	for (const auto &h:ret.handles)
-		elements.new_list_item_handles.emplace(*b++, h);
+		elements.new_list_item_handles.insert_or_assign(*b++, h);
 }
 
 listlayoutmanager_generator

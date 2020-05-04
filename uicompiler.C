@@ -94,6 +94,7 @@ void uicompiler::wrong_appearance_type(const std::string_view &name,
 //
 // - create_container(): takes a factory object, and an elements object;
 // creates a container and generates its contents.
+
 //
 // - generate - takes a container, calls get_layoutmanager(), and generates
 // its contents. It calls get_new_layoutmanager() from generators_base(), which
@@ -183,7 +184,7 @@ struct generators_base {
 	{
 		auto lm=new_container->get_layoutmanager();
 
-		elements.new_layoutmanagers.emplace(name, lm);
+		elements.new_layoutmanagers.insert_or_assign(name, lm);
 
 		if (!creator.empty())
 		{
@@ -1466,6 +1467,54 @@ scrollbar uicompiler::create_scrollbar(uicompiler::scrollbar_type type,
 		: f->create_vertical_scrollbar(config, a);
 }
 
+std::optional<named_element_factory>
+uicompiler::compiler_functions
+::get_optional_elements(uicompiler &compiler,
+			const ui::parser_lock &lock)
+{
+	auto clone=lock->clone();
+
+	auto xpath=clone->get_xpath("elements");
+	if (xpath->count() == 0)
+		return {};
+
+	xpath->to_node();
+
+	auto &generators=compiler.generators;
+	auto &uncompiled_elements=compiler.uncompiled_elements;
+
+	auto name=clone->get_text();
+
+	{
+		auto iter=generators->elements_generators.find(name);
+
+		if (iter != generators->elements_generators.end())
+			return {{name, iter->second}};
+	}
+
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != "factory"
+	    || iter->second->get_any_attribute("type") != "elements")
+	{
+		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
+					     "does not exist, or is a part of "
+					     "an infinitely-recursive layout"),
+					   name));
+	}
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=compiler.elements_parseconfig(new_lock);
+
+	generators->elements_generators.insert_or_assign(name, ret);
+
+	return {{name, ret}};
+}
+
 functionptr<void (THREAD_CALLBACK, const tooltip_factory &)>
 uicompiler::compiler_functions::get_optional_tooltip(uicompiler &compiler,
 						     const ui::parser_lock
@@ -1548,7 +1597,7 @@ void uicompiler::compiler_functions
 		 });
 
 	if (!id.empty())
-		elements.new_elements.emplace(id, menu);
+		elements.new_elements.insert_or_assign(id, menu);
 
 	auto ccp=elements.new_copy_cut_paste_menu_items;
 	elements.new_copy_cut_paste_menu_items=orig_ccp;
@@ -1645,7 +1694,7 @@ container uicompiler::create_container(const factory &f,
 					  .create_container(f, factories);
 			  }, v);
 
-	factories.new_elements.emplace(name, c);
+	factories.new_elements.insert_or_assign(name, c);
 
 	return c;
 }
@@ -1660,7 +1709,7 @@ static radio_group lookup_radio_group(uielements &elements,
 
 	auto g=radio_group::create();
 
-	elements.new_radio_groups.emplace(name, g);
+	elements.new_radio_groups.insert_or_assign(name, g);
 
 	return g;
 }
