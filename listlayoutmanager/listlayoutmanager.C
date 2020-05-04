@@ -436,9 +436,9 @@ void listlayoutmanagerObj
 }
 
 listlayoutmanagerptr
-listlayoutmanagerObj::get_item_layoutmanager(size_t i)
+listlayoutmanagerObj::submenu_listlayout(size_t i)
 {
-	return impl->list_element_singleton->impl->get_item_layoutmanager(i);
+	return impl->list_element_singleton->impl->submenu_listlayout(i);
 }
 
 LIBCXXW_NAMESPACE_END

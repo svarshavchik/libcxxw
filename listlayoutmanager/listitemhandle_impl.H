@@ -41,7 +41,7 @@ class listitemhandleObj::implObj : public listitemhandleObj {
 	void enabled(ONLY IN_THREAD, bool) override;
 
 	//! Return the menu item's layout manager.
-	listlayoutmanagerptr get_item_layoutmanager() const override;
+	listlayoutmanagerptr submenu_listlayout() const override;
 
 	//! Install a new status update callback.
 	void on_status_update(const list_item_status_change_callback &)

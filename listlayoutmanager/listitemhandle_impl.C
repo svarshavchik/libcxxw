@@ -109,7 +109,7 @@ void listitemhandleObj::implObj
 							  extra, cb);
 }
 
-listlayoutmanagerptr listitemhandleObj::implObj::get_item_layoutmanager() const
+listlayoutmanagerptr listitemhandleObj::implObj::submenu_listlayout() const
 {
 	listlayoutmanagerptr ptr;
 

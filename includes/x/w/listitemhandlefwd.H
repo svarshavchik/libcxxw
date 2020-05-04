@@ -60,7 +60,7 @@ handle->on_status_update(IN_THREAD,
 on_status_update() installs or replaces the list item's status callback.
 
 \code
-INSERT_LIBX_NAMESPACE::w::listlayoutmanagerptr l=handle->get_item_layoutmanager();
+INSERT_LIBX_NAMESPACE::w::listlayoutmanagerptr l=handle->submenu_listlayout();
 \endcode
 
 Return the sub-menu's layout manager, if this is a submenu entry in a menu,
@@ -71,7 +71,7 @@ the underlying
 list item gets removed from the list, or the list itself gets removed, this
 object automatically becomes an effective no-op, and attempts to update the
 now non-existent list item do nothing. enabled() always returns false.
-get_item_layoutmanager() returns a null ptr.
+submenu_listlayout() returns a null ptr.
 
 \note
 The new callback installed by on_status_update() gets immediately invoked

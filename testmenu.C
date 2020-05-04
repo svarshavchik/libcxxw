@@ -300,7 +300,7 @@ void add_recent(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
 
-	lock.get_menu(0)->listlayout()->get_item_layoutmanager(6)
+	lock.get_menu(0)->listlayout()->submenu_listlayout(6)
 		->append_items
 		({
 			[s](THREAD_CALLBACK, const auto &info)

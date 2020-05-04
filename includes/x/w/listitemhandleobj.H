@@ -35,7 +35,7 @@ public:
 	virtual void enabled(bool) LIBCXX_HIDDEN =0;
 
 	//! Return the menu item's layout manager.
-	virtual listlayoutmanagerptr get_item_layoutmanager()
+	virtual listlayoutmanagerptr submenu_listlayout()
 		const LIBCXX_HIDDEN =0;
 
 	//! Enable or disable this list item.

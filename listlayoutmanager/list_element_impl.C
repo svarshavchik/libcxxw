@@ -2362,8 +2362,7 @@ void list_elementObj::implObj::hover_action(ONLY IN_THREAD)
 	row.extra->show_submenu(IN_THREAD, lock, r);
 }
 
-listlayoutmanagerptr list_elementObj::implObj
-::get_item_layoutmanager(size_t i)
+listlayoutmanagerptr list_elementObj::implObj::submenu_listlayout(size_t i)
 {
 	listlayoutmanagerptr ptr;
 

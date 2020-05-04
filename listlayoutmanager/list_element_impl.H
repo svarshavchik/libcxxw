@@ -839,7 +839,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	void hover_action(ONLY IN_THREAD) override;
 
 	//! Return an existing menu item's submenu layoutmanager.
-	listlayoutmanagerptr get_item_layoutmanager(size_t i);
+	listlayoutmanagerptr submenu_listlayout(size_t i);
 };
 
 LIBCXXW_NAMESPACE_END

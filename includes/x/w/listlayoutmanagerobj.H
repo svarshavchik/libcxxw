@@ -224,7 +224,7 @@ public:
 					  &current_list_item_changed);
 
 	//! Return an existing menu item's submenu layoutmanager.
-	listlayoutmanagerptr get_item_layoutmanager(size_t i);
+	listlayoutmanagerptr submenu_listlayout(size_t i);
 
 	//! Append Copy/Cut/Paste menu items.
 
