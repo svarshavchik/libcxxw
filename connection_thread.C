@@ -162,7 +162,7 @@ batch_queue connection_threadObj::get_batch_queue()
 	return new_batch_queue;
 }
 
-bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
+bool connection_threadObj::process_pending_configure_events(ONLY IN_THREAD)
 {
 	bool processed_buffered_event=false;
 
@@ -204,13 +204,18 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 	// 3. Configure processing resizes all events. After we return from
 	//    here we're going to recalculate all the containers and move
 	//    everything that needs to be moved.
+
+	return processed_buffered_event;
+}
+
+bool connection_threadObj::process_pending_exposure_events(ONLY IN_THREAD)
+{
 	// 4. Finally everything's been recalculated and repositioned, and
 	//    we wind up back there, so we can look at the exposure events,
 	//    in Part II, and perform exposure processing, drawing everything
 	//    where it's been moved to.
 
-	if (processed_buffered_event)
-		return true;
+	bool processed_buffered_event=false;
 
 	for (const auto &window_handler:*window_handlers(IN_THREAD))
 	{

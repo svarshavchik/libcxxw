@@ -290,9 +290,16 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! Nothing to do.
 
 	//! Before redrawing anything check if we have received any
-	//! ConfigureNotify or Exposure events, and process them.
+	//! ConfigureNotify events, and process them.
 
-	bool process_buffered_events(ONLY IN_THREAD);
+	bool process_pending_configure_events(ONLY IN_THREAD);
+
+	//! Nothing to do.
+
+	//! Before redrawing anything check if we have received any
+	//! Exposure events, and process them.
+
+	bool process_pending_exposure_events(ONLY IN_THREAD);
 
 	//! Still nothing to do.
 

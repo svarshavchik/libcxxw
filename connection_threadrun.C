@@ -86,41 +86,6 @@ bool connection_threadObj
 			return flag;
 		}
 
-		if (recalculate_containers(IN_THREAD, poll_for))
-			continue;
-
-		if (process_element_position_updated(IN_THREAD,
-						     poll_for))
-			continue;
-
-		if (process_visibility_updated(IN_THREAD, poll_for))
-			continue;
-
-		// Process a message in the message queue. If processing a
-		// message resulted in container recalculation, element
-		// position update, or visibility update, that was an
-		// app request which must be processed before the next message,
-		// another app request, gets processed, so we go back to the top
-		// before processing the next message.
-
-		if (!msgqueue->empty())
-		{
-			CONNECTION_TRAFFIC_LOG("event", *this);
-			CONNECTION_THREAD_ACTION("event");
-			msgqueue.event();
-			continue;
-		}
-
-		// Search: are there any scheduled callbacks?
-
-		if (invoke_scheduled_callbacks(IN_THREAD, poll_for))
-			continue;
-
-		expire_incremental_updates(IN_THREAD, poll_for);
-
-		if (process_selection_and_focus_updates(IN_THREAD, poll_for))
-			continue;
-
 		// Check if the connection errored out, if not, check for
 		// a message.
 
@@ -158,7 +123,45 @@ bool connection_threadObj
 			}
 		}
 
-		if (process_buffered_events(IN_THREAD))
+		if (process_pending_configure_events(IN_THREAD))
+			continue;
+
+		if (recalculate_containers(IN_THREAD, poll_for))
+			continue;
+
+		if (process_element_position_updated(IN_THREAD,
+						     poll_for))
+			continue;
+
+		if (process_visibility_updated(IN_THREAD, poll_for))
+			continue;
+
+		// Process a message in the message queue. If processing a
+		// message resulted in container recalculation, element
+		// position update, or visibility update, that was an
+		// app request which must be processed before the next message,
+		// another app request, gets processed, so we go back to the top
+		// before processing the next message.
+
+		if (!msgqueue->empty())
+		{
+			CONNECTION_TRAFFIC_LOG("event", *this);
+			CONNECTION_THREAD_ACTION("event");
+			msgqueue.event();
+			continue;
+		}
+
+		// Search: are there any scheduled callbacks?
+
+		if (invoke_scheduled_callbacks(IN_THREAD, poll_for))
+			continue;
+
+		expire_incremental_updates(IN_THREAD, poll_for);
+
+		if (process_selection_and_focus_updates(IN_THREAD, poll_for))
+			continue;
+
+		if (process_pending_exposure_events(IN_THREAD))
 			continue;
 
 		if (redraw_elements(IN_THREAD, poll_for))
