@@ -17,15 +17,24 @@
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 #include "x/w/input_field.H"
+#include "x/w/editable_comboboxlayoutmanager.H"
+#include "x/w/image_button.H"
+#include "x/w/radio_group.H"
+#include "x/w/canvas.H"
+#include "x/w/dialog.H"
+#include "x/w/button.H"
 #include <x/mpobj.H>
 
 #include <string>
 #include <iostream>
 
+using namespace LIBCXX_NAMESPACE;
+using namespace LIBCXX_NAMESPACE::w;
+
 std::atomic<int> counter=0;
 
-x::mpcobj<int> installed_mcguffin_counter{0};
-x::mpcobj<int> uninstalled_mcguffin_counter{0};
+mpcobj<int> installed_mcguffin_counter{0};
+mpcobj<int> uninstalled_mcguffin_counter{0};
 
 #define TEST_UNFOCUS() ++counter;
 
@@ -46,26 +55,26 @@ x::mpcobj<int> uninstalled_mcguffin_counter{0};
 #include "focus/focusable_impl.C"
 #include "generic_window_handler.C"
 
-class close_flagObj : public LIBCXX_NAMESPACE::obj {
+class close_flagObj : public obj {
 
 public:
-	LIBCXX_NAMESPACE::mpcobj<bool> flag;
+	mpcobj<bool> flag;
 
 	close_flagObj() : flag{false} {}
 	~close_flagObj()=default;
 
 	void close()
 	{
-		LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{flag};
+		mpcobj<bool>::lock lock{flag};
 
 		*lock=true;
 		lock.notify_all();
 	}
 };
 
-typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
+typedef ref<close_flagObj> close_flag_ref;
 
-void initfields(const LIBCXX_NAMESPACE::w::gridlayoutmanager &layout)
+void initfields(const gridlayoutmanager &layout)
 {
 	for (int i=0; i<10; ++i)
 		layout->append_row()->create_input_field("");
@@ -73,11 +82,11 @@ void initfields(const LIBCXX_NAMESPACE::w::gridlayoutmanager &layout)
 
 void testunfocus()
 {
-	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
+	destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window
+	auto main_window=main_window
 		::create([]
 			 (const auto &main_window)
 			 {
@@ -103,7 +112,7 @@ void testunfocus()
 
 	main_window->show_all();
 
-	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
+	mpcobj<bool>::lock lock{close_flag->flag};
 
 	lock.wait_for(std::chrono::seconds(5), [&] { return *lock; });
 
@@ -119,15 +128,15 @@ void testunfocus()
 
 void testdelayed()
 {
-	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
+	destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window
+	auto main_window=main_window
 		::create([]
 			 (const auto &main_window)
 			 {
-				 LIBCXX_NAMESPACE::w::gridlayoutmanager glm=
+				 gridlayoutmanager glm=
 					 main_window->get_layoutmanager();
 
 				 glm->append_row()->create_input_field("");
@@ -149,12 +158,12 @@ void testdelayed()
 		 });
 	main_window->show_all();
 
-	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
+	mpcobj<bool>::lock lock{close_flag->flag};
 
 	lock.wait_for(std::chrono::seconds(5), [&] { return *lock; });
 
 	{
-		LIBCXX_NAMESPACE::w::gridlayoutmanager glm=
+		gridlayoutmanager glm=
 			main_window->get_layoutmanager();
 
 		glm->append_row()->create_input_field("")->request_focus();
@@ -162,7 +171,7 @@ void testdelayed()
 
 	std::cout << "Waiting for delayed focus request." << std::endl;
 	{
-		LIBCXX_NAMESPACE::mpcobj<int>::lock
+		mpcobj<int>::lock
 			lock{installed_mcguffin_counter};
 		lock.wait_for(std::chrono::seconds(3),
 			      [&]{ return *lock >= 1; });
@@ -170,7 +179,7 @@ void testdelayed()
 	std::cout << "Waiting for completed focus request." << std::endl;
 	main_window->show_all();
 	{
-		LIBCXX_NAMESPACE::mpcobj<int>::lock
+		mpcobj<int>::lock
 			lock{uninstalled_mcguffin_counter};
 		lock.wait_for(std::chrono::seconds(3),
 			      [&]{ return *lock >= 1; });
@@ -188,6 +197,172 @@ void testdelayed()
 				<< " instead of 1");
 }
 
+focusable_container create_input(const container &c,
+				 const close_flag_ref &cf)
+{
+	auto glm=c->gridlayout();
+
+	glm->remove();
+
+	auto ifld=glm->append_row()->create_focusable_container
+		([]
+		 (const auto &)
+		 {
+		 },
+		 new_editable_comboboxlayoutmanager{});
+
+	ifld->on_keyboard_focus([cf]
+				(ONLY IN_THREAD,
+				 focus_change fc,
+				 const auto &trigger)
+				{
+					if (fc == focus_change::gained)
+						cf->close();
+				});
+	return ifld;
+}
+
+void testautorestore()
+{
+	destroy_callback::base::guard guard;
+
+	auto close_flag=close_flag_ref::create();
+
+	containerptr radio_container;
+	image_buttonptr radio_button;
+	buttonptr big_button;
+
+	auto main_window=main_window::create
+		([&]
+		 (const auto &main_window)
+		 {
+			 auto glm=main_window->gridlayout();
+
+			 canvas_config conf;
+
+			 conf.width={30};
+			 conf.height={30};
+
+			 glm->append_row()->create_canvas(conf);
+		 });
+
+	guard(main_window->connection_mcguffin());
+
+	main_window->on_disconnect([]
+				   {
+					   exit(1);
+				   });
+
+	main_window->on_delete
+		([close_flag]
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
+		 {
+			 close_flag->close();
+		 });
+	main_window->show_all();
+
+	{
+		mpcobj<bool>::lock lock{close_flag->flag};
+
+		lock.wait_for(std::chrono::seconds(2), [&] { return *lock; });
+	}
+
+	create_dialog_args d_args
+		{"testunfocus_dialog@w.libcxx.com", true};
+
+	auto d=main_window->create_dialog
+		(d_args,
+		 [&]
+		 (const auto &d)
+		 {
+			 auto glm=d->dialog_window->gridlayout();
+
+			 x::w::focusable_containerptr ifld;
+
+			 radio_button=glm->append_row()->create_radio
+				 (radio_group::create(),
+				  [&]
+				  (const factory &f)
+				  {
+					  radio_container=f->create_container
+						  ([&]
+						   (const auto &c)
+						   {
+							   ifld=create_input
+								   (c,
+								    close_flag);
+						   },
+						   new_gridlayoutmanager{});
+
+				  });
+
+			 ifld->get_focus_after(radio_button);
+			 ifld->request_focus();
+			 big_button=glm->append_row()->create_button("Ok");
+		 });
+
+	d->dialog_window->on_state_update
+		([close_flag]
+		 (ONLY IN_THREAD,
+		  const element_state &st,
+		  const auto &busy)
+		 {
+			 if (st.state_update == st.after_hiding)
+				 close_flag->close();
+		 });
+
+	d->dialog_window->show_all();
+	{
+		mpcobj<bool>::lock lock{close_flag->flag};
+
+		lock.wait_for(std::chrono::seconds(10), [&] { return *lock; });
+
+		if (!*lock)
+			throw EXCEPTION("Keyboard focus not received");
+
+		*lock=false;
+
+		d->dialog_window->in_thread
+			([d]
+			 (ONLY IN_THREAD)
+			 {
+				 d->dialog_window->hide(IN_THREAD);
+			 });
+	}
+
+	{
+		mpcobj<bool>::lock lock{close_flag->flag};
+
+		lock.wait_for(std::chrono::seconds(10), [&] { return *lock; });
+
+		if (!*lock)
+			throw EXCEPTION("Window not hidden");
+		*lock=false;
+
+		radio_container->in_thread
+			([=]
+			 (ONLY IN_THREAD)
+			 {
+				 auto ifld=create_input(radio_container,
+							close_flag);
+
+				 ifld->get_focus_after(radio_button);
+				 ifld->request_focus();
+				 d->dialog_window->show_all(IN_THREAD);
+			 });
+	}
+
+	{
+		mpcobj<bool>::lock lock{close_flag->flag};
+
+		lock.wait_for(std::chrono::seconds(10), [&] { return *lock; });
+
+		if (!*lock)
+			throw EXCEPTION("Keyboard focus not received 2nd time");
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -199,9 +374,16 @@ int main(int argc, char **argv)
 				testdelayed();
 				return 0;
 			}
+
+			if (std::string{argv[1]} == "autorestore")
+			{
+				alarm(60);
+				testautorestore();
+				return 0;
+			}
 		}
 		testunfocus();
-	} catch (const LIBCXX_NAMESPACE::exception &e)
+	} catch (const exception &e)
 	{
 		e->caught();
 		exit(1);

@@ -34,6 +34,10 @@ struct cut_copy_paste {};
 
 struct user_mod {};
 
+//! Placeholder for a \ref callback_trigger_keyfocus_move "forced keyboard focus move".
+
+struct keyfocus_move{};
+
 //! \ref callback_trigger_t "callback_trigger_t" is not copyable.
 
 struct callback_trigger_is_not_copyable {
@@ -65,6 +69,7 @@ typedef std::variant<std::monostate,
 		     next_key,
 		     cut_copy_paste,
 		     user_mod,
+		     keyfocus_move,
 		     callback_trigger_is_not_copyable
 		     > callback_trigger_t;
 
@@ -140,6 +145,25 @@ constexpr size_t callback_trigger_cut_copy_paste=7;
 //! trigger is seen by the input field's on_change() callback.
 
 constexpr size_t callback_trigger_user_mod=8;
+
+//! \ref callback_trigger_t "callback_trigger_t" indicating a forced keyboard focu smove.
+
+//! std::variant index used in the following circumstances:
+//!
+//! - request_focus was explicitly invoked.
+//!
+//! - a widget that has the current keyboard focus becomes disabled, hidden,
+//! or it gets removed completely, and keyboard focus is forced to move to the
+//! next widget that can received keyboard focus
+//!
+//! - a widget that could not immediately receive keyboard focus because it
+//! hasn't been enabled yet is now enabled, and forces a delayed keyboard
+//! focus move.
+//!
+//! - the window is visible, and the keyboard focus is moved to the first
+//! widget with the autofocus flag.
+
+constexpr size_t callback_trigger_keyfocus_move=9;
 
 LIBCXXW_NAMESPACE_END
 

@@ -113,6 +113,10 @@ void focusableObj::implObj::focusable_deinitialize(ONLY IN_THREAD)
 	auto next_iter=ff.erase(focusable_fields_iter(IN_THREAD));
 	in_focusable_fields(IN_THREAD)=false;
 
+	// We should not've requested a delayed input focus move, but if
+	// we did let's rectify this right now.
+	delayed_input_focus_mcguffin(IN_THREAD)=delayed_input_focusptr{};
+
 	// If this field is not currently receiving input
 	// focus we're golden. Just removing it from
 	// focusable_fields is enough.
@@ -124,7 +128,7 @@ void focusableObj::implObj::focusable_deinitialize(ONLY IN_THREAD)
 		// will find another focusable field, and
 		// update keyboard_focus, or call remove_focus()
 		// and null it out.
-		next_focus(IN_THREAD, next_iter, {});
+		next_focus(IN_THREAD, next_iter, keyfocus_move{});
 }
 
 focusable_fields_t &focusableObj::implObj::focusable_fields(ONLY IN_THREAD)
@@ -202,6 +206,8 @@ void focusableObj::implObj::unfocus(ONLY IN_THREAD)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
+	delayed_input_focus_mcguffin(IN_THREAD)=delayed_input_focusptr{};
+
 	auto ptr_impl=focusable_implptr(this);
 
 	if (get_focusable_element().get_window_handler()
@@ -211,7 +217,7 @@ void focusableObj::implObj::unfocus(ONLY IN_THREAD)
 #ifdef TEST_UNFOCUS
 	TEST_UNFOCUS();
 #endif
-	next_focus(IN_THREAD, {});
+	next_focus(IN_THREAD, keyfocus_move{});
 }
 
 bool elementObj::implObj
@@ -572,6 +578,9 @@ void focusableObj::implObj::set_focus_only(ONLY IN_THREAD,
 
 bool generic_windowObj::handlerObj::process_focus_updates(ONLY IN_THREAD)
 {
+	// Find the most recent widget that requested keyboard focus but
+	// couldn't immediately receive it, and check if it is eligible now.
+
 	auto mcguffin=scheduled_input_focus(IN_THREAD).getptr();
 
 	if (mcguffin)
@@ -584,11 +593,15 @@ bool generic_windowObj::handlerObj::process_focus_updates(ONLY IN_THREAD)
 
 			if (impl.get_focusable_element().enabled(IN_THREAD))
 			{
-				// set_keyboard_focus_to will clear the
-				// mcguffin.
+				impl.delayed_input_focus_mcguffin(IN_THREAD)=
+					delayed_input_focusptr{};
 
-				impl.set_focus_and_ensure_visibility(IN_THREAD,
-								     {});
+				// set_keyboard_focus_to will not clear the
+				// delayed_input_focus_mcguffin for a
+				// keyfocus_move, so we did that ourselves.
+
+				impl.set_focus_and_ensure_visibility
+					(IN_THREAD, keyfocus_move{});
 				return true;
 			}
 		}
@@ -606,19 +619,33 @@ void focusableObj::implObj::request_focus_if_possible(ONLY IN_THREAD,
 		if (now_or_never)
 			return;
 
+		auto &wh=get_focusable_element().get_window_handler();
+
+		// If another widget previously requested keyboard focus
+		// too bad, we will want it now, so
+		// remove_delayed_keyboard_focus().
+		wh.remove_delayed_keyboard_focus(IN_THREAD);
+
 		auto mcguffin=delayed_input_focus::create(ref{this});
 
 		delayed_input_focus_mcguffin(IN_THREAD)=mcguffin;
 
-		get_focusable_element().get_window_handler()
-			.scheduled_input_focus(IN_THREAD)=mcguffin;
+		wh.scheduled_input_focus(IN_THREAD)=mcguffin;
+
 #ifdef TEST_INSTALLED_DELAYED_MCGUFFIN
 		TEST_INSTALLED_DELAYED_MCGUFFIN();
 #endif
 		return;
 	}
 
-	set_focus_and_ensure_visibility(IN_THREAD, {});
+	// set_keyboard_focus_to() will not remove_delayed_keyboard_focus()
+	// for a keyfocus_move, so we must do it here ourselves. We can
+	// receive keyboard focus, so if another widget asked for it, when
+	// we can, too bad, we are getting it instead because we could, first.
+	get_focusable_element().get_window_handler()
+		.remove_delayed_keyboard_focus(IN_THREAD);
+
+	set_focus_and_ensure_visibility(IN_THREAD, keyfocus_move{});
 }
 
 bool focusableObj::implObj::focus_autorestorable(ONLY IN_THREAD)

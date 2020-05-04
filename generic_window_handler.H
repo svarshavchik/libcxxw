@@ -1042,6 +1042,17 @@ public:
 	void set_keyboard_focus_to(ONLY IN_THREAD, const focusable_impl &f,
 				   const callback_trigger_t &trigger);
 
+	//! Cancel any delayed keyboard focus move
+
+	//! If a widget has a pending request to receive keyboard focus,
+	//! when it can, cancel the request.
+	//!
+	//! This could be because another widget can receive keyboard focus
+	//! first, so this one's request is moot; or another widget also
+	//! wants to receive keyboard focus when it can, so it is now the
+	//! most recent widget with a keyboard focus request.
+	void remove_delayed_keyboard_focus(ONLY IN_THREAD);
+
 	//! No element has keyboard focus any more.
 	void unset_keyboard_focus(ONLY IN_THREAD,
 				  const callback_trigger_t &trigger);

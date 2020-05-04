@@ -1604,6 +1604,7 @@ test:
 	LC_ALL=ru_RU.UTF-8 ./testpage --testfocus
 	./testwordwrappablelabel --testmetrics
 	./testunfocus
+	./testunfocus autorestore
 	./testtoolbox --norestore -w=4 --testmetrics
 	./testtoolbox --testmetrics
 	./testtoolbox --norestore --testthemescale

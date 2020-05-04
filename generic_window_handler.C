@@ -526,6 +526,31 @@ void generic_windowObj::handlerObj
 	visibility_info.do_not_redraw=true;
 
 	do_inherited_visibility_updated(IN_THREAD, visibility_info);
+
+	// Ok, so if we're now visible, find the first widget that can
+	// autofocus() and give it keyboard focus.
+
+	if (visibility_info.flag)
+	{
+		// But if there's a widget that requested a delayed keyboard
+		// focus, and we can give it to it, this will be good enough.
+
+		if (process_focus_updates(IN_THREAD))
+			return;
+
+		for (const auto &element:focusable_fields(IN_THREAD))
+		{
+			if (!element->focusable_enabled(IN_THREAD))
+				continue;
+
+			if (!element->autofocus.get())
+				continue;
+
+			element->set_focus_and_ensure_visibility
+				(IN_THREAD, keyfocus_move{});
+			break;
+		}
+	}
 }
 
 void generic_windowObj::handlerObj
@@ -636,20 +661,6 @@ void generic_windowObj::handlerObj
 	}
 
 	xcb_map_window(IN_THREAD->info->conn, id());
-
-	// Find the first element with autofocus(), and make it so.
-
-	for (const auto &element:focusable_fields(IN_THREAD))
-	{
-		if (!element->focusable_enabled(IN_THREAD))
-			continue;
-
-		if (!element->autofocus.get())
-			continue;
-
-		element->set_focus_and_ensure_visibility(IN_THREAD, {});
-		break;
-	}
 }
 
 void generic_windowObj::handlerObj
@@ -2034,20 +2045,8 @@ void generic_windowObj::handlerObj
 	// The fact that we're here must mean that it's getting the input
 	// focus, or someone else decided to get the input focus first.
 
-	auto mcguffin=scheduled_input_focus(IN_THREAD).getptr();
-
-	if (mcguffin)
-	{
-		auto f=mcguffin->me(IN_THREAD).getptr();
-
-		if (f)
-		{
-			f->delayed_input_focus_mcguffin(IN_THREAD)=nullptr;
-#ifdef TEST_UNINSTALL_DELAYED_MCGUFFIN
-			TEST_UNINSTALL_DELAYED_MCGUFFIN();
-#endif
-		}
-	}
+	if (trigger.index() != callback_trigger_keyfocus_move)
+		remove_delayed_keyboard_focus(IN_THREAD);
 
 	auto old_focus=most_recent_keyboard_focus(IN_THREAD);
 
@@ -2080,6 +2079,26 @@ void generic_windowObj::handlerObj
 				client->focus_state(IN_THREAD,
 						    e.uses_input_method());
 			});
+}
+
+void generic_windowObj::handlerObj
+::remove_delayed_keyboard_focus(ONLY IN_THREAD)
+{
+	auto mcguffin=scheduled_input_focus(IN_THREAD).getptr();
+
+	if (!mcguffin)
+		return;
+
+	auto f=mcguffin->me(IN_THREAD).getptr();
+
+	if (!f)
+		return;
+
+	f->delayed_input_focus_mcguffin(IN_THREAD)=nullptr;
+
+#ifdef TEST_UNINSTALL_DELAYED_MCGUFFIN
+	TEST_UNINSTALL_DELAYED_MCGUFFIN();
+#endif
 }
 
 void generic_windowObj::handlerObj
