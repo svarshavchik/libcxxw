@@ -1020,6 +1020,10 @@ standard_combobox_selection_search()
 	static const custom_combobox_selection_search_t config=
 		// Install callback to search items using whatever was typed into the
 		// current selection display element.
+		//
+		// NOTE: the custom combobox will want to know if we did
+		// something, so we must use IN_THREAD to invoke
+		// list layout manager methods.
 		[]
 		(ONLY IN_THREAD,
 		 const auto &search_info)
@@ -1029,7 +1033,7 @@ standard_combobox_selection_search()
 			if (search_info.text.size() == 0)
 			{
 				if (!search_info.selection_required)
-					lm->unselect();
+					lm->unselect(IN_THREAD);
 				return;
 			}
 
@@ -1042,7 +1046,8 @@ standard_combobox_selection_search()
 					found, false))
 			{
 				if (!lm->selected(found))
-					lm->autoselect(found);
+					lm->autoselect(IN_THREAD, found,
+						       search_info.trigger);
 			}
 		};
 

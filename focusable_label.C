@@ -38,6 +38,8 @@ focusable_label factoryObj
 	auto focusable_label_impl=ref<focusable_labelObj::implObj>
 		::create(ff, text, internal_config);
 
+	focusable_label_impl->autofocus=true;
+
 	auto l=label::create(focusable_label_impl, focusable_label_impl);
 
 	auto ffl=ref<focusframelayoutimplObj>::create(ff, ff, l);

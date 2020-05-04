@@ -70,6 +70,9 @@ struct custom_combobox_selection_search_info_t {
 	//! The selection_required flag from new_custom_comboboxlayoutmanager
 	bool selection_required;
 
+	//! What triggered the search
+	const callback_trigger_t &trigger;
+
 	//! Available mcguffin for blocking all further processing.
 	const busy &mcguffin;
 };

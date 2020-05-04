@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "popup_imagebutton.H"
 #include "x/w/focus_border_appearance.H"
+#include "x/w/callback_trigger.H"
 #include "combobox/custom_combobox_container_impl.H"
 #include "combobox/custom_comboboxlayoutmanager.H"
 #include "combobox/custom_combobox_popup_container_impl.H"
@@ -103,6 +104,10 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 
 		list_lock lock{lm};
 
+		auto old_selection=lm->selected();
+
+		bool enter_key=false;
+
 		if (!std::visit(visitor{
 		    [&](const key_event *ke)
 		    {
@@ -184,6 +189,7 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 						i=selected.value();
 						++i;
 					}
+					enter_key=true;
 				}
 				else
 				{
@@ -214,11 +220,44 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 		if (!activated)
 			return true;
 
+		// Figure out what triggered this.
+		callback_trigger_t trigger;
+
+		std::visit(visitor
+			   {[&]
+			    (const key_event *p)
+			    {
+				    trigger.emplace<const key_event *>(p);
+			    },
+			    [&]
+			    (const std::u32string_view *p)
+			    {
+				    trigger.emplace<cut_copy_paste>();
+			    },
+			    [&]
+			    (const all_key_events_is_not_copyable &)
+			    {
+			    }}, e);
+
 		search_func(IN_THREAD,
 			    custom_combobox_selection_search_info_t
 			    {lock, lm, buffer, i, current_selection,
-					    selection_required,
-					    mcguffin});
+				     selection_required,
+				     trigger,
+				     mcguffin});
+
+		auto new_selection=lm->selected();
+
+		// If an enter key was pressed, and the selection has
+		// not changed, we indicate that we did NOT process the
+		// enter key.
+		//
+		// This does the right thing when pressing enter after making
+		// a selection in an editable combo-box with a default "Save"
+		// button, somewhere, that has an "Enter" keyboard shortcut.
+
+		if (enter_key && old_selection == new_selection)
+			return false;
 
 		return true;
 	}
