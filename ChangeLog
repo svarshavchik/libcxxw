@@ -1,5 +1,7 @@
 2020-04-28  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* shortcut.C: Recognize "Enter" as a shortcut.
+
 	* combo-box: more intelligent reporting on whether the Enter
 	key did something, in a combo-box.
 

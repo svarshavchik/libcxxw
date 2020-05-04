@@ -155,6 +155,12 @@ shortcut::shortcut(shortcut_parse_info info)
 			return;
 		}
 
+		if (ustr == U"enter")
+		{
+			unicode='\n';
+			return;
+		}
+
 		for (const auto &sk:special_keys)
 		{
 			size_t l=strlen(sk.name);
@@ -219,6 +225,8 @@ shortcut::operator std::u32string() const
 	{
 		if (unicode == '\e')
 			s=U"Esc";
+		else if (unicode == '\n')
+			s=U"Enter";
 		else
 			s.push_back(unicode);
 	}
