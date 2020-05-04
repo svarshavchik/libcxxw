@@ -244,7 +244,8 @@ void current_font_placeholderObj::save(ONLY IN_THREAD,
 	auto writelock=pos->impl->create_writelock_for_saving("font", name);
 
 	writelock->create_child()->element({"font"})
-		->text(state->official_font.get().official_font)
+		->text(static_cast<std::string>
+		       (state->official_font.get().official_font))
 		->parent()->parent();
 
 	mpobj<std::vector<font_picker_group_id>>::lock
