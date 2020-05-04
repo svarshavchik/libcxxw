@@ -987,7 +987,7 @@ void appObj::border_update2(border_info_t::lock &lock,
 		x::w::standard_comboboxlayoutmanager
 			from_name_lm=border_from_name->get_layoutmanager();
 
-		update_new_element(id, lock->ids, border_name,
+		update_new_element({id}, lock->ids, border_name,
 				   [&]
 				   (size_t i)
 				   {

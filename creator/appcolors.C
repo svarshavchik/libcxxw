@@ -2059,7 +2059,7 @@ void appObj::color_update2(colors_info_t::lock &lock,
 {
 	if (is_new)
 	{
-		auto n=update_new_element(id, lock->ids, color_name);
+		auto n=update_new_element({id}, lock->ids, color_name);
 
 		std::vector<x::w::list_item_param>
 			new_item{ {lock->ids.at(n-1)}};

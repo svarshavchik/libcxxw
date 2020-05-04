@@ -209,12 +209,23 @@ public:
 				      const std::string &id,
 				      bool is_new);
 
+	//! New ID and name parameter to update_new_element
+
+	//! If description is an empty string, it's considered to be the
+	//! same as the id. This allows for convenient uniform initialization
+	//! syntax to be used for this parameter.
+
+	struct new_element_t {
+		std::string id;
+		std::string description;
+	};
+
 	//! Common logic when creating a new element
 
 	//! Inserts the new element's id into the list of existing_ids,
-	//! and a combo-box with the list.
+	//! and the description into the combo-box that shows the list.
 	static size_t
-	update_new_element(const std::string &new_id,
+	update_new_element(const new_element_t &new_element,
 			   std::vector<std::string> &existing_ids,
 			   const x::w::focusable_container &id_combo);
 
@@ -223,19 +234,20 @@ public:
 	//! Invokes the closure before calling autoselect() on the combo-box.
 	template<typename F>
 	static inline size_t
-	update_new_element(const std::string &new_id,
+	update_new_element(const new_element_t &new_element,
 			   std::vector<std::string> &existing_ids,
 			   const x::w::focusable_container &id_combo,
 			   F &&f)
 	{
-		return do_update_new_element(new_id, existing_ids, id_combo,
+		return do_update_new_element(new_element, existing_ids,
+					     id_combo,
 					     x::make_function<void (size_t)>
 					     (std::forward<F>(f)));
 	}
 
 	//! Type-erase update_new_element
 	static size_t
-	do_update_new_element(const std::string &new_id,
+	do_update_new_element(const new_element_t &new_element,
 			      std::vector<std::string> &existing_ids,
 			      const x::w::focusable_container &id_combo,
 			      const x::function<void (size_t)> &f);

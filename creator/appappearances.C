@@ -290,7 +290,7 @@ appObj::update_callback_t appObj::appearance_create2(appearance_info_t::lock
 void appObj::appearance_create2(appearance_info_t::lock &lock,
 				const x::ref<x::obj> &busy_mcguffin)
 {
-	update_new_element(lock->new_appearance_name, lock->ids,
+	update_new_element({lock->new_appearance_name}, lock->ids,
 			   appearance_name);
 
 	main_window->in_thread_idle

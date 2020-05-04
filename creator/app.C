@@ -1328,11 +1328,11 @@ appObj::create_update_t appObj::create_update(const char *type,
 }
 
 size_t
-appObj::update_new_element(const std::string &new_id,
+appObj::update_new_element(const new_element_t &new_element,
 			   std::vector<std::string> &existing_ids,
 			   const x::w::focusable_container &id_combo)
 {
-	return update_new_element(new_id, existing_ids, id_combo,
+	return update_new_element(new_element, existing_ids, id_combo,
 				  []
 				  (auto ignore)
 				  {
@@ -1340,7 +1340,7 @@ appObj::update_new_element(const std::string &new_id,
 }
 
 size_t
-appObj::do_update_new_element(const std::string &new_id,
+appObj::do_update_new_element(const new_element_t &new_element,
 			      std::vector<std::string> &existing_ids,
 			      const x::w::focusable_container &id_combo,
 			      const x::function<void (size_t)> &callback)
@@ -1350,7 +1350,7 @@ appObj::do_update_new_element(const std::string &new_id,
 
 	auto insert_pos=std::lower_bound(existing_ids.begin(),
 					 existing_ids.end(),
-					 new_id);
+					 new_element.id);
 
 	x::w::standard_comboboxlayoutmanager id_lm=
 		id_combo->get_layoutmanager();
@@ -1360,8 +1360,9 @@ appObj::do_update_new_element(const std::string &new_id,
 	auto i=p+1;
 	// Pos 0 is new dimension
 
-	existing_ids.insert(insert_pos, new_id);
-	id_lm->insert_items(i, {new_id});
+	existing_ids.insert(insert_pos, new_element.id);
+	id_lm->insert_items(i, {new_element.description.empty()
+				? new_element.id:new_element.description});
 	callback(i);
 	id_lm->autoselect(i);
 

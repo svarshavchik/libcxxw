@@ -629,7 +629,7 @@ void appObj::dimension_update2(dimension_info_t::lock &lock,
 			from_name_lm=dimension_from_name->get_layoutmanager();
 
 
-		auto i=update_new_element(id, lock->ids,
+		auto i=update_new_element({id}, lock->ids,
 					  dimension_name,
 					  [&]
 					  (size_t i)
