@@ -1631,10 +1631,9 @@ void list_elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 	if (me.y >= iter->y &&
 	    me.y < coord_t::truncate(iter->y+iter->height) &&
 	    iter->extra->enabled(lock))
-		set_current_element(IN_THREAD, lock, iter-b, false,
-				    std::monostate{});
-	else
-		unset_current_element(IN_THREAD, lock, std::monostate{});
+		set_current_element(IN_THREAD, lock, iter-b, false, &me);
+	// There is a small margin between rows that this motion even can
+	// fall into. Don't both to unset_current_element() in this case.
 }
 
 bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
