@@ -1200,13 +1200,15 @@ generic_windowObj::handlerObj::lookup_shortcut(ONLY IN_THREAD,
 				auto &b=best_shortcut
 					->installed_shortcut(IN_THREAD);
 
-				auto s1=unicode::iconvert::fromu
-					::convert(a, unicode_locale_chset())
-					.first;
+				auto s1=unicode::iconvert
+					::convert(a.description(),
+						  unicode::utf_8,
+						  unicode_locale_chset());
 
-				auto s2=unicode::iconvert::fromu
-					::convert(b, unicode_locale_chset())
-					.first;
+				auto s2=unicode::iconvert
+					::convert(b.description(),
+						  unicode::utf_8,
+						  unicode_locale_chset());
 
 				LOG_ERROR("Conflicting shortcuts: "
 					  << s1 << " and " << s2);

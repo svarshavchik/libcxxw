@@ -1,5 +1,7 @@
 2020-05-03  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* includes/x/w/shortcut.H: Improve shortcut labeling.
+
 	* listlayoutmanager/list_element_impl.C: Rename get_item_layoutmanager()
 	to submenu_listlayout(), for consistency.
 

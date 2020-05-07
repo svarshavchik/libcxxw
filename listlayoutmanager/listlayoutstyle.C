@@ -800,7 +800,7 @@ class LIBCXX_HIDDEN menu_list_style_impl
 		std::u32string s;
 
 		if (info.listitem_shortcut)
-			s=*info.listitem_shortcut;
+			s=info.listitem_shortcut->label();
 
 		auto rt=textlist_element
 			.create_richtextstring(textlist_element

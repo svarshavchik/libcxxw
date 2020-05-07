@@ -122,9 +122,10 @@ public:
 
 	//! Standard shortcut keysym
 
-	//! If the parameter is one of the Kp_ keysyms mentioned by the
-	//! constructor, return the garden-variety keysym, otherwise return
-	//! the parameter.
+	//! If the parameter is one of the KP_ keysyms mentioned by the
+	//! constructor, return the garden-variety keysym. If it's the garden
+	//! variety keysym, return the KP_ keysym. If there is no KP_
+	//! keysym, return the smae keysym.
 
 	static uint32_t shortcut_keysym(uint32_t);
 private:
@@ -137,9 +138,14 @@ public:
 	//! Whether a key event matches this shortcut.
 	bool matches(const key_event &ke) const;
 
-	//! Description of this shortcut, as a unicode string.
+	//! Description of this shortcut, as a string.
 
-	operator std::u32string() const;
+	std::string description() const;
+
+	//! Description of this shortcut, as a unicode label.
+
+	//! This is used to label this shortcut in menus.
+	std::u32string label() const;
 };
 
 //! Inactive shortcut

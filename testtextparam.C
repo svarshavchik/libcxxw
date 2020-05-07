@@ -137,7 +137,7 @@ void testshortcut()
 
 	shortcut alth{"Alt", 'H'};
 
-	if (std::u32string{alth} != U"Alt-H")
+	if (alth.description() != "Alt-H")
 		throw EXCEPTION("2 arg shortcut constructor failed");
 
 	shortcut f1{"F1"};
@@ -147,9 +147,13 @@ void testshortcut()
 
 	shortcut altf2{"${context}Alt-F2"};
 
-	if (std::u32string{altf2} != U"Alt-F2")
+	if (altf2.description() != "Alt-F2")
 		throw EXCEPTION("shortcut with label constructor failed");
 
+	shortcut kp_home{"KP_Home"};
+
+	if (kp_home.label() != U"KP-Home")
+		throw EXCEPTION("shortcut.label() failed");
 }
 
 int main(int argc, char **argv)
