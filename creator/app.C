@@ -1,7 +1,6 @@
 #include "libcxxw_config.h"
 
 #include "creator/app.H"
-#include "x/w/screen_positions.H"
 #include "x/w/uigenerators.H"
 #include "x/w/uielements.H"
 #include "x/w/menubarlayoutmanager.H"
@@ -15,7 +14,6 @@
 #include "x/w/shortcut.H"
 #include "x/w/theme_text.H"
 #include "catch_exceptions.H"
-#include "messages.H"
 
 #include <x/config.H>
 #include <x/messages.H>
@@ -32,11 +30,6 @@
 #include <cmath>
 #include <iterator>
 #include <functional>
-
-#ifndef CREATORDIR
-#define CREATORDIR PKGDATADIR "/creator"
-#endif
-
 
 static x::xml::doc new_theme_file()
 {
@@ -60,7 +53,7 @@ appObj::init_args::init_args()
 	 {
 		 for (const auto c:filter_info.new_contents)
 			 if (c <= ' ' || c == '<' || c == '>' ||
-			     c == '&')
+			     c == '&' || c > 127)
 				 return;
 
 		 filter_info.update();
@@ -81,11 +74,16 @@ appObj::init_args::init_args()
 	{
 		xpath->to_node(i);
 
-		auto name=appearance_type->clone();
+		// Clone the <appearance> element's lock.
 
-		name->get_xpath("name")->to_node();
+		auto save=appearance_type->clone();
 
-		appearance_types.emplace(name->get_text(), appearance_type);
+		// Get the <name>.
+		appearance_type->get_xpath("name")->to_node();
+
+		// The text of <name> is the key.
+		appearance_types.emplace(appearance_type->get_text(),
+					 save);
 	}
 }
 
@@ -272,7 +270,7 @@ inline appObj::init_args appObj::create_init_args()
 				 (args.elements, ui, args);
 
 			 appObj::appearances_elements_initialize
-				 (args.elements, ui, args);
+				 (args.elements, ui, args, mw, catalog, pos);
 		 });
 
 	return args;
@@ -1313,17 +1311,17 @@ appObj::create_update_t appObj::create_update(const char *type,
 			return std::nullopt;
 		}
 
-		xpath->to_node(1); // Remove existing dim
+		xpath->to_node(1); // Remove existing element
 		doc_lock->remove();
 	}
 
 	doc_lock->get_xpath("/theme")->to_node();
 	xpath=doc_lock->get_xpath(type);
 
-	auto new_dim=new_element(doc_lock, xpath);
+	auto new_node=new_element(doc_lock, xpath);
 
 	return std::tuple{doc_lock,
-			new_dim->element({type})->create_child()
+			new_node->element({type})->create_child()
 			->attribute({"id", id})};
 }
 

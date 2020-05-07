@@ -223,6 +223,8 @@ void appObj::borders_elements_initialize(app_elements_tptr &elements,
 
 	// Install callbacks.
 
+	border_new_name->on_filter(args.label_filter);
+
 	border_new_name->on_validate
 		([]
 		 (ONLY IN_THREAD,

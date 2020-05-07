@@ -2,8 +2,6 @@
 <theme version="1"
        xmlns:xi="http://www.w3.org/2003/XInclude">
 
-  <dim id="minimum_width">100</dim>
-  <dim id="minimum_height">20</dim>
   <dim id="none">0</dim>
 
   <layout type="menubar" id="mainmenubar">
@@ -193,7 +191,7 @@
   <factory type="grid" id="dimension_name_row">
     <halign>right</halign>
     <element>
-      <label type='theme_text'>${context:creator}Name:</label>
+      <label type='theme_text'>${context:dimension}Name:</label>
     </element>
     <container>
       <name>dimension_name_field</name>
@@ -206,7 +204,7 @@
   <factory type="grid" id="new_dimension_name_row">
     <halign>right</halign>
     <element id="dimension_new_name_label">
-      <label type='theme_text'>${context:creator}New name:</label>
+      <label type='theme_text'>${context:dimension}New name:</label>
     </element>
     <element id="dimension_new_name_field">
       <input_field />
@@ -252,7 +250,7 @@
     <element id="dimension_value_option_field">
       <radio>
 	<element>
-	  <label type="theme_text">${context:creator}Mm:</label>
+	  <label type="theme_text">${context:dimension}Mm:</label>
 	</element>
       </radio>
       <group>dimension-type-group</group>
@@ -276,7 +274,7 @@
     <element id="dimension_scale_option_field">
       <radio>
 	<element>
-	  <label type="theme_text">${context:creator}Scale:</label>
+	  <label type="theme_text">${context:dimension}Scale:</label>
 	</element>
       </radio>
       <group>dimension-type-group</group>
@@ -1816,35 +1814,35 @@
     <element id="border_update_button">
       <button>
 	<element>
-	  <label type="theme_text">${context:color}${decoration:underline}U${decoration:none}pdate</label>
+	  <label type="theme_text">${context:border}${decoration:underline}U${decoration:none}pdate</label>
 	</element>
       </button>
       <config>
 	<appearance>normal_theme</appearance>
       </config>
-      <shortcut type='theme_text'>${context:color}Alt-U</shortcut>
+      <shortcut type='theme_text'>${context:border}Alt-U</shortcut>
     </element>
     <element id="border_reset_button">
       <button>
 	<element>
-	  <label type="theme_text">${context:color}${decoration:underline}R${decoration:none}eset</label>
+	  <label type="theme_text">${context:border}${decoration:underline}R${decoration:none}eset</label>
 	</element>
       </button>
       <config>
 	<appearance>normal_theme</appearance>
       </config>
-      <shortcut type='theme_text'>${context:color}Alt-R</shortcut>
+      <shortcut type='theme_text'>${context:border}Alt-R</shortcut>
     </element>
     <element id="border_delete_button">
       <button>
 	<element>
-	  <label type="theme_text">${context:color}D${decoration:underline}e${decoration:none}lete</label>
+	  <label type="theme_text">${context:border}D${decoration:underline}e${decoration:none}lete</label>
 	</element>
       </button>
       <config>
 	<appearance>normal_theme</appearance>
       </config>
-      <shortcut type='theme_text'>${context:color}Alt-E</shortcut>
+      <shortcut type='theme_text'>${context:border}Alt-E</shortcut>
     </element>
   </factory>
 
@@ -1865,6 +1863,9 @@
     </append_row>
     <append_row>
       <name>new-appearances-name-row</name>
+    </append_row>
+    <append_row>
+      <name>appearance-contents-row</name>
     </append_row>
   </layout>
 
@@ -1922,4 +1923,206 @@
 
   <layout id="appearance_new_type_field" type="standard_combobox" />
 
+  <!--
+      Appearance: Contents row
+
+      The container showing the contents of the currently selected appearance
+
+      Uses the page layout manager, with two pages: the list of current
+      appearance values, and a page where a new value is modified or an
+      existing value is modified.
+  -->
+
+  <factory type="grid" id="appearance-contents-row">
+    <halign>center</halign>
+    <colspan>
+      <columns>6</columns>
+    </colspan>
+    <container>
+      <name>appearance_contents_page</name>
+      <type>page</type>
+    </container>
+  </factory>
+
+  <layout type="page" id="appearance_contents_page">
+    <append>
+      <name>appearance_contents_page_factory</name>
+    </append>
+  </layout>
+
+  <factory type="page" id="appearance_contents_page_factory">
+    <container>
+      <name>appearance_values_page</name>
+      <type>grid</type>
+    </container>
+  </factory>
+
+  <!-- Page 0: show appearance contents -->
+
+  <layout type="page" id="appearance_values_show">
+    <open>
+      <position>0</position>
+    </open>
+  </layout>
+
+  <!-- Contents of the currently selected appearance -->
+
+  <layout type="grid" id="appearance_values_page">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>appearance-contents-from-row</name>
+    </append_row>
+    <append_row>
+      <name>appearance-contents-values-row</name>
+    </append_row>
+    <append_row>
+      <name>appearance-contents-buttons-row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="appearance-contents-from-row">
+    <element>
+      <label>${context:appearance}Based On:</label>
+    </element>
+
+    <container>
+      <name>appearance_based_on_field</name>
+      <type>standard_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="appearance_based_on_field" type="standard_combobox" />
+
+  <factory type="grid" id="appearance-contents-values-row">
+    <element>
+      <canvas />
+    </element>
+
+    <container>
+      <name>appearance_values</name>
+      <type>table</type>
+      <config>
+	<columns>2</columns>
+	<height>
+	  <min_rows>8</min_rows>
+	  <max_rows>8</max_rows>
+	</height>
+
+	<lr_padding>
+	  <column>0</column>
+	  <left>appearance_value_padding</left>
+	  <right>appearance_value_padding</right>
+	</lr_padding>
+	<lr_padding>
+	  <column>1</column>
+	  <left>appearance_value_padding</left>
+	  <right>appearance_value_padding</right>
+	</lr_padding>
+      </config>
+      <header>
+	<element>
+	  <label type='theme_text'>${context:appearance}Field</label>
+	</element>
+      </header>
+      <header>
+	<element>
+	  <label type='theme_text'>${context:appearance}Value</label>
+	</element>
+      </header>
+
+      <context id="appearance_values_popup">
+	<menu>
+	  <append_items>
+	    <items>
+	      <name>appearance_value_move_up</name>
+	      <shortcut>Alt-Up</shortcut>
+	      <label type='theme_text'>${context:appearance}Move Up</label>
+	      <name>appearance_value_move_down</name>
+	      <shortcut>Alt-Down</shortcut>
+	      <label type='theme_text'>${context:appearance}Move Down</label>
+	      <name>appearance_value_update</name>
+	      <label type='theme_text'>${context:appearance}Update</label>
+	      <name>appearance_value_create</name>
+	      <submenu />
+	      <label type='theme_text'>${context:appearance}Create</label>
+	      <name>appearance_value_delete</name>
+	      <shortcut>Del</shortcut>
+	      <label type='theme_text'>${context:appearance}Delete</label>
+	    </items>
+	  </append_items>
+	</menu>
+	<shortcut type='theme_text'>${context:appearance-list}Alt-M</shortcut>
+      </context>
+    </container>
+  </factory>
+
+  <dim id="appearance_value_padding">2</dim>
+
+  <layout id="appearance_values" type="table" />
+
+  <!-- Appearance: Update/Reset/Delete buttons -->
+
+  <factory type="grid" id="appearance-contents-buttons-row">
+    <element>
+      <canvas />
+    </element>
+
+    <container>
+      <type>grid</type>
+      <name>appearance-contents-buttons-container</name>
+    </container>
+  </factory>
+
+  <layout type="grid" id="appearance-contents-buttons-container">
+    <append_row>
+      <name>appearance-contents-buttons</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="appearance-contents-buttons">
+    <element id="appearance_update_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:appearance}${decoration:underline}U${decoration:none}pdate</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:appearance}Alt-U</shortcut>
+    </element>
+    <element id="appearance_reset_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:appearance}${decoration:underline}R${decoration:none}eset</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:appearance}Alt-R</shortcut>
+    </element>
+    <element id="appearance_delete_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:appearance}D${decoration:underline}e${decoration:none}lete</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:appearance}Alt-E</shortcut>
+    </element>
+  </factory>
 </theme>

@@ -124,8 +124,12 @@ new_list.height(4, 10);
 
     <note>
       <para>
-	The list's height gets computed based on the list items' default font's
-	height and the number of rows in the list. The list's height does not
+	This assumes that all values in the list are the same height, which
+	is the case when all list values use the same font.
+	For the purpose of making these calculations the single row's height
+	comes from the tallest row in the list; this gets multiplied by the
+	specified height(s) and the result becomes the list's height.
+	The height does not
 	come up to be an even number of rows if the list contains
 	<link linkend="listitemmethods">separators or items with custom
 	  fonts</link>.

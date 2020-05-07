@@ -135,7 +135,7 @@ See COPYING for distribution information.
 	    <quote>single</quote>,
 	    <quote>single_optional</quote>,
 	    <quote>multiple</quote>, or
-	    <quote>node</quote>.
+	    <quote>no</quote>.
 	  </para>
 	</listitem>
       </varlistentry>

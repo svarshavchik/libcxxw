@@ -3774,6 +3774,9 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 	      <informalexample>
 		<programlisting><![CDATA[
   <dim id="cell-padding">20</dim>
+
+
+  <scroll_button_height>cell-padding</scroll_button_height>
 ]]></programlisting>
 	      </informalexample>
 	    </blockquote>

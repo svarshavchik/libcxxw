@@ -1002,7 +1002,8 @@ cxxwtheme_LDFLAGS=$(TESTLINKTYPE)
 $(call REFCOLLECTION_GEN,creator/appelements.inc.H,$(srcdir)/creator/appelements.xml)
 $(call EXTRACT_THEME_TEXT_GEN,creator.inc.C,creator/main.xml)
 
-creatorinst_DATA=creator/main.xml creator/appearances.xml
+creatorinst_DATA=creator/main.xml creator/appearance_dialog.xml \
+			creator/appearances.xml
 EXTRA_DIST += $(creatorinst_DATA)
 EXTRA_DIST += creator/appearances.xsl
 

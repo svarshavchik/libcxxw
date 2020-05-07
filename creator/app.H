@@ -15,6 +15,7 @@
 #include <x/xml/writelock.H>
 #include <x/xml/xpath.H>
 #include "x/w/main_window.H"
+#include "x/w/dialog.H"
 #include "x/w/uigenerators.H"
 #include "x/w/file_dialogfwd.H"
 #include "x/w/focusable_container.H"
@@ -28,6 +29,8 @@
 #include "x/w/color_picker.H"
 #include "x/w/impl/connection_threadfwd.H"
 #include "x/w/impl/uixmlparser.H"
+#include "x/w/screen_positions.H"
+#include "messages.H"
 
 #include "creator/appelements.inc.H"
 #include <variant>
@@ -35,6 +38,10 @@
 #include <string>
 #include <map>
 #include <vector>
+
+#ifndef CREATORDIR
+#define CREATORDIR PKGDATADIR "/creator"
+#endif
 
 class appObj;
 
@@ -63,6 +70,10 @@ private:
 
 	static init_args create_init_args() LIBCXX_HIDDEN;
 
+	//! Container for known appearance types.
+	typedef std::map<std::string, const x::xml::const_readlock
+			 > appearance_types_t;
+
 	//! Parameters for an internal constructor
 	struct init_args {
 
@@ -71,7 +82,7 @@ private:
 		std::string filename;
 		x::xml::doc theme;
 		app_elements_tptr elements;
-		std::map<std::string, const x::xml::readlock> appearance_types;
+		appearance_types_t appearance_types;
 		x::functionref<x::w::input_field_filter_callback_t
 			       > label_filter;
 
@@ -325,7 +336,7 @@ public:
 	x::mpobj<std::string> themename;
 
 	//! All supported appearance types, by their name.
-	const std::map<std::string, const x::xml::readlock> appearance_types;
+	const appearance_types_t appearance_types;
 
 	//! Whether the theme file has been modified
 	x::mpobj<bool> edited=false;
@@ -1164,30 +1175,117 @@ private:
 public:
 	/////////////////////////////////////////////////////////////////////
 	//
-	// Borders page.
+	// Appearance page.
 
 	//! Installs callbacks.
 
 	static void appearances_elements_initialize(app_elements_tptr &elements,
 						    x::w::uielements &ui,
-						    init_args &args);
+						    init_args &args,
+						    const x::w::main_window &,
+						    const x::messages &,
+						    const
+						    x::w::screen_positions &);
+
+	//! Placeholder for an \ref appearance_value_t "appearance value".
+	struct reset {
+
+		//! Always equal.
+		bool operator==(const reset &) const { return true; }
+	};
+
+	//! An appearance field value is just a string, for our purposes.
+
+	//! Except when it's not, <reset />s in optionals and vectors
+	//! is an alternative.
+
+	typedef std::variant<reset, std::u32string> appearance_value_t;
+
+	//! An appearance field, and its value
+
+	struct appearance_fv {
+
+		std::string field;
+		appearance_value_t value;
+
+		bool operator==(const appearance_fv &other) const
+		{
+			return field == other.field && value == other.value;
+		}
+
+		//! Delegating constructor (sort of)
+		template<typename F, typename V>
+		appearance_fv(F &&f, V && v)
+			: field{std::forward<F>(f)},
+			  value{std::forward<V>(v)}
+		{
+		}
+
+		//! Add this field and value to a list_item_param.
+
+		//! Used to convert a field/value to a table row, in the
+		//! appearance_value container.
+		//!
+		//! push_back()s two values here.
+		void format(std::vector<x::w::list_item_param> &v) const;
+	};
+
 	//! Original appearance parameters
 
 	struct appearance_orig_params {
 		size_t index; //!< Which original appearance
+
+		std::string from; //!< Appearance based on.
+
+		std::vector<appearance_fv> values; //! Values.
 	};
 
 	//! Validated and saved parameters.
 
 	struct appearance_save_params {
 		std::string appearance_new_name;  //!< When creating a new one.
-		// loaded_appearance_t appearance_new_value; //!< The new value
+
+		// Existing appearance:
+
+		std::string from; //!< Appearance based on.
+
+		std::vector<appearance_fv> values; //!< Values.
+
+		//! Which value is currently highlighted, if any.
+
+		std::optional<size_t> current_value;
 
 		//! Check if the new value is unchanged
-		//bool operator==(const appearance_orig_params &orig) const
-		//{
-		//	return appearance_new_value == orig.loaded_appearance;
-		//}
+
+		bool operator==(const appearance_orig_params &orig) const
+		{
+			return from == orig.from && values == orig.values;
+		}
+	};
+
+	//! All fields in the appearance object.
+
+	struct appearance_field {
+
+		//! Either "type[name]" or "ref[name}"
+
+		//! This field is either "name" (like color_arg, dim-arg)
+		//! or a reference to another appearance type, i.e.
+		//! "scrollbar".
+
+		std::string typeref;
+
+		//! Description
+
+		std::string descr;
+
+		//! Whether this is a vector
+		bool multiple;
+
+		//! Whether this value can be '<reset>'
+
+		//! Implied by "multiple"
+		bool reset;
 	};
 
 	//! Appearances metadata
@@ -1195,9 +1293,6 @@ public:
 
 		//! Cached: selected index of an existing appearance.
 		std::optional<appearance_orig_params> current_selection;
-
-		//! New appearance name
-		std::string new_appearance_name;
 
 		//! New appearance type
 		std::string new_appearance_type;
@@ -1208,11 +1303,19 @@ public:
 		//! The existing appearance types
 		std::vector<std::string> types;
 
+		//! Cached possible appearances based on values for the currently shown type
+
+		std::vector<std::string> current_defaults;
+
+		//! Cached fields, in order, of the currently shown appearance.
+
+		std::map<std::string, appearance_field> current_fields;
+
 		//! This is updated every time something changes on the
 		//! appearances page. The "Save" button simply takes this to
 		//! the bank.
 
-		std::optional<appearance_save_params> save_params;
+		appearance_save_params save_params;
 	};
 
 	//! Thread-safe container for appearances metadata.
@@ -1229,10 +1332,8 @@ public:
 
 	//! Something was selected or unselected in the appearance combo-box
 
-	void appearance_selected
-	(ONLY IN_THREAD,
-	 const
-	 x::w::standard_combobox_selection_changed_info_t &info);
+	//! Reset all appearance fields.
+	void appearance_reset(ONLY IN_THREAD);
 
 	//! Something was selected or unselected in the new appearance type combo-box
 
@@ -1247,16 +1348,142 @@ public:
 	void appearance_enable_disable_buttons(ONLY IN_THREAD,
 					       appearance_info_t::lock &lock);
 
+	//! Enable/disable individual fields on the "Create" submenu.
+
+	//! Invoked from UI callback. Once a field value is set, it is disabled
+	//! in the Create submenu, unless it's a multiple field.
+	void appearance_enable_disable_new_fields(ONLY IN_THREAD,
+						  appearance_info_t::lock &lock)
+		;
+
+	//! The appearance's description in the appearance_name combo-box.
+	new_element_t appearance_name_and_description(const std::string &n);
+
 	//! Create a new appearance object, invoked from update_theme().
 	get_updatecallbackptr appearance_create(ONLY IN_THREAD);
 
+	//! Currently selected appearance value has changed, scrolled through...
+
+	void appearance_value_changed(ONLY IN_THREAD,
+				      appearance_info_t::lock &,
+				      const x::w::list_item_status_info_t &);
+
+	//! Selection made from the appearance value popup menu
+	void appearance_on_value_move_up(ONLY IN_THREAD);
+
+	//! Selection made from the appearance value popup menu
+	void appearance_on_value_move_down(ONLY IN_THREAD);
+
+	//! Selection made from the appearance value popup menu
+	void appearance_on_value_update(ONLY IN_THREAD);
+
+	//! Selection made from the appearance value popup menu
+	void appearance_on_value_create(ONLY IN_THREAD);
+
+	//! Selection made from the appearance value popup menu
+	void appearance_on_value_delete(ONLY IN_THREAD);
+
+	//! Get new appearance name
+
+	//! Retrieve the name from the input field.
+	//!
+	//! The lock parameter enforces the same locking order.
+	std::string get_new_appearance_name(appearance_info_t::lock &);
 private:
+	//! Selected the option for the new value
+
+	//! Callback from the radio button next to the new value, on the
+	//! appearance dialog. Enables or disables the new value input field
+
+	void appearance_value_option_selected(ONLY IN_THREAD, size_t i);
+
+	//! "Create" selected from appearance submenu, create the dialog
+	void appearance_value_edit(ONLY IN_THREAD, const std::string &);
 
 	//! Continue appearance_create(), in the main execution thread.
 	update_callback_t appearance_create2(appearance_info_t::lock &lock);
 
 	//! Finish appearance_create(), in the main execution thread.
 	void appearance_create2(appearance_info_t::lock &lock,
+				const std::string &new_appearance_name,
+				const x::ref<x::obj> &busy_mcguffin);
+
+
+
+	//! Save/update appearance, invoked from update_theme().
+
+	get_updatecallbackptr appearance_update(ONLY IN_THREAD);
+
+	//! Continue appearance_update(), in the main execution thread.
+
+	update_callback_t appearance_update2(appearance_info_t::lock &lock);
+
+	//! Finalize appearance_update(), in the main execution thread.
+	void appearance_update2(appearance_info_t::lock &lock,
+				const std::string &id,
+				const x::ref<x::obj> &busy_mcguffin);
+
+	//! Finish appearance_update(), in the connection thread.
+	void appearance_update3(ONLY IN_THREAD,
+				const x::ref<x::obj> &busy_mcguffin);
+
+
+	//! Returns the description of the current appearance type.
+
+	//! The parameter is the current_selection.
+	x::xml::readlock appearance_current_value(appearance_info_t::lock &);
+
+	//! Find the currently shown appearance type
+
+	//! Return value of appearance_current_value() is the parameter.
+	appearance_types_t::const_iterator
+	appearance_current_value_type(const x::xml::readlock &);
+
+	//! Find the currently shown appearance type
+
+	//! \overload
+	appearance_types_t::const_iterator
+	appearance_current_value_type(appearance_info_t::lock &);
+
+	//! Save button in the new value appearance button.
+
+	//! The new value is a standard combo-box, that specifies the new
+	//! value by its index.
+
+	void appearance_new_value_std_combo(ONLY IN_THREAD,
+					    const std::string &field_name,
+					    const std::vector<
+					    std::u32string> &);
+
+	//! Save button in the new value appearance button.
+
+	//! The new value is an editable combo-box, that specifies the new
+	//! value in its input field.
+
+	void appearance_new_value_edit_combo(ONLY IN_THREAD,
+					     const std::string &field_name);
+
+	//! Save button in the new value appearance button.
+
+	//! The new value is a free-form input field.
+
+	void appearance_new_value_input(ONLY IN_THREAD,
+					const std::string &field_name);
+
+	//! Save button in the new appearance dialog.
+
+	void appearance_new_value_save_and_hide(ONLY IN_THREAD,
+						const std::string &,
+						const std::u32string &);
+	//! Delete appearance, invoked from update_theme().
+	get_updatecallbackptr appearance_delete(ONLY IN_THREAD);
+
+	//! Continue appearance_delete(), in the main execution thread.
+	update_callback_t appearance_delete2(appearance_info_t::lock &lock);
+
+	//! Finish appearance_delete(), in the main execution thread.
+	void appearance_delete2(appearance_info_t::lock &lock,
+				size_t index,
 				const x::ref<x::obj> &busy_mcguffin);
 };
 

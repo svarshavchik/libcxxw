@@ -13,6 +13,11 @@ object and placed into discrete variables.
   </ref>
 
   <ref>
+    <type>x::w::dialog</type>
+    <name>appearance_dialog</name>
+  </ref>
+
+  <ref>
     <type>x::w::const_uigenerators</type>
     <name>main_generator</name>
   </ref>
@@ -413,5 +418,92 @@ object and placed into discrete variables.
   <ref>
     <type>x::w::button</type>
     <name>appearance_new_create</name>
+  </ref>
+
+  <ref>
+    <type>x::w::container</type>
+    <name>appearance_contents_page</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>appearance_based_on_field</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>appearance_values</name>
+  </ref>
+
+  <ref>
+    <type>x::w::container</type>
+    <name>appearance_values_popup</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>appearance_update_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>appearance_reset_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>appearance_delete_button</name>
+  </ref>
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>appearance_value_move_up</name>
+  </ref>
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>appearance_value_move_down</name>
+  </ref>
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>appearance_value_update</name>
+  </ref>
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>appearance_value_create</name>
+  </ref>
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>appearance_value_delete</name>
+  </ref>
+
+  <!-- Appearance value dialog -->
+
+  <ref>
+    <type>x::w::const_uigenerators</type>
+    <name>appearance_dialog_gen</name>
+  </ref>
+
+  <ref>
+    <type>x::w::container</type>
+    <name>appearance_new_value_container</name>
+  </ref>
+
+  <ref>
+    <type>x::w::image_button</type>
+    <name>appearance_new_value_option</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>appearance_new_value_save</name>
+  </ref>
+
+  <ref>
+    <type>x::w::image_button</type>
+    <name>appearance_reset_value_option</name>
+  </ref>
+
+  <ref>
+    <type>x::w::label</type>
+    <name>appearance_new_value_description</name>
   </ref>
 </collection>

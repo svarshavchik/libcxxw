@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<theme version="1"
+       xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <layout id="main" type="grid">
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>description_row</name>
+    </append_row>
+
+    <append_row>
+      <name>value_row</name>
+    </append_row>
+
+    <append_row>
+      <name>reset_row</name>
+    </append_row>
+
+    <append_row>
+      <name>button_row</name>
+    </append_row>
+  </layout>
+
+  <factory id="description_row" type="grid">
+    <halign>center</halign>
+    <element id="appearance_new_value_description">
+      <label type="theme_text"></label>
+      <options>
+	<alignment>center</alignment>
+	<widthmm>20</widthmm>
+      </options>
+    </element>
+  </factory>
+
+  <!--
+      New apperance value, possibilities are standard/editable combo-box,
+      or an input field, dependending on the value. Use the page layout
+      manager, and show the appropriate page.
+  -->
+
+  <factory id="value_row" type="grid">
+    <element id="appearance_new_value_option">
+      <radio>
+	<container>
+	  <name>appearance_new_value_container</name>
+	  <type>grid</type>
+	</container>
+      </radio>
+      <group>value_or_set</group>
+    </element>
+  </factory>
+
+
+  <layout id="appearance_new_value_container" type="grid" />
+
+  <!--
+      New value grid, will have one of several widgets, an
+      input field, a standard or an editable combo-box.
+
+      The appearance_new_value_container is initially an empty grid, and
+      we load it with one of several alternative layouts, before it gets
+      opened.
+
+  -->
+
+  <layout type="grid" id="appearance_new_value_input_field_open">
+    <remove_all />
+    <append_row>
+      <name>appearance_new_value_input_field_factory</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="appearance_new_value_input_field_factory">
+    <element id="appearance_new_value_input_field">
+      <input_field />
+        <config>
+	  <columns>30</columns>
+	</config>
+
+	<elements>appearance_new_value_input_field_factory_created</elements>
+    </element>
+  </factory>
+
+  <layout type="grid" id="appearance_new_value_editable_combobox_open">
+    <remove_all />
+    <append_row>
+      <name>appearance_new_value_editable_combobox_factory</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid"
+	   id="appearance_new_value_editable_combobox_factory">
+    <container>
+      <name>appearance_new_value_editable_combobox</name>
+      <type>editable_combobox</type>
+	<elements>appearance_new_value_editable_combobox_factory_created</elements>
+    </container>
+  </factory>
+
+  <layout id="appearance_new_value_editable_combobox"
+	  type="editable_combobox" />
+
+  <layout type="grid" id="appearance_new_value_standard_combobox_open">
+    <remove_all />
+    <append_row>
+      <name>appearance_new_value_standard_combobox_factory</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid"
+	   id="appearance_new_value_standard_combobox_factory">
+    <container>
+      <name>appearance_new_value_standard_combobox</name>
+      <type>standard_combobox</type>
+      <elements>appearance_new_value_standard_combobox_factory_created</elements>
+    </container>
+  </factory>
+
+  <layout id="appearance_new_value_standard_combobox"
+	  type="standard_combobox" />
+
+  <!-- The new value widgets get created as needed, make sure their tab order
+       is correct.
+  -->
+
+  <factory id="appearance_new_value_input_field_factory_created"
+	   type="elements">
+    <get_focus_after>
+      <focusable>appearance_new_value_input_field</focusable>
+      <after_focusable>appearance_new_value_option</after_focusable>
+    </get_focus_after>
+
+    <request_focus>
+      <focusable>appearance_new_value_input_field</focusable>
+    </request_focus>
+  </factory>
+
+  <factory id="appearance_new_value_editable_combobox_factory_created"
+	   type="elements">
+    <get_focus_after>
+      <focusable>appearance_new_value_editable_combobox</focusable>
+      <after_focusable>appearance_new_value_option</after_focusable>
+    </get_focus_after>
+
+    <request_focus>
+      <focusable>appearance_new_value_editable_combobox</focusable>
+    </request_focus>
+  </factory>
+
+  <factory id="appearance_new_value_standard_combobox_factory_created"
+	   type="elements">
+    <get_focus_after>
+      <focusable>appearance_new_value_standard_combobox</focusable>
+      <after_focusable>appearance_new_value_option</after_focusable>
+    </get_focus_after>
+
+    <request_focus>
+      <focusable>appearance_new_value_standard_combobox</focusable>
+    </request_focus>
+  </factory>
+
+  <!-- Reset option, if appropriate -->
+
+  <factory id="reset_row" type="grid">
+    <element id="appearance_reset_value_option">
+      <radio>
+	<element>
+	  <label type="theme_text">${context:appearance_value_dialog}Reset</label>
+	</element>
+      </radio>
+      <group>value_or_set</group>
+    </element>
+  </factory>
+
+  <factory id="button_row" type="grid">
+    <halign>center</halign>
+    <container>
+      <name>appearance_button_row_container</name>
+      <type>grid</type>
+    </container>
+  </factory>
+
+  <layout id="appearance_button_row_container" type="grid">
+    <append_row>
+      <name>appearance_dialog_buttons</name>
+    </append_row>
+  </layout>
+
+  <factory id="appearance_dialog_buttons" type="grid">
+    <element id="appearance_new_value_cancel">
+      <button>
+	<element>
+	  <label type="theme_text">${context:appearance_new_value}Cancel</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut>Esc</shortcut>
+    </element>
+
+    <element id="appearance_new_value_save">
+      <button>
+	<element>
+	  <label type="theme_text">${context:appearance_new_value}Save</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut>Enter</shortcut>
+    </element>
+  </factory>
+</theme>

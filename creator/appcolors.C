@@ -141,6 +141,7 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 					"color-radial-gradient-option-radio",
 					"color-right-side-page-open-radial");
 
+	color_new_name->on_filter(args.label_filter);
 
 	// Basic color widget.
 
