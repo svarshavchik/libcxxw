@@ -1749,6 +1749,25 @@ bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
 			next_row=r.value();
 		}
 		break;
+	case XK_Home:
+	case XK_KP_Home:
+		if (current_keyed_element(lock) &&
+		    current_keyed_element(lock).value() == 0)
+			return false;
+		next_row=0;
+		break;
+	case XK_End:
+	case XK_KP_End:
+		{
+			size_t s=lock->row_infos.size();
+
+			if (current_keyed_element(lock) ||
+			    current_keyed_element(lock).value()+1 >= s)
+				return false;
+
+			next_row=--s;
+		}
+		break;
 	default:
 		return false;
 	}

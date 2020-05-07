@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <sstream>
+#include <X11/keysym.h>
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -320,6 +321,10 @@ static mondata processes[]=
 	};
 
 #include "testlistoptions.H"
+
+#include "listlayoutmanager/list_element_impl.H"
+#include "listlayoutmanager/listlayoutmanager_impl.H"
+#include "connection.H"
 
 auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 			  const LIBCXX_NAMESPACE::w::screen_positions &pos,
@@ -709,7 +714,16 @@ create_plain_list(const testlistoptions &opts,
 	return list_container;
 }
 
-static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
+struct plain_list_info_s {
+	bool shown=false;
+	std::optional<size_t> item_selected;
+};
+
+typedef LIBCXX_NAMESPACE::mpcobj<plain_list_info_s> plain_list_info_t;
+
+plain_list_info_t plain_list_info;
+
+static inline auto plain_list(const LIBCXX_NAMESPACE::w::main_window
 			      &main_window,
 			      const testlistoptions &opts)
 {
@@ -722,6 +736,34 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 
 	auto list_container=create_plain_list(opts, factory);
 
+	list_container->on_state_update
+		([]
+		 (ONLY IN_THREAD,
+		  const auto &s,
+		  const auto &)
+		 {
+			 if (s.shown)
+			 {
+				 plain_list_info_t::lock lock{plain_list_info};
+
+				 lock->shown=s.shown;
+				 lock.notify_all();
+			 }
+		 });
+
+	list_container->listlayout()->on_current_list_item_changed
+		([]
+		 (ONLY IN_THREAD,
+		  const auto &info)
+		 {
+			 if (info.selected)
+			 {
+				 plain_list_info_t::lock lock{plain_list_info};
+
+				 lock->item_selected=info.item_number;
+				 lock.notify_all();
+			 }
+		 });
 	auto insert_row=
 		factory->halign(LIBCXX_NAMESPACE::w::halign::fill)
 		.create_button("Insert New Row");
@@ -771,8 +813,7 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
 		 mutable
 		 {
-			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 l->insert_items
 				 (0, {next_lorem_ipsum()
@@ -806,8 +847,7 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
 		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
 		 {
-			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 // insert_items() and append_items() take
 			 // a std::vector of list_item_param-s as parameters.
@@ -846,8 +886,7 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
 		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
 		 {
-			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 // If the list is non-empty, remove the first list
 			 // item.
@@ -863,8 +902,7 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
 		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
 		 {
-			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 if (l->size() == 0)
 				 return;
@@ -881,8 +919,7 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
 		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
 		 {
-			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 lorem_ipsum_idx=(size_t)-1;
 
@@ -901,8 +938,7 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 		  const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
 		  const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
 		 {
-			 LIBCXX_NAMESPACE::w::listlayoutmanager l=
-				 list_container->get_layoutmanager();
+			 auto l=list_container->listlayout();
 
 			 // This callback gets executed by the library's
 			 // internal connection thread, so this lock is
@@ -937,10 +973,9 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 	factory=layout->append_row();
 
 	factory->colspan(2);
-	list_container=create_plain_list(opts, factory);
+	auto second_list_container=create_plain_list(opts, factory);
 
-	LIBCXX_NAMESPACE::w::listlayoutmanager
-		l=list_container->get_layoutmanager();
+	auto l=second_list_container->listlayout();
 
 	l->selection_type(LIBCXX_NAMESPACE::w::single_selection_type);
 
@@ -970,6 +1005,8 @@ static inline void plain_list(const LIBCXX_NAMESPACE::w::main_window
 			 std::cout << " in list 2";
 			 std::cout << std::endl;
 		 });
+
+	return list_container;
 }
 
 void testlist(const testlistoptions &options)
@@ -989,6 +1026,8 @@ void testlist(const testlistoptions &options)
 
 	LIBCXX_NAMESPACE::w::main_window_config config;
 
+	LIBCXX_NAMESPACE::w::focusable_containerptr mainlist;
+
 	config.restore(pos, "name");
 	auto main_window=default_screen->create_mainwindow
 		(config,
@@ -1001,7 +1040,7 @@ void testlist(const testlistoptions &options)
 				 listtable(default_screen, main_window, pos,
 					   options);
 			 else
-				 plain_list(main_window, options);
+				 mainlist=plain_list(main_window, options);
 		 });
 
 	guard(main_window->connection_mcguffin());
@@ -1020,6 +1059,46 @@ void testlist(const testlistoptions &options)
 		 });
 
 	main_window->show_all();
+
+	if (options.callback->value)
+	{
+		alarm(30);
+
+		plain_list_info_t::lock lock{plain_list_info};
+
+		lock.wait([&] { return lock->shown; });
+
+		mainlist->in_thread
+			([=]
+			 (ONLY IN_THREAD)
+			 {
+				 auto impl=mainlist->listlayout()
+					 ->impl->list_element_singleton->impl;
+
+				 LIBCXX_NAMESPACE::w::key_event
+					 ke{0,
+					    mainlist->get_screen()
+					    ->get_connection()
+					    ->impl
+					    ->keysyms_info(IN_THREAD)};
+				 ke.keypress=true;
+				 ke.keysym=XK_Home;
+
+				 impl->process_key_event(IN_THREAD, ke);
+			 });
+
+		lock.wait([&] { return lock->item_selected &&
+					lock->item_selected == 0; });
+
+		mainlist->listlayout()->insert_items(0, {"Foo"});
+
+		lock.wait([&] { return lock->item_selected &&
+					lock->item_selected == 1; });
+		mainlist->listlayout()->remove_item(0);
+		lock.wait([&] { return lock->item_selected &&
+					lock->item_selected == 1; });
+		return;
+	}
 
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 	lock.wait([&] { return *lock; });

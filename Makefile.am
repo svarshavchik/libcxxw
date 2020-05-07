@@ -1596,6 +1596,7 @@ test:
 	./testmainwindow --themescale
 	./testmainwindow --themescale --nopadding
 	./testscrollbar --testscroll
+	./testlist --callback
 	./testlabel
 	./testlabel --truncatable
 	LC_ALL=ru_RU.UTF-8 ./testtooltip --width=25

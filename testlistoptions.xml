@@ -44,12 +44,14 @@
     <descr>Use bulleted list style</descr>
   </option>
 
-
-
-
-
-
-
+  <option>
+    <name>callback</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>c</opt>
+    <longopt>callback</longopt>
+    <descr>Test item callbacks</descr>
+  </option>
 
   <option>
     <name>test</name>
@@ -115,6 +117,7 @@
     <name>test</name>
     <name>hier</name>
     <name>table</name>
+    <name>callback</name>
   </mutex>
 
   <defaultoptions />
