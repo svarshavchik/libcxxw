@@ -429,65 +429,85 @@ static inline auto dimension_scale_value_validator(const x::w::input_field
 			       &appObj::dimension_scale_value_entered);
 }
 
-static auto color_scale_value_validator(const x::w::input_field &field)
+// Double value input field validator.
+
+static auto optional_double_validator_closure()
+{
+	return []
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 const x::w::input_field &me,
+		 const auto &trigger) -> std::optional<std::optional<double>>
+	{
+		if (value.empty())
+			return std::optional<double>{};
+
+		double parsed_value;
+
+		{
+			std::istringstream i{value};
+
+			i >> parsed_value;
+
+			if (i.fail() || !(i.get(), i.eof()))
+			{
+				me->stop_message(_("Invalid value"));
+				return std::nullopt;
+			}
+		}
+
+		if (parsed_value < 0)
+		{
+			me->stop_message(_("Value cannot be"
+					   " negative"));
+			return std::nullopt;
+		}
+
+		std::istringstream i{appObj::fmtdblval(parsed_value)};
+
+		std::optional<std::optional<double>> ret;
+
+		auto &valid_value=ret.emplace();
+
+		valid_value.emplace(0);
+
+		i >> *valid_value;
+
+		return ret;
+	};
+}
+
+static auto optional_double_formatter_closure()
+{
+	return []
+		(const auto &v) -> std::string
+	       {
+		       if (v)
+		       {
+			       return appObj::fmtdblval(*v);
+		       }
+		       return "";
+	       };
+}
+
+static auto optional_double_new_value_closure(void
+					      (appObj::*validated_cb)(ONLY))
+{
+	return [validated_cb]
+		(ONLY IN_THREAD, const auto &v)
+	       {
+		       appinvoke(validated_cb, IN_THREAD);
+	       };
+}
+
+template<typename field_type>
+static auto optional_double_validator(field_type &&field,
+				      void (appObj::*validated_cb)(ONLY))
 {
 	return field->set_validator
-		([]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  const x::w::input_field &me,
-		  const auto &trigger) -> std::optional<std::optional<double>>
-		 {
-			 if (value.empty())
-				 return std::optional<double>{};
-
-			 double parsed_value;
-
-			 {
-				 std::istringstream i{value};
-
-				 i >> parsed_value;
-
-				 if (i.fail() || !(i.get(), i.eof()))
-				 {
-					 me->stop_message(_("Invalid value"));
-					 return std::nullopt;
-				 }
-			 }
-
-			 if (parsed_value < 0)
-			 {
-				 me->stop_message(_("Value cannot be"
-						    " negative"));
-				 return std::nullopt;
-			 }
-
-			 std::istringstream i{appObj::fmtdblval(parsed_value)};
-
-			 std::optional<std::optional<double>> ret;
-
-			 auto &valid_value=ret.emplace();
-
-			 valid_value.emplace(0);
-
-			 i >> *valid_value;
-
-			 return ret;
-		 },
-		 []
-		 (const auto &v) -> std::string
-		 {
-			 if (v)
-			 {
-				 return appObj::fmtdblval(*v);
-			 }
-			 return "";
-		 },
-		 []
-		 (ONLY IN_THREAD, const auto &v)
-		 {
-			 appinvoke(&appObj::color_updated, IN_THREAD);
-		 });
+		(optional_double_validator_closure(),
+		 optional_double_formatter_closure(),
+		 optional_double_new_value_closure(validated_cb));
 }
 
 struct all_gradient_values : x::w::linear_gradient_values,
@@ -787,14 +807,18 @@ appObj::appObj(init_args &&args)
 				    (dimension_value)},
 	  dimension_scale_value_validated{dimension_scale_value_validator
 					  (dimension_scale_value)},
-	  color_scaled_r_validated{color_scale_value_validator
-				   (color_scaled_page_r)},
-	  color_scaled_g_validated{color_scale_value_validator
-				   (color_scaled_page_g)},
-	  color_scaled_b_validated{color_scale_value_validator
-				   (color_scaled_page_b)},
-	  color_scaled_a_validated{color_scale_value_validator
-				   (color_scaled_page_a)},
+	  color_scaled_r_validated{optional_double_validator
+				   (color_scaled_page_r,
+				    &appObj::color_updated)},
+	  color_scaled_g_validated{optional_double_validator
+				   (color_scaled_page_g,
+				    &appObj::color_updated)},
+	  color_scaled_b_validated{optional_double_validator
+				   (color_scaled_page_b,
+				    &appObj::color_updated)},
+	  color_scaled_a_validated{optional_double_validator
+				   (color_scaled_page_a,
+				    &appObj::color_updated)},
 
 
 	  color_linear_x1_validated{color_gradient_value_validator
