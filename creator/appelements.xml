@@ -389,6 +389,95 @@ object and placed into discrete variables.
     <name>border_delete_button</name>
   </ref>
 
+  <!-- Fonts page fields -->
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>font_name</name>
+  </ref>
+  <ref>
+    <type>x::w::label</type>
+    <name>font_new_name_label</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>font_new_name</name>
+  </ref>
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>font_from_name</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>font_family</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>font_size_type</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>font_size</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>font_foundry</name>
+  </ref>
+
+  <ref>
+    <type>x::w::input_field</type>
+    <name>font_style</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>font_weight</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>font_spacing</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>font_slant</name>
+  </ref>
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>font_width</name>
+  </ref>
+
+  <ref>
+    <type>x::w::container</type>
+    <name>font_preview_container</name>
+  </ref>
+
+  <ref>
+    <type>x::w::font_picker_preview</type>
+    <name>font_preview</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>font_update_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>font_reset_button</name>
+  </ref>
+
+  <ref>
+    <type>x::w::button</type>
+    <name>font_delete_button</name>
+  </ref>
+
   <!-- Appearance pages fields -->
 
   <ref>

@@ -1014,6 +1014,7 @@ cxxwcreator_SOURCES=\
 	creator/appcolors.C			\
 	creator/appborders.C			\
 	creator/appdimension.C			\
+	creator/appfonts.C			\
 	creator/cxxwcreator.C			\
 	#
 

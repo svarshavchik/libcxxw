@@ -854,7 +854,7 @@ void appObj::border_enable_disable_buttons(ONLY IN_THREAD,
 			auto preview_border=
 				generator->lookup_border
 				(lock->ids.at(lock->current_selection->index),
-				 false, "current_border");
+				 true, "current_border");
 			x::w::borderlayoutmanager blm=
 				border_preview->get_layoutmanager();
 

@@ -30,6 +30,7 @@
 #include "x/w/impl/connection_threadfwd.H"
 #include "x/w/impl/uixmlparser.H"
 #include "x/w/screen_positions.H"
+#include "font_picker/font_picker_preview.H"
 #include "messages.H"
 
 #include "creator/appelements.inc.H"
@@ -48,6 +49,19 @@ class appObj;
 typedef x::ref<appObj> app;
 
 typedef const app_elements_t const_app_elements_t;
+
+//! Collection of standard values of various font properties.
+
+struct standard_font_values_t {
+
+	x::w::font::values_t standard_weights,
+		standard_slants,
+		standard_widths,
+		standard_spacings;
+	std::vector<unsigned> standard_point_sizes;
+
+	standard_font_values_t();
+};
 
 //! Singleton application class.
 
@@ -75,7 +89,7 @@ private:
 			 > appearance_types_t;
 
 	//! Parameters for an internal constructor
-	struct init_args {
+	struct init_args : standard_font_values_t {
 
 		std::string configfile;
 
@@ -85,7 +99,6 @@ private:
 		appearance_types_t appearance_types;
 		x::functionref<x::w::input_field_filter_callback_t
 			       > label_filter;
-
 		init_args();
 	};
 
@@ -437,6 +450,14 @@ public:
 	const x::w::validated_input_field<
 		std::vector<double>
 		> border_dashes_field_validated;
+
+	//! Validator for the point size field
+	const x::w::validated_input_field<std::optional<double>
+					  > font_point_size_validated;
+
+	//! Collection of standard values of various font properties.
+
+	const standard_font_values_t standard_font_values;
 
 	//////////////////////////////////////////////////////////////////////
 	//
@@ -1171,6 +1192,208 @@ private:
 	void border_delete2(border_info_t::lock &lock,
 			    size_t index,
 			    const x::ref<x::obj> &busy_mcguffin);
+
+public:
+
+
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Fonts page.
+
+	//! Installs callbacks.
+
+	static void fonts_elements_initialize(app_elements_tptr &,
+					      x::w::uielements &,
+					      init_args &);
+
+	//! Initialize the dimension page after loading/creating a new theme.
+
+	void fonts_initialize(ONLY IN_THREAD);
+
+public:
+	//! Font size can be specified as point size, or scaled
+
+	//! Note: enum values in same order as the corresponding
+	//! font_size_type combo-box values.
+
+	enum class font_size_type_t
+		{
+		 point_size,
+		 scaled_size,
+		 scale
+		};
+
+	//! Parsed font
+
+	struct loaded_font_t {
+
+		//! Parsed font value
+		std::string from;
+
+		//! Parsed font value
+		std::string family;
+
+		//! Parsed font value
+		font_size_type_t size_type=font_size_type_t::point_size;
+
+		//! Parsed font value
+		std::optional<double> size;
+
+		//! Parsed font value
+		std::string foundry;
+
+		//! Parsed font value
+		std::string style;
+
+		//! Parsed font value
+		std::string weight;
+
+		//! Parsed font value
+		std::string spacing;
+
+		//! Parsed font value
+		std::string slant;
+
+		//! Parsed font value
+		std::string width;
+
+		bool operator==(const loaded_font_t &other) const
+		{
+			return from == other.from &&
+				family == other.family &&
+				size_type == other.size_type &&
+				size == other.size &&
+				foundry == other.foundry &&
+				style == other.style &&
+				weight == other.weight &&
+				spacing == other.spacing &&
+				slant == other.slant &&
+				width == other.width;
+		}
+	};
+
+	//! Original font parameters
+
+	struct font_orig_params {
+		size_t index; //!< Which original font
+
+		loaded_font_t loaded_font; //!< The original font
+	};
+
+	//! Validated and saved parameters.
+
+	struct font_save_params {
+		std::string font_new_name;  //!< When creating a new one.
+		loaded_font_t font_new_value; //!< The new value
+
+		//! Check if the new value is unchanged
+		bool operator==(const font_orig_params &orig) const
+		{
+			return font_new_value == orig.loaded_font;
+		}
+	};
+
+	//! Fonts metadata
+	struct font_info_s {
+
+		//! Cached: selected index of an existing font.
+		std::optional<font_orig_params> current_selection;
+
+		//! The existing fonts.
+		std::vector<std::string> ids;
+
+		//! This is updated every time something changes on the
+		//! fonts page. The "Save" button simply takes this to
+		//! the bank.
+
+		std::optional<font_save_params> save_params;
+
+		//! Whether a call to font_enable_disable is already scheduled
+
+		bool enable_disable_scheduled=false;
+	};
+
+	//! Thread-safe container for fonts metadata.
+
+	typedef x::mptobj<font_info_s, std::recursive_mutex> font_info_t;
+
+	//! Current font data
+	font_info_t font_info;
+
+private:
+	//! Initialize the dimension page after loading/creating a new theme.
+
+	void fonts_initialize(ONLY IN_THREAD, font_info_t::lock &lock);
+public:
+	//! Something was selected or unselected in the font combo-box
+
+	void font_selected(ONLY IN_THREAD,
+			     const
+			     x::w::standard_combobox_selection_changed_info_t
+			     &);
+
+	//! "Reset" button
+	void font_reset(ONLY IN_THREAD);
+
+	//! A new font was selected in the font combo-box
+
+	//! Or the Reset button was pressed. Always invokes font_reset_values
+	//! when done.
+	void font_selected_locked(ONLY IN_THREAD,
+				    font_info_t::lock &lock);
+
+	//! Reset all fields to their original values, for the current font
+	void font_reset_values(ONLY IN_THREAD,
+				 font_info_t::lock &lock);
+
+	//! Enable/disable elements
+	void font_enable_disable_buttons(ONLY IN_THREAD,
+					   font_info_t::lock &lock);
+
+	//! Enable/disable elements
+
+	//! Invoked from UI callback.
+	static void font_enable_disable_later(ONLY IN_THREAD);
+
+	//! Invoked from UI callback.
+	static void font_enable_disable_now(ONLY IN_THREAD);
+
+	//! Invoked from UI callback.
+	void font_enable_disable(ONLY IN_THREAD);
+	//! Save/update font, invoked from update_theme().
+
+	get_updatecallbackptr font_update(ONLY IN_THREAD);
+
+private:
+
+	//! Continue font_update(), in the main execution thread.
+
+	update_callback_t font_update2(font_info_t::lock &lock);
+
+	//! Finalize font_update(), in the main execution thread.
+
+	void font_update2(font_info_t::lock &lock,
+			    const std::string &id,
+			    bool is_new,
+			    const x::ref<x::obj> &busy_mcguffin);
+
+	//! Finish font_update(), in the connection thread.
+	void font_update3(ONLY IN_THREAD,
+			    const x::ref<x::obj> &busy_mcguffin);
+
+public:
+	//! Delete font, invoked from update_theme().
+	get_updatecallbackptr font_delete(ONLY IN_THREAD);
+
+private:
+
+	//! Continue font_delete(), in the main execution thread.
+	update_callback_t font_delete2(font_info_t::lock &lock);
+
+	//! Finish font_delete(), in the main execution thread.
+	void font_delete2(font_info_t::lock &lock,
+					    size_t index,
+					    const x::ref<x::obj> &busy_mcguffin);
 
 public:
 	/////////////////////////////////////////////////////////////////////

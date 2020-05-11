@@ -146,6 +146,20 @@
     <add>
       <tab>
 	<element>
+	  <label type='theme_text'>${context:creator-main}Fon${decoration:underline}t${decoration:none}s</label>
+	</element>
+      </tab>
+      <shortcut type="theme_text">${context:creator-main}Alt-T</shortcut>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>fonts_page</name>
+	</container>
+      </page>
+    </add>
+    <add>
+      <tab>
+	<element>
 	  <label type='theme_text'>${context:creator-main}${decoration:underline}A${decoration:none}ppearances</label>
 	</element>
       </tab>
@@ -1843,6 +1857,352 @@
 	<appearance>normal_theme</appearance>
       </config>
       <shortcut type='theme_text'>${context:border}Alt-E</shortcut>
+    </element>
+  </factory>
+
+  <!-- Fonts page -->
+
+  <layout type="grid" id="fonts_page">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>fonts-top-half</name>
+    </append_row>
+    <append_row>
+      <name>fonts-bottom-row</name>
+    </append_row>
+  </layout>
+
+  <!-- Font: Top half, preview on the left, font properties on the right -->
+
+  <factory type="grid" id="fonts-top-half">
+    <halign>center</halign>
+    <element>
+      <name>font_preview_container</name>
+    </element>
+    <container>
+      <name>fonts_details</name>
+      <type>grid</type>
+    </container>
+  </factory>
+
+  <appearance id="font-preview-appearance" type="font_picker">
+  </appearance>
+
+  <!-- Font: font details -->
+
+  <layout type="grid" id="fonts_details">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>3</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>4</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>5</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>6</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>7</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>8</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>9</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>10</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>fonts-name-row</name>
+    </append_row>
+    <append_row>
+      <name>new-fonts-name-row</name>
+    </append_row>
+    <append_row>
+      <name>fonts-from-row</name>
+    </append_row>
+    <append_row>
+      <name>fonts-family-row</name>
+    </append_row>
+    <append_row>
+      <name>fonts-size-row</name>
+    </append_row>
+    <append_row>
+      <name>fonts-foundry-row</name>
+    </append_row>
+    <append_row>
+      <name>fonts-style-row</name>
+    </append_row>
+    <append_row>
+      <name>fonts-weight-row</name>
+    </append_row>
+    <append_row>
+      <name>fonts-spacing-row</name>
+    </append_row>
+    <append_row>
+      <name>fonts-slant-row</name>
+    </append_row>
+    <append_row>
+      <name>fonts-width-row</name>
+    </append_row>
+  </layout>
+
+  <!-- Font: Name -->
+  <factory type="grid" id="fonts-name-row">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>${context:creator}Name:</label>
+    </element>
+    <container>
+      <name>font_name_field</name>
+      <type>standard_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="font_name_field" type="standard_combobox" />
+
+  <!-- Font: New name -->
+  <factory type="grid" id="new-fonts-name-row">
+    <halign>right</halign>
+    <element id="font_new_name_label">
+      <label type='theme_text'>${context:creator}New name:</label>
+    </element>
+    <element id="font_new_name_field">
+      <input_field />
+        <config>
+	  <columns>30</columns>
+	</config>
+    </element>
+  </factory>
+
+  <!-- Font: From -->
+  <factory type="grid" id="fonts-from-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}From:</label>
+    </element>
+    <container>
+      <name>font_from_name</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="font_from_name" type="editable_combobox" />
+
+  <!-- Font: Family -->
+  <factory type="grid" id="fonts-family-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Family:</label>
+    </element>
+    <container>
+      <name>font_family</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="font_family" type="editable_combobox" />
+
+  <!-- Font: Size -->
+  <factory type="grid" id="fonts-size-row">
+    <halign>right</halign>
+    <container>
+      <name>font_size_type</name>
+      <type>standard_combobox</type>
+    </container>
+    <container>
+      <name>font_size</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="font_size_type" type="standard_combobox" />
+
+  <layout id="font_size" type="editable_combobox" />
+
+  <!-- Font: Foundry -->
+  <factory type="grid" id="fonts-foundry-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Foundry:</label>
+    </element>
+    <element id="font_foundry">
+      <input_field />
+        <config>
+	  <columns>30</columns>
+	</config>
+    </element>
+  </factory>
+
+  <!-- Font: Style -->
+  <factory type="grid" id="fonts-style-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Style:</label>
+    </element>
+    <element id="font_style">
+      <input_field />
+        <config>
+	  <columns>30</columns>
+	</config>
+    </element>
+  </factory>
+
+  <!-- Font: Weight -->
+  <factory type="grid" id="fonts-weight-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Weight:</label>
+    </element>
+    <container>
+      <name>font_weight</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="font_weight" type="editable_combobox" />
+
+  <!-- Font: Spacing -->
+  <factory type="grid" id="fonts-spacing-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Spacing:</label>
+    </element>
+    <container>
+      <name>font_spacing</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="font_spacing" type="editable_combobox" />
+
+  <!-- Font: Slant -->
+  <factory type="grid" id="fonts-slant-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Slant:</label>
+    </element>
+    <container>
+      <name>font_slant</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="font_slant" type="editable_combobox" />
+
+  <!-- Font: Width -->
+  <factory type="grid" id="fonts-width-row">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:creator}Width:</label>
+    </element>
+    <container>
+      <name>font_width</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+
+  <layout id="font_width" type="editable_combobox" />
+
+  <!-- Bottom section: update/delete/reset buttons -->
+
+  <factory id="fonts-bottom-row" type="grid">
+    <halign>center</halign>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+
+    <padding>
+      <side>top</side>
+      <padding>none</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>none</padding>
+    </padding>
+    <container>
+      <type>grid</type>
+      <name>fonts-bottom-row-container</name>
+    </container>
+  </factory>
+
+  <layout id="fonts-bottom-row-container" type="grid">
+    <append_row>
+      <name>fonts-buttons</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="fonts-buttons">
+    <element id="font_update_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:font}${decoration:underline}U${decoration:none}pdate</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:font}Alt-U</shortcut>
+    </element>
+    <element id="font_reset_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:font}${decoration:underline}R${decoration:none}eset</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:font}Alt-R</shortcut>
+    </element>
+    <element id="font_delete_button">
+      <button>
+	<element>
+	  <label type="theme_text">${context:font}D${decoration:underline}e${decoration:none}lete</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:font}Alt-E</shortcut>
     </element>
   </factory>
 

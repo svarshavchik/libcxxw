@@ -13,6 +13,8 @@
 #include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/shortcut.H"
 #include "x/w/theme_text.H"
+#include "x/w/font_picker_config.H"
+#include "x/w/font_picker_appearance.H"
 #include "catch_exceptions.H"
 
 #include <x/config.H>
@@ -40,6 +42,17 @@ static x::xml::doc new_theme_file()
 	lock->create_child()->element({"theme"})->attribute({"version", "1"});
 
 	return d;
+}
+
+//! Collection of standard values of various font properties.
+
+standard_font_values_t::standard_font_values_t()
+	: standard_weights{x::w::font::standard_weights()},
+	  standard_slants{x::w::font::standard_slants()},
+	  standard_widths{x::w::font::standard_widths()},
+	  standard_spacings{x::w::font::standard_spacings()},
+	  standard_point_sizes{x::w::font::standard_point_sizes()}
+{
 }
 
 appObj::init_args::init_args()
@@ -130,7 +143,43 @@ inline appObj::init_args appObj::create_init_args()
 		 [&]
 		 (const auto &mw)
 		 {
-			 x::w::uielements ui;
+			 // Generated container for the font preview.
+			 x::w::containerptr font_preview_containerptr;
+
+			 // And the actual widget that previews the font
+			 x::w::font_picker_previewptr font_previewptr;
+
+			 x::w::uielements ui
+				 {
+				  {
+				   {
+				    "font_preview_container",
+				    [&]
+				    (const auto &factory)
+				    {
+					    // Cusotm factory for the
+					    // font preview widget.
+
+					    x::w::font_picker_config config;
+
+					    config.appearance=main_generator
+						    ->lookup_appearance
+						    ("font-preview-appearance");
+
+					    const auto &[font_preview_container,
+							 font_preview_widget]=
+						    x::w::
+						    create_font_picker_preview
+						    (factory, config);
+
+					    font_preview_containerptr=
+						    font_preview_container;
+					    font_previewptr=
+						    font_preview_widget;
+				    },
+				   },
+				  },
+				 };
 
 			 mw->on_disconnect([]
 					   {
@@ -258,6 +307,14 @@ inline appObj::init_args appObj::create_init_args()
 			 x::w::gridlayoutmanager lm=mw->get_layoutmanager();
 			 lm->generate("main", main_generator, ui);
 
+			 // We created a custom widget, pretend that it
+			 // came off the same assembly line sa the rest.
+			 ui.new_elements.emplace("font_preview_container",
+						 font_preview_containerptr);
+			 ui.new_elements.emplace("font_preview",
+						 font_previewptr);
+
+
 			 args.elements.status=ui.get_element("status");
 
 			 appObj::dimension_elements_initialize
@@ -267,6 +324,9 @@ inline appObj::init_args appObj::create_init_args()
 				 (args.elements, ui, args);
 
 			 appObj::borders_elements_initialize
+				 (args.elements, ui, args);
+
+			 appObj::fonts_elements_initialize
 				 (args.elements, ui, args);
 
 			 appObj::appearances_elements_initialize
@@ -894,7 +954,12 @@ appObj::appObj(init_args &&args)
 	  border_vradius_scale_validated{border_size_scale_validator
 			  (border_vradius_scale)},
 	  border_dashes_field_validated{create_border_dashes_field_validator
-					(border_dashes_field)}
+					(border_dashes_field)},
+	  font_point_size_validated(optional_double_validator
+				    (font_size->editable_comboboxlayout(),
+				     &appObj::font_enable_disable)),
+	  standard_font_values{std::move(static_cast<standard_font_values_t &>
+					 (args))}
 {
 }
 
@@ -905,6 +970,7 @@ void appObj::loaded_file(ONLY IN_THREAD)
 	dimension_initialize(IN_THREAD);
 	colors_initialize(IN_THREAD);
 	borders_initialize(IN_THREAD);
+	fonts_initialize(IN_THREAD);
 	appearances_initialize(IN_THREAD);
 }
 
