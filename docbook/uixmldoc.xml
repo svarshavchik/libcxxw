@@ -1242,7 +1242,8 @@ lm->generate("bottom-part", generator, widgets);</programlisting>
     <point_size>14</point_size</point_size>
   </font>
 
-  <font id="question_mark_font_bold" from="question_mark_font">
+  <font id="question_mark_font_bold">
+    <from>question_mark_font</from>
     <weight>heavy</weight>
   </font>
 
@@ -1255,15 +1256,14 @@ lm->generate("bottom-part", generator, widgets);</programlisting>
       <tag class='attribute'>id</tag> attribute gives the label that
       theme file uses to refer to this font.
       An optional
-      <tag class='attribute'>from</tag> attribute specifies that this
+      <tag class='element'>from</tag> specifies that this
       font specification is based on another font. The other font's
       definition gets copied, and this font's settings
       modify the original font's setting.
     </para>
 
     <para>
-      The <tag class='element'>font</tag> element contains the following
-      elements:
+      Other elements in a <tag class='element'>font</tag>:
     </para>
 
     <itemizedlist>
@@ -1277,6 +1277,14 @@ lm->generate("bottom-part", generator, widgets);</programlisting>
 	<para>
 	  <tag class='element'>point_size</tag> specifies the font's height
 	  in points.
+	</para>
+
+	<para>
+	  Alternatively
+	  <tag class='element'>scale</tag> multiplies the font's size by
+	  a value. This is used together with
+	  <tag class='element'>from</tag> to make base the font's
+	  size on another font's size.
 	</para>
 
 	<note>

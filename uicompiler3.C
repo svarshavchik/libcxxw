@@ -1115,7 +1115,7 @@ void uicompiler::do_load_fonts(const ui::parser_lock &lock,
 
 			font new_font;
 
-			auto from=lock->get_any_attribute("from");
+			auto from=optional_value(lock, "from", "font");
 
 			if (!from.empty())
 			{

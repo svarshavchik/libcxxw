@@ -491,7 +491,8 @@ See COPYING for distribution information.
     <scaled_size>.3</scaled_size>
   </font>
 
-  <font id="question_mark_font_bold" from="question_mark_font">
+  <font id="question_mark_font_bold">
+    <from>question_mark_font</from>
     <weight>heavy</weight>
   </font>
 
@@ -512,7 +513,7 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  A <tag class='element'>font</tag>'s
-	  <tag class='attribute'>from</tag> attribute can also reference
+	  <tag class='element'>from</tag> can also reference
 	  a font specification from the default theme.
 	</para>
       </listitem>

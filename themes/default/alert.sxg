@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-
 <!-- Exclamation mark inside a diamond -->
-
 <sxg xmlns:xi="http://www.w3.org/2003/XInclude">
   <width>5</width>
   <height>5</height>
@@ -26,10 +24,11 @@
     <size>scaled</size>
     <width>5</width>
     <height>5</height>
-    <gc id="mask_gc" />
+    <gc id="mask_gc"/>
   </pixmap>
 
-  <font id="exclamation_mark_font" from="mono">
+  <font id="exclamation_mark_font">
+    <from>mono</from>
     <scaled_size>.7</scaled_size>
   </font>
 
@@ -130,7 +129,7 @@
       <x>2.4</x>
       <y>2.5</y>
 
-      <srcsize />
+      <srcsize/>
 
       <halign>centered</halign>
       <valign>middle</valign>

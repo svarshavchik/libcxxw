@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <sxg xmlns:xi="http://www.w3.org/2003/XInclude">
   <width>64</width>
   <height>64</height>
@@ -16,10 +15,11 @@
     <size>scaled</size>
     <width>64</width>
     <height>64</height>
-    <gc id="mask_gc" />
+    <gc id="mask_gc"/>
   </pixmap>
 
-  <font id="question_mark_font" from="label">
+  <font id="question_mark_font">
+    <from>label</from>
     <scaled_size>.8</scaled_size>
   </font>
 
@@ -102,7 +102,7 @@
       <x>32</x>
       <y>32</y>
 
-      <srcsize />
+      <srcsize/>
 
       <halign>centered</halign>
       <valign>middle</valign>
