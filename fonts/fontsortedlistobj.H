@@ -10,6 +10,7 @@
 #include <x/obj.H>
 
 #include "fonts/fontlistobj.H"
+#include "fonts/fontsortedlistfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -20,7 +21,7 @@ namespace fontconfig {
 
 //! A sorted list of fonts that best matches a pattern.
 
-class LIBCXX_HIDDEN sortedlistObj : public listObj {
+class sortedlistObj : public listObj {
 
 public:
 	class implObj;

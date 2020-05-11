@@ -42,6 +42,9 @@ public:
 
 	size_t size() const;
 
+	class LIBCXX_PUBLIC const_iterator;
+	class LIBCXX_PUBLIC iterator;
+
 	//! A iterator over a constant font list.
 
 	class const_iterator : public std::iterator<std::random_access_iterator_tag, pattern> {
@@ -235,10 +238,10 @@ public:
 	};
 
 	//! Return the beginning iterator
-	iterator begin();
+	iterator begin() LIBCXX_PUBLIC;
 
 	//! Return the ending iterator
-	iterator end();
+	iterator end() LIBCXX_PUBLIC;
 
 	//! Return the beginning iterator
 	const_iterator begin() const;

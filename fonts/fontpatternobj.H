@@ -24,7 +24,7 @@ namespace fontconfig {
 
 //! Information about a font.
 
-class LIBCXX_HIDDEN patternObj : virtual public obj {
+class patternObj : virtual public obj {
 
 public:
 	class implObj;
@@ -72,7 +72,7 @@ public:
 	//! Get a value.
 	bool get_string(const std::string_view &object, std::string &value,
 			size_t index=0)
-		const;
+		const LIBCXX_PUBLIC;
 	//! Get a value.
 	bool get_charset(const std::string_view &object,
 			 const_charsetptr &value, size_t index=0)

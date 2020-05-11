@@ -11,6 +11,7 @@
 #include "fonts/fontobjectsetfwd.H"
 #include "fonts/fontpatternfwd.H"
 #include "fonts/fontlistfwd.H"
+#include "fonts/fontconfigfwd.H"
 #include "x/w/impl/fonts/fontcharsetfwd.H"
 #include "x/w/fontfwd.H"
 
@@ -29,7 +30,7 @@ namespace fontconfig {
 //! A singleton object whose constructor loads and initializes the fontconfig
 //! library, and whose destructor deinitializes it.
 
-class LIBCXX_HIDDEN configObj : virtual public obj {
+class configObj : virtual public obj {
 
 public:
 	class implObj;
@@ -56,7 +57,7 @@ public:
 			       double dpi);
 
 	//! List available fonts
-	list create_list();
+	list create_list() LIBCXX_PUBLIC;
 
 	//! List available fonts
 	list create_list(const pattern &patternArg);

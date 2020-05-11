@@ -27,7 +27,7 @@ public:
 
 	//! Return the singleton instance.
 
-	static config create();
+	static config create() LIBCXX_PUBLIC;
 
 	//! Factor for the create() method.
 
