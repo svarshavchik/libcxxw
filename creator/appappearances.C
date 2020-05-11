@@ -1560,6 +1560,23 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 			      appearance_new_value_container);
 		initialized=true;
 	}
+	else if (type == "font_arg")
+	{
+		font_info_t::lock lock{font_info};
+
+		create_appearance_value_editable_combobox create
+			{
+			 lock->ids.begin(),
+			 lock->ids.end(),
+			 appearance_new_value_save,
+			 n,
+			 appearance_new_value_option,
+			};
+
+		create.create(appearance_dialog_gen,
+			      appearance_new_value_container);
+		initialized=true;
+	}
 
 	if (type == "halign")
 	{
