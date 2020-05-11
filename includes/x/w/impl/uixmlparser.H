@@ -7,11 +7,13 @@
 
 #include <x/w/namespace.H>
 #include <x/w/rgb.H>
+#include <x/w/fontfwd.H>
 #include <x/xml/doc.H>
 #include <x/xml/readlock.H>
 #include <x/locale.H>
 #include <x/functional.H>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <unordered_map>
 
@@ -285,6 +287,44 @@ private:
 				       const char *xpath_name);
 
 };
+
+//! Interface for parsing \<font> elements
+
+//! Parses the contents of the \<font>. Does not parse the id and from
+//! attributes.
+//!
+//! parse() parses the \<font> element, and invokes the callbacks.
+
+struct parse_font {
+
+	//! Parse contents of \<font>
+	void parse(const parser_lock &lock,
+		   const std::string &id);
+
+	//! Invoked by parse()
+	virtual void set_point_size(double)=0;
+	//! Invoked by parse()
+	virtual void set_scaled_size(double)=0;
+	//! Invoked by parse()
+	virtual void scale(double)=0;
+	//! Invoked by parse()
+	virtual void set_from(const std::string &)=0;
+	//! Invoked by parse()
+	virtual void set_family(const std::string &)=0;
+	//! Invoked by parse()
+	virtual void set_foundry(const std::string &)=0;
+	//! Invoked by parse()
+	virtual void set_style(const std::string &)=0;
+	//! Invoked by parse()
+	virtual void set_weight(const std::string &)=0;
+	//! Invoked by parse()
+	virtual void set_spacing(const std::string &)=0;
+	//! Invoked by parse()
+	virtual void set_slant(const std::string &)=0;
+	//! Invoked by parse()
+	virtual void set_width(const std::string &)=0;
+};
+
 
 #if 0
 {

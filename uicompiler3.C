@@ -30,6 +30,7 @@
 #include <x/xml/xpath.H>
 #include <x/imbue.H>
 #include <x/visitor.H>
+#include <x/value_string.H>
 #include "picture.H"
 #include "messages.H"
 #include "defaulttheme.H"
@@ -1082,6 +1083,175 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 	}
 }
 
+namespace {
+#if 0
+}
+#endif
+
+struct parse_font : ui::parse_font {
+
+	font &f;
+
+	parse_font( font &f) : f{f} {}
+
+	void set_point_size(double v) override
+	{
+		f.set_point_size(v);
+	}
+
+	void set_scaled_size(double v) override
+	{
+		f.set_scaled_size(v);
+	}
+
+	void scale(double v) override
+	{
+		f.scale(v);
+	}
+
+	void set_from(const std::string &v) override
+	{
+		// Already processed ourselves
+	}
+
+	void set_family(const std::string &v) override
+	{
+		f.set_family(v);
+	}
+
+	void set_foundry(const std::string &v) override
+	{
+		f.set_foundry(v);
+	}
+
+	void set_style(const std::string &v) override
+	{
+		f.set_style(v);
+	}
+
+	void set_weight(const std::string &v) override
+	{
+		f.set_weight(v);
+	}
+
+	void set_spacing(const std::string &v) override
+	{
+		f.set_spacing(v);
+	}
+
+	void set_slant(const std::string &v) override
+	{
+		f.set_slant(v);
+	}
+
+	void set_width(const std::string &v) override
+	{
+		f.set_width(v);
+	}
+};
+
+static const struct {
+
+	//! Name of an element inside a <font>
+	const char *name;
+
+	//! font method that sets the value.
+
+	std::variant<
+		void (ui::parse_font::*)(double),
+		void (ui::parse_font::*)(const std::string &)
+		> set_font_value;
+} fontfields[]=
+	{
+	 { "point_size", &ui::parse_font::set_point_size},
+	 { "scaled_size", &ui::parse_font::set_scaled_size},
+	 { "scale", &ui::parse_font::scale},
+
+	 { "from", &ui::parse_font::set_from},
+	 { "family", &ui::parse_font::set_family},
+	 { "foundry", &ui::parse_font::set_foundry},
+	 { "style", &ui::parse_font::set_style},
+	 { "weight", &ui::parse_font::set_weight},
+	 { "spacing", &ui::parse_font::set_spacing},
+	 { "slant", &ui::parse_font::set_slant},
+	 { "width", &ui::parse_font::set_width},
+	};
+
+
+#if 0
+{
+#endif
+}
+
+namespace ui {
+#if 0
+}
+#endif
+
+// Parse what's inside a <font>
+
+void parse_font::parse(const ui::parser_lock &lock,
+		       const std::string &id)
+{
+	bool size_field_found=false;
+
+	for (const auto &v:fontfields)
+	{
+		auto node=lock.clone();
+
+		auto xpath=node->get_xpath(v.name);
+
+		if (xpath->count() == 0)
+			continue;
+
+		xpath->to_node();
+
+		auto s=node->get_text();
+
+		std::visit
+			(visitor
+			 {[&](void (ui::parse_font::*func)(double))
+			  {
+				  try {
+					  if (size_field_found)
+						  throw EXCEPTION
+							  (_("Multiple size"
+							     " fields"
+							     " specified"));
+
+					  auto v=x::value_string<double>
+						  ::from_string
+						  (s, lock.c_locale);
+
+					  (this->*func)(v);
+				  } catch (const x::exception &e)
+				  {
+					  std::ostringstream o;
+
+					  o << gettextmsg(_("Cannot parse %1%, "
+							    " font id=%2%: "),
+							  v.name,
+							  id);
+					  o << e;
+					  throw EXCEPTION(o.str());
+				  }
+				  size_field_found=true;
+
+			  },[&](void (ui::parse_font::*string_func)
+				(const std::string &))
+			    {
+				    (this->*string_func)(s);
+			    }
+			 },
+			 v.set_font_value);
+	}
+}
+
+#if 0
+{
+#endif
+}
+
 void uicompiler::do_load_fonts(const ui::parser_lock &lock,
 			       const function<void (const std::string &,
 						    const font &)> &install,
@@ -1127,71 +1297,10 @@ void uicompiler::do_load_fonts(const ui::parser_lock &lock,
 				new_font=*ret;
 			}
 
-			static const struct {
-				const char *name;
-				font &(font::*handler)(double);
-			} double_values[]={
-				{ "point_size", &font::set_point_size},
-				{ "scaled_size", &font::set_scaled_size},
-				{ "scale", &font::scale},
-			};
-
-			for (const auto &v:double_values)
 			{
-				double value;
-				auto node=lock.clone();
+				parse_font parser{new_font};
 
-				auto xpath=node->get_xpath(v.name);
-
-				if (xpath->count() == 0)
-					continue;
-
-				xpath->to_node();
-
-				std::istringstream i(node->get_text());
-
-				imbue i_parse{lock.c_locale, i};
-
-				i >> value;
-
-				if (i.fail())
-					throw EXCEPTION(gettextmsg(_("Cannot parse %1%, font id=%2%"),
-								   v.name,
-								   id));
-				(new_font.*(v.handler))(value);
-			}
-
-			static const struct {
-				const char *name;
-				font &(font::*handler1)(const std::string &);
-				font &(font::*handler2)(const std::string_view &);
-			} string_values[]={
-				{ "family", &font::set_family, nullptr},
-				{ "foundry", &font::set_foundry, nullptr},
-				{ "style", &font::set_style, nullptr},
-				{ "weight", nullptr, &font::set_weight},
-				{ "spacing", nullptr, &font::set_spacing},
-				{ "slant", nullptr, &font::set_slant},
-				{ "width", nullptr, &font::set_width},
-			};
-
-			for (const auto &v:string_values)
-			{
-				auto node=lock.clone();
-
-				auto xpath=node->get_xpath(v.name);
-
-				if (xpath->count() == 0)
-					continue;
-
-				xpath->to_node();
-
-				if (v.handler1)
-					(new_font.*(v.handler1))
-						(node->get_text());
-				if (v.handler2)
-					(new_font.*(v.handler2))
-						(node->get_text());
+				parser.parse(lock, id);
 			}
 			install(id, new_font);
 			parsed=true;
