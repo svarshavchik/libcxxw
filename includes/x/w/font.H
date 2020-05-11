@@ -8,7 +8,8 @@
 
 #include <string>
 #include <string_view>
-#include <map>
+#include <tuple>
+#include <vector>
 #include <x/w/fontfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -75,9 +76,18 @@ struct font {
 
 	~font();
 
-	// Map of predefined int values and the corresponding localized string.
+	//! A predefined int value, its label, and localized name.
 
-	typedef std::map<int, std::string> values_t;
+	struct value_t {
+		int value;
+		const char *label;
+		const char *description;
+	};
+	//! Map of predefined int values and the corresponding localized string.
+
+	//! Container returned by several standard_() methods. The int
+	//! values are in sorted order.
+	typedef std::vector<value_t> values_t;
 
 	/////////////////////////////////////////////////////////////////////
 
@@ -222,7 +232,7 @@ struct font {
 	//! Specify spacing as a character string
 	font &set_spacing(const std::string_view &value);
 
-	//! Return a list of all predefined weights
+	//! Return a list of all predefined spacings
 	static values_t standard_spacings();
 
 	/////////////////////////////////////////////////////////////////////
@@ -239,6 +249,11 @@ struct font {
 
 		return *this;
 	}
+
+	//! Return standard point sizes
+
+	//! The returned vector is in sorted order
+	static std::vector<unsigned> standard_point_sizes();
 
 	//! Request a specific font
 

@@ -8,11 +8,15 @@
 #include <x/exception.H>
 #include <x/strtok.H>
 #include <x/visitor.H>
+#include <x/imbue.H>
 #include "x/w/font.H"
 #include "messages.H"
 #include <fontconfig/fontconfig.h>
 
 #include <algorithm>
+#include <iostream>
+#include <cstring>
+#include <charconv>
 
 LIBCXXW_NAMESPACE_START
 
@@ -64,7 +68,7 @@ bool font::operator==(const font &o) const
 	{ # lv, &font:: ln ## _ ## lv },
 
 #define DECLARE_MAP(ln,un,lv,uv,s)		\
-	{ ln ## _ ## lv, s},
+	{ ln ## _ ## lv, # lv,  s},
 
 #define WEIGHTS							\
 	DO(weight,WEIGHT,thin,THIN,_("Thin"))			\
@@ -86,6 +90,18 @@ struct LIBCXX_HIDDEN CHARMAP { const char *n; const int *ptr; };
 
 static int lookup(const struct CHARMAP *cm, const std::string_view &s)
 {
+	int v;
+
+	// We will accept an integer value literal, here.
+
+	auto b=s.data();
+	auto e=s.data()+s.size();
+
+	auto ret=std::from_chars(b, e, v);
+
+	if (ret.ec == std::errc{} && ret.ptr == e && v >= 0)
+		return v;
+
 	while (cm->n)
 	{
 		if (chrcasecmp::str_equal_to()(cm->n, s))
@@ -221,11 +237,17 @@ font &font::set_spacing(const std::string_view &value)
 font::values_t font::standard_spacings()
 {
 	return {
-		{ spacing_proportional, _("Proportional")},
-		{ spacing_dual_width, _("Dual Width")},
-		{ spacing_monospace, _("Monospaced")},
-		{ spacing_charcell, _("Character Cell")},
+		{ spacing_proportional, "proportional", _("Proportional")},
+		{ spacing_dual_width, "dual", _("Dual Width")},
+		{ spacing_monospace, "monospace", _("Monospaced")},
+		{ spacing_charcell, "charcell", _("Character Cell")},
 			};
+}
+
+std::vector<unsigned> font::standard_point_sizes()
+{
+	return {8, 10, 12, 14, 18, 24};
+
 }
 
 font &font::scale(unsigned numerator,
@@ -289,22 +311,33 @@ font &font::operator+=(const std::string_view &s)
 
 	const auto eof=std::istringstream::traits_type::eof();
 
+	// The first token is font family which may contain spaces.
+	const char *sep=";";
+
 	while (beg != end)
 	{
-		if (*beg == ';')
+		if (strchr(sep, *beg))
 		{
 			++beg;
 			continue;
 		}
 
 		auto p=beg;
-		beg=std::find(beg, end, ';');
+		beg=std::find_if(beg, end,
+				 [sep]
+				 (char c)
+				 {
+					 return strchr(sep, c) != 0;
+				 });
 
 		std::string setting{p, beg};
 
 		if (setting.empty()) continue;
 
 		auto equals=setting.find('=');
+
+		// Subsequent tokens can have more separator chars.
+		sep=";, \t\r\n";
 
 		if (equals == setting.npos)
 		{
@@ -315,16 +348,22 @@ font &font::operator+=(const std::string_view &s)
 		std::string name=trim(setting.substr(0, equals));
 		std::string value=trim(setting.substr(equals+1));
 
+		// TODO: when from_chars supported floating point.
+
 		if (cmpi(name, "point_size"))
 		{
 			double v;
 
 			std::istringstream i{value};
 
+			x::imbue im{x::locale::base::c(), i};
+
 			i >> v;
 
-			if (!i.fail() || i.get() == eof)
+			if (!i.fail() && i.get() == eof)
+			{
 				set_point_size(v);
+			}
 		}
 
 		if (cmpi(name, "scale"))
@@ -333,9 +372,11 @@ font &font::operator+=(const std::string_view &s)
 
 			std::istringstream i{value};
 
+			x::imbue im{x::locale::base::c(), i};
+
 			i >> v;
 
-			if (!i.fail() || i.get() == eof)
+			if (!i.fail() && i.get() == eof)
 				scale(v);
 		}
 
@@ -367,8 +408,13 @@ font &font::operator+=(const std::string_view &s)
 font::operator std::string() const
 {
 	std::ostringstream o;
-	const char *sep="";
 
+	// TODO -- when to_chars implements double.
+
+	imbue im{locale::base::c(), o};
+
+	const char *sep="";
+	const char *string_sep="; ";
 	auto v=visitor{
 		[&](const char *name, const std::string &v)
 		{
@@ -376,14 +422,40 @@ font::operator std::string() const
 				return;
 
 			o << sep << name << "=" << v;
-			sep="; ";
+			sep=string_sep;
 		},
-		[&](const char *name, int v)
+		[&](const char *name, int v, const struct CHARMAP *map)
 		{
 			if (v < 0)
 				return;
 
-			o << sep << name << "=" << v;
+			o << sep << name << "=";
+
+			while (map->n)
+			{
+				if (*map->ptr == v)
+					break;
+				++map;
+			}
+
+			// If there's a predefined label, use it.
+			if (map->n)
+			{
+				o << map->n;
+			}
+			else
+			{
+				char buf[40];
+
+				auto ret=std::to_chars(buf, buf+sizeof(buf)-1,
+						       v);
+				if (ret.ec == std::errc{})
+				{
+					*ret.ptr=0;
+				}
+
+				o << buf;
+			}
 			sep=", ";
 		},
 		[&](const char *name, double v)
@@ -395,11 +467,13 @@ font::operator std::string() const
 			sep=", ";
 		}};
 
-	v("foundry", foundry);
 	v("family", family);
-	v("weight", weight);
-	v("slant", slant);
-	v("width", width);
+	string_sep=", ";
+	v("foundry", foundry);
+	v("weight", weight, weights_str);
+	v("slant", slant, slants_str);
+	v("width", width, widths_str);
+	v("spacing", spacing, spacings_str);
 	v("style", style);
 	v("point_size", point_size);
 	v("pixel_size", pixel_size);

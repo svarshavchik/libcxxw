@@ -357,7 +357,7 @@ static inline void update_option_combobox
 		// No group, draw all possible options as valid.
 
 		for (const auto &option:options)
-			valid_options.insert(option.first);
+			valid_options.insert(option.value);
 	}
 	else
 	{
@@ -367,7 +367,7 @@ static inline void update_option_combobox
 		possible_options.reserve(options.size());
 
 		for (const auto &option:options)
-			possible_options.push_back(option.first);
+			possible_options.push_back(option.value);
 
 		// Check each pattern.
 		for (const auto &pattern:current_group->patterns)
@@ -429,9 +429,9 @@ static inline void update_option_combobox
 	{
 		text_param option;
 
-		if (valid_options.find(opt.first) == valid_options.end())
+		if (valid_options.find(opt.value) == valid_options.end())
 			option(appearance->unsupported_option_color);
-		option(opt.second);
+		option(opt.description);
 
 		item_options.emplace_back(option);
 	}
@@ -461,7 +461,7 @@ static int reset_option_combobox(const standard_comboboxlayoutmanager &lm,
 		values.reserve(options.size());
 
 		for (const auto &opt:options)
-			values.push_back(opt.first);
+			values.push_back(opt.value);
 
 		if (!values.empty())
 		{
@@ -520,7 +520,7 @@ font_picker_impl_init_params(const image_button_internal &popup_button,
 		sorted_values.reserve(valid_values.size());
 
 		for (const auto valid_value:valid_values)
-			sorted_values.push_back(valid_value.first);
+			sorted_values.push_back(valid_value.value);
 
 		auto b=sorted_values.begin();
 		auto e=sorted_values.end();
@@ -865,7 +865,7 @@ void font_pickerObj::implObj
 				if (--n == 0)
 				{
 					(current_font(IN_THREAD).*set_function)
-						(value.first);
+						(value.value);
 					return;
 				}
 			}
@@ -942,7 +942,11 @@ void font_pickerObj::implObj
 	}
 
 	if (point_sizes.empty())
-		point_sizes={8, 10, 12, 14, 18, 24};
+	{
+		auto s=font::standard_point_sizes();
+
+		point_sizes.insert(s.begin(), s.end());
+	}
 
 	std::vector<list_item_param> items;
 
