@@ -13,6 +13,7 @@
 #include "x/w/impl/child_elementobj.H"
 #include "x/w/defaultthemefwd.H"
 #include "x/w/font.H"
+#include "x/w/font_arg.H"
 #include "textlabel.H"
 
 LIBCXXW_NAMESPACE_START
@@ -58,6 +59,12 @@ class LIBCXX_HIDDEN font_picker_previewObj::implObj
 	//! Sets current_font, then calls refresh_preview().
 	void update_preview(ONLY IN_THREAD,
 			    const font &updated_font);
+
+	//! Update the font preview
+
+	//! Sets current_font, then calls refresh_preview().
+	void update_preview(ONLY IN_THREAD,
+			    const font_arg &updated_font);
 
 	//! Override initialize()
 

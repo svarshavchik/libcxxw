@@ -280,9 +280,8 @@ struct LIBCXX_HIDDEN font_picker_init_helper
 #endif
 }
 
-static inline font_picker_preview
-create_preview_label(const factory &f,
-		     const font_picker_config &config)
+std::tuple<container, font_picker_preview>
+create_font_picker_preview(const factory &f, const font_picker_config &config)
 {
 	// The font preview element is a peephole
 	// with a text label inside it.
@@ -405,7 +404,7 @@ create_preview_label(const factory &f,
 
 	f->created_internally(c);
 
-	return new_preview_label;
+	return {c, new_preview_label};
 }
 
 standard_dialog_elements_t font_picker_init_helper
@@ -421,7 +420,9 @@ standard_dialog_elements_t font_picker_init_helper
 						'\e')},
 		{"font-preview", [&, this](const auto &f)
 			{
-				preview_label=create_preview_label(f, config);
+				const auto &[c, label] =
+					create_font_picker_preview(f, config);
+				preview_label=label;
 			}},
 	};
 }

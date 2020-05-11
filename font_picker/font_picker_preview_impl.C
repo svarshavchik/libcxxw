@@ -106,6 +106,15 @@ font_picker_previewObj::implObj::implObj(const container_impl &parent_container,
 font_picker_previewObj::implObj::~implObj()=default;
 
 void font_picker_previewObj::implObj::update_preview(ONLY IN_THREAD,
+						     const font_arg
+						     &updated_font)
+{
+	auto coll=create_current_fontcollection(updated_font);
+
+	update_preview(IN_THREAD, coll->font_spec(IN_THREAD));
+}
+
+void font_picker_previewObj::implObj::update_preview(ONLY IN_THREAD,
 						     const font &updated_font)
 {
 	current_font(IN_THREAD)=updated_font;

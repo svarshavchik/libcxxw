@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN font_picker_previewObj;
+class LIBCXX_PUBLIC font_picker_previewObj;
 
 /*! Preview of the currently picked font.
 

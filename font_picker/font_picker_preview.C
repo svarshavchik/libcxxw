@@ -21,4 +21,10 @@ void font_picker_previewObj::update_preview(ONLY IN_THREAD,
 	impl->update_preview(IN_THREAD, updated_font);
 }
 
+void font_picker_previewObj::update_preview(ONLY IN_THREAD,
+					    const font_arg &updated_font)
+{
+	impl->update_preview(IN_THREAD, updated_font);
+}
+
 LIBCXXW_NAMESPACE_END
