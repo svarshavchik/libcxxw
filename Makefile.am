@@ -1446,14 +1446,15 @@ uicompiler_toolboxlayout.lo			\
 	: uicompiler.stamp.inc.H
 
 GET_LAYOUTMANAGERS_BUILT=			\
-	get_layoutmanager.inc.C			\
-	get_layoutmanager.inc.H			\
+	get_layoutmanagers.inc.C		\
+	get_layoutmanagers.inc.H		\
 	includes/x/w/get_layoutmanagers.inc.H 	\
 	includes/x/w/get_layoutmanagersfwd.inc.H
 
 $(GET_LAYOUTMANAGERS_BUILT): get_layoutmanagers.stamp.inc.H
 	touch $@
 BUILT_SOURCES += $(GET_LAYOUTMANAGERS_BUILT)
+CLEANFILES    += $(GET_LAYOUTMANAGERS_BUILT)
 
 EXTRA_DIST += get_layoutmanagers_h.xsl
 
@@ -1642,7 +1643,7 @@ rpm: dist
 ACLOCAL_AMFLAGS = -I m4
 
 upload:
-	git tag -s -a @PACKAGE@/@VERSION@/`date +%Y%m%d%H%M%S` -m 'Tag version @VERSION@'
-	rm -f @PACKAGE@-@VERSION@.tar.bz2.sig; gpg --detach-sign --default-key mrsam@courier-mta.com @PACKAGE@-@VERSION@.tar.bz2; test -f @PACKAGE@-@VERSION@.tar.bz2.sig || exit 1
+	GPG_TTY=`tty` git tag -s -a @PACKAGE@/@VERSION@/`date +%Y%m%d%H%M%S` -m 'Tag version @VERSION@'
+	export GPG_TTY=`tty`; rm -f @PACKAGE@-@VERSION@.tar.bz2.sig; gpg --detach-sign --default-key mrsam@courier-mta.com @PACKAGE@-@VERSION@.tar.bz2; test -f @PACKAGE@-@VERSION@.tar.bz2.sig || exit 1
 	pag upload @PACKAGE@-@VERSION@.tar.bz2
 	pag upload @PACKAGE@-@VERSION@.tar.bz2.sig
