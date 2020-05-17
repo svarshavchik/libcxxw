@@ -89,7 +89,7 @@ convert_to_border_info(const screen &s,
 			[](const std::string &s)
 			{
 				return !s.empty();
-			}}, mm.hradius))
+			}}, mm.hradius.variant()))
 	{
 		radius_w=2;
 	}
@@ -103,7 +103,7 @@ convert_to_border_info(const screen &s,
 			[](const std::string &s)
 			{
 				return !s.empty();
-			}}, mm.vradius))
+			}}, mm.vradius.variant()))
 	{
 		radius_h=2;
 	}

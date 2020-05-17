@@ -5,7 +5,7 @@
 #ifndef x_w_impl_standard_focusframecontainer_element_impl_h
 #define x_w_impl_standard_focusframecontainer_element_impl_h
 
-#include <x/w/impl/focus/focusframecontainer_elementfwd.H>
+#include <x/w/impl/focus/focusframecontainer_element.H>
 #include <x/w/impl/container_elementfwd.H>
 #include <x/w/impl/container_visible_elementfwd.H>
 #include <x/w/impl/nonrecursive_visibilityfwd.H>

@@ -592,7 +592,7 @@ dim_t defaultthemeObj::get_theme_dim_t(const dim_arg &id, themedimaxis wh)
 
 					  return iter->second;
 				  }
-		}, id);
+		}, id.variant());
 
 	return wh == themedimaxis::width
 		? compute_width(v):compute_height(v);

@@ -15,6 +15,7 @@
 #include "themeiconpixmapobj.H"
 #include "pixmap_loader.H"
 #include "x/w/picture.H"
+#include "x/w/dim_arg_hash.H"
 #include <x/refptr_hash.H>
 #include <x/number_hash.H>
 #include <x/weakunordered_multimap.H>

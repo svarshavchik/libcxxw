@@ -32,7 +32,7 @@ size_t hash<LIBCXX_NAMESPACE::w::dim_arg>
 			(const string &s)
 			{
 				return this->hash<string>::operator()(s);
-			}}, d);
+			}}, d.variant());
 }
 
 
