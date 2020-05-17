@@ -68,10 +68,10 @@ fi
 #   $libdir/pkgconfig/libcxxw-$VERSION.pc
 #   $datadir/aclocal/libcxxw-$VERSION.m4
 #
-ABIVER=0.25
+ABIVER=0.27
 AC_SUBST(ABIVER)
 
-VERSION_INFO=25:0:0
+VERSION_INFO=27:0:0
 AC_SUBST(VERSION_INFO)
 
 # Checks for libraries.
