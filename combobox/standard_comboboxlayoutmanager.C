@@ -989,6 +989,19 @@ new_items_ret standard_comboboxlayoutmanagerObj
 }
 
 void standard_comboboxlayoutmanagerObj
+::resort_items(const std::vector<size_t> &indexes)
+{
+	impl->run_as([indexes, impl=this->impl]
+		     (ONLY IN_THREAD)
+		     {
+			     standard_comboboxlayoutmanager lm=
+				     impl->create_public_object();
+
+			     lm->resort_items(IN_THREAD, indexes);
+		     });
+}
+
+void standard_comboboxlayoutmanagerObj
 ::resort_items(ONLY IN_THREAD, const std::vector<size_t> &indexes)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};

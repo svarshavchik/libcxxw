@@ -105,7 +105,8 @@ public:
 					&items)
 		override;
 
-	using superclass_t::resort_items;
+	//! Override resort_items().
+	void resort_items(const std::vector<size_t> &indexes) override;
 
 	//! Override resort_items().
 	void resort_items(ONLY IN_THREAD,
