@@ -343,9 +343,6 @@ factoryObj::create_input_field(const text_param &text,
 
 		child_element_init_params init_params;
 
-		init_params.background_color=x::w::rgb{x::w::rgb::maximum,
-						       0, 0};
-
 		do_create_button_with_explicit_borders
 			(*f, button_config{
 				config.appearance
