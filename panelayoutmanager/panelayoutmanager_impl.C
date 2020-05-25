@@ -578,7 +578,15 @@ void panelayoutmanagerObj::implObj
 
 	if (pane_number == 0)
 	{
-		remove_elements(lock, 0, 2);
+		if (s == 1)
+		{
+			// Do not remove the slider.
+			remove_elements(lock, 0, 1);
+		}
+		else
+		{
+			remove_elements(lock, 0, 2);
+		}
 		return;
 	}
 

@@ -1,3 +1,8 @@
+2020-05-25  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* pane layout manager: removing the only pane resulted in bad
+	contents of the layout manager.
+
 0.27
 
 2020-05-17  Sam Varshavchik  <mrsam@courier-mta.com>
