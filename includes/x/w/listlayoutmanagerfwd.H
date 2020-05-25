@@ -872,16 +872,16 @@ typedef functionptr<list_item_status_change_callback_t
 typedef functionptr<void (THREAD_CALLBACK, const list_item_status_info_t &)
 		    > list_selection_changed_cb_t;
 
-//! SFINAE template for overloading a list_item_status_change_callback_t parameter.
+//! This is a list item status change callback
 
-template<typename callback>
-using is_list_item_status_change_callback=
-	std::is_same<std::void_t<
-			     decltype(std::declval<callback &&>()
-				      (std::declval<THREAD_CALLBACK>(),
-				       std::declval<const
-				       list_item_status_info_t &>()))>,
-		     void>;
+template<typename F>
+concept is_list_item_status_change_callback
+= requires(F f,
+	   ONLY IN_THREAD,
+	   const list_item_status_info_t &info)
+{
+	{ f(IN_THREAD, info) };
+};
 
 //! A new list item.
 

@@ -31,11 +31,11 @@ enum class text_decoration {
 	underline=1,
 };
 
-template<typename ...> struct text_param_constructible_d;
-
 template<typename ...Args>
-using text_param_constructible=
-	typename text_param_constructible_d<Args...>::type;
+concept text_param_constructible=requires(text_param &t, Args && ...args)
+	{
+		{ (t(std::forward<Args>(args)), ...) };
+	};
 
 /*! \brief \anchor text_param A text parameter for a new widget.
 
@@ -318,11 +318,10 @@ public:
 
 	//! Forward to the default constructor, then forward to \c operator().
 
-	template<typename first_arg, typename ...args,
-		 typename=
-		 std::void_t<text_param_constructible<first_arg, args...>>>
+	template<typename first_arg, typename ...args>
 	inline text_param(first_arg &&arg1, args && ...remaining_args)
-		: text_param()
+		requires text_param_constructible<first_arg, args...>
+		: text_param{}
 	{
 		operator()(std::forward<first_arg>(arg1),
 			   std::forward<args>(remaining_args)...);
@@ -417,46 +416,17 @@ public:
 
 	//! Invokes \c operator() one parameter at a time.
 
-	template<typename first_arg, typename second_arg, typename ...args,
-		 typename=std::void_t<text_param_constructible<first_arg,
-							       second_arg,
-							       args...>>>
+	template<typename first_arg, typename second_arg, typename ...args>
 	inline text_param &operator()(first_arg &&arg1,
 				      second_arg &&arg2,
 				      args && ...remaining_args)
+		requires text_param_constructible<first_arg, second_arg,
+						  args...>
 	{
 		return operator()(std::forward<first_arg>(arg1))
 			(std::forward<second_arg>(arg2),
 			 std::forward<args>(remaining_args)...);
 	}
-};
-
-//! Helper class used by \ref text_param_constructible "text_param_constructible".
-
-template<typename, typename=void> struct text_param_constructible_s {};
-
-template<>
-struct text_param_constructible_s<std::tuple<>, void> {
-
-	typedef void type;
-};
-
-template<typename T, typename ...Args>
-struct text_param_constructible_s<std::tuple<T, Args...>,
-				  std::void_t<decltype
-					      (std::declval<text_param &>()
-					       .operator()(std::declval<
-							   std::decay_t<T>
-							   &>())
-					       )>
-				  >
-	: public text_param_constructible_s<std::tuple<Args...>>
-{
-};
-
-template<typename ...Args>
-struct text_param_constructible_d :
-	text_param_constructible_s<std::tuple<std::decay_t<Args>...>> {
 };
 
 LIBCXXW_NAMESPACE_END

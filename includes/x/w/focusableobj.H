@@ -26,6 +26,13 @@ struct LIBCXX_HIDDEN internal_focusable_group;
 
 typedef void internal_focusable_cb(const internal_focusable_group &);
 
+template<typename F>
+concept internal_focusable_cb_t = requires(const internal_focusable_group &g,
+					   F f)
+{
+	{ f(g) };
+};
+
 //! Methods common to all widgets that can receive input focus.
 
 //! \see focusable
@@ -117,7 +124,7 @@ public:
 	//! arranges them in consecutive focus order, invoking the callback
 	//! and passing this information.
 
-	template<typename functor>
+	template<internal_focusable_cb_t functor>
 	void get_impl(functor &&f) const;
 
 	//! Type-erased get_impl().
@@ -199,7 +206,7 @@ public:
 	void focusable_receive_selection(ONLY IN_THREAD);
 };
 
-template<typename functor>
+template<internal_focusable_cb_t functor>
 inline void focusableObj::get_impl(functor &&f) const
 {
 	do_get_impl(make_function<internal_focusable_cb>

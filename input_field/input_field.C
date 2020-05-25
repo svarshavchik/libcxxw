@@ -96,6 +96,13 @@ input_field_config_appearance::input_field_config_appearance
 input_field_config_appearance &input_field_config_appearance
 ::operator=(const input_field_config_appearance &)=default;
 
+input_field_config_appearance &input_field_config_appearance::operator=
+(const const_input_field_appearance &o)
+{
+	const_input_field_appearance::operator=(o);
+	return *this;
+}
+
 input_field_config::~input_field_config()=default;
 
 /////////////////////////////////////////////////////////////////////

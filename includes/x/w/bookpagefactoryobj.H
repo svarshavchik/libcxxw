@@ -13,6 +13,7 @@
 #include <x/w/shortcutfwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/alignment.H>
+#include <x/w/concepts.H>
 #include <x/functional.H>
 #include <x/obj.H>
 
@@ -44,11 +45,8 @@ public:
 
 	//! Add another page to the book.
 
-	template<typename tab_factory,
-		 typename page_factory,
-		 typename=std::void_t<decltype(std::declval<tab_factory &&>()
-					       (std::declval<const factory &>())
-					       )>>
+	template<factory_processor tab_factory,
+		 factory_processor page_factory>
 	inline auto &add(tab_factory &&tf,
 			 page_factory &&pf)
 	{
@@ -62,11 +60,8 @@ public:
 	//! Add another page to the book.
 
 	//! \overload
-	template<typename tab_factory,
-		 typename page_factory,
-		 typename=std::void_t<decltype(std::declval<tab_factory &&>()
-					       (std::declval<const factory &>())
-					       )>>
+	template<factory_processor tab_factory,
+		 factory_processor page_factory>
 	inline auto &add(tab_factory &&tf,
 			 page_factory &&pf,
 			 const create_bookpage_args_t &args)
@@ -83,7 +78,7 @@ public:
 
 	//! \overload
 
-	template<typename page_factory>
+	template<factory_processor page_factory>
 	inline auto &add(const text_param &label,
 			 page_factory &&pf)
 	{
@@ -96,7 +91,7 @@ public:
 	//! Add another page to the book.
 
 	//! \overload
-	template<typename page_factory>
+	template<factory_processor page_factory>
 	inline auto &add(const text_param &label,
 			 page_factory &&pf,
 			 const create_bookpage_with_label_args_t &args)

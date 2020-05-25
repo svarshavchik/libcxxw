@@ -15,6 +15,17 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Callback passed to scratch_buffer's get().
+
+template<typename F>
+concept scratch_buffer_callback=requires(F f,
+					 const picture &pc,
+					 const pixmap &pm,
+					 const gc &g)
+{
+	{ f(pc, pm, g) };
+};
+
 //! A \ref scratch_buffer "shared picture object".
 
 class scratch_bufferObj : virtual public obj {
@@ -45,7 +56,7 @@ public:
 	//! The shared pixmap and picture remain locked until the callback
 	//! returns.
 
-	template<typename functor>
+	template<scratch_buffer_callback functor>
 	void get(dim_t minimum_width,
 		 dim_t minimum_height,
 		 functor &&f)

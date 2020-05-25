@@ -227,7 +227,7 @@ bool freetypefontObj::implObj
 		if (error)
 		{
 			LOG_ERROR("FT_Bitmap_Convert failed for glyph "
-				  << c
+				  << (uint32_t)c
 				  << ", source mode "
 				  << (int)(*lock)->glyph->bitmap.pixel_mode
 				  << ", family "
@@ -257,7 +257,8 @@ bool freetypefontObj::implObj
 
 	if (num_grays < 2)
 	{
-		LOG_ERROR(num_grays << " gray levels for glyph " << c);
+		LOG_ERROR(num_grays << " gray levels for glyph "
+			  << (uint32_t)c);
 		return false;
 	}
 
@@ -297,7 +298,7 @@ bool freetypefontObj::implObj::load_and_render_glyph(face_t::const_lock &lock,
 		{
 			LOG_ERROR("FT_Load_Glyph failed for glyph #" << glyph_index
 				  << " U+0x"
-				  << std::hex << c
+				  << std::hex << (uint32_t)c
 				  << ", family "
 				  << (*lock)->family_name
 				  << "/"
@@ -467,7 +468,7 @@ void freetypefontObj::implObj
 		{
 			LOG_ERROR((std::string)
 				  gettextmsg(_("No glyph information found for character %1%"),
-					     c)
+					     (uint32_t)c)
 				  << ", family "
 				  << (*lock)->family_name
 				  << "/"

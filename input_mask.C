@@ -132,7 +132,7 @@ input_mask::input_mask(const std::string_view &o)
 	std::string_view o_copy{o};
 
 	static const struct {
-		const char *name;
+		char name[12];
 		bool input_mask::*field;
 	} fields[]={
 		{"shift", &input_mask::shift},
@@ -159,6 +159,10 @@ input_mask::input_mask(const std::string_view &o)
 		if (n > o_copy.size())
 			n=o_copy.size();
 
+		auto orig_n=n;
+
+		if (n > 32)
+			n=32;
 		char w_buf[n];
 
 		const char *p=o_copy.data();
@@ -170,7 +174,7 @@ input_mask::input_mask(const std::string_view &o)
 
 		std::string_view w{w_buf, n};
 
-		o_copy.remove_prefix(n);
+		o_copy.remove_prefix(orig_n);
 
 		bool found=false;
 		for (const auto &field:fields)

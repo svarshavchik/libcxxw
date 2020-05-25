@@ -12,6 +12,7 @@
 #include <x/w/text_paramfwd.H>
 #include <x/w/menufwd.H>
 #include <x/w/shortcutfwd.H>
+#include <x/w/concepts.H>
 #include <x/functional.H>
 #include <x/optional_argsfwd.H>
 
@@ -55,7 +56,8 @@ public:
 	//! that receives a \ref listlayoutmanager "list layout manager"
 	//! as its parameter.
 
-	template<typename functor, typename content_functor,
+	template<factory_processor functor,
+		 listlayoutmanager_processor content_functor,
 		 typename ...Args>
 	menu add(functor &&f, content_functor &&cf, Args && ...args)
 	{
@@ -69,7 +71,7 @@ public:
 	}
 
 	//! Add a menu bar item that's plain text.
-	template<typename content_functor, typename ...Args>
+	template<listlayoutmanager_processor content_functor, typename ...Args>
 	menu add_text(const text_param &t, content_functor &&cf,
 		      Args && ...args)
 	{

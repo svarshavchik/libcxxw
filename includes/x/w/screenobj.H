@@ -21,6 +21,7 @@
 #include <x/w/rgbfwd.H>
 #include <x/w/types.H>
 #include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/concepts.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
 #include <x/functional.H>
@@ -132,18 +133,9 @@ public:
 
 	typedef void main_window_creator_t(const main_window &);
 
-	//! SFINAE selector for a creator functor.
-
-	template<typename functor>
-	using is_main_window_creator=
-		std::void_t<decltype(std::declval<functor &&>()
-				     (std::declval<const main_window &>
-				     ()))>;
-
 	//! Create a new top level window, using the default layout manager
 
-	template<typename functor,
-		 typename =is_main_window_creator<functor>>
+	template<main_window_processor functor>
 	main_window create_mainwindow(functor &&f)
 	{
 		return do_create_mainwindow
@@ -152,8 +144,7 @@ public:
 	}
 
 	//! Create a new top level window using a custom layout manager.
-	template<typename functor,
-		 typename =is_main_window_creator<functor>>
+	template<main_window_processor functor>
 	main_window create_mainwindow(functor &&f,
 				      const new_layoutmanager &layout_factory)
 	{
@@ -165,8 +156,7 @@ public:
 
 	//! Create a new top level window, using the default layout manager
 
-	template<typename functor,
-		 typename =is_main_window_creator<functor>>
+	template<main_window_processor functor>
 	main_window create_mainwindow(const main_window_config_t &config,
 				      functor &&f)
 	{
@@ -176,8 +166,7 @@ public:
 	}
 
 	//! Create a new top level window using a custom layout manager.
-	template<typename functor,
-		 typename =is_main_window_creator<functor>>
+	template<main_window_processor functor>
 	main_window create_mainwindow(const main_window_config_t &config,
 				      functor &&f,
 				      const new_layoutmanager &layout_factory)

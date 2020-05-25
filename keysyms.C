@@ -867,7 +867,7 @@ bool keysyms::lookup(xcb_keycode_t keycode,
 			return false;
 	}
 
-	LOG_DEBUG("Unicode: " << unicode);
+	LOG_DEBUG("Unicode: " << (uint32_t)unicode);
 
 	// Here be dragons
 

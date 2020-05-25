@@ -268,7 +268,7 @@ void ximxtransportObj::implObj
 			 event->data.data32[1],
 			 XCB_GET_PROPERTY_TYPE_ANY,
 			 true,
-			 [=]
+			 [this, &IN_THREAD]
 			 (xcb_atom_t type,
 			  uint8_t format,
 			  void *data,

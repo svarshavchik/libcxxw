@@ -153,7 +153,6 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 
 	auto d=creator(dialog_args{ref_dialog_impl, mw});
 
-	// TODO: std::string should not be necessary in C++20
 	std::string dialog_ids{args.dialog_id.begin(), args.dialog_id.end()};
 
 	// Insert or replace this dialog_id.
@@ -161,7 +160,7 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 	implObj::all_dialogs_t::lock lock{impl->all_dialogs};
 
 	auto iter=lock->find(dialog_ids);
-	if (lock->find(dialog_ids) != lock->end())
+	if (iter != lock->end())
 		lock->erase(iter);
 
 	lock->emplace(std::piecewise_construct,

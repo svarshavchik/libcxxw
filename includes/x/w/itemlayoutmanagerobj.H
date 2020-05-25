@@ -10,6 +10,7 @@
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/factoryfwd.H>
 #include <x/w/elementfwd.H>
+#include <x/w/concepts.H>
 #include <x/functional.H>
 #include <x/functionalrefptrfwd.H>
 
@@ -48,7 +49,7 @@ public:
 	element get_item(size_t) const;
 
 	//! Add a new item
-	template<typename F, typename ...Args>
+	template<factory_processor F, typename ...Args>
 	inline void append_item(F &&f, Args && ...args)
 	{
 		do_append(make_function<void (const factory &)>

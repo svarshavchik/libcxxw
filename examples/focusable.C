@@ -139,7 +139,8 @@ void create_mainwindow(const x::w::main_window &main_window)
 				 std::cout << (keptr->keypress
 					       ? "press ":"release ");
 				 if (keptr->unicode)
-					 std::cout << "U+" << keptr->unicode;
+					 std::cout << "U+"
+						   << (uint32_t)keptr->unicode;
 				 else
 					 std::cout << "keysym "
 						   << keptr->keysym;

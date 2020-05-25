@@ -71,10 +71,11 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
-	  Takes full advantage of modern C++17 language features. Lambdas
+	  Takes full advantage of modern C++20 language features. Lambdas
 	  handle UI events (button clicks, menu selections, and other
 	  activity). Variant types provide compact means for
-	  selecting alternative options.
+	  selecting alternative options. Concepts and constraints assist
+	  the compiler with issuing clear diagnostics.
 	  All widgets are reference-counted objects.
 	</para>
       </listitem>

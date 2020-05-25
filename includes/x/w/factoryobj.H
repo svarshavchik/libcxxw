@@ -5,6 +5,7 @@
 #ifndef x_w_factoryobj_h
 #define x_w_factoryobj_h
 
+#include <x/w/concepts.H>
 #include <x/w/factoryfwd.H>
 #include <x/w/elementfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
@@ -37,7 +38,6 @@
 #include <x/obj.H>
 #include <x/functional.H>
 #include <x/optional_args.H>
-#include <utility>
 
 LIBCXXW_NAMESPACE_START
 
@@ -108,7 +108,7 @@ public:
 
 	//! Create a nested container
 
-	template<typename functor>
+	template<container_processor functor>
 	container create_container(functor &&creator,
 				   const new_layoutmanager &layout_manager)
 	{
@@ -153,11 +153,7 @@ public:
 			     const create_button_with_label_args_t &args);
 
 	//! Create a button using a callback to populate its contents.
-	template<typename functor,
-		 typename=std::void_t<decltype(std::declval<functor &&>()
-					       (std::declval<const factory &>())
-					       )>>
-
+	template<factory_processor functor>
 	button create_button(functor &&f)
 	{
 		return do_create_button(make_function<factory_creator_t>
@@ -165,10 +161,7 @@ public:
 	}
 
 	//! Create a button using a callback to populate its contents.
-	template<typename functor,
-		 typename=std::void_t<decltype(std::declval<functor &&>()
-					       (std::declval<const factory &>())
-					       )>>
+	template<factory_processor functor>
 	button create_button(functor &&f,
 			     const create_button_args_t &args)
 	{
@@ -247,7 +240,7 @@ public:
 
 	//! Create a focusable container.
 
-	template<typename functor>
+	template<focusable_container_processor functor>
 	focusable_container
 	create_focusable_container(functor &&creator,
 				   const new_focusable_layoutmanager

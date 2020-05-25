@@ -9,6 +9,7 @@
 #include <x/w/container.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/tooltip_appearancefwd.H>
+#include <x/w/concepts.H>
 #include <x/functional.H>
 #include <x/optional_args.H>
 
@@ -39,7 +40,7 @@ public:
 	//! The tooltip creator calls this object, passing the
 	//! content creator and the layout manager for the tooltip.
 
-	template<typename functor>
+	template<container_processor functor>
 	inline void operator()(functor &&creator,
 			const new_layoutmanager &layout_manager)
 		const

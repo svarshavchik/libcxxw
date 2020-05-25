@@ -435,11 +435,10 @@ struct list_item_param : public list_item_param_base {
 	//! Helps with constructing the variant class as a
 	//! \ref text_param "text_param".
 
-	template<typename Arg1, typename ...Args,
-		 typename=std::void_t<text_param_constructible
-				      <Arg1, Args...>>>
+	template<typename Arg1, typename ...Args>
 	list_item_param(Arg1 &&arg1,
 			Args && ...args)
+		requires text_param_constructible<Arg1, Args...>
 		: list_item_param_base{std::in_place_type_t<text_param>{},
 				       std::forward<Arg1>(arg1),
 				       std::forward<Args>(args)...}
@@ -450,10 +449,7 @@ struct list_item_param : public list_item_param_base {
 
 	//! Helps with constructing the variant class as a
 	//! \ref list_item_status_change_callback "list_item_status_change_callback".
-
-	template<typename Arg1, typename=
-		 std::enable_if<is_list_item_status_change_callback<Arg1>
-				::value>>
+	template<is_list_item_status_change_callback Arg1>
 	list_item_param(Arg1 &&arg1)
 		: list_item_param_base{std::in_place_type_t<
 				       list_item_status_change_callback>(),

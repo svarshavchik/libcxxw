@@ -11,6 +11,7 @@
 #include <x/w/factoryfwd.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/callback_triggerfwd.H>
+#include <x/w/concepts.H>
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
@@ -73,7 +74,7 @@ public:
 
 	//! Replace the label widget next to the image button.
 
-	template<typename functor>
+	template<factory_processor functor>
 	void update_label(functor &&f)
 	{
 		do_update_label(make_function<void (const factory &)>

@@ -48,7 +48,9 @@ struct input_field_config_appearance : const_input_field_appearance {
 	input_field_config_appearance &operator=
 	(const input_field_config_appearance &);
 
-	using const_input_field_appearance::operator=;
+	//! Assignment operator
+	input_field_config_appearance &operator=
+	(const const_input_field_appearance &);
 
 	using const_input_field_appearance::operator*;
 

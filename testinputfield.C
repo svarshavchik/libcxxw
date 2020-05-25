@@ -258,6 +258,8 @@ void testbutton()
 			 LIBCXX_NAMESPACE::w::input_field_config conf1{30, 1,
 					 true};
 
+			 conf1.appearance=
+				 LIBCXXW_NAMESPACE::input_field_appearance::base::theme();
 			 conf1.hint("Enter something here");
 
 			 conf1.maximum_size=30;

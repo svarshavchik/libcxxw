@@ -22,6 +22,7 @@
 #include <x/w/popup_list_appearancefwd.H>
 #include <x/w/shortcutfwd.H>
 #include <x/w/tooltipfwd.H>
+#include <x/w/concepts.H>
 #include <x/obj.H>
 #include <x/functional.H>
 #include <x/functionalrefptrfwd.H>
@@ -175,9 +176,7 @@ public:
 
 	//! Create a static tooltip.
 
-	template<typename creator,
-		 typename=decltype(std::declval<creator &&>()
-				   (std::declval<const container &>()))>
+	template<container_processor creator>
 	inline container create_static_tooltip(creator &&c)
 	{
 		return do_create_static_tooltip(make_function<void
@@ -187,9 +186,7 @@ public:
 
 	//! Create a static tooltip.
 
-	template<typename creator,
-		 typename=decltype(std::declval<creator &&>()
-				   (std::declval<const container &>()))>
+	template<container_processor creator>
 	inline container create_static_tooltip(creator &&c,
 					       const
 					       create_static_tooltip_args_t
@@ -213,9 +210,7 @@ public:
 
 	//! Create a static tooltip
 
-	template<typename creator,
-		 typename=decltype(std::declval<creator &&>()
-				   (std::declval<const container &>()))>
+	template<container_processor creator>
 	inline container create_static_tooltip(ONLY IN_THREAD,
 					       creator &&c)
 	{
@@ -227,9 +222,7 @@ public:
 
 	//! Create a static tooltip
 
-	template<typename creator,
-		 typename=decltype(std::declval<creator &&>()
-				   (std::declval<const container &>()))>
+	template<container_processor creator>
 	inline container create_static_tooltip(ONLY IN_THREAD,
 					       creator &&c,
 					       const
@@ -269,7 +262,7 @@ public:
 
 	//! Create a popup context menu for this widget.
 
-	template<typename functor,
+	template<listlayoutmanager_processor functor,
 		 typename ...Args>
 	inline container create_popup_menu(functor &&f,
 					   Args && ...args) const
