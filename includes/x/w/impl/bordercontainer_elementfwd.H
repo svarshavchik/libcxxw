@@ -103,13 +103,15 @@ public:
 	current_border_impl get_top_border(ONLY IN_THREAD) const override;
 	current_border_impl get_bottom_border(ONLY IN_THREAD) const override;
 
-	void set_border(ONLY IN_THREAD,
-			const border_arg &left_border,
-			const border_arg &right_border,
-			const border_arg &top_border,
-			const border_arg &bottom_border) override;
+	bool do_set_border(ONLY IN_THREAD,
+			   const border_arg &left_border,
+			   const border_arg &right_border,
+			   const border_arg &top_border,
+			   const border_arg &bottom_border) override;
 	richtextptr get_title(ONLY IN_THREAD) const override;
-	void set_title(ONLY IN_THREAD, const richtextptr &) override;
+	void set_title(ONLY IN_THREAD,
+		       const layoutmanager &layout,
+		       const richtextptr &) override;
 	dim_t get_title_indent(ONLY IN_THREAD) const override;
 	dim_t get_border_hpad(ONLY IN_THREAD) const override;
 	dim_t get_border_vpad(ONLY IN_THREAD) const override;

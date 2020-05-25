@@ -402,6 +402,7 @@ void list_elementObj::implObj
 
 	listlayoutmanager llm=llm_impl->create_public_object();
 	list_lock llock{llm};
+	llm->notmodified();
 	busy_impl yes_i_am{*this};
 
 	list_item_status_info_t info
@@ -441,7 +442,6 @@ void list_elementObj::implObj::remove_rows(ONLY IN_THREAD,
 					   size_t n_rows)
 {
 	list_lock lock{lm};
-
 	listimpl_info_t::lock &l{lock};
 
 	remove_rows(IN_THREAD, lm, l, row_number, n_rows);
@@ -478,6 +478,7 @@ void list_elementObj::implObj
 	      size_t row_number,
 	      new_cells_info &info)
 {
+	lm->set_modified();
 	listimpl_info_t::lock &lock=ll;
 
 	if (row_number > lock->row_infos.size())
@@ -540,6 +541,7 @@ void list_elementObj::implObj
 	       new_cells_info &info)
 {
 	list_lock ll{lm};
+	lm->set_modified();
 
 	listimpl_info_t::lock &lock=ll;
 
@@ -601,6 +603,7 @@ void list_elementObj::implObj
 {
 	list_lock ll{lm};
 
+	lm->set_modified();
 	unselect(IN_THREAD, lm, ll);
 
 	listimpl_info_t::lock &lock=ll;
@@ -626,6 +629,7 @@ void list_elementObj::implObj
 {
 	list_lock ll{lm};
 	listimpl_info_t::lock &lock=ll;
+	lm->set_modified();
 
 	if (current_element(lock))
 		current_element(IN_THREAD, lock, std::nullopt,
@@ -656,6 +660,7 @@ void list_elementObj::implObj::remove_rows(ONLY IN_THREAD,
 					   size_t row_number,
 					   size_t count)
 {
+	lm->set_modified();
 	removing_rows(IN_THREAD, lm, lock, row_number, count);
 
 	lock->row_infos.erase(lock->row_infos.begin()+row_number,
@@ -1993,6 +1998,7 @@ void list_elementObj::implObj::autoselect(ONLY IN_THREAD,
 					  size_t i,
 					  const callback_trigger_t &trigger)
 {
+	lm->notmodified();
 	listimpl_info_t::lock lock{textlist_info};
 
 	busy_impl yes_i_am{*this};
@@ -2008,6 +2014,7 @@ void list_elementObj::implObj::selected(ONLY IN_THREAD,
 {
 	list_lock ll{lm};
 
+	lm->notmodified();
 	listimpl_info_t::lock &lock=ll;
 
 	if (i >= lock->row_infos.size())
@@ -2026,6 +2033,7 @@ void list_elementObj::implObj
 {
 	list_lock ll{lm};
 
+	lm->notmodified();
 	listimpl_info_t::lock &lock=ll;
 
 	if (i >= lock->row_infos.size())
@@ -2085,6 +2093,7 @@ void list_elementObj::implObj
 		return;
 
 	r.extra->data(lock).selected=selected_flag;
+	lm->set_modified();
 
 	redraw_rows(IN_THREAD, lock, i, i,
 		    selected_flag &&

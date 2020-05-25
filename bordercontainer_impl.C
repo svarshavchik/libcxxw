@@ -62,5 +62,27 @@ void bordercontainer_implObj::initialize(ONLY IN_THREAD)
 			     get_container_impl().container_element_impl()
 			     .get_screen()->impl->current_theme.get());
 }
+//! Implement set_border().
+
+//! Inherited from bordercontainer_implObj.
+
+void bordercontainer_implObj::set_border(ONLY IN_THREAD,
+					 const layoutmanager &layout,
+					 const border_arg &new_left_border,
+					 const border_arg &new_right_border,
+					 const border_arg &new_top_border,
+					 const border_arg &new_bottom_border)
+{
+	if (do_set_border(IN_THREAD,
+			  new_left_border,
+			  new_right_border,
+			  new_top_border,
+			  new_bottom_border))
+	{
+		// Make sure that recalculate() gets called to clear
+		// the cached border info.
+		layout->set_modified();
+	}
+}
 
 LIBCXXW_NAMESPACE_END

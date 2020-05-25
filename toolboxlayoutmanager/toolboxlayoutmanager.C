@@ -72,6 +72,7 @@ class LIBCXX_HIDDEN toolboxfactory_append_implObj
 
 	void created(const element &e) override
 	{
+		lm->set_modified();
 		lm->toolbox_lock->elements.push_back(e);
 	}
 };
@@ -103,6 +104,7 @@ class LIBCXX_HIDDEN toolboxfactory_insert_implObj
 		auto &es=lm->toolbox_lock->elements;
 		es.insert(es.begin()+*lock, e);
 		++*lock;
+		lm->set_modified();
 	}
 };
 
@@ -137,6 +139,7 @@ void toolboxlayoutmanagerObj::remove_tools(size_t first_tool, size_t n)
 		throw EXCEPTION(gettextmsg(_("Element #%1% does not exist"),
 					   s));
 
+	modified=true;
 	auto &es=toolbox_lock->elements;
 
 	auto b=es.begin();
@@ -146,6 +149,7 @@ void toolboxlayoutmanagerObj::remove_tools(size_t first_tool, size_t n)
 
 size_t toolboxlayoutmanagerObj::size() const
 {
+	notmodified();
 	return toolbox_lock->elements.size();
 }
 

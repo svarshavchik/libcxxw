@@ -12,6 +12,7 @@
 #include <x/w/generic_windowobj.H>
 #include <x/w/pictformatfwd.H>
 #include <x/w/scratch_bufferfwd.H>
+#include <x/w/layoutmanagerfwd.H>
 #include <x/w/impl/current_border_implfwd.H>
 #include <x/w/impl/richtext/richtextfwd.H>
 
@@ -99,19 +100,31 @@ public:
 	virtual current_border_impl get_top_border(ONLY IN_THREAD) const=0;
 	virtual current_border_impl get_bottom_border(ONLY IN_THREAD) const=0;
 
-	//! Implemented by the mixin template, to set my border.
+	//! Calls do_set_border(), if it returns true sets the modified flag.
 
-	virtual void set_border(ONLY IN_THREAD,
-				const border_arg &left_border,
-				const border_arg &right_border,
-				const border_arg &top_border,
-				const border_arg &bottom_border)=0;
+	void set_border(ONLY IN_THREAD,
+			const layoutmanager &layout,
+			const border_arg &left_border,
+			const border_arg &right_border,
+			const border_arg &top_border,
+			const border_arg &bottom_border);
+
+	//! Implemented by the mixin template, to set a new border.
+
+	//! Returns true if the new border has changed, false if it is unchanged
+	virtual bool do_set_border(ONLY IN_THREAD,
+				   const border_arg &left_border,
+				   const border_arg &right_border,
+				   const border_arg &top_border,
+				   const border_arg &bottom_border)=0;
 
 	//! Implemented by the mixin container, to get the title.
 	virtual richtextptr get_title(ONLY IN_THREAD) const=0;
 
 	//! Implemented by the mixin container, to set the title.
-	virtual void set_title(ONLY IN_THREAD, const richtextptr &)=0;
+	virtual void set_title(ONLY IN_THREAD,
+			       const layoutmanager &layout,
+			       const richtextptr &)=0;
 
 	//! Get title indentation
 	virtual dim_t get_title_indent(ONLY IN_THREAD) const=0;

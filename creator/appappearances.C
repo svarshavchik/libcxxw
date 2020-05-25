@@ -918,6 +918,8 @@ void appObj::appearance_enable_disable_new_fields(ONLY IN_THREAD,
 
 	auto create_field_submenu=appearance_value_create->submenu_listlayout();
 
+	create_field_submenu->notmodified();
+
 	// This must be in the same order as current_fields;
 
 	size_t i=0;

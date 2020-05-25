@@ -12,7 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 singletonlayoutmanagerObj::singletonlayoutmanagerObj(const ref<implObj> &impl)
-	: layoutmanagerObj(impl), impl(impl)
+	: layoutmanagerObj{impl}, impl{impl}
 {
 }
 
@@ -33,6 +33,7 @@ class LIBCXX_HIDDEN replace_singleton_factoryObj : public factoryObj {
 	void created(const element &e) override
 	{
 		layout_manager->impl->created(e);
+		layout_manager->set_modified();
 	}
 
 	//! Return the container for a new element.
@@ -53,12 +54,12 @@ class LIBCXX_HIDDEN replace_singleton_factoryObj : public factoryObj {
 
 factory singletonlayoutmanagerObj::replace()
 {
-	return ref<replace_singleton_factoryObj>
-		::create(singletonlayoutmanager(this));
+	return ref<replace_singleton_factoryObj>::create(ref{this});
 }
 
 element singletonlayoutmanagerObj::get() const
 {
+	notmodified();
 	return impl->get();
 }
 

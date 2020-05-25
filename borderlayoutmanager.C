@@ -107,6 +107,7 @@ container new_borderlayoutmanager::create(const container_impl &parent,
 
 void borderlayoutmanagerObj::update_title(const text_param &title)
 {
+	notmodified();
 	impl->run_as
 		([=, impl=this->impl]
 		 (ONLY IN_THREAD)
@@ -139,7 +140,9 @@ void borderlayoutmanagerObj::update_title(ONLY IN_THREAD,
 		richtext_title=richtext::create(string, halign::left, 0);
 	}
 
-	impl->bordercontainer_impl->set_title(IN_THREAD, richtext_title);
+	impl->bordercontainer_impl->set_title(IN_THREAD,
+					      ref{this},
+					      richtext_title);
 }
 
 void borderlayoutmanagerObj::update_border(const border_arg &new_border)
@@ -159,11 +162,16 @@ void borderlayoutmanagerObj::update_borders(const border_arg &new_left_border,
 					    const border_arg &new_top_border,
 					    const border_arg &new_bottom_border)
 {
+	notmodified();
+
 	impl->run_as
 		([=, impl=this->impl]
 		 (ONLY IN_THREAD)
 		 {
-			 impl->bordercontainer_impl->set_border
+			 borderlayoutmanager layout=
+				 impl->create_public_object();
+
+			 layout->update_borders
 				 (IN_THREAD,
 				  new_left_border,
 				  new_right_border,
@@ -179,6 +187,7 @@ void borderlayoutmanagerObj::update_borders(ONLY IN_THREAD,
 					    const border_arg &new_bottom_border)
 {
 	impl->bordercontainer_impl->set_border(IN_THREAD,
+					       ref{this},
 					       new_left_border,
 					       new_right_border,
 					       new_top_border,

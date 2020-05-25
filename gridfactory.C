@@ -159,6 +159,7 @@ void gridfactoryObj::remove_when_hidden_set(bool flag)
 
 void gridfactoryObj::created(const element &new_element)
 {
+	layout->modified=true;
 	grid_map_t::lock grid_lock{layout->impl->grid_map};
 
 	implObj::new_grid_element_t::lock element_lock(impl->new_grid_element);

@@ -26,6 +26,7 @@ peepholelayoutmanagerObj::~peepholelayoutmanagerObj()=default;
 
 element peepholelayoutmanagerObj::get() const
 {
+	notmodified();
 	return impl->element_in_peephole->get_peepholed_element();
 }
 

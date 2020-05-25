@@ -66,11 +66,16 @@ void menubarlayoutmanagerObj::implObj::check_if_borders_changed()
 			(*grid_lock)->remove_all_defaults();
 	}
 	info(grid_lock).borders_present=should_be_present;
+
+	// We do not need to flag the layout manager as having been modified.
+	//
+	// The result here can only be obtained when the contents of the
+	// menu bar get modified already, and that will set the modified flag.
 }
 
 layoutmanager menubarlayoutmanagerObj::implObj::create_public_object()
 {
-	return menubarlayoutmanager::create(ref<implObj>(this));
+	return menubarlayoutmanager::create(ref{this});
 }
 
 void menubarlayoutmanagerObj::implObj::initialize(menubarlayoutmanagerObj

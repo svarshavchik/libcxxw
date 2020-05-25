@@ -29,12 +29,14 @@ panelayoutmanagerObj::~panelayoutmanagerObj()=default;
 
 size_t panelayoutmanagerObj::size() const
 {
+	notmodified();
 	grid_map_t::lock grid_lock{impl->grid_map};
 	return impl->size(grid_lock);
 }
 
 elementptr panelayoutmanagerObj::get(size_t n) const
 {
+	notmodified();
 	grid_map_t::lock grid_lock{impl->grid_map};
 	return impl->get_pane_element(grid_lock, n);
 }
@@ -72,6 +74,8 @@ panefactory panelayoutmanagerObj::append_panes()
 
 void panelayoutmanagerObj::remove_pane(size_t pane_number)
 {
+	modified=true;
+
 	grid_map_t::lock grid_lock{impl->grid_map};
 
 	impl->remove_pane(ref{this}, pane_number, grid_lock);
@@ -152,6 +156,7 @@ panefactory panelayoutmanagerObj::replace_panes(size_t position)
 
 void panelayoutmanagerObj::remove_all_panes()
 {
+	modified=true;
 	grid_map_t::lock grid_lock{impl->grid_map};
 
 	if (impl->size(grid_lock) == 0)
@@ -168,6 +173,8 @@ void panelayoutmanagerObj::remove_all_panes()
 
 panefactory panelayoutmanagerObj::replace_all_panes()
 {
+	modified=true;
+
 	// The factory acquires the lock, first.
 
 	auto f=append_panes();

@@ -53,11 +53,13 @@ LIBCXXW_NAMESPACE_START
 
 booklayoutmanagerObj
 ::booklayoutmanagerObj(const ref<implObj> &impl)
-	: layoutmanagerObj{impl->impl},
-	  book_pagelayoutmanager{impl->book_pagelayoutmanager()},
-	  book_pagetabgridlayoutmanager{impl->book_pagetabgridlayoutmanager()},
-	  impl{impl}
+: layoutmanagerObj{impl->impl},
+  book_pagelayoutmanager{impl->book_pagelayoutmanager()},
+  book_pagetabgridlayoutmanager{impl->book_pagetabgridlayoutmanager()},
+  impl{impl}
 {
+	book_pagelayoutmanager->notmodified();
+	book_pagetabgridlayoutmanager->notmodified();
 }
 
 booklayoutmanagerObj::~booklayoutmanagerObj()=default;
@@ -66,11 +68,13 @@ booklayoutmanagerObj::~booklayoutmanagerObj()=default;
 
 size_t booklayoutmanagerObj::pages() const
 {
+	notmodified();
 	return book_pagelayoutmanager->pages();
 }
 
 std::optional<size_t> booklayoutmanagerObj::opened() const
 {
+	notmodified();
 	return book_pagelayoutmanager->opened();
 }
 
@@ -78,6 +82,7 @@ void booklayoutmanagerObj
 ::on_opened(const functionref<void (THREAD_CALLBACK,
 				    const book_status_info_t &)> &cb)
 {
+	notmodified();
 	impl->impl->layout_container_impl->container_element_impl()
 		.get_window_handler().thread()
 		->run_as([me_impl=impl, cb]
@@ -104,6 +109,7 @@ void booklayoutmanagerObj
 
 void booklayoutmanagerObj::open(size_t n)
 {
+	notmodified();
 	impl->impl->run_as([me_impl=impl, n]
 			   (ONLY IN_THREAD)
 			   {
@@ -121,6 +127,10 @@ void booklayoutmanagerObj::open(ONLY IN_THREAD, size_t n)
 void booklayoutmanagerObj::open(ONLY IN_THREAD, size_t n,
 				const callback_trigger_t &trigger)
 {
+	notmodified();
+	book_pagelayoutmanager->notmodified();
+	book_pagetabgridlayoutmanager->notmodified();
+
 	book_lock lock{ref{this}};
 
 	// Remember which page is currently open.
@@ -162,6 +172,7 @@ void booklayoutmanagerObj::open(ONLY IN_THREAD, size_t n,
 
 void booklayoutmanagerObj::close()
 {
+	notmodified();
 	impl->impl->run_as([me_impl=impl]
 			   (ONLY IN_THREAD)
 			   {
@@ -173,6 +184,9 @@ void booklayoutmanagerObj::close()
 
 void booklayoutmanagerObj::close(ONLY IN_THREAD)
 {
+	notmodified();
+	book_pagelayoutmanager->notmodified();
+	book_pagetabgridlayoutmanager->notmodified();
 	book_lock lock{ ref{this} };
 
 	auto opened=book_pagelayoutmanager->opened();
@@ -195,6 +209,7 @@ void booklayoutmanagerObj::close(ONLY IN_THREAD)
 
 element booklayoutmanagerObj::get_page(size_t n) const
 {
+	notmodified();
 	return book_pagelayoutmanager->get(n);
 }
 
@@ -353,6 +368,7 @@ static auto create_new_tab(const bookpagefactoryObj &my_factory,
 	auto inner_tab_container=container::create(inner_tab_gridcontainer_impl,
 						   inner_tab_lm);
 
+	layout_manager->set_modified();
 	return std::tuple{inner_tab_container, new_page, page_element};
 }
 
@@ -871,6 +887,7 @@ book_lock::book_lock(const const_booklayoutmanager &layout_manager)
 	  grid_lock{layout_manager->book_pagetabgridlayoutmanager
 		    ->impl->grid_map}
 {
+	layout_manager->notmodified();
 }
 
 book_lock::~book_lock()=default;

@@ -18,17 +18,36 @@ LIBCXXW_NAMESPACE_START
 
 layoutmanagerObj::layoutmanagerObj(const ref<implObj> &impl)
 	: impl{impl},
+	  modified{false},
 	  queue{impl->layout_container_impl->get_window_handler().thread()
 			  ->get_batch_queue()}
 
 {
 }
 
+#if 0
+void why(const ref<layoutmanagerObj::implObj> &impl)
+{
+	std::cout << impl->objname() << " WAS NOT CLASSIFIED!"
+		  << std::endl;
+
+	if (getenv("DEBUG_MOD"))
+		abort();
+}
+
+#endif
+
 // When the public object drops off, trigger layout recalculation.
 
 layoutmanagerObj::~layoutmanagerObj()
 {
-	impl->needs_recalculation(queue);
+#if 0
+	if (!modified && !notmodified_flag)
+		why(impl);
+#else
+	if (modified)
+		impl->needs_recalculation(queue);
+#endif
 }
 
 void layoutmanagerObj::generate(const std::string_view &name,

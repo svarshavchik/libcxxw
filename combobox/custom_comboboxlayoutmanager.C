@@ -44,8 +44,8 @@ custom_comboboxlayoutmanagerObj
 	// combobox popup, so naturally when we go out of scope and get
 	// destroyed it'll be the popup's container that'll get tickled for
 	// recalculation.
-	: listlayoutmanagerObj(list_layout_impl),
-	  impl(impl)
+	: listlayoutmanagerObj{list_layout_impl},
+	  impl{impl}
 {
 }
 

@@ -94,9 +94,6 @@ auto create_mainwindow(const main_window &mw)
 
 			 auto &[container, field]=*got;
 
-			 itemlayoutmanager lm=
-				 container->get_layoutmanager();
-
 			 std::vector<std::string> words;
 
 			 {
@@ -106,6 +103,8 @@ auto create_mainwindow(const main_window &mw)
 
 				 field->set("");
 			 }
+
+			 auto nonempty_word=words.begin();
 
 			 for (auto &w:words)
 			 {
@@ -123,6 +122,19 @@ auto create_mainwindow(const main_window &mw)
 				 if (word.empty())
 					 continue;
 
+				 *nonempty_word++=word;
+			 }
+
+			 words.erase(nonempty_word, words.end());
+
+			 if (words.empty())
+				 return true;
+
+			 itemlayoutmanager lm=
+				 container->get_layoutmanager();
+
+			 for (const auto &word:words)
+			 {
 				 lm->append_item
 					 ([&]
 					  (const factory &f)
@@ -181,6 +193,8 @@ void testitemlayoutmanager(const testitems_options &options)
 
 		do
 		{
+			if (n == 5)
+				break;
 			{
 				itemlayoutmanager ilm=
 					toppings_list->get_layoutmanager();
@@ -219,9 +233,6 @@ void testitemlayoutmanager(const testitems_options &options)
 					ilm->remove_item(2);
 					break;
 				}
-
-				if (n == 5)
-					break;
 				std::cout << ilm->size() << " items now"
 					  << std::endl;
 			}

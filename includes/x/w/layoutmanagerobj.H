@@ -27,6 +27,15 @@ public:
 	//! Internal implementation object.
 	const ref<implObj> impl;
 
+protected:
+	//! Whether this layout manager modified something
+	mutable std::atomic<bool> modified;
+public:
+	//! Set the modified flag
+	inline void set_modified()
+	{
+		modified=true;
+	}
 	//! Internal implementation object.
 
 	const batch_queue queue;
@@ -34,6 +43,17 @@ public:
 	//! Constructor
 	layoutmanagerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
+#if 0
+	mutable std::atomic<bool> notmodified_flag=false;
+
+	void notmodified() const
+	{
+		notmodified_flag=true;
+	}
+#else
+	//! For internal use
+	inline void notmodified() const {}
+#endif
 	//! Destructor
 	~layoutmanagerObj() LIBCXX_HIDDEN;
 

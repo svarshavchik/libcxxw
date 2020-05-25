@@ -171,6 +171,7 @@ focusable new_editable_comboboxlayoutmanager
 					  editable_comboboxlayoutmanager lm=
 						  impl->create_public_object();
 
+					  lm->notmodified();
 					  // If set() was called, we clear
 					  // any selected item.
 					  //
@@ -316,6 +317,7 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 void editable_comboboxlayoutmanagerObj
 ::on_validate(const functionref<input_field_validation_callback_t> &cb)
 {
+	notmodified();
 	locked_input_field->on_validate(cb);
 }
 
@@ -328,6 +330,7 @@ custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 void editable_comboboxlayoutmanagerObj
 ::on_selection_changed(const editable_combobox_selection_changed_t &cb)
 {
+	notmodified();
 	impl->selection_changed=cb;
 }
 
@@ -335,6 +338,7 @@ void editable_comboboxlayoutmanagerObj
 ::on_selection_changed(ONLY IN_THREAD,
 		       const editable_combobox_selection_changed_t &cb)
 {
+	notmodified();
 	on_selection_changed(cb);
 }
 

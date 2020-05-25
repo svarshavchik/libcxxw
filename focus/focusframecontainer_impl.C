@@ -31,8 +31,8 @@ void focusframecontainer_implObj::window_focus_change(ONLY IN_THREAD, bool flag)
 void focusframecontainer_implObj::update_focusframe(ONLY IN_THREAD)
 {
 	auto &bc=focusframe_bordercontainer_impl();
-
-	auto &e=bc.get_container_impl().container_element_impl();
+	auto &c=bc.get_container_impl();
+	auto &e=c.container_element_impl();
 
 	const auto &appearance=get_appearance();
 
@@ -40,7 +40,15 @@ void focusframecontainer_implObj::update_focusframe(ONLY IN_THREAD)
 		? appearance->focuson_border
 		: appearance->focusoff_border;
 
-	bc.set_border(IN_THREAD, b, b, b, b);
+	if (bc.do_set_border(IN_THREAD, b, b, b, b))
+	{
+		c.invoke_layoutmanager
+			([&]
+			 (const auto &impl)
+			 {
+				 impl->needs_recalculation(IN_THREAD);
+			 });
+	}
 }
 
 LIBCXXW_NAMESPACE_END

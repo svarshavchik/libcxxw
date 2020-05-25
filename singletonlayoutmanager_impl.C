@@ -33,7 +33,7 @@ singletonlayoutmanagerObj::implObj::~implObj()=default;
 
 layoutmanager singletonlayoutmanagerObj::implObj::create_public_object()
 {
-	return singletonlayoutmanager::create(ref<implObj>(this));
+	return singletonlayoutmanager::create(ref{this});
 }
 
 void singletonlayoutmanagerObj::implObj

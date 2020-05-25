@@ -20,6 +20,7 @@ menubar_lock::menubar_lock(const menubarlayoutmanager &manager)
 	: manager{manager},
 	  grid_lock{manager->impl->grid_map}
 {
+	manager->notmodified();
 }
 
 menubar_lock::~menubar_lock()=default;
@@ -89,6 +90,7 @@ class LIBCXX_HIDDEN menubarfactory_implObj : public menubarfactoryObj {
 			 const const_popup_list_appearance &appearance)
 		override
 	{
+		layout->set_modified();
 		return impl(this->layout, callback, content_callback,
 			    sc,
 			    appearance);
@@ -227,6 +229,7 @@ void menubarlayoutmanagerObj::remove_menu(size_t pos)
 		throw EXCEPTION(gettextmsg(_("Menu #%1% does not exist"),
 					   pos));
 
+	modified=true;
 	impl->remove(0, pos);
 
 	--impl->info(lock.grid_lock).divider_pos;
@@ -240,6 +243,7 @@ void menubarlayoutmanagerObj::remove_right_menu(size_t pos)
 		throw EXCEPTION(gettextmsg(_("Menu #%1% does not exist"),
 					   pos));
 
+	modified=true;
 	impl->remove(0,
 		     impl->info(lock.grid_lock)
 		     .divider_pos+1+pos);

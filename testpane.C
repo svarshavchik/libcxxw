@@ -281,6 +281,8 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 	auto pane=factory->colspan(2).create_focusable_container
 		([&]
 		 (const auto &pane_container) {
+			 if (npl.restored_sizes.empty())
+				 return;
 			 create_pane(pane_container->get_layoutmanager(), npl);
 		}, npl);
 
@@ -548,6 +550,9 @@ static void create_adjustable_pane(const LIBCXX_NAMESPACE::w::main_window &mw,
 	auto pane=factory->create_focusable_container
 		([&]
 		 (const auto &pane_container) {
+			 if (npl.restored_sizes.empty())
+				 return;
+
 			 auto lm=pane_container->get_layoutmanager();
 
 			 create_pane(lm, npl);

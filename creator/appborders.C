@@ -496,9 +496,6 @@ void appObj::border_selected(ONLY IN_THREAD,
 		return;
 	}
 
-	x::w::standard_comboboxlayoutmanager
-		lm=border_from_name->get_layoutmanager();
-
 	lock->current_selection.reset();
 
 	if (n == 0) // New border entry
@@ -508,6 +505,10 @@ void appObj::border_selected(ONLY IN_THREAD,
 	}
 
 	--n;
+
+	x::w::standard_comboboxlayoutmanager
+		lm=border_from_name->get_layoutmanager();
+
 	// A new border is selected.
 	//
 	// Disable the corresponding item in the border_from_name

@@ -99,6 +99,7 @@ void itemlayoutmanagerObj::do_append(const function<void (const factory &)>
 				     const const_item_button_appearance
 				     &appearance)
 {
+	modified=true;
 	impl->append(create_new_itembutton(impl, callback, appearance));
 }
 
@@ -115,16 +116,19 @@ void itemlayoutmanagerObj::do_insert(size_t i,
 				     const const_item_button_appearance
 				     &appearance)
 {
+	modified=true;
 	impl->insert(create_new_itembutton(impl, callback, appearance), i);
 }
 
 size_t itemlayoutmanagerObj::size() const
 {
+	notmodified();
 	return impl->size();
 }
 
 void itemlayoutmanagerObj::on_remove(const itemlayout_callback_t &callback)
 {
+	notmodified();
 	item_info_t::lock lock{impl->item_info};
 
 	lock->callback=callback;
@@ -132,16 +136,19 @@ void itemlayoutmanagerObj::on_remove(const itemlayout_callback_t &callback)
 
 void itemlayoutmanagerObj::remove_item(size_t i)
 {
+	modified=true;
 	impl->remove_items(i, 1);
 }
 
 void itemlayoutmanagerObj::remove_items(size_t i, size_t n)
 {
+	modified=true;
 	impl->remove_items(i, n);
 }
 
 element itemlayoutmanagerObj::get_item(size_t i) const
 {
+	notmodified();
 	return impl->get_item(i);
 }
 

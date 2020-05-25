@@ -1,5 +1,8 @@
 2020-05-25  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Optimize container recalculation. Layout managers' destructor
+	schedules container recalculation only when needed.
+
 	* combo-boxes: fix resort_items().
 
 	* pane layout manager: removing the only pane resulted in bad

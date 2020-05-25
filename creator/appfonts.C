@@ -610,8 +610,6 @@ void appObj::font_selected(ONLY IN_THREAD,
 		return;
 	}
 
-	auto lm=font_from_name->standard_comboboxlayout();
-
 	lock->current_selection.reset();
 
 	if (n == 0) // New font entry
@@ -621,6 +619,9 @@ void appObj::font_selected(ONLY IN_THREAD,
 	}
 
 	--n;
+
+	auto lm=font_from_name->standard_comboboxlayout();
+
 	// A new font is selected.
 	//
 	// Disable the corresponding item in the font_from_name

@@ -17,6 +17,7 @@ template<typename ...Args>
 typename editable_comboboxlayoutmanagerObj::set_args_t<Args...>
 ::void_t editable_comboboxlayoutmanagerObj::set(Args && ...args)
 {
+	this->notmodified();
 	this->locked_input_field->set(std::forward<Args>(args)...);
 }
 
@@ -24,6 +25,7 @@ typename editable_comboboxlayoutmanagerObj::set_args_t<Args...>
 template<typename ...Args>
 auto editable_comboboxlayoutmanagerObj::set_validator(Args && ...args)
 {
+	this->notmodified();
 	return this->locked_input_field->set_validator
 		(std::forward<Args>(args)...);
 }
@@ -31,6 +33,7 @@ auto editable_comboboxlayoutmanagerObj::set_validator(Args && ...args)
 template<typename ...Args>
 auto editable_comboboxlayoutmanagerObj::set_string_validator(Args && ...args)
 {
+	this->notmodified();
 	return this->locked_input_field->set_string_validator
 		(std::forward<Args>(args)...);
 }
@@ -38,6 +41,7 @@ auto editable_comboboxlayoutmanagerObj::set_string_validator(Args && ...args)
 template<typename ...Args>
 bool editable_comboboxlayoutmanagerObj::validate_modified(Args && ...args)
 {
+	this->notmodified();
 	return this->locked_input_field->validate_modified
 		(std::forward<Args>(args)...);
 }

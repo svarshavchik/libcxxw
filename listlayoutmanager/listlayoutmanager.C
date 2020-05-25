@@ -26,8 +26,8 @@ list_item_param &list_item_param::operator=(const list_item_param &)=default;
 list_item_param &list_item_param::operator=(list_item_param &&)=default;
 
 listlayoutmanagerObj::listlayoutmanagerObj(const ref<implObj> &impl)
-	: layoutmanagerObj(impl),
-	  impl(impl)
+	: layoutmanagerObj{impl},
+	  impl{impl}
 {
 }
 
@@ -41,10 +41,13 @@ void listlayoutmanagerObj::remove_item(size_t item_number)
 void listlayoutmanagerObj::remove_items(size_t item_number,
 					size_t n_items)
 {
+	notmodified();
+
 	impl->run_as([impl=this->impl, item_number, n_items]
 		     (ONLY IN_THREAD)
 		     {
 			     listlayoutmanager me=impl->create_public_object();
+
 			     me->impl->list_element_singleton->impl
 				     ->remove_rows(IN_THREAD,
 						   me,
@@ -70,6 +73,8 @@ void listlayoutmanagerObj::remove_items(ONLY IN_THREAD, size_t item_number,
 new_items_ret
 listlayoutmanagerObj::append_items(const std::vector<list_item_param> &items)
 {
+	notmodified();
+
 	new_items_ret ret;
 
 	auto cells=in_thread_new_cells_info::create(ref{this}, items, ret);
@@ -104,6 +109,8 @@ new_items_ret listlayoutmanagerObj
 new_items_ret listlayoutmanagerObj
 ::insert_items(size_t item_number, const std::vector<list_item_param> &items)
 {
+	notmodified();
+
 	new_items_ret ret;
 
 	auto cells=in_thread_new_cells_info::create(ref{this}, items, ret);
@@ -141,6 +148,8 @@ new_items_ret
 listlayoutmanagerObj::replace_items(size_t item_number,
 				    const std::vector<list_item_param>  &items)
 {
+	notmodified();
+
 	new_items_ret ret;
 
 	auto cells=in_thread_new_cells_info::create(ref{this}, items, ret);
@@ -149,6 +158,7 @@ listlayoutmanagerObj::replace_items(size_t item_number,
 		     (ONLY IN_THREAD)
 		     {
 			     listlayoutmanager me=impl->create_public_object();
+			     me->modified=true;
 			     me->impl->list_element_singleton->impl
 				     ->replace_rows(IN_THREAD, me,
 						    item_number,
@@ -162,6 +172,8 @@ new_items_ret listlayoutmanagerObj
 ::replace_items(ONLY IN_THREAD,
 		size_t item_number, const std::vector<list_item_param> &items)
 {
+	modified=true;
+
 	new_items_ret ret;
 
 	auto list_impl=impl->list_element_singleton->impl;
@@ -179,6 +191,8 @@ new_items_ret
 listlayoutmanagerObj::replace_all_items(const
 					std::vector<list_item_param> &items)
 {
+	notmodified();
+
 	new_items_ret ret;
 
 	auto cells=in_thread_new_cells_info::create(ref{this}, items, ret);
@@ -187,6 +201,7 @@ listlayoutmanagerObj::replace_all_items(const
 		     (ONLY IN_THREAD)
 		     {
 			     listlayoutmanager me=impl->create_public_object();
+			     me->modified=true;
 			     me->impl->list_element_singleton->impl
 				     ->replace_all_rows(IN_THREAD, me,
 							cells->info);
@@ -199,6 +214,8 @@ new_items_ret listlayoutmanagerObj
 ::replace_all_items(ONLY IN_THREAD,
 		    const std::vector<list_item_param> &items)
 {
+	modified=true;
+
 	new_items_ret ret;
 
 	auto list_impl=impl->list_element_singleton->impl;
@@ -214,6 +231,8 @@ new_items_ret listlayoutmanagerObj
 
 void listlayoutmanagerObj::resort_items(const std::vector<size_t> &indexes)
 {
+	notmodified();
+
 	impl->run_as([indexes, impl=this->impl]
 		     (ONLY IN_THREAD)
 		     {
@@ -235,31 +254,37 @@ void listlayoutmanagerObj::resort_items(ONLY IN_THREAD,
 
 size_t listlayoutmanagerObj::size() const
 {
+	notmodified();
 	return impl->list_element_singleton->impl->size();
 }
 
 bool listlayoutmanagerObj::selected(size_t i) const
 {
+	notmodified();
 	return impl->list_element_singleton->impl->selected(i);
 }
 
 size_t listlayoutmanagerObj::hierindent(size_t i) const
 {
+	notmodified();
 	return impl->list_element_singleton->impl->hierindent(i);
 }
 
 std::optional<size_t> listlayoutmanagerObj::selected() const
 {
+	notmodified();
 	return impl->list_element_singleton->impl->selected();
 }
 
 std::vector<size_t> listlayoutmanagerObj::all_selected() const
 {
+	notmodified();
 	return impl->list_element_singleton->impl->all_selected();
 }
 
 std::optional<size_t> listlayoutmanagerObj::current_list_item() const
 {
+	notmodified();
 	auto lei=impl->list_element_singleton->impl;
 
 	listimpl_info_t::lock lock{lei->textlist_info};
@@ -269,6 +294,8 @@ std::optional<size_t> listlayoutmanagerObj::current_list_item() const
 
 void listlayoutmanagerObj::selected(size_t i, bool selected_flag)
 {
+	notmodified();
+
 	impl->run_as([impl=this->impl, i, selected_flag]
 		     (ONLY IN_THREAD)
 		     {
@@ -282,6 +309,7 @@ void listlayoutmanagerObj::selected(ONLY IN_THREAD,
 				    size_t i, bool selected_flag,
 				    const callback_trigger_t &trigger)
 {
+	modified=true;
 	impl->list_element_singleton->impl
 		->selected(IN_THREAD, ref(this), i, selected_flag,
 			   trigger);
@@ -289,6 +317,8 @@ void listlayoutmanagerObj::selected(ONLY IN_THREAD,
 
 void listlayoutmanagerObj::autoselect(size_t i)
 {
+	notmodified();
+
 	impl->run_as([impl=this->impl,i]
 		     (ONLY IN_THREAD)
 		     {
@@ -301,12 +331,16 @@ void listlayoutmanagerObj::autoselect(ONLY IN_THREAD,
 				      size_t i,
 				      const callback_trigger_t &trigger)
 {
+	notmodified();
+
 	impl->list_element_singleton->impl->autoselect(IN_THREAD,
 						       ref(this), i, trigger);
 }
 
 void listlayoutmanagerObj::unselect()
 {
+	notmodified();
+
 	impl->run_as([impl=this->impl]
 		     (ONLY IN_THREAD)
 		     {
@@ -317,16 +351,20 @@ void listlayoutmanagerObj::unselect()
 
 void listlayoutmanagerObj::unselect(ONLY IN_THREAD)
 {
+	notmodified();
+
 	impl->list_element_singleton->impl->unselect(IN_THREAD, ref(this));
 }
 
 bool listlayoutmanagerObj::enabled(size_t i) const
 {
+	notmodified();
 	return impl->list_element_singleton->impl->enabled(i);
 }
 
 void listlayoutmanagerObj::enabled(size_t i, bool flag)
 {
+	notmodified();
 	impl->run_as([impl=this->impl, i, flag]
 		     (ONLY IN_THREAD)
 		     {
@@ -337,12 +375,14 @@ void listlayoutmanagerObj::enabled(size_t i, bool flag)
 
 void listlayoutmanagerObj::enabled(ONLY IN_THREAD, size_t i, bool flag)
 {
+	notmodified();
 	impl->list_element_singleton->impl->enabled(IN_THREAD, i, flag);
 }
 
 void listlayoutmanagerObj::on_status_update(size_t i,
 					    const list_item_status_change_callback &cb)
 {
+	notmodified();
 	impl->run_as([impl=this->impl, i, cb]
 		     (ONLY IN_THREAD)
 		     {
@@ -356,6 +396,7 @@ void listlayoutmanagerObj::on_status_update(ONLY IN_THREAD,
 					    size_t i,
 					    const list_item_status_change_callback &cb)
 {
+	notmodified();
 	impl->list_element_singleton->impl->on_status_update(IN_THREAD,
 							     ref{this},
 							     i,
@@ -366,6 +407,7 @@ void listlayoutmanagerObj::on_status_update(ONLY IN_THREAD,
 void listlayoutmanagerObj::selection_type(const list_selection_type_cb_t
 					  &selection_type)
 {
+	notmodified();
 	listimpl_info_t::lock lock{impl->list_element_singleton->impl
 				   ->textlist_info};
 
@@ -375,6 +417,8 @@ void listlayoutmanagerObj::selection_type(const list_selection_type_cb_t
 void listlayoutmanagerObj::selection_type(ONLY IN_THREAD,
 					  const list_selection_type_cb_t &s)
 {
+	notmodified();
+
 	selection_type(s); // In case this changed in the future.
 }
 
@@ -382,6 +426,7 @@ void listlayoutmanagerObj::on_list_selection_changed(const
 						     list_selection_changed_cb_t
 						     &selection_changed)
 {
+	notmodified();
 	listimpl_info_t::lock lock{impl->list_element_singleton->impl
 				   ->textlist_info};
 
@@ -392,6 +437,7 @@ void listlayoutmanagerObj
 ::on_list_selection_changed(ONLY IN_THREAD,
 			    const list_selection_changed_cb_t &s)
 {
+	notmodified();
 	on_list_selection_changed(s); // In case this changed in the future.
 }
 
@@ -399,6 +445,8 @@ void listlayoutmanagerObj::on_selection_changed(const
 						list_selection_changed_cb_t
 						&selection_changed)
 {
+	notmodified();
+
 	on_list_selection_changed(selection_changed);
 }
 
@@ -407,6 +455,8 @@ void listlayoutmanagerObj::on_selection_changed(ONLY IN_THREAD,
 						list_selection_changed_cb_t
 						&selection_changed)
 {
+	notmodified();
+
 	on_list_selection_changed(IN_THREAD, selection_changed);
 }
 
@@ -414,12 +464,14 @@ void listlayoutmanagerObj
 ::on_current_list_item_changed(const list_item_status_change_callbackptr
 			       &current_list_item_changed)
 {
+	notmodified();
+
 	impl->run_as([impl=this->impl, current_list_item_changed]
 		     (ONLY IN_THREAD)
 		     {
-			     listlayoutmanager lm=impl->create_public_object();
+			     auto me=listlayoutmanager::create(impl);
 
-			     lm->on_current_list_item_changed
+			     me->on_current_list_item_changed
 				     (IN_THREAD,
 				      current_list_item_changed);
 		     });
@@ -430,6 +482,8 @@ void listlayoutmanagerObj
 			       const list_item_status_change_callbackptr
 			       &current_list_item_changed)
 {
+	notmodified();
+
 	impl->list_element_singleton->impl
 		->current_list_item_changed(IN_THREAD)=
 		current_list_item_changed;
@@ -438,6 +492,7 @@ void listlayoutmanagerObj
 listlayoutmanagerptr
 listlayoutmanagerObj::submenu_listlayout(size_t i)
 {
+	notmodified();
 	return impl->list_element_singleton->impl->submenu_listlayout(i);
 }
 

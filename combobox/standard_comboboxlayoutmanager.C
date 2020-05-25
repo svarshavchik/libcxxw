@@ -24,6 +24,7 @@ const_standard_combobox_lock
 ::const_standard_combobox_lock(const const_standard_comboboxlayoutmanager &ll)
 	: const_list_lock{ll}, locked_layoutmanager{ll}
 {
+	locked_layoutmanager->notmodified();
 }
 
 const_standard_combobox_lock::~const_standard_combobox_lock()=default;
@@ -897,7 +898,7 @@ static void nosuchitem(size_t i)
 new_items_ret standard_comboboxlayoutmanagerObj
 ::append_items(const std::vector<list_item_param> &items)
 {
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+	standard_combobox_lock lock{ref{this}};
 
 	return lock.append_items(items);
 }
@@ -905,7 +906,7 @@ new_items_ret standard_comboboxlayoutmanagerObj
 new_items_ret standard_comboboxlayoutmanagerObj
 ::append_items(ONLY IN_THREAD, const std::vector<list_item_param> &items)
 {
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+	standard_combobox_lock lock{ref{this}};
 
 	return lock.append_items(IN_THREAD, items);
 }
@@ -914,7 +915,7 @@ new_items_ret standard_comboboxlayoutmanagerObj
 ::insert_items(size_t i,
 	       const std::vector<list_item_param> &items)
 {
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+	standard_combobox_lock lock{ref{this}};
 
 	return lock.insert_items(i, items);
 }
@@ -923,7 +924,7 @@ new_items_ret standard_comboboxlayoutmanagerObj
 ::insert_items(ONLY IN_THREAD, size_t i,
 	       const std::vector<list_item_param> &items)
 {
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+	standard_combobox_lock lock{ref{this}};
 
 	return lock.insert_items(IN_THREAD, i, items);
 }
@@ -932,7 +933,7 @@ new_items_ret standard_comboboxlayoutmanagerObj
 ::replace_items(size_t i,
 		const std::vector<list_item_param> &items)
 {
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+	standard_combobox_lock lock{ref{this}};
 
 	return lock.replace_items(i, items);
 }
@@ -941,7 +942,7 @@ new_items_ret standard_comboboxlayoutmanagerObj
 ::replace_items(ONLY IN_THREAD, size_t i,
 		const std::vector<list_item_param> &items)
 {
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+	standard_combobox_lock lock{ref{this}};
 
 	return lock.replace_items(IN_THREAD, i, items);
 }
@@ -965,8 +966,7 @@ void standard_comboboxlayoutmanagerObj::remove_items(ONLY IN_THREAD,
 
 text_param standard_comboboxlayoutmanagerObj::item(size_t i) const
 {
-	const_standard_combobox_lock
-		lock{const_standard_comboboxlayoutmanager(this)};
+	const_standard_combobox_lock lock{const_ref{this}};
 
 	return lock.item(i);
 }
@@ -974,7 +974,7 @@ text_param standard_comboboxlayoutmanagerObj::item(size_t i) const
 new_items_ret standard_comboboxlayoutmanagerObj
 ::replace_all_items(const std::vector<list_item_param> &items)
 {
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+	standard_combobox_lock lock{ref{this}};
 
 	return lock.replace_all_items(items);
 }
@@ -983,7 +983,7 @@ new_items_ret standard_comboboxlayoutmanagerObj
 ::replace_all_items(ONLY IN_THREAD,
 		    const std::vector<list_item_param> &items)
 {
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+	standard_combobox_lock lock{ref{this}};
 
 	return lock.replace_all_items(IN_THREAD, items);
 }
@@ -1004,7 +1004,7 @@ void standard_comboboxlayoutmanagerObj
 void standard_comboboxlayoutmanagerObj
 ::resort_items(ONLY IN_THREAD, const std::vector<size_t> &indexes)
 {
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+	standard_combobox_lock lock{ref{this}};
 
 	lock.resort_items(IN_THREAD, indexes);
 }
@@ -1138,6 +1138,7 @@ void standard_comboboxlayoutmanagerObj
 				  " function is disabled in editable"
 				  " combo-boxes"));
 
+	notmodified();
 	impl->selection_changed=cb;
 }
 

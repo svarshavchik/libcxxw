@@ -67,11 +67,37 @@ public:
 	//
 	// Access the underlying input field.
 
+#if 1
 	using input_lock::size;
 	using input_lock::pos;
 	using input_lock::get;
 	using input_lock::get_unicode;
+#else
 
+	auto size() const
+	{
+		notmodified();
+		return input_lock::size();
+	}
+
+	auto pos() const
+	{
+		notmodified();
+		return input_lock::pos();
+	}
+
+	auto get() const
+	{
+		notmodified();
+		return input_lock::get();
+	}
+
+	auto get_unicode() const
+	{
+		notmodified();
+		return input_lock::get_unicode();
+	}
+#endif
 	//! Forward set() to the underlying input field
 
 	template<typename ...Args> struct set_args_t;

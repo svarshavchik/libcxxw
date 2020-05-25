@@ -11,6 +11,7 @@
 #include <x/w/impl/themeborder_element.H>
 #include <x/w/impl/layoutmanager.H>
 #include <x/w/impl/child_element.H>
+#include <x/w/layoutmanager.H>
 #include <x/w/grid_map_infofwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -136,24 +137,27 @@ richtextptr bordercontainer_elementObj<element_impl>::get_title(ONLY IN_THREAD)
 //! Implement set_title().
 
 //! Inherited from bordercontainer_implObj.
-template<typename element_impl>
-void bordercontainer_elementObj<element_impl>::set_title(ONLY IN_THREAD,
-							 const richtextptr &t)
+template<typename element_impl> void bordercontainer_elementObj<element_impl>
+::set_title(ONLY IN_THREAD,
+	    const layoutmanager &layout,
+	    const richtextptr &t)
 {
 	this->title(IN_THREAD)=t;
+	layout->set_modified();
 }
 
-//! Implement set_border().
+
+//! Implement do_set_border().
 
 //! Inherited from bordercontainer_implObj.
 
 template<typename element_impl>
-void bordercontainer_elementObj<element_impl>
-::set_border(ONLY IN_THREAD,
-	     const border_arg &new_left_border,
-	     const border_arg &new_right_border,
-	     const border_arg &new_top_border,
-	     const border_arg &new_bottom_border)
+bool bordercontainer_elementObj<element_impl>
+::do_set_border(ONLY IN_THREAD,
+		const border_arg &new_left_border,
+		const border_arg &new_right_border,
+		const border_arg &new_top_border,
+		const border_arg &new_bottom_border)
 {
 	// First, save the existing borders.
 
@@ -184,16 +188,9 @@ void bordercontainer_elementObj<element_impl>
 	    themeborder_element_impl<top_border_tag>::current_border(IN_THREAD) &&
 	    prev_bottom_border==
 	    themeborder_element_impl<bottom_border_tag>::current_border(IN_THREAD))
-		return;
+		return false;
 
-	// Make sure that recalculate() gets called to clear the cached border info.
-
-	this->get_container_impl().invoke_layoutmanager
-		([&]
-		 (const auto &manager)
-		 {
-			 manager->needs_recalculation(IN_THREAD);
-		 });
+	return true;
 }
 
 //! Implement get_title_indent()

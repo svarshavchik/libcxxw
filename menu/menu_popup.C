@@ -74,7 +74,9 @@ do_create_menu_popup(const function<void (const listlayoutmanager &)> &creator,
 				  impl,
 				  lm);
 
-			 creator(lm->create_public_object());
+			 auto public_lm=lm->create_public_object();
+			 public_lm->notmodified();
+			 creator(public_lm);
 
 			 return {c, c};
 		 },

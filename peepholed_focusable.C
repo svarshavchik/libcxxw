@@ -132,10 +132,12 @@ create_peepholed_focusable_with_frame_impl
 			 // In order to properly initialize the focusable
 			 // element, the layout manager needs_recalculation().
 			 // Arrange to invoke it indirectly by constructing
-			 // the layout manager public object, which will
-			 // take care of calling needs_recalculation().
+			 // the layout manager public object, and indicate that
+			 // it's been modified.
 
 			 auto public_layout=layout_impl->create_public_object();
+
+			 public_layout->set_modified();
 
 			 // Ok, we can now create the container.
 			 auto peephole_container=peephole::create(impl,

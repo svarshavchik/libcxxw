@@ -449,7 +449,7 @@ layoutmanager gridlayoutmanagerObj::implObj::create_public_object()
 
 gridlayoutmanager gridlayoutmanagerObj::implObj::create_gridlayoutmanager()
 {
-	return gridlayoutmanager::create(ref<implObj>(this));
+	return gridlayoutmanager::create(ref{this});
 }
 
 void gridlayoutmanagerObj::implObj

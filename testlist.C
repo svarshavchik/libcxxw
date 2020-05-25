@@ -1072,8 +1072,12 @@ void testlist(const testlistoptions &options)
 			([=]
 			 (ONLY IN_THREAD)
 			 {
-				 auto impl=mainlist->listlayout()
-					 ->impl->list_element_singleton->impl;
+				 auto ll=mainlist->listlayout();
+
+				 ll->set_modified();
+
+				 auto impl=
+					 ll->impl->list_element_singleton->impl;
 
 				 LIBCXX_NAMESPACE::w::key_event
 					 ke{0,

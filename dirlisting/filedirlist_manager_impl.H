@@ -178,6 +178,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 			lock_panebase(const panelayoutmanager &pane_lm)
 				: pane_lm{pane_lm}
 			{
+				pane_lm->notmodified();
 			}
 
 			//! Return the list layout manager for the subdir pane

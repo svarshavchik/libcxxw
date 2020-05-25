@@ -184,6 +184,8 @@ struct generators_base {
 	{
 		auto lm=new_container->get_layoutmanager();
 
+		lm->notmodified();
+
 		elements.new_layoutmanagers.insert_or_assign(name, lm);
 
 		if (!creator.empty())

@@ -105,6 +105,7 @@ void listitemhandleObj::implObj
 
 	listlayoutmanager llm=p->create_public_object();
 
+	llm->notmodified();
 	p->list_element_singleton->impl->on_status_update(IN_THREAD, llm,
 							  extra, cb);
 }

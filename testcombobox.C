@@ -486,6 +486,7 @@ void testcombobox(const testcombobox_options &options)
 	{
 		editable_comboboxlayoutmanager lm=combobox->get_layoutmanager();
 
+		lm->notmodified();
 		std::cout << "Final selection: " << lm->get() << std::endl;
 	}
 }
