@@ -651,7 +651,7 @@ lm->generate("bottom-part", generator, widgets);</programlisting>
       to the given size, taking into account the
       <link linkend="cxxwtheme.1">current theme's scale</link>.
       This is the same as setting a
-      <ulink url="&link-typedef-x--w-dim-arg;"><classname>&ns;::w::dim_arg</classname></ulink>
+      <ulink url="&link-x--w--dim-arg;"><classname>&ns;::w::dim_arg</classname></ulink>
       from the given value.
       A special value of <quote>inf</quote> evaluates to a
       <literal>NAN</literal>, and used in contexts of specifying an unlimited
@@ -3775,7 +3775,7 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
 
 	<varlistentry>
 	  <term>
-	    <ulink url="&link-typedef-x--w-dim-arg;"><classname>&ns;::w::dim_arg</classname></ulink> fields
+	    <ulink url="&link-x--w--dim-arg;"><classname>&ns;::w::dim_arg</classname></ulink> fields
 	  </term>
 	  <listitem>
 	    <blockquote>
@@ -3981,6 +3981,30 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
       </para>
     </section>
   </section>
+
+  <section id="cxxwcreator">
+    <title><command>cxxwcreator</command> tool</title>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="cxxwcreator.png" format="PNG"
+		   contentwidth="480px" contentdepth="340px" />
+      </imageobject>
+      <textobject>
+	<phrase>
+	  <command>cxxwcreator</command>
+	</phrase>
+      </textobject>
+    </mediaobject>
+
+    <para>
+      <command>cxxwcreator</command> is a work in progress.
+      <command>cxxwcreator</command> loads a <link linkend="uixmldoc">theme
+	UI file</link> and provides an interactive editor for modifying the
+      UI elements in the file.
+    </para>
+  </section>
+
 </appendix>
 
 <!--

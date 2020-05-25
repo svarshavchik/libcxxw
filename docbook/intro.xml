@@ -121,7 +121,7 @@ See COPYING for distribution information.
 	&app;'s core functionality is complete, and
 	<link linkend="INSTALL">is available for downloading</link>.
 	The most recent build of &app; adds an initial implementation of the
-	<link linkend="uixmldoc"><command>cxxwcreator</command></link>
+	<link linkend="cxxwcreator"><command>cxxwcreator</command></link>
 	tool,
 	adds alpha channel support to the
 	<link linkend="fontcolorpickers">color picker widget</link>,

@@ -161,7 +161,7 @@ See COPYING for distribution information.
     </note>
 
     <para>
-      <ulink url="&link-typedef-x--w-dim-arg;"><classname>&ns;::w::dim_arg</classname></ulink>
+      <ulink url="&link-x--w--dim-arg;"><classname>&ns;::w::dim_arg</classname></ulink>
       specifies the value of a minimum, preferred, or maximum metric.
       The value may be:
     </para>
