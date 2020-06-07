@@ -7,7 +7,11 @@
 
 #include "itemlayoutmanager/itembuttonfwd.H"
 #include "itemlayoutmanager/itembuttonobj.H"
+#include "x/w/itemlayoutmanagerfwd.H"
+
+#include <x/functionalrefptr.H>
 #include <x/ref.H>
+#include <vector>
 
 LIBCXXW_NAMESPACE_START
 

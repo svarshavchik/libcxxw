@@ -40,32 +40,6 @@ typedef ptr<itembuttonObj> itembuttonptr;
 
 typedef const_ptr<itembuttonObj> const_itembuttonptr;
 
-struct LIBCXX_HIDDEN itemlayout_button_container;
-
-//! The info we have on the items we are managing.
-
-struct itemlayout_button_container {
-
-	inline itemlayout_button_container(const itemlayout_callback_t &);
-
-	//! Callback for each item's close buttons
-	itemlayout_callback_t callback;
-
-	//! A button with each item in the container.
-	std::vector<itembutton> all_buttons;
-
-	//! Any new button that has been added, but not processed yet.
-
-	//! A new button gets added both to all_buttons and new_buttons,
-	//! recalculate() initializes each new button, then clears this
-	//! vector.
-	std::vector<itembutton> new_buttons;
-
-	//! Buttons that have been removed
-	std::vector<itembutton> removed_buttons;
-};
-
-
 LIBCXXW_NAMESPACE_END
 
 #endif

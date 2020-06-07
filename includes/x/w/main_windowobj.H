@@ -50,7 +50,8 @@ LIBCXXW_NAMESPACE_START
 
 //! \see main_window
 
-class main_windowObj : public generic_windowObj {
+class main_windowObj : public generic_windowObj,
+		       public with_constructorObj {
 
 public:
 	LOG_CLASS_SCOPE;

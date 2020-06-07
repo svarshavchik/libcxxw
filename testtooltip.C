@@ -209,7 +209,7 @@ int main(int argc, char **argv)
 
 		options.parse(argc, argv);
 
-		if (options.width->isSet())
+		if (options.width->is_set())
 			autotest=true;
 
 		if (autotest)

@@ -95,18 +95,18 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	// so a list containing items that use different fonts may not
 	// end up showing an exact number of lines specified, because of
 	// that.
-	if (opts.rows->isSet())
+	if (opts.rows->is_set())
 	{
 		size_t min=opts.rows->value, max=min;
 
-		if (opts.maxrows->isSet())
+		if (opts.maxrows->is_set())
 		{
 			max=opts.maxrows->value;
 		}
 
 		new_list.height(min, max);
 	}
-	else if (opts.maxrows->isSet())
+	else if (opts.maxrows->is_set())
 	{
 		auto v=opts.maxrows->value;
 		new_list.height(v); //
@@ -114,7 +114,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	// Alternatively, the list's height gets set in millimeters, via
 	// x::w::dim_axis_arg.
-	else if (opts.height->isSet())
+	else if (opts.height->is_set())
 	{
 		auto v=opts.height->value;
 		new_list.height(x::w::dim_axis_arg{v});

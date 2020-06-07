@@ -25,7 +25,8 @@ LIBCXXW_NAMESPACE_START
 //! \see date_input_field_calendar
 
 class date_input_field_calendarObj
-	: public peepholed_attachedto_containerObj {
+	: public peepholed_attachedto_containerObj,
+	  public with_constructorObj {
 
  public:
 	//! This popup's custom appearance

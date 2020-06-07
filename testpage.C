@@ -320,7 +320,7 @@ void testpage(const testpage_options &options)
 		throw EXCEPTION("EDITOR_CONSTRUCTOR_DEBUG didn't execute");
 	}
 
-	if (options.testfocus->isSet())
+	if (options.testfocus->is_set())
 	{
 		LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 

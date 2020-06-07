@@ -27,7 +27,9 @@ LIBCXXW_NAMESPACE_START
 
 //! \see filedirlist_manager
 
-class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN filedirlist_managerObj::implObj
+	: virtual public obj,
+	  public with_constructorObj {
 
  public:
 

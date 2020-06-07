@@ -9,7 +9,7 @@
 #include "x/w/impl/layoutmanager.H"
 #include "x/w/item_layout_appearance.H"
 #include "itemlayoutmanager/peepholed_item_containerobj.H"
-#include "itemlayoutmanager/itembuttonfwd.H"
+#include "itemlayoutmanager/itembutton.H"
 
 LIBCXXW_NAMESPACE_START
 

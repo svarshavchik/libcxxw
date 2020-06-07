@@ -49,7 +49,8 @@ void load_cxxwtheme_property(const xcb_screen_t *screen_0,
 //
 // The window theme
 
-class LIBCXX_HIDDEN defaultthemeObj : public uigeneratorsObj {
+class LIBCXX_HIDDEN defaultthemeObj : public uigeneratorsObj,
+				      public with_constructorObj {
 
 public:
 	//! Name of this theme
@@ -147,13 +148,10 @@ public:
 
 	//! Construct a theme for the given screen.
 
-	//! This construct the object, but does not fully initialize it.
-	//! After constructing the theme object, load() must be invoked with
-	//! the same theme_config parameter.
 	defaultthemeObj(const xcb_screen_t *screen,
 			const config &theme_config);
 
-	//! Phase 2 constructor
+	//! Phase 2 constructor, actually loads the theme.
 	void constructor(const xcb_screen_t *screen,
 			 const config &theme_config);
 

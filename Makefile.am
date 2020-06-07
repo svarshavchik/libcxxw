@@ -33,8 +33,8 @@ libcxxw-@ABIVER@.@LIBCXX_VERSION@.pc: Makefile
 	echo "libdir=${libdir}/libcxxw-@ABIVER@-@LIBCXX_VERSION@" >>libcxxw.pc.tmp
 	echo "includedir=${includedir}" >>libcxxw.pc.tmp
 	echo "" >>libcxxw.pc.tmp
-	echo "Name: LibCXX Windows Library" >>libcxxw.pc.tmp
-	echo "Description: LibCXX Windows Library" >>libcxxw.pc.tmp
+	echo "Name: LibCXX Widget Toolkit" >>libcxxw.pc.tmp
+	echo "Description: LibCXX Widget Toolkit" >>libcxxw.pc.tmp
 	echo "Version: @VERSION@.@LIBCXX_VERSION@" >>libcxxw.pc.tmp
 	echo "Cflags: -I$(includedir)/libcxxw-@ABIVER@-@LIBCXX_VERSION@" >>libcxxw.pc.tmp
 	echo 'Libs: -L${libdir}/libcxxw-@ABIVER@-@LIBCXX_VERSION@ -Wl,-rpath -Wl,${libdir}/libcxxw-@ABIVER@-@LIBCXX_VERSION@' >>libcxxw.pc.tmp

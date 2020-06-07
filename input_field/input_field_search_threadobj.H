@@ -16,6 +16,7 @@
 #include <x/mpobj.H>
 #include <x/logger.H>
 #include <x/functionalrefptrfwd.H>
+#include <x/functionalrefptrobj.H>
 
 LIBCXXW_NAMESPACE_START
 

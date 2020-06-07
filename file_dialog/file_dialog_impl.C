@@ -653,7 +653,7 @@ class LIBCXX_HIDDEN text_uri_selection_handlerObj
 
 			uriimpl u{s};
 
-			auto scheme=u.getScheme();
+			auto scheme=u.get_scheme();
 
 			if (!scheme.empty() && scheme != "file")
 			{
@@ -665,7 +665,7 @@ class LIBCXX_HIDDEN text_uri_selection_handlerObj
 				return;
 			}
 
-			auto authority=u.getAuthority().to_string();
+			auto authority=u.get_authority().to_string();
 
 			if (!authority.empty() && authority != "localhost")
 			{
@@ -678,7 +678,7 @@ class LIBCXX_HIDDEN text_uri_selection_handlerObj
 				return;
 			}
 
-			auto path=u.getPath();
+			auto path=u.get_path();
 
 			auto file_dialog_impl=r->file_dialog_impl
 				.get().getptr();

@@ -13,6 +13,7 @@
 #include <x/w/all_appearancesfwd.H>
 #include <x/w/tooltipfwd.H>
 #include <x/functionalrefptrfwd.H>
+#include <x/functionalrefptrobj.H>
 #include <x/obj.H>
 #include <x/visitor.H>
 #include <x/vectorfwd.H>

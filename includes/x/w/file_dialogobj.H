@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see file_dialog
 
-class file_dialogObj : public dialogObj {
+class file_dialogObj : public dialogObj, public with_constructorObj {
 
 public:
 	struct init_args;

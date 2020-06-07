@@ -714,50 +714,9 @@ typedef mpobj<listimpl_info_s, std::recursive_mutex> listimpl_info_t;
 
 typedef mpobj_lock<listimpl_info_s, std::recursive_mutex> listimpl_info_lock_t;
 
-//! A superclass of \ref submenu "submenu" that holds the creator callback.
-
-//! Makes it possible to use aggregate initialization with submenu, and
-//! default-construct the optional custom submenu appearance.
-
-struct submenu_creator {
-
-	//! Callback invoked to create the submenu.
-
-	functionref<void (const listlayoutmanager &)> creator;
-};
-
-//! A superclass of \ref submenu "submenu" that holds the submenu's appearance.
-
-//! Makes it possible to use aggregate initialization with submenu, and
-//! default-construct the const_popup_list_appearance using only a
-//! forward-declaration
-
-struct submenu_appearance {
-
-	//! Submenu's appearance.
-
-	const_popup_list_appearance appearance;
-
-	//! Default constructor
-
-	submenu_appearance();
-
-	//! Constructor
-	submenu_appearance(const const_popup_list_appearance &appearance);
-
-	//! Copy constructor
-	submenu_appearance(const submenu_appearance &appearance);
-
-	//! Assignment operator
-	submenu_appearance &operator=(const submenu_appearance &appearance);
-
-	//! Destructor
-	~submenu_appearance();
-};
-
-//! This is a menu item entry for a sub menu.
-
-struct submenu : submenu_creator, submenu_appearance {};
+struct submenu_creator;
+struct submenu_appearance;
+struct submenu;
 
 //! This is a selectable menu option.
 

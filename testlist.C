@@ -369,13 +369,13 @@ auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 
 	ntlm.adjustable_column_widths=options.adjustable->value;
 
-	if (options.width->isSet())
+	if (options.width->is_set())
 		ntlm.table_width=ntlm.maximum_table_width=options.width->value;
 
-	if (options.maximum_table_width->isSet())
+	if (options.maximum_table_width->is_set())
 		ntlm.maximum_table_width=options.maximum_table_width->value;
 
-	if (options.minwidth->isSet())
+	if (options.minwidth->is_set())
 		ntlm.minimum_column_widths=
 			{
 			 {1, 30},
@@ -646,23 +646,23 @@ create_plain_list(const testlistoptions &opts,
 		new_list.selection_type=
 			LIBCXX_NAMESPACE::w::multiple_selection_type;
 
-	if (opts.rows->isSet())
+	if (opts.rows->is_set())
 	{
 		size_t min=opts.rows->value, max=min;
 
-		if (opts.maxrows->isSet())
+		if (opts.maxrows->is_set())
 		{
 			max=opts.maxrows->value;
 		}
 
 		new_list.height(min, max);
 	}
-	else if (opts.maxrows->isSet())
+	else if (opts.maxrows->is_set())
 	{
 		auto v=opts.maxrows->value;
 		new_list.height(v); //
 	}
-	else if (opts.height->isSet())
+	else if (opts.height->is_set())
 	{
 		auto v=opts.height->value;
 		new_list.height(LIBCXX_NAMESPACE::w::dim_axis_arg{v});

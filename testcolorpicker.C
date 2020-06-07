@@ -141,13 +141,13 @@ void testcolorpicker(const testcolorpicker_options &options)
 				 f.family=options.font_family->value;
 			 }
 
-			 if (options.font_size->isSet())
+			 if (options.font_size->is_set())
 			 {
 				 set_font=true;
 				 f.point_size=options.font_size->value;
 			 }
 
-			 if (options.font_weight->isSet())
+			 if (options.font_weight->is_set())
 			 {
 				 set_font=true;
 				 f.set_weight(options.font_weight->value);

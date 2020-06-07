@@ -22,7 +22,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see menubarfactory
 
-class menubarfactoryObj : public obj {
+class menubarfactoryObj : virtual public obj {
 
 public:
 

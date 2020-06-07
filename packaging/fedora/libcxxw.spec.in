@@ -41,7 +41,7 @@ BuildRequires: desktop-file-utils
 BuildRequires: gettext
 
 %description
-LibCXX Windows Library
+LibCXX Widget Toolkit
 
 %package cups
 Group: System Environment/Libraries

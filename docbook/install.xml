@@ -24,10 +24,11 @@ See COPYING for distribution information.
 	    <ulink url="https://releases.pagure.org/LibCXXW/">Download</ulink>
 	  </simpara>
 
+	  <!--
 	  <simpara>
 	    <ulink url="https://lists.libcxx.org/mailman/listinfo/libcxx-users_lists.libcxx.org">Mailing list</ulink>
 	  </simpara>
-
+-->
 	  <simpara>
 	    <ulink url="https://pagure.io/LibCXXW.git">Pagure</ulink> or
 	    <ulink url="https://github.com/svarshavchik/libcxxw.git">GitHUB</ulink>

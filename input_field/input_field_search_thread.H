@@ -8,6 +8,7 @@
 #include "input_field/input_field_search_threadfwd.H"
 #include "input_field/input_field_search_threadobj.H"
 #include <x/ref.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 
