@@ -12,7 +12,7 @@ See COPYING for distribution information.
 
     <para>
       &appshort; is an optional add-on library to &libcxx; that
-      implements an X widget toolkit with a modern C++ API.
+      implements an X widget toolkit with a modern C++20 API.
       &appshort; aims to make it possible to implement a
       basic, no-frills X user interface in modern C++.
       This short demo gives a brief overview of &appshort;'s X widget

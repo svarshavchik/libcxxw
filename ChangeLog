@@ -1,4 +1,8 @@
+0.28
+
 2020-05-25  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Update the API to the C++20 revision.
 
 	* Optimize container recalculation. Layout managers' destructor
 	schedules container recalculation only when needed.
