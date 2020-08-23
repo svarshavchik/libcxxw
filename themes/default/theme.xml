@@ -58,11 +58,8 @@
     <b>1</b>
   </color>
 
-  <color id="modal_shade">
-    <r>0</r>
-    <g>0</g>
-    <b>0</b>
-    <a>.5</a>
+  <color id="modal_shade" scale="30%">
+    <a>.7</a>
   </color>
 
   <color id="mainwindow_background" scale="75%"/>

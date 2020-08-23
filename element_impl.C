@@ -1286,10 +1286,11 @@ void elementObj::implObj
 	{
 		contents->composite(wh.shaded_color(IN_THREAD)
 				    ->get_current_color(IN_THREAD),
-				    rect.x,
-				    rect.y,
-				    {0, 0, rect.width, rect.height},
-				    render_pict_op::op_atop);
+				    abs_x,
+				    abs_y,
+				    0, 0,
+				    rect.width, rect.height,
+				    render_pict_op::op_over);
 	}
 
 	// generic_window_handler inherits from gcObj::handlerObj, and

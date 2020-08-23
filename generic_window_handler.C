@@ -875,25 +875,9 @@ ref<obj> generic_windowObj::handlerObj::get_shade_busy_mcguffin()
 			 if (!was_empty)
 				 return;
 
-			 // Instead of redrawing each element, we'll just
-			 // compose the shade directly into the window_pixmap,
-			 // then flush_redrawn_areas.
+			 std::unordered_set<element_impl> scheduled;
 
-			 rectangle r{
-				     0, 0,
-				     me->window_pixmap(IN_THREAD)->get_width(),
-				     me->window_pixmap(IN_THREAD)->get_height()
-			 };
-
-			 me->window_picture(IN_THREAD)->composite
-				 (me->shaded_color(IN_THREAD)
-				  ->get_current_color(IN_THREAD),
-				  0, 0, r,
-				  render_pict_op::op_atop);
-
-			 rectarea rr{r};
-
-			 me->flush_redrawn_areas(IN_THREAD, rr);
+			 me->schedule_redraw_recursively(IN_THREAD, scheduled);
 		 });
 
 	return n;
