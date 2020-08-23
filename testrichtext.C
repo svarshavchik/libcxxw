@@ -3,6 +3,7 @@
 #include "richtext/richtextparagraph.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
+#include "richtext/richtextiterator.H"
 #include "x/w/impl/background_color.H"
 #include "screen.H"
 #include "main_window.H"
@@ -433,6 +434,115 @@ void testlinebreaks(const current_fontcollection &font1,
 		throw EXCEPTION("Unexpected break result");
 }
 
+void testrlsplit(const current_fontcollection &font1,
+		 const current_fontcollection &font2,
+		 const main_window &w)
+{
+	auto IN_THREAD=w->get_screen()->impl->thread;
+	auto black=create_new_background_color(w->get_screen(),
+					       w->elementObj::impl
+					       ->get_window_handler()
+					       .drawable_pictformat, "0%");
+
+	richtextmeta meta1{black, font1}, meta2=meta1;
+
+	meta1.rl=true;
+
+	auto richtext=richtext::create(richtextstring{
+		U"lorem\nIPSUM",
+		{
+			{0, meta1},
+		}}, halign::left, 0);
+	auto impl=richtext->debug_get_impl(IN_THREAD);
+
+	if (impl->paragraphs.size() != 2)
+		throw EXCEPTION("Did not get 2 paragraphs");
+
+	auto p=impl->paragraphs.get_paragraph(0);
+
+	if ((*p)->fragments.size() != 1)
+		throw EXCEPTION("Somehow we ended up with multiple fragments");
+
+	auto iter1=richtext->at(0);
+	auto iter2=richtext->at(6);
+
+	if (iter1->at(IN_THREAD).character != U'M' ||
+	    iter2->at(IN_THREAD).character != U'm')
+		throw EXCEPTION("testrlsplit: unexpected render_order");
+
+	{
+		auto f=(*p)->get_fragment(0);
+
+		paragraph_list my_paragraphs{*impl};
+		fragment_list my_fragments{my_paragraphs, **p};
+
+		f->merge(my_fragments);
+	}
+
+	if ((*p)->get_fragment(0)->string.get_string() !=
+	    U"merolMUSPI\n")
+		throw EXCEPTION("testrlsplit: unexpected result of merge");
+
+	if (iter1->pos() != 5 || iter2->pos() != 0 ||
+	    iter1->at(IN_THREAD).character != U'M' ||
+	    iter2->at(IN_THREAD).character != U'm')
+		throw EXCEPTION("testrlsplit: unexpected locations"
+				" after merge");
+
+	richtext=richtext::create(richtextstring{
+		U"lorem\nIPSUMDolor",
+		{
+			{0, meta1},
+			{11, meta2},
+		}}, halign::left, 0);
+	impl=richtext->debug_get_impl(IN_THREAD);
+
+	if (impl->paragraphs.size() != 2)
+		throw EXCEPTION("Did not get 2 paragraphs (2)");
+
+	p=impl->paragraphs.get_paragraph(0);
+
+	if ((*p)->fragments.size() != 1)
+		throw EXCEPTION("Somehow we ended up with multiple fragments "
+				"(2)");
+
+	iter1=richtext->at(0);
+	iter2=richtext->at(6);
+
+	if (iter1->at(IN_THREAD).character != U'M' ||
+	    iter2->at(IN_THREAD).character != U'm')
+		throw EXCEPTION("testrlsplit: unexpected render_order (2)");
+
+	{
+		auto f=(*p)->get_fragment(0);
+
+		paragraph_list my_paragraphs{*impl};
+		fragment_list my_fragments{my_paragraphs, **p};
+
+		f->merge(my_fragments);
+	}
+
+	if ((*p)->get_fragment(0)->string.get_string() !=
+	    U"merolMUSPI\nDolor")
+		throw EXCEPTION("testrlsplit: unexpected result of merge(2)");
+
+	if (iter1->pos() != 5 || iter2->pos() != 0 ||
+	    iter1->at(IN_THREAD).character != U'M' ||
+	    iter2->at(IN_THREAD).character != U'm')
+		throw EXCEPTION("testrlsplit: unexpected locations"
+				" after merge");
+
+	if ((*p)->get_fragment(0)->string.get_meta() !=
+	    richtextstring::meta_t{
+		    {0, meta1},
+		    {11, meta2}
+	    })
+	{
+		throw EXCEPTION("testrlsplit: unexpected meta"
+				" after merge");
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -472,6 +582,7 @@ int main(int argc, char **argv)
 		testrichtext(font1, font2, mw);
 		testsplit(font1, font2, mw);
 		testlinebreaks(font1, font2, mw);
+		testrlsplit(font1, font2, mw);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

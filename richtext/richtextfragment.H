@@ -255,6 +255,19 @@ public:
 	void merge(//! Fragment's paragraph's fragment list
 		   fragment_list &my_fragments);
 
+ private:
+
+	//! Left-to-right text merge.
+
+	//! Invoked by merge(), to merge left-to-right text. To handle
+	//! merging of the next fragment when this fragment is right-to-left
+	//! text, merge() does some prep work, then invokes this too.
+	void merge_lr(fragment_list &my_fragments,
+		      const richtextfragment &other);
+
+ public:
+
+
 	//! Calculate the fragment index from start of rich text.
 
 	//! Each fragment is essentially a line, and this is the line number

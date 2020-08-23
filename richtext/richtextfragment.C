@@ -1249,8 +1249,6 @@ void richtextfragmentObj::merge(fragment_list &my_fragments)
 {
 	USING_MY_PARAGRAPH();
 
-	const std::u32string &current_string=string.get_string();
-
 	assert_or_throw(my_fragments.paragraph.my_paragraph_number ==
 			my_paragraph->my_paragraph_number,
 			"Internal error: wrong my_fragments parameter to split()");
@@ -1272,6 +1270,44 @@ void richtextfragmentObj::merge(fragment_list &my_fragments)
 	auto other=my_paragraph->get_fragment(n);
 
 	redraw_needed=true;
+
+	size_t next_left_to_right_start;
+	bool merge_again=false;
+
+	if (string.get_dir() == richtext_dir::rl &&
+	    (next_left_to_right_start=other->string.left_to_right_start()) > 0)
+	{
+		// If the following fragment has left-to-right text, split
+		// it from it. From this point on, the following fragment has
+		// only right to left text.
+
+		if (other->string.get_string().size()
+		    > next_left_to_right_start)
+		{
+			merge_again=true;
+			other->split(my_fragments, next_left_to_right_start);
+		}
+		--n; // This is now equal to my_fragment_number
+
+		// Instead, merge this fragment at the end of the next one.
+		other->merge_lr(my_fragments, ref{this});
+
+		if (merge_again)
+		{
+			// left-to-right text must follow, so this won't
+			// recurse again.
+			other->merge(my_fragments);
+		}
+		return;
+	}
+
+	merge_lr(my_fragments, other);
+}
+
+void richtextfragmentObj::merge_lr(fragment_list &my_fragments,
+				   const richtextfragment &other)
+{
+	const std::u32string &current_string=string.get_string();
 
 	auto orig_size=current_string.size();
 
@@ -1303,7 +1339,8 @@ void richtextfragmentObj::merge(fragment_list &my_fragments)
 		other->locations.pop_front();
 		l->split_from_fragment(0);
 	}
-	my_fragments.erase(my_paragraph->fragments.get_iter(n));
+	my_fragments.erase(my_paragraph->fragments
+			   .get_iter(other->my_fragment_number));
 	my_fragments.fragment_text_changed(my_fragment_number, 0);
 }
 
