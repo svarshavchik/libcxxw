@@ -9,6 +9,8 @@
 #include <iostream>
 
 #define x_w_impl_richtext_richtextmeta_H
+#define x_w_impl_fonts_freetypefontfwd_H
+#define x_w_impl_fonts_freetypefont_H
 
 LIBCXXW_NAMESPACE_START
 
@@ -21,15 +23,63 @@ public:
 
 	bool operator==(const richtextmeta &o) const
 	{
-	 return c == o.c && rl == o.rl;
+		return c == o.c && rl == o.rl;
 	}
 
 	bool operator!=(const richtextmeta &o) const { return !operator==(o); }
+
+	richtextmeta *operator->()
+	{
+		return this;
+	}
+
+	const richtextmeta *operator->() const
+	{
+		return this;
+	}
+
+	template<typename iter_type>
+	void load_glyphs(iter_type b, iter_type e,
+			 char32_t unprintable_char) const
+	{
+	}
+
+	template<typename iter_type, typename lambda_type>
+	void glyphs_size_and_kernings(iter_type b,
+				      iter_type e,
+				      lambda_type &&lambda,
+				      char32_t prev_char,
+				      char32_t unprintable_char) const
+	{
+		while (b != e)
+		{
+		 lambda(16, 16, -(int)(prev_char & 15), 0);
+
+		 prev_char = *b;
+
+		 ++b;
+		}
+	}
 };
+
+typedef richtextmeta freetypefont;
+
 LIBCXXW_NAMESPACE_END
 
 #include "richtext/richtextstring.C"
+#include "richtext/richtextstring2.C"
 #include "assert_or_throw.C"
+
+LIBCXXW_NAMESPACE_START
+
+const richtextstring::resolved_fonts_t &richtextstring::resolve_fonts() const
+{
+	resolved_fonts=get_meta();
+
+	return resolved_fonts;
+}
+
+LIBCXXW_NAMESPACE_END
 
 using namespace LIBCXX_NAMESPACE::w;
 
@@ -558,12 +608,302 @@ static void renderordertest()
 	}
 }
 
+void kerningtest()
+{
+	static const struct {
+
+		richtextstring test_string, prev, next;
+		unicode_bidi_level_t paragraph_embedding_level;
+		std::vector<int16_t> kernings;
+	} tests[]={
+
+		   // 0: basic test: left to right, previous line ends in a
+		   // different font.
+
+		   {{U"12345678",
+			   {
+			    {0, {0}},
+			    {4, {1}},
+			   }},
+
+		    {U"1234567",
+		     {
+		      {0, {0}},
+		      {4, {1}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {0}},
+		      {4, {1}},
+		     }},
+		    UNICODE_BIDI_LR,
+		    {0, -1, -2, -3, 0, -5, -6, -7}
+		   },
+
+		   // 1: basic test: left to right, previous line ends in the
+		   // same font.
+
+		   {{U"12345678",
+			   {
+			    {0, {1}},
+			    {4, {0}},
+			   }},
+
+		    {U"1234567",
+		     {
+		      {0, {0}},
+		      {4, {1}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {0}},
+		      {4, {1}},
+		     }},
+		    UNICODE_BIDI_LR,
+		    {-7, -1, -2, -3, 0, -5, -6, -7}
+		   },
+
+		   // 2: Right to left, next line is read for the leading
+		   // character's kerning.
+		   {{U"12345678",
+		     {
+		      {0, {0, 1}},
+		      {4, {1, 1}},
+		     }},
+		    {U"1234567",
+		     {
+		      {0, {1, 1}},
+		      {4, {0, 1}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {1, 1}},
+		      {4, {0, 1}},
+		     }},
+		    UNICODE_BIDI_LR,
+		    {-3, -1, -2, -3, 0, -5, -6, -7},
+		   },
+
+		   // 3: Right to left: next line ends in a different font.
+
+		   {{U"12345678",
+		     {
+		      {0, {0, 1}},
+		      {4, {1, 1}},
+		     }},
+		    {U"1234567",
+		     {
+		      {0, {1}},
+		      {4, {0}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {0, 1}},
+		      {4, {1, 1}},
+		     }},
+		    UNICODE_BIDI_LR,
+		    {0, -1, -2, -3, 0, -5, -6, -7},
+		   },
+
+		   // 4: right to left, next line's leading right to left
+		   // text ends in a different font.
+		   {{U"12345678",
+		     {
+		      {0, {0, 1}},
+		      {4, {1, 1}},
+		     }},
+		    {U"1234567",
+		     {
+		      {0, {1}},
+		      {4, {0}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {1, 1}},
+		      {4, {0, 0}},
+		     }},
+		    UNICODE_BIDI_LR,
+		    {0, -1, -2, -3, 0, -5, -6, -7},
+		   },
+
+		   // 5: right to left, next line's right to left text ends
+		   // with a matching font.
+
+		   {{U"12345678",
+		     {
+		      {0, {0, 1}},
+		      {4, {1, 1}},
+		     }},
+		    {U"1234567",
+		     {
+		      {0, {1}},
+		      {4, {0}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {0, 1}},
+		      {3, {0, 0}},
+		     }},
+		    UNICODE_BIDI_LR,
+		    {-6, -1, -2, -3, 0, -5, -6, -7}
+		   },
+
+		   // 6: line is only partially right to left.
+
+		   {{U"12345678",
+		     {
+		      {0, {0, 1}},
+		      {4, {1, 0}},
+		     }},
+		    {U"1234567",
+		     {
+		      {0, {1}},
+		      {4, {0}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {0, 1}},
+		      {3, {0, 0}},
+		     }},
+		    UNICODE_BIDI_LR,
+		    {0, -1, -2, -3, 0, -5, -6, -7}
+		   },
+
+		   // Right to left paragraph embedding level tests
+
+
+		   // 7: basic test: left to right, previous line ends in the
+		   // same font, but it's not entirely left to right.
+
+		   {{U"12345678",
+			   {
+			    {0, {0}},
+			   }},
+
+		    {U"1234567",
+		     {
+		      {0, {1, 1}},
+		      {4, {0}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {0}},
+		     }},
+		    UNICODE_BIDI_RL,
+		    {0, -1, -2, -3, -4, -5, -6, -7}
+		   },
+
+		   // 8: previous line is entirely left to right, but this
+		   // line isn't.
+
+		   {{U"12345678",
+			   {
+			    {0, {0}},
+			    {4, {0, 1}},
+			   }},
+
+		    {U"1234567",
+		     {
+		      {0, {0}},
+		      {4, {0}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {0}},
+		     }},
+		    UNICODE_BIDI_RL,
+		    {0, -1, -2, -3, 0, -5, -6, -7}
+		   },
+
+		   // 9: previous line and this line are entirely left to
+		   // right.
+
+		   {{U"12345678",
+			   {
+			    {0, {0}},
+			   }},
+
+		    {U"1234567",
+		     {
+		      {0, {0}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {0}},
+		     }},
+		    UNICODE_BIDI_RL,
+		    {-7, -1, -2, -3, -4, -5, -6, -7}
+		   },
+
+		   // 10: right to left, different fonts.
+
+		   {{U"12345678",
+			   {
+			    {0, {0, 1}},
+			   }},
+
+		    {U"1234567",
+		     {
+		      {0, {0, 1}},
+		      {4, {0, 0}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {0}},
+		      {4, {1, 1}},
+		     }},
+		    UNICODE_BIDI_RL,
+		    {0, -1, -2, -3, -4, -5, -6, -7}
+		   },
+
+		   // 11: right to left, same fonts
+
+		   {{U"12345678",
+			   {
+			    {0, {0, 1}},
+			   }},
+
+		    {U"1234567",
+		     {
+		      {0, {0, 1}},
+		      {4, {0, 0}},
+		     }},
+		    {U"4567123",
+		     {
+		      {0, {0}},
+		      {4, {0, 1}},
+		     }},
+		    UNICODE_BIDI_RL,
+		    {-3, -1, -2, -3, -4, -5, -6, -7}
+		   },
+	};
+
+	int i=0;
+
+	for (const auto &t:tests)
+	{
+		std::vector<dim_t> widths;
+		std::vector<int16_t> kernings;
+
+		auto test_string=t.test_string;
+
+		test_string.compute_width(&t.prev, &t.next,
+					  t.paragraph_embedding_level, 0,
+					  widths, kernings);
+
+		if (kernings != t.kernings)
+			throw EXCEPTION("kerningtest " << i << " failed");
+		++i;
+	}
+}
+
 int main()
 {
 	try {
 		inserttest();
 		erasesubstrtest();
 		renderordertest();
+		kerningtest();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

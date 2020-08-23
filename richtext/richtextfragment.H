@@ -192,7 +192,8 @@ public:
 
 	//! Internal implementation.
 
-	void load_glyphs_widths_kernings(richtextfragmentObj *prev_fragment);
+	void load_glyphs_widths_kernings(richtextfragmentObj *prev_fragment,
+					 richtextfragmentObj *next_fragment);
 
 	//! Compute glyphs, widths, and kernings for a subset of characters.
 

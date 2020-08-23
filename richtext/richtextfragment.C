@@ -87,7 +87,7 @@ richtextfragmentObj
 
 void richtextfragmentObj::finish_setting()
 {
-	load_glyphs_widths_kernings(nullptr);
+	load_glyphs_widths_kernings(nullptr, nullptr);
 }
 
 richtextfragmentObj
@@ -176,23 +176,30 @@ void richtextfragmentObj
 
 void richtextfragmentObj::load_glyphs_widths_kernings()
 {
-	load_glyphs_widths_kernings(prev_fragment());
+	load_glyphs_widths_kernings(prev_fragment(), next_fragment());
 }
 
 void richtextfragmentObj
-::load_glyphs_widths_kernings(richtextfragmentObj *previous_fragment)
+::load_glyphs_widths_kernings(richtextfragmentObj *previous_fragment,
+			      richtextfragmentObj *next_fragment)
 {
 	USING_MY_PARAGRAPH();
 
-	horiz_info.update([&, this]
-			  (auto &widths,
-			   auto &kernings)
-			  {
-				  string.compute_width(previous_fragment ?
-						       &previous_fragment->string:NULL,
-						       my_paragraph->my_richtext->unprintable_char,
-						       widths,
-						       kernings);
+	horiz_info.update
+		([&, this]
+		 (auto &widths,
+		  auto &kernings)
+		 {
+			 string.compute_width((previous_fragment ?
+					       &previous_fragment->string:NULL),
+					      (next_fragment ?
+					       &next_fragment->string:NULL),
+					      my_paragraph->my_richtext
+					      ->paragraph_embedding_level,
+					      my_paragraph->my_richtext
+					      ->unprintable_char,
+					      widths,
+					      kernings);
 			  });
 }
 
@@ -202,17 +209,24 @@ void richtextfragmentObj::update_glyphs_widths_kernings(size_t pos,
 	USING_MY_PARAGRAPH();
 
 	auto previous_fragment=prev_fragment();
+	auto next_fragment_=next_fragment();
 
-	horiz_info.update([&, this]
-			  (auto &widths,
-			   auto &kernings)
-			  {
-				  string.compute_width(previous_fragment ?
-						       &previous_fragment->string:NULL,
-						       my_paragraph->my_richtext->unprintable_char,
-						       widths,
-						       kernings,
-						       pos, count);
+	horiz_info.update
+		([&, this]
+		 (auto &widths,
+		  auto &kernings)
+		 {
+			 string.compute_width((previous_fragment ?
+					       &previous_fragment->string:NULL),
+					      (next_fragment_ ?
+					       &next_fragment_->string:NULL),
+					      my_paragraph->my_richtext
+					      ->paragraph_embedding_level,
+					      my_paragraph->my_richtext
+					      ->unprintable_char,
+					      widths,
+					      kernings,
+					      pos, count);
 			  });
 }
 

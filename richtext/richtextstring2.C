@@ -8,12 +8,15 @@
 #include "x/w/impl/richtext/richtextmeta.H"
 #include "x/w/impl/fonts/freetypefont.H"
 #include "assert_or_throw.H"
+#include <x/exception.H>
 
 #include <algorithm>
 
 LIBCXXW_NAMESPACE_START
 
-void richtextstring::compute_width(richtextstring *previous_string,
+void richtextstring::compute_width(const richtextstring *previous_string,
+				   const richtextstring *next_string,
+				   unicode_bidi_level_t embedding_level,
 				   char32_t unprintable_char,
 				   std::vector<dim_t> &widths,
 				   std::vector<int16_t> &kernings)
@@ -22,13 +25,17 @@ void richtextstring::compute_width(richtextstring *previous_string,
 	kernings.resize(string.size());
 
 	compute_width(previous_string,
+		      next_string,
+		      embedding_level,
 		      unprintable_char,
 		      widths,
 		      kernings,
 		      0, string.size());
 }
 
-void richtextstring::compute_width(richtextstring *previous_string,
+void richtextstring::compute_width(const richtextstring *previous_string,
+				   const richtextstring *next_string,
+				   unicode_bidi_level_t embedding_level,
 				   char32_t unprintable_char,
 				   std::vector<dim_t> &widths,
 				   std::vector<int16_t> &kernings,
@@ -60,24 +67,87 @@ void richtextstring::compute_width(richtextstring *previous_string,
 	const auto &fonts=resolve_fonts();
 	char32_t previous_char=0;
 
-	// For element #0, if the previous string ends in the same font,
+	const auto &meta=get_meta();
+
+	if (fonts.empty() || meta.empty())
+		; // Edge case
+	// Figure out what "previous_char" is, of character #0. For ordinary
+	// left-to-right text, if the previous string ends in the same font,
 	// set previous_char to the last character in the string, so that
 	// we can set the kerning for element #0 accordingly.
+	// This applies if this string beings with left-to-right text and
+	// either:
+	//
+	// * paragraph direction is left-to-right, or
+	//
+	// * previous string is entirely left to right, and this one is too.
+	//
+	// Note that we check that this string begins with left-to-right
+	// text, and that the previous string ends with left to right text.
 
-	if (previous_string)
+	else if (previous_string &&
+		 (embedding_level == UNICODE_BIDI_LR ||
+		  (previous_string->get_dir() == richtext_dir::lr &&
+		   get_dir() == richtext_dir::lr))
+		 && !meta.begin()->second.rl)
 	{
 		const auto &previous_fonts=
 			previous_string->resolve_fonts();
 		const auto &previous_meta=
 			previous_string->get_meta();
-		if (!previous_fonts.empty() && !fonts.empty() &&
-		    !previous_meta.empty() && !meta.empty () &&
-		    !(--previous_meta.end())->second.force_font_break
-		    (meta.begin()->second) &&
-		    (--previous_fonts.end())->second == fonts.begin()->second)
-			previous_char=*previous_string->string.begin();
+		if (!previous_fonts.empty() && !previous_meta.empty())
+		{
+			auto prev_last=--previous_meta.end();
+
+			if (!prev_last->second.rl &&
+			    (--previous_fonts.end())->second ==
+			    fonts.begin()->second)
+				previous_char=*--previous_string->string.end();
+		}
 	}
 
+	// Otherwise, if the ENTIRE fragment is right-to-left, we look at the
+	// next_string. If it starts with rl, we look at the last meta's
+
+	else if (embedding_level == UNICODE_BIDI_LR &&
+		 get_dir() == richtext_dir::rl && next_string)
+	{
+		const auto &next_fonts=next_string->resolve_fonts();
+		resolved_fonts_t::const_iterator next_font_iter;
+
+		auto index=next_string->left_to_right_start(&next_font_iter);
+
+		if (next_font_iter != next_fonts.begin() &&
+		    (--next_font_iter)->second == fonts.begin()->second)
+		{
+			previous_char=next_string->string.at(index-1);
+		}
+	}
+
+	// Otherwise, if the paragraph embedding level is right-to-left
+	// and this string starts with right-to-left text, we look at the
+	// next_string, and what it ends with.
+	else if (embedding_level != UNICODE_BIDI_LR && next_string)
+	{
+		auto b=get_meta().begin();
+
+		auto &next_meta=next_string->get_meta();
+		const auto &next_fonts=next_string->resolve_fonts();
+
+		if (!next_meta.empty() && !next_fonts.empty())
+			// Should always be the case.
+		{
+			auto e=--next_meta.end();
+
+			if (b->second.rl && e->second.rl &&
+			    fonts.begin()->second ==
+			    (--next_fonts.end())->second)
+			{
+				previous_char=next_string->string.at
+					(next_string->string.size()-1);
+			}
+		}
+	}
 	const char32_t *str=string.c_str();
 
 	auto b=fonts.begin();
@@ -171,6 +241,54 @@ void richtextstring::compute_width(richtextstring *previous_string,
 			 }, previous_char, unprintable_char);
 		previous_char=0;
 	}
+}
+
+size_t richtextstring::left_to_right_start(resolved_fonts_t::const_iterator *p)
+		const
+{
+	const auto &fonts=resolve_fonts();
+
+	// Most common shortcuts:
+	switch (get_dir()) {
+	case richtext_dir::lr:
+		if (p)
+			*p=fonts.begin();
+		return 0;
+	case richtext_dir::rl:
+		if (p)
+			*p=fonts.end();
+		return string.size();
+	case richtext_dir::both:
+		break;
+	}
+
+	const auto &meta=get_meta();
+
+	auto b=meta.begin(), e=meta.end();
+
+	auto lrp=std::find_if(b, e,
+			      []
+			      (auto &v)
+			      {
+				      return !v.second.rl;
+			      });
+
+	if (lrp == e)
+		throw EXCEPTION("internal error, did not find left-to-right "
+				"text");
+
+	if (p)
+	{
+		// There should be a font break here, too.
+
+		*p=std::find_if(fonts.begin(), fonts.end(),
+				[&]
+				(const auto &font_info)
+				{
+					return font_info.first == lrp->first;
+				});
+	}
+	return lrp->first;
 }
 
 LIBCXXW_NAMESPACE_END

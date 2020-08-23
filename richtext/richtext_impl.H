@@ -151,6 +151,11 @@ public:
 	//! code picks it up, and forwards it to richtextparagraphObj::render().
 	halign alignment;
 
+	//! Paragraph bi-direction embedding level.
+
+	unicode_bidi_level_t paragraph_embedding_level=
+		UNICODE_BIDI_LR;
+
 	//! Constructor
 
 	//! The richtextstring gets passed in by reference, and gets converted

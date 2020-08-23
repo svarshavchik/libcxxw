@@ -230,12 +230,26 @@ public:
 
 	//! Container returned by resolve_fonts()
 
-	resolved_fonts_t resolved_fonts;
+	//! resolve_fonts() is a const method. Fonts depends on the string
+	//! and the meta.
+	mutable resolved_fonts_t resolved_fonts;
 
 	//! Whether the string or metadata was modified, and resolved_fonts needs caching.
-	bool fonts_need_resolving=true;
+	mutable bool fonts_need_resolving=true;
 
  public:
+	//! Compute start of left-to-right text
+
+	//! If the rich text string begins with right-to-left text, returns
+	//! the starting index of the left to right content (or the size of
+	//! the string if there are none).
+	//!
+	//! If the optional parameter is not null, also computes the iterator
+	//! to the resolved font.
+
+	size_t left_to_right_start(resolved_fonts_t::const_iterator *p=nullptr)
+		const;
+
 	//! Whether font resolution is required
 
 	bool need_font_resolution() const
@@ -260,7 +274,7 @@ public:
 	//! The freetypefont remains in effect until the next element's index,
 	//! or the end of the string.
 
-	const resolved_fonts_t &resolve_fonts();
+	const resolved_fonts_t &resolve_fonts() const;
 
 	//! Calculate the width and the kerning of each character.
 
@@ -273,10 +287,20 @@ public:
 	//! the last font in the previous richtextstring is the same as the
 	//! first font in this string.
 	//!
+	//! If \c next_string is not null it points to the "next"
+	//! richtextstring. If the richtextstring dir is rl, the kerning
+	//! of character 0 comes from the last font in the next richtextstring
+	//! if it's the same as this font.
+	//!
+	//! embedding_level specifies the default paragraph bi-directional
+	//! level, either UNICODE_BIDI_LR or UNICODE_BIDI_RL.
+	//!
 	//! Characters that cannot be represented get replaced by
 	//! unprintable_char.
 
-	void compute_width(richtextstring *previous_string,
+	void compute_width(const richtextstring *previous_string,
+			   const richtextstring *next_string,
+			   unicode_bidi_level_t embedding_level,
 			   char32_t unprintable_char,
 			   std::vector<dim_t> &widths,
 			   std::vector<int16_t> &kernings);
@@ -292,7 +316,9 @@ public:
 	//! "count" gives the count of characters, starting at "skip", that
 	//! get updated.
 
-	void compute_width(richtextstring *previous_string,
+	void compute_width(const richtextstring *previous_string,
+			   const richtextstring *next_string,
+			   unicode_bidi_level_t embedding_level,
 			   char32_t unprintable_char,
 			   std::vector<dim_t> &widths,
 			   std::vector<int16_t> &kernings,

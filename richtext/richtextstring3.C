@@ -15,7 +15,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-const richtextstring::resolved_fonts_t &richtextstring::resolve_fonts()
+const richtextstring::resolved_fonts_t &richtextstring::resolve_fonts() const
 {
 	if (!fonts_need_resolving)
 		return resolved_fonts;
