@@ -42,14 +42,17 @@ class richtextstring {
 	//! Our unicode string.
 	std::u32string string;
 
+public:
 	//! Our container for the metadata.
 
 	//! This a tuple of index+richtextmeta, sorted by index. Externally
 	//! this is sorced from a map, so there won't be any duplicates.
 	typedef std::vector<std::pair<size_t, richtextmeta>> meta_t;
-
+private:
 	//! The metadata.
-	meta_t meta;
+
+	//! coalesce() updates this, but it's a const method.
+	mutable meta_t meta;
 
 	//! The text string is in rendering order.
 
@@ -70,14 +73,15 @@ class richtextstring {
 
 	//! This flag is set when the string or metadata is modified, and
 	//! is cleared by coalesce().
+	//! coalesce() updates this, but it's a const method.
 
-	bool coalesce_needed=false;
+	mutable bool coalesce_needed=false;
 
 	//! Remove consecutive metadata entries that are the same.
 
 	//! If \c coalesce_needed is set, scans the metadata array.
 	//! Consecutive entries with the same metadata are removed.
-	void coalesce();
+	void coalesce() const;
 
 	//! Make sure there is an entry in the metadata vector for index \#n.
 
@@ -176,7 +180,7 @@ public:
 	inline const std::u32string &get_string() const { return string; }
 
 	//! Return the metadata.
-	inline const meta_t &get_meta() { coalesce(); return meta; }
+	inline const meta_t &get_meta() const { coalesce(); return meta; }
 
 	//! Return the size of the string.
 	inline size_t size() const { return string.size(); }

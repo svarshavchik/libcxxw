@@ -11,6 +11,7 @@
 #include "richtext/richtext_insert.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
+#include "richtext/richtext_linebreak_info.H"
 #include "x/w/text_hotspot.H"
 #include "x/w/impl/fonts/freetypefont.H"
 #include "x/w/impl/fonts/composite_text_stream.H"
@@ -77,8 +78,8 @@ richtextfragmentObj
 ::richtextfragmentObj(const richtextstring &string,
 		      size_t substr_pos,
 		      size_t substr_len,
-		      std::vector<short>::const_iterator beg_breaks,
-		      std::vector<short>::const_iterator end_breaks)
+		      std::vector<unicode_lb>::const_iterator beg_breaks,
+		      std::vector<unicode_lb>::const_iterator end_breaks)
 	: string(string, substr_pos, substr_len),
 	  breaks(beg_breaks, end_breaks)
 {
@@ -288,7 +289,7 @@ void richtextfragmentObj::recalculate_size_called_by_fragment_list()
 		width = dim_t::truncate(width + total);
 		minimum_width = dim_t::truncate(minimum_width + total);
 
-		if (breaks[i] != UNICODE_LB_NONE && i != 0)
+		if (breaks[i] != unicode_lb::none && i != 0)
 			minimum_width=0;
 	}
 
@@ -367,7 +368,7 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 
 	// Make room for breaks, widths, and kernings.
 
-	breaks.insert(breaks.begin()+pos, n_size, 0);
+	breaks.insert(breaks.begin()+pos, n_size, unicode_lb::none);
 	breaks_sentry.guard();
 
 	horiz_info.insert(pos, n_size);
@@ -412,7 +413,7 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 	size_t counter=1;
 	for (size_t p=current_string.size(); p; )
 	{
-		if (breaks[--p] == UNICODE_LB_MANDATORY && p != 0)
+		if (breaks[--p] == unicode_lb::mandatory && p != 0)
 		{
 			split(my_fragments, p);
 			++counter;
@@ -450,51 +451,11 @@ void richtextfragmentObj::recalculate_linebreaks()
 	if (++end_with < my_paragraph->fragments.size())
 		++n;
 
-	// Run the unicode linebreaking algorithm, capture the linebreaking
-	// value for the current line only.
-
-	class LIBCXX_HIDDEN recalc_linebreaks
-		: public unicode::linebreak_callback_base {
-
-	public:
-		size_t skip;
-		size_t todo;
-		short *ptr;
-
-		recalc_linebreaks(size_t skipArg,
-				  size_t todoArg,
-				  short *ptrArg)
-			: skip(skipArg),
-			todo(todoArg),
-			ptr(ptrArg)
-			{
-			}
-
-		int callback(int value) override
-		{
-			if (skip)
-			{
-				--skip;
-				return 0;
-			}
-
-			if (todo)
-			{
-				*ptr++=(short)value;
-				--todo;
-			}
-			return 0;
-		}
-	};
-
-	recalc_linebreaks recalc(skip, current_string.size(), &breaks[0]);
+	richtext_linebreak_info recalc(skip, current_string.size(), &breaks[0]);
 
 	while (n)
 	{
-		const auto &string=my_paragraph->get_fragment(start_with)
-			->string.get_string();
-
-		recalc(string.begin(), string.end());
+		recalc(my_paragraph->get_fragment(start_with)->string);
 		--n;
 		++start_with;
 	}
@@ -508,7 +469,7 @@ void richtextfragmentObj::recalculate_linebreaks()
 		// breaking value must be UNICODE_LB_MANDATORY
 
 		breaks[0]=my_paragraph->my_paragraph_number > 0
-			? UNICODE_LB_MANDATORY:UNICODE_LB_NONE;
+			? unicode_lb::mandatory:unicode_lb::none;
 	}
 }
 
@@ -1110,7 +1071,7 @@ richtextfragment richtextfragmentObj::split(fragment_list &my_fragments,
 	const std::u32string &current_string=string.get_string();
 
 	assert_or_throw(pos > 0 && pos < current_string.size() &&
-			breaks[pos] != UNICODE_LB_NONE,
+			breaks[pos] != unicode_lb::none,
 			"Internal error: attempting to split a text fragment at a disallowed position");
 
 
@@ -1155,7 +1116,7 @@ richtextfragment richtextfragmentObj::split(fragment_list &my_fragments,
 		}
 	}
 
-	if (break_type == UNICODE_LB_MANDATORY)
+	if (break_type == unicode_lb::mandatory)
 	{
 		// Copy split content into a new paragraph.
 

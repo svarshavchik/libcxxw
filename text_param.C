@@ -38,6 +38,9 @@ text_decoration operator"" _decoration(const char *s, size_t l)
 	if (n == "underline")
 		return text_decoration::underline;
 
+	if (n == "rtol")
+		return text_decoration::rtol;
+
 	return text_decoration::none;
 }
 
@@ -202,11 +205,17 @@ richtextstring elementObj::implObj
 			if (iter != t.decorations.end())
 			{
 				font.underline=false;
+				font.rl=false;
 
 				if ( (text_decoration_int_t)iter->second &
 				     (text_decoration_int_t)text_decoration
 				     ::underline)
 					font.underline=true;
+
+				if ( (text_decoration_int_t)iter->second &
+				     (text_decoration_int_t)text_decoration
+				     ::rtol)
+					font.rl=true;
 			}
 		}
 

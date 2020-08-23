@@ -113,7 +113,7 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 		// Checkpoint at each breakable character, and at the end of the
 		// fragment.
 
-		if (i && (i == n || (*iter)->breaks[i] != UNICODE_LB_NONE))
+		if (i && (i == n || (*iter)->breaks[i] != unicode_lb::none))
 		{
 			if (accumulated_width-
 			    (*iter)->horiz_info.kerning(0) // Doesn't count

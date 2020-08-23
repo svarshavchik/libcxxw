@@ -763,6 +763,9 @@ libcxxw_la_SOURCES=\
 	richtext/richtext_impl.C		    \
 	richtext/richtext_impl.H		    \
 	richtext/richtext_insert.H		    \
+	richtext/richtext_linebreak_info.C	    \
+	richtext/richtext_linebreak_info.H	    \
+	richtext/richtext_linebreak_infofwd.H	    \
 	richtext/richtextiterator.C		    \
 	richtext/richtextiterator.H		    \
 	richtext/richtextiteratorobj.H		    \

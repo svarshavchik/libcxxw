@@ -26,9 +26,16 @@ LIBCXXW_NAMESPACE_START
 
 //! Optional text decorations for \ref text_param "text parameters".
 
+//! - underline: draw an underline
+//!
+//! - rtol: draw text right to left
+//!
+//! - none: remove all decorations
+
 enum class text_decoration {
 	none=0,
 	underline=1,
+	rtol=2,
 };
 
 template<typename ...Args>

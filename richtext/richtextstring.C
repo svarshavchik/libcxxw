@@ -138,7 +138,7 @@ void richtextstring::modified()
 	resolved_fonts.clear();
 }
 
-void richtextstring::coalesce()
+void richtextstring::coalesce() const
 {
 	if (!coalesce_needed)
 		return;

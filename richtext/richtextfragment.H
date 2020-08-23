@@ -22,6 +22,7 @@
 #include "x/w/impl/richtext/richtextcursorlocationfwd.H"
 #include "richtext/richtexthorizinfo.H"
 #include "x/w/impl/richtext/richtext_insertfwd.H"
+#include "richtext/richtext_linebreak_infofwd.H"
 #include "x/w/picturefwd.H"
 #include "x/w/pictureobj.H"
 #include "x/w/rgb_hash.H"
@@ -170,7 +171,7 @@ public:
 	//! richtextfragment in a textparagraph is expected to show
 	//! UNICODE_LB_ALLOWED for its first character.
 
-	std::vector<short> breaks;
+	std::vector<unicode_lb> breaks;
 
 	//! Horizontal dimensions cache.
 	richtexthorizinfo_t horiz_info;
@@ -215,8 +216,8 @@ public:
 	richtextfragmentObj(const richtextstring &string,
 			    size_t substr_pos,
 			    size_t substr_len,
-			    std::vector<short>::const_iterator,
-			    std::vector<short>::const_iterator);
+			    std::vector<unicode_lb>::const_iterator,
+			    std::vector<unicode_lb>::const_iterator);
 
 	//! After the internal constructor, above, is done, set() calls this.
 

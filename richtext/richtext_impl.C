@@ -13,6 +13,7 @@
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
 #include "richtext/richtext_insert.H"
+#include "richtext/richtext_linebreak_info.H"
 #include "x/w/screen.H"
 #include "messages.H"
 #include "assert_or_throw.H"
@@ -126,23 +127,21 @@ void richtext_implObj::do_set(const richtextstring &string)
 
 	// Calculate mandatory line breaks.
 
-	std::vector<short> breaks;
+	std::vector<unicode_lb> breaks;
 
 	{
-		const auto &s=string.get_string();
+		auto &s=string.get_string();
 
-		breaks.reserve(s.size());
+		breaks.resize(s.size(), unicode_lb::none);
 
-		typedef unicode::linebreak_iter<std::u32string::const_iterator>
-			iter_t;
+		if (!s.empty())
+		{
+			richtext_linebreak_info calc_linebreaks{0, s.size(),
+								&breaks[0]};
 
-		std::copy(iter_t(s.begin(), s.end()),
-			  iter_t(),
-			  std::back_insert_iterator<std::vector<short>>
-			  (breaks));
-
-		assert_or_throw(breaks.size() == s.size(),
-				"Internal error, unicode linebreak marker size not equal to unicode text string size");
+			calc_linebreaks(string);
+			calc_linebreaks.finish();
+		}
 	}
 
 	// Each mandatory line break starts a new paragraph.
@@ -156,7 +155,7 @@ void richtext_implObj::do_set(const richtextstring &string)
 	{
 		// Find the next mandatory line break.
 		size_t j=std::find(&breaks[0]+(i+1), &breaks[0]+n,
-				   UNICODE_LB_MANDATORY)-&breaks[0];
+				   unicode_lb::mandatory)-&breaks[0];
 
 		auto new_paragraph=my_paragraphs.append_new_paragraph();
 
