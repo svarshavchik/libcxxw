@@ -1,3 +1,8 @@
+2020-06-24  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* richtext/richtextmeta.C: Implement three-way comparison for
+	richtextmeta.
+
 2020-06-21  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* includes/x/w/impl/element.H: rework the label hotpost logic to

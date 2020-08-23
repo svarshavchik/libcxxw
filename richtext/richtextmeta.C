@@ -44,15 +44,20 @@ richtextmeta richtextmeta::replace_font(const current_fontcollection &font)
 	return cpy;
 }
 
-bool richtextmeta::operator==(const richtextmeta &o) const
+std::strong_ordering richtextmeta::operator<=>(const richtextmeta &o) const
+	noexcept
 {
-	return textcolor==o.textcolor &&
-		bg_color == o.bg_color &&
-		underline==o.underline &&
-		rl == o.rl &&
-		textfont == o.textfont &&
-		link == o.link;
+	std::strong_ordering ord=textcolor <=> o.textcolor;
 
+	if (ord == std::strong_ordering::equal &&
+	    (ord=bg_color <=> o.bg_color) == std::strong_ordering::equal &&
+	    (ord=underline <=> o.underline) == std::strong_ordering::equal &&
+	    (ord=rl <=> o.rl) == std::strong_ordering::equal &&
+	    (ord=textfont <=> o.textfont) == std::strong_ordering::equal)
+	{
+		ord=link <=> o.link;
+	}
+	return ord;
 }
 
 LIBCXXW_NAMESPACE_END

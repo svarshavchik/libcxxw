@@ -11,6 +11,7 @@
 #include <x/w/impl/richtext/richtextmetafwd.H>
 #include <x/w/impl/fonts/current_fontcollection.H>
 #include <x/w/impl/background_colorfwd.H>
+#include <compare>
 
 LIBCXXW_NAMESPACE_START
 
@@ -87,12 +88,12 @@ public:
 	bool rl=false;
 
 	//! Comparison operator, two metadata are equivalent
-	bool operator==(const richtextmeta &) const;
+	std::strong_ordering operator<=>(const richtextmeta &) const noexcept;
 
-	//! Comparison operator
-	bool operator!=(const richtextmeta &o) const
+	//! Comparison operator, two metadata are equivalent
+	bool operator==(const richtextmeta &o) const noexcept
 	{
-		return !operator==(o);
+		return operator<=>(o) == std::strong_ordering::equal;
 	}
 };
 
