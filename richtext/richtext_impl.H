@@ -152,22 +152,27 @@ public:
 	halign alignment;
 
 	//! Constructor
+
+	//! The richtextstring gets passed in by reference, and gets converted
+	//! to rendering order, but not otherwise moved from.
 	richtext_implObj(//! Initial contents
-			 const richtextstring &str,
+			 richtextstring &&str,
 
 			 //! Alignment
 			 halign alignmentArg);
 
 	//! Replace existing contents by something else.
 
+	//! The richtextstring gets passed in by reference, and gets converted
+	//! to rendering order, but not otherwise moved from.
 	void set(ONLY IN_THREAD,
 		 //! Text string
-		 const richtextstring &string);
+		 richtextstring &&string);
 
  private:
 	//! Invoked from set(), after all existing locations are copied.
 	void do_set(//! Text string
-		    const richtextstring &string);
+		    richtextstring &&string);
 
  public:
 

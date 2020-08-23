@@ -255,19 +255,31 @@ void richtextstring::swap_order()
 	is_render_order=!is_render_order;
 }
 
-class richtextstring::compare_meta_by_pos {
+namespace {
+#if 0
+}
+#endif
+
+class compare_meta_by_pos {
 public:
 
-	inline bool operator()(const meta_t::value_type &v, size_t p) const
+	inline bool operator()(const richtextstring::meta_t::value_type &v,
+			       size_t p) const
 	{
 		return v.first < p;
 	}
 
-	inline bool operator()(size_t p, const meta_t::value_type &v) const
+	inline bool operator()(size_t p,
+			       const richtextstring::meta_t::value_type &v)
+		const
 	{
 		return p < v.first;
 	}
 };
+#if 0
+{
+#endif
+}
 
 richtextstring::meta_t::iterator
 richtextstring::meta_lower_bound_by_pos(size_t p)
@@ -350,6 +362,20 @@ void richtextstring::insert(size_t pos,
 
 	modified();
 
+	if (is_render_order && p->second.rl)
+	{
+		std::u32string rs{s.begin(), s.end()};
+
+		auto b=rs.begin(), e=rs.end();
+
+		while (b < e)
+		{
+			--e;
+			std::swap(*b, *e);
+			++b;
+		}
+		do_insert(pos, rs, new_meta);
+	}
 	do_insert(pos, s, new_meta);
 }
 
@@ -366,6 +392,15 @@ void richtextstring::insert(size_t pos, richtextstring s)
 
 	bool fonts_not_resolved =
 		fonts_need_resolving || s.fonts_need_resolving;
+
+	if (is_render_order)
+	{
+		s.render_order();
+	}
+	else
+	{
+		s.logical_order();
+	}
 
 	do_insert(pos, s.string, s.meta);
 

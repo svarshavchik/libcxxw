@@ -22,9 +22,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtextObj::richtextObj(const richtextstring &string,
+richtextObj::richtextObj(richtextstring &&string,
 			 halign alignment, dim_t initial_width)
-	: richtextObj{ref<richtext_implObj>::create(string, alignment),
+	: richtextObj{ref<richtext_implObj>::create(std::move(string),
+						    alignment),
 		      initial_width}
 {
 }
@@ -58,11 +59,11 @@ size_t richtextObj::size(ONLY IN_THREAD)
 			      });
 }
 
-void richtextObj::set(ONLY IN_THREAD, const richtextstring &string)
+void richtextObj::set(ONLY IN_THREAD, richtextstring &&string)
 {
 	impl_t::lock lock{impl};
 
-	(*lock)->set(IN_THREAD, string);
+	(*lock)->set(IN_THREAD, std::move(string));
 }
 
 bool richtextObj::rewrap(dim_t width)
@@ -753,6 +754,11 @@ void richtextObj::replace_at_location(ONLY IN_THREAD,
 size_t richtextObj::pos(const internal_richtext_impl_t::lock &lock,
 			const richtextcursorlocation &l)
 {
+	return do_pos(&*l);
+}
+
+size_t richtextObj::do_pos(const richtextcursorlocationObj *l)
+{
 	assert_or_throw
 		(l->my_fragment &&
 		 l->my_fragment->string.size() > l->get_offset() &&
@@ -763,18 +769,19 @@ size_t richtextObj::pos(const internal_richtext_impl_t::lock &lock,
 		l->my_fragment->my_paragraph->first_char_n;
 }
 
-void richtextObj::get(const internal_richtext_impl_t::lock &lock,
-		      richtextstring &str,
-		      const richtextcursorlocation &a,
-		      const richtextcursorlocation &b)
+richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
+				const richtextcursorlocation &a,
+				const richtextcursorlocation &b)
 {
+	richtextstring str;
+
 	const richtextcursorlocationObj *location_a=&*a;
 	const richtextcursorlocationObj *location_b=&*b;
 
 	auto diff=location_a->compare(*location_b);
 
 	if (diff == 0)
-		return; // Too easy
+		return str; // Too easy
 
 	// Make sure we go from a to b.
 
@@ -792,13 +799,39 @@ void richtextObj::get(const internal_richtext_impl_t::lock &lock,
 			location_b->my_fragment,
 			"Internal error: uninitialized fragments in get()");
 
+
+	// Estimate how big ret will be. We can compute the
+	// number of characters exactly. Use the number of
+	// lines as the estimate for the number of metadata
+	// changes. richtextstring's insert() is optimized
+	// to avoid coalescing the metadata until it's
+	// needed. So it will end up inserting a metadata
+	// record for every line, initially.
+	//
+	// TODO: when we support rich text editing, we'll
+	// need to add some additional overhead, here.
+
+	auto pos1=do_pos(location_a);
+	auto pos2=do_pos(location_b);
+
+	auto index1=location_a->my_fragment->index();
+	auto index2=location_b->my_fragment->index();
+
+	if (pos1 > pos2 || index1 > index2)
+		throw EXCEPTION("Internal error in get(): inconsistent cursor"
+				" locations");
+	str.reserve(pos2-pos1+1, index2-index1+1);
+
+	// And now that the buffers are ready and waiting...
+
 	if (diff == 1)
 	{
 		str.insert(0, {location_a->my_fragment->string,
 					location_a->get_offset(),
 					location_b->get_offset()-
 					location_a->get_offset()});
-		return;
+		str.logical_order();
+		return str;
 	}
 
 	str.insert(0, {location_a->my_fragment->string,
@@ -820,6 +853,9 @@ void richtextObj::get(const internal_richtext_impl_t::lock &lock,
 
 	str.insert(str.size(),
 		   {f->string, 0, location_b->get_offset()});
+
+	str.logical_order();
+	return str;
 }
 
 ref<richtext_implObj> richtextObj::debug_get_impl(ONLY IN_THREAD)

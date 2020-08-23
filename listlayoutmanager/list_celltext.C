@@ -12,12 +12,12 @@ LIBCXXW_NAMESPACE_START
 
 list_celltextObj::list_celltextObj(const richtext_alteration_config
 				   &richtext_alteration,
-				   const richtextstring &string,
+				   richtextstring &&string,
 				   halign halignment,
 				   valign valignment,
 				   dim_t word_wrap_width)
 	: list_cellObj{valignment},
-	  richtextObj{string, halignment, word_wrap_width},
+	  richtextObj{std::move(string), halignment, word_wrap_width},
 	  richtext_alteration{richtext_alteration}
 {
 }

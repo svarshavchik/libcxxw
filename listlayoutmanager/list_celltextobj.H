@@ -19,7 +19,7 @@ struct list_celltextObj : public list_cellObj,
 
 	//! Constructor
 	list_celltextObj(const richtext_alteration_config &richtext_alteration,
-			 const richtextstring &string,
+			 richtextstring &&string,
 			 halign halignment,
 			 valign valignment,
 			 dim_t word_wrap_width);

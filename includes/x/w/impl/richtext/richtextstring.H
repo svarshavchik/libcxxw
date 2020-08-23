@@ -110,8 +110,6 @@ private:
 	//! index \#n.
 	static meta_t::iterator duplicate(meta_t &, size_t);
 
-	class compare_meta_by_pos;
-
 	//! A lower_bound() search by the index # in the meta vector.
 	meta_t::iterator meta_lower_bound_by_pos(size_t p);
 
@@ -149,7 +147,15 @@ public:
 
 	//! Insert new text into the richtextstring
 
-	//! Specifies the insert point, and another string.
+	//! Specifies the insert point, and another string. If this
+	//! richtextstring is_render_order and the metadata is rl, then
+	//! the string gets reversed, accordingly.
+	//!
+	//! richtextobj::get() returns the string in logical order.
+	//!
+	//! richtext_implObj::do_set() sets the initial or the updated
+	//! contents of the richtext object, and it converts the
+	//! richtextstring to render_order.
 
 	void insert(size_t pos,
 		    const std::u32string_view &s);
@@ -158,6 +164,16 @@ public:
 
 	//! Specifies the insert point, and another string. Emphasis on
 	//! "another", hence the parameter is passed by value :-).
+	//!
+	//! If this richtextstring is_render_order then the another
+	//! richtextstring will also get converted to rendering order,
+	//! otherwise it will be made sure to be in logical order.
+	//!
+	//! richtextobj::get() returns the string in logical order.
+	//!
+	//! richtext_implObj::do_set() sets the initial or the updated
+	//! contents of the richtext object, and it converts the
+	//! richtextstring to render_order.
 
 	void insert (size_t pos, richtextstring s);
  private:

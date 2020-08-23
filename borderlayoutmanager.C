@@ -64,8 +64,8 @@ container new_borderlayoutmanager::create(const container_impl &parent,
 			 (e.label_theme_font())
 			};
 
-		auto string=e.create_richtextstring(meta, title);
-		richtext_title=richtext::create(string, halign::left, 0);
+		richtext_title=richtext::create
+			(e.create_richtextstring(meta, title), halign::left, 0);
 	}
 
 	auto c_impl=ref<bordercontainer_elementObj<container_elementObj
@@ -136,8 +136,8 @@ void borderlayoutmanagerObj::update_title(ONLY IN_THREAD,
 			 (e.label_theme_font())
 			};
 
-		auto string=e.create_richtextstring(meta, title);
-		richtext_title=richtext::create(string, halign::left, 0);
+		richtext_title=richtext::create
+			(e.create_richtextstring(meta, title), halign::left, 0);
 	}
 
 	impl->bordercontainer_impl->set_title(IN_THREAD,

@@ -57,7 +57,10 @@ class richtextObj : virtual public obj {
  public:
 
 	//! Constructor
-	richtextObj(const richtextstring &string,
+
+	//! The richtextstring gets passed in by reference, and gets converted
+	//! to rendering order, but not otherwise moved from.
+	richtextObj(richtextstring &&string,
 		    halign alignment,
 		    dim_t word_wrap_width);
 
@@ -93,7 +96,7 @@ class richtextObj : virtual public obj {
 
 	//! Set the entire contents of the richtext.
 
-	void set(ONLY IN_THREAD, const richtextstring &string);
+	void set(ONLY IN_THREAD, richtextstring &&string);
 
 	//! Redraw this widget fully.
 
@@ -321,16 +324,30 @@ class richtextObj : virtual public obj {
 	static size_t pos(const internal_richtext_impl_t::lock &,
 			  const richtextcursorlocation &);
 
+
 	//! Get text between two locations.
 
 	//! Invoked from richtextiterator->get() after a read_only_lock().
-
-	static void get(const internal_richtext_impl_t::lock &,
-			richtextstring &,
-			const richtextcursorlocation &,
-			const richtextcursorlocation &);
+	//!
+	//! Return a richtextstring in logical_order (unidirectional,
+	//! bi-directional text handled internally, by the richtextstring,
+	//! gets converted to its logical order.
+	//!
+	//! richtext_implObj::do_set() sets the initial or the updated
+	//! contents of the richtext object, and it converts the
+	//! richtextstring to render_order.
+	//!
+	//! richtextstring::insert() checks if the richtextstring being
+	//! inserted into is_render_order, and if so it also converted
+	//! the inserted text into rendering order.
+	richtextstring get(const internal_richtext_impl_t::lock &,
+			   const richtextcursorlocation &,
+			   const richtextcursorlocation &);
 
  private:
+	//! Implement pos().
+	static size_t do_pos(const richtextcursorlocationObj *l);
+
 	//! Return an iterator to the given character # in the rich text.
 
 	richtextiterator at(internal_richtext_impl_t::lock &lock, size_t npos);

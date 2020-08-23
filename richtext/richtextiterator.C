@@ -444,35 +444,8 @@ richtextstring richtextiteratorObj::get(const const_richtextiterator &other)
 		([&, this]
 		 (auto &lock)
 		 {
-			 // Estimate how big ret will be. We can compute the
-			 // number of characters exactly. Use the number of
-			 // lines as the estimate for the number of metadata
-			 // changes. richtextstring's insert() is optimized
-			 // to avoid coalescing the metadata until it's
-			 // needed. So it will end up inserting a metadata
-			 // record for every line, initially.
-			 //
-			 // TODO: when we support rich text editing, we'll
-			 // need to add some additional overhead, here.
-
-
-			 auto pos1=my_richtext->pos(lock, my_location);
-			 auto pos2=my_richtext->pos(lock, other->my_location);
-
-			 if (pos1 > pos2)
-				 std::swap(pos1, pos2);
-
-			 auto index1=my_location->my_fragment->index();
-			 auto index2=other->my_location->my_fragment->index();
-
-			 if (index1 > index2)
-				 std::swap(index1, index2);
-
-			 ret.reserve(pos2-pos1+1, index2-index1+1);
-
-			 // And now that the buffers are ready and waiting...
-			 my_richtext->get(lock, ret, my_location,
-					  other->my_location);
+			 ret=my_richtext->get(lock, my_location,
+					      other->my_location);
 		 });
 
 	return ret;

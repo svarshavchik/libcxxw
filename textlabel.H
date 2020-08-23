@@ -205,7 +205,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 	implObj(textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
 		const const_defaulttheme &initial_theme,
-		richtextstring &&string,
+		const richtextstring &string,
 		const richtext &text,
 		const richtextmeta &default_meta);
 

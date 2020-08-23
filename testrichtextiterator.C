@@ -31,7 +31,7 @@ void testrichtext1(const main_window &w,
 			{0, {black, font1}},
 		}};
 
-	auto richtext=richtext::create(ustring, halign::left, 0);
+	auto richtext=richtext::create(std::move(ustring), halign::left, 0);
 
 	auto b=richtext->at(0);
 	auto e=richtext->end();
@@ -363,7 +363,7 @@ void testrichtext2(const main_window &w,
 				{0, {black, font1}}
 			}};
 
-		auto text=richtext::create(ustring, halign::left, 0);
+		auto text=richtext::create(std::move(ustring), halign::left, 0);
 
 		validate_richtext(IN_THREAD, text, orig,
 				  test_name + "before insert: ");
@@ -450,7 +450,7 @@ void testrichtext3(const main_window &w,
 				{0, {black, font1}}
 			}};
 
-		auto text=richtext::create(ustring, halign::left, 0);
+		auto text=richtext::create(std::move(ustring), halign::left, 0);
 
 		validate_richtext(IN_THREAD, text, test_string,
 				  "initial rich text value: ");
@@ -617,7 +617,7 @@ void testrichtext4(const main_window &w,
 			{0, {black, font1}}
 		}};
 
-	auto richtext=richtext::create(ustring, halign::left, 0);
+	auto richtext=richtext::create(std::move(ustring), halign::left, 0);
 
 	richtext->thread_lock
 		(IN_THREAD,
@@ -690,7 +690,7 @@ void testrichtext5(const main_window &w,
 		}};
 
 
-	auto richtext=richtext::create(ustring, halign::left, 0);
+	auto richtext=richtext::create(std::move(ustring), halign::left, 0);
 
 	auto text_width=richtext->thread_lock
 		(IN_THREAD,
@@ -746,7 +746,7 @@ void testrichtext6(const main_window &w,
 			{0, {black, font1}},
 		}};
 
-	auto richtext=richtext::create(ustring, halign::left, 0);
+	auto richtext=richtext::create(std::move(ustring), halign::left, 0);
 
 	auto b=richtext->at(5);
 	auto e=richtext->at(8);

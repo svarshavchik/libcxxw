@@ -25,14 +25,15 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtext_implObj::richtext_implObj(const richtextstring &string,
+richtext_implObj::richtext_implObj(richtextstring &&string,
 				   halign alignmentArg)
 	: word_wrap_width{0}, alignment{alignmentArg}
 {
-	do_set(string);
+	do_set(std::move(string));
 }
 
-void richtext_implObj::set(ONLY IN_THREAD, const richtextstring &string)
+void richtext_implObj::set(ONLY IN_THREAD,
+			   richtextstring &&string)
 {
 	// If the existing rich text object has any cursor locations, make
 	// a copy of them.
@@ -71,7 +72,7 @@ void richtext_implObj::set(ONLY IN_THREAD, const richtextstring &string)
 
 	restore_paragraphs_sentry.guard();
 
-	do_set(string);
+	do_set(std::move(string));
 
 	finish_initialization();
 
@@ -120,10 +121,20 @@ void richtext_implObj::set(ONLY IN_THREAD, const richtextstring &string)
 	restore_paragraphs_sentry.unguard();
 }
 
-void richtext_implObj::do_set(const richtextstring &string)
+void richtext_implObj::do_set(richtextstring &&string)
 {
 	paragraphs.clear();
 	num_chars=0;
+
+	// Convert the string to rendering order.
+	//
+	// richtextobj::get() returns the string in logical order.
+	//
+	// richtextstring::insert() checks if the richtextstring being
+	// inserted into is_render_order, and if so it also converted
+	// the inserted text into rendering order.
+
+	string.render_order();
 
 	// Calculate mandatory line breaks.
 

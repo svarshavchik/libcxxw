@@ -35,7 +35,7 @@ void testrichtext(const current_fontcollection &font1,
 			{20, {black, font2}}
 		}};
 
-	auto richtext=richtext::create(ustring, halign::left, 0);
+	auto richtext=richtext::create(std::move(ustring), halign::left, 0);
 	auto impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 3)
@@ -142,7 +142,8 @@ void testsplit(const current_fontcollection &font1,
 
 	for (const auto &test:tests)
 	{
-		auto richtext=richtext::create(ustring, halign::left, 0);
+		auto richtext=richtext::create(std::move(ustring),
+					       halign::left, 0);
 		auto impl=richtext->debug_get_impl(IN_THREAD);
 
 		assert_or_throw(impl->num_chars == ustring.size(),

@@ -67,7 +67,7 @@ textlabelObj::implObj::implObj(const text_param &text,
 }
 
 static textlabelObj::implObj::hotspot_info_t
-create_hotspot_info(richtextstring &s, const richtext &t)
+create_hotspot_info(const richtextstring &s, const richtext &t)
 {
 	textlabelObj::implObj::hotspot_info_t info;
 
@@ -135,7 +135,8 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 	: implObj{config, parent_element_impl,
 		  initial_theme,
 		  std::move(string),
-		  richtext::create(string, config.config.alignment, 0),
+		  richtext::create(std::move(string), config.config.alignment,
+				   0),
 		  default_meta}
 {
 }
@@ -147,8 +148,9 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 	: implObj{config,
 		  parent_element_impl,
 		  initial_theme,
-		  std::move(string),
-		  richtext::create(string, config.config.alignment, 0),
+		  string,
+		  richtext::create(std::move(string),
+				   config.config.alignment, 0),
 		  string.meta_at(0)}
 {
 }
@@ -156,7 +158,7 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 textlabelObj::implObj::implObj(textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
 			       const const_defaulttheme &initial_theme,
-			       richtextstring &&string,
+			       const richtextstring &string,
 			       const richtext &text,
 			       const richtextmeta &default_meta)
 	: richtext_alteration_config{config.use_ellipsis ? richtextptr
@@ -217,7 +219,7 @@ void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string)
 				       ? hotspot_processing::create
 				       : hotspot_processing::none);
 
-	text->set(IN_THREAD, s);
+	text->set(IN_THREAD, std::move(s));
 
 	hotspot_info(IN_THREAD)=create_hotspot_info(s, text);
 	ordered_hotspots=rebuild_ordered_hotspots(hotspot_info(IN_THREAD));

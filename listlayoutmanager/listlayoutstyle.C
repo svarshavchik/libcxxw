@@ -313,7 +313,7 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 
 				   auto t=list_celltext
 					   ::create(textlist_element,
-						    rts, halignment,
+						    std::move(rts), halignment,
 						    valignment, 0);
 
 				   create_cell(t);
@@ -807,7 +807,7 @@ class LIBCXX_HIDDEN menu_list_style_impl
 					       .itemshortcut_meta, s);
 
 		return list_celltext::create(textlist_element,
-					     rt, halign::left,
+					     std::move(rt), halign::left,
 					     valign::bottom, 0);
 	}
 
