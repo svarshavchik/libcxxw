@@ -144,14 +144,36 @@ void richtextstring::coalesce() const
 		return;
 
 	coalesce_needed=false;
+	cached_dir=richtext_dir::lr;
 
-	meta.erase(std::unique(meta.begin(), meta.end(),
-			       []
-			       (const auto &a,
-				const auto &b)
-			       {
-				       return a.second == b.second;
-			       }), meta.end());
+	auto p=meta.begin(), e=meta.end();
+
+	auto q=p;
+
+	// This is equivalent to std::unique, but we take advantage of
+	// the opportunity to also figure out our direction.
+
+	bool has_lr=false;
+	bool has_rl=false;
+
+	while (q != e)
+	{
+		if (q->second.rl)
+			has_rl=true;
+		else
+			has_lr=true;
+
+		*p++ = *q;
+
+		while (++q != e && q[-1].second == q->second)
+			;
+	}
+	meta.erase(p, e);
+
+	if (has_rl)
+	{
+		cached_dir=has_lr ? richtext_dir::both : richtext_dir::rl;
+	}
 }
 
 void richtextstring::swap_order()

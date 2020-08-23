@@ -280,25 +280,91 @@ void richtextfragmentObj::recalculate_size_called_by_fragment_list()
 	assert_or_throw(horiz_info.size() == breaks.size(),
 			"Internal error: different width and breaks/kernings vectors");
 
+	// Loop over the text string backwards, adding up the width and
+	// kerning of each character (with the exceptions noted) to compute
+	// the total width of the line. Also leverage this loop to compute
+	// the minimum width of this line. This is used, to set the minimum
+	// size of the rich text, which is the maximum minimum.
+
+	dim_t width_so_far=0;
+
+	initial_width=0;
+
+	// If the fragment starts with rl text, find where the lr text starts.
+	size_t lr_starts;
+
+	{
+		const auto &meta=string.get_meta();
+
+		auto b=meta.begin(), e=meta.end();
+
+		while (b != e && b->second.rl)
+		{
+			++b;
+		}
+
+		lr_starts= b == e ? string.size():b->first;
+	}
+
+	std::optional<dim_t> first_rl_width;
+
 	for (size_t i=horiz_info.size(); i; )
 	{
 		--i;
 
-		auto total=horiz_info.width(i)+horiz_info.kerning(i);
+		// Width of this character, together with the width of this
+		// character plus its kerning from the previous character.
 
-		width = dim_t::truncate(width + total);
-		minimum_width = dim_t::truncate(minimum_width + total);
+		auto c_width=horiz_info.width(i);
+		auto c_total=c_width+horiz_info.kerning(i);
 
-		if (breaks[i] != unicode_lb::none && i != 0)
-			minimum_width=0;
+		// The kerning is not used for the first character.
+
+		if (i == 0)
+		{
+			width = dim_t::truncate(width + c_width);
+		}
+		else
+		{
+			width = dim_t::truncate(width + c_total);
+		}
+
+		// We're seeing something in the line that can break here?
+
+		if (i == 0 || breaks[i] != unicode_lb::none)
+		{
+			width_so_far =
+				dim_t::truncate(width_so_far + c_width);
+
+			if (width_so_far > minimum_width)
+				minimum_width=width_so_far;
+
+			// This loop iterates backwards. The last time we
+			// get here we will compute the width of the
+			// initial non-breakable sequence
+			initial_width=width_so_far;
+
+			// However if there's initial rl text, we want to
+			// grab the first non-breakable sequence we see,
+			// when we reach it (lr_starts is 0 if there are no
+			// leading rl sections).
+			if (i < lr_starts && !first_rl_width)
+				first_rl_width=width_so_far;
+
+			// Reset for the next one.
+			width_so_far=0;
+		}
+		else
+		{
+			// Otherwize, the minimum width includes the kerning.
+			width_so_far =
+				dim_t::truncate(width_so_far + c_total);
+		}
 	}
 
-	if (!horiz_info.empty())
-		width -= horiz_info.kerning(0); // Doesn't count
-
-	// Don't adjust minimum_width, we'll want to know if the initial
-	// portion can be appended to the previous fragment, with the default
-	// kerning!
+	// Edge case: initial rl sequence.
+	if (first_rl_width)
+		initial_width=*first_rl_width;
 
 	const auto &resolved_fonts=RESOLVE_FONTS();
 

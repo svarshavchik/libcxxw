@@ -303,6 +303,15 @@ public:
 	//! Computed width up to the first breakable character.
 
 	//! This includes the kerning value of the first character.
+	//!
+	//! If this fragment starts with rl text, this is the size of the
+	//! last non-breakable rl sequence.
+	dim_t initial_width=0;
+
+	//! Maximum minimum width
+
+	//! Basically, if this fragment is split at every breakable position,
+	//! this would be the maximum width of all the split fragments.
 	dim_t minimum_width=0;
 
 	//! Computed height of this text fragment above the baseline

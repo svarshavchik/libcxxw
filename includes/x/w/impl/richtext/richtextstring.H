@@ -19,6 +19,15 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! What's in the \ref richtextfragmentObj "rich text fragment".
+
+enum class richtext_dir : unsigned char
+	{
+	 lr, //!< All normal left to right text.
+	 rl, //!< All right to left text.
+	 both, //!< Mixture of left to right and right to left text
+	};
+
 //! A unicode string, marked up by \ref richtextmeta "a richtextmeta".
 
 //! Encapsulate a unicode string, with a list of fonts and colors for drawing
@@ -76,6 +85,12 @@ private:
 	//! coalesce() updates this, but it's a const method.
 
 	mutable bool coalesce_needed=false;
+
+	//! The direction of this rich text string.
+
+	//! This calculated by coalesce() too. It is out of date
+	//! if coalesce_needed.
+	mutable richtext_dir cached_dir=richtext_dir::lr;
 
 	//! Remove consecutive metadata entries that are the same.
 
@@ -181,6 +196,10 @@ public:
 
 	//! Return the metadata.
 	inline const meta_t &get_meta() const { coalesce(); return meta; }
+
+	//! Return the direction
+
+	inline richtext_dir &get_dir() const { coalesce(); return cached_dir; }
 
 	//! Return the size of the string.
 	inline size_t size() const { return string.size(); }
