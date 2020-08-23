@@ -29,7 +29,8 @@ richtextstring::richtextstring(const std::u32string &string,
 richtextstring::richtextstring(const richtextstring &other,
 			       size_t pos,
 			       size_t n)
-	: string(other.string.substr(pos, n)), meta(other.meta)
+	: string{other.string.substr(pos, n)}, meta{other.meta},
+	  is_render_order{other.is_render_order}
 {
 	assert_or_throw(pos <= other.string.size() &&
 			other.string.size()-pos >= n,
@@ -151,6 +152,81 @@ void richtextstring::coalesce()
 			       {
 				       return a.second == b.second;
 			       }), meta.end());
+}
+
+void richtextstring::swap_order()
+{
+	coalesce();
+
+	auto b=meta.begin(), e=meta.end();
+
+	while (b != e)
+	{
+		// Find the start of right-to-left text
+
+		if (!b->second.rl)
+		{
+			++b;
+			continue;
+		}
+
+		auto p=b;
+
+		// Find the start of the following left-to-right text
+
+		while (b != e)
+		{
+			if (!b->second.rl)
+				break;
+			++b;
+		}
+
+		// Start and end of right-to-left text.
+
+		size_t start_pos=p->first;
+
+		size_t end_pos= b == e ? string.size()	: b->first;
+
+		size_t start_pos_s=start_pos;
+
+		size_t end_pos_s=end_pos;
+
+		// First, we swap the characters.
+		while (start_pos_s < end_pos_s)
+		{
+			--end_pos_s;
+			std::swap(string[start_pos_s], string[end_pos_s]);
+			++start_pos_s;
+		}
+
+		// Now we swap the metadata, p is the start of the right-to-left
+		// metadata, q is the end.
+
+		auto q=b;
+
+		while (p < q)
+		{
+			--q;
+
+			// Number of characters being swapped.
+			size_t n_first=(p+1 == e ? string.size():p[1].first)-
+				p->first;
+			size_t n_last=end_pos-q->first;
+
+			std::swap(*p, *q);
+
+			// Reset the starting index of each metadata.
+
+			p->first=start_pos;
+
+			start_pos += n_last;
+			end_pos -= n_first;
+
+			q->first=end_pos;
+			++p;
+		}
+	}
+	is_render_order=!is_render_order;
 }
 
 class richtextstring::compare_meta_by_pos {

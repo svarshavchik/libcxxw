@@ -114,18 +114,6 @@ void richtextfragmentObj::get_fragment_out_of_bounds()
 	throw EXCEPTION("Internal error: rich text fragment out of bounds.");
 }
 
-richtextfragmentObj::fragments_t::iterator
-richtextfragmentObj::my_paragraph_iter() const
-{
-	USING_MY_PARAGRAPH();
-
-	auto iter=my_paragraph->get_fragment_iter(my_fragment_number);
-
-	assert_or_throw(&**iter == this,
-			"Internal error: corrupted fragment list");
-	return iter;
-}
-
 size_t richtextfragmentObj::y_position() const
 {
 	USING_MY_PARAGRAPH();

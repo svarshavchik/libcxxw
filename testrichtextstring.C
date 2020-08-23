@@ -17,10 +17,11 @@ class richtextmeta {
 public:
 
 	char c;
+	bool rl=false;
 
 	bool operator==(const richtextmeta &o) const
 	{
-		return c == o.c;
+	 return c == o.c && rl == o.rl;
 	}
 
 	bool operator!=(const richtextmeta &o) const { return !operator==(o); }
@@ -456,11 +457,113 @@ void erasesubstrtest()
 	}
 }
 
+struct render_order_test_case {
+	const char *testname;
+
+	const char32_t *logical_s;
+	std::unordered_map<size_t, richtextmeta> logical_meta;
+
+	const char32_t *render_s;
+	std::vector<std::pair<size_t, richtextmeta>> render_meta;
+};
+
+const struct render_order_test_case render_order_test_cases[]={
+	{
+	 "Empty right-to-left",
+	 U"",
+	 {},
+	 U"",
+	 {}
+	},
+	{
+	 "One right-to-left, even chars",
+	 U"abcdef",
+	 { {0, {'a', false}},
+	   {1, {'b', true}},
+	   {5, {'c', false}}
+	 },
+	 U"aedcbf",
+	 { {0, {'a', false}},
+	   {1, {'b', true}},
+	   {5, {'c', false}}
+	 },
+	},
+	{
+	 "One right-to-left, odd chars",
+	 U"abcdefg",
+	 { {0, {'a', false}},
+	   {1, {'b', true}},
+	   {6, {'c', false}}
+	 },
+	 U"afedcbg",
+	 { {0, {'a', false}},
+	   {1, {'b', true}},
+	   {6, {'c', false}}
+	 },
+	},
+	{
+	 "Two right-to-lefts, even chars",
+	 U"abcdef",
+	 { {0, {'a', false}},
+	   {1, {'b', true}},
+	   {3, {'c', true}},
+	   {5, {'d', false}}
+	 },
+	 U"aedcbf",
+	 { {0, {'a', false}},
+	   {1, {'c', true}},
+	   {3, {'b', true}},
+	   {5, {'d', false}}
+	 },
+	},
+	{
+	 "Two right-to-lefts, odd chars",
+	 U"abcdefg",
+	 { {0, {'a', false}},
+	   {1, {'b', true}},
+	   {3, {'c', true}},
+	   {6, {'d', false}}
+	 },
+	 U"afedcbg",
+	 { {0, {'a', false}},
+	   {1, {'c', true}},
+	   {4, {'b', true}},
+	   {6, {'d', false}}
+	 },
+	},
+};
+
+static void renderordertest()
+{
+	for (const auto &test:render_order_test_cases)
+	{
+		richtextstring rts{test.logical_s, test.logical_meta};
+
+		richtextstring rts_orig=rts;
+
+		rts.render_order();
+
+		if (rts.get_string() != test.render_s ||
+		    rts.get_meta() != test.render_meta)
+			throw EXCEPTION("Test " << test.testname << " failed");
+
+		richtextstring rts2{rts, 0, rts.get_string().size()};
+
+		rts2.logical_order();
+
+		if (rts2.get_string() != rts_orig.get_string() ||
+		    rts2.get_meta() != rts_orig.get_meta())
+			throw EXCEPTION("Test " << test.testname
+					<< " (reset) failed");
+	}
+}
+
 int main()
 {
 	try {
 		inserttest();
 		erasesubstrtest();
+		renderordertest();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

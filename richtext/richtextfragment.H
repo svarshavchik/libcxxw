@@ -137,9 +137,6 @@ public:
 	//! destroyed, all of its fragments get destroyed. This native pointer,
 	//! therefore, is always valid (so far).
 	//!
-	//! my_paragraph_iter is this fragment's iterator in
-	//! paragraph->fragments.
-	//!
 	//! my_paragraph and my_fragment_number are initialized and
 	//! maintained by fragment_list's methods.
 
@@ -153,9 +150,6 @@ public:
 
 	//! Fragment's y-position, respective to its paragraph's y_position.
 	size_t y_pos=0;
-
-	//! Return my iterator in my_paragraph->fragments
-	fragments_t::iterator my_paragraph_iter() const;
 
 	//! A list of cursor locations in this fragment.
 

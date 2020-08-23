@@ -79,6 +79,13 @@ public:
 	//! Whether to artificially underline the text
 	bool underline=false;
 
+	//! Right to left text
+
+	//! The rich text is stored in the left-to-right rendering order.
+	//! This affects the algorithms for inserting, deleting, and wrapping
+	//! text.
+	bool rl=false;
+
 	//! Comparison operator, two metadata are equivalent
 	bool operator==(const richtextmeta &) const;
 

@@ -49,6 +49,7 @@ bool richtextmeta::operator==(const richtextmeta &o) const
 	return textcolor==o.textcolor &&
 		bg_color == o.bg_color &&
 		underline==o.underline &&
+		rl == o.rl &&
 		textfont == o.textfont &&
 		link == o.link;
 

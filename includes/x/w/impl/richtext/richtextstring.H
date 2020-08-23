@@ -51,6 +51,10 @@ class richtextstring {
 	//! The metadata.
 	meta_t meta;
 
+	//! The text string is in rendering order.
+
+	bool is_render_order=false;
+
 	//! Sort the meta, which was imported from a map.
 
 	//! Sorts it by index, validates it against a stirng of size 'n'.
@@ -98,7 +102,11 @@ class richtextstring {
 	//! Invoked by insert() and erase()
 	void modified();
 
- public:
+	//! Invoked by render_order() and logical_order()
+
+	void swap_order();
+
+public:
 
 	//! Default constructors
 	richtextstring()=default;
@@ -142,6 +150,22 @@ class richtextstring {
 		       const std::u32string_view &s,
 		       meta_t &new_meta);
  public:
+	//! We want to see the characters in logical order
+
+	inline void logical_order()
+	{
+		if (is_render_order)
+			swap_order();
+	}
+
+	//! We want to see the characters in rendering order
+
+	inline void render_order()
+	{
+		if (!is_render_order)
+			swap_order();
+	}
+
 	//! Remove portions of this string.
 	void erase(size_t pos, size_t n);
 
