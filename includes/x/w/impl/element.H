@@ -93,6 +93,24 @@ LIBCXXW_NAMESPACE_START
 
 class clip_region_set;
 
+//! Whether create_richtextstring() should create focusable label hotspots.
+
+//! Used in elementObj::implObj to determine whether hotspots are allowed
+//! in the rich text string.
+enum class hotspot_processing {
+			       //! No hotspots are allowed
+			       none,
+
+			       //! Creating a new richtextstring
+
+			       //! A trailing NULL byte is inserted, in the
+			       //! event that the string ends in a hotspot.
+			       create,
+
+			       //! Updating an existing hotspot string.
+			       update,
+};
+
 //! Base class for widget implementation.
 
 //! Stuff that all widgets have.
@@ -1226,7 +1244,8 @@ class elementObj::implObj : public element_drawObj,
 	//! exception.
 	richtextstring create_richtextstring(const richtextmeta &default_font,
 					     const text_param &t,
-					     bool allow_links=false);
+					     hotspot_processing allow_links=
+					     hotspot_processing::none);
 
 
 	//////////////////////////////////////////////////////////////////

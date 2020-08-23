@@ -155,7 +155,7 @@ text_param &text_param::operator()(std::nullptr_t)
 richtextstring elementObj::implObj
 ::create_richtextstring(const richtextmeta &default_font,
 			const text_param &t,
-			bool allow_links)
+			hotspot_processing allow_links)
 {
 	richtextmeta font=default_font;
 
@@ -178,7 +178,7 @@ richtextstring elementObj::implObj
 
 	if (!t.hotspots.empty())
 	{
-		if (!allow_links)
+		if (allow_links == hotspot_processing::none)
 			throw EXCEPTION(_("Links are not allowed in this text."));
 	}
 
@@ -187,7 +187,7 @@ richtextstring elementObj::implObj
 	if (t.string.size() > 0)
 		all_positions.insert(0);
 
-	if (allow_links)
+	if (allow_links == hotspot_processing::create)
 		all_positions.insert(t.string.size());
 
 	// Now iterate over them, in order, to create the unordered_map for
@@ -262,7 +262,7 @@ richtextstring elementObj::implObj
 		m.insert({p, font});
 	}
 
-	if (allow_links)
+	if (allow_links == hotspot_processing::create)
 		// richtextstring's constructor inserts a \0 here.
 		// We made sure that all_positions includes t.string.size(),
 		// above.
@@ -270,7 +270,7 @@ richtextstring elementObj::implObj
 	else if (m.find(t.string.size()) != m.end())
 		throw EXCEPTION(gettextmsg("Font or color specification not followed by text."));
 
-	return {t.string, m, allow_links};
+	return {t.string, m, allow_links == hotspot_processing::create};
 }
 
 LIBCXXW_NAMESPACE_END

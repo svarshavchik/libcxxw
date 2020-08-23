@@ -120,7 +120,9 @@ textlabelObj::implObj::implObj(const text_param &text,
 		  parent_element_impl,
 		  *theme_lock,
 		  parent_element_impl.create_richtextstring
-		  (default_meta, text, config.allow_links),
+		  (default_meta, text, config.allow_links
+		   ? hotspot_processing::create
+		   : hotspot_processing::none),
 		  default_meta}
 {
 }
@@ -210,7 +212,11 @@ void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string)
 {
 	get_label_element_impl().initialize_if_needed(IN_THREAD);
 	auto s=get_label_element_impl()
-		.create_richtextstring(default_meta, string, allow_links);
+		.create_richtextstring(default_meta, string,
+				       allow_links
+				       ? hotspot_processing::create
+				       : hotspot_processing::none);
+
 	text->set(IN_THREAD, s);
 
 	hotspot_info(IN_THREAD)=create_hotspot_info(s, text);
@@ -583,7 +589,7 @@ void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 	iter->second.link_start->replace(IN_THREAD, iter->second.link_end,
 					 e.create_richtextstring
 					 (default_meta, replacement_text,
-					  true));
+					  hotspot_processing::update));
 	updated(IN_THREAD);
 
 	text->redraw_whatsneeded(IN_THREAD, e,

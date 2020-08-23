@@ -1,3 +1,8 @@
+2020-06-21  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* includes/x/w/impl/element.H: rework the label hotpost logic to
+	avoid creating hotspot links with a spurious trailing \0.
+
 2020-06-20  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Fix rendering of modal shade color.
