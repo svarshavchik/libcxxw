@@ -24,6 +24,10 @@ richtextstring::richtextstring(const std::u32string &string,
 
 	sort_and_validate(this->meta, this->string.size());
 	modified();
+
+	// The trailing null byte is not right-to-left
+	if (append_null_byte)
+		duplicate(this->string.size()-1)->second.rl=false;
 }
 
 richtextstring::richtextstring(const richtextstring &other,

@@ -30,9 +30,14 @@ const richtextstring::resolved_fonts_t &richtextstring::resolve_fonts()
 	// Find consecutive text segments that use the same font.
 
 	auto textp=&*string.begin();
+
+	auto p=meta.begin();
 	for (auto b=meta.begin(), e=meta.end(); b != e; )
 	{
-		auto p=b;
+		auto force_font_break=
+			b->second.force_font_break(p->second);
+
+		p=b;
 		++b;
 
 		size_t start_char=p->first;
@@ -60,7 +65,8 @@ const richtextstring::resolved_fonts_t &richtextstring::resolve_fonts()
 				 // keep going.
 
 				 if (last_font != resolved_fonts.end() &&
-				     last_font->second == font)
+				     last_font->second == font &&
+				     !force_font_break)
 					 return;
 
 				 resolved_fonts.emplace_back(start_char, font);
@@ -126,8 +132,12 @@ void richtextstring::compute_width(richtextstring *previous_string,
 	{
 		const auto &previous_fonts=
 			previous_string->resolve_fonts();
-
+		const auto &previous_meta=
+			previous_string->get_meta();
 		if (!previous_fonts.empty() && !fonts.empty() &&
+		    !previous_meta.empty() && !meta.empty () &&
+		    !(--previous_meta.end())->second.force_font_break
+		    (meta.begin()->second) &&
 		    (--previous_fonts.end())->second == fonts.begin()->second)
 			previous_char=*previous_string->string.begin();
 	}

@@ -87,6 +87,16 @@ public:
 	//! text.
 	bool rl=false;
 
+	//! Artificial font break
+
+	//! resolve_fonts() will always "start" a new font when direction
+	//! changes.
+
+	bool force_font_break(const richtextmeta &o) const
+	{
+		return rl != o.rl;
+	}
+
 	//! Comparison operator, two metadata are equivalent
 	std::strong_ordering operator<=>(const richtextmeta &) const noexcept;
 
