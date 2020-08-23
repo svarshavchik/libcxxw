@@ -517,22 +517,27 @@ void richtextfragmentObj::recalculate_linebreaks()
 	if (++end_with < my_paragraph->fragments.size())
 		++n;
 
-	richtext_linebreak_info recalc(skip, current_string.size(), &breaks[0]);
 
-	while (n)
+	richtextstring *ptrs[n];
+
+	for (size_t i=0; i<n; ++i)
 	{
-		recalc(my_paragraph->get_fragment(start_with)->string);
-		--n;
+		ptrs[i]=&my_paragraph->get_fragment(start_with)->string;
 		++start_with;
 	}
-	recalc.finish();
+
+	richtext_linebreak_info(skip, current_string.size(), &breaks[0],
+				ptrs, n);
 
 	start_with=my_fragment_number;
 	if (start_with == 0)
 	{
 		// If this is the first fragment in the paragraph, and this
 		// is not the first paragraph, the first character's line
-		// breaking value must be UNICODE_LB_MANDATORY
+		// breaking value must be unicode_lb::mandatory
+		//
+		// If this is the first fragment in paragraph 0, it's
+		// uncode_lb::none (this logic is also present in do_set).
 
 		breaks[0]=my_paragraph->my_paragraph_number > 0
 			? unicode_lb::mandatory:unicode_lb::none;

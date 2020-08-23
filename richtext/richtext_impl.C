@@ -147,11 +147,36 @@ void richtext_implObj::do_set(richtextstring &&string)
 
 		if (!s.empty())
 		{
-			richtext_linebreak_info calc_linebreaks{0, s.size(),
-								&breaks[0]};
+			richtextstring *ptr= &string;
 
-			calc_linebreaks(string);
-			calc_linebreaks.finish();
+			richtext_linebreak_info(0, s.size(), &breaks[0],
+						&ptr, 1);
+		}
+
+		// The first character, by definition, does not break. This
+		// logic is also present in recalculate_linebreaks().
+		if (!breaks.empty())
+			breaks[0]=unicode_lb::none;
+
+		// richtext_linebreak_info will miss the mark when there are
+		// embedded newlines in rtol text. We'll fix this up here.
+
+		auto b=s.begin();
+		auto e=s.end();
+
+		auto p=b;
+
+		while (p != e)
+		{
+			auto q=std::find(p, e, '\n');
+
+			if (q == e)
+				break;
+
+			breaks[q-b]=unicode_lb::none;
+			if (++q != e)
+				breaks[q-b]=unicode_lb::mandatory;
+			p=q;
 		}
 	}
 

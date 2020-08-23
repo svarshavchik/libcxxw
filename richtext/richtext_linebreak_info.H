@@ -15,8 +15,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN richtext_linebreak_calculate;
-
 //! Run the unicode linebreak algorithm on one or more richtextstrings.
 
 //! Additionally, detect changes in left-to-right rendering, and
@@ -24,69 +22,24 @@ class LIBCXX_HIDDEN richtext_linebreak_calculate;
 //! point. Whenever the rendering direction changes, UNICODE_LB_NONE is
 //! overridden to UNICODE_LB_ALLOWED.
 //!
-//! Writes the linebreaking values to a preallocated array of shorts.
-//! The constructor takes a pointer to a vector of unicode_lbs, of size "todo".
-//! The initial #skip characters get skipped, when writing the linebreaking
-//! algorithm.
+//! Writes the linebreaking values to a preallocated array of unicode_lbs.
 //!
-//! Invoke the () operator, with one or more richtextstrings, followed by
-//! finish().
-class richtext_linebreak_info
-	: private unicode::linebreak_callback_base {
+//! A pointer to an array of pointers of richtextstrings define the character
+//! sequence whose linebreaks get computed, n_strings is the number of the
+//! richtextstrings.
+//!
+//! 'ptr' points to the preallocated array of unicode_lbs, whose size is 'todo'
+//! which may be smaller than the total number of characters. Together with
+//! 'skip' this defines a subset of the linebreaking values to calculate.
+//!
+//! So, if 'skip' is 4, and 'todo' is 10, this saves the linebreaking values
+//! for characters 4 through 13 into ptr (with character 4's value in ptr[0]).
 
-	//! Running skip count
-	size_t skip;
-
-	//! Remaining todo
-	size_t todo;
-
-	//! Writing unicode linebreaking values.
-	unicode_lb *ptr;
-
-	//! Queues up richtextstrings.
-
-	//! unicode linebreak algorithm does not guarantee a one for one
-	//! callback. We need to pair each linebreak value with the richtext
-	//! metadata, so as soon as each richtextstring comes in we grab the
-	//! beginning an th ending iterator value to its metadata, and the
-	//! total size of the richtext string, and queue them up.
-	//!
-	//! Each callback invokation logically works its way through each
-	//! meta vector, until the entire metadata from a single richtextstring
-	//! gets consumed; the queue then gets poppped and we're ready for the
-	//! next range, if any.
-	std::queue<std::tuple<
-			   richtextstring::meta_t::const_iterator,
-			   richtextstring::meta_t::const_iterator,
-			   size_t>
-		   > metadata;
-
-	//! Current index in the metadata.
-	size_t meta_index;
-
-	//! Current text direction.
-	bool rl;
-
-public:
-	//! Constructor
-	richtext_linebreak_info(size_t skipArg,
-				size_t todoArg,
-				unicode_lb *ptrArg);
-
-	//! Destructor
-	~richtext_linebreak_info();
-
-private:
-	//! Callback from the courier-unicode library
-	int callback(int value) override;
-
-public:
-	//! Compute linebreaks for.
-	void operator()(const richtextstring &s);
-
-	//! use finish() to conclude the job.
-	using unicode::linebreak_callback_base::finish;
-};
+void richtext_linebreak_info(size_t skip,
+			     size_t todo,
+			     unicode_lb *ptr,
+			     richtextstring * const *strings,
+			     size_t n_strings) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END;
 #endif

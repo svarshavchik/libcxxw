@@ -10,6 +10,7 @@
 #include "assert_or_throw.H"
 #include <x/options.H>
 #include <iostream>
+#include <algorithm>
 
 using namespace LIBCXX_NAMESPACE::w;
 
@@ -359,6 +360,79 @@ void testresolvedfonts(const current_fontcollection &font1,
 	}
 }
 
+
+void testlinebreaks(const current_fontcollection &font1,
+		    const current_fontcollection &font2,
+		    const main_window &w)
+{
+	auto IN_THREAD=w->get_screen()->impl->thread;
+	auto black=create_new_background_color(w->get_screen(),
+					       w->elementObj::impl
+					       ->get_window_handler()
+					       .drawable_pictformat, "0%");
+
+	richtextmeta meta1 {black, font1};
+	richtextmeta meta2 {black, font1};
+	richtextmeta meta3 {black, font2};
+	meta2.rl=true;
+	meta3.rl=true;
+
+	auto richtext=richtext::create(richtextstring{
+		U"Lorem IpsumDolor Sit Amet",
+		{
+			{0, meta1},
+			{11, meta2},
+			{17, meta3},
+			{20, meta1},
+		}}, halign::left, 0);
+	auto impl=richtext->debug_get_impl(IN_THREAD);
+
+	if (impl->paragraphs.size() != 1)
+		throw EXCEPTION("Did not get 1 paragraph");
+
+	auto p=impl->paragraphs.get_paragraph(0);
+
+	if ((*p)->fragments.size() != 1)
+		throw EXCEPTION("Somehow we ended up with multiple fragments");
+
+	auto f=(*p)->get_fragment(0);
+
+	if (f->string.get_string() != U"Lorem IpsumtiS roloD Amet")
+
+		throw EXCEPTION("Rendering order not set");
+
+	std::vector<unicode_lb> expected_breaks=
+		{
+		 unicode_lb::none,	// L
+		 unicode_lb::none,	// o
+		 unicode_lb::none,	// r
+		 unicode_lb::none,	// e
+		 unicode_lb::none,	// m
+		 unicode_lb::none,	//
+		 unicode_lb::allowed,	// I
+		 unicode_lb::none,	// p
+		 unicode_lb::none,	// s
+		 unicode_lb::none,	// u
+		 unicode_lb::none,	// m
+		 unicode_lb::allowed,	// t         <-- R-L start (can break)
+		 unicode_lb::none,	// i
+		 unicode_lb::none,	// S
+		 unicode_lb::allowed,	//
+		 unicode_lb::none,	// r
+		 unicode_lb::none,	// o
+		 unicode_lb::none,	// l
+		 unicode_lb::none,	// o
+		 unicode_lb::none,	// D
+		 unicode_lb::allowed,	//           <-- L-R start (can break)
+		 unicode_lb::allowed,	// A
+		 unicode_lb::none,	// m
+		 unicode_lb::none,	// e
+		 unicode_lb::none,	// t
+		};
+	if (f->breaks != expected_breaks)
+		throw EXCEPTION("Unexpected break result");
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -397,6 +471,7 @@ int main(int argc, char **argv)
 		testresolvedfonts(font1, font2, mw);
 		testrichtext(font1, font2, mw);
 		testsplit(font1, font2, mw);
+		testlinebreaks(font1, font2, mw);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;
