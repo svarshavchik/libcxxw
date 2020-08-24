@@ -1290,27 +1290,27 @@ void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
 
 	bool merge_again=false;
 
-		// If the following fragment has left-to-right text, split
-		// it from it. From this point on, the following fragment has
-		// only right to left text.
+	// If the following fragment has left-to-right text, split
+	// it from it. From this point on, the following fragment has
+	// only right to left text.
 
-		if (other->string.get_string().size()
-		    > next_left_to_right_start)
-		{
-			merge_again=true;
-			other->split(my_fragments, next_left_to_right_start,
-				     split_lr);
-		}
+	if (other->string.get_string().size()
+	    > next_left_to_right_start)
+	{
+		merge_again=true;
+		other->split(my_fragments, next_left_to_right_start,
+			     split_lr);
+	}
 
-		// Instead, merge this fragment at the end of the next one.
-		other->merge_lr_lr(my_fragments, ref{this});
+	// Instead, merge this fragment at the end of the next one.
+	other->merge_lr_lr(my_fragments, ref{this});
 
-		if (merge_again)
-		{
-			// left-to-right text must follow, so this won't
-			// recurse again.
-			other->merge(my_fragments);
-		}
+	if (merge_again)
+	{
+		// left-to-right text must follow, so this won't
+		// recurse again.
+		other->merge(my_fragments);
+	}
 }
 
 void richtextfragmentObj::merge_lr_lr(fragment_list &my_fragments,
