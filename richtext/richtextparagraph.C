@@ -118,6 +118,24 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 		auto next_fragment=*get_fragment_iter(fragment_n+1);
 		auto initial_width=next_fragment->initial_width;
 
+		// If this fragment is rl, the next fragment's initial_width
+		// will work for us, either way. If the next fragment starts
+		// with rl text, this is going to be the last rl text segment.
+		//
+		// If this fragment is not rl, and the next fragment begins
+		// with rl text, it must fit.
+
+		if ((*iter)->string.get_dir() != richtext_dir::rl)
+		{
+			size_t p=next_fragment->string.left_to_right_start();
+
+			if (p > 0)
+			{
+				initial_width=p >= next_fragment->string.size()
+					? next_fragment->horiz_info.width()
+					: next_fragment->horiz_info.x_pos(p);
+			}
+		}
 		if ((*iter)->width + initial_width > wwidth)
 			break; // It would be too big.
 
@@ -137,17 +155,65 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 	assert_or_throw(! (*iter)->horiz_info.empty(),
 			"How can we be so big, when there are no widths?");
 
-	size_t last_break_pos=0;
+	size_t n=(*iter)->horiz_info.size();
+
+	assert_or_throw(n == (*iter)->breaks.size(),
+			"Mismatch between string size and horizontal metrics");
+
+	auto split_type=richtextfragmentObj::split_lr;
+
+	if ((*iter)->string.get_dir() == richtext_dir::rl)
+	{
+		// Because we're not fine, see above, this subtraction is valid.
+		wwidth=dim_t::value_type((*iter)->width) -
+			dim_t::value_type(width);
+		split_type=richtextfragmentObj::split_rl;
+	}
+
+	std::optional<size_t> last_break_pos;
 
 	dim_squared_t accumulated_width=0;
 
-	size_t n=(*iter)->horiz_info.size();
-	for (size_t i=0; ; ++i)
-	{
-		// Checkpoint at each breakable character, and at the end of the
-		// fragment.
+	auto &meta=(*iter)->string.get_meta();
 
-		if (i && (i == n || (*iter)->breaks[i] != unicode_lb::none))
+	auto metap=meta.begin();
+	auto metae=meta.end();
+	auto next_metap=metap;
+
+	if (next_metap != metae)
+		++next_metap;
+
+	for (size_t i=0; i<n; ++i)
+	{
+		auto cur_break=(*iter)->breaks[i];
+
+		// If we're NOT splitting an entire fragment of rl text, we
+		// will NOT consider a break point in rl text.
+		//
+		// We make this check BEFORE we check if this index starts
+		// a new meta. There should be a break when rl text starts,
+		// so we should break there.
+
+		if (split_type == richtextfragmentObj::split_lr &&
+		    metap != metae && metap->second.rl)
+			cur_break=unicode_lb::none;
+
+		// Keep track of the current metadata, as we go along.
+
+		if (next_metap != metae && next_metap->first == i)
+		{
+			metap=next_metap;
+			++next_metap;
+
+			// And when rl text ends, there should be a break there
+			// too.
+			if (!metap->second.rl)
+				cur_break=(*iter)->breaks[i];
+		}
+
+		// Checkpoint each breakable character.
+
+		if (i && cur_break != unicode_lb::none)
 		{
 			if (accumulated_width-
 			    (*iter)->horiz_info.kerning(0) // Doesn't count
@@ -160,19 +226,17 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 			last_break_pos=i;
 		}
 
-		if (i == n)
-			break;
-
-		accumulated_width += (*iter)->horiz_info.width(i)+(*iter)->horiz_info.kerning(i);
+		accumulated_width +=
+			(*iter)->horiz_info.width(i)+
+			(*iter)->horiz_info.kerning(i);
 	}
 
 	// At this point, break at the last position that fell below the
 	// requested width. If there were no break positions, we're boned.
 
-	if (last_break_pos && last_break_pos < n)
+	if (last_break_pos)
 	{
-		(*iter)->split(my_fragments, last_break_pos,
-			       richtextfragmentObj::split_lr);
+		(*iter)->split(my_fragments, *last_break_pos, split_type);
 
 		iter=get_fragment_iter(fragment_n);
 
