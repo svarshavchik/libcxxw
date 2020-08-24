@@ -26,6 +26,7 @@
 #include <x/obj.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
+#include <courier-unicode.h>
 #include <utility>
 
 LIBCXXW_NAMESPACE_START
@@ -62,7 +63,9 @@ class richtextObj : virtual public obj {
 	//! to rendering order, but not otherwise moved from.
 	richtextObj(richtextstring &&string,
 		    halign alignment,
-		    dim_t word_wrap_width);
+		    dim_t word_wrap_width,
+		    unicode_bidi_level_t paragraph_embedding_level=
+		    UNICODE_BIDI_LR);
 
  private:
 	//! Internal constructor

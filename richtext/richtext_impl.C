@@ -26,8 +26,11 @@
 LIBCXXW_NAMESPACE_START
 
 richtext_implObj::richtext_implObj(richtextstring &&string,
-				   halign alignmentArg)
-	: word_wrap_width{0}, alignment{alignmentArg}
+				   halign alignmentArg,
+				   unicode_bidi_level_t
+				   paragraph_embedding_level)
+	: word_wrap_width{0}, alignment{alignmentArg},
+	  paragraph_embedding_level{paragraph_embedding_level}
 {
 	do_set(std::move(string));
 }
@@ -121,6 +124,62 @@ void richtext_implObj::set(ONLY IN_THREAD,
 	restore_paragraphs_sentry.unguard();
 }
 
+static inline auto create_new_fragment(richtextstring &string,
+				       std::vector<unicode_lb> &breaks,
+				       size_t i,
+				       size_t j,
+				       unicode_bidi_level_t embedding_level)
+{
+	// Normally the \n ends the paragraph. If the paragraph
+	// embedding level is right-to-left, \n belongs at the
+	// beginning of the paragraph.
+
+	bool swap_newline=false;
+
+	if (embedding_level != UNICODE_BIDI_LR)
+	{
+		if (string.get_string().at(j-1) == '\n')
+			swap_newline=true;
+	}
+
+	if (!swap_newline)
+		return richtextfragment::create(richtextstring{string,
+							       i,
+							       j-i},
+			std::vector<unicode_lb>{
+				breaks.begin()+i,
+					breaks.begin()+j
+					});
+
+	richtextstring rl_str{string, j-1, 1}; // The newline
+
+	std::vector<unicode_lb> rl_breaks;
+
+	rl_breaks.reserve(j-i);
+	rl_breaks.push_back(unicode_lb::none); // The newline
+
+	if (j-i > 1)
+	{
+		rl_str += richtextstring{string, i, j-i-1};
+	}
+
+	rl_breaks.insert(rl_breaks.end(), breaks.begin()+i,
+			 breaks.begin()+(j-1));
+
+	// Figure out the linebreaking situation after the newline. If there's
+	// right-to-left text there, it's none, if there's left-to-right text
+	// there, it is allowed.
+
+	if (j-i > 1)
+	{
+		rl_breaks.at(1)=
+			rl_str.meta_at(1).rl ? unicode_lb::none
+			: unicode_lb::allowed;
+	}
+	return richtextfragment::create(std::move(rl_str),
+					std::move(rl_breaks));
+}
+
 void richtext_implObj::do_set(richtextstring &&string)
 {
 	paragraphs.clear();
@@ -196,14 +255,10 @@ void richtext_implObj::do_set(richtextstring &&string)
 		auto new_paragraph=my_paragraphs.append_new_paragraph();
 
 		auto new_fragment=
-			richtextfragment::create(richtextstring{string,
-								i,
-								j-i},
-				std::vector<unicode_lb>{
-					breaks.begin()+i,
-						breaks.begin()+j
-						});
-
+			create_new_fragment(string,
+					    breaks,
+					    i, j,
+					    paragraph_embedding_level);
 
 		const_fragment_list my_fragments{my_paragraphs,
 				*new_paragraph};

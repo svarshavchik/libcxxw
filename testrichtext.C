@@ -468,8 +468,8 @@ void testrlsplit(const current_fontcollection &font1,
 	auto iter1=richtext->at(0);
 	auto iter2=richtext->at(6);
 
-	if (iter1->at(IN_THREAD).character != U'M' ||
-	    iter2->at(IN_THREAD).character != U'm')
+	if (iter1->at(IN_THREAD).character != U'm' ||
+	    iter2->at(IN_THREAD).character != U'M')
 		throw EXCEPTION("testrlsplit: unexpected render_order");
 
 	{
@@ -482,12 +482,12 @@ void testrlsplit(const current_fontcollection &font1,
 	}
 
 	if ((*p)->get_fragment(0)->string.get_string() !=
-	    U"merolMUSPI\n")
+	    U"MUSPImerol\n")
 		throw EXCEPTION("testrlsplit: unexpected result of merge");
 
 	if (iter1->pos() != 5 || iter2->pos() != 0 ||
-	    iter1->at(IN_THREAD).character != U'M' ||
-	    iter2->at(IN_THREAD).character != U'm')
+	    iter1->at(IN_THREAD).character != U'm' ||
+	    iter2->at(IN_THREAD).character != U'M')
 		throw EXCEPTION("testrlsplit: unexpected locations"
 				" after merge");
 
@@ -511,8 +511,8 @@ void testrlsplit(const current_fontcollection &font1,
 	iter1=richtext->at(0);
 	iter2=richtext->at(6);
 
-	if (iter1->at(IN_THREAD).character != U'M' ||
-	    iter2->at(IN_THREAD).character != U'm')
+	if (iter1->at(IN_THREAD).character != U'm' ||
+	    iter2->at(IN_THREAD).character != U'M')
 		throw EXCEPTION("testrlsplit: unexpected render_order (2)");
 
 	{
@@ -525,12 +525,12 @@ void testrlsplit(const current_fontcollection &font1,
 	}
 
 	if ((*p)->get_fragment(0)->string.get_string() !=
-	    U"merolMUSPI\nDolor")
+	    U"MUSPImerol\nDolor")
 		throw EXCEPTION("testrlsplit: unexpected result of merge(2)");
 
 	if (iter1->pos() != 5 || iter2->pos() != 0 ||
-	    iter1->at(IN_THREAD).character != U'M' ||
-	    iter2->at(IN_THREAD).character != U'm')
+	    iter1->at(IN_THREAD).character != U'm' ||
+	    iter2->at(IN_THREAD).character != U'M')
 		throw EXCEPTION("testrlsplit: unexpected locations"
 				" after merge");
 
@@ -587,7 +587,6 @@ void testrlsplit(const current_fontcollection &font1,
 		throw EXCEPTION("testrlsplit: unexpected locations"
 				" after splitrl");
 }
-
 
 void testrlmerge(const current_fontcollection &font1,
 		 const current_fontcollection &font2,
@@ -721,6 +720,181 @@ void testrlmerge(const current_fontcollection &font1,
 	}
 }
 
+void testunwrap(const current_fontcollection &font1,
+		const current_fontcollection &font2,
+		const main_window &w)
+{
+	auto IN_THREAD=w->get_screen()->impl->thread;
+	auto black=create_new_background_color(w->get_screen(),
+					       w->elementObj::impl
+					       ->get_window_handler()
+					       .drawable_pictformat, "0%");
+
+	richtextmeta meta1{black, font1}, meta2=meta1;
+
+	meta2.rl=true;
+
+	static const struct {
+		richtextstring s;
+
+		unicode_bidi_level_t embedding_level;
+
+		// Split the test string at the given positions. A vector
+		// of <fragment #, position> tuples.
+
+		std::vector< std::tuple<size_t, size_t,
+					richtextfragmentObj::split_t>
+			     > preliminary_split;
+
+		// Expected contents of each fragment, after the splits.
+
+		std::vector< std::tuple<size_t, const char32_t *>
+			     > expected_fragments;
+
+		const char32_t *unwrap_result;
+	} testcases[]={
+		       // Case 0
+		       {
+			{
+			 U"lorem ipsum dolorsit amet",
+			 {
+			  {0, meta1},
+			  {6, meta2},
+			  {17, meta1},
+			 }
+			},
+
+			UNICODE_BIDI_LR,
+
+
+			{
+			 {0, 17, // fragment 2: "sit amet"
+			  richtextfragmentObj::split_lr},
+
+			 {0, 6,  // fragment 1: "rolod muspi"
+			  richtextfragmentObj::split_lr},
+
+			 {1, 5,  // split off "rolod",
+			  richtextfragmentObj::split_rl},
+			},
+
+			{
+			 {1, U" muspi"},
+			 {2, U"rolod"},
+			},
+
+			U"lorem rolod muspisit amet",
+		       },
+		       // Case 1
+		       {
+			{
+			 U"lorem ipsum dolor sit amet\n",
+			 {
+			  {0, meta2},
+			  {6, meta1},
+			  {18, meta2},
+			 }
+			},
+
+			UNICODE_BIDI_RL,
+
+			{
+			},
+
+			{
+			},
+
+			U"\n merolipsum dolor tema tis",
+		       },
+
+		       // Case 2
+		       {
+			{
+			 U"lorem ipsum dolor sit amet\n",
+			 {
+			  {0, meta1},
+			  {12, meta2},
+			 }
+			},
+
+			UNICODE_BIDI_RL,
+
+			{
+			 {0, 17, richtextfragmentObj::split_rl},
+			 {1, 1, richtextfragmentObj::split_rl},
+			 {1, 6, richtextfragmentObj::split_lr},
+			 {2, 6, richtextfragmentObj::split_lr},
+			},
+
+			{
+			 {0, U" tis rolod"},  // rl
+			 {1, U"lorem "},      // lr
+			 {2, U"ipsum "},      // lr
+			 {3, U"tema"},        // rl
+			 {4, U"\n"},          // rl
+			},
+
+			U"\ntemalorem ipsum  tis rolod",
+		       },
+	};
+
+	size_t i=0;
+
+	for (const auto &t:testcases)
+	{
+		auto copy=t.s;
+
+		auto richtext=richtext::create(std::move(copy),
+					       halign::left, 0,
+					       t.embedding_level);
+
+		auto impl=richtext->debug_get_impl(IN_THREAD);
+
+		auto p=impl->paragraphs.get_paragraph(0);
+
+		{
+			paragraph_list my_paragraphs{*impl};
+			fragment_list my_fragments{my_paragraphs, **p};
+
+			for (const auto &[fragment, offset, split_type]
+				     : t.preliminary_split)
+			{
+				auto f=(*p)->get_fragment(fragment);
+				f->split(my_fragments, offset, split_type);
+			}
+
+			for (const auto &[fragment, expected]
+				     : t.expected_fragments)
+			{
+				auto f=(*p)->get_fragment(fragment);
+
+				if (f->string.get_string() != expected)
+					throw EXCEPTION("testunwrap: case "
+							<< i
+							<< ": unexpected "
+							"fragment"
+							<< fragment);
+			}
+		}
+
+		impl->unwrap();
+		std::u32string s;
+
+		for (size_t i=0, n=impl->paragraphs.size(); i<n; ++i)
+		{
+			s += (*impl->paragraphs.get_paragraph(i))
+				->get_fragment(0)->string.get_string();
+		}
+
+		if (s != t.unwrap_result)
+			throw EXCEPTION("testunwrap: case "
+					<< i
+					<< ": unwrap failed");
+
+		++i;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -762,6 +936,7 @@ int main(int argc, char **argv)
 		testlinebreaks(font1, font2, mw);
 		testrlsplit(font1, font2, mw);
 		testrlmerge(font1, font2, mw);
+		testunwrap(font1, font2, mw);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

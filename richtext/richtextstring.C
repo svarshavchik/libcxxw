@@ -183,6 +183,16 @@ void richtextstring::swap_order()
 {
 	coalesce();
 
+	// We leave paragraph breaks alone, first, make sure we have meta
+	// breaks on them.
+
+	for (size_t n=string.size(), i=0; i<n; ++i)
+		if (string[i] == '\n')
+		{
+			duplicate(i);
+			if (i+1 < n)
+				duplicate(i+1);
+		}
 	auto b=meta.begin(), e=meta.end();
 
 	while (b != e)
@@ -195,6 +205,12 @@ void richtextstring::swap_order()
 			continue;
 		}
 
+		if (string[b->first] == '\n')
+		{
+			++b;
+			continue;
+		}
+
 		auto p=b;
 
 		// Find the start of the following left-to-right text
@@ -202,6 +218,8 @@ void richtextstring::swap_order()
 		while (b != e)
 		{
 			if (!b->second.rl)
+				break;
+			if (string[b->first] == '\n')
 				break;
 			++b;
 		}
@@ -252,6 +270,7 @@ void richtextstring::swap_order()
 		}
 	}
 	is_render_order=!is_render_order;
+	coalesce_needed=true;
 }
 
 namespace {

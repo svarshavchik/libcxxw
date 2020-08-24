@@ -23,9 +23,11 @@
 LIBCXXW_NAMESPACE_START
 
 richtextObj::richtextObj(richtextstring &&string,
-			 halign alignment, dim_t initial_width)
+			 halign alignment, dim_t initial_width,
+			 unicode_bidi_level_t paragraph_embedding_level)
 	: richtextObj{ref<richtext_implObj>::create(std::move(string),
-						    alignment),
+						    alignment,
+						    paragraph_embedding_level),
 		      initial_width}
 {
 }

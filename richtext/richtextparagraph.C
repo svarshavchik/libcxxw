@@ -56,6 +56,33 @@ bool richtextparagraphObj::unwrap(paragraph_list &my_paragraphs)
 
 	bool flag=false;
 
+	// When the paragraph embedding level is left-to-right, we need to
+	// merge all right-to-left fragments first.
+	//
+	// When the paragraph embedding level is right-to-left, we need to
+	// merge all left-to-right fragments first.
+
+	auto merge_first=my_richtext->paragraph_embedding_level ==
+		UNICODE_BIDI_LR ? richtext_dir::rl : richtext_dir::lr;
+
+	size_t fs=my_fragments.size();
+
+	for (size_t n=0; n+1<fs; )
+	{
+		auto f=get_fragment(n);
+
+		if (f->string.get_dir() != merge_first)
+		{
+			++n;
+			continue;
+		}
+
+		f->merge(my_fragments);
+		flag=true;
+		fs=my_fragments.size();
+	}
+
+	// And then, merge the rest.
 	while (my_fragments.size() > 1)
 	{
 		get_fragment(0)->merge(my_fragments);

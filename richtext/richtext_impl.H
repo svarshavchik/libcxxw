@@ -153,8 +153,7 @@ public:
 
 	//! Paragraph bi-direction embedding level.
 
-	unicode_bidi_level_t paragraph_embedding_level=
-		UNICODE_BIDI_LR;
+	unicode_bidi_level_t paragraph_embedding_level;
 
 	//! Constructor
 
@@ -164,7 +163,10 @@ public:
 			 richtextstring &&str,
 
 			 //! Alignment
-			 halign alignmentArg);
+			 halign alignmentArg,
+
+			 //! Paragraph bi-direction embedding level.
+			 unicode_bidi_level_t paragraph_embedding_level);
 
 	//! Replace existing contents by something else.
 
