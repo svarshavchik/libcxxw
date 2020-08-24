@@ -773,6 +773,7 @@ libcxxw_la_SOURCES=\
 	richtext/richtextcursorlocation.H	    \
 	richtext/richtextfragment.C		    \
 	richtext/richtextfragment.H		    \
+	richtext/richtextfragment2.C		    \
 	richtext/richtextfragment_render.H	    \
 	richtext/richtexthorizinfo.C		    \
 	richtext/richtexthorizinfo.H		    \
@@ -1224,8 +1225,8 @@ testrichtextiterator_SOURCES=testrichtextiterator.C
 testrichtextiterator_LDADD=libcxxw.la
 testrichtextiterator_LDFLAGS=-static $(STATICLINKFLAGS)
 
-testrichtextstring_SOURCES=testrichtextstring.C
-testrichtextstring_LDADD=-lcxx
+testrichtextstring_SOURCES=testrichtextstring.C mockrichtext.H
+testrichtextstring_LDADD=-lcxx -lcourier-unicode
 
 $(call OPTIONS_GEN,testscrollbar.inc.H,testscrollbar.xml)
 

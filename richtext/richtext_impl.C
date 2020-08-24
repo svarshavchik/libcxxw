@@ -4,8 +4,6 @@
 */
 
 #include "libcxxw_config.h"
-#include "x/w/impl/fonts/current_fontcollection.H"
-#include "x/w/impl/fonts/freetypefont.H"
 #include "richtext/richtext_impl.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtextfragment.H"

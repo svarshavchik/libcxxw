@@ -50,6 +50,14 @@ public:
 	//! Destructor
 	~richtexthorizinfo_t();
 
+	//! Explicit constructor, used in unit test.
+	richtexthorizinfo_t(std::vector<dim_t> &&widths,
+			    std::vector<int16_t> &&kernings)
+		: widths{std::move(widths)},
+		  kernings{std::move(kernings)}
+	{
+	}
+
 	//! Copy constructor
 	richtexthorizinfo_t(const richtexthorizinfo_t &);
 

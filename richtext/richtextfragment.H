@@ -35,6 +35,19 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Compute size of the underline.
+
+dim_t underline_size(dim_squared_t font_height) LIBCXX_HIDDEN;
+
+//! Adjust for underline.
+
+//! Even though this text range may not be underlined
+//! always take into account the underline's
+//! requirements. See underline().
+
+dim_t adjust_descender_for_underline(dim_t ascender,
+				     dim_t descender) LIBCXX_HIDDEN;
+
 //! A text fragment, with some metadata (fonts)
 
 //! A list of these form a text paragraph. These objects are managed by
@@ -142,6 +155,16 @@ public:
 	//! maintained by fragment_list's methods.
 
 	richtextparagraphObj *my_paragraph=nullptr;
+
+
+#define USING_MY_PARAGRAPH() \
+	assert_or_throw(my_paragraph && my_paragraph->my_richtext &&			\
+			my_paragraph->fragments.size() > my_fragment_number,\
+			"Internal error: paragraph or text linkage sanity check failed.")
+
+#define RESOLVE_FONTS()				\
+	(string.resolve_fonts())
+
 
 	//! \see my_paragraph
 	size_t my_fragment_number=0;
@@ -350,13 +373,30 @@ public:
 	//! This does not include the first character's kerning value.
 	dim_t width=0;
 
-	//! Computed width up to the first breakable character.
+	//! Computed width up to the first breakable character, for lr text.
 
 	//! This includes the kerning value of the first character.
 	//!
 	//! If this fragment starts with rl text, this is the size of the
 	//! last non-breakable rl sequence.
-	dim_t initial_width=0;
+	dim_t initial_width_lr=0;
+
+	//! Trailing lr segment's initial width
+
+	//! If this fragment ends with lr text this is the width of the
+	//! initial sequence of lr text, up to the first breakable character.
+	//!
+	//! If this fragment ends with rl text, this is the width of the rl
+	//! after after the last break.
+
+	dim_t initial_width_rl_trailing_lr=0;
+
+	//! Trailing rl segment's width.
+
+	//! If this fragment ends with lr text, this is the entire width of the
+	//! rl text. Otherwise it is the same as initial_width_rl_trailing_lr
+
+	dim_t initial_width_rl=0;
 
 	//! Maximum minimum width
 
@@ -414,6 +454,19 @@ public:
 
 	//! Return the width of the fragment in pixels.
 	dim_t x_width(ONLY IN_THREAD);
+
+	//! Compute the "initial width" of this fragment
+
+	//! rewrap_fragment() is considering merging the next fragment into
+	//! this one. This determines what the next fragment "brings
+	//! to the table". For left-to-right text, this would be the width
+	//! of the initial word. For right-to-left text, this would be the
+	//! width of the last word.
+	//!
+	//! NOTE: rewrap_fragment() makes sure that this is not the last
+	//! fragment in the paragraph.
+	dim_t compute_initial_width_for_bidi() const;
+
  private:
 
 	//! We may sometimes need to overlay richtextmeta with something

@@ -112,31 +112,8 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 
 	while (fragment_n+1 < my_fragments.size())
 	{
-		// Is the next fragment starts with something small enough
-		// to get merged into here?
-
-		auto next_fragment=*get_fragment_iter(fragment_n+1);
-		auto initial_width=next_fragment->initial_width;
-
-		// If this fragment is rl, the next fragment's initial_width
-		// will work for us, either way. If the next fragment starts
-		// with rl text, this is going to be the last rl text segment.
-		//
-		// If this fragment is not rl, and the next fragment begins
-		// with rl text, it must fit.
-
-		if ((*iter)->string.get_dir() != richtext_dir::rl)
-		{
-			size_t p=next_fragment->string.left_to_right_start();
-
-			if (p > 0)
-			{
-				initial_width=p >= next_fragment->string.size()
-					? next_fragment->horiz_info.width()
-					: next_fragment->horiz_info.x_pos(p);
-			}
-		}
-		if ((*iter)->width + initial_width > wwidth)
+		if ((*iter)->width + (*iter)->compute_initial_width_for_bidi()
+		    > wwidth)
 			break; // It would be too big.
 
 		// We'll merge the whole thing, and sort things out later.

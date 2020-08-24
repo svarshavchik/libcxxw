@@ -9,7 +9,7 @@
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtext_impl.H"
-#include "defaulttheme.H"
+#include "x/w/defaultthemefwd.H"
 #include <algorithm>
 
 LIBCXXW_NAMESPACE_START

@@ -8,7 +8,7 @@
 
 #include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/impl/richtext/richtext_insertfwd.H"
-#include "x/w/impl/richtext/richtextcursorlocationfwd.H"
+#include "richtext/richtextcursorlocation.H"
 #include <string>
 
 LIBCXXW_NAMESPACE_START

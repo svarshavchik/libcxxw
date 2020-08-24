@@ -715,6 +715,13 @@ void richtextstring::erase(size_t pos, size_t n)
 	string.erase(sb, sb+n);
 }
 
+void richtextstring::theme_updated(ONLY IN_THREAD,
+				   const const_defaulttheme &new_theme)
+{
+	// This is mostly to clear the cached resolved fonts:
+	modified();
+}
+
 void richtextstring::clear()
 {
 	string.clear();

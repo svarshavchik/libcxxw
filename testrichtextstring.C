@@ -8,80 +8,87 @@
 #include "x/w/namespace.H"
 #include <iostream>
 
-#define x_w_impl_richtext_richtextmeta_H
-#define x_w_impl_fonts_freetypefontfwd_H
-#define x_w_impl_fonts_freetypefont_H
-
-LIBCXXW_NAMESPACE_START
-
-class richtextmeta {
-
-public:
-
-	char c;
-	bool rl=false;
-
-	bool operator==(const richtextmeta &o) const
-	{
-		return c == o.c && rl == o.rl;
-	}
-
-	bool operator!=(const richtextmeta &o) const { return !operator==(o); }
-
-	richtextmeta *operator->()
-	{
-		return this;
-	}
-
-	const richtextmeta *operator->() const
-	{
-		return this;
-	}
-
-	template<typename iter_type>
-	void load_glyphs(iter_type b, iter_type e,
-			 char32_t unprintable_char) const
-	{
-	}
-
-	template<typename iter_type, typename lambda_type>
-	void glyphs_size_and_kernings(iter_type b,
-				      iter_type e,
-				      lambda_type &&lambda,
-				      char32_t prev_char,
-				      char32_t unprintable_char) const
-	{
-		while (b != e)
-		{
-		 lambda(16, 16, -(int)(prev_char & 15), 0);
-
-		 prev_char = *b;
-
-		 ++b;
-		}
-	}
-};
-
-typedef richtextmeta freetypefont;
-
-LIBCXXW_NAMESPACE_END
-
-#include "richtext/richtextstring.C"
-#include "richtext/richtextstring2.C"
-#include "assert_or_throw.C"
-
-LIBCXXW_NAMESPACE_START
-
-const richtextstring::resolved_fonts_t &richtextstring::resolve_fonts() const
-{
-	resolved_fonts=get_meta();
-
-	return resolved_fonts;
-}
-
-LIBCXXW_NAMESPACE_END
+#include "mockrichtext.H"
 
 using namespace LIBCXX_NAMESPACE::w;
+
+struct fragment_metric {
+	std::u32string string;
+	dim_t initial_width_lr;
+	dim_t initial_width_rl_trailing_lr;
+	dim_t initial_width_rl;
+	richtexthorizinfo_t horiz_info;
+
+	bool operator==(const fragment_metric &) const=default;
+};
+
+std::ostream &operator<<(std::ostream &o, const std::vector<fragment_metric> &v)
+{
+	const char *p="";
+	o << "{";
+	p="";
+
+	for (const auto &m:v)
+	{
+		o << p;
+		p=",";
+		o << std::endl << "\t";
+
+		o << "{U\"" << std::string{m.string.begin(), m.string.end()}
+		<< "\", " << m.initial_width_lr << ", "
+		<< m.initial_width_rl_trailing_lr << ", "
+		<< m.initial_width_rl
+		<< "," << std::endl << "\t{"
+		<< std::endl << "\t\t{";
+
+		for (size_t i=0; i < m.horiz_info.size(); i++)
+		{
+			o << (i == 0 ? "": ", ")
+			  << m.horiz_info.width(i);
+		}
+		o << "}," << std::endl << "\t\t{";
+		for (size_t i=0; i < m.horiz_info.size(); i++)
+		{
+			o << (i == 0 ? "": ", ")
+			  << m.horiz_info.kerning(i);
+		}
+		o << "}" << std::endl
+		  << "\t}}";
+	}
+	o << std::endl << "}";
+	return o;
+}
+
+std::vector<fragment_metric>
+get_metrics(const LIBCXX_NAMESPACE::ref<richtext_implObj> &impl)
+{
+	std::vector<fragment_metric> ret;
+
+	impl->paragraphs.for_paragraphs
+		(0,
+		 [&]
+		 (auto &p)
+		 {
+			 p->fragments.for_fragments
+				 ([&]
+				  (auto &f)
+				  {
+					  fragment_metric m
+						  {
+						   f->string.get_string(),
+						   f->initial_width_lr,
+						   f->initial_width_rl_trailing_lr,
+						   f->initial_width_rl,
+						   f->horiz_info
+						  };
+
+					  ret.push_back(std::move(m));
+				  });
+			 return true;
+		 });
+
+	return ret;
+}
 
 struct insert_test_case {
 
@@ -897,6 +904,71 @@ void kerningtest()
 	}
 }
 
+void rlmetricstest()
+{
+	richtextmeta lr, rl;
+
+	rl.rl=true;
+
+	auto impl=LIBCXX_NAMESPACE::ref<richtext_implObj>::create
+		(richtextstring{
+				U"12 34 56 78 11 22 33 44",
+				{
+				 {0, rl},
+				 {12, lr},
+				},
+		},
+		 halign::left,
+		 UNICODE_BIDI_RL);
+
+	impl->finish_initialization();
+
+	{
+		paragraph_list my_paragraphs{*impl};
+
+		auto p=*impl->paragraphs.get_paragraph(0);
+		fragment_list my_fragments{my_paragraphs, *p};
+
+		auto f=p->get_fragment(0);
+		f->split(my_fragments, 12, f->split_rl);
+
+		f=p->get_fragment(0);
+		f->split(my_fragments, 6, f->split_lr);
+
+		f=p->get_fragment(2);
+		f->split(my_fragments, 6, f->split_rl);
+	}
+
+	if (auto m=get_metrics(impl); m != std::vector<fragment_metric>{
+			{U"11 22 ", 46, 74, 46,
+				{
+					{16, 16, 16, 16, 16, 16},
+					{0, -1, -1, -16, -2, -2}
+				}},
+			{U"33 44", 42, 38, 26,
+				{
+					{16, 16, 16, 16, 16},
+					{-16, -3, -3, -16, -4}
+				}},
+			{U" 43 21", 30, 48, 48,
+				{
+					{16, 16, 16, 16, 16, 16},
+					{-5, -16, -4, -3, -16, -2}
+				}},
+			{U" 87 65", 26, 48, 48,
+				{
+					{16, 16, 16, 16, 16, 16},
+					{0, -16, -8, -7, -16, -6}
+				}}
+		})
+	{
+		std::cerr << "Unexpected rlmetricstest result:"
+			  << std::endl
+			  << m << std::endl;
+		throw EXCEPTION("rlmetricstest: test 1 failed");
+	}
+}
+
 int main()
 {
 	try {
@@ -904,6 +976,7 @@ int main()
 		erasesubstrtest();
 		renderordertest();
 		kerningtest();
+		rlmetricstest();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();
