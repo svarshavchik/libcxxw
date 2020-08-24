@@ -74,14 +74,10 @@ richtextfragmentObj::richtextfragmentObj()
 {
 }
 
-richtextfragmentObj
-::richtextfragmentObj(const richtextstring &string,
-		      size_t substr_pos,
-		      size_t substr_len,
-		      std::vector<unicode_lb>::const_iterator beg_breaks,
-		      std::vector<unicode_lb>::const_iterator end_breaks)
-	: string(string, substr_pos, substr_len),
-	  breaks(beg_breaks, end_breaks)
+richtextfragmentObj::richtextfragmentObj(richtextstring &&string,
+					 std::vector<unicode_lb> &&breaks)
+	: string{std::move(string)},
+	  breaks{std::move(breaks)}
 {
 }
 

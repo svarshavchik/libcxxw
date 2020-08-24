@@ -196,11 +196,13 @@ void richtext_implObj::do_set(richtextstring &&string)
 		auto new_paragraph=my_paragraphs.append_new_paragraph();
 
 		auto new_fragment=
-			richtextfragment::create(string,
-						 i,
-						 j-i,
-						 breaks.begin()+i,
-						 breaks.begin()+j);
+			richtextfragment::create(richtextstring{string,
+								i,
+								j-i},
+				std::vector<unicode_lb>{
+					breaks.begin()+i,
+						breaks.begin()+j
+						});
 
 
 		const_fragment_list my_fragments{my_paragraphs,

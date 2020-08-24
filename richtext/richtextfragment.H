@@ -214,11 +214,8 @@ public:
 	//! This gets invoked from set(), when constructing the initial
 	//! single fragment in the paragraph, to kick things off.
 
-	richtextfragmentObj(const richtextstring &string,
-			    size_t substr_pos,
-			    size_t substr_len,
-			    std::vector<unicode_lb>::const_iterator,
-			    std::vector<unicode_lb>::const_iterator);
+	richtextfragmentObj(richtextstring &&string,
+			    std::vector<unicode_lb> &&breaks);
 
 	//! After the internal constructor, above, is done, set() calls this.
 
