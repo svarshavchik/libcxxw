@@ -174,8 +174,10 @@ void testsplit(const current_fontcollection &font1,
 
 		auto control_horiz=fragment->horiz_info;
 
-		auto new_fragment=fragment->split(my_fragments,
-						  test.split_pos);
+		fragment->split(my_fragments, test.split_pos,
+				fragment->split_lr);
+
+		auto new_fragment=x::ref{fragment->next_fragment()};
 
 		fragment=*paragraph->fragments.get_iter(0);
 
@@ -541,6 +543,49 @@ void testrlsplit(const current_fontcollection &font1,
 		throw EXCEPTION("testrlsplit: unexpected meta"
 				" after merge");
 	}
+
+	richtext=richtext::create(richtextstring{
+		U"lorem IPSUM",
+		{
+			{0, meta1},
+		}}, halign::left, 0);
+	impl=richtext->debug_get_impl(IN_THREAD);
+
+	if (impl->paragraphs.size() != 1)
+		throw EXCEPTION("Did not get 1 paragraphs (splitrl)");
+
+	p=impl->paragraphs.get_paragraph(0);
+
+	if ((*p)->fragments.size() != 1)
+		throw EXCEPTION("Somehow we ended up with multiple fragments "
+				"(splitrl)");
+
+	iter1=richtext->at(0);
+	iter2=richtext->at(6);
+
+	if (iter1->at(IN_THREAD).character != U'M' ||
+	    iter2->at(IN_THREAD).character != U'm')
+		throw EXCEPTION("testrlsplit: unexpected render_order (2)");
+
+	{
+		auto f=(*p)->get_fragment(0);
+
+		paragraph_list my_paragraphs{*impl};
+		fragment_list my_fragments{my_paragraphs, **p};
+
+		f->split(my_fragments, 5, f->split_rl);
+	}
+
+	if ((*p)->fragments.size() != 2 ||
+	    (*p)->get_fragment(0)->string.get_string() != U" merol" ||
+	    (*p)->get_fragment(1)->string.get_string() != U"MUSPI")
+		throw EXCEPTION("testrlsplit: unexpected result of splitrl");
+
+	if (iter1->pos() != 6 || iter2->pos() != 1 ||
+	    iter1->at(IN_THREAD).character != U'M' ||
+	    iter2->at(IN_THREAD).character != U'm')
+		throw EXCEPTION("testrlsplit: unexpected locations"
+				" after splitrl");
 }
 
 int main(int argc, char **argv)

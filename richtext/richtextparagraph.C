@@ -137,7 +137,8 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 
 	if (last_break_pos && last_break_pos < n)
 	{
-		(*iter)->split(my_fragments, last_break_pos);
+		(*iter)->split(my_fragments, last_break_pos,
+			       richtextfragmentObj::split_lr);
 
 		iter=get_fragment_iter(fragment_n);
 

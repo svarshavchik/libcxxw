@@ -482,7 +482,8 @@ void testrichtext3(const main_window &w,
 
 					 auto f=(*p)->fragments.get_iter(0);
 
-					 (*f)->split(my_fragments, 10);
+					 (*f)->split(my_fragments, 10,
+						     (*f)->split_lr);
 					 my_fragments
 						 .fragments_were_rewrapped();
 				 }
@@ -633,8 +634,8 @@ void testrichtext4(const main_window &w,
 
 				 auto f=*(*p)->fragments.get_iter(0);
 
-				 f->split(my_fragments, 12);
-				 f->split(my_fragments, 6);
+				 f->split(my_fragments, 12, f->split_lr);
+				 f->split(my_fragments, 6, f->split_lr);
 				 my_fragments.fragments_were_rewrapped();
 			 }
 		 });

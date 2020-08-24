@@ -239,16 +239,29 @@ public:
 			    size_t substr_pos,
 			    size_t substr_len);
 
+	//! What kind of split() to do.
+
+	//! The onus is on the caller to pick the right value.
+	enum split_t {
+	      split_lr, //!< Splitting of normal left-to-right text
+	      split_rl, //!< Special logic for splitting right-to-left text
+	};
 	//! Split this text fragment at character #n.
 
 	//! Returns a new text fragment, containing character #n and
 	//! onwards. This text fragment is truncated to character #n.
 
-	richtextfragment split(//! Fragment's paragraph's fragment list
-			       fragment_list &my_fragments,
+	void split(//! Fragment's paragraph's fragment list
+		   fragment_list &my_fragments,
 
-			       //! Split position
-			       size_t pos);
+		   //! Split position
+		   size_t pos,
+
+		   //! Split type
+
+		   //! The onus is on the caller to do the right thing.
+		   enum split_t type
+		   );
 
 	//! Take the next fragment in this paragraph and merge it into this one.
 
@@ -414,14 +427,6 @@ public:
 			  const const_picture &background_color,
 			  coord_t background_x,
 			  coord_t background_y);
-
-	//! Appended a new fragment after this one, in the same paragraph
-
-	//! This is called from split_from(), no change in the number of
-	//! characters in this fragment's paragraph.
-	void appended_no_change_in_char_count(//! Fragment's paragraph's fragment list
-					      fragment_list &my_fragments,
-					      const richtextfragment &new_fragment);
 
  public:
 	//! Return previous fragment in this paragraph, or nullptr

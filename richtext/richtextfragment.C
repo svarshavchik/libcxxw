@@ -495,7 +495,7 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 	{
 		if (breaks[--p] == unicode_lb::mandatory && p != 0)
 		{
-			split(my_fragments, p);
+			split(my_fragments, p, split_lr);
 			++counter;
 		}
 	}
@@ -1148,8 +1148,8 @@ void richtextfragmentObj::render(ONLY IN_THREAD,
 
 ////////////////////////////////////////////////////////////////////////////
 
-richtextfragment richtextfragmentObj::split(fragment_list &my_fragments,
-					    size_t pos)
+void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
+				enum split_t type)
 {
 	USING_MY_PARAGRAPH();
 
@@ -1201,7 +1201,13 @@ richtextfragment richtextfragmentObj::split(fragment_list &my_fragments,
 		}
 	}
 
-	if (break_type == unicode_lb::mandatory)
+	if (type == split_rl)
+	{
+		auto iter=my_paragraph->fragments.get_iter(my_fragment_number);
+
+		my_fragments.insert_no_change_in_char_count(iter, new_fragment);
+	}
+	else if (break_type == unicode_lb::mandatory)
 	{
 		// Copy split content into a new paragraph.
 
@@ -1219,8 +1225,11 @@ richtextfragment richtextfragmentObj::split(fragment_list &my_fragments,
 	}
 	else
 	{
-		appended_no_change_in_char_count(my_fragments,
-						 new_fragment);
+		auto iter=my_paragraph->fragments.get_iter(my_fragment_number);
+
+		++iter;
+
+		my_fragments.insert_no_change_in_char_count(iter, new_fragment);
 	}
 
 	if (new_fragment->string.size())
@@ -1229,20 +1238,6 @@ richtextfragment richtextfragmentObj::split(fragment_list &my_fragments,
 	my_fragments.fragment_text_changed(my_fragment_number, 0);
 
 	redraw_needed=true;
-	return new_fragment;
-}
-
-void richtextfragmentObj
-::appended_no_change_in_char_count(fragment_list &my_fragments,
-				   const richtextfragment &new_fragment)
-{
-	USING_MY_PARAGRAPH();
-
-	auto iter=my_paragraph->fragments.get_iter(my_fragment_number);
-
-	++iter;
-
-	my_fragments.insert_no_change_in_char_count(iter, new_fragment);
 }
 
 void richtextfragmentObj::merge(fragment_list &my_fragments)
@@ -1285,7 +1280,8 @@ void richtextfragmentObj::merge(fragment_list &my_fragments)
 		    > next_left_to_right_start)
 		{
 			merge_again=true;
-			other->split(my_fragments, next_left_to_right_start);
+			other->split(my_fragments, next_left_to_right_start,
+				     split_lr);
 		}
 		--n; // This is now equal to my_fragment_number
 
