@@ -83,10 +83,17 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 
 	dim_squared_t wwidth=dim_t::value_type(width);
 
-	while (fragment_n+1 < my_fragments.size() &&
-	       (*iter)->width
-	       + (*get_fragment_iter(fragment_n+1))->initial_width <= wwidth)
+	while (fragment_n+1 < my_fragments.size())
 	{
+		// Is the next fragment starts with something small enough
+		// to get merged into here?
+
+		auto next_fragment=*get_fragment_iter(fragment_n+1);
+		auto initial_width=next_fragment->initial_width;
+
+		if ((*iter)->width + initial_width > wwidth)
+			break; // It would be too big.
+
 		// We'll merge the whole thing, and sort things out later.
 		(*iter)->merge(my_fragments);
 		iter=get_fragment_iter(fragment_n);
