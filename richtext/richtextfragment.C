@@ -1264,15 +1264,67 @@ void richtextfragmentObj::merge(fragment_list &my_fragments)
 
 	auto other=my_paragraph->get_fragment(n);
 
-	redraw_needed=true;
-
-	if (string.get_dir() == richtext_dir::rl)
+	if (my_paragraph->my_richtext->paragraph_embedding_level ==
+	    UNICODE_BIDI_LR)
 	{
-		merge_lr_rl(my_fragments, other);
+		if (string.get_dir() == richtext_dir::rl)
+		{
+			merge_lr_rl(my_fragments, other);
+			return;
+		}
+
+		merge_lr_lr(my_fragments, other);
+	}
+	else
+	{
+		if (string.get_dir() == richtext_dir::lr)
+		{
+			merge_rl_lr(my_fragments, other);
+			return;
+		}
+
+		other->merge_lr_lr(my_fragments, ref{this});
+	}
+}
+
+void richtextfragmentObj::merge_rl_lr(fragment_list &my_fragments,
+				      const richtextfragment &other)
+{
+	if (other->string.get_dir() == richtext_dir::lr)
+	{
+		merge_lr_lr(my_fragments, other);
 		return;
 	}
 
-	merge_lr_lr(my_fragments, other);
+	auto &meta=other->string.get_meta();
+	auto mb=meta.begin();
+	auto me=meta.end();
+
+	assert_or_throw(mb != me,
+			"Internal error: empty meta in merge_rl_lr");
+
+	auto p=me;
+
+	while (p > mb && !p[-1].second.rl)
+		--p;
+
+	if (p == me)
+	{
+		// Next fragment ends with rl text, regular rl merge.
+
+		other->merge_lr_lr(my_fragments, ref{this});
+		return;
+	}
+
+	other->split(my_fragments, p->first, split_lr);
+
+	other->merge_lr_lr(my_fragments, ref{this});
+
+	auto next=other->next_fragment();
+
+	assert_or_throw(next, "Internal error: did not find split fragment in"
+			" merge_rl_lr");
+	other->merge_lr_lr(my_fragments, ref{next});
 }
 
 void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
@@ -1319,6 +1371,8 @@ void richtextfragmentObj::merge_lr_lr(fragment_list &my_fragments,
 	const std::u32string &current_string=string.get_string();
 
 	auto orig_size=current_string.size();
+
+	redraw_needed=true;
 
 	if (!other->string.get_string().empty())
 	{

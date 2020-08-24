@@ -270,6 +270,20 @@ public:
 
  private:
 
+	//! Merge a richtextdir::lr line with the next line in rl paragraph
+
+	//! Paragraph embedding level is rl, and this is a richtext_dir::lr
+	//! fragment.
+	//!
+	//! If the next line is richtextdir::lr too, we can just use
+	//! merge_lr_lr.
+	//!
+	//! Otherwise if there are any lr text at the end of the next
+	//! fragment, they get appended to this line, with the rest prepended.
+
+	void merge_rl_lr(fragment_list &my_fragments,
+			 const richtextfragment &other);
+
 	//! Left to right paragraph, merging richtext_dir:rl with next fragment
 
 	//! This fragment is richtext_dir::rl. Check if the next fragment

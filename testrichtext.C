@@ -588,6 +588,139 @@ void testrlsplit(const current_fontcollection &font1,
 				" after splitrl");
 }
 
+
+void testrlmerge(const current_fontcollection &font1,
+		 const current_fontcollection &font2,
+		 const main_window &w)
+{
+	auto IN_THREAD=w->get_screen()->impl->thread;
+	auto black=create_new_background_color(w->get_screen(),
+					       w->elementObj::impl
+					       ->get_window_handler()
+					       .drawable_pictformat, "0%");
+
+	richtextmeta meta1{black, font1}, meta2=meta1;
+
+	meta2.rl=true;
+
+	static const struct {
+		richtextstring s;
+		richtextstring result;
+	} testcases[]={
+
+		       // Test case 0
+		       {
+			{
+			 U"lorem ipsum\ndolorsit amet",
+			 {
+			  {0, meta1},
+			 }
+			},
+			{
+			 U"lorem ipsum\ndolorsit amet",
+			 {
+			  {0, meta1},
+			 }
+			},
+		       },
+
+		       // Test case 1
+
+		       {
+			{
+			 U"lorem ipsum\ndolorsit amet",
+			 {
+			  {0, meta2},
+			  {21, meta1},
+			 }
+			},
+			{
+			 U"dolorsit ametlorem ipsum\n",
+			 {
+			  {0, meta2},
+			  {9, meta1},
+			  {13, meta2},
+			 }
+			},
+		       },
+
+		       // Test case 2
+		       {
+			{
+			 U"lorem ipsum\ndolorsit amet",
+			 {
+			  {0, meta1},
+			  {12, meta2},
+			  {21, meta1},
+			 }
+			},
+			{
+			 U"dolorsit lorem ipsum\namet",
+			 {
+			  {0, meta2},
+			  {9, meta1},
+			 }
+			},
+		       },
+
+	};
+
+	size_t i=0;
+
+	for (const auto &t:testcases)
+	{
+		auto copy=t.s;
+
+		copy.debug_set_render_order(true);
+		auto richtext=richtext::create(std::move(copy),
+					       halign::left, 0);
+
+		auto impl=richtext->debug_get_impl(IN_THREAD);
+
+		impl->paragraph_embedding_level=UNICODE_BIDI_RL;
+
+		auto p=impl->paragraphs.get_paragraph(0);
+
+		auto f=(*p)->get_fragment(0);
+
+		{
+			paragraph_list my_paragraphs{*impl};
+			fragment_list my_fragments{my_paragraphs, **p};
+
+			f->merge(my_fragments);
+		}
+
+		if (impl->paragraphs.size() != 1)
+		{
+			throw EXCEPTION("testrlmerge: test case "
+					<< i
+					<< " failed, expected 1 paragraph");
+		}
+
+		if ((*impl->paragraphs.get_paragraph(0))->fragments.size() != 1)
+		{
+			throw EXCEPTION("testrlmerge: test case "
+					<< i
+					<< " failed, expected 1 fragment");
+		}
+
+		auto actual=impl->get_as_richtext();
+
+		if (actual.get_string() != t.result.get_string())
+		{
+			throw EXCEPTION("testrlmerge: test case "
+					<< i << " failed, different string");
+		}
+
+		if (actual.get_meta() != t.result.get_meta())
+		{
+			throw EXCEPTION("testrlmerge: test case "
+					<< i << " failed, different meta");
+		}
+		++i;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -628,6 +761,7 @@ int main(int argc, char **argv)
 		testsplit(font1, font2, mw);
 		testlinebreaks(font1, font2, mw);
 		testrlsplit(font1, font2, mw);
+		testrlmerge(font1, font2, mw);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

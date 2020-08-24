@@ -201,6 +201,13 @@ public:
 			swap_order();
 	}
 
+	//! Used in unit tests to fudge the render order flag.
+
+	inline void debug_set_render_order(bool flag)
+	{
+		is_render_order=flag;
+	}
+
 	//! Remove portions of this string.
 	void erase(size_t pos, size_t n);
 
