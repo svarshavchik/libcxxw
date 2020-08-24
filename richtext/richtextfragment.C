@@ -1266,12 +1266,30 @@ void richtextfragmentObj::merge(fragment_list &my_fragments)
 
 	redraw_needed=true;
 
-	size_t next_left_to_right_start;
+	if (string.get_dir() == richtext_dir::rl)
+	{
+		merge_lr_rl(my_fragments, other);
+		return;
+	}
+
+	merge_lr_lr(my_fragments, other);
+}
+
+void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
+				      const richtextfragment &other)
+{
+
+	size_t next_left_to_right_start=
+		other->string.left_to_right_start();
+
+	if (next_left_to_right_start == 0)
+	{
+		merge_lr_lr(my_fragments, other);
+		return;
+	}
+
 	bool merge_again=false;
 
-	if (string.get_dir() == richtext_dir::rl &&
-	    (next_left_to_right_start=other->string.left_to_right_start()) > 0)
-	{
 		// If the following fragment has left-to-right text, split
 		// it from it. From this point on, the following fragment has
 		// only right to left text.
@@ -1283,10 +1301,9 @@ void richtextfragmentObj::merge(fragment_list &my_fragments)
 			other->split(my_fragments, next_left_to_right_start,
 				     split_lr);
 		}
-		--n; // This is now equal to my_fragment_number
 
 		// Instead, merge this fragment at the end of the next one.
-		other->merge_lr(my_fragments, ref{this});
+		other->merge_lr_lr(my_fragments, ref{this});
 
 		if (merge_again)
 		{
@@ -1294,14 +1311,10 @@ void richtextfragmentObj::merge(fragment_list &my_fragments)
 			// recurse again.
 			other->merge(my_fragments);
 		}
-		return;
-	}
-
-	merge_lr(my_fragments, other);
 }
 
-void richtextfragmentObj::merge_lr(fragment_list &my_fragments,
-				   const richtextfragment &other)
+void richtextfragmentObj::merge_lr_lr(fragment_list &my_fragments,
+				      const richtextfragment &other)
 {
 	const std::u32string &current_string=string.get_string();
 

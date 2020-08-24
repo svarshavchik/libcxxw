@@ -270,13 +270,25 @@ public:
 
  private:
 
-	//! Left-to-right text merge.
+	//! Left to right paragraph, merging richtext_dir:rl with next fragment
 
-	//! Invoked by merge(), to merge left-to-right text. To handle
-	//! merging of the next fragment when this fragment is right-to-left
-	//! text, merge() does some prep work, then invokes this too.
-	void merge_lr(fragment_list &my_fragments,
-		      const richtextfragment &other);
+	//! This fragment is richtext_dir::rl. Check if the next fragment
+	//! begins with rl text, if so it needs to be prepended to this
+	//! fragment.
+
+	void merge_lr_rl(fragment_list &my_fragments,
+			 const richtextfragment &other);
+
+	//! Left-to-right paragraph, left-to-right text merge.
+
+	//! Basically appends the next fragment to this one.
+	//!
+	//! Invoked by merge(), to merge left-to-right text. This is also
+	//! called from merge_lr_rl, to handle merging of the next fragment
+	//! when this fragment is right-to-left text, merge_lr_rl() does some
+	//! prep work, then invokes this too.
+	void merge_lr_lr(fragment_list &my_fragments,
+			 const richtextfragment &other);
 
  public:
 
