@@ -113,9 +113,14 @@ private:
 	//! A lower_bound() search by the index # in the meta vector.
 	meta_t::iterator meta_lower_bound_by_pos(size_t p);
 
+public:
 	//! An upper_bound() search by the index # in the meta vector.
 	static meta_t::iterator meta_upper_bound_by_pos(meta_t &meta, size_t p);
 
+	//! An upper_bound() search by the index # in the meta vector.
+	static meta_t::const_iterator
+	meta_upper_bound_by_pos(const meta_t &meta, size_t p);
+private:
 	//! Invoked by insert() and erase()
 	void modified();
 

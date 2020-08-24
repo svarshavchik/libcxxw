@@ -17,6 +17,7 @@ struct fragment_metric {
 	dim_t initial_width_lr;
 	dim_t initial_width_rl_trailing_lr;
 	dim_t initial_width_rl;
+	dim_t width;
 	richtexthorizinfo_t horiz_info;
 
 	bool operator==(const fragment_metric &) const=default;
@@ -37,7 +38,8 @@ std::ostream &operator<<(std::ostream &o, const std::vector<fragment_metric> &v)
 		o << "{U\"" << std::string{m.string.begin(), m.string.end()}
 		<< "\", " << m.initial_width_lr << ", "
 		<< m.initial_width_rl_trailing_lr << ", "
-		<< m.initial_width_rl
+		<< m.initial_width_rl << ", "
+		<< m.width
 		<< "," << std::endl << "\t{"
 		<< std::endl << "\t\t{";
 
@@ -79,6 +81,7 @@ get_metrics(const LIBCXX_NAMESPACE::ref<richtext_implObj> &impl)
 						   f->initial_width_lr,
 						   f->initial_width_rl_trailing_lr,
 						   f->initial_width_rl,
+						   f->width,
 						   f->horiz_info
 						  };
 
@@ -590,7 +593,7 @@ const struct render_order_test_case render_order_test_cases[]={
 	},
 };
 
-static void renderordertest()
+void renderordertest()
 {
 	for (const auto &test:render_order_test_cases)
 	{
@@ -940,25 +943,25 @@ void rlmetricstest()
 	}
 
 	if (auto m=get_metrics(impl); m != std::vector<fragment_metric>{
-			{U"11 22 ", 46, 74, 46,
+			{U"11 22 ", 46, 80, 46, 80,
 				{
 					{16, 16, 16, 16, 16, 16},
-					{0, -1, -1, -16, -2, -2}
+					{0, -1, -1, -10, -2, -2}
 				}},
-			{U"33 44", 42, 38, 26,
+			{U"33 44", 42, 50, 32, 60,
 				{
 					{16, 16, 16, 16, 16},
-					{-16, -3, -3, -16, -4}
+					{-10, -3, -3, -10, -4}
 				}},
-			{U" 43 21", 30, 48, 48,
+			{U" 43 21", 36, 48, 48, 67,
 				{
 					{16, 16, 16, 16, 16, 16},
-					{-5, -16, -4, -3, -16, -2}
+					{-5, -10, -4, -3, -10, -2}
 				}},
-			{U" 87 65", 26, 48, 48,
+			{U" 87 65", 32, 48, 48, 55,
 				{
 					{16, 16, 16, 16, 16, 16},
-					{0, -16, -8, -7, -16, -6}
+					{0, -10, -8, -7, -10, -6}
 				}}
 		})
 	{
@@ -966,6 +969,413 @@ void rlmetricstest()
 			  << std::endl
 			  << m << std::endl;
 		throw EXCEPTION("rlmetricstest: test 1 failed");
+	}
+}
+
+void rewraptest()
+{
+	richtextmeta lr, rl;
+
+	rl.rl=true;
+
+	const struct {
+		richtextstring string;
+		dim_t wrap_to_width;
+		unicode_bidi_level_t lr;
+		std::vector<fragment_metric> wrapped;
+	} testcases[]=
+		  {
+		   // Test 1
+		   {
+		    {U"1234 567",
+		     {
+		      {0, lr}
+		     }
+		    },
+		    50,
+		    UNICODE_BIDI_LR,
+		    {
+		     {U"1234 ", 70, 70, 70, 70,
+		      {
+		       {16, 16, 16, 16, 16},
+		       {0, -1, -2, -3, -4}
+		      }},
+		     {U"567", 37, 27, 27, 37,
+		      {
+		       {16, 16, 16},
+		       {-10, -5, -6}
+		      }}
+		    },
+		   },
+
+		   // Test 2
+
+		   {
+		    {U"12 34 56 78",
+		     {
+		      {0, lr}
+		     }
+		    },
+		    76,
+		    UNICODE_BIDI_LR,
+		    {
+		     {U"12 34 ", 45, 76, 45, 76,
+		      {
+		       {16, 16, 16, 16, 16, 16},
+		       {0, -1, -2, -10, -3, -4}
+		      }},
+		     {U"56 78", 37, 42, 27, 52,
+		      {
+		       {16, 16, 16, 16, 16},
+		       {-10, -5, -6, -10, -7}
+		      }}
+		    }
+		   },
+
+		   // Test 3
+
+		   {
+		    {U"12 34 56 78",
+		     {
+		      {0, lr}
+		     }
+		    },
+		    75,
+		    UNICODE_BIDI_LR,
+		    {
+		     {U"12 ", 45, 45, 45, 45,
+		      {
+		       {16, 16, 16},
+		       {0, -1, -2}
+		      }},
+		     {U"34 56 ", 41, 58, 31, 68,
+		      {
+		       {16, 16, 16, 16, 16, 16},
+		       {-10, -3, -4, -10, -5, -6}
+		      }},
+		     {U"78", 25, 15, 15, 25,
+		      {
+		       {16, 16},
+		       {-10, -7}
+		      }}
+		    }
+		   },
+		   // Test 4
+		   {
+		    {U"12 34 56 78",
+		     {
+		      {0, rl},
+		      {6, lr},
+		     }
+		    },
+		    10,
+		    UNICODE_BIDI_LR,
+		    {
+		     {U" 43 21", 36, 48, 48, 67,
+		      {
+		       {16, 16, 16, 16, 16, 16},
+		       {0, -10, -4, -3, -10, -2}
+		      }},
+		     {U"56 78", 37, 52, 37, 52,
+		      {
+		       {16, 16, 16, 16, 16},
+		       {0, -5, -6, -10, -7}
+		      }}
+		    }
+		   },
+		   // Test 5
+		   {
+		    {U"11 22 22 33",
+		     {
+		      {0, lr},
+		      {3, rl},
+		      {8, lr},
+		     }
+		    },
+		    85,
+		    UNICODE_BIDI_LR,
+		    {
+		     {U"11 ", 46, 46, 46, 46,
+		      {
+		       {16, 16, 16},
+		       {0, -1, -1}
+		      }},
+		     {U"22 22 ", 36, 16, 16, 80,
+		      {
+		       {16, 16, 16, 16, 16, 16},
+		       {0, -2, -2, -10, -2, 0}
+		      }},
+		     {U"33", 29, 19, 19, 29,
+		      {
+		       {16, 16},
+		       {-10, -3}
+		      }}
+		    }
+		   },
+		   // Test 6
+		   {
+		    {U"11 22 22 33",
+		     {
+		      {0, lr},
+		      {3, rl},
+		      {8, lr},
+		     }
+		    },
+		    72,
+		    UNICODE_BIDI_LR,
+		    {
+		     {U"11 ", 46, 46, 46, 46,
+		      {
+		       {16, 16, 16},
+		       {0, -1, -1}
+		      }},
+		     {U"22 22", 36, 48, 48, 64,
+		      {
+		       {16, 16, 16, 16, 16},
+		       {0, -2, -2, -10, -2}
+		      }},
+		     {U" 33", 16, 35, 16, 35,
+		      {
+		       {16, 16, 16},
+		       {0, -10, -3}
+		      }}
+		    }
+		   },
+		   // Test 7
+		   {
+		    {U"11 11 11 33",
+		     {
+		      {0, rl},
+		      {8, lr},
+		     }
+		    },
+		    70,
+		    UNICODE_BIDI_LR,
+		    {
+		     {U"11 11 11", 37, 48, 48, 103,
+		      {
+		       {16, 16, 16, 16, 16, 16, 16, 16},
+		       {0, -1, -1, -10, -1, -1, -10, -1}
+		      }},
+		     {U" 33", 16, 35, 16, 35,
+		      {
+		       {16, 16, 16},
+		       {0, -10, -3}
+		      }}
+		    }
+		   },
+		   // Test 8
+		   {
+		    {U"11 11 11 11",
+		     {
+		      {0, rl},
+		     }
+		    },
+		    70,
+		    UNICODE_BIDI_LR,
+		    {
+		     {U" 11", 37, 48, 48, 37,
+		      {
+		       {16, 16, 16},
+		       {-1, -10, -1}
+		      }},
+		     {U" 11", 37, 48, 48, 37,
+		      {
+		       {16, 16, 16},
+		       {-1, -10, -1}
+		      }},
+		     {U"11 11", 37, 48, 48, 67,
+		      {
+		       {16, 16, 16, 16, 16},
+		       {0, -1, -1, -10, -1}
+		      }}
+		    }
+		   },
+
+
+		   // Test 9
+		   {
+		    {U"1234 567",
+		     {
+		      {0, lr}
+		     }
+		    },
+		    50,
+		    UNICODE_BIDI_RL,
+		    {
+		     {U"1234 ", 70, 70, 70, 70,
+		      {
+		       {16, 16, 16, 16, 16},
+		       {0, -1, -2, -3, -4}
+		      }},
+		     {U"567", 37, 27, 27, 37,
+		      {
+		       {16, 16, 16},
+		       {-10, -5, -6}
+		      }}
+		    },
+		   },
+
+		   // Test 10
+		   {
+		    {U"1234 567 89",
+		     {
+		      {0, rl}
+		     }
+		    },
+		    96,
+		    UNICODE_BIDI_RL,
+		    {
+		     	{U" 4321", 61, 80, 80, 61,
+			 {
+			  {16, 16, 16, 16, 16},
+			  {-5, -10, -4, -3, -2}
+			 }},
+			{U"98 765", 41, 64, 64, 56,
+			 {
+			  {16, 16, 16, 16, 16, 16},
+			  {0, -9, -8, -10, -7, -6}
+			 }}
+		    },
+		   },
+
+		   // Test 11
+		   {
+		    {U"1234 567 89",
+		     {
+		      {0, rl}
+		     }
+		    },
+		    16,
+		    UNICODE_BIDI_RL,
+		    {
+		     {U" 4321", 61, 80, 80, 61,
+		      {
+		       {16, 16, 16, 16, 16},
+		       {-5, -10, -4, -3, -2}
+		      }},
+		     {U" 765", 41, 64, 64, 41,
+		      {
+		       {16, 16, 16, 16},
+		       {-8, -10, -7, -6}
+		      }},
+		     {U"98", 23, 32, 32, 23,
+		      {
+		       {16, 16},
+		       {0, -9}
+		      }}
+		    },
+		   },
+		   // Test 12
+		   {
+		    {U"1234 567 89",
+		     {
+		      {0, rl}
+		     }
+		    },
+		    97,
+		    UNICODE_BIDI_RL,
+		    {
+		     {U" 765 4321", 61, 80, 80, 97,
+		      {
+		       {16, 16, 16, 16, 16, 16, 16, 16, 16},
+		       {-8, -10, -7, -6, -5, -10, -4, -3, -2}
+		      }},
+		     {U"98", 23, 32, 32, 23,
+		      {
+		       {16, 16},
+		       {0, -9}
+		      }}
+		    },
+		   },
+
+		   // Test 13
+		   {
+		    {U"11 22 22 11",
+		     {
+		      {0, rl},
+		      {3, lr},
+		      {8, rl},
+		     }
+		    },
+		    90,
+		    UNICODE_BIDI_RL,
+		    {
+		     {U"11 ", 16, 16, 16, 46,
+		      {
+		       {16, 16, 16},
+		       {0, -1, -1}
+		      }},
+		     {U"22 22", 44, 64, 44, 64,
+		      {
+		       {16, 16, 16, 16, 16},
+		       {0, -2, -2, -10, -2}
+		      }},
+		     {U" 11", 37, 48, 48, 37,
+		      {
+		       {16, 16, 16},
+		       {0, -10, -1}
+		      }}
+		    },
+		   },
+
+
+		   // Test 14
+		   {
+		    {U"11 1122 22",
+		     {
+		      {0, rl},
+		      {5, lr},
+		     }
+		    },
+		    6,
+		    UNICODE_BIDI_RL,
+		    {
+		     {U"22 22", 44, 64, 44, 64,
+		      {
+		       {16, 16, 16, 16, 16},
+		       {0, -2, -2, -10, -2}
+		      }},
+		     {U" 11", 37, 48, 48, 37,
+		      {
+		       {16, 16, 16},
+		       {-1, -10, -1}
+		      }},
+		     {U"11", 31, 32, 32, 31,
+		      {
+		       {16, 16},
+		       {0, -1}
+		      }}
+		    },
+		   },
+		  };
+
+	size_t casenum=0;
+
+	for (const auto &t:testcases)
+	{
+		++casenum;
+
+		auto impl=LIBCXX_NAMESPACE::ref<richtext_implObj>::create
+			((richtextstring)t.string,
+			 halign::left,
+			 t.lr);
+
+		impl->finish_initialization();
+		{
+			impl->rewrap(t.wrap_to_width);
+		}
+		if (auto m=get_metrics(impl); m != t.wrapped)
+		{
+			std::cerr << "Test case " << casenum << " failed"
+				  << std::endl
+				  << "Expected:" << std::endl
+				  << t.wrapped
+				  << std::endl
+				  << "Actual: " << std::endl
+				  << m << std::endl;
+			throw EXCEPTION("rewraptest failed");
+		}
 	}
 }
 
@@ -977,6 +1387,7 @@ int main()
 		renderordertest();
 		kerningtest();
 		rlmetricstest();
+		rewraptest();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

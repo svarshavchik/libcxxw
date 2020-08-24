@@ -520,6 +520,11 @@ public:
 
 	//! At what row this fragment was redrawn (if redraw_needed is false).
 	coord_t redrawn_y_position=0;
+
+
+	size_t compute_split_pos_lr(dim_t width) const;
+
+	size_t compute_split_pos_rl(dim_t width) const;
 };
 
 LIBCXXW_NAMESPACE_END

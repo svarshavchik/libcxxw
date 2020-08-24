@@ -313,6 +313,13 @@ richtextstring::meta_upper_bound_by_pos(meta_t &meta, size_t p)
 				compare_meta_by_pos());
 }
 
+richtextstring::meta_t::const_iterator
+richtextstring::meta_upper_bound_by_pos(const meta_t &meta, size_t p)
+{
+	return std::upper_bound(meta.begin(), meta.end(), p,
+				compare_meta_by_pos());
+}
+
 richtextmeta richtextstring::meta_at(size_t p)
 {
 	auto iter=meta_upper_bound_by_pos(meta, p);

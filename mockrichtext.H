@@ -48,7 +48,7 @@ public:
 	{
 		while (b != e)
 		{
-		 lambda(16, 16, prev_char == ' ' ? -16:
+		 lambda(16, 16, prev_char == ' ' ? -10:
 			-(int)(prev_char & 15), 0);
 
 		 prev_char = *b;

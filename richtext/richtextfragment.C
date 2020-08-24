@@ -1133,4 +1133,257 @@ dim_t richtextfragmentObj::compute_initial_width_for_bidi() const
 	}
 }
 
+size_t richtextfragmentObj::compute_split_pos_lr(dim_t desired_width) const
+{
+	auto &meta=string.get_meta();
+	auto metab=meta.begin();
+	auto metae=meta.end();
+
+	// Find the index of the character that reached "desired_width"
+	size_t xpos=horiz_info.find_x_pos(desired_width);
+
+	// Find this character's metadata.
+	auto p=richtextstring::meta_upper_bound_by_pos(meta, xpos);
+
+	if (p > metab)
+		--p;
+
+	// Did we land in the middle of right-to-left text? If so, we
+	// won't break inside it.
+
+	if (p->second.rl)
+	{
+		// Search for the start of the right-to-left text, we'll
+		// break there.
+
+		while (1)
+		{
+			if (p == metab)
+			{
+				// Right to left text at the beginning of
+				// the line. We can't break there. The best
+				// we can do is find where left-to-right
+				// text starts. This will exceed the requested
+				// width. So be it.
+
+				while (1)
+				{
+					if (p == metae)
+					{
+						xpos=string.size();
+						break;
+					}
+					if (!p->second.rl)
+					{
+						xpos=p->first;
+						break;
+					}
+					++p;
+				}
+				break;
+			}
+			if (!p[-1].second.rl)
+			{
+				// Start of right to left text, break here.
+				xpos=p->first;
+				break;
+			}
+			--p;
+		}
+	}
+	else
+	{
+		// We landed in the middle of left-to-right text. Check to
+		// see if there's any right to left text before. There /should/
+		// be a break there, but this part of the code won't ass-ume it.
+
+		size_t first_lr=0;
+
+		while (p > metab)
+		{
+			if (p[-1].second.rl)
+			{
+				first_lr=p->first;
+				break;
+			}
+			--p;
+		}
+
+		while (1)
+		{
+			if (xpos == first_lr)
+			{
+				// Reached either position 0 or start of
+				// right-to-left text. If not position
+				// 0 we can break here.
+				if (xpos > 0)
+					break;
+
+				// Left to right text at the beginning of the
+				// line. Find where left-to-right text ends.
+
+				size_t n=string.size();
+
+				for (p=metab; p != metae; ++p)
+				{
+					if (p->second.rl)
+					{
+						n=p->first;
+						break;
+					}
+				}
+
+				// Ok, now we look for the first line break
+				// up to here.
+
+				while (xpos < n)
+				{
+					if (breaks.at(xpos) !=
+					    unicode_lb::none)
+						break;
+					++xpos;
+				}
+				break;
+			}
+
+			// Found the first break before width.
+			if (breaks.at(xpos) != unicode_lb::none)
+				break;
+			--xpos;
+		}
+	}
+
+	return xpos;
+}
+
+size_t richtextfragmentObj::compute_split_pos_rl(dim_t desired_width) const
+{
+	auto &meta=string.get_meta();
+	auto metab=meta.begin();
+	auto metae=meta.end();
+
+	if (desired_width > width)
+		desired_width=width; // Shouldn't happen.
+
+	// Find the index of the character that crosses desired_width
+	size_t xpos=horiz_info.find_x_pos_right(width-desired_width);
+
+	// Find this character's metadata.
+	auto p=richtextstring::meta_upper_bound_by_pos(meta, xpos);
+
+	if (p > metab)
+		--p;
+
+	// Did we land in the middle of left-to-right text? If so, we
+	// won't break inside it.
+
+	if (!p->second.rl)
+	{
+		while (1)
+		{
+			if (p == metae)
+			{
+				// Left to right text at the end. Find where
+				// it begins, and break there. That's the
+				// best we can do.
+
+				while (1)
+				{
+					if (p == metab)
+					{
+						xpos=0;
+						break;
+					}
+
+					// Start of right to left text, break
+					// here.
+
+					if (p[-1].second.rl)
+					{
+						if (p == metae)
+							xpos=string.size();
+						else
+							xpos=p->first;
+						break;
+					}
+					--p;
+				}
+				break;
+			}
+
+			// Right to left text begins (ends) here, so that'
+			// the closest break point to "desired_width".
+
+			if (p->second.rl)
+			{
+				xpos=p->first;
+				break;
+			}
+			++p;
+		}
+	}
+	else
+	{
+		// We landed in the middle of right-to-left text. Check to
+		// see if there's any left-to-right text after. There /should/
+		// be a break there, but this part of the code won't ass-ume it.
+
+		size_t first_lr=string.size();
+		while (p < metae)
+		{
+			if (!p->second.rl)
+			{
+				first_lr=p->first;
+				break;
+			}
+			++p;
+		}
+
+		while (1)
+		{
+			if (xpos == first_lr)
+			{
+				// Reached either end of string or start
+				// of left-to-right text. If not end of
+				// string, we can break here.
+				size_t n=string.size();
+
+				if (xpos < n)
+					break;
+
+				first_lr=n;
+
+				// Right to left text at the end of the line.
+				// Find where the right-to-left text starts.
+
+				for (p=metae; p != metab; )
+				{
+					--p;
+					if (p->second.rl)
+						first_lr=p->first;
+					else break;
+				}
+
+				// Now look for the first breakable position
+				// before first_lr.
+
+				while (xpos > first_lr)
+				{
+					--xpos;
+					if (breaks.at(xpos) !=
+					    unicode_lb::none)
+						break;
+				}
+				break;
+			}
+
+			if (breaks.at(xpos) != unicode_lb::none)
+				break;
+			++xpos;
+		}
+	}
+
+	return xpos;
+}
+
 LIBCXXW_NAMESPACE_END

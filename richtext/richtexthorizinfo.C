@@ -71,7 +71,7 @@ void richtexthorizinfo_t::append(const richtexthorizinfo_t &other)
 	updated();
 }
 
-void richtexthorizinfo_t::compute_offsets()
+void richtexthorizinfo_t::compute_offsets() const
 {
 	if (offsets_valid)
 		return;
@@ -104,7 +104,7 @@ void richtexthorizinfo_t::compute_offsets()
 		largest_x=x;
 }
 
-size_t richtexthorizinfo_t::find_x_pos(dim_t xpos)
+size_t richtexthorizinfo_t::find_x_pos(dim_t xpos) const
 {
 	compute_offsets();
 	auto b=offsets.begin();
@@ -120,15 +120,34 @@ size_t richtexthorizinfo_t::find_x_pos(dim_t xpos)
 	assert_or_throw(iter != b,
 			"upper_bound() should not have returned begin()");
 
-
-	if (xpos < dim_t::truncate(iter[-1].second + widths.at(iter-b-1)) ||
-	    iter == e)
+	--iter;
+	while (iter != b &&
+	       xpos < dim_t::truncate(iter[-1].second + widths.at(iter-b-1)))
 		--iter;
 
 	return iter-b;
 }
 
-dim_t richtexthorizinfo_t::x_pos(size_t i)
+size_t richtexthorizinfo_t::find_x_pos_right(dim_t xpos) const
+{
+	compute_offsets();
+	auto b=offsets.begin();
+	auto e=offsets.end();
+	auto iter=std::upper_bound(b, e,
+				   xpos,
+				   []
+				   (dim_t xpos, auto &pair)
+				   {
+					   return xpos < pair.first;
+				   });
+
+	if (iter != b && iter[-1].first >= xpos)
+		--iter;
+
+	return iter-b;
+}
+
+dim_t richtexthorizinfo_t::x_pos(size_t i) const
 {
 	compute_offsets();
 
@@ -137,7 +156,7 @@ dim_t richtexthorizinfo_t::x_pos(size_t i)
 	return offsets[i].second;
 }
 
-dim_t richtexthorizinfo_t::width()
+dim_t richtexthorizinfo_t::width() const
 {
 	compute_offsets();
 	return largest_x;

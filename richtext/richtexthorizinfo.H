@@ -129,18 +129,18 @@ private:
 
 	//! Whether the offset vector is valid.
 
-	bool offsets_valid=false;
+	mutable bool offsets_valid=false;
 
 	//! Helper vector for find_x_pos() and x_pos()
 
-	std::vector<std::pair<dim_t, dim_t>> offsets;
+	mutable std::vector<std::pair<dim_t, dim_t>> offsets;
 
 	//! Compute the offsets() array.
 
-	void compute_offsets();
+	void compute_offsets() const;
 
 	//! Largest x value, calculated by compute_offsets().
-	dim_t largest_x;
+	mutable dim_t largest_x;
 
 public:
 
@@ -148,17 +148,22 @@ public:
 
 	//! Returns size()-1 if x_pos is to the right of the last character
 
-	size_t find_x_pos(dim_t xpos);
+	size_t find_x_pos(dim_t xpos) const;
+
+	//! Find the character to the right of position x_pos
+
+	//! Might return size().
+	size_t find_x_pos_right(dim_t xpos) const;
 
 	//! Returns the starting position for character #x.
 
-	dim_t x_pos(size_t n);
+	dim_t x_pos(size_t n) const;
 
 	//! Return the sum total of widths and kernings
 
 	//! ... except for kerning 0
 
-	dim_t width();
+	dim_t width() const;
 };
 
 LIBCXXW_NAMESPACE_END
