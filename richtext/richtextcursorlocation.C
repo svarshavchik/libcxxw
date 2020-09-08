@@ -28,30 +28,47 @@ void richtextcursorlocationObj::initialize(const richtextcursorlocation &clone)
 {
 	assert_or_throw(clone->my_fragment,
 			"Internal: cloning an unattached location");
-	initialize(clone->my_fragment, 0);
+	initialize(clone->my_fragment, 0, new_location::lr);
 	position=clone->position;
 }
 
 void richtextcursorlocationObj::initialize(richtextfragmentObj *fragment,
-					   size_t offsetArg)
+					   size_t offsetArg,
+					   new_location location_option)
 {
 	initialize(fragment, offsetArg,
 		   fragment->locations.insert(fragment->locations.end(),
 					      ref<richtextcursorlocationObj>
-					      (this)));
+					      (this)),
+		   location_option);
 }
 
 void richtextcursorlocationObj::initialize(richtextfragmentObj *fragment,
 					   size_t offsetArg,
 					   richtextfragmentObj::locations_t
-					   ::iterator new_iter)
+					   ::iterator new_iter,
+					   new_location location_option)
 {
+	assert_or_throw(fragment &&
+			fragment->my_paragraph &&
+			fragment->my_paragraph->my_richtext,
+			"Internal error: no rich text metadata in "
+			"richtextcursorlocationObj::initialize");
 
 	if (my_fragment)
 		deinitialize(); // Repointing this one to another fragment.
 
 	my_fragment=fragment;
 	my_fragment_iter=new_iter;
+
+	if (location_option == new_location::bidi &&
+	    my_fragment->my_paragraph->my_richtext->rl())
+	{
+		assert_or_throw(offsetArg < my_fragment->string.size(),
+				"Internal error: invalid initial location"
+				" offset");
+		offsetArg=my_fragment->string.size()-1-offsetArg;
+	}
 
 	position.offset=offsetArg;
 	horiz_pos_no_longer_valid();
@@ -191,7 +208,7 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 
 		if (!new_fragment)
 		{
-			initialize(f, 0);
+			initialize(f, 0, new_location::lr);
 			return; // Start of text
 		}
 
@@ -226,7 +243,8 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 		// Can't figure out what to do, move to the end of the
 		// previous fragment, and try again.
 
-		initialize(new_fragment, new_fragment_text_size-1);
+		initialize(new_fragment, new_fragment_text_size-1,
+			   new_location::lr);
 		++howmuch;
 	}
 
@@ -297,7 +315,7 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 						"empty fragment");
 				auto pos=f->string.size()-1;
 
-				initialize(f, pos);
+				initialize(f, pos, new_location::lr);
 				return;
 			}
 
@@ -307,7 +325,7 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 		}
 
 		if (initialization_required)
-			initialize(f, 0);
+			initialize(f, 0, new_location::lr);
 
 		// We can end up with howmuch being 0, if we landed it exactly.
 		if (howmuch == 0)
@@ -332,7 +350,7 @@ void richtextcursorlocationObj::up(ONLY IN_THREAD)
 
 	if (!new_fragment)
 		return;
-	initialize(new_fragment, 0);
+	initialize(new_fragment, 0, new_location::lr);
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
@@ -344,7 +362,7 @@ void richtextcursorlocationObj::down(ONLY IN_THREAD)
 
 	if (!new_fragment)
 		return;
-	initialize(new_fragment, 0);
+	initialize(new_fragment, 0, new_location::lr);
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
@@ -370,7 +388,7 @@ void richtextcursorlocationObj::page_up(ONLY IN_THREAD, dim_t height)
 		new_fragment=new_fragment->prev_fragment();
 	}
 
-	initialize(last_fragment, 0);
+	initialize(last_fragment, 0, new_location::lr);
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
@@ -396,7 +414,7 @@ void richtextcursorlocationObj::page_down(ONLY IN_THREAD, dim_t height)
 		new_fragment=new_fragment->next_fragment();
 	}
 
-	initialize(last_fragment, 0);
+	initialize(last_fragment, 0, new_location::lr);
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
@@ -434,7 +452,7 @@ bool richtextcursorlocationObj::moveto(ONLY IN_THREAD, coord_t x, coord_t y)
 
 		f=nextf;
 	}
-	initialize(f, 0);
+	initialize(f, 0, new_location::lr);
 
 	auto first_xpos=f->first_xpos(IN_THREAD);
 
@@ -521,6 +539,14 @@ std::ptrdiff_t richtextcursorlocationObj::compare(const richtextcursorlocationOb
 
 	return position.offset < b.position.offset ? -1:
 		position.offset > b.position.offset ? 1:0;
+}
+
+void richtextcursorlocationObj::mirror_position(internal_richtext_impl_t::lock
+						&)
+{
+	if (my_fragment->my_paragraph->my_richtext->rl())
+		position.offset=my_fragment->string.size()-1-position.offset;
+	horiz_pos_no_longer_valid();
 }
 
 LIBCXXW_NAMESPACE_END

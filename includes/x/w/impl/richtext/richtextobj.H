@@ -16,8 +16,6 @@
 #include <x/w/impl/richtext/richtext_insertfwd.H>
 #include <x/w/impl/richtext/richtext_draw_infofwd.H>
 #include <x/w/impl/richtext/richtext_draw_boundariesfwd.H>
-#include <x/w/types.H>
-#include <x/w/alignment.H>
 #include <x/w/metrics/axis.H>
 #include <x/w/rectanglefwd.H>
 #include <x/w/drawablefwd.H>
@@ -26,7 +24,6 @@
 #include <x/obj.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
-#include <courier-unicode.h>
 #include <utility>
 
 LIBCXXW_NAMESPACE_START
@@ -62,10 +59,7 @@ class richtextObj : virtual public obj {
 	//! The richtextstring gets passed in by reference, and gets converted
 	//! to rendering order, but not otherwise moved from.
 	richtextObj(richtextstring &&string,
-		    halign alignment,
-		    dim_t word_wrap_width,
-		    unicode_bidi_level_t paragraph_embedding_level=
-		    UNICODE_BIDI_LR);
+		    const richtext_options &options);
 
  private:
 	//! Internal constructor
@@ -260,7 +254,7 @@ class richtextObj : virtual public obj {
 
 	//! Return an iterator to the given character # in the rich text.
 
-	richtextiterator at(size_t npos);
+	richtextiterator at(size_t npos, new_location location_option);
 
 	//! Run something while protected by a read only lock.
 
@@ -349,11 +343,13 @@ class richtextObj : virtual public obj {
 
  private:
 	//! Implement pos().
-	static size_t do_pos(const richtextcursorlocationObj *l);
+	static size_t do_pos(const richtextcursorlocationObj *l,
+			     get_location location_option);
 
 	//! Return an iterator to the given character # in the rich text.
 
-	richtextiterator at(internal_richtext_impl_t::lock &lock, size_t npos);
+	richtextiterator at(internal_richtext_impl_t::lock &lock, size_t npos,
+			    new_location location_option);
  public:
 	//! For testing purpose.
 

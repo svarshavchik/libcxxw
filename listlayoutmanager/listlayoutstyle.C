@@ -311,10 +311,14 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 					     text_param{U"\n"}:s)
 					    );
 
+				   richtext_options options;
+
+				   options.alignment=halignment;
+
 				   auto t=list_celltext
 					   ::create(textlist_element,
-						    std::move(rts), halignment,
-						    valignment, 0);
+						    std::move(rts), options,
+						    valignment);
 
 				   create_cell(t);
 			   },
@@ -807,8 +811,9 @@ class LIBCXX_HIDDEN menu_list_style_impl
 					       .itemshortcut_meta, s);
 
 		return list_celltext::create(textlist_element,
-					     std::move(rt), halign::left,
-					     valign::bottom, 0);
+					     std::move(rt),
+					     richtext_options{},
+					     valign::bottom);
 	}
 
 	void menu_attribute_requested() const override

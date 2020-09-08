@@ -31,9 +31,9 @@ void testrichtext1(const main_window &w,
 			{0, {black, font1}},
 		}};
 
-	auto richtext=richtext::create(std::move(ustring), halign::left, 0);
+	auto richtext=richtext::create(std::move(ustring), richtext_options{});
 
-	auto b=richtext->at(0);
+	auto b=richtext->at(0, new_location::lr);
 	auto e=richtext->end();
 
 	assert_or_throw(b->at(IN_THREAD).character == 'H',
@@ -363,7 +363,7 @@ void testrichtext2(const main_window &w,
 				{0, {black, font1}}
 			}};
 
-		auto text=richtext::create(std::move(ustring), halign::left, 0);
+		auto text=richtext::create(std::move(ustring), richtext_options{});
 
 		validate_richtext(IN_THREAD, text, orig,
 				  test_name + "before insert: ");
@@ -377,7 +377,7 @@ void testrichtext2(const main_window &w,
 				{0, {black, font1}}
 			}};
 
-		auto b=text->at(test.insert_pos);
+		auto b=text->at(test.insert_pos, new_location::lr);
 
 		assert_or_throw(b->at(IN_THREAD).character ==
 				(char32_t)orig[test.insert_pos],
@@ -450,7 +450,7 @@ void testrichtext3(const main_window &w,
 				{0, {black, font1}}
 			}};
 
-		auto text=richtext::create(std::move(ustring), halign::left, 0);
+		auto text=richtext::create(std::move(ustring), richtext_options{});
 
 		validate_richtext(IN_THREAD, text, test_string,
 				  "initial rich text value: ");
@@ -489,7 +489,7 @@ void testrichtext3(const main_window &w,
 				 }
 			 });
 
-		auto b=text->at(0), e=text->end();
+		auto b=text->at(0, new_location::lr), e=text->end();
 
 		assert_or_throw(b->debug_get_location()->my_fragment
 				->find_y_position( e->debug_get_location()
@@ -505,10 +505,10 @@ void testrichtext3(const main_window &w,
 				.first->index() == 0,
 				"find_y_position backward failed");
 
-		auto pos1=text->at(test.pos1);
-		auto pos2=text->at(test.pos2);
+		auto pos1=text->at(test.pos1, new_location::lr);
+		auto pos2=text->at(test.pos2, new_location::lr);
 
-		auto pos_middle=text->at((test.pos1+test.pos2)/2);
+		auto pos_middle=text->at((test.pos1+test.pos2)/2, new_location::lr);
 
 		assert_or_throw(pos1->at(IN_THREAD).character ==
 				(char32_t)test_string[test.pos1],
@@ -618,7 +618,7 @@ void testrichtext4(const main_window &w,
 			{0, {black, font1}}
 		}};
 
-	auto richtext=richtext::create(std::move(ustring), halign::left, 0);
+	auto richtext=richtext::create(std::move(ustring), richtext_options{});
 
 	richtext->thread_lock
 		(IN_THREAD,
@@ -654,7 +654,7 @@ void testrichtext4(const main_window &w,
 			o << "testrichtext4: initial position=" << i
 			  << ", move by: " << (j-i);
 
-			auto cursor=richtext->at(i);
+			auto cursor=richtext->at(i, new_location::lr);
 			if (cursor->at(IN_THREAD).character !=
 			    (char32_t)test_string[i])
 				throw EXCEPTION(o.str() +
@@ -691,7 +691,7 @@ void testrichtext5(const main_window &w,
 		}};
 
 
-	auto richtext=richtext::create(std::move(ustring), halign::left, 0);
+	auto richtext=richtext::create(std::move(ustring), richtext_options{});
 
 	auto text_width=richtext->thread_lock
 		(IN_THREAD,
@@ -711,7 +711,7 @@ void testrichtext5(const main_window &w,
 
 	for (const auto &test:tests)
 	{
-		auto insert_pos=richtext->at(7);
+		auto insert_pos=richtext->at(7, new_location::lr);
 
 		std::u32string ustring{test, test+strlen(test)};
 
@@ -747,10 +747,10 @@ void testrichtext6(const main_window &w,
 			{0, {black, font1}},
 		}};
 
-	auto richtext=richtext::create(std::move(ustring), halign::left, 0);
+	auto richtext=richtext::create(std::move(ustring), richtext_options{});
 
-	auto b=richtext->at(5);
-	auto e=richtext->at(8);
+	auto b=richtext->at(5, new_location::lr);
+	auto e=richtext->at(8, new_location::lr);
 
 	ustring={
 		U" ",
@@ -785,6 +785,69 @@ void testrichtext6(const main_window &w,
 	    })
 		throw EXCEPTION("Entire text after replace()");
 
+}
+
+void testrichtext7(const main_window &w,
+		   const current_fontcollection &font1,
+		   const current_fontcollection &font2)
+{
+	auto IN_THREAD=w->get_screen()->impl->thread;
+
+	auto black=create_new_background_color(w->get_screen(),
+					       w->elementObj::impl
+					       ->get_window_handler()
+					       .drawable_pictformat, "0%");
+
+	richtextmeta meta1{black, font1};
+
+	meta1.rl=true;
+
+	richtextstring ustring{
+			       U"Hello\nworld\nrolem\nipsum",
+			       {
+				{0, meta1},
+			       }};
+
+	// Right to left tests.
+	richtext_options options;
+	options.paragraph_embedding_level=UNICODE_BIDI_RL;
+	options.unprintable_char=' ';
+	auto richtext=richtext::create(std::move(ustring), options);
+
+	auto b=richtext->begin();
+	auto e=richtext->end();
+
+	if (b->pos() != 0 || e->pos() != 22 || b->at(IN_THREAD).character != 'H'
+	    || e->at(IN_THREAD).character != 'm')
+		throw EXCEPTION("testrichtext7: test 1 failed");
+
+	b->move(IN_THREAD, -1);
+	e->move(IN_THREAD, 1);
+	if (b->pos() != 1 || e->pos() != 21 || b->at(IN_THREAD).character != 'e'
+	    || e->at(IN_THREAD).character != 'u')
+		throw EXCEPTION("testrichtext7: test 2 failed");
+
+	b->move(IN_THREAD, 2);
+	if (b->pos() != 11 || b->at(IN_THREAD).character != '\n')
+		throw EXCEPTION("testrichtext7: test 3 failed");
+	b->move(IN_THREAD, -2);
+	if (b->pos() != 1 || b->at(IN_THREAD).character != 'e')
+		throw EXCEPTION("testrichtext7: test 4 failed");
+	b->start_of_line();
+	if (b->pos() != 5 || b->at(IN_THREAD).character != '\n')
+		throw EXCEPTION("testrichtext7: test 5 failed");
+	b->down(IN_THREAD);
+	if (b->pos() != 11 || b->at(IN_THREAD).character != '\n')
+		throw EXCEPTION("testrichtext7: test 6 failed");
+	b->up(IN_THREAD);
+	if (b->pos() != 5 || b->at(IN_THREAD).character != '\n')
+		throw EXCEPTION("testrichtext7: test 7 failed");
+	b=b->pos(1);
+	if (b->at(IN_THREAD).character != 'e')
+		throw EXCEPTION("testrichtext7: test 8 failed");
+	b=b->pos(11);
+	if (b->at(IN_THREAD).character != '\n')
+		throw EXCEPTION("testrichtext7: test 8 failed");
 }
 
 int main(int argc, char **argv)
@@ -828,6 +891,7 @@ int main(int argc, char **argv)
 		testrichtext4(mw, font1);
 		testrichtext5(mw, font2);
 		testrichtext6(mw, font1, font2);
+		testrichtext7(mw, font1, font2);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

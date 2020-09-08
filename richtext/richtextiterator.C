@@ -20,11 +20,12 @@ richtextiteratorObj::richtextiteratorObj(const richtext &my_richtext,
 					 const richtextcursorlocation
 					 &my_location,
 					 richtextfragmentObj *my_fragment,
-					 size_t offset)
+					 size_t offset,
+					 new_location location_option)
 	: my_richtext(my_richtext),
 	  my_location(my_location)
 {
-	my_location->initialize(my_fragment, offset);
+	my_location->initialize(my_fragment, offset, location_option);
 }
 
 richtextiteratorObj::richtextiteratorObj(const richtextiteratorObj &clone)
@@ -53,7 +54,7 @@ richtextiterator richtextiteratorObj::end() const
 
 richtextiterator richtextiteratorObj::pos(size_t offset) const
 {
-	return my_richtext->at(offset);
+	return my_richtext->at(offset, new_location::bidi);
 }
 
 richtextiterator richtextiteratorObj::clone() const

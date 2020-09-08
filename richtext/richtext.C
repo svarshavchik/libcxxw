@@ -23,12 +23,10 @@
 LIBCXXW_NAMESPACE_START
 
 richtextObj::richtextObj(richtextstring &&string,
-			 halign alignment, dim_t initial_width,
-			 unicode_bidi_level_t paragraph_embedding_level)
+			 const richtext_options &options)
 	: richtextObj{ref<richtext_implObj>::create(std::move(string),
-						    alignment,
-						    paragraph_embedding_level),
-		      initial_width}
+						    options),
+	options.initial_width}
 {
 }
 
@@ -688,22 +686,24 @@ std::tuple<pixmap, picture> richtextObj::create(ONLY IN_THREAD,
 
 richtextiterator richtextObj::begin()
 {
-	return at(0);
+	return at(0, new_location::bidi);
 }
 
 richtextiterator richtextObj::end()
 {
-	return at((size_t)-1);
+	return at((size_t)-1, new_location::bidi);
 }
 
-richtextiterator richtextObj::at(size_t npos)
+richtextiterator richtextObj::at(size_t npos, new_location location_option)
 {
 	internal_richtext_impl_t::lock lock{impl};
 
-	return at(lock, npos);
+	return at(lock, npos, location_option);
 }
 
-richtextiterator richtextObj::at(internal_richtext_impl_t::lock &lock, size_t npos)
+richtextiterator richtextObj::at(internal_richtext_impl_t::lock &lock,
+				 size_t npos,
+				 new_location location_option)
 {
 	size_t n_paragraph=(*lock)->find_paragraph_for_pos(npos);
 
@@ -724,7 +724,8 @@ richtextiterator richtextObj::at(internal_richtext_impl_t::lock &lock, size_t np
 	return richtextiterator::create(richtext(this),
 					location,
 					&*fragment,
-					npos);
+					npos,
+					location_option);
 }
 
 void richtextObj::insert_at_location(ONLY IN_THREAD,
@@ -756,18 +757,27 @@ void richtextObj::replace_at_location(ONLY IN_THREAD,
 size_t richtextObj::pos(const internal_richtext_impl_t::lock &lock,
 			const richtextcursorlocation &l)
 {
-	return do_pos(&*l);
+	return do_pos(&*l, get_location::bidi);
 }
 
-size_t richtextObj::do_pos(const richtextcursorlocationObj *l)
+size_t richtextObj::do_pos(const richtextcursorlocationObj *l,
+			   get_location location_option)
 {
 	assert_or_throw
 		(l->my_fragment &&
 		 l->my_fragment->string.size() > l->get_offset() &&
-		 l->my_fragment->my_paragraph,
+		 l->my_fragment->my_paragraph &&
+		 l->my_fragment->my_paragraph->my_richtext,
 		 "Internal error in pos(): invalid cursor location");
 
-	return l->get_offset() +l->my_fragment->first_char_n +
+	auto offset=l->get_offset();
+
+	if (location_option == get_location::bidi &&
+	    l->my_fragment->my_paragraph->my_richtext
+	    ->rl())
+		offset=l->my_fragment->string.size()-1-offset;
+
+	return offset+l->my_fragment->first_char_n +
 		l->my_fragment->my_paragraph->first_char_n;
 }
 
@@ -813,8 +823,8 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 	// TODO: when we support rich text editing, we'll
 	// need to add some additional overhead, here.
 
-	auto pos1=do_pos(location_a);
-	auto pos2=do_pos(location_b);
+	auto pos1=do_pos(location_a, get_location::lr);
+	auto pos2=do_pos(location_b, get_location::lr);
 
 	auto index1=location_a->my_fragment->index();
 	auto index2=location_b->my_fragment->index();

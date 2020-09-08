@@ -67,7 +67,10 @@ sxg_parserObj::create_text_picture(const picture_info &info,
 
 	// Use richtext to compute text dimensions, and render it.
 
-	auto t=richtext::create(richtextstring{s, m}, info.align, 0);
+	richtext_options options;
+
+	options.alignment=info.align;
+	auto t=richtext::create(richtextstring{s, m}, options);
 
 	// Although we may not be in the connection thread, and probably are
 	// not since, this richtext object is local only to this function

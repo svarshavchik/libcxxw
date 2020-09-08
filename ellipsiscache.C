@@ -53,13 +53,16 @@ richtext ellipsiscacheObj::get(elementObj::implObj &parent_element)
 		({cfc, color},
 		 [&]
 		 {
+			 richtext_options options;
+
+			 options.unprintable_char='.';
+
 			 return richtext::create
 				 (parent_element.create_richtextstring
 				  ({parent_element.create_background_color
 				    (color), cfc},
 					  U"\u2026"),
-				  halign::left,
-				  0);
+				  options);
 		 });
 }
 

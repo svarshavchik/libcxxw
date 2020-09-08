@@ -6,7 +6,9 @@
 #ifndef richtextcursorlocation_H
 #define richtextcursorlocation_H
 
+#include "x/w/input_field_lock.H"
 #include "x/w/impl/richtext/richtextcursorlocationfwd.H"
+#include "x/w/impl/richtext/richtextiteratorfwd.H"
 #include "richtext/richtextfragment.H"
 
 LIBCXXW_NAMESPACE_START
@@ -29,13 +31,15 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	//! initialize() to link this location to its fragment.
 
 	void initialize(richtextfragmentObj *fragment,
-			size_t offset);
+			size_t offset,
+			new_location location_option);
 
 	// Alternative entry point used in set().
 
 	void initialize(richtextfragmentObj *fragment,
 			size_t offsetArg,
-			richtextfragmentObj::locations_t::iterator new_iter);
+			richtextfragmentObj::locations_t::iterator new_iter,
+			new_location location_option);
 
 	//! Alternative initialization used by clone().
 	void initialize(const richtextcursorlocation &clone);
@@ -221,15 +225,24 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 
 	//! Compare locations.
 
-	// Compare two cursors' locations.
-
-	// Returns 0 if the two cursors point to the same spot.
-	// Returns 1 or -1 if the two cursors point to the same fragment,
-	// but they're not the same. Returns >1 or <-1 if the two cursors
-	// point to different fragments. Basically, this is the number
-	// of fragments between the two cursors, inclusively.
+	//! Returns 0 if the two cursors point to the same spot.
+	//! Returns 1 or -1 if the two cursors point to the same fragment,
+	//! but they're not the same. Returns >1 or <-1 if the two cursors
+	//! point to different fragments. Basically, this is the number
+	//! of fragments between the two cursors, inclusively.
 
 	std::ptrdiff_t compare(const richtextcursorlocationObj &b) const;
+
+	//! Flip the location on its fragment to the opposite side.
+
+	//! Does nothing with a left-to-right paragraph embedding level.
+	//!
+	//! Otherwise updates this location position on the line accordingly.
+	//! This is used when the cursor is moved to a logical character
+	//! position. Well, if it winds up at the beginning of the line, it
+	//! should really be at the end of the line, and vice-versa, for
+	//! right-to-left paragraph embedding level.
+	void mirror_position(internal_richtext_impl_t::lock &must_be_locked);
 };
 
 LIBCXXW_NAMESPACE_END

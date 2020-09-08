@@ -46,7 +46,8 @@ private:
 	richtextiteratorObj(const richtext &my_richtext,
 			    const richtextcursorlocation &my_location,
 			    richtextfragmentObj *my_fragment,
-			    size_t offset);
+			    size_t offset,
+			    new_location location_option);
 
 	//! Alternative constructor used by clone()
 

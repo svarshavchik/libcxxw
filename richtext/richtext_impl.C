@@ -24,11 +24,11 @@
 LIBCXXW_NAMESPACE_START
 
 richtext_implObj::richtext_implObj(richtextstring &&string,
-				   halign alignmentArg,
-				   unicode_bidi_level_t
-				   paragraph_embedding_level)
-	: word_wrap_width{0}, alignment{alignmentArg},
-	  paragraph_embedding_level{paragraph_embedding_level}
+				   const richtext_options &options)
+	: word_wrap_width{0},
+	  unprintable_char{options.unprintable_char},
+	  alignment{options.alignment},
+	  paragraph_embedding_level{options.paragraph_embedding_level}
 {
 	do_set(std::move(string));
 }
@@ -109,13 +109,15 @@ void richtext_implObj::set(ONLY IN_THREAD,
 
 		locations_sentry.unguard();
 
+		// Position transplanted locations at the end of last fragment.
 		auto fragment_ptr=&*last_fragment;
 		size_t n=fragment_ptr->string.size()-1;
 
 		for (auto b=fragment_ptr->locations.begin(),
 			     e=fragment_ptr->locations.end(); b != e; ++b)
 		{
-			(*b)->initialize(fragment_ptr, n, b);
+			(*b)->initialize(fragment_ptr, n, b,
+					 new_location::bidi);
 		}
 	}
 

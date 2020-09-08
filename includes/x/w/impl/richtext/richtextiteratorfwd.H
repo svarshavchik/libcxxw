@@ -40,6 +40,30 @@ typedef ptr<richtextiteratorObj> richtextiteratorptr;
 
 typedef const_ref<richtextiteratorObj> const_richtextiterator;
 
+//! How to intepret a specified cursor location, a location in richtext
+
+//! The cursor location gets set according left-to-right render order, and the
+//! cursor location's in the line fragment gets calculated. If the
+//! paragraph embedding left is right to left, and this option is bidi,
+//! the line position gets mirrored (location 0 becomes the location at
+//! the end of the fragment, and increasing values get counted to the
+//! beginning of the line).
+//!
+//! This is normally specified as "bidi". "lr" designation does not adjust the
+//! location. This is typically done when the location is based on another
+//! location in the text, which was already adjusted for right to left
+//! embedding level, if appropriate.
+
+enum class new_location { lr, bidi};
+
+//! Get the location index offset
+
+//! Analogous to new_location, when we read the existing cursor location, and
+//! compute the offset to the beginning of the text, the cursor location
+//! in its line fragment gets calculated based on this option.
+
+enum class get_location { lr, bidi};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

@@ -913,6 +913,10 @@ void rlmetricstest()
 
 	rl.rl=true;
 
+	richtext_options options;
+
+	options.paragraph_embedding_level=UNICODE_BIDI_RL;
+
 	auto impl=LIBCXX_NAMESPACE::ref<richtext_implObj>::create
 		(richtextstring{
 				U"12 34 56 78 11 22 33 44",
@@ -920,9 +924,7 @@ void rlmetricstest()
 				 {0, rl},
 				 {12, lr},
 				},
-		},
-		 halign::left,
-		 UNICODE_BIDI_RL);
+		}, options);
 
 	impl->finish_initialization();
 
@@ -1356,10 +1358,12 @@ void rewraptest()
 	{
 		++casenum;
 
+		richtext_options options;
+
+		options.paragraph_embedding_level=t.lr;
+
 		auto impl=LIBCXX_NAMESPACE::ref<richtext_implObj>::create
-			((richtextstring)t.string,
-			 halign::left,
-			 t.lr);
+			((richtextstring)t.string, options);
 
 		impl->finish_initialization();
 		{

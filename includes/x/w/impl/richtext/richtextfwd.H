@@ -7,7 +7,10 @@
 #define x_w_impl_richtext_richtextfwd_H
 
 #include <x/ptrfwd.H>
+#include <x/w/alignment.H>
+#include <x/w/types.H>
 #include <x/w/input_fieldfwd.H>
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -29,6 +32,30 @@ typedef ref<richtextObj> richtext;
 //! A nullable pointer reference to a \ref richtext "rich text string".
 
 typedef ptr<richtextObj> richtextptr;
+
+//! Options for a new richtext object.
+
+struct richtext_options {
+	//! Text alignment
+	halign alignment=halign::left;
+
+	//! Width of the rich text
+
+	//! Sets targeted word-wrap width. If 0, no wrapping.
+	dim_t initial_width=0;
+
+	//! Substitute character for unprintable characters.
+
+	//! The default '\0' effectively hides unprintable characters.
+	//! Spaces are specified for input fields, since '\n' appear at
+	//! the end of each paragraph, and a space serves nicely as a blinking
+	//! cursor there.
+	char32_t unprintable_char='\0';
+
+	//! Embedding direction.
+	unicode_bidi_level_t paragraph_embedding_level=
+		UNICODE_BIDI_LR;
+};
 
 LIBCXXW_NAMESPACE_END
 

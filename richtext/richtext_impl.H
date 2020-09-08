@@ -143,7 +143,7 @@ public:
 
 	//! \ref editor "editor" overwrites this with a space, so that a
 	//! cursor on top of a newline character is visible.
-	char32_t unprintable_char=0;
+	const char32_t unprintable_char;
 
 	//! Alignment of text, for rendering paragraphs
 
@@ -155,18 +155,19 @@ public:
 
 	unicode_bidi_level_t paragraph_embedding_level;
 
+	//! For convenience
+	inline bool rl() const
+	{
+		return paragraph_embedding_level != UNICODE_BIDI_LR;
+	}
 	//! Constructor
 
 	//! The richtextstring gets passed in by reference, and gets converted
 	//! to rendering order, but not otherwise moved from.
 	richtext_implObj(//! Initial contents
 			 richtextstring &&str,
-
-			 //! Alignment
-			 halign alignmentArg,
-
-			 //! Paragraph bi-direction embedding level.
-			 unicode_bidi_level_t paragraph_embedding_level);
+			 //! Options
+			 const richtext_options &options);
 
 	//! Replace existing contents by something else.
 

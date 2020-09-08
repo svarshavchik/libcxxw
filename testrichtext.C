@@ -37,7 +37,7 @@ void testrichtext(const current_fontcollection &font1,
 			{20, {black, font2}}
 		}};
 
-	auto richtext=richtext::create(std::move(ustring), halign::left, 0);
+	auto richtext=richtext::create(std::move(ustring), richtext_options{});
 	auto impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 3)
@@ -145,7 +145,7 @@ void testsplit(const current_fontcollection &font1,
 	for (const auto &test:tests)
 	{
 		auto richtext=richtext::create(std::move(ustring),
-					       halign::left, 0);
+					       richtext_options{});
 		auto impl=richtext->debug_get_impl(IN_THREAD);
 
 		assert_or_throw(impl->num_chars == ustring.size(),
@@ -387,7 +387,7 @@ void testlinebreaks(const current_fontcollection &font1,
 			{11, meta2},
 			{17, meta3},
 			{20, meta1},
-		}}, halign::left, 0);
+		}}, richtext_options{});
 	auto impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 1)
@@ -454,7 +454,7 @@ void testrlsplit(const current_fontcollection &font1,
 		U"lorem\nIPSUM",
 		{
 			{0, meta1},
-		}}, halign::left, 0);
+		}}, richtext_options{});
 	auto impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 2)
@@ -465,8 +465,8 @@ void testrlsplit(const current_fontcollection &font1,
 	if ((*p)->fragments.size() != 1)
 		throw EXCEPTION("Somehow we ended up with multiple fragments");
 
-	auto iter1=richtext->at(0);
-	auto iter2=richtext->at(6);
+	auto iter1=richtext->at(0, new_location::lr);
+	auto iter2=richtext->at(6, new_location::lr);
 
 	if (iter1->at(IN_THREAD).character != U'm' ||
 	    iter2->at(IN_THREAD).character != U'M')
@@ -496,7 +496,7 @@ void testrlsplit(const current_fontcollection &font1,
 		{
 			{0, meta1},
 			{11, meta2},
-		}}, halign::left, 0);
+		}}, richtext_options{});
 	impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 2)
@@ -508,8 +508,8 @@ void testrlsplit(const current_fontcollection &font1,
 		throw EXCEPTION("Somehow we ended up with multiple fragments "
 				"(2)");
 
-	iter1=richtext->at(0);
-	iter2=richtext->at(6);
+	iter1=richtext->at(0, new_location::lr);
+	iter2=richtext->at(6, new_location::lr);
 
 	if (iter1->at(IN_THREAD).character != U'm' ||
 	    iter2->at(IN_THREAD).character != U'M')
@@ -548,7 +548,7 @@ void testrlsplit(const current_fontcollection &font1,
 		U"lorem IPSUM",
 		{
 			{0, meta1},
-		}}, halign::left, 0);
+		}}, richtext_options{});
 	impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 1)
@@ -560,8 +560,8 @@ void testrlsplit(const current_fontcollection &font1,
 		throw EXCEPTION("Somehow we ended up with multiple fragments "
 				"(splitrl)");
 
-	iter1=richtext->at(0);
-	iter2=richtext->at(6);
+	iter1=richtext->at(0, new_location::lr);
+	iter2=richtext->at(6, new_location::lr);
 
 	if (iter1->at(IN_THREAD).character != U'M' ||
 	    iter2->at(IN_THREAD).character != U'm')
@@ -672,7 +672,7 @@ void testrlmerge(const current_fontcollection &font1,
 
 		copy.debug_set_render_order(true);
 		auto richtext=richtext::create(std::move(copy),
-					       halign::left, 0);
+					       richtext_options{});
 
 		auto impl=richtext->debug_get_impl(IN_THREAD);
 
@@ -844,9 +844,10 @@ void testunwrap(const current_fontcollection &font1,
 	{
 		auto copy=t.s;
 
-		auto richtext=richtext::create(std::move(copy),
-					       halign::left, 0,
-					       t.embedding_level);
+		richtext_options options;
+
+		options.paragraph_embedding_level=t.embedding_level;
+		auto richtext=richtext::create(std::move(copy), options);
 
 		auto impl=richtext->debug_get_impl(IN_THREAD);
 

@@ -67,8 +67,10 @@ textlabelObj::implObj::implObj(const text_param &text,
 }
 
 static textlabelObj::implObj::hotspot_info_t
-create_hotspot_info(const richtextstring &s, const richtext &t)
+create_hotspot_info(richtextstring &&s, const richtext &t)
 {
+	s.render_order();
+
 	textlabelObj::implObj::hotspot_info_t info;
 
 	const auto &m=s.get_meta();
@@ -89,12 +91,19 @@ create_hotspot_info(const richtextstring &s, const richtext &t)
 
 		while (b->second.link == p->second.link)
 		{
+			if (b->second.rl != p->second.rl)
+				throw EXCEPTION(_("Cannot change text direction"
+						  " in the middle of a hotspot"
+						  ));
 			if (++b == e)
 				throw EXCEPTION("Internal error: cannot find end of link");
 		}
 
-		info.insert({p->second.link, {t->at(p->first),
-						t->at(b->first), counter++}});
+		info.insert({p->second.link, {t->at(p->first,
+						    new_location::lr),
+					      t->at(b->first,
+						    new_location::lr),
+					      counter++}});
 	}
 	return info;
 }
@@ -127,6 +136,17 @@ textlabelObj::implObj::implObj(const text_param &text,
 {
 }
 
+static
+inline richtext_options create_richtext_options(textlabel_config &config,
+						char32_t unprintable_char)
+{
+	richtext_options options;
+
+	options.alignment=config.config.alignment;
+	options.unprintable_char=unprintable_char;
+	return options;
+}
+
 textlabelObj::implObj::implObj(textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
 			       const const_defaulttheme &initial_theme,
@@ -135,8 +155,8 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 	: implObj{config, parent_element_impl,
 		  initial_theme,
 		  std::move(string),
-		  richtext::create(std::move(string), config.config.alignment,
-				   0),
+		  richtext::create(std::move(string),
+				   create_richtext_options(config, '\0')),
 		  default_meta}
 {
 }
@@ -148,9 +168,9 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 	: implObj{config,
 		  parent_element_impl,
 		  initial_theme,
-		  string,
+		  std::move(string),
 		  richtext::create(std::move(string),
-				   config.config.alignment, 0),
+				   create_richtext_options(config, ' ')),
 		  string.meta_at(0)}
 {
 }
@@ -158,7 +178,7 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 textlabelObj::implObj::implObj(textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
 			       const const_defaulttheme &initial_theme,
-			       const richtextstring &string,
+			       richtextstring &&string,
 			       const richtext &text,
 			       const richtextmeta &default_meta)
 	: richtext_alteration_config{config.use_ellipsis ? richtextptr
@@ -172,7 +192,8 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 	  fixed_width_metrics{config.fixed_width_metrics},
 	  allow_shrinkage{config.allow_shrinkage},
 	  current_theme{initial_theme},
-	  hotspot_info_thread_only{create_hotspot_info(string, text)},
+	  hotspot_info_thread_only{create_hotspot_info(std::move(string),
+						       text)},
 	  ordered_hotspots{rebuild_ordered_hotspots(hotspot_info_thread_only)},
 	  text{text},
 	  hotspot_cursor{config.allow_links
@@ -221,7 +242,7 @@ void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string)
 
 	text->set(IN_THREAD, std::move(s));
 
-	hotspot_info(IN_THREAD)=create_hotspot_info(s, text);
+	hotspot_info(IN_THREAD)=create_hotspot_info(std::move(s), text);
 	ordered_hotspots=rebuild_ordered_hotspots(hotspot_info(IN_THREAD));
 	hotspot_highlighted(IN_THREAD)=nullptr;
 	updated(IN_THREAD);
@@ -588,10 +609,24 @@ void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 	replacement_text.hotspots.clear(); // Too bad, so sad.
 	replacement_text.hotspots.insert({0, link});
 
+	auto new_str=e.create_richtextstring
+		(default_meta, replacement_text,
+		 hotspot_processing::update);
+
+	auto &new_meta=new_str.get_meta();
+	auto mb=new_meta.begin(), me=new_meta.end();
+
+	if (mb == me)
+		throw EXCEPTION(_("Replacehoment hotspot string cannot be empty"
+				  ));
+	for (auto mp=mb; mp!=me; mp++)
+		if (mp->second.rl != mb->second.rl)
+			throw EXCEPTION(_("Cannot change text direction"
+					  " in the middle of a hotspot"
+					  ));
+
 	iter->second.link_start->replace(IN_THREAD, iter->second.link_end,
-					 e.create_richtextstring
-					 (default_meta, replacement_text,
-					  hotspot_processing::update));
+					 std::move(new_str));
 	updated(IN_THREAD);
 
 	text->redraw_whatsneeded(IN_THREAD, e,

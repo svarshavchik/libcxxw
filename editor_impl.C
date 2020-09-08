@@ -512,7 +512,7 @@ editorObj::implObj::implObj(init_args &args)
 	       (parent_peephole->container_element_impl()
 		.create_richtextstring(args.hint_meta,
 				       args.config.hint),
-		halign::center, 0)}
+		richtext_options{halign::center})}
 {
 	// The first input field in a window gets focus when its shown.
 
@@ -521,12 +521,6 @@ editorObj::implObj::implObj(init_args &args)
 #ifdef EDITOR_CONSTRUCTOR_DEBUG
 	EDITOR_CONSTRUCTOR_DEBUG();
 #endif
-	cursor->my_richtext->read_only_lock
-		([]
-		 (const auto &impl)
-		 {
-			 (*impl)->unprintable_char=' '; // TODO
-		 });
 }
 
 editorObj::implObj::~implObj()=default;
