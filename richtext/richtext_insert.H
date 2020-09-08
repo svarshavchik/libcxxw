@@ -28,7 +28,7 @@ LIBCXXW_NAMESPACE_START
 //! richtext_implObj::insert_at_location(), which obtains the fragment
 //! from the richtextcursorlocation, whose insert() gets finally invoked.
 
-struct LIBCXX_HIDDEN richtext_insert_base {
+struct richtext_insert_base {
 
 	//! The location being inserted.
 

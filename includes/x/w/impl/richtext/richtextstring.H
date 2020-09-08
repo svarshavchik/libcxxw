@@ -63,10 +63,6 @@ private:
 	//! coalesce() updates this, but it's a const method.
 	mutable meta_t meta;
 
-	//! The text string is in rendering order.
-
-	bool is_render_order=false;
-
 	//! Sort the meta, which was imported from a map.
 
 	//! Sorts it by index, validates it against a stirng of size 'n'.
@@ -124,10 +120,6 @@ private:
 	//! Invoked by insert() and erase()
 	void modified();
 
-	//! Invoked by render_order() and logical_order()
-
-	void swap_order();
-
 public:
 
 	//! Default constructors
@@ -152,16 +144,6 @@ public:
 
 	//! Insert new text into the richtextstring
 
-	//! Specifies the insert point, and another string. If this
-	//! richtextstring is_render_order and the metadata is rl, then
-	//! the string gets reversed, accordingly.
-	//!
-	//! richtextobj::get() returns the string in logical order.
-	//!
-	//! richtext_implObj::do_set() sets the initial or the updated
-	//! contents of the richtext object, and it converts the
-	//! richtextstring to render_order.
-
 	void insert(size_t pos,
 		    const std::u32string_view &s);
 
@@ -169,18 +151,8 @@ public:
 
 	//! Specifies the insert point, and another string. Emphasis on
 	//! "another", hence the parameter is passed by value :-).
-	//!
-	//! If this richtextstring is_render_order then the another
-	//! richtextstring will also get converted to rendering order,
-	//! otherwise it will be made sure to be in logical order.
-	//!
-	//! richtextobj::get() returns the string in logical order.
-	//!
-	//! richtext_implObj::do_set() sets the initial or the updated
-	//! contents of the richtext object, and it converts the
-	//! richtextstring to render_order.
 
-	void insert (size_t pos, richtextstring s);
+	void insert(size_t pos, richtextstring s);
  private:
 
 	//! insert() implementation.
@@ -190,28 +162,6 @@ public:
 		       const std::u32string_view &s,
 		       meta_t &new_meta);
  public:
-	//! We want to see the characters in logical order
-
-	inline void logical_order()
-	{
-		if (is_render_order)
-			swap_order();
-	}
-
-	//! We want to see the characters in rendering order
-
-	inline void render_order()
-	{
-		if (!is_render_order)
-			swap_order();
-	}
-
-	//! Used in unit tests to fudge the render order flag.
-
-	inline void debug_set_render_order(bool flag)
-	{
-		is_render_order=flag;
-	}
 
 	//! Replace a portion of this string with another one.
 
@@ -237,9 +187,40 @@ public:
 	//! Return the metadata.
 	inline const meta_t &get_meta() const { coalesce(); return meta; }
 
+	//! Comparator
+	bool operator==(const richtextstring &s) const;
+
+	//! Comparator
+	inline bool operator!=(const richtextstring &s) const
+	{
+		return !operator==(s);
+	}
+
 	//! Return the direction
 
 	inline richtext_dir &get_dir() const { coalesce(); return cached_dir; }
+
+	//! Compute this rich text string's unicode embedding level.
+
+	//! Factor in the paragraph embedding level if this richtextstring
+	//! has richtext_dir::both left-to-right and right-to-left content.
+	//! Otherwise return the appropriate unicode embedding level value.
+
+	unicode_bidi_level_t embedding_level(unicode_bidi_level_t
+					     paragraph_embedding_level) const
+	{
+		switch (get_dir()) {
+		case richtext_dir::lr:
+			paragraph_embedding_level=UNICODE_BIDI_LR;
+			break;
+		case richtext_dir::rl:
+			paragraph_embedding_level=UNICODE_BIDI_RL;
+			break;
+		case richtext_dir::both:
+			break;
+		}
+		return paragraph_embedding_level;
+	}
 
 	//! Return the size of the string.
 	inline size_t size() const { return string.size(); }

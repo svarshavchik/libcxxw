@@ -4,21 +4,11 @@
 */
 
 #include "libcxxw_config.h"
-#include "x/w/pixmap.H"
-#include "x/w/drawable.H"
 #include "richtext/richtext_impl.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtextfragment.H"
-#include "richtext/richtextfragment_render.H"
 #include "richtext/richtextiterator.H"
 #include "richtext/richtextcursorlocation.H"
-#include "richtext/richtext_draw_info.H"
-#include "richtext/richtext_draw_boundaries.H"
-#include "richtext/richtext_alteration_config.H"
-#include "x/w/impl/draw_info.H"
-#include "x/w/impl/element_draw.H"
-#include "screen.H"
-#include "picture.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -88,84 +78,6 @@ richtextObj::get_metrics(dim_t preferred_width)
 	return (*lock)->get_metrics(preferred_width);
 }
 
-void richtextObj::theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
-{
-	impl_t::lock lock{impl};
-
-	(*lock)->theme_updated(IN_THREAD, new_theme);
-}
-
-void richtextObj::full_redraw(ONLY IN_THREAD,
-			      element_drawObj &element,
-			      const richtext_draw_info &rdi,
-			      const draw_info &di,
-			      const rectarea &areas)
-{
-	richtext_draw_boundaries draw_bounds{di, areas};
-	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
-
-	full_redraw(IN_THREAD, element, rdi, di, clipped, draw_bounds);
-}
-
-void richtextObj::full_redraw(ONLY IN_THREAD,
-			      element_drawObj &element,
-			      const richtext_draw_info &rdi,
-			      const draw_info &di,
-			      clip_region_set &clipped,
-			      richtext_draw_boundaries &draw_bounds)
-{
-	draw(IN_THREAD, element, rdi, di, clipped,
-	     make_function<bool (richtextfragmentObj *)>
-	     ([]
-	      (richtextfragmentObj *f)
-	      {
-		      // Record where this fragment was (about to be) redrawn.
-		      f->redrawn_y_position=f->y_position();
-		      return true;
-	      }),
-	     true, draw_bounds);
-}
-
-void richtextObj::redraw_whatsneeded(ONLY IN_THREAD,
-				     element_drawObj &element,
-				     const richtext_draw_info &rdi,
-				     const draw_info &di)
-{
-	redraw_whatsneeded(IN_THREAD, element, rdi, di, di.entire_area());
-}
-
-void richtextObj::redraw_whatsneeded(ONLY IN_THREAD,
-				     element_drawObj &element,
-				     const richtext_draw_info &rdi,
-				     const draw_info &di,
-				     const rectarea &areas)
-{
-	richtext_draw_boundaries draw_bounds{di, areas};
-	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
-
-	draw(IN_THREAD, element, rdi, di, clipped,
-	     make_function<bool (richtextfragmentObj *)>
-	     ([]
-	      (richtextfragmentObj *f)
-	      {
-		      bool flag=f->redraw_needed;
-		      f->redraw_needed=false;
-
-		      // Even if redraw_needed was false, if another row
-		      // was inserted above this one, this row's position
-		      // has changed. redraw_needed gets set only if something
-		      // about this specific row has changed, and won't be
-		      // set in that case. So, redraw this row, in any case.
-
-		      coord_t y_pos=coord_t::truncate(f->y_position());
-		      if (y_pos != f->redrawn_y_position)
-			      flag=true;
-		      f->redrawn_y_position=y_pos;
-		      return flag;
-	      }),
-	     false, draw_bounds);
-}
-
 void richtextObj::text_width(const std::optional<dim_t> &s)
 {
 	read_only_lock([&]
@@ -183,505 +95,6 @@ void richtextObj::minimum_width_override(ONLY IN_THREAD, dim_t width)
 		    {
 			    (*impl)->minimum_width_override=width;
 		    });
-}
-
-void richtextObj::redraw_between(ONLY IN_THREAD,
-				 element_drawObj &element,
-				 const richtextiterator &a,
-				 const richtextiterator &b,
-				 const richtext_draw_info &rdi,
-				 const draw_info &di)
-{
-	assert_or_throw(a->my_richtext == b->my_richtext &&
-			a->my_richtext == richtext(this),
-			"Internal error: invalid iterators passed to redraw_between().");
-
-	bool first=true;
-	size_t a_index=0;
-	size_t b_index=0;
-
-	richtext_draw_boundaries draw_bounds{di, di.entire_area()};
-
-	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
-
-	draw(IN_THREAD, element, rdi, di, clipped,
-	     make_function<bool (richtextfragmentObj *)>
-	     ([&]
-	      (richtextfragmentObj *f)
-	      {
-		      // This is now executing while holding a lock on the
-		      // implementation object. We cannot access the fragments
-		      // until this happens.
-
-		      if (first)
-		      {
-			      assert_or_throw(a->my_location->my_fragment &&
-					      b->my_location->my_fragment,
-					      "Internal error: null fragment "
-					      " in redraw_between");
-
-			      first=false;
-			      a_index=a->my_location->my_fragment->index();
-			      b_index=b->my_location->my_fragment->index();
-
-			      if (a_index > b_index)
-				      std::swap(a_index, b_index);
-		      }
-
-		      auto i=f->index();
-
-		      return ( a_index <= i && i <= b_index );
-	      }),
-	     false,
-	     draw_bounds);
-}
-
-void richtextObj::draw(ONLY IN_THREAD,
-		       element_drawObj &element,
-		       const richtext_draw_info &rdi,
-		       const draw_info &di,
-		       clip_region_set &clipped,
-		       const function<bool (richtextfragmentObj *)>
-		       &redraw_fragment,
-		       bool clear_padding,
-		       richtext_draw_boundaries &draw_bounds)
-{
-	if (draw_bounds.nothing_to_draw())
-		return;
-
-	assert_or_throw(draw_bounds.draw_bounds.x >= 0 &&
-			draw_bounds.draw_bounds.y >= 0,
-			"Bounding rectangle cannot start on a negative coordinate");
-
-	// Check if the rich text should have a trailing ellipsis if it's
-	// truncated.
-
-	if (rdi.richtext_alteration.ellipsis)
-	{
-		impl_t::lock lock{rdi.richtext_alteration.ellipsis->impl};
-
-		// We use ellipsis' first fragment only. Too bad.
-
-		if (!(*lock)->paragraphs.empty())
-		{
-			auto &p= *(*lock)->paragraphs.get_paragraph(0);
-
-			if (!p->fragments.empty())
-			{
-				auto &f=*p->fragments.get_iter(0);
-
-				draw_with_ellipsis(IN_THREAD, element,
-						   rdi, di, clipped,
-						   redraw_fragment,
-						   clear_padding,
-						   draw_bounds, &*f);
-				return;
-			}
-		}
-	}
-
-	draw_with_ellipsis(IN_THREAD, element, rdi, di, clipped,
-			   redraw_fragment,
-			   clear_padding,
-			   draw_bounds, nullptr);
-}
-
-// Data and logic for rendering a single fragment of text
-
-// draw_fragment/draw_with_ellipsis calls this to draw_using_scratch_buffer
-// each fragment (line) of the label.
-//
-// If this is a truncated label with ellipsis, this also is used to draw the
-// trailing ellipsis separately, after fudging the draw_bounds.
-
-struct LIBCXX_HIDDEN richtextObj::draw_fragment_info {
-
-	// The main information that's needed to draw each fragment:
-	element_drawObj &element;
-	const draw_info &di;
-	clip_region_set &clipped;
-	richtext_draw_boundaries &draw_bounds;
-
-	// If the richtext-draw_info parameter to the drawing function
-	// specifies that this label has a selection (this is the label
-	// code used by editorObj::implObj to draw the contents of the
-	// input field, and the input field has a selected, highlighted
-	// chunk.
-	//
-	// This is translated into starting and ending fragment index number
-	// and the offset in each fragment where the selection starts and
-	// ends, and has_selection gets set to true.
-	//
-	// This is ignored when has_selection=false
-	size_t selection_start_fragment_index=0;
-	size_t selection_start_offset=0;
-	size_t selection_end_fragment_index=0;
-	size_t selection_end_offset=0;
-	bool has_selection=false;
-
-	// The index # (the line #) of the fragment being drawn.
-	size_t fragment_index;
-
-	// Position in the scratch buffer where the baseline of the drawn
-	// text is.
-	//
-	// This is each label's above_baseline value. If a trailing ellipsis
-	// gets drawn, the fragment_ypos value remains unchanged, drawing
-	// the ellipsis with the same baseline.
-	coord_t fragment_ypos;
-
-	// While drawing fragments, we capture the height of the scratch
-	// pixmap we're using at the first opportunity.
-
-	dim_t scratch_height=0;
-
-	// The starting y coordinate and the height of the line. This is used
-	// for correctly compositing the gradient background color.
-
-	coord_squared_t y_position=0;
-	dim_t height=0;
-
-	void draw_fragment(ONLY IN_THREAD, richtextfragmentObj *f);
-};
-
-void richtextObj::draw_fragment_info::draw_fragment(ONLY IN_THREAD,
-						    richtextfragmentObj  *f)
-{
-	if (draw_bounds.nothing_to_draw())
-		return;
-
-	element.draw_using_scratch_buffer
-		(IN_THREAD,
-		 [&]
-		 (const picture &scratch_picture,
-		  const pixmap &scratch_pixmap,
-		  const gc &scratch_gc)
-		 {
-			 richtextfragmentObj::render_info render_info
-				 {
-				  scratch_picture,
-				  di.window_background_color,
-				  di.background_x,
-				  di.background_y,
-				  coord_t::truncate
-				  (di.absolute_location.x +
-				   draw_bounds.position.x),
-				  coord_t::truncate
-				  (di.absolute_location.y +
-				   draw_bounds.position.y),
-
-				  draw_bounds.draw_bounds.width,
-				  dim_t::truncate(draw_bounds
-						  .draw_bounds
-						  .x),
-
-				  fragment_ypos,
-				 };
-
-			 // If we're drawing a selection,
-			 // figure out which part of it is
-			 // on this line.
-
-			 if (has_selection &&
-			     fragment_index >= selection_start_fragment_index &&
-			     fragment_index <= selection_end_fragment_index)
-			 {
-				 size_t from=0;
-				 size_t to=f->string.size();
-
-				 if (fragment_index ==
-				     selection_start_fragment_index)
-					 from=selection_start_offset;
-
-				 if (fragment_index ==
-				     selection_end_fragment_index)
-					 to=selection_end_offset;
-
-				 render_info.selection_start=from;
-				 render_info.selection_end=to;
-			 }
-
-			 f->render(IN_THREAD, render_info);
-
-			 scratch_height=scratch_pixmap->get_height();
-
-		 },
-		 rectangle{coord_t::truncate(draw_bounds.draw_bounds.x +
-					     draw_bounds.position.x),
-				   coord_t::truncate(coord_t::truncate
-						     (y_position) +
-						     draw_bounds
-						     .position.y),
-				   draw_bounds.draw_bounds.width,
-				   height},
-		 di, di,
-		 clipped);
-}
-
-void richtextObj::draw_with_ellipsis(ONLY IN_THREAD,
-				     element_drawObj &element,
-				     const richtext_draw_info &rdi,
-				     const draw_info &di,
-				     clip_region_set &clipped,
-				     const function<bool (richtextfragmentObj
-							  *)>
-				     &redraw_fragment,
-				     bool clear_padding,
-				     richtext_draw_boundaries &draw_bounds,
-				     richtextfragmentObj *ellipsis_fragment)
-{
-	impl_t::lock lock{impl};
-
-	clipped.draw_as_disabled=rdi.draw_as_disabled;
-
-	richtextfragmentObj *f=nullptr;
-
-	if (!(*lock)->paragraphs.empty())
-	{
-		size_t y_pos=draw_bounds.draw_bounds.y < 0 ? 0:
-			(coord_t::value_type)(draw_bounds.draw_bounds.y);
-
-		auto frag=(*lock)->find_fragment_for_y_position(y_pos);
-
-		if (frag)
-			f=&*frag;
-	}
-
-	// It's unlikely, but possible that the container gave us
-	// more height than we'll actually draw. Keep track of the ending
-	// y coordinate that was rendered.
-	coord_t y=draw_bounds.draw_bounds.y;
-
-	auto ending_y_position=draw_bounds.draw_bounds.y + draw_bounds.draw_bounds.height;
-
-	// Determine if there's a current selection.
-
-	draw_fragment_info dfi{element, di, clipped, draw_bounds};
-
-	if (rdi.selection_start && rdi.selection_end)
-	{
-		auto a=rdi.selection_start->my_location;
-		auto b=rdi.selection_end->my_location;
-
-		auto cmp=a->compare(*b);
-
-		if (cmp)
-		{
-			if (cmp > 0)
-				std::swap(a, b);
-
-			dfi.selection_start_fragment_index=
-				a->my_fragment->index();
-			dfi.selection_start_offset=a->get_offset();
-
-			dfi.selection_end_fragment_index=b->my_fragment->index();
-			dfi.selection_end_offset=b->get_offset();
-			dfi.has_selection=true;
-		}
-	}
-
-	// Now draw each fragment. Loop iteration advances y by each
-	// fragment's height.
-
-	dfi.fragment_index=f ? f->index():0;
-
-	rectangle original_position=draw_bounds.position;
-
-	for (; f; (f=f->next_fragment()), ++dfi.fragment_index)
-	{
-		// We rely on the fragments' y_position()s being accurate.
-
-		dfi.y_position=coord_squared_t{f->y_position()};
-
-		if (ending_y_position <= dfi.y_position)
-			break;
-
-		dfi.height=f->height();
-
-		y=coord_t::truncate(dfi.y_position+dfi.height);
-
-		if (!redraw_fragment(f))
-			continue;
-
-		rectangle ellipsis_rectangle;
-
-		// Fragment is smaller than the bounds it's being drawn in?
-
-		if (ellipsis_fragment && f->width > draw_bounds.position.width)
-		{
-			// Subtract the width of the ellipsis from the
-			// width of the drawing boundaries. We will cut off
-			// the fragment at this point.
-
-			dim_t truncate_at=
-				ellipsis_fragment->width
-				> draw_bounds.position.width
-				? dim_t{0}:draw_bounds.position.width
-				  - ellipsis_fragment->width;
-
-			// Copy the draw bounds to the ellipsis_rectangle,
-			// then adjust the ellipsis_rectangle to start at
-			// truncate_at.
-			ellipsis_rectangle=draw_bounds.position;
-
-			ellipsis_rectangle.width=
-				ellipsis_rectangle.width-truncate_at;
-			ellipsis_rectangle.x=coord_t::truncate
-				(ellipsis_rectangle.x+truncate_at);
-
-
-			// Ok, if we decided that we'll be drawing a
-			// trailing ellipsis on this row, adjust the
-			// fragment's bounds accordingly.
-			if (ellipsis_rectangle.width > 0 &&
-			    ellipsis_rectangle.height > 0)
-			{
-				rectangle adjusted_draw_rectangle
-					{original_position};
-
-				adjusted_draw_rectangle.width=truncate_at;
-
-				draw_bounds.position_at
-					(adjusted_draw_rectangle);
-			}
-		}
-
-		// Y position for rendering the fragment in the scratch
-		// buffer.
-		//
-		// This gets set to fragment->above_baseline
-		dfi.fragment_ypos=coord_t::truncate(f->above_baseline);
-
-		dfi.draw_fragment(IN_THREAD, f);
-
-		// Did we decide to draw the ellipsis here?
-		if (ellipsis_rectangle.width > 0 &&
-		    ellipsis_rectangle.height > 0)
-		{
-			// Fudge our coordinates for the ellipsis.
-			draw_bounds.position_at(ellipsis_rectangle);
-
-			auto has_selection=dfi.has_selection;
-
-			dfi.has_selection=false;
-			dfi.draw_fragment(IN_THREAD, ellipsis_fragment);
-			dfi.has_selection=has_selection;
-
-			// Need to restore this, for the next loop iteration.
-			draw_bounds.position_at(original_position);
-		}
-	}
-
-	// If characters are removed from an input field and it becomes
-	// less tall, we need to clear the padding even if we were asked
-	// not to.
-	auto h=(*lock)->height();
-
-	if (h < rendered_height)
-	{
-		clear_padding=true;
-	}
-
-	rendered_height=h;
-	if (!clear_padding)
-		return;
-
-	// If there's undrawn area between the label and the bottom of the
-	// display element, what we'll do is use draw_using_scratch_buffer()
-	// to acquire the buffer. draw_using_scratch_buffer() clears it to
-	// the element's background color. That's all we need to do, and
-	// nothing more.
-
-	while (y < coord_t::truncate(ending_y_position))
-	{
-		// If we know the height of the existing scratch buffer, take
-		// advantage of it fully, to clear the remaining space.
-		//
-		// But make sure that it's at least 16 pixels.
-		if (dfi.scratch_height < 16)
-			dfi.scratch_height=16;
-
-		dim_t remaining_height=dim_t::truncate(ending_y_position - y);
-
-		if (remaining_height < dfi.scratch_height)
-			dfi.scratch_height=remaining_height;
-
-		element.draw_using_scratch_buffer
-			(IN_THREAD,
-			 [&]
-			 (const picture &scratch_picture,
-			  const pixmap &scratch_pixmap,
-			  const gc &scratch_gc)
-			 {
-				 y=dim_t::truncate(y + dfi.scratch_height);
-				 dfi.scratch_height=scratch_pixmap->get_height();
-			 },
-			 rectangle{draw_bounds.position.x,
-					 coord_t::truncate(y +
-							   draw_bounds
-							   .position.y),
-					 di.absolute_location.width,
-					 dfi.scratch_height},
-			 di, di,
-			 clipped);
-	}
-}
-
-
-std::tuple<pixmap, picture> richtextObj::create(ONLY IN_THREAD,
-						const drawable &for_drawable)
-{
-	impl_t::lock lock{impl};
-
-	dim_t width= dim_t::truncate((*lock)->width());
-	dim_t height= dim_t::truncate((*lock)->height());
-
-	auto pixmap=for_drawable->create_pixmap(width, height);
-	auto p=pixmap->create_picture();
-
-	dim_t largest_height=1;
-
-	// The text must be non-empty. There must always be a fragment.
-
-	richtextfragment frag=(*lock)->find_fragment_for_y_position(0);
-
-	for (auto f=&*frag; f; f=f->next_fragment())
-	{
-		auto h=f->height();
-
-		if (h > largest_height)
-			largest_height=h;
-	}
-
-	auto scratch_pixmap=for_drawable->create_pixmap(width, largest_height);
-	auto scratch_picture=scratch_pixmap->create_picture();
-
-	auto transparent=rgb(0, 0, 0, 0);
-	auto transparent_color=for_drawable->get_screen()->impl
-		->create_solid_color_picture(transparent);
-
-	coord_t y=0;
-	for (auto f=&*frag; f; f=f->next_fragment())
-	{
-		auto h=f->height();
-
-		scratch_picture->fill_rectangle({0, 0, width, largest_height},
-						transparent);
-
-		richtextfragmentObj::render_info
-			render_info{ scratch_picture,
-				     transparent_color, 0, 0,
-				     0, 0,
-				     width};
-		render_info.ypos=coord_t::truncate(f->above_baseline);
-		f->render(IN_THREAD, render_info);
-		p->composite(scratch_picture,
-			     0, 0,
-			     {0, y, width, h});
-		y=coord_t::truncate(y+h);
-	}
-
-	return {pixmap, p};
 }
 
 richtextiterator richtextObj::begin()
@@ -781,6 +194,317 @@ size_t richtextObj::do_pos(const richtextcursorlocationObj *l,
 		l->my_fragment->my_paragraph->first_char_n;
 }
 
+namespace {
+#if 0
+}
+#endif
+
+//! Helper logic used by get()
+
+//! get() makes the initial pass over the contents of richtext for extracting,
+//! making a pass over each line/fragment in the range to be get-ted, in the
+//! correct order. Here we extract the appropriate part of each line,
+//! usually the whole line. But if the line happens to be where the get
+//! range starts and ends, we trim off the parts we will not extract.
+
+struct get_helper {
+
+	//! The string getting extracted here.
+
+	richtextstring &str;
+
+	//! The richtext paragraph embedding direction.
+	const unicode_bidi_level_t paragraph_embedding_level;
+
+	//! Start and end of the range.
+	const richtextcursorlocationObj *location_a, *location_b;
+
+	//! Pedantic pointer comparison
+
+	//! We compare each extracted line/fragment pointer to the
+	//! starting/ending get position. To be pedantic, we must use
+	//! std::equal_to to correctly implement total order as it comes
+	//! to pointer comparisons.
+
+	std::equal_to<const richtextfragmentObj *> compare_fragments;
+
+	//! Extract right-to-left lines in left-to-right text.
+
+	//! The paragraph embedding level is left to right, but we have one
+	//! or more lines consisting of right-to-left text.
+	//!
+	//! Original text: "lllr rr rrr rrrr".
+	//!
+	//! Because it's right-to-left, when we wrap it across multiple
+	//! lines this winds up as:
+	//!
+	//! lll
+	//! rrrr
+	//! rrr
+	//! rr
+	//! r
+	//!
+	//! We already extracted "lll", and we are now reconstituting the
+	//! right to left next. So we need to extract right to left text
+	//! from the bottom up.
+	//!
+	//! We have the "bottom" and "top" lines, so we start at the bottom
+	//! and work our way to the top.
+	void rl_line(const richtextfragmentObj *bottom,
+		     const richtextfragmentObj *top)
+	{
+		while(1)
+		{
+			assert_or_throw(bottom != 0,
+					"Internal error: null rl_line");
+			line(bottom, UNICODE_BIDI_RL);
+
+			if (compare_fragments(bottom, top))
+				break;
+			bottom=bottom->prev_fragment();
+		}
+	}
+
+	//! Extract left-to-right lines in right-to-left text
+
+	//! The paragraph embedding level is right to left, so if the original
+	//! text was:
+	//!
+	//! rrr rr rllll lll ll l
+	//!
+	//! This was wrapped as
+	//!
+	//! llll
+	//! lll
+	//! ll
+	//! l
+	//! r
+	//! rr
+	//! rrr
+	//!
+	//! This is now being extracted, and get() walks its way up from the
+	//! end of the paragraph to the beginning, but found a range of
+	//! left-to-right oriented lines.
+	//!
+	//! Extract them, top to bottom.
+
+	void lr_line(const richtextfragmentObj *top,
+		     const richtextfragmentObj *bottom)
+	{
+		// The bottom line may not be entirely left-to-right. The
+		// left to right portion would be at the end of the line.
+		//
+		// Start from the end of the line, and find where the left
+		// to right text begins.
+
+		auto &m=bottom->string.get_meta();
+		auto b=m.begin(), e=m.end();
+
+		while (b != e && !e[-1].second.rl)
+			--e;
+
+		// Right to left text begins to the right of "rl_begin".
+		size_t rl_begin = e == m.end() ? bottom->string.size():e->first;
+
+		// If bottom happens to be the end location of the get()
+		// range, note the offset in the bottom fragment.
+		//
+		// Also, make a copy of location_b AND RESTORE IT before
+		// we return, the logic below may modify it temporarily.
+
+		size_t o=location_b->get_offset();
+
+		auto copy=location_b;
+
+		ptr<richtextcursorlocationObj> clone;
+
+		// If "bottom" is the fragment with the end of the get()
+		// range, and the end of the get() range is to the left
+		// of rl_begin, it's grabbing some right-to-left text, and
+		// since we are extracting the right-to-left text from the
+		// bottom and going our way up, we need to grab the
+		// portion between location_b and rl_begin, as the first
+		// order of business.
+		//
+		// We'll then temporary move location_b, the ending get()
+		// location, to rl_begin, so that the existing logic
+		// below, when it eventually gets called for the bottom
+		// line, ends up extracting just the left-to-right text.
+
+		if (compare_fragments(bottom, location_b->my_fragment) &&
+		    o < rl_begin)
+		{
+			add(bottom->string, o+1, rl_begin-(o+1));
+
+			auto temp_end=richtextcursorlocation::create();
+
+			// We need to have the temporary location_b begin
+			// just to the left of rl_begin, since the logic
+			// in line() trims off everything from the beginnin
+			// of the line up to and including the ending
+			// position.
+
+			temp_end->initialize(location_b->my_fragment,
+					     rl_begin-1,
+					     new_location::lr);
+			clone=temp_end;
+			location_b= &*temp_end;
+		}
+
+		// With that out of the way, extract the lines of left-to-right
+		// text, from top to bottom.
+
+		while(1)
+		{
+			assert_or_throw(top != 0,
+					"Internal error: null rl_line");
+
+			// If this line is the bottom line of the get() range
+			// we only need to extract everything on or after
+			// the ending position.
+
+			if (compare_fragments(top, location_b->my_fragment))
+			{
+				size_t end=location_b->get_offset()+1;
+				add(top->string,
+				    end,
+				    top->string.size()-end);
+			}
+			else if (compare_fragments(top,
+						   location_a->my_fragment))
+			{
+				// If this line is the top line of the get()
+				// range, extract everything starting with
+				// pos, to the end of the line.
+
+				auto pos=location_a->get_offset();
+
+				// Edge case, right to left paragraph embedding
+				// level results in \n at the beginning of the
+				// line. This is the end of the paragraph,
+				// so if our starting extracting position is
+				// here, we don't really extract anything
+				// (get(), below, will take care of extracting
+				// the \n).
+
+				if (pos > 0 ||
+				    top->string.get_string().at(0) != '\n')
+				{
+					add(top->string,
+					    pos,
+					    top->string.size()-pos);
+				}
+			}
+			else
+			{
+				line(top, UNICODE_BIDI_LR);
+			}
+			if (compare_fragments(bottom, top))
+				break;
+			top=top->next_fragment();
+		}
+
+		location_b=copy;
+	}
+
+	//! get()ing another line fragment of text.
+
+	//! Appends another line to str.
+	//!
+	//! Checks if this line is contains the starting or the ending
+	//! get() position, and if so trims off the parts before/after
+	//! the range that we get().
+
+	void line(const richtextfragmentObj *f,
+		  unicode_bidi_level_t l)
+	{
+		if (compare_fragments(f, location_a->my_fragment))
+		{
+			// Starting location.
+
+			auto o=location_a->get_offset();
+
+			if (l == UNICODE_BIDI_LR)
+			{
+				// For left-to right text we add() only from the
+				// starting location to the end of the line.
+				add(f->string, o, f->string.size()-o);
+			}
+			else
+			{
+				// For right to left text we add from the
+				// beginning of the line up to *and including*
+				// the starting location. So we add +1 to o.
+				add(f->string, 0, o+1);
+			}
+			return;
+		}
+
+		if (compare_fragments(f, location_b->my_fragment))
+		{
+			// Ending location
+			auto o=location_b->get_offset();
+
+			if (l == UNICODE_BIDI_LR)
+			{
+				// Left to right text, add() only from the
+				// beginning of the line to the ending location.
+				add(f->string, 0, o);
+			}
+			else
+			{
+				// Right to left text, so to the right of 'o'
+				// is what we get(), starting at o+1.
+				add(f->string, o+1, f->string.size()-(o+1));
+			}
+			return;
+		}
+		add(f->string, 0, f->string.size());
+	}
+
+	//! add() the next chunk of get() text.
+
+	//! Append whatever in 'other', #n characters starting at position
+	//! #start, to str.
+
+	void add(const richtextstring &other,
+		 size_t start,
+		 size_t n) const
+	{
+		size_t s=other.size();
+
+		assert_or_throw(start <= s &&
+				(s-start) >= n,
+				"Internal error: invalid get string offset");
+
+		// Edge case, for right-to-left embedding level we'll quietly
+		// skip the \n at the beginning of the last line of the
+		// paragraph.
+		if (start == 0 && n > 0 &&
+		    paragraph_embedding_level != UNICODE_BIDI_LR &&
+		    other.get_string()[0] == '\n')
+		{
+			++start;
+			--n;
+		}
+
+		if (n == 0)
+			return;
+
+		if (start == 0 && n == s)
+		{
+			str.insert(str.size(), other);
+			return;
+		}
+		str.insert(str.size(), {other, start, n});
+	}
+};
+
+#if 0
+{
+#endif
+}
+
 richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 				const richtextcursorlocation &a,
 				const richtextcursorlocation &b)
@@ -811,7 +535,6 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 			location_b->my_fragment,
 			"Internal error: uninitialized fragments in get()");
 
-
 	// Estimate how big ret will be. We can compute the
 	// number of characters exactly. Use the number of
 	// lines as the estimate for the number of metadata
@@ -823,50 +546,336 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 	// TODO: when we support rich text editing, we'll
 	// need to add some additional overhead, here.
 
-	auto pos1=do_pos(location_a, get_location::lr);
-	auto pos2=do_pos(location_b, get_location::lr);
+	auto pos1=do_pos(location_a, get_location::bidi);
+	auto pos2=do_pos(location_b, get_location::bidi);
 
 	auto index1=location_a->my_fragment->index();
 	auto index2=location_b->my_fragment->index();
 
-	if (pos1 > pos2 || index1 > index2)
+	if (pos1 > pos2)
+		std::swap(pos1, pos2);
+	if (index1 > index2)
 		throw EXCEPTION("Internal error in get(): inconsistent cursor"
 				" locations");
 	str.reserve(pos2-pos1+1, index2-index1+1);
+
+	get_helper helper{str, (*lock)->paragraph_embedding_level,
+		location_a, location_b};
 
 	// And now that the buffers are ready and waiting...
 
 	if (diff == 1)
 	{
-		str.insert(0, {location_a->my_fragment->string,
-					location_a->get_offset(),
-					location_b->get_offset()-
-					location_a->get_offset()});
-		str.logical_order();
+		// On the same line.
+
+		if ((*lock)->paragraph_embedding_level == UNICODE_BIDI_LR)
+		{
+			// Left to right text, get() characters starting
+			// with the starting position, location_a, until
+			// (but not including) location_b.
+			helper.add(location_a->my_fragment->string,
+				   location_a->get_offset(),
+				   location_b->get_offset()-
+				   location_a->get_offset());
+		}
+		else
+		{
+			// Right to left text. get() characters starting
+			// (but not including) the starting position,
+			// location_a, until and including location b.
+
+			helper.add(location_a->my_fragment->string,
+				   location_a->get_offset()+1,
+				   location_b->get_offset()-
+				   location_a->get_offset());
+		}
 		return str;
 	}
 
-	str.insert(0, {location_a->my_fragment->string,
-				location_a->get_offset(),
-				location_a->my_fragment
-				->string.size()
-				-location_a->get_offset()});
-	--diff;
-	auto f=location_a->my_fragment->next_fragment();
+	// At this point, "diff" is the total number of line fragments,
+	// at least 2, since the starting and ending position are on different
+	// lines. If the ending position is on the line following the starting
+	// position, then diff is 2, and we extract two lines (and let the
+	// helper take care of the rest).
 
-	while (--diff)
+	if (helper.paragraph_embedding_level == UNICODE_BIDI_LR)
 	{
-		assert_or_throw(f, "Internal error: NULL fragment");
-		str.insert(str.size(), f->string);
+		richtextfragmentObj *first_rl=0;
 
-		f=f->next_fragment();
+		auto f=location_a->my_fragment;
+
+		// We know extract left-to-right text, from the starting
+		// fragment to the ending fragment.
+		//
+		// When we find a fragment of right to left text, we stop,
+		// count the number of right-to-left lines, then extract
+		// the right to left lines from the bottom up.
+		//
+		// If the original rich text was
+		//
+		// ll lllr rr rrr rrrr
+		//
+		// Then we wrapped it
+		//
+		// ll
+		// lll
+		// rrrr
+		// rrr
+		// rr
+		// r
+		//
+		// So, after extracting the left to right text, when we find
+		// right to left lines we skip ahead to the last one, "r",
+		// then work our way up.
+
+		do
+		{
+			assert_or_throw(f != NULL,
+					"Internal error: NULL fragment");
+
+			// Compute the effective embedding level. if
+			// this fragment's direction is BOTH, we will
+			// consider it left-to-right text.
+			//
+			// Note that this means that after we see one or
+			// more right-to-left lines, if the last right to left
+			// line has the remainder of the right-to-left text,
+			// followed by resumption of left-to-right text, it
+			// will be considered left to right, here.
+
+			auto paragraph_embedding_level=
+				f->string.embedding_level(UNICODE_BIDI_LR);
+
+			if (paragraph_embedding_level != UNICODE_BIDI_LR)
+			{
+				if (!first_rl)
+					// First right-to-left line.
+					first_rl=f;
+			}
+			else
+			{
+				// If we just seen at least one right to
+				// left line, process them.
+
+				if (first_rl)
+				{
+					// Before processing all the pure
+					// right-to-left lines, if the
+					// first left-to-right line has some
+					// leading right-to-left text, it's
+					// part of the right-to-left sequence
+					// and since right-to-left text is
+					// processed from bottom up we just
+					// handle it ourselves, here.
+					//
+					// But first, also check if the entire
+					// get() range also ends on this
+					// fragment.
+					size_t cutoff=f->string.size();
+
+					if (helper.compare_fragments
+					    (f, location_b->my_fragment))
+					{
+						cutoff=location_b->get_offset();
+					}
+
+					// If the line starts with some
+					// right to left text, find where
+					// left to right text starts.
+
+					auto m=f->string.get_meta();
+					auto b=m.begin(),
+						e=m.end();
+
+					while (b != e && b->second.rl)
+						++b;
+
+					// Ok, so if right-to-left text
+					// ends before the cutoff, we emit
+					// it in its entirety here, before
+					// emitting the rest of rl_lines.
+					// Otherwise we emit only up to the
+					// cutoff.
+					helper.add(f->string, 0,
+						   b->first < cutoff ?
+						   b->first : cutoff);
+
+					// Now, emit all right-to-left lines.
+					helper.rl_line(f->prev_fragment(),
+						       first_rl);
+					first_rl=nullptr;
+
+					// And then emit everything on this
+					// line after the end of the right
+					// to left text, and before the cutoff
+					// (the end of the line, or the end
+					// of the get() range).
+					if (cutoff > b->first)
+						helper.add(f->string, b->first,
+							   cutoff-b->first);
+				}
+				else
+				{
+					// Ordinary left to right line. Boring.
+					helper.line(f,
+						    paragraph_embedding_level);
+				}
+			}
+
+			if (--diff == 0)
+			{
+				// End of paragraph. If we skipped some
+				// right-to-left lines, we'll do them here.
+				if (first_rl)
+					helper.rl_line(f, first_rl);
+			}
+
+			f=f->next_fragment();
+		} while (diff);
 	}
-	assert_or_throw(f, "Internal error: NULL fragment");
+	else
+	{
+		// Right-to-left text:
+		//
+		// r rr rrr rrrr
+		//
+		// gets wrapped as
+		//
+		// rrrr
+		// rrr
+		// rr
+		// r
+		//
+		// So we reassemble it from the bottom up. HOWEVER: paragraph
+		// breajs. Paragraph breaks are left in place, so we
+		// scan ahead until either we find the end of the get() range
+		// or the paragraph break. If paragraph break, we emit the
+		// paragraph, the newline, then proceed to the next paragraph.
 
-	str.insert(str.size(),
-		   {f->string, 0, location_b->get_offset()});
+		auto f=location_a->my_fragment;
 
-	str.logical_order();
+		while (diff)
+		{
+			size_t n_lines_in_paragraph=0;
+
+			// Scan ahead until we exhaust #diff lines, or see
+			// a paragraph break. In right to left text, the
+			// paragraph break is the \n at the beginning of the
+			// fragment, and not the end.
+
+			auto end_of_paragraph=f;
+
+			while (diff)
+			{
+				++n_lines_in_paragraph;
+
+				end_of_paragraph=f;
+
+				f=f->next_fragment();
+				--diff;
+
+				if (end_of_paragraph->string.get_string().at(0)
+				    == '\n')
+					break;
+			}
+
+			// Start here, and work our way up to where we started
+			// (the start of the get() range, or the start() of a
+			// paragraph.
+
+			f=end_of_paragraph;
+			richtextfragmentObj *last_lr=0;
+
+			while (n_lines_in_paragraph)
+			{
+				--n_lines_in_paragraph;
+
+				assert_or_throw
+					(f != NULL,
+					 "Internal error: NULL fragment");
+
+				// Figure out whether this line is left to right
+				// or right to left.
+
+				auto paragraph_embedding_level=
+					helper.paragraph_embedding_level;
+
+				switch (f->string.get_dir()) {
+				case richtext_dir::lr:
+					paragraph_embedding_level=
+						UNICODE_BIDI_LR;
+					break;
+				case richtext_dir::rl:
+					paragraph_embedding_level=
+						UNICODE_BIDI_RL;
+					break;
+				case richtext_dir::both:
+
+					// We will consider this line a
+					// left to right line only if it ENDS
+					// with left to right text, which
+					// might mean that it's wrapped from
+					// the preceding chunk of left to right
+					// text.
+					auto &m=f->string.get_meta();
+					auto b=m.begin();
+					auto e=m.end();
+
+					if (b != e && !e[-1].second.rl)
+						paragraph_embedding_level=
+							UNICODE_BIDI_LR;
+					break;
+				}
+
+				// When we find a left-to-right line, we need
+				// emit left-to-right text from top to bottom,
+				// so we mark the first line we find it, then
+				// keep going.
+
+				if (paragraph_embedding_level ==
+				    UNICODE_BIDI_LR)
+				{
+					if (!last_lr)
+						last_lr=f;
+				}
+				else
+				{
+					if (last_lr)
+					{
+						// If we skipped over some
+						// left-to-right lines, emit
+						// them.
+						helper.lr_line
+							(f->next_fragment(),
+							 last_lr);
+						last_lr=0;
+					}
+					helper.line(f,
+						    paragraph_embedding_level);
+				}
+
+				if (n_lines_in_paragraph == 0)
+				{
+					// Paragraph began with left-to-right
+					// text.
+					if (last_lr)
+						helper.lr_line(f, last_lr);
+				}
+
+				f=f->prev_fragment();
+			}
+
+			f=end_of_paragraph;
+
+			// If there are more lines to do, we must've emitted
+			// an entire paragraph, and its last fragment must
+			// begin with the paragraph break, \n, so emit it.
+			if (diff)
+				str.insert(str.size(), {f->string, 0, 1});
+			f=f->next_fragment();
+		}
+	}
+
 	return str;
 }
 

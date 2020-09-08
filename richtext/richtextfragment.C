@@ -542,7 +542,7 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 	{
 		if (breaks[--p] == unicode_lb::mandatory && p != 0)
 		{
-			split(my_fragments, p, split_lr);
+			split(my_fragments, p, split_lr, false);
 			++counter;
 		}
 	}
@@ -691,14 +691,15 @@ dim_t richtextfragmentObj::x_width(ONLY IN_THREAD)
 ////////////////////////////////////////////////////////////////////////////
 
 void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
-				enum split_t type)
+				enum split_t type, bool force)
 {
 	USING_MY_PARAGRAPH();
 
 	const std::u32string &current_string=string.get_string();
 
 	assert_or_throw(pos > 0 && pos < current_string.size() &&
-			breaks[pos] != unicode_lb::none,
+			(force ||
+			 breaks[pos] != unicode_lb::none),
 			"Internal error: attempting to split a text fragment at a disallowed position");
 
 
@@ -749,7 +750,7 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 
 		my_fragments.insert_no_change_in_char_count(iter, new_fragment);
 	}
-	else if (break_type == unicode_lb::mandatory)
+	else if (!force && break_type == unicode_lb::mandatory)
 	{
 		// Copy split content into a new paragraph.
 
@@ -858,7 +859,7 @@ void richtextfragmentObj::merge_rl_lr(fragment_list &my_fragments,
 		return;
 	}
 
-	other->split(my_fragments, p->first, split_lr);
+	other->split(my_fragments, p->first, split_lr, false);
 
 	other->merge_lr_lr(my_fragments, ref{this});
 
@@ -893,7 +894,7 @@ void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
 	{
 		merge_again=true;
 		other->split(my_fragments, next_left_to_right_start,
-			     split_lr);
+			     split_lr, true);
 	}
 
 	// Instead, merge this fragment at the end of the next one.
@@ -1236,12 +1237,11 @@ size_t richtextfragmentObj::compute_split_pos_lr(dim_t desired_width) const
 				// Ok, now we look for the first line break
 				// up to here.
 
-				while (xpos < n)
+				while (++xpos < n)
 				{
 					if (breaks.at(xpos) !=
 					    unicode_lb::none)
 						break;
-					++xpos;
 				}
 				break;
 			}
@@ -1303,7 +1303,9 @@ size_t richtextfragmentObj::compute_split_pos_rl(dim_t desired_width) const
 						if (p == metae)
 							xpos=string.size();
 						else
+						{
 							xpos=p->first;
+						}
 						break;
 					}
 					--p;
@@ -1359,6 +1361,7 @@ size_t richtextfragmentObj::compute_split_pos_rl(dim_t desired_width) const
 				for (p=metae; p != metab; )
 				{
 					--p;
+
 					if (p->second.rl)
 						first_lr=p->first;
 					else break;

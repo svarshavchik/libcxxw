@@ -483,7 +483,7 @@ void testrichtext3(const main_window &w,
 					 auto f=(*p)->fragments.get_iter(0);
 
 					 (*f)->split(my_fragments, 10,
-						     (*f)->split_lr);
+						     (*f)->split_lr, false);
 					 my_fragments
 						 .fragments_were_rewrapped();
 				 }
@@ -634,8 +634,8 @@ void testrichtext4(const main_window &w,
 
 				 auto f=*(*p)->fragments.get_iter(0);
 
-				 f->split(my_fragments, 12, f->split_lr);
-				 f->split(my_fragments, 6, f->split_lr);
+				 f->split(my_fragments, 12, f->split_lr, false);
+				 f->split(my_fragments, 6, f->split_lr, false);
 				 my_fragments.fragments_were_rewrapped();
 			 }
 		 });
@@ -803,7 +803,7 @@ void testrichtext7(const main_window &w,
 	meta1.rl=true;
 
 	richtextstring ustring{
-			       U"Hello\nworld\nrolem\nipsum",
+			       U"olleH\ndlrow\nmelor\nmuspi",
 			       {
 				{0, meta1},
 			       }};
@@ -827,6 +827,15 @@ void testrichtext7(const main_window &w,
 	    || e->at(IN_THREAD).character != 'u')
 		throw EXCEPTION("testrichtext7: test 2 failed");
 
+	if (b->get(e) !=
+	    richtextstring{
+		    U"olle\ndlrow\nmelor\nspi",
+		    {
+			    {0, meta1},
+		    }})
+	{
+		throw EXCEPTION("testrichtext7: test 10 failed");
+	}
 	b->move(IN_THREAD, 2);
 	if (b->pos() != 11 || b->at(IN_THREAD).character != '\n')
 		throw EXCEPTION("testrichtext7: test 3 failed");
@@ -847,7 +856,7 @@ void testrichtext7(const main_window &w,
 		throw EXCEPTION("testrichtext7: test 8 failed");
 	b=b->pos(11);
 	if (b->at(IN_THREAD).character != '\n')
-		throw EXCEPTION("testrichtext7: test 8 failed");
+		throw EXCEPTION("testrichtext7: test 9 failed");
 }
 
 int main(int argc, char **argv)

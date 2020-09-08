@@ -185,16 +185,6 @@ void richtext_implObj::do_set(richtextstring &&string)
 	paragraphs.clear();
 	num_chars=0;
 
-	// Convert the string to rendering order.
-	//
-	// richtextobj::get() returns the string in logical order.
-	//
-	// richtextstring::insert() checks if the richtextstring being
-	// inserted into is_render_order, and if so it also converted
-	// the inserted text into rendering order.
-
-	string.render_order();
-
 	// Calculate mandatory line breaks.
 
 	std::vector<unicode_lb> breaks;

@@ -156,6 +156,39 @@ public:
 			     bool &toosmall,
 			     bool &toobig);
 
+ private:
+
+	//! What rewrap_fragment_toobig returns.
+
+	enum class toobig_results {
+		//! We rewrapped it
+		success,
+		//! Could not rewrap it, too small or no breaking position
+		failed,
+
+		//! We rewrapped it, but we should try again, we may be able
+		//! to rewrap it again.
+		tryagain,
+	};
+
+	//! Rewrap a fragment that's too big.
+
+	//! Called from rewrap_fragment. Returns tryagain if this fragment
+	//! has bidirectional text in both directions. After it was wrapped
+	//! it's possible that it now has bidirectional text in one direction
+	//! that's still too big. We don't break in the middle of direction
+	//! that's opposite to the paragraph embedding level, unless the entire
+	//! fragment is in one direction. So, we could've broken things up
+	//! now, and we now have a fragment in the same direction that can
+	//! be broken up even further, so we should be called again.
+
+	toobig_results rewrap_fragment_toobig(fragment_list &my_fragments,
+					      const richtextfragment &f,
+					      dim_t width,
+					      bool &toosmall,
+					      bool &toobig);
+
+ public:
 	/////////////////////////////////////////////////////////////////////
 
 	//! Locate a fragment.

@@ -32,8 +32,7 @@ richtextstring::richtextstring(const std::u32string &string,
 richtextstring::richtextstring(const richtextstring &other,
 			       size_t pos,
 			       size_t n)
-	: string{other.string.substr(pos, n)}, meta{other.meta},
-	  is_render_order{other.is_render_order}
+	: string{other.string.substr(pos, n)}, meta{other.meta}
 {
 	assert_or_throw(pos <= other.string.size() &&
 			other.string.size()-pos >= n,
@@ -106,6 +105,12 @@ richtextstring::richtextstring(const richtextstring &other,
 
 richtextstring::~richtextstring()=default;
 
+bool richtextstring::operator==(const richtextstring &s) const
+{
+	return get_string() == s.get_string() &&
+		get_meta() == s.get_meta();
+}
+
 void richtextstring::sort_and_validate(meta_t &meta, size_t n)
 {
 	std::sort(meta.begin(), meta.end(),
@@ -177,100 +182,6 @@ void richtextstring::coalesce() const
 	{
 		cached_dir=has_lr ? richtext_dir::both : richtext_dir::rl;
 	}
-}
-
-void richtextstring::swap_order()
-{
-	coalesce();
-
-	// We leave paragraph breaks alone, first, make sure we have meta
-	// breaks on them.
-
-	for (size_t n=string.size(), i=0; i<n; ++i)
-		if (string[i] == '\n')
-		{
-			duplicate(i);
-			if (i+1 < n)
-				duplicate(i+1);
-		}
-	auto b=meta.begin(), e=meta.end();
-
-	while (b != e)
-	{
-		// Find the start of right-to-left text
-
-		if (!b->second.rl)
-		{
-			++b;
-			continue;
-		}
-
-		if (string[b->first] == '\n')
-		{
-			++b;
-			continue;
-		}
-
-		auto p=b;
-
-		// Find the start of the following left-to-right text
-
-		while (b != e)
-		{
-			if (!b->second.rl)
-				break;
-			if (string[b->first] == '\n')
-				break;
-			++b;
-		}
-
-		// Start and end of right-to-left text.
-
-		size_t start_pos=p->first;
-
-		size_t end_pos= b == e ? string.size()	: b->first;
-
-		size_t start_pos_s=start_pos;
-
-		size_t end_pos_s=end_pos;
-
-		// First, we swap the characters.
-		while (start_pos_s < end_pos_s)
-		{
-			--end_pos_s;
-			std::swap(string[start_pos_s], string[end_pos_s]);
-			++start_pos_s;
-		}
-
-		// Now we swap the metadata, p is the start of the right-to-left
-		// metadata, q is the end.
-
-		auto q=b;
-
-		while (p < q)
-		{
-			--q;
-
-			// Number of characters being swapped.
-			size_t n_first=(p+1 == e ? string.size():p[1].first)-
-				p->first;
-			size_t n_last=end_pos-q->first;
-
-			std::swap(*p, *q);
-
-			// Reset the starting index of each metadata.
-
-			p->first=start_pos;
-
-			start_pos += n_last;
-			end_pos -= n_first;
-
-			q->first=end_pos;
-			++p;
-		}
-	}
-	is_render_order=!is_render_order;
-	coalesce_needed=true;
 }
 
 namespace {
@@ -387,20 +298,6 @@ void richtextstring::insert(size_t pos,
 
 	modified();
 
-	if (is_render_order && p->second.rl)
-	{
-		std::u32string rs{s.begin(), s.end()};
-
-		auto b=rs.begin(), e=rs.end();
-
-		while (b < e)
-		{
-			--e;
-			std::swap(*b, *e);
-			++b;
-		}
-		do_insert(pos, rs, new_meta);
-	}
 	do_insert(pos, s, new_meta);
 }
 
@@ -417,15 +314,6 @@ void richtextstring::insert(size_t pos, richtextstring s)
 
 	bool fonts_not_resolved =
 		fonts_need_resolving || s.fonts_need_resolving;
-
-	if (is_render_order)
-	{
-		s.render_order();
-	}
-	else
-	{
-		s.logical_order();
-	}
 
 	do_insert(pos, s.string, s.meta);
 
@@ -800,6 +688,7 @@ richtextstring &richtextstring::operator+=(const richtextstring &o)
 {
 	modified();
 
+	size_t n=string.size();
 	string += o.string;
 
 	size_t p=meta.size();
@@ -807,7 +696,7 @@ richtextstring &richtextstring::operator+=(const richtextstring &o)
 	meta.insert(meta.end(), o.meta.begin(), o.meta.end());
 
 	for (auto b=meta.begin()+p, e=meta.end(); b != e; ++b)
-		b->first += p;
+		b->first += n;
 	return *this;
 }
 

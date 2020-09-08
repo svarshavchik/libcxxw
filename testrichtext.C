@@ -175,7 +175,7 @@ void testsplit(const current_fontcollection &font1,
 		auto control_horiz=fragment->horiz_info;
 
 		fragment->split(my_fragments, test.split_pos,
-				fragment->split_lr);
+				fragment->split_lr, false);
 
 		auto new_fragment=x::ref{fragment->next_fragment()};
 
@@ -381,11 +381,11 @@ void testlinebreaks(const current_fontcollection &font1,
 	meta3.rl=true;
 
 	auto richtext=richtext::create(richtextstring{
-		U"Lorem IpsumDolor Sit Amet",
+		U"Lorem IpsumtiS roloD Amet",
 		{
 			{0, meta1},
-			{11, meta2},
-			{17, meta3},
+			{11, meta3},
+			{14, meta2},
 			{20, meta1},
 		}}, richtext_options{});
 	auto impl=richtext->debug_get_impl(IN_THREAD);
@@ -399,10 +399,6 @@ void testlinebreaks(const current_fontcollection &font1,
 		throw EXCEPTION("Somehow we ended up with multiple fragments");
 
 	auto f=(*p)->get_fragment(0);
-
-	if (f->string.get_string() != U"Lorem IpsumtiS roloD Amet")
-
-		throw EXCEPTION("Rendering order not set");
 
 	std::vector<unicode_lb> expected_breaks=
 		{
@@ -451,7 +447,7 @@ void testrlsplit(const current_fontcollection &font1,
 	meta1.rl=true;
 
 	auto richtext=richtext::create(richtextstring{
-		U"lorem\nIPSUM",
+		U"merol\nMUSPI",
 		{
 			{0, meta1},
 		}}, richtext_options{});
@@ -467,10 +463,6 @@ void testrlsplit(const current_fontcollection &font1,
 
 	auto iter1=richtext->at(0, new_location::lr);
 	auto iter2=richtext->at(6, new_location::lr);
-
-	if (iter1->at(IN_THREAD).character != U'm' ||
-	    iter2->at(IN_THREAD).character != U'M')
-		throw EXCEPTION("testrlsplit: unexpected render_order");
 
 	{
 		auto f=(*p)->get_fragment(0);
@@ -492,7 +484,7 @@ void testrlsplit(const current_fontcollection &font1,
 				" after merge");
 
 	richtext=richtext::create(richtextstring{
-		U"lorem\nIPSUMDolor",
+		U"merol\nMUSPIDolor",
 		{
 			{0, meta1},
 			{11, meta2},
@@ -510,10 +502,6 @@ void testrlsplit(const current_fontcollection &font1,
 
 	iter1=richtext->at(0, new_location::lr);
 	iter2=richtext->at(6, new_location::lr);
-
-	if (iter1->at(IN_THREAD).character != U'm' ||
-	    iter2->at(IN_THREAD).character != U'M')
-		throw EXCEPTION("testrlsplit: unexpected render_order (2)");
 
 	{
 		auto f=(*p)->get_fragment(0);
@@ -545,7 +533,7 @@ void testrlsplit(const current_fontcollection &font1,
 	}
 
 	richtext=richtext::create(richtextstring{
-		U"lorem IPSUM",
+		U"MUSPI merol",
 		{
 			{0, meta1},
 		}}, richtext_options{});
@@ -565,7 +553,7 @@ void testrlsplit(const current_fontcollection &font1,
 
 	if (iter1->at(IN_THREAD).character != U'M' ||
 	    iter2->at(IN_THREAD).character != U'm')
-		throw EXCEPTION("testrlsplit: unexpected render_order (2)");
+		throw EXCEPTION("testrlsplit: unexpected render_order (3)");
 
 	{
 		auto f=(*p)->get_fragment(0);
@@ -573,7 +561,7 @@ void testrlsplit(const current_fontcollection &font1,
 		paragraph_list my_paragraphs{*impl};
 		fragment_list my_fragments{my_paragraphs, **p};
 
-		f->split(my_fragments, 5, f->split_rl);
+		f->split(my_fragments, 5, f->split_rl, false);
 	}
 
 	if ((*p)->fragments.size() != 2 ||
@@ -670,7 +658,6 @@ void testrlmerge(const current_fontcollection &font1,
 	{
 		auto copy=t.s;
 
-		copy.debug_set_render_order(true);
 		auto richtext=richtext::create(std::move(copy),
 					       richtext_options{});
 
@@ -756,7 +743,7 @@ void testunwrap(const current_fontcollection &font1,
 		       // Case 0
 		       {
 			{
-			 U"lorem ipsum dolorsit amet",
+			 U"lorem rolod muspisit amet",
 			 {
 			  {0, meta1},
 			  {6, meta2},
@@ -788,7 +775,7 @@ void testunwrap(const current_fontcollection &font1,
 		       // Case 1
 		       {
 			{
-			 U"lorem ipsum dolor sit amet\n",
+			 U" merolipsum dolor tema tis\n",
 			 {
 			  {0, meta2},
 			  {6, meta1},
@@ -810,7 +797,7 @@ void testunwrap(const current_fontcollection &font1,
 		       // Case 2
 		       {
 			{
-			 U"lorem ipsum dolor sit amet\n",
+			 U"lorem ipsum tema tis rolod\n",
 			 {
 			  {0, meta1},
 			  {12, meta2},
@@ -861,7 +848,8 @@ void testunwrap(const current_fontcollection &font1,
 				     : t.preliminary_split)
 			{
 				auto f=(*p)->get_fragment(fragment);
-				f->split(my_fragments, offset, split_type);
+				f->split(my_fragments, offset, split_type,
+					 false);
 			}
 
 			for (const auto &[fragment, expected]
@@ -873,7 +861,7 @@ void testunwrap(const current_fontcollection &font1,
 					throw EXCEPTION("testunwrap: case "
 							<< i
 							<< ": unexpected "
-							"fragment"
+							"fragment "
 							<< fragment);
 			}
 		}

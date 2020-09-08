@@ -69,8 +69,6 @@ textlabelObj::implObj::implObj(const text_param &text,
 static textlabelObj::implObj::hotspot_info_t
 create_hotspot_info(richtextstring &&s, const richtext &t)
 {
-	s.render_order();
-
 	textlabelObj::implObj::hotspot_info_t info;
 
 	const auto &m=s.get_meta();

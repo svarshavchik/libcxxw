@@ -280,7 +280,14 @@ public:
 		   //! Split type
 
 		   //! The onus is on the caller to do the right thing.
-		   enum split_t type
+		   enum split_t type,
+
+		   //! Force the split
+
+		   //! Turns off sanity checking. Used to split nl
+		   //! at the end of the paragraph, before splitting the
+		   //! last line.
+		   bool force
 		   );
 
 	//! Take the next fragment in this paragraph and merge it into this one.
@@ -313,6 +320,8 @@ public:
 	void merge_lr_rl(fragment_list &my_fragments,
 			 const richtextfragment &other);
 
+ public:
+
 	//! Left-to-right paragraph, left-to-right text merge.
 
 	//! Basically appends the next fragment to this one.
@@ -323,8 +332,6 @@ public:
 	//! prep work, then invokes this too.
 	void merge_lr_lr(fragment_list &my_fragments,
 			 const richtextfragment &other);
-
- public:
 
 
 	//! Calculate the fragment index from start of rich text.

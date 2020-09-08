@@ -3,8 +3,13 @@
 #define x_w_impl_richtext_richtextmeta_H
 #define x_w_impl_fonts_freetypefontfwd_H
 #define x_w_impl_fonts_freetypefont_H
+#define x_w_text_hotspot_H
+#define x_w_text_hotspotfwd_H
 
 LIBCXXW_NAMESPACE_START
+
+typedef int text_hotspot;
+typedef int text_hotspotptr;
 
 class richtextmeta {
 
@@ -12,6 +17,8 @@ public:
 
 	char c;
 	bool rl=false;
+
+	text_hotspotptr link=0;
 
 	static constexpr dim_t ascender=8;
 	static constexpr dim_t descender=4;
@@ -64,8 +71,10 @@ LIBCXXW_NAMESPACE_END
 
 #include "richtext/richtextstring.C"
 #include "richtext/richtextstring2.C"
+#include "richtext/richtextiterator.C"
 #include "richtext/richtextfragment.C"
 #include "richtext/richtextparagraph.C"
+#include "richtext/richtext.C"
 #include "richtext/richtext_impl.C"
 #include "richtext/paragraph_list.C"
 #include "richtext/fragment_list.C"

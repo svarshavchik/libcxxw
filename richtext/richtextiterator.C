@@ -439,17 +439,13 @@ richtextstring richtextiteratorObj::get(const const_richtextiterator &other)
 	assert_or_throw(my_richtext == other->my_richtext,
 			"Iterators to two different objects.");
 
-	richtextstring ret;
-
-	my_richtext->read_only_lock
+	return my_richtext->read_only_lock
 		([&, this]
 		 (auto &lock)
-		 {
-			 ret=my_richtext->get(lock, my_location,
-					      other->my_location);
-		 });
-
-	return ret;
+		{
+			return my_richtext->get(lock, my_location,
+						other->my_location);
+		});
 }
 
 dim_t richtextiteratorObj::horiz_pos(ONLY IN_THREAD)

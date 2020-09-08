@@ -11,6 +11,7 @@
 #include "x/w/impl/richtext/richtext.H"
 #include "x/w/impl/richtext/richtextstringfwd.H"
 #include "x/w/impl/richtext/richtextmeta.H"
+#include "x/w/impl/richtext/richtext_insertfwd.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/screenfwd.H"
 #include "x/w/input_field_lock.H"
@@ -22,8 +23,6 @@
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
-
-class LIBCXX_HIDDEN richtext_insert_base;
 
 //! A list of text paragraphs that ends with a mandatory line break.
 

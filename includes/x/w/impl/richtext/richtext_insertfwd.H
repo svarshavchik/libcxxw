@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct richtext_insert_base;
+struct LIBCXX_HIDDEN richtext_insert_base;
 
 LIBCXXW_NAMESPACE_END
 

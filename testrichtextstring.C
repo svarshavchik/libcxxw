@@ -722,31 +722,6 @@ const struct render_order_test_case render_order_test_cases[]={
 	},
 };
 
-void renderordertest()
-{
-	for (const auto &test:render_order_test_cases)
-	{
-		richtextstring rts{test.logical_s, test.logical_meta};
-
-		richtextstring rts_orig=rts;
-
-		rts.render_order();
-
-		if (rts.get_string() != test.render_s ||
-		    rts.get_meta() != test.render_meta)
-			throw EXCEPTION("Test " << test.testname << " failed");
-
-		richtextstring rts2{rts, 0, rts.get_string().size()};
-
-		rts2.logical_order();
-
-		if (rts2.get_string() != rts_orig.get_string() ||
-		    rts2.get_meta() != rts_orig.get_meta())
-			throw EXCEPTION("Test " << test.testname
-					<< " (reset) failed");
-	}
-}
-
 void kerningtest()
 {
 	static const struct {
@@ -1038,7 +1013,7 @@ void kerningtest()
 
 void rlmetricstest()
 {
-	richtextmeta lr, rl;
+	richtextmeta lr{0}, rl{0};
 
 	rl.rl=true;
 
@@ -1048,7 +1023,7 @@ void rlmetricstest()
 
 	auto impl=LIBCXX_NAMESPACE::ref<richtext_implObj>::create
 		(richtextstring{
-				U"12 34 56 78 11 22 33 44",
+				U" 87 65 43 2111 22 33 44",
 				{
 				 {0, rl},
 				 {12, lr},
@@ -1064,13 +1039,13 @@ void rlmetricstest()
 		fragment_list my_fragments{my_paragraphs, *p};
 
 		auto f=p->get_fragment(0);
-		f->split(my_fragments, 12, f->split_rl);
+		f->split(my_fragments, 12, f->split_rl, false);
 
 		f=p->get_fragment(0);
-		f->split(my_fragments, 6, f->split_lr);
+		f->split(my_fragments, 6, f->split_lr, false);
 
 		f=p->get_fragment(2);
-		f->split(my_fragments, 6, f->split_rl);
+		f->split(my_fragments, 6, f->split_rl, false);
 	}
 
 	if (auto m=get_metrics(impl); m != std::vector<fragment_metric>{
@@ -1105,7 +1080,7 @@ void rlmetricstest()
 
 void rewraptest()
 {
-	richtextmeta lr, rl;
+	richtextmeta lr{0}, rl{0};
 
 	rl.rl=true;
 
@@ -1193,13 +1168,13 @@ void rewraptest()
 		   },
 		   // Test 4
 		   {
-		    {U"12 34 56 78",
+		    {U" 43 2156 78",
 		     {
 		      {0, rl},
 		      {6, lr},
 		     }
 		    },
-		    10,
+		    90,
 		    UNICODE_BIDI_LR,
 		    {
 		     {U" 43 21", 36, 48, 48, 67,
@@ -1280,7 +1255,7 @@ void rewraptest()
 		      {8, lr},
 		     }
 		    },
-		    70,
+		    110,
 		    UNICODE_BIDI_LR,
 		    {
 		     {U"11 11 11", 37, 48, 48, 103,
@@ -1349,7 +1324,7 @@ void rewraptest()
 
 		   // Test 10
 		   {
-		    {U"1234 567 89",
+		     {U"98 765 4321",
 		     {
 		      {0, rl}
 		     }
@@ -1372,7 +1347,7 @@ void rewraptest()
 
 		   // Test 11
 		   {
-		    {U"1234 567 89",
+		    {U"98 765 4321",
 		     {
 		      {0, rl}
 		     }
@@ -1399,7 +1374,7 @@ void rewraptest()
 		   },
 		   // Test 12
 		   {
-		    {U"1234 567 89",
+		    {U"98 765 4321",
 		     {
 		      {0, rl}
 		     }
@@ -1422,7 +1397,7 @@ void rewraptest()
 
 		   // Test 13
 		   {
-		    {U"11 22 22 11",
+		    {U" 1122 2211 ",
 		     {
 		      {0, rl},
 		      {3, lr},
@@ -1462,21 +1437,27 @@ void rewraptest()
 		    6,
 		    UNICODE_BIDI_RL,
 		    {
-		     {U"22 22", 44, 64, 44, 64,
-		      {
-		       {16, 16, 16, 16, 16},
-		       {0, -2, -2, -10, -2}
-		      }},
-		     {U" 11", 37, 48, 48, 37,
-		      {
-		       {16, 16, 16},
-		       {-1, -10, -1}
-		      }},
-		     {U"11", 31, 32, 32, 31,
-		      {
-		       {16, 16},
-		       {0, -1}
-		      }}
+			    {U"22 ", 44, 44, 44, 44,
+			     {
+				     {16, 16, 16},
+				     {0, -2, -2}
+			     }},
+			    {U"22", 30, 20, 20, 30,
+			     {
+				     {16, 16},
+				     {-10, -2}
+			     }},
+
+			    {U" 11", 37, 48, 48, 37,
+			     {
+				     {16, 16, 16},
+				     {-1, -10, -1}
+			     }},
+			    {U"11", 31, 32, 32, 31,
+			     {
+				     {16, 16},
+				     {0, -1}
+			     }}
 		    },
 		   },
 		  };
@@ -1512,16 +1493,414 @@ void rewraptest()
 	}
 }
 
+void gettest()
+{
+	richtextmeta lr{0}, rl{0};
+
+	rl.rl=true;
+
+	const struct {
+		richtextstring string;
+		dim_t wrap_to_width;
+		unicode_bidi_level_t lr;
+
+		std::vector<std::u32string> fragments;
+
+		std::vector<std::tuple<size_t, size_t, std::u32string>> tests;
+
+	} testcases[]=
+		{
+			// Test 1
+			{
+				{U"11222 22 233",
+				 {
+					 {0, lr},
+					 {2, rl},
+					 {10, lr},
+				 }
+				},
+				80,
+				UNICODE_BIDI_LR,
+				{
+					U"11",
+					U" 22 2",
+					U"22233",
+				},
+
+				{
+					{1, 11, U"1222 22 23"},
+					{1, 8,  U"12 22 2"},
+					{0, 2, U"1122 2"},
+					{0, 6, U"11"},
+					{5, 11, U"222 22 3"},
+					{5, 9, U"22 22 "},
+				},
+
+			},
+			// Test 2
+			{
+				{U"11222 22 233\n11222 22 233",
+				 {
+					 {0, lr},
+					 {2, rl},
+					 {10, lr},
+					 {15, rl},
+					 {23, lr},
+				 }
+				},
+				88,
+				UNICODE_BIDI_LR,
+				{
+					U"11",
+					U" 22 2",
+					U"22233\n",
+					U"11",
+					U" 22 2",
+					U"22233",
+				},
+				{
+					{11, 14, U"3\n1"},
+				},
+			},
+			// Test 3
+
+			{
+				{U"11222 22 2\n222 22 233",
+				 {
+					 {0, lr},
+					 {2, rl},
+					 {10, lr},
+					 {11, rl},
+					 {19, lr},
+				 }
+				},
+				80,
+				UNICODE_BIDI_LR,
+				{
+					U"11",
+					U" 22 2",
+					U"222\n",
+					U" 22 2",
+					U"22233",
+				},
+				{
+					{0, 20, U"11222 22 2\n222 22 23"},
+					{6, 10, U"222 22 2"},
+				},
+			},
+			// Test 4
+			{
+				{U"222 22 211\n33222 22 2",
+				 {
+					 {0, lr},
+					 {8, rl},
+					 {11, lr},
+					 {13, rl},
+				 }
+				},
+				80,
+				UNICODE_BIDI_RL,
+				{
+					U"11",
+					U"222 ",
+					U"\n22 2",
+					U" 22 2",
+					U"33222",
+				},
+				{
+					{0, 20, U"222 22 211\n3222 22 2"},
+					{2, 10, U" 22 2"},
+					{10, 20, U"\n3222 22 2"},
+				},
+			},
+			// Test 5
+			{
+				{U"222 22 211\n33222 22 2",
+				 {
+					 {0, rl},
+					 {8, lr},
+					 {10, rl},
+					 {11, lr},
+					 {13, rl},
+				 }
+				},
+				70,
+				UNICODE_BIDI_RL,
+				{
+					U" 211",
+					U" 22",
+					U"\n222",
+					U" 22 2",
+					U"222",
+					U"33"
+				},
+				{
+					{0, 11, U"222 221\n"},
+					{1, 11, U"222 2211\n"},
+					{4, 13, U"222 22\n 2"},
+				},
+			},
+
+			// Test 6
+			{
+				{U"1122 2 222\n222 22 2",
+				 {
+					 {0, lr},
+					 {2, rl},
+				 }
+				},
+				80,
+				UNICODE_BIDI_RL,
+				{
+					U" 2 222",
+					U"\n1122",
+					U" 22 2",
+					U"222",
+				},
+				{
+					{0, 10, U"1122 2 222"},
+					{0, 9, U"122 2 222"},
+					{0, 11, U"1122 2 222\n"},
+				},
+			},
+			// Test 7
+			{
+				{U"111 11 122\n222 22 2",
+				 {
+					 {0, lr},
+					 {8, rl},
+				 }
+				},
+				40,
+				UNICODE_BIDI_RL,
+				{
+					U"22",
+					U"111 ",
+					U"11 ",
+					U"\n1",
+					U" 2",
+					U" 22",
+					U"222",
+				},
+				{
+					{0, 10, U"111 11 122"},
+					{0, 11, U"111 11 122\n"},
+					{0, 13, U"111 11 122\n 2"},
+					{0, 10, U"111 11 122"},
+					{5, 10, U"111 11 1"},
+					{4, 10, U"11 11 1"},
+					{10,18, U"\n22 22 2"},
+				},
+			},
+			// Test 8
+			{
+				{U"111 11 122",
+				 {
+					 {0, rl},
+				 }
+				},
+				200,
+				UNICODE_BIDI_RL,
+				{
+					U"111 11 122",
+				},
+				{
+					{0, 3, U"122"},
+				}
+			},
+
+			// Test 9
+			{
+				{U"2211 111 111",
+				 {
+					 {0, rl},
+					 {2, lr},
+				 }
+				},
+				100,
+				UNICODE_BIDI_RL,
+				{
+					U"11 111 ",
+					U"22111",
+				},
+				{
+					{6, 11, U"211 111 111"},
+					{6, 10, U"11 111 111"},
+					{6, 9, U"11 111 11"},
+				}
+			},
+			// Test 10
+			{
+				{U"221122 2222 222 22222",
+				 {
+					 {0, rl},
+					 {2, lr},
+					 {4, rl},
+				 }
+				},
+				120,
+				UNICODE_BIDI_RL,
+				{
+					U" 22222",
+					U" 2222 222",
+					U"221122",
+				},
+				{
+					{0, 20, U"21122 2222 222 22222"},
+					{0, 19, U"1122 2222 222 22222"},
+					{0, 18, U"122 2222 222 22222"},
+					{0, 17, U"22 2222 222 22222"},
+					{0, 16, U"2 2222 222 22222"},
+				}
+			},
+		};
+
+	size_t casenum=0;
+
+	for (const auto &t:testcases)
+	{
+		++casenum;
+
+		richtext_options options;
+
+		options.paragraph_embedding_level=t.lr;
+
+		auto str=richtext::create((richtextstring)t.string,
+					  options);
+
+		str->rewrap(t.wrap_to_width);
+
+		std::vector<std::u32string> actual_fragments;
+
+		str->read_only_lock
+			([&]
+			 (auto &lock)
+			{
+				paragraph_list my_paragraphs{**lock};
+
+				auto p=*(*lock)->paragraphs.get_paragraph(0);
+				fragment_list my_fragments{my_paragraphs, *p};
+
+				auto f=&*p->get_fragment(0);
+
+				while (f)
+				{
+					actual_fragments.push_back
+						(f->string.get_string());
+
+					f=f->next_fragment();
+				}
+			});
+
+		if (actual_fragments != t.fragments)
+		{
+			std::ostringstream o;
+
+			o << "Expected lines:" << std::endl;
+
+			for (auto &f:t.fragments)
+			{
+				o << "   \"" << std::string{f.begin(), f.end()}
+					<< "\"" << std::endl;
+			}
+			o << "Actual lines:" << std::endl;
+			for (auto &f:actual_fragments)
+			{
+				o << "   \"" << std::string{f.begin(), f.end()}
+					<< "\"" << std::endl;
+			}
+			throw EXCEPTION("gettest #" << casenum << " failed:\n"
+					<< o.str());
+		}
+		auto b=str->begin(), e=str->end();
+
+		if (b->pos() != 0 && e->pos() != t.string.size()-1)
+			throw EXCEPTION("gettext #" << casenum << "failed: "
+					"unexpected begin/end positions.");
+
+		size_t n=0;
+
+		for (const auto &[start, end, result] : t.tests)
+		{
+			++n;
+
+			b=b->pos(start);
+			e=e->pos(end);
+
+			auto res=b->get(e).get_string();
+
+			if (res != result)
+			{
+				std::string res_s{res.begin(), res.end()};
+				std::string result_s{result.begin(),
+					result.end()};
+				throw EXCEPTION("gettext #" << casenum
+						<< " failed test "
+						<< n << ": result is \""
+						<< res_s
+						<< "\" instead of \""
+						<< result_s
+						<< "\"");
+			}
+		}
+
+		richtextstring unwrapped_string;
+
+		str->read_only_lock
+			([&]
+			 (auto &lock)
+			{
+				(*lock)->unwrap();
+
+				(*lock)->paragraphs.for_paragraphs
+					(0,
+					 [&]
+					 (const auto &p)
+					 {
+						 auto s=p->get_fragment(0)
+							 ->string;
+
+						 if (s.size() > 1 &&
+						     s.get_string()[0] == '\n'
+						     &&
+						     t.lr != UNICODE_BIDI_LR)
+						 {
+							 richtextstring
+								 r{s,
+								 1,
+								 s.size()-1};
+
+							 r += richtextstring
+							 {s, 0, 1};
+
+							 s=r;
+						 }
+
+						 unwrapped_string += s;
+						 return true;
+					 });
+			});
+
+		if (unwrapped_string != t.string)
+				throw EXCEPTION("gettext #" << casenum
+						<< " failed test "
+						<< n
+						<< ": did not unwrap back to "
+						"the original string");
+
+	}
+}
+
 int main()
 {
 	try {
 		inserttest();
 		erasesubstrtest();
 		replacesubstrtest();
-		renderordertest();
 		kerningtest();
 		rlmetricstest();
 		rewraptest();
+		gettest();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

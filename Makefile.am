@@ -755,6 +755,7 @@ libcxxw_la_SOURCES=\
 	richtext/paragraph_list.C		    \
 	richtext/paragraph_list.H		    \
 	richtext/richtext.C			    \
+	richtext/richtext2.C			    \
 	richtext/richtext_alteration_config.H	    \
 	richtext/richtext_alteration_configfwd.H    \
 	richtext/richtext_draw_boundaries.C	    \
