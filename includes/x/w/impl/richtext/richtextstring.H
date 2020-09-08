@@ -213,6 +213,18 @@ public:
 		is_render_order=flag;
 	}
 
+	//! Replace a portion of this string with another one.
+
+	//! other_string's content, starting with its character #other_pos
+	//! and containing #other_size characters replaces the contents of
+	//! this string, starting at #pos. This string must have at least
+	//! pos+other_size characters.
+
+	void replace(size_t pos,
+		     const richtextstring &other_string,
+		     size_t other_pos,
+		     size_t other_size);
+
 	//! Remove portions of this string.
 	void erase(size_t pos, size_t n);
 

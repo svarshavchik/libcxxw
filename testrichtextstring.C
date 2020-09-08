@@ -517,6 +517,135 @@ void erasesubstrtest()
 	}
 }
 
+void replacesubstrtest()
+{
+	static const struct {
+		richtextstring string;
+		richtextstring other;
+		size_t  replace_pos;
+		size_t  other_pos, other_size;
+		richtextstring result;
+	} tests[]={
+		{
+			// Test 1
+			{U"123456",
+			 {
+				 {0, {'a'}},
+			 }},
+			{U"789",
+			 {
+				 {0, {'b'}},
+			 }},
+			0,
+			0, 3,
+			{U"789456",
+			 {
+				 {0, {'b'}},
+				 {3, {'a'}},
+			 }}
+
+		},
+		{
+			// Test 2
+			{U"123456",
+			 {
+				 {0, {'a'}},
+			 }},
+			{U"789",
+			 {
+				 {0, {'b'}},
+			 }},
+			1,
+			0, 3,
+			{U"178956",
+			 {
+				 {0, {'a'}},
+				 {1, {'b'}},
+				 {4, {'a'}},
+			 }}
+
+		},
+		{
+			// Test 3
+			{U"123456",
+			 {
+				 {0, {'a'}},
+			 }},
+			{U"789",
+			 {
+				 {0, {'b'}},
+			 }},
+			3,
+			0, 3,
+			{U"123789",
+			 {
+				 {0, {'a'}},
+				 {3, {'b'}},
+			 }}
+
+		},
+		{
+			// Test 4
+			{U"123456",
+			 {
+				 {0, {'a'}},
+				 {2, {'b'}},
+				 {5, {'c'}},
+			 }},
+			{U"789",
+			 {
+				 {0, {'d'}},
+			 }},
+			2,
+			0, 3,
+			{U"127896",
+			 {
+				 {0, {'a'}},
+				 {2, {'d'}},
+				 {5, {'c'}},
+			 }}
+
+		},
+		{
+			// Test 5
+			{U"123456",
+			 {
+				 {0, {'a'}},
+			 }},
+			{U"67890",
+			 {
+				 {0, {'x'}},
+				 {1, {'b'}},
+				 {4, {'y'}},
+			 }},
+			2,
+			1, 3,
+			{U"127896",
+			 {
+				 {0, {'a'}},
+				 {2, {'b'}},
+				 {5, {'a'}},
+			 }}
+
+		},
+	};
+
+	size_t i=0;
+
+	for (const auto &t:tests)
+	{
+		++i;
+		auto string=t.string;
+
+		string.replace(t.replace_pos, t.other,
+			       t.other_pos, t.other_size);
+
+		if (string != t.result)
+			throw EXCEPTION("replacesubstrtest #" << i <<
+					" failed");
+	}
+}
+
 struct render_order_test_case {
 	const char *testname;
 
@@ -1388,6 +1517,7 @@ int main()
 	try {
 		inserttest();
 		erasesubstrtest();
+		replacesubstrtest();
 		renderordertest();
 		kerningtest();
 		rlmetricstest();

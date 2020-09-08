@@ -624,10 +624,64 @@ void richtextstring::do_insert(size_t pos,
 	cleanup.unguard();
 }
 
+void richtextstring::replace(size_t pos,
+			     const richtextstring &other_string,
+			     size_t other_pos, size_t other_size)
+{
+	size_t s=size();
+	size_t other_s=other_string.size();
+
+	assert_or_throw(pos <= s &&
+			other_pos <= other_s &&
+			other_s-other_pos >= other_size &&
+			s-pos >= other_size,
+			"Internal error: overflow in richtextstring::replace()"
+			);
+
+	if (other_size == 0)
+		return;
+
+	other_string.meta.reserve(other_string.meta.size()+2);
+	auto other_meta_begin=duplicate(other_string.meta, other_pos);
+	auto other_meta_end=duplicate(other_string.meta, other_pos+other_size);
+
+	// Duplicate meta at insert begin and insert end points.
+	//
+	// reserve() ensures that duplicate() will not reallocate.
+
+	meta.reserve(meta.size()+2+(other_meta_end-other_meta_begin));
+
+	auto meta_begin=duplicate(pos);
+	auto meta_end=duplicate(pos+other_size);
+
+	// Erase the existing string's meta, and then insert the other_string
+	// meta.
+	meta.erase(meta_begin, meta_end);
+	meta.insert(meta_begin, other_meta_begin, other_meta_end);
+
+	// Update the starting position of the just-inserted meta.
+	s=(other_meta_end-other_meta_begin);
+	while (s)
+	{
+		meta_begin->first -= other_pos;
+		meta_begin->first += pos;
+		++meta_begin;
+		--s;
+	}
+
+	//! And replace the contents of the string itself.
+	auto ob=other_string.string.begin();
+
+	std::copy(ob+other_pos, ob+other_pos+other_size,
+		  string.begin()+pos);
+
+	coalesce_needed=true;
+}
+
 void richtextstring::erase(size_t pos, size_t n)
 {
 	assert_or_throw(pos <= string.size() && string.size()-pos >= n,
-			"Internal error: overflow in erase()");
+			"Internal error: overflow in richtextstring::erase()");
 
 	if (n == 0)
 		return;
