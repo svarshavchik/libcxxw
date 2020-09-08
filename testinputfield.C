@@ -631,12 +631,18 @@ void testbutton()
 
 			 conf6.hint="\"a\"";
 
-			 factory->create_input_field("", conf6)
-				 ->on_filter
+			 auto fld6=factory->create_input_field("", conf6);
+
+			 fld6->on_filter
 				 ([]
 				  (ONLY IN_THREAD,
 				   const auto &info)
 				  {
+					  std::cout << info.starting_pos
+						    << ", " << info.n_delete
+						    << ", "
+						    << info.new_contents.size()
+						    << std::endl;
 					  info.update();
 
 					  if (info.new_contents == U"a")
@@ -657,11 +663,12 @@ void testbutton()
 						close_flag->close();
 					});
 			 factory=layout->append_row();
-			 b=factory->create_button("Enable/Disable", {
+			 b=factory->create_button("Enable/Disable+Set", {
 					 LIBCXX_NAMESPACE::w::default_button(),
 						 });
 			 b->on_activate
 			 ([flag=true,
+			   fld6,
 			   mw=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
 			  (THREAD_CALLBACK,
 			   const auto &,
@@ -682,6 +689,7 @@ void testbutton()
 				 appdata->second->set_enabled(flag);
 				 appdata->password->set_enabled(flag);
 				 appdata->spinner->set_enabled(flag);
+				 fld6->set("Foo");
 			 });
 
 

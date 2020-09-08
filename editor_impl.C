@@ -629,6 +629,13 @@ void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
 			deselect=true;
 		}
 	}
+	else if (current_keyboard_focus(IN_THREAD) &&
+		 trigger.index() != callback_trigger_button_event)
+	{
+		// Move to the logical end of the field if focus is not gained
+		// because of a button click.
+		to_end(IN_THREAD, {}, trigger);
+	}
 
 	if (config.autodeselect && !current_keyboard_focus(IN_THREAD))
 		deselect=true;
@@ -2146,7 +2153,7 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 			     ignored, trigger};
 	selection_cursor_t::lock &cursor_lock=moving.cursor_lock;
 
-	size_t deleted=cursor->end()->pos();
+	size_t deleted=text->size(IN_THREAD)-1;
 
 	update_content(IN_THREAD, moving, 0, deleted, string);
 	remove_primary_selection(IN_THREAD);
