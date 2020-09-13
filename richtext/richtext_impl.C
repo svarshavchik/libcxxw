@@ -5,6 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "richtext/richtext_impl.H"
+#include "richtext/richtext_range.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextcursorlocation.H"
@@ -569,35 +570,105 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 	}
 }
 
-struct LIBCXX_HIDDEN richtext_implObj::remove_info {
+//! Calculate which portion of the line fragment falls in the removal range.
 
-	const richtextcursorlocationObj *location_a;
-	const richtextcursorlocationObj *location_b;
+//! Subclasses richtext_range to determine which portions of a given fragment
+//! are within the removal range.
 
-	std::ptrdiff_t diff;
+struct richtext_implObj::remove_info : richtext_range {
 
-	remove_info(const richtextcursorlocation &ar,
-		    const richtextcursorlocation &br)
-		: location_a(&*ar), location_b(&*br),
-		diff(location_a->compare(*location_b))
+	using richtext_range::richtext_range;
+
+	//! Which part of the given fragment is in the selection range.
+
+	//! If all or part of the given fragment is in the selected richtext
+	//! range, return the first character index and the number of
+	//! characters.
+	//!
+	//! Number of characters being 0 indicates no part of this fragment
+	//! is in range.
+
+	std::tuple<size_t, size_t> in_range(const richtextfragmentObj *f)
+	{
+		auto index=f->index();
+
+		// Edge case, before or after the range:
+
+		auto starting_index=location_a->my_fragment->index();
+		auto ending_index=location_b->my_fragment->index();
+
+		if (index < starting_index || index > ending_index)
+			return {0, 0}; // Shouldn't happen.
+
+		// If this is the first or the last fragment in the range,
+		// use classify_fragment() then the appropriate richtext_range
+		// method, and capture what comes out of range().
+
+		if (index == starting_index || index == ending_index)
 		{
+			first=0;
+			last=0;
 
-			if (diff > 0)
+			if (complete_line())
 			{
-				location_b=&*ar;
-				location_a=&*br;
+				// ... but this is all on one line.
+
+				return {first, last-first};
+			}
+
+			auto embedding_level=classify_fragment(f);
+
+			if (embedding_level == UNICODE_BIDI_LR)
+			{
+				lr_lines(nullptr, f, f);
 			}
 			else
 			{
-				diff= -diff;
+				rl_lines(f, f, nullptr);
 			}
+
+			return {first, last-first};
 		}
+
+		// Completely inside the range. Shouldn't happen, we get
+		// called only for the starting and ending character range.
+
+		return {0, f->string.size()};
+	}
+private:
+
+	mutable size_t first=0, last=0;
+
+	// Capture what lr_lines() or rl_lines() feeds us, piecemeal, and
+	// assume that what's in range is the combined part.
+
+	void range(const richtextstring &other,
+		   size_t start,
+		   size_t n) const override
+	{
+		if (n == 0)
+			return;
+
+		if (first == last)
+			first=last=start;
+
+		if (start < first)
+			first=start;
+
+		start += n;
+
+		if (start > last)
+		{
+			last=start;
+		}
+	}
+
 };
 
 void richtext_implObj::remove_at_location(const richtextcursorlocation &ar,
 					  const richtextcursorlocation &br)
 {
-	remove_info info{ar, br};
+	remove_info info{ref{this}, ar, br};
 
 	if (info.diff == 0)
 		return; // Too easy
@@ -613,7 +684,7 @@ void richtext_implObj
 		      const richtextcursorlocation &remove_from,
 		      const richtextcursorlocation &remove_to)
 {
-	remove_info info{remove_from, remove_to};
+	remove_info info{ref{this}, remove_from, remove_to};
 
 	paragraph_list my_paragraphs{*this};
 
@@ -675,7 +746,7 @@ richtext_implObj::get_metrics(dim_t preferred_width)
 	};
 }
 
-void richtext_implObj::remove_at_location(const remove_info &info,
+void richtext_implObj::remove_at_location(remove_info &info,
 					  paragraph_list &my_paragraphs)
 {
 	remove_at_location_no_rewrap(info, my_paragraphs);
@@ -703,7 +774,7 @@ void richtext_implObj::remove_at_location(const remove_info &info,
 }
 
 void richtext_implObj
-::remove_at_location_no_rewrap(const remove_info &info,
+::remove_at_location_no_rewrap(remove_info &info,
 			       paragraph_list &my_paragraphs)
 {
 	assert_or_throw(info.location_a->my_fragment &&
@@ -717,6 +788,25 @@ void richtext_implObj
 				      *fragment_a->my_paragraph);
 
 	auto diff=info.diff;
+
+	auto [a_start, a_size]=info.in_range(fragment_a);
+	auto [b_start, b_size]=info.in_range(fragment_b);
+
+	if (diff <= 1) // Same line
+	{
+		fragment_list fragment_a_list{my_paragraphs,
+			*fragment_a->my_paragraph};
+
+		fragment_a->remove(a_start,
+				   a_size,
+				   fragment_a_list);
+		return;
+	}
+
+	assert_or_throw(a_size < fragment_a->string.size() ||
+			b_size < fragment_b->string.size(),
+			"Internal error: cannot be removing both the starting "
+			"and the ending line completely");
 
 	if (diff > 1)
 	{
@@ -744,16 +834,29 @@ void richtext_implObj
 			}
 		}
 
-		// Then merge the next fragment into this one.
+		// Then merge the next fragment into this one, according
+		// to the paragraph embedding level.
 
-		fragment_a->merge(fragment_a_list);
+		fragment_a->merge(fragment_a_list,
+				  fragment_a->merge_paragraph);
 		my_paragraphs.recalculation_required();
 	}
 
-	fragment_a->remove(info.location_a->get_offset(),
-			   info.location_b->get_offset()-
-			   info.location_a->get_offset(),
-			   fragment_a_list);
+	// merge_paragraph will end up with location_b before location_a
+	// in right-to-left paragraph embedding level.
+
+	auto a=info.location_a;
+	auto b=info.location_b;
+
+	if (a->compare(*b) > 0)
+		std::swap(a, b);
+
+	a->my_fragment->remove(a->get_offset() +
+			       // This is the *ending* location. and 'b' is the
+			       // *starting* location.
+			       (my_paragraphs.text.rl() ? 1:0),
+			       a_size + b_size,
+			       fragment_a_list);
 }
 
 LIBCXXW_NAMESPACE_END

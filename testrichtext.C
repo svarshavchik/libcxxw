@@ -213,7 +213,7 @@ void testsplit(const current_fontcollection &font1,
 					+ test.results + ", got: " + s);
 		}
 
-		fragment->merge(my_fragments);
+		fragment->merge(my_fragments, fragment->merge_bidi);
 
 		if (control_text.get_string() != fragment->string.get_string()
 		    ||
@@ -470,7 +470,7 @@ void testrlsplit(const current_fontcollection &font1,
 		paragraph_list my_paragraphs{*impl};
 		fragment_list my_fragments{my_paragraphs, **p};
 
-		f->merge(my_fragments);
+		f->merge(my_fragments, f->merge_bidi);
 	}
 
 	if ((*p)->get_fragment(0)->string.get_string() !=
@@ -509,7 +509,7 @@ void testrlsplit(const current_fontcollection &font1,
 		paragraph_list my_paragraphs{*impl};
 		fragment_list my_fragments{my_paragraphs, **p};
 
-		f->merge(my_fragments);
+		f->merge(my_fragments, f->merge_bidi);
 	}
 
 	if ((*p)->get_fragment(0)->string.get_string() !=
@@ -673,7 +673,7 @@ void testrlmerge(const current_fontcollection &font1,
 			paragraph_list my_paragraphs{*impl};
 			fragment_list my_fragments{my_paragraphs, **p};
 
-			f->merge(my_fragments);
+			f->merge(my_fragments, f->merge_bidi);
 		}
 
 		if (impl->paragraphs.size() != 1)

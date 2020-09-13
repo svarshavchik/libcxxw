@@ -5,6 +5,7 @@
 #define x_w_impl_fonts_freetypefont_H
 #define x_w_text_hotspot_H
 #define x_w_text_hotspotfwd_H
+#define connection_thread_h
 
 LIBCXXW_NAMESPACE_START
 
@@ -94,4 +95,5 @@ const richtextstring::resolved_fonts_t &richtextstring::resolve_fonts() const
 	return resolved_fonts;
 }
 
+struct connection_threadObj : virtual public obj {};
 LIBCXXW_NAMESPACE_END

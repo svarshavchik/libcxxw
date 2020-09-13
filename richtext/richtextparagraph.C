@@ -77,7 +77,7 @@ bool richtextparagraphObj::unwrap(paragraph_list &my_paragraphs)
 			continue;
 		}
 
-		f->merge(my_fragments);
+		f->merge(my_fragments, f->merge_bidi);
 		flag=true;
 		fs=my_fragments.size();
 	}
@@ -85,7 +85,9 @@ bool richtextparagraphObj::unwrap(paragraph_list &my_paragraphs)
 	// And then, merge the rest.
 	while (my_fragments.size() > 1)
 	{
-		get_fragment(0)->merge(my_fragments);
+		auto f=get_fragment(0);
+
+		f->merge(my_fragments, f->merge_bidi);
 		flag=true;
 	}
 
@@ -117,7 +119,7 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 			break; // It would be too big.
 
 		// We'll merge the whole thing, and sort things out later.
-		(*iter)->merge(my_fragments);
+		(*iter)->merge(my_fragments, (*iter)->merge_bidi);
 		iter=get_fragment_iter(fragment_n);
 		toosmall=true;
 

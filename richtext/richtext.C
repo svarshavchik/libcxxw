@@ -195,6 +195,11 @@ size_t richtextObj::do_pos(const richtextcursorlocation &l,
 		l->my_fragment->my_paragraph->first_char_n;
 }
 
+//! Retrieve text within the selected range
+
+//! Uses richtext_range to logically collect the text into the richtextstring.
+//!
+//! Some of the high level lgoic
 struct richtextObj::get_helper : richtext_range {
 
 	//! The string getting extracted here.

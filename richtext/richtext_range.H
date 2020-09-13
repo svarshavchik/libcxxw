@@ -22,9 +22,10 @@ struct LIBCXX_HIDDEN richtext_range;
 
 //! Helper logic used by get()
 //!
-//! Encapsulates the logic to take a starting and ending richtextcursorlocation
-//! and then define, for each line fragment between them, which parts of the
-//! line comprise the bidirectional text, and in which order.
+//! Encapsulates most of the logic that takes a starting and ending
+//! richtextcursorlocation and then defines, for each line fragment between
+//! them, which parts of the line comprise the bidirectional text, and in
+//! which order.
 //!
 //! The constructor takes two richtextcursorlocations, and rearranges them
 //! so that location_a is always the starting range and location_b is the
@@ -44,7 +45,7 @@ struct LIBCXX_HIDDEN richtext_range;
 //!
 //! After constructing the richtext_range, diff is set to the result of
 //! compare(). If complete_line() returned true the range is entirely in a
-//! single line fragment and it called add() to define it.
+//! single line fragment and it calls add() to define it, before returning.
 //!
 //! Otherwise classify_fragment() determines whether the line fragment
 //! consists of left-to-right or right-to-left text. Not all bidirectional
@@ -56,9 +57,9 @@ struct LIBCXX_HIDDEN richtext_range;
 //! range starts and ends, we trim off the parts we will not extract, and
 //! call range().
 //!
-//! Furthermore, in a right-to-left paragraph, range() skips the
-//! \n at the beginning of the last line in the paragraph. get() handles
-//! the logic for extracting it at the right time.
+//! This is also used to calculate removal information, which portion of each
+//! line fragment are to be removed, as specified by the beginning and ending
+//! removal locations.
 
 struct richtext_range {
 
@@ -197,8 +198,7 @@ private:
 	//! get() position, and if so trims off the parts before/after
 	//! the range that we get().
 
-	void line(const richtextfragmentObj *f,
-		  unicode_bidi_level_t l);
+	void line(const richtextfragmentObj *f);
 
 	//! add() the next chunk of get() text.
 

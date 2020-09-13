@@ -774,6 +774,7 @@ libcxxw_la_SOURCES=\
 	richtext/richtextiteratorobj.H		    \
 	richtext/richtextcursorlocation.C	    \
 	richtext/richtextcursorlocation.H	    \
+	richtext/richtextcursorlocationparagraphtext.H \
 	richtext/richtextfragment.C		    \
 	richtext/richtextfragment.H		    \
 	richtext/richtextfragment2.C		    \

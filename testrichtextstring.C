@@ -1493,8 +1493,57 @@ void rewraptest()
 	}
 }
 
+void compare_fragments(const richtext &str,
+		       const std::vector<std::u32string> &expected_fragments,
+		       const std::string &what)
+{
+	std::vector<std::u32string> actual_fragments;
+
+	str->read_only_lock
+		([&]
+		 (auto &lock)
+		{
+			paragraph_list my_paragraphs{**lock};
+
+			auto p=*(*lock)->paragraphs.get_paragraph(0);
+			fragment_list my_fragments{my_paragraphs, *p};
+
+			auto f=&*p->get_fragment(0);
+
+			while (f)
+			{
+				actual_fragments.push_back
+					(f->string.get_string());
+
+				f=f->next_fragment();
+			}
+		});
+
+		if (actual_fragments != expected_fragments)
+		{
+			std::ostringstream o;
+
+			o << "Expected lines:" << std::endl;
+
+			for (auto &f:expected_fragments)
+			{
+				o << "   \"" << std::string{f.begin(), f.end()}
+					<< "\"" << std::endl;
+			}
+			o << "Actual lines:" << std::endl;
+			for (auto &f:actual_fragments)
+			{
+				o << "   \"" << std::string{f.begin(), f.end()}
+					<< "\"" << std::endl;
+			}
+			throw EXCEPTION(what << o.str());
+		}
+}
+
 void gettest()
 {
+	auto IN_THREAD=connection_thread::create();
+
 	richtextmeta lr{0}, rl{0};
 
 	rl.rl=true;
@@ -1506,7 +1555,15 @@ void gettest()
 
 		std::vector<std::u32string> fragments;
 
-		std::vector<std::tuple<size_t, size_t, std::u32string>> tests;
+		std::vector<std::tuple<
+				    // starting location, ending location.
+				    size_t, size_t,
+
+				    // get() results
+				    std::u32string,
+
+				    // new string, after a remove().
+				    std::vector<std::u32string>>> tests;
 
 	} testcases[]=
 		{
@@ -1528,12 +1585,28 @@ void gettest()
 				},
 
 				{
-					{1, 11, U"1222 22 23"},
-					{1, 8,  U"12 22 2"},
-					{0, 2, U"1122 2"},
-					{0, 6, U"11"},
-					{5, 11, U"222 22 3"},
-					{5, 9, U"22 22 "},
+					{1, 11, U"1222 22 23", {
+							U"13",
+						}},
+					{1, 8, U"12 22 2", {
+							U"12233",
+						}},
+					{0, 2, U"11", {
+							U" 22 2",
+							U"22233",
+						}},
+					{0, 6, U"11 22 ", {
+							U"2222",
+							U"33",
+						}},
+					{5, 11, U"222 23", {
+							U"11 22",
+							U"3",
+						}},
+					{5, 9, U"22 2", {
+							U"11",
+							U" 22233",
+						}},
 				},
 
 			},
@@ -1559,7 +1632,13 @@ void gettest()
 					U"22233",
 				},
 				{
-					{11, 14, U"3\n1"},
+					{11, 14, U"3\n1",	{
+							U"11",
+							U" 22 2",
+							U"22231",
+							U" 22 2",
+							U"22233",
+						}},
 				},
 			},
 			// Test 3
@@ -1584,8 +1663,15 @@ void gettest()
 					U"22233",
 				},
 				{
-					{0, 20, U"11222 22 2\n222 22 23"},
-					{6, 10, U"222 22 2"},
+					{0, 20, U"11222 22 2\n222 22 23", {
+							U"3",
+						}},
+					{6, 10, U"2222", {
+							U"11",
+							U" 22 \n",
+							U" 22 2",
+							U"22233",
+						}},
 				},
 			},
 			// Test 4
@@ -1608,9 +1694,19 @@ void gettest()
 					U"33222",
 				},
 				{
-					{0, 20, U"222 22 211\n3222 22 2"},
-					{2, 10, U"222 22 2"},
-					{10, 20, U"\n3222 22 2"},
+					{0, 20, U"222 22 211\n3222 22 2", {
+							U"3",
+						}},
+					{2, 10, U"222 22 2",	{
+							U"\n11",
+							U" 22 2",
+							U"33222",
+						}},
+					{10, 20, U"\n3222 22 2",	{
+							U"11",
+							U"222 ",
+							U"322 2",
+						}},
 				},
 			},
 			// Test 5
@@ -1632,12 +1728,26 @@ void gettest()
 					U"\n222",
 					U" 22 2",
 					U"222",
-					U"33"
+					U"33",
 				},
 				{
-					{0, 11, U"222 22 211\n"},
-					{1, 11, U"222 22 21\n"},
-					{4, 13, U"222 22\n 2"},
+					{0, 11, U"222 22 211\n",	{
+							U" 22 2",
+							U"222",
+							U"33"
+						}},
+					{1, 11, U"222 22 21\n",		{
+							U" 21",
+							U" 22",
+							U"222",
+							U"33"
+						}},
+					{4, 13, U"222 22\n 2",		{
+							U" 211",
+							U" 22",
+							U"222",
+							U"33",
+						}},
 				},
 			},
 
@@ -1658,9 +1768,20 @@ void gettest()
 					U"222",
 				},
 				{
-					{0, 10, U"1122 2 222"},
-					{0, 9, U"122 2 222"},
-					{0, 11, U"1122 2 222\n"},
+					{0, 10, U"1122 2 222",	{
+							U"\n",
+							U" 22 2",
+							U"222",
+						}},
+					{0, 9, U"122 2 222",	{
+							U"\n1",
+							U" 22 2",
+							U"222",
+						}},
+					{0, 11, U"1122 2 222\n",	{
+							U" 22 2",
+							U"222",
+						}},
 				},
 			},
 			// Test 7
@@ -1683,13 +1804,47 @@ void gettest()
 					U"222",
 				},
 				{
-					{0, 10, U"111 11 122"},
-					{0, 11, U"111 11 122\n"},
-					{0, 13, U"111 11 122\n 2"},
-					{0, 10, U"111 11 122"},
-					{5, 10, U"111 1"},
-					{4, 10, U"1111 1"},
-					{10,18, U"\n22 22 2"},
+					{0, 10, U"111 11 122",	{
+							U"\n",
+							U" 2",
+							U" 22",
+							U"222",
+						}},
+					{0, 11, U"111 11 122\n",	{
+							U" 2",
+							U" 22",
+							U"222",
+						}},
+					{0, 13, U"111 11 122\n 2",	{
+							U" 22",
+							U"222",
+						}},
+					{1, 10, U"111 11 12",	{
+							U"\n2",
+							U" 2",
+							U" 22",
+							U"222",
+						}},
+					{5, 10, U"111 1",	{
+							U"22",
+							U"\n11 ",
+							U" 2",
+							U" 22",
+							U"222",
+						}},
+					{4, 10, U"1111 1",	{
+							U"22",
+							U"\n1 ",
+							U" 2",
+							U" 22",
+							U"222",
+						}},
+					{10,18, U"\n22 22 2",	{
+							U"22",
+							U"111 ",
+							U"11 ",
+							U"21",
+						}},
 				},
 			},
 			// Test 8
@@ -1705,7 +1860,9 @@ void gettest()
 					U"111 11 122",
 				},
 				{
-					{0, 3, U"122"},
+					{0, 3, U"122",	{
+							U"111 11 ",
+						}},
 				}
 			},
 
@@ -1724,9 +1881,17 @@ void gettest()
 					U"22111",
 				},
 				{
-					{6, 11, U"21111"},
-					{6, 10, U"1111"},
-					{6, 9, U"111"},
+					{6, 11, U"21111",	{
+							U"21 111 ",
+						}},
+					{6, 10, U"1111",	{
+							U"1 111 ",
+							U"22",
+						}},
+					{6, 9, U"111",	{
+							U"11 111 ",
+							U"22",
+						}},
 				}
 			},
 			// Test 10
@@ -1746,11 +1911,21 @@ void gettest()
 					U"221122",
 				},
 				{
-					{0, 20, U"21122 2222 222 22222"},
-					{0, 19, U"1122 2222 222 22222"},
-					{0, 18, U"122 2222 222 22222"},
-					{0, 17, U"22 2222 222 22222"},
-					{0, 16, U"2 2222 222 22222"},
+					{0, 20, U"21122 2222 222 22222", {
+							U"2"
+						}},
+					{0, 19, U"1122 2222 222 22222",	{
+							U"22",
+						}},
+					{0, 18, U"122 2222 222 22222",	{
+							U"221",
+						}},
+					{0, 17, U"22 2222 222 22222",	{
+							U"2211",
+						}},
+					{0, 16, U"2 2222 222 22222",	{
+							U"22112",
+						}},
 				}
 			},
 		};
@@ -1770,48 +1945,13 @@ void gettest()
 
 		str->rewrap(t.wrap_to_width);
 
-		std::vector<std::u32string> actual_fragments;
-
-		str->read_only_lock
-			([&]
-			 (auto &lock)
-			{
-				paragraph_list my_paragraphs{**lock};
-
-				auto p=*(*lock)->paragraphs.get_paragraph(0);
-				fragment_list my_fragments{my_paragraphs, *p};
-
-				auto f=&*p->get_fragment(0);
-
-				while (f)
-				{
-					actual_fragments.push_back
-						(f->string.get_string());
-
-					f=f->next_fragment();
-				}
-			});
-
-		if (actual_fragments != t.fragments)
 		{
 			std::ostringstream o;
 
-			o << "Expected lines:" << std::endl;
-
-			for (auto &f:t.fragments)
-			{
-				o << "   \"" << std::string{f.begin(), f.end()}
-					<< "\"" << std::endl;
-			}
-			o << "Actual lines:" << std::endl;
-			for (auto &f:actual_fragments)
-			{
-				o << "   \"" << std::string{f.begin(), f.end()}
-					<< "\"" << std::endl;
-			}
-			throw EXCEPTION("gettest #" << casenum << " failed:\n"
-					<< o.str());
+			o << "gettest #" << casenum << " rewrap failed:\n";
+			compare_fragments(str, t.fragments, o.str());
 		}
+
 		auto b=str->begin(), e=str->end();
 
 		if (b->pos() != 0 && e->pos() != t.string.size()-1)
@@ -1820,9 +1960,17 @@ void gettest()
 
 		size_t n=0;
 
-		for (const auto &[start, end, result] : t.tests)
+		for (const auto &[start, end, result, after_delete] : t.tests)
 		{
 			++n;
+
+			auto str=richtext::create((richtextstring)t.string,
+						  options);
+
+			str->rewrap(t.wrap_to_width);
+
+			b=str->begin();
+			e=str->end();
 
 			b=b->pos(start);
 			e=e->pos(end);
@@ -1842,6 +1990,16 @@ void gettest()
 						<< result_s
 						<< "\"");
 			}
+
+			b->remove(IN_THREAD, e);
+
+			std::ostringstream o;
+
+			o << "gettext #" << casenum
+			  << " failed test " << n
+			  << " delete: ";
+
+			compare_fragments(str, after_delete, o.str());
 		}
 
 		richtextstring unwrapped_string;

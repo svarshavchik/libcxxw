@@ -145,13 +145,14 @@ void richtext_range::rl_lines(const richtextfragmentObj *bottom,
 		// If we skipped over some
 		// left-to-right lines, emit
 		// them.
+
 		lr_lines_in_rl(bottom->next_fragment(),
 			       last_lr);
 	}
 
 	while (1)
 	{
-		line(bottom, UNICODE_BIDI_RL);
+		line(bottom);
 
 		if (compare_fragments(bottom, top))
 			break;
@@ -167,7 +168,7 @@ void richtext_range::rl_lines_in_lr(const richtextfragmentObj *bottom,
 	{
 		assert_or_throw(bottom != 0,
 				"Internal error: null rl_line");
-		line(bottom, UNICODE_BIDI_RL);
+		line(bottom);
 
 		if (compare_fragments(bottom, top))
 			break;
@@ -198,7 +199,7 @@ void richtext_range::lr_lines(const richtextfragmentObj *first_rl,
 				"Internal error: unexpected rl text "
 				"before start of extracted text");
 
-		line(top, UNICODE_BIDI_LR);
+		line(top);
 	}
 	else
 	{
@@ -269,7 +270,7 @@ void richtext_range::lr_lines(const richtextfragmentObj *first_rl,
 		top=top->next_fragment();
 
 		// Ordinary left to right line. Boring.
-		line(top, UNICODE_BIDI_LR);
+		line(top);
 	}
 }
 
@@ -349,11 +350,11 @@ void richtext_range::lr_lines_in_rl(const richtextfragmentObj *top,
 		else if (compare_fragments(top,
 					   location_a->my_fragment))
 		{
-			line(top, UNICODE_BIDI_RL);
+			line(top);
 		}
 		else
 		{
-			line(top, UNICODE_BIDI_LR);
+			line(top);
 		}
 		if (compare_fragments(bottom, top))
 			break;
@@ -363,8 +364,7 @@ void richtext_range::lr_lines_in_rl(const richtextfragmentObj *top,
 	location_b_offset=orig_location_b_offset;
 }
 
-void richtext_range::line(const richtextfragmentObj *f,
-			  unicode_bidi_level_t l)
+void richtext_range::line(const richtextfragmentObj *f)
 {
 	if (compare_fragments(f, location_a->my_fragment))
 	{
@@ -372,7 +372,7 @@ void richtext_range::line(const richtextfragmentObj *f,
 
 		auto o=location_a_offset;
 
-		if (l == UNICODE_BIDI_LR)
+		if (paragraph_embedding_level == UNICODE_BIDI_LR)
 		{
 			// For left-to right text we add() only from the
 			// starting location to the end of the line.
@@ -393,7 +393,7 @@ void richtext_range::line(const richtextfragmentObj *f,
 		// Ending location
 		auto o=location_b_offset;
 
-		if (l == UNICODE_BIDI_LR)
+		if (paragraph_embedding_level == UNICODE_BIDI_LR)
 		{
 			// Left to right text, add() only from the
 			// beginning of the line to the ending location.

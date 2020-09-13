@@ -290,10 +290,26 @@ public:
 		   bool force
 		   );
 
+	//! Specifies the merge() strategy
+	enum merge_type_t {
+
+		//! Merge fragments according to their contents' directions
+
+		//! Factors in each fragment's contents' direction, in order
+		//! to choose how to combine them
+		merge_bidi,
+
+		//! Merge fragments according to the paragraph embedding level
+
+		//! Used when removing a selection.
+		merge_paragraph,
+	};
+
 	//! Take the next fragment in this paragraph and merge it into this one.
 
 	void merge(//! Fragment's paragraph's fragment list
-		   fragment_list &my_fragments);
+		   fragment_list &my_fragments,
+		   merge_type_t merge_type);
 
  private:
 

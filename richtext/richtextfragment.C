@@ -783,7 +783,8 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 	redraw_needed=true;
 }
 
-void richtextfragmentObj::merge(fragment_list &my_fragments)
+void richtextfragmentObj::merge(fragment_list &my_fragments,
+				merge_type_t merge_type)
 {
 	USING_MY_PARAGRAPH();
 
@@ -810,23 +811,45 @@ void richtextfragmentObj::merge(fragment_list &my_fragments)
 	if (my_paragraph->my_richtext->paragraph_embedding_level ==
 	    UNICODE_BIDI_LR)
 	{
-		if (string.get_dir() == richtext_dir::rl)
+		if (merge_type == merge_bidi &&
+		    string.get_dir() == richtext_dir::rl)
 		{
 			merge_lr_rl(my_fragments, other);
 			return;
 		}
 
 		merge_lr_lr(my_fragments, other);
+
+		if (merge_type == merge_paragraph)
+		{
+			update_glyphs_widths_kernings(0, 1);
+
+			auto p=prev_fragment();
+
+			if (p)
+				p->update_glyphs_widths_kernings(0, 1);
+		}
 	}
 	else
 	{
-		if (string.get_dir() == richtext_dir::lr)
+		if (merge_type == merge_bidi &&
+		    string.get_dir() == richtext_dir::lr)
 		{
 			merge_rl_lr(my_fragments, other);
 			return;
 		}
 
 		other->merge_lr_lr(my_fragments, ref{this});
+
+		if (merge_type == merge_paragraph)
+		{
+			other->update_glyphs_widths_kernings(0, 1);
+
+			auto p=other->prev_fragment();
+
+			if (p)
+				p->update_glyphs_widths_kernings(0, 1);
+		}
 	}
 }
 
@@ -904,7 +927,7 @@ void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
 	{
 		// left-to-right text must follow, so this won't
 		// recurse again.
-		other->merge(my_fragments);
+		other->merge(my_fragments, other->merge_bidi);
 	}
 }
 
@@ -959,13 +982,23 @@ void richtextfragmentObj::remove(size_t pos,
 
 	USING_MY_PARAGRAPH();
 
-	const std::u32string &current_string=string.get_string();
+	auto &current_string=string.get_string();
 
-	assert_or_throw(pos < current_string.size(),
-			"invalid starting position in remove()");
+	assert_or_throw(pos < current_string.size() &&
+			nchars < current_string.size(),
+			"invalid starting position or remove length");
 
-	assert_or_throw(current_string.size()-pos > nchars,
-			"invalid character count in remove()");
+	if (my_fragments.my_paragraphs.text.rl())
+	{
+		assert_or_throw(current_string.size()-pos >= nchars &&
+				pos > 0,
+				"invalid character rl range in remove()");
+	}
+	else
+	{
+		assert_or_throw(current_string.size()-pos > nchars,
+				"invalid character lr range in remove()");
+	}
 
 	redraw_needed=true;
 
@@ -975,7 +1008,9 @@ void richtextfragmentObj::remove(size_t pos,
 
 	breaks.erase(breaks.begin()+pos, breaks.begin()+pos+nchars);
 	horiz_info.erase(pos, nchars);
-	update_glyphs_widths_kernings(pos, 1);
+
+	update_glyphs_widths_kernings(pos < current_string.size()
+				      ? pos:pos-1, 1);
 
 	// Adjust all locations on or after the removal point.
 	for (const auto &l:locations)

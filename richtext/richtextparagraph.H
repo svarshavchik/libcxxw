@@ -211,6 +211,9 @@ public:
 	}
 };
 
+#define richtextparagraph_H_defined
+#include "richtext/richtextcursorlocationparagraphtext.H"
+
 LIBCXXW_NAMESPACE_END
 
 #endif

@@ -302,11 +302,11 @@ public:
 
  private:
 
-	struct remove_info;
+	struct LIBCXX_HIDDEN remove_info;
 
 	//! Common code shared by remove_at_location() and replace_at_location().
 
-	void remove_at_location(const remove_info &,
+	void remove_at_location(remove_info &,
 				paragraph_list &);
 
 	//! Remove content between two cursors, without rewrapping it.
@@ -318,7 +318,7 @@ public:
 	//! avoid rewrapping, since insert_at_location(), which
 	//! replace_at_location() uses, will do this anyway.
 
-	void remove_at_location_no_rewrap(const remove_info &,
+	void remove_at_location_no_rewrap(remove_info &,
 					  paragraph_list &);
 
 	//! Common code shared by remove_at_location() and replace_at_location().
@@ -356,6 +356,9 @@ public:
 	std::pair<metrics::axis, metrics::axis>
 		get_metrics(dim_t preferred_width);
 };
+
+#define richtext_impl_H_defined
+#include "richtext/richtextcursorlocationparagraphtext.H"
 
 LIBCXXW_NAMESPACE_END
 

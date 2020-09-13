@@ -60,7 +60,7 @@ const_fragment_list::~const_fragment_list()
 			 first_fragment_n += n_fragments_in_paragraph;
 			 first_fragment_y_position=
 				 p.next_paragraph_y_position();
-			 my_paragraphs.size_changed=true;
+			 my_paragraphs.recalculation_required();
 			 return true;
 		 });
 
@@ -68,6 +68,7 @@ const_fragment_list::~const_fragment_list()
 	{
 		paragraph.my_richtext=nullptr;
 		my_paragraphs.erase(paragraph.my_paragraph_number);
+		my_paragraphs.recalculation_required();
 	}
 }
 
@@ -119,7 +120,7 @@ fragment_list::~fragment_list()
 		changed=true;
 
 	if (changed)
-		my_paragraphs.size_changed=true;
+		my_paragraphs.recalculation_required();
 }
 
 void fragment_list::theme_was_updated(ONLY IN_THREAD,

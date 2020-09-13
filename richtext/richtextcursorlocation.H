@@ -149,20 +149,7 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	//! We are advised, so, by richtextfragment. Adjust ourselves
 	//! accordingly.
 
-	inline void removed_from_fragment(size_t pos, size_t nchars)
-	{
-		if (position.offset < pos)
-			return;
-
-		if (position.offset <= pos+nchars)
-		{
-			position.offset=pos;
-		}
-		else
-			position.offset -= nchars;
-
-		horiz_pos_no_longer_valid();
-	}
+	void removed_from_fragment(size_t pos, size_t nchars);
 
 	//! This is a cursor location for the currently-visible cursor
 	bool cursor_on=false;
@@ -244,6 +231,9 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	//! right-to-left paragraph embedding level.
 	void mirror_position(internal_richtext_impl_t::lock &must_be_locked);
 };
+
+#define richtextcursorlocation_H_defined
+#include "richtext/richtextcursorlocationparagraphtext.H"
 
 LIBCXXW_NAMESPACE_END
 
