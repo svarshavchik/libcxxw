@@ -353,6 +353,114 @@ struct richtextObj::get_helper_base {
 		}
 	}
 
+	//! Add left-to-right oriented fragments to extracted text.
+
+	//! "top" and "bottom" specifies the first and the last left-to
+	//! right fragment. If this is a left-to-right oriented paragraph
+	//! a non-null first_rl specifies that the left-to-right fragments
+	//! were preceded by one or more right-to-left fragments, and this
+	//! is first one of them.
+	//!
+	//! first_lr is always null in right-to-left paragraphs.
+
+	void lr_lines(const richtextfragmentObj *first_rl,
+		      const richtextfragmentObj *top,
+		      const richtextfragmentObj *bottom)
+	{
+		if (paragraph_embedding_level != UNICODE_BIDI_LR)
+		{
+			assert_or_throw(!first_rl,
+					"Internal error: unexpected rl text "
+					"before lr text in rl paragraph");
+
+			lr_lines_in_rl(top, bottom);
+			return;
+		}
+
+		// If the first line contains the starting range of extracted
+		// text, call line() normally to truncate it.
+
+		if (compare_fragments(top, location_a->my_fragment))
+		{
+			assert_or_throw(!first_rl,
+					"Internal error: unexpected rl text "
+					"before start of extracted text");
+
+			line(top, UNICODE_BIDI_LR);
+		}
+		else
+		{
+			// If we just seen at least one right to
+			// left line, process them.
+			//
+			// Before processing all the pure
+			// right-to-left lines, if the
+			// first left-to-right line has some
+			// leading right-to-left text, it's
+			// part of the right-to-left sequence
+			// and since right-to-left text is
+			// processed from bottom up we just
+			// handle it ourselves, here.
+			//
+			// But first, also check if the entire
+			// get() range also ends on this
+			// fragment.
+			size_t cutoff=top->string.size();
+
+			if (compare_fragments
+			    (top, location_b->my_fragment))
+			{
+				cutoff=location_b->get_offset();
+			}
+
+			// If the line starts with some
+			// right to left text, find where
+			// left to right text starts.
+
+			auto m=top->string.get_meta();
+			auto b=m.begin(),
+				e=m.end();
+
+			while (b != e && b->second.rl)
+				++b;
+
+			// Ok, so if right-to-left text
+			// ends before the cutoff, we emit
+			// it in its entirety here, before
+			// emitting the rest of rl_lines.
+			// Otherwise we emit only up to the
+			// cutoff.
+			add(top->string, 0,
+			    b->first < cutoff ?
+			    b->first : cutoff);
+
+			if (first_rl)
+			{
+
+				// Now, emit all right-to-left lines.
+				rl_line(top->prev_fragment(),
+					first_rl);
+			}
+			// And then emit everything on this
+			// line after the end of the right
+			// to left text, and before the cutoff
+			// (the end of the line, or the end
+			// of the get() range).
+			if (cutoff > b->first)
+				add(top->string, b->first,
+				    cutoff-b->first);
+		}
+
+		// Process any remaining left-to-right lines normally.
+		while (!compare_fragments(top, bottom))
+		{
+			top=top->next_fragment();
+
+			// Ordinary left to right line. Boring.
+			line(top, UNICODE_BIDI_LR);
+		}
+	}
+
 	//! Extract left-to-right lines in right-to-left text
 
 	//! The paragraph embedding level is right to left, so if the original
@@ -376,8 +484,8 @@ struct richtextObj::get_helper_base {
 	//!
 	//! Extract them, top to bottom.
 
-	void lr_line(const richtextfragmentObj *top,
-		     const richtextfragmentObj *bottom)
+	void lr_lines_in_rl(const richtextfragmentObj *top,
+			    const richtextfragmentObj *bottom)
 	{
 		// The bottom line may not be entirely left-to-right. The
 		// left to right portion would be at the end of the line.
@@ -688,7 +796,9 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 
 	if (helper.paragraph_embedding_level == UNICODE_BIDI_LR)
 	{
-		richtextfragmentObj *first_rl=0;
+		richtextfragmentObj *first_rl=nullptr;
+
+		richtextfragmentObj *first_lr=nullptr, *last_lr=nullptr;
 
 		auto f=location_a->my_fragment;
 
@@ -726,85 +836,34 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 
 			if (paragraph_embedding_level != UNICODE_BIDI_LR)
 			{
+				if (first_lr)
+				{
+					helper.lr_lines(first_rl,
+							first_lr, last_lr);
+					first_rl=first_lr=last_lr=nullptr;
+				}
 				if (!first_rl)
 					// First right-to-left line.
 					first_rl=f;
 			}
 			else
 			{
-				// If we just seen at least one right to
-				// left line, process them.
+				// Left to right line.
 
-				if (first_rl)
-				{
-					// Before processing all the pure
-					// right-to-left lines, if the
-					// first left-to-right line has some
-					// leading right-to-left text, it's
-					// part of the right-to-left sequence
-					// and since right-to-left text is
-					// processed from bottom up we just
-					// handle it ourselves, here.
-					//
-					// But first, also check if the entire
-					// get() range also ends on this
-					// fragment.
-					size_t cutoff=f->string.size();
-
-					if (helper.compare_fragments
-					    (f, location_b->my_fragment))
-					{
-						cutoff=location_b->get_offset();
-					}
-
-					// If the line starts with some
-					// right to left text, find where
-					// left to right text starts.
-
-					auto m=f->string.get_meta();
-					auto b=m.begin(),
-						e=m.end();
-
-					while (b != e && b->second.rl)
-						++b;
-
-					// Ok, so if right-to-left text
-					// ends before the cutoff, we emit
-					// it in its entirety here, before
-					// emitting the rest of rl_lines.
-					// Otherwise we emit only up to the
-					// cutoff.
-					helper.add(f->string, 0,
-						   b->first < cutoff ?
-						   b->first : cutoff);
-
-					// Now, emit all right-to-left lines.
-					helper.rl_line(f->prev_fragment(),
-						       first_rl);
-					first_rl=nullptr;
-
-					// And then emit everything on this
-					// line after the end of the right
-					// to left text, and before the cutoff
-					// (the end of the line, or the end
-					// of the get() range).
-					if (cutoff > b->first)
-						helper.add(f->string, b->first,
-							   cutoff-b->first);
-				}
-				else
-				{
-					// Ordinary left to right line. Boring.
-					helper.line(f,
-						    paragraph_embedding_level);
-				}
+				if (!first_lr)
+					first_lr=f;
+				last_lr=f;
 			}
 
 			if (--diff == 0)
 			{
 				// End of paragraph. If we skipped some
-				// right-to-left lines, we'll do them here.
-				if (first_rl)
+				// lines, we'll do them here.
+
+				if (first_lr)
+					helper.lr_lines(first_rl,
+							first_lr, last_lr);
+				else if (first_rl)
 					helper.rl_line(f, first_rl);
 			}
 
@@ -893,8 +952,9 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 						// If we skipped over some
 						// left-to-right lines, emit
 						// them.
-						helper.lr_line
-							(f->next_fragment(),
+						helper.lr_lines
+							(nullptr,
+							 f->next_fragment(),
 							 last_lr);
 						last_lr=0;
 					}
@@ -907,7 +967,8 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 					// Paragraph began with left-to-right
 					// text.
 					if (last_lr)
-						helper.lr_line(f, last_lr);
+						helper.lr_lines(nullptr,
+								f, last_lr);
 				}
 
 				f=f->prev_fragment();
