@@ -346,6 +346,9 @@ class richtextObj : virtual public obj {
 	static size_t do_pos(const richtextcursorlocationObj *l,
 			     get_location location_option);
 
+	struct LIBCXX_HIDDEN get_helper_base;
+	struct LIBCXX_HIDDEN get_helper;
+
 	//! Return an iterator to the given character # in the rich text.
 
 	richtextiterator at(internal_richtext_impl_t::lock &lock, size_t npos,

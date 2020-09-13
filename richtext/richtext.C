@@ -194,11 +194,6 @@ size_t richtextObj::do_pos(const richtextcursorlocationObj *l,
 		l->my_fragment->my_paragraph->first_char_n;
 }
 
-namespace {
-#if 0
-}
-#endif
-
 //! Helper logic used by get()
 
 //! get() makes the initial pass over the contents of richtext for extracting,
@@ -207,17 +202,51 @@ namespace {
 //! usually the whole line. But if the line happens to be where the get
 //! range starts and ends, we trim off the parts we will not extract.
 
-struct get_helper {
-
-	//! The string getting extracted here.
-
-	richtextstring &str;
+struct richtextObj::get_helper_base {
 
 	//! The richtext paragraph embedding direction.
 	const unicode_bidi_level_t paragraph_embedding_level;
 
 	//! Start and end of the range.
 	const richtextcursorlocationObj *location_a, *location_b;
+
+	//! Number of lines between location_a and location_b
+
+	//! Returned by compare()
+	std::ptrdiff_t diff;
+
+	//! Constructor
+
+	//! Receives a location of the starting and ending position to be
+	//! extracted.
+
+	get_helper_base(const ref<richtext_implObj> &impl,
+			const richtextcursorlocation &a,
+			const richtextcursorlocation &b)
+		: paragraph_embedding_level{impl->paragraph_embedding_level},
+		  location_a{&*a},
+		  location_b{&*b},
+		  diff{location_a->compare(*location_b)}
+	{
+		if (diff == 0)
+			return;
+
+		// Make sure we go from a to b.
+
+		if (diff > 0)
+		{
+			std::swap(location_a, location_b);
+		}
+		else
+		{
+			diff= -diff;
+		}
+
+		assert_or_throw(location_a->my_fragment &&
+				location_b->my_fragment,
+				"Internal error: uninitialized fragments"
+				" in get()");
+	}
 
 	//! Pedantic pointer comparison
 
@@ -488,10 +517,66 @@ struct get_helper {
 			--n;
 		}
 
+		range(other, start, n);
+	}
+
+	//! Define extracted character range.
+
+	virtual void range(const richtextstring &other,
+			   size_t start,
+			   size_t n) const=0;
+};
+
+struct richtextObj::get_helper : get_helper_base {
+
+	//! The string getting extracted here.
+
+	richtextstring &str;
+
+	get_helper(richtextstring &str,
+		   const ref<richtext_implObj> &impl,
+		   const richtextcursorlocation &a,
+		   const richtextcursorlocation &b)
+
+		: get_helper_base{impl, a, b},
+		  str{str}
+	{
+		// Estimate how big ret will be. We can compute the
+		// number of characters exactly. Use the number of
+		// lines as the estimate for the number of metadata
+		// changes. richtextstring's insert() is optimized
+		// to avoid coalescing the metadata until it's
+		// needed. So it will end up inserting a metadata
+		// record for every line, initially.
+		//
+		// TODO: when we support rich text editing, we'll
+		// need to add some additional overhead, here.
+
+		auto pos1=richtextObj::do_pos(location_a, get_location::bidi);
+		auto pos2=richtextObj::do_pos(location_b, get_location::bidi);
+
+		auto index1=location_a->my_fragment->index();
+		auto index2=location_b->my_fragment->index();
+
+		if (pos1 > pos2)
+			std::swap(pos1, pos2);
+		if (index1 > index2)
+			throw EXCEPTION("Internal error in get():"
+					" inconsistent cursor"
+					" locations");
+		str.reserve(pos2-pos1+1, index2-index1+1);
+	}
+
+	//! Collect extracted characters into the richtextstring we're building.
+
+	void range(const richtextstring &other,
+		   size_t start,
+		   size_t n) const override
+	{
 		if (n == 0)
 			return;
 
-		if (start == 0 && n == s)
+		if (start == 0 && n == other.size())
 		{
 			str.insert(str.size(), other);
 			return;
@@ -500,67 +585,20 @@ struct get_helper {
 	}
 };
 
-#if 0
-{
-#endif
-}
-
 richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 				const richtextcursorlocation &a,
 				const richtextcursorlocation &b)
 {
 	richtextstring str;
 
-	const richtextcursorlocationObj *location_a=&*a;
-	const richtextcursorlocationObj *location_b=&*b;
+	get_helper helper{str, (*lock), a, b};
 
-	auto diff=location_a->compare(*location_b);
-
-	if (diff == 0)
+	if (helper.diff == 0)
 		return str; // Too easy
 
-	// Make sure we go from a to b.
-
-	if (diff > 0)
-	{
-		location_b=&*a;
-		location_a=&*b;
-	}
-	else
-	{
-		diff= -diff;
-	}
-
-	assert_or_throw(location_a->my_fragment &&
-			location_b->my_fragment,
-			"Internal error: uninitialized fragments in get()");
-
-	// Estimate how big ret will be. We can compute the
-	// number of characters exactly. Use the number of
-	// lines as the estimate for the number of metadata
-	// changes. richtextstring's insert() is optimized
-	// to avoid coalescing the metadata until it's
-	// needed. So it will end up inserting a metadata
-	// record for every line, initially.
-	//
-	// TODO: when we support rich text editing, we'll
-	// need to add some additional overhead, here.
-
-	auto pos1=do_pos(location_a, get_location::bidi);
-	auto pos2=do_pos(location_b, get_location::bidi);
-
-	auto index1=location_a->my_fragment->index();
-	auto index2=location_b->my_fragment->index();
-
-	if (pos1 > pos2)
-		std::swap(pos1, pos2);
-	if (index1 > index2)
-		throw EXCEPTION("Internal error in get(): inconsistent cursor"
-				" locations");
-	str.reserve(pos2-pos1+1, index2-index1+1);
-
-	get_helper helper{str, (*lock)->paragraph_embedding_level,
-		location_a, location_b};
+	auto &location_a=helper.location_a;
+	auto &location_b=helper.location_b;
+	auto &diff=helper.diff;
 
 	// And now that the buffers are ready and waiting...
 
