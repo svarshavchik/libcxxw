@@ -210,6 +210,8 @@ struct richtextObj::get_helper_base {
 	//! Start and end of the range.
 	const richtextcursorlocationObj *location_a, *location_b;
 
+	size_t location_a_offset, location_b_offset;
+
 	//! Number of lines between location_a and location_b
 
 	//! Returned by compare()
@@ -246,6 +248,9 @@ struct richtextObj::get_helper_base {
 				location_b->my_fragment,
 				"Internal error: uninitialized fragments"
 				" in get()");
+
+		location_a_offset=location_a->get_offset();
+		location_b_offset=location_b->get_offset();
 	}
 
 	//! Pedantic pointer comparison
@@ -395,11 +400,7 @@ struct richtextObj::get_helper_base {
 		// Also, make a copy of location_b AND RESTORE IT before
 		// we return, the logic below may modify it temporarily.
 
-		size_t o=location_b->get_offset();
-
-		auto copy=location_b;
-
-		ptr<richtextcursorlocationObj> clone;
+		const size_t orig_location_b_offset=location_b_offset;
 
 		// If "bottom" is the fragment with the end of the get()
 		// range, and the end of the get() range is to the left
@@ -415,23 +416,18 @@ struct richtextObj::get_helper_base {
 		// line, ends up extracting just the left-to-right text.
 
 		if (compare_fragments(bottom, location_b->my_fragment) &&
-		    o < rl_begin)
+		    orig_location_b_offset < rl_begin)
 		{
-			add(bottom->string, o+1, rl_begin-(o+1));
+			add(bottom->string, orig_location_b_offset+1,
+			    rl_begin-(orig_location_b_offset+1));
 
-			auto temp_end=richtextcursorlocation::create();
-
-			// We need to have the temporary location_b begin
+			// We need to have the temporary location_b_offset begin
 			// just to the left of rl_begin, since the logic
 			// in line() trims off everything from the beginnin
 			// of the line up to and including the ending
 			// position.
 
-			temp_end->initialize(location_b->my_fragment,
-					     rl_begin-1,
-					     new_location::lr);
-			clone=temp_end;
-			location_b= &*temp_end;
+			location_b_offset=rl_begin-1;
 		}
 
 		// With that out of the way, extract the lines of left-to-right
@@ -448,7 +444,7 @@ struct richtextObj::get_helper_base {
 
 			if (compare_fragments(top, location_b->my_fragment))
 			{
-				size_t end=location_b->get_offset()+1;
+				size_t end=location_b_offset+1;
 				add(top->string,
 				    end,
 				    top->string.size()-end);
@@ -460,7 +456,7 @@ struct richtextObj::get_helper_base {
 				// range, extract everything starting with
 				// pos, to the end of the line.
 
-				auto pos=location_a->get_offset();
+				auto pos=location_a_offset;
 
 				// Edge case, right to left paragraph embedding
 				// level results in \n at the beginning of the
@@ -487,7 +483,7 @@ struct richtextObj::get_helper_base {
 			top=top->next_fragment();
 		}
 
-		location_b=copy;
+		location_b_offset=orig_location_b_offset;
 	}
 
 	//! get()ing another line fragment of text.
@@ -505,7 +501,7 @@ struct richtextObj::get_helper_base {
 		{
 			// Starting location.
 
-			auto o=location_a->get_offset();
+			auto o=location_a_offset;
 
 			if (l == UNICODE_BIDI_LR)
 			{
@@ -526,7 +522,7 @@ struct richtextObj::get_helper_base {
 		if (compare_fragments(f, location_b->my_fragment))
 		{
 			// Ending location
-			auto o=location_b->get_offset();
+			auto o=location_b_offset;
 
 			if (l == UNICODE_BIDI_LR)
 			{
