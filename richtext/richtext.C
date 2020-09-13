@@ -257,6 +257,60 @@ struct richtextObj::get_helper_base {
 
 	std::equal_to<const richtextfragmentObj *> compare_fragments;
 
+	//! Classify a fragment as being either left-to-right or right-to-left.
+
+	//! The criteria differs, slightly, depending on the paragraph
+	//! embedding level.
+
+	unicode_bidi_level_t classify_fragment(const richtextfragmentObj *f)
+		const
+	{
+		auto level=paragraph_embedding_level;
+
+		if (level == UNICODE_BIDI_LR)
+		{			// Compute the effective embedding level. if
+			// this fragment's direction is BOTH, we will
+			// consider it left-to-right text.
+			//
+			// Note that this means that after we see one or
+			// more right-to-left lines, if the last right to left
+			// line has the remainder of the right-to-left text,
+			// followed by resumption of left-to-right text, it
+			// will be considered left to right, here.
+
+			return f->string.embedding_level(level);
+		}
+
+		// Figure out whether this line is left to right
+		// or right to left.
+
+		switch (f->string.get_dir()) {
+		case richtext_dir::lr:
+			level=UNICODE_BIDI_LR;
+			break;
+		case richtext_dir::rl:
+			level=UNICODE_BIDI_RL;
+			break;
+		case richtext_dir::both:
+
+			// We will consider this line a
+			// left to right line only if it ENDS
+			// with left to right text, which
+			// might mean that it's wrapped from
+			// the preceding chunk of left to right
+			// text.
+			auto &m=f->string.get_meta();
+			auto b=m.begin();
+			auto e=m.end();
+
+			if (b != e && !e[-1].second.rl)
+				level=UNICODE_BIDI_LR;
+			break;
+		}
+
+		return level;
+	}
+
 	//! Extract right-to-left lines in left-to-right text.
 
 	//! The paragraph embedding level is left to right, but we have one
@@ -671,18 +725,8 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 			assert_or_throw(f != NULL,
 					"Internal error: NULL fragment");
 
-			// Compute the effective embedding level. if
-			// this fragment's direction is BOTH, we will
-			// consider it left-to-right text.
-			//
-			// Note that this means that after we see one or
-			// more right-to-left lines, if the last right to left
-			// line has the remainder of the right-to-left text,
-			// followed by resumption of left-to-right text, it
-			// will be considered left to right, here.
-
 			auto paragraph_embedding_level=
-				f->string.embedding_level(UNICODE_BIDI_LR);
+				helper.classify_fragment(f);
 
 			if (paragraph_embedding_level != UNICODE_BIDI_LR)
 			{
@@ -832,38 +876,8 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 					(f != NULL,
 					 "Internal error: NULL fragment");
 
-				// Figure out whether this line is left to right
-				// or right to left.
-
 				auto paragraph_embedding_level=
-					helper.paragraph_embedding_level;
-
-				switch (f->string.get_dir()) {
-				case richtext_dir::lr:
-					paragraph_embedding_level=
-						UNICODE_BIDI_LR;
-					break;
-				case richtext_dir::rl:
-					paragraph_embedding_level=
-						UNICODE_BIDI_RL;
-					break;
-				case richtext_dir::both:
-
-					// We will consider this line a
-					// left to right line only if it ENDS
-					// with left to right text, which
-					// might mean that it's wrapped from
-					// the preceding chunk of left to right
-					// text.
-					auto &m=f->string.get_meta();
-					auto b=m.begin();
-					auto e=m.end();
-
-					if (b != e && !e[-1].second.rl)
-						paragraph_embedding_level=
-							UNICODE_BIDI_LR;
-					break;
-				}
+					helper.classify_fragment(f);
 
 				// When we find a left-to-right line, we need
 				// emit left-to-right text from top to bottom,
