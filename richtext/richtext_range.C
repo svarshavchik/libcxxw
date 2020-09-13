@@ -349,41 +349,7 @@ void richtext_range::lr_lines_in_rl(const richtextfragmentObj *top,
 		else if (compare_fragments(top,
 					   location_a->my_fragment))
 		{
-			// If this line is the top line of the get()
-			// range, extract everything starting with
-			// pos, to the end of the line.
-
-			auto pos=location_a_offset;
-
-			// Edge case, right to left paragraph embedding
-			// level results in \n at the beginning of the
-			// line. This is the end of the paragraph,
-			// so if our starting extracting position is
-			// here, we don't really extract anything
-			// (get(), below, will take care of extracting
-			// the \n).
-			//
-			// What this does is select everything starting
-			// with the beginning range until the end of the
-			// line unless the beginning range is on the
-			// paragraph marker, in which case we add()
-			// only the \n. The default implementation of
-			// get() will no-op this, but when this is used
-			// to define the selected text, this formally
-			// declares the \n to be a part of the selected
-			// area.
-
-			if (pos == 0 &&
-			    top->string.get_string().at(0) == '\n')
-			{
-				add(top->string, 0, 1);
-			}
-			else
-			{
-				add(top->string,
-				    pos,
-				    top->string.size()-pos);
-			}
+			line(top, UNICODE_BIDI_RL);
 		}
 		else
 		{
