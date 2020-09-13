@@ -316,6 +316,47 @@ struct richtextObj::get_helper_base {
 		return level;
 	}
 
+	//! Add right to left lines to extracted text.
+
+	//! "bottom" and "top" specifies the last and the first right-to
+	//! left fragment. If this is a right-to-left oriented paragraph
+	//! a non-null last_lr specifies that the right-to-left fragments
+	//! are followed by one or more left-to-right fragments.
+	//!
+	//! last_lr is always null in left-to-right paragraphs.
+
+	void rl_lines(const richtextfragmentObj *bottom,
+		      const richtextfragmentObj *top,
+		      const richtextfragmentObj *last_lr)
+	{
+		if (paragraph_embedding_level == UNICODE_BIDI_LR)
+		{
+			assert_or_throw(!last_lr,
+					"Internal error: unexpected lr text "
+					"after rl text in lr paragraph");
+			rl_lines_in_lr(bottom, top);
+			return;
+		}
+
+		if (last_lr)
+		{
+			// If we skipped over some
+			// left-to-right lines, emit
+			// them.
+			lr_lines_in_rl(bottom->next_fragment(),
+				       last_lr);
+		}
+
+		while (1)
+		{
+			line(bottom, UNICODE_BIDI_RL);
+
+			if (compare_fragments(bottom, top))
+				break;
+			bottom=bottom->prev_fragment();
+		}
+	}
+
 	//! Extract right-to-left lines in left-to-right text.
 
 	//! The paragraph embedding level is left to right, but we have one
@@ -338,8 +379,8 @@ struct richtextObj::get_helper_base {
 	//!
 	//! We have the "bottom" and "top" lines, so we start at the bottom
 	//! and work our way to the top.
-	void rl_line(const richtextfragmentObj *bottom,
-		     const richtextfragmentObj *top)
+	void rl_lines_in_lr(const richtextfragmentObj *bottom,
+			    const richtextfragmentObj *top)
 	{
 		while(1)
 		{
@@ -438,8 +479,8 @@ struct richtextObj::get_helper_base {
 			{
 
 				// Now, emit all right-to-left lines.
-				rl_line(top->prev_fragment(),
-					first_rl);
+				rl_lines(top->prev_fragment(),
+					 first_rl, nullptr);
 			}
 			// And then emit everything on this
 			// line after the end of the right
@@ -864,7 +905,7 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 					helper.lr_lines(first_rl,
 							first_lr, last_lr);
 				else if (first_rl)
-					helper.rl_line(f, first_rl);
+					helper.rl_lines(f, first_rl, nullptr);
 			}
 
 			f=f->next_fragment();
@@ -921,7 +962,10 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 			// paragraph.
 
 			f=end_of_paragraph;
-			richtextfragmentObj *last_lr=0;
+			richtextfragmentObj *last_lr=nullptr;
+
+			richtextfragmentObj *bottom_rl=nullptr;
+			richtextfragmentObj *top_rl=nullptr;
 
 			while (n_lines_in_paragraph)
 			{
@@ -942,31 +986,32 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 				if (paragraph_embedding_level ==
 				    UNICODE_BIDI_LR)
 				{
+					if (bottom_rl)
+					{
+						helper.rl_lines(bottom_rl,
+								top_rl,
+								last_lr);
+						bottom_rl=top_rl=nullptr;
+					}
 					if (!last_lr)
 						last_lr=f;
 				}
 				else
 				{
-					if (last_lr)
-					{
-						// If we skipped over some
-						// left-to-right lines, emit
-						// them.
-						helper.lr_lines
-							(nullptr,
-							 f->next_fragment(),
-							 last_lr);
-						last_lr=0;
-					}
-					helper.line(f,
-						    paragraph_embedding_level);
+					if (!bottom_rl)
+						bottom_rl=f;
+					top_rl=f;
 				}
 
 				if (n_lines_in_paragraph == 0)
 				{
 					// Paragraph began with left-to-right
 					// text.
-					if (last_lr)
+					if (bottom_rl)
+						helper.rl_lines(bottom_rl,
+								top_rl,
+								last_lr);
+					else if (last_lr)
 						helper.lr_lines(nullptr,
 								f, last_lr);
 				}
