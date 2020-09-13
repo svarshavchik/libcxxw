@@ -316,6 +316,47 @@ struct richtextObj::get_helper_base {
 		return level;
 	}
 
+	//! Extract entire range from one complete line
+
+	//! Extracts the contents between the starting and ending position
+	//! if they're in the same fragment, returning true.
+	//!
+	//! Returns false if they're not, extracting nothing.
+
+	bool complete_line()
+	{
+		if (diff == 0)
+			return true; // Too easy
+
+		if (diff != 1)
+			return false;
+
+		// On the same line.
+
+		if (paragraph_embedding_level == UNICODE_BIDI_LR)
+		{
+			// Left to right text, get() characters starting
+			// with the starting position, location_a, until
+			// (but not including) location_b.
+			add(location_a->my_fragment->string,
+			    location_a->get_offset(),
+			    location_b->get_offset()-
+			    location_a->get_offset());
+		}
+		else
+		{
+			// Right to left text. get() characters starting
+			// (but not including) the starting position,
+			// location_a, until and including location b.
+
+			add(location_a->my_fragment->string,
+			    location_a->get_offset()+1,
+			    location_b->get_offset()-
+			    location_a->get_offset());
+		}
+		return true;
+	}
+
 	//! Add right to left lines to extracted text.
 
 	//! "bottom" and "top" specifies the last and the first right-to
@@ -792,42 +833,10 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 
 	get_helper helper{str, (*lock), a, b};
 
-	if (helper.diff == 0)
-		return str; // Too easy
+	auto diff=helper.diff;
 
-	auto &location_a=helper.location_a;
-	auto &location_b=helper.location_b;
-	auto &diff=helper.diff;
-
-	// And now that the buffers are ready and waiting...
-
-	if (diff == 1)
-	{
-		// On the same line.
-
-		if ((*lock)->paragraph_embedding_level == UNICODE_BIDI_LR)
-		{
-			// Left to right text, get() characters starting
-			// with the starting position, location_a, until
-			// (but not including) location_b.
-			helper.add(location_a->my_fragment->string,
-				   location_a->get_offset(),
-				   location_b->get_offset()-
-				   location_a->get_offset());
-		}
-		else
-		{
-			// Right to left text. get() characters starting
-			// (but not including) the starting position,
-			// location_a, until and including location b.
-
-			helper.add(location_a->my_fragment->string,
-				   location_a->get_offset()+1,
-				   location_b->get_offset()-
-				   location_a->get_offset());
-		}
+	if (helper.complete_line())
 		return str;
-	}
 
 	// At this point, "diff" is the total number of line fragments,
 	// at least 2, since the starting and ending position are on different
@@ -841,7 +850,7 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 
 		richtextfragmentObj *first_lr=nullptr, *last_lr=nullptr;
 
-		auto f=location_a->my_fragment;
+		auto f=helper.location_a->my_fragment;
 
 		// We know extract left-to-right text, from the starting
 		// fragment to the ending fragment.
@@ -930,7 +939,7 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 		// or the paragraph break. If paragraph break, we emit the
 		// paragraph, the newline, then proceed to the next paragraph.
 
-		auto f=location_a->my_fragment;
+		auto f=helper.location_a->my_fragment;
 
 		while (diff)
 		{
