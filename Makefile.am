@@ -761,6 +761,8 @@ libcxxw_la_SOURCES=\
 	richtext/richtext_draw_boundaries.C	    \
 	richtext/richtext_draw_boundaries.H	    \
 	richtext/richtext_draw_info.H		    \
+	richtext/richtext_range.C		    \
+	richtext/richtext_range.H		    \
 	richtext/richtext_impl.C		    \
 	richtext/richtext_impl.H		    \
 	richtext/richtext_insert.H		    \

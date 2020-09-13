@@ -81,6 +81,7 @@ LIBCXXW_NAMESPACE_END
 #include "richtext/richtext_linebreak_info.C"
 #include "richtext/richtexthorizinfo.C"
 #include "richtext/richtextcursorlocation.C"
+#include "richtext/richtext_range.C"
 #include "metrics_axis.C"
 #include "assert_or_throw.C"
 
