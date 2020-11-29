@@ -194,6 +194,11 @@ void fragment_list::split_from(const richtextfragment &new_fragment,
 	split_after->my_paragraph->adjust_char_count(-new_fragment->string
 						     .size());
 
+	split_from(split_after);
+}
+
+void fragment_list::split_from(richtextfragmentObj *split_after)
+{
 	// Make a copy of the fragments that are going to get moved.
 	auto &old_fragments=split_after->my_paragraph->fragments;
 

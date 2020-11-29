@@ -162,6 +162,14 @@ class fragment_list : public const_fragment_list {
 	void split_from(const richtextfragment &new_fragment,
 			richtextfragmentObj *split_after);
 
+	//! Split a fragment, put all remaining fragments into a new paragraph
+
+	//! This is called from insert() when it is not splitting a fragment
+	//! in a middle, but rather moving all fragments after split_after
+	//! into a new paragraph.
+
+	void split_from(richtextfragmentObj *split_after);
+
 	// Move next paragraph's fragments to this paragraph.
 
 	void join_next();
@@ -194,7 +202,8 @@ class fragment_list : public const_fragment_list {
 
 	//! Create and append a new fragment
 	void append_new_fragment(richtextstring &&);
- private:
+
+private:
 
 	//! Recalculate the dimensions of the given fragment
 

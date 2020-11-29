@@ -1593,7 +1593,7 @@ uninstall-hook:
 EXTRA_DIST += $(patsubst $(srcdir)/%,%,$(all_theme_source_files))
 
 check-am:
-	@test -n "$(BUILT_TESTPROGRAMS)" || exit 0; for p in $(BUILT_TESTPROGRAMS); do echo $$p; ./$$p --test || exit 1; done
+	@test -n "$(BUILT_TESTPROGRAMS)" || exit 0; for p in $(BUILT_TESTPROGRAMS); do echo ">>$$p"; ./$$p --test || exit 1; done
 
 test:
 	./testmainwindow --state
