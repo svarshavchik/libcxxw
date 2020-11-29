@@ -9,10 +9,13 @@
 #include "x/w/impl/richtext/richtextstring.H"
 #include "richtext/richtextiterator.H"
 #include "x/w/impl/richtext/richtext_insertfwd.H"
+#include "x/w/impl/richtext/richtextcursorlocationfwd.H"
 #include <x/functional.H>
-#include "richtext/richtextcursorlocation.H"
+#include <x/sorted_range.H>
+#include <x/refptr_hash.H>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -115,8 +118,6 @@ struct LIBCXX_HIDDEN richtext_insert : richtext_insert_base {
 	}
 };
 
-class LIBCXX_HIDDEN create_fragments_from_inserted_text;
-
 //! Create fragments out of inserted text.
 
 //! One fragment per paragraph. The first step of processing inserted text
@@ -124,6 +125,10 @@ class LIBCXX_HIDDEN create_fragments_from_inserted_text;
 //!
 //! Takes a richtextstring and each call to operator() produces a
 //! richtextfragment. Or a null pointer after all fragments were produced.
+//!
+//! \note
+//! The constructor modifies the passed in string. All newlines are updated
+//! to have their text direction reflect the paragraph_embedding_level.
 
 class create_fragments_from_inserted_text {
 
@@ -131,7 +136,7 @@ class create_fragments_from_inserted_text {
 	richtextstring &string;
 
 	//! Constructor parameter
-	const unicode_bidi_level_t embedding_level;
+	const unicode_bidi_level_t paragraph_embedding_level;
 
 	size_t current_pos; //!< Next position to process
 
@@ -141,7 +146,7 @@ public:
 	//! Constructor
 	create_fragments_from_inserted_text(richtextstring &string,
 					    unicode_bidi_level_t
-					    embedding_level);
+					    paragraph_embedding_level);
 
 	//! Destructor
 	~create_fragments_from_inserted_text();
@@ -176,20 +181,55 @@ private:
 
 struct richtext_insert_results {
 
-	//! How much was inserted.
+	//! Cursor locations that should be moved as a result of the new text.
 
-	//! This is 0 if the insert text is empty.
+	std::vector<richtextcursorlocation> cursors_to_move;
+
+	//! Range of inserted text
+
+	//! The starting and ending position of inserted text in a fragment.
+
+	struct range {
+		size_t begin;
+		size_t end;
+	};
+
+	//! Where text has been inserted
+
+	//! Keeps track of where the inserted text is. This is a map
+	//! of richtextfragments. insert() inserts the text and records
+	//! each richtextfragment it updated or created. For each
+	//! richtextfragment a starting and ending position of the inserted
+	//! text gets recorded.
 	//!
-	//! Returns 1, unless new_text has line breaks, which inserts a new
-	//! paragraph. Each inserted paragraph increments the return value
-	//! by 1.
-	size_t counter=0;
+	//! Then, this gets updated by split() and merged() as the inserted
+	//! text gets rewrapped.
+	//!
+	//! The starting and ending position is a slight overkill, since
+	//! we reasonably expect to keep track of at most one range per
+	//! fragment.
+
+	std::unordered_map<richtextfragment,
+			   sorted_range<range>> inserted_range;
+
+#if 0
+	bool insert_rl=false;
+#endif
+	//! Whether the inserted text ended in a paragraph break
+
+	//! This is to let insert_at_location() to know that it needs to
+	//! rewrap an additional paragraph, since the inserted text ends
+	//! on the last line of the insert-ending paragraph, but the following
+	//! paragraph also needs to get rewrapped.
+	bool insert_ended_in_paragraph_break=false;
 
 	//! Fragments were split.
 
 	//! The range of character specifies by pos (offset) and count (number
 	//! of characters) was removed from the split_from fragment and
 	//! placed into a new split_to fragment.
+	//!
+	//! This updates inserted_range accordingly.
 	void split(const richtextfragment &split_from,
 		   size_t pos,
 		   size_t count,
@@ -199,10 +239,18 @@ struct richtext_insert_results {
 
 	//! merged_from was the fragment whose contents were merged into
 	//! the merged_to fragment, starting at the given position.
+	//!
+	//! This updates inserted_range accordingly.
 	void merged(const richtextfragment &merged_from,
 		    const richtextfragment &merged_to,
 		    size_t merged_to_pos);
 
+	//! An entire fragment was removed.
+	void removed(const richtextfragment &f);
+
+	//! An entire fragment was removed.
+	void removed(const richtextfragment &f,
+		     size_t pos, size_t nchars);
 };
 
 LIBCXXW_NAMESPACE_END

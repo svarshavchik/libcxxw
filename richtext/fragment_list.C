@@ -406,13 +406,14 @@ void fragment_list::recalculate_size(bool &width_changed,
 		paragraph.above_baseline+paragraph.below_baseline;
 }
 
-void fragment_list::append_new_fragment(richtextstring &&s)
+richtextfragment fragment_list::append_new_fragment(richtextstring &&s)
 {
 	auto f=richtextfragment::create(std::move(s));
-	append_no_recalculate(f);
+	append(f);
 	f->recalculate_linebreaks();
 	f->load_glyphs_widths_kernings();
-}
 
+	return f;
+}
 
 LIBCXXW_NAMESPACE_END

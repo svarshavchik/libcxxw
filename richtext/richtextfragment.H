@@ -240,6 +240,7 @@ public:
 
  public:
 	friend class fragment_list;
+	friend class richtextcursorlocationObj;
 
 	//! Default constructor
 	richtextfragmentObj();
@@ -381,7 +382,8 @@ public:
 
 	void remove(size_t pos,
 		    size_t nchars,
-		    fragment_list &my_fragments);
+		    fragment_list &my_fragments,
+		    richtext_insert_results &results);
 
 	//! Move attached cursor locations to another fragment.
 
@@ -404,6 +406,23 @@ public:
 		    size_t pos,
 		    richtextstring &&new_string,
 		    richtext_insert_results &insert_results);
+
+	//! Split off remaining fragments.
+
+	//! Invoked from insert() to split fragments after this one into
+	//! a new paragraph.
+
+	void split_after_me(paragraph_list &my_paragraphs);
+
+	//! Invoked from insert() when new paragraphs need to be inserted.
+
+	void insert_new_paragraphs(ONLY IN_THREAD,
+				   paragraph_list &my_paragraphs,
+				   create_fragments_from_inserted_text
+				   &factory,
+				   const richtextfragment &insert_before,
+				   richtext_insert_results &result);
+
  public:
 	//! Computed width of this text fragment.
 
@@ -548,19 +567,59 @@ public:
 	//! Return next fragment in this paragraph, or nullptr
 	richtextfragmentObj *next_fragment() const;
 
+	//! Wrapping position.
+
+	//! Alias for what wrap_left_and_pos() and wrap_right_and_pos()
+	//! return.
+
+	typedef std::tuple<richtextfragment, size_t> wrap_t;
+
+	//! Next fragment after scrolling off to the right
+
+	//! Insert code calculated a cursor location off on the right. This
+	//! can happen for right-to-left inserts.
+	//!
+	//! Depending on the paragraph_embedding_level, we reposition to the
+	//! next_fragment or the prev_fragment().
+	wrap_t wrap_right_fragment_and_pos();
+
+	//! Prev fragment after scrolling off to the left
+
+	//! Insert code calculated a cursor location off on the left. This
+	//! can happen for right-to-left inserts.
+	//!
+	//! Depending on the paragraph_embedding_level, we reposition to the
+	//! next_fragment or the prev_fragment().
+	wrap_t wrap_left_fragment_and_pos();
+
+ private:
+	//! Invoked from wrap_right_and_pos() and wrap_left_and_pos().
+	void first_wrapped_pos(wrap_t &);
+
+	//! Invoked from wrap_right_and_pos() and wrap_left_and_pos().
+	void last_wrapped_pos(wrap_t &);
+ public:
+
+
+
 	//! Rich text editor window: this fragment needs to be redrawn
 
-	//! This is used by richtexteditorwindow. It defaults to true,
-	//! richtexteditorwindow resets it to false. This is reset back to
-	//! true by: insert(), split(), merge().
+	//! Gets reset back to false when this fragment gets redrawn.
 	bool redraw_needed=true;
 
 	//! At what row this fragment was redrawn (if redraw_needed is false).
 	coord_t redrawn_y_position=0;
 
+	//! Calculate left-to-right split position for the given size
 
+	//! Computes where this left-to-right fragment should be split so
+	//! that its length does not exceed the given width.
 	size_t compute_split_pos_lr(dim_t width) const;
 
+	//! Calculate right-to-left split position for the given size
+
+	//! Computes where this right-to-left fragment should be split so
+	//! that its length does not exceed the given width.
 	size_t compute_split_pos_rl(dim_t width) const;
 };
 

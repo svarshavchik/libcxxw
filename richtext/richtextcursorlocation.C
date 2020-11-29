@@ -496,6 +496,9 @@ void richtextcursorlocationObj::inserted_at(ONLY IN_THREAD,
 {
 	if (position.offset >= pos)
 	{
+		if (do_not_adjust_in_insert)
+			return;
+
 		position.offset += nchars;
 
 		if (position.horiz_pos_is_valid)

@@ -201,7 +201,7 @@ class fragment_list : public const_fragment_list {
 				   ssize_t text_count_changed);
 
 	//! Create and append a new fragment
-	void append_new_fragment(richtextstring &&);
+	richtextfragment append_new_fragment(richtextstring &&);
 
 private:
 

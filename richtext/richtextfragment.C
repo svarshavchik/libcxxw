@@ -249,6 +249,124 @@ richtextfragmentObj *richtextfragmentObj::next_fragment() const
 	return nullptr;
 }
 
+richtextfragmentObj::wrap_t richtextfragmentObj::wrap_right_fragment_and_pos()
+{
+	USING_MY_PARAGRAPH();
+
+	size_t l=string.size();
+	assert_or_throw(l > 0, "empty fragment in wrap_right_fragment_and_pos");
+
+	// If we have no place to go off the right side of the fragment,
+	// remain at the last character.
+	wrap_t ret{ref{this}, --l};
+
+	if (string.embedding_level(my_paragraph->my_richtext
+				   ->paragraph_embedding_level)
+	    == UNICODE_BIDI_LR)
+	{
+		// From the right end of the fragment we go to the next line.
+		richtextfragmentObj *f=next_fragment();
+
+		if (f)
+			f->first_wrapped_pos(ret);
+	}
+	else
+	{
+		// From the right end of the fragment we go to the previous
+		// line.
+		richtextfragmentObj *f=prev_fragment();
+
+		if (f)
+			f->last_wrapped_pos(ret);
+	}
+
+	return ret;
+}
+
+richtextfragmentObj::wrap_t richtextfragmentObj::wrap_left_fragment_and_pos()
+{
+	USING_MY_PARAGRAPH();
+
+	size_t l=string.size();
+	assert_or_throw(l > 0, "empty fragment in wrap_left_fragment_and_pos");
+
+	// If we have no place to go off the left side of the fragment,
+	// remain at the first character.
+
+	wrap_t ret{ref{this}, 0};
+
+	if (string.embedding_level(my_paragraph->my_richtext
+				   ->paragraph_embedding_level)
+	    == UNICODE_BIDI_LR)
+	{
+		// From the left end of the fragment we go to the previous
+		// line.
+
+		richtextfragmentObj *f=prev_fragment();
+
+		if (f)
+			f->last_wrapped_pos(ret);
+	}
+	else
+	{
+		// From the left end of the fragment we go to the next line.
+
+		richtextfragmentObj *f=next_fragment();
+
+		if (f)
+			f->first_wrapped_pos(ret);
+	}
+
+	return ret;
+}
+
+void richtextfragmentObj::first_wrapped_pos(wrap_t &ret)
+{
+	USING_MY_PARAGRAPH();
+
+	size_t l=string.size();
+	assert_or_throw(l > 0, "empty fragment in first_wrapped_pos");
+
+	std::get<0>(ret)=ref{this};
+
+	if (string.embedding_level(my_paragraph->my_richtext
+				   ->paragraph_embedding_level)
+	    == UNICODE_BIDI_LR)
+	{
+		// We wrapped to the beginning of this line.
+
+		std::get<1>(ret)=0;
+	}
+	else
+	{
+		// We wrapped to the end of this line.
+		std::get<1>(ret)=l-1;
+	}
+}
+
+void richtextfragmentObj::last_wrapped_pos(wrap_t &ret)
+{
+	USING_MY_PARAGRAPH();
+
+	size_t l=string.size();
+	assert_or_throw(l > 0, "empty fragment in last_wrapped_pos");
+
+	std::get<0>(ret)=ref{this};
+
+	if (string.embedding_level(my_paragraph->my_richtext
+				   ->paragraph_embedding_level)
+	    == UNICODE_BIDI_LR)
+	{
+		// We wrapped to the end of this line.
+		std::get<1>(ret)=l-1;
+	}
+	else
+	{
+		// We wrapped to the beginning of this line.
+		std::get<1>(ret)=0;
+	}
+}
+
 void richtextfragmentObj::recalculate_size_called_by_fragment_list()
 {
 	width=0;
@@ -439,6 +557,88 @@ void richtextfragmentObj::recalculate_size_called_by_fragment_list()
 		location->horiz_pos_no_longer_valid();
 }
 
+void
+richtextfragmentObj::insert_new_paragraphs(ONLY IN_THREAD,
+					   paragraph_list &my_paragraphs,
+					   create_fragments_from_inserted_text
+					   &factory,
+					   const richtextfragment
+					   &insert_before,
+					   richtext_insert_results &results)
+{
+	// TODO -- figure out how to optimize insertions of multiple
+	// paragraphs.
+
+	while (1)
+	{
+		auto next_line=factory.next_string();
+
+		if (next_line.size() == 0)
+		{
+			results.insert_ended_in_paragraph_break=true;
+			break; // Inserted text ended in a paragraph break.
+		}
+		auto &next_line_s=next_line.get_string();
+
+		// If next_line does not have a new line this must be
+		// the chunk of text after the last paragraph break. The
+		// newline can appear only in the first or the last position.
+
+		auto seen_paragraph_break=
+			next_line_s.at(next_line.size()-1) == '\n' ||
+			next_line_s.at(0) == '\n';
+
+		if (!seen_paragraph_break)
+		{
+			// Must be the last one.
+
+			size_t insert_pos=0;
+
+			if (my_paragraphs.text.rl())
+				insert_pos=insert_before->string.size();
+
+			insert_before->insert(IN_THREAD, my_paragraphs,
+					      insert_pos,
+					      std::move(next_line),
+					      results);
+			break;
+		}
+
+		// We create a new paragraph here, consisting of a single
+		// fragment, our next_line.
+
+		auto new_paragraph=my_paragraphs
+			.insert_new_paragraph(insert_before->my_paragraph
+					      ->my_paragraph_number);
+
+		fragment_list my_fragments{my_paragraphs,
+			*new_paragraph};
+
+		size_t n=next_line.size();
+
+		results.inserted_range.try_emplace
+			(my_fragments.append_new_fragment(std::move(next_line)))
+			.first->second.add(richtext_insert_results::range
+					   {0, n});
+	}
+}
+
+void richtextfragmentObj
+::split_after_me(paragraph_list &my_paragraphs)
+{
+	auto n=next_fragment();
+
+	assert_or_throw(!n || n->my_fragment_number > 0,
+			"split_after_me called for a last fragment");
+
+	auto new_paragraph=my_paragraphs
+		.insert_new_paragraph(my_paragraph->my_paragraph_number+1);
+	fragment_list new_paragraph_fragments{my_paragraphs,
+		*new_paragraph};
+
+	new_paragraph_fragments.split_from(this);
+}
+
 richtext_insert_results
 richtextfragmentObj::insert(ONLY IN_THREAD,
 			    paragraph_list &my_paragraphs,
@@ -446,15 +646,260 @@ richtextfragmentObj::insert(ONLY IN_THREAD,
 {
 	USING_MY_PARAGRAPH();
 
+	// Ok, get the position and the contents to insert.
 	auto pos=new_string_to_insert.pos();
-
 	auto new_string=new_string_to_insert(string.meta_at(pos));
 
 	richtext_insert_results results;
 
-	insert(IN_THREAD, my_paragraphs,
-	       pos, std::move(new_string), results);
+	// Find all locations at the insert position.
+	for (const auto &l:locations)
+	{
+		if (l->get_offset() == pos)
+			results.cursors_to_move.push_back(l);
+	}
 
+	auto &my_string=string.get_string();
+
+	assert_or_throw(pos < my_string.size(),
+			"insert position after the fragment");
+
+	// Assume there's at least one paragraph break in the string
+	//
+	// Use create_fragments_from_inserted_text to generate one fragment
+	// for each individual paragraph.
+
+	create_fragments_from_inserted_text factory{new_string,
+		my_paragraphs.text.paragraph_embedding_level};
+
+	auto richtext_rl=my_paragraphs.text.rl();
+
+	// Whether the first paragraph (or the only text) is right to left
+	// text. This is determined by next_string_dir(), but if it's
+	// richtext_dir::both, or if the insert position is a paragraph
+	// break, this gets overriden to our paragraph embedding level.
+
+	auto insert_rl=richtext_rl;
+
+	if (my_string[pos] != '\n' && new_string.size() > 0)
+	{
+		switch (factory.next_string_dir()) {
+		case richtext_dir::lr:
+			insert_rl=false;
+			break;
+		case richtext_dir::rl:
+			insert_rl=true;
+			break;
+		case richtext_dir::both:
+			break;
+		}
+	}
+
+#if 0
+	results.insert_rl=insert_rl;
+#endif
+	if (insert_rl)
+		++pos; // Insertion position *after* what's indicated.
+
+	// Sanity check, non-empty string and ...
+	assert_or_throw(my_string.empty() ||
+			(
+			 // lr text: can't insert after trailing \n
+			 !(!richtext_rl && *--my_string.end() == '\n' &&
+			   pos == my_string.size())
+			 &&
+			 // rl text: can't insert before leading \n
+			 !(richtext_rl && my_string[0] == '\n' && pos == 0)
+			 ),
+			"insert position cannot be after the paragraph break");
+
+	if (auto &s=new_string.get_string(); std::find(s.begin(), s.end(), '\n')
+	    == s.end())
+	{
+		// Easy case, no paragraph breaks to worry about.
+
+		insert(IN_THREAD, my_paragraphs, pos,
+		       std::move(new_string), results);
+
+		return results;
+	}
+
+	if (pos == my_string.size())
+	{
+		auto this_embedding_level=
+			string.embedding_level(my_paragraphs.text
+					       .paragraph_embedding_level);
+		// Must be appending right to left, must be insert_rl
+		//
+		//
+		// What we'll do is insert the first paragraph at the end
+		// of the fragment, then split it off.
+
+		insert(IN_THREAD, my_paragraphs, pos,
+		       factory.next_string(), results);
+
+		if (this_embedding_level != UNICODE_BIDI_LR)
+		{
+			// No possible locations can be located here, all
+			// locations would be at the end of the current string.
+			//
+			// Find all locations at the end of the string which
+			// are do_not_adjust_on_insert, and manually put them
+			// at the end of the first character of the insert
+			// text, from the right, the logically equivalent
+			// position after insert, for the before-inserted
+			// position.
+			//
+			// Original fragment:  ttttttt
+			// Position:                 ^
+			//
+			// We appended nnnnnn
+			//
+			// New fragment:       tttttttnnnnnn
+			// New position:                   ^
+
+			fragment_list my_fragments{my_paragraphs,
+				*my_paragraph};
+
+			// This is right to left embedding level, so we just
+			// inserted a newline at the insert position. Do a
+			// right-to-left split, to split the preceding content
+			// into the next line.
+			if (richtext_rl)
+			{
+				split(my_fragments, pos, split_rl, true,
+				      results);
+			}
+		}
+
+		split_after_me(my_paragraphs);
+
+		insert_new_paragraphs(IN_THREAD,
+				      my_paragraphs,
+				      factory,
+				      ref{next_fragment()},
+				      results);
+
+		return results;
+	}
+
+	if (!richtext_rl)
+	{
+		// For inserting left-to-right paragraphs, we start the
+		// ball rolling to split the fragment where text is getting
+		// inserted at the insert position, then set insert_before
+		// to the split-off fragment. Each new fragment that gets
+		// inserted will get inserted before that one.
+		//
+		// Text:             aaaaaa|bbbbbb
+		//
+		// "|" marks the insert position. This gets split:
+		//
+		//                   aaaaaa
+		// insert_before->   bbbbbb
+		//
+		// If, however, nothing gets split and insert_before will be
+		// this fragment.
+
+		richtextfragment insert_before{this};
+
+		if (pos > 0)
+		{
+			fragment_list my_fragments{my_paragraphs,
+				*my_paragraph};
+
+			split(my_fragments, pos, split_lr, true, results);
+
+			auto p=next_fragment();
+			assert_or_throw(p,
+					"could not find split fragment");
+			insert_before=p;
+		}
+
+		// The split-off fragment, "bbbbbb", will be where we'll
+		// be inserting everything else, before it.
+		//
+		// We are going to be inserting at least one paragraph.
+		//
+		// insert_before, therefore, should start a new paragraph,
+		// so we move it to a new paragraph, first. Then, we'll
+		// take the first paragraph from the inserted text and
+		// append it to the previous paragraph, that contains
+		// "aaaaaa".
+
+		if (insert_before->my_fragment_number > 0)
+		{
+			// Now take the first paragraph to insert and add
+			// it to "aaaaaa", after splitting off bbbbbb.
+
+
+			split_after_me(my_paragraphs);
+			auto next_line=factory.next_string();
+
+			assert_or_throw(next_line.get_string().at
+					(next_line.size()-1) == '\n',
+					"expected at least one"
+					" paragraph");
+
+			insert(IN_THREAD, my_paragraphs, string.size(),
+			       std::move(next_line), results);
+		}
+
+		insert_new_paragraphs(IN_THREAD,
+				      my_paragraphs,
+				      factory,
+				      insert_before,
+				      results);
+	}
+	else
+	{
+		// We get here only when pos < my_string.size()
+		//
+		// Text:             aaaaaa|bbbbbb
+		//
+		// "|" marks the insert position, pos. This gets split:
+		//
+		//                   bbbbbb
+		// insert_before->   aaaaaa
+
+		richtextfragmentObj *p;
+
+		{
+			fragment_list my_fragments{my_paragraphs,
+				*my_paragraph};
+
+			split(my_fragments, pos, split_rl, true, results);
+
+			p=next_fragment();
+			assert_or_throw(p,
+					"could not find split fragment");
+		}
+		richtextfragment insert_before{p};
+
+		// The split-off fragment, "aaaaaa", will be where we'll
+		// be inserting everything else, before it.
+		//
+		// We are going to be inserting at least one paragraph.
+		//
+		// insert_before, therefore, should start a new paragraph,
+		// so we move it to a new paragraph, first.
+
+		split_after_me(my_paragraphs);
+		auto next_line=factory.next_string();
+
+		assert_or_throw(next_line.get_string().at(0) == '\n',
+				"expected at least one"
+				" paragraph");
+
+		insert(IN_THREAD, my_paragraphs, 0,
+		       std::move(next_line), results);
+
+		insert_new_paragraphs(IN_THREAD,
+				      my_paragraphs,
+				      factory,
+				      insert_before,
+				      results);
+	}
 	return results;
 }
 
@@ -465,7 +910,7 @@ void richtextfragmentObj::insert(ONLY IN_THREAD,
 				 richtext_insert_results &insert_results)
 {
 	// Sanity checks
-	assert_or_throw(pos < string.size(),
+	assert_or_throw(pos <= string.size(),
 			"Invalid pos parameter to insert()");
 
 	auto n_size=new_string.size();
@@ -525,14 +970,9 @@ void richtextfragmentObj::insert(ONLY IN_THREAD,
 	// Update cursor locations
 
 	for (const auto &location:locations)
-	{
-		if (!location->do_not_adjust_in_insert)
-		{
-			location->inserted_at(IN_THREAD,
-					      pos, n_size,
-					      width-old_width);
-		}
-	}
+		location->inserted_at(IN_THREAD,
+				      pos, n_size,
+				      width-old_width);
 
 	// At this point, it's new paragraphs, or bust!
 	string_sentry.unguard();
@@ -541,15 +981,8 @@ void richtextfragmentObj::insert(ONLY IN_THREAD,
 
 	redraw_needed=true;
 
-	for (size_t p=string.size(); p; )
-	{
-		if (breaks[--p] == unicode_lb::mandatory && p != 0)
-		{
-			split(my_fragments, p, split_lr, false,
-			      insert_results);
-			++insert_results.counter;
-		}
-	}
+	insert_results.inserted_range[ref{this}]
+		.add(richtext_insert_results::range{pos, pos+n_size});
 }
 
 // Recalculate line breaks for the previous fragment, this one,
@@ -1026,12 +1459,15 @@ void richtextfragmentObj::merge_lr_lr(fragment_list &my_fragments,
 
 void richtextfragmentObj::remove(size_t pos,
 				 size_t nchars,
-				 fragment_list &my_fragments)
+				 fragment_list &my_fragments,
+				 richtext_insert_results &results)
 {
 	if (nchars == 0)
 		return;
 
 	USING_MY_PARAGRAPH();
+
+	results.removed(ref{this}, pos, nchars);
 
 	auto &current_string=string.get_string();
 

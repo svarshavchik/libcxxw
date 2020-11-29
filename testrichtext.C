@@ -452,12 +452,15 @@ void testrlsplit(const current_fontcollection &font1,
 	richtextmeta meta1{black, font1}, meta2=meta1;
 
 	meta1.rl=true;
+	richtext_options options;
+
+	options.paragraph_embedding_level=UNICODE_BIDI_RL;
 
 	auto richtext=richtext::create(richtextstring{
 		U"merol\nMUSPI",
 		{
 			{0, meta1},
-		}}, richtext_options{});
+		}}, options);
 	auto impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 2)
@@ -468,7 +471,7 @@ void testrlsplit(const current_fontcollection &font1,
 	if ((*p)->fragments.size() != 1)
 		throw EXCEPTION("Somehow we ended up with multiple fragments");
 
-	auto iter1=richtext->at(0, new_location::lr);
+	auto iter1=richtext->at(1, new_location::lr);
 	auto iter2=richtext->at(6, new_location::lr);
 
 	{
@@ -481,10 +484,10 @@ void testrlsplit(const current_fontcollection &font1,
 	}
 
 	if ((*p)->get_fragment(0)->string.get_string() !=
-	    U"MUSPImerol\n")
+	    U"MUSPI\nmerol")
 		throw EXCEPTION("testrlsplit: unexpected result of merge");
 
-	if (iter1->pos() != 5 || iter2->pos() != 0 ||
+	if (iter1->pos() != 4 || iter2->pos() != 10 ||
 	    iter1->at(IN_THREAD).character != U'm' ||
 	    iter2->at(IN_THREAD).character != U'M')
 		throw EXCEPTION("testrlsplit: unexpected locations"
@@ -495,7 +498,7 @@ void testrlsplit(const current_fontcollection &font1,
 		{
 			{0, meta1},
 			{11, meta2},
-		}}, richtext_options{});
+		}}, richtext_options{options});
 	impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 2)
@@ -507,7 +510,7 @@ void testrlsplit(const current_fontcollection &font1,
 		throw EXCEPTION("Somehow we ended up with multiple fragments "
 				"(2)");
 
-	iter1=richtext->at(0, new_location::lr);
+	iter1=richtext->at(1, new_location::lr);
 	iter2=richtext->at(6, new_location::lr);
 
 	{
@@ -520,10 +523,10 @@ void testrlsplit(const current_fontcollection &font1,
 	}
 
 	if ((*p)->get_fragment(0)->string.get_string() !=
-	    U"MUSPImerol\nDolor")
+	    U"MUSPIDolor\nmerol")
 		throw EXCEPTION("testrlsplit: unexpected result of merge(2)");
 
-	if (iter1->pos() != 5 || iter2->pos() != 0 ||
+	if (iter1->pos() != 4 || iter2->pos() != 15 ||
 	    iter1->at(IN_THREAD).character != U'm' ||
 	    iter2->at(IN_THREAD).character != U'M')
 		throw EXCEPTION("testrlsplit: unexpected locations"
@@ -532,7 +535,8 @@ void testrlsplit(const current_fontcollection &font1,
 	if ((*p)->get_fragment(0)->string.get_meta() !=
 	    richtextstring::meta_t{
 		    {0, meta1},
-		    {11, meta2}
+		    {5, meta2},
+		    {10, meta1},
 	    })
 	{
 		throw EXCEPTION("testrlsplit: unexpected meta"
@@ -612,9 +616,11 @@ void testrlmerge(const current_fontcollection &font1,
 			 }
 			},
 			{
-			 U"lorem ipsum\ndolorsit amet",
+			 U"dolorsit amet\nlorem ipsum",
 			 {
 			  {0, meta1},
+			  {13, meta2},
+			  {14, meta1},
 			 }
 			},
 		       },
@@ -630,7 +636,7 @@ void testrlmerge(const current_fontcollection &font1,
 			 }
 			},
 			{
-			 U"dolorsit ametlorem ipsum\n",
+			 U"dolorsit amet\nlorem ipsum",
 			 {
 			  {0, meta2},
 			  {9, meta1},
@@ -650,10 +656,12 @@ void testrlmerge(const current_fontcollection &font1,
 			 }
 			},
 			{
-			 U"dolorsit lorem ipsum\namet",
+			 U"dolorsit amet\nlorem ipsum",
 			 {
 			  {0, meta2},
 			  {9, meta1},
+			  {13, meta2},
+			  {14, meta1},
 			 }
 			},
 		       },
@@ -666,12 +674,12 @@ void testrlmerge(const current_fontcollection &font1,
 	{
 		auto copy=t.s;
 
-		auto richtext=richtext::create(std::move(copy),
-					       richtext_options{});
+		richtext_options options;
+		options.paragraph_embedding_level=UNICODE_BIDI_RL;
+
+		auto richtext=richtext::create(std::move(copy), options);
 
 		auto impl=richtext->debug_get_impl(IN_THREAD);
-
-		impl->paragraph_embedding_level=UNICODE_BIDI_RL;
 
 		auto p=impl->paragraphs.get_paragraph(0);
 

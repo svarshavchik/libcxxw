@@ -1,4 +1,5 @@
 #include "libcxxw_config.h"
+#include "mockrichtext.H"
 #include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtextiterator.H"
 #include "richtext/richtextiterator.H"
@@ -12,24 +13,16 @@
 #include "assert_or_throw.H"
 #include <x/options.H>
 #include <iostream>
+#include <algorithm>
 
 using namespace LIBCXX_NAMESPACE::w;
 
-void testrichtext1(const main_window &w,
-		   const current_fontcollection &font1,
-		   const current_fontcollection &font2)
+void testrichtext1(ONLY IN_THREAD)
 {
-	auto IN_THREAD=w->get_screen()->impl->thread;
-
-	auto black=create_new_background_color(w->get_screen(),
-					       w->elementObj::impl
-					       ->get_window_handler()
-					       .drawable_pictformat, "0%");
-
 	richtextstring ustring{
 		U"Helloworld ",
 		{
-			{0, {black, font1}},
+			{0, {'1'}},
 		}};
 
 	auto richtext=richtext::create(std::move(ustring), richtext_options{});
@@ -89,20 +82,29 @@ void testrichtext1(const main_window &w,
 	assert_or_throw(b->at(IN_THREAD).character == 'w',
 			"pos(5) is not character 'w'.");
 
+	auto bm1=b->clone();
+	auto bp1=b->clone();
+	bm1->prev(IN_THREAD);
+	bp1->next(IN_THREAD);
 	auto o=b->insert(IN_THREAD, {
 			U"\n",
 			{
-				{0, {black, font2}}
+				{0, {'2'}}
 			}
 		});
 
+	assert_or_throw(bm1->pos() == 4 &&
+			o->pos() == 5 &&
+			b->pos() == 6 &&
+			bp1->pos() == 7,
+			"Unexpected iterator positions");
 	assert_or_throw(o->debug_get_location()->my_fragment->my_paragraph
 			->num_chars == 6,
-			"Number of characters in 1st paragraph is not 12.");
+			"Number of characters in 1st paragraph is not 6.");
 
 	assert_or_throw(b->debug_get_location()->my_fragment->my_paragraph
 			->num_chars == 6,
-			"Number of characters in 2nd paragraph is not 12.");
+			"Number of characters in 2nd paragraph is not 6.");
 
 	assert_or_throw(b->at(IN_THREAD).character == 'w',
 			"pos(6) is not character 'w' after insert");
@@ -117,8 +119,8 @@ void testrichtext1(const main_window &w,
 	auto meta=o->debug_get_location()->my_fragment->string.get_meta();
 
 	decltype(meta) expected{
-		{0, {black, font1}},
-		{5, {black, font2}}
+		{0, {'1'}},
+		{5, {'2'}}
 	};
 
 	assert_or_throw(meta == expected,
@@ -127,7 +129,7 @@ void testrichtext1(const main_window &w,
 	meta=b->debug_get_location()->my_fragment->string.get_meta();
 
 	expected={
-		{0, {black, font1}},
+		{0, {'1'}},
 	};
 
 	assert_or_throw(meta == expected,
@@ -282,16 +284,8 @@ void validate_richtext(ONLY IN_THREAD,
 	assert_or_throw(v == s, ss.c_str());
 }
 
-void testrichtext2(const main_window &w,
-		   const current_fontcollection &font1)
+void testrichtext2(ONLY IN_THREAD)
 {
-	auto IN_THREAD=w->get_screen()->impl->thread;
-
-	auto black=create_new_background_color(w->get_screen(),
-					       w->elementObj::impl
-					       ->get_window_handler()
-					       .drawable_pictformat, "0%");
-
 	const struct {
 		const char *orig;
 		size_t insert_pos;
@@ -316,6 +310,11 @@ void testrichtext2(const main_window &w,
 			"world",
 			0,
 			"Hello\n",
+		},
+		{
+			"world",
+			0,
+			"Hello",
 		},
 		{
 			"Hello ",
@@ -361,7 +360,7 @@ void testrichtext2(const main_window &w,
 		richtextstring ustring{
 			std::u32string{orig.begin(), orig.end()},
 			{
-				{0, {black, font1}}
+				{0, {'1'}}
 			}};
 
 		auto text=richtext::create(std::move(ustring), richtext_options{});
@@ -375,7 +374,7 @@ void testrichtext2(const main_window &w,
 			std::u32string{insert_string.begin(),
 				insert_string.end()},
 			{
-				{0, {black, font1}}
+				{0, {'1'}}
 			}};
 
 		auto b=text->at(test.insert_pos, new_location::lr);
@@ -385,8 +384,28 @@ void testrichtext2(const main_window &w,
 				"before insert, unexpected cursor position's"
 				" value");
 
+		auto bm1=b->clone();
+		auto bp1=b->clone();
+		bm1->prev(IN_THREAD);
+		bp1->next(IN_THREAD);
+
 		auto o=b->insert(IN_THREAD, std::move(ustring));
 
+		if (test.insert_pos > 0)
+			assert_or_throw(bm1->pos() == test.insert_pos-1,
+					"unexpected preceding iterator position"
+					);
+		assert_or_throw(b->pos() == test.insert_pos+
+				insert_string.size(),
+				"unexpected current iterator position");
+
+		if (test.insert_pos < std::string{test.orig}.size())
+		{
+			assert_or_throw(bp1->pos() == test.insert_pos+1+
+					insert_string.size(),
+					"unexpected following iterator"
+					" position");
+		}
 		orig.insert(orig.begin()+test.insert_pos,
 			    insert_string.begin(),
 			    insert_string.end());
@@ -397,16 +416,8 @@ void testrichtext2(const main_window &w,
 }
 
 
-void testrichtext3(const main_window &w,
-		   const current_fontcollection &font1)
+void testrichtext3(ONLY IN_THREAD)
 {
-	auto IN_THREAD=w->get_screen()->impl->thread;
-
-	auto black=create_new_background_color(w->get_screen(),
-					       w->elementObj::impl
-					       ->get_window_handler()
-					       .drawable_pictformat, "0%");
-
 	const struct {
 		size_t pos1, pos2;
 	} tests[]={
@@ -448,7 +459,7 @@ void testrichtext3(const main_window &w,
 		richtextstring ustring{
 			std::u32string{test_string.begin(), test_string.end()},
 			{
-				{0, {black, font1}}
+				{0, {'1'}}
 			}};
 
 		auto text=richtext::create(std::move(ustring), richtext_options{});
@@ -598,16 +609,8 @@ void testrichtext3(const main_window &w,
 	}
 }
 
-void testrichtext4(const main_window &w,
-		   const current_fontcollection &font1)
+void testrichtext4(ONLY IN_THREAD)
 {
-	auto IN_THREAD=w->get_screen()->impl->thread;
-
-	auto black=create_new_background_color(w->get_screen(),
-					       w->elementObj::impl
-					       ->get_window_handler()
-					       .drawable_pictformat, "0%");
-
 	richtext_insert_results ignored;
 
 	std::string test_string="12345 67890 ABCDEF\n" // 19 chars
@@ -621,7 +624,7 @@ void testrichtext4(const main_window &w,
 	richtextstring ustring{
 		std::u32string{test_string.begin(), test_string.end()},
 		{
-			{0, {black, font1}}
+			{0, {'1'}}
 		}};
 
 	auto richtext=richtext::create(std::move(ustring), richtext_options{});
@@ -679,23 +682,15 @@ void testrichtext4(const main_window &w,
 	}
 }
 
-void testrichtext5(const main_window &w,
-		   const current_fontcollection &font2)
+void testrichtext5(ONLY IN_THREAD)
 {
-	auto IN_THREAD=w->get_screen()->impl->thread;
-
-	auto black=create_new_background_color(w->get_screen(),
-					       w->elementObj::impl
-					       ->get_window_handler()
-					       .drawable_pictformat, "0%");
-
 	std::string test_string=
 		"The quick brown fox jumped over the lazy dog's tail.";
 
 	richtextstring ustring{
 		std::u32string{test_string.begin(), test_string.end()},
 		{
-			{0, {black, font2}}
+			{0, {'2'}}
 		}};
 
 
@@ -725,6 +720,8 @@ void testrichtext5(const main_window &w,
 
 		auto before_insert=insert_pos->insert(IN_THREAD, ustring);
 
+		assert_or_throw(insert_pos->pos() == 7 + ustring.size(),
+				"insert() did not update the insert pos");
 		std::string shouldbe=test_string.substr(0, 7) + test
 			+ test_string.substr(7);
 
@@ -738,21 +735,12 @@ void testrichtext5(const main_window &w,
 	}
 }
 
-void testrichtext6(const main_window &w,
-		   const current_fontcollection &font1,
-		   const current_fontcollection &font2)
+void testrichtext6(ONLY IN_THREAD)
 {
-	auto IN_THREAD=w->get_screen()->impl->thread;
-
-	auto black=create_new_background_color(w->get_screen(),
-					       w->elementObj::impl
-					       ->get_window_handler()
-					       .drawable_pictformat, "0%");
-
 	richtextstring ustring{
 		U"Hello---world ",
 		{
-			{0, {black, font1}},
+			{0, {'1'}},
 		}};
 
 	auto richtext=richtext::create(std::move(ustring), richtext_options{});
@@ -763,7 +751,7 @@ void testrichtext6(const main_window &w,
 	ustring={
 		U" ",
 		{
-			{0, {black, font2}},
+			{0, {'2'}},
 		}};
 
 	e->replace(IN_THREAD, b, std::move(ustring));
@@ -779,7 +767,7 @@ void testrichtext6(const main_window &w,
 
 	if (s.get_string() != U" " ||
 	    s.get_meta() != std::vector<std::pair<size_t, richtextmeta>>{
-		    {0, {black, font2}}
+		    {0, {'2'}}
 	    })
 		throw EXCEPTION("Return value from replace()");
 
@@ -787,26 +775,17 @@ void testrichtext6(const main_window &w,
 
 	if (s.get_string() != U"Hello world" ||
 	    s.get_meta() != std::vector<std::pair<size_t, richtextmeta>>{
-		    {0, {black, font1}},
-		    {5, {black, font2}},
-		    {6, {black, font1}}
+		    {0, {'1'}},
+		    {5, {'2'}},
+		    {6, {'1'}}
 	    })
 		throw EXCEPTION("Entire text after replace()");
 
 }
 
-void testrichtext7(const main_window &w,
-		   const current_fontcollection &font1,
-		   const current_fontcollection &font2)
+void testrichtext7(ONLY IN_THREAD)
 {
-	auto IN_THREAD=w->get_screen()->impl->thread;
-
-	auto black=create_new_background_color(w->get_screen(),
-					       w->elementObj::impl
-					       ->get_window_handler()
-					       .drawable_pictformat, "0%");
-
-	richtextmeta meta1{black, font1};
+	richtextmeta meta1{'1'};
 
 	meta1.rl=true;
 
@@ -867,6 +846,744 @@ void testrichtext7(const main_window &w,
 		throw EXCEPTION("testrichtext7: test 9 failed");
 }
 
+struct printable_char {
+	char32_t c;
+};
+
+std::ostream &operator<<(std::ostream &o, printable_char c)
+{
+	if (c.c == '\n')
+		o << "\\n";
+	else
+		o << (char)c.c;
+
+	return o;
+}
+
+std::string format(const std::vector<std::string> &l)
+{
+	std::ostringstream o;
+
+	for (auto &s:l)
+	{
+		o << "\"";
+		for (auto b=s.begin(), e=s.end(); b != e;)
+		{
+			auto p=b;
+			b=std::find(b, e, '\n');
+
+			o << std::string{p, b};
+
+			if (b != e)
+			{
+				o << "\\n";
+				++b;
+			}
+		}
+		o << "\",\n";
+	}
+	return o.str();
+}
+
+void testrichtext8(ONLY IN_THREAD)
+{
+	richtextmeta meta0{'0'},
+		meta1{'1'};
+
+	meta1.rl=true;
+
+	static const struct {
+		richtextstring base_string;
+		dim_t wrap_width;
+		unicode_bidi_level_t level;
+		size_t insert_pos;
+		richtextstring insert_string;
+		std::vector<std::string> expected;
+		size_t expected_orig;
+		size_t expected_insert;
+	} tests[] = {
+		// Test 1
+		{
+			{
+				U"olleH dlrow melor muspi\n",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			0, {
+				U" tema tis",
+				{ {0, meta1} }
+			},
+			{
+				" tema tis",
+				" melor muspi",
+				"\nolleH dlrow",
+			},
+			0,
+			9,
+		},
+		// Test 2
+		{
+			{
+				U"olleH dlrow melor muspi\n",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			0, {
+				U"tema tis\n111 222 333",
+				{ {0, meta1} }
+			},
+			{
+				"\ntema tis",
+				" 222 333",
+				" muspi111",
+				" melor",
+				"\nolleH dlrow",
+			},
+			0,
+			20,
+		},
+		// Test 3
+		{
+			{
+				U"olleH dlrow melor muspi\n",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			0, {
+				U"tema tis\n111 222 333\n",
+				{ {0, meta1} }
+			},
+			{
+				"\ntema tis",
+				" 222 333",
+				"\n111",
+				" melor muspi",
+				"\nolleH dlrow",
+			},
+			0,
+			21,
+		},
+		// Test 4
+		{
+			{
+				U"olleH dlrow melor muspi\n",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			0, {
+				U"111 227\n333\n444",
+				{ {0, meta0}, {4, meta1} }
+			},
+			{
+				"227",
+				"\n111 ",
+				"\n333",
+				" muspi444",
+				" melor",
+				"\nolleH dlrow",
+			},
+			0,
+			15,
+		},
+		// Test 5
+		{
+			{
+				U"Lorem Ipsum Dolor Sit Amet\n",
+				{
+					{0, meta0},
+				}
+			},
+			120,
+			UNICODE_BIDI_LR,
+			11, {
+				U"1234",
+				{ {0, meta1} }
+			},
+			{
+				"Lorem Ipsum ",
+				"1234Dolor ",
+				"Sit Amet\n",
+			},
+			12,
+			16,
+		},
+		// Test 6
+		{
+			{
+				U"Lorem Ipsum Dolor Sit Amet\n",
+				{
+					{0, meta0},
+				}
+			},
+			120,
+			UNICODE_BIDI_LR,
+			11, {
+				U"1234 56 78 90\nAB CD\nEF GH",
+				{ {0, meta1} }
+			},
+			{
+				"Lorem Ipsum ",
+				" 56 78 90",
+				"1234\n",
+				"AB CD\n",
+				"EF GHDolor ",
+				"Sit Amet\n",
+			},
+			20,
+			37,
+		},
+		// Test 7
+		{
+			{
+				U"Lorem Ipsum Dolor\n",
+				{
+					{0, meta0},
+				}
+			},
+			120,
+			UNICODE_BIDI_LR,
+			11, {
+				U"1234 56 78 90\n",
+				{ {0, meta1} }
+			},
+			{
+				"Lorem Ipsum ",
+				" 56 78 90",
+				"1234\n",
+				"Dolor\n",
+			},
+			20,
+			26,
+		},
+		// Test 8
+		{
+			{
+				U"Lorem Ipsum Dolor\n",
+				{
+					{0, meta0},
+				}
+			},
+			120,
+			UNICODE_BIDI_LR,
+			5, {
+				U"tema tis\n111 222 333",
+				{ {0, meta1} }
+			},
+			{
+				"Lorem ",
+				"tema tis\n",
+				" 222 333",
+				"111Ipsum ",
+				"Dolor\n",
+			},
+			6,
+			26,
+		},
+
+		// Test 9
+		{
+			{
+				U"Lorem Ipsum Dolor\n",
+				{
+					{0, meta0},
+				}
+			},
+			120,
+			UNICODE_BIDI_LR,
+			5, {
+				U"tema tis\n",
+				{ {0, meta1} }
+			},
+			{
+				"Lorem ",
+				"tema tis\n",
+				"Ipsum Dolor\n",
+			},
+			6,
+			15,
+		},
+		// Test 10
+		{
+			{
+				U"Lorem Ipsum Dolor\n",
+				{
+					{0, meta0},
+				}
+			},
+			120,
+			UNICODE_BIDI_LR,
+			5, {
+				U"111 222 333\ntema tis\n",
+				{ {0, meta1} }
+			},
+			{
+				"Lorem ",
+				" 222 333",
+				"111\n",
+				"tema tis\n",
+				"Ipsum Dolor\n",
+			},
+			13,
+			27,
+		},
+		// Test 11
+		{
+			{
+				U"olleH dlrow melor muspi\n",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			0, {
+				U" tema tis\n",
+				{ {0, meta1} }
+			},
+			{
+				"\n tema tis",
+				" melor muspi",
+				"\nolleH dlrow",
+			},
+			0,
+			10,
+		},
+		// Test 12
+		{
+			{
+				U"Lorem IpsumDolor",
+				{
+					{0, meta0},
+				}
+			},
+			120,
+			UNICODE_BIDI_LR,
+			5, {
+				U"tema",
+				{ {0, meta1} }
+			},
+			{
+				"Lorem tema",
+				"IpsumDolor",
+			},
+			6,
+			10,
+		},
+		// Test 13
+		{
+			{
+				U"Lorem\nIpsum",
+				{
+					{0, meta0},
+				}
+			},
+			120,
+			UNICODE_BIDI_LR,
+			5, {
+				U"tema",
+				{ {0, meta1} }
+			},
+			{
+				"Loremtema\n",
+				"Ipsum",
+			},
+			5,
+			9,
+		},
+		// Test 14
+		{
+			{
+				U"tema tis roloD muspI meroL",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			0, {
+				U"tema",
+				{ {0, meta1} }
+			},
+			{
+				" meroLtema",
+				" muspI",
+				" tis roloD",
+				"tema"
+			},
+			0,
+			4,
+		},
+		// Test 15
+		{
+			{
+				U"meroL\nIpsum",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			5, {
+				U"tema",
+				{ {0, meta1} }
+			},
+			{
+				"\ntemameroL",
+				"Ipsum"
+			},
+			5,
+			9,
+		},
+		// Test 16
+		{
+			{
+				U"meroL\nIpsum",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			5, {
+				U"tematema",
+				{ {0, meta0} }
+			},
+			{
+				"meroL",
+				"\ntematema",
+				"Ipsum",
+			},
+			5,
+			13,
+		},
+		// Test 17
+		{
+			{
+				U"tema tis roloD muspI meroL",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			0, {
+				U"1 2 3",
+				{ {0, meta1} }
+			},
+			{
+				" meroL1 2 3",
+				" muspI",
+				" tis roloD",
+				"tema"
+			},
+			0,
+			5,
+		},
+		// Test 18
+		{
+			{
+				U"tema tis roloD muspI meroL",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			0, {
+				U"1 2 3\n",
+				{ {0, meta1} }
+			},
+			{
+				"\n1 2 3",
+				" muspI meroL",
+				" tis roloD",
+				"tema"
+			},
+			0,
+			6,
+		},
+
+		// Test 19
+		{
+			{
+				U"tema tis roloD muspI meroL",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			0, {
+				U"1 2 3\n4 5 6",
+				{ {0, meta1} }
+			},
+			{
+				"\n1 2 3",
+				" meroL4 5 6",
+				" muspI",
+				" tis roloD",
+				"tema"
+			},
+			0,
+			11,
+		},
+
+		// Test 20
+		{
+			{
+				U"tema tis roloD muspI meroL",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			6, {
+				U" 2 3",
+				{ {0, meta1} }
+			},
+			{
+				" 2 3 meroL",
+				" muspI",
+				" tis roloD",
+				"tema"
+			},
+			6,
+			10,
+		},
+
+		// Test 21
+		{
+			{
+				U"tema tis roloD muspI meroL",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			6, {
+				U"2 3\n",
+				{ {0, meta1} }
+			},
+			{
+				"\n2 3 meroL",
+				" muspI",
+				" tis roloD",
+				"tema"
+			},
+			6,
+			10,
+		},
+
+		// Test 22
+		{
+			{
+				U"tema tis roloD muspI meroL",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			6, {
+				U"2 3\n4 5",
+				{ {0, meta1} }
+			},
+			{
+				"\n2 3 meroL",
+				" muspI4 5",
+				" tis roloD",
+				"tema"
+			},
+			6,
+			13,
+		},
+
+		// Test 23
+		{
+			{
+				U"tema tis roloD muspI meroL",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			6, {
+				U"2 3\n4 5\n6 7",
+				{ {0, meta1} }
+			},
+			{
+				"\n2 3 meroL",
+				"\n4 5",
+				" muspI6 7",
+				" tis roloD",
+				"tema"
+			},
+			6,
+			17,
+		},
+		// Test 24
+		{
+			{
+				U"meroL\ntema tis roloD muspI",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			5, {
+				U"2 3",
+				{ {0, meta0} }
+			},
+			{
+				"\n2 3meroL",
+				" roloD muspI",
+				"tema tis"
+			},
+			5,
+			8,
+		},
+		// Test 25
+		{
+			{
+				U"meroL\ntema tis roloD muspI",
+				{
+					{0, meta1},
+				}
+			},
+			120,
+			UNICODE_BIDI_RL,
+			5, {
+				U"Epsilon",
+				{ {0, meta0} }
+			},
+			{
+				"meroL",
+				"\nEpsilon",
+				" roloD muspI",
+				"tema tis"
+			},
+			5,
+			12,
+		},
+	};
+
+	size_t testnum=0;
+
+	for (const auto &t:tests)
+	{
+		++testnum;
+
+		auto ustring=t.base_string;
+
+		// Right to left tests.
+		richtext_options options;
+		options.paragraph_embedding_level=t.level;
+		options.unprintable_char=' ';
+		options.initial_width=t.wrap_width;
+		auto richtext=richtext::create(std::move(ustring), options);
+
+		auto extract=[&]
+			(auto cb)
+		{
+			richtext->thread_lock
+				(IN_THREAD,
+				 [&]
+				 (ONLY IN_THREAD, auto &lock)
+				 {
+					 (*lock)->paragraphs.for_paragraphs
+						 (0,
+						  [&]
+						  (auto p)
+						  {
+							  p->fragments
+								  .for_fragments
+								  (cb);
+							  return true;
+						  });
+				 });
+		};
+
+		auto dump=[&]
+		{
+			std::vector<std::string> actual;
+
+			extract([&]
+				(const auto &f)
+			{
+				auto &s=f->string.get_string();
+
+				actual.push_back({s.begin(), s.end()});
+			});
+
+			std::cout << format(actual);
+		};
+
+		dump();
+		std::cout << "----------------\n";
+
+		auto iter=richtext->at(t.insert_pos, new_location::bidi);
+
+		auto orig=iter->insert(IN_THREAD,
+				       (richtextstring)(t.insert_string));
+		dump();
+		std::cout << "\n";
+
+		if (orig->pos() != t.expected_orig)
+			throw EXCEPTION("testrichtext8: test "
+					<< testnum
+					<< " unexpected orig iter position ('"
+					<< printable_char{
+						orig->at(IN_THREAD).character
+					}
+					<< "', "
+					<< orig->pos()
+					<< ")");
+
+		if (iter->pos() != t.expected_insert)
+			throw EXCEPTION("testrichtext8: test "
+					<< testnum
+					<< " unexpected insert iter position ('"
+					<< printable_char{
+						iter->at(IN_THREAD).character
+					}
+					<< "', "
+					<< iter->pos()
+					<< ")");
+
+		std::vector<std::string> actual;
+
+		extract([&]
+			(const auto &f)
+		{
+			auto &s=f->string.get_string();
+
+			actual.push_back({s.begin(), s.end()});
+		});
+
+		if (actual != t.expected)
+			throw EXCEPTION("testrichtext8: test "
+					<< testnum
+					<< " unexpected results:\n"
+					<< format(actual));
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -892,23 +1609,16 @@ int main(int argc, char **argv)
 		if (flag == LIBCXX_NAMESPACE::option::parser::base::err_builtin)
 			exit(0);
 
-		auto mw=main_window::create([&]
-					    (const auto &ignore)
-					    {
-					    });
+		auto IN_THREAD=connection_thread::create();
 
-		auto font1=mw->impl->handler->create_current_fontcollection
-			(theme_font{"serif"});
-		auto font2=mw->impl->handler->create_current_fontcollection
-			(theme_font{"sans_serif"});
-
-		testrichtext1(mw, font1, font2);
-		testrichtext2(mw, font1);
-		testrichtext3(mw, font1);
-		testrichtext4(mw, font1);
-		testrichtext5(mw, font2);
-		testrichtext6(mw, font1, font2);
-		testrichtext7(mw, font1, font2);
+		testrichtext1(IN_THREAD);
+		testrichtext2(IN_THREAD);
+		testrichtext3(IN_THREAD);
+		testrichtext4(IN_THREAD);
+		testrichtext5(IN_THREAD);
+		testrichtext6(IN_THREAD);
+		testrichtext7(IN_THREAD);
+		testrichtext8(IN_THREAD);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

@@ -318,16 +318,24 @@ public:
 	//! replace_at_location() calls this in order to complete
 	//! avoid rewrapping, since insert_at_location(), which
 	//! replace_at_location() uses, will do this anyway.
+	//!
+	//! When called when replacing text, this is called after the
+	//! new text was inserted, passing in the richtext_insert_results
+	//! object, which gets forwarded to lower-level functions that keep
+	//! track of the inserted text. In other contexts a default-constructed
+	//! richtext_insert_results gets passed in.
 
 	void remove_at_location_no_rewrap(remove_info &,
-					  paragraph_list &);
+					  paragraph_list &,
+					  richtext_insert_results &);
 
 	//! Common code shared by remove_at_location() and replace_at_location().
 
 	void insert_at_location(ONLY IN_THREAD,
 				paragraph_list &my_paragraphs,
 				const richtext_insert_base &new_text,
-				const function<void ()> &after_insert);
+				const function<void (richtext_insert_results &)
+				> &after_insert);
 
  public:
 	//! Locate the paragraph containing character #pos

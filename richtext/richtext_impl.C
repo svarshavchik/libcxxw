@@ -407,14 +407,84 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 	paragraph_list my_paragraphs{*this};
 
 	insert_at_location(IN_THREAD, my_paragraphs, new_text,
-			   make_function<void ()>([] {}));
+			   make_function<void (richtext_insert_results &)>
+			   ([](auto &) {}));
+}
+
+// After text was inserted we calculated the inserted text range in the
+// first and the last fragment.
+//
+// We look and see if this was a right to left insert, and if so we
+// swap the from and to character position, so that the "from" becomes the
+// last inserted character and "to" becomes the character before the first
+// inserted character.
+//
+// Adjusts "from" and "to" accordingly, and returns a tuple of from's and to's
+// fragment, which default to the passed-in fragment. But it's possible that
+// from or to might wrap, in which case the from and to get adjusted
+// accordingly, together with the corresponding returned richtextfragment.
+
+static std::tuple<richtextfragment,
+		  richtextfragment> adjust_from_to(size_t &from, size_t &to,
+						   const richtextfragment &f,
+						   bool rl)
+{
+	std::tuple<richtextfragment, richtextfragment> ret={f, f};
+
+	if (from == to)
+		return ret;
+	auto &[from_fragment, to_fragment]=ret;
+
+	if (rl)
+	{
+		std::swap(from, to);
+
+		if (from == 0)
+		{
+			// This is going to be wherever we wind up going
+			// off the left edge of the cliff.
+			std::tie(from_fragment, from) =
+				f->wrap_left_fragment_and_pos();
+		}
+		else
+		{
+			--from;
+		}
+
+		if (to == 0)
+		{
+			// And this is going to be wherever we wind up going
+
+			// off the right edge of the cliff.
+			std::tie(to_fragment, to) =
+				f->wrap_left_fragment_and_pos();
+		}
+		else
+		{
+			--to;
+		}
+	}
+	else
+	{
+		if (to >= f->string.size())
+		{
+			// Shouldn't happen
+
+			std::tie(to_fragment, to) =
+				f->wrap_right_fragment_and_pos();
+		}
+	}
+
+	return ret;
 }
 
 void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 					  paragraph_list &my_paragraphs,
 					  const richtext_insert_base
 					  &new_text,
-					  const function<void ()> &after_insert)
+					  const function<void
+					  (richtext_insert_results &)>
+					  &after_insert)
 {
 	assert_or_throw(new_text.fragment(),
 			"Internal error: null my_fragment in insert()");
@@ -422,17 +492,15 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 	// Start by inserting the text. insert() returns the number of
 	// inserted paragraph breaks.
 
-	auto inserted_info=
-		new_text.fragment()->insert(IN_THREAD,
-					    my_paragraphs,
-					    new_text);
+	auto orig_fragment=new_text.fragment();
+	auto inserted_info=orig_fragment->insert(IN_THREAD,
+						 my_paragraphs,
+						 new_text);
 
-	after_insert();
+	after_insert(inserted_info);
 
 	if (word_wrap_width > 0)
 	{
-		auto orig_fragment=new_text.fragment();
-
 		assert_or_throw(orig_fragment && orig_fragment->my_paragraph &&
 				orig_fragment->my_paragraph->my_richtext,
 				"my_fragment, my_paragraph, or my_richtext "
@@ -440,13 +508,20 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 				"lock_and_insert_at_location()");
 
 		// First, rewrap whole paragraphs inserted.
+		//
+		// If there's more than one fragment that was inserted, we
+		// must've inserted new paragraphs, rewrap them.
+		auto counter=inserted_info.inserted_range.size();
 
-		if (inserted_info.counter > 1)
+		if (inserted_info.insert_ended_in_paragraph_break)
+			++counter;
+
+		if (counter > 1)
 		{
 			paragraphs.for_paragraphs
 				(orig_fragment->my_paragraph
 				 ->my_paragraph_number+1,
-				 inserted_info.counter-1,
+				 counter-1,
 				 [&]
 				 (const richtextparagraph &p)
 				 {
@@ -465,6 +540,106 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 		rewrap_at_fragment(word_wrap_width,
 				   orig_fragment, my_fragments,
 				   inserted_info);
+	}
+
+	if (inserted_info.inserted_range.empty())
+		return;
+
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Need to reposition the iterators accordingly, to the beginning and
+	// the end of the inserted text. To do that we need to process the
+	// inserted_range, to locate the first and the last fragment that
+	// has the inserted text. That's the first step.
+
+	auto top_info=inserted_info.inserted_range.begin();
+	auto bottom_info=top_info;
+	auto top_index=top_info->first->index(),
+		bottom_index=top_index;
+
+	// We sweep over the inserted_range, and check each fragment's
+	// index(), tracking the first and the last index() seen.
+
+	for (auto b=top_info, e=inserted_info.inserted_range.end();
+	     b != e; ++b)
+	{
+		assert_or_throw(!b->second.empty(),
+				"internal error: empty inserted text range");
+
+		auto index=b->first->index();
+
+		if (index < top_index)
+		{
+			top_info=b;
+			top_index=index;
+		}
+		if (index > bottom_index)
+		{
+			bottom_info=b;
+			bottom_index=index;
+		}
+	}
+
+	// So here are the top and the bottom fragment with the inserted
+	// text.
+	auto top_fragment=top_info->first,
+		bottom_fragment=bottom_info->first;
+
+	auto [top_from, top_to]=top_info->second.range();
+
+	auto bottom_from=top_from, bottom_to=top_to; // Opening bid.
+
+	if (top_info == bottom_info)
+	{
+		if (top_to <= top_from)
+			return; // Nothing inserted.
+
+		// Inserted everything on the same line, so we feed only
+		// the top_from and top_to to adjust_from_to, then drop
+		// top_to into bottom_to.
+
+		std::tie(top_fragment, bottom_fragment)=
+			adjust_from_to(top_from, top_to,
+				       top_fragment,
+				       top_fragment->string.embedding_level
+				       (paragraph_embedding_level));
+		bottom_to=top_to;
+	}
+	else
+	{
+		// Spanned multiple lines. Take the top_fragment, and
+		// adjust_from_to it. Do the same for the bottom_fragment.
+		//
+		// On each call to adjust_from_to we std::ignore the other
+		// returned fragment.
+		unicode_bidi_level_t top_dir=top_fragment
+			->string.embedding_level(paragraph_embedding_level),
+			bottom_dir=bottom_fragment
+			->string.embedding_level(paragraph_embedding_level);
+
+		std::tie(top_fragment, std::ignore)=
+			 adjust_from_to(top_from, top_to, top_fragment,
+					top_dir != UNICODE_BIDI_LR);
+
+		std::tie(bottom_from, bottom_to)=bottom_info->second.range();
+
+		std::tie(std::ignore, bottom_fragment)=
+			adjust_from_to(bottom_from, bottom_to, bottom_fragment,
+				       bottom_dir != UNICODE_BIDI_LR);
+	}
+
+	// We now know where the cursors_to_move need to go.
+
+	for (const auto &l:inserted_info.cursors_to_move)
+	{
+		if (l->do_not_adjust_in_insert)
+		{
+			l->reposition(top_fragment, top_from);
+		}
+		else
+		{
+			l->reposition(bottom_fragment, bottom_to);
+		}
 	}
 }
 
@@ -588,13 +763,15 @@ void richtext_implObj
 
 	insert_at_location(IN_THREAD, my_paragraphs,
 			   new_text,
-			   make_function<void ()>
+			   make_function<void (richtext_insert_results &)>
 			   ([&, this]
+			    (richtext_insert_results &insert_results)
 			    {
 				    if (info.diff != 0)
 					    remove_at_location_no_rewrap
 						    (info,
-						     my_paragraphs);
+						     my_paragraphs,
+						     insert_results);
 			    }));
 }
 
@@ -647,12 +824,12 @@ richtext_implObj::get_metrics(dim_t preferred_width)
 void richtext_implObj::remove_at_location(remove_info &info,
 					  paragraph_list &my_paragraphs)
 {
-	remove_at_location_no_rewrap(info, my_paragraphs);
+	richtext_insert_results ignored;
+
+	remove_at_location_no_rewrap(info, my_paragraphs, ignored);
 
 	if (word_wrap_width > 0)
 	{
-		richtext_insert_results ignored;
-
 		// Note: the text removal inside remove_at_location_no_rewrap
 		// destroys the fragment_a_list which updates fragment sizes.
 		//
@@ -676,7 +853,8 @@ void richtext_implObj::remove_at_location(remove_info &info,
 
 void richtext_implObj
 ::remove_at_location_no_rewrap(remove_info &info,
-			       paragraph_list &my_paragraphs)
+			       paragraph_list &my_paragraphs,
+			       richtext_insert_results &results)
 {
 	assert_or_throw(info.location_a->my_fragment &&
 			info.location_b->my_fragment,
@@ -700,7 +878,8 @@ void richtext_implObj
 
 		fragment_a->remove(a_start,
 				   a_size,
-				   fragment_a_list);
+				   fragment_a_list,
+				   results);
 		return;
 	}
 
@@ -720,6 +899,7 @@ void richtext_implObj
 		{
 			while (diff)
 			{
+				results.removed(ref{p});
 				{
 					fragment_list
 						rem_fragments{my_paragraphs,
@@ -738,11 +918,9 @@ void richtext_implObj
 		// Then merge the next fragment into this one, according
 		// to the paragraph embedding level.
 
-		richtext_insert_results ignored;
-
 		fragment_a->merge(fragment_a_list,
 				  fragment_a->merge_paragraph,
-				  ignored);
+				  results);
 		my_paragraphs.recalculation_required();
 	}
 
@@ -760,7 +938,8 @@ void richtext_implObj
 			       // *starting* location.
 			       (my_paragraphs.text.rl() ? 1:0),
 			       a_size + b_size,
-			       fragment_a_list);
+			       fragment_a_list,
+			       results);
 }
 
 LIBCXXW_NAMESPACE_END

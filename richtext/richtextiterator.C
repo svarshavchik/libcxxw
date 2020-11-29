@@ -8,6 +8,7 @@
 #include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtext_insert.H"
 #include "richtext/richtextcursorlocation.H"
+#include "richtext/richtext_impl.H"
 #include "messages.H"
 #include <utility>
 LIBCXXW_NAMESPACE_START

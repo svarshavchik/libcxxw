@@ -14,6 +14,8 @@ struct LIBCXX_HIDDEN richtext_insert_base;
 
 struct LIBCXX_HIDDEN richtext_insert_results;
 
+class LIBCXX_HIDDEN create_fragments_from_inserted_text;
+
 LIBCXXW_NAMESPACE_END
 
 #endif
