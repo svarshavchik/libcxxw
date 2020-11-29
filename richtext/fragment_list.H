@@ -6,6 +6,7 @@
 #ifndef fragment_list_H
 #define fragment_list_H
 
+#include "richtext/fragment_listfwd.H"
 #include "richtext/richtextfragment.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/defaultthemefwd.H"
@@ -17,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 //! fragment_list and const_fragment_list are the only classes
 //! that have full access to a paragraph's fragments_t.
 
-class LIBCXX_HIDDEN const_fragment_list {
+class const_fragment_list {
 
 public:
 	typedef richtextfragmentObj::fragments_t fragments_t;
@@ -64,7 +65,7 @@ public:
 //! fragment_list and const_fragment_list are the only classes
 //! that have full access to a paragraph's fragments_t.
 
-class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
+class fragment_list : public const_fragment_list {
 
  private:
 
@@ -191,6 +192,8 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	void fragment_text_changed(size_t fragment_number,
 				   ssize_t text_count_changed);
 
+	//! Create and append a new fragment
+	void append_new_fragment(richtextstring &&);
  private:
 
 	//! Recalculate the dimensions of the given fragment

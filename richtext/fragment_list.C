@@ -401,4 +401,13 @@ void fragment_list::recalculate_size(bool &width_changed,
 		paragraph.above_baseline+paragraph.below_baseline;
 }
 
+void fragment_list::append_new_fragment(richtextstring &&s)
+{
+	auto f=richtextfragment::create(std::move(s));
+	append_no_recalculate(f);
+	f->recalculate_linebreaks();
+	f->load_glyphs_widths_kernings();
+}
+
+
 LIBCXXW_NAMESPACE_END

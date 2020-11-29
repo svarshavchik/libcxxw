@@ -12,21 +12,18 @@ LIBCXXW_NAMESPACE_START
 // Construct a richtextstring for the new paragraph fragment.
 //
 // Moves \n to the beginning of the string in right-to-left paragraphs
-//
-// Sets swap_newline if that was the case.
 
 static inline auto create_new_fragment_text(richtextstring &string,
 					    size_t i,
 					    size_t j,
 					    unicode_bidi_level_t
-					    embedding_level,
-					    bool &swap_newline)
+					    embedding_level)
 {
 	// Normally the \n ends the paragraph. If the paragraph
 	// embedding level is right-to-left, \n belongs at the
 	// beginning of the paragraph.
 
-	swap_newline=false;
+	bool swap_newline=false;
 
 	if (embedding_level != UNICODE_BIDI_LR)
 	{
@@ -47,6 +44,7 @@ static inline auto create_new_fragment_text(richtextstring &string,
 	return rl_str;
 }
 
+#if 0
 // Take the new fragment text, created in richtextstring, and create a
 // new fragment. We made a single pass to calculate all the linebreaks,
 // so we pull out the linebreaks for that. Checks swap_newline, and makes
@@ -104,6 +102,7 @@ static inline auto create_new_fragment(richtextstring &string,
 		  breaks,
 		  i, j, embedding_level);
 }
+#endif
 
 create_fragments_from_inserted_text
 ::create_fragments_from_inserted_text(richtextstring &string,
@@ -112,6 +111,7 @@ create_fragments_from_inserted_text
 	  current_pos{0},
 	  n{string.size()}
 {
+#if 0
 	// Calculate mandatory line breaks.
 
 	auto &s=string.get_string();
@@ -151,12 +151,38 @@ create_fragments_from_inserted_text
 			breaks[q-b]=unicode_lb::mandatory;
 		p=q;
 	}
+
+#endif
 }
 
 create_fragments_from_inserted_text::~create_fragments_from_inserted_text()
 =default;
 
-richtextfragmentptr create_fragments_from_inserted_text::operator()()
+bool create_fragments_from_inserted_text::has_paragraph_break() const
+{
+	if (current_pos >= n)
+		return false;
+
+	size_t s=next_paragraph_start();
+
+	return s > current_pos && string.get_string().at(s-1) == '\n';
+}
+
+size_t create_fragments_from_inserted_text::next_paragraph_start() const
+{
+	auto &s=string.get_string();
+
+	auto e=&s[0]+n;
+
+	auto p=std::find(&s[0]+current_pos, e, '\n');
+
+	if (p != e)
+		++p;
+
+	return p-&s[0];
+}
+
+richtextstring create_fragments_from_inserted_text::next_string()
 {
 	// Each mandatory line break starts a new paragraph.
 	// Put each paragraph into a single fragment.
@@ -164,17 +190,15 @@ richtextfragmentptr create_fragments_from_inserted_text::operator()()
 	if (current_pos<n)
 	{
 		// Find the next mandatory line break.
-		size_t j=std::find(&breaks[0]+(current_pos+1), &breaks[0]+n,
-				   unicode_lb::mandatory)-&breaks[0];
+		size_t j=next_paragraph_start();
 
 		auto orig_pos=current_pos;
 
 		current_pos=j;
 
-		return create_new_fragment(string,
-					   breaks,
-					   orig_pos, j,
-					   embedding_level);
+		return create_new_fragment_text(string,
+						orig_pos, j,
+						embedding_level);
 	}
 
 	return {};

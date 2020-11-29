@@ -134,15 +134,24 @@ void richtext_implObj::do_set(richtextstring &&string)
 	create_fragments_from_inserted_text factory{string,
 		paragraph_embedding_level};
 
-	while (auto new_fragment=factory())
+	bool first_paragraph=true;
+
+	while (1)
 	{
+		auto string=factory.next_string();
+
+		if (!first_paragraph && string.size() == 0)
+			break;
+
+		first_paragraph=false;
+
 		auto new_paragraph=
 			my_paragraphs.append_new_paragraph();
 
-		const_fragment_list my_fragments{my_paragraphs,
+		fragment_list my_fragments{my_paragraphs,
 			*new_paragraph};
 
-		my_fragments.append_no_recalculate(new_fragment);
+		my_fragments.append_new_fragment(std::move(string));
 	}
 }
 
@@ -163,8 +172,6 @@ void richtext_implObj::finish_initialization()
 
 			 auto new_fragment=
 				 new_paragraph->get_fragment(0);
-
-			 new_fragment->finish_setting();
 
 			 // Now that the fragment has been initialized, the
 			 // paragraph's metrics can be recalculated

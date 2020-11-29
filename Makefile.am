@@ -752,6 +752,7 @@ libcxxw_la_SOURCES=\
 	rgb.C					    \
 	richtext/fragment_list.C		    \
 	richtext/fragment_list.H		    \
+	richtext/fragment_listfwd.H		    \
 	richtext/paragraph_list.C		    \
 	richtext/paragraph_list.H		    \
 	richtext/richtext.C			    \

@@ -55,16 +55,10 @@ richtextfragmentObj::richtextfragmentObj()
 {
 }
 
-richtextfragmentObj::richtextfragmentObj(richtextstring &&string,
-					 std::vector<unicode_lb> &&breaks)
+richtextfragmentObj::richtextfragmentObj(richtextstring &&string)
 	: string{std::move(string)},
-	  breaks{std::move(breaks)}
+	  breaks{string.size(), unicode_lb::none}
 {
-}
-
-void richtextfragmentObj::finish_setting()
-{
-	load_glyphs_widths_kernings(nullptr, nullptr);
 }
 
 richtextfragmentObj
@@ -153,24 +147,18 @@ void richtextfragmentObj
 
 void richtextfragmentObj::load_glyphs_widths_kernings()
 {
-	load_glyphs_widths_kernings(prev_fragment(), next_fragment());
-}
-
-void richtextfragmentObj
-::load_glyphs_widths_kernings(richtextfragmentObj *previous_fragment,
-			      richtextfragmentObj *next_fragment)
-{
 	USING_MY_PARAGRAPH();
+
+	auto pf=prev_fragment();
+	auto nf=next_fragment();
 
 	horiz_info.update
 		([&, this]
 		 (auto &widths,
 		  auto &kernings)
 		 {
-			 string.compute_width((previous_fragment ?
-					       &previous_fragment->string:NULL),
-					      (next_fragment ?
-					       &next_fragment->string:NULL),
+			 string.compute_width((pf ? &pf->string:NULL),
+					      (nf ? &nf->string:NULL),
 					      my_paragraph->my_richtext
 					      ->paragraph_embedding_level,
 					      my_paragraph->my_richtext

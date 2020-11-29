@@ -29,6 +29,7 @@
 #include "x/w/screenfwd.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/alignment.H"
+#include "richtext/fragment_listfwd.H"
 #include "assert_or_throw.H"
 
 #include <list>
@@ -208,15 +209,13 @@ public:
 
 	//! Make sure that all glyphs are loaded. Calculate widths and kernings.
 
+	//! This is invoked from fragment_list, when it creates a new fragment
+	//! and adds it to its paragraph.
+	//!
 	//! This invokes richtextstring's compute_width(), after some minor
 	//! prep work.
 
 	void load_glyphs_widths_kernings();
-
-	//! Internal implementation.
-
-	void load_glyphs_widths_kernings(richtextfragmentObj *prev_fragment,
-					 richtextfragmentObj *next_fragment);
 
 	//! Compute glyphs, widths, and kernings for a subset of characters.
 
@@ -229,23 +228,17 @@ public:
 					   size_t count);
 
  public:
+	friend class fragment_list;
+
 	//! Default constructor
 	richtextfragmentObj();
 
 	//! Internal constructor
 
-	//! This gets invoked from set(), when constructing the initial
-	//! single fragment in the paragraph, to kick things off.
-
-	richtextfragmentObj(richtextstring &&string,
-			    std::vector<unicode_lb> &&breaks);
-
-	//! After the internal constructor, above, is done, set() calls this.
-
-	//! set() must add the new fragment to its paragraph, before we can
-	//! wrap things up and load_glyphs_widths_kernings().
-
-	void finish_setting();
+	//! This gets invoked from fragment_list, which enforces the requirement
+	//! to construct the richtextfragment, adding it to the paragraph,
+	//! then invoking recalculate_linebreaks().
+	richtextfragmentObj(richtextstring &&string_from_fragment_list);
 
 	//! Private constructor
 
