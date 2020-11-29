@@ -238,7 +238,7 @@ class LIBCXX_HIDDEN richtextiteratorObj::internal_insert_impl
 
 richtextiterator
 richtextiteratorObj::insert(ONLY IN_THREAD,
-			    const richtextstring &new_string)
+			    richtextstring &&new_string)
 {
 	return insert(IN_THREAD,
 		      internal_insert_impl<richtextstring>{new_string});
@@ -255,7 +255,7 @@ richtextiterator richtextiteratorObj::insert(ONLY IN_THREAD,
 
 void richtextiteratorObj::replace(ONLY IN_THREAD,
 				  const const_richtextiterator &other,
-				  const richtextstring &new_string) const
+				  richtextstring &&new_string) const
 {
 	replace(IN_THREAD,
 		other,

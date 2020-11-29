@@ -139,7 +139,7 @@ private:
 	//! inserted text, and the number of inserted paragraphs, see
 	//! richtextfragmentObj::insert().
 
-	richtextiterator insert(ONLY IN_THREAD, const richtextstring &string);
+	richtextiterator insert(ONLY IN_THREAD, richtextstring &&string);
 
 	//! \overload
 
@@ -155,7 +155,7 @@ private:
 
 	void replace(ONLY IN_THREAD,
 		     const const_richtextiterator &other,
-		     const richtextstring &string) const;
+		     richtextstring &&string) const;
 
 	//! \overload
 

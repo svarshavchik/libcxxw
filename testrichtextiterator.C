@@ -372,7 +372,7 @@ void testrichtext2(const main_window &w,
 
 		ustring={
 			std::u32string{insert_string.begin(),
-				       insert_string.end()},
+				insert_string.end()},
 			{
 				{0, {black, font1}}
 			}};
@@ -384,7 +384,7 @@ void testrichtext2(const main_window &w,
 				"before insert, unexpected cursor position's"
 				" value");
 
-		auto o=b->insert(IN_THREAD, ustring);
+		auto o=b->insert(IN_THREAD, std::move(ustring));
 
 		orig.insert(orig.begin()+test.insert_pos,
 			    insert_string.begin(),
@@ -758,7 +758,7 @@ void testrichtext6(const main_window &w,
 			{0, {black, font2}},
 		}};
 
-	e->replace(IN_THREAD, b, ustring);
+	e->replace(IN_THREAD, b, std::move(ustring));
 
 	validate_richtext(IN_THREAD, richtext, "Hello world ", "replace()");
 
