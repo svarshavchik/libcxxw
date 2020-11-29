@@ -183,6 +183,8 @@ public:
 	//! Cursor locations in this fragment
 	locations_t locations;
 
+	friend class richtextcursorlocationObj;
+
  private:
 	//! Move a location to another fragment
 

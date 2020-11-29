@@ -230,6 +230,11 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	//! should really be at the end of the line, and vice-versa, for
 	//! right-to-left paragraph embedding level.
 	void mirror_position(internal_richtext_impl_t::lock &must_be_locked);
+
+	//! Move this location to some other fragment entirely.
+
+	void reposition(const richtextfragment &new_fragment,
+			size_t new_pos);
 };
 
 #define richtextcursorlocation_H_defined

@@ -549,4 +549,14 @@ void richtextcursorlocationObj::mirror_position(internal_richtext_impl_t::lock
 	horiz_pos_no_longer_valid();
 }
 
+void richtextcursorlocationObj::reposition(const richtextfragment &new_fragment,
+					   size_t new_pos)
+{
+	assert_or_throw(new_fragment->string.size() > new_pos,
+			"attempting to move to nonexistent position");
+	my_fragment->move_location(my_fragment_iter, new_fragment);
+	position.offset=new_pos;
+	horiz_pos_no_longer_valid();
+}
+
 LIBCXXW_NAMESPACE_END
