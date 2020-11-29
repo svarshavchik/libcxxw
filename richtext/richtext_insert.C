@@ -9,17 +9,24 @@
 
 LIBCXXW_NAMESPACE_START
 
-static inline auto create_new_fragment(richtextstring &string,
-				       std::vector<unicode_lb> &breaks,
-				       size_t i,
-				       size_t j,
-				       unicode_bidi_level_t embedding_level)
+// Construct a richtextstring for the new paragraph fragment.
+//
+// Moves \n to the beginning of the string in right-to-left paragraphs
+//
+// Sets swap_newline if that was the case.
+
+static inline auto create_new_fragment_text(richtextstring &string,
+					    size_t i,
+					    size_t j,
+					    unicode_bidi_level_t
+					    embedding_level,
+					    bool &swap_newline)
 {
 	// Normally the \n ends the paragraph. If the paragraph
 	// embedding level is right-to-left, \n belongs at the
 	// beginning of the paragraph.
 
-	bool swap_newline=false;
+	swap_newline=false;
 
 	if (embedding_level != UNICODE_BIDI_LR)
 	{
@@ -28,25 +35,42 @@ static inline auto create_new_fragment(richtextstring &string,
 	}
 
 	if (!swap_newline)
-		return richtextfragmentptr::create(richtextstring{string,
-								  i,
-								  j-i},
-			std::vector<unicode_lb>{
-				breaks.begin()+i,
-					breaks.begin()+j
-					});
+		return richtextstring{string, i, j-i};
 
 	richtextstring rl_str{string, j-1, 1}; // The newline
-
-	std::vector<unicode_lb> rl_breaks;
-
-	rl_breaks.reserve(j-i);
-	rl_breaks.push_back(unicode_lb::none); // The newline
 
 	if (j-i > 1)
 	{
 		rl_str += richtextstring{string, i, j-i-1};
 	}
+
+	return rl_str;
+}
+
+// Take the new fragment text, created in richtextstring, and create a
+// new fragment. We made a single pass to calculate all the linebreaks,
+// so we pull out the linebreaks for that. Checks swap_newline, and makes
+// sure we move the paragraph break too, in that case.
+
+static inline auto
+create_new_fragment_from_string(richtextstring &&string,
+				bool &swap_newline,
+				std::vector<unicode_lb> &breaks,
+				size_t i,
+				size_t j,
+				unicode_bidi_level_t embedding_level)
+{
+	if (!swap_newline)
+		return richtextfragmentptr::create(std::move(string),
+						   std::vector<unicode_lb>{
+							   breaks.begin()+i,
+							   breaks.begin()+j
+						   });
+
+	std::vector<unicode_lb> rl_breaks;
+
+	rl_breaks.reserve(j-i);
+	rl_breaks.push_back(unicode_lb::none); // The newline
 
 	rl_breaks.insert(rl_breaks.end(), breaks.begin()+i,
 			 breaks.begin()+(j-1));
@@ -58,11 +82,27 @@ static inline auto create_new_fragment(richtextstring &string,
 	if (j-i > 1)
 	{
 		rl_breaks.at(1)=
-			rl_str.meta_at(1).rl ? unicode_lb::none
+			string.meta_at(1).rl ? unicode_lb::none
 			: unicode_lb::allowed;
 	}
-	return richtextfragmentptr::create(std::move(rl_str),
+	return richtextfragmentptr::create(std::move(string),
 					   std::move(rl_breaks));
+}
+
+static inline auto create_new_fragment(richtextstring &string,
+				       std::vector<unicode_lb> &breaks,
+				       size_t i,
+				       size_t j,
+				       unicode_bidi_level_t embedding_level)
+{
+	bool swap_newline;
+
+	return create_new_fragment_from_string
+		( create_new_fragment_text(string, i, j, embedding_level,
+					   swap_newline),
+		  swap_newline,
+		  breaks,
+		  i, j, embedding_level);
 }
 
 create_fragments_from_inserted_text
