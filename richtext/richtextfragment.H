@@ -183,6 +183,16 @@ public:
 	//! Cursor locations in this fragment
 	locations_t locations;
 
+ private:
+	//! Move a location to another fragment
+
+	//! Called only to move the location object itself. This is followed
+	//! by (typically) split_from_parent.
+
+	void move_location(locations_t::iterator iter,
+			   const richtextfragment &new_fragment);
+
+ public:
 	//! The text fragment
 	richtextstring string;
 

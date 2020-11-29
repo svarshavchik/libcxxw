@@ -761,15 +761,7 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 
 			if (is_moved_to_new_fragment)
 			{
-				// This cursor location is now in the new
-				// fragment
-
-				new_fragment->locations.push_back(l);
-				locations.erase(p);
-
-				l->my_fragment=&*new_fragment;
-				l->my_fragment_iter=
-					--new_fragment->locations.end();
+				move_location(p, new_fragment);
 			}
 			if (was_split_off_from_parent)
 				l->split_from_fragment(pos);
@@ -807,6 +799,21 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 	my_fragments.fragment_text_changed(my_fragment_number, 0);
 
 	redraw_needed=true;
+}
+
+void richtextfragmentObj::move_location(locations_t::iterator iter,
+					const richtextfragment &new_fragment)
+{
+	auto l=*iter;
+
+	// This cursor location is now in the new
+	// fragment
+
+	new_fragment->locations.push_back(l);
+	locations.erase(iter);
+
+	l->my_fragment=&*new_fragment;
+	l->my_fragment_iter=--new_fragment->locations.end();
 }
 
 void richtextfragmentObj::merge(fragment_list &my_fragments,
