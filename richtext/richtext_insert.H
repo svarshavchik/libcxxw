@@ -133,13 +133,9 @@ class create_fragments_from_inserted_text {
 	//! Constructor parameter
 	const unicode_bidi_level_t embedding_level;
 
-#if 0
-	//! Cached line breaks
-	std::vector<unicode_lb> breaks;
-#endif
 	size_t current_pos; //!< Next position to process
 
-	const size_t n; //!< Cached breaks.size()
+	const size_t n; //!< Cached string size.
 
 public:
 	//! Constructor
@@ -154,6 +150,11 @@ public:
 
 	//! An empty string gets returned if there's no more.
 	richtextstring next_string();
+
+	//! Returns the direction of the next_string()
+
+	//! Called before next_string() is called.
+	richtext_dir next_string_dir() const;
 
 	//! Peek at whether we have a paragraph break, or not.
 

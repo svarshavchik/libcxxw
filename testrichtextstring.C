@@ -2049,6 +2049,43 @@ void gettest()
 	}
 }
 
+void getdirtest()
+{
+	richtextmeta lr{0}, rl{0};
+
+	rl.rl=true;
+	const richtextstring str{U"abc", {{0, lr}, {2, rl}}};
+
+	const struct {
+		size_t from;
+		size_t to;
+		richtext_dir dir;
+	} tests[]={
+		{
+			0, 2,
+			richtext_dir::lr,
+		},
+		{
+			0, 3,
+			richtext_dir::both,
+		},
+		{
+			2, 3,
+			richtext_dir::rl,
+		},
+		{
+			2, 2,
+			richtext_dir::lr,
+		},
+	};
+
+	for (auto &t:tests)
+	{
+		if (str.get_dir(t.from, t.to) != t.dir)
+			throw EXCEPTION("getdirtest failed");
+	}
+}
+
 int main()
 {
 	try {
@@ -2059,6 +2096,7 @@ int main()
 		rlmetricstest();
 		rewraptest();
 		gettest();
+		getdirtest();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

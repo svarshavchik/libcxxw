@@ -203,9 +203,19 @@ public:
 		return !operator==(s);
 	}
 
-	//! Return the direction
+	//! Return the direction of this text
+
+	//! Returns cached indication whether this string contains only
+	//! left to right text, right to left text, or both.
 
 	inline richtext_dir &get_dir() const { coalesce(); return cached_dir; }
+
+	//! Return the direction of this text
+
+	//! Computes whether the given character range has only
+	//! left to right text, right to left text, or both.
+
+	richtext_dir get_dir(size_t from, size_t to) const;
 
 	//! Compute this rich text string's unicode embedding level.
 

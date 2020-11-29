@@ -180,6 +180,42 @@ void richtextstring::coalesce() const
 	}
 }
 
+richtext_dir richtextstring::get_dir(size_t from,
+				     size_t to) const
+{
+	auto dir=richtext_dir::lr;
+
+	if (from >= to)
+		return dir;
+
+	auto iter_from=meta_upper_bound_by_pos(meta, from);
+	auto iter_to=meta_upper_bound_by_pos(meta, --to);
+
+	if (iter_from == meta.begin() || iter_to == meta.begin())
+		throw EXCEPTION("Internal error: iterator not found in meta_at()");
+	bool has_lr=false;
+	bool has_rl=false;
+
+	--iter_from;
+
+	while (iter_from < iter_to)
+	{
+		if (iter_from->second.rl)
+			has_rl=true;
+		else
+			has_lr=true;
+
+		++iter_from;
+	}
+
+	if (has_rl)
+	{
+		dir=has_lr ? richtext_dir::both : richtext_dir::rl;
+	}
+
+	return dir;
+}
+
 namespace {
 #if 0
 }

@@ -111,48 +111,6 @@ create_fragments_from_inserted_text
 	  current_pos{0},
 	  n{string.size()}
 {
-#if 0
-	// Calculate mandatory line breaks.
-
-	auto &s=string.get_string();
-
-	breaks.resize(n, unicode_lb::none);
-
-	if (!s.empty())
-	{
-		richtextstring *ptr= &string;
-
-		richtext_linebreak_info(0, s.size(), &breaks[0],
-					&ptr, 1);
-	}
-
-	// The first character, by definition, does not break. This
-	// logic is also present in recalculate_linebreaks().
-	if (!breaks.empty())
-		breaks[0]=unicode_lb::none;
-
-	// richtext_linebreak_info will miss the mark when there are
-	// embedded newlines in rtol text. We'll fix this up here.
-
-	auto b=s.begin();
-	auto e=s.end();
-
-	auto p=b;
-
-	while (p != e)
-	{
-		auto q=std::find(p, e, '\n');
-
-		if (q == e)
-			break;
-
-		breaks[q-b]=unicode_lb::none;
-		if (++q != e)
-			breaks[q-b]=unicode_lb::mandatory;
-		p=q;
-	}
-
-#endif
 }
 
 create_fragments_from_inserted_text::~create_fragments_from_inserted_text()
@@ -180,6 +138,23 @@ size_t create_fragments_from_inserted_text::next_paragraph_start() const
 		++p;
 
 	return p-&s[0];
+}
+
+richtext_dir create_fragments_from_inserted_text::next_string_dir() const
+{
+	if (current_pos >= n)
+	{
+		return embedding_level == UNICODE_BIDI_LR
+			? richtext_dir::lr : richtext_dir::rl;
+	}
+
+	auto &s=string.get_string();
+
+	auto e=&s[0]+n;
+
+	auto p=std::find(&s[0]+current_pos, e, '\n');
+
+	return string.get_dir(current_pos, p-(&s[0]));
 }
 
 richtextstring create_fragments_from_inserted_text::next_string()
