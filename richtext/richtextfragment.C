@@ -461,7 +461,7 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 	const std::u32string &current_string=string.get_string();
 
 	// Sanity checks
-	assert_or_throw(pos <= current_string.size(),
+	assert_or_throw(pos < current_string.size(),
 			"Invalid pos parameter to insert()");
 
 	auto n_size=new_string.size();

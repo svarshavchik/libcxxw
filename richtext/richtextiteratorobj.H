@@ -8,6 +8,7 @@
 
 #include "x/w/impl/richtext/richtextiteratorfwd.H"
 #include "x/w/impl/richtext/richtextfwd.H"
+#include "x/w/impl/richtext/richtext_insertfwd.H"
 #include "richtext/richtextcursorlocation.H"
 #include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/impl/richtext/richtextfragmentfwd.H"
@@ -38,6 +39,7 @@ private:
  public:
 
 	friend class richtextObj; // It has access to my_location, I trust him.
+	friend struct richtext_insert_base; // Ditto
 
 	//! Constructor
 

@@ -204,7 +204,7 @@ struct LIBCXX_HIDDEN richtextiteratorObj::internal_insert {
 
 
 	virtual void
-		operator()( const richtextcursorlocation &l,
+		operator()( const richtextiterator &i,
 			    const function< insert_callback_func > &) const=0;
 };
 
@@ -225,11 +225,11 @@ class LIBCXX_HIDDEN richtextiteratorObj::internal_insert_impl
 
 	internal_insert_impl(const type &s) : s{s} {}
 
-	void operator()( const richtextcursorlocation &l,
+	void operator()( const richtextiterator &i,
 			 const function< insert_callback_func> &f)
 		const override
 	{
-		f( richtext_insert<type>(l, s) );
+		f( richtext_insert<type>(i, s) );
 	}
 };
 
@@ -310,7 +310,7 @@ richtextiterator richtextiteratorObj::insert(ONLY IN_THREAD,
 	// appropriate insert_richtext subclass, and
 	// invoking insert_at_location().
 
-	new_string(orig->my_location,
+	new_string(orig,
 		   make_function<insert_callback_func>
 		   ([&, this]
 		    (const richtext_insert_base &s) {
@@ -373,7 +373,7 @@ void richtextiteratorObj::replace(ONLY IN_THREAD,
 				  const const_richtextiterator &other,
 				  const internal_insert &new_string) const
 {
-	auto orig=const_richtextiterator::create(*other);
+	auto orig=richtextiterator::create(*other);
 
 	// Clone the end of the insert position, and tell the insert
 	// code not to adjust it, temporarily.
@@ -385,7 +385,7 @@ void richtextiteratorObj::replace(ONLY IN_THREAD,
 	// appropriate insert_richtext subclass, and
 	// invoking insert_at_location().
 
-	new_string(orig->my_location,
+	new_string(orig,
 		   make_function<insert_callback_func>
 		   ([&, this]
 		    (const richtext_insert_base &s) {

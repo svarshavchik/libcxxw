@@ -7,6 +7,7 @@
 #define richtext_insert_H
 
 #include "x/w/impl/richtext/richtextstring.H"
+#include "richtext/richtextiterator.H"
 #include "x/w/impl/richtext/richtext_insertfwd.H"
 #include <x/functional.H>
 #include "richtext/richtextcursorlocation.H"
@@ -35,12 +36,12 @@ struct richtext_insert_base {
 
 	//! The location being inserted.
 
-	const richtextcursorlocation location;
+	const richtextiterator iterator;
 
 	//! Constructor
 
-	richtext_insert_base(const richtextcursorlocation &location)
-		: location{location}
+	richtext_insert_base(const richtextiterator &iterator)
+		: iterator{iterator}
 	{
 	}
 
@@ -51,13 +52,13 @@ struct richtext_insert_base {
 	//! Insert position
 	inline auto pos() const
 	{
-		return location->get_offset();
+		return iterator->my_location->get_offset();
 	}
 
 	//! Return the fragment being inserted.
 	inline auto fragment() const
 	{
-		return location->my_fragment;
+		return iterator->my_location->my_fragment;
 	}
 
 	//! How many characters being inserted.
@@ -73,8 +74,9 @@ struct LIBCXX_HIDDEN richtext_insert : richtext_insert_base {
 	const type &s;
 
 	//! Constructor
-	richtext_insert(const richtextcursorlocation &location, const type &s)
-		: richtext_insert_base{location}, s{s}
+	richtext_insert(const richtextiterator &iterator,
+			const type &s)
+		: richtext_insert_base{iterator}, s{s}
 	{
 	}
 
