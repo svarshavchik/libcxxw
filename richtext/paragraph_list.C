@@ -63,6 +63,19 @@ richtextparagraph paragraph_list::insert_new_paragraph(size_t insert_pos)
 	new_paragraph->my_richtext=&text;
 	new_paragraph->my_paragraph_number=insert_pos;
 
+	if (insert_pos > 0)
+	{
+		// Update cached data.
+
+		auto &prev=text.paragraphs[insert_pos-1];
+
+		new_paragraph->first_fragment_y_position=
+			prev->next_paragraph_y_position();
+		new_paragraph->first_fragment_n=
+			prev->first_fragment_n +
+			prev->n_fragments_in_paragraph;
+	}
+
 	text.paragraphs.for_paragraphs(insert_pos+1,
 				       []
 				       (const richtextparagraph &p)
