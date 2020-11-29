@@ -132,7 +132,8 @@ public:
 	//! Returns true if this paragraph was reformatted.
 
 	bool rewrap(paragraph_list &my_paragraphs,
-		    dim_t width);
+		    dim_t width,
+		    richtext_insert_results &insert_results);
 
 	//! Unwrap the paragraph completely
 
@@ -154,7 +155,8 @@ public:
 	void rewrap_fragment(fragment_list &my_fragments,
 			     dim_t width, size_t fragment_n,
 			     bool &toosmall,
-			     bool &toobig);
+			     bool &toobig,
+			     richtext_insert_results &insert_results);
 
  private:
 
@@ -186,7 +188,8 @@ public:
 					      const richtextfragment &f,
 					      dim_t width,
 					      bool &toosmall,
-					      bool &toobig);
+					      bool &toobig,
+					      richtext_insert_results &results);
 
  public:
 	/////////////////////////////////////////////////////////////////////

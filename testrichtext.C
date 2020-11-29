@@ -4,6 +4,7 @@
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
 #include "richtext/richtextiterator.H"
+#include "richtext/richtext_insert.H"
 #include "x/w/impl/background_color.H"
 #include "screen.H"
 #include "main_window.H"
@@ -174,8 +175,10 @@ void testsplit(const current_fontcollection &font1,
 
 		auto control_horiz=fragment->horiz_info;
 
+		richtext_insert_results results;
+
 		fragment->split(my_fragments, test.split_pos,
-				fragment->split_lr, false);
+				fragment->split_lr, false, results);
 
 		auto new_fragment=x::ref{fragment->next_fragment()};
 
@@ -213,7 +216,9 @@ void testsplit(const current_fontcollection &font1,
 					+ test.results + ", got: " + s);
 		}
 
-		fragment->merge(my_fragments, fragment->merge_bidi);
+		richtext_insert_results ignored;
+		fragment->merge(my_fragments, fragment->merge_bidi,
+				ignored);
 
 		if (control_text.get_string() != fragment->string.get_string()
 		    ||
@@ -436,6 +441,8 @@ void testrlsplit(const current_fontcollection &font1,
 		 const current_fontcollection &font2,
 		 const main_window &w)
 {
+	richtext_insert_results ignored;
+
 	auto IN_THREAD=w->get_screen()->impl->thread;
 	auto black=create_new_background_color(w->get_screen(),
 					       w->elementObj::impl
@@ -470,7 +477,7 @@ void testrlsplit(const current_fontcollection &font1,
 		paragraph_list my_paragraphs{*impl};
 		fragment_list my_fragments{my_paragraphs, **p};
 
-		f->merge(my_fragments, f->merge_bidi);
+		f->merge(my_fragments, f->merge_bidi, ignored);
 	}
 
 	if ((*p)->get_fragment(0)->string.get_string() !=
@@ -509,7 +516,7 @@ void testrlsplit(const current_fontcollection &font1,
 		paragraph_list my_paragraphs{*impl};
 		fragment_list my_fragments{my_paragraphs, **p};
 
-		f->merge(my_fragments, f->merge_bidi);
+		f->merge(my_fragments, f->merge_bidi, ignored);
 	}
 
 	if ((*p)->get_fragment(0)->string.get_string() !=
@@ -561,7 +568,7 @@ void testrlsplit(const current_fontcollection &font1,
 		paragraph_list my_paragraphs{*impl};
 		fragment_list my_fragments{my_paragraphs, **p};
 
-		f->split(my_fragments, 5, f->split_rl, false);
+		f->split(my_fragments, 5, f->split_rl, false, ignored);
 	}
 
 	if ((*p)->fragments.size() != 2 ||
@@ -586,6 +593,7 @@ void testrlmerge(const current_fontcollection &font1,
 					       ->get_window_handler()
 					       .drawable_pictformat, "0%");
 
+	richtext_insert_results ignored;
 	richtextmeta meta1{black, font1}, meta2=meta1;
 
 	meta2.rl=true;
@@ -673,7 +681,7 @@ void testrlmerge(const current_fontcollection &font1,
 			paragraph_list my_paragraphs{*impl};
 			fragment_list my_fragments{my_paragraphs, **p};
 
-			f->merge(my_fragments, f->merge_bidi);
+			f->merge(my_fragments, f->merge_bidi, ignored);
 		}
 
 		if (impl->paragraphs.size() != 1)
@@ -824,6 +832,7 @@ void testunwrap(const current_fontcollection &font1,
 			U"\ntemalorem ipsum  tis rolod",
 		       },
 	};
+	richtext_insert_results ignored;
 
 	size_t i=0;
 
@@ -849,7 +858,7 @@ void testunwrap(const current_fontcollection &font1,
 			{
 				auto f=(*p)->get_fragment(fragment);
 				f->split(my_fragments, offset, split_type,
-					 false);
+					 false, ignored);
 			}
 
 			for (const auto &[fragment, expected]

@@ -4,6 +4,7 @@
 #include "richtext/richtextiterator.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
+#include "richtext/richtext_insert.H"
 #include "x/w/impl/background_color.H"
 #include "screen.H"
 #include "main_window.H"
@@ -460,6 +461,8 @@ void testrichtext3(const main_window &w,
 			 []
 			 (ONLY IN_THREAD, auto &lock)
 			 {
+				 richtext_insert_results ignored;
+
 				 assert_or_throw
 					 ((*lock)->paragraphs.size() == 4,
 					  "testrichtext2: "
@@ -483,7 +486,8 @@ void testrichtext3(const main_window &w,
 					 auto f=(*p)->fragments.get_iter(0);
 
 					 (*f)->split(my_fragments, 10,
-						     (*f)->split_lr, false);
+						     (*f)->split_lr, false,
+						     ignored);
 					 my_fragments
 						 .fragments_were_rewrapped();
 				 }
@@ -604,6 +608,8 @@ void testrichtext4(const main_window &w,
 					       ->get_window_handler()
 					       .drawable_pictformat, "0%");
 
+	richtext_insert_results ignored;
+
 	std::string test_string="12345 67890 ABCDEF\n" // 19 chars
 		"G\n"
 		"H\n"
@@ -634,8 +640,10 @@ void testrichtext4(const main_window &w,
 
 				 auto f=*(*p)->fragments.get_iter(0);
 
-				 f->split(my_fragments, 12, f->split_lr, false);
-				 f->split(my_fragments, 6, f->split_lr, false);
+				 f->split(my_fragments, 12, f->split_lr, false,
+					  ignored);
+				 f->split(my_fragments, 6, f->split_lr, false,
+					  ignored);
 				 my_fragments.fragments_were_rewrapped();
 			 }
 		 });

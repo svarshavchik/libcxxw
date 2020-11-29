@@ -291,7 +291,10 @@ public:
 		   //! Turns off sanity checking. Used to split nl
 		   //! at the end of the paragraph, before splitting the
 		   //! last line.
-		   bool force
+		   bool force,
+
+		   //! Report our actions to insert_results
+		   richtext_insert_results &insert_results
 		   );
 
 	//! Specifies the merge() strategy
@@ -313,7 +316,8 @@ public:
 
 	void merge(//! Fragment's paragraph's fragment list
 		   fragment_list &my_fragments,
-		   merge_type_t merge_type);
+		   merge_type_t merge_type,
+		   richtext_insert_results &insert_results);
 
  private:
 
@@ -329,7 +333,9 @@ public:
 	//! fragment, they get appended to this line, with the rest prepended.
 
 	void merge_rl_lr(fragment_list &my_fragments,
-			 const richtextfragment &other);
+			 const richtextfragment &other,
+			 richtext_insert_results &insert_results);
+
 
 	//! Left to right paragraph, merging richtext_dir:rl with next fragment
 
@@ -338,7 +344,8 @@ public:
 	//! fragment.
 
 	void merge_lr_rl(fragment_list &my_fragments,
-			 const richtextfragment &other);
+			 const richtextfragment &other,
+			 richtext_insert_results &insert_results);
 
  public:
 
@@ -351,8 +358,8 @@ public:
 	//! when this fragment is right-to-left text, merge_lr_rl() does some
 	//! prep work, then invokes this too.
 	void merge_lr_lr(fragment_list &my_fragments,
-			 const richtextfragment &other);
-
+			 const richtextfragment &other,
+			 richtext_insert_results &insert_results);
 
 	//! Calculate the fragment index from start of rich text.
 
@@ -392,10 +399,11 @@ public:
  private:
 	//! Insert text in the middle of a single fragment.
 
-	richtext_insert_results insert(ONLY IN_THREAD,
-				       paragraph_list &my_paragraphs,
-				       size_t pos,
-				       richtextstring &&new_string);
+	void insert(ONLY IN_THREAD,
+		    paragraph_list &my_paragraphs,
+		    size_t pos,
+		    richtextstring &&new_string,
+		    richtext_insert_results &insert_results);
  public:
 	//! Computed width of this text fragment.
 

@@ -179,4 +179,18 @@ richtextstring create_fragments_from_inserted_text::next_string()
 	return {};
 }
 
+
+void richtext_insert_results::split(const richtextfragment &split_from,
+				    size_t pos,
+				    size_t count,
+				    const richtextfragment &split_to)
+{
+}
+
+void richtext_insert_results::merged(const richtextfragment &merged_from,
+				     const richtextfragment &merged_to,
+				     size_t merged_to_pos)
+{
+}
+
 LIBCXXW_NAMESPACE_END

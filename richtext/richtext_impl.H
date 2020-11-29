@@ -267,7 +267,8 @@ public:
 
 	void rewrap_at_fragment(dim_t width,
 				richtextfragmentObj *fragment,
-				fragment_list &fragment_list_arg);
+				fragment_list &fragment_list_arg,
+				richtext_insert_results &insert_results);
 
 	//! Unwrap all text
 

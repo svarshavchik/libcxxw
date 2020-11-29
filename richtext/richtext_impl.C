@@ -357,7 +357,9 @@ void richtext_implObj::theme_updated(ONLY IN_THREAD,
 
 void richtext_implObj::rewrap_at_fragment(dim_t width,
 					  richtextfragmentObj *fragment,
-					  fragment_list &fragment_list_arg)
+					  fragment_list &fragment_list_arg,
+					  richtext_insert_results
+					  &insert_results)
 {
 	assert_or_throw(fragment && fragment->my_paragraph,
 			"Internal error: fragment or paragraph is null");
@@ -382,7 +384,8 @@ void richtext_implObj::rewrap_at_fragment(dim_t width,
 		paragraph->rewrap_fragment(my_fragments,
 					   width,
 					   fragment_n,
-					   toosmall, toobig);
+					   toosmall, toobig,
+					   insert_results);
 		if (toobig || toosmall)
 			wrapped=true;
 		if (toobig)
@@ -448,7 +451,8 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 				 (const richtextparagraph &p)
 				 {
 					 p->rewrap(my_paragraphs,
-						   word_wrap_width);
+						   word_wrap_width,
+						   inserted_info);
 					 return true;
 				 });
 		}
@@ -459,7 +463,8 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 				*orig_fragment->my_paragraph};
 
 		rewrap_at_fragment(word_wrap_width,
-				   orig_fragment, my_fragments);
+				   orig_fragment, my_fragments,
+				   inserted_info);
 	}
 }
 
@@ -646,6 +651,8 @@ void richtext_implObj::remove_at_location(remove_info &info,
 
 	if (word_wrap_width > 0)
 	{
+		richtext_insert_results ignored;
+
 		// Note: the text removal inside remove_at_location_no_rewrap
 		// destroys the fragment_a_list which updates fragment sizes.
 		//
@@ -662,7 +669,8 @@ void richtext_implObj::remove_at_location(remove_info &info,
 		fragment_list fragment_a_list(my_paragraphs,
 					      *fragment_a->my_paragraph);
 		rewrap_at_fragment(word_wrap_width,
-				   fragment_a, fragment_a_list);
+				   fragment_a, fragment_a_list,
+				   ignored);
 	}
 }
 
@@ -730,8 +738,11 @@ void richtext_implObj
 		// Then merge the next fragment into this one, according
 		// to the paragraph embedding level.
 
+		richtext_insert_results ignored;
+
 		fragment_a->merge(fragment_a_list,
-				  fragment_a->merge_paragraph);
+				  fragment_a->merge_paragraph,
+				  ignored);
 		my_paragraphs.recalculation_required();
 	}
 

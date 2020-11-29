@@ -1018,6 +1018,7 @@ void rlmetricstest()
 	rl.rl=true;
 
 	richtext_options options;
+	richtext_insert_results ignored;
 
 	options.paragraph_embedding_level=UNICODE_BIDI_RL;
 
@@ -1039,13 +1040,13 @@ void rlmetricstest()
 		fragment_list my_fragments{my_paragraphs, *p};
 
 		auto f=p->get_fragment(0);
-		f->split(my_fragments, 12, f->split_rl, false);
+		f->split(my_fragments, 12, f->split_rl, false, ignored);
 
 		f=p->get_fragment(0);
-		f->split(my_fragments, 6, f->split_lr, false);
+		f->split(my_fragments, 6, f->split_lr, false, ignored);
 
 		f=p->get_fragment(2);
-		f->split(my_fragments, 6, f->split_rl, false);
+		f->split(my_fragments, 6, f->split_rl, false, ignored);
 	}
 
 	if (auto m=get_metrics(impl); m != std::vector<fragment_metric>{

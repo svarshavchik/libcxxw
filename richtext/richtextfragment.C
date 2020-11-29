@@ -450,25 +450,27 @@ richtextfragmentObj::insert(ONLY IN_THREAD,
 
 	auto new_string=new_string_to_insert(string.meta_at(pos));
 
-	return insert(IN_THREAD, my_paragraphs,
-		      pos, std::move(new_string));
+	richtext_insert_results results;
+
+	insert(IN_THREAD, my_paragraphs,
+	       pos, std::move(new_string), results);
+
+	return results;
 }
 
-richtext_insert_results
-richtextfragmentObj::insert(ONLY IN_THREAD,
-			    paragraph_list &my_paragraphs,
-			    size_t pos,
-			    richtextstring &&new_string)
+void richtextfragmentObj::insert(ONLY IN_THREAD,
+				 paragraph_list &my_paragraphs,
+				 size_t pos,
+				 richtextstring &&new_string,
+				 richtext_insert_results &insert_results)
 {
-	richtext_insert_results insert_results;
-
 	// Sanity checks
 	assert_or_throw(pos < string.size(),
 			"Invalid pos parameter to insert()");
 
 	auto n_size=new_string.size();
 
-	if (n_size == 0) return insert_results; // Marginal
+	if (n_size == 0) return;
 
 	// Make sure things will unwind properly, in the event of an unlikely
 	// exception.
@@ -539,17 +541,15 @@ richtextfragmentObj::insert(ONLY IN_THREAD,
 
 	redraw_needed=true;
 
-	size_t counter=1;
 	for (size_t p=string.size(); p; )
 	{
 		if (breaks[--p] == unicode_lb::mandatory && p != 0)
 		{
-			split(my_fragments, p, split_lr, false);
-			++counter;
+			split(my_fragments, p, split_lr, false,
+			      insert_results);
+			++insert_results.counter;
 		}
 	}
-	insert_results.counter=counter;
-	return insert_results;
 }
 
 // Recalculate line breaks for the previous fragment, this one,
@@ -694,7 +694,8 @@ dim_t richtextfragmentObj::x_width(ONLY IN_THREAD)
 ////////////////////////////////////////////////////////////////////////////
 
 void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
-				enum split_t type, bool force)
+				enum split_t type, bool force,
+				richtext_insert_results &insert_results)
 {
 	USING_MY_PARAGRAPH();
 
@@ -728,6 +729,8 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 		string.erase(0, pos);
 		breaks.erase(breaks.begin(), breaks.begin()+pos);
 		horiz_info.erase(0, pos);
+
+		insert_results.split(ref{this}, 0, pos, new_fragment);
 	}
 	else
 	{
@@ -735,6 +738,7 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 		string.erase(pos, n_erased);
 		breaks.erase(breaks.begin()+pos, breaks.end());
 		horiz_info.erase(pos, n_erased);
+		insert_results.split(ref{this}, pos, n_erased, new_fragment);
 	}
 	// We also must move any cursor locations to the new fragment.
 
@@ -822,7 +826,8 @@ void richtextfragmentObj::move_location(locations_t::iterator iter,
 }
 
 void richtextfragmentObj::merge(fragment_list &my_fragments,
-				merge_type_t merge_type)
+				merge_type_t merge_type,
+				richtext_insert_results &insert_results)
 {
 	USING_MY_PARAGRAPH();
 
@@ -852,11 +857,11 @@ void richtextfragmentObj::merge(fragment_list &my_fragments,
 		if (merge_type == merge_bidi &&
 		    string.get_dir() == richtext_dir::rl)
 		{
-			merge_lr_rl(my_fragments, other);
+			merge_lr_rl(my_fragments, other, insert_results);
 			return;
 		}
 
-		merge_lr_lr(my_fragments, other);
+		merge_lr_lr(my_fragments, other, insert_results);
 
 		if (merge_type == merge_paragraph)
 		{
@@ -873,11 +878,12 @@ void richtextfragmentObj::merge(fragment_list &my_fragments,
 		if (merge_type == merge_bidi &&
 		    string.get_dir() == richtext_dir::lr)
 		{
-			merge_rl_lr(my_fragments, other);
+			merge_rl_lr(my_fragments, other, insert_results);
 			return;
 		}
 
-		other->merge_lr_lr(my_fragments, ref{this});
+		other->merge_lr_lr(my_fragments, ref{this},
+				   insert_results);
 
 		if (merge_type == merge_paragraph)
 		{
@@ -892,11 +898,12 @@ void richtextfragmentObj::merge(fragment_list &my_fragments,
 }
 
 void richtextfragmentObj::merge_rl_lr(fragment_list &my_fragments,
-				      const richtextfragment &other)
+				      const richtextfragment &other,
+				      richtext_insert_results &insert_results)
 {
 	if (other->string.get_dir() == richtext_dir::lr)
 	{
-		merge_lr_lr(my_fragments, other);
+		merge_lr_lr(my_fragments, other, insert_results);
 		return;
 	}
 
@@ -916,23 +923,25 @@ void richtextfragmentObj::merge_rl_lr(fragment_list &my_fragments,
 	{
 		// Next fragment ends with rl text, regular rl merge.
 
-		other->merge_lr_lr(my_fragments, ref{this});
+		other->merge_lr_lr(my_fragments, ref{this}, insert_results);
 		return;
 	}
 
-	other->split(my_fragments, p->first, split_lr, false);
+	other->split(my_fragments, p->first, split_lr, false,
+		     insert_results);
 
-	other->merge_lr_lr(my_fragments, ref{this});
+	other->merge_lr_lr(my_fragments, ref{this}, insert_results);
 
 	auto next=other->next_fragment();
 
 	assert_or_throw(next, "Internal error: did not find split fragment in"
 			" merge_rl_lr");
-	other->merge_lr_lr(my_fragments, ref{next});
+	other->merge_lr_lr(my_fragments, ref{next}, insert_results);
 }
 
 void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
-				      const richtextfragment &other)
+				      const richtextfragment &other,
+				      richtext_insert_results &insert_results)
 {
 
 	size_t next_left_to_right_start=
@@ -940,7 +949,7 @@ void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
 
 	if (next_left_to_right_start == 0)
 	{
-		merge_lr_lr(my_fragments, other);
+		merge_lr_lr(my_fragments, other, insert_results);
 		return;
 	}
 
@@ -955,22 +964,24 @@ void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
 	{
 		merge_again=true;
 		other->split(my_fragments, next_left_to_right_start,
-			     split_lr, true);
+			     split_lr, true, insert_results);
 	}
 
 	// Instead, merge this fragment at the end of the next one.
-	other->merge_lr_lr(my_fragments, ref{this});
+	other->merge_lr_lr(my_fragments, ref{this}, insert_results);
 
 	if (merge_again)
 	{
 		// left-to-right text must follow, so this won't
 		// recurse again.
-		other->merge(my_fragments, other->merge_bidi);
+		other->merge(my_fragments, other->merge_bidi,
+			     insert_results);
 	}
 }
 
 void richtextfragmentObj::merge_lr_lr(fragment_list &my_fragments,
-				      const richtextfragment &other)
+				      const richtextfragment &other,
+				      richtext_insert_results &insert_results)
 {
 	const std::u32string &current_string=string.get_string();
 
@@ -992,6 +1003,8 @@ void richtextfragmentObj::merge_lr_lr(fragment_list &my_fragments,
 		horiz_info.append(other->horiz_info);
 
 		update_glyphs_widths_kernings(orig_pos, 1);
+
+		insert_results.merged(other, ref{this}, orig_pos);
 	}
 
 	// Migrate the cursor locations too

@@ -8,6 +8,7 @@
 #include "richtext/fragment_list.H"
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextparagraph.H"
+#include "richtext/richtext_insert.H"
 #include "x/w/impl/richtext/richtext.H"
 #include "assert_or_throw.H"
 #include "defaulttheme.H"
@@ -157,8 +158,10 @@ bool paragraph_list::rewrap(dim_t width)
 {
 	bool changed=false;
 
+	richtext_insert_results ignored;
+
 	for (const auto &paragraph:text.paragraphs)
-		if (paragraph->rewrap(*this, width))
+		if (paragraph->rewrap(*this, width, ignored))
 			changed=true;
 
 	return changed;

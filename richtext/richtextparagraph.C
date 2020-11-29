@@ -6,6 +6,7 @@
 #include "libcxxw_config.h"
 #include "richtext/richtextparagraph.H"
 #include "richtext/fragment_list.H"
+#include "richtext/richtext_insert.H"
 #include "x/w/impl/richtext/richtext.H"
 #include "richtext/paragraph_list.H"
 #include "assert_or_throw.H"
@@ -22,7 +23,8 @@ richtextparagraphObj::~richtextparagraphObj()
 }
 
 bool richtextparagraphObj::rewrap(paragraph_list &my_paragraphs,
-				  dim_t width)
+				  dim_t width,
+				  richtext_insert_results &results)
 {
 	fragment_list my_fragments(my_paragraphs, *this);
 
@@ -34,7 +36,8 @@ bool richtextparagraphObj::rewrap(paragraph_list &my_paragraphs,
 		bool toosmall, toobig;
 
 		rewrap_fragment(my_fragments,
-				width, my_fragment_n, toosmall, toobig);
+				width, my_fragment_n, toosmall, toobig,
+				results);
 		++my_fragment_n;
 
 		if (toosmall || toobig)
@@ -67,6 +70,8 @@ bool richtextparagraphObj::unwrap(paragraph_list &my_paragraphs)
 
 	size_t fs=my_fragments.size();
 
+	richtext_insert_results ignored;
+
 	for (size_t n=0; n+1<fs; )
 	{
 		auto f=get_fragment(n);
@@ -77,7 +82,7 @@ bool richtextparagraphObj::unwrap(paragraph_list &my_paragraphs)
 			continue;
 		}
 
-		f->merge(my_fragments, f->merge_bidi);
+		f->merge(my_fragments, f->merge_bidi, ignored);
 		flag=true;
 		fs=my_fragments.size();
 	}
@@ -87,7 +92,7 @@ bool richtextparagraphObj::unwrap(paragraph_list &my_paragraphs)
 	{
 		auto f=get_fragment(0);
 
-		f->merge(my_fragments, f->merge_bidi);
+		f->merge(my_fragments, f->merge_bidi, ignored);
 		flag=true;
 	}
 
@@ -100,7 +105,9 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 					   dim_t width,
 					   size_t fragment_n,
 					   bool &toosmall,
-					   bool &toobig)
+					   bool &toobig,
+					   richtext_insert_results
+					   &insert_results)
 {
 	toosmall=false;
 	toobig=false;
@@ -119,7 +126,8 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 			break; // It would be too big.
 
 		// We'll merge the whole thing, and sort things out later.
-		(*iter)->merge(my_fragments, (*iter)->merge_bidi);
+		(*iter)->merge(my_fragments, (*iter)->merge_bidi,
+			       insert_results);
 		iter=get_fragment_iter(fragment_n);
 		toosmall=true;
 
@@ -170,7 +178,8 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 				  (*iter)->horiz_info.kerning(n-1));
 
 			(*iter)->split(my_fragments, n-1,
-				       richtextfragmentObj::split_lr, true);
+				       richtextfragmentObj::split_lr, true,
+				       insert_results);
 			iter=get_fragment_iter(fragment_n);
 
 			split_nl=(*iter)->next_fragment();
@@ -180,7 +189,8 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 			newline_width=(*iter)->horiz_info.width(0);
 
 			(*iter)->split(my_fragments, 1,
-				       richtextfragmentObj::split_rl, true);
+				       richtextfragmentObj::split_rl, true,
+				       insert_results);
 			split_nl_rl=true;
 			iter=get_fragment_iter(fragment_n);
 			split_nl=(*iter)->next_fragment();
@@ -191,7 +201,8 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 
 		auto res=rewrap_fragment_toobig(my_fragments,
 						*iter, width,
-						toosmall, toobig);
+						toosmall, toobig,
+						insert_results);
 
 		// If we failed, it's possible that after we restore the \n
 		// we'll be too big. So try again to get below
@@ -200,7 +211,8 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 		if (res == toobig_results::failed && split_nl)
 			res=rewrap_fragment_toobig(my_fragments,
 						   *iter, width-newline_width,
-						   toosmall, toobig);
+						   toosmall, toobig,
+						   insert_results);
 
 		// Now, no matter what, put the newline back where it came
 		// from.
@@ -217,14 +229,16 @@ void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 				// Newline at the beginning of the line,
 				// right to left paragraph embedding level.
 				split_nl->merge_lr_lr(my_fragments,
-						      ref{prev});
+						      ref{prev},
+						      insert_results);
 			}
 			else
 			{
 				// Newline at the end of the line,
 				// left to right paragraph embedding level.
 				prev->merge_lr_lr(my_fragments,
-						  ref{split_nl});
+						  ref{split_nl},
+						  insert_results);
 			}
 			// Need to compute updated fragment sizes in order to
 			// continue.
@@ -242,7 +256,9 @@ richtextparagraphObj::rewrap_fragment_toobig(fragment_list &my_fragments,
 					     const richtextfragment &f,
 					     dim_t width,
 					     bool &toosmall,
-					     bool &toobig)
+					     bool &toobig,
+					     richtext_insert_results
+					     &insert_results)
 {
 	assert_or_throw(! f->horiz_info.empty(),
 			"How can we be so big, when there are no widths?");
@@ -290,7 +306,7 @@ richtextparagraphObj::rewrap_fragment_toobig(fragment_list &my_fragments,
 	if (pos == 0 || pos >= f->string.size())
 		return toobig_results::failed;
 
-	f->split(my_fragments, pos, split_type, false);
+	f->split(my_fragments, pos, split_type, false, insert_results);
 
 	if (!toosmall) // Don't complain twice.
 		toobig=true;

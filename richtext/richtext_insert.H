@@ -166,6 +166,14 @@ private:
 	size_t next_paragraph_start() const;
 };
 
+//! What happened in insert()
+
+//! insert() returns this object that reports metadata of what was inserted.
+//! This gets passed along to richtextfragmentObj::split and
+//! richtextfragmentObj in order to rewrap the inserted text. They invoke
+//! richtext_insert_results::split() and
+//! richtext_insert_results::merged() to, basically, log their action.
+
 struct richtext_insert_results {
 
 	//! How much was inserted.
@@ -176,6 +184,25 @@ struct richtext_insert_results {
 	//! paragraph. Each inserted paragraph increments the return value
 	//! by 1.
 	size_t counter=0;
+
+	//! Fragments were split.
+
+	//! The range of character specifies by pos (offset) and count (number
+	//! of characters) was removed from the split_from fragment and
+	//! placed into a new split_to fragment.
+	void split(const richtextfragment &split_from,
+		   size_t pos,
+		   size_t count,
+		   const richtextfragment &split_to);
+
+	//! Fragments were merged.
+
+	//! merged_from was the fragment whose contents were merged into
+	//! the merged_to fragment, starting at the given position.
+	void merged(const richtextfragment &merged_from,
+		    const richtextfragment &merged_to,
+		    size_t merged_to_pos);
+
 };
 
 LIBCXXW_NAMESPACE_END
