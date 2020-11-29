@@ -22,7 +22,7 @@ LIBCXXW_NAMESPACE_START
 //! Insert can insert either a richtextstring or a std::u32string. This
 //! class type-erases the call to richtextstring::insert().
 //!
-//! This parameter to insert() also stores a richtextcursorlocation, which
+//! This parameter to insert() also stores a richtextiterator, which
 //! insert() does not really use directly. insert() only calls pos() to
 //! obtain the location in the fragment where the new string gets
 //! insert()ed.
@@ -45,9 +45,31 @@ struct richtext_insert_base {
 	{
 	}
 
-	//! Invoke into's insert() method, to insert the string.
+	//! Return the string to insert
 
-	virtual void operator()(richtextstring &into) const=0;
+	//! Receives the metadata at the insert position. This is used to
+	//! construct a richtextstring from a std::u32string_view.
+	virtual richtextstring operator()(const richtextmeta &default_meta)
+		const=0;
+
+	//! Inserting another richtextstring.
+	static richtextstring get_richtext(richtextstring &str,
+					   const richtextmeta &default_meta)
+	{
+		return std::move(str);
+	}
+
+	//! Insering a std::u32string_view
+	static richtextstring get_richtext(const std::u32string_view &str,
+					   const richtextmeta &default_meta)
+	{
+		std::unordered_map<size_t, richtextmeta> m{ {0, default_meta} };
+
+		if (str.empty())
+			m.clear();
+
+		return richtextstring{str, m, false};
+	}
 
 	//! Insert position
 	inline auto pos() const
@@ -71,20 +93,19 @@ template<typename type>
 struct LIBCXX_HIDDEN richtext_insert : richtext_insert_base {
 
 	//! The string being inserted.
-	const type &s;
+	type &s;
 
 	//! Constructor
 	richtext_insert(const richtextiterator &iterator,
-			const type &s)
+			type &s)
 		: richtext_insert_base{iterator}, s{s}
 	{
 	}
 
-	//! Invoke richtextstring's insert() method.
-
-	void operator()(richtextstring &into) const override
+	richtextstring operator()(const richtextmeta &default_meta)
+		const override
 	{
-		into.insert(pos(), s);
+		return this->get_richtext(this->s, default_meta);
 	}
 
 	//! Return the string's size.

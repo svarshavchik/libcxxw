@@ -391,6 +391,14 @@ public:
 		      paragraph_list &my_paragraphs,
 		      const richtext_insert_base &new_string);
 
+ private:
+	//! Insert text in the middle of a single fragment.
+
+	size_t insert(ONLY IN_THREAD,
+		      paragraph_list &my_paragraphs,
+		      size_t pos,
+		      richtextstring &&new_string);
+ public:
 	//! Computed width of this text fragment.
 
 	//! This does not include the first character's kerning value.

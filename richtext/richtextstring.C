@@ -12,11 +12,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtextstring::richtextstring(const std::u32string &string,
-			       const std::unordered_map<size_t,
-			       richtextmeta> &meta,
-			       bool append_null_byte)
-	: string(string), meta(meta.begin(), meta.end())
+void richtextstring::finish_from_string(bool append_null_byte)
 {
 	if (append_null_byte)
 		this->string.push_back(0);

@@ -221,9 +221,9 @@ class LIBCXX_HIDDEN richtextiteratorObj::internal_insert_impl
 	: public internal_insert {
 
  public:
-	const type &s;
+	type &s;
 
-	internal_insert_impl(const type &s) : s{s} {}
+	internal_insert_impl(type &s) : s{s} {}
 
 	void operator()( const richtextiterator &i,
 			 const function< insert_callback_func> &f)
@@ -249,7 +249,7 @@ richtextiterator richtextiteratorObj::insert(ONLY IN_THREAD,
 					     &new_string)
 {
 	return insert(IN_THREAD,
-		      internal_insert_impl<std::u32string_view>
+		      internal_insert_impl<const std::u32string_view>
 		      {new_string});
 }
 
@@ -268,7 +268,7 @@ void richtextiteratorObj::replace(ONLY IN_THREAD,
 {
 	replace(IN_THREAD,
 		other,
-		internal_insert_impl<std::u32string_view>
+		internal_insert_impl<const std::u32string_view>
 		{new_string});
 }
 

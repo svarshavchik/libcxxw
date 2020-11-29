@@ -107,11 +107,9 @@ public:
 	}
 };
 
-#if 0
-{
-	{
-#endif
-	}
-}
+#define x_w_impl_richtext_richtextmeta_H_defined 1
+#include <x/w/impl/richtext/richtextstringmeta.H>
+
+LIBCXXW_NAMESPACE_END
 
 #endif

@@ -1,6 +1,7 @@
 #include "x/w/types.H"
 
 #define x_w_impl_richtext_richtextmeta_H
+#define x_w_impl_richtext_richtextmeta_H_defined
 #define x_w_impl_fonts_freetypefontfwd_H
 #define x_w_impl_fonts_freetypefont_H
 #define x_w_text_hotspot_H

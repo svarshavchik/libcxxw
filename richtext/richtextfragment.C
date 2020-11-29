@@ -453,15 +453,25 @@ void richtextfragmentObj::recalculate_size_called_by_fragment_list()
 
 size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 				   paragraph_list &my_paragraphs,
-				   const richtext_insert_base &new_string)
+				   const richtext_insert_base &new_string_to_insert)
 {
 	USING_MY_PARAGRAPH();
 
-	auto pos=new_string.pos();
-	const std::u32string &current_string=string.get_string();
+	auto pos=new_string_to_insert.pos();
 
+	auto new_string=new_string_to_insert(string.meta_at(pos));
+
+	return insert(IN_THREAD, my_paragraphs,
+		      pos, std::move(new_string));
+}
+
+size_t richtextfragmentObj::insert(ONLY IN_THREAD,
+				   paragraph_list &my_paragraphs,
+				   size_t pos,
+				   richtextstring &&new_string)
+{
 	// Sanity checks
-	assert_or_throw(pos < current_string.size(),
+	assert_or_throw(pos < string.size(),
 			"Invalid pos parameter to insert()");
 
 	auto n_size=new_string.size();
@@ -490,7 +500,7 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 				    horiz_info.erase(pos, pos+n_size);
 			    });
 
-	new_string(string);
+	string.insert(pos, std::move(new_string));
 	string_sentry.guard();
 
 	// Make room for breaks, widths, and kernings.
@@ -538,7 +548,7 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 	redraw_needed=true;
 
 	size_t counter=1;
-	for (size_t p=current_string.size(); p; )
+	for (size_t p=string.size(); p; )
 	{
 		if (breaks[--p] == unicode_lb::mandatory && p != 0)
 		{

@@ -129,9 +129,16 @@ public:
 
 	//! Initializes the richtextstring from the given string and metadata.
 
-	richtextstring(const std::u32string &string,
+	template<typename string_type>
+	richtextstring(string_type &&str,
 		       const std::unordered_map<size_t, richtextmeta> &meta,
 		       bool append_null_byte=false);
+
+private:
+	//! Finish the from string constructor.
+
+	void finish_from_string(bool);
+public:
 
 	//! Construct from a substring.
 
@@ -365,6 +372,9 @@ public:
 			    const function<void (size_t, richtextmeta &meta)>
 			    &l);
 };
+
+#define x_w_impl_richtext_richtextstring_H_defined 1
+#include <x/w/impl/richtext/richtextstringmeta.H>
 
 LIBCXXW_NAMESPACE_END
 
