@@ -193,7 +193,6 @@ public:
 
 	void move_location(locations_t::iterator iter,
 			   const richtextfragment &new_fragment);
-
  public:
 	//! The text fragment
 	richtextstring string;
@@ -386,23 +385,17 @@ public:
 
 	//! Insert text.
 
-	//! Returns 0 if the text is empty.
-	//!
-	//! Returns 1, unless new_text has line breaks, which inserts a new
-	//! paragraph. Each inserted paragraph increments the return value
-	//! by 1.
-
-	size_t insert(ONLY IN_THREAD,
-		      paragraph_list &my_paragraphs,
-		      const richtext_insert_base &new_string);
+	richtext_insert_results insert(ONLY IN_THREAD,
+				       paragraph_list &my_paragraphs,
+				       const richtext_insert_base &new_string);
 
  private:
 	//! Insert text in the middle of a single fragment.
 
-	size_t insert(ONLY IN_THREAD,
-		      paragraph_list &my_paragraphs,
-		      size_t pos,
-		      richtextstring &&new_string);
+	richtext_insert_results insert(ONLY IN_THREAD,
+				       paragraph_list &my_paragraphs,
+				       size_t pos,
+				       richtextstring &&new_string);
  public:
 	//! Computed width of this text fragment.
 

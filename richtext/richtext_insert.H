@@ -166,6 +166,17 @@ private:
 	size_t next_paragraph_start() const;
 };
 
+struct richtext_insert_results {
+
+	//! How much was inserted.
+
+	//! This is 0 if the insert text is empty.
+	//!
+	//! Returns 1, unless new_text has line breaks, which inserts a new
+	//! paragraph. Each inserted paragraph increments the return value
+	//! by 1.
+	size_t counter=0;
+};
 
 LIBCXXW_NAMESPACE_END
 

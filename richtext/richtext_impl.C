@@ -419,7 +419,7 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 	// Start by inserting the text. insert() returns the number of
 	// inserted paragraph breaks.
 
-	auto num_inserted=
+	auto inserted_info=
 		new_text.fragment()->insert(IN_THREAD,
 					    my_paragraphs,
 					    new_text);
@@ -438,12 +438,12 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 
 		// First, rewrap whole paragraphs inserted.
 
-		if (num_inserted > 1)
+		if (inserted_info.counter > 1)
 		{
 			paragraphs.for_paragraphs
 				(orig_fragment->my_paragraph
 				 ->my_paragraph_number+1,
-				 num_inserted-1,
+				 inserted_info.counter-1,
 				 [&]
 				 (const richtextparagraph &p)
 				 {

@@ -439,9 +439,10 @@ void richtextfragmentObj::recalculate_size_called_by_fragment_list()
 		location->horiz_pos_no_longer_valid();
 }
 
-size_t richtextfragmentObj::insert(ONLY IN_THREAD,
-				   paragraph_list &my_paragraphs,
-				   const richtext_insert_base &new_string_to_insert)
+richtext_insert_results
+richtextfragmentObj::insert(ONLY IN_THREAD,
+			    paragraph_list &my_paragraphs,
+			    const richtext_insert_base &new_string_to_insert)
 {
 	USING_MY_PARAGRAPH();
 
@@ -453,18 +454,21 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 		      pos, std::move(new_string));
 }
 
-size_t richtextfragmentObj::insert(ONLY IN_THREAD,
-				   paragraph_list &my_paragraphs,
-				   size_t pos,
-				   richtextstring &&new_string)
+richtext_insert_results
+richtextfragmentObj::insert(ONLY IN_THREAD,
+			    paragraph_list &my_paragraphs,
+			    size_t pos,
+			    richtextstring &&new_string)
 {
+	richtext_insert_results insert_results;
+
 	// Sanity checks
 	assert_or_throw(pos < string.size(),
 			"Invalid pos parameter to insert()");
 
 	auto n_size=new_string.size();
 
-	if (n_size == 0) return 0; // Marginal
+	if (n_size == 0) return insert_results; // Marginal
 
 	// Make sure things will unwind properly, in the event of an unlikely
 	// exception.
@@ -544,7 +548,8 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 			++counter;
 		}
 	}
-	return counter;
+	insert_results.counter=counter;
+	return insert_results;
 }
 
 // Recalculate line breaks for the previous fragment, this one,

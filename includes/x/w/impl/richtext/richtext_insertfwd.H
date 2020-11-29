@@ -12,6 +12,8 @@ LIBCXXW_NAMESPACE_START
 
 struct LIBCXX_HIDDEN richtext_insert_base;
 
+struct LIBCXX_HIDDEN richtext_insert_results;
+
 LIBCXXW_NAMESPACE_END
 
 #endif
