@@ -765,6 +765,7 @@ libcxxw_la_SOURCES=\
 	richtext/richtext_range.H		    \
 	richtext/richtext_impl.C		    \
 	richtext/richtext_impl.H		    \
+	richtext/richtext_insert.C		    \
 	richtext/richtext_insert.H		    \
 	richtext/richtext_linebreak_info.C	    \
 	richtext/richtext_linebreak_info.H	    \

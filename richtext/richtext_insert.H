@@ -8,8 +8,11 @@
 
 #include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/impl/richtext/richtext_insertfwd.H"
+#include <x/functional.H>
 #include "richtext/richtextcursorlocation.H"
 #include <string>
+#include <vector>
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -88,6 +91,45 @@ struct LIBCXX_HIDDEN richtext_insert : richtext_insert_base {
 		return s.size();
 	}
 };
+
+class LIBCXX_HIDDEN create_fragments_from_inserted_text;
+
+//! Create fragments out of inserted text.
+
+//! One fragment per paragraph. The first step of processing inserted text
+//! is to break it up into one paragraph per fragment.
+//!
+//! Takes a richtextstring and each call to operator() produces a
+//! richtextfragment. Or a null pointer after all fragments were produced.
+
+class create_fragments_from_inserted_text {
+
+	//! Constructor parameter
+	richtextstring &string;
+
+	//! Constructor parameter
+	const unicode_bidi_level_t embedding_level;
+
+	//! Cached line breaks
+	std::vector<unicode_lb> breaks;
+
+	size_t current_pos; //!< Next position to process
+
+	const size_t n; //!< Cached breaks.size()
+
+public:
+	//! Constructor
+	create_fragments_from_inserted_text(richtextstring &string,
+					    unicode_bidi_level_t
+					    embedding_level);
+
+	//! Destructor
+	~create_fragments_from_inserted_text();
+
+	//! Return next fragment.
+	richtextfragmentptr operator()();
+};
+
 
 LIBCXXW_NAMESPACE_END
 

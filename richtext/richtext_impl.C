@@ -12,7 +12,6 @@
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
 #include "richtext/richtext_insert.H"
-#include "richtext/richtext_linebreak_info.H"
 #include "x/w/screen.H"
 #include "messages.H"
 #include "assert_or_throw.H"
@@ -125,138 +124,25 @@ void richtext_implObj::set(ONLY IN_THREAD,
 	restore_paragraphs_sentry.unguard();
 }
 
-static inline auto create_new_fragment(richtextstring &string,
-				       std::vector<unicode_lb> &breaks,
-				       size_t i,
-				       size_t j,
-				       unicode_bidi_level_t embedding_level)
-{
-	// Normally the \n ends the paragraph. If the paragraph
-	// embedding level is right-to-left, \n belongs at the
-	// beginning of the paragraph.
-
-	bool swap_newline=false;
-
-	if (embedding_level != UNICODE_BIDI_LR)
-	{
-		if (string.get_string().at(j-1) == '\n')
-			swap_newline=true;
-	}
-
-	if (!swap_newline)
-		return richtextfragment::create(richtextstring{string,
-							       i,
-							       j-i},
-			std::vector<unicode_lb>{
-				breaks.begin()+i,
-					breaks.begin()+j
-					});
-
-	richtextstring rl_str{string, j-1, 1}; // The newline
-
-	std::vector<unicode_lb> rl_breaks;
-
-	rl_breaks.reserve(j-i);
-	rl_breaks.push_back(unicode_lb::none); // The newline
-
-	if (j-i > 1)
-	{
-		rl_str += richtextstring{string, i, j-i-1};
-	}
-
-	rl_breaks.insert(rl_breaks.end(), breaks.begin()+i,
-			 breaks.begin()+(j-1));
-
-	// Figure out the linebreaking situation after the newline. If there's
-	// right-to-left text there, it's none, if there's left-to-right text
-	// there, it is allowed.
-
-	if (j-i > 1)
-	{
-		rl_breaks.at(1)=
-			rl_str.meta_at(1).rl ? unicode_lb::none
-			: unicode_lb::allowed;
-	}
-	return richtextfragment::create(std::move(rl_str),
-					std::move(rl_breaks));
-}
-
 void richtext_implObj::do_set(richtextstring &&string)
 {
 	paragraphs.clear();
 	num_chars=0;
 
-	// Calculate mandatory line breaks.
-
-	std::vector<unicode_lb> breaks;
-
-	{
-		auto &s=string.get_string();
-
-		breaks.resize(s.size(), unicode_lb::none);
-
-		if (!s.empty())
-		{
-			richtextstring *ptr= &string;
-
-			richtext_linebreak_info(0, s.size(), &breaks[0],
-						&ptr, 1);
-		}
-
-		// The first character, by definition, does not break. This
-		// logic is also present in recalculate_linebreaks().
-		if (!breaks.empty())
-			breaks[0]=unicode_lb::none;
-
-		// richtext_linebreak_info will miss the mark when there are
-		// embedded newlines in rtol text. We'll fix this up here.
-
-		auto b=s.begin();
-		auto e=s.end();
-
-		auto p=b;
-
-		while (p != e)
-		{
-			auto q=std::find(p, e, '\n');
-
-			if (q == e)
-				break;
-
-			breaks[q-b]=unicode_lb::none;
-			if (++q != e)
-				breaks[q-b]=unicode_lb::mandatory;
-			p=q;
-		}
-	}
-
-	// Each mandatory line break starts a new paragraph.
-	// Put each paragraph into a single fragment.
-
-	size_t i=0, n=breaks.size();
-
 	paragraph_list my_paragraphs(*this);
 
-	while (i<n)
+	create_fragments_from_inserted_text factory{string,
+		paragraph_embedding_level};
+
+	while (auto new_fragment=factory())
 	{
-		// Find the next mandatory line break.
-		size_t j=std::find(&breaks[0]+(i+1), &breaks[0]+n,
-				   unicode_lb::mandatory)-&breaks[0];
-
-		auto new_paragraph=my_paragraphs.append_new_paragraph();
-
-		auto new_fragment=
-			create_new_fragment(string,
-					    breaks,
-					    i, j,
-					    paragraph_embedding_level);
+		auto new_paragraph=
+			my_paragraphs.append_new_paragraph();
 
 		const_fragment_list my_fragments{my_paragraphs,
-				*new_paragraph};
+			*new_paragraph};
 
 		my_fragments.append_no_recalculate(new_fragment);
-
-		i=j;
 	}
 }
 
