@@ -720,17 +720,29 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 	auto break_type=breaks[pos];
 
 	// We can copy the relevant parts from myself, into a new fragment...
-	auto new_fragment=richtextfragment::create(*this,
-						   pos,
-						   current_string.size()-pos);
+	auto new_fragment=type == split_rl
+		? richtextfragment::create(*this,
+					   0,
+					   pos)
+		: richtextfragment::create(*this,
+					   pos,
+					   current_string.size()-pos);
 
 	// ... then truncate myself accordingly.
 
-	size_t n_erased=current_string.size()-pos;
-	string.erase(pos, n_erased);
-	breaks.erase(breaks.begin()+pos, breaks.end());
-	horiz_info.erase(pos, n_erased);
-
+	if (type == split_rl)
+	{
+		string.erase(0, pos);
+		breaks.erase(breaks.begin(), breaks.begin()+pos);
+		horiz_info.erase(0, pos);
+	}
+	else
+	{
+		size_t n_erased=current_string.size()-pos;
+		string.erase(pos, n_erased);
+		breaks.erase(breaks.begin()+pos, breaks.end());
+		horiz_info.erase(pos, n_erased);
+	}
 	// We also must move any cursor locations to the new fragment.
 
 	for (auto iter=locations.begin(); iter != locations.end(); )
@@ -739,28 +751,44 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 
 		++iter;
 
-		if ((*p)->get_offset() >= pos)
-		{
-			// This cursor location is now in the new fragment
+		bool was_split_off_from_parent=
+			(*p)->get_offset() >= pos;
 
+		bool is_moved_to_new_fragment=false;
+
+		if (was_split_off_from_parent)
+		{
+			if (type == split_lr)
+				is_moved_to_new_fragment=true;
+		}
+		else
+		{
+			if (type == split_rl)
+				is_moved_to_new_fragment=true;
+		}
+
+		if (is_moved_to_new_fragment || was_split_off_from_parent)
+		{
 			auto l= *p;
 
-			new_fragment->locations.push_back(l);
-			locations.erase(p);
+			if (is_moved_to_new_fragment)
+			{
+				// This cursor location is now in the new
+				// fragment
 
-			l->my_fragment=&*new_fragment;
-			l->my_fragment_iter=--new_fragment->locations.end();
-			l->split_from_fragment(pos);
+				new_fragment->locations.push_back(l);
+				locations.erase(p);
+
+				l->my_fragment=&*new_fragment;
+				l->my_fragment_iter=
+					--new_fragment->locations.end();
+			}
+			if (was_split_off_from_parent)
+				l->split_from_fragment(pos);
 		}
 	}
 
-	if (type == split_rl)
-	{
-		auto iter=my_paragraph->fragments.get_iter(my_fragment_number);
-
-		my_fragments.insert_no_change_in_char_count(iter, new_fragment);
-	}
-	else if (!force && break_type == unicode_lb::mandatory)
+	if (!force && break_type == unicode_lb::mandatory)
 	{
 		// Copy split content into a new paragraph.
 
