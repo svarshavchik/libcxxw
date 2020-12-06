@@ -28,9 +28,10 @@ richtext_implObj::richtext_implObj(richtextstring &&string,
 	: word_wrap_width{0},
 	  unprintable_char{options.unprintable_char},
 	  alignment{options.alignment},
-	  paragraph_embedding_level{options.paragraph_embedding_level}
+	  paragraph_embedding_level{UNICODE_BIDI_LR}
 {
-	do_set(std::move(string));
+	do_set(std::move(string), options.paragraph_embedding_level);
+
 }
 
 void richtext_implObj::set(ONLY IN_THREAD,
@@ -64,16 +65,19 @@ void richtext_implObj::set(ONLY IN_THREAD,
 	// Also restore the original paragraphs in the event of a thrown exception.
 
 	auto paragraphs_cpy=paragraphs;
+	auto paragraph_embedding_level_cpy=paragraph_embedding_level;
 
 	auto restore_paragraphs_sentry=
 		make_sentry([&, this]
 			    {
 				    paragraphs=paragraphs_cpy;
+				    paragraph_embedding_level=
+					    paragraph_embedding_level_cpy;
 			    });
 
 	restore_paragraphs_sentry.guard();
 
-	do_set(std::move(string));
+	do_set(std::move(string), paragraph_embedding_level);
 
 	finish_initialization();
 
@@ -124,7 +128,9 @@ void richtext_implObj::set(ONLY IN_THREAD,
 	restore_paragraphs_sentry.unguard();
 }
 
-void richtext_implObj::do_set(richtextstring &&string)
+void richtext_implObj::do_set(richtextstring &&string,
+			      const std::optional<unicode_bidi_level_t>
+			      &new_paragraph_embedding_level)
 {
 	paragraphs.clear();
 	num_chars=0;
@@ -132,6 +138,7 @@ void richtext_implObj::do_set(richtextstring &&string)
 	paragraph_list my_paragraphs(*this);
 
 	create_fragments_from_inserted_text factory{string,
+		new_paragraph_embedding_level,
 		paragraph_embedding_level};
 
 	while (1)
@@ -597,8 +604,7 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 		std::tie(top_fragment, bottom_fragment)=
 			adjust_from_to(top_from, top_to,
 				       top_fragment,
-				       top_fragment->string.embedding_level
-				       (paragraph_embedding_level));
+				       top_fragment->embedding_level());
 		bottom_to=top_to;
 	}
 	else
@@ -608,10 +614,8 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 		//
 		// On each call to adjust_from_to we std::ignore the other
 		// returned fragment.
-		unicode_bidi_level_t top_dir=top_fragment
-			->string.embedding_level(paragraph_embedding_level),
-			bottom_dir=bottom_fragment
-			->string.embedding_level(paragraph_embedding_level);
+		unicode_bidi_level_t top_dir=top_fragment->embedding_level(),
+			bottom_dir=bottom_fragment->embedding_level();
 
 		std::tie(top_fragment, std::ignore)=
 			 adjust_from_to(top_from, top_to, top_fragment,

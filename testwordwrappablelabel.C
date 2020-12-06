@@ -28,6 +28,7 @@
 #include "textlabel_impl.C"
 #include <string>
 #include <iostream>
+#include <courier-unicode.h>
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -186,13 +187,13 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 			"dolor sit amet,",
 			black,
 			" consectetur adipisicing elit, s",
-			"rtol"_decoration,
+			unicode::literals::RLO,
 			"<<[",
 			black, lightblue,
 			"ed do eiusmod tem",
 			black,
 			"]>>",
-			"none"_decoration,
+			unicode::literals::PDF,
 			"por incididunt ut labore et dolore magna "
 			"aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
 			"ullamco laboris nisi ut aliquip ex ea commodo consequat. "

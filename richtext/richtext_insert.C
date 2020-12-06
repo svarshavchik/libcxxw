@@ -46,28 +46,18 @@ static inline auto create_new_fragment_text(richtextstring &string,
 
 create_fragments_from_inserted_text
 ::create_fragments_from_inserted_text(richtextstring &string,
+				      const std::optional<unicode_bidi_level_t>
+				      &new_paragraph_embedding_level,
 				      unicode_bidi_level_t
-				      paragraph_embedding_level)
-	: string{string}, paragraph_embedding_level{paragraph_embedding_level},
-	  current_pos{0},
-	  n{string.size()}
+				      &final_paragraph_embedding_level)
+	: canonicalizer{string, new_paragraph_embedding_level}
 {
-	// Force all newlines to have the paragraph embedding level.
-	auto &s=string.get_string();
+#ifdef CFFIT_CONSTRUCTOR_DEBUG
+	CFFIT_CONSTRUCTOR_DEBUG;
+#endif
 
-	auto rl=paragraph_embedding_level != UNICODE_BIDI_LR;
-
-	for (size_t i=0; i<n; ++i)
-	{
-		if (s[i] == '\n')
-			string.modify_meta
-				(i, 1,
-				 [rl]
-				 (size_t, auto &m)
-				 {
-					 m.rl=rl;
-				 });
-	}
+	final_paragraph_embedding_level=
+		canonicalizer.paragraph_embedding_level();
 }
 
 create_fragments_from_inserted_text::~create_fragments_from_inserted_text()
@@ -75,65 +65,44 @@ create_fragments_from_inserted_text::~create_fragments_from_inserted_text()
 
 bool create_fragments_from_inserted_text::has_paragraph_break() const
 {
-	if (current_pos >= n)
+	if (canonicalizer.end())
 		return false;
 
-	size_t s=next_paragraph_start();
+	auto &str=(*canonicalizer).get_string();
 
-	return s > current_pos && string.get_string().at(s-1) == '\n';
-}
+	return str.at(0) == '\n' ||
+		str.at(str.size()-1) == '\n';
 
-size_t create_fragments_from_inserted_text::next_paragraph_start() const
-{
-	auto &s=string.get_string();
-
-	auto e=&s[0]+n;
-
-	auto p=std::find(&s[0]+current_pos, e, '\n');
-
-	if (p != e)
-		++p;
-
-	return p-&s[0];
 }
 
 richtext_dir create_fragments_from_inserted_text::next_string_dir() const
 {
-	if (current_pos >= n)
+	if (canonicalizer.end())
 	{
-		return paragraph_embedding_level == UNICODE_BIDI_LR
+		return canonicalizer.paragraph_embedding_level()
+			== UNICODE_BIDI_LR
 			? richtext_dir::lr : richtext_dir::rl;
 	}
 
-	auto &s=string.get_string();
-
-	auto e=&s[0]+n;
-
-	auto p=std::find(&s[0]+current_pos, e, '\n');
-
-	return string.get_dir(current_pos, p-(&s[0]));
+	return (*canonicalizer).get_dir();
 }
 
 richtextstring create_fragments_from_inserted_text::next_string()
 {
-	// Each mandatory line break starts a new paragraph.
-	// Put each paragraph into a single fragment.
-
-	if (current_pos<n)
+	if (canonicalizer.end())
 	{
-		// Find the next mandatory line break.
-		size_t j=next_paragraph_start();
-
-		auto orig_pos=current_pos;
-
-		current_pos=j;
-
-		return create_new_fragment_text(string,
-						orig_pos, j,
-						paragraph_embedding_level);
+		return {};
 	}
 
-	return {};
+	auto &current_string=*canonicalizer;
+
+#ifdef CFFIT_NEXT_DEBUG
+	CFFIT_NEXT_DEBUG;
+#endif
+	++canonicalizer;
+
+	// See canonicalizer's docs.
+	return std::move(current_string);
 }
 
 

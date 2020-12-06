@@ -52,9 +52,10 @@ struct richtext_options {
 	//! cursor there.
 	char32_t unprintable_char='\0';
 
-	//! Embedding direction.
-	unicode_bidi_level_t paragraph_embedding_level=
-		UNICODE_BIDI_LR;
+	//! Embedding direction for this richtext.
+
+	//! If unset it gets derived from the initial or set string.
+	std::optional<unicode_bidi_level_t> paragraph_embedding_level;
 };
 
 LIBCXXW_NAMESPACE_END

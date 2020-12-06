@@ -600,7 +600,9 @@ public:
 	void last_wrapped_pos(wrap_t &);
  public:
 
+	//! Return this text string's embedding level
 
+	unicode_bidi_level_t embedding_level() const;
 
 	//! Rich text editor window: this fragment needs to be redrawn
 

@@ -11,6 +11,7 @@
 #include "mockrichtext.H"
 
 using namespace LIBCXX_NAMESPACE::w;
+using namespace unicode::literals;
 
 struct fragment_metric {
 	std::u32string string;
@@ -1013,9 +1014,7 @@ void kerningtest()
 
 void rlmetricstest()
 {
-	richtextmeta lr{0}, rl{0};
-
-	rl.rl=true;
+	richtextmeta lr{0};
 
 	richtext_options options;
 	richtext_insert_results ignored;
@@ -1024,10 +1023,16 @@ void rlmetricstest()
 
 	auto impl=LIBCXX_NAMESPACE::ref<richtext_implObj>::create
 		(richtextstring{
-				U" 87 65 43 2111 22 33 44",
+
+			// U" 87 65 43 2111 22 33 44"
+			//   rrrrrrrrrrrrlllllllllll
+
+			std::u32string{LRI} +
+			U"11 22 33 44" + PDI
+			+ RLO
+			+ U"12 34 56 78 " + PDF,
 				{
-				 {0, rl},
-				 {12, lr},
+				 {0, lr},
 				},
 		}, options);
 
@@ -1081,9 +1086,7 @@ void rlmetricstest()
 
 void rewraptest()
 {
-	richtextmeta lr{0}, rl{0};
-
-	rl.rl=true;
+	constexpr richtextmeta lr{0};
 
 	const struct {
 		richtextstring string;
@@ -1169,10 +1172,15 @@ void rewraptest()
 		   },
 		   // Test 4
 		   {
-		    {U" 43 2156 78",
+		    {
+			    // U" 43 2156 78"
+			    //   rrrrrrlllll
+
+			    std::u32string{RLI} + RLO
+			    + U"12 34 " + PDF + PDI
+			    + U"56 78",
 		     {
-		      {0, rl},
-		      {6, lr},
+		      {0, lr},
 		     }
 		    },
 		    90,
@@ -1192,11 +1200,13 @@ void rewraptest()
 		   },
 		   // Test 5
 		   {
-		    {U"11 22 22 33",
+		    {
+			    // U"11 22 22 33"
+			    //   lllrrrrrlll
+			    U"11 " + std::u32string{RLI}
+			    + RLO + U"22 22" + PDF + PDI + U" 33",
 		     {
 		      {0, lr},
-		      {3, rl},
-		      {8, lr},
 		     }
 		    },
 		    85,
@@ -1221,11 +1231,13 @@ void rewraptest()
 		   },
 		   // Test 6
 		   {
-		    {U"11 22 22 33",
+		    {
+			    // U"11 22 22 33",
+			    //   lllrrrrrlll
+			    U"11 " + std::u32string{RLI}
+			    + RLO + U"22 22" + PDF + PDI + U" 33",
 		     {
 		      {0, lr},
-		      {3, rl},
-		      {8, lr},
 		     }
 		    },
 		    72,
@@ -1250,10 +1262,14 @@ void rewraptest()
 		   },
 		   // Test 7
 		   {
-		    {U"11 11 11 33",
+		    {
+			    // U"11 11 11 33"
+			    //   rrrrrrrrlll
+
+			    std::u32string{RLI} + RLO
+			    + U"11 11 11" + PDF + PDI + U" 33",
 		     {
-		      {0, rl},
-		      {8, lr},
+		      {0, lr},
 		     }
 		    },
 		    110,
@@ -1273,9 +1289,12 @@ void rewraptest()
 		   },
 		   // Test 8
 		   {
-		    {U"11 11 11 11",
+		    {
+			    // U"11 11 11 11"
+			    //   rrrrrrrrrrr
+			    std::u32string{RLO} + U"11 11 11 11" + PDF,
 		     {
-		      {0, rl},
+		      {0, lr},
 		     }
 		    },
 		    70,
@@ -1302,7 +1321,12 @@ void rewraptest()
 
 		   // Test 9
 		   {
-		    {U"1234 567",
+		    {
+			    // U"1234 567"
+			    //   llllllll
+
+			    std::u32string{LRO} +
+			    U"1234 567" + PDF,
 		     {
 		      {0, lr}
 		     }
@@ -1325,9 +1349,14 @@ void rewraptest()
 
 		   // Test 10
 		   {
-		     {U"98 765 4321",
 		     {
-		      {0, rl}
+			     // U"98 765 4321"
+			     //   rrrrrrrrrrr
+
+			     std::u32string{RLO} +
+			     U"1234 567 89" + PDF,
+		     {
+		      {0, lr}
 		     }
 		    },
 		    96,
@@ -1348,9 +1377,14 @@ void rewraptest()
 
 		   // Test 11
 		   {
-		    {U"98 765 4321",
+		    {
+			     // U"98 765 4321"
+			     //   rrrrrrrrrrr
+
+			     std::u32string{RLO} +
+			     U"1234 567 89" + PDF,
 		     {
-		      {0, rl}
+		      {0, lr}
 		     }
 		    },
 		    16,
@@ -1375,9 +1409,14 @@ void rewraptest()
 		   },
 		   // Test 12
 		   {
-		    {U"98 765 4321",
+		    {
+			     // U"98 765 4321"
+			     //   rrrrrrrrrrr
+
+			     std::u32string{RLO} +
+			     U"1234 567 89" + PDF,
 		     {
-		      {0, rl}
+		      {0, lr}
 		     }
 		    },
 		    97,
@@ -1398,11 +1437,15 @@ void rewraptest()
 
 		   // Test 13
 		   {
-		    {U" 1122 2211 ",
+		    {
+			    // U" 1122 2211 "
+			    //   rrrlllllrrr
+
+			    std::u32string{RLI} + RLO + U" 11" + PDF + PDI +
+			    LRO + U"22 22" + PDF +
+			    std::u32string{RLI} + RLO + U"11 " + PDF + PDI,
 		     {
-		      {0, rl},
-		      {3, lr},
-		      {8, rl},
+		      {0, lr},
 		     }
 		    },
 		    90,
@@ -1429,10 +1472,14 @@ void rewraptest()
 
 		   // Test 14
 		   {
-		    {U"11 1122 22",
+		    {
+			    // U"11 1122 22"
+			    //   rrrrrlllll"
+
+			    std::u32string{LRI} + LRO + U"22 22" + PDF + PDI
+			    + RLO + U"11 11" + PDF,
 		     {
-		      {0, rl},
-		      {5, lr},
+		      {0, lr},
 		     }
 		    },
 		    6,
@@ -1541,13 +1588,34 @@ void compare_fragments(const richtext &str,
 		}
 }
 
+static std::string dumpstr(const richtextstring &s)
+{
+	std::string ss;
+
+	for (auto c:s.get_string())
+	{
+		if (c == '\n')
+		{
+			ss += "\\n";
+		}
+		else if (c > 127)
+		{
+			ss += "?";
+		}
+		else
+		{
+			ss += (char)c;
+		}
+	}
+
+	return ss;
+}
+
 void gettest()
 {
 	auto IN_THREAD=connection_thread::create();
 
-	richtextmeta lr{0}, rl{0};
-
-	rl.rl=true;
+	richtextmeta lr{0};
 
 	const struct {
 		richtextstring string;
@@ -1570,11 +1638,15 @@ void gettest()
 		{
 			// Test 1
 			{
-				{U"11222 22 233",
+				{
+					// U"11222 22 233",
+					//   llrrrrrrrrll
+					U"11" +
+					std::u32string{RLI} + RLO
+					+ U"2 22 222" + PDF + PDI
+					+ U"33",
 				 {
 					 {0, lr},
-					 {2, rl},
-					 {10, lr},
 				 }
 				},
 				80,
@@ -1613,13 +1685,16 @@ void gettest()
 			},
 			// Test 2
 			{
-				{U"11222 22 233\n11222 22 233",
+				{
+					// U"11222 22 233\n11222 22 233",
+					//   llrrrrrrrrlll llrrrrrrrrll
+
+					U"11" + std::u32string{RLI} + RLO
+					+ U"2 22 222" + PDF + PDI + U"33\n"
+					U"11" + std::u32string{RLI} + RLO
+					+ U"2 22 222" + PDF + PDI + U"33",
 				 {
 					 {0, lr},
-					 {2, rl},
-					 {10, lr},
-					 {15, rl},
-					 {23, lr},
 				 }
 				},
 				88,
@@ -1645,13 +1720,17 @@ void gettest()
 			// Test 3
 
 			{
-				{U"11222 22 2\n222 22 233",
+				{
+					// U"11222 22 2\n222 22 233",
+					//   llrrrrrrrrl rrrrrrrrll
+
+					std::u32string{RLO} + U"2 22 222" + PDF
+					+ LRI + U"11" + PDI
+					+ U"\n"
+					+ LRI + U"33" + PDI
+					+ RLO + U"2 22 222" + PDF,
 				 {
 					 {0, lr},
-					 {2, rl},
-					 {10, lr},
-					 {11, rl},
-					 {19, lr},
 				 }
 				},
 				80,
@@ -1677,12 +1756,15 @@ void gettest()
 			},
 			// Test 4
 			{
-				{U"222 22 211\n33222 22 2",
+				{
+					// U"222 22 211\n33222 22 2",
+					//   llllllllrrr llrrrrrrrr
+					std::u32string{RLO} + U"11" + PDF +
+					LRI + U"222 22 2" + PDI + U"\n" +
+					RLO + U"2 22 222" + PDF +
+					LRI + U"33" + PDI,
 				 {
 					 {0, lr},
-					 {8, rl},
-					 {11, lr},
-					 {13, rl},
 				 }
 				},
 				80,
@@ -1712,13 +1794,14 @@ void gettest()
 			},
 			// Test 5
 			{
-				{U"222 22 211\n33222 22 2",
+				{
+					// U"222 22 211\n33222 22 2"
+					//   rrrrrrrrllr llrrrrrrrr
+					std::u32string{LRI} + U"11" + PDI +
+					+ RLO + U"2 22 222\n2 22 222"
+					+ std::u32string{LRI} + U"33" + PDI,
 				 {
-					 {0, rl},
-					 {8, lr},
-					 {10, rl},
-					 {11, lr},
-					 {13, rl},
+					 {0, lr},
 				 }
 				},
 				70,
@@ -1754,10 +1837,16 @@ void gettest()
 
 			// Test 6
 			{
-				{U"1122 2 222\n222 22 2",
+				{
+					// U"1122 2 222\n222 22 2"
+					//   llrrrrrrrrr rrrrrrrr"
+
+					std::u32string{RLO} + U"222 2 22"
+					+ PDF + LRI + U"11" + PDI
+					+ U"\n"
+					+ RLO + U"2 22 222",
 				 {
 					 {0, lr},
-					 {2, rl},
 				 }
 				},
 				80,
@@ -1787,10 +1876,15 @@ void gettest()
 			},
 			// Test 7
 			{
-				{U"111 11 122\n222 22 2",
+				{
+					// U"111 11 122\n222 22 2",
+					//   llllllllrrr rrrrrrrr"
+
+					std::u32string{RLO} + U"22" + PDF +
+					LRI + U"111 11 1" + PDI + U"\n" +
+					RLO + U"2 22 222" + PDF,
 				 {
 					 {0, lr},
-					 {8, rl},
 				 }
 				},
 				40,
@@ -1850,9 +1944,14 @@ void gettest()
 			},
 			// Test 8
 			{
-				{U"111 11 122",
+				{
+					// U"111 11 122"
+					//   rrrrrrrrrr
+
+					std::u32string{RLO} +
+					U"221 11 111" + PDF,
 				 {
-					 {0, rl},
+					 {0, lr},
 				 }
 				},
 				200,
@@ -1869,10 +1968,15 @@ void gettest()
 
 			// Test 9
 			{
-				{U"2211 111 111",
+				{
+					// U"2211 111 111",
+					//   rrllllllllll
+
+					std::u32string{LRI} + U"11 111 111"
+					+ PDI
+					+ RLO + U"22" + PDF,
 				 {
-					 {0, rl},
-					 {2, lr},
+					 {0, lr},
 				 }
 				},
 				100,
@@ -1897,11 +2001,16 @@ void gettest()
 			},
 			// Test 10
 			{
-				{U"221122 2222 222 22222",
+				{
+					// U"221122 2222 222 22222"
+					//   rrllrrrrrrrrrrrrrrrrr
+
+					std::u32string{RLO}
+					+ U"22222 222 2222 22" + PDF
+					+ LRI + U"11" + PDI
+					+ RLO + U"22" + PDF,
 				 {
-					 {0, rl},
-					 {2, lr},
-					 {4, rl},
+					 {0, lr},
 				 }
 				},
 				120,
@@ -1944,6 +2053,9 @@ void gettest()
 		auto str=richtext::create((richtextstring)t.string,
 					  options);
 
+		// Captures what t.string became in canonical form.
+		auto expected_unwrapped_string=inserted_canonical_string;
+
 		str->rewrap(t.wrap_to_width);
 
 		{
@@ -1956,7 +2068,7 @@ void gettest()
 		auto b=str->begin(), e=str->end();
 
 		if (b->pos() != 0 && e->pos() != t.string.size()-1)
-			throw EXCEPTION("gettext #" << casenum << "failed: "
+			throw EXCEPTION("gettest #" << casenum << "failed: "
 					"unexpected begin/end positions.");
 
 		size_t n=0;
@@ -1983,7 +2095,7 @@ void gettest()
 				std::string res_s{res.begin(), res.end()};
 				std::string result_s{result.begin(),
 					result.end()};
-				throw EXCEPTION("gettext #" << casenum
+				throw EXCEPTION("gettest #" << casenum
 						<< " failed test "
 						<< n << ": result is \""
 						<< res_s
@@ -1996,7 +2108,7 @@ void gettest()
 
 			std::ostringstream o;
 
-			o << "gettext #" << casenum
+			o << "gettest #" << casenum
 			  << " failed test " << n
 			  << " delete: ";
 
@@ -2019,34 +2131,24 @@ void gettest()
 						 auto s=p->get_fragment(0)
 							 ->string;
 
-						 if (s.size() > 1 &&
-						     s.get_string()[0] == '\n'
-						     &&
-						     t.lr != UNICODE_BIDI_LR)
-						 {
-							 richtextstring
-								 r{s,
-								 1,
-								 s.size()-1};
-
-							 r += richtextstring
-							 {s, 0, 1};
-
-							 s=r;
-						 }
-
 						 unwrapped_string += s;
 						 return true;
 					 });
 			});
 
-		if (unwrapped_string != t.string)
-				throw EXCEPTION("gettext #" << casenum
-						<< " failed test "
-						<< n
-						<< ": did not unwrap back to "
-						"the original string");
-
+		if (unwrapped_string != expected_unwrapped_string)
+		{
+			throw EXCEPTION("gettest #" << casenum
+					<< " failed test "
+					<< n
+					<< ": did not unwrap back to "
+					"the original string\n"
+					<< "unwrapped: "
+					<< dumpstr(unwrapped_string)
+					<< "\n"
+					<< " expected: "
+					<< dumpstr(expected_unwrapped_string));
+		}
 	}
 }
 
@@ -2087,6 +2189,98 @@ void getdirtest()
 	}
 }
 
+using namespace unicode::literals;
+
+void canonicaltest()
+{
+	static constexpr richtextmeta meta0{0}, meta1{1};
+	static constexpr richtextmeta meta0_rl{0, true}, meta1_rl{1, true};
+
+	static const struct {
+		richtextstring input;
+		std::optional<unicode_bidi_level_t> embedding_level;
+		richtextstring canonical;
+		unicode_bidi_level_t final_embedding_level;
+	} tests[]={
+		// Test 1
+		{
+			{
+				std::u32string{U"foo"}
+				+ RLO + U"lorem" + PDF + U"baz",
+				{
+					{0, meta0},
+					{5, meta1},
+				},
+			},
+			std::nullopt,
+			{
+				U"foomerolbaz",
+				{
+					{0, meta0},
+					{3, meta1_rl},
+					{7, meta0_rl},
+					{8, meta1},
+				},
+			},
+			UNICODE_BIDI_LR,
+		},
+		// Test 2
+		{
+			{
+				std::u32string{U"lorem"}
+				+ RLO + U"ipsum" + PDF,
+				{
+					{0, meta0},
+					{6, meta1},
+					{7, meta0},
+				},
+			},
+			std::nullopt,
+			{
+				U"loremmuspi",
+				{
+					{0, meta0},
+					{5, meta0_rl},
+					{9, meta1_rl},
+				},
+			},
+			UNICODE_BIDI_LR,
+		},
+	};
+
+	int n=0;
+
+	for (const auto &t:tests)
+	{
+		++n;
+
+		auto str=t.input;
+
+		richtextstring canonical;
+
+		richtextstring::to_canonical_order c{str,
+			t.embedding_level};
+
+		auto level=c.paragraph_embedding_level();
+
+		while (!c.end())
+		{
+			canonical += *c;
+			++c;
+		}
+
+		if (canonical != t.canonical)
+			throw EXCEPTION("canonicaltest " << n
+					<< " failed: unexpected result");
+
+		if (level != t.final_embedding_level)
+			throw EXCEPTION("canonicaltest " << n
+					<< " failed:"
+					" unexpected embedding_level");
+	}
+}
+
+
 int main()
 {
 	try {
@@ -2098,6 +2292,7 @@ int main()
 		rewraptest();
 		gettest();
 		getdirtest();
+		canonicaltest();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

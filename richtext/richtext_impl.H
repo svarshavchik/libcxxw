@@ -179,7 +179,9 @@ public:
  private:
 	//! Invoked from set(), after all existing locations are copied.
 	void do_set(//! Text string
-		    richtextstring &&string);
+		    richtextstring &&string,
+		    const std::optional<unicode_bidi_level_t>
+		    &new_paragraph_embedding_level);
 
  public:
 

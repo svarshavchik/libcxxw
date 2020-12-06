@@ -132,21 +132,17 @@ struct LIBCXX_HIDDEN richtext_insert : richtext_insert_base {
 
 class create_fragments_from_inserted_text {
 
-	//! Constructor parameter
-	richtextstring &string;
-
-	//! Constructor parameter
-	const unicode_bidi_level_t paragraph_embedding_level;
-
-	size_t current_pos; //!< Next position to process
-
-	const size_t n; //!< Cached string size.
+	//! Allt the hard work happens here.
+	mutable richtextstring::to_canonical_order canonicalizer;
 
 public:
 	//! Constructor
 	create_fragments_from_inserted_text(richtextstring &string,
+					    const std::optional
+					    <unicode_bidi_level_t> &
+					    requested_embedding_level,
 					    unicode_bidi_level_t
-					    paragraph_embedding_level);
+					    &paragraph_embedding_level);
 
 	//! Destructor
 	~create_fragments_from_inserted_text();
@@ -165,10 +161,8 @@ public:
 
 	bool has_paragraph_break() const;
 
-private:
-
-	//! Find the start of next paragraph.
-	size_t next_paragraph_start() const;
+	//! Whether we've reached the end.
+	bool end() { return canonicalizer.end(); }
 };
 
 //! What happened in insert()

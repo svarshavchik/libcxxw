@@ -14,8 +14,10 @@
 #include <x/options.H>
 #include <iostream>
 #include <algorithm>
+#include <courier-unicode.h>
 
 using namespace LIBCXX_NAMESPACE::w;
+using namespace unicode::literals;
 
 void testrichtext1(ONLY IN_THREAD)
 {
@@ -171,10 +173,9 @@ void testrichtext1(ONLY IN_THREAD)
 		"Cursor did not move to next fragment");
 }
 
-void validate_richtext(ONLY IN_THREAD,
-		       const richtext &rtext,
-		       const std::string &s,
-		       const std::string &what)
+auto validate_richtext_structure(ONLY IN_THREAD,
+				 const richtext &rtext,
+				 const std::string &what)
 {
 	std::cout << "validate_richtext: " << what << std::endl;
 
@@ -185,9 +186,6 @@ void validate_richtext(ONLY IN_THREAD,
 					     return *lock;
 				     });
 	std::string v;
-
-	assert_or_throw(text->num_chars == s.size(),
-			"invalid overall text num_chars value");
 
 	size_t expected_row=0;
 	size_t total_numchars_par=0;
@@ -272,6 +270,19 @@ void validate_richtext(ONLY IN_THREAD,
 	assert_or_throw(total_numchars_par == v.size(),
 			"sum of paragraph num_chars does not match"
 			" total text size");
+
+	return std::tuple{v, text->num_chars};
+}
+
+void validate_richtext(ONLY IN_THREAD,
+		       const richtext &rtext,
+		       const std::string &s,
+		       const std::string &what)
+{
+	auto [v, num_chars]=
+		validate_richtext_structure(IN_THREAD, rtext, what);
+	assert_or_throw(num_chars == s.size(),
+			"invalid overall text num_chars value");
 
 	std::string ss=
 		"expected result of \""
@@ -785,15 +796,16 @@ void testrichtext6(ONLY IN_THREAD)
 
 void testrichtext7(ONLY IN_THREAD)
 {
-	richtextmeta meta1{'1'};
+	richtextmeta metalr{'1'}, metarl=metalr;
 
-	meta1.rl=true;
+	metarl.rl=true;
 
 	richtextstring ustring{
-			       U"olleH\ndlrow\nmelor\nmuspi",
-			       {
-				{0, meta1},
-			       }};
+		std::u32string{RLO} +
+		U"Hello\nworld\nrolem\nipsum" + PDF,
+		{
+			{0, metalr},
+		}};
 
 	// Right to left tests.
 	richtext_options options;
@@ -818,7 +830,7 @@ void testrichtext7(ONLY IN_THREAD)
 	    richtextstring{
 		    U"olle\ndlrow\nmelor\nspi",
 		    {
-			    {0, meta1},
+			    {0, metarl},
 		    }})
 	{
 		throw EXCEPTION("testrichtext7: test 10 failed");
@@ -887,10 +899,7 @@ std::string format(const std::vector<std::string> &l)
 
 void testrichtext8(ONLY IN_THREAD)
 {
-	richtextmeta meta0{'0'},
-		meta1{'1'};
-
-	meta1.rl=true;
+	richtextmeta metalr{'0'};
 
 	static const struct {
 		richtextstring base_string;
@@ -905,16 +914,20 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 1
 		{
 			{
-				U"olleH dlrow melor muspi\n",
+				// U"olleH dlrow melor muspi\n",
+				std::u32string{RLO} +
+				U"ipsum rolem world Hello\n" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			0, {
-				U" tema tis",
-				{ {0, meta1} }
+				// U" tema tis",
+				std::u32string{RLO} +
+				U"sit amet " + PDF,
+				{ {0, metalr} }
 			},
 			{
 				" tema tis",
@@ -927,16 +940,21 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 2
 		{
 			{
-				U"olleH dlrow melor muspi\n",
+				// U"olleH dlrow melor muspi\n",
+				std::u32string{RLO} +
+				U"ipsum rolem world Hello\n" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			0, {
-				U"tema tis\n111 222 333",
-				{ {0, meta1} }
+				// U"tema tis\n111 222 333",
+
+				std::u32string{RLO} +
+				U"sit amet\n333 222 111",
+				{ {0, metalr} }
 			},
 			{
 				"\ntema tis",
@@ -951,16 +969,19 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 3
 		{
 			{
-				U"olleH dlrow melor muspi\n",
+				// U"olleH dlrow melor muspi\n",
+				std::u32string{RLO} +
+				U"ipsum rolem world Hello\n" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			0, {
-				U"tema tis\n111 222 333\n",
-				{ {0, meta1} }
+				std::u32string{RLO} +
+				U"sit amet\n333 222 111\n",
+				{ {0, metalr} }
 			},
 			{
 				"\ntema tis",
@@ -975,16 +996,23 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 4
 		{
 			{
-				U"olleH dlrow melor muspi\n",
+				// U"olleH dlrow melor muspi\n",
+				std::u32string{RLO} +
+				U"ipsum rolem world Hello\n" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			0, {
-				U"111 227\n333\n444",
-				{ {0, meta0}, {4, meta1} }
+				// U"111 227\n333\n444"
+				//   llllrrrr rrrr rrr
+
+				std::u32string{RLO} + U"722" + PDF +
+				LRI + U"111 " + LRM + PDI +
+				U"\n333\n444",
+				{ {0, metalr} }
 			},
 			{
 				"227",
@@ -1002,14 +1030,14 @@ void testrichtext8(ONLY IN_THREAD)
 			{
 				U"Lorem Ipsum Dolor Sit Amet\n",
 				{
-					{0, meta0},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_LR,
 			11, {
-				U"1234",
-				{ {0, meta1} }
+				std::u32string{RLO} + U"4321" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"Lorem Ipsum ",
@@ -1024,14 +1052,16 @@ void testrichtext8(ONLY IN_THREAD)
 			{
 				U"Lorem Ipsum Dolor Sit Amet\n",
 				{
-					{0, meta0},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_LR,
-			11, {
-				U"1234 56 78 90\nAB CD\nEF GH",
-				{ {0, meta1} }
+			12, {
+				// U"1234 56 78 90\nAB CD\nEF GH",
+				std::u32string{RLO} +
+				U"09 87 65 4321\nDC BA\nHG FE" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"Lorem Ipsum ",
@@ -1049,14 +1079,17 @@ void testrichtext8(ONLY IN_THREAD)
 			{
 				U"Lorem Ipsum Dolor\n",
 				{
-					{0, meta0},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_LR,
-			11, {
-				U"1234 56 78 90\n",
-				{ {0, meta1} }
+			12, {
+				// U"1234 56 78 90\n",
+
+				std::u32string{RLO} +
+				U"09 87 65 4321" + PDF + U"\n",
+				{ {0, metalr} }
 			},
 			{
 				"Lorem Ipsum ",
@@ -1072,14 +1105,15 @@ void testrichtext8(ONLY IN_THREAD)
 			{
 				U"Lorem Ipsum Dolor\n",
 				{
-					{0, meta0},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_LR,
-			5, {
-				U"tema tis\n111 222 333",
-				{ {0, meta1} }
+			6, {
+				std::u32string{RLO} +
+				U"sit amet\n333 222 111" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"Lorem ",
@@ -1097,14 +1131,14 @@ void testrichtext8(ONLY IN_THREAD)
 			{
 				U"Lorem Ipsum Dolor\n",
 				{
-					{0, meta0},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_LR,
-			5, {
-				U"tema tis\n",
-				{ {0, meta1} }
+			6, {
+				std::u32string{RLO} + U"sit amet\n" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"Lorem ",
@@ -1119,14 +1153,15 @@ void testrichtext8(ONLY IN_THREAD)
 			{
 				U"Lorem Ipsum Dolor\n",
 				{
-					{0, meta0},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_LR,
-			5, {
-				U"111 222 333\ntema tis\n",
-				{ {0, meta1} }
+			6, {
+				std::u32string{RLO} +
+				U"333 222 111\nsit amet\n",
+				{ {0, metalr} }
 			},
 			{
 				"Lorem ",
@@ -1141,16 +1176,18 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 11
 		{
 			{
-				U"olleH dlrow melor muspi\n",
+				std::u32string{RLO} +
+				U"ipsum rolem world Hello\n" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			0, {
-				U" tema tis\n",
-				{ {0, meta1} }
+				std::u32string{RLO} +
+				U"sit amet \n" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"\n tema tis",
@@ -1165,14 +1202,14 @@ void testrichtext8(ONLY IN_THREAD)
 			{
 				U"Lorem IpsumDolor",
 				{
-					{0, meta0},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_LR,
 			5, {
-				U"tema",
-				{ {0, meta1} }
+				std::u32string{RLO} + U"amet" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"Lorem tema",
@@ -1186,14 +1223,14 @@ void testrichtext8(ONLY IN_THREAD)
 			{
 				U"Lorem\nIpsum",
 				{
-					{0, meta0},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_LR,
 			5, {
-				U"tema",
-				{ {0, meta1} }
+				std::u32string{RLO} + U"amet" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"Loremtema\n",
@@ -1205,16 +1242,17 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 14
 		{
 			{
-				U"tema tis roloD muspI meroL",
+				std::u32string{RLO} +
+				U"Lorem Ipsum Dolor sit amet" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			0, {
-				U"tema",
-				{ {0, meta1} }
+				std::u32string{RLO}+U"amet" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				" meroLtema",
@@ -1228,16 +1266,16 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 15
 		{
 			{
-				U"meroL\nIpsum",
+				std::u32string{RLO} + U"Lorem\nmuspI" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			5, {
-				U"tema",
-				{ {0, meta1} }
+				std::u32string{RLO}+U"amet" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"\ntemameroL",
@@ -1249,16 +1287,16 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 16
 		{
 			{
-				U"meroL\nIpsum",
+				std::u32string{RLO} + U"Lorem\nmuspI" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			5, {
 				U"tematema",
-				{ {0, meta0} }
+				{ {0, metalr} }
 			},
 			{
 				"meroL",
@@ -1271,16 +1309,17 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 17
 		{
 			{
-				U"tema tis roloD muspI meroL",
+				std::u32string{RLO} +
+				U"Lorem Ipsum Dolor sit amet" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			0, {
-				U"1 2 3",
-				{ {0, meta1} }
+				std::u32string{RLO} + U"3 2 1" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				" meroL1 2 3",
@@ -1294,16 +1333,18 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 18
 		{
 			{
-				U"tema tis roloD muspI meroL",
+				std::u32string{RLO} +
+				U"Lorem Ipsum Dolor sit amet" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			0, {
-				U"1 2 3\n",
-				{ {0, meta1} }
+				std::u32string{RLO} +
+				U"3 2 1\n" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"\n1 2 3",
@@ -1318,16 +1359,18 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 19
 		{
 			{
-				U"tema tis roloD muspI meroL",
+				std::u32string{RLO} +
+				U"Lorem Ipsum Dolor sit amet" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			0, {
-				U"1 2 3\n4 5 6",
-				{ {0, meta1} }
+				std::u32string{RLO} +
+				U"3 2 1\n6 5 4",
+				{ {0, metalr} }
 			},
 			{
 				"\n1 2 3",
@@ -1343,16 +1386,17 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 20
 		{
 			{
-				U"tema tis roloD muspI meroL",
+				std::u32string{RLO} +
+				U"Lorem Ipsum Dolor sit amet" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			6, {
-				U" 2 3",
-				{ {0, meta1} }
+				std::u32string{RLO} + U"3 2 " + PDF,
+				{ {0, metalr} }
 			},
 			{
 				" 2 3 meroL",
@@ -1367,16 +1411,17 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 21
 		{
 			{
-				U"tema tis roloD muspI meroL",
+				std::u32string{RLO} +
+				U"Lorem Ipsum Dolor sit amet" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			6, {
-				U"2 3\n",
-				{ {0, meta1} }
+				std::u32string{RLO} + U"3 2\n" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"\n2 3 meroL",
@@ -1391,16 +1436,18 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 22
 		{
 			{
-				U"tema tis roloD muspI meroL",
+				std::u32string{RLO} +
+				U"Lorem Ipsum Dolor sit amet" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			6, {
-				U"2 3\n4 5",
-				{ {0, meta1} }
+				std::u32string{RLO} +
+				U"3 2\n5 4" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"\n2 3 meroL",
@@ -1415,16 +1462,18 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 23
 		{
 			{
-				U"tema tis roloD muspI meroL",
+				std::u32string{RLO} +
+				U"Lorem Ipsum Dolor sit amet" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			6, {
-				U"2 3\n4 5\n6 7",
-				{ {0, meta1} }
+				std::u32string{RLO} +
+				U"3 2\n5 4\n7 6" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"\n2 3 meroL",
@@ -1439,16 +1488,17 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 24
 		{
 			{
-				U"meroL\ntema tis roloD muspI",
+				std::u32string{RLO} +
+				U"Lorem\nIpsum Dolor sit amet" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			5, {
-				U"2 3",
-				{ {0, meta0} }
+				std::u32string{LRO} + U"2 3" + PDF,
+				{ {0, metalr} }
 			},
 			{
 				"\n2 3meroL",
@@ -1461,16 +1511,17 @@ void testrichtext8(ONLY IN_THREAD)
 		// Test 25
 		{
 			{
-				U"meroL\ntema tis roloD muspI",
+				std::u32string{RLO} +
+				U"Lorem\nIpsum Dolor sit amet" + PDF,
 				{
-					{0, meta1},
+					{0, metalr},
 				}
 			},
 			120,
 			UNICODE_BIDI_RL,
 			5, {
 				U"Epsilon",
-				{ {0, meta0} }
+				{ {0, metalr} }
 			},
 			{
 				"meroL",

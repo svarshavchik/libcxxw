@@ -15,6 +15,7 @@
 #include <algorithm>
 
 using namespace LIBCXX_NAMESPACE::w;
+using namespace unicode::literals;
 
 void testrichtext(const current_fontcollection &font1,
 		  const current_fontcollection &font2,
@@ -380,18 +381,19 @@ void testlinebreaks(const current_fontcollection &font1,
 					       .drawable_pictformat, "0%");
 
 	richtextmeta meta1 {black, font1};
-	richtextmeta meta2 {black, font1};
 	richtextmeta meta3 {black, font2};
-	meta2.rl=true;
-	meta3.rl=true;
 
 	auto richtext=richtext::create(richtextstring{
-		U"Lorem IpsumtiS roloD Amet",
+			// U"Lorem IpsumtiS roloD Amet"
+			//   lllllllllllrrrrrrrrrlllll
+
+			U"Lorem Ipsum" + std::u32string{RLO}
+			+ U"Dolor Sit" + std::u32string{PDF}
+			+ U" Amet",
 		{
 			{0, meta1},
-			{11, meta3},
-			{14, meta2},
-			{20, meta1},
+			{18, meta3},
+			{22, meta1},
 		}}, richtext_options{});
 	auto impl=richtext->debug_get_impl(IN_THREAD);
 
@@ -449,18 +451,19 @@ void testrlsplit(const current_fontcollection &font1,
 					       ->get_window_handler()
 					       .drawable_pictformat, "0%");
 
-	richtextmeta meta1{black, font1}, meta2=meta1;
+	richtextmeta metarl{black, font1}, metalr=metarl;
 
-	meta1.rl=true;
+	metarl.rl=true;
 	richtext_options options;
 
 	options.paragraph_embedding_level=UNICODE_BIDI_RL;
 
 	auto richtext=richtext::create(richtextstring{
-		U"merol\nMUSPI",
-		{
-			{0, meta1},
-		}}, options);
+			std::u32string{RLO} + U"lorem\n" + PDF
+			+ RLO + U"IPSUM" + PDF,
+			{
+				{0, metalr},
+			}}, options);
 	auto impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 2)
@@ -494,10 +497,13 @@ void testrlsplit(const current_fontcollection &font1,
 				" after merge");
 
 	richtext=richtext::create(richtextstring{
-		U"merol\nMUSPIDolor",
+			// U"merol\nMUSPIDolor
+			//   rrrrrr rrrrrlllll
+			std::u32string{RLO} + U"lorem\n" + PDF
+			+ LRI + U"Dolor" + RLI
+			+ RLO + U"IPSUM" + PDF,
 		{
-			{0, meta1},
-			{11, meta2},
+			{0, metalr},
 		}}, richtext_options{options});
 	impl=richtext->debug_get_impl(IN_THREAD);
 
@@ -511,7 +517,7 @@ void testrlsplit(const current_fontcollection &font1,
 				"(2)");
 
 	iter1=richtext->at(1, new_location::lr);
-	iter2=richtext->at(6, new_location::lr);
+	iter2=richtext->at(11, new_location::lr);
 
 	{
 		auto f=(*p)->get_fragment(0);
@@ -523,10 +529,10 @@ void testrlsplit(const current_fontcollection &font1,
 	}
 
 	if ((*p)->get_fragment(0)->string.get_string() !=
-	    U"MUSPIDolor\nmerol")
+	    U"DolorMUSPI\nmerol")
 		throw EXCEPTION("testrlsplit: unexpected result of merge(2)");
 
-	if (iter1->pos() != 4 || iter2->pos() != 15 ||
+	if (iter1->pos() != 4 || iter2->pos() != 10 ||
 	    iter1->at(IN_THREAD).character != U'm' ||
 	    iter2->at(IN_THREAD).character != U'M')
 		throw EXCEPTION("testrlsplit: unexpected locations"
@@ -534,9 +540,8 @@ void testrlsplit(const current_fontcollection &font1,
 
 	if ((*p)->get_fragment(0)->string.get_meta() !=
 	    richtextstring::meta_t{
-		    {0, meta1},
-		    {5, meta2},
-		    {10, meta1},
+		    {0, metalr},
+		    {5, metarl}
 	    })
 	{
 		throw EXCEPTION("testrlsplit: unexpected meta"
@@ -544,10 +549,10 @@ void testrlsplit(const current_fontcollection &font1,
 	}
 
 	richtext=richtext::create(richtextstring{
-		U"MUSPI merol",
-		{
-			{0, meta1},
-		}}, richtext_options{});
+			std::u32string{RLO} + U"lorem IPSUM" + PDF,
+			{
+				{0, metalr},
+			}}, richtext_options{});
 	impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 1)
@@ -598,9 +603,9 @@ void testrlmerge(const current_fontcollection &font1,
 					       .drawable_pictformat, "0%");
 
 	richtext_insert_results ignored;
-	richtextmeta meta1{black, font1}, meta2=meta1;
+	richtextmeta lr{black, font1}, rl=lr;
 
-	meta2.rl=true;
+	rl.rl=true;
 
 	static const struct {
 		richtextstring s;
@@ -612,15 +617,15 @@ void testrlmerge(const current_fontcollection &font1,
 			{
 			 U"lorem ipsum\ndolorsit amet",
 			 {
-			  {0, meta1},
+			  {0, lr},
 			 }
 			},
 			{
 			 U"dolorsit amet\nlorem ipsum",
 			 {
-			  {0, meta1},
-			  {13, meta2},
-			  {14, meta1},
+			  {0, lr},
+			  {13, rl},
+			  {14, lr},
 			 }
 			},
 		       },
@@ -629,18 +634,23 @@ void testrlmerge(const current_fontcollection &font1,
 
 		       {
 			{
-			 U"lorem ipsum\ndolorsit amet",
+				// U"lorem ipsum\ndolorsit amet",
+				//   rrrrrrrrrrrr rrrrrrrrrllll
+
+				std::u32string{RLO} + U"muspi merol" + PDF +
+				U"\n" +
+				LRI + U"amet" + PDI +
+				std::u32string{RLO} + U" tisrolod" + PDF,
 			 {
-			  {0, meta2},
-			  {21, meta1},
+			  {0, lr},
 			 }
 			},
 			{
 			 U"dolorsit amet\nlorem ipsum",
 			 {
-			  {0, meta2},
-			  {9, meta1},
-			  {13, meta2},
+			  {0, rl},
+			  {9, lr},
+			  {13, rl},
 			 }
 			},
 		       },
@@ -648,20 +658,22 @@ void testrlmerge(const current_fontcollection &font1,
 		       // Test case 2
 		       {
 			{
-			 U"lorem ipsum\ndolorsit amet",
+				// U"lorem ipsum\ndolorsit amet",
+				//   llllllllllll rrrrrrrrrllll
+
+				std::u32string{LRI} + U"lorem ipsum\n"
+				U"amet" + PDI + RLO + U" tisrolod" + PDF,
 			 {
-			  {0, meta1},
-			  {12, meta2},
-			  {21, meta1},
+			  {0, lr},
 			 }
 			},
 			{
 			 U"dolorsit amet\nlorem ipsum",
 			 {
-			  {0, meta2},
-			  {9, meta1},
-			  {13, meta2},
-			  {14, meta1},
+			  {0, rl},
+			  {9, lr},
+			  {13, rl},
+			  {14, lr},
 			 }
 			},
 		       },
@@ -733,9 +745,9 @@ void testunwrap(const current_fontcollection &font1,
 					       ->get_window_handler()
 					       .drawable_pictformat, "0%");
 
-	richtextmeta meta1{black, font1}, meta2=meta1;
+	richtextmeta lr{black, font1}, rl=lr;
 
-	meta2.rl=true;
+	rl.rl=true;
 
 	static const struct {
 		richtextstring s;
@@ -759,11 +771,15 @@ void testunwrap(const current_fontcollection &font1,
 		       // Case 0
 		       {
 			{
-			 U"lorem rolod muspisit amet",
+				// U"lorem rolod muspisit amet",
+				//   llllllrrrrrrrrrrrllllllll
+
+				U"lorem "
+				+ std::u32string{RLO}
+				+ U"ipsum dolor" + PDF
+				+ U"sit amet",
 			 {
-			  {0, meta1},
-			  {6, meta2},
-			  {17, meta1},
+			  {0, lr},
 			 }
 			},
 
@@ -791,11 +807,14 @@ void testunwrap(const current_fontcollection &font1,
 		       // Case 1
 		       {
 			{
-			 U" merolipsum dolor tema tis\n",
+				// U" merolipsum dolor tema tis\n",
+				//   rrrrrrllllllllllllrrrrrrrrr
+
+				std::u32string{RLO} + U"sit amet" + PDF +
+				LRI + U"ipsum dolor " + PDI +
+				RLO + U"lorem " + PDF + U"\n",
 			 {
-			  {0, meta2},
-			  {6, meta1},
-			  {18, meta2},
+			  {0, lr},
 			 }
 			},
 
@@ -813,10 +832,12 @@ void testunwrap(const current_fontcollection &font1,
 		       // Case 2
 		       {
 			{
-			 U"lorem ipsum tema tis rolod\n",
+				// U"lorem ipsum tema tis rolod\n",
+				//   llllllllllllrrrrrrrrrrrrrrr
+				std::u32string{RLO} + U"dolor sit amet" + PDF
+				+ LRI + U"lorem ipsum " + LRM + PDI + U"\n",
 			 {
-			  {0, meta1},
-			  {12, meta2},
+			  {0, lr},
 			 }
 			},
 
