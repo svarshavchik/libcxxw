@@ -134,16 +134,12 @@ void richtext_implObj::do_set(richtextstring &&string)
 	create_fragments_from_inserted_text factory{string,
 		paragraph_embedding_level};
 
-	bool first_paragraph=true;
-
 	while (1)
 	{
 		auto string=factory.next_string();
 
-		if (!first_paragraph && string.size() == 0)
+		if (string.size() == 0)
 			break;
-
-		first_paragraph=false;
 
 		auto new_paragraph=
 			my_paragraphs.append_new_paragraph();
