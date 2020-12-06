@@ -15,9 +15,13 @@
 #include <courier-unicode.h>
 #include <unordered_map>
 #include <x/functional.H>
+#include <optional>
 #include <string_view>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
+
+//! Rich text direction
 
 //! What's in the \ref richtextfragmentObj "rich text fragment".
 
@@ -172,9 +176,9 @@ public:
 
 	//! Replace a portion of this string with another one.
 
-	//! other_string's content, starting with its character #other_pos
-	//! and containing #other_size characters replaces the contents of
-	//! this string, starting at #pos. This string must have at least
+	//! other_string's content, starting with its character \#other_pos
+	//! and containing \#other_size characters replaces the contents of
+	//! this string, starting at \#pos. This string must have at least
 	//! pos+other_size characters.
 
 	void replace(size_t pos,
@@ -381,6 +385,108 @@ public:
 	void do_modify_meta(size_t start, size_t count,
 			    const function<void (size_t, richtextmeta &meta)>
 			    &l);
+
+	struct LIBCXX_HIDDEN to_canonical_order;
+};
+
+//! Convert a bidirectional string into one or more paragraphs
+
+//! Each string is one paragraph from the original bidirectional string
+//! in canonical rendering order. The paragraph break in a newline character.
+//! For right-to-left rendering order it is the first character in the
+//! canonical string.
+//!
+//! Each string is in canonical rendering order, and right-to-left text
+//! gets marked with the rtol flag set in the metadata.
+
+struct richtextstring::to_canonical_order {
+	richtextstring &string;
+
+	//! Constructor
+
+	//! Takes a richtextstring and the requested canonical rendering
+	//! order. The richtextstring is taken by reference, and will get
+	//! scribbled all over.
+
+	to_canonical_order(richtextstring &string,
+			   const std::optional<unicode_bidi_level_t>
+			   &paragraph_embedding_level);
+
+	//! Computed embedding level.
+
+	//! Returns the canonical string's paragraph
+	//! embedding level, same as the one passed to the constructor or the
+	//! default one.
+
+	inline auto paragraph_embedding_level() const
+	{
+		return std::get<1>(calc_results);
+	}
+private:
+
+	//! Calculated bidi types.
+	unicode::bidi_calc_types types;
+
+	//! Calculated bidi levels and paragraph embedding level.
+	std::tuple<std::vector<unicode_bidi_level_t>,
+		   unicode_bidi_level_t> calc_results;
+
+	//! Current canonical string's starting position
+	size_t starting_pos;
+
+	//! Number of characters in the canonical string.
+	size_t n_chars;
+
+	//! Starting position of the next canonical string.
+	size_t ending_pos;
+
+	//! Take starting_pos, compute n_chars and ending_pos
+
+	void fill();
+
+	//! Current paragraph as a canonical string (maybe)
+
+	richtextstring canonical_string;
+
+	//! Whether canonical_string has been filled.
+
+	bool filled=false;
+
+public:
+
+	//! Whether operator* will return the next paragraph.
+
+	//! After the last paragraph is advanced past, by opeerator++,
+	//! this will return true.
+
+	bool end()
+	{
+		fill();
+		return n_chars == 0;
+	}
+
+	//! Return the current paragraph in canonical rendering order.
+
+	//! The returned object remains valid until operator++ is called.
+
+	richtextstring &operator*()
+	{
+		fill();
+		return canonical_string;
+	}
+
+	//! Advance to the next canonical paragraph.
+
+	void operator++()
+	{
+		fill();
+
+		if (!end())
+		{
+			filled=false;
+			starting_pos=ending_pos;
+		}
+	}
 };
 
 #define x_w_impl_richtext_richtextstring_H_defined 1

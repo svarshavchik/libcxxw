@@ -9,6 +9,7 @@
 #include "x/w/impl/richtext/richtextmeta.H"
 #include <x/sentry.H>
 #include <algorithm>
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -281,6 +282,7 @@ richtextstring::meta_t::iterator richtextstring::duplicate(size_t pos)
 	if (pos == string.size())
 		return meta.end();
 
+	coalesce_needed=true;
 	return duplicate(meta, pos);
 }
 
@@ -749,6 +751,214 @@ void richtextstring::do_modify_meta(size_t start, size_t count,
 
 		l(iter->first, iter->second);
 	}
+}
+
+richtextstring::to_canonical_order
+::to_canonical_order(richtextstring &string,
+		     const std::optional<unicode_bidi_level_t>
+		     &paragraph_embedding_level)
+	: string{string},
+	  types{string.string},
+	  calc_results{paragraph_embedding_level
+	? unicode::bidi_calc(types, *paragraph_embedding_level)
+	: unicode::bidi_calc(types)},
+	  starting_pos{0},
+	  n_chars{0},
+	  ending_pos{0}
+{
+	types.setbnl(string.string);
+
+	for (auto &m:string.meta)
+		if (m.second.rl)
+			throw EXCEPTION("internal error: canonicalized string "
+					"passed to to_canonical_order");
+}
+
+void richtextstring::to_canonical_order::fill()
+{
+	if (filled)
+		return;
+
+	// Find the next paragraph break
+	auto tb=types.types.begin()+starting_pos;
+	auto te=types.types.end();
+
+	auto tp=std::find(tb, te, UNICODE_BIDI_TYPE_B);
+
+	if (tp != te)
+		++tp;
+
+	// Set the number of characters in this paragraph, and
+	// compute the resulting ending_pos (next paragraph's starting_pos
+	// if it gets to this point)
+
+	n_chars=tp-tb;
+	ending_pos=starting_pos+n_chars;
+
+	// Reorder just the corresponding part of the original richtextstring
+	//
+	// We'll swap the metadata ourselves.
+	size_t s=string.string.size();
+
+	auto &levels=std::get<0>(calc_results);
+
+	unicode::bidi_reorder
+		(string.string, levels,
+		 [&, this]
+		 (size_t start, size_t n)
+		 {
+			 // bidi_reorder passes start relative to starting_pos
+
+			 start += starting_pos;
+
+			 assert_or_throw(start <= s && (s-start) >= n,
+					 "invalid reordering callback "
+					 "parameters");
+
+			 if (n == 0)
+				 return;
+
+			 // Find the start+ending metadata range.
+
+			 string.meta.reserve(string.meta.size()+2);
+
+			 auto from=string.duplicate(start);
+			 auto to=string.duplicate(start+n);
+
+			 // We will rebuild the swapped metadata in meta_cpy.
+			 meta_t meta_cpy;
+
+			 meta_cpy.reserve(to-from);
+
+			 // Iterate from the end to the beginning.
+
+			 // The ending position is equivalent to the
+			 // starting position:
+			 auto current_pos=start;
+
+			 // As we iterate backwards we compute how many
+			 // characters have the metadata applied to them.
+			 auto prev_end_pos=start+n;
+
+			 while (from < to)
+			 {
+				 --to;
+
+				 meta_cpy.emplace_back(current_pos, to->second);
+
+				 // (prev_end_pos-to) is the number of
+				 // characters that this metadata applies to.
+				 current_pos += prev_end_pos-to->first;
+
+				 prev_end_pos=to->first;
+			 }
+
+			 // We have a 1:1 relationship, so just update in place.
+			 for (auto &n:meta_cpy)
+				 *from++=n;
+		 },
+		 starting_pos,
+		 ending_pos-starting_pos);
+
+	// Now we remove the bidirectional markers to get the
+	// CANONICAL_CLEANUP-ed string.
+
+	unicode::bidi_cleanup
+		(string.string, levels,
+		 [&, this]
+		 (size_t pos)
+		 {
+			 // Relative to the starting position.
+			 pos += starting_pos;
+
+			 string.meta.reserve(string.meta.size()+2);
+
+			 // Need to remove the metadata for the character.
+			 auto p=string.duplicate(pos);
+			 string.duplicate(pos+1);
+
+			 p=string.meta.erase(p);
+
+			 // And then adjust the index of the following metadata.
+			 auto e=string.meta.end();
+			 while (p<e)
+			 {
+				 --(p->first);
+				 ++p;
+			 }
+
+			 // We have one fewer character now. This keeps track
+			 // of the actual number of characters in this
+			 // paragraph.
+			 --n_chars;
+		 },
+		 unicode::literals::CLEANUP_CANONICAL,
+		 starting_pos,
+		 ending_pos-starting_pos);
+
+	// And now, set the rl flag.
+	//
+	// We sweep through the levels, and update the metedata accordingly.
+	assert_or_throw(starting_pos <= levels.size() &&
+			levels.size()-starting_pos >= n_chars,
+			"internal error: unexpected levels size");
+
+	auto bb=levels.begin();
+	auto b=bb+starting_pos;
+	auto e=b+n_chars;
+
+	// The paragraph break, \n, force it to its embedding level.
+
+	if (b < e)
+	{
+		// The paragraph break will be either the last or the
+		// first character.
+		size_t i=starting_pos;
+
+		if (string.string.at(starting_pos+n_chars-1) == '\n')
+			i=starting_pos+n_chars-1;
+
+		if (string.string.at(i) == '\n')
+			levels.at(i)=paragraph_embedding_level();
+	}
+
+	while (b != e)
+	{
+		// Find the start of the next sequence of rtol text.
+
+		if (*b == UNICODE_BIDI_LR)
+		{
+			++b;
+			continue;
+		}
+
+		auto p=b;
+
+		// And now find the end of the rtol text.
+		while (b != e)
+		{
+			if (*b == UNICODE_BIDI_LR)
+				break;
+			++b;
+		}
+
+		// We just need to set the rtol flag in the corresponding
+		// metadata range.
+		string.meta.reserve(string.meta.size()+2);
+
+		auto q=string.duplicate(p-bb);
+		auto to=string.duplicate(b-bb);
+
+		while (q != to)
+		{
+			q->second.rl=true;
+			++q;
+		}
+	}
+
+	canonical_string=richtextstring{string, starting_pos, n_chars};
+
+	filled=true;
 }
 
 LIBCXXW_NAMESPACE_END
