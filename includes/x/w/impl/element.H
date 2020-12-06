@@ -87,7 +87,7 @@ LIBCXXW_NAMESPACE_START
 //!
 //! TODO: documentation
 
-//! \class x::w::freetype
+//! \class x::w::richtextfragmentObj
 //!
 //! TODO: documentation
 

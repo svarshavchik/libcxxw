@@ -471,7 +471,7 @@ help_button_2->create_custom_tooltip(factory);</programlisting>
       <methodname>create_tooltip</methodname>() is equivalent to calling the
       widget's <methodname>create_custom_tooltip</methodname>() with a
       &callback; from
-      <ulink url="&link-variable-x--w-create-label-tooltip;"><function>create_label_tooltip</function></ulink>().
+      <ulink url="&link-function-x--w-create-label-tooltip;"><function>create_label_tooltip</function></ulink>().
     </para>
 
     <para>
