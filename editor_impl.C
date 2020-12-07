@@ -109,7 +109,22 @@ create_initial_string(editorObj::implObj::init_args &args,
 
 	text_param cpy=args.text;
 
-	cpy(" ");
+	// An additional character at the end of the input field allows for
+	// the cursor to be moved to after the last "real" character in the
+	// input field.
+	//
+	// The way that richtextiterators work, the iterators can only point
+	// to an existing character, there is no one-past-the-end
+	// richtextiterator, so this works out quite nicely. The first
+	// position is the first character, and the last position is the
+	// one after the last "real" character.
+	//
+	// This character must be a newline. The richtext logic that deals
+	// with bidirectional text will not work right unless the actual
+	// text it's chewing on ends with what it thinks is a paragraph break.
+	//
+	// it gets rendered as a space.
+	cpy("\n");
 
 	auto string=element.create_richtextstring(args.default_meta, cpy);
 
