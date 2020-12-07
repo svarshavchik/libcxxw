@@ -115,8 +115,8 @@ struct input_field_config {
 	scrollbar_visibility vertical_scrollbar=
 		scrollbar_visibility::automatic_reserved;
 
-	//! Inner alignment
-	halign alignment=halign::left;
+	//! Explicitly specify the text alignment
+	std::optional<halign> alignment;
 
 	//! Maximum number of unicode characters.
 

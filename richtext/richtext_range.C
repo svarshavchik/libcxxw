@@ -12,10 +12,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtext_range::richtext_range(const ref<richtext_implObj> &impl,
+richtext_range::richtext_range(unicode_bidi_level_t paragraph_embedding_level,
 			       const richtextcursorlocation &a,
 			       const richtextcursorlocation &b)
-	: paragraph_embedding_level{impl->paragraph_embedding_level},
+	: paragraph_embedding_level{paragraph_embedding_level},
 	  location_a{a},
 	  location_b{b},
 	  diff{location_a->compare(*location_b)}

@@ -81,7 +81,7 @@ struct richtext_range {
 	//! Receives a location of the starting and ending position to be
 	//! extracted.
 
-	richtext_range(const ref<richtext_implObj> &impl,
+	richtext_range(unicode_bidi_level_t paragraph_embedding_level,
 		       const richtextcursorlocation &a,
 		       const richtextcursorlocation &b);
 

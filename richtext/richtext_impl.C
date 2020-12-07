@@ -27,11 +27,13 @@ richtext_implObj::richtext_implObj(richtextstring &&string,
 				   const richtext_options &options)
 	: word_wrap_width{0},
 	  unprintable_char{options.unprintable_char},
-	  alignment{options.alignment},
-	  paragraph_embedding_level{UNICODE_BIDI_LR}
+	  requested_alignment{options.alignment},
+	  requested_paragraph_embedding_level{
+		  options.paragraph_embedding_level},
+	  alignment{halign::left}, // To be updated, shortly
+	  paragraph_embedding_level{UNICODE_BIDI_LR} // To be updated, shortly
 {
-	do_set(std::move(string), options.paragraph_embedding_level);
-
+	do_set(std::move(string));
 }
 
 void richtext_implObj::set(ONLY IN_THREAD,
@@ -65,19 +67,21 @@ void richtext_implObj::set(ONLY IN_THREAD,
 	// Also restore the original paragraphs in the event of a thrown exception.
 
 	auto paragraphs_cpy=paragraphs;
+	auto alignment_cpy=alignment;
 	auto paragraph_embedding_level_cpy=paragraph_embedding_level;
 
 	auto restore_paragraphs_sentry=
 		make_sentry([&, this]
 			    {
 				    paragraphs=paragraphs_cpy;
+				    alignment=alignment_cpy;
 				    paragraph_embedding_level=
 					    paragraph_embedding_level_cpy;
 			    });
 
 	restore_paragraphs_sentry.guard();
 
-	do_set(std::move(string), paragraph_embedding_level);
+	do_set(std::move(string));
 
 	finish_initialization();
 
@@ -128,18 +132,25 @@ void richtext_implObj::set(ONLY IN_THREAD,
 	restore_paragraphs_sentry.unguard();
 }
 
-void richtext_implObj::do_set(richtextstring &&string,
-			      const std::optional<unicode_bidi_level_t>
-			      &new_paragraph_embedding_level)
+void richtext_implObj::do_set(richtextstring &&string)
 {
 	paragraphs.clear();
 	num_chars=0;
 
 	paragraph_list my_paragraphs(*this);
 
+	// Begin the job of unpacking this stuff and set the final
+	// paragraph embedding level
 	create_fragments_from_inserted_text factory{string,
-		new_paragraph_embedding_level,
+		requested_paragraph_embedding_level,
 		paragraph_embedding_level};
+
+	// Set the final alignment
+	if (requested_alignment)
+		alignment= *requested_alignment;
+	else
+		alignment= paragraph_embedding_level == UNICODE_BIDI_LR
+			? halign::left : halign::right;
 
 	while (1)
 	{
@@ -201,7 +212,7 @@ bool richtext_implObj::rewrap(dim_t width)
 	if (word_wrap_width == 0)
 		return unwrap();
 
-	paragraph_list my_paragraphs(*this);
+	paragraph_list my_paragraphs{*this};
 
 	return my_paragraphs.rewrap(word_wrap_width);
 }
@@ -741,7 +752,7 @@ private:
 void richtext_implObj::remove_at_location(const richtextcursorlocation &ar,
 					  const richtextcursorlocation &br)
 {
-	remove_info info{ref{this}, ar, br};
+	remove_info info{paragraph_embedding_level, ar, br};
 
 	if (info.diff == 0)
 		return; // Too easy
@@ -757,7 +768,7 @@ void richtext_implObj
 		      const richtextcursorlocation &remove_from,
 		      const richtextcursorlocation &remove_to)
 {
-	remove_info info{ref{this}, remove_from, remove_to};
+	remove_info info{paragraph_embedding_level, remove_from, remove_to};
 
 	paragraph_list my_paragraphs{*this};
 

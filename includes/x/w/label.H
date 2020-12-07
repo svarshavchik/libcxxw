@@ -18,8 +18,8 @@ LIBCXXW_NAMESPACE_START
 
 struct label_config {
 
-	//! Label alignment
-	halign alignment=halign::left;
+	//! Explicitly-specified text alignment
+	std::optional<halign> alignment;
 
 	//! Label word wrap width (0=don't wrap)
 	double widthmm=0;

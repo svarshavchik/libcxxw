@@ -20,6 +20,7 @@
 
 #include <unordered_map>
 #include <algorithm>
+#include <optional>
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -144,10 +145,17 @@ public:
 	//! cursor on top of a newline character is visible.
 	const char32_t unprintable_char;
 
+	//! Requested alignment of text for rendering paragraph
+
+	const std::optional<halign> requested_alignment;
+
+	//! Requested paragraph bi-direction embedding level.
+
+	const std::optional<unicode_bidi_level_t
+			    > requested_paragraph_embedding_level;
+
 	//! Alignment of text, for rendering paragraphs
 
-	//! We store it here, but richtextObj doesn't use it. The rendering
-	//! code picks it up, and forwards it to richtextparagraphObj::render().
 	halign alignment;
 
 	//! Paragraph bi-direction embedding level.
@@ -179,9 +187,7 @@ public:
  private:
 	//! Invoked from set(), after all existing locations are copied.
 	void do_set(//! Text string
-		    richtextstring &&string,
-		    const std::optional<unicode_bidi_level_t>
-		    &new_paragraph_embedding_level);
+		    richtextstring &&string);
 
  public:
 

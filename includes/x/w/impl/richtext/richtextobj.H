@@ -78,6 +78,12 @@ class richtextObj : virtual public obj {
 	//! Return the text object's current width
 	dim_t get_width();
 
+	//! Return the text object's alignment
+	halign get_alignment(ONLY IN_THREAD);
+
+	//! Return the paragraph embedding level
+	unicode_bidi_level_t get_paragraph_embedding_level(ONLY IN_THREAD);
+
 	//! Return the text object's current metrics
 
 	//! Return the text object's current horizontal and vertical sizes.

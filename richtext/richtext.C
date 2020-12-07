@@ -71,6 +71,20 @@ dim_t richtextObj::get_width()
 	return dim_t::truncate((*lock)->width());
 }
 
+halign richtextObj::get_alignment(ONLY IN_THREAD)
+{
+	impl_t::lock lock{impl};
+
+	return (*lock)->alignment;
+}
+
+unicode_bidi_level_t richtextObj::get_paragraph_embedding_level(ONLY IN_THREAD)
+{
+	impl_t::lock lock{impl};
+
+	return (*lock)->paragraph_embedding_level;
+}
+
 std::pair<metrics::axis, metrics::axis>
 richtextObj::get_metrics(dim_t preferred_width)
 {
@@ -211,7 +225,7 @@ struct richtextObj::get_helper : richtext_range {
 		   const richtextcursorlocation &a,
 		   const richtextcursorlocation &b)
 
-		: richtext_range{impl, a, b},
+		: richtext_range{impl->paragraph_embedding_level, a, b},
 		  str{str}
 	{
 		// Estimate how big ret will be. We can compute the

@@ -36,8 +36,9 @@ typedef ptr<richtextObj> richtextptr;
 //! Options for a new richtext object.
 
 struct richtext_options {
+
 	//! Text alignment
-	halign alignment=halign::left;
+	std::optional<halign> alignment;
 
 	//! Width of the rich text
 
