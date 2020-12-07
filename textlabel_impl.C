@@ -136,12 +136,14 @@ textlabelObj::implObj::implObj(const text_param &text,
 
 static
 inline richtext_options create_richtext_options(textlabel_config &config,
-						char32_t unprintable_char)
+						char32_t unprintable_char,
+						bool is_editor)
 {
 	richtext_options options;
 
 	options.alignment=config.config.alignment;
 	options.unprintable_char=unprintable_char;
+	options.is_editor=is_editor;
 	return options;
 }
 
@@ -154,7 +156,7 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 		  initial_theme,
 		  std::move(string),
 		  richtext::create(std::move(string),
-				   create_richtext_options(config, '\0')),
+				   create_richtext_options(config, '\0', 0)),
 		  default_meta}
 {
 }
@@ -168,7 +170,7 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 		  initial_theme,
 		  std::move(string),
 		  richtext::create(std::move(string),
-				   create_richtext_options(config, ' ')),
+				   create_richtext_options(config, ' ', true)),
 		  string.meta_at(0)}
 {
 }

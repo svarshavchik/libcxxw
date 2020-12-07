@@ -39,6 +39,7 @@ private:
  public:
 
 	friend class richtextObj; // It has access to my_location, I trust him.
+	friend class richtext_implObj; // I trust him too
 	friend struct richtext_insert_base; // Ditto
 
 	//! Constructor

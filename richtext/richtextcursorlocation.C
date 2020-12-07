@@ -45,7 +45,7 @@ void richtextcursorlocationObj::initialize(richtextfragmentObj *fragment,
 
 void richtextcursorlocationObj::initialize(richtextfragmentObj *fragment,
 					   size_t offsetArg,
-					   richtextfragmentObj::locations_t
+					   fragment_cursorlocations_t
 					   ::iterator new_iter,
 					   new_location location_option)
 {

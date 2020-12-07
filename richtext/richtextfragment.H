@@ -176,12 +176,8 @@ public:
 	//! Fragment's y-position, respective to its paragraph's y_position.
 	size_t y_pos=0;
 
-	//! A list of cursor locations in this fragment.
-
-	typedef std::list<richtextcursorlocation> locations_t;
-
 	//! Cursor locations in this fragment
-	locations_t locations;
+	fragment_cursorlocations_t locations;
 
 	friend class richtextcursorlocationObj;
 
@@ -191,7 +187,7 @@ public:
 	//! Called only to move the location object itself. This is followed
 	//! by (typically) split_from_parent.
 
-	void move_location(locations_t::iterator iter,
+	void move_location(fragment_cursorlocations_t::iterator iter,
 			   const richtextfragment &new_fragment);
  public:
 	//! The text fragment

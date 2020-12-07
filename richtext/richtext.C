@@ -160,8 +160,7 @@ void richtextObj::insert_at_location(ONLY IN_THREAD,
 				     impl_t::lock &lock,
 				     const richtext_insert_base &new_text)
 {
-	(*lock)->insert_at_location(IN_THREAD,
-				    new_text);
+	(*lock)->insert_at_location(IN_THREAD, *this, new_text);
 }
 
 void richtextObj::remove_at_location(ONLY IN_THREAD,
@@ -179,34 +178,14 @@ void richtextObj::replace_at_location(ONLY IN_THREAD,
 				      const richtextcursorlocation &remove_to)
 {
 	return (*lock)->replace_at_location(IN_THREAD,
+					    *this,
 					    new_text, remove_from, remove_to);
 }
 
 size_t richtextObj::pos(const internal_richtext_impl_t::lock &lock,
 			const richtextcursorlocation &l)
 {
-	return do_pos(l, get_location::bidi);
-}
-
-size_t richtextObj::do_pos(const richtextcursorlocation &l,
-			   get_location location_option)
-{
-	assert_or_throw
-		(l->my_fragment &&
-		 l->my_fragment->string.size() > l->get_offset() &&
-		 l->my_fragment->my_paragraph &&
-		 l->my_fragment->my_paragraph->my_richtext,
-		 "Internal error in pos(): invalid cursor location");
-
-	auto offset=l->get_offset();
-
-	if (location_option == get_location::bidi &&
-	    l->my_fragment->my_paragraph->my_richtext
-	    ->rl())
-		offset=l->my_fragment->string.size()-1-offset;
-
-	return offset+l->my_fragment->first_char_n +
-		l->my_fragment->my_paragraph->first_char_n;
+	return (*lock)->pos(l, get_location::bidi);
 }
 
 //! Retrieve text within the selected range
@@ -239,8 +218,8 @@ struct richtextObj::get_helper : richtext_range {
 		// TODO: when we support rich text editing, we'll
 		// need to add some additional overhead, here.
 
-		auto pos1=richtextObj::do_pos(location_a, get_location::bidi);
-		auto pos2=richtextObj::do_pos(location_b, get_location::bidi);
+		auto pos1=impl->pos(location_a, get_location::bidi);
+		auto pos2=impl->pos(location_b, get_location::bidi);
 
 		auto index1=location_a->my_fragment->index();
 		auto index2=location_b->my_fragment->index();

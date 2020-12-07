@@ -38,7 +38,7 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 
 	void initialize(richtextfragmentObj *fragment,
 			size_t offsetArg,
-			richtextfragmentObj::locations_t::iterator new_iter,
+			fragment_cursorlocations_t::iterator new_iter,
 			new_location location_option);
 
 	//! Alternative initialization used by clone().
@@ -50,9 +50,6 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	//! deinitialize(), in the public object's destructor.
 
 	void deinitialize();
-
-	//! Convenience typedef
-	typedef richtextfragmentObj::locations_t locations_t;
 
 	//! The fragment this location is on.
 
@@ -74,7 +71,7 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	richtextfragmentObj *my_fragment=nullptr;
 
 	//! Where this location is in my_fragment->locations;
-	locations_t::iterator my_fragment_iter;
+	fragment_cursorlocations_t::iterator my_fragment_iter;
 
 	//! If set to true(), richtextfragmentObj::insert() does not adjust
 	//! this location.

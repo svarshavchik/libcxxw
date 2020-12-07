@@ -57,6 +57,14 @@ struct richtext_options {
 
 	//! If unset it gets derived from the initial or set string.
 	std::optional<unicode_bidi_level_t> paragraph_embedding_level;
+
+	//! Whether this is the richtext object for an input field
+
+	//! The richtext object will have a trailing space, and this activates
+	//! additional functionality: if all but the last trailing space
+	//! is getting replaced, this gets handled as set(), which updates
+	//! the default embedding level and alignment, as appropriate.
+	bool is_editor=false;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -8,6 +8,7 @@
 
 #include <x/ref.H>
 #include <x/w/namespace.H>
+#include <list>
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,6 +35,10 @@ class LIBCXX_HIDDEN richtextcursorlocationObj;
 //! pixel offset that this location represents.
 
 typedef ref<richtextcursorlocationObj> richtextcursorlocation;
+
+//! Container for locations in a given richtextfragment
+
+typedef std::list<richtextcursorlocation> fragment_cursorlocations_t;
 
 LIBCXXW_NAMESPACE_END
 

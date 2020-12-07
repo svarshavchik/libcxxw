@@ -139,6 +139,14 @@ public:
 
 	size_t num_chars=0;
 
+	//! This is for an editor.
+
+	//! This richtext has a trailing newline. This flag activates extra
+	//! functionality: if all but the trailing newline is getting
+	//! replaced, this gets handled as set(), which updates
+	//! the default embedding level and alignment, as appropriate.
+	const bool is_editor;
+
 	//! Replacement character to show instead of unprintable characters.
 
 	//! \ref editor "editor" overwrites this with a space, so that a
@@ -180,11 +188,21 @@ public:
 
 	//! The richtextstring gets passed in by reference, and gets converted
 	//! to rendering order, but not otherwise moved from.
-	void set(ONLY IN_THREAD,
-		 //! Text string
-		 richtextstring &&string);
+	fragment_cursorlocations_t set(ONLY IN_THREAD,
+				       //! Text string
+				       richtextstring &&string);
 
  private:
+	//! Implement insert or replace using set().
+
+	//! If is_editor, and either new text is getting inserted into
+	//! an otherwise empty (except for the trailing character) richtext,
+	//! or if the entire contents (save the trailing char) get replaced,
+	//! this can be done as set().
+
+	void set(ONLY IN_THREAD, richtextObj &public_object,
+		 const richtext_insert_base &new_text);
+
 	//! Invoked from set(), after all existing locations are copied.
 	void do_set(//! Text string
 		    richtextstring &&string);
@@ -283,6 +301,14 @@ public:
 	//! Returns true if the rich text was reformatted.
 	bool unwrap();
 
+	//! Return a location's position
+
+	//! Doesn't really need this object, hence static. This is a calling
+	//! convention, to enforce locking.
+
+	static size_t pos(const richtextcursorlocation &l,
+			get_location location_option);
+
 	/////////////////////////////////////////////////////////////////////
 
 	//! Insert content at the given position.
@@ -290,8 +316,10 @@ public:
 	//! Invoked from the public object's insert_at_location(), after
 	//! locking everything down tightly, and supplying us with the
 	//! word_wrap_width.
-
+	//!
+	//! It passes itself as the public_object parameter.
 	void insert_at_location(ONLY IN_THREAD,
+				richtextObj &public_object,
 				const richtext_insert_base &new_text);
 
 	//! Remove content between two cursors.
@@ -304,7 +332,11 @@ public:
 
 	//! Combine replace and insert at location, together.
 
+	//! Also invoked by the public object, passing itself as the
+	//! public_object parameter.
+
 	void replace_at_location(ONLY IN_THREAD,
+				 richtextObj &public_object,
 				 const richtext_insert_base &new_text,
 				 const richtextcursorlocation &remove_from,
 				 const richtextcursorlocation &remove_to);

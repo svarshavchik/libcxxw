@@ -348,10 +348,6 @@ class richtextObj : virtual public obj {
 			   const richtextcursorlocation &);
 
  private:
-	//! Implement pos().
-	static size_t do_pos(const richtextcursorlocation &l,
-			     get_location location_option);
-
 	struct LIBCXX_HIDDEN get_helper;
 
 	//! Return an iterator to the given character # in the rich text.

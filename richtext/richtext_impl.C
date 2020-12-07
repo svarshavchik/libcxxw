@@ -26,6 +26,7 @@ LIBCXXW_NAMESPACE_START
 richtext_implObj::richtext_implObj(richtextstring &&string,
 				   const richtext_options &options)
 	: word_wrap_width{0},
+	  is_editor{options.is_editor},
 	  unprintable_char{options.unprintable_char},
 	  requested_alignment{options.alignment},
 	  requested_paragraph_embedding_level{
@@ -36,13 +37,13 @@ richtext_implObj::richtext_implObj(richtextstring &&string,
 	do_set(std::move(string));
 }
 
-void richtext_implObj::set(ONLY IN_THREAD,
-			   richtextstring &&string)
+fragment_cursorlocations_t richtext_implObj::set(ONLY IN_THREAD,
+						 richtextstring &&string)
 {
 	// If the existing rich text object has any cursor locations, make
 	// a copy of them.
 
-	richtextfragmentObj::locations_t all_locations;
+	fragment_cursorlocations_t all_locations;
 
 	paragraphs.for_paragraphs
 		(0,
@@ -118,6 +119,7 @@ void richtext_implObj::set(ONLY IN_THREAD,
 		locations_sentry.unguard();
 
 		// Position transplanted locations at the end of last fragment.
+
 		auto fragment_ptr=&*last_fragment;
 		size_t n=fragment_ptr->string.size()-1;
 
@@ -130,6 +132,8 @@ void richtext_implObj::set(ONLY IN_THREAD,
 	}
 
 	restore_paragraphs_sentry.unguard();
+
+	return all_locations;
 }
 
 void richtext_implObj::do_set(richtextstring &&string)
@@ -222,6 +226,27 @@ bool richtext_implObj::unwrap()
 	paragraph_list my_paragraphs(*this);
 
 	return my_paragraphs.unwrap();
+}
+
+size_t richtext_implObj::pos(const richtextcursorlocation &l,
+			     get_location location_option)
+{
+	assert_or_throw
+		(l->my_fragment &&
+		 l->my_fragment->string.size() > l->get_offset() &&
+		 l->my_fragment->my_paragraph &&
+		 l->my_fragment->my_paragraph->my_richtext,
+		 "Internal error in pos(): invalid cursor location");
+
+	auto offset=l->get_offset();
+
+	if (location_option == get_location::bidi &&
+	    l->my_fragment->my_paragraph->my_richtext
+	    ->rl())
+		offset=l->my_fragment->string.size()-1-offset;
+
+	return offset+l->my_fragment->first_char_n +
+		l->my_fragment->my_paragraph->first_char_n;
 }
 
 size_t richtext_implObj::find_paragraph_for_pos(size_t &pos)
@@ -414,10 +439,69 @@ void richtext_implObj::rewrap_at_fragment(dim_t width,
 		my_fragments.fragments_were_rewrapped();
 }
 
+void richtext_implObj::set(ONLY IN_THREAD, richtextObj &public_object,
+			   const richtext_insert_base &new_text)
+{
+	//! Any fragment will do.
+
+	auto last=public_object.end();
+
+	auto f=last->my_location->my_fragment;
+	auto o=last->my_location->get_offset();
+
+	assert_or_throw(f,
+			"Internal error: null my_fragment in insert()");
+
+	auto space=f->string.get_string().at(o);
+	auto meta=f->string.meta_at(o);
+
+	assert_or_throw(f->string.get_string().at(o) == '\n',
+			"internal error: didn't find trailing newline");
+	meta.rl=false;
+
+	auto new_string=new_text(meta);
+
+	new_string += richtextstring{
+		std::u32string{&space, &space+1},
+		{
+			{0, meta},
+				}};
+
+	auto cursors_to_move=set(IN_THREAD, std::move(new_string));
+
+	auto b=public_object.begin();
+	auto e=public_object.end();
+
+	richtextfragment top_fragment{b->my_location->my_fragment};
+	auto top_from=b->my_location->get_offset();
+	richtextfragment bottom_fragment{e->my_location->my_fragment};
+	auto bottom_to=e->my_location->get_offset();
+
+	for (const auto &l:cursors_to_move)
+	{
+		if (l->do_not_adjust_in_insert)
+		{
+			l->reposition(top_fragment, top_from);
+		}
+		else
+		{
+			l->reposition(bottom_fragment, bottom_to);
+		}
+	}
+}
+
 void richtext_implObj::insert_at_location(ONLY IN_THREAD,
+					  richtextObj &public_object,
 					  const richtext_insert_base
 					  &new_text)
 {
+	if (is_editor && num_chars == 1)
+	{
+		// We must be an editor, which has an extra trailing newline
+		// where the cursor rests after all existing input.
+		set(IN_THREAD, public_object, new_text);
+		return;
+	}
 	paragraph_list my_paragraphs{*this};
 
 	insert_at_location(IN_THREAD, my_paragraphs, new_text,
@@ -764,10 +848,25 @@ void richtext_implObj::remove_at_location(const richtextcursorlocation &ar,
 
 void richtext_implObj
 ::replace_at_location(ONLY IN_THREAD,
+		      richtextObj &public_object,
 		      const richtext_insert_base &new_text,
 		      const richtextcursorlocation &remove_from,
 		      const richtextcursorlocation &remove_to)
 {
+	if (is_editor)
+	{
+		// This is replacing entire contents if one of the locations
+		// is 0, and the other is one less than num_chars.
+		auto pos1=pos(remove_from, get_location::bidi);
+		auto pos2=pos(remove_to, get_location::bidi);
+
+		if ((pos1 == 0 || pos2 == 0) && pos1+pos2+1 == num_chars)
+		{
+			set(IN_THREAD, public_object, new_text);
+			return;
+		}
+	}
+
 	remove_info info{paragraph_embedding_level, remove_from, remove_to};
 
 	paragraph_list my_paragraphs{*this};

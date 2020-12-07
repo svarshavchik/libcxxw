@@ -1271,7 +1271,8 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 	redraw_needed=true;
 }
 
-void richtextfragmentObj::move_location(locations_t::iterator iter,
+void richtextfragmentObj::move_location(fragment_cursorlocations_t::iterator
+					iter,
 					const richtextfragment &new_fragment)
 {
 	auto l=*iter;

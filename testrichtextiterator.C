@@ -1491,7 +1491,7 @@ void testrichtext9(ONLY IN_THREAD)
 			std::nullopt,
 			UNICODE_BIDI_LR,
 			halign::left,
-			U"Rolem Ipsum",
+			U"Rolem Ipsum Dolor",
 			UNICODE_BIDI_LR,
 			halign::left,
 		},
@@ -1502,7 +1502,7 @@ void testrichtext9(ONLY IN_THREAD)
 			std::nullopt,
 			UNICODE_BIDI_RL,
 			halign::right,
-			std::u32string{RLM} + U"Rolem Ipsum",
+			std::u32string{RLM} + U"Rolem Ipsum Dolor",
 			UNICODE_BIDI_RL,
 			halign::right,
 		},
@@ -1513,7 +1513,7 @@ void testrichtext9(ONLY IN_THREAD)
 			std::nullopt,
 			UNICODE_BIDI_LR,
 			halign::left,
-			std::u32string{RLM} + U"Rolem Ipsum",
+			std::u32string{RLM} + U"Rolem Ipsum Dolor",
 			UNICODE_BIDI_RL,
 			halign::right,
 		},
@@ -1524,7 +1524,7 @@ void testrichtext9(ONLY IN_THREAD)
 			std::nullopt,
 			UNICODE_BIDI_RL,
 			halign::right,
-			U"Rolem Ipsum",
+			U"Rolem Ipsum Dolor",
 			UNICODE_BIDI_LR,
 			halign::left,
 		},
@@ -1535,7 +1535,7 @@ void testrichtext9(ONLY IN_THREAD)
 			halign::center,
 			UNICODE_BIDI_RL,
 			halign::center,
-			U"Rolem Ipsum",
+			U"Rolem Ipsum Dolor",
 			UNICODE_BIDI_RL,
 			halign::center,
 		},
@@ -1546,7 +1546,7 @@ void testrichtext9(ONLY IN_THREAD)
 			halign::center,
 			UNICODE_BIDI_RL,
 			halign::center,
-			std::u32string{RLM} + U"Rolem Ipsum",
+			std::u32string{RLM} + U"Rolem Ipsum Dolor",
 			UNICODE_BIDI_RL,
 			halign::center,
 		},
@@ -1605,6 +1605,126 @@ void testrichtext9(ONLY IN_THREAD)
 				("testrichtext9, test " << testcase <<
 				 ": set: unexpected updated_alignment"
 				 );
+
+		if (richtext->size(IN_THREAD) != 17)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": set: unexpected final size");
+
+		options.is_editor=1;
+
+		richtext=richtext::create(richtextstring{
+				U"\n",
+				{
+					{0, richtextmeta{}}
+				}},
+			options);
+
+		auto cursor=richtext->end();
+		auto before_cursor=
+			cursor->insert(IN_THREAD,
+				       richtextstring{
+					       t.new_text,
+					       {
+						       {0, richtextmeta{}}
+					       }});
+
+		if (richtext->get_paragraph_embedding_level(IN_THREAD)
+		    != t.updated_paragraph_embedding_level)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": insert: "
+				 "unexpected updated_paragraph_embedding_level"
+				 );
+
+		if (richtext->get_alignment(IN_THREAD)
+		    != t.updated_alignment)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": insert: unexpected updated_alignment"
+				 );
+
+		if (cursor->compare(cursor->end()) != 0)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": insert: cursor not at the end "
+				 << "(" << cursor->pos() << "/"
+				 << cursor->end()->pos() << ")"
+				 );
+		if (before_cursor->compare(cursor->begin()) != 0)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": insert: insert position not at the start"
+				 );
+
+		richtext=richtext::create(richtextstring{
+				t.orig_text + U"\n",
+				{
+					{0, richtextmeta{}}
+				}},
+			options);
+
+		richtext->begin()->replace
+			(IN_THREAD, richtext->end(),
+			 richtextstring{
+				 t.new_text,
+				 {
+					 {0, richtextmeta{}}
+				 }});
+
+		if (richtext->get_paragraph_embedding_level(IN_THREAD)
+		    != t.updated_paragraph_embedding_level)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": replace(1): "
+				 "unexpected updated_paragraph_embedding_level"
+				 );
+
+		if (richtext->get_alignment(IN_THREAD)
+		    != t.updated_alignment)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": replace(1): unexpected updated_alignment"
+				 );
+
+		if (richtext->size(IN_THREAD) != 18)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": replace(1): unexpected final size");
+
+		richtext=richtext::create(richtextstring{
+				t.orig_text + U"\n",
+				{
+					{0, richtextmeta{}}
+				}},
+			options);
+
+		richtext->end()->replace
+			(IN_THREAD, richtext->begin(),
+			 richtextstring{
+				 t.new_text,
+				 {
+					 {0, richtextmeta{}}
+				 }});
+
+		if (richtext->get_paragraph_embedding_level(IN_THREAD)
+		    != t.updated_paragraph_embedding_level)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": replace(2): "
+				 "unexpected updated_paragraph_embedding_level"
+				 );
+
+		if (richtext->get_alignment(IN_THREAD)
+		    != t.updated_alignment)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": replace(2): unexpected updated_alignment"
+				 );
+		if (richtext->size(IN_THREAD) != 18)
+			throw EXCEPTION
+				("testrichtext9, test " << testcase <<
+				 ": replace(1): unexpected final size");
 	}
 }
 
