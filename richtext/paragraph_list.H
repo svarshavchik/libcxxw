@@ -92,6 +92,12 @@ public:
 
 	//! Takes care of updating the Y position of everything.
 	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme);
+
+	//! Clean up all fragments.
+
+	//! After some tumult, shrink down richtextfragment strings.
+
+	void shrink_to_fit();
 };
 
 LIBCXXW_NAMESPACE_END

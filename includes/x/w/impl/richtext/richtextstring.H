@@ -153,6 +153,9 @@ public:
 	//! Destructor
 	~richtextstring();
 
+	//! Clean up the internal structures
+	void shrink_to_fit();
+
 	//! Insert new text into the richtextstring
 
 	void insert(size_t pos,

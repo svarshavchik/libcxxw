@@ -209,6 +209,8 @@ void richtext_implObj::rich_text_paragraph_out_of_bounds()
 bool richtext_implObj::rewrap(dim_t width)
 {
 	if (word_wrap_width == width)
+		// richtextObj's constructor calls shrink_to_fit() upon
+		// a false return.
 		return false;
 
 	word_wrap_width=width;
@@ -218,14 +220,20 @@ bool richtext_implObj::rewrap(dim_t width)
 
 	paragraph_list my_paragraphs{*this};
 
-	return my_paragraphs.rewrap(word_wrap_width);
+	auto flag=my_paragraphs.rewrap(word_wrap_width);
+	my_paragraphs.shrink_to_fit();
+	return flag;
 }
 
 bool richtext_implObj::unwrap()
 {
 	paragraph_list my_paragraphs(*this);
 
-	return my_paragraphs.unwrap();
+	auto flag=my_paragraphs.unwrap();
+
+	my_paragraphs.shrink_to_fit();
+
+	return flag;
 }
 
 size_t richtext_implObj::pos(const richtextcursorlocation &l,

@@ -10,6 +10,7 @@
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextiterator.H"
 #include "richtext/richtextcursorlocation.H"
+#include "richtext/paragraph_list.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -28,7 +29,13 @@ richtextObj::richtextObj(const ref<richtext_implObj> &impl,
 	impl_t::lock lock{this->impl};
 
 	(*lock)->finish_initialization();
-	(*lock)->rewrap(initial_width);
+
+	if (!(*lock)->rewrap(initial_width))
+	{
+		paragraph_list my_paragraphs{**lock};
+
+		my_paragraphs.shrink_to_fit();
+	}
 }
 
 richtextObj::~richtextObj()=default;

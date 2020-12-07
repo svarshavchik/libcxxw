@@ -212,4 +212,21 @@ void paragraph_list::theme_updated(ONLY IN_THREAD,
 	size_changed=true;
 }
 
+void paragraph_list::shrink_to_fit()
+{
+	text.paragraphs.for_paragraphs
+		(0,
+		 []
+		 (const richtextparagraph &p)
+		 {
+			 p->fragments.for_fragments
+				 ([]
+				  (const auto &f)
+				 {
+					 f->string.shrink_to_fit();
+				 });
+			 return true;
+		 });
+}
+
 LIBCXXW_NAMESPACE_END

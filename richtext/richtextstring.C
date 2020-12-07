@@ -143,6 +143,13 @@ void richtextstring::modified()
 	resolved_fonts.clear();
 }
 
+void richtextstring::shrink_to_fit()
+{
+	coalesce();
+	meta.shrink_to_fit();
+	string.shrink_to_fit();
+}
+
 void richtextstring::coalesce() const
 {
 	if (!coalesce_needed)
