@@ -8,9 +8,11 @@
 
 #include <vector>
 #include <unordered_map>
+#include <tuple>
 
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/refptr_hash.H>
 #include <x/logger.H>
 #include <x/functional.H>
 #include <x/vector.H>
@@ -100,7 +102,7 @@ public:
 
 		//! The paragraph with these fragments is about to be destroyed.
 
-		//! Invoked from the paragraph object's constructor, sets
+		//! Invoked from the paragraph object's destructor, sets
 		//! every fragment's my_paragraph to a nullptr.
 
 		void paragraph_destroyed();
@@ -153,12 +155,79 @@ public:
 	//! therefore, is always valid (so far).
 	//!
 	//! my_paragraph and my_fragment_number are initialized and
-	//! maintained by fragment_list's methods.
+	//! maintained by fragment_list's methods. This abstraction emphasizes
+	//! that only fragment_list can update this (with few exceptions), and
+	//! this is coordinated with hotspot update processing.
 
-	richtextparagraphObj *my_paragraph=nullptr;
+	struct my_paragraph_t {
+		richtextparagraphObj *ptr=nullptr;
 
+		inline auto *operator->() const
+		{
+			return ptr;
+		}
 
-#define USING_MY_PARAGRAPH() \
+		inline auto &operator*() const
+		{
+			return *ptr;
+		}
+
+		inline operator bool() const
+		{
+			return ptr != NULL;
+		}
+
+		inline bool operator!() const
+		{
+			return ptr == NULL;
+		}
+
+		void set(richtextparagraphObj *my_paragraph)
+		{
+			ptr=my_paragraph;
+		}
+	};
+
+	//! Link to my paragraph.
+	my_paragraph_t my_paragraph;
+
+	//! This fragment is being destroyed.
+
+	//! If there are any hotspots in this fragment they get removed from
+	//! our hotspot_collection.
+	//!
+	//! fragment_list calls it before removing this fragment.
+	void destroying();
+
+	//! Update our hotspot_collection
+
+	//! Rereads richtext, and updates our hotspot_collection.
+	void update_hotspots();
+
+	//! Hotspots in this fragment
+
+	//! Specifies the starting position and ending position of
+	//! all hotspots in the richtextstring.
+	//!
+	//! destroying() checks each each hotspot and if this fragment is
+	//! the first or the last fragment for this hotspot, according to
+	//! richtext's hotspot_collections, and if so updates richtext's
+	//! hotspot_collections accordingly.
+
+	std::unordered_map<text_hotspot, std::tuple<size_t, size_t>
+			   > hotspot_collection;
+
+	//! Compare another richtextfragment to this one
+
+	//! This is called when updating hotspots, so it doesn't use index()
+	//! because the paragraph's first_fragment_n may not be updated yet.
+	//!
+	//! However the relative my_fragment_number is expected to be
+	//! valid, so this first compares my_paragraph_number, then
+	//! my_fragment_number.
+	std::strong_ordering compare(const richtextfragment &other) const;
+
+#define USING_MY_PARAGRAPH()						\
 	assert_or_throw(my_paragraph && my_paragraph->my_richtext &&			\
 			my_paragraph->fragments.size() > my_fragment_number,\
 			"Internal error: paragraph or text linkage sanity check failed.")

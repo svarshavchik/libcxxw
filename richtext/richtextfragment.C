@@ -1694,7 +1694,31 @@ void richtextfragmentObj::fragments_t
 void richtextfragmentObj::fragments_t::paragraph_destroyed()
 {
 	for (const auto &fragment: static_cast<v_t &>(*this))
-		fragment->my_paragraph=nullptr;
+		fragment->my_paragraph.ptr=nullptr;
+}
+
+void richtextfragmentObj::destroying()
+{
+	my_paragraph.ptr=nullptr;
+}
+
+void richtextfragmentObj::update_hotspots()
+{
+}
+
+std::strong_ordering richtextfragmentObj::compare(const richtextfragment &other)
+	const
+{
+	assert_or_throw(my_paragraph && my_paragraph->my_richtext &&
+			other->my_paragraph && other->my_paragraph->my_richtext,
+			"Internal error: fragment not linked.");
+
+	auto c=my_paragraph <=> other->my_paragraph;
+
+	if (c != std::strong_ordering::equal)
+		return c;
+
+	return my_fragment_number <=> other->my_fragment_number;
 }
 
 richtextfragment richtextfragmentObj::fragments_t::find_fragment_for_pos(size_t &pos) const

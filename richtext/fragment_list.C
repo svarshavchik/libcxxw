@@ -87,7 +87,7 @@ void const_fragment_list
 	while (++iter != e)
 		++(*iter)->my_fragment_number;
 
-	fragment->my_paragraph=&paragraph;
+	fragment->my_paragraph.set(&paragraph);
 }
 
 // This is used in set(). The fragment doesn't have any text yet, it must
@@ -148,6 +148,7 @@ void fragment_list::recalculate_needed_fragment_sizes()
 
 			 f->recalculate_size_needed=false;
 			 f->recalculate_size_called_by_fragment_list();
+			 f->update_hotspots();
 		 });
 }
 
@@ -162,10 +163,10 @@ void fragment_list::insert_no_change_in_char_count(fragments_t::iterator at,
 
 void fragment_list::erase(fragments_t::iterator at)
 {
+	(*at)->destroying();
 	for (auto p=at, e=paragraph.fragments.end(); ++p != e; )
 		--(*p)->my_fragment_number;
 
-	(*at)->my_paragraph=nullptr;
 	paragraph.fragments.erase(at);
 	size_changed=true;
 }
@@ -215,7 +216,11 @@ void fragment_list::split_from(richtextfragmentObj *split_after)
 	for (const auto &f:copy)
 	{
 		split_after->my_paragraph->adjust_char_count(-f->string.size());
-		f->my_paragraph=nullptr;
+
+		// A thrown exception may end up with us losing this fragments,
+		// pretend that they are being destroyed now, and we'll
+		// call update_hotspots() manually, below.
+		f->destroying();
 	}
 
 	old_fragments.erase(p, e);
@@ -223,7 +228,10 @@ void fragment_list::split_from(richtextfragmentObj *split_after)
 	// We can now append them to us, the new paragraph, and adjust the
 	// character count.
 	for (const auto &f:copy)
+	{
 		append_no_recalculate(f);
+		f->update_hotspots();
+	}
 	size_changed=true;
 }
 
@@ -250,7 +258,6 @@ size_t fragment_list::remove(size_t first_fragment,
 	// Make a copy of the removed fragments, and remove them from the
 	// paragraph.
 	std::vector<richtextfragment> removed_fragments(b, e);
-	paragraph.fragments.erase(b, e);
 
 	for (const auto &p:removed_fragments)
 	{
@@ -260,8 +267,11 @@ size_t fragment_list::remove(size_t first_fragment,
 
 		paragraph.adjust_char_count(-nchars);
 
-		p->my_paragraph=nullptr;
+		p->destroying();
 	}
+
+	// erase() must be called after destroying() each fragment.
+	paragraph.fragments.erase(b, e);
 
 	// More accounting
 
@@ -289,23 +299,27 @@ void fragment_list::join_next()
 	// Make sure an unlikely exception won't screw things up.
 	auto next_paragraph=*pr;
 
-	my_paragraphs.erase(paragraph.my_paragraph_number+1);
-	next_paragraph->adjust_char_count(-next_paragraph->num_chars);
-
 	// Need to clear the paragraph's fragments. Paragraph's
 	// destructor zaps its fragments' my_paragraph.
 
 	std::vector<richtextfragment> copy=next_paragraph->fragments;
-	next_paragraph->fragments.clear();
 
 	for (const auto &f:copy)
-		f->my_paragraph=nullptr;
+		f->destroying();
+
+	// clear() and erase() must be called after destroying() each fragment.
+
+	next_paragraph->fragments.clear();
+
+	my_paragraphs.erase(paragraph.my_paragraph_number+1);
+	next_paragraph->adjust_char_count(-next_paragraph->num_chars);
 
 	for (const auto &f:copy)
 	{
 		// This increments this paragraphs char_count, that's another
 		// reason we have to explicitly substract them, beforehand.
 		append_no_recalculate(f);
+		f->update_hotspots();
 	}
 	size_changed=true;
 }

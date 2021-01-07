@@ -17,8 +17,10 @@
 #include "x/w/input_field_lock.H"
 #include <x/functional.H>
 #include <x/vectorfwd.H>
+#include <x/refptr_hash.H>
 
 #include <unordered_map>
+#include <tuple>
 #include <algorithm>
 #include <optional>
 #include <courier-unicode.h>
@@ -134,6 +136,14 @@ public:
 	//! All paragraphs
 
 	paragraphs_t paragraphs;
+
+	//! All hotspots
+
+	//! Tracks the first and the last fragment containing each hotspot.
+
+	std::unordered_map<text_hotspot, std::tuple<richtextfragment,
+						    richtextfragment>
+			   > hotspot_collection;
 
 	//! How many characters there are in all paragraphs.
 
