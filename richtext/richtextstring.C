@@ -781,6 +781,72 @@ richtextstring::to_canonical_order
 					"passed to to_canonical_order");
 }
 
+struct richtextstring::meta_reverse {
+
+	richtextstring &string;
+	const size_t starting_pos;
+	const size_t s;
+
+	meta_reverse(richtextstring &string, size_t starting_pos)
+		: string{string}, starting_pos{starting_pos},
+		  s{string.size()}
+	{
+	}
+
+	void operator()(size_t start, size_t n)
+	{
+		// bidi_reorder passes start relative to starting_pos
+
+		start += starting_pos;
+
+		assert_or_throw(start <= s && (s-start) >= n,
+				"invalid reordering callback "
+				"parameters");
+
+		if (n == 0)
+			return;
+
+		// Find the start+ending metadata range.
+
+		string.meta.reserve(string.meta.size()+2);
+
+		auto from=string.duplicate(start);
+		auto to=string.duplicate(start+n);
+
+		// We will rebuild the swapped metadata in meta_cpy.
+		meta_t meta_cpy;
+
+		meta_cpy.reserve(to-from);
+
+		// Iterate from the end to the beginning.
+
+		// The ending position is equivalent to the
+		// starting position:
+		auto current_pos=start;
+
+		// As we iterate backwards we compute how many
+		// characters have the metadata applied to them.
+		auto prev_end_pos=start+n;
+
+		while (from < to)
+		{
+			--to;
+
+			meta_cpy.emplace_back(current_pos, to->second);
+
+			// (prev_end_pos-to) is the number of
+			// characters that this metadata applies to.
+			current_pos += prev_end_pos-to->first;
+
+			prev_end_pos=to->first;
+		}
+
+		// We have a 1:1 relationship, so just update in place.
+		for (auto &n:meta_cpy)
+			*from++=n;
+	};
+};
+
 void richtextstring::to_canonical_order::fill()
 {
 	if (filled)
@@ -805,65 +871,12 @@ void richtextstring::to_canonical_order::fill()
 	// Reorder just the corresponding part of the original richtextstring
 	//
 	// We'll swap the metadata ourselves.
-	size_t s=string.string.size();
 
 	auto &levels=std::get<0>(calc_results);
 
 	unicode::bidi_reorder
 		(string.string, levels,
-		 [&, this]
-		 (size_t start, size_t n)
-		 {
-			 // bidi_reorder passes start relative to starting_pos
-
-			 start += starting_pos;
-
-			 assert_or_throw(start <= s && (s-start) >= n,
-					 "invalid reordering callback "
-					 "parameters");
-
-			 if (n == 0)
-				 return;
-
-			 // Find the start+ending metadata range.
-
-			 string.meta.reserve(string.meta.size()+2);
-
-			 auto from=string.duplicate(start);
-			 auto to=string.duplicate(start+n);
-
-			 // We will rebuild the swapped metadata in meta_cpy.
-			 meta_t meta_cpy;
-
-			 meta_cpy.reserve(to-from);
-
-			 // Iterate from the end to the beginning.
-
-			 // The ending position is equivalent to the
-			 // starting position:
-			 auto current_pos=start;
-
-			 // As we iterate backwards we compute how many
-			 // characters have the metadata applied to them.
-			 auto prev_end_pos=start+n;
-
-			 while (from < to)
-			 {
-				 --to;
-
-				 meta_cpy.emplace_back(current_pos, to->second);
-
-				 // (prev_end_pos-to) is the number of
-				 // characters that this metadata applies to.
-				 current_pos += prev_end_pos-to->first;
-
-				 prev_end_pos=to->first;
-			 }
-
-			 // We have a 1:1 relationship, so just update in place.
-			 for (auto &n:meta_cpy)
-				 *from++=n;
-		 },
+		 meta_reverse{string, starting_pos},
 		 starting_pos,
 		 ending_pos-starting_pos);
 

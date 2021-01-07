@@ -390,6 +390,8 @@ public:
 			    &l);
 
 	struct LIBCXX_HIDDEN to_canonical_order;
+
+	struct LIBCXX_HIDDEN meta_reverse;
 };
 
 //! Convert a bidirectional string into one or more paragraphs
