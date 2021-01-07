@@ -1,5 +1,5 @@
 /*
-** Copyright 2020 Double Precision, Inc.
+** Copyright 2020-2021 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef redraw_priority

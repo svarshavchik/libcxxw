@@ -1,5 +1,5 @@
 /*
-** Copyright 2018-2020 Double Precision, Inc.
+** Copyright 2018-2021 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef x_w_print_dialog_h
