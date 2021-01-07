@@ -206,13 +206,18 @@ struct richtextObj::get_helper : richtext_range {
 
 	richtextstring &str;
 
+private:
+	//! Paragraph being done here.
+	mutable richtextstring paragraph;
+
+public:
 	get_helper(richtextstring &str,
 		   const ref<richtext_implObj> &impl,
 		   const richtextcursorlocation &a,
 		   const richtextcursorlocation &b)
 
 		: richtext_range{impl->paragraph_embedding_level, a, b},
-		  str{str}
+		 str{str}
 	{
 		// Estimate how big ret will be. We can compute the
 		// number of characters exactly. Use the number of
@@ -246,27 +251,58 @@ struct richtextObj::get_helper : richtext_range {
 		   size_t start,
 		   size_t n) const override
 	{
-		// Edge case, for right-to-left embedding level we'll quietly
+		// Detect and handle paragraph breaks.
+
+		if (paragraph_embedding_level == UNICODE_BIDI_LR)
+		{
+			bool paragraph_break=
+				n > 0 && other.get_string()[start+(n-1)]=='\n';
+
+			add_range_to_paragraph(other, start, n);
+
+			if (paragraph_break)
+				finish_paragraph();
+			return;
+		}
+
+
+		// Edge case, for right-to-left embedding level we'll
 		// skip the \n at the beginning of the last line of the
-		// paragraph. get() will take care of it.
+		// paragraph, get() will take care of it.
 
 		if (start == 0 && n > 0 &&
-		    paragraph_embedding_level != UNICODE_BIDI_LR &&
 		    other.get_string()[0] == '\n')
 		{
 			++start;
 			--n;
 		}
 
+		add_range_to_paragraph(other, start, n);
+	}
+
+	void add_range_to_paragraph(const richtextstring &other,
+				    size_t start,
+				    size_t n) const
+	{
 		if (n == 0)
 			return;
 
 		if (start == 0 && n == other.size())
 		{
-			str.insert(str.size(), other);
+			paragraph += other;
 			return;
 		}
-		str.insert(str.size(), {other, start, n});
+		paragraph += richtextstring{other, start, n};
+	}
+
+	void finish_paragraph() const
+	{
+		if (paragraph.size() == 0)
+			return;
+
+		str += paragraph;
+
+		paragraph.clear();
 	}
 };
 
@@ -281,7 +317,10 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 	auto diff=helper.diff;
 
 	if (helper.complete_line())
+	{
+		helper.finish_paragraph();
 		return str;
+	}
 
 	// At this point, "diff" is the total number of line fragments,
 	// at least 2, since the starting and ending position are on different
@@ -479,11 +518,17 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 			// an entire paragraph, and its last fragment must
 			// begin with the paragraph break, \n, so emit it.
 			if (diff)
-				str.insert(str.size(), {f->string, 0, 1});
+			{
+				helper.finish_paragraph();
+				str += richtextstring{f->string, 0, 1};
+			}
 			f=f->next_fragment();
 		}
 	}
 
+	helper.finish_paragraph();
+
+	str.shrink_to_fit();
 	return str;
 }
 
