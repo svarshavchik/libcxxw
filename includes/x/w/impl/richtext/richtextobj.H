@@ -21,6 +21,7 @@
 #include <x/w/drawablefwd.H>
 #include <x/w/input_field_lock.H>
 #include <x/w/defaultthemefwd.H>
+#include <x/w/text_hotspotfwd.H>
 #include <x/obj.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
@@ -322,6 +323,10 @@ class richtextObj : virtual public obj {
 				 const richtextcursorlocation &remove_from,
 				 const richtextcursorlocation &remove_to);
 
+	//! Replace the contents of a hotspot.
+	void replace_hotspot(ONLY IN_THREAD,
+			     richtextstring &string,
+			     const text_hotspot &hotspot);
 	//! Calculate a location's position'
 
 	static size_t pos(const internal_richtext_impl_t::lock &,

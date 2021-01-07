@@ -526,6 +526,95 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 	return str;
 }
 
+void richtextObj::replace_hotspot(ONLY IN_THREAD,
+				  richtextstring &string,
+				  const text_hotspot &hotspot)
+{
+	// Update the text string with the hotspot.
+
+	string.modify_meta(0, string.size(),
+			   [&]
+			   (size_t, auto &meta)
+			   {
+				   meta.link=hotspot;
+			   });
+
+	auto [begin_iter, end_iter]=({
+			impl_t::lock lock{this->impl};
+
+			// Find the hotspot's first and last fragment
+
+			auto iter= (*lock)->hotspot_collection.find(hotspot);
+
+			if (iter == (*lock)->hotspot_collection.end())
+				throw EXCEPTION("Internal error: existing"
+						" hotspot not found.");
+
+			auto &[begin_fragment, end_fragment]=iter->second;
+
+			// In the first and the last fragment find where
+			// the hotspot begin or ends.
+
+			auto begin_hotspot_iter=
+				begin_fragment->hotspot_collection
+				.find(hotspot);
+
+			if (begin_hotspot_iter ==
+			    begin_fragment->hotspot_collection.end())
+				throw EXCEPTION("Internal error: hotspot"
+						" start not found.");
+
+			auto end_hotspot_iter=
+				end_fragment->hotspot_collection.find(hotspot);
+
+			if (end_hotspot_iter ==
+			    end_fragment->hotspot_collection.end())
+				throw EXCEPTION("Internal error: hotspot"
+						" end not found.");
+
+			// Determine, in the first and last fragment,
+			// the position where the hotspot starts and ends,
+			// based on the corresponding fragment's
+			// range_embedding_level().
+
+			auto &[begin_start, begin_end] =
+				begin_hotspot_iter->second;
+			auto &[end_start, end_end] =
+				end_hotspot_iter->second;
+
+			auto begin_pos=
+				begin_fragment->range_embedding_level()
+				== UNICODE_BIDI_LR
+				? begin_start:begin_end;
+
+			auto end_pos=
+				end_fragment->range_embedding_level()
+				== UNICODE_BIDI_LR
+				? end_end:end_start;
+
+			// Create the beginning and the ending iterators,
+			// and then replace_at_location
+
+			std::tuple{
+				richtextiterator::create
+					(richtext{this},
+					 richtextcursorlocation::create(),
+					 &*begin_fragment,
+					 begin_pos,
+					 new_location::lr),
+
+					richtextiterator::create
+					(richtext{this},
+					 richtextcursorlocation::create(),
+					 &*end_fragment,
+					 end_pos,
+					 new_location::lr)
+					};
+		});
+
+	begin_iter->replace(IN_THREAD, end_iter, std::move(string));
+}
+
 ref<richtext_implObj> richtextObj::debug_get_impl(ONLY IN_THREAD)
 {
 	impl_t::lock lock{impl};

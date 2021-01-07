@@ -1872,7 +1872,32 @@ struct richtext_insert_into {
 	}
 };
 
-typedef std::variant<richtext_remove_between, richtext_insert_into> richtext_op;
+// Functor used below to replace a hotspot
+
+struct richtext_replace_hotspot {
+
+	text_hotspot hotspot;
+	const char32_t *str;
+
+	richtext_replace_hotspot(const text_hotspot &hotspot,
+				 const char32_t *str)
+		: hotspot{hotspot}, str{str}
+	{
+	}
+
+	void operator()(ONLY IN_THREAD, const richtext &t) const
+	{
+		richtextstring rts{str,
+				   {
+					   {0, {0, 0, 0}}
+				   }};
+
+		t->replace_hotspot(IN_THREAD, rts, hotspot);
+	}
+};
+
+typedef std::variant<richtext_remove_between, richtext_insert_into,
+		     richtext_replace_hotspot> richtext_op;
 
 void testrichtext10(ONLY IN_THREAD)
 {
@@ -1961,6 +1986,22 @@ void testrichtext10(ONLY IN_THREAD)
 								{0, 12},
 								{0, 17},
 								{0, 12}
+							},
+						}
+					},
+				},
+
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_replace_hotspot>{},
+						meta1.link,
+						U"Hello World!",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 0, 0,
+							{
+								{6, 18},
 							},
 						}
 					},
@@ -2144,7 +2185,52 @@ void testrichtext10(ONLY IN_THREAD)
 							},
 						},
 					}
-				}
+				},
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_replace_hotspot>{},
+						meta1.link,
+						U"Hello World!",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 0, 1,
+							{
+								{18, 24},
+								{0, 6},
+							},
+						},
+						{
+							2, 0, 0,
+							{
+								{12, 18},
+							},
+						},
+					},
+				},
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_replace_hotspot>{},
+						meta2.link,
+						U"Hello World!",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 1, 3,
+							{
+								{0, 21},
+								{0, 21},
+								{0, 11},
+							},
+						},
+						{
+							2, 0, 0,
+							{
+								{12, 24},
+							},
+						},
+					},
+				},
 			},
 		},
 	};
@@ -2189,7 +2275,7 @@ void testrichtext10(ONLY IN_THREAD)
 					o.str();
 				});
 
-			richtext=richtext::create((richtextstring)t.input,
+			auto richtext=richtext::create((richtextstring)t.input,
 						  options);
 
 			std::visit([&]
@@ -2205,7 +2291,7 @@ void testrichtext10(ONLY IN_THREAD)
 
 			std::cout << dump_hotspot_info(hotspot_collection);
 			assert_or_throw(hotspot_collection == res,
-					(test_name +
+					(mod_test_name +
 					 " hotspot collection mismatch")
 					.c_str());
 		}
