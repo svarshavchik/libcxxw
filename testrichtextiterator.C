@@ -14,6 +14,9 @@
 #include <x/options.H>
 #include <iostream>
 #include <algorithm>
+#include <variant>
+#include <functional>
+#include <utility>
 #include <courier-unicode.h>
 
 using namespace LIBCXX_NAMESPACE::w;
@@ -173,6 +176,37 @@ void testrichtext1(ONLY IN_THREAD)
 		"Cursor did not move to next fragment");
 }
 
+// For validation purposes, richtext's hotspot collection get decoded into
+// a vector containing:
+//
+// 1) hotspot number,
+// 2) hotspot's first and last fragments' index().
+// 3) A vector of start/end tuples, the location of the hotspot in the
+//    fragment from the first to the last one.
+
+typedef std::vector<std::tuple<size_t,
+			       size_t, size_t,
+			       std::vector<std::tuple<size_t, size_t>>
+			       >> decoded_hotspot_info_t;
+
+static std::string dump_hotspot_info(const decoded_hotspot_info_t &info)
+{
+	std::ostringstream o;
+
+	for (const auto &[number, first, last, ranges]:info)
+	{
+		o << "hotspot " << number << ": fragments "
+		  << first << "-" << last << "\n";
+
+		for (const auto &[start, end]:ranges)
+		{
+			o << "    " << start << "-" << end << "\n";
+		}
+	}
+
+	return o.str();
+}
+
 auto validate_richtext_structure(ONLY IN_THREAD,
 				 const richtext &rtext,
 				 const std::string &what)
@@ -271,7 +305,79 @@ auto validate_richtext_structure(ONLY IN_THREAD,
 			"sum of paragraph num_chars does not match"
 			" total text size");
 
-	return std::tuple{v, text->num_chars};
+	decoded_hotspot_info_t decoded_hotspot_info;
+
+	for (auto &hotspot_info:text->hotspot_collection)
+	{
+		auto &[begin_fragment, end_fragment] = hotspot_info.second;
+
+		decoded_hotspot_info.emplace_back
+			(hotspot_info.first,
+			 begin_fragment->index(),
+			 end_fragment->index(),
+			 std::vector<std::tuple<size_t, size_t>>{});
+
+		auto &v=std::get<3>(decoded_hotspot_info.back());
+
+		assert_or_throw(begin_fragment->index()<=end_fragment->index(),
+				"hotspot begin after its end");
+
+		auto p=begin_fragment;
+
+		while (1)
+		{
+			auto iter=
+				p->hotspot_collection.find(hotspot_info.first);
+
+			assert_or_throw(iter != p
+					->hotspot_collection.end(),
+					"did not find expected hotspot");
+			auto &[start, end]=iter->second;
+
+			v.emplace_back(start, end);
+
+			assert_or_throw(start <= end &&	end <= p->string.size(),
+					"invalid hotspot fragment location");
+
+			auto &m=p->string.get_meta();
+			auto mb=m.begin(), me=m.end();
+
+			while (mb != me)
+			{
+				if (mb->first == start)
+					break;
+				++mb;
+			}
+
+			assert_or_throw(mb != me &&
+					mb->first == start,
+					"did not find hotspot start in fragment"
+					);
+			while (mb != me)
+			{
+				if (mb->first == end)
+					break;
+				++mb;
+			}
+
+			assert_or_throw((mb != me ? mb->first
+					 : p->string.size())
+					== end,
+					"did not find hotspot end in fragment");
+
+			if (p == end_fragment)
+				break;
+
+			auto n=p->next_fragment();
+
+			assert_or_throw(n,
+					"did not find last hotspot fragment");
+
+			p=richtextfragment{n};
+		}
+	}
+	std::sort(decoded_hotspot_info.begin(), decoded_hotspot_info.end());
+	return std::tuple{v, text->num_chars, decoded_hotspot_info};
 }
 
 void validate_richtext(ONLY IN_THREAD,
@@ -279,7 +385,7 @@ void validate_richtext(ONLY IN_THREAD,
 		       const std::string &s,
 		       const std::string &what)
 {
-	auto [v, num_chars]=
+	auto [v, num_chars, hotspot_collection]=
 		validate_richtext_structure(IN_THREAD, rtext, what);
 	assert_or_throw(num_chars == s.size(),
 			"invalid overall text num_chars value");
@@ -898,6 +1004,41 @@ std::string format(const std::vector<std::string> &l)
 	return o.str();
 }
 
+template<typename F> static void extract(ONLY IN_THREAD,
+					 const richtext &richtext, F &&f)
+{
+	richtext->thread_lock
+		(IN_THREAD,
+		 [&]
+		 (ONLY IN_THREAD, auto &lock)
+		 {
+			 (*lock)->paragraphs.for_paragraphs
+				 (0,
+				  [&]
+				  (auto p)
+				  {
+					  p->fragments.for_fragments
+						  (std::forward<F>(f));
+					  return true;
+				  });
+		 });
+}
+
+static void dump(ONLY IN_THREAD,
+		 const richtext &richtext)
+{
+	std::vector<std::string> actual;
+
+	extract(IN_THREAD, richtext, [&](const auto &f)
+	{
+		auto &s=f->string.get_string();
+
+		actual.push_back({s.begin(), s.end()});
+	});
+
+	std::cout << format(actual);
+}
+
 void testrichtext8(ONLY IN_THREAD)
 {
 	richtextmeta metalr{'0'};
@@ -1378,43 +1519,9 @@ void testrichtext8(ONLY IN_THREAD)
 
 			}, options);
 
-		auto extract=[&]
-			(auto cb)
-		{
-			richtext->thread_lock
-				(IN_THREAD,
-				 [&]
-				 (ONLY IN_THREAD, auto &lock)
-				 {
-					 (*lock)->paragraphs.for_paragraphs
-						 (0,
-						  [&]
-						  (auto p)
-						  {
-							  p->fragments
-								  .for_fragments
-								  (cb);
-							  return true;
-						  });
-				 });
-		};
 
-		auto dump=[&]
-		{
-			std::vector<std::string> actual;
+		dump(IN_THREAD, richtext);
 
-			extract([&]
-				(const auto &f)
-			{
-				auto &s=f->string.get_string();
-
-				actual.push_back({s.begin(), s.end()});
-			});
-
-			std::cout << format(actual);
-		};
-
-		dump();
 		std::cout << "----------------\n";
 
 		auto iter=richtext->at(t.insert_pos, new_location::bidi);
@@ -1426,7 +1533,7 @@ void testrichtext8(ONLY IN_THREAD)
 						       {0, metalr},
 					       }
 				       });
-		dump();
+		dump(IN_THREAD, richtext);
 		std::cout << "\n";
 
 		if (orig->pos() != t.expected_orig)
@@ -1453,7 +1560,7 @@ void testrichtext8(ONLY IN_THREAD)
 
 		std::vector<std::string> actual;
 
-		extract([&]
+		extract(IN_THREAD, richtext, [&]
 			(const auto &f)
 		{
 			auto &s=f->string.get_string();
@@ -1728,6 +1835,383 @@ void testrichtext9(ONLY IN_THREAD)
 	}
 }
 
+// Functor used below to remove something from a richtext
+
+struct richtext_remove_between {
+
+	size_t pos1;
+	size_t pos2;
+
+	richtext_remove_between(size_t pos1,
+				size_t pos2) : pos1{pos1}, pos2{pos2}
+	{
+	}
+
+	void operator()(ONLY IN_THREAD, const richtext &t) const
+	{
+		t->at(pos1, new_location::bidi)->
+			remove(IN_THREAD, t->at(pos2, new_location::bidi));
+	}
+};
+
+// Functor used below to insert something into a richtext
+
+struct richtext_insert_into {
+
+	size_t pos;
+	const char32_t *str;
+
+	richtext_insert_into(size_t pos, const char32_t *str)
+		: pos{pos}, str{str}
+	{
+	}
+
+	void operator()(ONLY IN_THREAD, const richtext &t) const
+	{
+		t->at(pos, new_location::bidi)->insert(IN_THREAD, str);
+	}
+};
+
+typedef std::variant<richtext_remove_between, richtext_insert_into> richtext_op;
+
+void testrichtext10(ONLY IN_THREAD)
+{
+	static constexpr richtextmeta meta0{0, 0, 0};
+	static constexpr richtextmeta meta1{0, 0, 1};
+	static constexpr richtextmeta meta2{0, 0, 2};
+
+	static const struct {
+		richtextstring input;
+		std::optional<unicode_bidi_level_t> embedding_level;
+		dim_t wrap_to_width;
+		decoded_hotspot_info_t expected_hotspot_collection;
+
+		std::vector<std::tuple<richtext_op,
+				       decoded_hotspot_info_t>
+			    > modifications;
+	} tests[]={
+		// Test 1
+		{
+			{
+				U"Lorem Ipsum Dolor Sit "
+				U"Amet consectetur "
+				U"adipisicing elit",
+				{
+					{0, meta0},
+					{6, meta1},
+					{51, meta0},
+				},
+			},
+			UNICODE_BIDI_LR,
+			200,
+			{
+				{
+					1, 0, 2,
+					{
+						{6, 22},
+						{0, 17},
+						{0, 12}
+					}
+				},
+
+			},
+			{
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_remove_between>{},
+						22, 39
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 0, 1,
+							{
+								{6, 22},
+								{0, 12}
+							},
+						}
+					},
+				},
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_insert_into>{},
+						22, U"Hello World ",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 0, 3,
+							{
+								{6, 22},
+								{0, 17},
+								{0, 12},
+								{0, 12}
+							},
+						}
+					},
+				},
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_insert_into>{},
+						22, U"Hello World\n",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 0, 3,
+							{
+								{6, 22},
+								{0, 12},
+								{0, 17},
+								{0, 12}
+							},
+						}
+					},
+				},
+			}
+		},
+
+		// Test 2
+		{
+			{
+				U"Lorem Ipsum "
+				U"Dolor Sit "
+				U"Amet "
+				U"consectetur "
+				U"adipisicing "
+				U"elit",
+				{
+					{0, meta0},
+					{6, meta1},
+					{51, meta0},
+				},
+			},
+			UNICODE_BIDI_LR,
+			120,
+			{
+				{
+					1, 0, 4,
+					{
+						{6, 12},
+						{0, 10},
+						{0, 5},
+						{0, 12},
+						{0, 12},
+					}
+				},
+			},
+			{
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_remove_between>{},
+						22, 39
+					},
+
+					decoded_hotspot_info_t{
+						{
+							1, 0, 2,
+							{
+								{6, 12},
+								{0, 10},
+								{0, 12},
+							}
+						}
+					}
+				},
+			},
+		},
+
+		// Test 3
+
+		{
+			{
+				U"Lorem Ipsum Dolor Sit\n"
+				U"Amet consectetur "
+				U"adipisicing elit",
+				{
+					{0, meta0},
+					{6, meta1},
+					{51, meta0},
+				},
+			},
+			UNICODE_BIDI_LR,
+			200,
+			{
+				{
+					1, 0, 2,
+					{
+						{6, 22},
+						{0, 17},
+						{0, 12}
+					}
+				},
+
+			},
+
+
+
+			{
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_remove_between>{},
+						12, 27
+					},
+
+					decoded_hotspot_info_t{
+						{
+							1, 0, 2,
+							{
+								{6, 12},
+								{0, 12},
+								{0, 12}
+							},
+						},
+					}
+				}
+			}
+		},
+
+		// Test 4
+
+		{
+			{
+				U"Lorem Ipsum Dolor Sit "
+				U"Amet_consectetur "
+				U"adipisicing elit sed "
+				U"do eiusmod tem",
+				{
+					{0, meta0},
+					{12, meta2},
+					{18, meta1},
+					{71, meta0},
+				},
+			},
+			UNICODE_BIDI_LR,
+			220,
+			{
+				{
+					1, 0, 3,
+					{
+						{18, 22},
+						{0, 17},
+						{0, 21},
+						{0, 11},
+					}
+				},
+				{
+					2, 0, 0,
+					{
+						{12, 18},
+					}
+				},
+			},
+
+			{
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_remove_between>{},
+						12, 18
+					},
+
+					decoded_hotspot_info_t{
+						{
+							1, 0, 3,
+							{
+								{12, 16},
+								{0, 17},
+								{0, 21},
+								{0, 11},
+							},
+						},
+					}
+				},
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_remove_between>{},
+						18, 22
+					},
+
+					decoded_hotspot_info_t{
+						{
+							1, 1, 3,
+							{
+								{0, 17},
+								{0, 21},
+								{0, 11},
+							},
+						},
+						{
+							2, 0, 0,
+							{
+								{12, 18},
+							},
+						},
+					}
+				}
+			},
+		},
+	};
+	size_t casenum=0;
+
+	for (const auto &t:tests)
+	{
+		std::string test_name=({
+				std::ostringstream o;
+
+				o << "testrichtext10, test " << ++casenum << ": ";
+				o.str();
+			});
+
+		richtext_options options;
+
+		options.paragraph_embedding_level=t.embedding_level;
+		options.initial_width=t.wrap_to_width;
+
+		auto richtext=richtext::create((richtextstring)t.input,options);
+
+		dump(IN_THREAD, richtext);
+		auto [v, num_chars, hotspot_collection]=
+			validate_richtext_structure(IN_THREAD, richtext,
+						    test_name);
+
+		std::cout << dump_hotspot_info(hotspot_collection);
+		assert_or_throw(hotspot_collection ==
+				t.expected_hotspot_collection,
+				(test_name + " hotspot collection mismatch")
+				.c_str());
+
+		size_t modification_number=0;
+
+		for (const auto &[op, res]:t.modifications)
+		{
+			std::string mod_test_name=({
+					std::ostringstream o;
+
+					o << test_name << "modification "
+					  << ++modification_number << ": ";
+					o.str();
+				});
+
+			richtext=richtext::create((richtextstring)t.input,
+						  options);
+
+			std::visit([&]
+				   (const auto &op)
+			{
+				op(IN_THREAD, richtext);
+			}, op);
+
+			dump(IN_THREAD, richtext);
+			auto [v, num_chars, hotspot_collection]=
+				validate_richtext_structure(IN_THREAD, richtext,
+							    mod_test_name);
+
+			std::cout << dump_hotspot_info(hotspot_collection);
+			assert_or_throw(hotspot_collection == res,
+					(test_name +
+					 " hotspot collection mismatch")
+					.c_str());
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -1764,6 +2248,7 @@ int main(int argc, char **argv)
 		testrichtext7(IN_THREAD);
 		testrichtext8(IN_THREAD);
 		testrichtext9(IN_THREAD);
+		testrichtext10(IN_THREAD);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

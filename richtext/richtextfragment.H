@@ -199,6 +199,15 @@ public:
 	//! fragment_list calls it before removing this fragment.
 	void destroying();
 
+ private:
+	//! Deregister hotspot
+
+	//! After a particular hotspot no longer appears in this
+	//! richtextfragment: update my_richtext->hotspot_collection to reflect
+	//! that this fragment no longer has this hotspot.
+
+	void deregister_hotspot(const text_hotspot &sp);
+ public:
 	//! Update our hotspot_collection
 
 	//! Rereads richtext, and updates our hotspot_collection.

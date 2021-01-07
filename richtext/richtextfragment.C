@@ -1318,7 +1318,10 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 	}
 
 	if (new_fragment->string.size())
+	{
 		new_fragment->update_glyphs_widths_kernings(0, 1);
+		new_fragment->update_hotspots();
+	}
 
 	my_fragments.fragment_text_changed(my_fragment_number, 0);
 
@@ -1699,11 +1702,159 @@ void richtextfragmentObj::fragments_t::paragraph_destroyed()
 
 void richtextfragmentObj::destroying()
 {
+	USING_MY_PARAGRAPH();
+
+	for (auto iter=hotspot_collection.begin();
+	     iter != hotspot_collection.end(); )
+	{
+		deregister_hotspot(iter->first);
+		iter=hotspot_collection.erase(iter);
+	}
+
 	my_paragraph.ptr=nullptr;
+}
+
+void richtextfragmentObj::deregister_hotspot(const text_hotspot &hotspot)
+{
+	richtextfragment me{this};
+
+	auto text_iter=
+		my_paragraph->my_richtext->hotspot_collection.find(hotspot);
+
+	assert_or_throw(text_iter !=
+			my_paragraph->my_richtext->hotspot_collection.end(),
+			"internal: hotspot not registered");
+
+	auto &[first_fragment, last_fragment] = text_iter->second;
+
+	if (first_fragment == me)
+	{
+		if (last_fragment == me)
+		{
+			my_paragraph->my_richtext->hotspot_collection
+				.erase(text_iter);
+			return;
+		}
+
+		auto n=next_fragment();
+
+		assert_or_throw(n,
+				"internal error: next hotspot fragment"
+				" not found");
+		first_fragment=richtextfragment{n};
+		return;
+	}
+
+	if (last_fragment == me)
+	{
+		auto p=prev_fragment();
+
+		assert_or_throw(p,
+				"internal error: prev hotspot fragment"
+				" not found");
+		last_fragment=richtextfragment{p};
+	}
 }
 
 void richtextfragmentObj::update_hotspots()
 {
+	USING_MY_PARAGRAPH();
+
+	// First, get our current links
+
+	std::unordered_map<text_hotspot, std::tuple<size_t, size_t>
+			   > new_hotspots;
+
+	auto &meta=string.get_meta();
+	for (auto mb=meta.begin(), me=meta.end(); mb != me;)
+	{
+		if (!mb->second.link)
+		{
+			++mb;
+			continue;
+		}
+
+		auto start_meta=mb;
+
+		while (++mb != me)
+		{
+			if (mb->second.link != start_meta->second.link)
+				break;
+		}
+
+		new_hotspots.emplace(start_meta->second.link,
+				     std::tuple{start_meta->first,
+					     mb == me ? string.size()
+					     : mb->first});
+	}
+
+	// Now, reconcile new_hotspots with the current hotspot_collection
+
+	for (auto iter=hotspot_collection.begin();
+	     iter != hotspot_collection.end(); )
+	{
+		auto updated=new_hotspots.find(iter->first);
+
+		if (updated != new_hotspots.end())
+		{
+			// Update our range.
+
+			iter->second=updated->second;
+			++iter;
+
+			new_hotspots.erase(updated);
+			continue;
+		}
+
+		// This hot spot is no longer here.
+
+		deregister_hotspot(iter->first);
+		iter=hotspot_collection.erase(iter);
+	}
+
+	// What's left in new_hotspots, are all the new ones, so...
+
+	auto &text_hotspot_collection=
+		my_paragraph->my_richtext->hotspot_collection;
+
+	auto me=richtextfragment{this};
+
+	for (auto iter=new_hotspots.begin(), e=new_hotspots.end();
+	     iter != e; )
+	{
+		auto p=iter;
+
+		++iter;
+
+		// We move them to this fragment's hotspot_collection
+		auto n=new_hotspots.extract(p);
+
+		auto new_iter=hotspot_collection.insert(std::move(n));
+
+		assert_or_throw(new_iter.inserted,
+				"internal error: moved hotspot not inserted");
+		// Then examine text_hotspot_collection to see how it needs
+		// to be updated.
+
+		auto res=text_hotspot_collection.try_emplace
+			(new_iter.position->first, std::tuple{me, me});
+
+		if (res.second)
+			continue; // Inserted, first fragment with hotspot.
+
+		// Hotspot already in the collection. Check to see if
+		// this fragment indicates an earlier or later range.
+		auto &[begin_range, end_range] =
+			res.first->second;
+
+		if (me->compare(begin_range) == std::strong_ordering::less)
+		{
+			begin_range=me;
+		}
+		else if (end_range->compare(me)
+			 == std::strong_ordering::less)
+			end_range=me;
+	}
 }
 
 std::strong_ordering richtextfragmentObj::compare(const richtextfragment &other)

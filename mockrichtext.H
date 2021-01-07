@@ -27,10 +27,8 @@ public:
 
 	bool operator==(const richtextmeta &o) const
 	{
-		return c == o.c && rl == o.rl;
+		return c == o.c && rl == o.rl && link == o.link;
 	}
-
-	bool operator!=(const richtextmeta &o) const { return !operator==(o); }
 
 	richtextmeta *operator->()
 	{
