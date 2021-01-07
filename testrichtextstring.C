@@ -2038,6 +2038,64 @@ void gettest()
 						}},
 				}
 			},
+			// Test 11
+			{
+				{
+					U"Lorem Ipsum Dolor Sit Amet\n",
+				 {
+					 {0, lr},
+				 }
+				},
+				80,
+				UNICODE_BIDI_RL,
+				{
+					U"Lorem ",
+					U"Ipsum ",
+					U"Dolor ",
+					U"Sit ",
+					U"\nAmet",
+				},
+
+				{
+					{0, 3, U"em ",
+					 {
+						 U"LorIpsum ",
+						 U"Dolor ",
+						 U"Sit ",
+						 U"\nAmet",
+					 }
+					},
+				},
+
+			},
+			// Test 12
+			{
+				{
+					std::u32string{RLO} +
+					U"Lorem Ipsum Dolor Sit Amet\n",
+				 {
+					 {0, lr},
+				 }
+				},
+				80,
+				UNICODE_BIDI_LR,
+				{
+					U" meroL",
+					U" muspI",
+					U" tiS roloD",
+					U"temA\n",
+				},
+
+				{
+					{0, 3, U" me",
+					 {
+						 U" muspIroL",
+						 U" tiS roloD",
+						 U"temA\n",
+					 },
+					},
+				},
+			},
 		};
 
 	size_t casenum=0;

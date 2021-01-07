@@ -1287,9 +1287,10 @@ void richtextfragmentObj::move_location(fragment_cursorlocations_t::iterator
 	l->my_fragment_iter=--new_fragment->locations.end();
 }
 
-void richtextfragmentObj::merge(fragment_list &my_fragments,
-				merge_type_t merge_type,
-				richtext_insert_results &insert_results)
+richtextfragment
+richtextfragmentObj::merge(fragment_list &my_fragments,
+			   merge_type_t merge_type,
+			   richtext_insert_results &insert_results)
 {
 	USING_MY_PARAGRAPH();
 
@@ -1319,8 +1320,7 @@ void richtextfragmentObj::merge(fragment_list &my_fragments,
 		if (merge_type == merge_bidi &&
 		    string.get_dir() == richtext_dir::rl)
 		{
-			merge_lr_rl(my_fragments, other, insert_results);
-			return;
+			return merge_lr_rl(my_fragments, other, insert_results);
 		}
 
 		merge_lr_lr(my_fragments, other, insert_results);
@@ -1340,8 +1340,7 @@ void richtextfragmentObj::merge(fragment_list &my_fragments,
 		if (merge_type == merge_bidi &&
 		    string.get_dir() == richtext_dir::lr)
 		{
-			merge_rl_lr(my_fragments, other, insert_results);
-			return;
+			return merge_rl_lr(my_fragments, other, insert_results);
 		}
 
 		other->merge_lr_lr(my_fragments, ref{this},
@@ -1356,18 +1355,25 @@ void richtextfragmentObj::merge(fragment_list &my_fragments,
 			if (p)
 				p->update_glyphs_widths_kernings(0, 1);
 		}
+
+		return other;
 	}
+
+	return ref{this};
 }
 
-void richtextfragmentObj::merge_rl_lr(fragment_list &my_fragments,
-				      const richtextfragment &other,
-				      richtext_insert_results &insert_results)
+richtextfragment
+richtextfragmentObj::merge_rl_lr(fragment_list &my_fragments,
+				 const richtextfragment &other,
+				 richtext_insert_results &insert_results)
 {
 	if (other->string.get_dir() == richtext_dir::lr)
 	{
 		merge_lr_lr(my_fragments, other, insert_results);
-		return;
+		return ref{this};
 	}
+
+	// Find any lr text at the end of the next fragment.
 
 	auto &meta=other->string.get_meta();
 	auto mb=meta.begin();
@@ -1386,24 +1392,50 @@ void richtextfragmentObj::merge_rl_lr(fragment_list &my_fragments,
 		// Next fragment ends with rl text, regular rl merge.
 
 		other->merge_lr_lr(my_fragments, ref{this}, insert_results);
-		return;
+		return other;
 	}
+
+	// The next fragment, "other", contains the leading rl text, and
+	// the lr text gets temporarily split to the next fragment.
+	//
+	// Before:
+	//           this:   llllll
+	//          other:   rrrrll
 
 	other->split(my_fragments, p->first, split_lr, false,
 		     insert_results);
-
+	// Now:
+	//           this:   llllll
+	//          other:   rrrr
+	//      following:   ll
+	// We now merge this fragment to the end of the "other" fragment,
+	// putting next fragment's rl text before this fragment's lr text.
 	other->merge_lr_lr(my_fragments, ref{this}, insert_results);
+
+	// Now:
+	//          other:   rrrrllllll
+	//      following:   lll
+	//
+	// And now we append the split-off lr text at the end of the lr
+	// text at the end of the combined fragment.
 
 	auto next=other->next_fragment();
 
 	assert_or_throw(next, "Internal error: did not find split fragment in"
 			" merge_rl_lr");
 	other->merge_lr_lr(my_fragments, ref{next}, insert_results);
+
+	// End result:
+	//
+	//           other: rrrrlllllllll
+
+	return other;
 }
 
-void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
-				      const richtextfragment &other,
-				      richtext_insert_results &insert_results)
+richtextfragment
+richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
+				 const richtextfragment &other,
+				 richtext_insert_results &insert_results)
 {
 
 	size_t next_left_to_right_start=
@@ -1412,7 +1444,7 @@ void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
 	if (next_left_to_right_start == 0)
 	{
 		merge_lr_lr(my_fragments, other, insert_results);
-		return;
+		return ref{this};
 	}
 
 	bool merge_again=false;
@@ -1436,9 +1468,10 @@ void richtextfragmentObj::merge_lr_rl(fragment_list &my_fragments,
 	{
 		// left-to-right text must follow, so this won't
 		// recurse again.
-		other->merge(my_fragments, other->merge_bidi,
-			     insert_results);
+		return other->merge(my_fragments, other->merge_bidi,
+				    insert_results);
 	}
+	return other;
 }
 
 void richtextfragmentObj::merge_lr_lr(fragment_list &my_fragments,

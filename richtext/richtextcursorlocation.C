@@ -61,12 +61,12 @@ void richtextcursorlocationObj::initialize(richtextfragmentObj *fragment,
 	my_fragment=fragment;
 	my_fragment_iter=new_iter;
 
+	assert_or_throw(offsetArg < my_fragment->string.size(),
+			"Internal error: invalid initial location"
+			" offset");
 	if (location_option == new_location::bidi &&
 	    my_fragment->my_paragraph->my_richtext->rl())
 	{
-		assert_or_throw(offsetArg < my_fragment->string.size(),
-				"Internal error: invalid initial location"
-				" offset");
 		offsetArg=my_fragment->string.size()-1-offsetArg;
 	}
 

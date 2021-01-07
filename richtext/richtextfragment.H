@@ -311,10 +311,15 @@ public:
 
 	//! Take the next fragment in this paragraph and merge it into this one.
 
-	void merge(//! Fragment's paragraph's fragment list
-		   fragment_list &my_fragments,
-		   merge_type_t merge_type,
-		   richtext_insert_results &insert_results);
+	//! Returns the merged fragment, which may be a different fragment,
+	//! due to bi-directional text. For example, right-to-left text
+	//! results in this fragment being appended to another one, with
+	//! this fragment no longer being used.
+
+	richtextfragment merge(//! Fragment's paragraph's fragment list
+			       fragment_list &my_fragments,
+			       merge_type_t merge_type,
+			       richtext_insert_results &insert_results);
 
  private:
 
@@ -328,10 +333,12 @@ public:
 	//!
 	//! Otherwise if there are any lr text at the end of the next
 	//! fragment, they get appended to this line, with the rest prepended.
-
-	void merge_rl_lr(fragment_list &my_fragments,
-			 const richtextfragment &other,
-			 richtext_insert_results &insert_results);
+	//!
+	//! Returns the merged fragment (this fragment may end up getting
+	//! merged into another one, and is no longer in use).
+	richtextfragment merge_rl_lr(fragment_list &my_fragments,
+				     const richtextfragment &other,
+				     richtext_insert_results &insert_results);
 
 
 	//! Left to right paragraph, merging richtext_dir:rl with next fragment
@@ -339,10 +346,13 @@ public:
 	//! This fragment is richtext_dir::rl. Check if the next fragment
 	//! begins with rl text, if so it needs to be prepended to this
 	//! fragment.
+	//!
+	//! Returns the merged fragment (this fragment may end up getting
+	//! merged into another one, and is no longer in use).
 
-	void merge_lr_rl(fragment_list &my_fragments,
-			 const richtextfragment &other,
-			 richtext_insert_results &insert_results);
+	richtextfragment merge_lr_rl(fragment_list &my_fragments,
+				     const richtextfragment &other,
+				     richtext_insert_results &insert_results);
 
  public:
 

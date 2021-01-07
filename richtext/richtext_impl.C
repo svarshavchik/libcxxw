@@ -981,9 +981,6 @@ void richtext_implObj
 	auto fragment_a=info.location_a->my_fragment;
 	auto fragment_b=info.location_b->my_fragment;
 
-	fragment_list fragment_a_list(my_paragraphs,
-				      *fragment_a->my_paragraph);
-
 	auto diff=info.diff;
 
 	auto [a_start, a_size]=info.in_range(fragment_a);
@@ -998,8 +995,43 @@ void richtext_implObj
 				   a_size,
 				   fragment_a_list,
 				   results);
+
+		auto embedding_level = fragment_a->embedding_level();
+
+		if (embedding_level == UNICODE_BIDI_LR ?
+		    fragment_a->string.size() == a_start :
+		    a_start == 0)
+		{
+			if (fragment_a->next_fragment())
+			{
+				fragment_a->merge(fragment_a_list,
+						  fragment_a->merge_bidi,
+						  results)
+					->recalculate_linebreaks();
+			}
+			else
+				fragment_a->recalculate_linebreaks();
+
+		} else if (embedding_level == UNICODE_BIDI_LR ?
+			   a_start == 0 :
+			   fragment_a->string.size() == a_start)
+		{
+			if (fragment_a->my_fragment_number)
+			{
+				fragment_a->prev_fragment()
+					->merge(fragment_a_list,
+						fragment_a->merge_bidi,
+						results)
+					->recalculate_linebreaks();
+			}
+			else
+				fragment_a->recalculate_linebreaks();
+		}
 		return;
 	}
+
+	fragment_list fragment_a_list(my_paragraphs,
+				      *fragment_a->my_paragraph);
 
 	assert_or_throw(a_size < fragment_a->string.size() ||
 			b_size < fragment_b->string.size(),
