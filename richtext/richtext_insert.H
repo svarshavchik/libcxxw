@@ -245,6 +245,9 @@ struct richtext_insert_results {
 	//! An entire fragment was removed.
 	void removed(const richtextfragment &f,
 		     size_t pos, size_t nchars);
+
+	//! Insert complete, move cursors according to the inserted_range
+	void move_cursors();
 };
 
 LIBCXXW_NAMESPACE_END
