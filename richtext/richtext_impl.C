@@ -512,9 +512,7 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 	}
 	paragraph_list my_paragraphs{*this};
 
-	insert_at_location(IN_THREAD, my_paragraphs, new_text,
-			   make_function<void (richtext_insert_results &)>
-			   ([](auto &) {}));
+	insert_at_location(IN_THREAD, my_paragraphs, new_text);
 }
 
 // After text was inserted we calculated the inserted text range in the
@@ -587,10 +585,7 @@ static std::tuple<richtextfragment,
 void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 					  paragraph_list &my_paragraphs,
 					  const richtext_insert_base
-					  &new_text,
-					  const function<void
-					  (richtext_insert_results &)>
-					  &after_insert)
+					  &new_text)
 {
 	assert_or_throw(new_text.fragment(),
 			"Internal error: null my_fragment in insert()");
@@ -602,8 +597,6 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 	auto inserted_info=orig_fragment->insert(IN_THREAD,
 						 my_paragraphs,
 						 new_text);
-
-	after_insert(inserted_info);
 
 	if (word_wrap_width > 0)
 	{
@@ -880,18 +873,16 @@ void richtext_implObj
 
 	paragraph_list my_paragraphs{*this};
 
-	insert_at_location(IN_THREAD, my_paragraphs,
-			   new_text,
-			   make_function<void (richtext_insert_results &)>
-			   ([&, this]
-			    (richtext_insert_results &insert_results)
-			    {
-				    if (info.diff != 0)
-					    remove_at_location_no_rewrap
-						    (info,
-						     my_paragraphs,
-						     insert_results);
-			    }));
+	if (info.diff != 0)
+	{
+		richtext_insert_results ignored;
+
+		remove_at_location_no_rewrap(info,
+					     my_paragraphs,
+					     ignored);
+	}
+
+	insert_at_location(IN_THREAD, my_paragraphs, new_text);
 }
 
 std::pair<metrics::axis, metrics::axis>

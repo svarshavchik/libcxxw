@@ -11,6 +11,8 @@
 #include "richtext/richtext_impl.H"
 #include "messages.H"
 #include <utility>
+#include <x/sentry.H>
+
 LIBCXXW_NAMESPACE_START
 
 /////////////////////////////////////////////////////////////////////////////
@@ -374,12 +376,17 @@ void richtextiteratorObj::replace(ONLY IN_THREAD,
 				  const const_richtextiterator &other,
 				  const internal_insert &new_string) const
 {
-	auto orig=richtextiterator::create(*other);
+	auto orig=richtextiterator::create(*this);
 
 	// Clone the end of the insert position, and tell the insert
 	// code not to adjust it, temporarily.
 
-	orig->my_location->do_not_adjust_in_insert=true;
+	my_location->do_not_adjust_in_insert=true;
+
+	auto sentry=make_sentry([my_location=this->my_location]
+	{
+		my_location->do_not_adjust_in_insert=false;
+	});
 
 	// We now type-erase the insert_callback_func
 	// to complete the process of constructing the
@@ -392,7 +399,7 @@ void richtextiteratorObj::replace(ONLY IN_THREAD,
 		    (const richtext_insert_base &s) {
 			   this->my_richtext->replace_at_location
 				   (IN_THREAD, wrapper.lock, s,
-				    this->my_location, orig->my_location);
+				    orig->my_location, other->my_location);
 		   }));
 }
 

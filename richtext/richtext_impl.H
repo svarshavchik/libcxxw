@@ -370,12 +370,9 @@ public:
 					  richtext_insert_results &);
 
 	//! Common code shared by remove_at_location() and replace_at_location().
-
 	void insert_at_location(ONLY IN_THREAD,
 				paragraph_list &my_paragraphs,
-				const richtext_insert_base &new_text,
-				const function<void (richtext_insert_results &)
-				> &after_insert);
+				const richtext_insert_base &new_text);
 
  public:
 	//! Locate the paragraph containing character #pos
