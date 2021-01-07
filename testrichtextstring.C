@@ -7,6 +7,7 @@
 #include <x/exception.H>
 #include "x/w/namespace.H"
 #include <iostream>
+#include <courier-unicode.h>
 
 #include "mockrichtext.H"
 
@@ -1589,22 +1590,81 @@ static std::string dumpstr(const richtextstring &s)
 {
 	std::string ss;
 
+	std::optional<bool> was_char;
+
 	for (auto c:s.get_string())
 	{
-		if (c == '\n')
-		{
-			ss += "\\n";
+		bool is_char=false;
+		std::string cc;
+
+		switch (c) {
+		case '\n':
+			is_char=true;
+			cc = "\\n";
+			break;
+		case UNICODE_LRO:
+			cc = "LRO";
+			break;
+		case UNICODE_RLO:
+			cc = "RLO";
+			break;
+		case UNICODE_PDF:
+			cc = "PDF";
+			break;
+		case UNICODE_LRI:
+			cc = "LRI";
+			break;
+		case UNICODE_RLI:
+			cc = "RLI";
+			break;
+		case UNICODE_PDI:
+			cc = "PDI";
+			break;
+		case UNICODE_LRM:
+			cc = "LRM";
+			break;
+		case UNICODE_RLM:
+			cc = "RLM";
+			break;
+		default:
+			is_char=true;
+
+			cc=unicode::iconvert::convert(std::u32string{&c, &c+1},
+						      unicode::utf_8);
 		}
-		else if (c > 127)
+
+		if (was_char && *was_char != is_char)
 		{
-			ss += "?";
+			if (*was_char)
+				ss += "\" + ";
+			else
+				ss += " + U\"";
 		}
 		else
 		{
-			ss += (char)c;
+			if (!is_char)
+			{
+				if (was_char)
+					ss += " + ";
+			}
+			else
+			{
+				if (!was_char)
+					ss += "U\"";
+			}
 		}
+		was_char=is_char;
+		ss += cc;
 	}
 
+	if (!was_char)
+	{
+		ss = "U\"";
+		was_char=true;
+	}
+
+	if (*was_char)
+		return ss + "\"";
 	return ss;
 }
 
@@ -2246,8 +2306,6 @@ void getdirtest()
 	}
 }
 
-using namespace unicode::literals;
-
 void canonicaltest()
 {
 	static constexpr richtextmeta meta0{0}, meta1{1};
@@ -2463,6 +2521,144 @@ void canonicaltest2()
 	}
 }
 
+void canonicaltest3()
+{
+	static constexpr richtextmeta meta0{0, 0};
+	static constexpr richtextmeta meta1{0, 1};
+
+	static const struct {
+		richtextstring orig_string;
+
+		richtextstring lr_canonical;
+		richtextstring lr_embedded;
+
+		richtextstring rl_canonical;
+		richtextstring rl_embedded;
+	} tests[] = {
+		// Test 1
+		{
+			{U"Hello world!",
+			 {
+				 {0, meta0},
+				 {6, meta1},
+				 {11, meta0},
+			 }},
+
+			{U"Hello dlrow!",
+			 {
+				 {0, meta0},
+			 },
+			},
+			{std::u32string{U"Hello "} + LRM + RLI
+			 + RLM  + RLO + U"dlrow"
+			 + PDF + RLM  + PDI + U"!",
+			 {
+				 {0, meta0},
+			 }
+			},
+
+			{U"!dlrowHello ",
+			 {
+				 {0, meta0},
+			 }
+			},
+
+			{std::u32string{LRI} + U"!" + LRM
+			 + PDI + RLM + RLO
+			 + U"dlrow" + PDF + RLM
+			 + LRI + U"Hello " + LRM
+			 + PDI,
+			 {
+				 {0, meta0},
+			 }
+			},
+		},
+		// Test 2
+		{
+			{U"Hello" U"ם" U"ו" U"ל" U"ש",
+			 {
+				 {0, meta0},
+				 {5, meta1},
+
+			 }
+			},
+
+			{U"Helloשלום",
+			 {
+				 {0, meta0},
+			 }
+			},
+
+			{std::u32string{U"Hello"} + RLI + U"שלום" + PDI,
+			 {
+				 {0, meta0},
+			 }
+			},
+
+			{U"שלוםHello",
+			 {
+				 {0, meta0},
+			 }
+			},
+
+			{std::u32string{U"שלום"} + LRI + U"Hello" + PDI,
+			 {
+				 {0, meta0},
+			 }
+			},
+
+		},
+	};
+
+
+	size_t casenum=0;
+
+	for (const auto &t: tests)
+	{
+		std::ostringstream o;
+
+		o << "canonical3 test " << ++casenum;
+
+		std::string testname=o.str();
+
+		{
+			auto cpy=t.orig_string;
+
+			richtextstring::from_canonical_order
+				from{cpy, UNICODE_BIDI_LR};
+
+			std::cout << dumpstr(cpy) << std::endl;
+
+			if (cpy != t.lr_canonical)
+				throw EXCEPTION(testname <<
+						": unexpected lr_canonical");
+			auto e=from.embed();
+			std::cout << dumpstr(e) << std::endl;
+			if (e != t.lr_embedded)
+				throw EXCEPTION(testname <<
+						": unexpected lr_embedded");
+		}
+
+		{
+			auto cpy=t.orig_string;
+
+			richtextstring::from_canonical_order
+				from{cpy, UNICODE_BIDI_RL};
+
+			std::cout << dumpstr(cpy) << std::endl;
+			if (cpy != t.rl_canonical)
+				throw EXCEPTION(testname <<
+						": unexpected rl_canonical");
+
+			auto e=from.embed();
+			std::cout << dumpstr(e) << std::endl;
+			if (e != t.rl_embedded)
+				throw EXCEPTION(testname <<
+						": unexpected rl_embedded");
+		}
+	}
+}
+
 int main()
 {
 	try {
@@ -2476,6 +2672,7 @@ int main()
 		getdirtest();
 		canonicaltest();
 		canonicaltest2();
+		canonicaltest3();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

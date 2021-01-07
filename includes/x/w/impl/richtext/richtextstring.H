@@ -391,6 +391,8 @@ public:
 
 	struct LIBCXX_HIDDEN to_canonical_order;
 
+	struct LIBCXX_HIDDEN from_canonical_order;
+
 	struct LIBCXX_HIDDEN meta_reverse;
 
 	//! Transformed hotspot marker character
@@ -520,6 +522,26 @@ public:
 			starting_pos=ending_pos;
 		}
 	}
+};
+
+//! Convert richtextstring from canonical to logical order
+
+//! Constructing this object modifies the richtextstring that gets passed
+//! to the constructor, from canonical to logical order.
+//!
+//! An optional subsequent call to embed() adds directional embedding markers
+//! into the text, and returns it.
+
+struct richtextstring::from_canonical_order {
+	richtextstring &string;
+	const unicode_bidi_level_t paragraph_embedding;
+
+	std::vector<unicode_bidi_level_t> levels;
+
+	from_canonical_order(richtextstring &string,
+			     unicode_bidi_level_t paragraph_embedding);
+
+	richtextstring embed() const;
 };
 
 #define x_w_impl_richtext_richtextstring_H_defined 1

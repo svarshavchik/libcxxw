@@ -1211,4 +1211,115 @@ void richtextstring::to_canonical_order::fill()
 	filled=true;
 }
 
+richtextstring::from_canonical_order
+::from_canonical_order(richtextstring &string,
+		       unicode_bidi_level_t paragraph_embedding)
+	: string{string}, paragraph_embedding{paragraph_embedding}
+{
+	// Recreate levels
+	levels.reserve(string.string.size());
+
+	size_t prev_index=0;
+	unicode_bidi_level_t prev_lr=UNICODE_BIDI_LR;
+
+	for (const auto &m:string.meta)
+	{
+		while (prev_index < m.first)
+		{
+			levels.push_back(prev_lr);
+			++prev_index;
+		}
+
+		prev_lr=m.second.rl ? UNICODE_BIDI_RL:UNICODE_BIDI_LR;
+	}
+
+	size_t s=string.size();
+
+	while (prev_index < s)
+	{
+		levels.push_back(prev_lr);
+		++prev_index;
+	}
+
+	// We can now convert to logical order ...
+	unicode::bidi_logical_order(string.string, levels,
+				    paragraph_embedding,
+				    meta_reverse{string, 0});
+
+	// and then clear the rl flag.
+	for (auto &m:string.meta)
+		m.second.rl=false;
+	string.coalesce_needed=true;
+	string.shrink_to_fit();
+}
+
+richtextstring richtextstring::from_canonical_order::embed() const
+{
+	richtextstring new_string;
+
+	// Estimate expansion.
+	new_string.string.reserve(string.string.size() / 9 * 10);
+	new_string.meta.reserve(string.meta.size() / 5 * 7);
+
+	unicode::bidi_embed
+		(string.string, levels,
+		 paragraph_embedding,
+		 [&, this]
+		 (const char32_t *s,
+		  size_t n,
+		  bool is_part_of_string)
+		 {
+			 if (!is_part_of_string)
+			 {
+				 // Make sure there's meta here.
+
+				 if (new_string.string.empty())
+					 new_string.meta.push_back
+						 (string.meta.at(0));
+
+				 new_string.string.insert
+					 (new_string.string.end(),
+					  s, s+n);
+				 return;
+			 }
+
+			 // We'll fill in the metadata starting at offset
+			 // meta_p.
+			 size_t meta_p=new_string.size();
+
+			 // Copying the string, first.
+			 new_string.string.insert(new_string.string.end(),
+						  s, s+n);
+
+			 // Now copy over the metadata. First, compute which
+			 // is_part_of_string is s.
+
+			 size_t off=s-&*string.string.begin();
+
+			 auto iter=string.duplicate(off);
+
+			 // Copy the metadata until end of string or until
+			 // the metadata is on or after the end of the
+			 // copied string.
+			 auto e=string.meta.end();
+			 while (iter != e)
+			 {
+				 if (iter->first >= off+n)
+					 break;
+				 auto &m=*iter++;
+
+				 // Need to adjust the indices. Subtract the
+				 // starting position in the old string, add
+				 // the starting position in the new string.
+				 new_string.meta
+					 .emplace_back(m.first-off + meta_p,
+						       m.second);
+			 }
+		 });
+
+	new_string.coalesce_needed=true;
+	string.shrink_to_fit();
+	return new_string;
+}
+
 LIBCXXW_NAMESPACE_END
