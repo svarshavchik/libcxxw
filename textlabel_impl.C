@@ -66,56 +66,30 @@ textlabelObj::implObj::implObj(const text_param &text,
 {
 }
 
-static textlabelObj::implObj::hotspot_info_t
-create_hotspot_info(richtextstring &&s, const richtext &t)
+// Compile a list of hotspots in the label.
+
+static auto rebuild_ordered_hotspots(richtextstring &str)
 {
-	textlabelObj::implObj::hotspot_info_t info;
+	textlabelObj::implObj::ordered_hotspots_t s;
 
-	const auto &m=s.get_meta();
+	size_t n=0;
 
-	auto b=m.begin(), e=m.end();
+	text_hotspotptr last_link;
 
-	size_t counter=0;
-
-	while (b != e)
+	for (auto &m:str.get_meta())
 	{
-		if (!b->second.link)
+		if (m.second.link != last_link && m.second.link)
 		{
-			++b;
-			continue;
+			s.by_number.emplace(n, m.second.link);
+			if (!s.by_hotspot.emplace(m.second.link, n).second)
+				throw EXCEPTION("Internal error: multiple "
+						"appearance by same hotspot");
+			++n;
 		}
 
-		auto p=b;
-
-		while (b->second.link == p->second.link)
-		{
-			if (b->second.rl != p->second.rl)
-				throw EXCEPTION(_("Cannot change text direction"
-						  " in the middle of a hotspot"
-						  ));
-			if (++b == e)
-				throw EXCEPTION("Internal error: cannot find end of link");
-		}
-
-		info.insert({p->second.link, {t->at(p->first,
-						    new_location::lr),
-					      t->at(b->first,
-						    new_location::lr),
-					      counter++}});
+		last_link=m.second.link;
 	}
-	return info;
-}
-
-// After create_hotspot_info() comes rebuild_ordered_hotspots.
-
-static auto rebuild_ordered_hotspots(const textlabelObj::implObj
-				     ::hotspot_info_t &hotspot_info)
-{
-	std::unordered_map<size_t, text_hotspot> m;
-
-	for (const auto &h:hotspot_info)
-		m.insert({h.second.n, h.first});
-	return m;
+	return s;
 }
 
 textlabelObj::implObj::implObj(const text_param &text,
@@ -155,9 +129,24 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 			       const const_defaulttheme &initial_theme,
 			       richtextstring &&string,
 			       const richtextmeta &default_meta)
+	: implObj{config, parent_element_impl, initial_theme,
+	std::move(string),
+	rebuild_ordered_hotspots(string),
+	default_meta}
+{
+}
+
+textlabelObj::implObj::implObj(textlabel_config &config,
+			       elementObj::implObj &parent_element_impl,
+			       const const_defaulttheme &initial_theme,
+			       richtextstring &&string,
+			       ordered_hotspots_t &&ordered_hotspots,
+			       const richtextmeta &default_meta)
+
 	: implObj{config, parent_element_impl,
 		  initial_theme,
 		  std::move(string),
+		  std::move(ordered_hotspots),
 		  richtext::create(std::move(string),
 				   create_richtext_options(config, '\0', 0,
 							   bidi_format::standard
@@ -172,9 +161,25 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 			       const const_defaulttheme &initial_theme,
 			       richtextstring &&string)
 	: implObj{config,
+	directional_format,
+	parent_element_impl,
+	initial_theme,
+	std::move(string),
+	rebuild_ordered_hotspots(string)}
+{
+}
+
+textlabelObj::implObj::implObj(textlabel_config &config,
+			       bidi_format directional_format,
+			       elementObj::implObj &parent_element_impl,
+			       const const_defaulttheme &initial_theme,
+			       richtextstring &&string,
+			       ordered_hotspots_t &&ordered_hotspots)
+	: implObj{config,
 		  parent_element_impl,
 		  initial_theme,
 		  std::move(string),
+		  std::move(ordered_hotspots),
 		  richtext::create(std::move(string),
 				   create_richtext_options(config, ' ', true,
 							   directional_format)),
@@ -182,10 +187,19 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 {
 }
 
+static inline auto clean_default_meta(const richtextmeta &meta)
+{
+	auto cleaned=meta;
+
+	cleaned.link=nullptr;
+	return cleaned;
+}
+
 textlabelObj::implObj::implObj(textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
 			       const const_defaulttheme &initial_theme,
 			       richtextstring &&string,
+			       ordered_hotspots_t &&ordered_hotspots,
 			       const richtext &text,
 			       const richtextmeta &default_meta)
 	: richtext_alteration_config{config.use_ellipsis ? richtextptr
@@ -199,14 +213,12 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 	  fixed_width_metrics{config.fixed_width_metrics},
 	  allow_shrinkage{config.allow_shrinkage},
 	  current_theme{initial_theme},
-	  hotspot_info_thread_only{create_hotspot_info(std::move(string),
-						       text)},
-	  ordered_hotspots{rebuild_ordered_hotspots(hotspot_info_thread_only)},
+	  ordered_hotspots_thread_only{std::move(ordered_hotspots)},
 	  text{text},
 	  hotspot_cursor{config.allow_links
 			 ? (richtextiteratorptr)text->begin()
 			 : richtextiteratorptr{}},
-	  default_meta{default_meta},
+	  default_meta{clean_default_meta(default_meta)},
 	  allow_links{config.allow_links}
 {
 	if (std::isnan(word_wrap_widthmm) ||
@@ -247,10 +259,11 @@ void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string)
 				       ? hotspot_processing::create
 				       : hotspot_processing::none);
 
+	auto new_ordered_hotspots=rebuild_ordered_hotspots(s);
+
 	text->set(IN_THREAD, std::move(s));
 
-	hotspot_info(IN_THREAD)=create_hotspot_info(std::move(s), text);
-	ordered_hotspots=rebuild_ordered_hotspots(hotspot_info(IN_THREAD));
+	ordered_hotspots(IN_THREAD)=std::move(new_ordered_hotspots);
 	hotspot_highlighted(IN_THREAD)=nullptr;
 	updated(IN_THREAD);
 	get_label_element_impl().schedule_full_redraw(IN_THREAD);
@@ -442,7 +455,7 @@ bool textlabelObj::implObj::process_button_event(ONLY IN_THREAD,
 bool textlabelObj::implObj::process_key_event(ONLY IN_THREAD,
 					      const key_event &ke)
 {
-	if (hotspot_info(IN_THREAD).empty())
+	if (ordered_hotspots(IN_THREAD).by_hotspot.empty())
 		return false;
 
 	text_hotspotptr next_link;
@@ -451,26 +464,27 @@ bool textlabelObj::implObj::process_key_event(ONLY IN_THREAD,
 	{
 		if (hotspot_highlighted(IN_THREAD))
 		{
-			auto iter=hotspot_info(IN_THREAD)
+			auto iter=ordered_hotspots(IN_THREAD).by_hotspot
 				.find(hotspot_highlighted(IN_THREAD));
 
-			if (iter == hotspot_info(IN_THREAD).end())
+			if (iter==ordered_hotspots(IN_THREAD).by_hotspot.end())
 			{
 				const auto &logger=elementObj::implObj::logger;
 				LOG_ERROR("Internal error: cannot locate hotspot");
 			}
 			else
 			{
-				auto iter2=
-					ordered_hotspots.find(iter->second.n+1);
-				if (iter2 != ordered_hotspots.end())
+				auto iter2=ordered_hotspots(IN_THREAD).by_number
+					.find(iter->second+1);
+				if (iter2 != ordered_hotspots(IN_THREAD).by_number.end())
 					next_link=iter2->second;
 			}
 		}
 		else
 		{
-			auto iter2=ordered_hotspots.find(0);
-			if (iter2 != ordered_hotspots.end())
+			auto iter2=ordered_hotspots(IN_THREAD).by_number.find(0);
+			if (iter2 != ordered_hotspots(IN_THREAD)
+			    .by_number.end())
 				next_link=iter2->second;
 		}
 	}
@@ -478,27 +492,30 @@ bool textlabelObj::implObj::process_key_event(ONLY IN_THREAD,
 	{
 		if (hotspot_highlighted(IN_THREAD))
 		{
-			auto iter=hotspot_info(IN_THREAD)
+			auto iter=ordered_hotspots(IN_THREAD).by_hotspot
 				.find(hotspot_highlighted(IN_THREAD));
 
-			if (iter == hotspot_info(IN_THREAD).end())
+			if (iter==ordered_hotspots(IN_THREAD).by_hotspot.end())
 			{
 				const auto &logger=elementObj::implObj::logger;
 				LOG_ERROR("Internal error: cannot locate hotspot");
 			}
-			else if (iter->second.n)
+			else if (iter->second)
 			{
-				auto iter2=
-					ordered_hotspots.find(iter->second.n-1);
-				if (iter2 != ordered_hotspots.end())
+				auto iter2=ordered_hotspots(IN_THREAD).by_number
+					.find(iter->second-1);
+				if (iter2 != ordered_hotspots(IN_THREAD)
+				    .by_number.end())
 					next_link=iter2->second;
 			}
 		}
 		else
 		{
-			auto iter2=ordered_hotspots
-				.find(hotspot_info(IN_THREAD).size()-1);
-			if (iter2 != ordered_hotspots.end())
+			auto iter2=ordered_hotspots(IN_THREAD).by_number
+				.find(ordered_hotspots(IN_THREAD).by_number
+				      .size()-1);
+			if (iter2 != ordered_hotspots(IN_THREAD)
+			    .by_number.end())
 				next_link=iter2->second;
 		}
 	}
@@ -527,9 +544,9 @@ bool textlabelObj::implObj::process_key_event(ONLY IN_THREAD,
 
 void textlabelObj::implObj::first_hotspot(ONLY IN_THREAD)
 {
-	auto next_link=ordered_hotspots.find(0);
+	auto next_link=ordered_hotspots(IN_THREAD).by_number.find(0);
 
-	if (next_link == ordered_hotspots.end())
+	if (next_link == ordered_hotspots(IN_THREAD).by_number.end())
 		return;
 	hotspot_unhighlight(IN_THREAD);
 
@@ -539,8 +556,9 @@ void textlabelObj::implObj::first_hotspot(ONLY IN_THREAD)
 
 void textlabelObj::implObj::last_hotspot(ONLY IN_THREAD)
 {
-	auto next_link=ordered_hotspots.find(hotspot_info(IN_THREAD).size()-1);
-	if (next_link == ordered_hotspots.end())
+	auto next_link=ordered_hotspots(IN_THREAD).by_number
+		.find(ordered_hotspots(IN_THREAD).by_number.size()-1);
+	if (next_link == ordered_hotspots(IN_THREAD).by_number.end())
 		return;
 	hotspot_unhighlight(IN_THREAD);
 
@@ -551,7 +569,7 @@ void textlabelObj::implObj::last_hotspot(ONLY IN_THREAD)
 void textlabelObj::implObj::report_motion_event(ONLY IN_THREAD,
 						const motion_event &me)
 {
-	if (hotspot_info(IN_THREAD).empty() || !hotspot_cursor)
+	if (ordered_hotspots(IN_THREAD).by_number.empty() || !hotspot_cursor)
 		return; // Shortcut
 
 	bool flag=hotspot_cursor->moveto(IN_THREAD, me.x, me.y);
@@ -604,17 +622,7 @@ void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 
 	auto &e=get_label_element_impl();
 
-	auto iter=hotspot_info(IN_THREAD).find(link);
-
-	if (iter == hotspot_info(IN_THREAD).end())
-	{
-		const auto &logger=e.logger;
-		LOG_ERROR("Internal error: cannot locate hotspot");
-		return;
-	}
-
 	replacement_text.hotspots.clear(); // Too bad, so sad.
-	replacement_text.hotspots.insert({0, link});
 
 	auto new_str=e.create_richtextstring
 		(default_meta, replacement_text,
@@ -624,10 +632,8 @@ void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 		throw EXCEPTION(_("Replacement hotspot string cannot be empty")
 				);
 
-	// TODO
+	text->replace_hotspot(IN_THREAD, new_str, link);
 
-	iter->second.link_start->replace(IN_THREAD, iter->second.link_end,
-					 std::move(new_str));
 	updated(IN_THREAD);
 
 	text->redraw_whatsneeded(IN_THREAD, e,

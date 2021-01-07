@@ -117,41 +117,26 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 				     double widthmm,
 				     const fontcollection &fc);
 
- public:
-	//! Info about each links.
-
-	struct link_info {
-		//! Where the link starts
-		richtextiterator link_start;
-
-		//! Where the link ends
-		richtextiterator link_end;
-
-		//! The hotspots get numbered, in order to create ordered_hotspots
-		size_t n;
-	};
-
-	//! The container for the links in the text.
-	typedef std::unordered_map<text_hotspot, link_info> hotspot_info_t;
-
- private:
-	//! The links in the text.
-	hotspot_info_t hotspot_info_thread_only;
-
 	//! Currently highlighted link.
 	text_hotspotptr hotspot_highlighted_thread_only;
 
-	//! Container for hotspots kept in appearance order.
-	typedef std::unordered_map<size_t, text_hotspot>
-		ordered_hotspots_t;
+ public:
+	//! Which hotspots are in this label
+	struct ordered_hotspots_t {
 
+		//! Ordered by their relative appearance order
+		std::unordered_map<size_t, text_hotspot> by_number;
+
+		//! Look up each hotspots's appearance order
+		std::unordered_map<text_hotspot, size_t> by_hotspot;
+	};
+ private:
 	//! Hotspots in appearance order.
-	ordered_hotspots_t ordered_hotspots;
+	ordered_hotspots_t ordered_hotspots_thread_only;
 
  public:
-	THREAD_DATA_ONLY(hotspot_info);
 	THREAD_DATA_ONLY(hotspot_highlighted);
-
+	THREAD_DATA_ONLY(ordered_hotspots);
 	//! The text in the label.
 
 	const richtext text;
@@ -184,12 +169,23 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 		textlabel_config &config,
 		elementObj::implObj &parent_element_impl);
 
+
 	//! Internal constructor
 	implObj(textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
 		const const_defaulttheme &initial_theme,
 		richtextstring &&string,
 		const richtextmeta &default_meta);
+
+
+	//! Internal constructor
+	implObj(textlabel_config &config,
+		elementObj::implObj &parent_element_impl,
+		const const_defaulttheme &initial_theme,
+		richtextstring &&string,
+		ordered_hotspots_t &&ordered_hotspots,
+		const richtextmeta &default_meta);
+
 
  public:
 	//! Constructor used by editor subclass.
@@ -202,11 +198,20 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 
  private:
 	//! Internal constructor
+	implObj(textlabel_config &config,
+		bidi_format directional_format,
+		elementObj::implObj &parent_element_impl,
+		const const_defaulttheme &initial_theme,
+		richtextstring &&string,
+		ordered_hotspots_t &&ordered_hotspots);
+
+	//! Internal constructor
 
 	implObj(textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
 		const const_defaulttheme &initial_theme,
 		richtextstring &&string,
+		ordered_hotspots_t &&ordered_hotspots,
 		const richtext &text,
 		const richtextmeta &default_meta);
 
