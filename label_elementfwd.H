@@ -41,6 +41,7 @@ public:
 	//! Note that the textlabel_config gets passed by reference.
 	label_elementObj(const container_impl &container,
 			 textlabel_config &config,
+			 bidi_format directional_format,
 			 const const_defaulttheme &theme,
 			 richtextstring &&string);
 

@@ -40,14 +40,14 @@ void testtextparam(const main_window &mw)
 	auto string=
 		mw->impl->handler
 		->create_richtextstring({create_new_background_color
-					 (mw->get_screen(),
-					  mw->elementObj::impl
-					  ->get_window_handler()
-					  .drawable_pictformat,
-					  "0%"),
-					mw->impl->handler
-					->create_current_fontcollection
-					  (theme_font{"serif"})},
+				(mw->get_screen(),
+				 mw->elementObj::impl
+				 ->get_window_handler()
+				 .drawable_pictformat,
+				 "0%"),
+				mw->impl->handler
+				->create_current_fontcollection
+				(theme_font{"serif"})},
 			param2);
 
 	const auto &m=string.get_meta();
@@ -56,7 +56,7 @@ void testtextparam(const main_window &mw)
 	if (m.size() != 2 ||
 	    m.at(0).first != 0 ||
 	    m.at(1).first != 3 ||
-	    s.size() != 9 ||
+	    s.size() != 10 ||
 	    m.at(0).second.bg_color.null() ||
 	    !m.at(1).second.bg_color.null())
 		throw EXCEPTION("Sumthin's wrong.");

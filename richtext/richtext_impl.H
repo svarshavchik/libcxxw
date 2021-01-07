@@ -172,6 +172,10 @@ public:
 	const std::optional<unicode_bidi_level_t
 			    > requested_paragraph_embedding_level;
 
+	//! Requested directional formatting
+
+	const bidi_format requested_directional_format;
+
 	//! Alignment of text, for rendering paragraphs
 
 	halign alignment;

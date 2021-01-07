@@ -13,6 +13,8 @@
 #include "x/w/border_infommfwd.H"
 #include "x/w/screenobj.H"
 #include "x/w/impl/border_infofwd.H"
+#include "x/w/labelfwd.H"
+#include "x/w/input_field_config.H"
 #include <unordered_set>
 #include <unordered_map>
 #include <string>
@@ -125,6 +127,24 @@ int to_percentage_t(const ui::parser_lock &lock,
 //! this reads an halign value.
 halign to_halign(const ui::parser_lock &lock,
 		 const char *element, const char *parent) LIBCXX_HIDDEN;
+
+
+//! Read a value
+
+//! When parsing XML-specified layouts,
+//! this reads a bidi value.
+
+bidi to_bidi_direction(const ui::parser_lock &lock,
+		       const char *element, const char *parent) LIBCXX_HIDDEN;
+
+//! Read a value
+
+//! When parsing XML-specified layouts,
+//! this reads a bidi_format value.
+
+bidi_format to_bidi_directional_format(const ui::parser_lock &lock,
+				       const char *element, const char *parent)
+	LIBCXX_HIDDEN;
 
 //! Read a value.
 

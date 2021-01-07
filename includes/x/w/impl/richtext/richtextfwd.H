@@ -10,6 +10,8 @@
 #include <x/w/alignment.H>
 #include <x/w/types.H>
 #include <x/w/input_fieldfwd.H>
+#include <x/w/labelfwd.H>
+#include <x/w/input_field_configfwd.H>
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -57,6 +59,13 @@ struct richtext_options {
 
 	//! If unset it gets derived from the initial or set string.
 	std::optional<unicode_bidi_level_t> paragraph_embedding_level;
+
+	//! Bi-directional formatting
+	bidi_format directional_format=bidi_format::standard;
+
+	//! Initialize paragraph_embedding_level basic on bidi values.
+
+	void set_bidi(bidi level);
 
 	//! Whether this is the richtext object for an input field
 

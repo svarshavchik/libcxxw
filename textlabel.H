@@ -195,6 +195,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 	//! Constructor used by editor subclass.
 
 	implObj(textlabel_config &config,
+		bidi_format directional_format,
 		elementObj::implObj &parent_element_impl,
 		const const_defaulttheme &initial_theme,
 		richtextstring &&string);

@@ -135,13 +135,12 @@ public:
 
 	template<typename string_type>
 	richtextstring(string_type &&str,
-		       const std::unordered_map<size_t, richtextmeta> &meta,
-		       bool append_null_byte=false);
+		       const std::unordered_map<size_t, richtextmeta> &meta);
 
 private:
 	//! Finish the from string constructor.
 
-	void finish_from_string(bool);
+	void finish_from_string();
 public:
 
 	//! Construct from a substring.
@@ -531,6 +530,9 @@ public:
 //!
 //! An optional subsequent call to embed() adds directional embedding markers
 //! into the text, and returns it.
+//!
+//! embed_paragraph() checks that the given string's default paragraph embedding
+//! level matches the specified one, and prepends a marker character if not.
 
 struct richtextstring::from_canonical_order {
 	richtextstring &string;
@@ -542,6 +544,9 @@ struct richtextstring::from_canonical_order {
 			     unicode_bidi_level_t paragraph_embedding);
 
 	richtextstring embed() const;
+
+	static void embed_paragraph(richtextstring &string,
+				    unicode_bidi_level_t paragraph_embedding);
 };
 
 #define x_w_impl_richtext_richtextstring_H_defined 1

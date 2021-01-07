@@ -23,6 +23,9 @@ struct label_config {
 
 	//! Label word wrap width (0=don't wrap)
 	double widthmm=0;
+
+	//! Embedding direction for this richtext.
+	bidi direction=bidi::automatic;
 };
 
 LIBCXXW_NAMESPACE_END

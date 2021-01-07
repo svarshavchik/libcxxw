@@ -31,6 +31,7 @@ richtext_implObj::richtext_implObj(richtextstring &&string,
 	  requested_alignment{options.alignment},
 	  requested_paragraph_embedding_level{
 		  options.paragraph_embedding_level},
+	  requested_directional_format{options.directional_format},
 	  alignment{halign::left}, // To be updated, shortly
 	  paragraph_embedding_level{UNICODE_BIDI_LR} // To be updated, shortly
 {

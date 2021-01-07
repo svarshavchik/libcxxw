@@ -71,7 +71,7 @@ struct richtext_insert_base {
 		if (str.empty())
 			m.clear();
 
-		return richtextstring{str, m, false};
+		return richtextstring{str, m};
 	}
 
 	//! Insert position

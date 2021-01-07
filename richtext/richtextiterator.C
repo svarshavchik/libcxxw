@@ -436,7 +436,9 @@ size_t richtextiteratorObj::pos() const
 		 });
 }
 
-richtextstring richtextiteratorObj::get(const const_richtextiterator &other)
+richtextstring richtextiteratorObj::get(const const_richtextiterator &other,
+					const std::optional<bidi_format>
+					&embedding)
 	const
 {
 	assert_or_throw(my_richtext == other->my_richtext,
@@ -447,7 +449,8 @@ richtextstring richtextiteratorObj::get(const const_richtextiterator &other)
 		 (auto &lock)
 		{
 			return my_richtext->get(lock, my_location,
-						other->my_location);
+						other->my_location,
+						embedding);
 		});
 }
 

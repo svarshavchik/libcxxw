@@ -194,7 +194,10 @@ public:
 
 	//! Get text between the iterators
 
-	richtextstring get(const const_richtextiterator &other)
+	//! Optionally overrides the richtext's bidi_format.
+	richtextstring get(const const_richtextiterator &other,
+			   const std::optional<bidi_format> &embedding=
+			   std::nullopt)
 		const;
 
 	//! Compare iterator positions

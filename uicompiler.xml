@@ -966,6 +966,11 @@ List of values:
 	  <field>widthmm</field>
 	  <type>to_mm</type>
 	</member>
+	<member>
+	  <name>direction</name>
+	  <field>direction</field>
+	  <type>to_bidi_direction</type>
+	</member>
       </parameter>
     </function>
 
@@ -1253,6 +1258,18 @@ List of values:
 	  <name>alignment</name>
 	  <field>alignment</field>
 	  <type>to_halign</type>
+	</member>
+
+	<member>
+	  <name>direction</name>
+	  <field>direction</field>
+	  <type>to_bidi_direction</type>
+	</member>
+
+	<member>
+	  <name>directional_format</name>
+	  <field>directional_format</field>
+	  <type>to_bidi_directional_format</type>
 	</member>
 
 	<member>

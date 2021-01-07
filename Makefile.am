@@ -1141,7 +1141,7 @@ testcustomcanvas_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testdateinput_SOURCES=testdateinput.C
 testdateinput_LDADD=libcxxw.la
-testdateinput_LDFLAGS=$(TESTLINKTYPE)
+testdateinput_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testimagebuttons_SOURCES=testimagebuttons.C
 testimagebuttons_LDADD=libcxxw.la

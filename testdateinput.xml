@@ -30,6 +30,17 @@
     </element>
   </factory>
 
+  <factory id='test' type='grid'>
+    <element id="testinputfield">
+      <input_field />
+      <config>
+	<columns>20</columns>
+	<direction>left_to_right</direction>
+	<directional_format>standard</directional_format>
+      </config>
+    </element>
+  </factory>
+
   <factory type="grid" id="second_row">
     <element id="enable_disable">
       <button>

@@ -14,6 +14,20 @@
 
 LIBCXXW_NAMESPACE_START
 
+void richtext_options::set_bidi(bidi level)
+{
+	switch (level) {
+	case bidi::automatic:
+		break;
+	case bidi::left_to_right:
+		paragraph_embedding_level=UNICODE_BIDI_LR;
+		break;
+	case bidi::right_to_left:
+		paragraph_embedding_level=UNICODE_BIDI_RL;
+		break;
+	}
+}
+
 richtextObj::richtextObj(richtextstring &&string,
 			 const richtext_options &options)
 	: richtextObj{ref<richtext_implObj>::create(std::move(string),
@@ -201,6 +215,10 @@ struct richtextObj::get_helper : richtext_range {
 
 	richtextstring &str;
 
+	const bidi_format embedding_format;
+
+	const ref<richtext_implObj> impl;
+
 private:
 	//! Paragraph being done here.
 	mutable richtextstring paragraph;
@@ -209,10 +227,12 @@ public:
 	get_helper(richtextstring &str,
 		   const ref<richtext_implObj> &impl,
 		   const richtextcursorlocation &a,
-		   const richtextcursorlocation &b)
-
+		   const richtextcursorlocation &b,
+		   bidi_format embedding_format)
 		: richtext_range{impl->paragraph_embedding_level, a, b},
-		 str{str}
+		  str{str},
+		  embedding_format{embedding_format},
+		  impl{impl}
 	{
 		// Estimate how big ret will be. We can compute the
 		// number of characters exactly. Use the number of
@@ -295,7 +315,21 @@ public:
 		if (paragraph.size() == 0)
 			return;
 
-		str += paragraph;
+		richtextstring::from_canonical_order convert{paragraph,
+			paragraph_embedding_level};
+
+		bool first_str=str.size() == 0;
+
+		str += embedding_format == bidi_format::embedded
+			? convert.embed():paragraph;
+
+		if ( first_str && impl->requested_paragraph_embedding_level &&
+		     embedding_format == bidi_format::embedded)
+		{
+			convert.embed_paragraph
+				(str,
+				 *impl->requested_paragraph_embedding_level);
+		}
 
 		paragraph.clear();
 	}
@@ -303,11 +337,13 @@ public:
 
 richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 				const richtextcursorlocation &a,
-				const richtextcursorlocation &b)
+				const richtextcursorlocation &b,
+				const std::optional<bidi_format> &embedding)
 {
 	richtextstring str;
 
-	get_helper helper{str, (*lock), a, b};
+	get_helper helper{str, (*lock), a, b,
+		embedding ? *embedding:(*lock)->requested_directional_format};
 
 	auto diff=helper.diff;
 
@@ -514,7 +550,18 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 			if (diff)
 			{
 				helper.finish_paragraph();
-				str += richtextstring{f->string, 0, 1};
+
+				// Go through the motions of calling
+				// finish_paragraph to emit the newline, since
+				// this will strip off the rl flag from the
+				// metadata. Don't duplicate that logic here.
+				//
+				// Additionally if the initial paragraph is
+				// empty we want to make sure that we
+				// emit the directional marker, if so needed,
+				// so that logic gets called as well, in there.
+				helper.add_range_to_paragraph(f->string, 0, 1);
+				helper.finish_paragraph();
 			}
 			f=f->next_fragment();
 		}

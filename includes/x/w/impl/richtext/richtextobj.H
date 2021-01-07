@@ -26,6 +26,7 @@
 #include <x/mpobj.H>
 #include <x/functional.H>
 #include <utility>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -350,7 +351,9 @@ class richtextObj : virtual public obj {
 	//! the inserted text into rendering order.
 	richtextstring get(const internal_richtext_impl_t::lock &,
 			   const richtextcursorlocation &,
-			   const richtextcursorlocation &);
+			   const richtextcursorlocation &,
+			   const std::optional<bidi_format> &embedding
+			   =std::nullopt);
 
  private:
 	struct LIBCXX_HIDDEN get_helper;

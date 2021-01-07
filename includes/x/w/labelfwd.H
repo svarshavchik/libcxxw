@@ -47,6 +47,25 @@ typedef const_ref<labelObj> const_label;
 
 typedef const_ptr<labelObj> const_labelptr;
 
+//! Bi-directional text direction
+
+enum class bidi {
+
+	//! Automatically determine the direction of bi-directional text
+
+	//! Uses the Unicode bi-directional algorithm to determine the
+	//! main direction (left to right or right to left) based on the first
+	//! directional character in the text or the label.
+	automatic,
+
+	//! This text or label's main direction is left-to-right
+	left_to_right,
+
+	//! This text or label's main direction is right-to-left
+	right_to_left,
+};
+
+
 LIBCXXW_NAMESPACE_END
 
 #endif

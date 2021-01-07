@@ -5,6 +5,8 @@
 #include "libcxxw_config.h"
 #include "x/w/dim_axis_arg.H"
 #include "x/w/metrics/axis.H"
+#include "x/w/label.H"
+#include "x/w/input_field_config.H"
 #include "defaulttheme.H"
 
 #include <math.h>

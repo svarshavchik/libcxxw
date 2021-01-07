@@ -12,6 +12,7 @@
 #include <x/w/input_field_configfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/input_field_appearancefwd.H>
+#include <x/w/labelfwd.H>
 #include <x/w/text_param.H>
 #include <x/w/scrollbar.H>
 #include <x/w/factory.H>
@@ -117,6 +118,12 @@ struct input_field_config {
 
 	//! Explicitly specify the text alignment
 	std::optional<halign> alignment;
+
+	//! Format of bi-directional text
+	bidi direction=bidi::automatic;
+
+	//! Bi-directional formatting
+	bidi_format directional_format=bidi_format::standard;
 
 	//! Maximum number of unicode characters.
 

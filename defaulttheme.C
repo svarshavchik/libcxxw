@@ -887,6 +887,45 @@ valign to_valign(const ui::parser_lock &lock,
 				   value, element));
 }
 
+bidi to_bidi_direction(const ui::parser_lock &lock,
+		       const char *element, const char *parent)
+{
+	auto value=single_value(lock, element, parent);
+
+	std::transform(value.begin(), value.end(), value.begin(),
+		       chrcasecmp::tolower);
+
+	if (value == "automatic")
+		return bidi::automatic;
+
+	if (value == "left_to_right")
+		return bidi::left_to_right;
+
+	if (value == "right_to_left")
+		return bidi::right_to_left;
+
+	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
+				   value, element));
+}
+
+bidi_format to_bidi_directional_format(const ui::parser_lock &lock,
+				       const char *element, const char *parent)
+{
+	auto value=single_value(lock, element, parent);
+
+	std::transform(value.begin(), value.end(), value.begin(),
+		       chrcasecmp::tolower);
+
+	if (value == "standard")
+		return bidi_format::standard;
+
+	if (value == "embedded")
+		return bidi_format::embedded;
+
+	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
+				   value, element));
+}
+
 const char *defaultthemeObj::default_cut_paste_selection() const
 {
 	return enabled_theme_options.find(use_primary_clipboard_option_id) ==

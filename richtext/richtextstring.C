@@ -14,17 +14,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-void richtextstring::finish_from_string(bool append_null_byte)
+void richtextstring::finish_from_string()
 {
-	if (append_null_byte)
-		this->string.push_back(0);
-
 	sort_and_validate(this->meta, this->string.size());
 	modified();
-
-	// The trailing null byte is not right-to-left
-	if (append_null_byte)
-		duplicate(this->string.size()-1)->second.rl=false;
 }
 
 richtextstring::richtextstring(const richtextstring &other,
@@ -1320,6 +1313,22 @@ richtextstring richtextstring::from_canonical_order::embed() const
 	new_string.coalesce_needed=true;
 	string.shrink_to_fit();
 	return new_string;
+}
+
+void richtextstring::from_canonical_order
+::embed_paragraph(richtextstring &string,
+		  unicode_bidi_level_t paragraph_embedding)
+{
+	if (char32_t c=unicode::bidi_embed_paragraph_level(string.string,
+							   paragraph_embedding))
+	{
+		string.string.insert(string.string.begin(), c);
+		for (auto &m:string.meta)
+		{
+			if (m.first > 0)
+				++m.first;
+		}
+	}
 }
 
 LIBCXXW_NAMESPACE_END

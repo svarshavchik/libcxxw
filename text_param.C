@@ -178,16 +178,33 @@ richtextstring elementObj::implObj
 
 	if (!t.hotspots.empty())
 	{
-		if (allow_links == hotspot_processing::none)
+		if (allow_links != hotspot_processing::create)
 			throw EXCEPTION(_("Links are not allowed in this text."));
 	}
 
-	// We always have something at offset 0 if the string is not empty.
+	// All text labels and input fields have a newline conveniently
+	// appended to them. For input fields this gives a position for the
+	// cursor after all entered text. There is no one-past-the-end
+	// richtextiterator position.
+	//
+	// If this string is being created as updated hotspot contents:
+	// we don't append an additional character here, the richtext will
+	// take care of affixing separator markers to the hotspots. Instead
+	// we just make sure that the replacement string is not empty.
 
-	if (t.string.size() > 0)
-		all_positions.insert(0);
+	auto suffix=(allow_links == hotspot_processing::update
+		     ? t.string.empty() ? U" ":U""
+		     : U"\n");
 
-	if (allow_links == hotspot_processing::create)
+	// As a consequence of this, we will always produce a non-empty
+	// richtextstring here, and we always create metadata at position 0.
+
+	all_positions.insert(0);
+
+	// And we always create metadata at position string.size(), where
+	// the trailing newline gets added. Except when we're creating
+	// replacement hotspot text.
+	if (allow_links != hotspot_processing::update)
 		all_positions.insert(t.string.size());
 
 	// Now iterate over them, in order, to create the unordered_map for
@@ -257,20 +274,21 @@ richtextstring elementObj::implObj
 
 			if (iter != t.hotspots.end())
 				font.link=iter->second;
+
+			if (p == t.string.size())
+			{
+				// If the rich text string ends in a hotspot,
+				// make sure that the trailing newline is NOT
+				// a part of the hotspot!
+				font.link=nullptr;
+			}
 		}
 
 		m.insert({p, font});
 	}
 
-	if (allow_links == hotspot_processing::create)
-		// richtextstring's constructor inserts a \0 here.
-		// We made sure that all_positions includes t.string.size(),
-		// above.
-		m.find(t.string.size())->second=default_font;
-	else if (m.find(t.string.size()) != m.end())
-		throw EXCEPTION(gettextmsg("Font or color specification not followed by text."));
-
-	return {t.string, m, allow_links == hotspot_processing::create};
+	// And the newline itself
+	return {t.string + suffix, m};
 }
 
 LIBCXXW_NAMESPACE_END

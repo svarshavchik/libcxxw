@@ -902,9 +902,7 @@ void testrichtext6(ONLY IN_THREAD)
 
 void testrichtext7(ONLY IN_THREAD)
 {
-	richtextmeta metalr{'1'}, metarl=metalr;
-
-	metarl.rl=true;
+	richtextmeta metalr{'1'};
 
 	richtextstring ustring{
 		std::u32string{RLO} +
@@ -935,9 +933,9 @@ void testrichtext7(ONLY IN_THREAD)
 
 	if (b->get(e) !=
 	    richtextstring{
-		    U"olle\ndlrow\nmelor\nspi",
+		    U"ello\nworld\nrolem\nips",
 		    {
-			    {0, metarl},
+			    {0, metalr},
 		    }})
 	{
 		throw EXCEPTION("testrichtext7: test 10 failed");

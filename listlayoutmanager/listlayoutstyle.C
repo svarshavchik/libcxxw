@@ -306,10 +306,7 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 					   compute_alignments();
 				   auto rts=textlist_element
 					   .create_richtextstring
-					   (textlist_element.itemlabel_meta,
-					    (s.string.empty() ?
-					     text_param{U"\n"}:s)
-					    );
+					   (textlist_element.itemlabel_meta, s);
 
 				   richtext_options options;
 

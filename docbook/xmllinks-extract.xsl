@@ -37,7 +37,7 @@
   <xsl:apply-templates select="@*|node()"/>
 </xsl:template>
 
-<xsl:template match="member">
+<xsl:template match="member[@kind != 'enumvalue']">
   <xsl:text>&lt;tag name="link-</xsl:text>
   <xsl:value-of select="@kind" /><xsl:text>-</xsl:text>
   <xsl:value-of select="translate(../name,': &amp;&lt;&gt;,_{}[]()*~!=+&#34;%/','-------------ZDNEPQMD')" />

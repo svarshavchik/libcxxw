@@ -1837,6 +1837,48 @@ layout->generate("main-window-grid",
 	</para>
       </section>
     </section>
+
+    <section id="uixmlbidivalue">
+      <title><ulink url="&link-enum-x--w-bidi;"><classname>&ns;::w::bidi</classname></ulink> values</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<element id="title">
+    <label type="theme_text">Lorem Ipsum</label>
+    <options>
+        <direction>right_to_left</direction>
+    </options>
+</element>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	An <classname>&ns;::w::bidi</classname> value is one of
+	<quote>automatic</quote>,
+	<quote>left_to_right</quote> or
+	<quote>right_to_left</quote>.
+      </para>
+    </section>
+
+    <section id="uixmlbidiformatvalue">
+      <title><ulink url="&link-enum-x--w-bidi-format;"><classname>&ns;::w::bidi_format</classname></ulink> values</title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<element id='name'>
+  <config>
+    <directional_format>embedded</directional_format>
+  </config>
+</element>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	An <classname>&ns;::w::bidi_format</classname> value is one of
+	<quote>standard</quote> or
+	<quote>embedded</quote>.
+      </para>
+    </section>
   </section>
 
   <section id="uixmlfactorycontainer">

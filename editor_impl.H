@@ -321,6 +321,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 		constexpr bool oneline() const { return rows <= 1; }
 		size_t maximum_size;
 		bool update_clipboards;
+		bidi_format directional_format;
 
 		//! Initialize from input_field_config
 

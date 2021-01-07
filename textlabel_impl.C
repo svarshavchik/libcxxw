@@ -137,11 +137,14 @@ textlabelObj::implObj::implObj(const text_param &text,
 static
 inline richtext_options create_richtext_options(textlabel_config &config,
 						char32_t unprintable_char,
-						bool is_editor)
+						bool is_editor,
+						bidi_format directional_format)
 {
 	richtext_options options;
 
 	options.alignment=config.config.alignment;
+	options.directional_format=directional_format;
+	options.set_bidi(config.config.direction);
 	options.unprintable_char=unprintable_char;
 	options.is_editor=is_editor;
 	return options;
@@ -156,12 +159,15 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 		  initial_theme,
 		  std::move(string),
 		  richtext::create(std::move(string),
-				   create_richtext_options(config, '\0', 0)),
+				   create_richtext_options(config, '\0', 0,
+							   bidi_format::standard
+							   )),
 		  default_meta}
 {
 }
 
 textlabelObj::implObj::implObj(textlabel_config &config,
+			       bidi_format directional_format,
 			       elementObj::implObj &parent_element_impl,
 			       const const_defaulttheme &initial_theme,
 			       richtextstring &&string)
@@ -170,7 +176,8 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 		  initial_theme,
 		  std::move(string),
 		  richtext::create(std::move(string),
-				   create_richtext_options(config, ' ', true)),
+				   create_richtext_options(config, ' ', true,
+							   directional_format)),
 		  string.meta_at(0)}
 {
 }
@@ -613,17 +620,11 @@ void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 		(default_meta, replacement_text,
 		 hotspot_processing::update);
 
-	auto &new_meta=new_str.get_meta();
-	auto mb=new_meta.begin(), me=new_meta.end();
+	if (new_str.get_string().empty())
+		throw EXCEPTION(_("Replacement hotspot string cannot be empty")
+				);
 
-	if (mb == me)
-		throw EXCEPTION(_("Replacehoment hotspot string cannot be empty"
-				  ));
-	for (auto mp=mb; mp!=me; mp++)
-		if (mp->second.rl != mb->second.rl)
-			throw EXCEPTION(_("Cannot change text direction"
-					  " in the middle of a hotspot"
-					  ));
+	// TODO
 
 	iter->second.link_start->replace(IN_THREAD, iter->second.link_end,
 					 std::move(new_str));

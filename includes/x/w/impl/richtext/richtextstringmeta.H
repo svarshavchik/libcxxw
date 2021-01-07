@@ -9,12 +9,11 @@
 template<typename string_type>
 richtextstring::richtextstring(string_type &&str,
 			       const std::unordered_map<size_t,
-			       richtextmeta> &meta,
-			       bool append_null_byte)
+			       richtextmeta> &meta)
 	: string{std::forward<string_type>(str)},
 	  meta{meta.begin(), meta.end()}
 {
-	finish_from_string(append_null_byte);
+	finish_from_string();
 }
 
 #endif

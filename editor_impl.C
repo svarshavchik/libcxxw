@@ -82,6 +82,8 @@ editorObj::implObj::init_args
 	  hint_meta{default_meta} // Fixed up in create_initial_string()
 {
 	label_config_args.alignment=config.alignment;
+	label_config_args.direction=config.direction;
+
 	textlabel_config_args.width_in_columns=config.columns;
 	textlabel_config_args.fixed_width_metrics=true;
 
@@ -107,26 +109,8 @@ create_initial_string(editorObj::implObj::init_args &args,
 {
 	auto &element=args.parent_peephole->container_element_impl();
 
-	text_param cpy=args.text;
-
-	// An additional character at the end of the input field allows for
-	// the cursor to be moved to after the last "real" character in the
-	// input field.
-	//
-	// The way that richtextiterators work, the iterators can only point
-	// to an existing character, there is no one-past-the-end
-	// richtextiterator, so this works out quite nicely. The first
-	// position is the first character, and the last position is the
-	// one after the last "real" character.
-	//
-	// This character must be a newline. The richtext logic that deals
-	// with bidirectional text will not work right unless the actual
-	// text it's chewing on ends with what it thinks is a paragraph break.
-	//
-	// it gets rendered as a space.
-	cpy("\n");
-
-	auto string=element.create_richtextstring(args.default_meta, cpy);
+	auto string=element.create_richtextstring(args.default_meta,
+						  args.text);
 
 	if (string.get_meta().size() > 1)
 		throw EXCEPTION(_("Input text cannot contain embedded formatting."));
@@ -148,10 +132,12 @@ create_initial_string(editorObj::implObj::init_args &args,
 
 		password_info.real_string=string;
 
+		auto cpy=args.text;
+
 		auto b=cpy.string.begin();
 		auto e=cpy.string.end();
 
-		std::fill(b, --e, password_info.password_char);
+		std::fill(b, e, password_info.password_char);
 
 		string=element.create_richtextstring(args.default_meta, cpy);
 	}
@@ -475,8 +461,20 @@ editorObj::implObj::editor_config::editor_config(const input_field_config &c)
 	  autoselect{c.autoselect},
 	  autodeselect{c.autodeselect},
 	  maximum_size{c.maximum_size},
-	  update_clipboards{c.update_clipboards}
+	  update_clipboards{c.update_clipboards},
+	  directional_format{c.directional_format}
 {
+}
+
+static richtext_options hint_richtext_options(editorObj::implObj::init_args &args)
+{
+	richtext_options options{halign::center};
+
+	options.directional_format=
+		args.config.directional_format;
+	options.set_bidi(args.label_config_args.direction);
+
+	return options;
 }
 
 editorObj::implObj::implObj(init_args &args)
@@ -516,6 +514,7 @@ editorObj::implObj::implObj(init_args &args)
 		       // label_elementObj::
 		       args.parent_peephole,
 		       args.textlabel_config_args,
+		       args.config.directional_format,
 		       *args.theme_lock,
 		       create_initial_string(args, *this)},
 	  cursor{this->text->end()},
@@ -527,7 +526,7 @@ editorObj::implObj::implObj(init_args &args)
 	       (parent_peephole->container_element_impl()
 		.create_richtextstring(args.hint_meta,
 				       args.config.hint),
-		richtext_options{halign::center})}
+		hint_richtext_options(args))}
 {
 	// The first input field in a window gets focus when its shown.
 

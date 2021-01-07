@@ -26,12 +26,14 @@ template<typename element_impl>
 label_elementObj<element_impl>
 ::label_elementObj(const container_impl &parent_container,
 		   textlabel_config &config,
+		   bidi_format directional_format,
 		   const const_defaulttheme &theme,
 		   richtextstring &&string)
-	: textlabelObj::implObj{config,
-				parent_container->container_element_impl(),
-				theme,
-				std::move(string)},
+	: textlabelObj::implObj{
+			config, directional_format,
+			parent_container->container_element_impl(),
+			theme,
+			std::move(string)},
 	  element_impl{parent_container, config.child_element_init}
 {
 }
