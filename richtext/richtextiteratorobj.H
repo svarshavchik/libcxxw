@@ -10,6 +10,7 @@
 #include "x/w/impl/richtext/richtextfwd.H"
 #include "x/w/impl/richtext/richtext_insertfwd.H"
 #include "richtext/richtextcursorlocation.H"
+#include "richtext/richtextcursorlocationownerobj.H"
 #include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/impl/richtext/richtextfragmentfwd.H"
 #include "x/w/rectangle.H"
@@ -21,21 +22,13 @@ LIBCXXW_NAMESPACE_START
 
 //! \ref richtextiterator "Rich text iterator" implementation object.
 
-class richtextiteratorObj : virtual public obj {
+class richtextiteratorObj : public richtextcursorlocationownerObj {
 
 public:
 
 	//! My rich text object.
 	const richtext my_richtext;
 
-private:
-
-	//! My cursor location object.
-
-	//! An internal implementation object, basically. Accessible only
-	//! while holding a lock on the underlying implementation object.
-
-	richtextcursorlocation my_location;
  public:
 
 	friend class richtextObj; // It has access to my_location, I trust him.
@@ -58,7 +51,7 @@ private:
 	richtextiteratorObj(const richtextiteratorObj &clone);
 
 	//! Destructor
-	~richtextiteratorObj() noexcept;
+	~richtextiteratorObj();
 
 	//! Create another iterator pointing to the beginning of the text.
 	richtextiterator begin() const;

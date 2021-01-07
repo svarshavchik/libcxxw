@@ -777,6 +777,10 @@ libcxxw_la_SOURCES=\
 	richtext/richtextcursorlocation.C	    \
 	richtext/richtextcursorlocation.H	    \
 	richtext/richtextcursorlocationparagraphtext.H \
+	richtext/richtextcursorlocationowner.C	    \
+	richtext/richtextcursorlocationowner.H	    \
+	richtext/richtextcursorlocationownerfwd.H   \
+	richtext/richtextcursorlocationownerobj.H   \
 	richtext/richtextfragment.C		    \
 	richtext/richtextfragment.H		    \
 	richtext/richtextfragment2.C		    \

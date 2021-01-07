@@ -83,6 +83,7 @@ LIBCXXW_NAMESPACE_END
 #include "richtext/richtext_linebreak_info.C"
 #include "richtext/richtexthorizinfo.C"
 #include "richtext/richtextcursorlocation.C"
+#include "richtext/richtextcursorlocationowner.C"
 #include "richtext/richtext_range.C"
 
 static LIBCXX_NAMESPACE::w::richtextstring inserted_canonical_string;
