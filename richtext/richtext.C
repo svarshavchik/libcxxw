@@ -28,8 +28,6 @@ richtextObj::richtextObj(const ref<richtext_implObj> &impl,
 {
 	impl_t::lock lock{this->impl};
 
-	(*lock)->finish_initialization();
-
 	if (!(*lock)->rewrap(initial_width))
 	{
 		paragraph_list my_paragraphs{**lock};
@@ -39,9 +37,6 @@ richtextObj::richtextObj(const ref<richtext_implObj> &impl,
 }
 
 richtextObj::~richtextObj()=default;
-
-// We must make sure that finish_initialization() gets invoked after the
-// object gets constructed.
 
 richtextObj::impl_t::lock::lock(impl_t &me)
 	: internal_richtext_impl_t::lock(me)

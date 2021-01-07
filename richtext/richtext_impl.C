@@ -84,8 +84,6 @@ fragment_cursorlocations_t richtext_implObj::set(ONLY IN_THREAD,
 
 	do_set(std::move(string));
 
-	finish_initialization();
-
 	// Ok, now move all locations to the last character of the new text.
 
 	if (!all_locations.empty())
@@ -171,32 +169,6 @@ void richtext_implObj::do_set(richtextstring &&string)
 
 		my_fragments.append_new_fragment(std::move(string));
 	}
-}
-
-void richtext_implObj::finish_initialization()
-{
-	paragraph_list my_paragraphs(*this);
-
-	paragraphs.for_paragraphs
-		(0,
-		 [&]
-		 (const auto &new_paragraph)
-		 {
-			 fragment_list my_fragments{my_paragraphs,
-						    *new_paragraph};
-
-			 if (my_fragments.size() != 1)
-				 throw EXCEPTION("Internal error: expected 1 fragment in finish_initialization()");
-
-			 auto new_fragment=
-				 new_paragraph->get_fragment(0);
-
-			 // Now that the fragment has been initialized, the
-			 // paragraph's metrics can be recalculated
-			 my_fragments.fragment_text_changed(0, 0);
-
-			 return true;
-		 });
 }
 
 richtext_implObj::~richtext_implObj()=default;

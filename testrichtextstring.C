@@ -1036,8 +1036,6 @@ void rlmetricstest()
 				},
 		}, options);
 
-	impl->finish_initialization();
-
 	{
 		paragraph_list my_paragraphs{*impl};
 
@@ -1523,7 +1521,6 @@ void rewraptest()
 		auto impl=LIBCXX_NAMESPACE::ref<richtext_implObj>::create
 			((richtextstring)t.string, options);
 
-		impl->finish_initialization();
 		{
 			impl->rewrap(t.wrap_to_width);
 		}
