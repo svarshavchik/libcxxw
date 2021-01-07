@@ -777,8 +777,9 @@ struct richtext_implObj::remove_info : richtext_range {
 			return {0, 0}; // Shouldn't happen.
 
 		// If this is the first or the last fragment in the range,
-		// use classify_fragment() then the appropriate richtext_range
-		// method, and capture what comes out of range().
+		// use range_embedding_level() then the appropriate
+		// richtext_range method, and capture what comes out of
+		// range().
 
 		if (index == starting_index || index == ending_index)
 		{
@@ -792,7 +793,7 @@ struct richtext_implObj::remove_info : richtext_range {
 				return {first, last-first};
 			}
 
-			auto embedding_level=classify_fragment(f);
+			auto embedding_level=f->range_embedding_level();
 
 			if (embedding_level == UNICODE_BIDI_LR)
 			{

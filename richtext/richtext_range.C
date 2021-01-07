@@ -43,56 +43,6 @@ richtext_range::richtext_range(unicode_bidi_level_t paragraph_embedding_level,
 	location_b_offset=location_b->get_offset();
 }
 
-unicode_bidi_level_t
-richtext_range::classify_fragment(const richtextfragmentObj *f) const
-{
-	auto level=paragraph_embedding_level;
-
-	if (level == UNICODE_BIDI_LR)
-	{
-		// Compute the effective embedding level. if
-		// this fragment's direction is BOTH, we will
-		// consider it left-to-right text.
-		//
-		// Note that this means that after we see one or
-		// more right-to-left lines, if the last right to left
-		// line has the remainder of the right-to-left text,
-		// followed by resumption of left-to-right text, it
-		// will be considered left to right, here.
-
-		return f->string.embedding_level(level);
-	}
-
-	// Figure out whether this line is left to right
-	// or right to left.
-
-	switch (f->string.get_dir()) {
-	case richtext_dir::lr:
-		level=UNICODE_BIDI_LR;
-		break;
-	case richtext_dir::rl:
-		level=UNICODE_BIDI_RL;
-		break;
-	case richtext_dir::both:
-
-		// We will consider this line a
-		// left to right line only if it ENDS
-		// with left to right text, which
-		// might mean that it's wrapped from
-		// the preceding chunk of left to right
-		// text.
-		auto &m=f->string.get_meta();
-		auto b=m.begin();
-		auto e=m.end();
-
-		if (b != e && !e[-1].second.rl)
-			level=UNICODE_BIDI_LR;
-		break;
-	}
-
-	return level;
-}
-
 bool richtext_range::complete_line()
 {
 	if (diff == 0)

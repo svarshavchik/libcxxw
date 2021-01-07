@@ -365,10 +365,10 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 			assert_or_throw(f != NULL,
 					"Internal error: NULL fragment");
 
-			auto paragraph_embedding_level=
-				helper.classify_fragment(f);
+			auto embedding_level=
+				f->range_embedding_level();
 
-			if (paragraph_embedding_level != UNICODE_BIDI_LR)
+			if (embedding_level != UNICODE_BIDI_LR)
 			{
 				if (first_lr)
 				{
@@ -468,16 +468,15 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 					(f != NULL,
 					 "Internal error: NULL fragment");
 
-				auto paragraph_embedding_level=
-					helper.classify_fragment(f);
+				auto embedding_level=
+					f->range_embedding_level();
 
 				// When we find a left-to-right line, we need
 				// emit left-to-right text from top to bottom,
 				// so we mark the first line we find it, then
 				// keep going.
 
-				if (paragraph_embedding_level ==
-				    UNICODE_BIDI_LR)
+				if (embedding_level == UNICODE_BIDI_LR)
 				{
 					if (bottom_rl)
 					{

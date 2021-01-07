@@ -47,9 +47,9 @@ struct LIBCXX_HIDDEN richtext_range;
 //! compare(). If complete_line() returned true the range is entirely in a
 //! single line fragment and it calls add() to define it, before returning.
 //!
-//! Otherwise classify_fragment() determines whether the line fragment
+//! Otherwise the range_embedding_level() determines whether the line fragment
 //! consists of left-to-right or right-to-left text. Not all bidirectional
-//! rules get encapsulated here. Using classify_fragment(), get() makes
+//! rules get encapsulated here. Using range_embedding_level(), get() makes
 //! a pass over the contents of the richtext, calling lr_lines() and rl_lines()
 //! to define consecutive ranges of left-to-right and right-to-left text, in
 //! logical order. Here we extract the appropriate part of each line,
@@ -93,14 +93,6 @@ struct richtext_range {
 	//! to pointer comparisons.
 
 	std::equal_to<const richtextfragmentObj *> compare_fragments;
-
-	//! Classify a fragment as being either left-to-right or right-to-left.
-
-	//! The criteria differs, slightly, depending on the paragraph
-	//! embedding level.
-
-	unicode_bidi_level_t classify_fragment(const richtextfragmentObj *f)
-		const;
 
 	//! Extract entire range from one complete line
 

@@ -608,7 +608,14 @@ public:
 
 	//! Return this text string's embedding level
 
+	//! Calls richtextstring's embedding level, supplying our paragraph
+	//! embedding level.
 	unicode_bidi_level_t embedding_level() const;
+
+	//! Embedding level for text range definition purposes.
+
+	//! Used with code that uses richtext_range to extract text ranges.
+	unicode_bidi_level_t range_embedding_level() const;
 
 	//! Rich text editor window: this fragment needs to be redrawn
 
