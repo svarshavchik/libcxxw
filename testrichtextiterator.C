@@ -986,18 +986,18 @@ std::string format(const std::vector<std::string> &l)
 	for (auto &s:l)
 	{
 		o << "\"";
-		for (auto b=s.begin(), e=s.end(); b != e;)
+
+		for (auto c:s)
 		{
-			auto p=b;
-			b=std::find(b, e, '\n');
-
-			o << std::string{p, b};
-
-			if (b != e)
+			if (c == '\n')
 			{
 				o << "\\n";
-				++b;
 			}
+			else if (c == richtextstring::hotspot_marker)
+			{
+				o.put('|');
+			}
+			else o.put(c);
 		}
 		o << "\",\n";
 	}
@@ -1868,7 +1868,9 @@ struct richtext_insert_into {
 
 	void operator()(ONLY IN_THREAD, const richtext &t) const
 	{
+		skip_hotspot_sanity_check=true;
 		t->at(pos, new_location::bidi)->insert(IN_THREAD, str);
+		skip_hotspot_sanity_check=false;
 	}
 };
 
@@ -1933,9 +1935,9 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					1, 0, 2,
 					{
-						{6, 22},
+						{6, 23},
 						{0, 17},
-						{0, 12}
+						{0, 13}
 					}
 				},
 
@@ -1944,14 +1946,14 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					richtext_op{
 						std::in_place_type_t<richtext_remove_between>{},
-						22, 39
+						23, 40
 					},
 					decoded_hotspot_info_t{
 						{
 							1, 0, 1,
 							{
-								{6, 22},
-								{0, 12}
+								{6, 23},
+								{0, 13}
 							},
 						}
 					},
@@ -1959,16 +1961,16 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					richtext_op{
 						std::in_place_type_t<richtext_insert_into>{},
-						22, U"Hello World ",
+						23, U"Hello World ",
 					},
 					decoded_hotspot_info_t{
 						{
 							1, 0, 3,
 							{
-								{6, 22},
+								{6, 23},
 								{0, 17},
 								{0, 12},
-								{0, 12}
+								{0, 13}
 							},
 						}
 					},
@@ -1976,16 +1978,16 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					richtext_op{
 						std::in_place_type_t<richtext_insert_into>{},
-						22, U"Hello World\n",
+						23, U"Hello World\n",
 					},
 					decoded_hotspot_info_t{
 						{
 							1, 0, 3,
 							{
-								{6, 22},
+								{6, 23},
 								{0, 12},
 								{0, 17},
-								{0, 12}
+								{0, 13}
 							},
 						}
 					},
@@ -2001,7 +2003,7 @@ void testrichtext10(ONLY IN_THREAD)
 						{
 							1, 0, 0,
 							{
-								{6, 18},
+								{6, 20},
 							},
 						}
 					},
@@ -2021,20 +2023,21 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					{0, meta0},
 					{6, meta1},
-					{51, meta0},
+					{53, meta0},
 				},
 			},
 			UNICODE_BIDI_LR,
 			120,
 			{
 				{
-					1, 0, 4,
+					1, 0, 5,
 					{
-						{6, 12},
+						{6, 13},
 						{0, 10},
 						{0, 5},
 						{0, 12},
 						{0, 12},
+						{0, 3},
 					}
 				},
 			},
@@ -2042,16 +2045,17 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					richtext_op{
 						std::in_place_type_t<richtext_remove_between>{},
-						22, 39
+						23, 40
 					},
 
 					decoded_hotspot_info_t{
 						{
-							1, 0, 2,
+							1, 0, 3,
 							{
-								{6, 12},
+								{6, 13},
 								{0, 10},
 								{0, 12},
+								{0, 3},
 							}
 						}
 					}
@@ -2078,9 +2082,9 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					1, 0, 2,
 					{
-						{6, 22},
+						{6, 23},
 						{0, 17},
-						{0, 12}
+						{0, 13}
 					}
 				},
 
@@ -2092,16 +2096,16 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					richtext_op{
 						std::in_place_type_t<richtext_remove_between>{},
-						12, 27
+						13, 28
 					},
 
 					decoded_hotspot_info_t{
 						{
 							1, 0, 2,
 							{
-								{6, 12},
+								{6, 13},
 								{0, 12},
-								{0, 12}
+								{0, 13}
 							},
 						},
 					}
@@ -2130,16 +2134,16 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					1, 0, 3,
 					{
-						{18, 22},
+						{20, 25},
 						{0, 17},
 						{0, 21},
-						{0, 11},
+						{0, 12},
 					}
 				},
 				{
 					2, 0, 0,
 					{
-						{12, 18},
+						{12, 20},
 					}
 				},
 			},
@@ -2148,17 +2152,17 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					richtext_op{
 						std::in_place_type_t<richtext_remove_between>{},
-						12, 18
+						12, 20
 					},
 
 					decoded_hotspot_info_t{
 						{
 							1, 0, 3,
 							{
-								{12, 16},
+								{12, 17},
 								{0, 17},
 								{0, 21},
-								{0, 11},
+								{0, 12},
 							},
 						},
 					}
@@ -2166,22 +2170,23 @@ void testrichtext10(ONLY IN_THREAD)
 				{
 					richtext_op{
 						std::in_place_type_t<richtext_remove_between>{},
-						18, 22
+						20, 25
 					},
 
 					decoded_hotspot_info_t{
 						{
 							1, 1, 3,
 							{
-								{0, 17},
+								{1, 18},
 								{0, 21},
-								{0, 11},
+								{0, 12},
 							},
 						},
 						{
-							2, 0, 0,
+							2, 0, 1,
 							{
-								{12, 18},
+								{12, 19},
+								{0, 1},
 							},
 						},
 					}
@@ -2196,14 +2201,14 @@ void testrichtext10(ONLY IN_THREAD)
 						{
 							1, 0, 1,
 							{
-								{18, 24},
-								{0, 6},
+								{20, 27},
+								{0, 7},
 							},
 						},
 						{
 							2, 0, 0,
 							{
-								{12, 18},
+								{12, 20},
 							},
 						},
 					},
@@ -2216,17 +2221,18 @@ void testrichtext10(ONLY IN_THREAD)
 					},
 					decoded_hotspot_info_t{
 						{
-							1, 1, 3,
+							1, 0, 3,
 							{
+								{26, 27},
 								{0, 21},
 								{0, 21},
-								{0, 11},
+								{0, 12},
 							},
 						},
 						{
 							2, 0, 0,
 							{
-								{12, 24},
+								{12, 26},
 							},
 						},
 					},

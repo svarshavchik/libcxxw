@@ -7,6 +7,7 @@
 #include "assert_or_throw.H"
 #include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/impl/richtext/richtextmeta.H"
+#include "x/w/text_hotspot.H"
 #include <x/sentry.H>
 #include <algorithm>
 #include <courier-unicode.h>
@@ -760,11 +761,187 @@ void richtextstring::do_modify_meta(size_t start, size_t count,
 	}
 }
 
+//! Prepare string for to_canonical_order
+
+//! As part of prepping, identify hotspot ranges and insert a newline before
+//! the first character in the hotspot and after the last character in the
+//! hotspot, and set start_end_hotspots to the indexes of the hotspots.
+//!
+//! The newlines get inserted directly into the richtextstring (and the
+//! metadata gets updated accordingly.
+
+struct richtextstring::to_canonical_order::prepped_string {
+
+	richtextstring &string;
+
+	// Locations of inserted newlines
+
+	std::vector<size_t> start_end_hotspots;
+
+	prepped_string(richtextstring &string);
+};
+
+richtextstring::to_canonical_order::prepped_string
+::prepped_string(richtextstring &string)
+	: string{string}
+{
+#ifdef TO_CANONICAL_ORDER_HOOK
+	TO_CANONICAL_ORDER_HOOK();
+#endif
+
+	// Scan richtextstring metadata, noting the hotspot ranges
+
+	text_hotspotptr current_hotspot{};
+
+	for (auto &m:string.meta)
+	{
+		if (m.second.rl)
+			throw EXCEPTION("internal error: canonicalized string "
+					"passed to to_canonical_order");
+
+		// Change in hotspot. This is the end of the current_hotspot
+		// and/or start of a new hotspot.
+		//
+		// Append m.first to start_end_hotspots, noting where the
+		// newline should go.
+		//
+		// Note that if we switched from one hotspot to another one
+		// this will append m.first twice. There will be two newlines
+		// here.
+		if (m.second.link != current_hotspot)
+		{
+			if (m.first > 0 && current_hotspot)
+				start_end_hotspots.push_back(m.first);
+
+			if (m.second.link)
+			{
+				start_end_hotspots.push_back(m.first);
+			}
+		}
+		current_hotspot=m.second.link;
+	}
+
+	// If we ended in a hotspot we'll add an additional newline to
+	// terminate the last hotspot.
+	if (current_hotspot)
+		start_end_hotspots.push_back(string.size());
+
+	assert_or_throw((start_end_hotspots.size() % 2) == 0,
+			"internal error: odd number of hotspot markers");
+
+	// Now update the richtextstring. First we need to insert all the
+	// newlines.
+	//
+	// We're going to resize() the richtextstring's string, making it
+	// bigger by the number of newlines we're inserting. Then we're
+	// going to work our way from the tail end of richtextstring.string
+	// moving each character forward, and inserting the newlines where
+	// they shuld go. So we we had (t: text, h:hotspot)
+	//
+	// string:   tttthhhhhhtttt
+	//
+	// start_end_hotspots: {4, 10}.
+	//
+	// we resize and end two more characters
+	//
+	// string:   tttthhhhhhtttt00
+	//
+	// and then work our way shifting it:
+	//
+	// string:   tttt<hhhhhh<tttt
+	//
+	// (< - newline )
+
+	size_t s=string.size();
+
+	size_t i=s;
+	size_t j=s+start_end_hotspots.size();
+
+	string.string.resize(j);
+
+	size_t k=start_end_hotspots.size();
+
+	if (k && start_end_hotspots[k-1] == s)
+	{
+		// Edge case, at the end of the string there's a newline.
+		string.string.at(--j)='\n';
+		--k;
+	}
+
+	// Move over, one character at a time. When i and j are equal
+	// it means that all newlines have been inserted, and we can
+	// stop now.
+
+	while (i != j)
+	{
+		string.string.at(--j)=string.string.at(--i);
+
+		// Do any newlines go here?
+		while (k && i == start_end_hotspots[k-1])
+		{
+			string.string.at(--j)='\n';
+			--k;
+		}
+	}
+
+	// Now we need to update the metadata. We sweep the metadata again
+	// from the beginning to the end. Each time we see the start of a
+	// new hotspot it means that all subsequent metadata will start
+	// two indices later, since we've inserted two newlines above.
+	//
+	// We just need to keep track of how much to adjust the start of
+	// each metadata by, and we begin with 0.
+	size_t incr=0;
+
+	current_hotspot = text_hotspotptr{};
+
+	for (auto &m:string.meta)
+	{
+		m.first += incr;
+
+		if (m.second.link != current_hotspot)
+		{
+			// New metadata started? Everything else that
+			// follows is shifted over by two.
+			if (m.second.link)
+				incr += 2;
+		}
+
+		current_hotspot=m.second.link;
+	}
+
+	// We now update start_end_hotspots to reflect the location of the
+	// newlines in the richtextstring.string, where the newlines have
+	// been inserted.
+	//
+	// start_end_hotspots started of by indicates the indices where
+	// the newlines need to get inserted, and they'll now indicate
+	// the index of each inserted newline.
+
+	incr=0;
+
+	for (i=0, j=start_end_hotspots.size(); i < j; i += 2)
+	{
+		start_end_hotspots[i] += incr;
+		start_end_hotspots[i+1] += incr+1;
+		incr += 2;
+	}
+}
+
 richtextstring::to_canonical_order
 ::to_canonical_order(richtextstring &string,
 		     const std::optional<unicode_bidi_level_t>
 		     &paragraph_embedding_level)
-	: string{string},
+	: to_canonical_order{prepped_string{string},
+	paragraph_embedding_level}
+{
+}
+
+richtextstring::to_canonical_order
+::to_canonical_order(prepped_string &&the_prepped_string,
+		     const std::optional<unicode_bidi_level_t>
+		     &paragraph_embedding_level)
+	: string{the_prepped_string.string},
 	  types{string.string},
 	  calc_results{paragraph_embedding_level
 	? unicode::bidi_calc(types, *paragraph_embedding_level)
@@ -775,10 +952,19 @@ richtextstring::to_canonical_order
 {
 	types.setbnl(string.string);
 
-	for (auto &m:string.meta)
-		if (m.second.rl)
-			throw EXCEPTION("internal error: canonicalized string "
-					"passed to to_canonical_order");
+#ifdef TO_CANONICAL_ORDER_HOOK
+	TO_CANONICAL_ORDER_HOOK();
+#endif
+
+	// Update the richtextstring and replace all newlines that were
+	// inserted as demarcation marks for the hotspot, and replace them
+	// with the hotspot_marker, and update their type.
+
+	for (auto i:the_prepped_string.start_end_hotspots)
+	{
+		string.string.at(i) = hotspot_marker;
+		types.types.at(i) = UNICODE_BIDI_TYPE_S;
+	}
 }
 
 struct richtextstring::meta_reverse {
@@ -883,29 +1069,15 @@ void richtextstring::to_canonical_order::fill()
 	// Now we remove the bidirectional markers to get the
 	// CANONICAL_CLEANUP-ed string.
 
+	std::vector<size_t> removed_indices;
+
 	unicode::bidi_cleanup
 		(string.string, levels,
 		 [&, this]
 		 (size_t pos)
 		 {
 			 // Relative to the starting position.
-			 pos += starting_pos;
-
-			 string.meta.reserve(string.meta.size()+2);
-
-			 // Need to remove the metadata for the character.
-			 auto p=string.duplicate(pos);
-			 string.duplicate(pos+1);
-
-			 p=string.meta.erase(p);
-
-			 // And then adjust the index of the following metadata.
-			 auto e=string.meta.end();
-			 while (p<e)
-			 {
-				 --(p->first);
-				 ++p;
-			 }
+			 removed_indices.push_back(pos+starting_pos);
 
 			 // We have one fewer character now. This keeps track
 			 // of the actual number of characters in this
@@ -915,6 +1087,64 @@ void richtextstring::to_canonical_order::fill()
 		 unicode::literals::CLEANUP_CANONICAL,
 		 starting_pos,
 		 ending_pos-starting_pos);
+
+	if (removed_indices.size())
+	{
+		// Now, for each index we'll need to dupe that and the
+		// following index. We're removing this character from the
+		// string, and we need to update the metadata. This makes
+		// sure that there is an entry for the removed character and
+		// the following character, in the metadata vector, and we
+		// remove the removed character's metadata, below.
+
+		string.meta.reserve(string.meta.size() +
+				    removed_indices.size()*2);
+
+		for (auto i:removed_indices)
+		{
+			string.duplicate(i);
+
+			if (i+1 < string.size())
+				string.duplicate(i+1);
+		}
+
+		// So, we need to adjust the remaining meta range, by
+		// doing two things:
+
+		auto mb=string.meta_lower_bound_by_pos(removed_indices[0]);
+		auto p=mb;
+		auto me=string.meta.end();
+
+		auto rb=removed_indices.begin(), re=removed_indices.end();
+
+		size_t adjust=0;
+
+		while (mb != me)
+		{
+			if (rb != re && mb->first == *rb)
+			{
+				// 1) Skipping over removed character indexes.
+
+				// Each skipped-over character means that the
+				// metadata starting position of all following
+				// metadata entries gets decremented by 1.
+
+				++adjust;
+				++rb;
+			}
+			else
+			{
+				// 2) And adjusting the remaining indexes;
+
+				*p=*mb;
+				p->first -= adjust;
+				++p;
+			}
+			++mb;
+		}
+
+		string.meta.erase(p, me);
+	}
 
 	// And now, set the rl flag.
 	//

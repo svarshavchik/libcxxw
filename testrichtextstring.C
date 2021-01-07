@@ -2322,8 +2322,8 @@ void canonicaltest()
 
 		while (!c.end())
 		{
-			canonical += *c;
-			++c;
+			canonical += c.current_paragraph();
+			c.advance_to_next_paragraph();
 		}
 
 		if (canonical != t.canonical)
@@ -2337,6 +2337,131 @@ void canonicaltest()
 	}
 }
 
+void canonicaltest2()
+{
+	static constexpr richtextmeta meta0{0, 0, 0};
+	static constexpr richtextmeta meta1{0, 0, 1};
+	static constexpr richtextmeta meta2{0, 0, 2};
+
+	static const struct {
+		richtextstring orig_string;
+		richtextstring prepped_string;
+		std::vector<size_t> newlines;
+	} tests[] = {
+		// Test 1
+		{
+			{ U"Hello",
+			  {
+				  {0, meta0},
+			  }
+			},
+			{ U"Hello",
+			  {
+				  {0, meta0},
+			  }
+			},
+			{}
+		},
+		// Test 2
+		{
+			{ U"Hello",
+			  {
+				  {0, meta1},
+			  }
+			},
+			{ U"\nHello\n",
+			  {
+				  {0, meta1},
+			  }
+			},
+			{0, 6},
+		},
+
+		// Test 3
+		{
+			{ U"Hello World",
+			  {
+				  {0, meta1},
+				  {6, meta0},
+			  }
+			},
+			{ U"\nHello \nWorld",
+			  {
+				  {0, meta1},
+				  {8, meta0},
+			  }
+			},
+			{0, 7},
+		},
+		// Test 4
+		{
+			{ U"Hello World",
+			  {
+				  {0, meta0},
+				  {6, meta1},
+			  }
+			},
+			{ U"Hello \nWorld\n",
+			  {
+				  {0, meta0},
+				  {6, meta1},
+			  }
+			},
+			{6, 12},
+		},
+		// Test 5
+		{
+			{ U"Hello World",
+			  {
+				  {0, meta1},
+				  {6, meta2},
+			  }
+			},
+			{ U"\nHello \n\nWorld\n",
+			  {
+				  {0, meta1},
+				  {8, meta2},
+			  }
+			},
+			{0, 7, 8, 14},
+		},
+		// Test 6
+		{
+			{ U"Hello World",
+			  {
+				  {0, meta1},
+				  {5, meta0},
+				  {6, meta2},
+			  }
+			},
+			{ U"\nHello\n \nWorld\n",
+			  {
+				  {0, meta1},
+				  {7, meta0},
+				  {8, meta2},
+			  }
+			},
+			{0, 6, 8, 14},
+		},
+	};
+
+	size_t casenum=0;
+
+	for (const auto &t: tests)
+	{
+		++casenum;
+
+		auto cpy=t.orig_string;
+
+		richtextstring::to_canonical_order::prepped_string
+			prep{cpy};
+
+		if (cpy != t.prepped_string ||
+		    prep.start_end_hotspots != t.newlines)
+			throw EXCEPTION("canonicaltest2 test "
+					<< casenum << " failed");
+	}
+}
 
 int main()
 {
@@ -2350,6 +2475,7 @@ int main()
 		gettest();
 		getdirtest();
 		canonicaltest();
+		canonicaltest2();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

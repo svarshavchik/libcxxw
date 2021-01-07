@@ -392,6 +392,18 @@ public:
 	struct LIBCXX_HIDDEN to_canonical_order;
 
 	struct LIBCXX_HIDDEN meta_reverse;
+
+	//! Transformed hotspot marker character
+
+	//! The begin and the end of a hotspot is initially marked by a line
+	//! or a paragraph break, and is internally transformed to the
+	//! hotspot_marker. The hotspot_marker should have no visual
+	//! appearance, labels with hotspots should be using \0 as a
+	//! replacement character for unprintable characters, which itself has
+	//! no appearance. This character is picked so that it's unicode
+	//! character type is UNICODE_BIDI_TYPE_S.
+
+	static constexpr char32_t hotspot_marker=0x1F;
 };
 
 //! Convert a bidirectional string into one or more paragraphs
@@ -407,6 +419,8 @@ public:
 struct richtextstring::to_canonical_order {
 	richtextstring &string;
 
+	struct prepped_string;
+
 	//! Constructor
 
 	//! Takes a richtextstring and the requested canonical rendering
@@ -417,6 +431,13 @@ struct richtextstring::to_canonical_order {
 			   const std::optional<unicode_bidi_level_t>
 			   &paragraph_embedding_level);
 
+private:
+	//! Internal constructor
+
+	to_canonical_order(prepped_string &&string,
+			   const std::optional<unicode_bidi_level_t>
+			   &paragraph_embedding_level);
+public:
 	//! Computed embedding level.
 
 	//! Returns the canonical string's paragraph
@@ -472,9 +493,16 @@ public:
 
 	//! Return the current paragraph in canonical rendering order.
 
-	//! The returned object remains valid until operator++ is called.
+	//! The returned object remains valid until:
+	//!
+	//! 1) advance_to_next_paragraph gets called, and
+	//! 2) current_paragraph() gets called again.
+	//!
+	//! The returned object does not get invalidated immediately by
+	//! advance_to_next_paragraph(), but when this is called again,
+	//! afterwards.
 
-	richtextstring &operator*()
+	richtextstring &current_paragraph()
 	{
 		fill();
 		return canonical_string;
@@ -482,7 +510,7 @@ public:
 
 	//! Advance to the next canonical paragraph.
 
-	void operator++()
+	void advance_to_next_paragraph()
 	{
 		fill();
 

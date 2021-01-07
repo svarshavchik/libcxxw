@@ -51,23 +51,16 @@ public:
 				      iter_type e,
 				      lambda_type &&lambda,
 				      char32_t prev_char,
-				      char32_t unprintable_char) const
-	{
-		while (b != e)
-		{
-		 lambda(16, 16, prev_char == ' ' ? -10:
-			-(int)(prev_char & 15), 0);
-
-		 prev_char = *b;
-
-		 ++b;
-		}
-	}
+				      char32_t unprintable_char) const;
 };
 
 typedef richtextmeta freetypefont;
 
 LIBCXXW_NAMESPACE_END
+
+bool skip_hotspot_sanity_check=false;
+
+#define TO_CANONICAL_ORDER_HOOK() if (skip_hotspot_sanity_check) return
 
 #include "richtext/richtextstring.C"
 #include "richtext/richtextstring2.C"
@@ -94,6 +87,30 @@ static LIBCXX_NAMESPACE::w::richtextstring inserted_canonical_string;
 #include "assert_or_throw.C"
 
 LIBCXXW_NAMESPACE_START
+
+template<typename iter_type, typename lambda_type>
+void richtextmeta::glyphs_size_and_kernings(iter_type b,
+					    iter_type e,
+					    lambda_type &&lambda,
+					    char32_t prev_char,
+					    char32_t unprintable_char) const
+{
+	while (b != e)
+	{
+		if (*b == richtextstring::hotspot_marker)
+		{
+			lambda(0, 0, 0, 0);
+			++b;
+			continue;
+		}
+		lambda(16, 16, prev_char == ' ' ? -10:
+		       -(int)(prev_char & 15), 0);
+
+		prev_char = *b;
+
+		++b;
+	}
+}
 
 const richtextstring::resolved_fonts_t &richtextstring::resolve_fonts() const
 {

@@ -68,7 +68,7 @@ bool create_fragments_from_inserted_text::has_paragraph_break() const
 	if (canonicalizer.end())
 		return false;
 
-	auto &str=(*canonicalizer).get_string();
+	auto &str=canonicalizer.current_paragraph().get_string();
 
 	return str.at(0) == '\n' ||
 		str.at(str.size()-1) == '\n';
@@ -84,7 +84,7 @@ richtext_dir create_fragments_from_inserted_text::next_string_dir() const
 			? richtext_dir::lr : richtext_dir::rl;
 	}
 
-	return (*canonicalizer).get_dir();
+	return canonicalizer.current_paragraph().get_dir();
 }
 
 richtextstring create_fragments_from_inserted_text::next_string()
@@ -94,12 +94,12 @@ richtextstring create_fragments_from_inserted_text::next_string()
 		return {};
 	}
 
-	auto &current_string=*canonicalizer;
+	auto &current_string=canonicalizer.current_paragraph();
 
 #ifdef CFFIT_NEXT_DEBUG
 	CFFIT_NEXT_DEBUG;
 #endif
-	++canonicalizer;
+	canonicalizer.advance_to_next_paragraph();
 
 	// See canonicalizer's docs.
 	return std::move(current_string);
