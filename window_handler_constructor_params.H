@@ -11,6 +11,7 @@
 #include "x/w/generic_window_appearancefwd.H"
 #include "x/w/main_window_appearancefwd.H"
 #include "shared_handler_datafwd.H"
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -62,11 +63,12 @@ struct main_window_handler_constructor_params
 	: generic_window_handler_constructor_params {
 
 	main_window_handler_constructor_params
-	(const screen &parent_screen,
+	(const std::reference_wrapper<const screen> &parent_screen,
 	 const char *window_type,
 	 const char *window_state,
-	 const color_arg &background_color,
-	 const const_main_window_appearance &appearance,
+	 const std::reference_wrapper<const color_arg> &background_color,
+	 const std::reference_wrapper<const const_main_window_appearance>
+	 &appearance,
 	 bool override_redirect);
 
 	//! Appearance

@@ -378,9 +378,10 @@ public:
 }
 
 static ref<main_windowObj::handlerObj>
-create_splash_window_handler(const screen &me,
+create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 			     const splash_window_config &config,
-			     const color_arg &background_color,
+			     const std::reference_wrapper<const color_arg>
+			     & background_color,
 			     std::optional<border_arg> &main_window_border)
 {
 	main_window_handler_constructor_params
@@ -398,13 +399,13 @@ create_splash_window_handler(const screen &me,
 }
 
 static ref<main_windowObj::handlerObj>
-create_splash_window_handler(const screen &me,
+create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 			     const transparent_splash_window_config &config,
 			     std::optional<border_arg> &main_window_border,
 			     std::optional<color_arg> &inner_background_color)
 
 {
-	if (me->impl->toplevelwindow_pictformat->alpha_depth == 0)
+	if (me.get()->impl->toplevelwindow_pictformat->alpha_depth == 0)
 	{
 		const splash_window_config &nonalpha_config=config;
 
@@ -414,7 +415,10 @@ create_splash_window_handler(const screen &me,
 			 main_window_border);
 	}
 
-	auto handler=create_splash_window_handler(me, config, transparent,
+	color_arg transparent_background_color{transparent};
+
+	auto handler=create_splash_window_handler(me, config,
+						  transparent_background_color,
 						  main_window_border);
 
 	main_window_border=config.border;
@@ -435,7 +439,7 @@ main_window screenObj
 
 	auto queue=connref->impl->thread->get_batch_queue();
 
-	auto me=ref{this};
+	auto me=screen{this};
 
 	std::optional<border_arg> main_window_border;
 	std::optional<color_arg> inner_background_color;

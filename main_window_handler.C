@@ -27,27 +27,29 @@
 LIBCXXW_NAMESPACE_START
 
 main_window_handler_constructor_params
-::main_window_handler_constructor_params(const screen &parent_screen,
+::main_window_handler_constructor_params(const std::reference_wrapper<const
+					 screen> &parent_screen,
 					 const char *window_type,
 					 const char *window_state,
-					 const color_arg &background_color,
-					 const const_main_window_appearance &
-					 appearance,
+					 const std::reference_wrapper<const
+					 color_arg> &background_color,
+					 const std::reference_wrapper
+					 <const const_main_window_appearance>
+					 &appearance,
 					 bool override_redirect)
 	: generic_window_handler_constructor_params
 	{
-	 parent_screen,
-	 window_type,
-	 window_state,
-	 background_color,
-	 appearance->toplevel_appearance,
+		parent_screen,
+		window_type,
+		window_state,
+		background_color,
+		appearance.get()->toplevel_appearance,
 	 shared_handler_data::create(),
 	 0,
 	 override_redirect
-	}, appearance{appearance}
+	}, appearance{appearance.get()}
 {
 }
-
 
 main_windowObj::handlerObj::handlerObj(const constructor_params &params,
 				       const std::optional<rectangle>
