@@ -2057,9 +2057,10 @@ void gettest()
 				},
 
 				{
-					{0, 3, U"em ",
+					{0, 3, U"rem",
 					 {
-						 U"LorIpsum ",
+						 U"Lo ",
+						 U"Ipsum ",
 						 U"Dolor ",
 						 U"Sit ",
 						 U"\nAmet",
@@ -2087,9 +2088,10 @@ void gettest()
 				},
 
 				{
-					{0, 3, U" me",
+					{0, 3, U"mer",
 					 {
-						 U" muspIroL",
+						 U" oL",
+						 U" muspI",
 						 U" tiS roloD",
 						 U"temA\n",
 					 },

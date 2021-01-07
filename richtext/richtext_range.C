@@ -53,7 +53,7 @@ bool richtext_range::complete_line()
 
 	// On the same line.
 
-	if (paragraph_embedding_level == UNICODE_BIDI_LR)
+	if (location_a->my_fragment->embedding_level() == UNICODE_BIDI_LR)
 	{
 		// Left to right text, get() characters starting
 		// with the starting position, location_a, until
