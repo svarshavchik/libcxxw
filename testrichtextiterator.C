@@ -1148,15 +1148,15 @@ void testrichtext8(ONLY IN_THREAD)
 				"1234Dolor ",
 				"Sit Amet\n",
 			},
-			12,
-			16,
+			15,
+			11,
 		},
 		// Test 6
 		{
 			U"Lorem Ipsum Dolor Sit Amet\n",
 			120,
 			UNICODE_BIDI_LR,
-			12,
+			11,
 			// U"1234 56 78 90\nAB CD\nEF GH",
 			std::u32string{RLO} +
 			U"09 87 65 4321\nDC BA\nHG FE" + PDF,
@@ -1176,7 +1176,7 @@ void testrichtext8(ONLY IN_THREAD)
 			U"Lorem Ipsum Dolor\n",
 			120,
 			UNICODE_BIDI_LR,
-			12,
+			11,
 			// U"1234 56 78 90\n",
 
 			std::u32string{RLO} +
@@ -1195,7 +1195,7 @@ void testrichtext8(ONLY IN_THREAD)
 			U"Lorem Ipsum Dolor\n",
 			120,
 			UNICODE_BIDI_LR,
-			6,
+			5,
 			std::u32string{RLO} +
 			U"sit amet\n333 222 111" + PDF,
 			{
@@ -1214,7 +1214,7 @@ void testrichtext8(ONLY IN_THREAD)
 			U"Lorem Ipsum Dolor\n",
 			120,
 			UNICODE_BIDI_LR,
-			6,
+			5,
 			std::u32string{RLO} + U"sit amet\n" + PDF,
 			{
 				"Lorem ",
@@ -1229,7 +1229,7 @@ void testrichtext8(ONLY IN_THREAD)
 			U"Lorem Ipsum Dolor\n",
 			120,
 			UNICODE_BIDI_LR,
-			6,
+			5,
 			std::u32string{RLO} +
 			U"333 222 111\nsit amet\n",
 			{
@@ -1270,8 +1270,8 @@ void testrichtext8(ONLY IN_THREAD)
 				"Lorem tema",
 				"IpsumDolor",
 			},
-			6,
-			10,
+			9,
+			5,
 		},
 		// Test 13
 		{
@@ -2302,6 +2302,278 @@ void testrichtext10(ONLY IN_THREAD)
 	}
 }
 
+struct test11_info {
+	const richtext text;
+	richtextiterator cursor;
+};
+
+struct test11_insert {
+
+	const char32_t *string;
+
+	test11_insert(const char32_t *string) : string{string} {}
+
+	void operator()(ONLY IN_THREAD, test11_info &info) const
+	{
+		std::cout << info.cursor->pos() << "-";
+		info.cursor->insert(IN_THREAD, string);
+		std::cout << info.cursor->pos() << "\n";
+	}
+};
+
+struct test11_setpos {
+
+	size_t pos;
+
+	test11_setpos(size_t pos) : pos{pos} {}
+
+	void operator()(ONLY IN_THREAD, test11_info &info) const
+	{
+		info.cursor=info.cursor->pos(pos);
+	}
+};
+
+typedef std::variant<test11_insert, test11_setpos> test11_step;
+
+void testrichtext11(ONLY IN_THREAD)
+{
+	static constexpr richtextmeta meta0{0, 0};
+	// static constexpr richtextmeta meta1{0, 1};
+
+	static const struct {
+		std::optional<unicode_bidi_level_t> embedding_level;
+
+		std::vector<std::tuple<test11_step,
+				       richtextstring>> tests;
+	} tests[]={
+
+		// Test 1
+		{
+			std::nullopt,
+
+			{
+				// Step 1
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U" "
+					},
+					{
+						U" ",
+						{
+							{0, meta0}
+						},
+					}
+				},
+				// Step 2
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U"ש"
+					},
+					{
+						U" ש",
+						{
+							{0, meta0},
+						},
+					}
+				},
+				// Step 3
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U"ל"
+					},
+					{
+						U" לש",
+						{
+							{0, meta0},
+						},
+					}
+				},
+				// Step 4
+				{
+					test11_step{
+						std::in_place_type_t<test11_setpos>{},
+						0,
+					},
+					{
+						U" לש",
+						{
+							{0, meta0},
+						},
+					}
+				},
+				// Step 5
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U"ש"
+					},
+					{
+						U" לשש",
+						{
+							{0, meta0},
+						},
+					}
+				},
+				// Step 6
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U"ל"
+					},
+					{
+						U" לששל",
+						{
+							{0, meta0},
+						},
+					}
+				},
+			},
+		},
+		// Test 2
+		{
+			std::nullopt,
+
+			{
+				// Step 1
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U"Hello"
+					},
+					{
+						U"Hello",
+						{
+							{0, meta0}
+						},
+					}
+				},
+				// Step 2
+				{
+					test11_step{
+						std::in_place_type_t<test11_setpos>{},
+						4,
+					},
+					{
+						U"Hello",
+						{
+							{0, meta0},
+						},
+					}
+				},
+				// Step 3
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U"ש"
+					},
+					{
+						U"Helloש",
+						{
+							{0, meta0}
+						},
+					}
+				},
+				// Step 4
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U"ל"
+					},
+					{
+						U"Helloשל",
+						{
+							{0, meta0}
+						},
+					}
+				},
+			},
+		},
+
+		// Test 3
+		{
+			std::nullopt,
+
+			{
+				// Step 1
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U"של"
+					},
+					{
+						U"של",
+						{
+							{0, meta0}
+						},
+					}
+				},
+				// Step 2
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U"ו"
+					},
+					{
+						U"שלו",
+						{
+							{0, meta0}
+						},
+					}
+				},
+			},
+		},
+	};
+
+	// שלום
+	size_t casenum=0;
+	for (const auto &t:tests)
+	{
+		++casenum;
+
+		richtext_options options;
+
+		options.is_editor=1;
+
+		options.paragraph_embedding_level=t.embedding_level;
+
+		auto richtext=richtext::create(richtextstring{
+				U"\n",
+				{
+					{0, meta0}
+				}}, options);
+
+		test11_info info{richtext, richtext->end()};
+
+		size_t testnum=0;
+
+		for (const auto &[op, expected] : t.tests)
+		{
+			++testnum;
+
+			std::visit(
+				   [&](const auto &op)
+				   {
+					   op(IN_THREAD, info);
+				   }, op);
+
+			auto actual=
+				richtext->begin()->get(richtext->end());
+
+			if (actual != expected)
+			{
+				throw EXCEPTION("testrichtext11 test "
+						<< casenum
+						<< ", step "
+						<< testnum
+						<< ": unexpected result");
+			}
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -2339,6 +2611,7 @@ int main(int argc, char **argv)
 		testrichtext8(IN_THREAD);
 		testrichtext9(IN_THREAD);
 		testrichtext10(IN_THREAD);
+		testrichtext11(IN_THREAD);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

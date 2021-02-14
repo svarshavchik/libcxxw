@@ -209,13 +209,14 @@ public:
  private:
 	//! Implement insert or replace using set().
 
-	//! If is_editor, and either new text is getting inserted into
+	//! This is_editor, and either new text is getting inserted into
 	//! an otherwise empty (except for the trailing character) richtext,
 	//! or if the entire contents (save the trailing char) get replaced,
-	//! this can be done as set().
+	//! this can be done as set(), after adding the trailing newline
+	//! to the new_text.
 
-	void set(ONLY IN_THREAD, richtextObj &public_object,
-		 const richtext_insert_base &new_text);
+	void set_updated(ONLY IN_THREAD, richtextObj &public_object,
+			 const richtext_insert_base &new_text);
 
 	//! Invoked from set(), after all existing locations are copied.
 	void do_set(//! Text string

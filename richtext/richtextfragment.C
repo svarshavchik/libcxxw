@@ -736,26 +736,23 @@ richtextfragmentObj::insert(ONLY IN_THREAD,
 	// richtext_dir::both, or if the insert position is a paragraph
 	// break, this gets overriden to our paragraph embedding level.
 
-	auto insert_rl=richtext_rl;
+	results.insert_rl=richtext_rl;
 
 	if (my_string[pos] != '\n' && !factory.end())
 	{
 		switch (factory.next_string_dir()) {
 		case richtext_dir::lr:
-			insert_rl=false;
+			results.insert_rl=false;
 			break;
 		case richtext_dir::rl:
-			insert_rl=true;
+			results.insert_rl=true;
 			break;
 		case richtext_dir::both:
 			break;
 		}
 	}
 
-#if 0
-	results.insert_rl=insert_rl;
-#endif
-	if (insert_rl)
+	if (results.insert_rl)
 		++pos; // Insertion position *after* what's indicated.
 
 	// Sanity check, non-empty string and ...
@@ -786,7 +783,7 @@ richtextfragmentObj::insert(ONLY IN_THREAD,
 
 		auto this_embedding_level=embedding_level();
 
-		// Must be appending right to left, must be insert_rl
+		// Must be appending right to left, must be results.insert_rl
 		//
 		//
 		// What we'll do is insert the first paragraph at the end

@@ -1218,7 +1218,15 @@ void editorObj::implObj::update_filtered_content(ONLY IN_THREAD,
 					 me->clear_password_peek(IN_THREAD);
 				 }
 			 });
-		starting_cursor->insert(IN_THREAD, str);
+
+		// TODO: force left-to-right behavior for password content.
+		char32_t left_right_text[]={
+			UNICODE_LRO,
+			str[0],
+			UNICODE_PDF,
+			0
+		};
+		starting_cursor->insert(IN_THREAD, left_right_text);
 	}
 	else
 	{

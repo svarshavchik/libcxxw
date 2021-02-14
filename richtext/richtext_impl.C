@@ -420,10 +420,10 @@ void richtext_implObj::rewrap_at_fragment(dim_t width,
 		my_fragments.fragments_were_rewrapped();
 }
 
-void richtext_implObj::set(ONLY IN_THREAD, richtextObj &public_object,
-			   const richtext_insert_base &new_text)
+void richtext_implObj::set_updated(ONLY IN_THREAD, richtextObj &public_object,
+				   const richtext_insert_base &new_text)
 {
-	//! Any fragment will do.
+	//! Find the trailing newline
 
 	auto last=public_object.end();
 
@@ -436,7 +436,7 @@ void richtext_implObj::set(ONLY IN_THREAD, richtextObj &public_object,
 	auto space=f->string.get_string().at(o);
 	auto meta=f->string.meta_at(o);
 
-	assert_or_throw(f->string.get_string().at(o) == '\n',
+	assert_or_throw(space == '\n',
 			"internal error: didn't find trailing newline");
 	meta.rl=false;
 
@@ -480,7 +480,7 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 	{
 		// We must be an editor, which has an extra trailing newline
 		// where the cursor rests after all existing input.
-		set(IN_THREAD, public_object, new_text);
+		set_updated(IN_THREAD, public_object, new_text);
 		return;
 	}
 	paragraph_list my_paragraphs{*this};
@@ -675,7 +675,7 @@ void richtext_implObj
 
 		if ((pos1 == 0 || pos2 == 0) && pos1+pos2+1 == num_chars)
 		{
-			set(IN_THREAD, public_object, new_text);
+			set_updated(IN_THREAD, public_object, new_text);
 			return;
 		}
 	}

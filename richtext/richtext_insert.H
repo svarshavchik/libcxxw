@@ -15,6 +15,7 @@
 #include <x/refptr_hash.H>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <unordered_map>
 #include <courier-unicode.h>
 
@@ -62,16 +63,57 @@ struct richtext_insert_base {
 		return std::move(str);
 	}
 
-	//! Insering a std::u32string_view
+	//! Inserting a std::u32string_view
 	static richtextstring get_richtext(const std::u32string_view &str,
-					   const richtextmeta &default_meta)
+					   richtextmeta default_meta)
 	{
+		// default_meta is the current meta at the position. Clear its
+		// right-to-left flag, this will be the metadata for the
+		// inserted unicode string.
+
+		default_meta.rl=false;
+
 		std::unordered_map<size_t, richtextmeta> m{ {0, default_meta} };
 
 		if (str.empty())
 			m.clear();
 
-		return richtextstring{str, m};
+		auto direction=unicode_bidi_get_direction(str.data(),
+							  str.size());
+
+		// Return the string as if:
+		//
+		// 1) it has a character with an explicit direction or is
+		//    empty
+		//
+		// 2) or it has an override.
+
+		if (direction.is_explicit || str.empty() ||
+		    std::find_if(str.begin(), str.end(),
+				 []
+				 (char32_t c)
+				 {
+					 return c == UNICODE_LRO ||
+						 c == UNICODE_RLO;
+				 }) != str.end())
+			return richtextstring{str, m};
+
+		// We must be inserting text with implicit direction, however
+		// we need to make it explicit, by explicitly adding an
+		// override.
+
+		std::u32string directed_string;
+
+		directed_string.reserve(str.size()+2);
+
+		directed_string.push_back(direction.direction == UNICODE_BIDI_LR
+					  ? UNICODE_LRO:UNICODE_RLO
+					  );
+		directed_string += str;
+		directed_string += UNICODE_PDF;
+
+		return richtextstring{std::move(directed_string), m};
+
 	}
 
 	//! Insert position
@@ -206,9 +248,9 @@ struct richtext_insert_results {
 	std::unordered_map<richtextfragment,
 			   sorted_range<range>> inserted_range;
 
-#if 0
+	//! We did an insert of right-to-left text.
 	bool insert_rl=false;
-#endif
+
 	//! Whether the inserted text ended in a paragraph break
 
 	//! This is to let insert_at_location() to know that it needs to

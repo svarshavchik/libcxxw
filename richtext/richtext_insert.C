@@ -84,7 +84,22 @@ richtext_dir create_fragments_from_inserted_text::next_string_dir() const
 			? richtext_dir::lr : richtext_dir::rl;
 	}
 
-	return canonicalizer.current_paragraph().get_dir();
+	auto &str=canonicalizer.current_paragraph();
+	size_t from=0;
+	size_t to=str.size();
+
+	// Do not consider the paragraph break, i.e. the paragraph embedding
+	// level, when determining the next_string_dir().
+
+	if (to > 1)
+	{
+		if (str.get_string().at(0) == '\n')
+			++from;
+		else if (str.get_string().at(to-1) == '\n')
+			--to;
+	}
+
+	return str.get_dir(from, to);
 }
 
 richtextstring create_fragments_from_inserted_text::next_string()
@@ -372,11 +387,14 @@ void richtext_insert_results::move_cursors()
 
 	auto bottom_from=top_from, bottom_to=top_to; // Opening bid.
 
-	if (top_info == bottom_info)
-	{
-		if (top_to <= top_from)
-			return; // Nothing inserted.
+	if (top_info == bottom_info &&
+	    top_to <= top_from)
+		return; // Nothing inserted.
 
+	if (top_info == bottom_info &&
+	    top_fragment->string.get_string().at(top_from) != '\n' &&
+	    top_fragment->string.get_string().at(top_to-1) != '\n')
+	{
 		// Inserted everything on the same line, so we feed only
 		// the top_from and top_to to adjust_from_to, then drop
 		// top_to into bottom_to.
@@ -384,7 +402,7 @@ void richtext_insert_results::move_cursors()
 		std::tie(top_fragment, bottom_fragment)=
 			adjust_from_to(top_from, top_to,
 				       top_fragment,
-				       top_fragment->embedding_level());
+				       insert_rl);
 		bottom_to=top_to;
 	}
 	else
