@@ -112,6 +112,15 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 
 	//! Whether this is right-to-left text.
 	bool rl() const;
+
+	//! What will move() this location one position to the left.
+
+	ssize_t moveleft_howmuch() const;
+
+	//! What will move() this location one position to the right.
+
+	ssize_t moveright_howmuch() const;
+
  public:
 	//! What is says.
 	inline void horiz_pos_no_longer_valid()
@@ -174,6 +183,12 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 
 	//! Adjust location by character count.
 	void move(ONLY IN_THREAD, ssize_t howmuch);
+
+	//! Adjust location to delete the character under the cursor.
+
+	//! Called from the editor to advance the cursor in order to select
+	//! the character under the cursor.
+	void move_for_delete(ONLY IN_THREAD);
 
  private:
 	void leftby1(ONLY IN_THREAD);

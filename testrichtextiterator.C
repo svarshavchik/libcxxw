@@ -1052,7 +1052,7 @@ static void dump(ONLY IN_THREAD,
 	{
 		auto &s=f->string.get_string();
 
-		actual.push_back({s.begin(), s.end()});
+		actual.push_back(unicode::iconvert::convert(s, unicode::utf_8));
 	});
 
 	std::cout << format(actual);
@@ -2354,7 +2354,26 @@ struct test11_setpos {
 	}
 };
 
-typedef std::variant<test11_insert, test11_setpos> test11_step;
+struct test11_remove_between {
+
+	size_t pos1;
+	size_t pos2;
+
+	test11_remove_between(size_t pos1,
+			      size_t pos2) : pos1{pos1}, pos2{pos2}
+	{
+	}
+
+	void operator()(ONLY IN_THREAD, const test11_info &info) const
+	{
+		info.text->at(pos1, new_location::bidi)->
+			remove(IN_THREAD,
+			       info.text->at(pos2, new_location::bidi));
+	}
+};
+
+typedef std::variant<test11_insert, test11_setpos,
+		     test11_remove_between> test11_step;
 
 void testrichtext11(ONLY IN_THREAD)
 {
@@ -2546,6 +2565,39 @@ void testrichtext11(ONLY IN_THREAD)
 				},
 			},
 		},
+
+		// Test 4
+		{
+			std::nullopt,
+			{
+				// Step 1
+				{
+					test11_step{
+						std::in_place_type_t<test11_insert>{},
+						U"של"
+					},
+					{
+						U"של",
+						{
+							{0, meta0}
+						},
+					}
+				},
+				// Step 2
+				{
+					test11_step{
+						std::in_place_type_t<test11_remove_between>{},
+						1, 2,
+					},
+					{
+						U"ש",
+						{
+							{0, meta0}
+						},
+					}
+				},
+			},
+		},
 	};
 
 	// שלום
@@ -2595,6 +2647,107 @@ void testrichtext11(ONLY IN_THREAD)
 	}
 }
 
+void testrichtext12(ONLY IN_THREAD)
+{
+	static constexpr richtextmeta meta0{0};
+
+	static const struct {
+		const char32_t *input;
+		dim_t wrap_to_width;
+		std::vector<std::tuple<size_t, size_t,
+				       const char32_t *>> tests;
+	} tests[]={
+		// Test 1
+		{
+			U"Lorem IpsumשלוLoremIpsumDolorשלו\n",
+
+			130,
+			{
+				{0, 1, U"orem IpsumשלוLoremIpsumDolorשלו"},
+				{10, 11, U"Lorem IpsuשלוLoremIpsumDolorשלו"},
+				{11, 14, U"Lorem IpsumשלLoremIpsumDolorשלו"},
+				{12, 11, U"Lorem IpsumשוLoremIpsumDolorשלו"},
+			},
+		},
+		// Test 2
+		{
+			U"שלוLorem IpsumשלוLorem Ipsum\n",
+			130,
+		},
+	};
+
+	size_t casenum=0;
+
+	for (const auto &t:tests)
+	{
+		++casenum;
+
+		size_t testnum=0;
+
+		for (const auto [pos, moved_pos, expected]:t.tests)
+		{
+			richtext_options options;
+
+			options.initial_width=t.wrap_to_width;
+
+			auto richtext=
+				richtext::create(richtextstring
+						 {std::u32string{t.input},
+							 {
+								 {0, meta0}
+							 }
+						 },
+						 options);
+
+			if (testnum++ == 0)
+				dump(IN_THREAD, richtext);
+
+			auto iter=richtext->at(pos, new_location::bidi);
+
+			auto new_iter=iter->clone();
+
+			new_iter->move_for_delete(IN_THREAD);
+
+			if (new_iter->pos() != moved_pos)
+			{
+				std::ostringstream o;
+
+				o << "testrichtext12, test "
+				  << casenum << ", case " << testnum
+				  << ": ended up at position "
+				  << new_iter->pos()
+				  << " instead of " << moved_pos;
+
+				throw EXCEPTION(o.str());
+			}
+
+			iter->remove(IN_THREAD, new_iter);
+
+			iter=iter->begin();
+			new_iter=iter->end();
+
+			auto s=iter->get(new_iter);
+
+			if (s.get_string() != expected)
+			{
+				std::ostringstream o;
+
+				o << "testrichtext12, test "
+				  << casenum << ", case " << testnum
+				  << ": result is \""
+				  << unicode::iconvert::convert(s.get_string(),
+								unicode::utf_8)
+				  << "\" instead of \""
+				  << unicode::iconvert::convert(expected,
+								unicode::utf_8)
+				  << "\"";
+
+				throw EXCEPTION(o.str());
+			}
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -2633,6 +2786,7 @@ int main(int argc, char **argv)
 		testrichtext9(IN_THREAD);
 		testrichtext10(IN_THREAD);
 		testrichtext11(IN_THREAD);
+		testrichtext12(IN_THREAD);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

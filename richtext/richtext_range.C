@@ -322,7 +322,7 @@ void richtext_range::line(const richtextfragmentObj *f)
 
 		auto o=location_a_offset;
 
-		if (paragraph_embedding_level == UNICODE_BIDI_LR)
+		if (f->embedding_level() == UNICODE_BIDI_LR)
 		{
 			// For left-to right text we add() only from the
 			// starting location to the end of the line.

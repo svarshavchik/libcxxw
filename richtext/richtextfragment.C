@@ -1591,17 +1591,8 @@ void richtextfragmentObj::remove(size_t pos,
 			nchars < current_string.size(),
 			"invalid starting position or remove length");
 
-	if (my_fragments.my_paragraphs.text.rl())
-	{
-		assert_or_throw(current_string.size()-pos >= nchars &&
-				pos > 0,
-				"invalid character rl range in remove()");
-	}
-	else
-	{
-		assert_or_throw(current_string.size()-pos > nchars,
-				"invalid character lr range in remove()");
-	}
+	assert_or_throw(current_string.size()-pos >= nchars,
+			"invalid character range in remove()");
 
 	redraw_needed=true;
 

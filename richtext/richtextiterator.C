@@ -103,6 +103,17 @@ void richtextiteratorObj::move(ONLY IN_THREAD, ssize_t howmuch)
 		 });
 }
 
+void richtextiteratorObj::move_for_delete(ONLY IN_THREAD)
+{
+	my_richtext->thread_lock
+		(IN_THREAD,
+		 [&, this]
+		 (ONLY IN_THREAD, const auto &ignore)
+		 {
+			 my_location->move_for_delete(IN_THREAD);
+		 });
+}
+
 void richtextiteratorObj::start_of_line()
 {
 	my_richtext->read_only_lock

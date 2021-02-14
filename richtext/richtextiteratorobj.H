@@ -82,6 +82,12 @@ public:
 		move(IN_THREAD, -1);
 	}
 
+	//! Adjust location to delete the character under the cursor.
+
+	//! Called from the editor to advance the cursor in order to select
+	//! the character under the cursor.
+	void move_for_delete(ONLY IN_THREAD);
+
 	//! Advance the iterator
 	void move(ONLY IN_THREAD, ssize_t howmuch);
 

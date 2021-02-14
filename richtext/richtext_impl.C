@@ -849,15 +849,76 @@ void richtext_implObj
 
 		// Then merge the next fragment into this one, according
 		// to the paragraph embedding level.
-
+		//
+		// The merge will reposition locations "a" and "b". We want
+		// to remember where [a_start, a_size] and [b_start, b_size]
+		// is relative to the location of the fragments.
+		ssize_t relative_a_start=a_start-info.location_a->get_offset();
+		ssize_t relative_b_start=b_start-info.location_b->get_offset();
 		fragment_a->merge(fragment_a_list,
 				  fragment_a->merge_paragraph,
 				  results);
 		my_paragraphs.recalculation_required();
-	}
 
-	// merge_paragraph will end up with location_b before location_a
-	// in right-to-left paragraph embedding level.
+		auto f=info.location_a->my_fragment;
+
+		assert_or_throw(f == info.location_b->my_fragment,
+				"Internal error: expected to merge two "
+				"fragments into one");
+
+		// We now reapply relative_a_start and relative_b_start
+		// to locations "a" and "b" in order to know where those
+		// are now.
+
+		auto new_a_offset=info.location_a->get_offset();
+		auto new_b_offset=info.location_b->get_offset();
+
+		// Do some sanity checks, first.
+
+		assert_or_throw( (relative_a_start < 0 ?
+				  -(size_t)relative_a_start <= new_a_offset :
+				  f->string.size()-new_a_offset >=
+				  (size_t)relative_a_start) &&
+				 (relative_b_start < 0 ?
+				  -(size_t)relative_b_start <= new_b_offset :
+				  f->string.size()-new_b_offset >=
+				  (size_t)relative_b_start),
+				 "Internal error: inconsistent ranges after "
+				 "fragment merge");
+
+		a_start=new_a_offset + relative_a_start;
+		b_start=new_b_offset + relative_b_start;
+
+		// Make sure "a" range is before the "b" range, then figure
+		// out what we have.
+
+		if (b_start < a_start)
+		{
+			std::swap(a_start, b_start);
+			std::swap(a_size, b_size);
+		}
+
+		// We don't expect b to be wholly inside a, but if we do:
+		if (b_start+b_size <= a_start+a_size)
+		{
+			b_start=a_start+a_size;
+			b_size=0;
+		}
+
+		// We don't expect b to start in the middle of a, either...
+
+		if (b_start < a_start+a_size)
+		{
+			size_t adjust=a_start+a_size-b_start;
+
+			b_start += adjust;
+			b_size -= adjust;
+		}
+
+		f->remove(b_start, b_size, fragment_a_list, results);
+		f->remove(a_start, a_size, fragment_a_list, results);
+		return;
+	}
 
 	auto a=info.location_a;
 	auto b=info.location_b;
@@ -868,7 +929,8 @@ void richtext_implObj
 	a->my_fragment->remove(a->get_offset() +
 			       // This is the *ending* location. and 'b' is the
 			       // *starting* location.
-			       (my_paragraphs.text.rl() ? 1:0),
+			       (fragment_a->embedding_level() == UNICODE_BIDI_LR
+				? 0:1),
 			       a_size + b_size,
 			       fragment_a_list,
 			       results);

@@ -2087,7 +2087,7 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 	}
 
 	auto clone=cursor->clone();
-	clone->next(IN_THREAD);
+	clone->move_for_delete(IN_THREAD);
 
 	auto p=cursor->pos();
 

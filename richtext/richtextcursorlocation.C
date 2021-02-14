@@ -29,6 +29,16 @@ inline bool richtextcursorlocationObj::rl() const
 	return my_fragment->my_paragraph->my_richtext->rl();
 }
 
+inline ssize_t richtextcursorlocationObj::moveleft_howmuch() const
+{
+	return rl() ? 1:-1;
+}
+
+inline ssize_t richtextcursorlocationObj::moveright_howmuch() const
+{
+	return rl() ? -1:1;
+}
+
 void richtextcursorlocationObj::initialize(const richtextcursorlocation &clone)
 {
 	assert_or_throw(clone->my_fragment,
@@ -401,6 +411,37 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 	}
 }
 
+void richtextcursorlocationObj::move_for_delete(ONLY IN_THREAD)
+{
+	assert_or_throw(my_fragment && my_fragment->my_paragraph &&
+			my_fragment->my_paragraph->my_richtext,
+			"Internal error in move_for_delete()");
+
+	auto embedding_level=my_fragment->embedding_level();
+
+	if (embedding_level == UNICODE_BIDI_LR)
+	{
+		if (position.offset+1 < my_fragment->string.size())
+		{
+			move(IN_THREAD, moveright_howmuch());
+			return;
+		}
+	}
+	else
+	{
+		if (position.offset > 0)
+		{
+			move(IN_THREAD, moveleft_howmuch());
+			return;
+		}
+	}
+
+	auto f=my_fragment->next_fragment();
+
+	if (f)
+		initialize(f, 0, new_location::bidi);
+}
+
 void richtextcursorlocationObj::up(ONLY IN_THREAD)
 {
 	auto targeted_horiz_pos=get_targeted_horiz_pos(IN_THREAD);
@@ -606,6 +647,9 @@ std::ptrdiff_t richtextcursorlocationObj::compare(const richtextcursorlocationOb
 void richtextcursorlocationObj::mirror_position(internal_richtext_impl_t::lock
 						&)
 {
+	assert_or_throw(my_fragment && my_fragment->my_paragraph &&
+			my_fragment->my_paragraph->my_richtext,
+			"Internal error in mirror_position()");
 	if (rl())
 		position.offset=my_fragment->string.size()-1-position.offset;
 	horiz_pos_no_longer_valid();
