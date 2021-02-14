@@ -316,14 +316,6 @@ public:
 	//! Returns true if the rich text was reformatted.
 	bool unwrap();
 
-	//! Return a location's position
-
-	//! Doesn't really need this object, hence static. This is a calling
-	//! convention, to enforce locking.
-
-	static size_t pos(const richtextcursorlocation &l,
-			get_location location_option);
-
 	/////////////////////////////////////////////////////////////////////
 
 	//! Insert content at the given position.

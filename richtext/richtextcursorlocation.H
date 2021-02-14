@@ -110,6 +110,8 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	//! Set a new targeted horiz pos for the current actual cursor location.
 	void new_targeted_horiz_pos(ONLY IN_THREAD);
 
+	//! Whether this is right-to-left text.
+	bool rl() const;
  public:
 	//! What is says.
 	inline void horiz_pos_no_longer_valid()
@@ -122,6 +124,9 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	{
 		return position.offset;
 	}
+
+	//! Return our position
+	size_t pos(get_location location_option) const;
 
 	//! After a split(), subtract from offset.
 

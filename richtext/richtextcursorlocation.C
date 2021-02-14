@@ -24,6 +24,11 @@ richtextcursorlocationObj::~richtextcursorlocationObj() noexcept
 {
 }
 
+inline bool richtextcursorlocationObj::rl() const
+{
+	return my_fragment->my_paragraph->my_richtext->rl();
+}
+
 void richtextcursorlocationObj::initialize(const richtextcursorlocation &clone)
 {
 	assert_or_throw(clone->my_fragment,
@@ -64,14 +69,31 @@ void richtextcursorlocationObj::initialize(richtextfragmentObj *fragment,
 	assert_or_throw(offsetArg < my_fragment->string.size(),
 			"Internal error: invalid initial location"
 			" offset");
-	if (location_option == new_location::bidi &&
-	    my_fragment->my_paragraph->my_richtext->rl())
+	if (location_option == new_location::bidi && rl())
 	{
 		offsetArg=my_fragment->string.size()-1-offsetArg;
 	}
 
 	position.offset=offsetArg;
 	horiz_pos_no_longer_valid();
+}
+
+size_t richtextcursorlocationObj::pos(get_location location_option) const
+{
+	assert_or_throw
+		(my_fragment &&
+		 my_fragment->string.size() > get_offset() &&
+		 my_fragment->my_paragraph &&
+		 my_fragment->my_paragraph->my_richtext,
+		 "Internal error in pos(): invalid cursor location");
+
+	auto offset=get_offset();
+
+	if (location_option == get_location::bidi && rl())
+		offset=my_fragment->string.size()-1-offset;
+
+	return offset+my_fragment->first_char_n +
+		my_fragment->my_paragraph->first_char_n;
 }
 
 void richtextcursorlocationObj::deinitialize()
@@ -547,7 +569,7 @@ std::ptrdiff_t richtextcursorlocationObj::compare(const richtextcursorlocationOb
 void richtextcursorlocationObj::mirror_position(internal_richtext_impl_t::lock
 						&)
 {
-	if (my_fragment->my_paragraph->my_richtext->rl())
+	if (rl())
 		position.offset=my_fragment->string.size()-1-position.offset;
 	horiz_pos_no_longer_valid();
 }

@@ -209,27 +209,6 @@ bool richtext_implObj::unwrap()
 	return flag;
 }
 
-size_t richtext_implObj::pos(const richtextcursorlocation &l,
-			     get_location location_option)
-{
-	assert_or_throw
-		(l->my_fragment &&
-		 l->my_fragment->string.size() > l->get_offset() &&
-		 l->my_fragment->my_paragraph &&
-		 l->my_fragment->my_paragraph->my_richtext,
-		 "Internal error in pos(): invalid cursor location");
-
-	auto offset=l->get_offset();
-
-	if (location_option == get_location::bidi &&
-	    l->my_fragment->my_paragraph->my_richtext
-	    ->rl())
-		offset=l->my_fragment->string.size()-1-offset;
-
-	return offset+l->my_fragment->first_char_n +
-		l->my_fragment->my_paragraph->first_char_n;
-}
-
 size_t richtext_implObj::find_paragraph_for_pos(size_t &pos)
 {
 	auto p=paragraphs.find_paragraph_for_pos(pos);
@@ -670,8 +649,8 @@ void richtext_implObj
 	{
 		// This is replacing entire contents if one of the locations
 		// is 0, and the other is one less than num_chars.
-		auto pos1=pos(remove_from, get_location::bidi);
-		auto pos2=pos(remove_to, get_location::bidi);
+		auto pos1=remove_from->pos(get_location::bidi);
+		auto pos2=remove_to->pos(get_location::bidi);
 
 		if ((pos1 == 0 || pos2 == 0) && pos1+pos2+1 == num_chars)
 		{

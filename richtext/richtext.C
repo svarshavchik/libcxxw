@@ -201,7 +201,7 @@ void richtextObj::replace_at_location(ONLY IN_THREAD,
 size_t richtextObj::pos(const internal_richtext_impl_t::lock &lock,
 			const richtextcursorlocation &l)
 {
-	return (*lock)->pos(l, get_location::bidi);
+	return l->pos(get_location::bidi);
 }
 
 //! Retrieve text within the selected range
@@ -245,8 +245,8 @@ public:
 		// TODO: when we support rich text editing, we'll
 		// need to add some additional overhead, here.
 
-		auto pos1=impl->pos(location_a, get_location::bidi);
-		auto pos2=impl->pos(location_b, get_location::bidi);
+		auto pos1=location_a->pos(get_location::bidi);
+		auto pos2=location_b->pos(get_location::bidi);
 
 		auto index1=location_a->my_fragment->index();
 		auto index2=location_b->my_fragment->index();
