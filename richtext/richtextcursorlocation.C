@@ -193,22 +193,25 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 {
 	while (howmuch < 0)
 	{
+		size_t s=my_fragment->string.size();
+
 		assert_or_throw(my_fragment && my_fragment->my_paragraph &&
 				my_fragment->my_paragraph->my_richtext &&
-				position.offset
-				< my_fragment->string.size(),
+				get_offset() < s,
 				"Internal error in move(): invalid offset");
 
-		if (position.offset)
+		auto chars_left=get_offset();
+
+		if (chars_left)
 		{
 			// We're not at a beginning of some fragment.
 
-			if (howmuch + position.offset <= 0)
+			if (howmuch + chars_left <= 0)
 			{
 				// But howmuch is big enough to move to at
 				// least the beginning of the line.
 
-				howmuch += position.offset;
+				howmuch += chars_left;
 				start_of_line();
 				continue;
 			}
@@ -272,21 +275,25 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 
 	while (howmuch > 0)
 	{
-		assert_or_throw(my_fragment && my_fragment->my_paragraph &&
-				my_fragment->my_paragraph->my_richtext &&
-				position.offset < my_fragment->string.size(),
-				"Internal error in move(): invalid offset");
-
 		bool initialization_required=false;
-
-		size_t chars_left;
 
 		auto f=my_fragment;
 
-		while ((size_t)howmuch >=
-		       (chars_left=
-			f->string.size()-position.offset))
+		while (1)
 		{
+			size_t s=f->string.size();
+
+			assert_or_throw(f && f->my_paragraph &&
+					f->my_paragraph->my_richtext &&
+					position.offset < s,
+					"Internal error in move():"
+					" invalid offset");
+
+			size_t chars_left=s-get_offset();
+
+			if ((size_t)howmuch < chars_left)
+				break;
+
 			initialization_required=true;
 
 			// If we're at the start of the paragraph, and we're
@@ -295,7 +302,7 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 			// paragraph in one gulp.
 
 			if (f->my_fragment_number == 0 &&
-			    position.offset == 0 &&
+			    get_offset() == 0 &&
 			    (size_t)howmuch>=f->my_paragraph->num_chars)
 			{
 				auto next_paragraph_number=
