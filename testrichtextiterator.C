@@ -408,51 +408,61 @@ void testrichtext2(ONLY IN_THREAD)
 		size_t insert_pos;
 		const char *insert_string;
 	} tests[] = {
+		// Test 1
 		{
 			"Helloworld",
 			5,
 			"a",
 		},
+		// Test 2
 		{
 			"Helloworld",
 			5,
 			"\n",
 		},
+		// Test 3
 		{
 			"Helloworld",
 			5,
 			"\n\nb\n\n",
 		},
+		// Test 4
 		{
 			"world",
 			0,
 			"Hello\n",
 		},
+		// Test 5
 		{
 			"world",
 			0,
 			"Hello",
 		},
+		// Test 6
 		{
 			"Hello ",
 			5,
 			"world",
 		},
+		// Test 7
 		{
 			"Hello",
 			5,
 			"world\n",
 		},
+		// Test 8
 		{
 			"He\nl\nlo",
 			3,
 			"world",
 		},
+		// Test 9
 		{
 			"He\nl\nlo",
 			3,
 			"\nworld\n",
 		},
+		// Test 10
 		{
 			"a\nb\nc\nd\ne\nf\n",
 			2,
@@ -925,8 +935,8 @@ void testrichtext7(ONLY IN_THREAD)
 	    || e->at(IN_THREAD).character != 'm')
 		throw EXCEPTION("testrichtext7: test 1 failed");
 
-	b->move(IN_THREAD, -1);
-	e->move(IN_THREAD, 1);
+	b->move(IN_THREAD, 1);
+	e->move(IN_THREAD, -1);
 	if (b->pos() != 1 || e->pos() != 21 || b->at(IN_THREAD).character != 'e'
 	    || e->at(IN_THREAD).character != 'u')
 		throw EXCEPTION("testrichtext7: test 2 failed");
@@ -940,10 +950,10 @@ void testrichtext7(ONLY IN_THREAD)
 	{
 		throw EXCEPTION("testrichtext7: test 10 failed");
 	}
-	b->move(IN_THREAD, 2);
+	b->move(IN_THREAD, 10);
 	if (b->pos() != 11 || b->at(IN_THREAD).character != '\n')
 		throw EXCEPTION("testrichtext7: test 3 failed");
-	b->move(IN_THREAD, -2);
+	b->move(IN_THREAD, -10);
 	if (b->pos() != 1 || b->at(IN_THREAD).character != 'e')
 		throw EXCEPTION("testrichtext7: test 4 failed");
 	b->start_of_line();
@@ -961,6 +971,17 @@ void testrichtext7(ONLY IN_THREAD)
 	b=b->pos(11);
 	if (b->at(IN_THREAD).character != '\n')
 		throw EXCEPTION("testrichtext7: test 9 failed");
+
+	b=b->pos(1);
+	if (b->at(IN_THREAD).character != 'e')
+		throw EXCEPTION("testrichtext7: test 10 failed");
+
+	b->move(IN_THREAD, 12);
+	if (b->at(IN_THREAD).character != 'o')
+		throw EXCEPTION("testrichtext7: test 11 failed");
+	b->move(IN_THREAD, -12);
+	if (b->at(IN_THREAD).character != 'e')
+		throw EXCEPTION("testrichtext7: test 12 failed");
 }
 
 struct printable_char {

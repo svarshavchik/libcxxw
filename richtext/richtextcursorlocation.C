@@ -200,7 +200,14 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 				get_offset() < s,
 				"Internal error in move(): invalid offset");
 
+		auto is_rl=rl();
+
+		// How many characters can we move left by, until the
+		// bi-directional beginning of the fragment.
 		auto chars_left=get_offset();
+
+		if (is_rl)
+			chars_left=s-1-chars_left;
 
 		if (chars_left)
 		{
@@ -209,14 +216,24 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 			if (howmuch + chars_left <= 0)
 			{
 				// But howmuch is big enough to move to at
-				// least the beginning of the line.
+				// least the beginning of the fragment.
 
 				howmuch += chars_left;
-				start_of_line();
+
+				// Advance to the bi-directional beginning
+				// of the fragment.
+				if (is_rl)
+					end_of_line();
+				else
+					start_of_line();
 				continue;
 			}
 
-			leftby1(IN_THREAD);
+			// Advance in the direction
+			if (is_rl)
+				rightby1(IN_THREAD);
+			else
+				leftby1(IN_THREAD);
 			++howmuch;
 			continue;
 		}
@@ -233,7 +250,7 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 
 		if (!new_fragment)
 		{
-			initialize(f, 0, new_location::lr);
+			initialize(f, 0, new_location::bidi);
 			return; // Start of text
 		}
 
@@ -269,13 +286,15 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 		// previous fragment, and try again.
 
 		initialize(new_fragment, new_fragment_text_size-1,
-			   new_location::lr);
+			   new_location::bidi);
 		++howmuch;
 	}
 
 	while (howmuch > 0)
 	{
 		bool initialization_required=false;
+
+		auto is_rl=rl();
 
 		auto f=my_fragment;
 
@@ -289,8 +308,12 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 					"Internal error in move():"
 					" invalid offset");
 
-			size_t chars_left=s-get_offset();
+			// How many characters we have to move in order to
+			// reach the next fragment.
+			size_t chars_left=
+				is_rl ? get_offset()+1 : s-get_offset();
 
+			// Break if we won't reach the next fragment.
 			if ((size_t)howmuch < chars_left)
 				break;
 
@@ -302,7 +325,7 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 			// paragraph in one gulp.
 
 			if (f->my_fragment_number == 0 &&
-			    get_offset() == 0 &&
+			    s-chars_left == 0 && // Bi-directional beginning
 			    (size_t)howmuch>=f->my_paragraph->num_chars)
 			{
 				auto next_paragraph_number=
@@ -344,17 +367,21 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 						"empty fragment");
 				auto pos=f->string.size()-1;
 
-				initialize(f, pos, new_location::lr);
+				initialize(f, pos, new_location::bidi);
 				return;
 			}
 
 			howmuch-=chars_left;
 			f=next_f;
-			position.offset=0;
+
+			// We're now at the logical beginning of the next
+			// fragment.
+			position.offset=
+				is_rl ? f->string.size()-1 : 0;
 		}
 
 		if (initialization_required)
-			initialize(f, 0, new_location::lr);
+			initialize(f, 0, new_location::bidi);
 
 		// We can end up with howmuch being 0, if we landed it exactly.
 		if (howmuch == 0)
@@ -366,7 +393,10 @@ void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 
 		// Advance to the next character in the fragment.
 
-		rightby1(IN_THREAD);
+		if (is_rl)
+			leftby1(IN_THREAD);
+		else
+			rightby1(IN_THREAD);
 		--howmuch;
 	}
 }
