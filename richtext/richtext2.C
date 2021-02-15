@@ -15,9 +15,11 @@
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextiterator.H"
 #include "richtext/richtextcursorlocation.H"
+#include "richtext/richtext_range.H"
 
 #include "x/w/impl/draw_info.H"
 #include "x/w/impl/element_draw.H"
+#include <x/sorted_range.H>
 #include "screen.H"
 #include "picture.H"
 #include <functional>
@@ -226,14 +228,19 @@ struct LIBCXX_HIDDEN richtextObj::draw_fragment_info {
 	// chunk.
 	//
 	// This is translated into starting and ending fragment index number
-	// and the offset in each fragment where the selection starts and
-	// ends, and has_selection gets set to true.
+	// and the range in each fragment where the selection starts and
+	// ends, and has_selection gets set to true. selection_start_range
+	// and selection_end range are defined as character indexes in the
+	// corresponding fragment, as the starting index and one past the
+	// ending index.
 	//
 	// This is ignored when has_selection=false
 	size_t selection_start_fragment_index=0;
-	size_t selection_start_offset=0;
+	std::tuple<size_t, size_t> selection_start_range{0, 0};
+
 	size_t selection_end_fragment_index=0;
-	size_t selection_end_offset=0;
+	std::tuple<size_t, size_t> selection_end_range{0, 0};
+
 	bool has_selection=false;
 
 	// The index # (the line #) of the fragment being drawn.
@@ -308,11 +315,12 @@ void richtextObj::draw_fragment_info::draw_fragment(ONLY IN_THREAD,
 
 				 if (fragment_index ==
 				     selection_start_fragment_index)
-					 from=selection_start_offset;
-
-				 if (fragment_index ==
-				     selection_end_fragment_index)
-					 to=selection_end_offset;
+					 std::tie(from, to)=
+						 selection_start_range;
+				 else if (fragment_index ==
+					  selection_end_fragment_index)
+					 std::tie(from, to)=
+						 selection_end_range;
 
 				 render_info.selection_start=from;
 				 render_info.selection_end=to;
@@ -333,6 +341,87 @@ void richtextObj::draw_fragment_info::draw_fragment(ONLY IN_THREAD,
 				   height},
 		 di, di,
 		 clipped);
+}
+
+namespace {
+#if 0
+}
+#endif
+
+// Determine the parts of the first and last line in a selection range.
+//
+// When there is a selection the fragments between the first and the
+// last fragment in the selection range get highlighted in their entirety,
+// that's the easy part.
+//
+// The first and the last fragment in the selection range have only a part
+// of the fragment highlighted. Use the logic in richtext_range to define
+// the highlighted parts of the first and the last fragment in the selection
+// range.
+//
+// The constructor gets the richtext and the start/end of the selection
+// range. This is forwarded to richtext_range.
+//
+// richtext_range's location_a and location_b define the first and the
+// last fragment in the selection range.
+//
+// location_a_range and location_b_range define the portion of the
+// corresponding location which is highlighted. Each one is a tuple of
+// first, and one-past the last highlighted characters.
+//
+// When location_a and location_b are the same, the location_a_range
+// gives the range of the highlighted characters,m and location_b
+// specifies an empty range.
+
+struct selected_range_info : public richtext_range {
+
+	selected_range_info(const ref<richtext_implObj> &impl,
+			    const richtextcursorlocation &a,
+			    const richtextcursorlocation &b)
+		: richtext_range{impl->paragraph_embedding_level, a, b}
+	{
+		line_range.reserve(3);
+
+		if (complete_line())
+		{
+			// We already collected the needed information.
+			location_a_range=line_range.range();
+			return;
+		}
+
+		// Ok, call line() to collect the needed info for location_a
+		line(location_a->my_fragment);
+		location_a_range=line_range.range();
+
+		// Clear it, do the same for location_b
+		line_range.clear();
+		line(location_b->my_fragment);
+		location_b_range=line_range.range();
+	}
+
+	// Use the sorted_range collect the ranges that range() receives.
+
+	struct selection_range {
+		size_t begin;
+		size_t end;
+	};
+
+	mutable sorted_range<selection_range> line_range;
+
+	std::tuple<size_t, size_t> location_a_range{0, 0},
+		location_b_range{0, 0};
+
+	void range(const richtextstring &other,
+		   size_t start,
+		   size_t n) const override
+	{
+		line_range.add(selection_range{start, start+n});
+	}
+};
+
+#if 0
+{
+#endif
 }
 
 void richtextObj::draw_with_ellipsis(ONLY IN_THREAD,
@@ -384,15 +473,18 @@ void richtextObj::draw_with_ellipsis(ONLY IN_THREAD,
 
 		if (cmp)
 		{
+			selected_range_info info{ *lock, a, b};
+
+			dfi.selection_start_fragment_index=
+				info.location_a->my_fragment->index();
+			dfi.selection_start_range=info.location_a_range;
+
+			dfi.selection_end_fragment_index=
+				info.location_b->my_fragment->index();
+			dfi.selection_end_range=info.location_b_range;
 			if (cmp > 0)
 				std::swap(a, b);
 
-			dfi.selection_start_fragment_index=
-				a->my_fragment->index();
-			dfi.selection_start_offset=a->get_offset();
-
-			dfi.selection_end_fragment_index=b->my_fragment->index();
-			dfi.selection_end_offset=b->get_offset();
 			dfi.has_selection=true;
 		}
 	}

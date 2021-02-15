@@ -182,6 +182,7 @@ private:
 	void lr_lines_in_rl(const richtextfragmentObj *top,
 			    const richtextfragmentObj *bottom);
 
+protected:
 	//! get()ing another line fragment of text.
 
 	//! Appends another line to str.
@@ -191,7 +192,7 @@ private:
 	//! the range that we get().
 
 	void line(const richtextfragmentObj *f);
-
+private:
 	//! add() the next chunk of get() text.
 
 	//! Append whatever in 'other', #n characters starting at position
