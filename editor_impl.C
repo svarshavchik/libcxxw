@@ -210,16 +210,19 @@ public:
 		// to be redrawn, so this must be taken care of first, before
 		// letting blink() draw what it wants to draw.
 
-		if (me.deleted_count || me.inserted_count)
-		{
-			me.draw_changes(IN_THREAD, cursor_lock,
-					change_type,
-					me.deleted_count, me.inserted_count,
-					trigger);
-		}
+		try {
+			if (me.deleted_count || me.inserted_count)
+			{
+				me.draw_changes(IN_THREAD, cursor_lock,
+						change_type,
+						me.deleted_count,
+						me.inserted_count,
+						trigger);
+			}
 
-		if (me.current_keyboard_focus(IN_THREAD))
-			me.blink(IN_THREAD);
+			if (me.current_keyboard_focus(IN_THREAD))
+				me.blink(IN_THREAD);
+		} CATCH_EXCEPTIONS;
 	}
 };
 

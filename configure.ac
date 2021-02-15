@@ -100,15 +100,7 @@ done
 
 AC_SUBST([LIBCXXW_LIBS])
 
-save_LIBS="$LIBS"
-LIBS="-lcourier-unicode"
-AC_LINK_IFELSE(
-[AC_LANG_PROGRAM([
-#include <courier-unicode.h>
-],[
-	unicode_default_chset();
-])],[:],[AC_MSG_ERROR([The Courier Unicode Library 1.2 appears not to be installed. You may need to install a separate development subpackage, in addition to the main package])])
-LIBS="$save_LIBS"
+AX_COURIER_UNICODE_VERSION(2.2.1)
 
 XGETTEXT_EXTRA_OPTIONS="--keyword=_txt --keyword=_txtw --keyword=_txtn:1,2 --keyword=_txtnw:1,2"
 AC_SUBST([XGETTEXT_EXTRA_OPTIONS])
