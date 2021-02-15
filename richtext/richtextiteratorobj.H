@@ -70,17 +70,11 @@ public:
 	//! Create another iterator pointing to a specific character
 	richtextiterator pos(size_t offset) const;
 
-	//! Ahead by 1
-	inline void next(ONLY IN_THREAD)
-	{
-		move(IN_THREAD, 1);
-	}
+	//! Move iterator left. Returns false if iterator was not moved.
+	bool left(ONLY IN_THREAD);
 
-	//! Reverse by 1
-	inline void prev(ONLY IN_THREAD)
-	{
-		move(IN_THREAD, -1);
-	}
+	//! Move iterator right. Returns false if iterator was not moved.
+	bool right(ONLY IN_THREAD);
 
 	//! Adjust location to delete the character under the cursor.
 

@@ -13,15 +13,15 @@ inline void richtextcursorlocationObj::removed_from_fragment(size_t pos,
 	if (position.offset < pos)
 		return;
 
-	if (position.offset <= pos+nchars)
+	if (position.offset < pos+nchars)
 	{
 		position.offset=pos;
+
+		if (my_fragment->my_paragraph->my_richtext->rl())
+			--position.offset;
 	}
 	else
 		position.offset -= nchars;
-
-	if (my_fragment->my_paragraph->my_richtext->rl())
-		--position.offset;
 
 	horiz_pos_no_longer_valid();
 }

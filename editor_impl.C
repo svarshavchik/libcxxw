@@ -831,7 +831,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 			moving_cursor moving{IN_THREAD, *this, ke, moved,
 					     trigger};
-			cursor->prev(IN_THREAD);
+			cursor->left(IN_THREAD);
 		}
 		return moved;
 	case XK_Right:
@@ -841,7 +841,7 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 			moving_cursor moving{IN_THREAD, *this, ke, moved,
 					     trigger};
-			cursor->next(IN_THREAD);
+			cursor->right(IN_THREAD);
 		}
 		return moved;
 	case XK_Up:
@@ -949,20 +949,16 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 					 trigger};
 		delete_selection_info del_info{IN_THREAD, *this, modifying};
 
-		auto starting_pos=del_info.starting_pos;
-		auto n_to_delete=del_info.n;
+		// For correct cursor behavior in right to left text,
+		// we capture the current cursor position before the left()+
+		// delete, then we restore it after the backspace delete.
 
-		if (starting_pos > 0)
+		auto orig=cursor->clone();
+		if (cursor->left(IN_THREAD))
 		{
-			--starting_pos;
-			++n_to_delete;
+			delete_char(IN_THREAD, modifying);
+			cursor->swap(orig);
 		}
-
-		if (n_to_delete == 0)
-			return true; // Nothing more to delete.
-
-		update_content(IN_THREAD, modifying, starting_pos, n_to_delete,
-			       U"");
 		return true;
 	}
 	return false;
@@ -1254,7 +1250,7 @@ void editorObj::implObj::clear_password_peek(ONLY IN_THREAD)
 
 	auto p=cursor->clone();
 
-	p->prev(IN_THREAD);
+	p->move(IN_THREAD, -1);
 	p->insert(IN_THREAD, std::u32string(1, password_char));
 	p->remove(IN_THREAD, cursor);
 
@@ -2089,6 +2085,12 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 		return;
 	}
 
+	delete_char(IN_THREAD, modifying);
+}
+
+void editorObj::implObj::delete_char(ONLY IN_THREAD,
+				     modifying_text &modifying)
+{
 	auto clone=cursor->clone();
 	clone->move_for_delete(IN_THREAD);
 

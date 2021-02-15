@@ -199,6 +199,73 @@ inline void richtextcursorlocationObj::rightby1(ONLY IN_THREAD)
 	new_targeted_horiz_pos(IN_THREAD);
 }
 
+bool richtextcursorlocationObj::left(ONLY IN_THREAD)
+{
+	assert_or_throw(my_fragment && my_fragment->my_paragraph &&
+			my_fragment->my_paragraph->my_richtext,
+			"Internal error in left()");
+
+	if (get_offset() > 0)
+	{
+		leftby1(IN_THREAD);
+		return true;
+	}
+
+	auto f=my_fragment;
+
+	if (rl())
+		next_fragment(IN_THREAD);
+	else
+		prev_fragment(IN_THREAD);
+
+	return my_fragment != f;
+}
+
+bool richtextcursorlocationObj::right(ONLY IN_THREAD)
+{
+	assert_or_throw(my_fragment && my_fragment->my_paragraph &&
+			my_fragment->my_paragraph->my_richtext,
+			"Internal error in right()");
+
+	if (position.offset+1 < my_fragment->string.size())
+	{
+		rightby1(IN_THREAD);
+		return true;
+	}
+
+	auto f=my_fragment;
+	if (rl())
+		prev_fragment(IN_THREAD);
+	else
+		next_fragment(IN_THREAD);
+
+	return my_fragment != f;
+}
+
+void richtextcursorlocationObj::next_fragment(ONLY IN_THREAD)
+{
+	// Next fragment
+
+	auto f=my_fragment->next_fragment();
+
+	if (f)
+		initialize(f, 0, new_location::bidi);
+}
+
+void richtextcursorlocationObj::prev_fragment(ONLY IN_THREAD)
+{
+	// Previous fragment
+	auto f=my_fragment->prev_fragment();
+
+	if (f)
+	{
+		auto s=f->string.size();
+
+		if (s)
+			initialize(f, s-1, new_location::bidi);
+	}
+}
+
 void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 {
 	while (howmuch < 0)

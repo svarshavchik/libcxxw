@@ -181,6 +181,24 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 
 	dim_t get_horiz_pos(ONLY IN_THREAD);
 
+	//! Move location one position to the left.
+
+	//! If on the first character, move to the previous or next fragment,
+	//! depending on the paragraph embedding level.
+	bool left(ONLY IN_THREAD);
+
+	//! Move location one position to the right.
+
+	//! If on the last character, move to the previous or next fragment,
+	//! depending on the paragraph embedding level.
+	bool right(ONLY IN_THREAD);
+ private:
+	//! Move location to the next fragment.
+	void next_fragment(ONLY IN_THREAD);
+
+	//! Move location to the previous fragment.
+	void prev_fragment(ONLY IN_THREAD);
+ public:
 	//! Adjust location by character count.
 	void move(ONLY IN_THREAD, ssize_t howmuch);
 

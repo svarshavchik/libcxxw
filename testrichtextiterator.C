@@ -55,8 +55,8 @@ void testrichtext1(ONLY IN_THREAD)
 	auto b_horiz_pos=b->horiz_pos(IN_THREAD);
 	auto e_horiz_pos=e->horiz_pos(IN_THREAD);
 
-	b->next(IN_THREAD);
-	e->prev(IN_THREAD);
+	b->right(IN_THREAD);
+	e->left(IN_THREAD);
 
 	assert_or_throw(b->debug_get_location()->get_offset() == 1,
 			"pos(0)+1 offset is not 1");
@@ -68,8 +68,8 @@ void testrichtext1(ONLY IN_THREAD)
 	assert_or_throw(e->horiz_pos(IN_THREAD) != e_horiz_pos,
 			"end() horiz pos did not change");
 
-	b->prev(IN_THREAD);
-	e->next(IN_THREAD);
+	b->left(IN_THREAD);
+	e->right(IN_THREAD);
 
 	assert_or_throw(b->debug_get_location()->get_offset() == 0,
 			"pos(0) offset is not 0");
@@ -79,18 +79,18 @@ void testrichtext1(ONLY IN_THREAD)
 			"pos(0) horiz pos different");
 	assert_or_throw(e->horiz_pos(IN_THREAD) == e_horiz_pos,
 			"end() horiz pos different");
-	b->next(IN_THREAD);
-	b->next(IN_THREAD);
-	b->next(IN_THREAD);
-	b->next(IN_THREAD);
-	b->next(IN_THREAD);
+	b->right(IN_THREAD);
+	b->right(IN_THREAD);
+	b->right(IN_THREAD);
+	b->right(IN_THREAD);
+	b->right(IN_THREAD);
 	assert_or_throw(b->at(IN_THREAD).character == 'w',
 			"pos(5) is not character 'w'.");
 
 	auto bm1=b->clone();
 	auto bp1=b->clone();
-	bm1->prev(IN_THREAD);
-	bp1->next(IN_THREAD);
+	bm1->left(IN_THREAD);
+	bp1->right(IN_THREAD);
 	auto o=b->insert(IN_THREAD, {
 			U"\n",
 			{
@@ -146,30 +146,30 @@ void testrichtext1(ONLY IN_THREAD)
 	{
 		auto ee=e->clone();
 
-		ee->next(IN_THREAD);
+		ee->right(IN_THREAD);
 
 		assert_or_throw(e->debug_get_location()->get_offset() == 5,
-				"offset changed after next() on end cursor");
+				"offset changed after right() on end cursor");
 	}
-	e->prev(IN_THREAD);
-	e->prev(IN_THREAD);
-	e->prev(IN_THREAD);
-	e->prev(IN_THREAD);
-	e->prev(IN_THREAD);
+	e->left(IN_THREAD);
+	e->left(IN_THREAD);
+	e->left(IN_THREAD);
+	e->left(IN_THREAD);
+	e->left(IN_THREAD);
 
 	assert_or_throw(e->debug_get_location()->get_offset() == 0,
 			"end()-5 offset is not 0");
 	assert_or_throw(e->horiz_pos(IN_THREAD) == 0,
 			"end()-5 horiz pos is not 0");
 
-	e->prev(IN_THREAD);
+	e->left(IN_THREAD);
 	assert_or_throw(!e->debug_get_location()->my_fragment->prev_fragment(),
 		"Cursor not on first fragment");
 
 	assert_or_throw(e->debug_get_location()->get_offset() == 5,
 		"Cursor did not move to previous fragment");
 
-	o->next(IN_THREAD);
+	o->right(IN_THREAD);
 	assert_or_throw(!o->debug_get_location()->my_fragment->next_fragment(),
 		"Cursor not on last fragment");
 	assert_or_throw(o->debug_get_location()->get_offset() == 0,
@@ -513,8 +513,8 @@ void testrichtext2(ONLY IN_THREAD)
 
 		auto bm1=b->clone();
 		auto bp1=b->clone();
-		bm1->prev(IN_THREAD);
-		bp1->next(IN_THREAD);
+		bm1->left(IN_THREAD);
+		bp1->right(IN_THREAD);
 
 		auto o=b->insert(IN_THREAD, std::move(ustring));
 
@@ -803,8 +803,8 @@ void testrichtext4(ONLY IN_THREAD)
 			    (test_string[j < 0 ? 0: j >= n ? n-1:j]))
 				throw EXCEPTION(o.str() +
 						": unexpected character under cursor");
-			cursor->next(IN_THREAD);
-			cursor->prev(IN_THREAD);
+			cursor->right(IN_THREAD);
+			cursor->left(IN_THREAD);
 		}
 	}
 }
@@ -2331,7 +2331,6 @@ struct test11_info {
 struct test11_insert {
 
 	const char32_t *string;
-
 	test11_insert(const char32_t *string) : string{string} {}
 
 	void operator()(ONLY IN_THREAD, test11_info &info) const
@@ -2748,6 +2747,39 @@ void testrichtext12(ONLY IN_THREAD)
 	}
 }
 
+void testrichtext13(ONLY IN_THREAD)
+{
+	auto richtext=
+		richtext::create(richtextstring
+				 {std::u32string{U"שלום\n"},
+				  {
+					  {0, {0}}
+				  }
+				 },
+				 richtext_options{});
+	auto last=richtext->begin();
+
+	if (last->pos() != 0)
+		throw EXCEPTION("testrichtext13: unexpected begin() position");
+
+	auto cursor=last->clone();
+	cursor->left(IN_THREAD);
+
+	if (cursor->pos() != 1)
+		throw EXCEPTION("testrichtext13: unexpected cursor position");
+
+	auto delete_to=cursor->clone();
+	delete_to->move_for_delete(IN_THREAD);
+
+	if (delete_to->pos() != 2)
+		throw EXCEPTION("testrichtext13: unexpected delete position");
+
+	cursor->remove(IN_THREAD, delete_to);
+
+	if (last->pos() != 0)
+		throw EXCEPTION("testrichtext13: unexpected last position");
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -2787,6 +2819,7 @@ int main(int argc, char **argv)
 		testrichtext10(IN_THREAD);
 		testrichtext11(IN_THREAD);
 		testrichtext12(IN_THREAD);
+		testrichtext13(IN_THREAD);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

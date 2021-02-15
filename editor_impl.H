@@ -696,6 +696,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 				      const input_mask &mask,
 				      const callback_trigger_t &trigger);
 
+	//! Common logic shared by del_char_or_selection and backspace
+
+	void delete_char(ONLY IN_THREAD, modifying_text &modifying);
  public:
 
 	//! Return the current contents  of the editor.
