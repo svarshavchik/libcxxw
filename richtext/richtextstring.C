@@ -9,6 +9,7 @@
 #include "x/w/impl/richtext/richtextmeta.H"
 #include "x/w/text_hotspot.H"
 #include <x/sentry.H>
+#include <x/locale.H>
 #include <algorithm>
 #include <courier-unicode.h>
 
@@ -930,6 +931,14 @@ richtextstring::to_canonical_order
 {
 }
 
+static unicode_bidi_level_t default_paragraph_embedding_level()
+{
+	static const bool right_to_left=
+		locale::base::environment()->right_to_left();
+
+	return right_to_left ? UNICODE_BIDI_RL : UNICODE_BIDI_LR;
+}
+
 richtextstring::to_canonical_order
 ::to_canonical_order(prepped_string &&the_prepped_string,
 		     const std::optional<unicode_bidi_level_t>
@@ -944,6 +953,18 @@ richtextstring::to_canonical_order
 	  ending_pos{0}
 {
 	types.setbnl(string.string);
+
+	auto &direction = std::get<1>(calc_results);
+
+	// If there's no explicit paragraph embedded was determined we will
+	// use one from the environment. This will result in the default
+	// paragraph embedding level for new, empty input field to be taken
+	// from the environment locale.
+
+	if (!direction.is_explicit)
+	{
+		direction.direction=default_paragraph_embedding_level();
+	}
 
 #ifdef TO_CANONICAL_ORDER_HOOK
 	TO_CANONICAL_ORDER_HOOK();

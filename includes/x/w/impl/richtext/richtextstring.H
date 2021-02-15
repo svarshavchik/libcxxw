@@ -447,7 +447,7 @@ public:
 
 	inline auto paragraph_embedding_level() const
 	{
-		return std::get<1>(calc_results);
+		return std::get<1>(calc_results).direction;
 	}
 private:
 
@@ -456,7 +456,7 @@ private:
 
 	//! Calculated bidi levels and paragraph embedding level.
 	std::tuple<std::vector<unicode_bidi_level_t>,
-		   unicode_bidi_level_t> calc_results;
+		   struct unicode_bidi_direction> calc_results;
 
 	//! Current canonical string's starting position
 	size_t starting_pos;
