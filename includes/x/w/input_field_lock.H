@@ -9,6 +9,8 @@
 #include <x/mpobj.H>
 #include <x/refptr_traits.H>
 #include <x/w/input_fieldfwd.H>
+#include <x/w/richtext/richtextiteratorfwd.H>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -86,12 +88,28 @@ public:
 
 	//! Return the current cursor position.
 
-	//! Return the position of the cursor, and the position of the
-	//! other end of the currently selected portion of the text.
-	//! Both values are the same if there is no current selection.
+	//! \code
+	//! #include <INSERT_LIBX_NAMESPACE/w/richtext/richtextiterator.H>
+	//! \endcode
 	//!
-	//! Both vaues are in unicode characters.
-	std::tuple<size_t, size_t> pos() const LIBCXX_PUBLIC;
+	//! Return an iterator to the cursor, and and iterator to the
+	//! other end of the currently selected portion of the text.
+	//! Both iterators are the same if there is no current selection.
+	//!
+	//! \note
+	//! The second iterator can be before the second iterator, this
+	//! depends on the order the portion of the text was selected.
+	//!
+	//! \note
+	//! The connection thread can update the underlying contents and the
+	//! cursor positions at any given time, but is blocked from doing so
+	//! by this input lock. The first iterator, the current cursor position
+	//! remains valid after this input lock goes out of scope and gets
+	//! destroyed. The second iterator too, but will no longer carry any
+	//! particular meaning.
+	//!
+	std::tuple<richtextiterator, richtextiterator> pos()
+		const LIBCXX_PUBLIC;
 
 	//! Return the current contents of the input field as UTF-8.
 	std::string get(const std::optional<bidi_format> &embedding=

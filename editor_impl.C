@@ -431,12 +431,10 @@ editorObj::implObj::selection_cursor_t::const_lock
 
 editorObj::implObj::selection_cursor_t::const_lock::~const_lock()=default;
 
-std::optional<size_t> editorObj::implObj::selection_cursor_t::const_lock
+richtextiteratorptr editorObj::implObj::selection_cursor_t::const_lock
 ::cursor_pos() const
 {
-	if (!cursor) return std::nullopt;
-
-	return cursor->pos();
+	return cursor;
 }
 
 richtext_draw_info editorObj::implObj::selection_cursor_t::const_lock
@@ -2125,26 +2123,19 @@ size_t editorObj::implObj::size() const
 		 });
 }
 
-std::tuple<size_t, size_t> editorObj::implObj::pos()
+std::tuple<richtextiterator, richtextiterator> editorObj::implObj::pos()
 {
 	selection_cursor_t::const_lock cursor_lock{*this};
 
 	return pos(cursor_lock);
 }
 
-std::tuple<size_t, size_t>
+std::tuple<richtextiterator, richtextiterator>
 editorObj::implObj::pos(selection_cursor_t::const_lock &cursor_lock)
 {
-	size_t p=cursor->pos();
-
-	size_t p2=p;
-
 	auto cursor_pos=cursor_lock.cursor_pos();
 
-	if (cursor_pos)
-		p2=*cursor_pos;
-
-	return {p, p2};
+	return {cursor, cursor_pos ? richtextiterator{cursor_pos}:cursor};
 }
 
 void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,

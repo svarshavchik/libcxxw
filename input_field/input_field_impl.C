@@ -9,6 +9,7 @@
 #include "editor_impl.H"
 #include "x/w/impl/richtext/richtextobj.H"
 #include "x/w/input_field.H"
+#include "x/w/richtext/richtextiterator.H"
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -52,7 +53,7 @@ size_t const_input_lock::size() const
 	return locked_input_field->impl->editor_element->impl->size();
 }
 
-std::tuple<size_t, size_t> const_input_lock::pos() const
+std::tuple<richtextiterator, richtextiterator> const_input_lock::pos() const
 {
 	return locked_input_field->impl->editor_element->impl->pos();
 }

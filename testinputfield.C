@@ -33,6 +33,7 @@
 #include "x/w/tooltip.H"
 #include "x/w/tooltip_appearance.H"
 #include "x/w/tooltip_border_appearance.H"
+#include "x/w/richtext/richtextiterator.H"
 #include <x/weakcapture.H>
 #include <string>
 #include <iostream>
@@ -748,7 +749,8 @@ void testbutton()
 
 	auto [pos1, pos2]=lock_first.pos();
 
-	std::cout << "POS: [" << pos1 << ", " << pos2 << "]" << std::endl;
+	std::cout << "POS: [" << pos1->pos() << ", " << pos2->pos() << "]"
+		  << std::endl;
 
 	std::cout << "Done" << std::endl;
 }

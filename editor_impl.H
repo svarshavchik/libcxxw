@@ -219,7 +219,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 			//! Destructor
 			~const_lock();
 
-			std::optional<size_t> cursor_pos() const;
+			richtextiteratorptr cursor_pos() const;
 
 			richtext_draw_info get_richtext_draw_info(implObj &me)
 				const;
@@ -710,11 +710,12 @@ class LIBCXX_HIDDEN editorObj::implObj
 	size_t size() const;
 
 	//! Return the current cursor position.
-	std::tuple<size_t, size_t> pos();
+	std::tuple<richtextiterator, richtextiterator> pos();
 
  private:
 	//! Return the current cursor position.
-	std::tuple<size_t, size_t> pos(selection_cursor_t::const_lock &);
+	std::tuple<richtextiterator, richtextiterator>
+		pos(selection_cursor_t::const_lock &);
  public:
 	//! Set the current contents of the editor
 
