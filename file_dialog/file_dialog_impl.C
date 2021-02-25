@@ -13,6 +13,7 @@
 #include "x/w/impl/child_element.H"
 #include "messages.H"
 #include "x/w/input_field.H"
+#include "x/w/input_field_filter.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/input_dialog.H"
 #include "x/w/file_dialog_config.H"
@@ -883,7 +884,7 @@ static void no_slashes(const input_field &f)
 			     auto p=info.new_contents.rfind('/');
 
 			     info.update(info.starting_pos,
-					 info.n_delete,
+					 info.ending_pos,
 					 info.new_contents.substr(++p));
 		     });
 }

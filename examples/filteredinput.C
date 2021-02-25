@@ -16,6 +16,7 @@
 #include <x/w/text_param_literals.H>
 #include <x/w/input_field.H>
 #include <x/w/input_field_lock.H>
+#include <x/w/input_field_filter.H>
 #include <x/w/canvas.H>
 #include <x/w/container.H>
 #include <x/w/button.H>
@@ -51,6 +52,9 @@ void create_mainwindow(const x::w::main_window &main_window,
 	config.autoselect=true;
 	config.autodeselect=true;
 
+	// Explicit left-to-right text direction
+	config.direction=x::w::bidi::left_to_right;
+
 	// We create the input field with its contents initially "empty", but
 	// in reality it's full of spaces, with dashes where the input
 	// is separated.
@@ -72,8 +76,14 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 			 auto &[me]=*got;
 
-			 auto starting_pos=s.starting_pos;
-			 auto n_delete=s.n_delete;
+			 // starting_pos demarcate the starting position
+			 // of the modified text, and n_deleted is how
+			 // many characters are affected.
+			 //
+			 // n_deleted is 0 if new text is being added,
+			 // only.
+			 auto starting_pos=s.starting_pos->pos();
+			 auto n_deleted=s.n_deleted;
 
 			 // If this is cursor movement only: if the cursor
 			 // is moved into a position where the dash is,
@@ -111,26 +121,26 @@ void create_mainwindow(const x::w::main_window &main_window,
 				 if (current_contents.at(i-1) == ' ')
 				 {
 					 starting_pos=i-1;
-					 n_delete=0;
+					 n_deleted=0;
 				 }
 
 			 // Allow stuff to be deleted only at the end of the
 			 // input field. s.starting_pos is the starting
 			 // location to be deleted. Everything on or after
-			 // starting_pos+n_delete should either be a space
+			 // starting_pos+n_deleted should either be a space
 			 // or a dash.
 
-			 if (n_delete > 0)
+			 if (n_deleted > 0)
 			 {
 				 // If the region to delete ends on a dash,
 				 // make sure to include it in the region.
 
-				 size_t end_pos=starting_pos+n_delete;
+				 size_t end_pos=starting_pos+n_deleted;
 
 				 if (end_pos == 3 || end_pos == 7)
 				 {
 					 ++end_pos;
-					 ++n_delete;
+					 ++n_deleted;
 				 }
 
 				 // Ditto for the starting position, so
@@ -142,7 +152,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 				 case 3:
 				 case 7:
 					 --starting_pos;
-					 ++n_delete;
+					 ++n_deleted;
 				 }
 
 				 while (end_pos < current_contents.size())
@@ -191,7 +201,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 			 // to be deleted, so pad out new_contents, to
 			 // effectively delete it, by overwriting it.
 
-			 while (new_contents.size() < n_delete)
+			 while (new_contents.size() < n_deleted)
 			 {
 				 switch (starting_pos+new_contents.size()) {
 				 case 3:
@@ -205,13 +215,31 @@ void create_mainwindow(const x::w::main_window &main_window,
 			 }
 
 			 // At this point, we're effectively replacing the
-			 // existing contents of the input field, so n_delete
+			 // existing contents of the input field, so n_deleted
 			 // should always be the same as new_contents.size();
 
-			 n_delete=new_contents.size();
+			 n_deleted=new_contents.size();
 
 			 // Apply the filtered changes to the input field.
-			 s.update(starting_pos, n_delete, new_contents);
+
+			 // update() first two parameters are the starting
+			 // and the ending position of the modified text,
+			 // which are provided in the input_field_filter_info.
+			 //
+			 // However as the result of the above we've arrived
+			 // at, possibly, a different range of the text to
+			 // be modified, so we'll create new iterators.
+
+			 auto new_starting_pos=
+				 s.starting_pos->pos(starting_pos);
+
+			 auto new_ending_pos= n_deleted
+				 ? s.starting_pos->pos(starting_pos+n_deleted)
+				 // This optimization is not really needed...
+				 : new_starting_pos;
+
+			 s.update(new_starting_pos, new_ending_pos,
+				  new_contents);
 
 			 // If we wind up on top of a dash, advance past it.
 			 if (end_pos == 3 || end_pos == 7)

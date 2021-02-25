@@ -154,7 +154,8 @@ f->on_search([]
       <note>
 	<para>
 	  The given search string does not have any embedded isolation or
-	  override markers, irrespective of the
+	  override <link linkend="bidi">bi-directional markers</link>,
+	  irrespective of the
 	  <classname>&ns;::w::input_field_config</classname>'s
 	  <link linkend="inputfieldbidi"><varname>directional_format</varname></link>
 	  setting.
@@ -184,7 +185,7 @@ f->on_search([]
 	<listitem>
 	  <para>
 	    Pass a
-	    <classname>&ns;::std::vector&lt;std::u32string&gt;</classname>
+	    <classname>std::vector&lt;std::u32string&gt;</classname>
 	    to <varname>search_info</varname>'s
 	    <methodname>results</methodname>() method. This records the
 	    list of strings that comprise the found matches, and shows them

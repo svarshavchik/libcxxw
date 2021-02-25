@@ -2731,6 +2731,7 @@ first column, to make the labels line up with their input fields.
 	<alignment>right</alignment>
 	<maximum_size>5</maximum_size>
 	<autoselect/>
+	<direction>left_to_right</direction>
 	<set_default_spin_control_factories/>
       </config>
     </element>
@@ -2747,6 +2748,7 @@ first column, to make the labels line up with their input fields.
 	<alignment>right</alignment>
 	<maximum_size>5</maximum_size>
 	<autoselect/>
+	<direction>left_to_right</direction>
 	<set_default_spin_control_factories/>
       </config>
     </element>
@@ -2763,6 +2765,7 @@ first column, to make the labels line up with their input fields.
 	<alignment>right</alignment>
 	<maximum_size>5</maximum_size>
 	<autoselect/>
+	<direction>left_to_right</direction>
 	<set_default_spin_control_factories/>
       </config>
     </element>
@@ -2808,6 +2811,7 @@ first column, to make the labels line up with their input fields.
 	<alignment>right</alignment>
 	<maximum_size>5</maximum_size>
 	<autoselect/>
+	<direction>left_to_right</direction>
 	<set_default_spin_control_factories/>
       </config>
     </element>
@@ -2824,6 +2828,7 @@ first column, to make the labels line up with their input fields.
 	<alignment>right</alignment>
 	<maximum_size>5</maximum_size>
 	<autoselect/>
+	<direction>left_to_right</direction>
 	<set_default_spin_control_factories/>
       </config>
     </element>
@@ -2840,6 +2845,7 @@ first column, to make the labels line up with their input fields.
 	<alignment>right</alignment>
 	<maximum_size>5</maximum_size>
 	<autoselect/>
+	<direction>left_to_right</direction>
 	<set_default_spin_control_factories/>
       </config>
     </element>

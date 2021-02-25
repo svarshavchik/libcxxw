@@ -16,6 +16,7 @@
 #include "x/w/input_field.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/input_field_appearance.H"
+#include "x/w/input_field_filter.H"
 #include "x/w/label.H"
 #include "x/w/borderlayoutmanager.H"
 #include "x/w/frame_appearance.H"
@@ -639,8 +640,9 @@ void testbutton()
 				  (ONLY IN_THREAD,
 				   const auto &info)
 				  {
-					  std::cout << info.starting_pos
-						    << ", " << info.n_delete
+					  std::cout << info.starting_pos->pos()
+						    << "-"
+						    << info.ending_pos->pos()
 						    << ", "
 						    << info.new_contents.size()
 						    << std::endl;

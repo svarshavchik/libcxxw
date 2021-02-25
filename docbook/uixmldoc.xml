@@ -2573,6 +2573,7 @@ widgets.generate("initialize-dialog", generators);
     <options>
         <alignment>center</alignment>
         <widthmm>40</widthmm>
+        <direction>left_to_right</direction>
     </options>
 </element>]]></programlisting>
 	</informalexample>
@@ -2949,6 +2950,28 @@ widgets.generate("initialize-dialog", generators);
 	    member of ths
 	    <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>
 	    parameter.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>direction</tag>
+	</term>
+	<listitem>
+	  <para>
+	    The input field's <link linkend="uixmlbidivalue">text
+	      direction</link>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>directional_format</tag>
+	</term>
+	<listitem>
+	  <para>
+	    The input field's default
+	    <link linkend="uixmlbidivalue">bi-directional text format</link>.
 	  </para>
 	</listitem>
       </varlistentry>

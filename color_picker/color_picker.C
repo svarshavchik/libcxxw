@@ -25,6 +25,7 @@
 #include "x/w/impl/focus/focusable.H"
 #include "x/w/label.H"
 #include "x/w/input_field.H"
+#include "x/w/input_field_filter.H"
 #include "x/w/image_button.H"
 #include "x/w/button.H"
 #include "x/w/rgb.H"

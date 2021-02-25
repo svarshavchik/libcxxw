@@ -120,6 +120,16 @@ struct input_field_config {
 	std::optional<halign> alignment;
 
 	//! Format of bi-directional text
+
+	//! The default automatic direction gets determined as follows:
+	//!
+	//! - the initial contents's default rendering direction sets the
+	//! input field's default direction.
+	//!
+	//! - if the initial contents are empty or contain only boundary-
+	//! neutral characters, the system locale's detected rendering
+	//! direction gets used.
+
 	bidi direction=bidi::automatic;
 
 	//! Bi-directional formatting
@@ -213,6 +223,11 @@ struct input_field_search_info {
 				std::vector<list_item_param> &search_items);
 
 	//! Original search string.
+
+	//! \note
+	//! The search string is in the
+	//! \ref bidi_format "standard bi-directional format", without any
+	//! override or isolation markers.
 
 	const std::u32string &search_string;
 

@@ -104,6 +104,21 @@ See COPYING for distribution information.
     </itemizedlist>
 
     <para>
+      Callbacks that assume a specific
+      <link linkend="bidi">text direction</link> should have their
+      input fields configured accordingly, via
+      <link linkend="inputfields"><classname>&ns;::w::input_field_config</classname></link>.
+      This avoids unexpected results with bi-directional text.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;/w/input_field_filter.H&gt;</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
       The callback receives an
       <ulink url="&link-x--w--input-field-filter-info;"><classname>&ns;::w::input_field_filter_info</classname></ulink>
       object that specifies the tentative change.
@@ -123,24 +138,26 @@ See COPYING for distribution information.
 
     <variablelist>
       <varlistentry>
-	<term><varname>starting_pos</varname></term>
+	<term><varname>starting_pos</varname> and
+	  <varname>ending_pos</varname></term>
 	<listitem>
 	  <para>
-	    The index of the tentative change to the input field. Adding
-	    or deleting text at the beginning of the input field gets
-	    specified as a starting position #0. Removal of the third
-	    character in the input field (with a <keycap>Backspace</keycap>
-	    or <keycap>Del</keycap>, for example) sets
-	    <varname>starting_pos</varname>
-	    to 2.
+	    These
+	    <ulink url="&link-typedef-x--w-richtextiterator;"><classname>&ns;::w::richtextiterator</classname></ulink>s
+	    specify the location of the existing text
+	    that's getting changed.
+	    <varname>starting_pos</varname> is the first character getting
+	    changed and <varname>ending_pos</varname> is the next character
+	    after the last character getting changed, similar in concept
+	    to C++ iterators.
 	  </para>
 	</listitem>
       </varlistentry>
       <varlistentry>
-	<term><varname>n_delete</varname></term>
+	<term><varname>n_deleted</varname></term>
 	<listitem>
 	  <para>
-	    Number of characters to be deleted. This gets set to 0 if no
+	    Number of characters getting changed. This is 0 if no
 	    characters get deleted, and only new text gets inserted.
 	  </para>
 	</listitem>
@@ -149,7 +166,7 @@ See COPYING for distribution information.
 	<term><varname>new_contents</varname></term>
 	<listitem>
 	  <para>
-	    The new text that gets inserted.
+	    The new text that replaced the text getting changed.
 	  </para>
 	</listitem>
       </varlistentry>
@@ -157,7 +174,7 @@ See COPYING for distribution information.
 
     <para>
       It's possible that a single change specifies both a non-0
-      <varname>n_delete</varname> and a non-empty
+      <varname>n_deleted</varname> and a non-empty
       <varname>new_contents</varname>. An example would be highlighting a
       range of existing text, then executing a paste operation to replace
       it with different text. This is a single change, deleting the existing
@@ -168,9 +185,34 @@ See COPYING for distribution information.
       <varname>new_contents</varname> is a
       <classname>std::u32string_view</classname> that specifies the new
       text in Unicode.
-      <varname>starting_pos</varname> and
-      <varname>n_delete</varname> also count Unicode characters.
     </para>
+
+    <para>
+      The <varname>starting_pos</varname> and
+      <varname>ending_pos</varname> objects have a <function>pos</function>()
+      method that returns the iterating index, counted as a the number of
+      Unicode characters in the input field. The first character in the
+      input field is position 0. A 0 for <varname>n_deleted</varname> and
+      <varname>starting_pos</varname> and
+      <varname>ending_pos</varname> objects with the
+      same <function>pos</function>() reflect new text getting added without
+      any existing text getting removed.
+    </para>
+
+    <note>
+      <para>
+	<varname>n_deleted</varname> also counts Unicode characters,
+	but may not always match the difference between the
+	<varname>starting_pos</varname> and
+	<varname>ending_pos</varname>
+	<function>pos</function>()ition. This can happen
+	with multi-line input
+	fields that have <link linkend="bidi">bi-directional text</link>
+	(the first and the last line may include text either to the left
+	or the right of the starting and the ending position, depending
+	on the line's text direction).
+      </para>
+    </note>
 
     <section id="movementfilter">
       <title>Filtering cursor movements</title>
@@ -207,7 +249,7 @@ See COPYING for distribution information.
       editing process. The input filter example in
       <xref linkend="filteredinput" /> accepts only digits as input, but
       it has no means of blocking tabbing out of the input field after
-      typing in fewer than the requisite nine digits.
+      typing in fewer than the requisite ten digits.
     </para>
 
     <mediaobject>

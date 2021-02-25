@@ -42,6 +42,8 @@ create_mainwindow(const x::w::main_window &main_window,
 	config.maximum_size=14;
 	config.autoselect=true;
 	config.autodeselect=true;
+	config.direction=x::w::bidi::left_to_right;
+
 	auto field=factory->create_input_field("(###) ###-####", config);
 
 	field->on_default_filter(// Valid input is digits 0-9.

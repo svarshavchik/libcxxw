@@ -122,14 +122,32 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Updated in update_content().
 	size_t inserted_count;
 
+	//! The current selection for update_content()
+
+	//! Specifies the currently selected text.
+
+	struct current_selection_info {
+
+		//! Current selection's starting position.
+
+		const richtextiterator starting_position;
+
+		//! Current selection's ending position.
+
+		//! Same as starting_position if there's no selection.
+
+		const richtextiterator ending_position;
+	};
+
 	//! All changes to the contents of the input field go through here.
 
 	//! Remove and/or inserts the contents of the input field.
 	//!
-	//! Removes 'n' characters starting at 'pos', and replaces them
-	//! with str.
+	//! Removes the text given by current_selection_info, and replaces
+	//! it with str.
 	//!
-	//! An insert is done by passing n=0.
+	//! An insert is done by specifying starting_position=ending_position
+	//! in current_selection_info.
 	//!
 	//! A delete is done by passing an empty str.
 	//!
@@ -141,8 +159,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	void update_content(ONLY IN_THREAD,
 			    modifying_text &modifying,
-			    size_t pos,
-			    size_t n,
+			    const current_selection_info &info,
 			    const std::u32string_view &str);
 
 	struct LIBCXX_HIDDEN input_field_filter_info_impl;
@@ -151,9 +168,22 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Apply filtered update.
 	void update_filtered_content(ONLY IN_THREAD,
-				     size_t pos,
-				     size_t n,
+				     const richtextiterator &starting_cursor,
+				     const richtextiterator &other,
 				     const std::u32string_view &str);
+
+	//! Apply filtered update.
+
+	//! Computes the actual character count in the str and passes it as
+	//! cleaned size.
+	//!
+	//! If password_char is set, all isolation and override markers in
+	//! the unicode string get removed.
+	void update_filtered_content(ONLY IN_THREAD,
+				     richtextiterator starting_cursor,
+				     richtextiterator other,
+				     const std::u32string_view &str,
+				     size_t cleaned_size);
 
 	//! All access to the contents of the input field goes through here.
 
@@ -203,11 +233,11 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		class const_lock {
 
+		protected:
+
 			//! The lock on the underlying rich text object.
 
 			internal_richtext_impl_t::lock internal_lock;
-
-		protected:
 
 			//! The cursor reference.
 
@@ -228,6 +258,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 		class lock : public const_lock {
 
 		public:
+
+			using const_lock::internal_lock;
 
 			using const_lock::cursor;
 
@@ -593,7 +625,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//!
 	//! If there is a current selection, the destructor clears it.
 
-	struct delete_selection_info {
+	struct delete_selection_info : current_selection_info {
 
 		//! Constructed on the stack by the connection thread.
 		ONLY IN_THREAD;
@@ -606,15 +638,12 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		selection_cursor_t::lock &cursor_lock;
 
-		//! Current selection's starting position.
+		//! Whether there was a selection.
 
-		const size_t starting_pos;
-
-		//! Current selection's range.
-
-		//! 0 if there is no current selection.
-
-		const size_t n;
+		//! After the delete operation executes the starting and ending
+		//! iterator positions are the same. This remembers if they
+		//! were different when this was constructed.
+		const bool had_selection;
 
 		//! Constructor
 
@@ -628,8 +657,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 		delete_selection_info(ONLY IN_THREAD,
 				      implObj &me,
 				      modifying_text &modifying,
-				      size_t p1,
-				      size_t p2);
+				      const richtextiterator &starting_position,
+				      const richtextiterator &ending_position);
 	public:
 		//! Destructor deletes the current selection, if there is one.
 		~delete_selection_info();
@@ -697,9 +726,14 @@ class LIBCXX_HIDDEN editorObj::implObj
 				      const input_mask &mask,
 				      const callback_trigger_t &trigger);
 
-	//! Common logic shared by del_char_or_selection and backspace
+	//! Delete a character at cursor position.
 
 	void delete_char(ONLY IN_THREAD, modifying_text &modifying);
+
+	//! Common logic shared by del_char_or_selection and backspace
+
+	void delete_char(ONLY IN_THREAD, modifying_text &modifying,
+			 const richtextiterator &delete_cursor);
  public:
 
 	//! Return the current contents  of the editor.

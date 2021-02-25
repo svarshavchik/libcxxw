@@ -1,0 +1,69 @@
+<!--
+
+Copyright 2021 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="bidi">
+  <title>Bi-directional text</title>
+
+  <para>
+    &appshort; displays bi-directional text and provides several means for
+    controlling how bi-directional text gets displayed.
+  </para>
+
+  <para>
+    A <link linkend="labels">text label</link>'s primary direction gets
+    determined based on the default Unicode bi-directional rendering
+    algorithm.
+    Use the
+    <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>'s
+    optional <ulink url="&link-enum-x--w-bidi;"><classname>&ns;::w::bidi</classname></ulink>
+    <varname>direction</varname> to explicitly override
+    a label's rendering direction, when necessary.
+  </para>
+
+  <para>
+    <link linkend="inputfields">Input fields</link>' rendering direction
+    gets specified the same way. Use
+    <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>'s
+    <ulink url="&link-enum-x--w-bidi;"><classname>&ns;::w::bidi</classname></ulink>
+    <varname>direction</varname> to explicitly override
+    the input field's rendering direction.
+  </para>
+
+  <section id="bidiinput">
+    <title>Bi-directional text input</title>
+
+    <para>
+      <link linkend="inputfields">Input fields</link> apply
+      Unicode isolation and override markers, then display and edit the
+      resulting bi-directional text, directly, with all isolation and override
+      markers stripped off.
+    </para>
+
+    <para>
+      <function>get</function>() and <function>get_unicode</function>()
+      use the
+      <ulink url="&link-enum-x--w-bidi-format;"><classname>&ns;::w::bidi_format</classname></ulink>
+      <varname>directional_format</varname> that's specified in the
+      <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>, by default; or the optional
+      <classname>&ns;::w::bidi_format</classname> parameter that overrides
+      this default.
+    </para>
+
+    <para>
+      Input field <link linkend="searchinputthread">search callback
+	threads</link>
+      always receive a <varname>search_string</varname> in the standard
+      <classname>&ns;::w::bidi_format</classname>.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

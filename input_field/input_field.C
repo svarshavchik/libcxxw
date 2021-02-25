@@ -29,6 +29,7 @@
 #include "x/w/input_field.H"
 #include "x/w/input_field_config.H"
 #include "x/w/input_field_appearance.H"
+#include "x/w/input_field_filter.H"
 #include "x/w/focus_border_appearance.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/text_param.H"
@@ -685,6 +686,41 @@ void input_fieldObj::on_search(const
 		 });
 }
 
+std::u32string bidi_override(const std::u32string_view &u,
+			     bidi direction)
+{
+	if (direction == bidi::automatic)
+		return {u.begin(), u.end()};
+
+	return unicode::bidi_override( {u.begin(), u.end()},
+				       direction == bidi::left_to_right
+				       ? UNICODE_BIDI_LR : UNICODE_BIDI_RL,
+				       unicode::literals::CLEANUP_CANONICAL);
+}
+
+std::string bidi_override(const std::string_view &s,
+			  bidi direction)
+{
+	if (direction == bidi::automatic)
+		return {s.begin(), s.end()};
+
+	std::u32string ret;
+
+	unicode::iconvert::tou::convert(s.begin(), s.end(),
+					unicode_locale_chset(), ret);
+
+	ret=bidi_override(ret, direction);
+
+	std::string out_buf;
+        bool ignore;
+
+        unicode::iconvert::fromu::convert(s.begin(), s.end(),
+                                          unicode_locale_chset(), out_buf,
+					  ignore);
+
+	return out_buf;
+}
+
 void input_fieldObj::on_default_filter(const functionref<bool(char32_t)> &cb,
 				       const std::vector<size_t> &immutable,
 				       char32_t empty)
@@ -704,8 +740,9 @@ void input_fieldObj::on_default_filter(const functionref<bool(char32_t)> &cb,
 			 if (s.size != s.maximum_size)
 				 throw EXCEPTION("Internal error: on_default_filter() requires its input field "
 						 "set to its maximum size.");
-			 auto starting_pos=s.starting_pos;
-			 auto n_delete=s.n_delete;
+
+			 size_t starting_pos=s.starting_pos->pos();
+			 size_t n_delete=s.ending_pos->pos()-starting_pos;
 
 			 if (s.type == input_filter_type::move_only)
 			 {
@@ -766,7 +803,7 @@ void input_fieldObj::on_default_filter(const functionref<bool(char32_t)> &cb,
 					 }
 				 }
 
-				 if (adjusted_pos != s.starting_pos)
+				 if (adjusted_pos != s.starting_pos->pos())
 					 s.move(adjusted_pos);
 				 return;
 			 }
@@ -897,7 +934,10 @@ void input_fieldObj::on_default_filter(const functionref<bool(char32_t)> &cb,
 
 			 n_delete=new_contents.size();
 
-			 s.update(starting_pos, n_delete, new_contents);
+			 s.update(s.starting_pos->pos(starting_pos),
+				  s.starting_pos->pos(starting_pos+n_delete),
+				  bidi_override(new_contents,
+						s.direction));
 
 			 while (std::find(immutable.begin(),
 					  immutable.end(),

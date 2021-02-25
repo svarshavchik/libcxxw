@@ -97,6 +97,7 @@
 <!ENTITY table SYSTEM "table.xml">
 <!ENTITY toolbox SYSTEM "toolboxlayoutmanager.xml">
 <!ENTITY uigenerator SYSTEM "uigenerator.xml">
+<!ENTITY bidi SYSTEM "bidi.xml">
 <!ENTITY uixmlappearance_list SYSTEM "../appearance/appearance_list.xml">
 <!ENTITY uixmldocfactorygrid SYSTEM "uixmldocfactorygrid.xml">
 <!ENTITY uixmldoc SYSTEM "uixmldoc.xml">
@@ -187,6 +188,7 @@ See COPYING for distribution information.
     &toolbox;
     &splash;
     &uigenerator;
+    &bidi;
   </part>
 
   <part id="custom">

@@ -20,6 +20,7 @@
 #include "x/w/file_dialogfwd.H"
 #include "x/w/focusable_container.H"
 #include "x/w/input_field.H"
+#include "x/w/input_field_filter.H"
 #include "x/w/image_button.H"
 #include "x/w/button.H"
 #include "x/w/label.H"

@@ -20,7 +20,7 @@ struct LIBCXX_HIDDEN input_field_search_info;
 //! Unicode bi-directional formatting to apply to retrieved text
 
 //! Whether to include directional embedding markers in text returned by
-//! \ref input_lock "input_lock"'s get() and get_unicode() methods.
+//! \ref input_lock "input_lock"'s get() and get_unicode() methods, by default.
 
 enum class bidi_format {
 
@@ -29,17 +29,28 @@ enum class bidi_format {
 	//! This mostly means that text that was forcibly entered in the
 	//! opposite direction will not have embedded directional markers.
 	//! set()ing the resulting text may not necessarily result in the
-	//! text being rendered in the same order as it was entered
+	//! text being rendered in the same order as it was entered.
+	//!
+	//! \note
+	//! Input fields do not preserve any directional override or isolate
+	//! markers. They get removed from the initial contents of the input
+	//! field, or from any explicitly set() contents, and the standard
+	//! format retrieves the entered text without any directional override
+	//! and isolate markers.
+
 	standard,
 
-	//! Include embedded directional and isolation markers
+	//! Include embedded directional override and isolation markers
 
-	//! Embedded directional and isolation markers get included in the
+	//! Embedded directional override and isolation markers get included
+	//! in the
 	//! returned text, so that it's accurately restored if it gets set()
 	//! in the same input field again. The logic for calculating directional
 	//! markers is not exact. Some extra and unneeded directional markers
 	//! may be included as a result, depending on the input field's
-	//! specified \ref bidi "bi-directional text direction".
+	//! specified \ref bidi "bi-directional text direction", and won't
+	//! necessarily match the override and isolation markers from the
+	//! original contents of the input field.
 	//!
 	//! Applications must be fully aware
 	//! and be able to process all Unicode bi-directional markers.

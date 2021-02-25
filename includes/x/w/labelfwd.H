@@ -6,6 +6,7 @@
 #define x_w_labelfwd_h
 
 #include <x/w/namespace.H>
+#include <string>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -65,6 +66,24 @@ enum class bidi {
 	right_to_left,
 };
 
+//! Force text direction.
+
+//! If bidi is automatic, the same string gets returned.
+//! Otherwise all isolate, override, and directional markers get removed
+//! from the string, and replacement by a single override marker for the
+//! given direction.
+//!
+//! This is used with \ref input_field_filter_info "input field filters" which
+//! handle singly-directional text only.
+
+std::u32string bidi_override(const std::u32string_view &,
+			     bidi direction);
+
+//! Force text direction
+
+//! \overload
+std::string bidi_override(const std::string_view &,
+			  bidi direction);
 
 LIBCXXW_NAMESPACE_END
 

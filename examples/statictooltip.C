@@ -17,6 +17,7 @@
 #include <x/w/font_literals.H>
 #include <x/w/input_field.H>
 #include <x/w/input_field_lock.H>
+#include <x/w/input_field_filter.H>
 #include <x/w/container.H>
 #include <x/w/tooltip.H>
 #include <x/w/button.H>
@@ -206,7 +207,7 @@ public:
 		// negative numbers can be entered with "-" normally.
 
 		if (info.new_contents.size() == 1 && info.size > 0 &&
-		    info.starting_pos == info.size)
+		    info.starting_pos->pos() == info.size)
 		{
 			// Before one of these operators, we better already
 			// have a valid numeric value, here.
@@ -282,7 +283,9 @@ public:
 
 		auto contents=x::w::input_lock{field}.get();
 
-		contents=contents.substr(0, info.starting_pos)
+		auto starting_pos=info.starting_pos->pos();
+		auto ending_pos=starting_pos+info.n_deleted;
+		contents=contents.substr(0, starting_pos)
 
 			// new_contents is a std::u32string, but we
 			// checked it, above.
@@ -290,7 +293,7 @@ public:
 			{
 			 info.new_contents.begin(),
 			 info.new_contents.end()
-			} + contents.substr(info.starting_pos+info.n_delete);
+			} + contents.substr(ending_pos);
 
 		// If the new contents are empty, or if they pass validation,
 		// the proposed change is acceptable.
@@ -508,9 +511,11 @@ private:
 
 		// update() takes a std::u32string. We're plain ASCII.
 
-		info.update(0, info.size, std::u32string{value_str.begin(),
-								 value_str.end()
-								 });
+		info.update(info.starting_pos->begin(),
+			    info.starting_pos->end(),
+			    std::u32string{value_str.begin(),
+				    value_str.end()
+			    });
 	}
 
 	// '=' was typed in.
@@ -573,6 +578,7 @@ create_mainwindow(const x::w::main_window &main_window,
 
 	config.alignment=x::w::halign::right;
 	config.maximum_size=NDIGITS+NPREC+1;
+	config.direction=x::w::bidi::left_to_right;
 
 	// In some circumstances the entire contents of the input field
 	// is select_all()ed, so flip this flag to drop the selection when

@@ -24,6 +24,7 @@
 #include "x/w/main_window.H"
 #include "x/w/date_input_field_appearance.H"
 #include "x/w/input_field_appearance.H"
+#include "x/w/input_field_filter.H"
 #include "run_as.H"
 #include "messages.H"
 
@@ -154,6 +155,7 @@ date_input_field factoryObj
 
 	input_conf.autoselect=true;
 	input_conf.maximum_size=date_format.size();
+	input_conf.direction=bidi::left_to_right;
 
 	text_param initial;
 
@@ -307,8 +309,9 @@ date_input_field factoryObj
 
 				 auto & [text_input_field]=*got;
 
-				 auto starting_pos=info.starting_pos;
-				 auto n_delete=info.n_delete;
+				 size_t starting_pos=info.starting_pos->pos();
+				 size_t n_delete=info.ending_pos->pos()
+					 - starting_pos;
 				 auto &str=info.new_contents;
 				 const size_t size=info.size;
 
@@ -317,7 +320,12 @@ date_input_field factoryObj
 
 #include "date_input_field/date_input_field_filter.H"
 
-				 info.update(starting_pos, n_delete,
+				 new_string.insert(0,
+						   unicode::literals::LRO);
+				 info.update(info.starting_pos
+					     ->pos(starting_pos),
+					     info.starting_pos
+					     ->pos(starting_pos+n_delete),
 					     new_string);
 			 });
 

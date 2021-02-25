@@ -10,6 +10,7 @@
 #include "drag_destination_element.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_appearance.H"
+#include "x/w/input_field_filter.H"
 #include "x/w/impl/theme_font_element.H"
 #include "x/w/impl/background_color_element.H"
 #include "screen.H"
@@ -952,14 +953,12 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 		delete_selection_info del_info{IN_THREAD, *this, modifying};
 
 		// For correct cursor behavior in right to left text,
-		// we capture the current cursor position before the left()+
-		// delete, then we restore it after the backspace delete.
+		// we move to the left manually, first.
 
-		auto orig=cursor->clone();
-		if (cursor->left(IN_THREAD))
+		auto delete_cursor=cursor->clone();
+		if (delete_cursor->left(IN_THREAD))
 		{
-			delete_char(IN_THREAD, modifying);
-			cursor->swap(orig);
+			delete_char(IN_THREAD, modifying, delete_cursor);
 		}
 		return true;
 	}
@@ -968,20 +967,23 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 inline
 input_field_filter_info::input_field_filter_info(input_filter_type type,
-						 size_t starting_pos,
-						 size_t n_delete,
+						 bidi direction,
+						 const richtextiterator &starting_pos,
+						 const richtextiterator &ending_pos,
 						 const std::u32string_view
 						 &new_contents,
 						 size_t size,
 						 size_t maximum_size)
-	: type{type}, starting_pos{starting_pos}, n_delete{n_delete},
+	: type{type}, direction{direction},
+	  starting_pos{starting_pos}, ending_pos{ending_pos},
+	  n_deleted{starting_pos->count_richtextstring(ending_pos)},
 	  new_contents{new_contents}, size{size}, maximum_size{maximum_size}
 {
 }
 
 void input_field_filter_info::update() const
 {
-	update(starting_pos, n_delete, new_contents);
+	update(starting_pos, ending_pos, new_contents);
 }
 
 struct editorObj::implObj::input_field_filter_info_impl
@@ -995,26 +997,32 @@ struct editorObj::implObj::input_field_filter_info_impl
 	inline input_field_filter_info_impl(ONLY IN_THREAD,
 					    implObj &me,
 					    input_filter_type type,
-					    size_t starting_pos,
-					    size_t n_delete,
+					    const richtextiterator
+					    &starting_pos,
+					    const richtextiterator &ending_pos,
 					    const std::u32string_view
 					    &new_contents,
 					    modifying_text &modifying)
-		: input_field_filter_info{type, starting_pos, n_delete,
-					  new_contents, me.size(),
-					  me.config.maximum_size},
+		: input_field_filter_info
+		{type,
+		 (*modifying.cursor_lock.internal_lock)->rl()
+		 ? bidi::right_to_left : bidi::left_to_right,
+		 starting_pos, ending_pos,
+		 new_contents, me.size(),
+		 me.config.maximum_size
+		},
 		  IN_THREAD{IN_THREAD},
 		  me{me},
 		  modifying{modifying}
 	{
 	}
 
-	void update(size_t starting_pos,
-		    size_t n_delete,
+	void update(const richtextiterator &starting_pos,
+		    const richtextiterator &ending_pos,
 		    const std::u32string_view &new_contents) const override
 	{
 		me.update_filtered_content(IN_THREAD, starting_pos,
-					   n_delete,
+					   ending_pos,
 					   new_contents);
 	}
 
@@ -1037,13 +1045,13 @@ struct editorObj::implObj::input_field_filter_info_impl
 struct editorObj::implObj::input_field_filter_info_impl_change
 	: public input_field_filter_info_impl {
 
-	inline input_field_filter_info_impl_change(ONLY IN_THREAD,
-						   implObj &me,
-						   modifying_text &modifying,
-						   size_t starting_pos,
-						   size_t n_delete,
-						   const std::u32string_view
-						   &new_contents)
+	inline input_field_filter_info_impl_change
+	(ONLY IN_THREAD,
+	 implObj &me,
+	 modifying_text &modifying,
+	 const richtextiterator &a,
+	 const richtextiterator &b,
+	 const std::u32string_view &new_contents)
 		: input_field_filter_info_impl
 		{
 		 IN_THREAD,
@@ -1053,8 +1061,7 @@ struct editorObj::implObj::input_field_filter_info_impl_change
 		 : modifying.change_type==input_change_type::deleted
 		 ? input_filter_type::deleting
 		 : input_filter_type::replacing,
-		 starting_pos,
-		 n_delete,
+		 a, b,
 		 new_contents,
 		 modifying
 		}
@@ -1063,7 +1070,7 @@ struct editorObj::implObj::input_field_filter_info_impl_change
 
 	size_t original_pos() const override
 	{
-		return starting_pos;
+		return starting_pos->pos();
 	}
 };
 
@@ -1087,8 +1094,8 @@ struct editorObj::implObj::input_field_filter_info_impl_move
 		 IN_THREAD,
 		 me,
 		 input_filter_type::move_only,
-		 me.cursor->pos(),
-		 0,
+		 me.cursor,
+		 me.cursor,
 		 U"",
 		 modifying
 		},
@@ -1126,55 +1133,94 @@ editorObj::implObj::moving_cursor::~moving_cursor()
 	}
 }
 
-void editorObj::implObj::update_content(ONLY IN_THREAD,
-					modifying_text &modifying,
-					size_t starting_pos,
-					size_t n,
-					const std::u32string_view &str)
+void editorObj::implObj
+::update_content(ONLY IN_THREAD,
+		 modifying_text &modifying,
+		 const current_selection_info &info,
+		 const std::u32string_view &str)
 {
+	auto starting_position=info.starting_position;
+	auto ending_position=info.ending_position;
+
+	if (ending_position->pos() < starting_position->pos())
+		std::swap(starting_position, ending_position);
+
 	if (on_filter(IN_THREAD))
 	{
-		input_field_filter_info_impl_change impl{IN_THREAD,
-							 *this,
-							 modifying,
-							 starting_pos,
-							 n,
-							 str};
+		input_field_filter_info_impl_change
+			impl{IN_THREAD,
+			*this,
+			modifying,
+			starting_position,
+			ending_position,
+			str};
 
 		try {
 			on_filter(IN_THREAD)(IN_THREAD, impl);
 		} REPORT_EXCEPTIONS(this);
 		return;
 	}
-	update_filtered_content(IN_THREAD, starting_pos, n, str);
+	update_filtered_content(IN_THREAD, starting_position,
+				ending_position, str);
 }
 
-void editorObj::implObj::update_filtered_content(ONLY IN_THREAD,
-						 size_t starting_pos,
-						 size_t n,
-						 const std::u32string_view &str)
+void editorObj::implObj
+::update_filtered_content(ONLY IN_THREAD,
+			  const richtextiterator &starting_position,
+			  const richtextiterator &ending_position,
+			  const std::u32string_view &str)
 {
-	auto starting_cursor=cursor->pos(starting_pos);
-	// This may no longer be the case:
-	starting_pos=starting_cursor->pos();
+	if (!password_char)
+	{
+		// Straightforward, use unicode_bidi_cleaned_size() to
+		// quickly compute the actual character count without
+		// bothering to modify the string.
+
+		update_filtered_content(IN_THREAD, starting_position,
+					ending_position,
+					str,
+					unicode_bidi_cleaned_size
+					(str.data(),
+					 str.size(),
+					 UNICODE_BIDI_CLEANUP_EXTRA));
+		return;
+	}
+
+	// For passwords we will strip out all directional and isolation marks,
+	// since we are masking the text anyway.
+	std::u32string cleaned_str{str.begin(), str.end()};
+
+	unicode::bidi_cleanup(cleaned_str, [](size_t){},
+			      UNICODE_BIDI_CLEANUP_EXTRA);
+
+	update_filtered_content(IN_THREAD, starting_position,
+				ending_position,
+				cleaned_str,
+				cleaned_str.size());
+}
+
+void editorObj::implObj
+::update_filtered_content(ONLY IN_THREAD,
+			  richtextiterator starting_position,
+			  richtextiterator ending_position,
+			  const std::u32string_view &str,
+			  size_t cleaned_size)
+{
+	if (ending_position->pos() < starting_position->pos())
+		std::swap(starting_position, ending_position);
+
+	size_t n=starting_position->count_richtextstring(ending_position);
 
 	if (n)
 	{
-		auto other=starting_cursor->clone();
-
-		other->move(IN_THREAD, n);
-
-		 // May no longer be the case, either:
-		n=other->pos()-starting_pos;
-
-		if (size() - n + str.size() > config.maximum_size)
+		if (size() - n + cleaned_size > config.maximum_size)
 			return;
 
 		deleted_count += n;
 
 		if (n)
 		{
-			starting_cursor->remove(IN_THREAD, other);
+			starting_position->remove(IN_THREAD, ending_position);
 
 			if (password_char)
 			{
@@ -1182,26 +1228,27 @@ void editorObj::implObj::update_filtered_content(ONLY IN_THREAD,
 
 				mpobj<richtextstring>::lock lock{real_string};
 
-				lock->erase(starting_pos, n);
+				lock->erase(starting_position->pos(), n);
 			}
 		}
 	}
 	else
-		if (size() + str.size() > config.maximum_size)
+	{
+		if (size() + cleaned_size > config.maximum_size)
 			return;
-
-	inserted_count += str.size();
+	}
+	inserted_count += cleaned_size;
 
 	if (password_char == 0)
 	{
-		starting_cursor->insert(IN_THREAD, str);
+		starting_position->insert(IN_THREAD, str);
 		return;
 	}
 
 	// Extra work for password fields.
 
 	if (str.size() == 1 &&
-	    starting_cursor->end()->compare(starting_cursor) == 0)
+	    starting_position->end()->compare(starting_position) == 0)
 	{
 		password_peeking=get_screen()->impl->thread->schedule_callback
 			(IN_THREAD,
@@ -1227,18 +1274,18 @@ void editorObj::implObj::update_filtered_content(ONLY IN_THREAD,
 			UNICODE_PDF,
 			0
 		};
-		starting_cursor->insert(IN_THREAD, left_right_text);
+		starting_position->insert(IN_THREAD, left_right_text);
 	}
 	else
 	{
-		starting_cursor->insert(IN_THREAD,
-					std::u32string(str.size(),
-						       password_char));
+		starting_position->insert(IN_THREAD,
+					  std::u32string(str.size(),
+							 password_char));
 	}
 
 	mpobj<richtextstring>::lock lock{real_string};
 
-	lock->insert(starting_pos, str);
+	lock->insert(starting_position->pos(), str);
 }
 
 void editorObj::implObj::clear_password_peek(ONLY IN_THREAD)
@@ -1324,9 +1371,7 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 				 input_change_type::inserted, trigger};
 	delete_selection_info del_info{IN_THREAD, *this, modifying};
 
-	update_content(IN_THREAD, modifying,
-		       del_info.starting_pos,
-		       del_info.n,
+	update_content(IN_THREAD, modifying, del_info,
 		       str);
 }
 
@@ -1841,11 +1886,10 @@ editorObj::implObj::delete_selection_info
 ::delete_selection_info(ONLY IN_THREAD,
 			implObj &me,
 			modifying_text &modifying)
-	: delete_selection_info{IN_THREAD, me, modifying,
+	: delete_selection_info{IN_THREAD, me, modifying, me.cursor,
 				modifying.cursor_lock.cursor ?
-				modifying.cursor_lock.cursor->pos()
-				: me.cursor->pos(),
-				me.cursor->pos()}
+				richtextiterator{modifying.cursor_lock.cursor}
+				: me.cursor}
 {
 }
 
@@ -1853,13 +1897,13 @@ editorObj::implObj::delete_selection_info
 ::delete_selection_info(ONLY IN_THREAD,
 			implObj &me,
 			modifying_text &modifying,
-			size_t p1,
-			size_t p2)
-	: IN_THREAD{IN_THREAD},
+			const richtextiterator &starting_position,
+			const richtextiterator &ending_position)
+	: current_selection_info{starting_position, ending_position},
+	  IN_THREAD{IN_THREAD},
 	  me{me},
 	  cursor_lock{modifying.cursor_lock},
-	  starting_pos{p1 < p2 ? p1:p2},
-	  n{p1 < p2 ? p2-p1:p1-p2}
+	  had_selection{starting_position->pos() != ending_position->pos()}
 {
 }
 
@@ -1868,7 +1912,7 @@ editorObj::implObj::delete_selection_info::~delete_selection_info()
 	// Now that we've computed what the current situation is, we
 	// can go ahead and remove the primary selection.
 
-	if (n > 0)
+	if (had_selection)
 	{
 		cursor_lock.cursor=richtextiteratorptr();
 		me.remove_primary_selection(IN_THREAD);
@@ -1948,8 +1992,7 @@ bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
 			{
 				update_content(IN_THREAD,
 					       modifying,
-					       del_info.starting_pos,
-					       del_info.n,
+					       del_info,
 					       U"");
 			}
 		}
@@ -2073,7 +2116,7 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 				 input_change_type::deleted, trigger};
 	delete_selection_info del_info{IN_THREAD, *this, modifying};
 
-	if (del_info.n > 0)
+	if (del_info.had_selection)
 	{
 		if (mask.shift)
 			create_secondary_selection
@@ -2083,8 +2126,7 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 
 		update_content(IN_THREAD,
 			       modifying,
-			       del_info.starting_pos,
-			       del_info.n,
+			       del_info,
 			       U"");
 		return;
 	}
@@ -2095,15 +2137,22 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 void editorObj::implObj::delete_char(ONLY IN_THREAD,
 				     modifying_text &modifying)
 {
-	auto clone=cursor->clone();
+	delete_char(IN_THREAD, modifying, cursor);
+}
+
+void editorObj::implObj::delete_char(ONLY IN_THREAD,
+				     modifying_text &modifying,
+				     const richtextiterator &delete_cursor)
+{
+	auto clone=delete_cursor->clone();
 	clone->move_for_delete(IN_THREAD);
 
-	auto p=cursor->pos();
+	auto p=delete_cursor->pos();
 
 	if (p == clone->pos())
 		return;
 
-	update_content(IN_THREAD, modifying, p, 1, U"");
+	update_content(IN_THREAD, modifying, {clone, delete_cursor}, U"");
 }
 
 std::u32string editorObj::implObj::get(const std::optional<bidi_format>
@@ -2173,9 +2222,8 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 			     ignored, trigger};
 	selection_cursor_t::lock &cursor_lock=moving.cursor_lock;
 
-	size_t deleted=text->size(IN_THREAD)-1;
-
-	update_content(IN_THREAD, moving, 0, deleted, string);
+	update_content(IN_THREAD, moving, { text->begin(),
+					    text->end() }, string);
 	remove_primary_selection(IN_THREAD);
 
 	cursor->swap(cursor->pos(cursor_pos));
