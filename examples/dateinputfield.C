@@ -242,11 +242,6 @@ void dateinputfields()
 int main(int argc, char **argv)
 {
 	try {
-		// Before we do everything, set the library's locale to the
-		// system environment locale.
-
-		x::locale::base::environment()->global();
-
 		dateinputfields();
 	} catch (const x::exception &e)
 	{

@@ -36,9 +36,12 @@ enum class bidi_format {
 
 	//! Embedded directional and isolation markers get included in the
 	//! returned text, so that it's accurately restored if it gets set()
-	//! in the input field again. The logic for calculating directional
+	//! in the same input field again. The logic for calculating directional
 	//! markers is not exact. Some extra and unneeded directional markers
-	//! may be included as a result. Applications must be fully aware
+	//! may be included as a result, depending on the input field's
+	//! specified \ref bidi "bi-directional text direction".
+	//!
+	//! Applications must be fully aware
 	//! and be able to process all Unicode bi-directional markers.
 
 	embedded

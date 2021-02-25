@@ -692,8 +692,6 @@ void testmenu()
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::locale::base::environment()->global();
-
 		testmenu();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{

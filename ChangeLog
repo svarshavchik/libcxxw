@@ -1,3 +1,8 @@
+2021-02-14  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Implement the Unicode bi-directional algorithm for labels and
+	input fields. Automatically load the environment locale by default.
+
 2020-06-24  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* richtext/richtextmeta.C: Implement three-way comparison for

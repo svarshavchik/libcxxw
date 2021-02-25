@@ -38,16 +38,16 @@ See COPYING for distribution information.
     <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>
     that configures the label widget's appearance.
     <classname>&ns;::w::label_config</classname>'s
-    <varname>alignment</varname> value specifies the formatting of labels
-    that have multiple lines of text:
+    <varname>alignment</varname> value specifies formatting of labels
+    with have multiple lines of text:
   </para>
 
   <variablelist>
     <varlistentry>
-      <term><literal>&ns;::w::halign::left</literal> (default)</term>
+      <term><literal>&ns;::w::halign::left</literal></term>
       <listitem>
 	<para>
-	  Display all lines in the label normally, left-aligned.
+	  Align all lines in the label on the left margin.
 	</para>
       </listitem>
     </varlistentry>
@@ -72,12 +72,105 @@ See COPYING for distribution information.
   <para>
     Sometimes it's desirable to explicitly set the alignment even for labels
     with just a single line of text. Normally widgets get
-    automatically sized for their content. It's possible that a
+    automatically sized for their content, but it's possible that a
     <link linkend="container">container</link> adjusts the label to
-    a wider size that it needs, due to other elements in the container, and
-    the alignment setting will then govern how the text gets padded.
+    a wider size that it needs, due to other elements in the container.
+    The alignment setting ends up governing where the text gets padded.
   </para>
 
+  <para>
+    The <varname>alignment</varname> value is
+    <classname>std::optional</classname>. An unspecified value defaults
+    to the label's text direction (<literal>&ns;::w::halign::left</literal>
+    if the label contains left-to-right text and
+    <literal>&ns;::w::halign::right</literal> if the label contains
+    right-to-left text).
+  </para>
+
+  <section id="bidirectionaltext">
+    <title>Bi-directional labels</title>
+
+    <para>
+      The label's text rendering direction comes from
+      <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>'s
+      <varname>direction</varname> setting:
+    </para>
+
+    <para>
+      <variablelist>
+	<varlistentry>
+	  <term><literal>&ns;::w::bidi::left_to_right</literal></term>
+	  <listitem>
+	    <para>
+	      Draw this label as left-to-right text.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><literal>&ns;::w::bidi::right_to_left</literal></term>
+	  <listitem>
+	    <para>
+	      Draw this label as right-to-left text.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><literal>&ns;::w::bidi::automatic</literal> (default)</term>
+	  <listitem>
+	    <para>
+	      Draw this label according to the default direction of its
+	      text according to the Unicode bi-directional algorithm.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </para>
+
+    <para>
+      <classname>&ns;::w::label_config</classname>'s
+      default settings have the following results:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The label direction gets set based on its text. This uses the
+	  Unicode bi-directional algorithm to pick the first character in the
+	  label that has a strong left-to-right or right-to-left rendering
+	  indication.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The label's alignment gets set based on its direction.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      Labels without any strong left-to-right or right-to-left characters
+      default their direction that's heuristically derived from the
+      locale.
+    </para>
+
+    <note>
+      <para>
+	Executables that link with &appshort; automatically load the default
+	environment locale, i.e.:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>setlocale(LC_ALL, "");</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	It is not necessary to do this explicitly, this is done by
+	automatically, by default.
+      </para>
+    </note>
+  </section>
 </chapter>
 <!--
 Local Variables:

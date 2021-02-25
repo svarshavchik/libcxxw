@@ -159,8 +159,6 @@ void testshortcut()
 int main(int argc, char **argv)
 {
 	try {
-		locale::base::environment()->global();
-
 		auto options=option::list::create();
 
 		options->addDefaultOptions();

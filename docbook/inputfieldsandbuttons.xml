@@ -404,6 +404,41 @@ factory->create_input_field("", password_conf);</programlisting>
     </section>
   </section>
 
+  <section id="inputfieldbidi">
+    <title>Bi-directional input fields</title>
+
+    <para>
+      The <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>'s
+      <varname>alignment</varname> and
+      <varname>direction</varname>
+      work just like
+      <link linkend="bidirectinaltext"><classname>&ns;::w::label_config</classname></link>'s.
+      An additional <varname>directional_format</varname> setting is an
+      <ulink url="&link-enum-x--w-bidi-format;"><classname>&ns;::w::bidi_format</classname></ulink>
+      value that
+      governs the default representation of Unicode text.
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><literal>&ns;::w::bidi_format::standard</literal> (default)</term>
+	<listitem>
+	  <para>
+	    Represent the Unicode text without any isolation and embedding
+	    markers.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><literal>&ns;::w::bidi_format::embedded</literal></term>
+	<listitem>
+	  <para>
+	    Include isolation and embedding markers in the Unicode text.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
   <section id="tooltips">
     <title>Tooltips</title>
 

@@ -16,8 +16,25 @@
 #include "x/w/text_hotspot.H"
 #include <courier-unicode.h>
 #include <x/visitor.H>
+#include <x/locale.H>
 
 LIBCXXW_NAMESPACE_START
+
+namespace {
+
+	// Load the environment locale so that unicode_locale_chset()
+	// uses the system character set.
+
+	struct load_global_locale {
+
+		load_global_locale()
+		{
+			locale::base::environment()->global();
+		}
+	};
+
+	static load_global_locale do_load_global_locale;
+}
 
 typedef int text_decoration_int_t;
 

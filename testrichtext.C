@@ -929,8 +929,6 @@ int main(int argc, char **argv)
 			::load_property(LIBCXX_NAMESPACE_STR "::w::themes",
 					"themes", true, true);
 
-		LIBCXX_NAMESPACE::locale::base::environment()->global();
-
 		auto options=LIBCXX_NAMESPACE::option::list::create();
 
 		options->addDefaultOptions();
