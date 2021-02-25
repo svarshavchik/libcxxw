@@ -1265,14 +1265,16 @@ void editorObj::implObj::clear_password_peek(ONLY IN_THREAD)
 
 richtextstring editorObj::implObj::get_content(const richtextiterator &other)
 {
-	return get_content(cursor, other);
+	return get_content(cursor, other, std::nullopt);
 }
 
 richtextstring editorObj::implObj::get_content(const richtextiterator &a,
-					       const richtextiterator &b)
+					       const richtextiterator &b,
+					       const std::optional<bidi_format>
+					       &embedding)
 {
 	if (password_char == 0)
-		return a->get(b);
+		return a->get(b, embedding);
 
 	// Look at the real_string, instead.
 
@@ -1400,7 +1402,7 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 	{
 		busy_impl mcguffin{*this};
 
-		input_autocomplete_info_t info{get(), 0, mcguffin};
+		input_autocomplete_info_t info{get(std::nullopt), 0, mcguffin};
 
 		bool flag=false;
 
@@ -2106,9 +2108,11 @@ void editorObj::implObj::delete_char(ONLY IN_THREAD,
 	update_content(IN_THREAD, modifying, p, 1, U"");
 }
 
-std::u32string editorObj::implObj::get()
+std::u32string editorObj::implObj::get(const std::optional<bidi_format>
+				       &embedding)
 {
-	return get_content(cursor->begin(), cursor->end()).get_string();
+	return get_content(cursor->begin(), cursor->end(),
+			   embedding).get_string();
 }
 
 size_t editorObj::implObj::size() const

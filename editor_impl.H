@@ -169,7 +169,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! retrieved from the real_string instead.
 
 	richtextstring get_content(const richtextiterator &a,
-				   const richtextiterator &b);
+				   const richtextiterator &b,
+				   const std::optional<bidi_format> &embedding);
 
 	//! Whether the last character inserted into a password field is shown
 
@@ -703,7 +704,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Return the current contents  of the editor.
 
-	std::u32string get();
+	std::u32string get(const std::optional<bidi_format> &embedding);
 
 	//! Return the size of the input field.
 	size_t size() const;

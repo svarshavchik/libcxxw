@@ -438,6 +438,27 @@ factory->create_input_field("", password_conf);</programlisting>
 	</listitem>
       </varlistentry>
     </variablelist>
+
+    <para>
+      The <classname>&ns;::w::bidi_format</classname> setting covers:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The text returned by <function>get</function>() or
+	  <function>get_unicode</function>() by default.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A search input field's
+	  <link linkend="searchinputthread"><varname>search_string</varname></link>
+	  uses the <literal>standard</literal> format, ignoring this setting.
+	</para>
+      </listitem>
+    </itemizedlist>
   </section>
   <section id="tooltips">
     <title>Tooltips</title>

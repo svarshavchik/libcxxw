@@ -212,7 +212,9 @@ void editor_search_implObj::request_or_abort_search(ONLY IN_THREAD,
 
 std::u32string editor_search_implObj::get_search_string(ONLY IN_THREAD)
 {
-	return get();
+	// The search string will not have any embedded override or isolation
+	// markers.
+	return get(bidi_format::standard);
 }
 
 void editor_search_implObj

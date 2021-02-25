@@ -72,10 +72,10 @@ public:
 	~implObj();
 
 	//! Inherited from elementObj::implObj
-	void initialize(ONLY IN_THREAD) override;
+	void initialize(ONLY IN_THREAD) override LIBCXX_PUBLIC;
 
 	//! Inherited from elementObj::implObj
-	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme) override LIBCXX_PUBLIC;
 
 	//! Update the canvas's metrics.
 	void update(ONLY IN_THREAD,

@@ -57,15 +57,17 @@ std::tuple<size_t, size_t> const_input_lock::pos() const
 	return locked_input_field->impl->editor_element->impl->pos();
 }
 
-std::string const_input_lock::get() const
+std::string const_input_lock::get(const std::optional<bidi_format> &embedding)
+	const
 {
-	return unicode::iconvert::fromu::convert(get_unicode(),
-						 unicode::utf_8).first;
+	return unicode::iconvert::fromu::convert(get_unicode(embedding),
+						 unicode_locale_chset()).first;
 }
 
-std::u32string const_input_lock::get_unicode() const
+std::u32string const_input_lock::get_unicode(const std::optional<bidi_format>
+					     &embedding) const
 {
-	return locked_input_field->impl->editor_element->impl->get();
+	return locked_input_field->impl->editor_element->impl->get(embedding);
 }
 
 

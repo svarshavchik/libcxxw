@@ -34,6 +34,10 @@ typedef mpobj<ref<richtext_implObj>, std::recursive_mutex
 //! get() returns the current contents of the input field, in UTF-8; and
 //! get_unicode() returns the current contents as a unicode string.
 //!
+//! get() and get_unicode() take an optional \ref bidi_format "bidi_format"
+//! that overrides the \c directional_format configuration setting that was
+//! specified when the input field was created.
+//!
 //! \code
 //! size_t s=lock.size();
 //!
@@ -90,10 +94,12 @@ public:
 	std::tuple<size_t, size_t> pos() const LIBCXX_PUBLIC;
 
 	//! Return the current contents of the input field as UTF-8.
-	std::string get() const LIBCXX_PUBLIC;
+	std::string get(const std::optional<bidi_format> &embedding=
+			std::nullopt) const LIBCXX_PUBLIC;
 
 	//! Return the current contents of the input field, as unicode.
-	std::u32string get_unicode() const LIBCXX_PUBLIC;
+	std::u32string get_unicode(const std::optional<bidi_format> &embedding=
+				   std::nullopt) const LIBCXX_PUBLIC;
 
 };
 
