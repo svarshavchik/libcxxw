@@ -267,12 +267,17 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 	: superclass_t{init_args.style.appearance->selected_color,
 		       init_args.style.appearance->highlighted_color,
 		       init_args.style.appearance->current_color,
-		       init_args.style.appearance->h_padding,
-		       themedimaxis::width,
-		       init_args.style.appearance->v_padding,
-		       themedimaxis::height,
-		       init_args.style.appearance->indent,
-		       themedimaxis::width,
+		       std::forward_as_tuple
+		       (std::forward_as_tuple(init_args.style.appearance
+					      ->h_padding,
+					      themedimaxis::width),
+			std::forward_as_tuple(init_args.style.appearance
+					      ->v_padding,
+					      themedimaxis::height),
+			std::forward_as_tuple(init_args.style.appearance
+					      ->indent,
+					      themedimaxis::width)
+			),
 		       init_args.style.appearance->list_separator_border,
 		       init_args.textlist_container},
 	  richtext_alteration_config{

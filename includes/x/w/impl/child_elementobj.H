@@ -36,10 +36,6 @@ struct child_element_init_params {
 	popupptr attached_popup;
 };
 
-//! Tag for the background color
-
-struct child_element_bgcolor;
-
 //! An element that has a parent widget.
 
 class child_elementObj

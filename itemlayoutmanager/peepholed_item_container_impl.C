@@ -19,21 +19,24 @@ peepholed_item_containerObj::implObj
 	  const focusable &vertical_scrollbar,
 	  const new_itemlayoutmanager &config)
 	: superclass_t{
-	// Use parent's default label font as a refernece font.
+			// Use parent's default label font as a refernece font.
 
-	parent->container_element_impl().label_theme_font(),
+			parent->container_element_impl().label_theme_font(),
 
-		config.appearance->itemlayout_h_padding,
-			themedimaxis::width,
-			config.appearance->itemlayout_v_padding,
-			themedimaxis::height,
-		       parent,
-		       child_element_init_params
-		       {
-			"background@libcxx.com",
-			// Initial metrics
-			{{0, 0, dim_t::infinite()},
-			 {0, 0, 0}}}},
+			std::forward_as_tuple
+			(std::forward_as_tuple(config.appearance
+					       ->itemlayout_h_padding,
+					       themedimaxis::width),
+			 std::forward_as_tuple(config.appearance
+					       ->itemlayout_v_padding,
+					       themedimaxis::height)),
+			parent,
+			child_element_init_params
+			{
+				"background@libcxx.com",
+				// Initial metrics
+				{{0, 0, dim_t::infinite()},
+				 {0, 0, 0}}}},
 	  horizontal_scrollbar{horizontal_scrollbar},
 	  vertical_scrollbar{vertical_scrollbar}
 {

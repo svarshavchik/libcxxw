@@ -60,17 +60,21 @@ grid_elementObj::grid_elementObj(const new_grid_element_info &info,
 				 const element &grid_element)
 	: existing_grid_element_info{info},
 	  themedim_element<left_padding_tag>{info.left_padding_set,
-			  info.screen_impl,
-			  themedimaxis::width},
+		themedimaxis::width,
+		info.screen_impl},
+
 	  themedim_element<right_padding_tag>{info.right_padding_set,
-			  info.screen_impl,
-			  themedimaxis::width},
+		themedimaxis::width,
+		info.screen_impl},
+
 	  themedim_element<top_padding_tag>{info.top_padding_set,
-			  info.screen_impl,
-			  themedimaxis::width},
+		themedimaxis::width,
+		info.screen_impl},
+
 	  themedim_element<bottom_padding_tag>{info.bottom_padding_set,
-			  info.screen_impl,
-			  themedimaxis::width},
+		themedimaxis::width,
+		info.screen_impl},
+
 	  grid_element{grid_element},
 	  pos{metrics::grid_pos::create()},
 	  initialized_thread_only{false}

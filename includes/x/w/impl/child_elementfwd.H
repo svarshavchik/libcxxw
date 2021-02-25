@@ -12,6 +12,10 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC child_elementObj;
 
+//! Tag for the background color
+
+struct child_element_bgcolor;
+
 typedef ref<child_elementObj> child_element;
 
 struct LIBCXX_HIDDEN child_element_init_params;

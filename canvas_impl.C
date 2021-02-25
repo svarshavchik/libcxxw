@@ -3,8 +3,24 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "x/w/impl/canvas.H"
 #include "x/w/impl/themedim_axis_element.H"
+#include "x/w/impl/child_element.H"
+
+LIBCXXW_NAMESPACE_START
+
+template class LIBCXX_PUBLIC themedims_elementObj<child_elementObj,
+						  themedim_height_min,
+						  themedim_height_pref,
+						  themedim_height_max>;
+template class LIBCXX_PUBLIC themedims_elementObj<
+	themedim_axis_heightObj<child_elementObj>,
+	themedim_width_min,
+	themedim_width_pref,
+	themedim_width_max>;
+
+LIBCXXW_NAMESPACE_END
+
+#include "x/w/impl/canvas.H"
 #include "connection_thread.H"
 #include "defaulttheme.H"
 #include "xid_t.H"

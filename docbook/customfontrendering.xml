@@ -304,12 +304,26 @@ See COPYING for distribution information.
 	Instead of using one-fifth the size of the font's height,
 	<filename>customfontrenderer2.C</filename> sets the shadow's size
 	to 3.0 millimeters.
-	<filename>customfontrenderer2.C</filename> constructs a
-	<ulink url="&link-x--w--themedim-element-init;"><classname>&ns;::w::themedim_element_init</classname></ulink>
-	which computes the initial shadow pixel size based on the current
-	theme size, and passes the resulting object to the constructor.
-	The <classname>&ns;::w::themedim_elementObj</classname> &template_mixin;
-	then updates the pixel size whenever the display theme changes.
+	<filename>customfontrenderer2.C</filename> gives an example of using
+	the <classname>&ns;::w::themedim_elementObj</classname>
+	&template_mixin;
+	which normally computes a pixel size based on theme-specified
+	dimension or display resolution that's equivalent to a given
+	number of millimeters.
+      </para>
+
+      <para>
+	<classname>&ns;::w::themedim_elementObj</classname> is a variadic
+	template. This example uses it to attach only one dimension but it
+	takes an optional list of class names that serves only as tags
+	(the classes don't even need to be defined) and identifies each
+	dimension by its class tag.
+	<classname>&ns;::w::themedim_elementObj</classname>'s constructor
+	takes a single parameter, a <classname>std::tuple</classname> with
+	one value for each instantiated dimension.
+	This example uses <classname>std::forward_as_tuple</classname> to
+	forward a single value, <varname>shadow_init</varname> to the
+	<classname>&ns;::w::themedim_elementObj</classname>.
       </para>
     </section>
 

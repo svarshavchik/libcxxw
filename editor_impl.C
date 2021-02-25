@@ -504,10 +504,14 @@ editorObj::implObj::implObj(init_args &args)
 		       .create_icon({args.config.appearance
 				     ->dragging_nodrop_pointer})
 		       ->create_cursor(),
-			  args.config.appearance->drag_horiz_start,
-			  themedimaxis::width,
-			  args.config.appearance->drag_vert_start,
-			  themedimaxis::height,
+		       std::forward_as_tuple
+		       (std::forward_as_tuple(args.config.appearance
+					      ->drag_horiz_start,
+					      themedimaxis::width),
+			std::forward_as_tuple(args.config.appearance
+					      ->drag_vert_start,
+					      themedimaxis::height)
+			),
 		       // Capture the string's font.
 		       //
 		       // We are used by peepholed_fontelementObj, so we

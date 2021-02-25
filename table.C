@@ -149,17 +149,41 @@ class LIBCXX_HIDDEN header_container_implObj
 				 const table_synchronized_axis &axis,
 				 const container_impl &parent_container,
 				 const child_element_init_params &init_params)
+		: header_container_implObj{ntlm,
+			ntlm.table_width,
+			ntlm.maximum_table_width,
+			header_container_element,
+			axis,
+			parent_container,
+			init_params}
+	{
+	}
+
+	header_container_implObj(const new_tablelayoutmanager &ntlm,
+				 const dim_arg &table_width,
+				 const dim_arg &maximum_table_width,
+				 const element_impl &header_container_element,
+				 const table_synchronized_axis &axis,
+				 const container_impl &parent_container,
+				 const child_element_init_params &init_params)
+
 		: superclass_t{ntlm.extra_table_appearance->header_color,
 			ntlm.extra_table_appearance->adjustable_header_color,
 			ntlm.extra_table_appearance
 			->adjustable_header_highlight_color,
-			ntlm.table_width, themedimaxis::width,
-			ntlm.maximum_table_width, themedimaxis::width,
-			ntlm.extra_table_appearance->drag_horiz_start,
-			themedimaxis::width,
-			ntlm.extra_table_appearance
-			->adjustable_header_highlight_width,
-			themedimaxis::width,
+			std::forward_as_tuple
+			(std::forward_as_tuple(table_width,
+					       themedimaxis::width),
+			 std::forward_as_tuple(maximum_table_width,
+					       themedimaxis::width),
+			 std::forward_as_tuple(ntlm.extra_table_appearance
+					       ->drag_horiz_start,
+					       themedimaxis::width),
+			 std::forward_as_tuple
+			 (ntlm.extra_table_appearance
+			  ->adjustable_header_highlight_width,
+			  themedimaxis::width)
+			 ),
 			parent_container->container_element_impl()
 			.get_window_handler()
 			.create_icon({ntlm.extra_table_appearance

@@ -155,7 +155,6 @@ public:
 				 &current_title_fontcollection,
 				 const x::w::fontcollection
 				 &title_fontcollection,
-				 const x::w::themedim_element_init &shadow_init,
 				 x::w::dim_t width,
 				 x::w::dim_t ascender,
 				 x::w::dim_t descender)
@@ -164,8 +163,16 @@ public:
 		 // Initial font
 		 current_title_fontcollection,
 
-		 // Shadow dimension
-		 shadow_init,
+
+		 // The parameter to themedim_elementObj's mixin. Our
+		 // mixin contains one dimension, so this is a tuple
+		 // of one value.
+		 std::forward_as_tuple(
+		  // Each value is a tuple of a dim_arg and either a width
+		  // or height indication. This can also be forward-as_tuple
+				       std::tuple{3.0,
+					       x::w::themedimaxis::height}
+				       ),
 
 		 // Background color will be a linear gradient
 		 x::w::black,
@@ -174,15 +181,17 @@ public:
 		 // Finally, the parameters to child_elementObjs constructor:
 		 parent_container,
 		 create_child_element_init_params(width, ascender, descender,
-						  shadow_init.pixels)},
+
+						  // TODO
+						  0)},
 
 		  title{title},
 		  title_fontcollection{title_fontcollection},
 		  width{width},
 		  ascender{ascender},
-		  descender{descender},
-		  shadow{shadow_init.pixels}
+		  descender{descender}
 	{
+		shadow=0;
 	}
 
 	~my_font_renderer_implObj()=default;
@@ -410,15 +419,6 @@ static my_font_renderer create_my_font_renderer(const x::w::container_impl
 	x::w::fontcollection title_fontcollection=
 		current_title_fontcollection->fc_public.get();
 
-	// Construct the theme-based length of the shadow, 3 millimeters.
-
-	x::w::themedim_element_init shadow_dim
-		{
-		 parent_container,
-		 3.0,
-		 x::w::themedimaxis::height
-		};
-
 	x::w::dim_t max_ascender, max_descender, width;
 
 	compute_metrics(title_fontcollection,
@@ -430,7 +430,6 @@ static my_font_renderer create_my_font_renderer(const x::w::container_impl
 			 label,
 			 current_title_fontcollection,
 			 title_fontcollection,
-			 shadow_dim,
 			 width,
 			 max_ascender,
 			 max_descender);

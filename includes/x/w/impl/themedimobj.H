@@ -12,6 +12,8 @@
 #include "x/w/dim_arg.H"
 #include <string>
 #include <string_view>
+#include <functional>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -24,22 +26,19 @@ class themedimObj : virtual public obj {
 	//! The name of the dimension
 	dim_arg dimname;
 
-	//! How big it is, in pixels.
-	dim_t pixels_thread_only;
-
 	//! Whether the dimension is width or height based
 	const themedimaxis width_or_height;
+
+	//! How big it is, in pixels.
+	dim_t pixels_thread_only;
 
  public:
 	THREAD_DATA_ONLY(pixels);
 
 	//! Constructor
 	themedimObj(const dim_arg &dimname,
-		    const ref<screenObj::implObj> &screen_impl,
-		    themedimaxis width_or_height);
-
-	//! Constructor
-	themedimObj(const themedim_element_init &init);
+		    themedimaxis width_or_height,
+		    const ref<screenObj::implObj> &screen_impl);
 
 	//! Destructor
 	~themedimObj();

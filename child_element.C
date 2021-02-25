@@ -3,6 +3,17 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "x/w/impl/background_color_element.H"
+#include "x/w/impl/child_elementfwd.H"
+#include "x/w/impl/element.H"
+
+LIBCXXW_NAMESPACE_START
+
+template class LIBCXX_PUBLIC background_color_1elementObj<elementObj::implObj,
+	child_element_bgcolor>;
+
+LIBCXXW_NAMESPACE_END
+
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/draw_info.H"
 #include "x/w/impl/container.H"
@@ -10,7 +21,6 @@
 #include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/background_color.H"
 #include "generic_window_handler.H"
-#include "x/w/impl/background_color_element.H"
 #include "cursor_pointer.H"
 #include "inherited_visibility_info.H"
 #include "screen.H"

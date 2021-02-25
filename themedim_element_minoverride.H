@@ -21,11 +21,16 @@ inline themedim_element_minoverrideObj<element_impl>
 ::themedim_element_minoverrideObj(const dim_arg &width_override,
 				  const dim_arg &height_override,
 				  Args && ...args)
-	: superclass_t(width_override,
-		       themedimaxis::width,
-		       height_override,
-		       themedimaxis::height,
-		       std::forward<Args>(args)...)
+	: superclass_t{
+			std::forward_as_tuple
+			(
+			 std::forward_as_tuple(width_override,
+					       themedimaxis::width),
+			 std::forward_as_tuple(height_override,
+					       themedimaxis::height)
+			 ),
+			std::forward<Args>(args)...
+		}
 {
 }
 

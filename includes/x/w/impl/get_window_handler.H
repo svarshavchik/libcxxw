@@ -36,6 +36,14 @@ public:
 	}
 };
 
+//! A ref or a ptr to something that's derived from get_window_handler
+template<typename T>
+concept is_get_window_handler = requires (T t)  {
+
+	{ static_cast<get_window_handlerObj &>(*t) };
+
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

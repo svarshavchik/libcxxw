@@ -7,14 +7,85 @@
 
 #include <x/w/impl/themedimobj.H>
 #include <x/w/impl/themedimfwd.H>
+#include <x/w/screenobj.H>
+#include <x/ptrfwd.H>
+#include <tuple>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
-struct LIBCXX_PUBLIC themedim_element_init;
 template<typename tag=void>
 class LIBCXX_PUBLIC themedim_element;
-template<typename element_impl, typename tag=void>
-class LIBCXX_PUBLIC themedim1_elementObj;
+template<typename base, typename ...args>
+class themedims_elementObj;
+template<typename ...args> struct themedims_elements;
+
+//! Template for attaching one or more themedimObj mixins to a widget.
+
+//! The first template parameter is a subclass of elementObj::implObj,
+//! and \c themedim_elementObj multiply-inherits from the template parameter
+//! and a \ref themedimObj "themedimObj" via an intermediate
+//! themedim_element template, using the tag specified by the optional
+//! second template parameter (which defaults to \c void ).
+//!
+//! The template overrides initialize() and theme_updated(), in order to
+//! keep the themedimObj updated.
+//!
+//! Additional template parameters may follow. Each parameter assign
+//! a label to a themdimObj. The actual classes are not used and do not need
+//! to be defined. Two or more labels result in multiple reference dimensions,
+//! and multiply-inherited themedimObj. Each one's value gets referenced as
+//! them as themedim_element<X>::pixels(IN_THREAD),
+//! themedim_element<Y>::pixels(IN_THREAD).
+//!
+//! If optional template parameters are not specified, a single void template
+//! parameter gets used to mix in a single dimension.
+//!
+//! The first parameter to the constructor is a std::tuple with the same number
+//! number of values as the number of dimensions. It will be more efficient
+//! construct this parameter with \c std::forward_as_tuple, to avoid
+//! copying.
+//!
+//! Each value in the std::tuple is itself a two-value tuple that gives the
+//! parameters to \ref themedimObj "themedimObj"'s constructor: a
+//! \ref dim_arg "dim_arg" and a \ref themedimaxis "themedimaxis". The
+//! \ref dim_arg "dim_arg" parameter is also forwardable as a reference
+//! (both of them are, but not much to be gained from forwarding a simple
+//! \ref themedimaxis "themedimaxis" value.
+//!
+//! The remaining parameters get forwarded to the elementObj::implObj
+//! superclass.
+//!
+//! \c themedim_elementObj is an alias that supplies the default \c void
+//! dimension tag, if none are supplied.
+
+template<typename base, typename arg1=void, typename ...args>
+using themedim_elementObj=themedims_elementObj<base, arg1, args...>;
+
+//! Multiply inherit from the element and all themedims_elements
+
+//! Used by \ref themedim_elementObj "themedim_elementObj" to multiply
+//! inherit from its first template parameter and all remaining
+//! parameters constructing an appropriate subclass of
+//! \ref themedims_elements "themedims_elements".
+
+template<typename base, typename ...args>
+class themedims_elementObj : public base,
+			     public themedims_elements<args...> {
+
+ public:
+
+	template<typename ...TupleTypes, typename ...ExtraArgs>
+		themedims_elementObj(const std::tuple<TupleTypes...> &dimArgs,
+				     ExtraArgs && ...Args);
+
+	void initialize(ONLY IN_THREAD) override;
+
+	void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme)
+		override;
+
+	~themedims_elementObj();
+};
 
 //! Attach a tag to a themedimObj
 
@@ -44,90 +115,19 @@ public:
 	const_themedim getref() const;
 };
 
-//! One themedim_element instance mixin.
 
-//! Helper used by themedim_elementObj
+template<typename ...args> struct themedims_elements
+	: themedim_element<args>... {
 
-template<typename element_impl, typename tag>
-class themedim1_elementObj : public element_impl,
-			     public themedim_element<tag> {
 
-public:
+ public:
 
-	template<typename ...Args>
-	themedim1_elementObj(const dim_arg &dimname,
-			     themedimaxis width_or_height,
-			     Args && ...args);
-
-	template<typename ...Args>
-	themedim1_elementObj(const themedim_element_init &init_param,
-			     Args && ...args);
-
-	~themedim1_elementObj();
-
-	//! Override initialize()
-
-	//! Makes sure the dimension gets updated properly, in the event
-	//! of the default theme changing after construction.
-	void initialize(ONLY IN_THREAD) override;
-
-	//! Recalculate the dimension, after a theme change.
-	void theme_updated(ONLY IN_THREAD,
-			   const const_defaulttheme &new_theme) override;
+	template<typename ...TupleTypes, size_t ...indexes>
+		themedims_elements(std::index_sequence<indexes...>,
+				   const ref<screenObj::implObj> &screen_impl,
+				   const std::tuple<TupleTypes...> &dimArgs);
 };
 
-//! Helper template used by themedim_elementObj
-
-template<typename ...args> struct LIBCXX_PUBLIC themedims_element_types;
-
-//! Helper template used by themedim_elementObj
-
-template<typename base, typename arg>
-struct themedims_element_types<base, arg> {
-
-	typedef themedim1_elementObj<base, arg> type;
-};
-
-//! Helper template used by themedim_elementObj
-
-template<typename base, typename arg1, typename arg2, typename ...args>
-struct themedims_element_types<base, arg1, arg2, args...> {
-
-	typedef themedim1_elementObj<typename
-				     themedims_element_types<base, arg2,
-							     args...>
-				     ::type, arg1> type;
-};
-
-//! Template for attaching one or more themedimObj mixins to a widget.
-
-//! The first template parameter is a subclass of elementObj::implObj,
-//! and themedim_elementObj multiply-inherits from the template parameter
-//! and a \ref themedimObj via an intermediate
-//! themedim_element template, using the tag specified by the optional
-//! second template parameter (which defaults to \c void ).
-//!
-//! The template overrides initialize() and theme_updated(), in order to
-//! keep the themedimObj updated.
-//!
-//! Additional template parameters may follow.
-//! This makes it possible to have multiple reference dimensions, referring to
-//! them as themedim_element<X>::pixels(IN_THREAD),
-//! themedim_element<Y>::pixels(IN_THREAD).
-//!
-//! Each themedimObj takes the leading two parameters to the constructor.
-//! That is, if the template results in two themedimObj superclasses, the first
-//! four parameters initialize them. In each pair of parameters, the
-//! first one is the name of the theme dimension, and the second parameter
-//! is either themedimaxis::width or themedimaxis::height. Alternatively,
-//! the constructor may also take a themedim_element_init parameter.
-//!
-//! If optional template parameters are not specified, a single void template
-//! parameter gets used to mix in a single dimension.
-
-template<typename base, typename arg1=void, typename ...args>
-using themedim_elementObj=typename themedims_element_types<base, arg1, args...
-							   >::type;
 
 LIBCXXW_NAMESPACE_END
 

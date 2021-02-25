@@ -11,7 +11,6 @@
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC themedimObj;
-struct themedim_element_init;
 
 //! A dimension specified by the default theme.
 

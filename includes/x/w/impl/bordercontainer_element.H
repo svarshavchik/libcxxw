@@ -32,9 +32,11 @@ bordercontainer_elementObj<element_impl>
 			     Args && ...args)
 	: superclass_t{left_border, right_border,
 		       top_border, bottom_border,
-		       title_indent, themedimaxis::width,
-		       hpad, themedimaxis::width,
-		       vpad, themedimaxis::height,
+		       std::forward_as_tuple
+		       (std::forward_as_tuple(title_indent,
+					      themedimaxis::width),
+			std::forward_as_tuple(hpad, themedimaxis::width),
+			std::forward_as_tuple(vpad, themedimaxis::height)),
 		       std::forward<Args>(args)...},
 	  bordercontainer_implObj{my_window},
 	  title_thread_only{title}

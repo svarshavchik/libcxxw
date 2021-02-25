@@ -22,10 +22,16 @@ template<typename ...Args>
 inline themedim_axis_widthObj<base>
 ::themedim_axis_widthObj(const dim_axis_arg &dims,
 			 Args && ...args)
-	: superclass_t(dims.minimum, themedimaxis::width,
-		       dims.preferred, themedimaxis::width,
-		       dims.maximum, themedimaxis::width,
-		       std::forward<Args>(args)...)
+	: superclass_t{
+			std::forward_as_tuple
+			(std::forward_as_tuple(dims.minimum,
+					       themedimaxis::width),
+			 std::forward_as_tuple(dims.preferred,
+					       themedimaxis::width),
+			 std::forward_as_tuple(dims.maximum,
+					       themedimaxis::width)
+			 ),
+			std::forward<Args>(args)...}
 {
 }
 
@@ -76,10 +82,17 @@ template<typename ...Args>
 inline themedim_axis_heightObj<base>
 ::themedim_axis_heightObj(const dim_axis_arg &dims,
 			  Args && ...args)
-	: superclass_t(dims.minimum, themedimaxis::height,
-		       dims.preferred, themedimaxis::height,
-		       dims.maximum, themedimaxis::height,
-		       std::forward<Args>(args)...)
+	: superclass_t{
+			std::forward_as_tuple
+			(std::forward_as_tuple(dims.minimum,
+					       themedimaxis::height),
+			 std::forward_as_tuple(dims.preferred,
+					       themedimaxis::height),
+			 std::forward_as_tuple(dims.maximum,
+					       themedimaxis::height)
+			 ),
+			std::forward<Args>(args)...
+		}
 {
 }
 

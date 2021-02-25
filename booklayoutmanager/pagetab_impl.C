@@ -25,14 +25,19 @@ pagetabObj::implObj
 // cold color, for us.
 
 	: superclass_t{
-		       appearance->horiz_padding, themedimaxis::width,
-		       appearance->vert_padding, themedimaxis::height,
-		       appearance->current_color,
-		       appearance->noncurrent_color,
-		       appearance->noncurrent_color,
-		       appearance->warm_color,
-		       appearance->active_color,
-		       parent_container},
+			std::forward_as_tuple
+			(std::forward_as_tuple(appearance->horiz_padding,
+					       themedimaxis::width),
+			 std::forward_as_tuple(appearance->vert_padding,
+					       themedimaxis::height)
+			 ),
+			appearance->current_color,
+			appearance->noncurrent_color,
+			appearance->noncurrent_color,
+			appearance->warm_color,
+			appearance->active_color,
+			parent_container
+		},
 	  my_pagetabgridcontainer_impl{my_pagetabgridcontainer_impl},
 	  tab_font{appearance->label_font},
 	  tab_font_color{appearance->label_foreground_color}
