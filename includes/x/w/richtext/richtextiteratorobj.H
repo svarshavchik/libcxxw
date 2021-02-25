@@ -203,6 +203,11 @@ public:
 			   std::nullopt)
 		const LIBCXX_HIDDEN;
 
+	//! Count the number of characters that get_richtextstring will return.
+
+	size_t count_richtextstring(const const_richtextiterator &other)
+		const LIBCXX_HIDDEN;
+
 	//! Compare iterator positions
 	std::ptrdiff_t compare(const const_richtextiterator &other) const;
 

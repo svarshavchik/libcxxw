@@ -204,12 +204,72 @@ size_t richtextObj::pos(const internal_richtext_impl_t::lock &lock,
 	return l->pos(get_location::bidi);
 }
 
+
+struct richtextObj::count_helper : public richtext_range {
+
+	count_helper(const ref<richtext_implObj> &impl,
+		     const richtextcursorlocation &a,
+		     const richtextcursorlocation &b)
+		: richtext_range{impl->paragraph_embedding_level, a, b}
+	{
+	}
+
+	mutable size_t counter=0;
+
+
+	//! Collect extracted characters into the richtextstring we're building.
+
+	void range(const richtextstring &other,
+		   size_t start,
+		   size_t n) const override
+	{
+		// Detect and handle paragraph breaks.
+
+		if (paragraph_embedding_level == UNICODE_BIDI_LR)
+		{
+			bool paragraph_break=
+				n > 0 && other.get_string()[start+(n-1)]=='\n';
+
+			add_range_to_paragraph(other, start, n);
+
+			if (paragraph_break)
+				finish_paragraph();
+			return;
+		}
+
+
+		// Edge case, for right-to-left embedding level we'll
+		// skip the \n at the beginning of the last line of the
+		// paragraph, get_or_count() will take care of it.
+
+		if (start == 0 && n > 0 &&
+		    other.get_string()[0] == '\n')
+		{
+			++start;
+			--n;
+		}
+
+		add_range_to_paragraph(other, start, n);
+	}
+
+	virtual void finish_paragraph() const
+	{
+	}
+
+	virtual void add_range_to_paragraph(const richtextstring &other,
+					    size_t start,
+					    size_t n) const
+	{
+		counter += n;
+	}
+};
+
 //! Retrieve text within the selected range
 
 //! Uses richtext_range to logically collect the text into the richtextstring.
 //!
 //! Some of the high level lgoic
-struct richtextObj::get_helper : richtext_range {
+struct richtextObj::get_helper final : count_helper {
 
 	//! The string getting extracted here.
 
@@ -229,7 +289,7 @@ public:
 		   const richtextcursorlocation &a,
 		   const richtextcursorlocation &b,
 		   bidi_format embedding_format)
-		: richtext_range{impl->paragraph_embedding_level, a, b},
+		: count_helper{impl, a, b},
 		  str{str},
 		  embedding_format{embedding_format},
 		  impl{impl}
@@ -260,44 +320,9 @@ public:
 		str.reserve(pos2-pos1+1, index2-index1+1);
 	}
 
-	//! Collect extracted characters into the richtextstring we're building.
-
-	void range(const richtextstring &other,
-		   size_t start,
-		   size_t n) const override
-	{
-		// Detect and handle paragraph breaks.
-
-		if (paragraph_embedding_level == UNICODE_BIDI_LR)
-		{
-			bool paragraph_break=
-				n > 0 && other.get_string()[start+(n-1)]=='\n';
-
-			add_range_to_paragraph(other, start, n);
-
-			if (paragraph_break)
-				finish_paragraph();
-			return;
-		}
-
-
-		// Edge case, for right-to-left embedding level we'll
-		// skip the \n at the beginning of the last line of the
-		// paragraph, get() will take care of it.
-
-		if (start == 0 && n > 0 &&
-		    other.get_string()[0] == '\n')
-		{
-			++start;
-			--n;
-		}
-
-		add_range_to_paragraph(other, start, n);
-	}
-
 	void add_range_to_paragraph(const richtextstring &other,
 				    size_t start,
-				    size_t n) const
+				    size_t n) const override
 	{
 		if (n == 0)
 			return;
@@ -310,7 +335,7 @@ public:
 		paragraph += richtextstring{other, start, n};
 	}
 
-	void finish_paragraph() const
+	void finish_paragraph() const override
 	{
 		if (paragraph.size() == 0)
 			return;
@@ -335,6 +360,27 @@ public:
 	}
 };
 
+namespace {
+#if 0
+}
+#endif
+#if 0
+{
+#endif
+}
+
+size_t richtextObj::count(const internal_richtext_impl_t::lock &lock,
+			  const richtextcursorlocation &a,
+			  const richtextcursorlocation &b)
+{
+	count_helper counter{ (*lock), a, b };
+
+	if (!counter.complete_line())
+		get_or_count(counter);
+
+	return counter.counter;
+}
+
 richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 				const richtextcursorlocation &a,
 				const richtextcursorlocation &b,
@@ -345,13 +391,21 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 	get_helper helper{str, (*lock), a, b,
 		embedding ? *embedding:(*lock)->requested_directional_format};
 
-	auto diff=helper.diff;
-
 	if (helper.complete_line())
 	{
 		helper.finish_paragraph();
 		return str;
 	}
+
+	get_or_count(helper);
+
+	str.shrink_to_fit();
+	return str;
+}
+
+void richtextObj::get_or_count(count_helper &helper)
+{
+	auto diff=helper.diff;
 
 	// At this point, "diff" is the total number of line fragments,
 	// at least 2, since the starting and ending position are on different
@@ -568,9 +622,6 @@ richtextstring richtextObj::get(const internal_richtext_impl_t::lock &lock,
 	}
 
 	helper.finish_paragraph();
-
-	str.shrink_to_fit();
-	return str;
 }
 
 void richtextObj::replace_hotspot(ONLY IN_THREAD,

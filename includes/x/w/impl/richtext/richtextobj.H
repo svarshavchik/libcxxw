@@ -357,8 +357,19 @@ class richtextObj : virtual public obj {
 			   const std::optional<bidi_format> &embedding
 			   =std::nullopt);
 
- private:
+	//! Count how many characters will be returned by get().
+
+	size_t count(const internal_richtext_impl_t::lock &lock,
+		     const richtextcursorlocation &,
+		     const richtextcursorlocation &);
+
+private:
+	struct LIBCXX_HIDDEN count_helper;
 	struct LIBCXX_HIDDEN get_helper;
+
+	//! Used by get() and count()
+
+	void get_or_count(count_helper &);
 
 	//! Return an iterator to the given character # in the rich text.
 

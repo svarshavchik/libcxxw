@@ -2217,6 +2217,16 @@ void gettest()
 						<< "\"");
 			}
 
+			auto count=b->count_richtextstring(e);
+
+			if (count != res.size())
+				throw EXCEPTION("gettest #" << casenum
+						<< " failed test "
+						<< n << ": count is "
+						<< count
+						<< " instead of "
+						<< res.size());
+
 			b->remove(IN_THREAD, e);
 
 			std::ostringstream o;

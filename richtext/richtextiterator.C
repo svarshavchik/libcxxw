@@ -488,6 +488,21 @@ richtextiteratorObj::get_richtextstring(const const_richtextiterator &other,
 		});
 }
 
+size_t richtextiteratorObj::count_richtextstring(const const_richtextiterator &other)
+	const
+{
+	assert_or_throw(my_richtext == other->my_richtext,
+			"Iterators to two different objects.");
+
+	return my_richtext->read_only_lock
+		([&, this]
+		 (auto &lock)
+		{
+			return my_richtext->count(lock, my_location,
+						  other->my_location);
+		});
+}
+
 dim_t richtextiteratorObj::horiz_pos(ONLY IN_THREAD)
 {
 	return my_richtext->thread_lock
