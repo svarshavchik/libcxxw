@@ -23,13 +23,13 @@ class shortcut : public input_mask {
 public:
 	//! Which key activates a hotspot.
 
-	char32_t unicode;
+	char32_t unicode{0};
 
 	//! Which key activates a hotspot
 
 	//! A 0 key and keysym indicates no shortcut.
 
-	uint32_t keysym;
+	uint32_t keysym{0};
 
 	//! Default constructor.
 

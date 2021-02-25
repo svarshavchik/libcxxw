@@ -56,10 +56,9 @@ static const struct special_keys_t {
 #endif
 }
 
-shortcut::shortcut() : unicode(0), keysym(0)
-{
-}
-shortcut::shortcut(char32_t unicode) : unicode(unicode), keysym(0)
+shortcut::shortcut()=default;
+
+shortcut::shortcut(char32_t unicode) : unicode{unicode}
 {
 }
 
@@ -98,7 +97,7 @@ shortcut::operator bool() const { return unicode != 0 || keysym != 0; }
 
 shortcut::shortcut(const std::string_view &modifier,
 		   char32_t unicode)
-	: input_mask(modifier), unicode(unicode), keysym(0)
+	: input_mask{modifier}, unicode{unicode}
 {
 }
 
