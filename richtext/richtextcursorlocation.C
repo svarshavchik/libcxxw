@@ -623,15 +623,10 @@ bool richtextcursorlocationObj::moveto(ONLY IN_THREAD, coord_t x, coord_t y)
 
 	auto first_xpos=f->first_xpos(IN_THREAD);
 
-	auto adjusted_x=dim_t::truncate(x-first_xpos);
-
-	if (x < first_xpos)
-		adjusted_x=0;
-
-	set_targeted_horiz_pos(IN_THREAD, adjusted_x);
+	set_targeted_horiz_pos(IN_THREAD, coord_t::truncate(x));
 
 	return x >= first_xpos &&
-		dim_t::truncate(adjusted_x) < f->x_width(IN_THREAD);
+		dim_t::truncate(x-first_xpos) < f->x_width(IN_THREAD);
 }
 
 void richtextcursorlocationObj::start_of_line()

@@ -1432,7 +1432,7 @@ void editorObj::implObj::do_draw(ONLY IN_THREAD,
 		return;
 	}
 
-	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
+	selection_cursor_t::lock cursor_lock{IN_THREAD, *this, true};
 
 	text->full_redraw(IN_THREAD, *this,
 			  cursor_lock.get_richtext_draw_info(*this),
