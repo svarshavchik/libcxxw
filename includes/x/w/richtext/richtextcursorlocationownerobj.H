@@ -5,10 +5,10 @@
 #ifndef x_w_richtextcursorlocationownerobj_h
 #define x_w_richtextcursorlocationownerobj_h
 
-#include "richtext/richtextcursorlocationownerfwd.H"
-#include "x/w/impl/richtext/richtextcursorlocationfwd.H"
-#include "x/w/impl/richtext/richtextfragmentfwd.H"
-#include "x/w/impl/richtext/richtextiteratorfwd.H"
+#include <x/w/richtext/richtextcursorlocationownerfwd.H>
+#include <x/w/richtext/richtextcursorlocationfwd.H>
+#include <x/w/richtext/richtextfragmentfwd.H>
+#include <x/w/richtext/richtextiteratorfwd.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START

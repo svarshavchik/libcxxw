@@ -9,6 +9,7 @@
 #include "generic_window_handler.H"
 #include "screen.H"
 #include "x/w/impl/richtext/richtext.H"
+#include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/impl/richtext/richtextmeta.H"
 #include "richtext/richtext_draw_info.H"
 #include "x/w/impl/focus/focusable.H"

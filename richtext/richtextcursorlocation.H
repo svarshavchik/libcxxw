@@ -7,8 +7,8 @@
 #define richtextcursorlocation_H
 
 #include "x/w/input_field_lock.H"
-#include "x/w/impl/richtext/richtextcursorlocationfwd.H"
-#include "x/w/impl/richtext/richtextiteratorfwd.H"
+#include "x/w/richtext/richtextcursorlocationfwd.H"
+#include "x/w/richtext/richtextiteratorfwd.H"
 #include "richtext/richtextfragment.H"
 
 LIBCXXW_NAMESPACE_START

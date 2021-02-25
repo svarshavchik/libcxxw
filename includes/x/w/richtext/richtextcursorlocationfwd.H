@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef x_w_impl_richtext_richtextcursorlocationfwd_H
-#define x_w_impl_richtext_richtextcursorlocationfwd_H
+#ifndef x_w_richtext_richtextcursorlocationfwd_H
+#define x_w_richtext_richtextcursorlocationfwd_H
 
 #include <x/ref.H>
 #include <x/w/namespace.H>

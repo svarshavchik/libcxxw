@@ -772,15 +772,11 @@ libcxxw_la_SOURCES=\
 	richtext/richtext_linebreak_info.H	    \
 	richtext/richtext_linebreak_infofwd.H	    \
 	richtext/richtextiterator.C		    \
-	richtext/richtextiterator.H		    \
-	richtext/richtextiteratorobj.H		    \
 	richtext/richtextcursorlocation.C	    \
 	richtext/richtextcursorlocation.H	    \
 	richtext/richtextcursorlocationparagraphtext.H \
 	richtext/richtextcursorlocationowner.C	    \
 	richtext/richtextcursorlocationowner.H	    \
-	richtext/richtextcursorlocationownerfwd.H   \
-	richtext/richtextcursorlocationownerobj.H   \
 	richtext/richtextfragment.C		    \
 	richtext/richtextfragment.H		    \
 	richtext/richtextfragment2.C		    \

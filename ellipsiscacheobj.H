@@ -6,7 +6,7 @@
 #define x_w_ellipsiscacheobj_h
 
 #include "ellipsiscachefwd.H"
-#include "x/w/impl/richtext/richtextfwd.H"
+#include "x/w/richtext/richtextfwd.H"
 #include "x/w/impl/fonts/current_fontcollectionfwd.H"
 #include "x/w/rgb.H"
 #include "x/w/rgb_hash.H"

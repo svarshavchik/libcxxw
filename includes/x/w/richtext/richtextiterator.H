@@ -3,12 +3,12 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef richtextiterator_H
-#define richtextiterator_H
+#ifndef x_w_richtextiterator_H
+#define x_w_richtextiterator_H
 
 #include <x/ref.H>
-#include "x/w/impl/richtext/richtextiteratorfwd.H"
-#include "richtext/richtextiteratorobj.H"
+#include <x/w/richtext/richtextiteratorfwd.H>
+#include <x/w/richtext/richtextiteratorobj.H>
 
 LIBCXXW_NAMESPACE_START
 

@@ -6,7 +6,7 @@
 #ifndef richtextparagraph_H
 #define richtextparagraph_H
 
-#include "x/w/impl/richtext/richtextparagraphfwd.H"
+#include "x/w/richtext/richtextparagraphfwd.H"
 #include "richtext/richtextfragment.H"
 #include "x/w/impl/richtext/richtextstring.H"
 #include "richtext/richtext_impl.H"

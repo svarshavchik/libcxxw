@@ -3,12 +3,12 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef x_w_impl_richtext_richtextfragmentfwd_H
-#define x_w_impl_richtext_richtextfragmentfwd_H
+#ifndef x_w_richtext_richtextfragmentfwd_H
+#define x_w_richtext_richtextfragmentfwd_H
 
 #include <x/ptrfwd.H>
-#include <x/w/impl/richtext/richtextparagraphfwd.H>
-#include <x/w/impl/richtext/richtextiteratorfwd.H>
+#include <x/w/richtext/richtextparagraphfwd.H>
+#include <x/w/richtext/richtextiteratorfwd.H>
 #include <x/w/namespace.H>
 #include <x/w/types.H>
 

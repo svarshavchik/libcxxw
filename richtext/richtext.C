@@ -8,7 +8,7 @@
 #include "richtext/richtext_range.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtextfragment.H"
-#include "richtext/richtextiterator.H"
+#include "x/w/richtext/richtextiterator.H"
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/paragraph_list.H"
 

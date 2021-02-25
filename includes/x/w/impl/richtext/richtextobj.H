@@ -8,14 +8,15 @@
 
 #include <x/w/connection_threadfwd.H>
 #include <x/w/impl/element_draw.H>
-#include <x/w/impl/richtext/richtextstringfwd.H>
-#include <x/w/impl/richtext/richtextfwd.H>
-#include <x/w/impl/richtext/richtextfragmentfwd.H>
-#include <x/w/impl/richtext/richtextiteratorfwd.H>
-#include <x/w/impl/richtext/richtextcursorlocationfwd.H>
-#include <x/w/impl/richtext/richtext_insertfwd.H>
+#include <x/w/richtext/richtextstringfwd.H>
+#include <x/w/richtext/richtextfwd.H>
+#include <x/w/richtext/richtextfragmentfwd.H>
+#include <x/w/richtext/richtextiteratorfwd.H>
+#include <x/w/richtext/richtextcursorlocationfwd.H>
+#include <x/w/richtext/richtext_insertfwd.H>
 #include <x/w/impl/richtext/richtext_draw_infofwd.H>
 #include <x/w/impl/richtext/richtext_draw_boundariesfwd.H>
+#include <x/w/impl/richtext/richtext_optionsfwd.H>
 #include <x/w/metrics/axis.H>
 #include <x/w/rectanglefwd.H>
 #include <x/w/drawablefwd.H>
@@ -27,6 +28,7 @@
 #include <x/functional.H>
 #include <utility>
 #include <optional>
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 

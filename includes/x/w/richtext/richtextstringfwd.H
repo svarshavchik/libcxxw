@@ -2,8 +2,8 @@
 ** Copyright 2018-2021 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef x_w_impl_richtext_richtextstringfwd_h
-#define x_w_impl_richtext_richtextstringfwd_h
+#ifndef x_w_richtext_richtextstringfwd_h
+#define x_w_richtext_richtextstringfwd_h
 
 #include <x/w/namespace.H>
 

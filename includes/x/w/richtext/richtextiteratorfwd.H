@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef x_w_impl_richtext_richtextiteratorfwd_H
-#define x_w_impl_richtext_richtextiteratorfwd_H
+#ifndef x_w_richtext_richtextiteratorfwd_H
+#define x_w_richtext_richtextiteratorfwd_H
 
 #include <x/ptrfwd.H>
 #include <x/w/namespace.H>

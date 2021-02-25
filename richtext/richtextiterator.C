@@ -4,7 +4,7 @@
 */
 
 #include "libcxxw_config.h"
-#include "richtext/richtextiterator.H"
+#include "x/w/richtext/richtextiterator.H"
 #include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtext_insert.H"
 #include "richtext/richtextcursorlocation.H"
@@ -469,7 +469,8 @@ size_t richtextiteratorObj::pos() const
 		 });
 }
 
-richtextstring richtextiteratorObj::get(const const_richtextiterator &other,
+richtextstring
+richtextiteratorObj::get_richtextstring(const const_richtextiterator &other,
 					const std::optional<bidi_format>
 					&embedding)
 	const

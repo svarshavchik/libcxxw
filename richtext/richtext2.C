@@ -13,7 +13,7 @@
 #include "richtext/richtextfragment_render.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtextfragment.H"
-#include "richtext/richtextiterator.H"
+#include "x/w/richtext/richtextiterator.H"
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtext_range.H"
 

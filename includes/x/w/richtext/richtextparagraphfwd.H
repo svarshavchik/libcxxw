@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef x_w_impl_richtext_richtextparagraphfwd_H
-#define x_w_impl_richtext_richtextparagraphfwd_H
+#ifndef x_w_richtext_richtextparagraphfwd_H
+#define x_w_richtext_richtextparagraphfwd_H
 
 #include <x/w/namespace.H>
 #include <x/ptrfwd.H>

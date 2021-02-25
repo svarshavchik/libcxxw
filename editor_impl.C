@@ -23,7 +23,7 @@
 #include "label_element.H"
 #include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtext_impl.H"
-#include "richtext/richtextiterator.H"
+#include "x/w/richtext/richtextiterator.H"
 #include "richtext/richtext_draw_info.H"
 #include "selection/current_selection.H"
 #include "selection/current_selection_paste_handler.H"
@@ -1274,7 +1274,7 @@ richtextstring editorObj::implObj::get_content(const richtextiterator &a,
 					       &embedding)
 {
 	if (password_char == 0)
-		return a->get(b, embedding);
+		return a->get_richtextstring(b, embedding);
 
 	// Look at the real_string, instead.
 

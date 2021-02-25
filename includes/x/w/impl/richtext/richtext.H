@@ -6,8 +6,9 @@
 #ifndef x_w_impl_richtext_H
 #define x_w_impl_richtext_H
 
-#include <x/w/impl/richtext/richtextfwd.H>
+#include <x/w/richtext/richtextfwd.H>
 #include <x/w/impl/richtext/richtextobj.H>
+#include <x/w/impl/richtext/richtext_options.H>
 #include <x/w/metrics/axis.H>
 #include <x/w/alignment.H>
 

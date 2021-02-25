@@ -3,18 +3,18 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef richtextiteratorobj_H
-#define richtextiteratorobj_H
+#ifndef x_w_richtextiteratorobj_H
+#define x_w_richtextiteratorobj_H
 
-#include "x/w/impl/richtext/richtextiteratorfwd.H"
-#include "x/w/impl/richtext/richtextfwd.H"
-#include "x/w/impl/richtext/richtext_insertfwd.H"
-#include "richtext/richtextcursorlocation.H"
-#include "richtext/richtextcursorlocationownerobj.H"
-#include "x/w/impl/richtext/richtextstring.H"
-#include "x/w/impl/richtext/richtextfragmentfwd.H"
-#include "x/w/rectangle.H"
-#include "x/w/text_hotspot.H"
+#include <x/w/richtext/richtextiteratorfwd.H>
+#include <x/w/richtext/richtextfwd.H>
+#include <x/w/richtext/richtext_insertfwd.H>
+#include <x/w/richtext/richtextcursorlocationfwd.H>
+#include <x/w/richtext/richtextcursorlocationownerobj.H>
+#include <x/w/richtext/richtextstringfwd.H>
+#include <x/w/richtext/richtextfragmentfwd.H>
+#include <x/w/rectangle.H>
+#include <x/w/text_hotspot.H>
 #include <x/obj.H>
 #include <string_view>
 
@@ -195,10 +195,13 @@ public:
 	//! Get text between the iterators
 
 	//! Optionally overrides the richtext's bidi_format.
-	richtextstring get(const const_richtextiterator &other,
+	//!
+	//! \internal
+	richtextstring
+	get_richtextstring(const const_richtextiterator &other,
 			   const std::optional<bidi_format> &embedding=
 			   std::nullopt)
-		const;
+		const LIBCXX_HIDDEN;
 
 	//! Compare iterator positions
 	std::ptrdiff_t compare(const const_richtextiterator &other) const;
@@ -213,7 +216,7 @@ public:
 
 	//! For testing purpose.
 
-	auto debug_get_location() const { return my_location; }
+	auto &debug_get_location() const { return my_location; }
 };
 
 LIBCXXW_NAMESPACE_END

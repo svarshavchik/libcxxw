@@ -67,6 +67,7 @@ Group: Development/Libraries
 Summary: LibCXXW development libraries
 Requires: %{name}-devel = 0:%{version}-%{release}
 Requires: libxcb-devel
+Requires: courier-unicode-devel
 BuildRequires: xcb-util-renderutil-devel
 
 %description devel-internals

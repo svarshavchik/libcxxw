@@ -7,7 +7,7 @@
 #define x_w_impl_richtext_richtextstring_H
 
 #include <x/w/defaultthemefwd.H>
-#include <x/w/impl/richtext/richtextstringfwd.H>
+#include <x/w/richtext/richtextstringfwd.H>
 #include <x/w/impl/richtext/richtextmetafwd.H>
 #include <x/w/impl/fonts/freetypefontfwd.H>
 #include <x/w/connection_threadfwd.H>

@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef x_w_impl_richtext_richtext_insertfwd_H
-#define x_w_impl_richtext_richtext_insertfwd_H
+#ifndef x_w_richtext_richtext_insertfwd_H
+#define x_w_richtext_richtext_insertfwd_H
 
 #include <x/w/namespace.H>
 

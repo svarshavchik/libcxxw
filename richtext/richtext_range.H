@@ -7,9 +7,9 @@
 #define richtext_range_H
 
 #include "x/w/input_field_lock.H"
-#include "x/w/impl/richtext/richtextcursorlocationfwd.H"
-#include "x/w/impl/richtext/richtextstringfwd.H"
-#include "x/w/impl/richtext/richtextfragmentfwd.H"
+#include "x/w/richtext/richtextcursorlocationfwd.H"
+#include "x/w/richtext/richtextstringfwd.H"
+#include "x/w/richtext/richtextfragmentfwd.H"
 
 #include <courier-unicode.h>
 #include <functional>

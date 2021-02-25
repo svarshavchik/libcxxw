@@ -7,9 +7,11 @@
 #define richtext_insert_H
 
 #include "x/w/impl/richtext/richtextstring.H"
-#include "richtext/richtextiterator.H"
-#include "x/w/impl/richtext/richtext_insertfwd.H"
-#include "x/w/impl/richtext/richtextcursorlocationfwd.H"
+#include "x/w/richtext/richtextiterator.H"
+#include "x/w/richtext/richtext_insertfwd.H"
+#include "x/w/richtext/richtextcursorlocationfwd.H"
+#include "x/w/impl/richtext/richtextmeta.H"
+#include "richtext/richtextcursorlocation.H"
 #include <x/functional.H>
 #include <x/sorted_range.H>
 #include <x/refptr_hash.H>

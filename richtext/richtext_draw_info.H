@@ -8,7 +8,7 @@
 
 #include "x/w/impl/richtext/richtext_draw_infofwd.H"
 #include "richtext/richtext_alteration_configfwd.H"
-#include "richtext/richtextiterator.H"
+#include "x/w/richtext/richtextiterator.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -142,6 +142,7 @@ AC_CONFIG_FILES([Makefile
 	includes/x/w/impl/richtext/Makefile
 	includes/x/w/impl/selection/Makefile
 	includes/x/w/metrics/Makefile
+	includes/x/w/richtext/Makefile
 	packaging/fedora/libcxxw.spec
 	])
 

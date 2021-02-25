@@ -1,8 +1,8 @@
 #include "libcxxw_config.h"
 #include "mockrichtext.H"
 #include "x/w/impl/richtext/richtext.H"
-#include "richtext/richtextiterator.H"
-#include "richtext/richtextiterator.H"
+#include "x/w/richtext/richtextiterator.H"
+#include "x/w/richtext/richtextiterator.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
 #include "richtext/richtext_insert.H"
@@ -719,7 +719,7 @@ void testrichtext3(ONLY IN_THREAD)
 				  "validate_richtext");
 
 
-		auto v2=text->begin()->get(text->end());
+		auto v2=text->begin()->get_richtextstring(text->end());
 
 		std::u32string check{test_string.begin(),
 				--test_string.end()};
@@ -728,7 +728,7 @@ void testrichtext3(ONLY IN_THREAD)
 				"get(begin - end) did not return"
 				" expected results");
 
-		v2=text->end()->get(text->begin());
+		v2=text->end()->get_richtextstring(text->begin());
 
 		assert_or_throw(v2.get_string() == check,
 				"get(begin - end) did not return"
@@ -890,7 +890,7 @@ void testrichtext6(ONLY IN_THREAD)
 	if (e->at(IN_THREAD).character != 'w')
 		throw EXCEPTION("Ending iterator changed");
 
-	auto s=b->get(e);
+	auto s=b->get_richtextstring(e);
 
 	if (s.get_string() != U" " ||
 	    s.get_meta() != std::vector<std::pair<size_t, richtextmeta>>{
@@ -898,7 +898,7 @@ void testrichtext6(ONLY IN_THREAD)
 	    })
 		throw EXCEPTION("Return value from replace()");
 
-	s=b->begin()->get(b->end());
+	s=b->begin()->get_richtextstring(b->end());
 
 	if (s.get_string() != U"Hello world" ||
 	    s.get_meta() != std::vector<std::pair<size_t, richtextmeta>>{
@@ -941,7 +941,7 @@ void testrichtext7(ONLY IN_THREAD)
 	    || e->at(IN_THREAD).character != 'u')
 		throw EXCEPTION("testrichtext7: test 2 failed");
 
-	if (b->get(e) !=
+	if (b->get_richtextstring(e) !=
 	    richtextstring{
 		    U"ello\nworld\nrolem\nips",
 		    {
@@ -2632,7 +2632,7 @@ void testrichtext11(ONLY IN_THREAD)
 				   }, op);
 
 			auto actual=
-				richtext->begin()->get(richtext->end());
+				richtext->begin()->get_richtextstring(richtext->end());
 
 			if (actual != expected)
 			{
@@ -2725,7 +2725,7 @@ void testrichtext12(ONLY IN_THREAD)
 			iter=iter->begin();
 			new_iter=iter->end();
 
-			auto s=iter->get(new_iter);
+			auto s=iter->get_richtextstring(new_iter);
 
 			if (s.get_string() != expected)
 			{

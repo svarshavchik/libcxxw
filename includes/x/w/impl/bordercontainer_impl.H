@@ -14,7 +14,7 @@
 #include <x/w/scratch_bufferfwd.H>
 #include <x/w/layoutmanagerfwd.H>
 #include <x/w/impl/current_border_implfwd.H>
-#include <x/w/impl/richtext/richtextfwd.H>
+#include <x/w/richtext/richtextfwd.H>
 
 LIBCXXW_NAMESPACE_START
 

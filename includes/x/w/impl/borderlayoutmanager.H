@@ -9,7 +9,7 @@
 #include "x/w/impl/singletonlayoutmanager.H"
 #include "x/w/impl/bordercontainer_impl.H"
 #include "x/w/impl/border_implfwd.H"
-#include "x/w/impl/richtext/richtextfwd.H"
+#include "x/w/richtext/richtextfwd.H"
 #include <tuple>
 
 LIBCXXW_NAMESPACE_START

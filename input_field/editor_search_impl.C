@@ -9,7 +9,7 @@
 #include "input_field/input_field_search_thread.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/impl/richtext/richtext.H"
-#include "richtext/richtextiterator.H"
+#include "x/w/richtext/richtextiterator.H"
 #include "popup/popup.H"
 #include <sstream>
 #include <X11/keysym.h>

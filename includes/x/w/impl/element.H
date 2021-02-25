@@ -28,7 +28,7 @@
 #include <x/w/impl/updated_position_infofwd.H>
 #include <x/w/defaultthemefwd.H>
 #include <x/w/fontcollectionfwd.H>
-#include <x/w/impl/richtext/richtextstringfwd.H>
+#include <x/w/richtext/richtextstringfwd.H>
 #include <x/w/impl/inherited_visibility_infofwd.H>
 #include <x/w/impl/element_draw.H>
 #include <x/w/impl/draw_info.H>

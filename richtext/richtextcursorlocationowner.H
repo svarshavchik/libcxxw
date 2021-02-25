@@ -5,8 +5,8 @@
 #ifndef x_w_richtextcursorlocationowner_h
 #define x_w_richtextcursorlocationowner_h
 
-#include "richtext/richtextcursorlocationownerfwd.H"
-#include "richtext/richtextcursorlocationownerobj.H"
+#include "x/w/richtext/richtextcursorlocationownerfwd.H"
+#include "x/w/richtext/richtextcursorlocationownerobj.H"
 #include "richtext/richtextcursorlocation.H"
 #include <x/ref.H>
 
