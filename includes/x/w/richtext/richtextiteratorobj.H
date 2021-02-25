@@ -149,7 +149,8 @@ public:
 
 	void replace(ONLY IN_THREAD,
 		     const const_richtextiterator &other,
-		     richtextstring &&string) const;
+		     richtextstring &&string,
+		     bool replacing_hotspots) const;
 
 	//! \overload
 

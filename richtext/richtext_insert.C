@@ -48,9 +48,11 @@ create_fragments_from_inserted_text
 ::create_fragments_from_inserted_text(richtextstring &string,
 				      const std::optional<unicode_bidi_level_t>
 				      &new_paragraph_embedding_level,
+				      bool replacing_hotspots,
 				      unicode_bidi_level_t
 				      &final_paragraph_embedding_level)
-	: canonicalizer{string, new_paragraph_embedding_level}
+	: canonicalizer{string, new_paragraph_embedding_level,
+		replacing_hotspots}
 {
 #ifdef CFFIT_CONSTRUCTOR_DEBUG
 	CFFIT_CONSTRUCTOR_DEBUG;

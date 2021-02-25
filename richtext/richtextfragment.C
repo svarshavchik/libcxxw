@@ -727,6 +727,7 @@ richtextfragmentObj::insert(ONLY IN_THREAD,
 
 	create_fragments_from_inserted_text factory{new_string,
 		my_paragraphs.text.paragraph_embedding_level,
+		new_string_to_insert.replacing_hotspots,
 		my_paragraphs.text.paragraph_embedding_level};
 
 	auto richtext_rl=my_paragraphs.text.rl();
@@ -750,6 +751,12 @@ richtextfragmentObj::insert(ONLY IN_THREAD,
 		case richtext_dir::both:
 			break;
 		}
+	}
+
+	if (my_string[pos] != '\n' &&
+	    new_string_to_insert.replacing_hotspots)
+	{
+		results.insert_rl=embedding_level() != UNICODE_BIDI_LR;
 	}
 
 	if (results.insert_rl)

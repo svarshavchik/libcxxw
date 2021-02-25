@@ -772,11 +772,13 @@ struct richtextstring::to_canonical_order::prepped_string {
 
 	std::vector<size_t> start_end_hotspots;
 
-	prepped_string(richtextstring &string);
+	prepped_string(richtextstring &string,
+		       bool replacing_hotspots);
 };
 
 richtextstring::to_canonical_order::prepped_string
-::prepped_string(richtextstring &string)
+::prepped_string(richtextstring &string,
+		 bool replacing_hotspots)
 	: string{string}
 {
 #ifdef TO_CANONICAL_ORDER_HOOK
@@ -819,6 +821,12 @@ richtextstring::to_canonical_order::prepped_string
 	// terminate the last hotspot.
 	if (current_hotspot)
 		start_end_hotspots.push_back(string.size());
+
+	// If we are replacing the contents of the hotspots, the replacement
+	// text goes inside the existing hotspot markers so we don't need
+	// to insert them here.
+	if (replacing_hotspots)
+		start_end_hotspots.clear();
 
 	assert_or_throw((start_end_hotspots.size() % 2) == 0,
 			"internal error: odd number of hotspot markers");
@@ -925,18 +933,24 @@ richtextstring::to_canonical_order::prepped_string
 richtextstring::to_canonical_order
 ::to_canonical_order(richtextstring &string,
 		     const std::optional<unicode_bidi_level_t>
-		     &paragraph_embedding_level)
-	: to_canonical_order{prepped_string{string},
+		     &paragraph_embedding_level,
+		     bool replacing_hotspots)
+	: to_canonical_order{prepped_string{string, replacing_hotspots},
 	paragraph_embedding_level}
 {
 }
 
 static unicode_bidi_level_t default_paragraph_embedding_level()
 {
+#ifdef TEST_DEFAULT_EMBEDDING_LEVEL
+
+	return TEST_DEFAULT_EMBEDDING_LEVEL;
+#else
 	static const bool right_to_left=
 		locale::base::environment()->right_to_left();
 
 	return right_to_left ? UNICODE_BIDI_RL : UNICODE_BIDI_LR;
+#endif
 }
 
 richtextstring::to_canonical_order
@@ -945,9 +959,11 @@ richtextstring::to_canonical_order
 		     &paragraph_embedding_level)
 	: string{the_prepped_string.string},
 	  types{string.string},
-	  calc_results{paragraph_embedding_level
-	? unicode::bidi_calc(types, *paragraph_embedding_level)
-	: unicode::bidi_calc(types)},
+	  calc_results{unicode::bidi_calc(types,
+					  paragraph_embedding_level
+					  ? *paragraph_embedding_level
+					  : default_paragraph_embedding_level()
+					  )},
 	  starting_pos{0},
 	  n_chars{0},
 	  ending_pos{0}

@@ -10,9 +10,12 @@
 #include "x/w/richtext/richtextcursorlocationfwd.H"
 #include "x/w/richtext/richtextstringfwd.H"
 #include "x/w/richtext/richtextfragmentfwd.H"
-
+#include "x/w/richtext/richtextfwd.H"
+#include "x/w/richtext/richtextiteratorfwd.H"
+#include "x/w/text_hotspotfwd.H"
 #include <courier-unicode.h>
 #include <functional>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -102,6 +105,20 @@ struct richtext_range {
 	//! Returns false if they're not, extracting nothing.
 
 	bool complete_line();
+
+	//! Construct beginning and ending hotspot iterators.
+
+	//! Given an existing hotspot this constructs a pair of beginning
+	//! and ending iterator for the existing hotspot. This static function
+	//! is on-topic for richtext_range, because extracting the text
+	//! between these two iterators would use richtext_range to figure out
+	//! where it is.
+
+	static std::tuple<richtextiterator, richtextiterator>
+	replace_hotspot_iterators(ONLY IN_THREAD,
+				  const richtext &me,
+				  const ref<richtext_implObj> &impl,
+				  const text_hotspot &hotspot);
 
 	//! Add right to left lines to extracted text.
 

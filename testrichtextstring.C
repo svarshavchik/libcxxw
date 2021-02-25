@@ -2380,7 +2380,7 @@ void canonicaltest()
 		richtextstring canonical;
 
 		richtextstring::to_canonical_order c{str,
-			t.embedding_level};
+			t.embedding_level,false};
 
 		auto level=c.paragraph_embedding_level();
 
@@ -2518,7 +2518,7 @@ void canonicaltest2()
 		auto cpy=t.orig_string;
 
 		richtextstring::to_canonical_order::prepped_string
-			prep{cpy};
+			prep{cpy, false};
 
 		if (cpy != t.prepped_string ||
 		    prep.start_end_hotspots != t.newlines)

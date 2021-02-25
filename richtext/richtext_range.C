@@ -8,6 +8,9 @@
 #include "richtext/richtext_impl.H"
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtextfragment.H"
+#include "x/w/impl/richtext/richtext.H"
+#include "x/w/text_hotspot.H"
+#include "x/w/richtext/richtextiterator.H"
 #include "assert_or_throw.H"
 
 LIBCXXW_NAMESPACE_START
@@ -75,6 +78,123 @@ bool richtext_range::complete_line()
 		    location_a->get_offset());
 	}
 	return true;
+}
+
+std::tuple<richtextiterator, richtextiterator>
+richtext_range::replace_hotspot_iterators(ONLY IN_THREAD,
+					  const richtext &me,
+					  const ref<richtext_implObj> &impl,
+					  const text_hotspot &hotspot)
+{
+	// Find the hotspot's first and last fragment
+
+	auto iter=impl->hotspot_collection.find(hotspot);
+
+	if (iter == impl->hotspot_collection.end())
+		throw EXCEPTION("Internal error: existing hotspot not found.");
+
+	auto &[begin_fragment, end_fragment]=iter->second;
+
+	// In the first and the last fragment find where
+	// the hotspot begin or ends.
+
+	auto begin_hotspot_iter=
+		begin_fragment->hotspot_collection.find(hotspot);
+
+	if (begin_hotspot_iter ==
+	    begin_fragment->hotspot_collection.end())
+		throw EXCEPTION("Internal error: hotspot start not found.");
+
+	auto end_hotspot_iter=
+		end_fragment->hotspot_collection.find(hotspot);
+
+	if (end_hotspot_iter ==
+	    end_fragment->hotspot_collection.end())
+		throw EXCEPTION("Internal error: hotspot end not found.");
+
+	// Determine, in the first and last fragment,
+	// the position where the hotspot starts and ends,
+	// based on the corresponding fragment's embedding_level().
+
+	auto &[begin_start, begin_end]=begin_hotspot_iter->second;
+	auto &[end_start, end_end]=end_hotspot_iter->second;
+
+	auto loc1=richtextcursorlocation::create();
+	auto loc2=richtextcursorlocation::create();
+
+	if (begin_fragment == end_fragment)
+	{
+		// begin and end should be the same.
+		//
+		// There should be at least two hotspot_markers
+
+		if (begin_end < begin_start || begin_end - begin_start < 2)
+			throw EXCEPTION("Internal error: hotspot not marked");
+
+		// Create the iterators pointing to the beginning and the
+		// ending marker.
+		std::tuple iterators{
+			richtextiterator::create(me, loc1,
+						 &*begin_fragment,
+						 begin_start,
+						 new_location::lr),
+			richtextiterator::create(me, loc2,
+						 &*begin_fragment,
+						 begin_end-1,
+						 new_location::lr),
+		};
+
+		// If this is going to be left-to-right text, the ending
+		// richtextiterator already points one-past-the-last character
+		// of the hotspot, so we need to just advance the beginning
+		// richtextiterator to the first character in the hotspot.
+		//
+		// For right-to-left text it's the mirror opposite.
+		if (begin_fragment->embedding_level() == UNICODE_BIDI_LR)
+		{
+			std::get<0>(iterators)->right(IN_THREAD);
+		}
+		else
+		{
+			std::get<1>(iterators)->left(IN_THREAD);
+		}
+
+		return iterators;
+	}
+
+	// Hotspot begins and ends on different lines.
+	auto top_embedding_level=begin_fragment->embedding_level();
+	auto bottom_embedding_level=end_fragment->embedding_level();
+
+	auto top_iter=
+		richtextiterator::create(me, loc1, &*begin_fragment,
+					 top_embedding_level
+					 == UNICODE_BIDI_LR
+					 ? begin_start : begin_end-1,
+					 new_location::lr);
+
+	// Move the top iterator to the first character of the hotspot text,
+	// according to the fragment's embedding level.
+	if (top_embedding_level == UNICODE_BIDI_LR)
+		top_iter->right(IN_THREAD);
+	else
+		top_iter->left(IN_THREAD);
+
+	// The ending iterator:
+	//
+	// If the bottom fragment is left-to-right, position the
+	// richtextiterator on the ending marker character. Otherwise the
+	// first character in the hotspot range must be the ending marker,
+	// and it will be one-past the last character in this right-to-left
+	// fragment.
+	auto bottom_iter=
+		richtextiterator::create(me, loc2, &*end_fragment,
+					 bottom_embedding_level
+					 == UNICODE_BIDI_LR
+					 ? end_end-1:end_start,
+					 new_location::lr);
+
+	return {top_iter, bottom_iter};
 }
 
 void richtext_range::rl_lines(const richtextfragmentObj *bottom,

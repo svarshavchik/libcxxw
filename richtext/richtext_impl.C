@@ -146,6 +146,7 @@ void richtext_implObj::do_set(richtextstring &&string)
 	// paragraph embedding level
 	create_fragments_from_inserted_text factory{string,
 		requested_paragraph_embedding_level,
+		false,
 		paragraph_embedding_level};
 
 	// Set the final alignment

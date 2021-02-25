@@ -44,10 +44,15 @@ struct richtext_insert_base {
 
 	const richtextiterator iterator;
 
+	//! Whether twe are replacing an existing hotspot
+
+	const bool replacing_hotspots;
+
 	//! Constructor
 
-	richtext_insert_base(const richtextiterator &iterator)
-		: iterator{iterator}
+	richtext_insert_base(const richtextiterator &iterator,
+			     bool replacing_hotspots)
+		: iterator{iterator}, replacing_hotspots{replacing_hotspots}
 	{
 	}
 
@@ -144,8 +149,9 @@ struct LIBCXX_HIDDEN richtext_insert : richtext_insert_base {
 
 	//! Constructor
 	richtext_insert(const richtextiterator &iterator,
+			bool replacing_hotspots,
 			type &s)
-		: richtext_insert_base{iterator}, s{s}
+		: richtext_insert_base{iterator, replacing_hotspots}, s{s}
 	{
 	}
 
@@ -185,6 +191,7 @@ public:
 					    const std::optional
 					    <unicode_bidi_level_t> &
 					    requested_embedding_level,
+					    bool replacing_hotspots,
 					    unicode_bidi_level_t
 					    &paragraph_embedding_level);
 

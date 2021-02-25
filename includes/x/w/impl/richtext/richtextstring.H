@@ -430,7 +430,8 @@ struct richtextstring::to_canonical_order {
 
 	to_canonical_order(richtextstring &string,
 			   const std::optional<unicode_bidi_level_t>
-			   &paragraph_embedding_level);
+			   &paragraph_embedding_level,
+			   bool replacing_hotspots);
 
 private:
 	//! Internal constructor

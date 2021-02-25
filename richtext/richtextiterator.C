@@ -253,14 +253,17 @@ class LIBCXX_HIDDEN richtextiteratorObj::internal_insert_impl
 
  public:
 	type &s;
+	const bool replacing_hotspots;
 
-	internal_insert_impl(type &s) : s{s} {}
+	internal_insert_impl(type &s,
+			     bool replacing_hotspots)
+		: s{s}, replacing_hotspots{replacing_hotspots} {}
 
 	void operator()( const richtextiterator &i,
 			 const function< insert_callback_func> &f)
 		const override
 	{
-		f( richtext_insert<type>(i, s) );
+		f( richtext_insert<type>(i, replacing_hotspots, s) );
 	}
 };
 
@@ -272,7 +275,7 @@ richtextiteratorObj::insert(ONLY IN_THREAD,
 			    richtextstring &&new_string)
 {
 	return insert(IN_THREAD,
-		      internal_insert_impl<richtextstring>{new_string});
+		      internal_insert_impl<richtextstring>{new_string, false});
 }
 
 richtextiterator richtextiteratorObj::insert(ONLY IN_THREAD,
@@ -281,16 +284,18 @@ richtextiterator richtextiteratorObj::insert(ONLY IN_THREAD,
 {
 	return insert(IN_THREAD,
 		      internal_insert_impl<const std::u32string_view>
-		      {new_string});
+		      {new_string, false});
 }
 
 void richtextiteratorObj::replace(ONLY IN_THREAD,
 				  const const_richtextiterator &other,
-				  richtextstring &&new_string) const
+				  richtextstring &&new_string,
+				  bool replacing_hotspots) const
 {
 	replace(IN_THREAD,
 		other,
-		internal_insert_impl<richtextstring>{new_string});
+		internal_insert_impl<richtextstring>{new_string,
+			replacing_hotspots});
 }
 
 void richtextiteratorObj::replace(ONLY IN_THREAD,
@@ -300,7 +305,7 @@ void richtextiteratorObj::replace(ONLY IN_THREAD,
 	replace(IN_THREAD,
 		other,
 		internal_insert_impl<const std::u32string_view>
-		{new_string});
+		{new_string, false});
 }
 
 // This handles the common insert() code. The type of the inserted string

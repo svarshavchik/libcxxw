@@ -881,7 +881,7 @@ void testrichtext6(ONLY IN_THREAD)
 			{0, {'2'}},
 		}};
 
-	e->replace(IN_THREAD, b, std::move(ustring));
+	e->replace(IN_THREAD, b, std::move(ustring), false);
 
 	validate_richtext(IN_THREAD, richtext, "Hello world ", "replace()");
 
@@ -1796,7 +1796,8 @@ void testrichtext9(ONLY IN_THREAD)
 				 t.new_text,
 				 {
 					 {0, richtextmeta{}}
-				 }});
+				 }},
+			 false);
 
 		if (richtext->get_paragraph_embedding_level(IN_THREAD)
 		    != t.updated_paragraph_embedding_level)
@@ -1831,7 +1832,8 @@ void testrichtext9(ONLY IN_THREAD)
 				 t.new_text,
 				 {
 					 {0, richtextmeta{}}
-				 }});
+				 }},
+			 false);
 
 		if (richtext->get_paragraph_embedding_level(IN_THREAD)
 		    != t.updated_paragraph_embedding_level)
@@ -1898,11 +1900,11 @@ struct richtext_insert_into {
 struct richtext_replace_hotspot {
 
 	text_hotspot hotspot;
-	const char32_t *str;
+	std::u32string str;
 
 	richtext_replace_hotspot(const text_hotspot &hotspot,
-				 const char32_t *str)
-		: hotspot{hotspot}, str{str}
+				 std::u32string str)
+		: hotspot{hotspot}, str{std::move(str)}
 	{
 	}
 
@@ -2252,6 +2254,139 @@ void testrichtext10(ONLY IN_THREAD)
 							2, 0, 0,
 							{
 								{12, 26},
+							},
+						},
+					},
+				},
+			},
+		},
+
+		// Test 5
+		{
+			{
+				U" 7",
+				{
+					{0, meta1},
+				},
+			},
+			UNICODE_BIDI_RL,
+			200,
+			{
+				{
+					1, 0, 0,
+					{
+						{
+							{0, 4},
+						},
+					},
+				},
+			},
+
+			{
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_replace_hotspot>{},
+						meta1.link,
+						U" 8",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 0, 0,
+							{
+								{0, 4},
+							},
+						},
+					},
+				},
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_replace_hotspot>{},
+						meta1.link,
+						U" 9",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 0, 0,
+							{
+								{0, 4},
+							},
+						},
+					},
+				},
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_replace_hotspot>{},
+						meta1.link,
+						U"14",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 0, 0,
+							{
+								{0, 4},
+							},
+						},
+					},
+				},
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_replace_hotspot>{},
+						meta1.link,
+						U"15",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 0, 0,
+							{
+								{0, 4},
+							},
+						},
+					},
+				},
+			},
+		},
+
+
+		// Test 6
+		{
+			{
+				std::u32string{RLO} +
+				U"Lorem Ipsum 11111 111 amet" + PDF,
+				{
+					{0, meta0},
+					{13, meta1},
+					{22, meta0},
+				},
+			},
+			UNICODE_BIDI_RL,
+			120,
+			{
+				{
+					1, 1, 2,
+					{
+						{
+							{0, 7},
+							{5, 9},
+						},
+					},
+				},
+
+			},
+
+			{
+				{
+					richtext_op{
+						std::in_place_type_t<richtext_replace_hotspot>{},
+						meta1.link,
+						std::u32string{RLO} +
+						U"AAAAA AAA",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 1, 2,
+							{
+								{0, 7},
+								{5, 9},
 							},
 						},
 					},

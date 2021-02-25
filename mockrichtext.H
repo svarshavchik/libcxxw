@@ -60,6 +60,8 @@ LIBCXXW_NAMESPACE_END
 
 bool skip_hotspot_sanity_check=false;
 
+#define TEST_DEFAULT_EMBEDDING_LEVEL UNICODE_BIDI_LR
+
 #define TO_CANONICAL_ORDER_HOOK() if (skip_hotspot_sanity_check) return
 
 #include "richtext/richtextstring.C"

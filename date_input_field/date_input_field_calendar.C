@@ -93,6 +93,7 @@ static inline text_param do_hotspot(ONLY IN_THREAD,
 					ret(me->appearance->day_highlight_bg);
 				}
 
+				ret(unicode::literals::LRO);
 				ret(label);
 			},
 			[&](const button_event *b)
@@ -186,6 +187,7 @@ static void calendar_grid(const gridlayoutmanager &glm,
 				 });
 
 			day_label(link);
+			day_label(unicode::literals::LRO);
 			day_label(day_str);
 			day_label(nullptr);
 
