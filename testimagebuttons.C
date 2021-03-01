@@ -22,7 +22,6 @@
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 #include "x/w/label.H"
-#include "x/w/radio_group.H"
 #include "x/w/canvas.H"
 #include "x/w/font_literals.H"
 #include <string>
@@ -109,13 +108,11 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 		days_of_week_checkboxes.push_back(checkbox);
 	}
 
-	LIBCXX_NAMESPACE::w::radio_group group=LIBCXX_NAMESPACE::w::radio_group::create();
-
 	auto factory=layout->append_columns(0);
 
 	LIBCXX_NAMESPACE::w::image_button
 		train=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
-		.create_radio(group,
+		.create_radio("rg1",
 			      []
 			      (const auto &factory)
 			      {
@@ -166,7 +163,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 	factory=layout->append_columns(1);
 	LIBCXX_NAMESPACE::w::image_button
 		bus=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
-		.create_radio(group,
+		.create_radio("rg1",
 			      []
 			      (const auto &factory)
 			      {
@@ -192,7 +189,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 	factory=layout->append_columns(2);
 	LIBCXX_NAMESPACE::w::image_button
 		drive=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
-		.create_radio(group,
+		.create_radio("rg1",
 			      []
 			      (const auto &factory)
 			      {

@@ -22,7 +22,6 @@
 #include <x/w/canvas.H>
 #include <x/w/toolboxlayoutmanager.H>
 #include <x/w/toolboxfactory.H>
-#include <x/w/radio_group.H>
 #include <x/w/image_button.H>
 #include <x/w/menubarlayoutmanager.H>
 #include <x/w/menubarfactory.H>
@@ -136,8 +135,6 @@ static void create_toolbox_contents(const x::w::toolboxlayoutmanager &tlm)
 
 	// The toolbox icons are really radio buttons. We'll create 8 of them.
 
-	auto rg=x::w::radio_group::create();
-
 	for (size_t i=0; i<8; ++i)
 	{
 		// Borrow icon images from the default theme. They're all
@@ -182,7 +179,7 @@ static void create_toolbox_contents(const x::w::toolboxlayoutmanager &tlm)
 		// And pass the custom appearance as an additional parameter
 		// to create_radio().
 
-		auto b=f->create_radio(rg,
+		auto b=f->create_radio("toolboxradiogroup@examples.w.libcxx.com",
 				       [](const auto &f) {},
 				       custom);
 

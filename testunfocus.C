@@ -19,7 +19,6 @@
 #include "x/w/input_field.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/image_button.H"
-#include "x/w/radio_group.H"
 #include "x/w/canvas.H"
 #include "x/w/dialog.H"
 #include "x/w/button.H"
@@ -281,7 +280,7 @@ void testautorestore()
 			 x::w::focusable_containerptr ifld;
 
 			 radio_button=glm->append_row()->create_radio
-				 (radio_group::create(),
+				 ("radio_button",
 				  [&]
 				  (const factory &f)
 				  {

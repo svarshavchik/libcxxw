@@ -25,7 +25,7 @@
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/grabbed_pointerfwd.H"
-
+#include "radio_groupfwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
 #include "x/w/focusablefwd.H"
@@ -42,6 +42,7 @@
 #include <list>
 #include <x/weakptr.H>
 #include <x/weaklist.H>
+#include <x/weakunordered_multimap.H>
 #include <x/mpobj.H>
 #include <xcb/xcb_icccm.h>
 #include <x/functional.H>
@@ -1236,6 +1237,19 @@ public:
 
 	//! The appearance object that created me.
 	const const_generic_window_appearance appearance;
+
+	//! Find or create the given radio group.
+
+	radio_group get_radio_group(const std::string_view &);
+
+private:
+	//! All radio groups
+
+	//! Contains named groups for radio buttons in a regular window
+	//!
+	//! In a menu button this contains menu options with radio button
+	//! functionality.
+	const weakunordered_multimap<std::string, radio_groupObj> radio_groups;
 };
 
 LIBCXXW_NAMESPACE_END

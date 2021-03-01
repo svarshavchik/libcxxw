@@ -3402,7 +3402,7 @@ first column, to make the labels line up with their input fields.
 	  <label type="theme_text">All Pages</label>
 	</element>
       </radio>
-      <group>pages-radio-group</group>
+      <group>pages-radio-group@w.libcxx.com</group>
     </element>
   </factory>
 
@@ -3461,7 +3461,7 @@ first column, to make the labels line up with their input fields.
 	  <label type="theme_text">Pages:</label>
 	</element>
       </radio>
-      <group>pages-radio-group</group>
+      <group>pages-radio-group@w.libcxx.com</group>
     </element>
 
     <padding>

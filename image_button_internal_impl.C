@@ -164,37 +164,27 @@ class LIBCXX_HIDDEN radio_image_buttonObj :
 			      size_t) override;
 
 	//! Implement radio button turn off.
-	bool turn_off(ONLY IN_THREAD) override;
 
-	//! Implement radio button turn off.
-
-	void turned_off(ONLY IN_THREAD,
-			busy_impl &i_am_busy,
-			const callback_trigger_t &trigger) override;
+	void turn_off(ONLY IN_THREAD,
+		      busy_impl &i_am_busy,
+		      const callback_trigger_t &trigger) override;
 };
 
-bool radio_image_buttonObj::turn_off(ONLY IN_THREAD)
+void radio_image_buttonObj::turn_off(ONLY IN_THREAD,
+				     busy_impl &i_am_busy,
+				     const callback_trigger_t &trigger)
 {
 	if (get_image_number() == 0)
-		return false;
-
-	do_set_image_number(IN_THREAD, 0);
-	return true;
-}
-
-void radio_image_buttonObj::turned_off(ONLY IN_THREAD,
-				       busy_impl &i_am_busy,
-				       const callback_trigger_t &trigger)
-{
-	auto &cb=current_callback(IN_THREAD);
-
-	if (!cb)
 		return;
 
-	try {
-		cb(IN_THREAD, 0, trigger, i_am_busy);
-	} REPORT_EXCEPTIONS(this);
+	do_set_image_number(IN_THREAD, 0);
 
+	auto &cb=current_callback(IN_THREAD);
+
+	if (cb)
+		try {
+			cb(IN_THREAD, 0, trigger, i_am_busy);
+		} REPORT_EXCEPTIONS(this);
 }
 
 ref<image_button_internalObj::implObj>
@@ -207,7 +197,7 @@ create_radio_impl(const radio_group &group,
 		 image_button_internal_impl_init_params{
 			container, icon_images});
 
-	r->group->impl->button_list->push_back(r);
+	r->group->button_list->push_back(r);
 
 	return r;
 }
@@ -218,10 +208,8 @@ void radio_image_buttonObj::set_image_number(ONLY IN_THREAD,
 {
 	busy_impl i_am_busy{*this};
 
-	group->impl->turn_off(IN_THREAD,
-			      radio_button{this},
-			      i_am_busy,
-			      trigger);
+	group->turn_off(IN_THREAD, radio_button{this},
+			i_am_busy, trigger);
 
 	n %= icon_images(IN_THREAD).size();
 

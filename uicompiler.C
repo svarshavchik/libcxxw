@@ -39,7 +39,6 @@
 #include "x/w/date_input_field_config.H"
 #include "x/w/image.H"
 #include "x/w/image_button.H"
-#include "x/w/radio_group.H"
 #include "x/w/progressbar.H"
 #include "x/w/color_picker.H"
 #include "x/w/color_picker_config.H"
@@ -1699,21 +1698,6 @@ container uicompiler::create_container(const factory &f,
 	factories.new_elements.insert_or_assign(name, c);
 
 	return c;
-}
-
-static radio_group lookup_radio_group(uielements &elements,
-				      const std::string &name)
-{
-	auto iter=elements.new_radio_groups.find(name);
-
-	if (iter != elements.new_radio_groups.end())
-		return iter->second;
-
-	auto g=radio_group::create();
-
-	elements.new_radio_groups.insert_or_assign(name, g);
-
-	return g;
 }
 
 #include "uicompiler.inc.H/factory_parse_parameters.H"

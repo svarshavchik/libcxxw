@@ -16,6 +16,7 @@
 #include "x/w/factory.H"
 #include "x/w/button_event.H"
 #include "x/w/key_event.H"
+#include "radio_group.H"
 #include "x/w/impl/container_element.H"
 #include "gridlayoutmanager.H"
 #include "x/w/impl/container_visible_element.H"
@@ -375,9 +376,12 @@ image_button factoryObj::do_create_checkbox(const image_button_args_t &args)
 	return im;
 }
 
-image_button factoryObj::do_create_radio(const radio_group &group,
+image_button factoryObj::do_create_radio(const std::string_view &group_name,
 					 const image_button_args_t &args)
 {
+	auto group=get_container_impl()->get_window_handler()
+		.get_radio_group(group_name);
+
 	std::optional<functionref<factory_creator_t>
 		      > default_label_factory;
 

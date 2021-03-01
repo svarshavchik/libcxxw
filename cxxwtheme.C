@@ -24,7 +24,6 @@
 #include "x/w/text_param_literals.H"
 #include "x/w/input_field.H"
 #include "x/w/image_button.H"
-#include "x/w/radio_group.H"
 #include "x/w/progressbar.H"
 #include "x/w/tablelayoutmanager.H"
 #include "x/w/itemlayoutmanager.H"
@@ -348,7 +347,6 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 		return;
 
 	// Radio groups for each set of theme options.
-	std::unordered_map<std::string, w::radio_group> option_groups;
 	std::unordered_map<std::string,
 			   w::image_button> selected_option_group_value;
 
@@ -367,16 +365,11 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 			radio_button_group=option.label.substr(0, is_radio);
 
 		// Create a checkbox or a radio button.
-		//
-		// The first time we see a particular rado button group we
-		// insert it into option_groups, and then look it up.
 
 		auto cb=!radio_button_group.empty()
 
 			? f->create_radio
-			(option_groups.try_emplace(radio_button_group,
-						   w::radio_group::create())
-			 .first->second,
+			(name + ":" + radio_button_group,
 			 [&]
 			 (const w::factory &f)
 			 {
@@ -1223,8 +1216,6 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 
 static void demo_misc_column1(const w::gridlayoutmanager &lm)
 {
-	auto rg=w::radio_group::create();
-
 	for (int i=1; i<=3; ++i)
 	{
 		auto f=lm->append_row();
@@ -1239,7 +1230,7 @@ static void demo_misc_column1(const w::gridlayoutmanager &lm)
 					   f->create_label(o.str());
 				   });
 
-		f->create_radio(rg, [&]
+		f->create_radio("demo_options", [&]
 				(const auto &f)
 				{
 					std::ostringstream o;

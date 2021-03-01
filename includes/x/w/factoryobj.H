@@ -24,7 +24,6 @@
 #include <x/w/imagefwd.H>
 #include <x/w/image_buttonfwd.H>
 #include <x/w/image_button_appearancefwd.H>
-#include <x/w/radio_groupfwd.H>
 #include <x/w/focusable_containerfwd.H>
 #include <x/w/progressbarfwd.H>
 #include <x/w/scrollbarfwd.H>
@@ -38,6 +37,7 @@
 #include <x/obj.H>
 #include <x/functional.H>
 #include <x/optional_args.H>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -227,15 +227,16 @@ public:
 
 	//! Create a radio button
 	template<typename ...Args>
-	inline image_button create_radio(const radio_group &group,
+	inline image_button create_radio(const std::string_view
+					 &radio_groupname,
 					 Args && ...args)
 	{
-		return do_create_radio(group,
+		return do_create_radio(radio_groupname,
 				       { std::forward<Args>(args)...});
 	}
 
 	//! Create a radio button
-	image_button do_create_radio(const radio_group &group,
+	image_button do_create_radio(const std::string_view &radio_groupname,
 				     const image_button_args_t &args);
 
 	//! Create a focusable container.

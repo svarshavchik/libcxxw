@@ -22,7 +22,6 @@
 #include "x/w/canvas.H"
 #include "x/w/toolboxlayoutmanager.H"
 #include "x/w/toolboxfactory.H"
-#include "x/w/radio_group.H"
 #include "x/w/image_button.H"
 #include "x/w/menubarlayoutmanager.H"
 #include "x/w/menubarfactory.H"
@@ -143,8 +142,6 @@ static void create_toolbox_contents(const LIBCXX_NAMESPACE::w::toolboxlayoutmana
 {
 	auto f=tlm->append_tools();
 
-	auto rg=LIBCXX_NAMESPACE::w::radio_group::create();
-
 	for (size_t i=0; i<8; ++i)
 	{
 		static const char *icons[][2]=
@@ -175,7 +172,7 @@ static void create_toolbox_contents(const LIBCXX_NAMESPACE::w::toolboxlayoutmana
 					 ::base::visible_thin_theme();
 			 });
 
-		auto b=f->create_radio(rg,
+		auto b=f->create_radio("toolbox",
 				       [](const auto &f) {},
 				       custom_button);
 		b->on_activate

@@ -11,7 +11,7 @@ See COPYING for distribution information.
   <mediaobject>
     <imageobject>
       <imagedata fileref="checkradio.png" format="PNG"
-		 contentwidth="209px" contentdepth="203px" />
+		 contentwidth="339px" contentdepth="257px" />
     </imageobject>
     <textobject>
       <phrase>
@@ -43,18 +43,28 @@ See COPYING for distribution information.
       <methodname>create_radio</methodname>() and methods return an
       <ulink url="&link-typedef-x--w-image-button;"><classname>&ns;::w::image_button</classname></ulink>,
       which is a &focusable;.
-      Creating a radio button requires creating a
-      <ulink url="&link-typedef-x--w-radio-group;"><classname>&ns;::w::radio_group</classname></ulink>
-      separately, and passing it as the first parameter
-      to <methodname>create_radio</methodname>() when creating a radio
-      button for that radio button group.
+      The only difference between
+      <methodname>create_checkbox</methodname>() and
+      <methodname>create_radio</methodname>() is
+      <methodname>create_radio</methodname>()'s first parameter which is
+      a radio button group identifier. All radio buttons in the same window
+      with the same identifer form a radio button group.
       Radio buttons in the same radio button group are mutually exclusive
       with each other.
-      The application has no further
-      need to keep track of the
-      <classname>&ns;::w::radio_group</classname> object
-      after creating all the radio buttons. Each radio button maintains
-      its own internal link with the radio group object.
+    </para>
+
+    <para>
+      Radio group identifiers are opaque, unique labels. For future use,
+      radio group identifiers should use the following naming conventions.
+      Applications should use identifiers formatted as Internet
+      hostnames or E-mail addresses using domain names that belong to the
+      application. An application developed by
+      <literal>example.com</literal>
+      can use <quote>radiogroup1@example.com</quote>, or
+      <quote>radiogroup@app1.example.com</quote>, as an example.
+      &appshort;'s internal radio group identifiers use
+      <quote>@libcxx.com</quote> to avoid application conflicts:
+      &appshort; handles radio button identifiers as opaque text strings.
     </para>
 
     <section id="button_labeling">

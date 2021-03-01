@@ -403,13 +403,8 @@ INSERT_LIBX_NAMESPACE::w::image_button
 create_checkbox() creates a simple checkbox widget.
 
 \code
-#include <INSERT_LIBX_NAMESPACE/w/radio_group.H>
-#include <INSERT_LIBX_NAMESPACE/w/image_button.H>
-
-auto group=INSERT_LIBX_NAMESPACE::w::radio_group::create();
-
 INSERT_LIBX_NAMESPACE::w::image_button
-     button=factory->create_radio(group,
+     button=factory->create_radio("group1",
                                   []
                                   (const x::w::factory &f)
                                   {
@@ -417,8 +412,10 @@ INSERT_LIBX_NAMESPACE::w::image_button
                                   });
 \endcode
 
-A \ref radio_group "radio_group" object gets created in advance.
-create_radio() creates a new radio button.
+create_radio() creates a radio button group that's identified by a label.
+All buttons created in the window with the same label form a radio group.
+Selecting one of the buttons in the radio group deselects the previously-
+selected button.
 
 \par Progress bars
 

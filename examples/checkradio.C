@@ -16,7 +16,6 @@
 #include <x/w/canvas.H>
 #include <x/w/container.H>
 #include <x/w/image_button.H>
-#include <x/w/radio_group.H>
 #include <x/weakcapture.H>
 
 #include <vector>
@@ -35,7 +34,7 @@ typedef std::vector<std::tuple<std::string, x::w::image_button>> buttons_t;
 
 void set_train_label(const x::w::factory &f, bool is_selected)
 {
-	f->create_label(is_selected ? "Train (with weekends)":"Train")
+	f->create_label(is_selected ? "Train (no weekends)":"Train")
 
 		// Once everything gets created, it's show_all()ed. But when
 		// this is called to update the radio button's label, it is
@@ -149,16 +148,13 @@ void create_mainwindow(const x::w::main_window &main_window,
 		buttons.push_back({day_of_week, checkbox});
 	}
 
-	// Create a radio button group, to tie all the radio buttons together.
-	x::w::radio_group group=x::w::radio_group::create();
-
 	// Append more columns to row #0.
 	auto factory=layout->append_columns(0);
 
 	// Create the "Train" button, initially set.
 
 	x::w::image_button train=
-		factory->create_radio(group,
+		factory->create_radio("checkradiogroup@examples.w.libcxx.com",
 				      []
 				      (const x::w::factory &f)
 				      {
@@ -232,7 +228,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 	// Create a "bus" radio button and label.
 	x::w::image_button bus=
-		factory->create_radio(group,
+		factory->create_radio("checkradiogroup@examples.w.libcxx.com",
 				      []
 				      (const x::w::factory &f)
 				      {
@@ -259,7 +255,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 	factory=layout->append_columns(2);
 	x::w::image_button drive=
-		factory->create_radio(group,
+		factory->create_radio("checkradiogroup@examples.w.libcxx.com",
 				      []
 				      (const x::w::factory &f)
 				      {

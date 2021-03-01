@@ -743,7 +743,8 @@ libcxxw_la_SOURCES=\
 	radio_buttonobj.H			    \
 	radio_group.C				    \
 	radio_group.H				    \
-	radio_group_impl.C			    \
+	radio_groupfwd.H			    \
+	radio_groupobj.H			    \
 	rectangle.C				    \
 	rectangle.H				    \
 	recycled_pixmaps.C			    \

@@ -38,6 +38,7 @@
 #include "x/w/main_window.H"
 #include "x/w/generic_window_appearance.H"
 #include "x/w/impl/child_element.H"
+#include "radio_group.H"
 #include "inherited_visibility_info.H"
 #include "hotspot.H"
 #include "shortcut/installed_shortcut.H"
@@ -253,7 +254,9 @@ generic_windowObj::handlerObj
 				    ->get_workarea()},
 	  current_theme_thread_only{params.window_handler_params.screenref
 				    ->impl->current_theme.get()},
-	  appearance{params.appearance}
+	  appearance{params.appearance},
+	  radio_groups{weakunordered_multimap<std::string, radio_groupObj>
+	::create()}
 {
 	top_level_always_visible();
 
@@ -2820,6 +2823,19 @@ font_arg generic_windowObj::handlerObj::label_theme_font() const
 color_arg generic_windowObj::handlerObj::label_theme_color() const
 {
 	return appearance->label_color;
+}
+
+radio_group generic_windowObj::handlerObj::get_radio_group(const
+							   std::string_view &n)
+{
+	return radio_groups
+		->find_or_create(// TODO: C++20
+
+				 std::string{n.begin(), n.end()},
+				 []
+				 {
+					 return radio_group::create();
+				 });
 }
 
 LIBCXXW_NAMESPACE_END

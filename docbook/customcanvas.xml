@@ -449,7 +449,7 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
       <para>
 	The <link linkend="mixintemplates"><classname>&ns;::w::scratch_and_mask_buffer_draw</classname>
 	  mixin template</link>'s constructor
-	has an additional parameter specifying the masking scratch buffer's
+	has an additional parameter that specifies the masking scratch buffer's
 	label.
       </para>
 

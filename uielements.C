@@ -19,7 +19,6 @@
 #include "x/w/borderlayoutmanager.H"
 #include "x/w/toolboxlayoutmanager.H"
 #include "x/w/impl/container.H"
-#include "x/w/radio_group.H"
 #include "x/w/synchronized_axis.H"
 #include "x/w/copy_cut_paste_menu_items.H"
 #include "x/w/focusable.H"
@@ -28,23 +27,6 @@
 #include "uicompiler.H"
 
 LIBCXXW_NAMESPACE_START
-
-typedef uielements::new_radio_groups_t new_radio_groups_t;
-
-new_radio_groups_t::new_radio_groups_t()=default;
-
-new_radio_groups_t::~new_radio_groups_t()=default;
-
-new_radio_groups_t::new_radio_groups_t(const new_radio_groups_t &)=default;
-
-new_radio_groups_t::new_radio_groups_t(new_radio_groups_t &&)=default;
-
-new_radio_groups_t &new_radio_groups_t::operator=(const new_radio_groups_t &)
-=default;
-
-new_radio_groups_t &new_radio_groups_t::operator=(new_radio_groups_t &&)
-=default;
-
 
 typedef uielements::new_synchronized_axis_t new_synchronized_axis_t;
 
@@ -94,20 +76,6 @@ layoutmanager uielements::get_layoutmanager(const std::string_view &name) const
 		throw EXCEPTION(gettextmsg(_("Layout manager"
 					     " %1% was not found"),
 					   name));
-
-	return iter->second;
-}
-
-radio_group uielements::get_radio_group(const std::string_view &name) const
-{
-	// TODO: C++20;
-
-	auto iter=new_radio_groups.find(std::string{name.begin(), name.end()});
-
-	if (iter == new_radio_groups.end())
-		throw EXCEPTION(gettextmsg
-				(_("Radio button group %1% was not found"),
-				 name));
 
 	return iter->second;
 }

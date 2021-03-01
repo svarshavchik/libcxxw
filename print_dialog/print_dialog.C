@@ -17,7 +17,6 @@
 #include "x/w/input_field.H"
 #include "x/w/button.H"
 #include "x/w/image_button.H"
-#include "x/w/radio_group.H"
 #include "x/w/gridfactory.H"
 #include "x/w/label.H"
 #include "x/w/main_windowobj.H"
@@ -144,10 +143,6 @@ struct LIBCXX_HIDDEN print_dialog_init_helper {
 
 	//! The new fields, created as we go along.
 	print_dialog_fieldsptr fields;
-
-	//! Radio group for the "pages" button.
-
-	radio_group pages_radio_group=radio_group::create();
 
 	//! Return the element factories for the new dialog.
 

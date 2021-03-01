@@ -1437,8 +1437,6 @@ List of values:
       <parameter>
 	<name>group</name>
 	<type>single_value</type>
-	<before-passing-parameter>lookup_radio_group(elements, </before-passing-parameter>
-	<after-passing-parameter>)</after-passing-parameter>
       </parameter>
 
       <parameter>

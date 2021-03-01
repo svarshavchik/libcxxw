@@ -1,3 +1,7 @@
+2021-02-26  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Replace radiogroup handles with opaque identifier strings.
+
 2021-02-14  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Implement the Unicode bi-directional algorithm for labels and
