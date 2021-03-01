@@ -2314,9 +2314,7 @@ bool editorObj::implObj::should_redraw_to_show_hint(ONLY IN_THREAD)
 }
 
 void editorObj::implObj::on_search(ONLY IN_THREAD,
-				   const
-				   functionref<input_field_search_callback_t>
-				   &callback)
+				   const input_field_config::search_info &)
 {
 	stop_message(_("Internal error: on_search() is called without enabling"
 		       " searching"));

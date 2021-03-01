@@ -41,7 +41,7 @@ struct richtext_options {
 	std::optional<unicode_bidi_level_t> paragraph_embedding_level;
 
 	//! Bi-directional formatting
-	bidi_format directional_format=bidi_format::standard;
+	bidi_format directional_format=bidi_format::automatic;
 
 	//! Initialize paragraph_embedding_level basic on bidi values.
 

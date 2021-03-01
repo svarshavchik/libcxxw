@@ -121,63 +121,61 @@ class my_search_threadObj : public input_field_search_threadObj {
 public:
 	my_search_threadObj()
 		: input_field_search_threadObj
+		{{[]
+			 (const auto &info)
 		{
-		 []
-		 (const auto &info)
-		 {
-			 int n;
+			int n;
 
-			 auto flag=ref<abortflagObj>::create();
+			auto flag=ref<abortflagObj>::create();
 
-			 info.get_abort_mcguffin()->ondestroy
-				 ([flag]
-				  {
-					  mpcobj<bool>::lock lock{flag->flag};
+			info.get_abort_mcguffin()->ondestroy
+				([flag]
+				{
+					mpcobj<bool>::lock lock{flag->flag};
 
-					  *lock=true;
-					  lock.notify_all();
-				  });
+					*lock=true;
+					lock.notify_all();
+				});
 
-			 {
-				 mpcobj<int>::lock lock{search_counter};
+			{
+				mpcobj<int>::lock lock{search_counter};
 
-				 n=++*lock;
-				 lock.notify_all();
+				n=++*lock;
+				lock.notify_all();
 
-				 debug{} << "THREAD: SEARCH "
-					   << n << " STARTING";
-			 }
+				debug{} << "THREAD: SEARCH "
+					<< n << " STARTING";
+			}
 
-			 {
-				 mpcobj<int>::lock
-					 lock{wait_until_search_counter};
+			{
+				mpcobj<int>::lock
+					lock{wait_until_search_counter};
 
-				 while (*lock < n)
-					 lock.wait();
-			 }
+				while (*lock < n)
+					lock.wait();
+			}
 
-			 if (info.search_string == U"EXCEPT")
-			 {
-				 debug{} << "THREAD: EXCEPTION THROWN"
-					  ;
-				 throw EXCEPTION("Exception");
-			 }
-			 if (info.search_string == U"WAIT4ABORT")
-			 {
-				 mpcobj<bool>::lock lock{flag->flag};
+			if (info.search_string == U"EXCEPT")
+			{
+				debug{} << "THREAD: EXCEPTION THROWN"
+					;
+				throw EXCEPTION("Exception");
+			}
+			if (info.search_string == U"WAIT4ABORT")
+			{
+				mpcobj<bool>::lock lock{flag->flag};
 
-				 while (!*lock)
-					 lock.wait();
-			 }
-			 debug{} << "THREAD: SEARCH "
-				   << n << " PROCEEDING: "
-				   << std::string{info.search_string.begin(),
-						  info.search_string.end()}
-				  ;
+				while (!*lock)
+					lock.wait();
+			}
+			debug{} << "THREAD: SEARCH "
+				<< n << " PROCEEDING: "
+				<< std::string{info.search_string.begin(),
+				info.search_string.end()}
+			;
 
-			 info.results({info.search_string});
-		 }
-		}
+			info.results({info.search_string});
+		}}}
 	{
 		thread_started=0;
 		thread_stopped=0;

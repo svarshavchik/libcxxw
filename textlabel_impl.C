@@ -150,8 +150,7 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 		  std::move(ordered_hotspots),
 		  richtext::create(std::move(string),
 				   create_richtext_options(config, '\0', 0,
-							   bidi_format::standard
-							   )),
+							   bidi_format::none)),
 		  default_meta}
 {
 }

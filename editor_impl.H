@@ -791,9 +791,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Overridden by editor_search_implObj.
 
 	virtual void on_search(ONLY IN_THREAD,
-			       const
-			       functionref<input_field_search_callback_t>
-			       &callback);
+			       const input_field_config::search_info &);
 };
 
 LIBCXXW_NAMESPACE_END

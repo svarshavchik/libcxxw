@@ -916,11 +916,14 @@ bidi_format to_bidi_directional_format(const ui::parser_lock &lock,
 	std::transform(value.begin(), value.end(), value.begin(),
 		       chrcasecmp::tolower);
 
-	if (value == "standard")
-		return bidi_format::standard;
+	if (value == "none")
+		return bidi_format::none;
 
 	if (value == "embedded")
 		return bidi_format::embedded;
+
+	if (value == "automatic")
+		return bidi_format::automatic;
 
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
 				   value, element));

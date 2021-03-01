@@ -590,7 +590,7 @@ void testbutton()
 
 			 auto search=factory->create_input_field({},
 								 conf5);
-			 search->on_search(search_function);
+			 search->on_search({search_function});
 
 			 search->on_validate
 				 ([f=make_weak_capture(search)]

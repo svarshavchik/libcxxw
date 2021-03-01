@@ -56,8 +56,13 @@ See COPYING for distribution information.
     <para>
       Input field <link linkend="searchinputthread">search callback
 	threads</link>
-      always receive a <varname>search_string</varname> in the standard
-      <classname>&ns;::w::bidi_format</classname>.
+      have their
+      <classname>&ns;::w::bidi_format</classname> come from the
+      input field's
+      <ulink url="&link-x--w--input-field-config--search-info;"><varname>input_field_search</varname></ulink>'s
+      <varname>search_format</varname>.
+      The default
+      <varname>search_format</varname> value is <literal>none</literal>.
     </para>
   </section>
 </chapter>

@@ -17,9 +17,9 @@ LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::input_field_search_threadObj);
 LIBCXXW_NAMESPACE_START
 
 input_field_search_threadObj
-::input_field_search_threadObj(const functionref<input_field_search_callback_t>
-			       &search_callback)
-	: search_callback_thread_only{search_callback}
+::input_field_search_threadObj(const input_field_config::search_info
+			       &search_info)
+	: search_info_thread_only{search_info}
 {
 }
 
@@ -54,7 +54,7 @@ void input_field_search_threadObj::search_request(ONLY IN_THREAD)
 
 		// And start the thread.
 		run_lambda(&search_thread_infoObj::run, new_thread_info,
-			   search_callback(IN_THREAD),
+			   search_info(IN_THREAD).callback,
 			   weakptr<ptr<input_field_search_threadObj>>
 			   {ptr{this}});
 

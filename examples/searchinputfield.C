@@ -219,7 +219,10 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 	x::w::input_field_config search_config{30};
 
-	search_config.input_field_search_callback=search_function;
+	// Install the search callback.
+	search_config.input_field_search={
+		search_function
+	};
 
 	// Add some padding, to make the window bigger.
 

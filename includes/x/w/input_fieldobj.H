@@ -10,6 +10,7 @@
 #include <x/w/hotspotfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/containerfwd.H>
+#include <x/w/input_field_config.H>
 #include <x/functionalrefptrfwd.H>
 #include <string>
 
@@ -83,7 +84,7 @@ public:
 
 	//! Installs or replaces the search callback
 
-	void on_search(const functionref<input_field_search_callback_t> &);
+	void on_search(const input_field_config::search_info &search_info);
 
 	//! Inherited from elementObj
 

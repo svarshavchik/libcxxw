@@ -462,31 +462,40 @@ select_all() selects the entire contents of the input field.
 \code
 INSERT_LIBX_NAMESPACE::w::input_field_config conf{40};
 
-conf.input_field_search_callback=
+conf.input_field_search={
                  []
                  (const INSERT_LIBX_NAMESPACE::w::input_field_search_info &info)
                  {
 
-                 };
+                 }
+};
 
 conf.enable_search();
 
 // ...
 
-field->on_search([]
-                 (const INSERT_LIBX_NAMESPACE::w::input_field_search_info &info)
-                 {
+field->on_search({
+    []
+    (const INSERT_LIBX_NAMESPACE::w::input_field_search_info &info)
+    {
 
-                 });
+    });
 \endcode
 
 A search widget behavior gets enabled by setting
 \ref input_field_config "INSERT_LIBX_NAMESPACE::w::input_field_config"'s
-\c input_field_search_callback to a lambda or a callback object that takes an
+\c input_field_search. This is a small object with
+two fields:
+
+- a \c callback which is a callable object that takes an
 \ref input_field_search_info "INSERT_LIBX_NAMESPACE::w::input_field_search_info"
 parameter.
 
-Alternatively, enable_search() installs a stub closure, and
+- a \c search_format that's specifies the \ref bidi_format "bidi_format"
+of the search string that the callback receives, this defaults to
+\c INSERT_LIBX_NAMESPACE::w::bidi_format::none.
+
+Alternatively, enable_search() installs a stub callback, and
 on_search() installs the callable object after the input field widget gets
 created.
 

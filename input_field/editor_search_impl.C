@@ -20,7 +20,9 @@ editor_search_implObj::editor_search_implObj(init_args &args,
 					     const ref<input_field_searchObj>
 					     &search_container)
 	: superclass_t{args},
-	  input_field_search_threadObj{args.config.input_field_search_callback},
+	  input_field_search_threadObj{
+		  args.config.input_field_search.value()
+	  },
 	  search_container{search_container}
 {
 }
@@ -212,9 +214,9 @@ void editor_search_implObj::request_or_abort_search(ONLY IN_THREAD,
 
 std::u32string editor_search_implObj::get_search_string(ONLY IN_THREAD)
 {
-	// The search string will not have any embedded override or isolation
-	// markers.
-	return get(bidi_format::standard);
+	// Retrieve the contents in the search format.
+
+	return get(search_info(IN_THREAD).search_format);
 }
 
 void editor_search_implObj
@@ -290,9 +292,9 @@ void editor_search_implObj::search_stop_message(const text_param &t)
 
 void editor_search_implObj
 ::on_search(ONLY IN_THREAD,
-	    const functionref<input_field_search_callback_t> &callback)
+	    const input_field_config::search_info &arg)
 {
-	search_callback(IN_THREAD)=callback;
+	search_info(IN_THREAD)=arg;
 }
 
 LIBCXXW_NAMESPACE_END

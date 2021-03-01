@@ -133,7 +133,7 @@ struct input_field_config {
 	bidi direction=bidi::automatic;
 
 	//! Bi-directional formatting
-	bidi_format directional_format=bidi_format::standard;
+	bidi_format directional_format=bidi_format::automatic;
 
 	//! Maximum number of unicode characters.
 
@@ -172,6 +172,20 @@ struct input_field_config {
 	//! Any custom appearance must be set before calling this.
 	void set_default_spin_control_factories();
 
+	//! Additional information used by search fields.
+
+	//! This is optional \c input_field_search value in the
+	//! \ref input_field_config "input_field_config" and the
+	//! parameter to input field's search() method.
+
+	struct search_info {
+		//! The callback itself
+		functionref<input_field_search_callback_t> callback;
+
+		//! Search string's bi-directional format.
+		bidi_format search_format=bidi_format::none;
+	};
+
 	//! Search callback
 
 	//! Optional callback that enables concurrent searching. The callback
@@ -179,11 +193,11 @@ struct input_field_config {
 	//! partially-entered text. The list of values gets presented in a
 	//! combo-box style popup below or above the input field.
 
-	functionptr<input_field_search_callback_t> input_field_search_callback;
+	std::optional<search_info> input_field_search;
 
 	//! Install a default search callback that does nothing.
 
-	//! This sets input_field_search_callback to a dummy function that
+	//! This sets input_field_search to a dummy search function that
 	//! does nothing. This makes it possible to provide a search callback
 	//! after the input field widget gets created. This makes it possible
 	//! to create an input field search widgets using an XML theme file,
@@ -202,10 +216,13 @@ struct input_field_config {
 
 //! Parameter to the search callback.
 
-//! The search callback gets invoked in a separate execution thread.
-//! search_string is the string to search, and upon a successfull search,
-//! search_results and search_items gets set to two vectors that indicate
-//! the search results.
+//! The search callback gets invoked in a separate execution thread that
+//! runs independently of the connection thread. Returning from the callback
+//! opens or updates the search popup with the results of the search.
+//!
+//! search_string is the string to search. A successful search,
+//! search_results and search_items sets the two vectors to the results of
+//! the search.
 //!
 //! The first vector contains the found search results. The 2nd vector lists
 //! what should be shown in the search results popup.
@@ -224,10 +241,9 @@ struct input_field_search_info {
 
 	//! Original search string.
 
-	//! \note
-	//! The search string is in the
-	//! \ref bidi_format "standard bi-directional format", without any
-	//! override or isolation markers.
+	//! The \c search_format that gets specified when this callback
+	//! gets installed determines whether the search string contains
+	//! any Unicode bi-directional override or isolate markers.
 
 	const std::u32string &search_string;
 
@@ -241,8 +257,11 @@ struct input_field_search_info {
 	//! What goes into the popup list.
 	std::vector<list_item_param> &search_items;
 
-	//! Found results
-	void results(const std::vector<std::u32string> &text) const;
+	//! Simple results
+
+	//! Sets both search_results and search_items to the given vector.
+	void results(const std::vector<std::u32string> &text)
+		const LIBCXX_PUBLIC;
 
 	//! Returns the mcguffin that indicates an aborted search
 
@@ -251,8 +270,8 @@ struct input_field_search_info {
 	//! thread can use this mcguffin to signal it should abort execution.
 	//!
 	//! The new search does not get started until the callback returns.
-	//! The search callback can install a destructor callback in the
-	//! abort mcguffin to implement premature search termination.
+	//! The search callback can install a destructor callback into the
+	//! abort mcguffin to be notified to terminate the search.
 	virtual ref<obj> get_abort_mcguffin() const=0;
 };
 

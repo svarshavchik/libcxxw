@@ -10,6 +10,7 @@
 #include "x/w/text_paramfwd.H"
 #include "x/w/input_field_configfwd.H"
 #include "x/w/listlayoutmanagerfwd.H"
+#include "x/w/input_field_config.H"
 #include <x/obj.H>
 #include <x/ptrfwd.H>
 #include <x/weakptrfwd.H>
@@ -28,16 +29,16 @@ class input_field_search_threadObj : virtual public obj {
 
 	//! The search callback.
 
-	functionref<input_field_search_callback_t> search_callback_thread_only;
+	input_field_config::search_info search_info_thread_only;
+
 public:
 	LOG_CLASS_SCOPE;
 
-	THREAD_DATA_ONLY(search_callback);
+	THREAD_DATA_ONLY(search_info);
 
 	//! Constructor
-	input_field_search_threadObj(const
-				     functionref<input_field_search_callback_t>
-				     &search_callback);
+	input_field_search_threadObj(const input_field_config::search_info
+				     &search_info);
 
 	//! Destructor
 	~input_field_search_threadObj();

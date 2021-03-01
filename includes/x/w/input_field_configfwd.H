@@ -38,7 +38,7 @@ enum class bidi_format {
 	//! format retrieves the entered text without any directional override
 	//! and isolate markers.
 
-	standard,
+	none,
 
 	//! Include embedded directional override and isolation markers
 
@@ -55,7 +55,14 @@ enum class bidi_format {
 	//! Applications must be fully aware
 	//! and be able to process all Unicode bi-directional markers.
 
-	embedded
+	embedded,
+
+	//! Include embeded directional markers heuristically
+
+	//! Determine heuristically whether embedded directional
+	//! or isolation markers are required.
+
+	automatic
 };
 
 //! Callback used by an \ref input_field "input field" to search for values.

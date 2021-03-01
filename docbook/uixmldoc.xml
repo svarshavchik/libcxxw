@@ -1867,7 +1867,7 @@ layout->generate("main-window-grid",
 	  <programlisting><![CDATA[
 <element id='name'>
   <config>
-    <directional_format>embedded</directional_format>
+    <directional_format>always</directional_format>
   </config>
 </element>]]></programlisting>
 	</informalexample>
@@ -1875,7 +1875,7 @@ layout->generate("main-window-grid",
 
       <para>
 	An <classname>&ns;::w::bidi_format</classname> value is one of
-	<quote>standard</quote> or
+	<quote>none</quote>, <quote>automatic</quote> or
 	<quote>embedded</quote>.
       </para>
     </section>

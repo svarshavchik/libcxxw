@@ -77,11 +77,13 @@ void input_field_config::set_default_spin_control_factories()
 
 void input_field_config::enable_search()
 {
-	input_field_search_callback=
+	input_field_search={
 		[]
 		(const input_field_search_info &)
 		{
-		};
+		},
+		bidi_format::none
+	};
 }
 
 input_field_config_appearance::input_field_config_appearance()
@@ -135,7 +137,7 @@ create_input_field_impl_mixin(const container_impl &parent,
 {
 	// If there's no search callback, this is just the impl_mixin.
 
-	if (!config.input_field_search_callback)
+	if (!config.input_field_search)
 		return input_fieldObj::implObj::impl_mixin::create(parent);
 
 	if (config.password_char)
@@ -672,17 +674,15 @@ void input_fieldObj::on_filter(const
 		 });
 }
 
-void input_fieldObj::on_search(const
-			       functionref<input_field_search_callback_t>
-			       &callback)
+void input_fieldObj::on_search(const input_field_config::search_info &info)
 {
 	auto editor_impl=impl->editor_element->impl;
 
 	editor_impl->get_window_handler().thread()->run_as
-		([callback, editor_impl]
+		([info, editor_impl]
 		 (ONLY IN_THREAD)
 		 {
-			 editor_impl->on_search(IN_THREAD, callback);
+			 editor_impl->on_search(IN_THREAD, info);
 		 });
 }
 

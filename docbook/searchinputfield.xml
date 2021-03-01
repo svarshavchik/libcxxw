@@ -86,9 +86,15 @@ config.input_field_search_callback=
       using its
       <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>
       parameter to set the new input field's options.
-      Setting
-      <varname>input_field_search_callback</varname> adds a combo-box like
+      Initializing its
+      <varname>input_field_search</varname> members adds a combo-box like
       popup to the search input field.
+      <varname>input_field_search</varname> is a small object with two
+      fields: a <varname>callback</varname> for the actual callable object,
+      and a
+      <ulink url="&link-enum-x--w-bidi-format;"><classname>&ns;::w::bidi_format</classname></ulink>
+      that sets whether the search string received by the callback
+      has <link linkend="bidi">bi-directional markers</link>.
     </para>
 
     <para>
@@ -106,11 +112,14 @@ config.enable_search();
 
 &ns;::w::input_field f=factory-&gt;create_input_field("", config);
 
-f->on_search([]
-             (const &ns;::w::input_field_search_info &amp;search_info)
-             {
+f->on_search(
+    {
+     []
+     (const &ns;::w::input_field_search_info &amp;search_info)
+     {
                 // ...
-             });</programlisting>
+     }
+    });</programlisting>
       </informalexample>
     </blockquote>
 
@@ -153,8 +162,12 @@ f->on_search([]
 
       <note>
 	<para>
-	  The given search string does not have any embedded isolation or
-	  override <link linkend="bidi">bi-directional markers</link>,
+	  The <varname>input_field_search</varname>'s
+	  <varname>search_format</varname> member defaults to
+	  <ulink url="&link-enum-x--w-bidi-format;"><literal>&ns;::w::bidi_format::none</literal></ulink>.
+	  This strips off all
+	  <link linkend="bidi">bi-directional markers</link> from the
+	  <varname>search_string</varname>,
 	  irrespective of the
 	  <classname>&ns;::w::input_field_config</classname>'s
 	  <link linkend="inputfieldbidi"><varname>directional_format</varname></link>

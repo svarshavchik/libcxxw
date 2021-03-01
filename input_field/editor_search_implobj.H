@@ -124,8 +124,8 @@ public:
 	//! Override on_search().
 
 	void on_search(ONLY IN_THREAD,
-		       const functionref<input_field_search_callback_t>
-		       &callback) override;
+		       const input_field_config::search_info &search_info)
+		override;
 };
 
 LIBCXXW_NAMESPACE_END

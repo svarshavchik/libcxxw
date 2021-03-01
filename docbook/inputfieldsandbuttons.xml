@@ -421,7 +421,7 @@ factory->create_input_field("", password_conf);</programlisting>
 
     <variablelist>
       <varlistentry>
-	<term><literal>&ns;::w::bidi_format::standard</literal> (default)</term>
+	<term><literal>&ns;::w::bidi_format::none</literal> (default)</term>
 	<listitem>
 	  <para>
 	    Represent the Unicode text without any isolation and embedding
@@ -433,7 +433,17 @@ factory->create_input_field("", password_conf);</programlisting>
 	<term><literal>&ns;::w::bidi_format::embedded</literal></term>
 	<listitem>
 	  <para>
-	    Include isolation and embedding markers in the Unicode text.
+	    Always include isolation and embedding markers in the Unicode text.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><literal>&ns;::w::bidi_format::automatic</literal></term>
+	<listitem>
+	  <para>
+	    Include isolation and embedding markers in the Unicode text
+	    when it is heuristically determined they're needed.
 	  </para>
 	</listitem>
       </varlistentry>

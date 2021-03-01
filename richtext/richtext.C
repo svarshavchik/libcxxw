@@ -345,11 +345,28 @@ public:
 
 		bool first_str=str.size() == 0;
 
-		str += embedding_format == bidi_format::embedded
-			? convert.embed():paragraph;
+		bool do_embed=false;
+
+		switch (embedding_format) {
+		case bidi_format::none:
+			break;
+		case bidi_format::embedded:
+			do_embed=true;
+			break;
+		case bidi_format::automatic:
+			do_embed=unicode::bidi_needs_embed
+				(paragraph.get_string(),
+				 convert.levels,
+				 impl->requested_paragraph_embedding_level
+				 ? &*impl->requested_paragraph_embedding_level
+				 : NULL);
+			break;
+		}
+
+		str += do_embed	? convert.embed():paragraph;
 
 		if ( first_str && impl->requested_paragraph_embedding_level &&
-		     embedding_format == bidi_format::embedded)
+		     do_embed )
 		{
 			convert.embed_paragraph
 				(str,
