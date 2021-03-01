@@ -737,6 +737,10 @@ libcxxw_la_SOURCES=\
 	progressbar_slider.C			    \
 	progressbar_slider.H			    \
 	progressbar_sliderfwd.H			    \
+	radio_button.C				    \
+	radio_button.H				    \
+	radio_buttonfwd.H			    \
+	radio_buttonobj.H			    \
 	radio_group.C				    \
 	radio_group.H				    \
 	radio_group_impl.C			    \

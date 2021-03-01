@@ -16,8 +16,8 @@ LIBCXXW_NAMESPACE_START
 //! Subclass the \ref busy "busy handle". This gets instantiating before
 //! invoking a callback and passing to it the \ref busy "busy" handle.
 
-class LIBCXX_HIDDEN busy_impl : public busy {
- public:
+class busy_impl : public busy {
+public:
 
 	//! The top level display element.
 	const ref<generic_windowObj::handlerObj> w;

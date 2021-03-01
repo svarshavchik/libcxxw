@@ -6,8 +6,10 @@
 #define radio_group_h
 
 #include "x/w/radio_group.H"
-#include "image_button_internalobj.H"
-
+#include "x/w/busyfwd.H"
+#include "x/w/callback_triggerfwd.H"
+#include "radio_buttonfwd.H"
+#include "radio_buttonobj.H"
 #include <x/weaklist.H>
 
 LIBCXXW_NAMESPACE_START
@@ -18,7 +20,7 @@ public:
 
 	//! A container for all radio buttons in this group.
 
-	typedef weaklist<image_button_internalObj::implObj> button_list_t;
+	typedef weaklist<radio_buttonObj> button_list_t;
 
 	//! All radio buttons in this group.
 
@@ -31,8 +33,12 @@ public:
 	implObj();
 
 	//! Destructor
-
 	~implObj();
+
+	void turn_off(ONLY IN_THREAD,
+		      const radio_button &turned_on,
+		      busy_impl &busy,
+		      const callback_trigger_t &trigger);
 };
 
 

@@ -11,6 +11,7 @@
 #include "icon_images_vector_element.H"
 #include "x/w/impl/icon.H"
 #include "radio_group.H"
+#include "radio_buttonobj.H"
 #include "busy.H"
 #include "catch_exceptions.H"
 
@@ -133,7 +134,8 @@ create_checkbox_impl(const container_impl &container,
 // image.
 
 class LIBCXX_HIDDEN radio_image_buttonObj :
-	public checkbox_image_buttonObj {
+	public checkbox_image_buttonObj,
+	public radio_buttonObj {
  public:
 
 	//! Constructor
@@ -160,7 +162,40 @@ class LIBCXX_HIDDEN radio_image_buttonObj :
 	void set_image_number(ONLY IN_THREAD,
 			      const callback_trigger_t &trigger,
 			      size_t) override;
+
+	//! Implement radio button turn off.
+	bool turn_off(ONLY IN_THREAD) override;
+
+	//! Implement radio button turn off.
+
+	void turned_off(ONLY IN_THREAD,
+			busy_impl &i_am_busy,
+			const callback_trigger_t &trigger) override;
 };
+
+bool radio_image_buttonObj::turn_off(ONLY IN_THREAD)
+{
+	if (get_image_number() == 0)
+		return false;
+
+	do_set_image_number(IN_THREAD, 0);
+	return true;
+}
+
+void radio_image_buttonObj::turned_off(ONLY IN_THREAD,
+				       busy_impl &i_am_busy,
+				       const callback_trigger_t &trigger)
+{
+	auto &cb=current_callback(IN_THREAD);
+
+	if (!cb)
+		return;
+
+	try {
+		cb(IN_THREAD, 0, trigger, i_am_busy);
+	} REPORT_EXCEPTIONS(this);
+
+}
 
 ref<image_button_internalObj::implObj>
 create_radio_impl(const radio_group &group,
@@ -181,69 +216,31 @@ void radio_image_buttonObj::set_image_number(ONLY IN_THREAD,
 					     const callback_trigger_t &trigger,
 					     size_t n)
 {
+	busy_impl i_am_busy{*this};
+
+	group->impl->turn_off(IN_THREAD,
+			      radio_button{this},
+			      i_am_busy,
+			      trigger);
+
 	n %= icon_images(IN_THREAD).size();
 
 	if (n == 0)
 		n=(n+1) % icon_images(IN_THREAD).size();
 
-	// Invoke all callbacks after updating all image buttons' state.
-
-	std::vector<image_button_callback_t> callbacks;
-
-	callbacks.reserve(group->impl->button_list->size());
-
-	ref<image_button_internalObj::implObj> me(this);
-
-	// Turn off all other radio buttons...
-
-	for (const auto &buttonptr : *group->impl->button_list)
-	{
-		auto buttonp=buttonptr.getptr();
-
-		if (!buttonp)
-			continue;
-
-		ref<image_button_internalObj::implObj> button=buttonp;
-
-		// ... except me.
-
-		if (button == me)
-			continue;
-
-		if (button->get_image_number() == 0)
-			continue;
-
-		if (button->get_image_number())
-		{
-			auto &cb=button->current_callback(IN_THREAD);
-
-			if (cb)
-				callbacks.push_back(cb);
-		}
-
-		button->do_set_image_number(IN_THREAD, 0);
-	}
-
-	// And turn on myself.
+	// Turn on myself.
 
 	auto p=get_image_number();
 	if (n != p)
+	{
 		do_set_image_number(IN_THREAD, n);
-
-	busy_impl i_am_busy{*this};
-
-	for (const auto &cb:callbacks)
-		try {
-			cb(IN_THREAD, 0, trigger, i_am_busy);
-		} REPORT_EXCEPTIONS(this);
-
-	if (n != p)
 		try {
 			auto &cb=current_callback(IN_THREAD);
 
 			if (cb)
 				cb(IN_THREAD, n, trigger, i_am_busy);
 		} REPORT_EXCEPTIONS(this);
+	}
 }
 
 LIBCXXW_NAMESPACE_END

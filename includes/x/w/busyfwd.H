@@ -10,6 +10,7 @@
 LIBCXXW_NAMESPACE_START
 
 class busy;
+class LIBCXX_HIDDEN busy_impl;
 
 LIBCXXW_NAMESPACE_END
 
