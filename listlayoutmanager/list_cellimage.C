@@ -118,4 +118,9 @@ bool list_cellimageObj::cell_is_separator()
 	return false;
 }
 
+void list_cellimageObj::set_cell_image_number(size_t n)
+{
+	this->n=n;
+}
+
 LIBCXXW_NAMESPACE_END

@@ -6,13 +6,14 @@
 #define x_w_extra_list_row_infoobj_h
 
 #include "listlayoutmanager/extra_list_row_infofwd.H"
+#include "listlayoutmanager/list_elementobj.H"
 #include "x/w/impl/popup/popupfwd.H"
 #include "x/w/impl/connection_threadfwd.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/shortcutfwd.H"
 #include "x/w/rectangle.H"
-#include <x/obj.H>
+#include "radio_buttonobj.H"
 #include <x/functionalrefptrfwd.H>
 
 #include <functional>
@@ -23,7 +24,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see extra_list_row_info
 
-class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
+class LIBCXX_HIDDEN extra_list_row_infoObj : public radio_buttonObj {
 
 	class shortcut_implObj;
 
@@ -39,11 +40,11 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	//! Information about this row.
 
 	struct protected_data {
-		//! Row type
-		list_row_type_t row_type=list_row_type_t::enabled;
-
 		//! Row is selected
 		bool selected=false;
+
+		//! Row type
+		list_row_type_t row_type=list_row_type_t::enabled;
 
 		//! This item's status change callback.
 
@@ -65,7 +66,7 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	THREAD_DATA_ONLY(current_row_number);
 
 	//! Constructor
-	extra_list_row_infoObj();
+	extra_list_row_infoObj(bool initially_selected);
 
 	//! Destructor
 	~extra_list_row_infoObj();
@@ -90,6 +91,8 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	void set_meta(const listlayoutmanager &lm,
 		      list_row_info_t &row_info,
 		      listimpl_info_t::lock &lock,
+		      list_elementObj::implObj &me,
+		      size_t row_num,
 		      const textlist_rowinfo &meta);
 
 	//! Whether this list item has a popup.
@@ -102,10 +105,9 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 
 	//! Whether this list item is an option
 
-	bool is_option(listimpl_info_t::lock &lock) const
+	const menu_item_option *is_option(listimpl_info_t::lock &lock) const
 	{
-		return std::holds_alternative<menu_item_option>
-			(data(lock).menu_item);
+		return std::get_if<menu_item_option>(&data(lock).menu_item);
 	}
 
 	//! Display the popup.
@@ -131,6 +133,12 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	//! Return the submenu's layoutmanager.
 
 	listlayoutmanager submenu_layoutmanager(listimpl_info_t::lock &lock);
+
+	//! Inherited from radio_buttonObj
+	void turn_off(ONLY IN_THREAD,
+		      const container_impl &list_container,
+		      busy_impl &i_am_busy,
+		      const callback_trigger_t &trigger) override;
 };
 
 LIBCXXW_NAMESPACE_END

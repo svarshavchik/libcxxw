@@ -37,6 +37,7 @@
 #include "defaulttheme.H"
 #include "synchronized_axis_value.H"
 #include "ellipsiscache.H"
+#include "radio_group.H"
 #include <algorithm>
 #include <x/algorithm.H>
 #include <X11/keysym.h>
@@ -505,22 +506,26 @@ void list_elementObj::implObj
 			       info.rowmeta.begin(),
 			       info.rowmeta.end());
 
-	size_t row_num=0;
+	lock->cells.insert(lock->cells.begin() + row_number * columns,
+			   info.newcells.begin(), info.newcells.end());
+
+	size_t new_row_num=0;
 
 	std::for_each(lock->row_infos.begin() + row_number,
 		      lock->row_infos.begin() + row_number + rows,
-		      [&]
+		      [&, this]
 		      (auto &iter)
 		      {
 			      iter.extra->set_meta(lm, iter,
 						   lock,
+						   *this,
+						   row_number+new_row_num,
 						   std::get<1>
-						   (info.rowmeta.at(row_num++))
+						   (info.rowmeta.at
+						    (new_row_num))
 						   );
+			      ++new_row_num;
 		      });
-
-	lock->cells.insert(lock->cells.begin() + row_number * columns,
-			   info.newcells.begin(), info.newcells.end());
 
 	// Everything must be recalculated and redrawn.
 
@@ -569,22 +574,29 @@ void list_elementObj::implObj
 	// The existing rows are officially being removed.
 	removing_rows(IN_THREAD, lm, lock, row_number, n);
 
+	std::copy(info.newcells.begin(), info.newcells.end(),
+		  lock->cells.begin()+row_number*columns);
+
 	// With the booking out of the way, we simply replace the rows and
 	// cells.
 
-	size_t row_num=0;
+	size_t new_row_num=0;
 
 	std::generate(lock->row_infos.begin()+row_number,
 		      lock->row_infos.begin()+row_number+n,
 		      [&]
 		      {
-			      auto &meta=info.rowmeta.at(row_num++);
+			      auto &meta=info.rowmeta.at(new_row_num);
 
 			      list_row_info_t r{meta};
 
 			      r.extra->set_meta(lm, r,
 						lock,
+						*this,
+						row_number+new_row_num,
 						std::get<1>(meta));
+
+			      ++new_row_num;
 
 			      return r;
 		      });
@@ -592,9 +604,6 @@ void list_elementObj::implObj
 	// Need to explicitly set modified, since std::generate is going
 	// to bypass our carefully drafted contract.
 	lock->row_infos.modified=true;
-
-	std::copy(info.newcells.begin(), info.newcells.end(),
-		  lock->cells.begin()+row_number*columns);
 
 	// Recalculate and redraw everything.
 
@@ -2063,11 +2072,34 @@ void list_elementObj::implObj
 		return;
 	}
 
-	if (row.extra->is_option(lock))
+	if (auto option=row.extra->is_option(lock))
 	{
-		selected_common(IN_THREAD, lm, ll, lock, i,
-				!row.extra->data(lock).selected,
-				trigger);
+		if (option->group)
+		{
+			radio_group group{option->group};
+
+			// Turn off other button(s) in this radio group
+			// before this button gets turned on.
+			{
+				busy_impl yes_i_am{*this};
+
+				group->turn_off(IN_THREAD, row.extra,
+						lm->impl->layout_container_impl,
+						yes_i_am, trigger);
+			}
+
+			// Now turn on the new button.
+
+			selected_common(IN_THREAD, lm, ll, lock, i,
+					true,
+					trigger);
+		}
+		else
+		{
+			selected_common(IN_THREAD, lm, ll, lock, i,
+					!row.extra->data(lock).selected,
+					trigger);
+		}
 	}
 	else
 	{
@@ -2107,12 +2139,19 @@ void list_elementObj::implObj
 		     trigger.index() == callback_trigger_button_event
 		     ));
 
-	try {
-		list_style.selected_changed(&lock->cells.at(i*columns),
-					    selected_flag);
-	} REPORT_EXCEPTIONS(this);
+	selected_changed(lock, i, selected_flag);
 
 	notify_callbacks(IN_THREAD, lm, ll, r, i, selected_flag, trigger);
+}
+
+void list_elementObj::implObj::selected_changed(listimpl_info_t::lock &lock,
+						size_t row,
+						bool flag)
+{
+	try {
+		list_style.selected_changed(&lock->cells.at(row*columns),
+					    flag);
+	} REPORT_EXCEPTIONS(this);
 }
 
 void list_elementObj::implObj

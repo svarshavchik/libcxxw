@@ -225,7 +225,20 @@ items. Each such parameter creates a new list item.
 All metadata parameters apply to the immediately following list item, and
 therefore cannot appear at the end of the vector. Two or more metadata
 parameters for a single list item can appear in any relative order, as long
-as they appear before the single list item.
+as they appear before their list item:
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/factory.H>
+
+l->append_items({
+       "Lorem ipsum",
+       INSERT_LIBX_NAMESPACE::w::selected{},
+       "Dolor Sit Amet",
+    });
+\endcode
+
+This adds two list items, "Lorem Ipsum" and "Dolor Sit Amet". The latter
+comes up initially selected.
 
 \note
 All changes to the context of the list get executed by the connection thread.
@@ -389,6 +402,17 @@ An \c INSERT_LIBX_NAMESPACE::w::menuoption parameter indicates that the
 following item is a selectable option. In addition to invoking its callback,
 a visual indicator (usually a small bullet) gets added or removed next to
 the list item.
+
+\code
+INSERT_LIBX_NAMESPACE::w::menuoption{"radiogroup1@examples.libcxx.com"},
+\endcode
+
+Optional aggregate initialization specifies a unique menu option radio group
+label.
+
+Selecting a menu option with a non-empty radio group name automatically
+deselects any other selected option the same radio group name (in the same
+menu popup).
 
 \par Menu item shortcuts
 
@@ -720,7 +744,15 @@ struct submenu;
 
 //! This is a selectable menu option.
 
-struct menuoption {};
+struct menuoption {
+
+	//! If set, this option is a radio button in this group.
+	std::string radio_groupname;
+};
+
+//! This list item is initially selected.
+
+struct selected{};
 
 //! This is a separator.
 
@@ -851,6 +883,7 @@ typedef std::variant<text_param, image_param, separator, shortcut,
 		     inactive_shortcut,
 		     hierindent,
 		     menuoption, submenu,
+		     selected,
 		     list_item_status_change_callback,
 		     get_new_items> list_item_param_base;
 

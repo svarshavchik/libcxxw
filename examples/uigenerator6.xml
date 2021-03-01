@@ -112,6 +112,18 @@
 	    <menuoption />
 	    <label type="theme_text">Automatic Close</label>
 	    <separator />
+
+	    <!-- A radio group of two menu options -->
+
+	    <name>file_plain_format</name>
+	    <menuoption>optiongroup@examples.w.libcxx.com</menuoption>
+	    <selected /> <!-- Selected by default -->
+	    <label type="theme_text">Plain</label>
+
+	    <name>file_full_format</name>
+	    <menuoption>optiongroup@examples.w.libcxx.com</menuoption>
+	    <label type="theme_text">Full</label>
+
 	  </items>
 	</append_items>
 

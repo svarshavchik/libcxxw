@@ -393,6 +393,33 @@ size_t view_menu(const x::w::listlayoutmanager &m)
 					  << std::endl;
 			},
 			"Options",
+
+			// A separator line
+
+			x::w::separator{},
+
+			// A menu option, radio group, initially selected
+			x::w::menuoption{"radiooption@examples.libcxx.com"},
+			x::w::selected{},
+			[]
+			(ONLY IN_THREAD,
+			 const x::w::list_item_status_info_t &info)
+			{
+				std::cout << "View->Basic: " << info.selected
+					  << std::endl;
+			},
+			"Basic",
+
+			// A menu option, radio group, initially selected
+			x::w::menuoption{"radiooption@examples.libcxx.com"},
+			[]
+			(ONLY IN_THREAD,
+			 const x::w::list_item_status_info_t &info)
+			{
+				std::cout << "View->Detailed: " << info.selected
+					  << std::endl;
+			},
+			"Detailed",
 		});
 	return 1;
 }

@@ -1,3 +1,9 @@
+2021-02-28  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Specifying that list items, or menu options, are selected
+	by default. Implement menu option radio groups (mutually
+	exclusive).
+
 2021-02-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Replace radiogroup handles with opaque identifier strings.

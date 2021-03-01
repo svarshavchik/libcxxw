@@ -137,11 +137,26 @@ uicompiler::list_items_param_value(const ui::parser_lock &orig_lock,
 		if (name == "menuoption")
 		{
 			params->emplace_back
+				([groupname=optional_value(lock, ".",
+							   element)]
+				 (std::vector<list_item_param> &params,
+				  uielements &elements)
+				 {
+					 params.emplace_back(menuoption{
+							 groupname
+						 });
+				 });
+			continue;
+		}
+
+		if (name == "selected")
+		{
+			params->emplace_back
 				([]
 				 (std::vector<list_item_param> &params,
 				  uielements &elements)
 				 {
-					 params.emplace_back(menuoption{});
+					 params.emplace_back(selected{});
 				 });
 			continue;
 		}

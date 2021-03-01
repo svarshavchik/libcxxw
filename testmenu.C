@@ -513,8 +513,35 @@ size_t view_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 			std::cout << "View->Options: " << info.selected
 				  << std::endl;
 		},
-		"Options"
-			});
+		"Options",
+
+		// A separator line
+
+		LIBCXX_NAMESPACE::w::separator{},
+
+		// A menu option, radio group, initially selected
+		LIBCXX_NAMESPACE::w::menuoption{"radiooption@examples.libcxx.com"},
+		LIBCXX_NAMESPACE::w::selected{},
+		[]
+		(ONLY IN_THREAD,
+		 const auto &info)
+		{
+			std::cout << "View->Basic: " << info.selected
+				  << std::endl;
+		},
+		"Basic",
+
+		// A menu option, radio group, initially selected
+		LIBCXX_NAMESPACE::w::menuoption{"radiooption@examples.libcxx.com"},
+		[]
+		(ONLY IN_THREAD,
+		 const auto &info)
+		{
+			std::cout << "View->Detailed: " << info.selected
+				  << std::endl;
+		},
+		"Detailed",
+		});
 
 	return 1;
 }

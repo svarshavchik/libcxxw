@@ -31,7 +31,7 @@ See COPYING for distribution information.
 	<methodname>get_menubarlayoutmanager</methodname>()
 	returns an
 	<ulink url="&link-typedef-x--w-menubarlayoutmanager;"><classname>&ns;::w::menubarlayoutmanager</classname></ulink>,
-	a &layoutmanager; to create its contents. Once created,
+	a &layoutmanager; for creating the menu bar. Once created,
 	<methodname>get_menubar</methodname>() returns a
 	&container; that represents that menu bar, with a
 	<methodname>show</methodname>() method that makes it visible.
@@ -103,10 +103,10 @@ See COPYING for distribution information.
   <para>
     Unlike regular widgets in the main window, widgets
     that make up the menu bar and its menus should not be
-    <methodname>show</methodname>()n, except for
-    <methodname>show</methodname>()ing the menu bar itself.
+    <methodname>show</methodname>()n; just
+    <methodname>show</methodname>() the menu bar itself.
     <ulink url="&link-typedef-x--w-menubarlayoutmanager;"><classname>&ns;::w::menubarlayoutmanager</classname></ulink>'s
-    method that create menus take a creator callback that gets invoked
+    method that creates menus take a creator callback that gets invoked
     to create the menus.
   </para>
 
@@ -156,7 +156,7 @@ See COPYING for distribution information.
     <para>
       Constructing a
       <ulink url="&link-x--w--menubar-lock;"><classname>&ns;::w::menubar_lock</classname></ulink>
-      blocks the menu bar from other execution thread, at which point
+      blocks the menu bar from other execution threads, at which point
       its <methodname>get_menu</methodname>() returns the
       <classname>&ns;::w::menu</classname> elements.
     </para>
@@ -195,8 +195,8 @@ See COPYING for distribution information.
       <classname>&ns;::w::list_item_param</classname> is typically a label.
       It is (derived from) a <classname>std::variant</classname>; and can
       take on additional values, such as:
-      the shortcut for a menu item, a &callback;
-      to invoke whenever the menu item gets selected, and several other
+      the shortcut for a menu item; a &callback;
+      that gets invoked whenever the menu item gets selected; and several other
       menu item specific attributes.
     </para>
 
@@ -316,8 +316,66 @@ m->append_items(
       });</programlisting>
 	      </informalexample>
 	    </blockquote>
+
+	    <para>
+	      Mutually exclusive radio-button type groups of menu options get
+	      created by passing a
+	      <link linkend="radioidentifiers">radio group identifier</link>:
+	    </para>
+
+	    <blockquote>
+	      <informalexample>
+		<programlisting>
+m->append_items(
+      {
+		x::w::menuoption{"group1@examples.w.libcxx.com"},
+                x::w::selected{},
+		[]
+		(ONLY IN_THREAD,
+                 const x::w::list_item_status_info_t &amp;info)
+		{
+                            // ...
+		},
+		"Standard",
+		x::w::menuoption{"group1@examples.w.libcxx.com"},
+		[]
+		(ONLY IN_THREAD,
+                 const x::w::list_item_status_info_t &amp;info)
+		{
+                            // ...
+		},
+		"Enhanced",
+      });</programlisting>
+	      </informalexample>
+	    </blockquote>
+
+	    <para>
+	      This example adds two selectable menu options,
+	      <quote>Standard</quote> and <quote>Enhanced</quote>.
+	      The same label, <quote>group1@examples.w.libcxx.com</quote>
+	      gets specified for bnoth menu options, placing them in the
+	      same radio-button style group.
+	      The first one is initially selected (prefixed by a bullet
+	      icon). Selecting either one automatically deselects the
+	      other one.
+	    </para>
+
 	  </listitem>
 	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <classname>&ns;::w::selected</classname>
+	  </term>
+
+	  <listitem>
+	    <para>
+	      This entry specified that its menu option is initially
+	      selected.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
 	<varlistentry>
 	  <term>
 	    <classname>&ns;::w::submenu</classname>

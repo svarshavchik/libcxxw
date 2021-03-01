@@ -13,7 +13,8 @@
 #include "activated_in_thread.H"
 #include "generic_window_handler.H"
 #include "x/w/shortcut.H"
-
+#include "radio_button.H"
+#include "radio_group.H"
 #include <x/weakptr.H>
 
 LIBCXXW_NAMESPACE_START
@@ -138,7 +139,11 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 
 
-extra_list_row_infoObj::extra_list_row_infoObj()=default;
+extra_list_row_infoObj
+::extra_list_row_infoObj(bool initially_selected)
+	: data_under_lock{initially_selected}
+{
+}
 
 extra_list_row_infoObj::~extra_list_row_infoObj()
 {
@@ -157,12 +162,28 @@ bool extra_list_row_infoObj::enabled(listimpl_info_t::lock &lock) const
 void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 				      list_row_info_t &row_info,
 				      listimpl_info_t::lock &lock,
+				      list_elementObj::implObj &me,
+				      size_t row_num,
 				      const textlist_rowinfo &meta)
 {
 	data(lock).status_change_callback=meta.listitem_callback;
 
 	data(lock).menu_item=meta.menu_item;
 	row_info.indent=meta.indent_level;
+
+	if (auto option=is_option(lock))
+	{
+		// Attach ourselves to an option group now.
+		if (option->group)
+			option->group->button_list
+				->push_back(radio_button{this});
+	}
+
+	// If this is initially enabled this will set its correct visual
+	// appearance, for radio buttons.
+
+	me.selected_changed(lock, row_num, data(lock).selected);
+
 
 	if (meta.inactive_shortcut ||
 	    !meta.listitem_shortcut || !*meta.listitem_shortcut)
@@ -229,6 +250,52 @@ listlayoutmanager extra_list_row_infoObj
 {
 	return std::get<menu_item_submenu>(data(lock).menu_item).submenu_popup
 		->get_layoutmanager();
+}
+
+void extra_list_row_infoObj::turn_off(ONLY IN_THREAD,
+				      const container_impl &list_container,
+				      busy_impl &i_am_busy,
+				      const callback_trigger_t &trigger)
+{
+	list_container->invoke_layoutmanager
+		([&, this]
+		 (ref<listlayoutmanagerObj::implObj> impl)
+		{
+			// This is, admittingly, a lot of work, so let's see
+			// if we can shortcut it. First, grab the lock.
+			//
+			// Note that menuitem_selected() already obtained this
+			// list lock, so this lock is guaranteed to succeed.
+			// However we still need to go through the motion
+			// in order to legally access the data().
+
+			listimpl_info_t::lock
+				lock{impl->list_element_singleton->impl
+				->textlist_info};
+
+			if (!data(lock).selected)
+				return;
+
+			// This should whittle things down, expecting only
+			// one button in the radio group to be turned off,
+			// so this overhead gets limited to only one time:
+
+			listlayoutmanager lm=impl->create_public_object();
+
+			lm->notmodified();
+
+			if (current_row_number(IN_THREAD) <
+			    lock->row_infos.size() &&
+			    lock->row_infos.at(current_row_number(IN_THREAD))
+			    .extra == ref{this})
+			{
+				lm->selected(IN_THREAD,
+					     current_row_number(IN_THREAD),
+					     false,
+					     trigger);
+				return;
+			}
+		});
 }
 
 LIBCXXW_NAMESPACE_END

@@ -25,6 +25,10 @@ Each \ref list_row_info_t "list_row_info_t" has a pointer to this additional
 object, and object remains where it is, while other list items are inserted or
 deleted, and is not affected by changed to the contents of the list.
 
+The extra_list_row_infoObj inherits from radio_buttonObj. For menus, each
+list item that's a menu option in a radio group uses this to implement
+radio button functionality.
+
 */
 
 typedef ref<extra_list_row_infoObj> extra_list_row_info;

@@ -1618,7 +1618,6 @@ typedef x::ref<cxxwtheme_threadObj> cxxwtheme_thread;
 
 int main(int argc, char **argv)
 {
-	x::locale::base::environment()->global();
 	try {
 		x::singletonapp::managed
 			([]

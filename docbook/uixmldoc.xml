@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2019 Double Precision, Inc.
+Copyright 2019-2021 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -1707,12 +1707,39 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 	  </term>
 	  <listitem>
 	    <para>
-	      Specifies a
-	      <quote>menuoption</quote>
+	      Inserts
+	      a <classname>&ns;::w::menuoption</classname>
 	      <link linkend="menuattributes">menu attribute</link>, in a
+	      <classname>&ns;::w::list_item_param</classname>. in a
 	      <link linkend="uixmlfactorymenubar"><tag class='attribute'>type</tag>=<quote>menubar</quote>
 		<tag class='element'>factory</tag>s</link>
 	      that creates menu items.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <tag class='element'>menuoption</tag><replaceable>name</replaceable><tag class='endtag'>menuoption</tag>
+	  </term>
+
+	  <listitem>
+	    <para>
+	      Inserts
+	      a <classname>&ns;::w::menuoption</classname>
+	      with an initialized <varname>radio_groupname</varname>.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
+	    <tag class='emptytag'>selected</tag>
+	  </term>
+	  <listitem>
+	    <para>
+	      Inserts a
+	      a <classname>&ns;::w::selected</classname> value in the
+	      <classname>&ns;::w::list_item_param</classname>vector.
 	    </para>
 	  </listitem>
 	</varlistentry>

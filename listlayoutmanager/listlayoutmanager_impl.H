@@ -45,6 +45,10 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	//! Override create_public_object
 	layoutmanager create_public_object() override;
 
+	//! Create our public object.
+
+	listlayoutmanager create_listlayoutmanager();
+
 	//! Implement recalculate().
 
 	//! Forward recalculate() to textlist_impl's.

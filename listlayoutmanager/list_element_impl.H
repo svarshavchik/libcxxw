@@ -439,6 +439,9 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			     bool,
 			     const callback_trigger_t &);
 
+	void selected_changed(listimpl_info_t::lock &lock, size_t row,
+			      bool flag);
+
 	struct textlist_info_lock;
 
  public:

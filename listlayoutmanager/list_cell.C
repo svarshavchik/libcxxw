@@ -14,4 +14,8 @@ list_cellObj::list_cellObj(valign valignment)
 
 list_cellObj::~list_cellObj()=default;
 
+void list_cellObj::set_cell_image_number(size_t n)
+{
+}
+
 LIBCXXW_NAMESPACE_END

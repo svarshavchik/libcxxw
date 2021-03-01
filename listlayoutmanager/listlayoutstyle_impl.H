@@ -23,24 +23,66 @@
 #include "x/w/listlayoutmanager.H"
 #include "x/w/impl/focus/focusablefwd.H"
 #include "x/w/connection_threadfwd.H"
+#include "radio_groupfwd.H"
 #include <vector>
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
-//! Metadata for each list item returned by \ref listlayoutstyle_impl "create_newcell()
+//! Metadata for each created list item.
 
 struct textlist_rowinfo {
+
+	//! The new list item's keyboard shortcut.
 	std::optional<shortcut>			listitem_shortcut;
+
+	//! The new list item's callback.
 	list_item_status_change_callbackptr	listitem_callback;
 
+	//! The new list item's indentation level
 	size_t indent_level=0;
 
+	//! Whether the keyboard shortcut is for display-only purposes.
 	bool inactive_shortcut=false;
 
+	//! Whether the new list item is initially selected
+
+	bool initially_selected=false;
+
+	//! For menus, the type of the menu item.
 	menu_item_t menu_item;
 
+	//! For menu item that are options, their radio group (if any).
+	radio_groupptr menu_item_group;
+
+	//! A new menu item is being created.
+
+	//! About to set the menu_item, make sure this has not been done
+	//! before.
 	void setting_menu_item();
+
+	//! Constructor
+	textlist_rowinfo();
+
+	//! Destructor
+
+	~textlist_rowinfo();
+
+	//! Copy constructor.
+
+	textlist_rowinfo(const textlist_rowinfo &);
+
+	//! Move constructor
+
+	textlist_rowinfo(textlist_rowinfo &&);
+
+	//! Assignment oeprator
+
+	textlist_rowinfo &operator=(const textlist_rowinfo &);
+
+	//! Move operator
+
+	textlist_rowinfo &operator=(textlist_rowinfo &&);
 };
 
 //! Populated by create_cells().

@@ -55,7 +55,8 @@ class connectionObj : virtual public obj {
 
 	//! Sets a new theme and scaling factor.
 
-	void set_theme(ONLY IN_THREAD,
+	void set_theme(//! Called only in the connection thread
+		       ONLY IN_THREAD,
 		       //! Theme name
 		       const std::string &identifier,
 		       //! Scaling factor

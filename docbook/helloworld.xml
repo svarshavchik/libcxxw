@@ -892,6 +892,25 @@ x::w::label l=f->create_label("Hello world");</programlisting>
 	shows the basic approach of catching the exception, and reporting it.
       </para>
     </section>
+
+    <section id="locale">
+      <title>Application locale</title>
+
+      <para>
+	Linking with &appshort; results in automatically loading the system
+	environment locale into the application, i.e.:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>setlocale(LC_ALL, "");</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This happens automatically, with no explicit action.
+      </para>
+    </section>
   </section>
 </chapter>
 <!--

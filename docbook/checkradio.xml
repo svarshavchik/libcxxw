@@ -54,18 +54,28 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      Radio group identifiers are opaque, unique labels. For future use,
-      radio group identifiers should use the following naming conventions.
-      Applications should use identifiers formatted as Internet
-      hostnames or E-mail addresses using domain names that belong to the
-      application. An application developed by
-      <literal>example.com</literal>
-      can use <quote>radiogroup1@example.com</quote>, or
-      <quote>radiogroup@app1.example.com</quote>, as an example.
-      &appshort;'s internal radio group identifiers use
-      <quote>@libcxx.com</quote> to avoid application conflicts:
-      &appshort; handles radio button identifiers as opaque text strings.
+      Selectable <link linkend="menuattributes">menu options</link> also have
+      optional radio group identifiers, that form a mutually-exclusive list
+      of options selected from popup menus.
     </para>
+
+    <section id="radioidentifiers">
+      <title>Radio group identifiers</title>
+
+      <para>
+	Radio group identifiers are opaque, unique labels. For future use,
+	radio group identifiers should use the following naming conventions.
+	Applications should use identifiers formatted as Internet
+	hostnames or E-mail addresses using domain names that belong to the
+	application. An application developed by
+	<literal>example.com</literal>
+	can use <quote>radiogroup1@example.com</quote>, or
+	<quote>radiogroup@app1.example.com</quote>, as an example.
+	&appshort;'s internal radio group identifiers use
+	<quote>@libcxx.com</quote> to avoid application conflicts:
+	&appshort; handles radio button identifiers as opaque text strings.
+      </para>
+    </section>
 
     <section id="button_labeling">
       <title>Button labels</title>
@@ -100,7 +110,7 @@ See COPYING for distribution information.
 	  <programlisting>
 void set_train_label(const x::w::factory &amp;f, bool is_selected)
 {
-    f->create_label(is_selected ? "Train (with weekends)":"Train")->show();
+    f->create_label(is_selected ? "Train (no weekends)":"Train")->show();
 }
 
 // ...

@@ -7,6 +7,8 @@
 
 #include "x/w/impl/popup/popupfwd.H"
 #include "x/w/impl/popup/popupobj.H"
+#include "x/w/containerobj.H"
+#include "radio_groupfwd.H"
 #include <variant>
 
 LIBCXXW_NAMESPACE_START
@@ -15,7 +17,31 @@ LIBCXXW_NAMESPACE_START
 
 //! \see menu_item_t
 
-struct LIBCXX_HIDDEN menu_item_option {};
+struct LIBCXX_HIDDEN menu_item_option {
+
+	//! My radio group.
+
+	radio_groupptr group;
+
+	//! Constructor
+	menu_item_option();
+
+	//! Destructor
+	~menu_item_option();
+
+	//! Copy constructor
+	menu_item_option(const menu_item_option &);
+
+	//! Move constructor
+	menu_item_option(menu_item_option &&);
+
+	//! Assignment operator
+
+	menu_item_option &operator=(const menu_item_option &);
+
+	//! Move operator
+	menu_item_option &operator=(menu_item_option &&);
+};
 
 //! This menu item is a submenu
 

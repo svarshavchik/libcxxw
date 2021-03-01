@@ -25,6 +25,11 @@ listlayoutmanagerObj::implObj::~implObj()=default;
 
 layoutmanager listlayoutmanagerObj::implObj::create_public_object()
 {
+	return create_listlayoutmanager();
+}
+
+listlayoutmanager listlayoutmanagerObj::implObj::create_listlayoutmanager()
+{
 	return listlayoutmanager::create(ref{this});
 }
 

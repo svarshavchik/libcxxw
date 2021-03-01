@@ -9,6 +9,7 @@
 #include "radio_groupfwd.H"
 #include "x/w/busyfwd.H"
 #include "x/w/callback_triggerfwd.H"
+#include "x/w/containerobj.H"
 #include "radio_buttonfwd.H"
 #include "radio_buttonobj.H"
 #include <x/weaklistfwd.H>
@@ -33,8 +34,12 @@ public:
 
 	//! turn_off() everything in button_list except turned_on.
 
+	//! The parent container, busy and trigger get forwarded to
+	//! all radio_button_turned_offs.
+
 	void turn_off(ONLY IN_THREAD,
 		      const radio_button &turned_on,
+		      const container_impl &parent_container,
 		      busy_impl &busy,
 		      const callback_trigger_t &trigger);
 	//! Constructor

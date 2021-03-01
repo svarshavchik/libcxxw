@@ -26,9 +26,32 @@
 #include "x/w/listlayoutmanager.H"
 #include "x/w/text_paramfwd.H"
 #include "x/w/shortcut.H"
+#include "radio_group.H"
 #include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
+
+menu_item_option::menu_item_option()=default;
+
+menu_item_option::~menu_item_option()=default;
+
+menu_item_option::menu_item_option(const menu_item_option &)=default;
+
+menu_item_option::menu_item_option(menu_item_option &&)=default;
+
+menu_item_option &menu_item_option::operator=(const menu_item_option &)=default;
+
+menu_item_option &menu_item_option::operator=(menu_item_option &&)=default;
+
+textlist_rowinfo::textlist_rowinfo()=default;
+
+textlist_rowinfo::~textlist_rowinfo()=default;
+
+textlist_rowinfo::textlist_rowinfo(const textlist_rowinfo &)=default;
+textlist_rowinfo::textlist_rowinfo(textlist_rowinfo &&)=default;
+
+textlist_rowinfo &textlist_rowinfo::operator=(const textlist_rowinfo &)=default;
+textlist_rowinfo &textlist_rowinfo::operator=(textlist_rowinfo &&)=default;
 
 void textlist_rowinfo::setting_menu_item()
 {
@@ -93,6 +116,9 @@ struct create_cells_helper {
 
 	//! Where the new cells are being created.
 	new_cells_info &info;
+
+	//! My layout manager
+	const ref<listlayoutmanagerObj::implObj> &lilm;
 
 	//! Precomputed value
 	const size_t extra_leading=style.extra_leading_columns();
@@ -232,8 +258,9 @@ inline void create_cells_helper::create_separator()
 		info.newcells.push_back(list_cellseparator::create());
 
 	// next_rowinfo should be clean
-	info.rowmeta.emplace_back(extra_list_row_info::create(),
-				  next_rowinfo);
+	info.rowmeta.emplace_back
+		(extra_list_row_info::create(false),
+		 next_rowinfo);
 
 	column_counter += textlist_element.columns;
 	created_separator=true;
@@ -283,7 +310,21 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 			   [&](const menuoption &mo)
 			   {
 				   next_rowinfo.setting_menu_item();
-				   next_rowinfo.menu_item=menu_item_option{};
+
+				   menu_item_option option;
+
+				   if (!mo.radio_groupname.empty())
+					   option.group=
+						   lilm->layout_container_impl
+						   ->get_window_handler()
+						   .get_radio_group
+						   (mo.radio_groupname);
+
+				   next_rowinfo.menu_item=option;
+			   },
+			   [&](const selected &)
+			   {
+				   next_rowinfo.initially_selected=true;
 			   },
 			   [&](const submenu &sm)
 			   {
@@ -370,7 +411,9 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 
 		if ((column_counter % textlist_element.columns) == 0)
 		{
-			auto new_extra_list=extra_list_row_info::create();
+			auto new_extra_list=
+				extra_list_row_info
+				::create(next_rowinfo.initially_selected);
 
 			nonseparator_rows.push_back(new_extra_list);
 			info.rowmeta.emplace_back(new_extra_list,
@@ -407,7 +450,7 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 	list_elementObj::implObj &textlist_element=
 		*lilm->list_element_singleton->impl;
 
-	create_cells_helper helper{*this, textlist_element, info};
+	create_cells_helper helper{*this, textlist_element, info, lilm};
 
 	size_t n_real_elements=0;
 
@@ -430,6 +473,9 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 				{
 				},
 				[&](const inactive_shortcut &sc)
+				{
+				},
+				[&](const selected &)
 				{
 				},
 				[&](const list_item_status_change_callback &cb)
@@ -493,7 +539,6 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 
 
 		helper.process_list_item_param(s);
-
 	}
 
 	if (helper.havemeta)
@@ -725,13 +770,12 @@ class LIBCXX_HIDDEN bulleted_listlayoutstyle_impl
 		throw EXCEPTION("Should not get here.");
 	}
 
-	// Update the bullet element.
+	// Update the bullet element's image.
+
 	void selected_changed(list_cell *row,
 			      bool selected_flag) const override
 	{
-		list_cellimage i=*row;
-
-		*mpobj<size_t>::lock{i->n}=selected_flag ? 1:0;
+		(*row)->set_cell_image_number(selected_flag ? 1:0);
 	}
 };
 

@@ -32,9 +32,9 @@ typedef functionref<void (THREAD_CALLBACK, size_t,
 //! method.
 //!
 //! create_checkbox() and create_radio() take the same parameters, except
-//! that create_radio() takes an additional, initial parameter:
-//! a \ref radio_group "INSERT_LIBX_NAMESPACE::w::radio_group" object, an
-//! opaque object that links all radio buttons into a single group. The
+//! that create_radio() takes an additional, initial parameter, a
+//! radio group identifier, an opaque label. All image button with the
+//! same label link all radio buttons into a single group. The
 //! common parameters are:
 //!
 //! - an optional \ref factory "factory object" for creating the button's
@@ -51,8 +51,7 @@ typedef functionref<void (THREAD_CALLBACK, size_t,
 //!
 //! - a \ref valign "vertical alignment setting".
 //!
-//! Each parameter is individually optional (the initial
-//! \ref radio_group "INSERT_LIBX_NAMESPACE::w::radio_group" parameter
+//! Each parameter is individually optional (the initial radio group parameter
 //! to create_radio() is mandatory, and appears before these three parameters)
 //! but these parameters must appear in the given order (this is done with
 //! some aggressive overloading).

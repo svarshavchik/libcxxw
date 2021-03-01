@@ -139,6 +139,33 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				   << i.selected << std::endl;
 		 });
 
+	h=element_factory.get_listitemhandle("file_plain_format");
+
+	h->on_status_update
+		([]
+		 (ONLY IN_THREAD,
+		  const x::w::list_item_status_info_t &i)
+		 {
+			 if (std::holds_alternative<x::w::initial>(i.trigger))
+				 return;
+
+			 std::cout << "File/Plain Format: "
+				   << i.selected << std::endl;
+		 });
+
+	h=element_factory.get_listitemhandle("file_full_format");
+	h->on_status_update
+		([]
+		 (ONLY IN_THREAD,
+		  const x::w::list_item_status_info_t &i)
+		 {
+			 if (std::holds_alternative<x::w::initial>(i.trigger))
+				 return;
+
+			 std::cout << "File/Full Format: "
+				   << i.selected << std::endl;
+		 });
+
 	h=element_factory.get_listitemhandle("help_about");
 
 	h->on_status_update

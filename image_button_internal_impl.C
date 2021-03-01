@@ -166,11 +166,13 @@ class LIBCXX_HIDDEN radio_image_buttonObj :
 	//! Implement radio button turn off.
 
 	void turn_off(ONLY IN_THREAD,
+		      const container_impl &parent_container,
 		      busy_impl &i_am_busy,
 		      const callback_trigger_t &trigger) override;
 };
 
 void radio_image_buttonObj::turn_off(ONLY IN_THREAD,
+				     const container_impl &parent_container,
 				     busy_impl &i_am_busy,
 				     const callback_trigger_t &trigger)
 {
@@ -208,7 +210,7 @@ void radio_image_buttonObj::set_image_number(ONLY IN_THREAD,
 {
 	busy_impl i_am_busy{*this};
 
-	group->turn_off(IN_THREAD, radio_button{this},
+	group->turn_off(IN_THREAD, radio_button{this}, child_container,
 			i_am_busy, trigger);
 
 	n %= icon_images(IN_THREAD).size();

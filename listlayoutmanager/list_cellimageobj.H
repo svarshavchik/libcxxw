@@ -57,6 +57,10 @@ struct list_cellimageObj : public list_cellObj,
 
 	//! Implement cell_is_separator().
 	bool cell_is_separator() override;
+
+	//! Set image number
+
+	void set_cell_image_number(size_t n) override;
 };
 
 LIBCXXW_NAMESPACE_END
