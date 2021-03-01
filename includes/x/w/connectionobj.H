@@ -55,14 +55,28 @@ class connectionObj : virtual public obj {
 
 	//! Sets a new theme and scaling factor.
 
-	void set_theme(const std::string &identifier,
+	void set_theme(ONLY IN_THREAD,
+		       //! Theme name
+		       const std::string &identifier,
+		       //! Scaling factor
 		       int factor,
+		       //! Theme options
 		       const enabled_theme_options_t &enabled_options,
-		       bool this_connection_only);
+
+		       //! Update this connection's theme only. Don't save it.
+		       bool this_connection_only,
+
+		       //! Which settings were updated
+
+		       //! Settings that begin with underscore do not affect
+		       //! the visual appearance and won't trigger theme
+		       //! updated processing.
+		       const std::unordered_set<std::string> &updated_settings);
 
 	//! Sets and saves new theme and scaling factor.
 
-	void set_and_save_theme(const std::string &identifier,
+	void set_and_save_theme(ONLY IN_THREAD,
+				const std::string &identifier,
 				int factor,
 				const enabled_theme_options_t &enabled_options);
 

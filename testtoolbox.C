@@ -421,11 +421,19 @@ void testtoolbox(const testtoolboxoptions &options)
 			lock.wait_for(std::chrono::seconds(1),
 				      [&] { return *lock; });
 
-			my_app->main_window->get_screen()->get_connection()
-				->set_theme(original_theme,
-					    (i % 2) ? 100:200,
-					    original_options,
-					    true);
+			my_app->main_window->in_thread
+				([c=my_app->main_window->get_screen()
+				  ->get_connection(),
+				  original_theme, original_options, i]
+				 (ONLY IN_THREAD)
+				{
+					c->set_theme(IN_THREAD,
+						     original_theme,
+						     (i % 2) ? 100:200,
+						     original_options,
+						     true,
+						     {"theme"});
+				});
 		}
 		lock.wait_for(std::chrono::seconds(1),
 			      [&] { return *lock; });

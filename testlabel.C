@@ -206,11 +206,16 @@ void testlabel(const testlabel_options &options)
 		lock.wait_for(std::chrono::seconds(1),
 			      [&] { return *lock; });
 
-		main_window->get_screen()->get_connection()
-			->set_theme(original_theme,
-				    (i % 2) ? 100:200,
-				    original_options,
-				    true);
+		main_window->in_thread
+			([=, c=main_window->get_screen()->get_connection()]
+			 (ONLY IN_THREAD)
+			{
+				c->set_theme(IN_THREAD,
+					     original_theme,
+					     (i % 2) ? 100:200,
+					     original_options,
+					     true, {"theme"});
+			});
 	}
 
 	lock.wait_for(std::chrono::seconds(1),
@@ -221,12 +226,19 @@ void testlabel(const testlabel_options &options)
 	if (n != 5)
 		throw EXCEPTION("The label should've been drawn "
 				"5 times instead of " << n);
-	main_window->get_screen()->get_connection()
-		->set_theme(original_theme,
-			    original_scale,
-			    original_options,
-			    true);
+
+	main_window->in_thread
+		([=, c=main_window->get_screen()->get_connection()]
+		 (ONLY IN_THREAD)
+		{
+			c->set_theme(IN_THREAD,
+				     original_theme,
+				     original_scale,
+				     original_options,
+				     true, {"theme"});
+		});
 }
+
 
 int main(int argc, char **argv)
 {

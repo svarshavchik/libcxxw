@@ -430,20 +430,25 @@ void connectionObj::implObj::set_wm_icon(xcb_window_t wid,
 
 //////////////////////////////////////////////////////////////////////////////
 
-void connectionObj::set_and_save_theme(const std::string &identifier,
+void connectionObj::set_and_save_theme(ONLY IN_THREAD,
+				       const std::string &identifier,
 				       int factor,
 				       const enabled_theme_options_t
 				       &enabled_options)
 
 {
-	set_theme(identifier, factor, enabled_options, false);
+	set_theme(IN_THREAD,
+		  identifier, factor, enabled_options, false, {"_"});
 	save_config(identifier, factor, enabled_options);
 }
 
-void connectionObj::set_theme(const std::string &identifier,
+void connectionObj::set_theme(ONLY IN_THREAD,
+			      const std::string &identifier,
 			      int factor,
 			      const enabled_theme_options_t &enabled_options,
-			      bool this_connection_only)
+			      bool this_connection_only,
+			      const std::unordered_set<std::string>
+			      &updated_settings)
 {
 	auto available_themes=connection::base::available_themes();
 
@@ -467,14 +472,14 @@ void connectionObj::set_theme(const std::string &identifier,
 							   factor/100.0,
 							   enabled_options);
 
-		impl->thread->run_as
-			([impl=this->impl, config]
-			 (ONLY IN_THREAD)
-			 {
-				 update_themes(IN_THREAD, impl->screens,
-					       config);
-				 IN_THREAD->theme_updated(IN_THREAD);
-			 });
+		update_themes(IN_THREAD, impl->screens, config);
+
+		for (const auto &setting:updated_settings)
+			if (*setting.c_str() != '_')
+			{
+				IN_THREAD->theme_updated(IN_THREAD);
+				break;
+			}
 		return;
 
 	}

@@ -169,6 +169,8 @@ public:
 	int scale;
 	w::enabled_theme_options_t enabled_theme_options;
 
+	std::unordered_set<std::string> updated_settings;
+
 	std::vector<w::connection::base::available_theme> available_themes;
 
 	theme_infoObj(const w::connection &conn)
@@ -239,11 +241,30 @@ static void wait_until_theme_installed(const w::connection &conn,
 				       const appstate_ref &appstate,
 				       const ref<obj> &mcguffin);
 
-static void set_new_theme(const w::main_window &mw,
+static void set_new_theme(ONLY IN_THREAD,
+			  const w::main_window &mw,
 			  const w::connection &conn,
 			  const appstate_ref &appstate,
-			  const theme_info_t &theme_info)
+			  const theme_info_t &theme_info,
+			  const std::unordered_set<std::string>
+			  &updated_settings)
 {
+	bool wait_for_update=false;
+
+	for (const auto &setting:updated_settings)
+		if (*setting.c_str() != '_')
+			wait_for_update=true;
+
+	if (!wait_for_update)
+	{
+		// Option will not cause theme updated processing.
+		conn->set_theme(IN_THREAD,
+				theme_info->name,
+				theme_info->scale,
+				theme_info->enabled_theme_options, true,
+				updated_settings);
+		return;
+	}
 	// The first step is to make ourselves busy, then wait until the
 	// connection thread finishes wraps up the busy setup.
 
@@ -254,11 +275,14 @@ static void set_new_theme(const w::main_window &mw,
 			    options=theme_info->enabled_theme_options,
 			    appstate,
 			    mw,
+			    updated_settings,
 			    wait_mcguffin]
-			   (THREAD_CALLBACK)
+			   (ONLY IN_THREAD)
 			   {
 				   // Now we can officially set the theme.
-				   conn->set_theme(name, scale, options, true);
+				   conn->set_theme(IN_THREAD,
+						   name, scale, options, true,
+						   updated_settings);
 				   wait_until_theme_installed(conn, appstate,
 							      wait_mcguffin);
 			   });
@@ -323,19 +347,78 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 	if (iter == available_themes.end())
 		return;
 
+	// Radio groups for each set of theme options.
+	std::unordered_map<std::string, w::radio_group> option_groups;
+	std::unordered_map<std::string,
+			   w::image_button> selected_option_group_value;
+
 	for (const auto &option:iter->available_options)
 	{
 		auto f=glm->append_row();
-		auto cb=f->create_checkbox
+
+		auto is_radio=option.label.find('_');
+
+		std::string radio_button_group;
+
+		// An option with an underscore is an option group, which
+		// becomes a radio button.
+
+		if (is_radio != option.label.npos)
+			radio_button_group=option.label.substr(0, is_radio);
+
+		// Create a checkbox or a radio button.
+		//
+		// The first time we see a particular rado button group we
+		// insert it into option_groups, and then look it up.
+
+		auto cb=!radio_button_group.empty()
+
+			? f->create_radio
+			(option_groups.try_emplace(radio_button_group,
+						   w::radio_group::create())
+			 .first->second,
+			 [&]
+			 (const w::factory &f)
+			 {
+				 f->create_label(option.description);
+			 })
+			: f->create_checkbox
 			([&]
 			 (const w::factory &f)
 			 {
 				 f->create_label(option.description);
 			 });
+
 		auto value=enabled_theme_options.find(option.label);
 
-		if (value != enabled_theme_options.end())
-			cb->set_value(1);
+		// If the option is enabled in the theme:
+		//
+		// - checkbox: we set it here.
+		//
+		// - radio button: the one that's set goes into
+		//   selected_group_option_value and we'll set it later.
+		//   However: the first option we see for a radio button
+		//   will be placed into selected_group_option_value in all
+		//   cases, and then if we find the one that's really set
+		//   we'll update it. This way we'll always have an option
+		//   set in each radio button group, and the first one in the
+		//   theme file must be the default option.
+
+		if (value != enabled_theme_options.end() ||
+		    (!radio_button_group.empty() &&
+		     selected_option_group_value.find(radio_button_group)
+		     == selected_option_group_value.end()))
+		{
+			if (!radio_button_group.empty())
+				selected_option_group_value
+					.insert_or_assign(radio_button_group,
+							  cb);
+			else
+				cb->set_value(1);
+		}
+
+		for (auto &[group, radio_button] : selected_option_group_value)
+			radio_button->set_value(1);
 
 		cb->on_activate
 			([label=option.label,
@@ -373,17 +456,46 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 					 theme_info->enabled_theme_options
 						 .insert(label);
 
-				 current_theme_options_t current_theme_options;
+				 // A radio button will cause callbacks for
+				 // both the deactivated and the activated
+				 // button to be triggered.
+				 //
+				 // Keep track of the updated_settings
+				 // and call set_new_theme only when we're
+				 // done.
 
-				 if (!current_theme_options)
-					 return;
+				 theme_info->updated_settings.insert(label);
 
-				 auto conn=current_theme_options
-					 ->options_container
-					 ->get_screen()
-					 ->get_connection();
+				 mw->in_thread_idle
+					 ([=]
+					  (ONLY IN_THREAD)
+					 {
+						 auto &updated_settings=
+							 theme_info
+							 ->updated_settings;
 
-				 set_new_theme(mw, conn, appstate, theme_info);
+						 if (updated_settings.empty())
+							 return;
+
+						 current_theme_options_t
+							 current_theme_options;
+
+						 if (!current_theme_options)
+							 return;
+
+						 auto conn=current_theme_options
+							 ->options_container
+							 ->get_screen()
+							 ->get_connection();
+
+						 set_new_theme(IN_THREAD,
+							       mw, conn,
+							       appstate,
+							       theme_info,
+							       updated_settings
+							       );
+						 updated_settings.clear();
+					 });
 			 });
 
 		cb->show_all();
@@ -466,7 +578,10 @@ static w::container create_main_window(const w::main_window &mw)
 			theme_info->name=themeids[info.list_item_status_info
 						  .item_number];
 
-			set_new_theme(mw, conn, appstate, theme_info);
+			set_new_theme(IN_THREAD,
+				      mw, conn, appstate, theme_info,
+				      // Trigger a theme update
+				      {"theme"});
 
 			current_theme_options_t current_theme_options;
 
@@ -545,7 +660,7 @@ static w::container create_main_window(const w::main_window &mw)
 
 	scale_scrollbar->on_update
 		([scale_label, conn, mw=make_weak_capture(mw)]
-		 (THREAD_CALLBACK, const auto &info)
+		 (ONLY IN_THREAD, const auto &info)
 		 {
 			 if (std::holds_alternative<w::initial>(info.trigger))
 				 return;
@@ -581,7 +696,10 @@ static w::container create_main_window(const w::main_window &mw)
 
 			 theme_info->scale=v;
 
-			 set_new_theme(mw, conn, appstate, theme_info);
+			 set_new_theme(IN_THREAD,
+				       mw, conn, appstate, theme_info,
+				       // Trigger a theme update
+				       {"theme"});
 
 			 current_theme_options_t current_theme_options;
 
@@ -631,7 +749,7 @@ static w::container create_main_window(const w::main_window &mw)
 			 f->create_button
 				 ("Set")->on_activate
 				 ([conn]
-				  (THREAD_CALLBACK,
+				  (ONLY IN_THREAD,
 				   const auto &ignore1,
 				   const auto &ignore2)
 				  {
@@ -647,11 +765,13 @@ static w::container create_main_window(const w::main_window &mw)
 
 					  theme_info->validate_options();
 					  conn->set_theme
-						  (theme_info->name,
+						  (IN_THREAD,
+						   theme_info->name,
 						   theme_info->scale,
 						   theme_info
 						   ->enabled_theme_options,
-						   false);
+						   false,
+						   {});
 					  appstate->close();
 				  });
 
@@ -667,7 +787,7 @@ static w::container create_main_window(const w::main_window &mw)
 					 {_("${context:cxxwtheme_save}Alt-S")}
 				 })->on_activate
 				 ([conn]
-				  (THREAD_CALLBACK,
+				  (ONLY IN_THREAD,
 				   const auto &ignore1,
 				   const auto &ignore2)
 				  {
@@ -683,7 +803,8 @@ static w::container create_main_window(const w::main_window &mw)
 
 					  theme_info->validate_options();
 					  conn->set_and_save_theme
-						  (theme_info->name,
+						  (IN_THREAD,
+						   theme_info->name,
 						   theme_info->scale,
 						   theme_info
 						   ->enabled_theme_options);

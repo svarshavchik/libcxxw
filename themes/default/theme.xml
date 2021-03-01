@@ -3,8 +3,9 @@
 
   <name>Default theme</name>
 
-  <option id="noshade">Disable shading</option>
-  <option id="fixshade">Fixed shading (faster)</option>
+  <option id="shade_full">Scalable shading</option>
+  <option id="shade_fixed">Fixed shading (faster)</option>
+  <option id="shade_none">Disable shading</option>
 
   <dim id="no-padding">0</dim>
 
@@ -248,7 +249,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
 
 
-  <color id="fixshade:button_normal_color" type="linear_gradient">
+  <color id="shade_fixed:button_normal_color" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
     <gradient>
@@ -262,7 +263,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:button_selected_color" type="linear_gradient">
+  <color id="shade_fixed:button_selected_color" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
     <gradient>
@@ -276,7 +277,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:button_active_color" type="linear_gradient">
+  <color id="shade_fixed:button_active_color" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
     <gradient>
@@ -290,9 +291,9 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:button_normal_color" scale="70%"/>
-  <color id="noshade:button_selected_color" scale="80%"/>
-  <color id="noshade:button_active_color" scale="100%"/>
+  <color id="shade_none:button_normal_color" scale="70%"/>
+  <color id="shade_none:button_selected_color" scale="80%"/>
+  <color id="shade_none:button_active_color" scale="100%"/>
 
   <color id="button_spinner_normal_color" scale="70%"/>
   <color id="button_spinner_selected_color" scale="80%"/>
@@ -320,7 +321,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:button_spinner_gradient" scale="50%"/>
+  <color id="shade_none:button_spinner_gradient" scale="50%"/>
 
   <!-- Fonts -->
 
@@ -497,13 +498,13 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:scrollbar_horiz_foreground_color" scale="scrollbar_foreground_color"/>
+  <color id="shade_none:scrollbar_horiz_foreground_color" scale="scrollbar_foreground_color"/>
 
-  <color id="noshade:scrollbar_vert_foreground_color" scale="scrollbar_foreground_color"/>
+  <color id="shade_none:scrollbar_vert_foreground_color" scale="scrollbar_foreground_color"/>
 
-  <color id="noshade:scrollbar_knob_foreground_color" scale="scrollbar_foreground_color"/>
+  <color id="shade_none:scrollbar_knob_foreground_color" scale="scrollbar_foreground_color"/>
 
-  <color id="noshade:scrollbar_knob_dragging_color" scale="scrollbar_dragging_color"/>
+  <color id="shade_none:scrollbar_knob_dragging_color" scale="scrollbar_dragging_color"/>
 
   <color id="scrollbar_horiz_dragging_color" type="linear_gradient">
     <x1>0</x1>
@@ -545,9 +546,9 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:scrollbar_horiz_dragging_color" scale="scrollbar_dragging_color"/>
+  <color id="shade_none:scrollbar_horiz_dragging_color" scale="scrollbar_dragging_color"/>
 
-  <color id="noshade:scrollbar_vert_dragging_color" scale="scrollbar_dragging_color"/>
+  <color id="shade_none:scrollbar_vert_dragging_color" scale="scrollbar_dragging_color"/>
 
   <border id="scrollbarfocuson_border" from="inputfocuson_border"/>
   <border id="scrollbarfocusoff_border" from="inputfocusoff_border">
@@ -567,7 +568,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:tooltip_background_color" scale="90%"/>
+  <color id="shade_none:tooltip_background_color" scale="90%"/>
 
   <!-- Border when an alpha channel is available -->
   <border id="tooltip_border" from="thin_0%">
@@ -593,7 +594,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <color id="static_tooltip_background_color" scale="tooltip_background_color"/>
 
-  <color id="noshade:static_tooltip_background_color" scale="noshade:tooltip_background_color"/>
+  <color id="shade_none:static_tooltip_background_color" scale="shade_none:tooltip_background_color"/>
 
   <!-- Border for a splash window -->
   <border id="splash_border" from="tooltip_border"/>
@@ -639,7 +640,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:list_header_color" type="linear_gradient">
+  <color id="shade_fixed:list_header_color" type="linear_gradient">
     <widthmm>50</widthmm>
     <heightmm>10</heightmm>
     <gradient>
@@ -652,7 +653,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:list_header_color" scale="70%"/>
+  <color id="shade_none:list_header_color" scale="70%"/>
 
   <color id="list_adjustable_header_color" scale="50%"/>
 
@@ -677,7 +678,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:list_adjustable_header_highlight_color" scale="90%"/>
+  <color id="shade_none:list_adjustable_header_highlight_color" scale="90%"/>
 
   <!-- Combo-boxes -->
 
@@ -728,9 +729,9 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:combobox_above_background_color" scale="combobox_background_color"/>
+  <color id="shade_none:combobox_above_background_color" scale="combobox_background_color"/>
 
-  <color id="noshade:combobox_below_background_color" scale="combobox_background_color"/>
+  <color id="shade_none:combobox_below_background_color" scale="combobox_background_color"/>
 
   <color id="combobox_selected_color" scale="80%"/>
 
@@ -761,7 +762,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:menubar_background_color" type="linear_gradient">
+  <color id="shade_fixed:menubar_background_color" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
     <x1>0</x1>
@@ -778,7 +779,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:menubar_background_color" scale="80%"/>
+  <color id="shade_none:menubar_background_color" scale="80%"/>
 
   <border id="menubar_border" from="thin_0%">
     <color>0%</color>
@@ -865,10 +866,10 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <color id="menu_popup_background_color" scale="90%"/>
 
-  <color id="noshade:menu_above_background_color" scale="menu_popup_background_color"/>
-  <color id="noshade:menu_below_background_color" scale="menu_popup_background_color"/>
-  <color id="noshade:menu_left_background_color" scale="menu_popup_background_color"/>
-  <color id="noshade:menu_right_background_color" scale="menu_popup_background_color"/>
+  <color id="shade_none:menu_above_background_color" scale="menu_popup_background_color"/>
+  <color id="shade_none:menu_below_background_color" scale="menu_popup_background_color"/>
+  <color id="shade_none:menu_left_background_color" scale="menu_popup_background_color"/>
+  <color id="shade_none:menu_right_background_color" scale="menu_popup_background_color"/>
 
   <color id="menu_popup_foreground_color" scale="10%"/>
   <color id="menu_popup_selected_color" scale="80%"/>
@@ -948,7 +949,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   </color>
 
-  <color id="noshade:progressbar" scale="progressbar_value_100_color"/>
+  <color id="shade_none:progressbar" scale="progressbar_value_100_color"/>
 
   <!-- Books -->
 
@@ -999,7 +1000,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:book_tab_inactive_color" type="linear_gradient">
+  <color id="shade_fixed:book_tab_inactive_color" type="linear_gradient">
     <widthmm>5</widthmm>
     <heightmm>5</heightmm>
     <gradient>
@@ -1012,7 +1013,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:book_tab_active_color" type="linear_gradient">
+  <color id="shade_fixed:book_tab_active_color" type="linear_gradient">
     <widthmm>5</widthmm>
     <heightmm>5</heightmm>
     <gradient>
@@ -1025,7 +1026,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:book_tab_warm_color" type="linear_gradient">
+  <color id="shade_fixed:book_tab_warm_color" type="linear_gradient">
     <widthmm>5</widthmm>
     <heightmm>5</heightmm>
     <gradient>
@@ -1038,7 +1039,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:book_tab_hot_color" type="linear_gradient">
+  <color id="shade_fixed:book_tab_hot_color" type="linear_gradient">
     <widthmm>5</widthmm>
     <heightmm>5</heightmm>
     <gradient>
@@ -1051,10 +1052,10 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:book_tab_inactive_color" scale="50%"/>
-  <color id="noshade:book_tab_active_color" scale="70%"/>
-  <color id="noshade:book_tab_warm_color" scale="80%"/>
-  <color id="noshade:book_tab_hot_color" scale="100%"/>
+  <color id="shade_none:book_tab_inactive_color" scale="50%"/>
+  <color id="shade_none:book_tab_active_color" scale="70%"/>
+  <color id="shade_none:book_tab_warm_color" scale="80%"/>
+  <color id="shade_none:book_tab_hot_color" scale="100%"/>
 
   <color id="page_background" scale="80%"/>
   <border id="page_border" from="thin_0%"/>
@@ -1075,7 +1076,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:book_tab_background_color" type="linear_gradient">
+  <color id="shade_fixed:book_tab_background_color" type="linear_gradient">
     <widthmm>75</widthmm>
     <heightmm>10</heightmm>
     <gradient>
@@ -1088,7 +1089,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:book_tab_background_color" scale="50%"/>
+  <color id="shade_none:book_tab_background_color" scale="50%"/>
 
   <dim id="book_scroll_height">8</dim>
 
@@ -1160,7 +1161,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:dateedit_popup_background_color" type="linear_gradient">
+  <color id="shade_fixed:dateedit_popup_background_color" type="linear_gradient">
     <widthmm>30</widthmm>
     <heightmm>30</heightmm>
     <gradient>
@@ -1173,7 +1174,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:dateedit_popup_background_color" scale="100%"/>
+  <color id="shade_none:dateedit_popup_background_color" scale="100%"/>
 
   <dim id="dateedit_popup_yscroll_height">8</dim>
   <dim id="dateedit_popup_mscroll_height">6</dim>
@@ -1235,7 +1236,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:element_attached_popup_background_color" scale="80%"/>
+  <color id="shade_none:element_attached_popup_background_color" scale="80%"/>
 
   <border id="element_attached_popup_button_focusoff_border" from="inputfocusoff_border">
     <color>inputfocus_color2</color>
@@ -1322,7 +1323,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:itembutton_background_color" type="linear_gradient">
+  <color id="shade_fixed:itembutton_background_color" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
     <gradient>
@@ -1335,7 +1336,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:itembutton_background_color" scale="80%"/>
+  <color id="shade_none:itembutton_background_color" scale="80%"/>
 
   <!-- Border layout manager -->
 
@@ -1368,7 +1369,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="fixshade:frame_background" type="linear_gradient">
+  <color id="shade_fixed:frame_background" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
 
@@ -1409,7 +1410,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
-  <color id="noshade:button-row-color" scale="75%"/>
+  <color id="shade_none:button-row-color" scale="75%"/>
 
   <layout type="grid" id="ok-dialog">
     <valign>

@@ -452,7 +452,7 @@ void listtable(const LIBCXX_NAMESPACE::w::screen &default_screen,
 
 	b->on_activate
 		([=]
-		 (THREAD_CALLBACK,
+		 (ONLY IN_THREAD,
 		  const auto &trigger,
 		  const auto &busy)
 		 mutable
@@ -460,10 +460,12 @@ void listtable(const LIBCXX_NAMESPACE::w::screen &default_screen,
 			 original_scale=original_scale == 100 ? 200:100;
 
 			 default_screen->get_connection()
-				 ->set_theme(original_theme,
+				 ->set_theme(IN_THREAD,
+					     original_theme,
 					     original_scale,
 					     original_options,
-					     true);
+					     true,
+					     {"theme"});
 		 });
 	factory->create_canvas();
 	factory=layout->append_row();

@@ -554,11 +554,18 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 				      { return false; });
 		}
 
-		main_window->get_screen()->get_connection()
-			->set_theme(flag ? alternate_theme:original_theme,
-				    original_scale,
-				    original_options,
-				    true);
+		main_window->in_thread
+			([=, c=main_window->get_screen()->get_connection()]
+			 (ONLY IN_THREAD)
+			{
+				c->set_theme(IN_THREAD,
+					     flag ? alternate_theme
+					     :original_theme,
+					     original_scale,
+					     original_options,
+					     true,
+					     {"theme"});
+			});
 
 		flag= !flag;
 		{
@@ -733,11 +740,17 @@ runtestthemescale(const testmainwindowoptions &options)
 				      { return false; });
 		}
 
-		main_window->get_screen()->get_connection()
-			->set_theme(original_theme,
-				    (i % 2) ? 100:200,
-				    original_options,
-				    true);
+		main_window->in_thread
+			([=, c=main_window->get_screen()->get_connection()]
+			 (ONLY IN_THREAD)
+			{
+				c->set_theme(IN_THREAD,
+					     original_theme,
+					     (i % 2) ? 100:200,
+					     original_options,
+					     true,
+					     {"theme"});
+			});
 
 		flag= !flag;
 		{
@@ -749,11 +762,18 @@ runtestthemescale(const testmainwindowoptions &options)
 		}
 	}
 
-	main_window->get_screen()->get_connection()
-		->set_theme(original_theme,
-			    original_scale,
-			    original_options,
-			    true);
+	main_window->in_thread
+		([c=main_window->get_screen()->get_connection(),
+		  original_theme, original_scale, original_options]
+		 (ONLY IN_THREAD)
+		{
+			c->set_theme(IN_THREAD,
+				     original_theme,
+				     original_scale,
+				     original_options,
+				     true,
+				     {"theme"});
+		});
 	return {cmain, ccanvas};
 }
 
