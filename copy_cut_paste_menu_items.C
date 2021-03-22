@@ -11,6 +11,8 @@
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "generic_window_handler.H"
 #include "messages.H"
+#include "screen.H"
+#include "defaulttheme.H"
 #include <tuple>
 #include <optional>
 
@@ -82,15 +84,28 @@ public:
 	//! Handle for the menu item.
 	const listitemhandle paste_handle;
 
+	//! bidi_format option
+	const listitemhandle bidi_format_automatic;
+
+	//! bidi_format option
+	const listitemhandle bidi_format_none;
+
+	//! bidi_format option
+	const listitemhandle bidi_format_embedded;
+
 	// This is constructed after the copy/cut/paste items are added
 	// to the menu list. Save their handles.
 
 	copy_cut_paste_implObj(const weak_target_element &target_element,
-			       const std::vector<listitemhandle> &handles)
+			       const std::vector<listitemhandle> &handles,
+			       const std::vector<listitemhandle> &bidi_formats)
 		: target_element{target_element},
 		  copy_handle{handles.at(0)},
 		  cut_handle{handles.at(1)},
-		  paste_handle{handles.at(2)}
+		  paste_handle{handles.at(2)},
+		  bidi_format_automatic{bidi_formats.at(0)},
+		  bidi_format_none{bidi_formats.at(1)},
+		  bidi_format_embedded{bidi_formats.at(2)}
 	{
 	}
 
@@ -128,6 +143,18 @@ public:
 				ret.emplace(e_impl,
 					    s->selection_has_owner()
 					    && mw->selection_can_be_received());
+
+				switch (s->impl->default_bidi_format.get()) {
+				case bidi_format::none:
+					bidi_format_none->autoselect();
+					break;
+				case bidi_format::embedded:
+					bidi_format_embedded->autoselect();
+					break;
+				case bidi_format::automatic:
+					bidi_format_automatic->autoselect();
+					break;
+				}
 			}
 		}
 
@@ -177,13 +204,27 @@ public:
 	}
 };
 
+static void set_bidi_format(ONLY IN_THREAD,
+			    const weak_target_element &me,
+			    const list_item_status_info_t &status,
+			    bidi_format selection)
+{
+	auto ei=me->get_element_impl();
+
+	if (!ei)
+		return;
+
+	ei->get_screen()->impl->default_bidi_format=selection;
+}
+
 // Create the copy/cut/paste menu items.
 
 // The key combinations are implemented directly in editorObj::implObj,
 // so we specify that their shorcuts are inactive_shortcut.
 
 static std::vector<list_item_param>
-get_copy_cut_paste_popup_menu_items(const weak_target_element &me)
+get_copy_cut_paste_popup_menu_items(const weak_target_element &me,
+				    std::vector<listitemhandle> &bidi_formats)
 {
 	return {
 		[me]
@@ -244,6 +285,54 @@ get_copy_cut_paste_popup_menu_items(const weak_target_element &me)
 		},
 		inactive_shortcut{"Shift-Ins"},
 		{_("Paste")},
+
+		submenu{
+			[me, &bidi_formats]
+			(const listlayoutmanager &lm)
+			{
+				auto ret=lm->append_items
+					({[me](ONLY IN_THREAD,
+					       const auto &status_info)
+					{
+						set_bidi_format
+							(IN_THREAD,
+							 me, status_info,
+							 bidi_format::automatic
+							 );
+					},menuoption{"copycutpaste@w.libcxx.com"
+						},
+					{_("Heuristically")},
+					[me]
+					(ONLY IN_THREAD,
+					 const auto &status_info)
+					{
+						set_bidi_format
+							(IN_THREAD,
+							 me, status_info,
+							 bidi_format::none
+							 );
+					},
+					menuoption{"copycutpaste@w.libcxx.com"},
+					{_("Never")},
+					[me]
+					(ONLY IN_THREAD,
+					 const auto &status_info)
+					{
+						set_bidi_format
+							(IN_THREAD,
+							 me, status_info,
+							 bidi_format::embedded
+							 );
+					},
+					menuoption{"copycutpaste@w.libcxx.com"},
+					{_("Always")},
+					get_new_items{}
+					});
+
+				bidi_formats=std::move(ret.handles);
+			}
+		},
+		{_("Cut/Copy bi-directional markers")},
 		get_new_items{}
 	};
 }
@@ -262,11 +351,14 @@ listlayoutmanagerObj::append_copy_cut_paste(const element &parent)
 
 	auto target_element=weak_target_element::create(parent->impl);
 
+	std::vector<listitemhandle> bidi_formats;
+
 	auto ret=append_items(get_copy_cut_paste_popup_menu_items
-			      (target_element));
+			      (target_element, bidi_formats));
 
 	return ref<copy_cut_paste_implObj>::create(target_element,
-						   ret.handles);
+						   ret.handles,
+						   bidi_formats);
 }
 
 copy_cut_paste_menu_items
@@ -279,11 +371,14 @@ listlayoutmanagerObj::append_copy_cut_paste(ONLY IN_THREAD,
 
 	auto target_element=weak_target_element::create(parent->impl);
 
+	std::vector<listitemhandle> bidi_formats;
+
 	auto ret=append_items(IN_THREAD,
 			      get_copy_cut_paste_popup_menu_items
-			      (target_element));
+			      (target_element, bidi_formats));
 
-	return ref<copy_cut_paste_implObj>::create(target_element, ret.handles);
+	return ref<copy_cut_paste_implObj>::create(target_element, ret.handles,
+						   bidi_formats);
 }
 
 LIBCXXW_NAMESPACE_END

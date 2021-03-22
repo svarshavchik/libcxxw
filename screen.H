@@ -11,6 +11,7 @@
 #include "x/w/pictformatfwd.H"
 #include "x/w/scratch_bufferfwd.H"
 #include "x/w/border_arg.H"
+#include "x/w/input_field_configfwd.H"
 #include "recycled_pixmapsfwd.H"
 #include "x/w/rgb.H"
 #include "connection.H"
@@ -128,6 +129,8 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	//! The current theme for this screen.
 	current_theme_t current_theme;
+
+	mpobj<bidi_format> default_bidi_format;
 
 	//! The fontconfig library
 

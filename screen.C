@@ -192,27 +192,28 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 			    const screen::base::visual_t &toplevelwindow_visual,
 			    const const_pictformat &toplevelwindow_pictformat,
 			    const connection_thread &thread)
-	: xcb_screen(xcb_screen),
-	  screen_number(screen_number),
-	  thread(thread),
-	  toplevelwindow_visual(toplevelwindow_visual),
-	  toplevelwindow_pictformat(toplevelwindow_pictformat),
-	  toplevelwindow_colormap(ref<toplevelwindow_colormapObj>
+	: xcb_screen{xcb_screen},
+	  screen_number{screen_number},
+	  thread{thread},
+	  toplevelwindow_visual{toplevelwindow_visual},
+	  toplevelwindow_pictformat{toplevelwindow_pictformat},
+	  toplevelwindow_colormap{ref<toplevelwindow_colormapObj>
 				  ::create(thread, xcb_screen->root,
 					   toplevelwindow_visual->impl
-					   ->visual_id)),
-	  screen_depths(screen_depths),
-	  supported(supported),
-	  current_theme(current_theme),
-	  fc(fontconfig::create()),
-	  ft(freetype::create()),
-	  picturecache(screen_picturecache::create()),
-	  recycled_pixmaps_cache(recycled_pixmaps::create()),
-	  screen_border_cache(border_cache::create()),
-	  fontcaches(screen_fontcaches::create()),
+					   ->visual_id)},
+	  screen_depths{screen_depths},
+	  supported{supported},
+	  current_theme{current_theme},
+	  default_bidi_format{current_theme->default_bidi_format()},
+	  fc{fontconfig::create()},
+	  ft{freetype::create()},
+	  picturecache{screen_picturecache::create()},
+	  recycled_pixmaps_cache{recycled_pixmaps::create()},
+	  screen_border_cache{border_cache::create()},
+	  fontcaches{screen_fontcaches::create()},
 	  ellipsiscaches{ellipsiscache::create()},
-	  iconcaches(icon_cache::create()),
-	  cursor_pointercaches(cursor_pointer_cache::create())
+	  iconcaches{icon_cache::create()},
+	  cursor_pointercaches{cursor_pointer_cache::create()}
 {
 }
 

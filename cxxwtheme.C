@@ -354,12 +354,23 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 	{
 		auto f=glm->append_row();
 
-		auto is_radio=option.label.find('_');
-
 		std::string radio_button_group;
+
+		auto is_radio=option.label.find('_');
 
 		// An option with an underscore is an option group, which
 		// becomes a radio button.
+		//
+		// The clipboard cut/paste option starts with an
+		// undescore, so that becomes an empty radio group.
+		//
+		// bidi_format option starts with a double underscore. We
+		// want that to be a radio group, but not trigger a theme
+		// update redraw, which is already taken care of by the
+		// first leading underscore.
+
+		if (is_radio == 0 && option.label.substr(0, 2) == "__")
+			is_radio=option.label.find('_', 2);
 
 		if (is_radio != option.label.npos)
 			radio_button_group=option.label.substr(0, is_radio);

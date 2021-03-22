@@ -1308,11 +1308,6 @@ void editorObj::implObj::clear_password_peek(ONLY IN_THREAD)
 				 get_draw_info(IN_THREAD));
 }
 
-richtextstring editorObj::implObj::get_content(const richtextiterator &other)
-{
-	return get_content(cursor, other, std::nullopt);
-}
-
 richtextstring editorObj::implObj::get_content(const richtextiterator &a,
 					       const richtextiterator &b,
 					       const std::optional<bidi_format>
@@ -1777,7 +1772,10 @@ editorObj::implObj::selectionObj::
 selectionObj(xcb_timestamp_t timestamp, const ref<implObj> &me,
 	     const richtextiterator &other)
 	: current_selectionObj(timestamp), me(me),
-	  cut_text{me->get_content(other).get_string()}
+	  cut_text{me->get_content(me->cursor,
+				   other,
+				   me->get_screen()->impl
+				   ->default_bidi_format.get()).get_string()}
 {
 }
 

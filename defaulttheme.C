@@ -56,6 +56,10 @@ themeoptionsprop(LIBCXX_NAMESPACE_STR "::w::theme::options", "");
 
 static const char use_primary_clipboard_option_id[]="_use_primary_clipboard";
 
+static const char bidi_format_automatic_option_id[]="__bidi_format_automatic";
+static const char bidi_format_none_option_id[]="__bidi_format_none";
+static const char bidi_format_embedded_option_id[]="__bidi_format_embedded";
+
 std::string themedirroot()
 {
 	return themedirbase.get();
@@ -362,8 +366,14 @@ parse_available_theme_options(const xml::doc &theme_configfile)
 		const char *id;
 		const char32_t *description;
 	} reserved_options[]={
-			      {use_primary_clipboard_option_id,
-			       U"Use the primary clipboard for Copy/Cut/Paste"}
+		{use_primary_clipboard_option_id,
+		 U"Use the primary clipboard for Copy/Cut/Paste"},
+		{bidi_format_automatic_option_id,
+		 U"Copy/Cut bi-directional markers heuristically"},
+		{bidi_format_none_option_id,
+		 U"Do not Copy/Cut bi-directional markers"},
+		{bidi_format_embedded_option_id,
+		 U"Always Copy/Cut bi-directional markers"},
 	};
 
 	for (const auto &option:reserved_options)
@@ -489,7 +499,6 @@ public:
 {
 #endif
 }
-
 defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 				 const config &theme_config)
 	: themename{theme_config.themename},
@@ -936,5 +945,19 @@ const char *defaultthemeObj::default_cut_paste_selection() const
 		? "SECONDARY":"PRIMARY";
 }
 
+bidi_format defaultthemeObj::default_bidi_format() const
+{
+	bidi_format f=bidi_format::automatic;
+
+	if (enabled_theme_options.find(bidi_format_none_option_id) !=
+	    enabled_theme_options.end())
+		f=bidi_format::none;
+
+	if (enabled_theme_options.find(bidi_format_embedded_option_id) !=
+	    enabled_theme_options.end())
+		f=bidi_format::embedded;
+
+	return f;
+}
 
 LIBCXXW_NAMESPACE_END

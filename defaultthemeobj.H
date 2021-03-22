@@ -19,6 +19,7 @@
 #include "x/w/dim_arg.H"
 #include "x/w/connectionfwd.H"
 #include "x/w/connection_threadfwd.H"
+#include "x/w/input_field_configfwd.H"
 #include "x/w/defaultthemefwd.H"
 #include "x/w/impl/themedimfwd.H"
 #include "x/w/uigeneratorsobj.H"
@@ -160,6 +161,9 @@ public:
 
 	//! Default cut/paste selection
 	const char *default_cut_paste_selection() const;
+
+	//! The theme-configured cut/paste bidi format option.
+	bidi_format default_bidi_format() const;
 };
 
 LIBCXXW_NAMESPACE_END

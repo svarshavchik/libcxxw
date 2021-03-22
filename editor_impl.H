@@ -187,13 +187,6 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! All access to the contents of the input field goes through here.
 
-	//! Returns the characters between the \c cursor and the \c other
-	//! iterator. If this is a password field, the characters get
-	//! retrieved from the real_string instead.
-	richtextstring get_content(const richtextiterator &other);
-
-	//! All access to the contents of the input field goes through here.
-
 	//! Returns the characters between the two iterators.
 	//! If this is a password field, the characters get
 	//! retrieved from the real_string instead.
