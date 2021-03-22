@@ -36,7 +36,7 @@
       <config>
 	<columns>20</columns>
 	<direction>left_to_right</direction>
-	<directional_format>standard</directional_format>
+	<directional_format>automatic</directional_format>
       </config>
     </element>
   </factory>

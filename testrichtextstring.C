@@ -2201,7 +2201,8 @@ void gettest()
 			b=b->pos(start);
 			e=e->pos(end);
 
-			auto res=b->get_richtextstring(e).get_string();
+			auto res=b->get_richtextstring(e,
+						       bidi_format::none).get_string();
 
 			if (res != result)
 			{

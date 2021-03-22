@@ -959,11 +959,9 @@ richtextstring::to_canonical_order
 		     &paragraph_embedding_level)
 	: string{the_prepped_string.string},
 	  types{string.string},
-	  calc_results{unicode::bidi_calc(types,
-					  paragraph_embedding_level
-					  ? *paragraph_embedding_level
-					  : default_paragraph_embedding_level()
-					  )},
+	  calc_results{paragraph_embedding_level
+	? unicode::bidi_calc(types, *paragraph_embedding_level)
+	: unicode::bidi_calc(types)},
 	  starting_pos{0},
 	  n_chars{0},
 	  ending_pos{0}

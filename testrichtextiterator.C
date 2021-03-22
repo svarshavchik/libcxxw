@@ -941,14 +941,14 @@ void testrichtext7(ONLY IN_THREAD)
 	    || e->at(IN_THREAD).character != 'u')
 		throw EXCEPTION("testrichtext7: test 2 failed");
 
-	if (b->get_richtextstring(e) !=
+	if (b->get_richtextstring(e, bidi_format::none) !=
 	    richtextstring{
 		    U"ello\nworld\nrolem\nips",
 		    {
 			    {0, metalr},
 		    }})
 	{
-		throw EXCEPTION("testrichtext7: test 10 failed");
+		throw EXCEPTION("testrichtext7: test 13 failed");
 	}
 	b->move(IN_THREAD, 10);
 	if (b->pos() != 11 || b->at(IN_THREAD).character != '\n')
@@ -2767,7 +2767,9 @@ void testrichtext11(ONLY IN_THREAD)
 				   }, op);
 
 			auto actual=
-				richtext->begin()->get_richtextstring(richtext->end());
+				richtext->begin()->get_richtextstring
+				(richtext->end(),
+				 bidi_format::none);
 
 			if (actual != expected)
 			{
@@ -2860,7 +2862,8 @@ void testrichtext12(ONLY IN_THREAD)
 			iter=iter->begin();
 			new_iter=iter->end();
 
-			auto s=iter->get_richtextstring(new_iter);
+			auto s=iter->get_richtextstring(new_iter,
+							bidi_format::none);
 
 			if (s.get_string() != expected)
 			{
