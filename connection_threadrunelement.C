@@ -94,6 +94,13 @@ void connection_threadObj
 		{
 			auto element=*b;
 
+			if (resize_pending(IN_THREAD,
+					   element->get_window_handler(),
+					   poll_for))
+			{
+				++b;
+				continue;
+			}
 			b=last_set.erase(b);
 
 			f(element);

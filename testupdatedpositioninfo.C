@@ -26,7 +26,13 @@ typedef LIBCXX_NAMESPACE::mpcobj<LIBCXX_NAMESPACE::w::rectarea> flush_counter_t;
 
 static flush_counter_t flush_counter;
 
-static LIBCXX_NAMESPACE::mpcobj<size_t> state_change{0};
+struct state_change_t {
+	size_t count=0;
+	LIBCXX_NAMESPACE::w::rectangle current_position;
+	bool clear_all=false;
+};
+
+static LIBCXX_NAMESPACE::mpcobj<state_change_t> state_change;
 
 #define DEBUG_EXPLICIT_REDRAW() do {					\
 		if (this == DEBUG)				\
@@ -38,8 +44,6 @@ static LIBCXX_NAMESPACE::mpcobj<size_t> state_change{0};
 			l.notify_all();					\
 		}							\
 	} while (0);
-
-#include "element_impl.C"
 
 #define DEBUG_FLUSH_REDRAWN_AREAS() do {				\
 		if (!DEBUG)						\
@@ -54,9 +58,31 @@ static LIBCXX_NAMESPACE::mpcobj<size_t> state_change{0};
 #define DEBUG_BUTTON_EVENT() return
 #define DEBUG_POINTER_MOTION_EVENT() return
 
+#define CLEAR_TO_COLOR_LOG() do {					\
+		LIBCXX_NAMESPACE::mpcobj<state_change_t>::lock		\
+			lock{state_change};				\
+									\
+		for (const auto &r:areas)				\
+		{							\
+			if (r.width==lock->current_position.width &&	\
+			    r.height==lock->current_position.height)	\
+			{						\
+				std::cout << "*** CLEAR ALL: "		\
+					  << r << std::endl;		\
+				lock->clear_all=true;			\
+			}						\
+		}							\
+	} while(0)
+
+#include "element_impl.C"
+
 #include "generic_window_handler.C"
 
-#define DEBUG_MOVE_LOG() do {			\
+static LIBCXX_NAMESPACE::mpobj<int> moved_count=0;
+
+#define DEBUG_MOVE_LOG() do {					\
+		if (e->objname() == "x::w::buttonObj::implObj")	\
+			moved_count=moved_count.get()+1;	\
 		std::cout << "MOVE " << e->objname()		\
 			  << ": " << move_info.scroll_from	\
 			  << " -> " << move_info.move_to_x	\
@@ -289,24 +315,26 @@ void testupdatedposition()
 		  const auto &state,
 		  const auto &)
 		 {
-			 LIBCXX_NAMESPACE::mpcobj<size_t>::lock
+			 LIBCXX_NAMESPACE::mpcobj<state_change_t>::lock
 				 lock{state_change};
 
 			 std::cout << "State: " << state << std::endl;
-			 ++*lock;
+			 ++lock->count;
+			 lock->current_position=state.current_position;
 			 lock.notify_all();
 		 });
 
 	{
-		LIBCXX_NAMESPACE::mpcobj<size_t>::lock lock{state_change};
+		LIBCXX_NAMESPACE::mpcobj<state_change_t>::lock
+			lock{state_change};
 
 		lock.wait_for(std::chrono::seconds(5),
 			      [&]
 			      {
-				      return *lock == 1;
+				      return lock->count == 1;
 			      });
 
-		if (*lock != 1)
+		if (lock->count != 1)
 			throw EXCEPTION("Did not get the initial state");
 	}
 
@@ -380,20 +408,26 @@ void testupdatedposition()
 	// Wait for the window to resize.
 
 	{
-		LIBCXX_NAMESPACE::mpcobj<size_t>::lock lock{state_change};
+		LIBCXX_NAMESPACE::mpcobj<state_change_t>::lock
+			lock{state_change};
 
 		lock.wait_for(std::chrono::seconds(5),
 			      [&]
 			      {
-				      return *lock == 2;
+				      return lock->count == 2;
 			      });
 
-		if (*lock != 2)
+		if (lock->count != 2)
 			throw EXCEPTION("Did not get the 1st resized state");
 	}
 
 	wait_for_idle(main_window);
 
+	std::cout << "MOVE COUNT: " << moved_count.get()
+		  << std::endl;
+
+	if (moved_count.get() != 1)
+		throw EXCEPTION("Expected button contents to be moved");
 	{
 		flush_counter_t::lock lock{flush_counter};
 
@@ -431,19 +465,25 @@ void testupdatedposition()
 	}
 
 	{
-		LIBCXX_NAMESPACE::mpcobj<size_t>::lock lock{state_change};
+		LIBCXX_NAMESPACE::mpcobj<state_change_t>::lock
+			lock{state_change};
 
 		lock.wait_for(std::chrono::seconds(5),
 			      [&]
 			      {
-				      return *lock == 3;
+				      return lock->count == 3;
 			      });
 
-		if (*lock != 3)
+		if (lock->count != 3)
 			throw EXCEPTION("Did not get the 2nd resized state");
 	}
 
 	wait_for_idle(main_window);
+
+	std::cout << "MOVE COUNT: " << moved_count.get()
+		  << std::endl;
+	if (moved_count.get() != 2)
+		throw EXCEPTION("Expected button contents to be moved");
 
 	{
 		flush_counter_t::lock lock{flush_counter};
@@ -477,6 +517,8 @@ void testupdatedposition()
 
 	if (button_draw_counter.get() != 1)
 		throw EXCEPTION("DREW BUTTON expected to happen only once.");
+	if (state_change.get().clear_all)
+		throw EXCEPTION("Unexpected clear");
 }
 
 int main()
