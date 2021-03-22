@@ -223,11 +223,11 @@ struct list_element_impl_init_args;
 
 //! \see list_element
 
-class LIBCXX_HIDDEN list_elementObj::implObj :
+class list_elementObj::implObj :
 	public list_element_impl_superclass_t,
 	public richtext_alteration_config {
 
- public:
+public:
 
 	//! Parent container, with a singleton layout manager.
 
@@ -239,7 +239,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Constructor
 	implObj(const list_element_impl_init_args &init_args);
 
- private:
+private:
 	//! Internal constructor
 
 	implObj(const list_element_impl_init_args &init_args,
@@ -265,7 +265,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Statistics kept by recalculate().
 	tallest_row_height_t tallest_row_height_thread_only;
 
- public:
+public:
 	THREAD_DATA_ONLY(tallest_row_height);
 
 	//! Destructor
@@ -309,7 +309,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Specified in new_listlayoutmanager.
 	const std::unordered_map<size_t, current_border_impl> column_borders;
 
- private:
+private:
 	//! Synchronization info
 
 	my_synchronized_axis synchronized_info;
@@ -324,7 +324,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 						     const const_defaulttheme &)
 		;
 
- public:
+public:
 	THREAD_DATA_ONLY(minimum_column_widths);
 
 	//! Remove a row.
@@ -363,7 +363,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Recalculate after a theme update.
 
 	void recalculate_with_new_theme(ONLY IN_THREAD,
-					listimpl_info_t::lock &lock);
+					textlist_info_lock &lock);
 
 	//! Recalculate our metrics, and everything.
 
@@ -426,7 +426,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			       const listlayoutmanager &, size_t,
 			       const callback_trigger_t &,
 			       const busy &);
- private:
+private:
 
 	//! Common internal selection processing.
 
@@ -442,9 +442,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	void selected_changed(listimpl_info_t::lock &lock, size_t row,
 			      bool flag);
 
-	struct textlist_info_lock;
-
- public:
+public:
 	//! Number of items in the list
 
 	size_t size();
@@ -483,14 +481,14 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 		     const extra_list_row_info &extra,
 		     bool flag);
 
- private:
+private:
 	//! Enable or disable the list item.
 
 	void enabled(ONLY IN_THREAD,
 		     textlist_info_lock &lock,
 		     const extra_list_row_info &extra,
 		     bool flag);
- public:
+public:
 	//! Install a new on_status_update callback.
 
 	void on_status_update(ONLY IN_THREAD,
@@ -513,7 +511,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			      size_t i,
 			      const list_item_status_change_callback &);
 
- private:
+private:
 
 	//! Redraw all visible rows.
 	void do_draw(ONLY IN_THREAD,
@@ -527,70 +525,12 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 		      const listlayoutmanager &,
 		      list_lock &);
 
- public:
+public:
 	//! Our text data.
 	listimpl_info_t textlist_info;
 
 	friend class extra_list_row_infoObj;
-
- private:
-
-	//! Internal lock on textlist_info
-
-	//! listimpl_info_t is an mpobj. A lock must get acquired first,
-	//! then used to instantiate th textlist_info_lock. This checks
-	//! if list_row_info_vector.modified if set, then if so calls
-	//! recalculate().
-
-	struct textlist_info_lock {
-
-	public:
-
-		listimpl_info_t::lock &lock;
-
-		// Whether the list was modified, before we were constructed.
-
-		const bool was_modified;
-
-		// The construct checks row_infos.modified, and if so calls
-		// recalculate().
-
-		textlist_info_lock(ONLY IN_THREAD,
-				   listimpl_info_t::lock &lock,
-				   implObj &me);
-
-		//! Destructor
-
-		~textlist_info_lock();
-
-		//! Convenience function
-		inline auto operator->() noexcept
-		{
-			return lock.operator->();
-		}
-
-		//! Convenience function
-		inline auto operator->() const noexcept
-		{
-			return lock.operator->();
-		}
-	};
-
-	//! If the show starts without a lock in place, create one.
-
-	struct create_textlist_info_lock
-		: public listimpl_info_t::lock,
-		  public textlist_info_lock {
-
-		//! Constructor
-		create_textlist_info_lock(ONLY IN_THREAD, implObj &me);
-
-		//! Destructor
-		~create_textlist_info_lock();
-
-		using listimpl_info_t::lock::operator->;
-	};
- public:
+	friend struct textlist_info_lock;
 
 	//! Scratch buffer for drawing separators
 	const scratch_buffer scratch_buffer_for_separator;
@@ -616,7 +556,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
  private:
 	//! Callback when the current list item changes.
 	list_item_status_change_callbackptr current_list_item_changed_thread_only;
- public:
+public:
 	THREAD_DATA_ONLY(current_list_item_changed);
 
 	//! Return the vertical padding of each row.
@@ -644,7 +584,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Whether the enter/space key or button 1 is down.
 	bool is_key_or_button_down=false;
 
- public:
+public:
 	//! This can be accessed only while holding the lock.
 	inline const auto &current_element(const listimpl_info_t::lock &lock)
 	{
@@ -689,7 +629,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	{
 		return current_keyed_element_under_lock;
 	}
- private:
+private:
 	//! Currently highlighted list item changed.
 
 	void report_new_current_element(ONLY IN_THREAD,
@@ -723,7 +663,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			   size_t row,
 			   size_t count);
 
-	void recalculate(ONLY IN_THREAD, listimpl_info_t::lock &lock);
+	void recalculate(ONLY IN_THREAD, textlist_info_lock &lock);
 
 	//! Compute calculate_column_widths and total_column_width
 
@@ -829,7 +769,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			      bool,
 			      const callback_trigger_t &,
 			      const busy &);
- public:
+public:
 
 	//! Override hover_action_delay.
 
@@ -843,6 +783,63 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Return an existing menu item's submenu layoutmanager.
 	listlayoutmanagerptr submenu_listlayout(size_t i);
+};
+
+//! Internal lock on textlist_info
+
+//! listimpl_info_t is an mpobj. A lock must get acquired first,
+//! then used to instantiate th textlist_info_lock. This checks
+//! if list_row_info_vector.modified if set, then if so calls
+//! recalculate().
+
+struct textlist_info_lock {
+
+public:
+
+	listimpl_info_t::lock &lock;
+
+	// Whether the list was modified, before we were constructed.
+
+	const bool was_modified;
+
+	// The construct checks row_infos.modified, and if so calls
+	// recalculate().
+
+	textlist_info_lock(ONLY IN_THREAD,
+			   listimpl_info_t::lock &lock,
+			   list_elementObj::implObj &me);
+
+	//! Destructor
+
+	~textlist_info_lock();
+
+	//! Convenience function
+	inline auto operator->() noexcept
+	{
+		return lock.operator->();
+	}
+
+	//! Convenience function
+	inline auto operator->() const noexcept
+	{
+		return lock.operator->();
+	}
+};
+
+//! If the show starts without a lock in place, create one.
+
+struct create_textlist_info_lock
+	: public listimpl_info_t::lock,
+	  public textlist_info_lock {
+
+	//! Constructor
+	create_textlist_info_lock(ONLY IN_THREAD,
+				  list_elementObj::implObj &me);
+
+	//! Destructor
+	~create_textlist_info_lock();
+
+	using listimpl_info_t::lock::operator->;
 };
 
 LIBCXXW_NAMESPACE_END

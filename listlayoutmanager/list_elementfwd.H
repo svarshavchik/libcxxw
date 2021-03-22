@@ -77,6 +77,9 @@ struct LIBCXX_HIDDEN tallest_row_height_t {
 	}
 };
 
+struct LIBCXX_HIDDEN textlist_info_lock;
+struct LIBCXX_HIDDEN create_textlist_info_lock;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

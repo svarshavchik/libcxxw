@@ -19,7 +19,7 @@ class LIBCXX_HIDDEN list_elementObj : public elementObj,
 				      public focusableObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;

@@ -7,6 +7,7 @@
 
 #include "listlayoutmanager/extra_list_row_infofwd.H"
 #include "listlayoutmanager/list_elementobj.H"
+#include "listlayoutmanager/list_elementfwd.H"
 #include "x/w/impl/popup/popupfwd.H"
 #include "x/w/impl/connection_threadfwd.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
@@ -35,7 +36,7 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : public radio_buttonObj {
 	//! My row number.
 
 	//! This get updated in recalculate().
-	size_t current_row_number_thread_only;
+	size_t current_row_number_under_lock;
 
 	//! Information about this row.
 
@@ -63,7 +64,15 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : public radio_buttonObj {
 	protected_data data_under_lock;
 
  public:
-	THREAD_DATA_ONLY(current_row_number);
+
+	//! Return this item's row number
+
+	//! Require a textlist_info_lock, because it checks if it's necessary
+	//! to call recalculate(), which may update my row number.
+	inline auto &current_row_number(textlist_info_lock &)
+	{
+		return current_row_number_under_lock;
+	}
 
 	//! Constructor
 	extra_list_row_infoObj(bool initially_selected);

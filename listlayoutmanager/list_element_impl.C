@@ -78,28 +78,27 @@ list_lock::~list_lock()=default;
 // The construct checks row_infos.modified, and if so calls
 // recalculate().
 
-list_elementObj::implObj::textlist_info_lock
-::textlist_info_lock(ONLY IN_THREAD,
-		     listimpl_info_t::lock &lock,
-		     implObj &me)
+textlist_info_lock::textlist_info_lock(ONLY IN_THREAD,
+				       listimpl_info_t::lock &lock,
+				       list_elementObj::implObj &me)
 	: lock{lock},
 	  was_modified{ lock->row_infos.modified}
 {
 	if (was_modified)
-		me.recalculate(IN_THREAD, lock);
+		me.recalculate(IN_THREAD, *this);
 }
 
-list_elementObj::implObj::textlist_info_lock::~textlist_info_lock()=default;
+textlist_info_lock::~textlist_info_lock()=default;
 
-list_elementObj::implObj::create_textlist_info_lock
-::create_textlist_info_lock(ONLY IN_THREAD, implObj &me)
+create_textlist_info_lock::create_textlist_info_lock(ONLY IN_THREAD,
+						     list_elementObj::implObj
+						     &me)
 	: listimpl_info_t::lock{me.textlist_info},
 	  textlist_info_lock{IN_THREAD, *this, me}
 {
 }
 
-list_elementObj::implObj::create_textlist_info_lock
-::~create_textlist_info_lock()=default;
+create_textlist_info_lock::~create_textlist_info_lock()=default;
 
 ////////////////////////////////////////////////////////////////////////////
 //
@@ -851,7 +850,7 @@ void list_elementObj::implObj::initialize(ONLY IN_THREAD)
 
 	superclass_t::initialize(IN_THREAD);
 
-	listimpl_info_t::lock lock{textlist_info};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	recalculate_with_new_theme(IN_THREAD, lock);
 	request_visibility(IN_THREAD, true);
@@ -864,7 +863,7 @@ void list_elementObj::implObj::theme_updated(ONLY IN_THREAD,
 						get_screen()->impl
 						->current_theme.get());
 	superclass_t::theme_updated(IN_THREAD, new_theme);
-	listimpl_info_t::lock lock{textlist_info};
+	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	for (const auto &cell:lock->cells)
 		cell->cell_theme_updated(IN_THREAD, new_theme);
@@ -873,7 +872,7 @@ void list_elementObj::implObj::theme_updated(ONLY IN_THREAD,
 }
 
 void list_elementObj::implObj::recalculate_with_new_theme(ONLY IN_THREAD,
-							  listimpl_info_t::lock
+							  textlist_info_lock
 							  &lock)
 {
 	// Shortcut: clear the aggregate column_widths, and clear
@@ -890,13 +889,13 @@ void list_elementObj::implObj::recalculate_with_new_theme(ONLY IN_THREAD,
 }
 
 void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
-					   listimpl_info_t::lock &lock)
+					   textlist_info_lock &lock)
 {
 	size_t n=lock->row_infos.size();
 	coord_t y=0;
 	auto row=lock->row_infos.begin();
 
-	calculate_column_widths(IN_THREAD, lock);
+	calculate_column_widths(IN_THREAD, lock.lock);
 
 	auto v_padding_times_two=list_v_padding(IN_THREAD);
 
@@ -923,7 +922,7 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 	for (size_t i=0; i<n; ++i, ++row)
 	{
 		row->y=y;
-		row->extra->current_row_number(IN_THREAD)=i;
+		row->extra->current_row_number(lock)=i;
 
 		if (!row->size_computed)
 		{
@@ -991,7 +990,7 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 			{
 				// This row becomes a separator line.
 
-				row->extra->data(lock).row_type=
+				row->extra->data(lock.lock).row_type=
 					list_row_type_t::separator;
 				row->height=current_border(IN_THREAD)->border(IN_THREAD)
 					->calculated_border_height;
@@ -1010,9 +1009,9 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 		}
 	}
 
-	calculate_column_widths(IN_THREAD, lock);
+	calculate_column_widths(IN_THREAD, lock.lock);
 
-	dim_t width=calculate_column_poswidths(IN_THREAD, lock);
+	dim_t width=calculate_column_poswidths(IN_THREAD, lock.lock);
 	dim_t height=dim_t::truncate(y);
 
 	lock->row_infos.modified=false;
@@ -2224,6 +2223,16 @@ void list_elementObj::implObj::enabled(ONLY IN_THREAD,
 {
 	create_textlist_info_lock lock{IN_THREAD, *this};
 
+	// This is called from listitemhandle. Perform sanity checks.
+
+	size_t n=extra->current_row_number(lock);
+
+	if (n >= lock->row_infos.size())
+		return;
+
+	if (lock->row_infos.at(n).extra != extra)
+		return;
+
 	enabled(IN_THREAD, lock, extra, flag);
 }
 
@@ -2245,7 +2254,7 @@ void list_elementObj::implObj::enabled(ONLY IN_THREAD,
 
 	r.row_type=new_type;
 
-	redraw_rows(IN_THREAD, lock.lock, extra->current_row_number(IN_THREAD));
+	redraw_rows(IN_THREAD, lock.lock, extra->current_row_number(lock));
 }
 
 void list_elementObj::implObj
@@ -2257,7 +2266,7 @@ void list_elementObj::implObj
 	list_lock ll{lm};
 	textlist_info_lock lock{IN_THREAD, ll, *this};
 
-	size_t i=extra->current_row_number(IN_THREAD);
+	size_t i=extra->current_row_number(lock);
 
 	if (i >= lock->row_infos.size())
 		return;

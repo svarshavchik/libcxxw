@@ -45,10 +45,6 @@ class extra_list_row_infoObj::shortcut_implObj
 	//! NOTE: we can only access it after acquiring a textlist_info_lock!
 	weakptr<extra_list_row_infoptr> extra_ptr;
 
-	typedef list_elementObj::implObj::textlist_info_lock textlist_info_lock;
-	typedef list_elementObj::implObj
-	::create_textlist_info_lock create_textlist_info_lock;
-
 public:
 
 	shortcut_implObj(const listlayoutmanager &lm,
@@ -132,7 +128,7 @@ public:
 			return;
 
 		lm->autoselect(IN_THREAD,
-			       p->current_row_number(IN_THREAD), trigger);
+			       p->current_row_number(lock), trigger);
 	}
 };
 
@@ -141,7 +137,8 @@ public:
 
 extra_list_row_infoObj
 ::extra_list_row_infoObj(bool initially_selected)
-	: data_under_lock{initially_selected}
+	: current_row_number_under_lock{(size_t)-1},
+	  data_under_lock{initially_selected}
 {
 }
 
@@ -269,9 +266,8 @@ void extra_list_row_infoObj::turn_off(ONLY IN_THREAD,
 			// However we still need to go through the motion
 			// in order to legally access the data().
 
-			listimpl_info_t::lock
-				lock{impl->list_element_singleton->impl
-				->textlist_info};
+			create_textlist_info_lock lock{IN_THREAD,
+				*impl->list_element_singleton->impl};
 
 			if (!data(lock).selected)
 				return;
@@ -284,13 +280,13 @@ void extra_list_row_infoObj::turn_off(ONLY IN_THREAD,
 
 			lm->notmodified();
 
-			if (current_row_number(IN_THREAD) <
+			if (current_row_number(lock) <
 			    lock->row_infos.size() &&
-			    lock->row_infos.at(current_row_number(IN_THREAD))
+			    lock->row_infos.at(current_row_number(lock))
 			    .extra == ref{this})
 			{
 				lm->selected(IN_THREAD,
-					     current_row_number(IN_THREAD),
+					     current_row_number(lock),
 					     false,
 					     trigger);
 				return;
