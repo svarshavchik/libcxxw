@@ -419,7 +419,7 @@ A regular tooltip is a popup that appears when the mouse pointer hovers over
 a widget. The library automatically show()s and hide()s the tooltip,
 as needed.
 create_tooltip() creates a default tooltip from a text label (which is a
-\ref text_param "INSERT_LIBX_NAMESPACE::w::text_param" that can specify
+\ref text_param "INSERT_LIBX_NAMESPACE::w::text_param" that can use
 custom fonts), and an optional
  \ref label_config "INSERT_LIBX_NAMESPACE::w::label_config". The resulting
 tooltip appears automatically when the pointer pauses over the widget, and disappears when it moves again.
@@ -437,7 +437,7 @@ In this manner, the tooltip's contents get created each time the tooltip
 becomes visible, and may show something different each time.
 
 \note
-It is not necessary for the creator lambda to show() the new container. The
+The creator lambda should not show() the new container. The
 new container gets automatically show_all()ed and the tooltip becomes visible
 when the creator returns.
 

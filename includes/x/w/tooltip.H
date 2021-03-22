@@ -32,8 +32,9 @@ public:
 	//! Constructor
 	~tooltip_factory();
 
-	//! Appearance
-	const_tooltip_appearance appearance;
+	//! Default appearance
+
+	const_tooltip_appearance default_appearance;
 
 	//! The tooltip creator's callback.
 
@@ -42,17 +43,35 @@ public:
 
 	template<container_processor functor>
 	inline void operator()(functor &&creator,
-			const new_layoutmanager &layout_manager)
+			       const new_layoutmanager &layout_manager)
+		const
+	{
+		operator()(std::forward<functor>(creator),
+			   layout_manager,
+			   default_appearance);
+	}
+
+	//! The tooltip creator's callback.
+
+	//! The tooltip creator calls this object, passing the
+	//! content creator, the layout manager for the tooltip and
+	//! a custom appearance object for the tooltip.
+	template<container_processor functor>
+	inline void operator()(functor &&creator,
+			       const new_layoutmanager &layout_manager,
+			       const const_tooltip_appearance &appearance)
 		const
 	{
 		create(make_function<void (const container &)>
-		       (std::forward<functor>(creator)), layout_manager);
+		       (std::forward<functor>(creator)), layout_manager,
+		       appearance);
 	}
 
 	//! Create the tooltip
 
 	virtual void create(const function<void (const container &)> &creator,
-			    const new_layoutmanager &layout_manager)
+			    const new_layoutmanager &layout_manager,
+			    const const_tooltip_appearance &appearance)
 		const LIBCXX_PUBLIC=0;
 };
 

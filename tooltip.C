@@ -32,7 +32,7 @@ static property::value<unsigned>
 tooltip_delay(LIBCXX_NAMESPACE_STR "::w::tooltip_delay", 2000);
 
 tooltip_factory::tooltip_factory()
-	: appearance{tooltip_appearance::base::tooltip_theme()}
+	: default_appearance{tooltip_appearance::base::tooltip_theme()}
 {
 }
 
@@ -174,11 +174,9 @@ class LIBCXX_HIDDEN tooltip_factory_impl : public tooltip_factory {
 	~tooltip_factory_impl()=default;
 
 	void create(const function<void (const container &)> &creator,
-		    const new_layoutmanager &layout_manager) const override;
-
-	void create(const function<void (const container &)> &creator,
-		    const const_tooltip_appearance &appearance,
-		    const new_layoutmanager &layout_manager) const;
+		    const new_layoutmanager &layout_manage,
+		    const const_tooltip_appearance &appearance)
+		const override;
 
 	virtual ref<tooltip_handlerObj>
 		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
@@ -192,16 +190,8 @@ class LIBCXX_HIDDEN tooltip_factory_impl : public tooltip_factory {
 
 void tooltip_factory_impl::create(const function<void (const container &)>
 				  &creator,
-				  const new_layoutmanager &layout_manager)
-	const
-{
-	create(creator, appearance, layout_manager);
-}
-
-void tooltip_factory_impl::create(const function<void (const container &)>
-				  &creator,
-				  const const_tooltip_appearance &appearance,
-				  const new_layoutmanager &layout_manager)
+				  const new_layoutmanager &layout_manager,
+				  const const_tooltip_appearance &appearance)
 	const
 {
 	ref<generic_windowObj::handlerObj>
@@ -507,7 +497,7 @@ container elementObj::do_create_static_tooltip(const function<void
 					     rectangle{},
 					     created_tooltip_popup};
 
-	factory.create(creator, config.appearance, nlm);
+	factory.create(creator, nlm, config.appearance);
 
 	popup p{created_tooltip_popup};
 
@@ -553,7 +543,7 @@ container elementObj::do_create_static_tooltip(ONLY IN_THREAD,
 			impl->get_absolute_location_on_screen(IN_THREAD),
 			created_tooltip_popup};
 
-	factory.create(creator, config.appearance, nlm);
+	factory.create(creator, nlm, config.appearance);
 
 	popup p{created_tooltip_popup};
 
