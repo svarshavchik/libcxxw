@@ -1632,6 +1632,7 @@ test:
 	./testtoolbox --testmetrics
 	./testtoolbox --norestore --testthemescale
 	./testcombobox -l
+	./testupdatedpositioninfo
 
 .PHONY: rpm
 
