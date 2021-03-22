@@ -102,6 +102,19 @@ public:
 	//! Close all menu popups.
 	void close_all_menu_popups(ONLY IN_THREAD);
 
+	//! A new tooltip popup is getting opened
+
+	//! Nothing needs to be done. The tooltip popup will not process
+	//! any pointer or button activity.
+
+	ref<obj> opening_tooltip_popup(ONLY IN_THREAD,
+				       const ref<popupObj::handlerObj> &);
+
+	//! A tooltip popup is being closed
+
+	void closing_tooltip_popup(ONLY IN_THREAD,
+				   const popupObj::handlerObj &);
+
 	//! Forward a key event to whichever popup should be getting them.
 
 	bool handle_key_event(ONLY IN_THREAD,

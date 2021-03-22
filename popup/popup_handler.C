@@ -47,6 +47,11 @@ const popup_visibility_semantics menu_popup_type={
 	&shared_handler_dataObj::closing_menu_popup
 };
 
+const popup_visibility_semantics tooltip_popup_type={
+	&shared_handler_dataObj::opening_tooltip_popup,
+	&shared_handler_dataObj::closing_tooltip_popup
+};
+
 popupObj::handlerObj::handlerObj(const popup_handler_args &args)
 	: superclass_t{{args.parent->screenref,
 			args.window_type,

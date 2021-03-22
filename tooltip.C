@@ -133,7 +133,7 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 			border_appearance->vpad,
 			popup_handler_args
 			{
-				exclusive_popup_type,
+				tooltip_popup_type,
 				"tooltip",
 				parent,
 				popup_attachedto_info::create(where, how),

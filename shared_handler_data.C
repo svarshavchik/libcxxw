@@ -154,6 +154,21 @@ void shared_handler_dataObj::close_all_menu_popups(ONLY IN_THREAD)
 #endif
 }
 
+ref<obj> shared_handler_dataObj
+::opening_tooltip_popup(ONLY IN_THREAD,
+			const ref<popupObj::handlerObj> &popup)
+{
+	auto mcguffin=ref<handler_mcguffinObj>::create(popup);
+
+	return mcguffin;
+}
+
+void shared_handler_dataObj
+::closing_tooltip_popup(ONLY IN_THREAD,
+			const popupObj::handlerObj &popup)
+{
+}
+
 bool shared_handler_dataObj
 ::handle_key_event(ONLY IN_THREAD,
 		   const ref<generic_windowObj::handlerObj> &key_event_from,
@@ -349,6 +364,19 @@ shared_handler_dataObj::find_popup_for_xy(ONLY IN_THREAD,
 	// If there's a combo-box popup, all motion events go there.
 
 	bool have_exclusive_popup=false;
+
+	for (auto &b:*opened_exclusive_popups)
+	{
+		auto exclusive_popup=b.getptr();
+
+		if (!exclusive_popup)
+			continue;
+
+		auto handler=exclusive_popup->handler.getptr();
+
+		if (!handler)
+			continue;
+	}
 
 	for (auto &b:*opened_exclusive_popups)
 	{

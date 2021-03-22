@@ -61,6 +61,13 @@ extern const popup_visibility_semantics LIBCXX_HIDDEN menu_popup_type;
 
 extern const popup_visibility_semantics LIBCXX_HIDDEN exclusive_popup_type;
 
+//! Tooltip popup semantics
+
+//! Tooltips carry no special semantics, they don't process key or button
+//! events.
+
+extern const popup_visibility_semantics LIBCXX_HIDDEN tooltip_popup_type;
+
 //! Return value from recalculate_attached_popup_position
 
 //! Indicates where recalculate_attached_popup_position() placed the popup in relation
