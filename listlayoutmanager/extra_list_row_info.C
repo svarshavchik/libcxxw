@@ -156,6 +156,11 @@ bool extra_list_row_infoObj::enabled(listimpl_info_t::lock &lock) const
 	return data(lock).row_type == list_row_type_t::enabled;
 }
 
+bool extra_list_row_infoObj::selected(listimpl_info_t::lock &lock) const
+{
+	return data(lock).selected;
+}
+
 void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 				      list_row_info_t &row_info,
 				      listimpl_info_t::lock &lock,

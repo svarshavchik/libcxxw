@@ -21,6 +21,7 @@
 #include "x/w/menubarfactory.H"
 #include "x/w/menu.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/listitemhandle.H"
 #include "x/w/input_field.H"
 #include "x/w/label.H"
 #include "x/w/dialog.H"
@@ -37,6 +38,7 @@
 #include <x/locale.H>
 #include <x/cups/job.H>
 #include <string>
+#include <tuple>
 #include <iostream>
 #include <sstream>
 
@@ -497,7 +499,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 size_t view_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 {
-	m->replace_all_items({
+	auto ret=m->replace_all_items({
 		LIBCXX_NAMESPACE::w::menuoption{},
 		[](THREAD_CALLBACK, const auto &info)
 		{
@@ -541,8 +543,35 @@ size_t view_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 				  << std::endl;
 		},
 		"Detailed",
-		});
+		LIBCXX_NAMESPACE::w::get_new_items{}
+		}
+		);
 
+	m->insert_items
+		(3,
+		 {[basic=ret.handles.at(2),
+		   detailed=ret.handles.at(3)]
+		  (ONLY IN_THREAD,
+		   const auto &info)
+		  mutable
+		 {
+			 std::swap(basic, detailed);
+
+			 basic->autoselect();
+			 basic->autoselect(IN_THREAD);
+		 },
+		"Toggle basic/detailed",
+		 [basic=ret.handles.at(2),
+		  detailed=ret.handles.at(3)]
+		 (ONLY IN_THREAD,
+		  const auto &info)
+		 {
+			 basic->selected(false);
+			 detailed->selected(IN_THREAD, false);
+		 },
+		"Unselect basic/detailed",
+		 }
+		 );
 	return 1;
 }
 

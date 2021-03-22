@@ -8,6 +8,7 @@
 #include "x/w/listitemhandle.H"
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/extra_list_row_infofwd.H"
+#include <x/weakptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,9 +18,11 @@ class listitemhandleObj::implObj : public listitemhandleObj {
 
 	const weakptr<ptr<listlayoutmanagerObj::implObj>> listlayout_impl;
 
-	const extra_list_row_info extra;
+	const weakptr<extra_list_row_infoptr> extra;
 
- public:
+	struct recover_weak_ref;
+
+public:
 	//! Constructor
 	implObj(const ref<listlayoutmanagerObj::implObj> &impl,
 		size_t n);
@@ -39,6 +42,27 @@ class listitemhandleObj::implObj : public listitemhandleObj {
 
 	//! Implement enabled()
 	void enabled(ONLY IN_THREAD, bool) override;
+
+	//! Implement selected()
+	bool selected() const override;
+
+	//! Implement selected()
+	void selected(bool selected_flag) override;
+
+	//! Implement selected()
+	void selected(ONLY IN_THREAD, bool selected_flag,
+		      const callback_trigger_t &trigger) override;
+
+	using listitemhandleObj::selected;
+
+	//! Implement autoselect()
+	void autoselect() override;
+
+	//! Implement autoselect()
+	void autoselect(ONLY IN_THREAD, const callback_trigger_t &trigger)
+		override;
+
+	using listitemhandleObj::autoselect;
 
 	//! Return the menu item's layout manager.
 	listlayoutmanagerptr submenu_listlayout() const override;

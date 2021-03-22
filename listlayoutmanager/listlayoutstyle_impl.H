@@ -213,6 +213,10 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 	virtual void nonmenu_attribute_requested() const;
 
  public:
+	//! About to create a new cell.
+
+	virtual void validate_rowinfo(const textlist_rowinfo &) const;
+
 	//! How many extra leading columns there are.
 
 	//! Called by create_cells() to figure out what it's doing.

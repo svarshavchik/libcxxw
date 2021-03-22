@@ -41,6 +41,27 @@ handle->enabled(IN_THREAD, true);
 enabled() enables or disables the handle's item, or indicates whether
 the item is currently enabled.
 
+\code
+bool flag=handle->selected();
+
+handle->selected(true);
+
+handle->selected(IN_THREAD, true);
+
+handle->selected(IN_THREAD, true, trigger);
+
+handle->autoselect();
+
+handle->autoselect(IN_THREAD);
+
+handle->autoselect(IN_THREAD, trigger);
+
+\endcode
+
+select() and autoselect() selects or unselcts the handle's item, see
+\ref listlayoutmanager "list layout manager"'s description of the semantics
+of these operations. The IN_THREAD overloads provide a default
+\ref callback_trigger_t "trigger object" if not specified.
 
 \code
 handle->on_status_update([]

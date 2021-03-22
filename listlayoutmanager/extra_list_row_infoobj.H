@@ -95,6 +95,9 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : public radio_buttonObj {
 	//! This item can be selected via keyboard or pointer
 	bool enabled(listimpl_info_t::lock &) const;
 
+	//! This item is selected
+	bool selected(listimpl_info_t::lock &) const;
+
 	//! Initialize this row's metadata.
 
 	void set_meta(const listlayoutmanager &lm,

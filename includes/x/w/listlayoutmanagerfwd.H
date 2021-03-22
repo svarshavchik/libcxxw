@@ -241,7 +241,7 @@ This adds two list items, "Lorem Ipsum" and "Dolor Sit Amet". The latter
 comes up initially selected.
 
 \note
-All changes to the context of the list get executed by the connection thread.
+All changes to the contents of the list get processed by the connection thread.
 Using size() immediately after append_items(), for example, may still return
 the previous list size; until the contents of list get updated by the
 connection thread. As explained below, the IN_THREAD overloads are invocable
@@ -414,6 +414,26 @@ Selecting a menu option with a non-empty radio group name automatically
 deselects any other selected option the same radio group name (in the same
 menu popup).
 
+\par Initially selected list items
+
+\code
+l->append_items({
+                   []
+                   (ONLY IN_THREAD,
+                    const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
+                   {
+                   },
+                   INSERT_LIBX_NAMESPACE::w::menuoption{},
+                   INSERT_LIBX_NAMESPACE::w::selected{}
+		   "Detailed view",
+                   });
+\endcode
+
+A \c INSERT_LIBX_NAMESPACE::w::selected in a regular list or in a menu
+with a menuoption indicates a list item that's initially selected. Its
+optional aggregate initialization sets the value of its sole \c bool
+field (defaults to \c true ).
+
 \par Menu item shortcuts
 
 \code
@@ -436,6 +456,10 @@ the keyboard.
 
 You cannot install a shortcut for a separator item (makes no sense), or
 a submenu.
+
+An \ref inactive_shortcut "INSERT_LIBX_NAMESPACE::w::inactive_shortcut"
+also shows the shortcut key in the menu item but doesn't actually attach
+it to the menu item.
 
 \par Submenus
 
@@ -662,6 +686,9 @@ This is empty by default, and gets returned only when
 \c get_new_items gets specified. It takes additional work to create these
 objects, so this work gets done only upon request.
 
+\note
+The vector includes all handles for new items, except for separator items.
+
 \par Standard Copy/Cut/Paste menu items
 
 \code
@@ -752,7 +779,10 @@ struct menuoption {
 
 //! This list item is initially selected.
 
-struct selected{};
+//! The actual selection status is controlled by the \c flag that defaults
+//! to true.
+
+struct selected{ bool flag=true; };
 
 //! This is a separator.
 

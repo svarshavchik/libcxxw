@@ -1,5 +1,7 @@
 2021-02-28  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Implement selected() and autoselect() in list item handles.
+
 	* Specifying that list items, or menu options, are selected
 	by default. Implement menu option radio groups (mutually
 	exclusive).

@@ -8,6 +8,7 @@
 #include <x/w/listitemhandlefwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/connection_threadfwd.H>
+#include <x/w/callback_triggerfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/obj.H>
 
@@ -40,6 +41,31 @@ public:
 
 	//! Enable or disable this list item.
 	virtual void enabled(ONLY IN_THREAD, bool) LIBCXX_HIDDEN =0;
+
+	//! Whether this list item is selected.
+	virtual bool selected() const LIBCXX_HIDDEN =0;
+
+	//! Select or unselect this list item
+	virtual void selected(bool selected_flag) LIBCXX_HIDDEN=0;
+
+	//! Select or unselect this list item
+	void selected(ONLY IN_THREAD, bool selected_flag) LIBCXX_PUBLIC;
+
+	//! Select or unselect this list item
+	virtual void selected(ONLY IN_THREAD, bool selected_flag,
+			      const callback_trigger_t &trigger)
+		LIBCXX_HIDDEN=0;
+
+	//! Autoselect this list item
+	virtual void autoselect() LIBCXX_HIDDEN=0;
+
+	//! Autoselect this list item
+	void autoselect(ONLY IN_THREAD) LIBCXX_PUBLIC;
+
+	//! Autoselect this list item
+	virtual void autoselect(ONLY IN_THREAD,
+				const callback_trigger_t &trigger)
+		LIBCXX_HIDDEN=0;
 
 	//! Install a new status update callback.
 	virtual void on_status_update(const

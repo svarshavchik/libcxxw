@@ -322,9 +322,9 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 
 				   next_rowinfo.menu_item=option;
 			   },
-			   [&](const selected &)
+			   [&](const selected &s)
 			   {
-				   next_rowinfo.initially_selected=true;
+				   next_rowinfo.initially_selected=s.flag;
 			   },
 			   [&](const submenu &sm)
 			   {
@@ -411,6 +411,8 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 
 		if ((column_counter % textlist_element.columns) == 0)
 		{
+			style.validate_rowinfo(next_rowinfo);
+
 			auto new_extra_list=
 				extra_list_row_info
 				::create(next_rowinfo.initially_selected);
@@ -571,6 +573,10 @@ void listlayoutstyle_impl::menu_attribute_requested() const
 }
 
 void listlayoutstyle_impl::nonmenu_attribute_requested() const
+{
+}
+
+void listlayoutstyle_impl::validate_rowinfo(const textlist_rowinfo &) const
 {
 }
 
@@ -866,6 +872,20 @@ class LIBCXX_HIDDEN menu_list_style_impl
 		throw EXCEPTION(_("hierindent attribute is not allowed "
 			  "in menus"));
 	}
+
+
+	void validate_rowinfo(const textlist_rowinfo &info) const override
+	{
+		if (!info.initially_selected)
+			return;
+
+		if (!std::holds_alternative<menu_item_option>(info.menu_item))
+		{
+			throw EXCEPTION(_("Only menu options can be initially "
+					  "selected"));
+		}
+	}
+
 };
 
 static const

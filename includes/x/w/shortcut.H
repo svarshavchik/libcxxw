@@ -152,8 +152,8 @@ public:
 
 //! Used in menus to show a shortcut for a menu item but without creating
 //! the actual shortcut. The key combination gets implemented elsewhere.
-//! This is used for copy/cut/paste menu items. The input field response to
-//! the key combinations itself.
+//! This is used for copy/cut/paste menu items. The input field reacts to
+//! the key combination itself, not the menu item.
 
 class inactive_shortcut : public shortcut {
 
