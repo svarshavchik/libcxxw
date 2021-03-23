@@ -18,6 +18,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <functional>
+#include <charconv>
 
 LIBCXXW_NAMESPACE_START
 
@@ -69,6 +70,27 @@ static bool resize_pending(ONLY IN_THREAD,
 		wh.resizing(IN_THREAD));
 }
 
+namespace {
+
+	// Cache the calls to resize_pending(). They're expensive.
+	// So we use an unordered_map to cache the results of resize_pending
+	// by windowObj::handlerObj, and use try_emplace with this object
+	// that has an operator bool that calls it. So, once the cache
+	// already has this operator bool, no more calls get made.
+
+	struct get_resize_pending {
+
+		ONLY IN_THREAD;
+		generic_windowObj::handlerObj &wh;
+		int &poll_for;
+
+		operator bool() const
+		{
+			return resize_pending(IN_THREAD, wh, poll_for);
+		}
+	};
+}
+
 void connection_threadObj
 ::do_lowest_sizable_element_first(ONLY IN_THREAD,
 				  element_set_t &s,
@@ -79,6 +101,9 @@ void connection_threadObj
 	// Start at the end of the nesting level map, work our way up.
 
 	auto iter=s.end();
+
+	std::unordered_map<generic_windowObj::handlerObj *, bool>
+		is_resize_pending;
 
 	while (iter != s.begin())
 	{
@@ -94,9 +119,15 @@ void connection_threadObj
 		{
 			auto element=*b;
 
-			if (resize_pending(IN_THREAD,
-					   element->get_window_handler(),
-					   poll_for))
+			auto &wh=element->get_window_handler();
+
+			if (is_resize_pending
+			    .try_emplace(&wh,
+					 get_resize_pending{
+						 IN_THREAD,
+							 wh,
+							 poll_for
+					 }).first->second)
 			{
 				++b;
 				continue;
@@ -152,6 +183,9 @@ bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 
 	bool flag=false;
 
+	std::unordered_map<generic_windowObj::handlerObj *, bool>
+		is_resize_pending;
+
 	for (auto b=containers_2_recalculate_thread_only->begin(),
 		     e=containers_2_recalculate_thread_only->end(); b != e;)
 	{
@@ -162,10 +196,16 @@ bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 		{
 			auto container=*first;
 
-			if (resize_pending(IN_THREAD,
-					   container->container_element_impl()
-					   .get_window_handler(),
-					   poll_for))
+			auto &wh=container->container_element_impl()
+				.get_window_handler();
+
+			if (is_resize_pending
+			    .try_emplace(&wh,
+					 get_resize_pending{
+						 IN_THREAD,
+							 wh,
+							 poll_for
+					 }).first->second)
 				continue;
 
 			// Wait until recalculate() is invoked before
@@ -590,6 +630,9 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 
 	redraw_queue.reserve(elements_to_redraw(IN_THREAD)->size());
 
+	std::unordered_map<generic_windowObj::handlerObj *, bool>
+		is_resize_pending;
+
 	for (auto b=elements_to_redraw(IN_THREAD)->begin(),
 		     e=elements_to_redraw(IN_THREAD)->end(); b != e; )
 	{
@@ -597,8 +640,14 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 
 		++b;
 
-		if (resize_pending(IN_THREAD, p->get_window_handler(),
-				   poll_for))
+		auto &wh=p->get_window_handler();
+
+		if (is_resize_pending.try_emplace(&wh,
+						  get_resize_pending{
+							  IN_THREAD,
+							  wh,
+							  poll_for
+						  }).first->second)
 			continue;
 
 		redraw_queue.push_back
