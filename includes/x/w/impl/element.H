@@ -16,10 +16,12 @@
 #include <x/w/input_mask.H>
 #include <x/w/button_eventfwd.H>
 #include <x/w/motion_eventfwd.H>
+#include <x/w/labelfwd.H>
 #include <x/w/busyfwd.H>
 #include <x/w/focus.H>
 #include <x/w/rgbfwd.H>
 #include <x/w/focusableobj.H>
+#include <x/w/tooltip_appearancefwd.H>
 #include <x/w/font_arg.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/impl/redraw_priority.H>
@@ -1617,6 +1619,27 @@ class elementObj::implObj : public element_drawObj,
 	//! currently shown.
 	//! interval, which is now elapsed.
 	virtual void hover_cancel(ONLY IN_THREAD);
+	//! Compute pointer event as pseudo tooltip anchor element
+
+	//! Popups attach to the element's coordinates. Tooltips use the
+	//! popup attachment framework, but get anchored to the pointer
+	//! position.
+	//!
+	//! This takes the last reported pointer position and constructs
+	//! a pseudo rectangle for an element 0x0 at the pointer coordinates.
+	std::tuple<rectangle, attached_to>
+	tooltip_pseudo_rectangle(ONLY IN_THREAD,
+				 const const_tooltip_appearance &appearance)
+		LIBCXX_HIDDEN;
+
+	//! Text direction in this element
+
+	//! Used to position the tooltip to the left or the right of the
+	//! pointer position.
+	//!
+	//! Returns the default paragraph embedding level. Overriden in
+	//! labels and input fields.
+	virtual bidi direction(ONLY IN_THREAD);
 
  private:
 	//! Schedule a timer to check if the tooltip needs to be shown.

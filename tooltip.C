@@ -285,48 +285,69 @@ popup_tooltip_factory::create_tooltip_handler
 {
 	// Compute the current pointer coordinates.
 
-	auto parent_element_absolute_location=
-		parent_element->get_absolute_location_on_screen(IN_THREAD);
-
-	coord_t x{coord_t::truncate(parent_element->data(IN_THREAD)
-				    .last_motion_x
-				    + parent_element_absolute_location.x)};
-	coord_t y{coord_t::truncate(parent_element->data(IN_THREAD)
-				    .last_motion_y
-				    + parent_element_absolute_location.y)};
-
-	auto current_theme=
-		parent_window->get_screen()->impl->current_theme.get();
-
-	dim_t offset_x=current_theme->get_theme_dim_t
-		(appearance->tooltip_x_offset,
-		 themedimaxis::width);
-	dim_t offset_y=current_theme->get_theme_dim_t
-		(appearance->tooltip_y_offset,
-		 themedimaxis::height);
-
-
-	auto direction=
-		default_paragraph_embedding_level() == UNICODE_BIDI_LR
-		? attached_to::tooltip_right : attached_to::tooltip_left;
+	auto [tooltip_coordinates, direction]=
+		parent_element->tooltip_pseudo_rectangle(IN_THREAD,
+							 appearance);
 
 	// And construct an attached_to::tooltip tooltip_handlerObj,
 	// at these coordinates.
 	return ref<tooltip_handlerObj>::create
 		(parent_window,
 		 appearance,
-		 rectangle{coord_t::truncate(direction ==
-					     attached_to::tooltip_right
-					     ? x+offset_x
-					     : x-offset_x),
-				coord_t::truncate(y-offset_y),
-				   0, 0},
+		 tooltip_coordinates,
 		 direction);
 }
 
 #if 0
 {
 #endif
+}
+
+std::tuple<rectangle, attached_to> elementObj::implObj
+::tooltip_pseudo_rectangle(ONLY IN_THREAD,
+			   const const_tooltip_appearance &appearance)
+{
+	auto parent_element_absolute_location=
+		get_absolute_location_on_screen(IN_THREAD);
+
+	coord_t x{coord_t::truncate(data(IN_THREAD).last_motion_x
+				    + parent_element_absolute_location.x)};
+	coord_t y{coord_t::truncate(data(IN_THREAD).last_motion_y
+				    + parent_element_absolute_location.y)};
+
+	auto current_theme=get_screen()->impl->current_theme.get();
+
+	dim_t offset_x=current_theme->get_theme_dim_t
+		(appearance->tooltip_x_offset, themedimaxis::width);
+	dim_t offset_y=current_theme->get_theme_dim_t
+		(appearance->tooltip_y_offset, themedimaxis::height);
+
+	attached_to tooltip_direction=
+		default_paragraph_embedding_level() == UNICODE_BIDI_LR
+		? attached_to::tooltip_right : attached_to::tooltip_left;
+
+	switch (direction(IN_THREAD)) {
+	case bidi::left_to_right:
+		tooltip_direction=attached_to::tooltip_right;
+		break;
+	case bidi::right_to_left:
+		tooltip_direction=attached_to::tooltip_left;
+		break;
+	case bidi::automatic:
+		break;
+	}
+
+	return {
+		rectangle{
+			coord_t::truncate(tooltip_direction ==
+					  attached_to::tooltip_right
+					  ? x+offset_x
+					  : x-offset_x),
+			coord_t::truncate(y-offset_y),
+			0, 0
+		},
+		tooltip_direction
+	};
 }
 
 static_tooltip_config::static_tooltip_config()
