@@ -227,6 +227,25 @@ public:
 	}
 };
 
+namespace {
+	// The reason for constructing moving_cursor
+
+	enum class move_type {
+
+		// Normal cursor movement
+		navigation,
+
+		// Making a selection
+		selection_in_progress,
+
+		// Another application made a selection, so we clear ours.
+		clearing_selection,
+
+		// Any other reason not explicitly mentioned here.
+		other
+	};
+};
+
 // Helper object constructed on the stack before moving the cursor, and
 // destroyed after the cursor is moved. Inherits from modifying_text, in
 // order to turn off/on the blinking cursor, concurrent with the move.
@@ -255,15 +274,21 @@ struct editorObj::implObj::moving_cursor :
 	moving_cursor(ONLY IN_THREAD, editorObj::implObj &me,
 		      const input_mask &mask, bool &moved,
 		      const trigger_parameter &trigger)
-		: moving_cursor{IN_THREAD, me,
-				mask.shift || (mask.buttons & 1), false,
+		: moving_cursor{
+				IN_THREAD, me,
+
+				// Either we're making a selection or doing
+				// normal navigation, depending on the shift
+				// key.
+				mask.shift || (mask.buttons & 1)
+				? move_type::selection_in_progress
+				: move_type::navigation,
 				moved, trigger}
 	{
 	}
 
 	moving_cursor(ONLY IN_THREAD, editorObj::implObj &me,
-		      bool selection_in_progress,
-		      bool processing_clear,
+		      move_type type,
 		      bool &moved,
 		      const trigger_parameter &trigger)
 		: modifying_text{IN_THREAD, me,
@@ -282,8 +307,10 @@ struct editorObj::implObj::moving_cursor :
 		  old_cursor{me.cursor->clone()},
 		moved{moved}
 	{
-		if (selection_in_progress)
+		if (type == move_type::selection_in_progress)
 		{
+			// Start the selection.
+
 			if (!cursor_lock.cursor)
 				cursor_lock.cursor=me.cursor->clone();
 		}
@@ -299,13 +326,14 @@ struct editorObj::implObj::moving_cursor :
 
 				me.draw_between(IN_THREAD, p, me.cursor);
 
-				// processing_clear is set when clear()ing
+				// clearing_selection is when clear()ing
 				// the current selection in response to
 				// someone else installing a new selection.
 				//
 				// Otherwise, we are removing the selection
 				// ourselves, and need to announce it.
-				if (!processing_clear)
+
+				if (type != move_type::clearing_selection)
 					me.remove_primary_selection(IN_THREAD);
 			}
 		}
@@ -382,8 +410,10 @@ public:
 		//
 		// We pretend that we're moving the cursor without
 		// a selection in progress, that's all.
-		moving_cursor dummy{IN_THREAD, *me, false, true, ignored,
-				    trigger};
+		moving_cursor dummy{IN_THREAD, *me,
+			move_type::clearing_selection,
+			ignored,
+			trigger};
 
 		me->current_primary_selection=nullptr;
 	}
@@ -658,12 +688,16 @@ void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
 		; // Yea?
 	else if (deselect)
 	{
-		// Leverage the existing moving_cursor logic.
+		// Leverage the existing moving_cursor logic to clear
+		// the current selection.
 
 		bool ignored;
 
-		moving_cursor moving{IN_THREAD, *this, false, false, ignored,
-				     trigger};
+		moving_cursor moving{
+			IN_THREAD, *this,
+			move_type::other, ignored,
+			trigger
+		};
 	}
 }
 
@@ -1707,8 +1741,12 @@ editorObj::implObj::drop(ONLY IN_THREAD,
 	{
 		callback_trigger_t trigger{cut_copy_paste{}};
 
-		moving_cursor moving{IN_THREAD, *this, false, false, moved,
-				     trigger};
+		moving_cursor moving{
+			IN_THREAD, *this,
+			move_type::other,
+			moved,
+			trigger
+		};
 
 		cursor->swap(dragged_pos);
 		set_focus_only(IN_THREAD, {});
@@ -2216,8 +2254,11 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 
 	bool ignored;
 
-	moving_cursor moving{IN_THREAD, *this, will_have_selection, false,
-			     ignored, trigger};
+	moving_cursor moving{IN_THREAD, *this,
+		will_have_selection ? move_type::selection_in_progress
+		: move_type::other,
+		ignored, trigger
+	};
 	selection_cursor_t::lock &cursor_lock=moving.cursor_lock;
 
 	update_content(IN_THREAD, moving, { text->begin(),
