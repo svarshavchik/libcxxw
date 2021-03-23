@@ -156,6 +156,9 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 	//! Current minimum vertical override
 	mpobj<dim_t> min_vert_override=0;
 
+	//! Return the text's current direction.
+
+	bidi direction(ONLY IN_THREAD);
 	//! Constructor for a label element.
 
 	implObj(const text_param &text,

@@ -110,6 +110,11 @@ public:
 	void set_minimum_override(ONLY IN_THREAD,
 				  dim_t horiz_override,
 				  dim_t vert_override) override;
+
+	//! Override direction()
+
+	//! Return the primary text direction.
+	bidi direction(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

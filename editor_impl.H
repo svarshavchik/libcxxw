@@ -9,6 +9,7 @@
 #include "textlabel.H"
 #include "label_elementfwd.H"
 #include "cursor_pointer_elementfwd.H"
+#include "icon_images_set_elementfwd.H"
 #include "x/w/impl/theme_font_elementfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "x/w/impl/fonts/current_fontcollectionfwd.H"
@@ -42,6 +43,9 @@ struct invisible_pointer;
 struct dragging_pointer;
 struct dragging_wontdrop_pointer;
 
+struct left_to_right_icon;
+struct right_to_left_icon;
+
 //! Compose the superclass for editorObj::implObj.
 
 //! Pulls in various mixins:
@@ -49,21 +53,26 @@ struct dragging_wontdrop_pointer;
 //! - background_color_element, for the regular and disabled background
 //! colors.
 //!
+//! - icon_images_set_element, for text direction icon tooltips.
+//!
 //! - reference_font, used to compute the actual element metrics, based
 //! on the nominal font size, and the requested number of rows and columns.
 //!
 //! - and the last, but not least, this is a focusable label element.
 
 typedef background_color_elementObj<
-	cursor_pointer_elementObj<drag_source_elementObj
-				  <drag_destination_elementObj
-				   <theme_font_elementObj
-				    <focusable_elementObj
-				     <label_elementObj<child_elementObj>
-				      >>>>,
-				  invisible_pointer,
-				  dragging_pointer,
-				  dragging_wontdrop_pointer>,
+	icon_images_set_elementObj<
+		cursor_pointer_elementObj<drag_source_elementObj
+					  <drag_destination_elementObj
+					   <theme_font_elementObj
+					    <focusable_elementObj
+					     <label_elementObj<child_elementObj>
+					      >>>>,
+					  invisible_pointer,
+					  dragging_pointer,
+					  dragging_wontdrop_pointer>,
+		left_to_right_icon,
+		right_to_left_icon>,
 	textedit_background_color,
 	textedit_disabled_background_color> editor_impl_superclass_t;
 
@@ -312,6 +321,57 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	bool autoselected=false;
 
+	//! Whether insert text direction has been overridden
+
+	unicode_bidi_level_t bidi_override=UNICODE_BIDI_SKIP;
+
+	//! Set the bidi_override and show the icon tooltip popup.
+
+	void set_bidi_override(ONLY IN_THREAD,
+			       unicode_bidi_level_t new_bidi_override,
+			       const icon &tooltip_icon,
+			       const input_mask &mask);
+
+	//! Override hide_popups()
+
+	//! Calls clear_bidi_override
+	void hide_popups(ONLY IN_THREAD) override;
+
+	//! Clear the bidi override and hide the icon tooltip popup
+	void clear_bidi_override(ONLY IN_THREAD);
+
+ private:
+	popupptr direction_attached_popup_thread_only;
+ public:
+	THREAD_DATA_ONLY(direction_attached_popup);
+
+	//! Override update_attachedto_info
+
+	//! The default implementation updates the attached-to popup's
+	//! position based on the element position.
+	//!
+	//! Bidi tooltips are attached to the cursor position. Here we
+	//! check if the bidi tooltip is being shown, and update its
+	//! position ourselves.
+
+	void update_attachedto_info(ONLY IN_THREAD) override;
+
+	//! Report the current cursor position is a pseudo-motion event.
+
+	//! Tooltips are attached to the current cursor position, so we
+	//! simulate a motion event at the current cursor position.
+
+	void report_cursor_pos_as_motion_event(ONLY IN_THREAD);
+
+ public:
+	//! Override direction()
+
+	//! Use the bidi override, if it's in place. Otherwise return the
+	//! default one.
+
+	bidi direction(ONLY IN_THREAD) override;
+
+ private:
 	//! Implement show_droppable_pointer
 
 	//! Invoked from the drag_source_element mixin to change the pointer
@@ -348,6 +408,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 		size_t maximum_size;
 		bool update_clipboards;
 		bidi_format directional_format;
+
+		const_tooltip_appearance direction_tooltip_appearance;
 
 		//! Initialize from input_field_config
 
@@ -415,6 +477,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 		const ref<editor_peephole_implObj> &parent_peephole;
 		const text_param &text;
 		const input_field_config &config;
+		const icon &left_to_right_icon;
+		const icon &right_to_left_icon;
 		current_theme_t::lock theme_lock;
 
 		// Forwarded to the internal label implementation constructor:
@@ -425,7 +489,10 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		init_args(const ref<editor_peephole_implObj> &parent_peephole,
 			  const text_param &text,
-			  const input_field_config &config);
+			  const input_field_config &config,
+			  const icon &left_to_right_icon,
+			  const icon &right_to_left_icon);
+
 
 		//! Default metadata.
 		richtextmeta default_meta;

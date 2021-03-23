@@ -37,20 +37,26 @@ See COPYING for distribution information.
     <title>Bi-directional text input</title>
 
     <para>
-      <link linkend="inputfields">Input fields</link> apply
-      Unicode isolation and override markers, then display and edit the
-      resulting bi-directional text, directly, with all isolation and override
-      markers stripped off.
+      Bi-directional text placed into an
+      <link linkend="inputfields">input fields</link> loses all of its
+      original isolation and override markers (if any). Its original Unicode
+      Unicode isolation and override markers get applied as part of
+      interpreting the bi-directional text's visual appearance. The
+      resulting bi-directional text gets edited directly, with its
+      isolation and override markers stripped off.
     </para>
 
     <para>
-      <function>get</function>() and <function>get_unicode</function>()
-      use the
+      Retrieved contents of the input field may or may not include
+      replacement markers, depending on the requested
       <ulink url="&link-enum-x--w-bidi-format;"><classname>&ns;::w::bidi_format</classname></ulink>
-      <varname>directional_format</varname> that's specified in the
-      <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>, by default; or the optional
-      <classname>&ns;::w::bidi_format</classname> parameter that overrides
-      this default.
+      <varname>directional_format</varname>.
+      <function>get</function>() and <function>get_unicode</function>()
+      use this
+      <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>, setting by default. An optional
+      <classname>&ns;::w::bidi_format</classname> parameter
+      <function>get</function>() and <function>get_unicode</function>()
+      overrides this default.
     </para>
 
     <para>
@@ -64,6 +70,36 @@ See COPYING for distribution information.
       The default
       <varname>search_format</varname> value is <literal>none</literal>.
     </para>
+
+    <para>
+      New direction of text entered into an input field comes from each
+      character's default rendering direction.
+      <keycap>Alt</keycap>-<keycap>Cursor-Left</keycap> and
+      <keycap>Alt</keycap>-<keycap>Cursor-Right</keycap> override the
+      default rendering direction of the typed in text going forward.
+      Pressing the same key combination turns off the directional override.
+      A small tooltip is displayed while text direction override is in effect:
+    </para>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="bidi_input.png" format="PNG"
+		   contentwidth="420px" contentdepth="213px" />
+      </imageobject>
+      <textobject>
+	<phrase>
+	  Bi-directional text input
+	</phrase>
+      </textobject>
+      <caption>
+	<para>
+	  In this example the normal text was typed in first, then the
+	  cursor got backed up to the open parenthesis; then
+	  <keycap>Alt</keycap>-<keycap>Cursor-Left</keycap>
+	  followed by <quote>Hello world</quote>.
+	</para>
+      </caption>
+    </mediaobject>
   </section>
 </chapter>
 <!--

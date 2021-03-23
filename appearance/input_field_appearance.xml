@@ -10,6 +10,20 @@ Pointer image while typing, invisible pointer
     <type>std::string</type>
   </field>
   <field>
+    <name>left_to_right</name>
+    <descr><![CDATA[
+Tooltip image for left-to-right text entry
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
+    <name>right_to_left</name>
+    <descr><![CDATA[
+Tooltip image for right-to-left text entry
+]]></descr>
+    <type>std::string</type>
+  </field>
+  <field>
     <name>dragging_pointer</name>
     <descr><![CDATA[
 Pointer image while dragging
@@ -141,6 +155,13 @@ borders
 Appearance of the list search popup
 ]]></descr>
     <ref>popup_list</ref>
+  </field>
+  <field>
+    <name>direction_tooltip_appearance</name>
+    <descr><![CDATA[
+Appearance of the text direction tooltip popup.
+]]></descr>
+    <ref>tooltip</ref>
   </field>
   <field>
     <name>horizontal_scrollbar</name>

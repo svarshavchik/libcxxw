@@ -101,7 +101,7 @@ struct input_field_config {
 
 	//! Set the typical settings for a password field.
 
-	void set_password(char32_t c='*')
+	void set_password(char32_t c=u'\U00002022')
 	{
 		autoselect=true;
 		autodeselect=true;

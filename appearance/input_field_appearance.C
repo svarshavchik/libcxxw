@@ -9,6 +9,7 @@
 #include "x/w/combobox_appearance.H"
 #include "x/w/scrollbar_appearance.H"
 #include "x/w/focus_border_appearance.H"
+#include "x/w/tooltip_appearance.H"
 #include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
@@ -59,6 +60,8 @@ create_right_spinner_button_appearance(const border_arg &border)
 
 input_field_appearance_properties::input_field_appearance_properties()
 	: invisible_pointer{"cursor-invisible"},
+	  left_to_right{"left-to-right"},
+	  right_to_left{"right-to-left"},
 	  dragging_pointer{"cursor-dragging"},
 	  dragging_nodrop_pointer{"cursor-dragging-wontdrop"},
 	  border{"textedit_border"},
@@ -77,6 +80,9 @@ input_field_appearance_properties::input_field_appearance_properties()
 	  right_spinner_appearance{create_right_spinner_button_appearance
 				   (border)},
 	  search_popup_appearance{combobox_appearance::base::theme()},
+	  direction_tooltip_appearance{
+		  tooltip_appearance::base::direction_tooltip_theme()
+	  },
 	  horizontal_scrollbar{scrollbar_appearance::base::theme()},
 	  vertical_scrollbar{scrollbar_appearance::base::theme()},
 	  spin_decrement{"spin-decrement"},
@@ -159,7 +165,7 @@ struct input_field_appearance_base_editable_combobox_themeObj : virtual public o
 #endif
 }
 
-const_input_field_appearance 
+const_input_field_appearance
 input_field_appearance_base::editable_combobox_theme()
 {
 	return singleton<input_field_appearance_base_editable_combobox_themeObj>::get()->config;

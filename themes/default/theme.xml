@@ -570,6 +570,9 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
 
   <color id="shade_none:tooltip_background_color" scale="90%"/>
 
+  <color id="direction_tooltip_background_color"
+	 scale="tooltip_background_color"/>
+
   <!-- Border when an alpha channel is available -->
   <border id="tooltip_border" from="thin_0%">
     <hradius>1</hradius>

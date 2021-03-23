@@ -54,7 +54,9 @@ cached for speed.
 a cached default theme appearance for a popup tooltip.
 \c INSERT_LIBX_NAMESPACE::w::tooltip_appearance::base::static_tooltip_theme()
 returns a cached default theme appearance for a static tooltip.
-
+\c INSERT_LIBX_NAMESPACE::w::tooltip_appearance::base::direction_tooltip_theme()
+returns a cached default theme appearance for an input field's text direction
+tooltip
 */
 
 typedef ref<tooltip_appearanceObj,

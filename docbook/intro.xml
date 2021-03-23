@@ -53,10 +53,17 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
+	  &appshort; displays and implements support for
+	  bi-directional text input.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
 	  Create widgets
 	  <link linkend="uigenerator">from an <acronym>XML</acronym>
 	    stylesheet</link> that supports the majority of the C++ library
-	  API. Adjust the visual appearance of widgets simply by editing
+	  API. Adjust the visual appearance of widgets by editing
 	  the stylesheet, without recompiling the code.
 	</para>
       </listitem>
@@ -121,12 +128,10 @@ See COPYING for distribution information.
       <para>
 	&app;'s core functionality is complete, and
 	<link linkend="INSTALL">is available for downloading</link>.
-	The most recent build of &app; adds an initial implementation of the
-	<link linkend="cxxwcreator"><command>cxxwcreator</command></link>
-	tool,
-	adds alpha channel support to the
-	<link linkend="fontcolorpickers">color picker widget</link>,
-	and optimizes window refreshes and redrawing.
+	The most recent build of &app; implements robust support for
+	<link linkend="bidi">bi-directional text</link>
+	tool and
+	<link linkend="menuattributes">menu option radio groups</link>.
       </para>
     </section>
   </section>

@@ -40,14 +40,6 @@ public:
 
 	//! Coordinate
 	coord_t y;
-
-	//! Constructor
-
-	motion_event(const input_mask &mask,
-		     motion_event_type type,
-		     coord_t x,
-		     coord_t y) : mask(mask), type(type), x(x), y(y) {}
-
 };
 
 LIBCXXW_NAMESPACE_END

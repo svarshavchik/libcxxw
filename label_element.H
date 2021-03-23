@@ -129,6 +129,12 @@ void label_elementObj<element_impl>
 						    vert_override);
 }
 
+template<typename element_impl>
+bidi label_elementObj<element_impl>::direction(ONLY IN_THREAD)
+{
+	return textlabelObj::implObj::direction(IN_THREAD);
+}
+
 LIBCXXW_NAMESPACE_END
 
 #endif

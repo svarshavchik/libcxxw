@@ -5,11 +5,17 @@
 #include "libcxxw_config.h"
 #include "editor.H"
 #include "editor_impl.H"
+#include "image.H"
 #include "cursor_pointer_element.H"
+#include "icon_images_set_element.H"
 #include "drag_source_element.H"
 #include "drag_destination_element.H"
+#include "x/w/tooltip.H"
+#include "x/w/gridlayoutmanager.H"
+#include "x/w/gridfactory.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_appearance.H"
+#include "x/w/tooltip_appearance.H"
 #include "x/w/input_field_filter.H"
 #include "x/w/impl/theme_font_element.H"
 #include "x/w/impl/background_color_element.H"
@@ -37,6 +43,9 @@
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
+#include "popup/popup_impl.H"
+#include "popup/popup_handler.H"
+#include "popup/popup_attachedto_info.H"
 #include <x/vector.H>
 #include <x/weakcapture.H>
 #include <X11/keysym.h>
@@ -68,11 +77,14 @@ create_default_meta(const container_impl &container,
 editorObj::implObj::init_args
 ::init_args(const ref<editor_peephole_implObj> &parent_peephole,
 	    const text_param &text,
-	    const input_field_config &config)
+	    const input_field_config &config,
+	    const icon &left_to_right_icon,
+	    const icon &right_to_left_icon)
 	: parent_peephole{parent_peephole},
 	  text{text},
 	  config{config},
-
+	  left_to_right_icon{left_to_right_icon},
+	  right_to_left_icon{right_to_left_icon},
 	  // The theme lock exists before we create the rich text string
 	  // that goes into the label implementation superclass
 	  theme_lock{parent_peephole->container_element_impl()
@@ -307,6 +319,9 @@ struct editorObj::implObj::moving_cursor :
 		  old_cursor{me.cursor->clone()},
 		moved{moved}
 	{
+		if (type != move_type::navigation)
+			me.clear_bidi_override(IN_THREAD);
+
 		if (type == move_type::selection_in_progress)
 		{
 			// Start the selection.
@@ -494,7 +509,10 @@ editorObj::implObj::editor_config::editor_config(const input_field_config &c)
 	  autodeselect{c.autodeselect},
 	  maximum_size{c.maximum_size},
 	  update_clipboards{c.update_clipboards},
-	  directional_format{c.directional_format}
+	  directional_format{c.directional_format},
+	  direction_tooltip_appearance{
+		  c.appearance->direction_tooltip_appearance
+	  }
 {
 }
 
@@ -514,6 +532,10 @@ editorObj::implObj::implObj(init_args &args)
 	  superclass_t{args.config.appearance->background_color,
 			  // Background colors
 		       args.config.appearance->disabled_background_color,
+
+		       // Icons
+		       args.left_to_right_icon,
+		       args.right_to_left_icon,
 
 		       // Invisible pointer cursor
 		       args.parent_peephole->container_element_impl()
@@ -678,7 +700,9 @@ void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
 	{
 		// Move to the logical end of the field if focus is not gained
 		// because of a button click.
+
 		to_end(IN_THREAD, {}, trigger);
+		clear_bidi_override(IN_THREAD); // Can't hurt.
 	}
 
 	if (config.autodeselect && !current_keyboard_focus(IN_THREAD))
@@ -797,14 +821,36 @@ bool editorObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 				   cursor_pointer_1tag<invisible_pointer>
 				   ::tagged_cursor_pointer(IN_THREAD));
 
-	if (ke.keypress && ke.notspecial())
+	if (ke.keypress)
 	{
-		if (process_keypress(IN_THREAD, ke))
+		if (ke.notspecial())
 		{
-			autoselected=false;
-			scroll_cursor_into_view(IN_THREAD);
-			return true;
+			// No meta/alt/super/hyper held:
+
+			if (process_keypress(IN_THREAD, ke))
+			{
+				autoselected=false;
+				scroll_cursor_into_view(IN_THREAD);
+				return true;
+			}
 		}
+		else if (ke.alt)
+			switch (ke.keysym) {
+			case XK_Left:
+			case XK_KP_Left:
+				set_bidi_override(IN_THREAD, UNICODE_BIDI_RL,
+						  icon_1tag<right_to_left_icon>
+						  ::tagged_icon(IN_THREAD),
+						  ke);
+				return true;
+			case XK_Right:
+			case XK_KP_Right:
+				set_bidi_override(IN_THREAD, UNICODE_BIDI_LR,
+						  icon_1tag<left_to_right_icon>
+						  ::tagged_icon(IN_THREAD),
+						  ke);
+				return true;
+			}
 	}
 
 	if (!ke.keypress)
@@ -815,6 +861,112 @@ bool editorObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 		}
 
 	return superclass_t::process_key_event(IN_THREAD, ke);
+}
+
+void editorObj::implObj
+::set_bidi_override(ONLY IN_THREAD,
+		    unicode_bidi_level_t new_bidi_override,
+		    const icon &tooltip_icon,
+		    const input_mask &mask)
+{
+	if (bidi_override == new_bidi_override)
+	{
+		clear_bidi_override(IN_THREAD); // Toggle.
+		return;
+	}
+
+	clear_bidi_override(IN_THREAD); // Change of direction.
+
+	bidi_override=new_bidi_override;
+
+	report_cursor_pos_as_motion_event(IN_THREAD);
+
+	direction_attached_popup(IN_THREAD)=show_tooltip
+		(IN_THREAD,
+		 [&]
+		 (ONLY IN_THREAD,
+		  const auto &factory)
+		 {
+			 factory([&]
+				 (const container &c)
+			 {
+				 gridlayoutmanager lm=c->get_layoutmanager();
+
+				 auto f=lm->append_row();
+				 f->padding(0);
+
+				 auto image_impl=
+					 ref<imageObj::implObj>::create
+					 (image_impl_init_params
+					  {f->get_container_impl(),
+					   tooltip_icon});
+
+				 auto i=image::create(image_impl);
+
+				 f->created_internally(i);
+			 },
+				 new_gridlayoutmanager{},
+				 config.direction_tooltip_appearance);
+		 });
+}
+
+void editorObj::implObj::hide_popups(ONLY IN_THREAD)
+{
+	clear_bidi_override(IN_THREAD);
+	superclass_t::hide_popups(IN_THREAD);
+}
+
+void editorObj::implObj::clear_bidi_override(ONLY IN_THREAD)
+{
+	bidi_override=UNICODE_BIDI_SKIP;
+
+	direction_attached_popup(IN_THREAD)=nullptr;
+}
+
+void editorObj::implObj::update_attachedto_info(ONLY IN_THREAD)
+{
+	if (bidi_override != UNICODE_BIDI_SKIP &&
+	    direction_attached_popup(IN_THREAD))
+	{
+		const auto &[pos, ignore] = tooltip_pseudo_rectangle
+			(IN_THREAD,
+			 config.direction_tooltip_appearance);
+
+		direction_attached_popup(IN_THREAD)->impl->handler
+			->update_attachedto_element_position
+			(IN_THREAD, pos);
+		return;
+	}
+	superclass_t::update_attachedto_info(IN_THREAD);
+}
+
+void editorObj::implObj::report_cursor_pos_as_motion_event(ONLY IN_THREAD)
+{
+	// Simulate a motion event so that the tooltip comes up where the
+	// cursor is.
+
+	auto pos=cursor->at(IN_THREAD).position;
+	input_mask mask;
+
+	motion_event me{mask, motion_event_type::keyboard_action_event,
+		coord_t::truncate(pos.x + pos.width/2),
+		coord_t::truncate(pos.y),
+	};
+	report_motion_event(IN_THREAD, me);
+}
+
+bidi editorObj::implObj::direction(ONLY IN_THREAD)
+{
+	switch (bidi_override) {
+	case UNICODE_BIDI_LR:
+		return bidi::left_to_right;
+	case UNICODE_BIDI_RL:
+		return bidi::right_to_left;
+	default:
+		break;
+	}
+
+	return superclass_t::direction(IN_THREAD);
 }
 
 void editorObj::implObj::set_cursor_pointer(ONLY IN_THREAD,
@@ -962,7 +1114,27 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 
 	if ((!config.oneline() && ke.unicode == '\n') || ke.unicode >= ' ')
 	{
-		insert(IN_THREAD, {&ke.unicode, 1}, &ke);
+		char32_t string[4];
+
+		switch (bidi_override) {
+		case UNICODE_BIDI_LR:
+			string[0]=UNICODE_LRM;
+			string[1]=UNICODE_LRO;
+			string[2]=ke.unicode;
+			string[3]=UNICODE_LRM;
+			insert(IN_THREAD, {string, 4}, &ke);
+			break;
+		case UNICODE_BIDI_RL:
+			string[0]=UNICODE_RLM;
+			string[1]=UNICODE_RLO;
+			string[2]=ke.unicode;
+			string[3]=UNICODE_RLM;
+			insert(IN_THREAD, {string, 4}, &ke);
+			break;
+		default:
+			insert(IN_THREAD, {&ke.unicode, 1}, &ke);
+			break;
+		}
 		return true;
 	}
 
@@ -1301,11 +1473,12 @@ void editorObj::implObj
 				 }
 			 });
 
-		// TODO: force left-to-right behavior for password content.
+		// TODO: support bidi here, somehow.
 		char32_t left_right_text[]={
+			UNICODE_LRM,
 			UNICODE_LRO,
 			str[0],
-			UNICODE_PDF,
+			UNICODE_LRM,
 			0
 		};
 		starting_position->insert(IN_THREAD, left_right_text);
@@ -1538,6 +1711,18 @@ void editorObj::implObj::scroll_cursor_into_view(ONLY IN_THREAD)
 
 	ensure_visibility(IN_THREAD, pos);
 	report_current_cursor_position(IN_THREAD, pos);
+
+	if (bidi_override != UNICODE_BIDI_SKIP)
+	{
+		// We must be showing the bidi tooltip popup, so first
+		// update the cursor position as a fake motion event
+
+		report_cursor_pos_as_motion_event(IN_THREAD);
+
+		// And then update the bidi popup's position
+
+		update_attachedto_info(IN_THREAD);
+	}
 }
 
 bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
@@ -2135,6 +2320,8 @@ void editorObj::implObj::select_all(ONLY IN_THREAD,
 				    const callback_trigger_t &trigger)
 {
 	input_mask mask;
+
+	clear_bidi_override(IN_THREAD);
 
 	to_begin(IN_THREAD, mask, trigger);
 

@@ -11,6 +11,7 @@
 #include "x/w/impl/richtext/richtext.H"
 #include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/impl/richtext/richtextmeta.H"
+#include "richtext/richtext_impl.H"
 #include "richtext/richtext_draw_info.H"
 #include "x/w/impl/focus/focusable.H"
 #include "x/w/impl/background_color.H"
@@ -50,6 +51,17 @@ label factoryObj::create_label(const text_param &text,
 	created(l);
 
 	return l;
+}
+
+bidi textlabelObj::implObj::direction(ONLY IN_THREAD)
+{
+	return text->read_only_lock
+		([&]
+		 (auto &lock)
+		{
+			return (*lock)->rl()
+				? bidi::right_to_left:bidi::left_to_right;
+		});
 }
 
 textlabelObj::implObj::implObj(const text_param &text,

@@ -26,6 +26,10 @@ public:
 	//! Default theme.
 
 	static const_tooltip_appearance static_tooltip_theme();
+
+	//! Default theme.
+
+	static const_tooltip_appearance direction_tooltip_theme();
 };
 
 LIBCXXW_NAMESPACE_END

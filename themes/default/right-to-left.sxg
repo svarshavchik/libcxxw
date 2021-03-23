@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+  <picture id="border">
+    <type>rgb</type>
+    <color>transparent</color>
+  </picture>
+
+  <picture id="background">
+    <type>rgb</type>
+    <color>transparent</color>
+  </picture>
+
+  <picture id="bg">
+    <type>rgb</type>
+    <color>transparent</color>
+  </picture>
+
+  <picture id="chevron_outline">
+    <type>rgb</type>
+    <color>30%</color>
+  </picture>
+
+  <picture id="chevron_fill">
+    <type>rgb</type>
+    <color>50%</color>
+  </picture>
+
+  <xi:include href="scroll-left.inc.sxg" xpointer="xpointer(/sxg/*)" />
+</sxg>

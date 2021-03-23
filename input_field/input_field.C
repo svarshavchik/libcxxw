@@ -36,6 +36,7 @@
 #include "x/w/scrollbar.H"
 #include "x/w/button.H"
 #include "x/w/image.H"
+#include "x/w/impl/icon.H"
 #include "x/w/copy_cut_paste_menu_items.H"
 #include "gridlayoutmanager.H"
 #include "x/w/factory.H"
@@ -280,6 +281,11 @@ factoryObj::create_input_field(const text_param &text,
 						  peephole_algorithm::automatic,
 						  halign::fill, valign::fill};
 
+	auto &wh=get_element_impl().get_window_handler();
+
+	auto left_to_right_icon=wh.create_icon({config.appearance->left_to_right});
+	auto right_to_left_icon=wh.create_icon({config.appearance->right_to_left});
+
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({config.appearance->border,
 		  config.appearance->focus_border,
@@ -307,7 +313,10 @@ factoryObj::create_input_field(const text_param &text,
 
 			   editorObj::implObj::init_args args
 				   {
-				    peephole_impl, text, config};
+					   peephole_impl, text, config,
+					   left_to_right_icon,
+					   right_to_left_icon,
+				   };
 			   auto e_impl=create_editor_impl(args,
 							  search_container);
 

@@ -1100,12 +1100,18 @@ bool generic_windowObj::handlerObj::handle_key_event(ONLY IN_THREAD,
 
 	if (most_recent_keyboard_focus(IN_THREAD))
 	{
-		most_recent_keyboard_focus(IN_THREAD)
-			->get_focusable_element()
-			.unschedule_hover_action(IN_THREAD);
+		auto &fe=most_recent_keyboard_focus(IN_THREAD)
+			->get_focusable_element();
 
-		processed=most_recent_keyboard_focus(IN_THREAD)->get_focusable_element()
-			.process_key_event(IN_THREAD, ke);
+		if (ke.keypress)
+			// A key press will close the tooltip. Note we do
+			// this before calling process_key_event().
+			// editor_impl will install a tooltip of its
+			// own to show a manual directional override key
+			// being pressed.
+			fe.unschedule_hover_action(IN_THREAD);
+
+		processed=fe.process_key_event(IN_THREAD, ke);
 	}
 	else
 		processed=process_key_event(IN_THREAD, ke);
@@ -1369,8 +1375,7 @@ void generic_windowObj::handlerObj
 				return;
 		}
 
-		pointer_element
-			->unschedule_hover_action(IN_THREAD);
+		pointer_element->unschedule_hover_action(IN_THREAD);
 
 		if (!pointer_element
 		    ->process_button_event_if_enabled(IN_THREAD, be,

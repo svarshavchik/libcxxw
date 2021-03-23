@@ -89,4 +89,33 @@ const_tooltip_appearance tooltip_appearance_base::static_tooltip_theme()
 	return singleton<tooltip_appearance_base_static_tooltip_themeObj>::get()->config;
 }
 
+namespace {
+#if 0
+}
+#endif
+
+struct tooltip_appearance_base_direction_tooltip_themeObj : virtual public obj {
+
+	const const_tooltip_appearance config=
+		tooltip_appearance_base::tooltip_theme()->modify
+		([]
+		 (const auto &theme)
+		 {
+			 theme->tooltip_background_color=
+				 "direction_tooltip_background_color";
+		 });
+
+};
+
+#if 0
+{
+#endif
+}
+
+const_tooltip_appearance tooltip_appearance_base::direction_tooltip_theme()
+{
+	return singleton<tooltip_appearance_base_direction_tooltip_themeObj>
+		::get()->config;
+}
+
 LIBCXXW_NAMESPACE_END
