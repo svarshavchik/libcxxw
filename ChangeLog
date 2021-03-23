@@ -1,3 +1,7 @@
+2021-03-21  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* cxxwtheme/defaulttheme: reimplement theme options as combo-boxes.
+
 2021-02-28  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Implement selected() and autoselect() in list item handles.

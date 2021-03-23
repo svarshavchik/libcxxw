@@ -18,6 +18,20 @@
   </option>
 
   <option>
+    <name>callback</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>c</opt>
+    <longopt>callback</longopt>
+    <descr>Test callbacks</descr>
+  </option>
+
+  <mutex>
+    <name>editable</name>
+    <name>layout</name>
+  </mutex>
+
+  <option>
     <name>book</name>
     <type>bool</type>
     <default>false</default>

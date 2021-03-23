@@ -54,6 +54,8 @@ themescaleprop(LIBCXX_NAMESPACE_STR "::w::theme::scale", 0);
 static property::value<std::string>
 themeoptionsprop(LIBCXX_NAMESPACE_STR "::w::theme::options", "");
 
+static const char use_secondary_clipboard_option_id[]="_use_secondary_clipboard";
+
 static const char use_primary_clipboard_option_id[]="_use_primary_clipboard";
 
 static const char bidi_format_automatic_option_id[]="__bidi_format_automatic";
@@ -185,6 +187,11 @@ default_theme_options(const std::string &cxxwtheme_property,
 
 	if (themeoptions.empty())
 	{
+		// Ok, check to see if options are set in the CXXWTHEME
+		// properties. Check if we have the cxxwtheme property
+		// by looking for the ':'. If the property is empty
+		// we will read the options from the configuration file.
+
 		auto n=cxxwtheme_property.find(':');
 
 		if (n != std::string::npos)
@@ -217,6 +224,7 @@ default_theme_options(const std::string &cxxwtheme_property,
 	}
 	else
 	{
+		// Overridden via the application properties.
 		i.str(themeoptions);
 	}
 
@@ -324,62 +332,103 @@ parse_available_theme_options(const xml::doc &theme_configfile)
 
 	ui::parser_lock lock{theme_configfile->readlock()};
 
+	/*
+	** First, we parse:
+	**
+	**  <option>
+	**    <description>Shading</description>
+	**    <value id="shade_full">Scalable</value>
+	**    <value id="shade_fixed">Fixed(faster)</value>
+	**    <value id="shade_none">Disabled</value>
+	**  </option>
+	*/
+
 	if (lock->get_root())
 	{
 		auto xpath=lock->get_xpath("/theme/option");
 
 		size_t count=xpath->count();
 
+		// Sanity check, ids must be unique.
 		std::unordered_set<std::string> seen;
 
 		for (size_t i=0; i<count; ++i)
 		{
 			xpath->to_node(i+1);
 
-			auto descr_str=lock->get_text();
+			auto option=lock->clone();
 
-			auto id=lock->get_any_attribute("id");
+			option->get_xpath("description")->to_node();
 
-			if (id.empty())
-				throw EXCEPTION("Missing \"id\" "
-						"attribute for an "
-						"<option>");
+			auto descr=option->get_u32text();
 
-			if (seen.find(id) != seen.end())
-				continue;
+			if (descr.empty())
+			{
+				throw EXCEPTION("Empty <description>");
+			}
 
-			if (id.substr(0, 1) == "_")
-				throw EXCEPTION("Theme option id cannot start "
-						"with an underscore.");
-			seen.insert(id);
+			opts.emplace_back(descr);
 
-			if (descr_str.empty())
-				continue;
-			auto descr=unicode::iconvert::tou
-				::convert(descr_str, unicode::utf_8).first;
+			auto &new_option=opts.back();
 
-			opts.push_back({id, descr});
+			option=lock->clone();
+
+			auto values=option->get_xpath("value");
+
+			size_t n_values=values->count();
+
+			for (size_t j=0; j<n_values; j++)
+			{
+				values->to_node(j+1);
+
+				auto id=option->get_any_attribute("id");
+
+				if (id.empty())
+					throw EXCEPTION("Missing \"id\" "
+							"attribute for a "
+							"<value>");
+
+				if (seen.find(id) != seen.end())
+					throw EXCEPTION("Duplicate \"id\"=\""
+							<< id
+							<< "\" for a <value>");
+
+				if (id.substr(0, 1) == "_")
+					throw EXCEPTION("Theme option id"
+							" cannot start "
+							"with an underscore.");
+				seen.insert(id);
+
+				new_option.choices.emplace_back
+					(id, option->get_u32text());
+			}
+
+			if (new_option.choices.empty())
+				throw EXCEPTION("<option> without any "
+						"<value>s");
 		}
 	}
 
-	static const struct {
-		const char *id;
-		const char32_t *description;
-	} reserved_options[]={
-		{use_primary_clipboard_option_id,
-		 U"Use the primary clipboard for Copy/Cut/Paste"},
-		{bidi_format_automatic_option_id,
-		 U"Copy/Cut bi-directional markers heuristically"},
-		{bidi_format_none_option_id,
-		 U"Do not Copy/Cut bi-directional markers"},
-		{bidi_format_embedded_option_id,
-		 U"Always Copy/Cut bi-directional markers"},
-	};
+	// And now for the built-in options
 
-	for (const auto &option:reserved_options)
-	{
-		opts.push_back({option.id, option.description});
-	}
+	opts.emplace_back(
+			  U"Copy/Cut/Paste clipboard",
+			  theme_option::choices_t{
+				  { use_secondary_clipboard_option_id,
+				    U"secondary (default)" },
+				  { use_primary_clipboard_option_id,
+				    U"primary" },
+			  });
+
+	opts.emplace_back(U"Copy/Cut bi-directional markers",
+			  theme_option::choices_t{
+				  { bidi_format_automatic_option_id,
+				    U"automatically (default)"},
+				  { bidi_format_none_option_id,
+				    U"none"},
+				  { bidi_format_embedded_option_id,
+				    U"always"},
+			  });
 	return opts;
 }
 
@@ -405,7 +454,7 @@ connection::base::available_themes()
 
 	std::vector<std::string> filenames;
 
-	glob::create()->expand(themedirroot() + "/*/theme.xml")->get(filenames);
+	glob::create()->expand(themedirroot() + "/" "*/theme.xml")->get(filenames);
 
 	for (const auto &theme_xml:filenames)
 	{
@@ -543,8 +592,19 @@ bool defaultthemeObj::is_different_theme(const const_defaulttheme &t) const
 
 	for (const auto &this_o:available_theme_options)
 	{
-		if (this_o.label != oo->label)
+		if (this_o.choices.size() != oo->choices.size())
 			return true;
+
+		auto ochoice=oo->choices.begin();
+
+		for (const auto &this_choice:this_o.choices)
+		{
+			if (std::get<0>(this_choice) !=
+			    std::get<0>(*ochoice))
+				return true;
+
+			++ochoice;
+		}
 		++oo;
 	}
 	return false;
@@ -664,15 +724,14 @@ theme_color_t defaultthemeObj::get_theme_color(const std::string_view &id) const
 	if (!id.empty())
 		strtok_str(id, ", \r\t\n", ids);
 
+	// Built-in options that begin with underscores will not be used
+	// in theme color options. It's faster just to check
+	// enabled_theme_options.
 	for (const auto &try_id:ids)
 	{
-		for (const auto &option:available_theme_options)
+		for (const auto &label:enabled_theme_options)
 		{
-			if (enabled_theme_options.find(option.label) ==
-			    enabled_theme_options.end())
-				continue;
-			auto iter=colors.find(option.label + ":"
-					      + try_id);
+			auto iter=colors.find(label + ":" + try_id);
 
 			if (iter != colors.end())
 				return iter->second;
@@ -683,7 +742,6 @@ theme_color_t defaultthemeObj::get_theme_color(const std::string_view &id) const
 		if (iter != colors.end())
 			return iter->second;
 	}
-
 	throw EXCEPTION(gettextmsg(_("Theme color %1% does not exist"), id));
 }
 

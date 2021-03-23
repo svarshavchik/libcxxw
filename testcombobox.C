@@ -160,6 +160,28 @@ focusable_container create_standard_combobox(const factory &f)
 	return create_combobox(f, sc);
 }
 
+typedef LIBCXX_NAMESPACE::mpobj<std::vector<std::tuple<size_t, bool>>
+				> callback_test_t;
+
+callback_test_t callback_test;
+
+focusable_container create_standard_combobox2(const factory &f)
+{
+	new_standard_comboboxlayoutmanager sc{
+		[](ONLY IN_THREAD,
+		   const auto &info)
+		{
+			callback_test_t::lock lock{callback_test};
+
+			lock->emplace_back(info.list_item_status_info
+					   .item_number,
+					   info.list_item_status_info.selected);
+		}
+	};
+
+	return create_combobox(f, sc);
+}
+
 static void do_resort(ONLY IN_THREAD,
 		      const focusable_container &combobox,
 		      const button &b)
@@ -243,6 +265,26 @@ gridlayoutmanager create_book(const x::w::focusable_container &c)
 	return glm;
 }
 
+void settle_down(const main_window &mw)
+{
+	mpcobj<bool> flag{false};
+
+	mw->in_thread_idle([&]
+			   (ONLY IN_THREAD)
+	{
+		mpcobj<bool>::lock lock{flag};
+
+		*lock=true;
+		lock.notify_all();
+	});
+
+	mpcobj<bool>::lock lock{flag};
+	lock.wait([&]
+	{
+		return *lock;
+	});
+}
+
 void testcombobox(const testcombobox_options &options)
 {
 	destroy_callback::base::guard guard;
@@ -278,6 +320,8 @@ void testcombobox(const testcombobox_options &options)
 
 			 if (options.editable->value)
 				 combobox=create_editable_combobox(factory);
+			 else if (options.callback->value)
+				 combobox=create_standard_combobox2(factory);
 			 else
 				 combobox=create_standard_combobox(factory);
 
@@ -467,10 +511,40 @@ void testcombobox(const testcombobox_options &options)
 
 	main_window->show_all();
 
-	mpcobj<bool>::lock lock{close_flag->flag};
+	if (options.callback->value)
+	{
+		settle_down(main_window);
+		{
+			standard_comboboxlayoutmanager lm=
+				combobox->get_layoutmanager();
+			lm->autoselect(1);
+			lm->autoselect(3);
+		}
 
-	lock.wait([&] { return *lock; });
+		settle_down(main_window);
+		callback_test_t::lock lock{callback_test};
+		for (const auto &[index, status]:*lock)
+		{
+			std::cout << index << ":" << status << std::endl;
+		}
 
+		if (*lock != std::vector<std::tuple<size_t, bool>>{
+				{1, true},
+				{1, false},
+				{3, true}
+			})
+		{
+			std::cout << "Expected combo-boxes to deselect before"
+				" selecting" << std::endl;
+			exit(1);
+		}
+	}
+	else
+	{
+		mpcobj<bool>::lock lock{close_flag->flag};
+
+		lock.wait([&] { return *lock; });
+	}
 	standard_comboboxlayoutmanager lm=combobox->get_layoutmanager();
 
 	auto n=lm->selected();

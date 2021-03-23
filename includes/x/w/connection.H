@@ -11,6 +11,7 @@
 #include <x/functionalrefptr.H>
 #include <string>
 #include <vector>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -19,8 +20,13 @@ LIBCXXW_NAMESPACE_START
 //! Screen themes have options.
 
 struct theme_option {
-	std::string	label;		//!< Internal label
 	std::u32string	description;	//!< Description
+
+	typedef std::vector<std::tuple<std::string, std::u32string>
+			    > choices_t;
+
+	//! A vector of <label, description> tuples.
+	choices_t choices;
 };
 
 //! Base class for \ref connection "display server connections".

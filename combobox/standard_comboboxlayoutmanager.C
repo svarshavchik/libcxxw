@@ -84,8 +84,9 @@ static std::vector<text_param> to_text_param(const std::vector<list_item_param>
 			  },
 			  [](const auto &s)
 			  {
-				  throw EXCEPTION(_("This combo-box cannot "
-						    "contain this item."));
+				  throw EXCEPTION(_("You can only put text "
+						    "and separators into a "
+						    "combo-box."));
 			  }
 			 }, i);
 	return ret;

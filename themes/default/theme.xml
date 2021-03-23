@@ -3,9 +3,12 @@
 
   <name>Default theme</name>
 
-  <option id="shade_full">Scalable shading</option>
-  <option id="shade_fixed">Fixed shading (faster)</option>
-  <option id="shade_none">Disable shading</option>
+  <option>
+    <description>Shading</description>
+    <value id="shade_full">scalable (default)</value>
+    <value id="shade_fixed">fixed (faster)</value>
+    <value id="shade_none">disabled</value>
+  </option>
 
   <dim id="no-padding">0</dim>
 

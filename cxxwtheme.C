@@ -185,6 +185,8 @@ public:
 	void set_theme_options(const w::main_window &,
 			       const w::container &);
 
+	// Sanity check.
+
 	void validate_options()
 	{
 		auto iter=std::find_if(available_themes.begin(),
@@ -205,9 +207,15 @@ public:
 
 		for (const auto &option:iter->available_options)
 		{
-			if (enabled_theme_options.find(option.label) !=
-			    enabled_theme_options.end())
-				validated_theme_options.insert(option.label);
+			for (const auto &[label, descr]:option.choices)
+			{
+				if (enabled_theme_options.find(label) !=
+				    enabled_theme_options.end())
+				{
+					validated_theme_options.insert(label);
+					break;
+				}
+			}
 		}
 		enabled_theme_options=validated_theme_options;
 	}
@@ -328,6 +336,91 @@ static void wait_until_theme_installed(const w::connection &conn,
 
 typedef singletonptr<current_theme_optionsObj> current_theme_options_t;
 
+// Callback for a theme option value in one of the combo-boxes.
+
+static auto create_option_callback(const std::string &label,
+				   const w::main_window &mw)
+{
+	return [label,
+		mw=make_weak_capture(mw)]
+		(ONLY IN_THREAD,
+		 const w::list_item_status_info_t &info)
+	{
+		appstate_t appstate;
+
+		if (!appstate)
+			return;
+
+		auto got=mw.get();
+
+		if (!got)
+			return;
+
+		auto &[mw]=*got;
+
+		theme_info_t theme_info;
+
+		if (!theme_info)
+			return;
+
+		if (!info.selected)
+		{
+			theme_info->enabled_theme_options.erase(label);
+			return;
+		}
+		else
+		{
+			if (!theme_info->enabled_theme_options
+			    .insert(label).second)
+				return; // Initialization
+		}
+
+		if (*label.c_str() == '_')
+			return; // Internal option
+
+		// A radio button will cause callbacks for
+		// both the deactivated and the activated
+		// button to be triggered.
+		//
+		// Keep track of the updated_settings
+		// and call set_new_theme only when we're
+		// done.
+
+		theme_info->updated_settings.insert(label);
+
+		mw->in_thread_idle
+			([=]
+			 (ONLY IN_THREAD)
+			{
+				auto &updated_settings=
+					theme_info
+					->updated_settings;
+
+				if (updated_settings.empty())
+					return;
+
+				current_theme_options_t
+					current_theme_options;
+
+				if (!current_theme_options)
+					return;
+
+				auto conn=current_theme_options
+					->options_container
+					->get_screen()
+					->get_connection();
+
+				set_new_theme(IN_THREAD,
+					      mw, conn,
+					      appstate,
+					      theme_info,
+					      updated_settings
+					      );
+				updated_settings.clear();
+			});
+	};
+}
+
 void theme_infoObj::set_theme_options(const w::main_window &mw,
 				      const w::container &c)
 {
@@ -350,159 +443,49 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 	std::unordered_map<std::string,
 			   w::image_button> selected_option_group_value;
 
+	w::new_standard_comboboxlayoutmanager new_option_combobox;
+
 	for (const auto &option:iter->available_options)
 	{
 		auto f=glm->append_row();
 
-		std::string radio_button_group;
+		f->halign(w::halign::right);
+		f->valign(w::valign::middle);
 
-		auto is_radio=option.label.find('_');
+		f->create_label(option.description + U":");
 
-		// An option with an underscore is an option group, which
-		// becomes a radio button.
-		//
-		// The clipboard cut/paste option starts with an
-		// undescore, so that becomes an empty radio group.
-		//
-		// bidi_format option starts with a double underscore. We
-		// want that to be a radio group, but not trigger a theme
-		// update redraw, which is already taken care of by the
-		// first leading underscore.
+		f->valign(w::valign::middle);
 
-		if (is_radio == 0 && option.label.substr(0, 2) == "__")
-			is_radio=option.label.find('_', 2);
+		std::vector<x::w::list_item_param> params;
 
-		if (is_radio != option.label.npos)
-			radio_button_group=option.label.substr(0, is_radio);
+		params.reserve(option.choices.size()*2);
+		size_t selected=0;
 
-		// Create a checkbox or a radio button.
-
-		auto cb=!radio_button_group.empty()
-
-			? f->create_radio
-			(name + ":" + radio_button_group,
-			 [&]
-			 (const w::factory &f)
-			 {
-				 f->create_label(option.description);
-			 })
-			: f->create_checkbox
-			([&]
-			 (const w::factory &f)
-			 {
-				 f->create_label(option.description);
-			 });
-
-		auto value=enabled_theme_options.find(option.label);
-
-		// If the option is enabled in the theme:
-		//
-		// - checkbox: we set it here.
-		//
-		// - radio button: the one that's set goes into
-		//   selected_group_option_value and we'll set it later.
-		//   However: the first option we see for a radio button
-		//   will be placed into selected_group_option_value in all
-		//   cases, and then if we find the one that's really set
-		//   we'll update it. This way we'll always have an option
-		//   set in each radio button group, and the first one in the
-		//   theme file must be the default option.
-
-		if (value != enabled_theme_options.end() ||
-		    (!radio_button_group.empty() &&
-		     selected_option_group_value.find(radio_button_group)
-		     == selected_option_group_value.end()))
+		for (const auto &[label,description]:option.choices)
 		{
-			if (!radio_button_group.empty())
-				selected_option_group_value
-					.insert_or_assign(radio_button_group,
-							  cb);
-			else
-				cb->set_value(1);
+			if (enabled_theme_options.find(label)
+			    != enabled_theme_options.end())
+			{
+				selected=params.size()/2;
+			}
+
+			// This adds two list_item_param per options, so
+			// selected divides size() by 2.
+			params.emplace_back(create_option_callback(label, mw));
+			params.emplace_back(description);
 		}
 
-		for (auto &[group, radio_button] : selected_option_group_value)
-			radio_button->set_value(1);
+		f->create_focusable_container
+			([&]
+			 (const auto &c)
+			{
+				w::standard_comboboxlayoutmanager lm=
+					c->get_layoutmanager();
 
-		cb->on_activate
-			([label=option.label,
-			  mw=make_weak_capture(mw)]
-			 (ONLY IN_THREAD,
-			  size_t n,
-			  const auto &trigger,
-			  const auto &busy)
-			 {
-				 if (std::holds_alternative<w::initial>
-				     (trigger))
-					 return;
-
-				 appstate_t appstate;
-
-				 if (!appstate)
-					 return;
-
-				 auto got=mw.get();
-
-				 if (!got)
-					 return;
-
-				 auto &[mw]=*got;
-
-				 theme_info_t theme_info;
-
-				 if (!theme_info)
-					 return;
-
-				 if (n == 0)
-					 theme_info->enabled_theme_options
-						 .erase(label);
-				 else
-					 theme_info->enabled_theme_options
-						 .insert(label);
-
-				 // A radio button will cause callbacks for
-				 // both the deactivated and the activated
-				 // button to be triggered.
-				 //
-				 // Keep track of the updated_settings
-				 // and call set_new_theme only when we're
-				 // done.
-
-				 theme_info->updated_settings.insert(label);
-
-				 mw->in_thread_idle
-					 ([=]
-					  (ONLY IN_THREAD)
-					 {
-						 auto &updated_settings=
-							 theme_info
-							 ->updated_settings;
-
-						 if (updated_settings.empty())
-							 return;
-
-						 current_theme_options_t
-							 current_theme_options;
-
-						 if (!current_theme_options)
-							 return;
-
-						 auto conn=current_theme_options
-							 ->options_container
-							 ->get_screen()
-							 ->get_connection();
-
-						 set_new_theme(IN_THREAD,
-							       mw, conn,
-							       appstate,
-							       theme_info,
-							       updated_settings
-							       );
-						 updated_settings.clear();
-					 });
-			 });
-
-		cb->show_all();
+				lm->append_items(params);
+				lm->autoselect(selected);
+			},
+			 new_option_combobox);
 	}
 }
 
