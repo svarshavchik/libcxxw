@@ -346,6 +346,12 @@ popup_position_affinity popupObj::handlerObj
 	// The popup cannot be below max_y.
 	coord_t max_y=coord_t::truncate(screen_height - r.height);
 
+	if (max_x < 0)
+		max_x=0;
+
+	if (max_y < 0)
+		max_y=0;
+
 	coord_t x=attachedto_element_position.x;
 	coord_t y=attachedto_element_position.y;
 
@@ -401,8 +407,13 @@ popup_position_affinity popupObj::handlerObj
 			r.width=attachedto_element_position.width;
 		break;
 
+	case attached_to::tooltip_left:
+		x = coord_t::truncate(x-r.width);
+		if (x < 0)
+			x=0;
+		// FALLTHROUGH
 	case attached_to::above_or_below:
-	case attached_to::tooltip:
+	case attached_to::tooltip_right:
 		// It'll be above or below, but start on the same x coordinate
 		// as the attached to element, but not to the right of max_x.
 

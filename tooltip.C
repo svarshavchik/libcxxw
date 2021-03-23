@@ -19,6 +19,7 @@
 #include "x/w/pictformat.H"
 #include "x/w/impl/bordercontainer_element.H"
 #include "x/w/impl/richtext/richtext.H"
+#include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/impl/borderlayoutmanager.H"
 #include "defaulttheme.H"
 #include "x/w/gridfactory.H"
@@ -297,15 +298,22 @@ popup_tooltip_factory::create_tooltip_handler
 		 themedimaxis::height);
 
 
+	auto direction=
+		default_paragraph_embedding_level() == UNICODE_BIDI_LR
+		? attached_to::tooltip_right : attached_to::tooltip_left;
+
 	// And construct an attached_to::tooltip tooltip_handlerObj,
 	// at these coordinates.
 	return ref<tooltip_handlerObj>::create
 		(parent_window,
 		 appearance,
-		 rectangle{coord_t::truncate(x+offset_x),
+		 rectangle{coord_t::truncate(direction ==
+					     attached_to::tooltip_right
+					     ? x+offset_x
+					     : x-offset_x),
 				coord_t::truncate(y-offset_y),
 				   0, 0},
-		 attached_to::tooltip);
+		 direction);
 }
 
 #if 0
@@ -390,8 +398,10 @@ void elementObj::implObj::hover_action(ONLY IN_THREAD)
 void elementObj::implObj::hover_cancel(ONLY IN_THREAD)
 {
 	if (!data(IN_THREAD).attached_popup ||
-	    data(IN_THREAD).attached_popup->impl->handler->attachedto_info->how
-	    != attached_to::tooltip)
+	    (data(IN_THREAD).attached_popup->impl->handler->attachedto_info->how
+	     != attached_to::tooltip_left &&
+	     data(IN_THREAD).attached_popup->impl->handler->attachedto_info->how
+	     != attached_to::tooltip_right))
 		return;
 	data(IN_THREAD).attached_popup=nullptr;
 

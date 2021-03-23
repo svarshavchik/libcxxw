@@ -94,12 +94,19 @@ enum class attached_to
 	 above_or_below, //!< Above, if there's room, else below
 	 right_or_left, //!< To the right, if there's room else to the left.
 
-	 //! Tooltip displayed at pointer position.
+	 //! Tooltip displayed to the right of the pointer position.
 
 	 //! Used internally by regular tooltips. Do not specify when creating
 	 //! a static tooltip.
 
-	 tooltip,
+	 tooltip_right,
+
+	 //! Tooltip displayed to the left of the pointer position.
+
+	 //! Used internally by regular tooltips. Do not specify when creating
+	 //! a static tooltip.
+
+	 tooltip_left,
 };
 
 //! Optional settings for a static tooltip.

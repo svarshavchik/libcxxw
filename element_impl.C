@@ -1942,7 +1942,8 @@ void elementObj::implObj::update_attachedto_info(ONLY IN_THREAD)
 	auto h=data(IN_THREAD).attached_popup->impl->handler;
 
 	switch (h->attachedto_info->how) {
-	case attached_to::tooltip:
+	case attached_to::tooltip_left:
+	case attached_to::tooltip_right:
 		return;
 
 	case attached_to::below_or_above:

@@ -32,6 +32,8 @@ enum class richtext_dir : unsigned char
 	 both, //!< Mixture of left to right and right to left text
 	};
 
+unicode_bidi_level_t default_paragraph_embedding_level() LIBCXX_HIDDEN;
+
 //! A unicode string, marked up by \ref richtextmeta "a richtextmeta".
 
 //! Encapsulate a unicode string, with a list of fonts and colors for drawing

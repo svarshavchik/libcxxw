@@ -940,7 +940,7 @@ richtextstring::to_canonical_order
 {
 }
 
-static unicode_bidi_level_t default_paragraph_embedding_level()
+unicode_bidi_level_t default_paragraph_embedding_level()
 {
 #ifdef TEST_DEFAULT_EMBEDDING_LEVEL
 
