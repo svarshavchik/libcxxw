@@ -126,14 +126,18 @@ bool connection_threadObj
 		if (process_pending_configure_events(IN_THREAD))
 			continue;
 
-		if (recalculate_containers(IN_THREAD, poll_for))
+		resize_pending_cache_t resize_pending_cache;
+
+		if (recalculate_containers(IN_THREAD, resize_pending_cache,
+					   poll_for))
 			continue;
 
 		if (process_element_position_updated(IN_THREAD,
 						     poll_for))
 			continue;
 
-		if (process_visibility_updated(IN_THREAD, poll_for))
+		if (process_visibility_updated(IN_THREAD,
+					       resize_pending_cache, poll_for))
 			continue;
 
 		// Process a message in the message queue. If processing a
@@ -164,7 +168,7 @@ bool connection_threadObj
 		if (process_pending_exposure_events(IN_THREAD))
 			continue;
 
-		if (redraw_elements(IN_THREAD, poll_for))
+		if (redraw_elements(IN_THREAD, resize_pending_cache, poll_for))
 			continue;
 		break;
 	}

@@ -98,6 +98,10 @@ class LIBCXX_HIDDEN connection_threadObj
 
  private:
 
+	//! Cache for recording which windows' resize is pending.
+	typedef std::unordered_map<generic_windowObj::handlerObj *, bool
+				   > resize_pending_cache_t;
+
 	//! Invoke a closure for each element in a set, lowest to highest.
 
 	//! Invokes the closure for each element starting with the elements
@@ -111,10 +115,11 @@ class LIBCXX_HIDDEN connection_threadObj
 		static inline
 		void lowest_sizable_elements_first(ONLY IN_THREAD,
 						   element_set_t &s,
+						   resize_pending_cache_t &c,
 						   int &poll_for,
 						   functor &&f)
 	{
-		do_lowest_sizable_element_first(IN_THREAD, s, poll_for,
+		do_lowest_sizable_element_first(IN_THREAD, s, c, poll_for,
 						make_function
 						<void (const element_impl &)>
 						(f));
@@ -125,6 +130,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	static void do_lowest_sizable_element_first
 		(ONLY IN_THREAD,
 		 element_set_t &s,
+		 resize_pending_cache_t &c,
 		 int &poll_for,
 		 const function<void (const element_impl &)> &f);
 
@@ -135,7 +141,9 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Check for a visibility change, and process it.
 
-	bool process_visibility_updated(ONLY IN_THREAD, int &poll_for);
+	bool process_visibility_updated(ONLY IN_THREAD,
+					resize_pending_cache_t &cache,
+					int &poll_for);
 
 	//! Root window on screen 0
 
@@ -185,13 +193,17 @@ class LIBCXX_HIDDEN connection_threadObj
 	elements_to_redraw_set *elements_to_redraw_thread_only;
 
 	//! Draw elements.
-	bool redraw_elements(ONLY IN_THREAD, int &poll_for);
+	bool redraw_elements(ONLY IN_THREAD,
+			     resize_pending_cache_t &cache,
+			     int &poll_for);
 
 	//! Which containers need to be recalculated in bulk
 	containers_2_recalculate_map *containers_2_recalculate_thread_only;
 
 	//! Find a container to recalculate
-	bool recalculate_containers(ONLY IN_THREAD, int &poll_for);
+	bool recalculate_containers(ONLY IN_THREAD,
+				    resize_pending_cache_t &c,
+				    int &poll_for);
 
 	//! Display elements that need their updated positions processed.
 

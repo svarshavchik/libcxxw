@@ -94,6 +94,7 @@ namespace {
 void connection_threadObj
 ::do_lowest_sizable_element_first(ONLY IN_THREAD,
 				  element_set_t &s,
+				  resize_pending_cache_t &is_resize_pending,
 				  int &poll_for,
 				  const function<void (const element_impl &)>
 				  &f)
@@ -101,9 +102,6 @@ void connection_threadObj
 	// Start at the end of the nesting level map, work our way up.
 
 	auto iter=s.end();
-
-	std::unordered_map<generic_windowObj::handlerObj *, bool>
-		is_resize_pending;
 
 	while (iter != s.begin())
 	{
@@ -146,6 +144,8 @@ void connection_threadObj
 // their update_visibility() methods.
 
 bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
+						      resize_pending_cache_t
+						      &is_resize_pending,
 						      int &poll_for)
 {
 	CONNECTION_TRAFFIC_LOG("process visibility", *this);
@@ -160,6 +160,7 @@ bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
 	lowest_sizable_elements_first
 		(IN_THREAD,
 		 *visibility_updated(IN_THREAD),
+		 is_resize_pending,
 		 poll_for,
 		 [&]
 		 (const auto &e)
@@ -177,14 +178,14 @@ bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
 	return flag;
 }
 
-bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
+bool connection_threadObj::recalculate_containers(ONLY IN_THREAD,
+						  resize_pending_cache_t
+						  &is_resize_pending,
+						  int &poll_for)
 {
 	CONNECTION_TRAFFIC_LOG("recalculate", *this);
 
 	bool flag=false;
-
-	std::unordered_map<generic_windowObj::handlerObj *, bool>
-		is_resize_pending;
 
 	for (auto b=containers_2_recalculate_thread_only->begin(),
 		     e=containers_2_recalculate_thread_only->end(); b != e;)
@@ -621,7 +622,10 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 }
 
 
-bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
+bool connection_threadObj::redraw_elements(ONLY IN_THREAD,
+					   resize_pending_cache_t
+					   &is_resize_pending,
+					   int &poll_for)
 {
 	CONNECTION_TRAFFIC_LOG("redraw", *this);
 
@@ -629,9 +633,6 @@ bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 		    > redraw_queue;
 
 	redraw_queue.reserve(elements_to_redraw(IN_THREAD)->size());
-
-	std::unordered_map<generic_windowObj::handlerObj *, bool>
-		is_resize_pending;
 
 	for (auto b=elements_to_redraw(IN_THREAD)->begin(),
 		     e=elements_to_redraw(IN_THREAD)->end(); b != e; )
