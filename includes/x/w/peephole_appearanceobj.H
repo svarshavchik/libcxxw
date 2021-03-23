@@ -11,22 +11,9 @@
 #include <x/w/dim_arg.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref peephole_appearance "INSERT_LIBX_NAMESPACE::w::peephole_appearance".
-
-struct peephole_appearance_properties {
-
-	//! Constructor
-	peephole_appearance_properties();
-
-	//! Destructor
-	~peephole_appearance_properties();
-
 #include <x/w/peephole_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

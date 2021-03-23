@@ -2,13 +2,14 @@
   <name>tooltip</name>
   <default>tooltip_theme</default>
   <default>static_tooltip_theme</default>
+  <default>direction_tooltip_theme</default>
   <field>
     <name>alpha_border</name>
     <descr><![CDATA[
 Border for the new tooltip
 
 Used when the display has an alpha channel.
-Typically a slightly rounded border
+Typically a slightly rounded border.
 ]]></descr>
     <ref>tooltip_border</ref>
   </field>
@@ -18,7 +19,7 @@ Typically a slightly rounded border
 Border for the new tooltip
 
 Used when the display does not have an alpha channel.
-Typically a square border
+Typically a square border.
 ]]></descr>
     <ref>tooltip_border</ref>
   </field>
@@ -41,7 +42,7 @@ Generic appearance of a top level window
     <descr><![CDATA[
 Tooltip location, to the right of the pointer position.
 
-Regular tooltips only, ignored for static tooltips
+Regular tooltips only, ignored for static tooltips.
 ]]></descr>
     <type>dim_arg</type>
   </field>

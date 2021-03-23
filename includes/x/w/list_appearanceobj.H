@@ -15,22 +15,9 @@
 #include <x/w/focus_border_appearancefwd.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! All properties inherited by a \ref list_appearance "list appearance object".
-
-struct list_appearance_properties {
-
-	//! Constructor
-	list_appearance_properties();
-
-	//! Destructor
-	~list_appearance_properties();
-
 #include <x/w/list_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

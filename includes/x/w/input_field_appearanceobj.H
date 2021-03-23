@@ -17,22 +17,9 @@
 #include <x/w/button_appearancefwd.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref input_field_appearance "INSERT_LIBX_NAMESPACE::w::input_field_appearance".
-
-struct input_field_appearance_properties {
-
-	//! Constructor
-	input_field_appearance_properties();
-
-	//! Destructor
-	~input_field_appearance_properties();
-
 #include <x/w/input_field_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

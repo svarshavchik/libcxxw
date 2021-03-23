@@ -12,22 +12,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref tooltip_border_appearance "INSERT_LIBX_NAMESPACE::w::tooltip_border_appearance".
-
-struct tooltip_border_appearance_properties {
-
-	//! Constructor
-	tooltip_border_appearance_properties();
-
-	//! Destructor
-	~tooltip_border_appearance_properties();
-
 #include <x/w/tooltip_border_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

@@ -14,22 +14,9 @@
 #include <x/w/appearanceobj.H>
 #include <vector>
 #include <string>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref generic_window_appearance "INSERT_LIBX_NAMESPACE::w::generic_window_appearance".
-
-struct generic_window_appearance_properties {
-
-	//! Constructor
-	generic_window_appearance_properties();
-
-	//! Destructor
-	~generic_window_appearance_properties();
-
 #include <x/w/generic_window_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

@@ -12,22 +12,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Images used in a \ref scrollbar_appearance "scrollbar appearance".
-
-struct scrollbar_images_appearance_properties {
-
-	//! Constructor
-	scrollbar_images_appearance_properties();
-
-	//! Destructor
-	~scrollbar_images_appearance_properties();
-
 #include <x/w/scrollbar_images_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

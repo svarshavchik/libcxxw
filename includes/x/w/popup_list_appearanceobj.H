@@ -7,27 +7,9 @@
 
 #include <x/w/popup_list_appearancefwd.H>
 #include <x/w/list_appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! All properties inherited by a \ref popup_list_appearance "popup list appearance object".
-
-//! That's in addition to the ones that are inherited from the
-//! \ref list_appearance "list appearance properties" object.
-
-struct popup_list_appearance_properties {
-
-	//! Constructor
-
-	popup_list_appearance_properties();
-
-	//! Destructor
-
-	~popup_list_appearance_properties();
-
 #include <x/w/popup_list_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

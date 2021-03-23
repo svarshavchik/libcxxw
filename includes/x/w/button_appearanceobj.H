@@ -13,22 +13,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref button_appearance "INSERT_LIBX_NAMESPACE::w::button_appearance".
-
-struct button_appearance_properties {
-
-	//! Constructor
-	button_appearance_properties();
-
-	//! Destructor
-	~button_appearance_properties();
-
 #include <x/w/button_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

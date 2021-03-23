@@ -15,22 +15,9 @@
 #include <x/w/alignment.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref pane_appearance "INSERT_LIBX_NAMESPACE::w::pane_appearance".
-
-struct pane_appearance_properties {
-
-	//! Constructor
-	pane_appearance_properties();
-
-	//! Destructor
-	~pane_appearance_properties();
-
 #include <x/w/pane_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

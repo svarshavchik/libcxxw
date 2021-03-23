@@ -12,22 +12,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref scrollbar_appearance "INSERT_LIBX_NAMESPACE::w::scrollbar_appearance".
-
-struct scrollbar_appearance_properties {
-
-	//! Constructor
-	scrollbar_appearance_properties();
-
-	//! Destructor
-	~scrollbar_appearance_properties();
-
 #include <x/w/scrollbar_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

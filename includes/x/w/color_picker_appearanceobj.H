@@ -15,22 +15,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref color_picker_appearance "INSERT_LIBX_NAMESPACE::w::color_picker_appearance".
-
-struct color_picker_appearance_properties {
-
-	//! Constructor
-	color_picker_appearance_properties();
-
-	//! Destructor
-	~color_picker_appearance_properties();
-
 #include <x/w/color_picker_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

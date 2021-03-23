@@ -7,6 +7,9 @@
   <default>book_right_theme</default>
   <default>date_popup_left_theme</default>
   <default>date_popup_right_theme</default>
+  <constructor_parameters><![CDATA[
+const std::vector<std::string> &i
+]]></constructor_parameters>
   <field>
     <name>alignment</name>
     <descr><![CDATA[

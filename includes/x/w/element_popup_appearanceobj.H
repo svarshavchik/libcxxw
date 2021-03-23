@@ -15,22 +15,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref element_popup_appearance "INSERT_LIBX_NAMESPACE::w::element_popup_appearance".
-
-struct element_popup_appearance_properties {
-
-	//! Constructor
-	element_popup_appearance_properties();
-
-	//! Destructor
-	~element_popup_appearance_properties();
-
 #include <x/w/element_popup_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

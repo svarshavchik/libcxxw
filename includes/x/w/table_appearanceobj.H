@@ -10,22 +10,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref table_appearance "INSERT_LIBX_NAMESPACE::w::table_appearance".
-
-struct table_appearance_properties {
-
-	//! Constructor
-	table_appearance_properties();
-
-	//! Destructor
-	~table_appearance_properties();
-
 #include <x/w/table_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

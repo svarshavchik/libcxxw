@@ -11,22 +11,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref bookpage_appearance "INSERT_LIBX_NAMESPACE::w::bookpage_appearance".
-
-struct bookpage_appearance_properties {
-
-	//! Constructor
-	bookpage_appearance_properties();
-
-	//! Destructor
-	~bookpage_appearance_properties();
-
 #include <x/w/bookpage_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

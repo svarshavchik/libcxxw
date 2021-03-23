@@ -16,22 +16,9 @@
 #include <x/w/text_param.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref font_picker_appearance "INSERT_LIBX_NAMESPACE::w::font_picker_appearance".
-
-struct font_picker_appearance_properties {
-
-	//! Constructor
-	font_picker_appearance_properties();
-
-	//! Destructor
-	~font_picker_appearance_properties();
-
 #include <x/w/font_picker_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

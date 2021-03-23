@@ -14,22 +14,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref file_dialog_appearance "INSERT_LIBX_NAMESPACE::w::file_dialog_appearance".
-
-struct file_dialog_appearance_properties {
-
-	//! Constructor
-	file_dialog_appearance_properties();
-
-	//! Destructor
-	~file_dialog_appearance_properties();
-
 #include <x/w/file_dialog_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

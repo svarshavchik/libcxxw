@@ -12,22 +12,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref focus_border_appearance "INSERT_LIBX_NAMESPACE::w::focus_border_appearance".
-
-struct focus_border_appearance_properties {
-
-	//! Constructor
-	focus_border_appearance_properties();
-
-	//! Destructor
-	~focus_border_appearance_properties();
-
 #include <x/w/focus_border_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

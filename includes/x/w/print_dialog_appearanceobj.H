@@ -16,22 +16,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref print_dialog_appearance "INSERT_LIBX_NAMESPACE::w::print_dialog_appearance".
-
-struct print_dialog_appearance_properties {
-
-	//! Constructor
-	print_dialog_appearance_properties();
-
-	//! Destructor
-	~print_dialog_appearance_properties();
-
 #include <x/w/print_dialog_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

@@ -14,22 +14,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref tooltip_appearance "INSERT_LIBX_NAMESPACE::w::tooltip_appearance".
-
-struct tooltip_appearance_properties {
-
-	//! Constructor
-	tooltip_appearance_properties();
-
-	//! Destructor
-	~tooltip_appearance_properties();
-
 #include <x/w/tooltip_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

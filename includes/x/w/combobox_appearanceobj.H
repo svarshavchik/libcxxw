@@ -9,27 +9,9 @@
 #include <x/w/focus_border_appearancefwd.H>
 #include <x/w/popup_list_appearanceobj.H>
 #include <x/w/border_arg.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! All properties inherited by a \ref combobox_appearance "popup list appearance object".
-
-//! That's in addition to the ones that are inherited from the
-//! \ref popup_list_appearance "popup_list appearance properties" object.
-
-struct combobox_appearance_properties {
-
-	//! Constructor
-
-	combobox_appearance_properties();
-
-	//! Destructor
-
-	~combobox_appearance_properties();
-
 #include <x/w/combobox_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

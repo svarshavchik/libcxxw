@@ -17,22 +17,9 @@
 #include <x/w/appearanceobj.H>
 
 #include <tuple>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref main_window_appearance "INSERT_LIBX_NAMESPACE::w::main_window_appearance".
-
-struct main_window_appearance_properties {
-
-	//! Constructor
-	main_window_appearance_properties();
-
-	//! Destructor
-	~main_window_appearance_properties();
-
 #include <x/w/main_window_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

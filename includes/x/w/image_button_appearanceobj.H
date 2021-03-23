@@ -13,22 +13,9 @@
 #include <x/w/appearanceobj.H>
 #include <vector>
 #include <string>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref image_button_appearance "INSERT_LIBX_NAMESPACE::w::image_button_appearance".
-
-struct image_button_appearance_properties {
-
-	//! Constructor
-	image_button_appearance_properties(const std::vector<std::string> &i);
-
-	//! Destructor
-	~image_button_appearance_properties();
-
 #include <x/w/image_button_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

@@ -16,22 +16,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref date_input_field_appearance "INSERT_LIBX_NAMESPACE::w::date_input_field_appearance".
-
-struct date_input_field_appearance_properties {
-
-	//! Constructor
-	date_input_field_appearance_properties();
-
-	//! Destructor
-	~date_input_field_appearance_properties();
-
 #include <x/w/date_input_field_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 

@@ -12,22 +12,9 @@
 #include <x/w/rgb.H>
 #include <x/functional.H>
 #include <x/w/appearanceobj.H>
-
-LIBCXXW_NAMESPACE_START
-
-//! Actual properties inherited by \ref item_layout_appearance "INSERT_LIBX_NAMESPACE::w::item_layout_appearance".
-
-struct item_layout_appearance_properties {
-
-	//! Constructor
-	item_layout_appearance_properties();
-
-	//! Destructor
-	~item_layout_appearance_properties();
-
 #include <x/w/item_layout_appearance.inc.H>
 
-};
+LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 
