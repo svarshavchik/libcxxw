@@ -277,7 +277,7 @@ void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string)
 
 	ordered_hotspots(IN_THREAD)=std::move(new_ordered_hotspots);
 	hotspot_highlighted(IN_THREAD)=nullptr;
-	updated(IN_THREAD);
+	updated(IN_THREAD, true);
 	get_label_element_impl().schedule_full_redraw(IN_THREAD);
 }
 
@@ -287,7 +287,7 @@ void textlabelObj::implObj::set_minimum_override(ONLY IN_THREAD,
 {
 	min_horiz_override=horiz_override;
 	min_vert_override=vert_override;
-	recalculate(IN_THREAD);
+	recalculate(IN_THREAD, false);
 }
 
 void textlabelObj::implObj
@@ -328,7 +328,7 @@ void textlabelObj::implObj::initialize(ONLY IN_THREAD)
 	compute_preferred_width(current_theme_now, word_wrap_widthmm,
 				default_meta.getfont()->fc(IN_THREAD));
 
-	updated(IN_THREAD);
+	updated(IN_THREAD, false);
 
 #ifdef DEBUG_INITIAL_METRICS
 
@@ -338,13 +338,14 @@ void textlabelObj::implObj::initialize(ONLY IN_THREAD)
 #endif
 }
 
-void textlabelObj::implObj::updated(ONLY IN_THREAD)
+void textlabelObj::implObj::updated(ONLY IN_THREAD,
+				    bool force_metrics_update)
 {
 	rewrap_due_to_updated_position(IN_THREAD);
 
 	// We can now compute and set our initial metrics.
 
-	recalculate(IN_THREAD);
+	recalculate(IN_THREAD, force_metrics_update);
 }
 
 void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
@@ -355,7 +356,7 @@ void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
 	text->theme_updated(IN_THREAD, new_theme);
 	compute_preferred_width(new_theme, word_wrap_widthmm,
 				default_meta.getfont()->fc(IN_THREAD));
-	updated(IN_THREAD);
+	updated(IN_THREAD, false);
 }
 
 void textlabelObj::implObj::process_updated_position(ONLY IN_THREAD)
@@ -369,7 +370,7 @@ void textlabelObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 	if (preferred_width == 0)
 	{
 		text->rewrap(0);
-		recalculate(IN_THREAD);
+		recalculate(IN_THREAD, false);
 		return; // Not word wrapping.
 	}
 
@@ -396,7 +397,7 @@ void textlabelObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 	text->rewrap(rewrap_to);
 
 	// And we should now update our metrics, accordingly.
-	recalculate(IN_THREAD);
+	recalculate(IN_THREAD, false);
 }
 
 void textlabelObj::implObj::do_draw(ONLY IN_THREAD,
@@ -410,7 +411,8 @@ void textlabelObj::implObj::do_draw(ONLY IN_THREAD,
 			  di, areas);
 }
 
-void textlabelObj::implObj::recalculate(ONLY IN_THREAD)
+void textlabelObj::implObj::recalculate(ONLY IN_THREAD,
+					bool force_metrics_update)
 {
 	auto metrics=calculate_current_metrics();
 
@@ -418,7 +420,8 @@ void textlabelObj::implObj::recalculate(ONLY IN_THREAD)
 		.get_horizvert(IN_THREAD)->set_element_metrics
 		(IN_THREAD,
 		 metrics.first,
-		 metrics.second);
+		 metrics.second,
+		 force_metrics_update);
 }
 
 std::pair<metrics::axis, metrics::axis>
@@ -646,7 +649,7 @@ void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 
 	text->replace_hotspot(IN_THREAD, new_str, link);
 
-	updated(IN_THREAD);
+	updated(IN_THREAD, true);
 
 	text->redraw_whatsneeded(IN_THREAD, e,
 				 {*this},

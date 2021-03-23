@@ -11,6 +11,7 @@
 #include "corner_border.H"
 #include "metrics_grid_xy.H"
 #include "x/w/impl/current_border_impl.H"
+#include "x/w/impl/richtext/richtextstring.H"
 #include "synchronized_axis_impl.H"
 #include "container_impl.H"
 #include "screen.H"
@@ -1234,6 +1235,9 @@ bool gridlayoutmanagerObj::implObj
 	std::cout << "----" << std::endl;
 #endif
 
+	unicode_bidi_level_t default_element_direction=
+		default_paragraph_embedding_level();
+
 	for (const auto &child:elements.all_elements)
 	{
 		const auto &element=child.child_element;
@@ -1310,15 +1314,36 @@ bool gridlayoutmanagerObj::implObj
 		if (max_height > element_position.height)
 			max_height=element_position.height;
 
+		// Determing the default alignment, left or right, for
+		// this element.
+
+		unicode_bidi_level_t element_direction=
+			default_element_direction;
+
+		switch (element->impl->direction(IN_THREAD)) {
+		case bidi::left_to_right:
+			element_direction=UNICODE_BIDI_LR;
+			break;
+		case bidi::right_to_left:
+			element_direction=UNICODE_BIDI_RL;
+			break;
+		case bidi::automatic:
+			break;
+		}
+
 		// And if max_width and max_height is smaller than
 		// element_position, then align() the element accordingly.
 
-		auto aligned=metrics::align(element_position.width,
-					    element_position.height,
-					    max_width,
-					    max_height,
-					    child.horizontal_alignment,
-					    child.vertical_alignment);
+		auto aligned=metrics::align
+			(element_position.width,
+			 element_position.height,
+			 max_width,
+			 max_height,
+			 child.horizontal_alignment ?
+			 *child.horizontal_alignment
+			 : element_direction == UNICODE_BIDI_LR
+			 ? halign::left : halign::right,
+			 child.vertical_alignment);
 
 		element_position.x=
 			element_position.x.truncate

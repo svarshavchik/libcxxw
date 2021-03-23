@@ -74,9 +74,12 @@ namespace metrics {
 
 		//! Update the metrics.
 
+		//! Set force_update to invoke horizvert_update()
+		//! unconditionally.
 		void set_element_metrics(ONLY IN_THREAD,
 					 const axis &new_horiz,
-					 const axis &new_vert)
+					 const axis &new_vert,
+					 const bool force_update=false)
 		{
 			auto prev_horiz=horiz;
 			auto prev_vert=vert;
@@ -90,7 +93,8 @@ namespace metrics {
 			horiz.set_minimum(minimum_horiz_override(IN_THREAD));
 			vert.set_minimum(minimum_vert_override(IN_THREAD));
 
-			if (horiz != prev_horiz || vert != prev_vert)
+			if (force_update ||
+			    horiz != prev_horiz || vert != prev_vert)
 			{
 				horizvert_updated(IN_THREAD);
 			}

@@ -51,7 +51,7 @@ struct existing_grid_element_info {
 	current_border_implptr bottom_border;
 
 	//! Horizontal alignment
-	halign horizontal_alignment=halign::left;
+	std::optional<halign> horizontal_alignment;
 
 	//! Vertical alignment
 	valign vertical_alignment=valign::top;

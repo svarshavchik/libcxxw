@@ -238,7 +238,8 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 	void update(ONLY IN_THREAD, const text_param &string);
 
 	//! Text has been updated
-	void updated(ONLY IN_THREAD);
+	void updated(ONLY IN_THREAD,
+		     bool force_metrics_update);
 
 	////////////////////////////////////////////////////////////////////
 	//
@@ -289,7 +290,8 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 
 	//! Invoke calculate_current_metrics(), then set_element_metrics().
 
-	void recalculate(ONLY IN_THREAD);
+	void recalculate(ONLY IN_THREAD,
+			 bool force_metrics_update);
 
 	//! Calculate current text metrics.
 

@@ -47,7 +47,7 @@ public:
 
 		element child_element;
 		bool takes_up_space;
-		halign horizontal_alignment;
+		std::optional<halign> horizontal_alignment;
 		valign vertical_alignment;
 
 		pos_axis(const metrics::grid_pos &pos,
@@ -55,7 +55,7 @@ public:
 			 const metrics::horizvert &axises,
 			 const metrics::pos_axis_padding &padding,
 			 const element &child_element,
-			 halign horizontal_alignment,
+			 const std::optional<halign> horizontal_alignment,
 			 valign vertical_alignment)
 			: metrics::pos_axis({pos, axises, padding}),
 			child_element(child_element),

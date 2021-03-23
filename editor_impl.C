@@ -1595,7 +1595,14 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 				      size_t inserted,
 				      const callback_trigger_t &trigger)
 {
-	recalculate(IN_THREAD);
+	recalculate(IN_THREAD,
+
+		    // We handle text direction changes ourselves. We expect
+		    // our size to be fixed, and when the default text
+		    // direction changes we will redraw the entire text
+		    // label with new alignment.
+
+		    false);
 
 	// If we originally should've shown the hint, but now not, or vice
 	// versa, we should redraw everything fully.
