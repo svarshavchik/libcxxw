@@ -2918,6 +2918,155 @@ void testrichtext13(ONLY IN_THREAD)
 		throw EXCEPTION("testrichtext13: unexpected last position");
 }
 
+void testrichtext14(ONLY IN_THREAD)
+{
+
+	static constexpr richtextmeta metalr{0, 0};
+
+	static const struct {
+		std::u32string test_string;
+		dim_t wrap_width;
+
+		std::vector<std::tuple<
+				    // position selected
+				    size_t,
+				    // start
+				    size_t,
+				    // end
+				    size_t
+				    >> tests;
+	} tests[]={
+		{
+			U"Rolem  Ipsum Dolor. Sit Amet\n",
+			140,
+			{
+				{0, 0, 5},
+				{4, 0, 5},
+				{5, 5, 7},
+				{6, 5, 7},
+				{7, 7, 12},
+				{11, 7, 12},
+				{12, 12, 12},
+
+				{13, 13, 18},
+				{17, 13, 18},
+				{18, 18, 19},
+				{19, 19, 20},
+
+				{20, 20, 23},
+
+				{23, 23, 24},
+
+				{24, 24, 28},
+
+				{28, 28, 28},
+			}
+		},
+		{
+			std::u32string{RLM} + std::u32string{RLO} +
+			U"Rolem  Ipsum Dolor. Sit Amet\n",
+			140,
+			{
+				{0, 0, 5},
+				{4, 0, 5},
+				{5, 5, 7},
+				{6, 5, 7},
+				{7, 7, 12},
+				{11, 7, 12},
+				{12, 12, 12},
+
+				{13, 13, 18},
+				{17, 13, 18},
+				{18, 18, 19},
+				{19, 19, 20},
+
+				{20, 20, 23},
+
+				{23, 23, 24},
+
+				{24, 24, 28},
+
+				{28, 28, 28},
+			}
+		},
+		{
+			U"XYZ",
+			140,
+			{
+				{0, 0, 2},
+				{1, 0, 2},
+				{2, 0, 2},
+			},
+		},
+		{
+			U"Helloשלום\n",
+			140,
+			{
+				{0, 0, 5},
+				{4, 0, 5},
+				{5, 5, 9},
+				{8, 5, 9},
+			},
+		},
+		{
+			U"Hello" + std::u32string{RLO} + U"World\n",
+			140,
+			{
+				{0, 0, 5},
+				{4, 0, 5},
+				{5, 5, 10},
+				{9, 5, 10},
+			},
+		}
+	};
+
+	size_t testnum=0;
+
+	for (const auto &t:tests)
+	{
+		++testnum;
+
+		// Right to left tests.
+		richtext_options options;
+		options.unprintable_char=' ';
+		options.initial_width=t.wrap_width;
+		auto richtext=richtext::create(richtextstring{
+				t.test_string,
+				{
+					{0, metalr},
+				},
+
+			}, options);
+
+		size_t casenum=0;
+		for (const auto &[pos, begin, end]:t.tests)
+		{
+			++casenum;
+
+			const auto &[begin_iter, end_iter]=
+				richtext->begin()->pos(pos)->select_word();
+			if (begin_iter->pos() != begin)
+				throw EXCEPTION("testrichtext14: test "
+						<< testnum
+						<< ", case "
+						<< casenum
+						<< ": begin position: expected "
+						<< begin
+						<< ": got "
+						<< begin_iter->pos());
+			if (end_iter->pos() != end)
+				throw EXCEPTION("testrichtext14: test "
+						<< testnum
+						<< ", case "
+						<< casenum
+						<< ": end position: expected "
+						<< end
+						<< ": got "
+						<< end_iter->pos());
+		}
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -2956,6 +3105,7 @@ int main(int argc, char **argv)
 		testrichtext11(IN_THREAD);
 		testrichtext12(IN_THREAD);
 		testrichtext13(IN_THREAD);
+		testrichtext14(IN_THREAD);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

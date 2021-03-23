@@ -533,4 +533,15 @@ void richtextiteratorObj::set_cursor(ONLY IN_THREAD, bool cursor_on)
 		 });
 }
 
+std::tuple<richtextiterator, richtextiterator>
+richtextiteratorObj::select_word() const
+{
+	return my_richtext->read_only_lock
+		([&, this]
+		 (auto &lock)
+		{
+			return my_richtext->select_word(lock, my_location);
+		});
+}
+
 LIBCXXW_NAMESPACE_END

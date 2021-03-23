@@ -1741,8 +1741,11 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 			 // we might have something already selected, and
 			 // don't really want to deselect it.
 			 || (be.button == 3 &&
-			     !current_keyboard_focus(IN_THREAD))))
+			     !current_keyboard_focus(IN_THREAD)))
+	    && be.click_count == 1)
 	{
+		// First button click.
+
 		bool ignored;
 
 		abort_dragging(IN_THREAD); // Something stale?
@@ -1794,7 +1797,6 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 						       most_recent_y);
 				}
 			}
-
 		}
 
 		// We grab the pointer while the button is held down.
@@ -1818,6 +1820,34 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 				get_window_handler()
 					.receive_selection(IN_THREAD,
 							   XCB_ATOM_PRIMARY);
+			}
+		}
+	}
+	else if (be.press)
+	{
+		// Some other button click.
+
+		if (be.button == 1 && be.click_count == 2)
+		{
+			callback_trigger_t trigger(&be);
+
+			auto [start, end]=cursor->select_word();
+
+			if (start->compare(end))
+			{
+				bool ignored;
+
+				{
+					moving_cursor moving{IN_THREAD, *this,
+						move_type::navigation,
+						ignored, trigger};
+
+					cursor->swap(start);
+				}
+				moving_cursor moving{IN_THREAD, *this,
+					move_type::selection_in_progress,
+					ignored, trigger};
+				cursor->swap(end);
 			}
 		}
 	}

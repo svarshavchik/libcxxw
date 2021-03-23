@@ -220,6 +220,15 @@ public:
 
 	void set_cursor(ONLY IN_THREAD, bool cursor_on);
 
+	//! Select a word referenced by this iterator
+
+	//! Returns a pair of iterators such as the first one marks the
+	//! beginning of the word under this iterator and the second
+	//! one marks the end of the word under this iterator.
+
+	std::tuple<richtextiterator, richtextiterator> select_word() const;
+
+	//! word and this iterator now marks
 	//! For testing purpose.
 
 	auto &debug_get_location() const { return my_location; }

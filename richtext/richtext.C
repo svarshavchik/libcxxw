@@ -165,7 +165,7 @@ richtextiterator richtextObj::at(internal_richtext_impl_t::lock &lock,
 
 	auto location=richtextcursorlocation::create();
 
-	return richtextiterator::create(richtext(this),
+	return richtextiterator::create(richtext{this},
 					location,
 					&*fragment,
 					npos,
@@ -671,6 +671,29 @@ ref<richtext_implObj> richtextObj::debug_get_impl(ONLY IN_THREAD)
 	impl_t::lock lock{impl};
 
 	return *lock;
+}
+
+std::tuple<richtextiterator, richtextiterator>
+richtextObj::select_word(const internal_richtext_impl_t::lock &,
+			 const richtextcursorlocation &loc)
+{
+	auto fragment=loc->my_fragment;
+
+	auto [begin_pos, end_pos]=
+		richtext_range::select_word(fragment, loc->get_offset());
+
+	return {
+		richtextiterator::create(richtext{this},
+					 richtextcursorlocation::create(),
+					 &*fragment,
+					 begin_pos,
+					 new_location::lr),
+		richtextiterator::create(richtext{this},
+					 richtextcursorlocation::create(),
+					 &*fragment,
+					 end_pos,
+					 new_location::lr)
+	};
 }
 
 LIBCXXW_NAMESPACE_END

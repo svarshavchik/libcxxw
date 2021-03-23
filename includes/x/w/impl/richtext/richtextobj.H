@@ -335,6 +335,18 @@ class richtextObj : virtual public obj {
 	static size_t pos(const internal_richtext_impl_t::lock &,
 			  const richtextcursorlocation &);
 
+	//! Select a word referenced by this location
+
+	//! Returns a pair of iterators such as the first one marks the
+	//! beginning of the word under this iterator and the second
+	//! one marks the end of the word under this iterator.
+
+	std::tuple<richtextiterator,
+		   richtextiterator> select_word(const
+						 internal_richtext_impl_t::lock
+						 &,
+						 const richtextcursorlocation &)
+		;
 
 	//! Get text between two locations.
 

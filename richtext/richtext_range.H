@@ -224,6 +224,23 @@ private:
 	virtual void range(const richtextstring &other,
 			   size_t start,
 			   size_t n) const=0;
+
+public:
+	//! Define the selected range on a single line.
+
+	//! Finds the word in the fragment at location #pos.
+	//!
+	//! Returns 'a' and 'b' indexies, such as
+	//! if richtext_range was constructed with richtextcursorlocations of
+	//! 'a' and 'b' carrying indexes they will select the indicated
+	//! subsection of the complete_line().
+	//!
+	//! \note
+	//! returns the same value if no word is found at the given location.
+
+	static std::tuple<size_t, size_t
+			  > select_word(const richtextfragmentObj *fragment,
+					size_t pos);
 };
 
 LIBCXXW_NAMESPACE_END

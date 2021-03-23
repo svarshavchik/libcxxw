@@ -80,6 +80,218 @@ bool richtext_range::complete_line()
 	return true;
 }
 
+// Use the unicode wordbreaking algorithm to find words.
+
+namespace {
+#if 0
+}
+#endif
+
+// Capture word-breaking flags out of courier-unicode
+
+struct find_word : unicode::wordbreak_callback_base {
+
+	using unicode::wordbreak_callback_base::operator<<;
+
+	size_t pos;
+
+	size_t begin_pos;
+	size_t end_pos;
+
+	find_word(size_t pos) : pos{pos}, begin_pos{0}, end_pos{end_pos}
+	{
+	}
+
+	size_t i{0};
+	bool found_after_end{false};
+
+	int callback(bool flag) override
+	{
+		if (flag)
+		{
+			// Word break before this character.
+
+			// We capture the last word break before pos
+
+			if (i <= pos)
+				begin_pos=i;
+
+			// Now we capture the first word break on or after pos
+
+			if (i >= pos && i > begin_pos)
+			{
+				if (!found_after_end)
+					end_pos=i;
+				found_after_end=true;
+			}
+		}
+		++i;
+		return 0;
+	}
+
+	void finish()
+	{
+		unicode::wordbreak_callback_base::finish();
+
+		// Fix up
+
+		if (!found_after_end)
+		{
+			end_pos=i;
+		}
+	}
+
+};
+#if 0
+{
+#endif
+}
+
+std::tuple<size_t, size_t>
+richtext_range::select_word(const richtextfragmentObj *f, size_t pos)
+{
+	auto &meta=f->string.get_meta();
+
+	auto beg_iter=richtextstring::meta_upper_bound_by_pos(meta, pos);
+
+	if (beg_iter == meta.begin())
+		throw EXCEPTION("Internal error: iterator not found in"
+				" select_word()");
+
+	--beg_iter;
+
+	// If pos is in the left-to-right text find where it begins, ditto
+	// for right-to-left.
+
+	auto rl=beg_iter->second.rl;
+
+	while (beg_iter != meta.begin())
+	{
+		--beg_iter;
+		if (beg_iter->second.rl != rl)
+		{
+			++beg_iter;
+			break;
+		}
+	}
+
+	auto end_iter=beg_iter;
+
+	// Ditto: where it ends
+
+	while (++end_iter != meta.end())
+	{
+		if (end_iter->second.rl != rl)
+			break;
+	}
+
+	// beg_iter and end_iter now define the sequence of characters in the
+	// same rendering direction that we will run through the unicode
+	// word breaking algorithm.
+
+	assert_or_throw(beg_iter->first < f->string.size() &&
+			beg_iter->first <= pos &&
+			(end_iter == meta.end() ||
+			 end_iter->first < f->string.size()),
+			"internal error: inconsistent meta in select_word()");
+
+	size_t starting_index=beg_iter->first;
+
+	auto &string=f->string.get_string();
+
+	auto b=string.begin()+beg_iter->first;
+	auto e=end_iter == meta.end() ? string.end()
+		: string.begin()+end_iter->first;
+
+	size_t nchars=e-b;
+
+	find_word search{
+		rl
+		// Below, we'll be scanning from the right
+		//
+		// So, if we're scanning characters 4-6, and pos is 6, from
+		// find_word's perspective we are looking for position 0.
+
+		? starting_index+nchars-1-pos
+		: pos-starting_index};
+	if (rl)
+	{
+		while (b != e)
+			search << *--e;
+	}
+	else
+	{
+		while (b != e)
+			search << *b++;
+	}
+
+	search.finish();
+
+	// Now we must now translate the relative offsets in find_word to
+	// the real ones.
+
+	size_t begin_pos;
+	size_t end_pos;
+
+	if (rl)
+	{
+		// Right-to-left text:
+		//
+		// starting_index+nchars-1 is the index of the first character
+		// that was laundered through the word-breaking algorithm,
+		// so character #n would be
+		//
+		// starting_index+nchars-1-begin_pos
+		//
+		// That's going to really be the LAST character, so ending_pos
+		// is that plus + 1:
+
+		end_pos=starting_index+nchars-search.begin_pos;
+
+		//
+		// And one past the end would be
+		//
+		// starting_index+chars-1-end_pos
+		//
+		// So the starting index is that plus 1
+
+		begin_pos=starting_index+nchars-search.end_pos;
+	}
+	else
+	{
+		// This one's easy, just add the starting_index
+
+		begin_pos=search.begin_pos + starting_index;
+		end_pos=search.end_pos + starting_index;
+	}
+
+
+	// Ok, did we find a word?
+	if (end_pos > begin_pos)
+	{
+		// Make end_pos point to the last character in the word.
+
+		// Then, adjust for the fragment's text direction.
+		--end_pos;
+
+		if (f->embedding_level() == UNICODE_BIDI_LR)
+		{
+			if (end_pos+1 < string.size())
+				// Should be the case
+				++end_pos;
+		}
+		else
+		{
+			std::swap(begin_pos, end_pos);
+
+			if (end_pos > 0) // Should be the case
+				--end_pos;
+		}
+	}
+
+	return {begin_pos, end_pos};
+}
+
 std::tuple<richtextiterator, richtextiterator>
 richtext_range::replace_hotspot_iterators(ONLY IN_THREAD,
 					  const richtext &me,
