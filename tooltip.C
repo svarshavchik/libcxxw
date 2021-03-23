@@ -398,14 +398,25 @@ void elementObj::implObj::hover_action(ONLY IN_THREAD)
 	if (!data(IN_THREAD).tooltip_factory)
 		return;
 
+	data(IN_THREAD).attached_popup=
+		show_tooltip(IN_THREAD, data(IN_THREAD).tooltip_factory);
+}
+
+popupptr
+elementObj::implObj::show_tooltip(ONLY IN_THREAD,
+				  const functionref<void (THREAD_CALLBACK,
+							  const
+							  tooltip_factory &)
+				  > &tooltip_factory)
+{
 	popupptr ret;
 
 	popup_tooltip_factory
 		create_a_tooltip(IN_THREAD, ref{this}, ret);
 
-	data(IN_THREAD).attached_popup=ret;
+	tooltip_factory(IN_THREAD, create_a_tooltip);
 
-	data(IN_THREAD).tooltip_factory(IN_THREAD, create_a_tooltip);
+	return ret;
 }
 
 void elementObj::implObj::hover_cancel(ONLY IN_THREAD)

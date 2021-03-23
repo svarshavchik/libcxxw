@@ -1589,10 +1589,23 @@ class elementObj::implObj : public element_drawObj,
 	//! Only gets invoked when hover_action_delay() returned a non-0
 	//! interval, which is now elapsed.
 	//!
-	//! The default implementation shows the tooltip.
+	//! The default implementation shows the tooltip. Overriden in a list
+	//! container to show the submenu when hovering over a menu item with
+	//! a submenu.
 	virtual void hover_action(ONLY IN_THREAD);
 
-	//! Cancel the hover-triggered action.
+	//! Create and show the tooltip
+
+	//! Always returns a non-null popup. By default it goes into
+	//! data.attached_popup. editorObj::implObj also uses it to create its
+	//! own direction popup that it manages.
+
+	popupptr show_tooltip(ONLY IN_THREAD,
+			      const functionref<void (THREAD_CALLBACK,
+						      const tooltip_factory &)>
+			      &tooltip_factory);
+
+	//! Hide the tooltip.
 
 	//! A widget that implements a hover-triggered action
 	//! implements hover_action_delay() together with hover_action()
