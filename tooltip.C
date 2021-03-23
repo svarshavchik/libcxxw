@@ -45,7 +45,7 @@ namespace {
 
 //! Subclass popupObj::handlerObj for a tooltip window.
 
-class LIBCXX_HIDDEN tooltip_handlerObj :
+class tooltip_handlerObj :
 	public bordercontainer_elementObj<popupObj::handlerObj> {
 
 	//! typedef alias
@@ -161,12 +161,12 @@ tooltip_handlerObj::~tooltip_handlerObj()=default;
 //! differently. created_popup() is also responsible for installing
 //! the new popup into parent_element's data.attached_popup.
 
-class LIBCXX_HIDDEN tooltip_factory_impl : public tooltip_factory {
+class tooltip_factory_impl : public tooltip_factory {
 
- protected:
+protected:
 	const ref<elementObj::implObj> parent_element;
 
- public:
+public:
 	tooltip_factory_impl(const ref<elementObj::implObj> &parent_element)
 		: parent_element(parent_element)
 	{
@@ -180,7 +180,8 @@ class LIBCXX_HIDDEN tooltip_factory_impl : public tooltip_factory {
 		const override;
 
 	virtual ref<tooltip_handlerObj>
-		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
+		create_tooltip_handler(const element_impl &parent_element,
+				       const ref<generic_windowObj::handlerObj>
 				       &parent_window,
 				       const const_tooltip_appearance
 				       &appearance)
@@ -198,8 +199,10 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 	ref<generic_windowObj::handlerObj>
 		parent_window{&parent_element->get_window_handler()};
 
-	auto popup_handler=create_tooltip_handler(parent_window,
-						  appearance);
+	auto popup_handler=
+		create_tooltip_handler(parent_element,
+				       parent_window,
+				       appearance);
 
 	auto popup_impl=ref<popupObj::implObj>::create(popup_handler,
 						       parent_window);
@@ -239,13 +242,13 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 //! Implements create_tooltip_handler() and created_popup() for regular
 //! popups.
 
-class LIBCXX_HIDDEN popup_tooltip_factory :
+class popup_tooltip_factory :
 	public tooltip_factory_impl {
 
- protected:
+private:
 	ONLY IN_THREAD;
 
- public:
+public:
 	popup_tooltip_factory(ONLY IN_THREAD,
 			      const ref<elementObj::implObj> &parent_element)
 		: tooltip_factory_impl{parent_element},
@@ -256,7 +259,8 @@ class LIBCXX_HIDDEN popup_tooltip_factory :
 	 ~popup_tooltip_factory()=default;
 
 	ref<tooltip_handlerObj>
-		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
+		create_tooltip_handler(const element_impl &parent_element,
+				       const ref<generic_windowObj::handlerObj>
 				       &parent_window,
 				       const const_tooltip_appearance
 				       &appearance)
@@ -272,7 +276,8 @@ class LIBCXX_HIDDEN popup_tooltip_factory :
 
 ref<tooltip_handlerObj>
 popup_tooltip_factory::create_tooltip_handler
-(const ref<generic_windowObj::handlerObj> &parent_window,
+(const element_impl &parent_element,
+ const ref<generic_windowObj::handlerObj> &parent_window,
  const const_tooltip_appearance &appearance) const
 {
 	// Compute the current pointer coordinates.
@@ -414,10 +419,10 @@ namespace {
 }
 #endif
 
-class LIBCXX_HIDDEN static_popup_tooltip_factory :
+class static_popup_tooltip_factory :
 	public tooltip_factory_impl {
 
- public:
+public:
 	const static_tooltip_config &config;
 
 	const rectangle parent_element_position;
@@ -429,7 +434,8 @@ class LIBCXX_HIDDEN static_popup_tooltip_factory :
 				     popupptr &created_tooltip_popup);
 
 	ref<tooltip_handlerObj>
-		create_tooltip_handler(const ref<generic_windowObj::handlerObj>
+		create_tooltip_handler(const element_impl &parent_element,
+				       const ref<generic_windowObj::handlerObj>
 				       &parent_window,
 				       const const_tooltip_appearance
 				       &appearance)
@@ -457,7 +463,8 @@ static_popup_tooltip_factory::static_popup_tooltip_factory
 
 ref<tooltip_handlerObj>
 static_popup_tooltip_factory
-::create_tooltip_handler(const ref<generic_windowObj::handlerObj>
+::create_tooltip_handler(const element_impl &parent_element,
+			 const ref<generic_windowObj::handlerObj>
 			 &parent_window,
 			 const const_tooltip_appearance &appearance) const
 {
