@@ -153,7 +153,7 @@ struct create_cells_helper {
 
 	auto compute_alignments() const
 	{
-		std::tuple ret{halign::left, valign::bottom};
+		std::tuple ret{std::optional<halign>{}, valign::bottom};
 
 		auto c=column_counter % textlist_element.columns;
 
@@ -161,7 +161,8 @@ struct create_cells_helper {
 		auto col_alignment=textlist_element.col_alignments.find(c);
 
 		if (col_alignment != textlist_element.col_alignments.end())
-			std::get<halign>(ret)=col_alignment->second;
+			std::get<std::optional<halign>>(ret)=
+				col_alignment->second;
 
 		auto row_alignment=textlist_element.row_alignments.find(c);
 
@@ -369,10 +370,19 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 					   .get_window_handler()
 					   .create_icon({s});
 
+				   auto real_halignment=
+					   default_paragraph_embedding_level()
+					   == UNICODE_BIDI_LR
+					   ? halign::left
+					   : halign::right;
+
+				   if (halignment)
+					   real_halignment=*halignment;
+
 				   auto t=list_cell
 					   (list_cellimage::create
 					    (std::vector<icon>{i},
-					     halignment, valignment));
+					     real_halignment, valignment));
 				   create_cell(t);
 			   },
 			   [&](const separator &)

@@ -27,7 +27,7 @@ See COPYING for distribution information.
     <itemizedlist>
       <listitem>
 	<para>
-	  An independent X widget toolkit stack, from the ground up. The
+	  This is an independent X widget toolkit stack, from the ground up. The
 	  only dependencies are low-level
 	  libraries that are not tied to any particular desktop environment.
 	  See <xref linkend="INSTALL" /> for more information.
@@ -36,10 +36,9 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
-	  Combines a clean modern look with classical, traditional UI
-	  widgets.
-	  Mild gradient shading provides a subtle, non-intrusive
-	  3D effect.
+	  &appshort; shows a clean modern look with classical, traditional UI
+	  widgets drawn with a subtle, non-intrusive 3D effect from mild
+	  gradient shading.
 	  Traditional UI widgets include
 	  labels, checkboxes, radio buttons, input fields,
 	  lists, combo-boxes, menus, and dialogs &mdash; updated to modern
@@ -53,17 +52,18 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
-	  &appshort; displays and implements support for
-	  bi-directional text input.
+	  &appshort; implements natural support for bi-directional text input
+	  (&larr; and &rarr; keys don't switch direction in the middle of
+	  right-to-left text).
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  Create widgets
-	  <link linkend="uigenerator">from an <acronym>XML</acronym>
+	  It's possible to create widgets
+	  <link linkend="uigenerator">using an <acronym>XML</acronym>
 	    stylesheet</link> that supports the majority of the C++ library
-	  API. Adjust the visual appearance of widgets by editing
+	  API; then adjust the widgets' visual appearance by editing
 	  the stylesheet, without recompiling the code.
 	</para>
       </listitem>
@@ -97,22 +97,21 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
-	  Unlike other widget toolkits,
-	  &app; does not force the application to use an event-driven
-	  design. &appshort; uses an internal execution thread to handle
+	  &appshort; does not force the application to use an event-driven
+	  design. unlike other widget toolkits.
+	  The library's internal execution thread handles
 	  &xproto; events. The application's UI remains responsive to X
 	  events, while the main application runs a
-	  long-running task (with all pointer and button activity suspended).
+	  long-running task (with all pointer and button activity blocked).
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  &appshort;'s build scripts allow running, <emphasis>and
-	    developing with</emphasis> multiple versions of the library
-	  concurrently. It's possible to install different &appshort; versions
-	  for applications that use different <acronym>ABI</acronym>s, solving
-	  this common problem with using large C++ libraries.
+	  &appshort;'s installation configuration solves common ABI
+	  issues with C++based libraries. It's possible to run,
+	  <emphasis>and build</emphasis> code that uses multiple versions of
+	  &appshort;.
 	</para>
       </listitem>
     </itemizedlist>
@@ -130,7 +129,7 @@ See COPYING for distribution information.
 	<link linkend="INSTALL">is available for downloading</link>.
 	The most recent build of &app; implements robust support for
 	<link linkend="bidi">bi-directional text</link>
-	tool and
+	and
 	<link linkend="menuattributes">menu option radio groups</link>.
       </para>
     </section>
