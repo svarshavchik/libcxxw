@@ -248,11 +248,14 @@ class popup_tooltip_factory :
 private:
 	ONLY IN_THREAD;
 
+	popupptr &initialize_popup;
 public:
 	popup_tooltip_factory(ONLY IN_THREAD,
-			      const ref<elementObj::implObj> &parent_element)
+			      const ref<elementObj::implObj> &parent_element,
+			      popupptr &initialize_popup)
 		: tooltip_factory_impl{parent_element},
-		IN_THREAD{IN_THREAD}
+		IN_THREAD{IN_THREAD},
+		initialize_popup{initialize_popup}
 		{
 		}
 
@@ -268,7 +271,7 @@ public:
 
 	void created_popup(const popup &tooltip_popup) const override
 	{
-		parent_element->data(IN_THREAD).attached_popup=tooltip_popup;
+		initialize_popup=tooltip_popup;
 
 		tooltip_popup->show_all();
 	}
@@ -395,7 +398,12 @@ void elementObj::implObj::hover_action(ONLY IN_THREAD)
 	if (!data(IN_THREAD).tooltip_factory)
 		return;
 
-	popup_tooltip_factory create_a_tooltip(IN_THREAD, ref(this));
+	popupptr ret;
+
+	popup_tooltip_factory
+		create_a_tooltip(IN_THREAD, ref{this}, ret);
+
+	data(IN_THREAD).attached_popup=ret;
 
 	data(IN_THREAD).tooltip_factory(IN_THREAD, create_a_tooltip);
 }
