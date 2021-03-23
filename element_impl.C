@@ -319,12 +319,17 @@ void elementObj::implObj
 	if (!reported_flag)
 	{
 		unschedule_hover_action(IN_THREAD);
+		hide_popups(IN_THREAD);
 
 		// Also hide the popup.
 		if (data(IN_THREAD).attached_popup_impl)
 			data(IN_THREAD).attached_popup_impl
 				->request_visibility(IN_THREAD, false);
 	}
+}
+
+void elementObj::implObj::hide_popups(ONLY IN_THREAD)
+{
 }
 
 void elementObj::implObj::draw_after_visibility_updated(ONLY IN_THREAD,
@@ -1583,6 +1588,7 @@ void elementObj::implObj::keyboard_focus(ONLY IN_THREAD,
 					 const callback_trigger_t &trigger)
 {
 	unschedule_hover_action(IN_THREAD);
+	hide_popups(IN_THREAD);
 	invoke_keyboard_focus_callback(IN_THREAD, trigger);
 }
 
@@ -1842,7 +1848,7 @@ void elementObj::implObj::unschedule_hover_action(ONLY IN_THREAD)
 {
 	data(IN_THREAD).hover_scheduled_mcguffin=nullptr;
 
-	hover_cancel(IN_THREAD);
+	hide_tooltip(IN_THREAD);
 }
 
 void elementObj::implObj::ensure_visibility(ONLY IN_THREAD, const rectangle &r)
@@ -1944,6 +1950,7 @@ void elementObj::implObj::update_attachedto_info(ONLY IN_THREAD)
 	switch (h->attachedto_info->how) {
 	case attached_to::tooltip_left:
 	case attached_to::tooltip_right:
+		// Not anchored to the element's position.
 		return;
 
 	case attached_to::below_or_above:

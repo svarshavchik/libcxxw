@@ -1569,7 +1569,9 @@ class elementObj::implObj : public element_drawObj,
 	//!
 	//! The default implementation returns the tooltip delay
 	//! configuration setting if this widget has a tooltip factory
-	//! installed, else returns 0.
+	//! installed, else returns 0. Overridden in a list container to
+	//! check if the list item has a submenu, returning 0 if not, otherwise
+	//! this hover action delay implements opening a submenu.
 
 	virtual std::chrono::milliseconds hover_action_delay(ONLY IN_THREAD);
 
@@ -1607,6 +1609,14 @@ class elementObj::implObj : public element_drawObj,
 						      const tooltip_factory &)>
 			      &tooltip_factory);
 
+	//! Hide any popups
+
+	//! Gets invoked whenever this element loses keyboard or pointer
+	//! focus, or is no longer visible. Does nothing. Overridden
+	//! in editorObj::implObj to hide the text direction tooltip, if it's
+	//! displayed.
+	virtual void hide_popups(ONLY IN_THREAD) LIBCXX_HIDDEN;
+
 	//! Hide the tooltip.
 
 	//! A widget that implements a hover-triggered action
@@ -1618,7 +1628,12 @@ class elementObj::implObj : public element_drawObj,
 	//! The default implementation removes the tooltip, if one is
 	//! currently shown.
 	//! interval, which is now elapsed.
-	virtual void hover_cancel(ONLY IN_THREAD);
+	void hide_tooltip(ONLY IN_THREAD) LIBCXX_HIDDEN;
+
+	//! Whether there's a tooltip attached to this element.
+
+	bool has_tooltip_popup(ONLY IN_THREAD) const LIBCXX_HIDDEN;
+
 	//! Compute pointer event as pseudo tooltip anchor element
 
 	//! Popups attach to the element's coordinates. Tooltips use the
@@ -1819,7 +1834,7 @@ class elementObj::implObj : public element_drawObj,
 	//! Invoked from initialize(), process_updated_position(), and
 	//! absolute_location_updated() in order to keep the attached popup
 	//! positioned accordingly.
-	void update_attachedto_info(ONLY IN_THREAD);
+	virtual void update_attachedto_info(ONLY IN_THREAD);
 
 	//! Save the element's status
 

@@ -440,16 +440,24 @@ elementObj::implObj::show_tooltip(ONLY IN_THREAD,
 	return ret;
 }
 
-void elementObj::implObj::hover_cancel(ONLY IN_THREAD)
+void elementObj::implObj::hide_tooltip(ONLY IN_THREAD)
 {
-	if (!data(IN_THREAD).attached_popup ||
-	    (data(IN_THREAD).attached_popup->impl->handler->attachedto_info->how
-	     != attached_to::tooltip_left &&
-	     data(IN_THREAD).attached_popup->impl->handler->attachedto_info->how
-	     != attached_to::tooltip_right))
-		return;
-	data(IN_THREAD).attached_popup=nullptr;
+	if (has_tooltip_popup(IN_THREAD))
+		data(IN_THREAD).attached_popup=nullptr;
+}
 
+bool elementObj::implObj::has_tooltip_popup(ONLY IN_THREAD) const
+{
+	if (data(IN_THREAD).attached_popup)
+		switch (data(IN_THREAD).attached_popup->impl->handler
+			->attachedto_info->how) {
+		case attached_to::tooltip_left:
+		case attached_to::tooltip_right:
+			return true;
+		default:
+			break;
+		}
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////
