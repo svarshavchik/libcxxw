@@ -1643,6 +1643,7 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 	if (change_made != input_change_type::set &&
 	    s > 0 && cursor->pos() == s &&
 	    !is_delete_or_backspace &&
+	    on_autocomplete(IN_THREAD) &&
 	    (!cursor_lock.cursor || cursor_lock.cursor->pos() == cursor->pos()))
 	{
 		busy_impl mcguffin{*this};
@@ -1653,12 +1654,10 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 
 		auto &cb=on_autocomplete(IN_THREAD);
 
-		if (cb)
-		{
-			try {
-				flag=cb(IN_THREAD, info);
-			} REPORT_EXCEPTIONS(this);
-		}
+		try {
+			flag=cb(IN_THREAD, info);
+		} REPORT_EXCEPTIONS(this);
+
 		if (flag)
 			set(IN_THREAD, info.string, info.string.size(),
 			    info.selection_start, trigger);
