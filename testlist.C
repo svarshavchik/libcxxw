@@ -19,12 +19,17 @@
 #include "x/w/tablelayoutmanager.H"
 #include "x/w/label.H"
 #include "x/w/button.H"
+#include "x/w/button_event.H"
+#include "x/w/motion_event.H"
 #include "x/w/canvas.H"
 #include "x/w/screen.H"
 #include "x/w/image_param_literals.H"
 #include "x/w/listitemhandle.H"
 #include "x/w/connection.H"
 
+#include "focus/label_for.H"
+#include "listlayoutmanager/listlayoutmanager_impl.H"
+#include "listlayoutmanager/list_element_impl.H"
 #include <vector>
 #include <sstream>
 #include <X11/keysym.h>
@@ -554,6 +559,61 @@ static std::string next_lorem_ipsum()
 	return lorem_ipsum[i];
 }
 
+void make_context_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m,
+		       const std::optional<size_t> &selected)
+{
+	std::ostringstream o;
+
+	if (selected)
+	{
+		o << *selected;
+	}
+	else
+	{
+		o << "none";
+	}
+
+	m->append_items
+		({
+			[]
+			(THREAD_CALLBACK, const auto &ignore)
+			{
+				std::cout << "Help selected" << std::endl;
+			},
+			"Help (" + o.str() + ")",
+			[]
+			(THREAD_CALLBACK, const auto &ignore)
+			{
+				std::cout << "About selected" << std::endl;
+			},
+			"About (" + o.str() + ")",
+		});
+}
+
+static LIBCXX_NAMESPACE::mpobj<std::optional<size_t>
+			       > selection_when_context_menu_opened;
+
+static LIBCXX_NAMESPACE::w::container
+show_context_menu(ONLY IN_THREAD,
+		  const LIBCXX_NAMESPACE::w::container &c)
+{
+	auto selected=
+		LIBCXX_NAMESPACE::w::listlayoutmanager{c->get_layoutmanager()}
+		->selected();
+
+	selection_when_context_menu_opened=selected;
+
+	auto context_menu=c->create_popup_menu
+		([&]
+		 (const auto &lm) {
+			make_context_menu(lm, selected);
+		});
+
+	context_menu->show();
+
+	return context_menu;
+}
+
 void listhiertest(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
 	LIBCXX_NAMESPACE::w::gridlayoutmanager
@@ -737,6 +797,16 @@ static inline auto plain_list(const LIBCXX_NAMESPACE::w::main_window
 	factory->rowspan(6);
 
 	auto list_container=create_plain_list(opts, factory);
+
+	list_container->install_contextpopup_callback
+		([current_popup=LIBCXX_NAMESPACE::w::containerptr{}]
+		 (ONLY IN_THREAD,
+		  const LIBCXX_NAMESPACE::w::container &c,
+		  const auto &t,
+		  const auto &m)
+		mutable {
+			current_popup=show_context_menu(IN_THREAD, c);
+		});
 
 	list_container->on_state_update
 		([]
@@ -1011,6 +1081,26 @@ static inline auto plain_list(const LIBCXX_NAMESPACE::w::main_window
 	return list_container;
 }
 
+void settle_down(const LIBCXX_NAMESPACE::w::main_window &mw)
+{
+	LIBCXX_NAMESPACE::mpcobj<bool> flag{false};
+
+	mw->in_thread_idle([&]
+			   (ONLY IN_THREAD)
+	{
+		LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{flag};
+
+		*lock=true;
+		lock.notify_all();
+	});
+
+	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{flag};
+	lock.wait([&]
+	{
+		return *lock;
+	});
+}
+
 void testlist(const testlistoptions &options)
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
@@ -1106,6 +1196,52 @@ void testlist(const testlistoptions &options)
 		return;
 	}
 
+	if (options.test->value)
+	{
+		alarm(30);
+		settle_down(main_window);
+		main_window->in_thread
+			([mainlist]
+			 (ONLY IN_THREAD)
+			{
+				LIBCXX_NAMESPACE::w::listlayoutmanager lm=
+					mainlist->get_layoutmanager();
+
+				auto impl=lm->impl->list_element_singleton
+					->impl;
+
+				auto &keysyms=
+					impl->get_screen()->get_connection()
+					->impl->keysyms_info(IN_THREAD);
+
+				LIBCXX_NAMESPACE::w::button_event_redirect_info
+					redirect_info;
+
+				LIBCXX_NAMESPACE::w::button_event
+					be{0, keysyms, 3, true, 1,
+					redirect_info};
+
+				LIBCXX_NAMESPACE::w::motion_event
+					me{be,
+					LIBCXX_NAMESPACE::w::motion_event_type
+					::button_action_event,
+					0, 0};
+
+				impl->report_motion_event(IN_THREAD, me);
+				impl->process_button_event
+					(IN_THREAD, be, 0);
+			});
+		settle_down(main_window);
+
+		auto selected=selection_when_context_menu_opened.get();
+
+		if (! (selected && *selected == 0))
+		{
+			throw EXCEPTION("Did not have item 0 selected when "
+					"context menu opened");
+		}
+		return;
+	}
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 	lock.wait([&] { return *lock; });
 
@@ -1120,16 +1256,12 @@ void testlist(const testlistoptions &options)
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::property
-			::load_property(LIBCXX_NAMESPACE_STR "::themes",
-					"themes", true, true);
 		testlistoptions options;
 
 		options.parse(argc, argv);
 		if (options.test->value)
 		{
 			testlist1();
-			return 0;
 		}
 		testlist(options);
 	} catch (const LIBCXX_NAMESPACE::exception &e)

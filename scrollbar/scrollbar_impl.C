@@ -835,7 +835,7 @@ bool scrollbarObj::implObj::process_button_event(ONLY IN_THREAD,
 		drag_start_current_pixel=current_pixel;
 		dragged_value=state(IN_THREAD).value;
 		draw_slider(IN_THREAD);
-		grab(IN_THREAD);
+		grab(IN_THREAD, &be);
 	}
 
 	return true;

@@ -87,7 +87,7 @@ bool pane_slider_focusframeObj::process_button_event(ONLY IN_THREAD,
 						 (IN_THREAD, ref{this},
 						  grid_lock);
 				 });
-			grab(IN_THREAD);
+			grab(IN_THREAD, &be);
 		}
 		else
 		{

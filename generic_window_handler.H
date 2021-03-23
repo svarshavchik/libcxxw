@@ -648,7 +648,8 @@ public:
 	//! This is the element that should be receiving pointer events.
 
 	void set_element_with_pointer(ONLY IN_THREAD,
-				      const ref<elementObj::implObj> &e);
+				      const ref<elementObj::implObj> &e,
+				      const callback_trigger_t &trigger);
 
  public:
 	//! An element is being removed.
@@ -780,7 +781,8 @@ public:
 
 	//! An element's button_press_event() wishes to grab the pointer.
 
-	void grab(ONLY IN_THREAD, const ref<elementObj::implObj> &e);
+	void grab(ONLY IN_THREAD, const ref<elementObj::implObj> &e,
+		  const callback_trigger_t &trigger);
 
 	//! Process XdndEnter from drag source
 	void process_drag_enter(ONLY IN_THREAD,
@@ -865,7 +867,8 @@ public:
 
 	//! The top level display element cannot grab. Throw an exception.
 
-	void grab(ONLY IN_THREAD) override;
+	void grab(ONLY IN_THREAD,
+		  const callback_trigger_t &trigger) override;
 
  public:
 	//! Do not redraw after the window's visibility is updated.

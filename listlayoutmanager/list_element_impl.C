@@ -1901,10 +1901,6 @@ void list_elementObj::implObj::pointer_focus(ONLY IN_THREAD,
 {
 	superclass_t::pointer_focus(IN_THREAD, trigger);
 
-#if 0
-	// This causes deselection when the right context popup menu gets
-	// opened, and the main window gets LeaveNotify event.
-
 	create_textlist_info_lock lock{IN_THREAD, *this};
 
 	if (!current_pointer_focus(IN_THREAD))
@@ -1912,7 +1908,6 @@ void list_elementObj::implObj::pointer_focus(ONLY IN_THREAD,
 		unset_current_element(IN_THREAD, lock, trigger);
 		current_keyed_element(lock).reset();
 	}
-#endif
 }
 
 void list_elementObj::implObj::keyboard_focus(ONLY IN_THREAD,

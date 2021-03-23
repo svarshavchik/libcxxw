@@ -154,7 +154,8 @@ public:
 
 	//! Implement grab().
 
-	void grab(ONLY IN_THREAD) override;
+	void grab(ONLY IN_THREAD,
+		  const callback_trigger_t &trigger) override LIBCXX_PUBLIC;
 
 	//! Motion events
 

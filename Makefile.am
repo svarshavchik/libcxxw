@@ -1071,7 +1071,6 @@ TESTPROGRAMS=\
 	testfiledircontents				\
 	testfocusable					\
 	testgrid					\
-	testlist					\
 	testrichtextstring				\
 	testrichtext					\
 	testrichtextiterator				\
@@ -1090,8 +1089,9 @@ INTERACTIVETESTPROGRAMS=\
 	testdateinput					\
 	testfocusrestore				\
 	testimagebuttons			        \
-testinputfield					\
+	testinputfield					\
 	testitemlayoutmanager				\
+	testlist					\
 	testmainwindow					\
 	testmenu					\
 	testlabel					\
@@ -1618,6 +1618,7 @@ test:
 	./testmainwindow --themescale --nopadding
 	./testscrollbar --testscroll
 	./testlist --callback
+	./testlist --test
 	./testlabel
 	./testlabel --truncatable
 	LC_ALL=ru_RU.UTF-8 ./testtooltip --width=25

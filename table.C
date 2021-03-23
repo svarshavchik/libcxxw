@@ -384,7 +384,7 @@ bool header_container_implObj
 						   .last_motion_x,
 						   first_draggable_column,
 						   second_draggable_column);
-			grab(IN_THREAD);
+			grab(IN_THREAD, &be);
 		}
 
 		return true;

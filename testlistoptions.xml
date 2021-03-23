@@ -62,6 +62,11 @@
     <descr>Invoked by make check</descr>
   </option>
 
+  <mutex>
+    <name>callback</name>
+    <name>test</name>
+  </mutex>
+
   <option>
     <name>hier</name>
     <type>bool</type>

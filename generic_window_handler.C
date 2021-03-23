@@ -1390,14 +1390,16 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj::grab(ONLY IN_THREAD,
-					 const ref<elementObj::implObj> &e)
+					 const ref<elementObj::implObj> &e,
+					 const callback_trigger_t &trigger)
 {
-	set_element_with_pointer(IN_THREAD, e);
+	set_element_with_pointer(IN_THREAD, e, trigger);
 	if (most_recent_element_with_pointer(IN_THREAD))
 		keep_passive_grab(IN_THREAD);
 }
 
-void generic_windowObj::handlerObj::grab(ONLY IN_THREAD)
+void generic_windowObj::handlerObj::grab(ONLY IN_THREAD,
+					 const callback_trigger_t &trigger)
 {
 	throw EXCEPTION("Internal error: called grab() on the top level window.");
 }
@@ -2133,7 +2135,7 @@ void generic_windowObj::handlerObj
 ::leave_notify_event(ONLY IN_THREAD,
 		     const xcb_leave_notify_event_t *event)
 {
-	pointer_focus_lost(IN_THREAD, {});
+	pointer_focus_lost(IN_THREAD, pointerfocus_move{});
 }
 
 void generic_windowObj::handlerObj
@@ -2307,7 +2309,7 @@ void generic_windowObj::handlerObj
 
 	element_impl e{find_element_under(IN_THREAD, me.x, me.y)};
 
-	set_element_with_pointer(IN_THREAD, e);
+	set_element_with_pointer(IN_THREAD, e, &me);
 
 	if (most_recent_element_with_pointer(IN_THREAD))
 		most_recent_element_with_pointer(IN_THREAD)
@@ -2356,7 +2358,8 @@ element_impl generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::set_element_with_pointer(ONLY IN_THREAD, const ref<elementObj::implObj> &e)
+::set_element_with_pointer(ONLY IN_THREAD, const ref<elementObj::implObj> &e,
+			   const callback_trigger_t &trigger)
 {
 	// Even though we checked the "removed" flag, already, someday someone
 	// may win the lottery and we end up here when the top level
@@ -2365,7 +2368,7 @@ void generic_windowObj::handlerObj
 
 	if (e->data(IN_THREAD).removed)
 	{
-		pointer_focus_lost(IN_THREAD, {});
+		pointer_focus_lost(IN_THREAD, pointerfocus_move{});
 		return;
 	}
 
@@ -2377,7 +2380,7 @@ void generic_windowObj::handlerObj
 
 		e->request_focus(IN_THREAD, old,
 				 &elementObj::implObj::report_pointer_focus,
-				 {});
+				 trigger);
 	}
 }
 
@@ -2388,7 +2391,7 @@ void generic_windowObj::handlerObj
 	if (most_recent_element_with_pointer(IN_THREAD) == ei)
 	{
 		ungrab(IN_THREAD);
-		pointer_focus_lost(IN_THREAD, {});
+		pointer_focus_lost(IN_THREAD, pointerfocus_move{});
 	}
 }
 

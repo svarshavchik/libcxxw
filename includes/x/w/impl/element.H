@@ -1505,7 +1505,8 @@ class elementObj::implObj : public element_drawObj,
 
 	//! process_button_event() calls grab() to grab the pointer.
 
-	virtual void grab(ONLY IN_THREAD)=0;
+	virtual void grab(ONLY IN_THREAD,
+			  const callback_trigger_t &trigger) LIBCXX_PUBLIC=0;
 
 	//! Invoke the pointer_focus() virtual function.
 	void report_pointer_focus(ONLY IN_THREAD,

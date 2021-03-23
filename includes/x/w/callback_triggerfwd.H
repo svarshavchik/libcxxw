@@ -38,6 +38,10 @@ struct user_mod {};
 
 struct keyfocus_move{};
 
+//! Placeholder for a \ref callback_trigger_pointerfocus_move "forced pointer focus move".
+
+struct pointerfocus_move{};
+
 //! \ref callback_trigger_t "callback_trigger_t" is not copyable.
 
 struct callback_trigger_is_not_copyable {
@@ -70,6 +74,7 @@ typedef std::variant<std::monostate,
 		     cut_copy_paste,
 		     user_mod,
 		     keyfocus_move,
+		     pointerfocus_move,
 		     callback_trigger_is_not_copyable
 		     > callback_trigger_t;
 
@@ -146,7 +151,7 @@ constexpr size_t callback_trigger_cut_copy_paste=7;
 
 constexpr size_t callback_trigger_user_mod=8;
 
-//! \ref callback_trigger_t "callback_trigger_t" indicating a forced keyboard focu smove.
+//! \ref callback_trigger_t "callback_trigger_t" indicating a forced keyboard focus move.
 
 //! std::variant index used in the following circumstances:
 //!
@@ -164,6 +169,18 @@ constexpr size_t callback_trigger_user_mod=8;
 //! widget with the autofocus flag.
 
 constexpr size_t callback_trigger_keyfocus_move=9;
+
+//! \ref callback_trigger_t "callback_trigger_t" indicating a forced pointer focus move.
+
+//! std::variant index used in the following circumstances indicating that
+//! an element lost pointer focus for reasons other than a pointer moving
+//! to another element, namely:
+//!
+//! - the pointer left the parent window entirely.
+//!
+//! - the element with the pointer focus was remove from its parent window.
+
+constexpr size_t callback_trigger_pointerfocus_move=9;
 
 LIBCXXW_NAMESPACE_END
 

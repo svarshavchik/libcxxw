@@ -1807,7 +1807,7 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 		}
 
 		// We grab the pointer while the button is held down.
-		grab(IN_THREAD);
+		grab(IN_THREAD, &be);
 
 		// If we figured out we're not dragging currently selected text,
 		// we'll do what we normally do when a button is pressed.

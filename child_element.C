@@ -366,9 +366,10 @@ bool child_elementObj::process_button_event(ONLY IN_THREAD,
 	return ret;
 }
 
-void child_elementObj::grab(ONLY IN_THREAD)
+void child_elementObj::grab(ONLY IN_THREAD,
+			    const callback_trigger_t &trigger)
 {
-	get_window_handler().grab(IN_THREAD, element_impl{this});
+	get_window_handler().grab(IN_THREAD, element_impl{this}, trigger);
 }
 
 void child_elementObj::report_motion_event(ONLY IN_THREAD,
