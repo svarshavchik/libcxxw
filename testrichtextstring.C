@@ -2666,6 +2666,148 @@ void canonicaltest3()
 	}
 }
 
+void canonicaltest4()
+{
+	static constexpr richtextmeta meta0{0, 0};
+	static constexpr richtextmeta meta1{1, 0};
+	static constexpr richtextmeta meta2{2, 0};
+	static constexpr richtextmeta meta3{3, 0};
+
+	static const struct {
+		richtextstring orig_string;
+		richtextstring canonical_string;
+	} tests[]={
+		// Test 1
+		{
+			{
+				U"",
+				{
+				}
+			},
+			{
+				U"",
+				{
+				}
+			},
+		},
+		// Test 2
+		{
+			{
+				U"\u0306\u0303",
+				{
+					{0, meta0},
+					{1, meta1},
+				}
+			},
+			{
+				U"",
+				{
+				}
+			},
+		},
+		// Test 3
+		{
+			{
+				U"AA\u0306\u0303B",
+				{
+					{0, meta0},
+					{1, meta1},
+					{2, meta2},
+					{3, meta3},
+				}
+			},
+			{
+				U"A\u1eb4B",
+				{
+					{0, meta0},
+					{1, meta1},
+					{2, meta3},
+				}
+			},
+		},
+		// Test 4
+		{
+			{
+				U"AA\u0306\u0303B",
+				{
+					{0, meta0},
+					{2, meta2},
+					{3, meta3},
+				}
+			},
+			{
+				U"A\u1eb4B",
+				{
+					{0, meta0},
+					{2, meta3},
+				}
+			},
+		},
+		// Test 5
+		{
+			{
+				U"AA\u0306\u0303B",
+				{
+					{0, meta0},
+					{2, meta1},
+					{3, meta2},
+					{4, meta3},
+				}
+			},
+			{
+				U"A\u1eb4B",
+				{
+					{0, meta0},
+					{2, meta3},
+				}
+			},
+		},
+		// Test 6
+		{
+			{
+				U"A\u02B9B",
+				{
+					{0, meta0},
+					{1, meta1},
+					{2, meta2},
+				}
+			},
+			{
+				U"A\u02B9B",
+				{
+					{0, meta0},
+					{1, meta1},
+					{2, meta2},
+				}
+			},
+		},
+	};
+
+	int n=0;
+
+	for (const auto &t:tests)
+	{
+		++n;
+
+		auto str=t.orig_string;
+
+		richtextstring::to_canonical_order c{str,
+			UNICODE_BIDI_LR, false};
+
+		auto result=c.current_paragraph();
+
+		if (result != t.canonical_string)
+		{
+			throw EXCEPTION("canonicaltest4 test "
+					<< n
+					<< "\nExpected: "
+					<< dumpstr(t.canonical_string)
+					<< "\n  Actual: "
+					<< dumpstr(result));
+		}
+	}
+}
+
 int main()
 {
 	try {
@@ -2680,6 +2822,7 @@ int main()
 		canonicaltest();
 		canonicaltest2();
 		canonicaltest3();
+		canonicaltest4();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

@@ -785,6 +785,137 @@ richtextstring::to_canonical_order::prepped_string
 	TO_CANONICAL_ORDER_HOOK();
 #endif
 
+#if 0
+	// Convert the Unicode string to canonical format.
+
+	unicode::decompose
+		(string.string,
+		 unicode::decompose_flag_qc,
+		 [&, this]
+		 (std::u32string &ignore,
+		  const std::vector<std::tuple<size_t, size_t>> &inserts)
+		 {
+			 // Make a pass, and update all meta positions.
+			 //
+			 // Bottom line: the first value in the tuple is
+			 // the index position where the # of characters
+			 // given by the second tuples are inserted.
+			 //
+			 // So, all metadata position /after/ the given
+			 // offset get adjusted by the second tuple's value.
+			 //
+			 // If there's a metadata entry for the original
+			 // position it does NOT get adjusted.
+
+			 auto insert_begin=inserts.begin();
+			 auto insert_end=inserts.end();
+
+			 size_t adjust=0;
+
+			 for (auto &[index, meta] : string.meta)
+			 {
+				 while (insert_begin != insert_end)
+				 {
+					 auto &[offset, n]= *insert_begin;
+
+					 if (offset >= index)
+						 break;
+					 adjust += n;
+					 ++insert_begin;
+				 }
+
+				 index += adjust;
+			 }
+		 });
+#endif
+
+	unicode::compose
+		(string.string,
+		 unicode::compose_flag_removeunused,
+		 [&, this]
+		 (unicode_composition_t &composition)
+		 {
+			 string.meta.reserve(composition.n_compositions * 2
+					     + string.meta.size());
+
+			 // Mark the metadata at each composition spot, and
+			 // right after it.
+
+			 for (size_t i=0; i<composition.n_compositions; ++i)
+			 {
+				 auto index=composition.compositions[i]->index;
+				 auto n=composition.compositions[i]->n_composed;
+
+				 auto iter=string.duplicate(index);
+
+				 if (index+n>=string.size())
+				 {
+					 // Edge case, remove all metadata
+					 // at the tail end.
+
+					 string.meta.erase(iter,
+							   string.meta.end());
+				 }
+				 else
+				 {
+					 string.duplicate(index+n);
+				 }
+			 }
+
+			 /*
+			 ** And now adjust the metadata. The compositions
+			 ** are in sorted order.
+			 **
+			 ** Iterate over the metadata. When we reach the
+			 ** one at the start of the composition we then
+			 ** scan ahead to the one that marks the end of
+			 ** the composition, then resume copying it.
+			 */
+
+			 auto p=string.meta.begin(), b=p, e=string.meta.end();
+			 size_t i=0;
+			 size_t adjust=0;
+
+			 while (b != e)
+			 {
+				 if (i < composition.n_compositions &&
+				     b->first ==
+				     composition.compositions[i]->index)
+				 {
+					 auto c=composition.compositions[i];
+
+					 /*
+					 ** Now look for the metadata at the
+					 ** end of the composed text.
+					 */
+
+					 size_t j=c->index + c->n_composed;
+
+					 /*
+					 ** If there's any composed text,
+					 ** copy over the beginning metadata.
+					 ** If the entire composed text is
+					 ** removed we don't.
+					 */
+
+					 if (c->n_composed > c->n_composition)
+					 {
+						 *p=*b;
+						 ++p;
+					 }
+					 while (b != e && b->first != j)
+						 ++b;
+
+					 adjust += c->n_composed -
+						 c->n_composition;
+					 continue;
+				 }
+				 *p=*b;
+				 p->first -= adjust;
+				 ++b;
+				 ++p;
+			 }
+		 });
 	// Scan richtextstring metadata, noting the hotspot ranges
 
 	text_hotspotptr current_hotspot{};
