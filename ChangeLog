@@ -1,3 +1,8 @@
+2021-03-23  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* listlayoutmanager/list_element_impl.C: close_all_menu_popups()
+	only as a result of a key or button event.
+
 2021-03-21  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* cxxwtheme/defaulttheme: reimplement theme options as combo-boxes.

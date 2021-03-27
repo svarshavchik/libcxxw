@@ -2106,7 +2106,13 @@ void list_elementObj::implObj
 	// all menu popups, now that the menu selection
 	// has been made...
 
-	get_window_handler().handler_data->close_all_menu_popups(IN_THREAD);
+	switch (trigger.index()) {
+	case callback_trigger_button_event:
+	case callback_trigger_key_event:
+		get_window_handler().handler_data
+			->close_all_menu_popups(IN_THREAD);
+		break;
+	}
 }
 
 void list_elementObj::implObj

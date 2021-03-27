@@ -129,7 +129,11 @@ public:
 	//! Which widget is currently under cursor
 	std::optional<size_t> current_list_item() const;
 
-	//! As if item \#i was clicked on.
+	//! As if item \#i was selected.
+
+	//! \note
+	//! A key_event or a button_event will close a menu popup (unless
+	//! the menu list item is a submenu popup.
 
 	void autoselect(ONLY IN_THREAD,
 			size_t i,
