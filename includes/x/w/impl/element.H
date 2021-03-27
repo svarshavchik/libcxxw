@@ -1616,7 +1616,7 @@ class elementObj::implObj : public element_drawObj,
 	//! focus, or is no longer visible. Does nothing. Overridden
 	//! in editorObj::implObj to hide the text direction tooltip, if it's
 	//! displayed.
-	virtual void hide_popups(ONLY IN_THREAD) LIBCXX_HIDDEN;
+	virtual void hide_popups(ONLY IN_THREAD) LIBCXX_PUBLIC;
 
 	//! Hide the tooltip.
 

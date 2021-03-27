@@ -175,7 +175,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			    {
 				    std::ostringstream o;
 
-				    o << "Insert " << ++counter << std::endl;
+				    o << "Insert " << ++counter;
 
 				    auto lm=combobox->standard_comboboxlayout();
 
