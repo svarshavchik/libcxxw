@@ -51,8 +51,15 @@ mpcobj<int> uninstalled_mcguffin_counter{0};
 		lock.notify_all();					\
 	} while (0)
 
+mpobj<bool> resizing_timeout_detected;
+
+#define DEBUG_RESIZING_TIMEOUT() do {		\
+		resizing_timeout_detected=true;		\
+	} while (0)
+
 #include "focus/focusable_impl.C"
 #include "generic_window_handler.C"
+#include "connection_threadrunelement.C"
 
 class close_flagObj : public obj {
 
@@ -362,6 +369,143 @@ void testautorestore()
 	}
 }
 
+void settle_down(const main_window &mw)
+{
+	mpcobj<bool> flag{false};
+
+	mw->in_thread_idle([&]
+			   (ONLY IN_THREAD)
+	{
+		mpcobj<bool>::lock lock{flag};
+
+		*lock=true;
+		lock.notify_all();
+	});
+
+	mpcobj<bool>::lock lock{flag};
+	lock.wait([&]
+	{
+		return *lock;
+	});
+}
+
+void testdialog()
+{
+	destroy_callback::base::guard guard;
+
+	auto main_window=main_window::create
+		([&]
+		 (const auto &main_window)
+		 {
+			 auto glm=main_window->gridlayout();
+
+			 canvas_config conf;
+
+			 conf.width={30};
+			 conf.height={30};
+
+			 glm->append_row()->create_canvas(conf);
+		 });
+
+	guard(main_window->connection_mcguffin());
+
+	main_window->on_disconnect([]
+				   {
+					   exit(1);
+				   });
+
+	main_window->show_all();
+	settle_down(main_window);
+
+	create_dialog_args d_args
+		{"testunfocus_dialog@w.libcxx.com", true};
+
+	auto d=main_window->create_dialog
+		(d_args,
+		 [&]
+		 (const auto &d)
+		 {
+			 auto glm=d->dialog_window->gridlayout();
+
+			 auto f=glm->append_row();
+
+			 auto combobox=f->create_focusable_container
+				 ([]
+				  (const auto &c)
+				 {
+					 auto lm=c->editable_comboboxlayout();
+
+					 lm->replace_all_items
+						 ({
+							 "Rolem",
+							 "Ipsum",
+							 "Dolor",
+							 "Sit",
+							 "Amet",
+						 });
+				 },
+				  new_editable_comboboxlayoutmanager{});
+		 });
+
+	d->dialog_window->show_all();
+	settle_down(main_window);
+	d->dialog_window->hide_all();
+	settle_down(main_window);
+
+	static mpcobj<bool> dialog_shown{false};
+
+	d->dialog_window->on_state_update
+		([]
+		 (ONLY IN_THREAD,
+		  const element_state &st,
+		  const auto &busy)
+		{
+			if (st.state_update == st.after_showing)
+			{
+				mpcobj<bool>::lock lock{dialog_shown};
+
+				*lock=true;
+				lock.notify_all();
+			}
+		});
+
+	main_window->in_thread
+		([&]
+		 (ONLY IN_THREAD)
+		{
+			 auto glm=d->dialog_window->gridlayout();
+
+			 glm->remove();
+			 auto f=glm->append_row();
+
+			 auto combobox=f->create_focusable_container
+				 ([]
+				  (const auto &c)
+				 {
+					 auto lm=c->editable_comboboxlayout();
+
+					 lm->replace_all_items
+						 ({
+							 "Rolem Ipsum Dolor",
+							 "Sit Amet",
+						 });
+				 },
+				  new_editable_comboboxlayoutmanager{});
+
+			d->dialog_window->show_all(IN_THREAD);
+		});
+
+	{
+		mpcobj<bool>::lock lock{dialog_shown};
+
+		lock.wait_for(std::chrono::seconds(5),
+			      [&] { return *lock; });
+
+		if (!*lock)
+			throw EXCEPTION("Timed out");
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -378,6 +522,17 @@ int main(int argc, char **argv)
 			{
 				alarm(60);
 				testautorestore();
+				return 0;
+			}
+
+			if (std::string{argv[1]} == "dialog")
+			{
+				alarm(60);
+				testdialog();
+
+				if (resizing_timeout_detected.get())
+					throw EXCEPTION("Resizing timeout"
+							" detected");
 				return 0;
 			}
 		}

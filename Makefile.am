@@ -1629,6 +1629,7 @@ test:
 	./testwordwrappablelabel --testmetrics
 	./testunfocus
 	./testunfocus autorestore
+	./testunfocus dialog
 	./testtoolbox --norestore -w=4 --testmetrics
 	./testtoolbox --testmetrics
 	./testtoolbox --norestore --testthemescale

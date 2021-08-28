@@ -18,6 +18,15 @@ generic_windowObj::implObj::implObj(const ref<handlerObj> &handler)
 {
 }
 
-generic_windowObj::implObj::~implObj()=default;
+generic_windowObj::implObj::~implObj()
+{
+	handler->get_screen()->get_connection()
+		->in_thread([handler=this->handler]
+			    (ONLY IN_THREAD)
+		{
+			handler->request_visibility(IN_THREAD, false);
+		});
+
+}
 
 LIBCXXW_NAMESPACE_END

@@ -473,6 +473,9 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	virtual bool will_accept_transferred_focus(ONLY IN_THREAD);
 
+	//! Set the default keyboard focus in this window.
+	virtual void set_default_focus(ONLY IN_THREAD);
+
 	//! Flush all redrawn areas
 	virtual void flush_redrawn_areas(ONLY IN_THREAD);
 };

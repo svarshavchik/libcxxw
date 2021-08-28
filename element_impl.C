@@ -201,6 +201,11 @@ void elementObj::implObj::request_visibility_recursive(ONLY IN_THREAD,
 	request_visibility(IN_THREAD, flag);
 }
 
+bool elementObj::implObj::update_visibility_while_resize_pending()
+{
+	return false;
+}
+
 void elementObj::implObj::update_visibility(ONLY IN_THREAD)
 {
 	// Ignore visibility updates until such time we are

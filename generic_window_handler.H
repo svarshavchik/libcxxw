@@ -118,6 +118,7 @@ class generic_windowObj::handlerObj
 	coord_t root_y_thread_only; //!< y coordinate on the root window
 
  public:
+	LOG_CLASS_SCOPE;
 
 	// Resolve some ambiguities.
 
@@ -255,6 +256,12 @@ class generic_windowObj::handlerObj
 				  const rectangle &r,
 				  coord_t scrolled_to_x,
 				  coord_t scrolled_to_y);
+
+	//! Override request_visibility
+
+	//! Invoke update_resizing_timeout(), since it uses requested_visibility
+	//! to make its determination.
+	void request_visibility(ONLY IN_THREAD, bool flag) override;
 
 	//! Determine whether we expect to be resized by the window manager.
 
@@ -878,6 +885,9 @@ public:
 	void draw_child_elements_after_visibility_updated(ONLY IN_THREAD,
 							  bool flag) override;
 
+	//! Override update_visibility_while_resize_pending()
+	bool update_visibility_while_resize_pending() override;
+
 	//! Override update_visibility()
 
 	//! Because top_level_always_visible(), update_visibility() gets
@@ -891,6 +901,14 @@ public:
 	void set_inherited_visibility_flag(ONLY IN_THREAD,
 					   bool logical_flag,
 					   bool reported_flag) override;
+
+	//! Set the initial focus in the window
+
+	//! Check if the window is opened, is not being resized, there are
+	//! no pending visibility updates and there is no current keyboard
+	//! focus, but there are widgets that can receive the default
+	//! keyboard focus, then set the keyboard focus to the first one.
+	void set_default_focus(ONLY IN_THREAD) override;
 
  protected:
 

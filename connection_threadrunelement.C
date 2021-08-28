@@ -42,8 +42,9 @@ bool connection_threadObj::is_element_in_set(element_set_t &s,
 // If we expect the widget's window to get resized we'll skip some
 // processing until it does.
 
-static bool resize_pending(ONLY IN_THREAD,
-			   generic_windowObj::handlerObj &wh, int &poll_for)
+bool connection_threadObj
+::check_resize_pending(ONLY IN_THREAD,
+		       generic_windowObj::handlerObj &wh, int &poll_for)
 {
 	return std::visit(visitor{
 			[](const not_resizing &)
@@ -55,8 +56,13 @@ static bool resize_pending(ONLY IN_THREAD,
 
 				if (now >= resizing_timeout)
 				{
+					LOG_ERROR("Window resizing timed out");
 					wh.resizing(IN_THREAD)=not_resizing{};
 					wh.invoke_stabilized(IN_THREAD);
+					wh.set_default_focus(IN_THREAD);
+#ifdef DEBUG_RESIZING_TIMEOUT
+					DEBUG_RESIZING_TIMEOUT();
+#endif
 					return false;
 				}
 
@@ -86,7 +92,8 @@ namespace {
 
 		operator bool() const
 		{
-			return resize_pending(IN_THREAD, wh, poll_for);
+			return connection_threadObj
+				::check_resize_pending(IN_THREAD, wh, poll_for);
 		}
 	};
 }
@@ -119,7 +126,12 @@ void connection_threadObj
 
 			auto &wh=element->get_window_handler();
 
-			if (is_resize_pending
+			// Widger visibility updates are postponed when
+			// there's a pending resize for their window. However
+			// we do want to process visibility updates for the
+			// top level window itself.
+			if (!element->update_visibility_while_resize_pending()
+			    && is_resize_pending
 			    .try_emplace(&wh,
 					 get_resize_pending{
 						 IN_THREAD,
@@ -175,6 +187,14 @@ bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
 				 e->update_visibility(IN_THREAD);
 			 } CATCH_EXCEPTIONS;
 		 });
+
+	// Check if a window's initial default focus should be set, after
+	// processing all visibility updates.
+
+	if (flag && visibility_updated(IN_THREAD)->empty())
+		for (const auto &wh:*window_handlers(IN_THREAD))
+			wh.second->set_default_focus(IN_THREAD);
+
 	return flag;
 }
 
@@ -427,7 +447,8 @@ struct reposition_bucket {
 	reposition_bucket(ONLY IN_THREAD,
 			  const ref<generic_windowObj::handlerObj> &wh,
 			  int &poll_for)
-		: resize_pending_flag{resize_pending(IN_THREAD, *wh, poll_for)}
+		: resize_pending_flag{connection_threadObj
+		::check_resize_pending(IN_THREAD, *wh, poll_for)}
 	{
 	}
 };

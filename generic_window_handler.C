@@ -50,6 +50,9 @@
 #include <xcb/xcb_icccm.h>
 #include <string>
 #include <algorithm>
+
+LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::generic_windowObj::handlerObj);
+
 LIBCXXW_NAMESPACE_START
 
 static property::value<bool> disable_grabs(LIBCXX_NAMESPACE_STR
@@ -59,7 +62,7 @@ static property::value<unsigned> double_click(LIBCXX_NAMESPACE_STR
 					      "::w::double_click", 1000);
 
 static property::value<unsigned> resize_timeout(LIBCXX_NAMESPACE_STR
-						"::w::resize_timeout", 1000);
+						"::w::resize_timeout", 5000);
 
 static rectangle element_position(const rectangle &r)
 {
@@ -509,6 +512,11 @@ void generic_windowObj::handlerObj
 {
 }
 
+bool generic_windowObj::handlerObj::update_visibility_while_resize_pending()
+{
+	return true;
+}
+
 void generic_windowObj::handlerObj::update_visibility(ONLY IN_THREAD)
 {
 	// Ignore visibility updates until such time we are
@@ -529,30 +537,47 @@ void generic_windowObj::handlerObj
 	visibility_info.do_not_redraw=true;
 
 	do_inherited_visibility_updated(IN_THREAD, visibility_info);
+}
 
-	// Ok, so if we're now visible, find the first widget that can
-	// autofocus() and give it keyboard focus.
+void generic_windowObj::handlerObj::set_default_focus(ONLY IN_THREAD)
+{
+	// We must be visible. set_inherited_visibility_flag calls us
+	// after updating reported_inherited_visibility.
 
-	if (visibility_info.flag)
+	if (!data(IN_THREAD).reported_inherited_visibility)
+		return;
+
+	// We must not have a pending resize. We are called after the
+	// resizing flag gets set to not_resizing.
+
+	if (!std::holds_alternative<not_resizing>(resizing(IN_THREAD)))
+		return;
+
+	// There cannot be any pending visibility updates.
+	if (!IN_THREAD->visibility_updated(IN_THREAD)->empty())
+		return;
+
+	// If there's a widget that requested a delayed keyboard
+	// focus, and we can give it to it, this will be good enough.
+
+	if (process_focus_updates(IN_THREAD))
+		return;
+
+	// If there's already a widget with a focus, nothing needs to be done.
+	if (most_recent_keyboard_focus(IN_THREAD))
+		return;
+
+	for (const auto &element:focusable_fields(IN_THREAD))
 	{
-		// But if there's a widget that requested a delayed keyboard
-		// focus, and we can give it to it, this will be good enough.
+		if (!element->focusable_enabled(IN_THREAD))
+			continue;
 
-		if (process_focus_updates(IN_THREAD))
-			return;
+		if (!element->autofocus.get())
+			continue;
 
-		for (const auto &element:focusable_fields(IN_THREAD))
-		{
-			if (!element->focusable_enabled(IN_THREAD))
-				continue;
-
-			if (!element->autofocus.get())
-				continue;
-
-			element->set_focus_and_ensure_visibility
-				(IN_THREAD, keyfocus_move{});
-			break;
-		}
+		element->set_focus_and_ensure_visibility
+			(IN_THREAD, keyfocus_move{});
+		break;
 	}
 }
 
@@ -573,6 +598,8 @@ void generic_windowObj::handlerObj
 	{
 		set_inherited_visibility_unmapped(IN_THREAD);
 	}
+
+	set_default_focus(IN_THREAD);
 }
 
 std::string
@@ -1442,6 +1469,11 @@ void generic_windowObj::handlerObj
 	// when the dust settles, in process_configure_notify().
 
 	current_position=r;
+
+	LOG_DEBUG(this
+		  << " ("
+		  << objname()
+		  << ") ConfigureNotify: " << r);
 }
 
 void generic_windowObj::handlerObj::raise(ONLY IN_THREAD)
@@ -1548,6 +1580,11 @@ void generic_windowObj::handlerObj::do_process_configure_notify(ONLY IN_THREAD)
 
 	// If the relative position changed, send out the notifications.
 	update_current_position(IN_THREAD, new_position);
+
+	LOG_DEBUG(this
+		  << " ("
+		  << objname()
+		  << ") NEW POSITION: " << new_position);
 
 	update_resizing_timeout(IN_THREAD);
 
@@ -1785,6 +1822,24 @@ void generic_windowObj::handlerObj::current_position_updated(ONLY IN_THREAD)
 
 void generic_windowObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
 {
+	LOG_DEBUG( ({
+				std::ostringstream o;
+
+				auto hv=get_horizvert(IN_THREAD);
+
+				o << this
+				  << " ("
+				  << objname()
+				  << ") METRICS UPDATED: min "
+				  << hv->horiz.minimum() << "x"
+				  << hv->vert.minimum()
+				  << ", max: "
+				  << hv->horiz.maximum() << "x"
+				  << hv->vert.maximum();
+
+				o.str();
+			}));
+
 	update_resizing_timeout(IN_THREAD);
 
 	if (data(IN_THREAD).metrics_update_callback)
@@ -1802,6 +1857,13 @@ void generic_windowObj::handlerObj::install_size_hints(const size_hints &hints)
 
 void generic_windowObj::handlerObj::size_hints_updated(ONLY IN_THREAD)
 {
+}
+
+void generic_windowObj::handlerObj::request_visibility(ONLY IN_THREAD,
+						       bool flag)
+{
+	superclass_t::request_visibility(IN_THREAD, flag);
+	update_resizing_timeout(IN_THREAD);
 }
 
 void generic_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
@@ -1823,10 +1885,22 @@ void generic_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
 
 	if (!flag)
 	{
+		LOG_DEBUG(this
+			  << " ("
+			  << objname()
+			  << ") NOT RESIZING");
+
 		resizing(IN_THREAD)=not_resizing{};
+		set_default_focus(IN_THREAD);
 	}
 	else
 	{
+		LOG_DEBUG(this
+			  << " ("
+			  << objname()
+			  << ") RESIZING"
+			  );
+
 		resizing(IN_THREAD)=
 			tick_clock_t::now()+
 			std::chrono::duration_cast<tick_clock_t::duration>

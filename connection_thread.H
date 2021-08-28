@@ -96,6 +96,10 @@ class LIBCXX_HIDDEN connection_threadObj
 	static bool is_element_in_set(element_set_t &s,
 				      const element_impl &i);
 
+	static bool check_resize_pending(ONLY IN_THREAD,
+					 generic_windowObj::handlerObj &wh,
+					 int &poll_for);
+
  private:
 
 	//! Cache for recording which windows' resize is pending.

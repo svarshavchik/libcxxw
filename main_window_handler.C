@@ -255,6 +255,17 @@ void main_windowObj::handlerObj::publish_size_hints(ONLY IN_THREAD)
 	MAINWINDOW_HINTS_DEBUG1();
 #endif
 
+	LOG_DEBUG(static_cast<generic_windowObj::handlerObj *>(this)
+		  << " ("
+		  << objname()
+		  << ") HINTS: "
+		  << hints.width << "x" << hints.height
+		  << ", min: "
+		  << hints.min_width << "x" << hints.min_height
+		  << ", max: "
+		  << hints.max_width << "x" << hints.max_height
+		  );
+
 	auto conn=screenref->get_connection()->impl;
 
 	// Before making ourselves visible, if we have a suggested position

@@ -767,6 +767,14 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual void update_visibility(ONLY IN_THREAD);
 
+	//! Hold of on update_visibility while resize_pending
+
+	//! Returns false by default. Overridden int
+	//! generic_windowObj::handlerObj overrides and returns true.
+	//! It maps the window, which is needed for resizing processing.
+
+	virtual bool update_visibility_while_resize_pending();
+
 	//! update_visibility() invokes this callback.
 
 	//! This is overridden in child_elementObj, which also checks

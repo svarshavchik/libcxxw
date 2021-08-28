@@ -35,6 +35,7 @@ void override_redirectObj
 	r.width=hv->horiz.preferred();
 	r.height=hv->vert.preferred();
 
+
 	auto screen_width=wh.screenref->impl->width_in_pixels();
 	auto screen_height=wh.screenref->impl->height_in_pixels();
 
@@ -104,6 +105,15 @@ void override_redirectObj
 
 	{
 		mpobj<rectangle>::lock lock(wh.current_position);
+
+		auto &logger=wh.logger;
+		LOG_DEBUG(&wh
+			  << " ("
+			  << objname()
+			  << ") OVERRIDE: "
+			  << r
+			  << ", existing: " << *lock
+			  );
 
 		if (*lock == most_recent_configuration)
 			return;
