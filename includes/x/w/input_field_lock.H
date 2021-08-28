@@ -11,6 +11,7 @@
 #include <x/w/input_fieldfwd.H>
 #include <x/w/richtext/richtextiteratorfwd.H>
 #include <tuple>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 

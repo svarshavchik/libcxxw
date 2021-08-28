@@ -2820,7 +2820,7 @@ void testrichtext12(ONLY IN_THREAD)
 
 		size_t testnum=0;
 
-		for (const auto [pos, moved_pos, expected]:t.tests)
+		for (const auto &[pos, moved_pos, expected]:t.tests)
 		{
 			richtext_options options;
 

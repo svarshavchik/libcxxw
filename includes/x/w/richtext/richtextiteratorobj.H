@@ -17,6 +17,7 @@
 #include <x/w/text_hotspot.H>
 #include <x/obj.H>
 #include <string_view>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 

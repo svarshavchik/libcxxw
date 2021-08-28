@@ -1669,6 +1669,7 @@ private:
 	appearance_types_t::const_iterator
 	appearance_current_value_type(appearance_info_t::lock &);
 
+public:
 	//! Save button in the new value appearance button.
 
 	//! The new value is a standard combo-box, that specifies the new
@@ -1686,7 +1687,7 @@ private:
 
 	void appearance_new_value_edit_combo(ONLY IN_THREAD,
 					     const std::string &field_name);
-
+private:
 	//! Save button in the new value appearance button.
 
 	//! The new value is a free-form input field.

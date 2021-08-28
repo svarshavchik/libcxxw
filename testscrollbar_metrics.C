@@ -122,7 +122,7 @@ void testscrollbar_metrics()
 						<< vp.second);
 		}
 
-		for (const auto lo:test.los)
+		for (const auto &lo:test.los)
 		{
 			auto res=sm.pixel_to_value(lo);
 
@@ -132,7 +132,7 @@ void testscrollbar_metrics()
 						<< lo << ") is not lo");
 		}
 
-		for (const auto hi:test.his)
+		for (const auto &hi:test.his)
 		{
 			auto res=sm.pixel_to_value(hi);
 

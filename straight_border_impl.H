@@ -80,7 +80,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 	void compute_metrics(ONLY IN_THREAD) override
 	{
-		horizvert_axi current_axi;
+		metrics::horizvert_axi current_axi;
 
 		const auto &b=this->best_border(IN_THREAD);
 

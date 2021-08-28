@@ -16,6 +16,7 @@
 #include <string_view>
 #include <variant>
 #include <unordered_map>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
