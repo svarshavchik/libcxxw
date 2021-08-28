@@ -87,11 +87,11 @@
   <factory type="grid" id="main_row">
     <container>
       <type>book</type>
-      <name>main_book</name>
+      <name>main_tabs</name>
     </container>
   </factory>
 
-  <layout type="book" id="main_book">
+  <layout type="book" id="main_tabs">
     <append_pages>
       <name>initial_contents</name>
     </append_pages>

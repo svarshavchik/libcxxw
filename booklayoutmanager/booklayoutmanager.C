@@ -575,19 +575,23 @@ class LIBCXX_HIDDEN book_focusable_containerObj
 
 	focusable_impl get_impl() const override
 	{
-		const_ref<booklayoutmanagerObj::implObj> layout_impl=
+		ref<bookgridlayoutmanagerObj> bglm=
 			get_layout_impl();
 
-		return layout_impl->get_focusable();
+		auto blm_impl=ref<booklayoutmanagerObj::implObj>::create(bglm);
+
+		return blm_impl->get_focusable()->get_impl();
 	}
 
 	void do_get_impl(const function<internal_focusable_cb> &cb) const
 		override
 	{
-		const_ref<booklayoutmanagerObj::implObj> layout_impl=
+		ref<bookgridlayoutmanagerObj> bglm=
 			get_layout_impl();
 
-		auto focusables=layout_impl->get_focusables();
+		auto blm_impl=ref<booklayoutmanagerObj::implObj>::create(bglm);
+
+		auto focusables=blm_impl->get_focusables();
 
 		process_focusable_impls_from_focusables(cb, focusables);
 	}

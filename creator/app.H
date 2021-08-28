@@ -39,6 +39,7 @@
 #include <optional>
 #include <string>
 #include <map>
+#include <concepts>
 #include <vector>
 
 #ifndef CREATORDIR
@@ -63,6 +64,76 @@ struct standard_font_values_t {
 
 	standard_font_values_t();
 };
+
+//! Status of the loaded appearance file
+
+struct edited_info_t {
+
+	//! Name of the currently loaded filename
+
+	std::string themename;
+
+	//! Whether we update_themed successfully.
+
+	//! This is true when the theme has been updated. Saving it resets
+	//! it back to false.
+	bool updated=false;
+
+	//! Something was modified, but not update_themed.
+
+	bool modified=false;
+
+	//! Comparison operator
+	bool operator==(const edited_info_t &o) const=default;
+
+	//! Constructor
+	edited_info_t(const std::string &themename)
+		: themename{themename}
+	{
+	}
+
+	//! The theme file was updated.
+	void updated_theme()
+	{
+		updated=true;
+	}
+
+	//! The theme file was saved with this name.
+
+	void saved(const std::string &filename)
+	{
+		*this=edited_info_t{filename};
+	}
+
+	//! Whether the theme file needs saving.
+	bool need_saving() const
+	{
+		return updated || modified;
+	}
+
+	//! Whether the current theme can be saved.
+
+	//! If a modification is in progress, it won't be picked up by save()
+	//! so we will not enable it.
+
+	bool can_save() const
+	{
+		return !modified;
+	}
+};
+
+//! A lambda that updates the theme file.
+
+//! The lambda takes an edited_info_t reference as a parameter, and can
+//! modify it.
+
+template<typename F>
+concept update_functor = requires(F f, edited_info_t &info) {
+	{
+		f(info)
+	} -> std::same_as<void>;
+};
+
 
 //! Singleton application class.
 
@@ -126,6 +197,7 @@ public:
 	get_xpath_for(const x::xml::readlock &lock,
 		      const char *type,
 		      const std::string &id);
+
 private:
 
 	//! Update everything, after a new file is loaded or created.
@@ -139,7 +211,7 @@ private:
 
 	//! Disable/enable menu items based on what things are now.
 
-	void enable_disable_menus();
+	void enable_disable_menus(const edited_info_t &info);
 
 	//! Compute the logic to enable and disable update/delete/reset buttons
 
@@ -345,15 +417,24 @@ private:
 	void update_theme2(const x::functionref<update_callback_t(appObj *)
 			   > &,
 			   const x::ref<x::obj> &mcguffin);
+
+	//! The current status of what's being update
+	x::mpobj<edited_info_t> current_edited_info;
+
+	//! update status of what's being edited
+	template<update_functor F>
+	void update(F &&f)
+	{
+		do_update(x::make_function<void (edited_info_t &)>
+			  (std::forward<F>(f)));
+	}
+
+	//! Type-erased update().
+	void do_update(const x::function<void (edited_info_t &)> &);
 public:
-	//! Filename
-	x::mpobj<std::string> themename;
 
 	//! All supported appearance types, by their name.
 	const appearance_types_t appearance_types;
-
-	//! Whether the theme file has been modified
-	x::mpobj<bool> edited=false;
 
 	//! Dimensions page: validated new name field
 	const x::w::validated_input_field<
@@ -555,10 +636,11 @@ private:
 
 	void ifnotedited(ONLY IN_THREAD,
 			 void (appObj::*whattodo)(ONLY IN_THREAD),
-			 const char *ok_label,
-			 const char *ok2_label,
+			 const char *save_label,
+			 const char *nosave_label,
+			 const char *nosave_label_without_shortcut,
 			 const char *cancel_label,
-			 const char *ok2_shortcut);
+			 const char *nosave_shortcut);
 
 	//! The end of the road for a file_quit_event
 	void stoprunning(ONLY IN_THREAD);
@@ -1479,6 +1561,10 @@ public:
 
 		std::optional<size_t> current_value;
 
+		//! Whether the current_value is being updated.
+
+		bool current_value_update=false;
+
 		//! Check if the new value is unchanged
 
 		bool operator==(const appearance_orig_params &orig) const
@@ -1622,7 +1708,16 @@ private:
 	void appearance_value_option_selected(ONLY IN_THREAD, size_t i);
 
 	//! "Create" selected from appearance submenu, create the dialog
-	void appearance_value_edit(ONLY IN_THREAD, const std::string &);
+	void appearance_value_edit_create(ONLY IN_THREAD, const std::string &);
+
+	//! "Update" selected from appearance submenu, create the dialog
+	void appearance_value_edit_update(ONLY IN_THREAD);
+
+	//! Common code for  appearance_value_edit_create and update.
+	void appearance_value_edit(ONLY IN_THREAD,
+				   appearance_info_t::lock &lock,
+				   const std::string &n,
+				   const appearance_value_t &v);
 
 	//! Continue appearance_create(), in the main execution thread.
 	update_callback_t appearance_create2(appearance_info_t::lock &lock);

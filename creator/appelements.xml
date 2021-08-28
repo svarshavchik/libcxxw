@@ -34,6 +34,18 @@ object and placed into discrete variables.
     <name>file_save_menu_handle</name>
   </ref>
 
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>file_save_as_menu_handle</name>
+  </ref>
+
+  <!-- The tabs -->
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>main_tabs</name>
+  </ref>
+
   <!-- Dimension page fields -->
 
   <ref>

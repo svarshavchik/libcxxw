@@ -254,14 +254,30 @@ void appObj::appearances_elements_initialize(app_elements_tptr &elements,
 		  const auto &trigger,
 		  const auto &busy)
 		 {
-			 appinvoke([&]
-				   (appObj *me)
-				   {
-					   lm->unselect(IN_THREAD);
-					   lm->selected(IN_THREAD, i,
-							true, trigger);
-					   me->appearance_values_popup
-						   ->show_all(IN_THREAD);
+			 appinvoke
+				 ([&]
+				  (appObj *me)
+				 {
+					 lm->unselect(IN_THREAD);
+					 lm->selected(IN_THREAD, i,
+						      true, trigger);
+
+					 // move up/down below autoselect()s
+					 // the moved button.
+					 //
+					 // We don't want to reopen the popup,
+					 // that's too annoying, so open the
+					 // popup only in response to
+					 // key or button events.
+					 switch (trigger.index()) {
+					 case x::w::callback_trigger_key_event:
+					 case x::w::
+						 callback_trigger_button_event:
+
+						 me->appearance_values_popup
+							 ->show_all(IN_THREAD);
+						 break;
+					 }
 				   });
 		 });
 
@@ -307,6 +323,18 @@ void appObj::appearances_elements_initialize(app_elements_tptr &elements,
 				 return;
 
 			 appinvoke(&appObj::appearance_on_value_move_down,
+				   IN_THREAD);
+		 });
+	appearance_value_update->on_status_update
+		([]
+		 (ONLY IN_THREAD,
+		  const auto &status_info)
+		 {
+			 if (status_info.trigger.index() ==
+			     x::w::callback_trigger_initial)
+				 return;
+
+			 appinvoke(&appObj::appearance_value_edit_update,
 				   IN_THREAD);
 		 });
 	appearance_value_delete->on_status_update
@@ -677,7 +705,7 @@ void appObj::appearance_reset(ONLY IN_THREAD)
 						 return;
 
 					 appinvoke(&appObj::
-						   appearance_value_edit,
+						   appearance_value_edit_create,
 						   IN_THREAD,
 						   name);
 				 });
@@ -872,6 +900,10 @@ void appObj::appearance_enable_disable_buttons(ONLY IN_THREAD,
 		}
 	}
 
+	bool modified;
+
+	modified=false;
+
 	if (lock->current_selection &&
 	    lock->save_params == *lock->current_selection)
 	{
@@ -896,6 +928,7 @@ void appObj::appearance_enable_disable_buttons(ONLY IN_THREAD,
 		// The delete/reset/update buttons are on the page that's
 		// shown only when a current appearance is selected, so their
 		// status can be set in all cases.
+
 		appearance_name->set_enabled(IN_THREAD,
 					     lock->current_selection ?
 					     false:true);
@@ -903,7 +936,18 @@ void appObj::appearance_enable_disable_buttons(ONLY IN_THREAD,
 		appearance_delete_button->set_enabled(IN_THREAD, false);
 		appearance_reset_button->set_enabled(IN_THREAD, true);
 		appearance_update_button->set_enabled(IN_THREAD, true);
+		//
+		// If an appearance if selected, it must've been modified
+		//
+		if (lock->current_selection)
+			modified=true;
 	}
+
+	update([&]
+	       (auto &info)
+	{
+		info.modified=modified;
+	});
 }
 
 void appObj::appearance_enable_disable_new_fields(ONLY IN_THREAD,
@@ -996,16 +1040,79 @@ void appObj::appearance_value_selected(ONLY IN_THREAD,
 	}
 }
 
+namespace {
+#if 0
+}
+#endif
+
+// appearance_on_value_move_up/down share common logic with handling
+// what gets moved up or down:
+//
+// If an item is explicitly selected, use that, otherwise use what's currently
+// highlighted (by keyboard navigation, most likely). This avoids having to
+// explicitly hit Enter beforing moving this value.
+//
+// The constructor figures out what the currently-selected value is.
+
+struct appearance_on_value_index : std::optional<size_t> {
+
+	const x::w::tablelayoutmanager lm;
+
+	using std::optional<size_t>::operator=;
+	using std::optional<size_t>::operator bool;
+	using std::optional<size_t>::operator*;
+
+	//! Constructor.
+
+	appearance_on_value_index(const x::w::tablelayoutmanager &lm,
+				  std::optional<size_t> &current_value,
+				  size_t values_size)
+		: std::optional<size_t>{lm->current_list_item()},
+		  lm{lm}
+	{
+		if (current_value)
+			*this=*current_value;
+
+		// The currently-highlighted list item could be the last item
+		// which is not movable.
+
+		if (*this &&
+		    **this >= values_size)
+			reset();
+	}
+
+	//! After everything is moved, current_value must be updated.
+	//!
+	//! But only if it's where the current value came from.
+
+	void update(ONLY IN_THREAD, size_t n)
+	{
+		lm->autoselect(IN_THREAD, n, {});
+	}
+};
+
+#if 0
+{
+#endif
+}
+
 void appObj::appearance_on_value_move_up(ONLY IN_THREAD)
 {
 	appearance_info_t::lock lock{appearance_info};
 
 	auto tlm=appearance_values->tablelayout();
 
-	if (!lock->save_params.current_value)
+	appearance_on_value_index new_value_index{tlm,
+		lock->save_params.current_value,
+		lock->save_params.values.size()};
+
+	if (!new_value_index)
 		return;
 
-	auto n=*lock->save_params.current_value;
+	auto &n=*new_value_index;
+
+	if (n == 0)
+		return; // Shouldn't happen.
 
 	// Make a copy of the preceding item.
 	std::vector<x::w::list_item_param> moved_item;
@@ -1022,7 +1129,8 @@ void appObj::appearance_on_value_move_up(ONLY IN_THREAD)
 	// it after the current item.
 	tlm->remove_item(IN_THREAD, n-1);
 	tlm->insert_items(IN_THREAD, n, moved_item);
-	tlm->unselect(IN_THREAD);
+
+	new_value_index.update(IN_THREAD, --n);
 
 	appearance_enable_disable_buttons(IN_THREAD, lock);
 }
@@ -1033,10 +1141,14 @@ void appObj::appearance_on_value_move_down(ONLY IN_THREAD)
 
 	auto tlm=appearance_values->tablelayout();
 
-	if (!lock->save_params.current_value)
+	appearance_on_value_index new_value_index{tlm,
+		lock->save_params.current_value,
+		lock->save_params.values.size()};
+
+	if (!new_value_index)
 		return;
 
-	auto n=*lock->save_params.current_value;
+	auto &n=*new_value_index;
 
 	if (n+1 >= lock->save_params.values.size())
 		return;
@@ -1057,7 +1169,9 @@ void appObj::appearance_on_value_move_down(ONLY IN_THREAD)
 	// before this item.
 	tlm->remove_item(IN_THREAD, n+1);
 	tlm->insert_items(IN_THREAD, n, moved_item);
-	tlm->unselect(IN_THREAD);
+
+	new_value_index.update(IN_THREAD, ++n);
+
 	appearance_enable_disable_buttons(IN_THREAD, lock);
 }
 
@@ -1102,8 +1216,11 @@ public:
 	{
 	}
 
+	typedef appObj::appearance_value_t appearance_value_t;
+
 	void create(const x::w::const_uigenerators &g,
-		    const x::w::container &c)
+		    const x::w::container &c,
+		    const appearance_value_t &v)
 	{
 		auto layout=c->gridlayout();
 
@@ -1121,6 +1238,43 @@ public:
 
 		lm->replace_all_items(values);
 
+		std::optional<size_t> index;
+
+		std::visit(x::visitor{
+				[&, this](const std::u32string &s)
+				{
+					if (s.empty())
+						return;
+
+					size_t i=0;
+
+					for (const auto &v:values)
+					{
+						if (std::holds_alternative<
+						    x::w::text_param>(v) &&
+						    std::get<x::w::text_param>
+						    (v).string == s)
+						{
+							// If we found the
+							// initial value
+							// explicitly listed,
+							// formally select
+							// it in the combo box.
+
+							lm->autoselect(i);
+							return;
+						}
+						i++;
+					}
+
+					// Otherwise, we can set it directly,
+					// if this is an editable combobox.
+					set_value(lm, s);
+				},[](appObj::reset)
+				{
+				},
+			}, v);
+
 		install_save_button_callback();
 	}
 
@@ -1129,6 +1283,11 @@ public:
 	virtual const char *element_name()=0;
 
 	virtual void install_save_button_callback()=0;
+
+	virtual void set_value(const x::w::standard_comboboxlayoutmanager &lm,
+			       const std::u32string &v)
+	{
+	}
 };
 
 struct create_appearance_value_editable_combobox
@@ -1160,7 +1319,15 @@ struct create_appearance_value_editable_combobox
 				 appinvoke(&appObj
 					   ::appearance_new_value_edit_combo,
 					   IN_THREAD, field_name);
-		 });
+			 });
+	}
+
+	void set_value(const x::w::standard_comboboxlayoutmanager &lm,
+		       const std::u32string &v) override
+	{
+		x::w::editable_comboboxlayoutmanager elm=lm;
+
+		elm->set(v);
 	}
 };
 
@@ -1183,7 +1350,8 @@ struct create_appearance_value_standard_combobox
 	void install_save_button_callback() override;
 };
 
-void create_appearance_value_standard_combobox::install_save_button_callback()
+void create_appearance_value_standard_combobox
+::install_save_button_callback()
 {
 	// Now convert the list_item_params to plain text strings
 
@@ -1200,12 +1368,12 @@ void create_appearance_value_standard_combobox::install_save_button_callback()
 					      text_values
 						      .emplace_back(t.string);
 				      },
-					      [&](const auto &)
-					      {
-						      // Separator
-						      text_values
-							      .push_back(U"");
-					      }}, v);
+				      [&](const auto &)
+				      {
+					      // Separator
+					      text_values
+						      .push_back(U"");
+				      }}, v);
 	}
 
 	// Save button calls appearance_new_value_std_combo
@@ -1226,11 +1394,42 @@ void create_appearance_value_standard_combobox::install_save_button_callback()
 #endif
 }
 
-void appObj::appearance_value_edit(ONLY IN_THREAD,
-				   const std::string &n)
+void appObj::appearance_value_edit_create(ONLY IN_THREAD,
+					  const std::string &n)
 {
 	appearance_info_t::lock lock{appearance_info};
 
+	lock->save_params.current_value_update=false;
+
+	appearance_value_edit(IN_THREAD, lock, n, U"");
+}
+
+void appObj::appearance_value_edit_update(ONLY IN_THREAD)
+{
+	appearance_info_t::lock lock{appearance_info};
+
+	lock->save_params.current_value_update=true;
+
+	auto &save_params=lock->save_params;
+
+	size_t n=save_params.values.size();
+
+	if (save_params.current_value &&
+	    // Shouldn't be the case otherwise:
+	    *save_params.current_value < n)
+	{
+		auto &[field, value] =
+			save_params.values[*save_params.current_value];
+		lock->save_params.current_value_update=true;
+		appearance_value_edit(IN_THREAD, lock, field, value);
+	}
+}
+
+void appObj::appearance_value_edit(ONLY IN_THREAD,
+				   appearance_info_t::lock &lock,
+				   const std::string &n,
+				   const appearance_value_t &v)
+{
 	if (!lock->current_selection)
 		return;
 
@@ -1415,6 +1614,7 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 	bool initialized=false;
 
 	bool reset_option=false;
+	bool reset_option_selected=false;
 
 	{
 		auto xpath=type_lock->get_xpath("../optional | ../vector");
@@ -1423,7 +1623,11 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 		{
 			xpath->to_node();
 			if (type_lock->get_text() != "0")
+			{
 				reset_option=true;
+				reset_option_selected=
+					std::holds_alternative<reset>(v);
+			}
 		}
 	}
 
@@ -1495,7 +1699,7 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 			};
 
 		create.create(appearance_dialog_gen,
-			      appearance_new_value_container);
+			      appearance_new_value_container, v);
 		initialized=true;
 	}
 	else if (type == "dim_arg")
@@ -1512,7 +1716,7 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 			};
 
 		create.create(appearance_dialog_gen,
-			      appearance_new_value_container);
+			      appearance_new_value_container, v);
 		initialized=true;
 	}
 	else if (type == "color_arg" || type == "text_color_arg")
@@ -1541,7 +1745,7 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 				     lock->ids.end());
 
 		create.create(appearance_dialog_gen,
-			      appearance_new_value_container);
+			      appearance_new_value_container, v);
 
 		initialized=true;
 	}
@@ -1559,7 +1763,7 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 			};
 
 		create.create(appearance_dialog_gen,
-			      appearance_new_value_container);
+			      appearance_new_value_container, v);
 		initialized=true;
 	}
 	else if (type == "font_arg")
@@ -1576,7 +1780,7 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 			};
 
 		create.create(appearance_dialog_gen,
-			      appearance_new_value_container);
+			      appearance_new_value_container, v);
 		initialized=true;
 	}
 
@@ -1592,7 +1796,7 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 			};
 
 		create.create(appearance_dialog_gen,
-			      appearance_new_value_container);
+			      appearance_new_value_container, v);
 
 		initialized=true;
 	}
@@ -1608,7 +1812,7 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 			};
 
 		create.create(appearance_dialog_gen,
-			      appearance_new_value_container);
+			      appearance_new_value_container, v);
 
 		initialized=true;
 	}
@@ -1624,7 +1828,7 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 			};
 
 		create.create(appearance_dialog_gen,
-			      appearance_new_value_container);
+			      appearance_new_value_container, v);
 		initialized=true;
 	}
 
@@ -1639,6 +1843,13 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 		layout->generate("appearance_new_value_input_field_open",
 				 appearance_dialog_gen, new_elements);
 
+		x::w::input_field field=
+			appearance_new_value_container->gridlayout()->get(0, 0);
+
+		if (std::holds_alternative<std::u32string>(v))
+		{
+			field->set(IN_THREAD, std::get<std::u32string>(v));
+		}
 		// Save button calls appearance_new_value_input
 		appearance_new_value_save->on_activate
 			([n]
@@ -1652,11 +1863,16 @@ void appObj::appearance_value_edit(ONLY IN_THREAD,
 	}
 
 	appearance_dialog->dialog_window->set_window_title(n);
-	appearance_new_value_option->set_value(IN_THREAD, 1);
 
 	// Enable or disable the reset option, as appropriate, then
 	// show_all().
 	appearance_reset_value_option->set_enabled(IN_THREAD, reset_option);
+
+	// Figure out which one of the two radio buttons should be selected.
+	(reset_option_selected
+	 ? appearance_reset_value_option
+	 : appearance_new_value_option)->set_value(IN_THREAD, 1);
+
 	appearance_dialog->dialog_window->show_all(IN_THREAD);
 }
 
@@ -1724,12 +1940,22 @@ void appObj::appearance_new_value_save_and_hide(ONLY IN_THREAD,
 	{
 		n=*save_params.current_value;
 
-		save_params.values.insert(save_params.values.begin() + n,
-					  new_value);
+		if (save_params.current_value_update == true)
+			// Updating an existing value
+			save_params.values[*save_params.current_value]=
+				new_value;
+		else
+			// Inserting a new value.
+			save_params.values.insert(save_params.values.begin()
+						  + n,
+						  new_value);
 	}
 	else
 	{
 		save_params.values.push_back(new_value);
+
+		// Guard against gremlins.
+		save_params.current_value_update=false;
 	}
 
 	// Update the table with the values.
@@ -1739,8 +1965,17 @@ void appObj::appearance_new_value_save_and_hide(ONLY IN_THREAD,
 	new_value.format(new_value_item);
 
 	auto lm=appearance_values->tablelayout();
-	lm->insert_items(IN_THREAD, n, new_value_item);
-	lm->unselect(IN_THREAD);
+
+	if (save_params.current_value_update)
+	{
+		lm->replace_items(IN_THREAD, n, new_value_item);
+	}
+	else
+	{
+		lm->insert_items(IN_THREAD, n, new_value_item);
+	}
+
+	lm->autoselect(IN_THREAD, n, {});
 
 	// Hide the dialog, and update the new fields submenu, to reflect
 	// that there is a new field value in the appearance, and unless the new

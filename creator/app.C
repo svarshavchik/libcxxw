@@ -302,6 +302,9 @@ inline appObj::init_args appObj::create_init_args()
 			 args.elements.file_save_menu_handle=
 				 ui.get_listitemhandle("file_save");
 
+			 args.elements.file_save_as_menu_handle=
+				 ui.get_listitemhandle("file_save_as");
+
 			 // Initial contents.
 
 			 x::w::gridlayoutmanager lm=mw->get_layoutmanager();
@@ -314,8 +317,8 @@ inline appObj::init_args appObj::create_init_args()
 			 ui.new_elements.emplace("font_preview",
 						 font_previewptr);
 
-
 			 args.elements.status=ui.get_element("status");
+			 args.elements.main_tabs=ui.get_element("main_tabs");
 
 			 appObj::dimension_elements_initialize
 				 (args.elements, ui, args);
@@ -856,7 +859,7 @@ appObj::appObj(init_args &&args)
 	: const_app_elements_t{std::move(args.elements)},
 	  configfile{args.configfile},
 	  theme{args.theme},
-	  themename{args.filename},
+	  current_edited_info{args.filename},
 	  appearance_types{std::move(args.appearance_types)},
 
 	  /////////////////////////////////////////////////////////////////////
@@ -966,7 +969,6 @@ appObj::appObj(init_args &&args)
 void appObj::loaded_file(ONLY IN_THREAD)
 {
 	update_title();
-	enable_disable_menus();
 	dimension_initialize(IN_THREAD);
 	colors_initialize(IN_THREAD);
 	borders_initialize(IN_THREAD);
@@ -980,16 +982,19 @@ void appObj::update_title()
 {
 	std::string title=_("LibCXXW UI Creator");
 
-	auto n=themename.get();
-
-	n=n.substr(n.rfind('/')+1);
-
-	if (!n.empty())
 	{
-		title += " - ";
-		title += n;
-	}
+		x::mpobj_lock lock{current_edited_info};
 
+		auto n=lock->themename;
+
+		n=n.substr(n.rfind('/')+1);
+
+		if (!n.empty())
+		{
+			title += " - ";
+			title += n;
+		}
+	}
 	main_window->set_window_title(title);
 }
 
@@ -1047,8 +1052,12 @@ void appObj::update_theme2(const x::functionref<update_callback_t (appObj *)
 		(void)x::w::uigenerators::create(new_theme);
 
 		theme=new_theme;
-		edited=true;
-		enable_disable_menus();
+
+		update([]
+		       (auto &info)
+		{
+			info.updated_theme();
+		});
 
 		callback2(this, mcguffin);
 	} catch (const x::exception &e)
@@ -1075,7 +1084,11 @@ void appObj::file_save_event(ONLY IN_THREAD)
 void appObj::do_file_save_event(ONLY IN_THREAD,
 				void (appObj::*what_to_do_next)(ONLY IN_THREAD))
 {
-	auto filename=themename.get();
+	auto filename=({
+			x::mpobj_lock lock{current_edited_info};
+
+			lock->themename;
+		});
 
 	if (!filename.empty())
 	{
@@ -1158,10 +1171,12 @@ void appObj::do_file_save(ONLY IN_THREAD,
 {
 	theme.get()->readlock()->save_file(filename, true);
 
-	themename=filename;
-	edited=false;
+	update([&]
+	       (auto &info)
+	{
+		info.saved(filename);
+	});
 	update_title();
-	enable_disable_menus();
 	(this->*what_to_do_next)(IN_THREAD);
 }
 
@@ -1170,10 +1185,26 @@ void appObj::only_save(ONLY IN_THREAD)
 	status->update(_("File saved"));
 }
 
-void appObj::enable_disable_menus()
+void appObj::do_update(const x::function<void (edited_info_t &)> &cb)
 {
-	file_save_menu_handle->enabled(themename.get().size() > 0 &&
-				       edited.get());
+	x::mpobj_lock lock{current_edited_info};
+
+	auto orig=*lock;
+
+	cb(*lock);
+
+	if (orig != *lock)
+		enable_disable_menus(*lock);
+}
+
+void appObj::enable_disable_menus(const edited_info_t &info)
+{
+	file_save_menu_handle->enabled(info.themename.size() > 0 &&
+				       info.need_saving() && info.can_save());
+
+	// Cannot save or switch tabs.
+	file_save_as_menu_handle->enabled(info.can_save());
+	main_tabs->set_enabled(info.can_save());
 }
 
 void appObj::help_about(ONLY IN_THREAD)
@@ -1199,7 +1230,8 @@ void appObj::file_quit_event(ONLY IN_THREAD)
 	ifnotedited(IN_THREAD,
 		    &appObj::stoprunning,
 		    _("Save And Quit"),
-		    _("${decoration:underline}Q${decoration:none}uit Only"),
+		    _("${decoration:underline}Q${decoration:none}uit Without Saving"),
+		    _("Quit Without Saving"),
 		    _("Cancel"),
 		    _("Alt-Q"));
 }
@@ -1210,6 +1242,7 @@ void appObj::file_new_event(ONLY IN_THREAD)
 		    &appObj::new_file,
 		    _("Save Changes"),
 		    _("${decoration:underline}D${decoration:none}iscard Changes"),
+		    _("Discard Changes"),
 		    _("Cancel"),
 		    _("Alt-D"));
 }
@@ -1220,6 +1253,7 @@ void appObj::file_open_event(ONLY IN_THREAD)
 		    &appObj::open_file,
 		    _("Save Changes"),
 		    _("${decoration:underline}D${decoration:none}iscard Changes"),
+		    _("Discard Changes"),
 		    _("Cancel"),
 		    _("Alt-D"));
 }
@@ -1240,7 +1274,13 @@ void appObj::open_initial_file(ONLY IN_THREAD,
 		main_window->show_all(IN_THREAD);
 
 		if (filename.empty())
+		{
+			{
+				x::mpobj_lock lock{current_edited_info};
+				enable_disable_menus(*lock);
+			}
 			loaded_file(IN_THREAD);
+		}
 		else
 			open_dialog_closed(IN_THREAD, filename);
 	} REPORT_EXCEPTIONS(main_window);
@@ -1250,10 +1290,15 @@ void appObj::open_dialog_closed(ONLY IN_THREAD,
 				const std::string &filename)
 {
 	theme=load_file(filename);
-	themename=filename;
+
+	update([&]
+	       (auto &info)
+	{
+		info.saved(filename);
+	});
 	loaded_file(IN_THREAD);
 
-	auto n=themename.get();
+	auto n=filename;
 
 	n=n.substr(n.rfind('/')+1);
 
@@ -1282,55 +1327,96 @@ x::xml::doc appObj::load_file(const std::string &filename)
 
 void appObj::ifnotedited(ONLY IN_THREAD,
 			 void (appObj::*whattodo)(ONLY IN_THREAD),
-			 const char *ok_label,
-			 const char *ok2_label,
+			 const char *save_label,
+			 const char *nosave_label,
+			 const char *nosave_label_without_shortcut,
 			 const char *cancel_label,
-			 const char *ok2_shortcut)
+			 const char *nosave_shortcut)
 {
-	if (!edited.get())
+	bool need_saving;
+	bool can_save;
+
+	{
+		x::mpobj_lock lock{current_edited_info};
+
+		need_saving=lock->need_saving();
+		can_save=lock->can_save();
+	}
+
+	if (!need_saving)
 	{
 		(this->*whattodo)(IN_THREAD);
 		return;
 	}
 
-	main_window->create_ok2_cancel_dialog
-		({"alert@creator.w.libcxx.com", true},
-		 "alert",
-		 []
-		 (const auto &f)
-		 {
-			 f->create_label(_("Some changes have not been saved"));
-		 },
-		 [whattodo]
-		 (ONLY IN_THREAD,
-		  const auto &ignore)
-		 {
-			 appinvoke(&appObj::do_file_save_event,
-				   IN_THREAD, whattodo);
-		 },
+	auto make_label=
+		[]
+		(const auto &f)
+		{
+			f->create_label(_("Some changes have not been saved"));
+		};
+
+	auto do_file_save=
+		[whattodo]
+		(ONLY IN_THREAD,
+		 const auto &ignore)
+		{
+			appinvoke(&appObj::do_file_save_event,
+				  IN_THREAD, whattodo);
+		};
+
+	auto do_anyway=
 		 [whattodo]
 		 (ONLY IN_THREAD,
 		  const auto &ignore)
 		 {
 			 appinvoke(whattodo, IN_THREAD);
-		 },
-		 []
+		 };
+	auto do_nothing=
+		[]
 		 (ONLY IN_THREAD,
 		  const auto &ignore)
 		 {
-		 },
-		 x::w::theme_text{ok_label},
-		 x::w::theme_text{ok2_label},
-		 x::w::theme_text{cancel_label},
-		 {ok2_shortcut})->dialog_window->show_all();
+		 };
+
+	if (can_save)
+	{
+		main_window->create_ok2_cancel_dialog
+			({"alert@creator.w.libcxx.com", true},
+			 "alert",
+			 std::move(make_label),
+			 std::move(do_file_save),
+			 std::move(do_anyway),
+			 std::move(do_nothing),
+			 x::w::theme_text{save_label},
+			 x::w::theme_text{nosave_label},
+			 x::w::theme_text{cancel_label},
+			 {nosave_shortcut})->dialog_window->show_all();
+	}
+	else
+	{
+		main_window->create_ok_cancel_dialog
+			({"alert@creator.w.libcxx.com", true},
+			 "alert",
+			 std::move(make_label),
+			 std::move(do_anyway),
+			 std::move(do_nothing),
+			 x::w::theme_text{nosave_label_without_shortcut},
+			 x::w::theme_text{cancel_label})
+			->dialog_window->show_all();
+	}
+
 	return;
 }
 
 void appObj::new_file(ONLY IN_THREAD)
 {
 	theme=new_theme_file();
-	themename="";
-	edited=false;
+	update([&]
+	       (auto &info)
+	{
+		info=edited_info_t{""};
+	});
 	status->update(_("New theme file created"));
 	loaded_file(IN_THREAD);
 }
