@@ -2066,6 +2066,20 @@ void list_elementObj::implObj
 		return;
 	}
 
+	// Close the menu popups. This must be done before invoking
+	// selected_common(). A callback on a menu popup's selection may
+	// want to re-open the popup. Even if the callback invokes show,
+	// we'll rudely hide it. So, to prevent that, we close_all_menu_popups
+	// before invoking selection callbacks.
+
+	switch (trigger.index()) {
+	case callback_trigger_button_event:
+	case callback_trigger_key_event:
+		get_window_handler().handler_data
+			->close_all_menu_popups(IN_THREAD);
+		break;
+	}
+
 	if (auto option=row.extra->is_option(lock))
 	{
 		if (option->group)
@@ -2100,18 +2114,6 @@ void list_elementObj::implObj
 		notify_callbacks(IN_THREAD,
 				 lm, ll, row, i, row.extra->data(lock).selected,
 				 trigger, mcguffin);
-	}
-
-	// Our job is to make arrangements to close
-	// all menu popups, now that the menu selection
-	// has been made...
-
-	switch (trigger.index()) {
-	case callback_trigger_button_event:
-	case callback_trigger_key_event:
-		get_window_handler().handler_data
-			->close_all_menu_popups(IN_THREAD);
-		break;
 	}
 }
 
