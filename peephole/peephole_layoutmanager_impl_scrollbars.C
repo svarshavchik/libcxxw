@@ -260,6 +260,16 @@ void scrollbarsObj::vert_scroll_high(ONLY IN_THREAD,
 scrollbarsObj::~scrollbarsObj()=default;
 
 
+void scrollbarsObj::do_for_each_child(ONLY IN_THREAD,
+				      const function<void (const element &e)>
+				      &callback)
+{
+	superclass_t::do_for_each_child(IN_THREAD, callback);
+
+	callback(h_scrollbar);
+	callback(v_scrollbar);
+}
+
 bool scrollbarsObj
 ::process_button_event(ONLY IN_THREAD,
 		       const button_event &be,

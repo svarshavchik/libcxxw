@@ -53,6 +53,9 @@ void set_top_level_peephole_scrollbar_focus_order
 class LIBCXX_HIDDEN peepholelayoutmanagerObj::implObj::scrollbarsObj
 	: public peepholelayoutmanagerObj::implObj {
 
+	//! My superclass
+	typedef peepholelayoutmanagerObj::implObj superclass_t;
+
  public:
 	class callbackObj;
 
@@ -70,6 +73,7 @@ class LIBCXX_HIDDEN peepholelayoutmanagerObj::implObj::scrollbarsObj
 	//! Vertical scrollbar configuration
 
 	scrollbar_visibility vertical_scrollbar_visibility_thread_only;
+
  public:
 	THREAD_DATA_ONLY(horizontal_scrollbar_visibility);
 	THREAD_DATA_ONLY(vertical_scrollbar_visibility);
@@ -87,6 +91,13 @@ class LIBCXX_HIDDEN peepholelayoutmanagerObj::implObj::scrollbarsObj
 	//! Scrollwheel action.
 
 	void vert_scroll_high(ONLY IN_THREAD, const input_mask &);
+	//! Implement do_for_each_child().
+
+	//! Iterate over the scrollbars.
+
+	void do_for_each_child(ONLY IN_THREAD,
+			       const function<void (const element &e)> &)
+		override;
 
  protected:
 
