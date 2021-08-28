@@ -66,7 +66,18 @@ main_windowObj::~main_windowObj()=default;
 void main_windowObj::on_delete(const functionref<void (THREAD_CALLBACK,
 						       const busy &)> &callback)
 {
-	impl->on_delete(callback);
+	in_thread([callback, impl=this->impl]
+		  (ONLY IN_THREAD)
+	{
+		impl->on_delete(IN_THREAD, callback);
+	});
+}
+
+void main_windowObj::on_delete(ONLY IN_THREAD,
+			       const functionref<void (THREAD_CALLBACK,
+						       const busy &)> &callback)
+{
+	impl->on_delete(IN_THREAD, callback);
 }
 
 void main_windowObj::install_window_icons(const std::vector<std::string> &a)

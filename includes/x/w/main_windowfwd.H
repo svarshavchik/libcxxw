@@ -91,6 +91,13 @@ main_window->on_delete([]
                         const INSERT_LIBX_NAMESPACE::w::busy &block)
                        {
                        });
+
+main_window->on_delete(IN_THREAD,
+                       []
+                       (ONLY IN_THREAD,
+                        const INSERT_LIBX_NAMESPACE::w::busy &block)
+                       {
+                       });
 \endcode
 
 on_delete() installs a lambda that gets executed when the main application

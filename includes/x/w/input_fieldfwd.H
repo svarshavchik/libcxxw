@@ -97,6 +97,16 @@ Overloaded set() methods that take an IN_THREAD handle from the internal
 connection thread update the input field immediately.
 
 \code
+std::string s=f->get();
+
+std::u32string s=f->get_unicode();
+\endcode
+
+get() and get_unicode() is equivalent to constructing
+an \ref input_lock "INSERT_LIBX_NAMESPACE::w::input_lock" and using
+its get() or get_unicode() method.
+
+\code
 f->on_change([]
              (ONLY IN_THREAD,
               const INSERT_LIBX_NAMESPACE::w::input_change_info_t &)

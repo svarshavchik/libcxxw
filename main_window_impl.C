@@ -33,16 +33,12 @@ main_windowObj::implObj::implObj(const main_window_impl_args &args)
 
 main_windowObj::implObj::~implObj()=default;
 
-void main_windowObj::implObj::on_delete(const functionref<void
+void main_windowObj::implObj::on_delete(ONLY IN_THREAD,
+					const functionref<void
 					(THREAD_CALLBACK,
 					 const busy &)> &callback)
 {
-	thread()->run_as([handler=this->handler, callback]
-			 (ONLY IN_THREAD)
-			 {
-				 handler->on_delete_callback(IN_THREAD)
-					 =callback;
-			 });
+	handler->on_delete_callback(IN_THREAD)=callback;
 }
 
 LIBCXXW_NAMESPACE_END

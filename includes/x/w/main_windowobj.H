@@ -103,9 +103,15 @@ public:
 	//! Return the menu bar itself.
 	const_container get_menubar() const;
 
-	//! Install a callback that gets invoke when the window close button is clicked.
+	//! Invoke this callback when the window close button is clicked.
 
 	void on_delete(const functionref<void (THREAD_CALLBACK,
+					       const busy &)> &callback);
+
+	//! Invoke this callback when the window close button is clicked.
+
+	void on_delete(ONLY IN_THREAD,
+		       const functionref<void (THREAD_CALLBACK,
 					       const busy &)> &callback);
 
 private:

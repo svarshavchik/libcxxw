@@ -962,4 +962,20 @@ ref<elementObj::implObj> input_fieldObj::get_minimum_override_element_impl()
 	return impl->editor_element->impl;
 }
 
+std::string input_fieldObj::get(const std::optional<bidi_format> &embedding)
+	const
+{
+	const_input_lock lock{const_ref{this}};
+
+	return lock.get(embedding);
+}
+
+std::u32string input_fieldObj
+::get_unicode(const std::optional<bidi_format> &embedding) const
+{
+	const_input_lock lock{const_ref{this}};
+
+	return lock.get_unicode(embedding);
+}
+
 LIBCXXW_NAMESPACE_END

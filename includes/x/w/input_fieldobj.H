@@ -135,6 +135,14 @@ public:
 
 	void on_spin(const hotspot_callback_t &,
 		     const hotspot_callback_t &);
+
+	//! Return the current contents of the input field as UTF-8.
+	std::string get(const std::optional<bidi_format> &embedding=
+			std::nullopt) const;
+
+	//! Return the current contents of the input field, as unicode.
+	std::u32string get_unicode(const std::optional<bidi_format> &embedding=
+				   std::nullopt) const;
 };
 
 LIBCXXW_NAMESPACE_END
