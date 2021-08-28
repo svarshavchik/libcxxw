@@ -208,6 +208,8 @@ struct generators_base {
 #endif
 }
 
+#include "uicompiler.inc.H/uicompiler_configparser.H"
+
 // Grid layout manager functionality.
 
 struct uicompiler::gridlayoutmanager_functions {
@@ -261,22 +263,6 @@ struct uicompiler::gridlayoutmanager_functions {
 };
 
 // Parse generators for the contents of a new_listlayoutmanager
-
-static const_vector<new_listlayoutmanager_generator>
-create_newlistlayoutmanager_vector(uicompiler &compiler,
-				   const ui::parser_lock &orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("config");
-
-	if (xpath->count() == 0) // None, return an empty vector.
-		return const_vector<new_listlayoutmanager_generator>::create();
-
-	xpath->to_node();
-
-	return compiler.new_listlayout_parseconfig(lock);
-}
 
 struct uicompiler::listlayoutmanager_functions {
 
@@ -361,22 +347,6 @@ struct uicompiler::listlayoutmanager_functions {
 //
 // Table layout manager functionality.
 //
-// Parse new table layout manager generators from <config>
-
-static const_vector<new_tablelayoutmanager_generator>
-create_newtablelayoutmanager_vector(uicompiler &compiler,
-				    const ui::parser_lock &orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("config");
-
-	if (xpath->count() == 0) // None, return an empty vector.
-		return const_vector<new_tablelayoutmanager_generator>::create();
-	xpath->to_node();
-
-	return compiler.new_tablelayout_parseconfig(lock);
-}
 
 // Parse all header cell generators.
 
@@ -515,22 +485,6 @@ struct uicompiler::tablelayoutmanager_functions {
 //
 // Pane layout manager functionality.
 //
-// Parse new pane layout manager generators from <config>
-
-static const_vector<new_panelayoutmanager_generator>
-create_newpanelayoutmanager_vector(uicompiler &compiler,
-				    const ui::parser_lock &orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("config");
-
-	if (xpath->count() == 0) // None, return an empty vector.
-		return const_vector<new_panelayoutmanager_generator>::create();
-	xpath->to_node();
-
-	return compiler.new_panelayout_parseconfig(lock);
-}
 
 struct uicompiler::panelayoutmanager_functions {
 
@@ -611,21 +565,6 @@ struct uicompiler::panelayoutmanager_functions {
 //
 // Parse new item layout manager generators from <config>
 
-static const_vector<new_itemlayoutmanager_generator>
-create_newitemlayoutmanager_vector(uicompiler &compiler,
-				    const ui::parser_lock &orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("config");
-
-	if (xpath->count() == 0) // None, return an empty vector.
-		return const_vector<new_itemlayoutmanager_generator>::create();
-	xpath->to_node();
-
-	return compiler.new_itemlayout_parseconfig(lock);
-}
-
 struct uicompiler::itemlayoutmanager_functions {
 
 	struct generators : generators_base {
@@ -702,22 +641,6 @@ struct uicompiler::itemlayoutmanager_functions {
 //
 // Page layout manager functionality.
 //
-// Parse new page layout manager generators from <config>
-
-static const_vector<new_pagelayoutmanager_generator>
-create_newpagelayoutmanager_vector(uicompiler &compiler,
-				    const ui::parser_lock &orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("config");
-
-	if (xpath->count() == 0) // None, return an empty vector.
-		return const_vector<new_pagelayoutmanager_generator>::create();
-	xpath->to_node();
-
-	return compiler.new_pagelayout_parseconfig(lock);
-}
 
 struct uicompiler::pagelayoutmanager_functions {
 
@@ -794,23 +717,6 @@ struct uicompiler::pagelayoutmanager_functions {
 //
 // Toolbox layout manager functionality.
 //
-// Parse new toolbox layout manager generators from <config>
-
-static const_vector<new_toolboxlayoutmanager_generator>
-create_newtoolboxlayoutmanager_vector(uicompiler &compiler,
-				    const ui::parser_lock &orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("config");
-
-	if (xpath->count() == 0) // None, return an empty vector.
-		return const_vector<new_toolboxlayoutmanager_generator>
-			::create();
-	xpath->to_node();
-
-	return compiler.new_toolboxlayout_parseconfig(lock);
-}
 
 struct uicompiler::toolboxlayoutmanager_functions {
 
@@ -890,24 +796,6 @@ struct uicompiler::toolboxlayoutmanager_functions {
 
 // Parse generators for the contents of a new_standard_comboboxlayoutmanager
 
-static const_vector<new_standard_comboboxlayoutmanager_generator>
-create_newstandard_comboboxlayoutmanager_vector(uicompiler &compiler,
-						const ui::parser_lock
-						&orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("config");
-
-	if (xpath->count() == 0) // None, return an empty vector.
-		return const_vector<new_standard_comboboxlayoutmanager_generator
-				    >::create();
-
-	xpath->to_node();
-
-	return compiler.new_standard_comboboxlayout_parseconfig(lock);
-}
-
 struct uicompiler::standard_comboboxlayoutmanager_functions {
 
 	// A vector of compiled standard combo-box layout manager generators
@@ -982,24 +870,6 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 
 // Parse generators for the contents of a new_editable_comboboxlayoutmanager
 
-static const_vector<new_editable_comboboxlayoutmanager_generator>
-create_neweditable_comboboxlayoutmanager_vector(uicompiler &compiler,
-						const ui::parser_lock
-						&orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("config");
-
-	if (xpath->count() == 0) // None, return an empty vector.
-		return const_vector<new_editable_comboboxlayoutmanager_generator
-				    >::create();
-
-	xpath->to_node();
-
-	return compiler.new_editable_comboboxlayout_parseconfig(lock);
-}
-
 struct uicompiler::editable_comboboxlayoutmanager_functions {
 
 	// A vector of compiled editable combo-box layout manager generators
@@ -1073,23 +943,6 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 };
 
 // Book layout manager functionality
-// Parse generators for the contents of a new_listlayoutmanager
-
-static const_vector<new_booklayoutmanager_generator>
-create_newbooklayoutmanager_vector(uicompiler &compiler,
-				   const ui::parser_lock &orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("config");
-
-	if (xpath->count() == 0) // None, return an empty vector.
-		return const_vector<new_booklayoutmanager_generator>::create();
-
-	xpath->to_node();
-
-	return compiler.new_booklayout_parseconfig(lock);
-}
 
 struct uicompiler::booklayoutmanager_functions {
 
@@ -1161,23 +1014,6 @@ struct uicompiler::booklayoutmanager_functions {
 };
 
 // Border layout manager functionality
-// Parse generators for the contents of a new_listlayoutmanager
-
-static const_vector<new_borderlayoutmanager_generator>
-create_newborderlayoutmanager_vector(uicompiler &compiler,
-				   const ui::parser_lock &orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("config");
-
-	if (xpath->count() == 0) // None, return an empty vector.
-		return const_vector<new_borderlayoutmanager_generator>::create();
-
-	xpath->to_node();
-
-	return compiler.new_borderlayout_parseconfig(lock);
-}
 
 // Parse the generator for the border's contents.
 

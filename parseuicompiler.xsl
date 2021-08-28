@@ -571,6 +571,36 @@ uicompiler::<xsl:value-of select="name" />_parseconfig(const ui::parser_lock &am
     <xsl:for-each select="parser">
       <xsl:call-template name="make-parser" />
     </xsl:for-each>
+    <exsl:document
+	href="uicompiler.inc.H/uicompiler_configparser.H"
+	method="text">
+      <xsl:for-each select="parser">
+	<xsl:if test="config">
+	  <xsl:text>static const_vector&lt;</xsl:text>
+	  <xsl:value-of select="config" />
+	  <xsl:text>manager_generator&gt;
+create_new</xsl:text><xsl:value-of select="name" /><xsl:text>manager_vector(uicompiler &amp;compiler,
+				   const ui::parser_lock &amp;orig_lock)
+{
+	auto lock=orig_lock->clone();
+
+	auto xpath=lock->get_xpath("config");
+
+	if (xpath->count() == 0) // None, return an empty vector.
+		return const_vector&lt;</xsl:text>
+<xsl:value-of select="config" /><xsl:text>manager_generator&gt;::create();
+
+	xpath->to_node();
+
+	return compiler.</xsl:text>
+<xsl:value-of select="config" /><xsl:text>_parseconfig(lock);
+}
+</xsl:text>
+
+
+	</xsl:if>
+      </xsl:for-each>
+    </exsl:document>
   </xsl:template>
 
   <xsl:template match="*|/">

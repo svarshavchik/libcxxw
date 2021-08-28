@@ -623,7 +623,7 @@ List of values:
     </function>
   </parser>
 
-  <parser>
+  <parser factory="1">
     <name>gridfactory</name>
 
     <use_common>factory</use_common>
@@ -917,7 +917,7 @@ List of values:
     </function>
   </parser>
 
-  <parser>
+  <parser factory="1">
     <name>factory</name>
 
     <parameter>
@@ -1784,6 +1784,7 @@ List of values:
 
   <parser layoutmanager="1">
     <name>booklayout</name>
+    <config>new_booklayout</config>
 
     <parameter>
       <type>booklayoutmanager</type>
@@ -1869,6 +1870,7 @@ List of values:
 
   <parser layoutmanager="1">
     <name>borderlayout</name>
+    <config>new_borderlayout</config>
 
     <parameter>
       <type>borderlayoutmanager</type>
@@ -1947,7 +1949,7 @@ List of values:
 
   <!-- page factory -->
 
-  <parser>
+  <parser factory="1">
     <name>pagefactory</name>
 
     <parameter>
@@ -1995,7 +1997,7 @@ List of values:
 
   <!-- book page factory -->
 
-  <parser>
+  <parser factory="1">
     <name>bookpagefactory</name>
 
     <parameter>
@@ -2083,6 +2085,7 @@ List of values:
   <parser layoutmanager="1">
     <name>listlayout</name>
 
+    <config>new_listlayout</config>
     <parameter>
       <type>listlayoutmanager</type>
       <name>layout</name>
@@ -2220,6 +2223,7 @@ List of values:
 
   <parser layoutmanager="1">
     <name>standard_comboboxlayout</name>
+    <config>new_standard_comboboxlayout</config>
 
     <parameter>
       <type>standard_comboboxlayoutmanager</type>
@@ -2238,6 +2242,7 @@ List of values:
 
   <parser layoutmanager="1">
     <name>editable_comboboxlayout</name>
+    <config>new_editable_comboboxlayout</config>
 
     <parameter>
       <type>editable_comboboxlayoutmanager</type>
@@ -2256,6 +2261,7 @@ List of values:
 
   <parser layoutmanager="1">
     <name>tablelayout</name>
+    <config>new_tablelayout</config>
 
     <parameter>
       <type>tablelayoutmanager</type>
@@ -2297,6 +2303,7 @@ List of values:
 
   <parser layoutmanager="1">
     <name>panelayout</name>
+    <config>new_panelayout</config>
 
     <parameter>
       <type>panelayoutmanager</type>
@@ -2410,7 +2417,7 @@ List of values:
 
   <!-- panefactory initialization -->
 
-  <parser>
+  <parser factory="1">
     <name>panefactory</name>
 
     <parameter>
@@ -2450,7 +2457,7 @@ List of values:
 
   <!-- toolboxfactory initialization -->
 
-  <parser>
+  <parser factory="1">
     <name>toolboxfactory</name>
 
     <parameter>
@@ -2470,6 +2477,7 @@ List of values:
 
   <parser layoutmanager="1">
     <name>itemlayout</name>
+    <config>new_itemlayout</config>
 
     <parameter>
       <type>itemlayoutmanager</type>
@@ -2568,6 +2576,7 @@ List of values:
 
   <parser layoutmanager="1">
     <name>pagelayout</name>
+    <config>new_pagelayout</config>
 
     <parameter>
       <type>pagelayoutmanager</type>
@@ -2655,6 +2664,7 @@ List of values:
 
   <parser layoutmanager="1">
     <name>toolboxlayout</name>
+    <config>new_toolboxlayout</config>
 
     <parameter>
       <type>toolboxlayoutmanager</type>
@@ -3557,7 +3567,7 @@ List of values:
 
   <!-- menubarfactory -->
 
-  <parser>
+  <parser factory="1">
     <name>menubarfactory</name>
 
     <parameter>
@@ -3614,7 +3624,7 @@ List of values:
 
   <!-- menubarlayout -->
 
-  <parser>
+  <parser factory="1">
     <name>menubarlayout</name>
 
     <parameter>
@@ -3734,7 +3744,7 @@ List of values:
 
   <!-- Parser for uielements -->
 
-  <parser>
+  <parser elements="1">
     <name>elements</name>
     <parameter>
       <type>uielements * const</type>
