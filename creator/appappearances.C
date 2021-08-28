@@ -257,6 +257,9 @@ void appObj::appearances_elements_initialize(app_elements_tptr &elements,
 			 appinvoke([&]
 				   (appObj *me)
 				   {
+					   lm->unselect(IN_THREAD);
+					   lm->selected(IN_THREAD, i,
+							true, trigger);
 					   me->appearance_values_popup
 						   ->show_all(IN_THREAD);
 				   });
@@ -264,7 +267,7 @@ void appObj::appearances_elements_initialize(app_elements_tptr &elements,
 
 	// Enable/disable Move/Update/Delete/Create appearance values menu
 	// popup depending on which value has been selected.
-	appearance_values_lm->on_current_list_item_changed
+	appearance_values_lm->on_selection_changed
 		([]
 		 (ONLY IN_THREAD,
 		  const auto &status_info)
@@ -275,7 +278,7 @@ void appObj::appearances_elements_initialize(app_elements_tptr &elements,
 					   appearance_info_t::lock
 						   lock{me->appearance_info};
 
-					   me->appearance_value_changed
+					   me->appearance_value_selected
 						   (IN_THREAD, lock,
 						    status_info);
 				   });
@@ -941,7 +944,7 @@ void appObj::appearance_enable_disable_new_fields(ONLY IN_THREAD,
 	}
 }
 
-void appObj::appearance_value_changed(ONLY IN_THREAD,
+void appObj::appearance_value_selected(ONLY IN_THREAD,
 				      appearance_info_t::lock &lock,
 				      const x::w::list_item_status_info_t &info)
 {
@@ -956,10 +959,6 @@ void appObj::appearance_value_changed(ONLY IN_THREAD,
 		appearance_value_update->enabled(IN_THREAD, false);
 		appearance_value_create->enabled(IN_THREAD, false);
 		appearance_value_delete->enabled(IN_THREAD, false);
-
-		// If the popup is visible hide it. We can still get motion
-		// events after the popup comes up.
-
 		appearance_values_popup->hide(IN_THREAD);
 	}
 	else
@@ -1023,6 +1022,7 @@ void appObj::appearance_on_value_move_up(ONLY IN_THREAD)
 	// it after the current item.
 	tlm->remove_item(IN_THREAD, n-1);
 	tlm->insert_items(IN_THREAD, n, moved_item);
+	tlm->unselect(IN_THREAD);
 
 	appearance_enable_disable_buttons(IN_THREAD, lock);
 }
@@ -1057,7 +1057,7 @@ void appObj::appearance_on_value_move_down(ONLY IN_THREAD)
 	// before this item.
 	tlm->remove_item(IN_THREAD, n+1);
 	tlm->insert_items(IN_THREAD, n, moved_item);
-
+	tlm->unselect(IN_THREAD);
 	appearance_enable_disable_buttons(IN_THREAD, lock);
 }
 
@@ -1737,8 +1737,10 @@ void appObj::appearance_new_value_save_and_hide(ONLY IN_THREAD,
 	std::vector<x::w::list_item_param> new_value_item;
 
 	new_value.format(new_value_item);
-	appearance_values->tablelayout()
-		->insert_items(IN_THREAD, n, new_value_item);
+
+	auto lm=appearance_values->tablelayout();
+	lm->insert_items(IN_THREAD, n, new_value_item);
+	lm->unselect(IN_THREAD);
 
 	// Hide the dialog, and update the new fields submenu, to reflect
 	// that there is a new field value in the appearance, and unless the new

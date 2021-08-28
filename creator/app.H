@@ -1586,11 +1586,11 @@ public:
 	//! Create a new appearance object, invoked from update_theme().
 	get_updatecallbackptr appearance_create(ONLY IN_THREAD);
 
-	//! Currently selected appearance value has changed, scrolled through...
+	//! Currently selected appearance value has changed.
 
-	void appearance_value_changed(ONLY IN_THREAD,
-				      appearance_info_t::lock &,
-				      const x::w::list_item_status_info_t &);
+	void appearance_value_selected(ONLY IN_THREAD,
+				       appearance_info_t::lock &,
+				       const x::w::list_item_status_info_t &);
 
 	//! Selection made from the appearance value popup menu
 	void appearance_on_value_move_up(ONLY IN_THREAD);

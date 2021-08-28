@@ -180,7 +180,7 @@ constexpr size_t callback_trigger_keyfocus_move=9;
 //!
 //! - the element with the pointer focus was remove from its parent window.
 
-constexpr size_t callback_trigger_pointerfocus_move=9;
+constexpr size_t callback_trigger_pointerfocus_move=10;
 
 LIBCXXW_NAMESPACE_END
 
