@@ -26,12 +26,12 @@ void installed_shortcutObj::activated(ONLY IN_THREAD,
 		p->activated(IN_THREAD, trigger);
 }
 
-bool installed_shortcutObj::enabled(ONLY IN_THREAD)
+bool installed_shortcutObj::enabled(ONLY IN_THREAD, enabled_for what)
 {
 	auto p=activate.getptr();
 
 	if (p)
-		return p->enabled(IN_THREAD);
+		return p->enabled(IN_THREAD, what);
 
 	return false;
 }

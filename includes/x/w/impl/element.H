@@ -40,6 +40,7 @@
 #include <x/w/impl/cursor_pointerfwd.H>
 #include <x/w/impl/metrics_horizvertobj.H>
 #include <x/w/impl/focus/label_forfwd.H>
+#include <x/w/impl/focus/focusablefwd.H>
 #include <x/w/impl/fonts/current_fontcollectionfwd.H>
 #include <x/w/impl/popup/popupfwd.H>
 #include <x/w/impl/dnd.H>
@@ -1291,7 +1292,7 @@ class elementObj::implObj : public element_drawObj,
 	//! Turning off focus in any parent widget automatically turns off
 	//! focus processing for all of their child elements, in this manner.
 
-	virtual bool enabled(ONLY IN_THREAD);
+	virtual bool enabled(ONLY IN_THREAD, enabled_for what);
 
 	//! Used in input focus processing, accessed by the connection thread only.
 

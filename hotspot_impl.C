@@ -121,7 +121,7 @@ void hotspotObj::implObj::update(ONLY IN_THREAD,
 
 	auto &e=get_hotspot_element();
 
-	if (e.enabled(IN_THREAD) &&
+	if (e.enabled(IN_THREAD, enabled_for::input_focus) &&
 	    (e.current_keyboard_focus(IN_THREAD) ||
 	     e.current_pointer_focus(IN_THREAD)))
 		new_temperature=temperature::warm;
@@ -171,9 +171,9 @@ void hotspotObj::implObj::activated(ONLY IN_THREAD,
 	} REPORT_EXCEPTIONS(&e);
 }
 
-bool hotspotObj::implObj::enabled(ONLY IN_THREAD)
+bool hotspotObj::implObj::enabled(ONLY IN_THREAD, enabled_for what)
 {
-	return get_hotspot_focusable().focusable_enabled(IN_THREAD);
+	return get_hotspot_focusable().focusable_enabled(IN_THREAD, what);
 }
 
 void hotspotObj::implObj::set_shortcut(const shortcut &sc)

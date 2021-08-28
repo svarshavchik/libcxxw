@@ -7,6 +7,7 @@
 
 #include "shortcut/installed_shortcutfwd.H"
 #include "x/w/impl/connection_threadfwd.H"
+#include "x/w/impl/focus/focusablefwd.H"
 #include "activated_in_threadfwd.H"
 #include "activated_in_threadobj.H"
 #include "x/w/shortcut.H"
@@ -46,7 +47,7 @@ public:
 	//! Implement enabled().
 
 	//! Forwarded to the real enabled().
-	bool enabled(ONLY IN_THREAD) override;
+	bool enabled(ONLY IN_THREAD, enabled_for what) override;
 };
 
 LIBCXXW_NAMESPACE_END

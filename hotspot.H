@@ -155,7 +155,7 @@ class LIBCXX_HIDDEN hotspotObj::implObj
 
 	//! Implemented by forwarding it to the focusable.
 
-	bool enabled(ONLY IN_THREAD) override;
+	bool enabled(ONLY IN_THREAD, enabled_for what) override;
 
 	//! Set the keyboard shortcut for this hotspot.
 

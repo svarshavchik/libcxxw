@@ -365,14 +365,14 @@ class LIBCXX_HIDDEN contextpopup_shortcut_activatorObj
 
 	//! If the attached-to element is visible, the shortcut is enabled.
 
-	bool enabled(ONLY IN_THREAD) override
+	bool enabled(ONLY IN_THREAD, enabled_for what) override
 	{
 		auto eptr=weake.getptr();
 
 		if (!eptr)
 			return false;
 
-		return eptr->impl->data(IN_THREAD).logical_inherited_visibility;
+		return eptr->impl->enabled(IN_THREAD, what);
 	}
 };
 

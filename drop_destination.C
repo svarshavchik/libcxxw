@@ -403,7 +403,8 @@ void generic_windowObj::handlerObj
 
 	if (!(dropping_elementptr &&
 	      dropping_elementptr->can_be_under_pointer(IN_THREAD) &&
-	      dropping_elementptr->enabled(IN_THREAD)))
+	      dropping_elementptr->enabled(IN_THREAD,
+					   enabled_for::input_focus)))
 		return;
 
 	try

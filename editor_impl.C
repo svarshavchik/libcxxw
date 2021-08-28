@@ -1581,7 +1581,7 @@ void editorObj::implObj::enablability_changed(ONLY IN_THREAD)
 {
 	set_background_color
 		(IN_THREAD,
-		 enabled(IN_THREAD)
+		 enabled(IN_THREAD, enabled_for::input_focus)
 		 ? background_color_element<textedit_background_color>
 		 ::get(IN_THREAD)
 		 : background_color_element<textedit_disabled_background_color>
@@ -1735,7 +1735,7 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 					      const button_event &be,
 					      xcb_timestamp_t timestamp)
 {
-	if (!enabled(IN_THREAD))
+	if (!enabled(IN_THREAD, enabled_for::input_focus))
 		return superclass_t::process_button_event(IN_THREAD, be,
 							  timestamp);
 
@@ -2510,7 +2510,7 @@ bool editorObj::implObj::ok_to_lose_focus(ONLY IN_THREAD,
 bool editorObj::implObj::validate_modified(ONLY IN_THREAD,
 					   const callback_trigger_t &trigger)
 {
-	if (!enabled(IN_THREAD))
+	if (!enabled(IN_THREAD, enabled_for::input_focus))
 		// We could be here because we're losing keyboard focus after
 		// we become invisible. Don't want to invoke validation in
 		// that case.

@@ -176,6 +176,32 @@ class LIBCXX_HIDDEN contextmenu_popup_handlerObj
 
 	~contextmenu_popup_handlerObj()=default;
 
+	//! Override enabled()
+
+	//! We don't want to activate any shortcuts in this popup if the
+	//! element it's attached to is not enabled. We don't have a convenient
+	//! hook for getting notified when its enableness status changes.
+	//! It's probably ok to draw everything in this menu as enabled, it
+	//! shouldn't pop up if the parent element is not enabled.
+
+	bool enabled(ONLY IN_THREAD, enabled_for what) override
+	{
+		if (!peepholed_toplevel_listcontainer_handlerObj
+		    ::enabled(IN_THREAD, what))
+			return false;
+
+		if (what != enabled_for::shortcut_activation)
+			return true;
+
+		auto eptr=contextmenu_element.getptr();
+
+		if (!eptr)
+			return false; // We're going away?
+
+
+		return eptr->enabled(IN_THREAD, enabled_for::input_focus);
+	}
+
 	//! Override set_inherited_visibility_mapped
 
 	//! Before mapping the popup, get the pointer position and make

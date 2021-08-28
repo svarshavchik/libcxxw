@@ -136,7 +136,7 @@ public:
 
 	//! If the parent container is set as disabled, so are we.
 
-	bool enabled(ONLY IN_THREAD) override;
+	bool enabled(ONLY IN_THREAD, enabled_for what) override;
 
 	//! Override draw_to_window_picture_as_disabled.
 

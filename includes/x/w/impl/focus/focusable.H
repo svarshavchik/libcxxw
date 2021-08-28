@@ -112,7 +112,7 @@ class focusableObj::implObj : virtual public obj {
 
 	//! Whether this widget is enabled for focusing.
 
-	bool focusable_enabled(ONLY IN_THREAD);
+	bool focusable_enabled(ONLY IN_THREAD, enabled_for what);
 
 	//! Set enabled/disabled
 

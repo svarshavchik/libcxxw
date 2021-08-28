@@ -569,7 +569,8 @@ void generic_windowObj::handlerObj::set_default_focus(ONLY IN_THREAD)
 
 	for (const auto &element:focusable_fields(IN_THREAD))
 	{
-		if (!element->focusable_enabled(IN_THREAD))
+		if (!element->focusable_enabled(IN_THREAD,
+						enabled_for::input_focus))
 			continue;
 
 		if (!element->autofocus.get())
@@ -1202,7 +1203,8 @@ generic_windowObj::handlerObj::lookup_shortcut(ONLY IN_THREAD,
 			// Find the first shortcut that's enabled and
 			// matches the key.
 
-			if (!p->enabled(IN_THREAD)
+			if (!p->enabled(IN_THREAD,
+					enabled_for::shortcut_activation)
 			    ||
 			    !p->installed_shortcut(IN_THREAD).matches(ke))
 				continue;
@@ -1955,7 +1957,9 @@ bool generic_windowObj::handlerObj::process_key_event(ONLY IN_THREAD,
 			--e;
 			const auto &element=*e;
 
-			if (element->focusable_enabled(IN_THREAD))
+			if (element->focusable_enabled(IN_THREAD,
+						       enabled_for::input_focus)
+			    )
 			{
 				element->set_focus_and_ensure_visibility
 					(IN_THREAD, prev_key{});
@@ -2006,7 +2010,8 @@ bool generic_windowObj::handlerObj
 
 	for (const auto &element:focusable_fields(IN_THREAD))
 	{
-		if (element->focusable_enabled(IN_THREAD))
+		if (element->focusable_enabled(IN_THREAD,
+					       enabled_for::input_focus))
 		{
 			element->set_focus_and_ensure_visibility(IN_THREAD,
 								 trigger);
@@ -2854,7 +2859,6 @@ void generic_windowObj::handlerObj::set_input_focus(ONLY IN_THREAD)
 	xcb_set_input_focus(conn()->conn, XCB_NONE, id(),
 			    IN_THREAD->timestamp(IN_THREAD));
 }
-
 
 void generic_windowObj::handlerObj
 ::update_displayed_cursor_pointer(ONLY IN_THREAD)

@@ -29,9 +29,10 @@ focusableObj::implObj::implObj()
 
 focusableObj::implObj::~implObj()=default;
 
-bool focusableObj::implObj::focusable_enabled(ONLY IN_THREAD)
+bool focusableObj::implObj::focusable_enabled(ONLY IN_THREAD,
+					      enabled_for what)
 {
-	return get_focusable_element().enabled(IN_THREAD);
+	return get_focusable_element().enabled(IN_THREAD, what);
 }
 
 #define GET_FOCUSABLE_FIELD_ITER() ({		\
@@ -236,15 +237,16 @@ bool elementObj::implObj
 			 (const auto &thats_me,
 			  const auto &focusable)
 			 {
-				 focusable_enabled=
-					 focusable->focusable_enabled(IN_THREAD);
+				 focusable_enabled=focusable
+					 ->focusable_enabled
+					 (IN_THREAD, enabled_for::input_focus);
 			 });
 
 		if (!focusable_enabled)
 			return true;
 
 	}
-	return !enabled(IN_THREAD);
+	return !enabled(IN_THREAD, enabled_for::input_focus);
 }
 
 void elementObj::label_for(const focusable &f)
@@ -289,7 +291,7 @@ void elementObj::label_for(const focusable &f)
 		 });
 }
 
-bool elementObj::implObj::enabled(ONLY IN_THREAD)
+bool elementObj::implObj::enabled(ONLY IN_THREAD, enabled_for what)
 {
 	// This element has been removed from the container.
 	//
@@ -315,8 +317,8 @@ bool elementObj::implObj::enabled(ONLY IN_THREAD)
 			 (const auto &thats_me,
 			  const auto &focusable)
 			 {
-				 check_this=ref(&focusable
-						->get_focusable_element());
+				 check_this=ref{&focusable
+					 ->get_focusable_element()};
 			 });
 	}
 
@@ -334,7 +336,7 @@ bool elementObj::implObj
 				  const button_event &be,
 				  xcb_timestamp_t timestamp)
 {
-	if (!enabled(IN_THREAD))
+	if (!enabled(IN_THREAD, enabled_for::input_focus))
 		return false;
 
 	return process_button_event(IN_THREAD, be, timestamp);
@@ -459,7 +461,8 @@ void focusableObj::implObj::next_focus(ONLY IN_THREAD,
 
 	while (starting_iter != ff.end())
 	{
-		if ((*starting_iter)->focusable_enabled(IN_THREAD))
+		if ((*starting_iter)
+		    ->focusable_enabled(IN_THREAD,enabled_for::input_focus))
 		{
 			switch_focus(IN_THREAD, *starting_iter, trigger);
 			return;
@@ -481,7 +484,8 @@ void focusableObj::implObj::next_focus(ONLY IN_THREAD,
 
 	for (starting_iter=ff.begin(); starting_iter != ff.end();
 	     ++starting_iter)
-		if ((*starting_iter)->focusable_enabled(IN_THREAD))
+		if ((*starting_iter)
+		    ->focusable_enabled(IN_THREAD, enabled_for::input_focus))
 		{
 			switch_focus(IN_THREAD, *starting_iter, trigger);
 			return;
@@ -506,7 +510,8 @@ void focusableObj::implObj::prev_focus(ONLY IN_THREAD,
 	while (iter != ff.begin())
 	{
 		--iter;
-		if ((*iter)->focusable_enabled(IN_THREAD))
+		if ((*iter)->focusable_enabled(IN_THREAD,
+					       enabled_for::input_focus))
 		{
 			switch_focus(IN_THREAD, *iter, trigger);
 			return;
@@ -528,7 +533,8 @@ void focusableObj::implObj::prev_focus(ONLY IN_THREAD,
 	for (iter=ff.end(); iter != ff.begin(); )
 	{
 		--iter;
-		if ((*iter)->focusable_enabled(IN_THREAD))
+		if ((*iter)->focusable_enabled(IN_THREAD,
+					       enabled_for::input_focus))
 		{
 			switch_focus(IN_THREAD, *iter, trigger);
 			return;
@@ -591,7 +597,8 @@ bool generic_windowObj::handlerObj::process_focus_updates(ONLY IN_THREAD)
 		{
 			auto &impl=*f;
 
-			if (impl.get_focusable_element().enabled(IN_THREAD))
+			if (impl.get_focusable_element()
+			    .enabled(IN_THREAD, enabled_for::input_focus))
 			{
 				impl.delayed_input_focus_mcguffin(IN_THREAD)=
 					delayed_input_focusptr{};
@@ -614,7 +621,7 @@ void focusableObj::implObj::request_focus_if_possible(ONLY IN_THREAD,
 {
 	auto &e=get_focusable_element();
 
-	if (!e.enabled(IN_THREAD))
+	if (!e.enabled(IN_THREAD, enabled_for::input_focus))
 	{
 		if (now_or_never)
 			return;

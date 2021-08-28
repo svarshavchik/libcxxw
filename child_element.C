@@ -337,12 +337,12 @@ bool child_elementObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 		.process_key_event(IN_THREAD, ke);
 }
 
-bool child_elementObj::enabled(ONLY IN_THREAD)
+bool child_elementObj::enabled(ONLY IN_THREAD, enabled_for what)
 {
-	if (!child_container->container_element_impl().enabled(IN_THREAD))
+	if (!child_container->container_element_impl().enabled(IN_THREAD, what))
 		return false;
 
-	return superclass_t::enabled(IN_THREAD);
+	return superclass_t::enabled(IN_THREAD, what);
 }
 
 bool child_elementObj::draw_to_window_picture_as_disabled(ONLY IN_THREAD)

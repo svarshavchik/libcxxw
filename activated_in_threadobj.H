@@ -8,6 +8,7 @@
 #include "activated_in_threadfwd.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/hotspotfwd.H"
+#include "x/w/impl/focus/focusablefwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -30,7 +31,7 @@ public:
 	virtual void activated(ONLY IN_THREAD, const callback_trigger_t &)=0;
 
 	//! I am enabled.
-	virtual bool enabled(ONLY IN_THREAD)=0;
+	virtual bool enabled(ONLY IN_THREAD, enabled_for what)=0;
 };
 
 LIBCXXW_NAMESPACE_END

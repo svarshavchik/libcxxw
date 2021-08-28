@@ -72,7 +72,7 @@ public:
 
 	//! Is the shortcut enabled?
 
-	bool enabled(ONLY IN_THREAD) override
+	bool enabled(ONLY IN_THREAD, enabled_for what) override
 	{
 		bool enabled=false;
 
@@ -89,6 +89,19 @@ public:
 
 				 if (p)
 					 enabled=p->enabled(lock);
+
+				 if (!enabled)
+					 return;
+
+				 switch (what) {
+				 case enabled_for::shortcut_activation:
+					 enabled=impl->focusableObj::implObj
+						 ::focusable_enabled(IN_THREAD,
+								     what);
+					 break;
+				 case enabled_for::input_focus:
+					 break;
+				 }
 			 });
 
 		return enabled;

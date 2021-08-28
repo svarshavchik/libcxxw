@@ -42,7 +42,7 @@ bool drag_destination_elementObj<element_impl>
 				 const source_dnd_formats_t &source_formats,
 				 xcb_timestamp_t timestamp)
 {
-	if (this->enabled(IN_THREAD) &&
+	if (this->enabled(IN_THREAD, enabled_for::input_focus) &&
 	    this->accepts_drop(IN_THREAD, source_formats, timestamp))
 	{
 		accepting_element=ref<elementObj::implObj>{this};
