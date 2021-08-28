@@ -7,5 +7,13 @@
     <longopt>testfocus</longopt>
     <descr>Automated test option</descr>
   </option>
+  <option>
+    <name>testredraw</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>f</opt>
+    <longopt>testredraw</longopt>
+    <descr>Automated test option</descr>
+  </option>
   <defaultoptions />
 </optclass>

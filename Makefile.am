@@ -1626,6 +1626,7 @@ test:
 	./testprogressbar
 	./testitemlayoutmanager --testitems
 	LC_ALL=ru_RU.UTF-8 ./testpage --testfocus
+	./testpage --testredraw
 	./testwordwrappablelabel --testmetrics
 	./testunfocus
 	./testunfocus autorestore

@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/mpobj.H>
 
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
@@ -69,6 +70,18 @@ public:
 	}
 };
 
+static LIBCXX_NAMESPACE::mpobj<bool> redrawn_label;
+
+#define DEBUG_ACTUAL_DRAW() do {					\
+		if (objname() == "x::w::label_elementObj<x::w::child_elementObj>") \
+		{							\
+			LIBCXX_NAMESPACE::mpobj_lock lock{redrawn_label}; \
+									\
+			*lock=true;					\
+		}							\
+	} while(0)
+
+#include "element_impl.C"
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
 auto name_tab(const LIBCXX_NAMESPACE::w::gridlayoutmanager &glm)
@@ -371,6 +384,107 @@ void testpage(const testpage_options &options)
 	}
 }
 
+void create_testredraw(const LIBCXX_NAMESPACE::w::main_window &mw)
+{
+	LIBCXX_NAMESPACE::w::gridlayoutmanager glm=mw->get_layoutmanager();
+
+	auto c=glm->append_row()
+		->create_container([&]
+				   (const auto &s)
+		{
+			LIBCXX_NAMESPACE::w::pagelayoutmanager
+				pl=s->get_layoutmanager();
+
+			LIBCXX_NAMESPACE::w::pagefactory sf=pl->append();
+
+			auto page0=
+				sf->halign(LIBCXX_NAMESPACE::w::halign::fill)
+				.valign(LIBCXX_NAMESPACE::w::valign::fill)
+				.create_container
+				([&]
+				 (const auto &c)
+				{
+					c->set_background_color
+						(LIBCXX_NAMESPACE::w::white);
+				},
+				 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
+			page0->show();
+
+			sf->create_label("Label");
+
+		}, LIBCXX_NAMESPACE::w::new_pagelayoutmanager{});
+
+	c->show();
+}
+
+static LIBCXX_NAMESPACE::mpcobj<bool> idled;
+
+static void wait_for_idle(const LIBCXX_NAMESPACE::w::main_window &mw)
+{
+	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{idled};
+
+	*lock=false;
+
+	mw->in_thread_idle([]
+			   (ONLY IN_THREAD)
+			   {
+				   LIBCXX_NAMESPACE::mpcobj<bool>::lock
+					   lock{idled};
+
+				   *lock=true;
+
+				   lock.notify_all();
+			   });
+
+	lock.wait([&]{ return *lock; });
+}
+
+void testredraw()
+{
+	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
+
+	auto close_flag=close_flag_ref::create();
+
+	auto mw=LIBCXX_NAMESPACE::w::main_window::create
+		([&]
+		 (const auto &mw)
+		{
+			create_testredraw(mw);
+			LIBCXX_NAMESPACE::w::container{
+				mw->gridlayout()->get(0,0)
+					}->pagelayout()->open(0);
+		});
+
+	mw->set_window_title("Redraw");
+	mw->show();
+
+	guard(mw->connection_mcguffin());
+
+	mw->on_disconnect([]
+			  {
+				  exit(1);
+			  });
+
+	mw->on_delete([close_flag]
+		      (THREAD_CALLBACK,
+		       const auto &ignore)
+		      {
+			      close_flag->close();
+		      });
+
+	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
+
+	wait_for_idle(mw);
+
+	LIBCXX_NAMESPACE::w::container{mw->gridlayout()->get(0, 0)}
+		->pagelayout()->open(1);
+
+	wait_for_idle(mw);
+
+	if (!redrawn_label.get())
+		throw EXCEPTION("Did not redraw the label");
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -381,7 +495,10 @@ int main(int argc, char **argv)
 
 		options.parse(argc, argv);
 
-		testpage(options);
+		if (options.testredraw->is_set())
+			testredraw();
+		else
+			testpage(options);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

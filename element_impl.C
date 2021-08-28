@@ -1166,6 +1166,10 @@ void elementObj::implObj::draw(ONLY IN_THREAD,
 	if (areas.empty() || di.element_viewport.empty())
 		return; // Don't bother.
 
+#ifdef DEBUG_ACTUAL_DRAW
+	DEBUG_ACTUAL_DRAW();
+#endif
+
 	if (DO_NOT_DRAW(IN_THREAD))
 		clear_to_color(IN_THREAD, di, areas);
 	else

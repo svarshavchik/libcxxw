@@ -295,9 +295,6 @@ void containerObj::implObj
 		       [&]
 		       (const element &e)
 		       {
-			       if (!e->impl->data(IN_THREAD).actual_visibility)
-				       return;
-
 			       // visibility_updated() took care of
 			       // invoking draw_after_visbility_updated()
 			       // for the container. We now need
