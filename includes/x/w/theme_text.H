@@ -15,8 +15,8 @@ LIBCXXW_NAMESPACE_START
 /*! Helper for creating a \ref text_param "text parameter" that uses fonts and colors, in gettext-compatible way
 
 \code
-#include &lt;INSERT_LIBX_NAMESPACE/locale.H&gt;
-#include &lt;INSERT_LIBX_NAMESPACE/messages.H&gt;
+#include <INSERT_LIBX_NAMESPACE/locale.H>
+#include <INSERT_LIBX_NAMESPACE/messages.H>
 
 auto catalog=INSERT_LIBX_NAMESPACE::w::messages::create("app", INSERT_LIBX_NAMESPACE::locale::base::utf8());
 
@@ -52,6 +52,8 @@ referencing the theme-defined color. "name" is a
 are always available; other "name"s must be specified in the theme file.
 
 - ${font:name} - adds font "name" from the theme file to the \c text_param.
+"name" can follows the same format as a
+\ref theme_font "INSERT_LIBX_NAMESPACE::w::theme_font".
 
 - ${decoration:underline} and ${decoration:none} - turns on/off the
 corresponding text decoration.

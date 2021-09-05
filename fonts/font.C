@@ -302,6 +302,8 @@ font font::operator+(const std::string_view &s) const
 	return f;
 }
 
+static const char seps[] = ";,";
+
 font &font::operator+=(const std::string_view &s)
 {
 	const char *beg=s.begin();
@@ -309,14 +311,9 @@ font &font::operator+=(const std::string_view &s)
 
 	chrcasecmp::str_equal_to cmpi;
 
-	const auto eof=std::istringstream::traits_type::eof();
-
-	// The first token is font family which may contain spaces.
-	const char *sep=";";
-
 	while (beg != end)
 	{
-		if (strchr(sep, *beg))
+		if (strchr(seps, *beg))
 		{
 			++beg;
 			continue;
@@ -324,10 +321,10 @@ font &font::operator+=(const std::string_view &s)
 
 		auto p=beg;
 		beg=std::find_if(beg, end,
-				 [sep]
+				 []
 				 (char c)
 				 {
-					 return strchr(sep, c) != 0;
+					 return strchr(seps, c) != 0;
 				 });
 
 		std::string setting{p, beg};
@@ -336,47 +333,42 @@ font &font::operator+=(const std::string_view &s)
 
 		auto equals=setting.find('=');
 
-		// Subsequent tokens can have more separator chars.
-		sep=";, \t\r\n";
-
 		if (equals == setting.npos)
 		{
-			family=setting;
+			auto s=trim(setting);
+
+			if (!s.empty())
+				family=s;
 			continue;
 		}
 
 		std::string name=trim(setting.substr(0, equals));
 		std::string value=trim(setting.substr(equals+1));
 
-		// TODO: when from_chars supported floating point.
+		if (value.empty())
+			continue;
 
 		if (cmpi(name, "point_size"))
 		{
 			double v;
 
-			std::istringstream i{value};
+			auto ret=std::from_chars(&value[0],
+						 &value[0]+value.size(), v);
 
-			x::imbue im{x::locale::base::c(), i};
-
-			i >> v;
-
-			if (!i.fail() && i.get() == eof)
-			{
+			if (ret.ec == std::errc{} &&
+			    *ret.ptr == 0)
 				set_point_size(v);
-			}
 		}
 
 		if (cmpi(name, "scale"))
 		{
 			double v;
 
-			std::istringstream i{value};
+			auto ret=std::from_chars(&value[0],
+						 &value[0]+value.size(), v);
 
-			x::imbue im{x::locale::base::c(), i};
-
-			i >> v;
-
-			if (!i.fail() && i.get() == eof)
+			if (ret.ec == std::errc{} &&
+			    *ret.ptr == 0)
 				scale(v);
 		}
 

@@ -16,6 +16,48 @@ LIBCXXW_NAMESPACE_START
 
 //! A font specification.
 
+//! \code
+//! INSERT_LIBX_NAMESPACE::w::font f{"arial"};
+//! \endcode
+//!
+//! Construct a font specification for the "Arial" font family.
+
+//! \code
+//! INSERT_LIBX_NAMESPACE::w::font f{"arial", 10.0};
+//! \endcode
+//!
+//! Construct a font specification for the "Arial" font family, 10 points.
+//!
+//! \code
+//! INSERT_LIBX_NAMESPACE::w::font f{"liberation sans; point_size=10, slant=italic"};
+//!
+//! INSERT_LIBX_NAMESPACE::w::font f{"family=liberation sans, point_size=10, slant=italic"};
+//! \endcode
+//!
+//! The constructor that takes a single text parameter parses its string
+//! further in order to extract a more detailed font specification as per
+//! the examples above:
+//!
+//! - either commas or semicolons (together with surrounding namespaces
+//! gets recognized as delimiter for a list of setting
+//!
+//! - each setting takes the form of a "parameter=value"
+//!
+//! - a setting without an equals sign is interpreted as value for the
+//!  "family" setting.
+//!
+//! Otherwise the parameters and values are:
+//!
+//! - "foundry=<n>" - font foundry
+//! - "family=<n>" - font family
+//! - "weight=n" - same as calling set_weight()
+//! - "slant=n" - same as calling set_slant()
+//! - "width=n" - same as calling set_width()
+//! - "style=n" - same as calling set_style()
+//! - "scale=n" - same as calling scale()
+//! - "point_size=n" - same as calling set_point_size()
+//! - "pixel_size=n" - same as calling pixel_size()
+
 struct font {
 
 	//! Font foundry
@@ -298,16 +340,9 @@ struct font {
 
 	//! Create a new font by modifying this font.
 
-	//! The string consists of:
-	//!
-	//! - "foundry=<n>" - font foundry
-	//! - "family=<n>" - font family
-	//! - "weight=n"   - same as calling set_weight()
-	//! - "slant=n"    - same as calling set_slant()
-	//! - "width=n"    - same as calling set_width()
-	//! - "style=n"    - same as calling set_style()
-	//! - "point_size" - same as calling set_point_size()
-	//! - "pixel_size" - same as calling pixel_size()
+	//! The string is in the same format as the constructor's parameter,
+	//! and the additional properties from the string get applied to
+	//! this font specification.
 
 	font operator+(const std::string_view &s) const;
 

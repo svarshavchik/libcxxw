@@ -1,3 +1,7 @@
+2021-08-29  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Change the parsing of "font" objects, update documentation.
+
 0.29.0
 
 2021-03-23  Sam Varshavchik  <mrsam@courier-mta.com>
