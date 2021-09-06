@@ -117,6 +117,15 @@ public:
 	const bool allowthemerefs;
 
 private:
+
+	//! The uncompiled_elements' container type.
+
+	typedef std::unordered_map<std::string,
+				   ui::parser_lock,
+				   std::hash<std::string>,
+				   std::equal_to<void>
+				   > uncompiled_elements_t;
+
 	//! Top level factory and layouts that aren't compiled yet.
 
 	//! The constructor puts all <factory> and <layout>
@@ -130,7 +139,13 @@ private:
 	//! already been generated it gets plucked from the generators,
 	//! otherwise it's removed from uncompiled_elements and compiled,
 	//! recursively.
-	std::unordered_map<std::string, ui::parser_lock> uncompiled_elements;
+	uncompiled_elements_t uncompiled_elements;
+
+	//! Look up something specific in the uncompiled_elements
+
+	uncompiled_elements_t::iterator find_uncompiled(const std::string &name,
+							const char *element,
+							const char *type);
 
 public:
 	//! Parser for grid layout manager generator.

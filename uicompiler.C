@@ -1329,17 +1329,7 @@ uicompiler::compiler_functions
 			return {{name, iter->second}};
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "factory"
-	    || iter->second->get_any_attribute("type") != "elements")
-	{
-		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=compiler.find_uncompiled(name, "factory", "elements");
 
 	auto new_lock=iter->second;
 
@@ -1350,6 +1340,28 @@ uicompiler::compiler_functions
 	generators->elements_generators.insert_or_assign(name, ret);
 
 	return {{name, ret}};
+}
+
+uicompiler::uncompiled_elements_t
+::iterator uicompiler::find_uncompiled(const std::string &name,
+				       const char *element,
+				       const char *type)
+{
+	auto iter=uncompiled_elements.find(name);
+
+	if (iter == uncompiled_elements.end()
+	    || iter->second->name() != element
+	    || iter->second->get_any_attribute("type") != type)
+	{
+		throw EXCEPTION(gettextmsg
+				(_("Layout or factory \"%1%\" "
+				   "not found, is the wrong <type>, "
+				   "or is a part of a recursive sequence "
+				   "of layouts and factories"),
+				 name));
+	}
+
+	return iter;
 }
 
 functionptr<void (THREAD_CALLBACK, const tooltip_factory &)>

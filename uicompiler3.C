@@ -1343,17 +1343,7 @@ uicompiler::lookup_gridlayoutmanager_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "grid")
-	{
-		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "grid");
 
 	auto new_lock=iter->second;
 
@@ -1377,17 +1367,7 @@ uicompiler::lookup_listlayoutmanager_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "list")
-	{
-		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "list");
 
 	auto new_lock=iter->second;
 
@@ -1411,17 +1391,7 @@ uicompiler::lookup_standard_comboboxlayoutmanager_generators(const ui::parser_lo
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "standard_combobox")
-	{
-		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "standard_combobox");
 
 	auto new_lock=iter->second;
 
@@ -1445,17 +1415,7 @@ uicompiler::lookup_editable_comboboxlayoutmanager_generators(const ui::parser_lo
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "editable_combobox")
-	{
-		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "editable_combobox");
 
 	auto new_lock=iter->second;
 
@@ -1479,17 +1439,7 @@ uicompiler::lookup_tablelayoutmanager_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "table")
-	{
-		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "table");
 
 	auto new_lock=iter->second;
 
@@ -1513,17 +1463,7 @@ uicompiler::lookup_panelayoutmanager_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "pane")
-	{
-		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "pane");
 
 	auto new_lock=iter->second;
 
@@ -1550,17 +1490,7 @@ uicompiler::lookup_panefactory_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "factory"
-	    || iter->second->get_any_attribute("type") != "pane")
-	{
-		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "factory", "pane");
 
 	auto new_lock=iter->second;
 
@@ -1587,17 +1517,7 @@ uicompiler::lookup_toolboxfactory_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "factory"
-	    || iter->second->get_any_attribute("type") != "toolbox")
-	{
-		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "factory", "toolbox");
 
 	auto new_lock=iter->second;
 
@@ -1621,17 +1541,7 @@ uicompiler::lookup_itemlayoutmanager_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "item")
-	{
-		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "item");
 
 	auto new_lock=iter->second;
 
@@ -1655,17 +1565,7 @@ uicompiler::lookup_pagelayoutmanager_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "page")
-	{
-		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "page");
 
 	auto new_lock=iter->second;
 
@@ -1689,17 +1589,7 @@ uicompiler::lookup_toolboxlayoutmanager_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "toolbox")
-	{
-		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "toolbox");
 
 	auto new_lock=iter->second;
 
@@ -1723,17 +1613,7 @@ uicompiler::lookup_booklayoutmanager_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "book")
-	{
-		throw EXCEPTION(gettextmsg(_("Book layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "book");
 
 	auto new_lock=iter->second;
 
@@ -1760,17 +1640,7 @@ uicompiler::lookup_gridfactory_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "factory"
-	    || iter->second->get_any_attribute("type") != "grid")
-	{
-		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "factory", "grid");
 
 	auto new_lock=iter->second;
 
@@ -1799,17 +1669,7 @@ uicompiler::lookup_menubarlayoutmanager_generators
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "menubar")
-	{
-		throw EXCEPTION(gettextmsg(_("Layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "menubar");
 
 	auto new_lock=iter->second;
 
@@ -1836,17 +1696,7 @@ uicompiler::lookup_menubarfactory_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "factory"
-	    || iter->second->get_any_attribute("type") != "menubar")
-	{
-		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "factory", "menubar");
 
 	auto new_lock=iter->second;
 
@@ -1873,17 +1723,7 @@ uicompiler::lookup_pagefactory_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "factory"
-	    || iter->second->get_any_attribute("type") != "page")
-	{
-		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "factory", "page");
 
 	auto new_lock=iter->second;
 
@@ -1910,17 +1750,7 @@ uicompiler::lookup_bookpagefactory_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "factory"
-	    || iter->second->get_any_attribute("type") != "book")
-	{
-		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "factory", "book");
 
 	auto new_lock=iter->second;
 
@@ -1944,17 +1774,7 @@ uicompiler::lookup_borderlayoutmanager_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "layout"
-	    || iter->second->get_any_attribute("type") != "border")
-	{
-		throw EXCEPTION(gettextmsg(_("Border layout \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "layout", "border");
 
 	auto new_lock=iter->second;
 
@@ -1981,17 +1801,7 @@ uicompiler::lookup_elements_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=uncompiled_elements.find(name);
-
-	if (iter == uncompiled_elements.end()
-	    || iter->second->name() != "factory"
-	    || iter->second->get_any_attribute("type") != "pane")
-	{
-		throw EXCEPTION(gettextmsg(_("Factory \"%1%\", "
-					     "does not exist, or is a part of "
-					     "an infinitely-recursive layout"),
-					   name));
-	}
+	auto iter=find_uncompiled(name, "factory", "pane");
 
 	auto new_lock=iter->second;
 
