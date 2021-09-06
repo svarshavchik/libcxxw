@@ -1,5 +1,11 @@
 2021-08-29  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Factor out new_list_or_combobox_layoutmanager out of
+	new_listlayoutmanager, inherit it by new_custom_comboboxlayoutmanager,
+	inheriting a bunch of common settings, not just synchronized_axis,
+	that should be safe for combo-boxes to use. This includes the number
+	of columns.
+
 	* Change the parsing of "font" objects, update documentation.
 
 0.29.0

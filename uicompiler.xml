@@ -2777,13 +2777,13 @@ List of values:
 
   </parser>
 
-  <!-- new_listlayoutmanager initialization -->
+  <!-- new_list_or_combobox_layoutmanager initialization -->
 
   <parser>
-    <name>new_listlayout</name>
+    <name>new_list_or_combobox_layout</name>
 
     <parameter>
-      <type>new_listlayoutmanager_plainptr</type>
+      <type>new_list_or_combobox_layoutmanager_plainptr</type>
       <name>layout</name>
     </parameter>
 
@@ -2791,79 +2791,6 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
-
-    <function>
-      <name>selection_type</name>
-      <object>layout</object>
-      <invoke>selection_type=</invoke>
-
-      <parameter>
-	<name>columns</name>
-	<xpath>.</xpath>
-	<type>to_selection_type</type>
-      </parameter>
-    </function>
-
-    <function>
-      <name>height</name>
-      <object>layout</object>
-      <invoke>height</invoke>
-      <condition>
-	<exists>min_rows</exists>
-      </condition>
-      <parameter>
-	<name>min_rows</name>
-	<type>to_size_t</type>
-      </parameter>
-      <parameter>
-	<name>max_rows</name>
-	<type>to_size_t</type>
-      </parameter>
-    </function>
-
-    <function>
-      <name>height</name>
-      <object>layout</object>
-      <invoke>variable_height</invoke>
-      <condition>
-	<exists>variable</exists>
-      </condition>
-    </function>
-
-    <function>
-      <name>height</name>
-      <object>layout</object>
-      <invoke>height</invoke>
-
-      <parameter>
-	<name>min</name>
-	<type>single_value</type>
-	<before-passing-parameter>{</before-passing-parameter>
-	<lookup>
-	  <function>compiler.generators-&gt;lookup_dim</function>
-	  <default_params />
-	</lookup>
-      </parameter>
-
-      <parameter>
-	<name>preferred</name>
-	<type>single_value</type>
-	<lookup>
-	  <function>compiler.generators-&gt;lookup_dim</function>
-	  <default_params />
-	</lookup>
-      </parameter>
-
-      <parameter>
-	<name>max</name>
-	<type>single_value</type>
-	<after-passing-parameter>}</after-passing-parameter>
-	<lookup>
-	  <function>compiler.generators-&gt;lookup_dim</function>
-	  <default_params />
-	</lookup>
-      </parameter>
-    </function>
 
     <function>
       <name>width</name>
@@ -3058,6 +2985,97 @@ List of values:
 	</lookup>
       </parameter>
     </function>
+  </parser>
+
+  <!-- new_listlayoutmanager initialization -->
+
+  <parser>
+    <name>new_listlayout</name>
+
+    <parameter>
+      <type>new_listlayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <use_common>new_list_or_combobox_layout</use_common>
+
+    <function>
+      <name>selection_type</name>
+      <object>layout</object>
+      <invoke>selection_type=</invoke>
+
+      <parameter>
+	<name>columns</name>
+	<xpath>.</xpath>
+	<type>to_selection_type</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>height</name>
+      <object>layout</object>
+      <invoke>height</invoke>
+      <condition>
+	<exists>min_rows</exists>
+      </condition>
+      <parameter>
+	<name>min_rows</name>
+	<type>to_size_t</type>
+      </parameter>
+      <parameter>
+	<name>max_rows</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>height</name>
+      <object>layout</object>
+      <invoke>variable_height</invoke>
+      <condition>
+	<exists>variable</exists>
+      </condition>
+    </function>
+
+    <function>
+      <name>height</name>
+      <object>layout</object>
+      <invoke>height</invoke>
+
+      <parameter>
+	<name>min</name>
+	<type>single_value</type>
+	<before-passing-parameter>{</before-passing-parameter>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<name>preferred</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<name>max</name>
+	<type>single_value</type>
+	<after-passing-parameter>}</after-passing-parameter>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
 
     <function>
       <name>horizontal_scrollbar</name>
@@ -3133,6 +3151,8 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
+
+    <use_common>new_list_or_combobox_layout</use_common>
 
     <function>
       <name>optional</name>

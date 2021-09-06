@@ -185,12 +185,25 @@ typedef functionref<void (const new_booklayoutmanager_plainptr &layout,
 
 typedef new_listlayoutmanager *new_listlayoutmanager_plainptr;
 
+//! Pseudo-ref used to initialize a new_list_or_combobox_layoutmanager
+
+typedef new_list_or_combobox_layoutmanager
+*new_list_or_combobox_layoutmanager_plainptr;
+
 //! Generate something to initialize a new_listlayoutmanager
 
 //! \see uigenerators
 typedef functionref<void (const new_listlayoutmanager_plainptr &layout,
 			  uielements &elements)
 		    > new_listlayoutmanager_generator;
+
+//! Generate something to initialize a new_list_or_combobox_layoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_list_or_combobox_layoutmanager_plainptr
+			  &layout,
+			  uielements &elements)
+		    > new_list_or_combobox_layoutmanager_generator;
 
 //! Pseudo-ref used to initialize a new_custom_comboboxlayoutmanager parameter
 

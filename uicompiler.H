@@ -245,6 +245,11 @@ public:
 	vector<new_booklayoutmanager_generator
 	       > new_booklayout_parseconfig(const ui::parser_lock &lock);
 
+	//! Parser for the new list or combobox layout manager generator
+
+	vector<new_list_or_combobox_layoutmanager_generator
+	       > new_list_or_combobox_layout_parseconfig(const ui::parser_lock &lock);
+
 	//! Parser for the new list layout manager generator
 
 	vector<new_listlayoutmanager_generator
@@ -384,6 +389,10 @@ private:
 	//! Generate a single new_booklayoutmanager instruction.
 	new_booklayoutmanager_generator
 	new_booklayout_parser(const ui::parser_lock &lock);
+
+	//! Generate a single new_list_or_combobox_layoutmanager instruction.
+	new_list_or_combobox_layoutmanager_generator
+	new_list_or_combobox_layout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_listlayoutmanager instruction.
 	new_listlayoutmanager_generator

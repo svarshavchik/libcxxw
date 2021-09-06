@@ -74,7 +74,7 @@ See COPYING for distribution information.
       An optional
       <tag class='element'>config</tag> element sets non-default values
       of the
-      <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>
+      <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standardlayoutmanager</classname></ulink>
       or the
       <ulink url="&link-x--w--new-editable-comboboxlayoutmanager;"><classname>&ns;::w::new_editable_comboboxlayoutmanager</classname></ulink>
       that creates the container:
@@ -180,6 +180,17 @@ See COPYING for distribution information.
 	</listitem>
       </varlistentry>
     </variablelist>
+
+    <para>
+      The
+      <tag class='element'>config</tag> element shares
+      additional common settings with
+      <link linkend="uixmllayoutnewlistlayoutmanager">
+	<classname>&ns;::w::new_listlayoutmanager</classname>
+      </link>:
+    </para>
+    &uixmllayoutnewlistcombobox;
+
   </section>
 </section>
 

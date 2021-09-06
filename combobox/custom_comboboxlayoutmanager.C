@@ -416,7 +416,8 @@ focusable_container new_custom_comboboxlayoutmanager
 	new_listlayoutmanager style=
 		combobox_new_listlayoutmanager(selection_required,
 					       appearance);
-	style.synchronized_columns=synchronized_columns;
+
+	static_cast<new_list_or_combobox_layoutmanager &>(style)=*this;
 
 	custom_combobox_popup_containerptr popup_containerptr;
 

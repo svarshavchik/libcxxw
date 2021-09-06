@@ -121,6 +121,7 @@
 <!ENTITY uixmllayoutitem SYSTEM "uixmldoclayoutitem.xml">
 <!ENTITY uixmllayoutlistelements SYSTEM "uixmldoclayoutlistelements.xml">
 <!ENTITY uixmllayoutlist SYSTEM "uixmldoclayoutlist.xml">
+<!ENTITY uixmllayoutnewlistcombobox SYSTEM "uixmldoclayoutnewlistcombobox.xml">
 <!ENTITY uixmllayoutmenubar SYSTEM "uixmldoclayoutmenubar.xml">
 <!ENTITY uixmllayoutpageelements SYSTEM "uixmldoclayoutpageelements.xml">
 <!ENTITY uixmllayoutpage SYSTEM "uixmldoclayoutpage.xml">

@@ -80,43 +80,218 @@ struct submenu_appearance {
 
 struct submenu : submenu_creator, submenu_appearance {};
 
-//! Create a new container with a \ref listlayoutmanager "list layout manager".
+/*!
 
-//! This parameter gets passed to a \ref factory "factory"'s
-//! \c create_focusable_container()
-//! to create a simple selection list.
-//!
-//! The constructor takes one optional parameter, which can be:
-//!
-//! - \c INSERT_LIBX_NAMESPACE::w::highlighted_list - selected items in
-//! the list are displayed by a highlighted background color. This is the
-//! default value.
-//!
-//! - \c INSERT_LIBX_NAMESPACE::w::bulleted_list - a bullet appears next to
-//! each selected item in the list.
-//!
-//! The remaining fields get initialized to their default values and may be
-//! modified prior before using \c create_focusable_container().
-//!
-//! \par Synchronized lists
-//!
-//! It is possible to use the same \c new_listlayoutmanager to create more
-//! than one selection list. Each individual selection list's width gets
-//! automatically sized to be big enough to show the widest list item;
-//! but using the same \c new_listlayoutmanager makes all individual selection
-//! lists have the same width, the width of the widest selection list.
-//! This results in a tidy visual appearance when these selection lists appear
-//! in the same column.
-//!
-//! This is due to the default-constructed \c synchronized_columns member.
-//! Each selection list constructed with the same
-//! \ref synchronized_axis "synchronized axis object" and the same number
-//! of columns gets sized together with all selection lists that link to the
-//! same synchronized axis object. It is possible to constructed multiple
-//! selection lists using different \c new_listlayoutmanager objects, provided
-//! that the synchronized axis object gets carefully copied to each one.
+Configuration common to list and combo-box layout managers.
 
-class new_listlayoutmanager : public new_focusable_layoutmanager {
+Common configuration settings, inherited by
+\ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager",
+\ref new_custom_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_custom_comboboxlayoutmanager",
+\ref new_standard_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_standard_comboboxlayoutmanager", and
+\ref new_editable_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager",
+
+\par Synchronized lists
+
+It is possible to use the same
+\c new_list_or_combobox_layoutmanager object to create more
+than one selection list or combo-box. Each individual list's width gets
+automatically sized to be big enough to show the widest list item;
+but using the same new listlayoutmanager object makes all individual lists
+and combo-boxes have the same width, the width of the widest list or
+combo-box.
+This results in a tidy visual appearance when these lists or
+combo-boxes appear in the same column.
+
+This is due to the default-constructed \c synchronized_columns member.
+Each selection list or combo-box constructed with the same
+\ref synchronized_axis "synchronized axis object" and the same number
+of columns gets sized together with all selection lists or
+combo-boxes that link to the
+same synchronized axis object. It is possible to constructed multiple
+selection lists or combo-boxes
+using different \c new_list_or_comboboxlayoutmanager objects, provided
+that the synchronized axis object gets carefully copied to each one.
+
+*/
+
+class new_list_or_combobox_layoutmanager {
+
+protected:
+	//! List's or combo-box's width.
+
+	//! If not set, the list or a combo-box is always wide enough
+	//! for its widest content.
+
+	std::optional<dim_axis_arg> width_value;
+public:
+
+	new_list_or_combobox_layoutmanager() LIBCXX_HIDDEN;
+
+	//! By default, the width is determined by its widest content.
+
+	inline void default_width()
+	{
+		width_value.reset();
+	}
+
+	//! Specify an explicit width.
+
+	inline void width(const dim_axis_arg &arg)
+	{
+		width_value=arg;
+	}
+
+	//! Set the new width as completely variable.
+
+	//! The parent widget can resize it, and make this list or combo-box
+	//! shorter or wider than its widest content.
+	inline void variable_width()
+	{
+		width(dim_axis_arg{0, 0});
+	}
+
+	//! Number of columns
+
+	//! This is not the number of characters, but the number of
+	//! elements in each list or a combo-box item. The default is 1.
+	//!
+	//! \note
+	//! \ref standard_comboboxlayoutmanager "standard" and
+	//! \ref editable_comboboxlayoutmanager "editable" combo-boxes
+	//! support multiple columns but show only the first column's text
+	//! in their label or input fields.
+
+	size_t columns;
+
+	//! Relative width of columns.
+
+	//! If the list or combo-box gets filled horizontally,
+	//! the additional space goes to these columns.
+	//!
+	//! This specifies the requested width of a column as a percentage of
+	//! the total width, in the range 0-100.
+	std::unordered_map<size_t, int> requested_col_widths;
+
+	//! Horizontal alignment of columns.
+	std::unordered_map<size_t, halign> col_alignments;
+
+	//! Vertical alignment of columns.
+	std::unordered_map<size_t, valign> row_alignments;
+
+	//! Optional borders between columns
+
+	//! Draw these borders between the columns. columns_borders[1]
+	//! specifies the border between the 1st and the 2nd column
+	//! (column #0 and column #1).
+	//!
+	//! Map keys must be between 1 and (columns-1).
+	//!
+	//! For tables:
+	//!
+	//! The focus border gets drawn around the entire list, and there should
+	//! always be a focus border that visually connects with the column
+	//! borders, see focusoff_border, below.
+	//!
+	//! \see tablelayoutmanager
+
+	std::unordered_map<size_t, border_arg> column_borders;
+
+	//! Minimum column widths, specified in millimeters
+
+	//! Mostly for the benefit of the table layout manager. If not specified
+	//! the default gets computed based on list contents.
+	//!
+	//! \see tablelayoutmanager
+
+	std::unordered_map<size_t, double> minimum_column_widths;
+
+	//! What other list these columns get synchronized with.
+
+	//! Lists or combo-boxes
+	//! created using the same \c synchronized_columns will have
+	//! their columns' widths equalized. Positioning them above
+	//! each other results in their columns lining up with each other.
+	//!
+	//! For this to work correctly:
+	//!
+	//! - All lists or combo-boxes
+	//! must be sized to the same width by their container.
+	//! Using the grid layout manager and using halign::fill is the
+	//! simplest way to do that.
+	//!
+	//! - All lists or combo-boxes must have the same number of columns.
+	//!
+	//! - They must have same borders. This includes the list_border,
+	//! focusoff_border, focuson_border, and column_borders. Or, at least,
+	//! the borders must have the same width.
+	//!
+	//! - They must have the same h_padding.
+	//!
+	//! It is also possible to, very carefully, synchronize the columns
+	//! between a grid and the list or combo-box, by using the same
+	//! synchronized_columns with a
+	//! \ref new_gridlayoutmanager "new_gridlayoutmanager".
+	//!
+	//! This works correctly only if:
+	//!
+	//! - both this list or combo-box and tje grid have the same number
+	//! of columns
+	//!
+	//! - all borders are the same.
+	//!
+	//! - Their left and right paddings are the same as v_padding.
+	//!
+	//! \note
+	//!
+	//! The \c synchronized_columns get
+	//! ignored if this list is part of the table, and
+	//! this is overridden by
+	//! \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
+	//! which uses this to implement the table's header.
+
+	synchronized_axis synchronized_columns;
+	//! Optionally-specified paddings for each cell
+
+	//! Map keyed by column number. Value is {left_padding, right_padding}
+	//! for that column. h_padding is the default, if not specified.
+
+	std::unordered_map<size_t, std::tuple<dim_arg, dim_arg>> lr_paddings;
+};
+
+/*!
+
+Create a new container with a \ref listlayoutmanager "list layout manager".
+
+This parameter gets passed to a \ref factory "factory"'s
+\c create_focusable_container()
+to create a simple selection list.
+
+The constructor takes one optional parameter, which can be:
+
+- \c INSERT_LIBX_NAMESPACE::w::highlighted_list - selected items in
+the list are displayed by a highlighted background color. This is the
+default value.
+
+- \c INSERT_LIBX_NAMESPACE::w::bulleted_list - a bullet appears next to
+each selected item in the list.
+
+The remaining fields get initialized to their default values and may be
+modified prior before using \c create_focusable_container().
+
+\par Common settings
+
+\c INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager inherits from
+\ref new_list_or_combobox_layoutmanager "INSERT_LIBX_NAMESPACE::w::new_list_or_combobox_layoutmanager"
+that has settings which are common with
+\ref new_custom_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_custom_comboboxlayoutmanager",
+\ref new_standard_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_standard_comboboxlayoutmanager", and
+\ref new_editable_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager",
+
+*/
+
+class new_listlayoutmanager : public new_focusable_layoutmanager,
+			      public new_list_or_combobox_layoutmanager {
+
 
  public:
 
@@ -203,124 +378,6 @@ public:
 	{
 		height_value=dim_axis_arg{0, 0};
 	}
-
-private:
-	//! List's width.
-
-	//! If not set, the list is always wide enough for its widest widget.
-
-	std::optional<dim_axis_arg> width_value;
-public:
-
-	//! By default, the list's width is determined by its widest widget.
-	inline void default_width()
-	{
-		width_value.reset();
-	}
-
-	//! Specify an explicit list width.
-
-	inline void width(const dim_axis_arg &arg)
-	{
-		width_value=arg;
-	}
-
-	//! Set the new list's width as completely variable.
-	inline void variable_width()
-	{
-		width(dim_axis_arg{0, 0});
-	}
-
-	//! Number of columns in the list
-
-	//! This is not the number of characters, but the number of
-	//! elements in each list item. The default is 1.
-	size_t columns;
-
-	//! Relative width of columns.
-
-	//! If the selection list is filled horizontally, inside its parent
-	//! grid layout manager, the additional space goes to these columns.
-	//!
-	//! This specifies the request width of a column as a percentage of
-	//! the total width of the list, in the range 0-100.
-	std::unordered_map<size_t, int> requested_col_widths;
-
-	//! Horizontal alignment of columns.
-	std::unordered_map<size_t, halign> col_alignments;
-
-	//! Vertical alignment of columns.
-	std::unordered_map<size_t, valign> row_alignments;
-
-	//! Optional borders between columns
-
-	//! Draw these borders between the columns. columns_borders[1]
-	//! specifies the border between the 1st and the 2nd column
-	//! (column #0 and column #1).
-	//!
-	//! Map keys must be between 1 and (columns-1).
-	//!
-	//! The focus border gets drawn around the list, and there should
-	//! always be a focus border that visually connects with the column
-	//! borders, see focusoff_border, below.
-
-	std::unordered_map<size_t, border_arg> column_borders;
-
-	//! Minimum column widths, specified in millimeters
-
-	//! Mostly for the benefit of the table layout manager. If not specified
-	//! the default gets computed based on list contents.
-	//!
-	//! \see tablelayoutmanager
-
-	std::unordered_map<size_t, double> minimum_column_widths;
-
-	//! What other list this list's columns get synchronized with.
-
-	//! Lists created using the same synchronized_columns will have
-	//! their columns' widths equalized. Positioning the lists above
-	//! each results in both lists's columns lining up with each other.
-	//!
-	//! For this to work correctly:
-	//!
-	//! - Both lists must be sized to the same width by their container.
-	//! Using the grid layout manager and using halign::fill is the
-	//! simplest way to do that.
-	//!
-	//! - both lists must have the same number of columns.
-	//!
-	//! - both lists must have same borders. This includes the list_border,
-	//! focusoff_border, focuson_border, and column_borders. Or, at least,
-	//! the borders must have the same width.
-	//!
-	//! - Both lists have the same h_padding.
-	//!
-	//! It is also possible to, very carefully, synchronize the columns
-	//! between a grid and the list, by using the same
-	//! synchronized_columns with a
-	//! \ref new_gridlayoutmanager "new_gridlayoutmanager".
-	//!
-	//! This works correctly only if:
-	//!
-	//! - both this list and the other list or grid have the same number
-	//! of columns
-	//!
-	//! - all borders are the same.
-	//!
-	//! - Their left and right paddings are the same as v_padding.
-	//!
-	//! synchronized_columns ignored if this list is part of the table, and
-	//! this is overridden by
-	//! \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
-	//! which uses this to implement the table's header.
-
-	synchronized_axis synchronized_columns;
-	//! Optionally-specified paddings for each cell
-
-	//! Map keyed by column number. Value is {left_padding, right_padding}
-	//! for that column. h_padding is the default, if not specified.
-
-	std::unordered_map<size_t, std::tuple<dim_arg, dim_arg>> lr_paddings;
 
 	//! Visibility of the horizontal scrollbar
 	scrollbar_visibility horizontal_scrollbar;

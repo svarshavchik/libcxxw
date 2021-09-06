@@ -152,22 +152,18 @@ and
 \ref new_editable_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager"
 provide layout managers that implement a more conventional combo-box widget.
 
-\par Synchronized combo-boxes
+\par Common settings
 
-The width of each individual combo-box gets sized to be just wide enough to
-show the widest combo-box item. It's possible to create several combo-boxes
-with the same width, sizing all combo-boxes's width based on the wide item
-in all the combo-boxes, combined together.
-
-This is simply done by using the same \c new_custom_comboboxlayoutmanager
-object. See
-\ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager"
-for more information.
+\c INSERT_LIBX_NAMESPACE::w::new_custom_comboboxlayoutmanager inherits from
+\ref new_list_or_combobox_layoutmanager "INSERT_LIBX_NAMESPACE::w::new_list_or_combobox_layoutmanager"
+that has settings which are common with
+\ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager".
 
 */
 
 class new_custom_comboboxlayoutmanager
-	: public new_focusable_layoutmanager {
+	: public new_focusable_layoutmanager,
+	  public new_list_or_combobox_layoutmanager {
 
  public:
 

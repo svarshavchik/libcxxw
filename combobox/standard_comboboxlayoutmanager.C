@@ -63,9 +63,12 @@ standard_combobox_lock::~standard_combobox_lock()=default;
 // standard combo-box.
 
 static std::vector<text_param> to_text_param(const std::vector<list_item_param>
-					     &items)
+					     &items,
+					     const size_t n_columns)
 {
 	std::vector<text_param> ret;
+
+	size_t column_number=0;
 
 	for (const list_item_param::variant_t &i:items)
 		std::visit
@@ -73,10 +76,20 @@ static std::vector<text_param> to_text_param(const std::vector<list_item_param>
 			 {
 			  [&](const text_param &t)
 			  {
-				  ret.push_back(t);
+				  // Collect only the first row's text
+
+				  if (column_number == 0)
+					  ret.push_back(t);
+				  column_number = (column_number+1)
+					  % n_columns;
 			  },
 			  [&](const separator &s)
 			  {
+				  if (column_number != 0)
+					  throw EXCEPTION(_("Internal error:"
+							    " separator element"
+							    " is out of place"
+							    ));
 				  ret.push_back({});
 			  },
 			  [](const list_item_status_change_callback &)
@@ -125,7 +138,13 @@ struct new_text_params_wrapper {
 	new_text_params_wrapper(std::vector<list_item_param>
 				&updated_items,
 				standard_combobox_lock &lock)
-		: new_text_params{to_text_param(updated_items)}
+		: new_text_params{
+				to_text_param(updated_items,
+					      lock.locked_layoutmanager
+					      ->listlayoutmanagerObj::impl
+					      ->list_element_singleton->impl
+					      ->columns)
+			}
 	{
 		lock.locked_layoutmanager->impl->
 			update_items_if_needed(updated_items);

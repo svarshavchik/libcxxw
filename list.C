@@ -90,13 +90,18 @@ submenu_appearance &submenu_appearance
 
 submenu_appearance::~submenu_appearance()=default;
 
+new_list_or_combobox_layoutmanager::new_list_or_combobox_layoutmanager()
+	: columns{1},
+	  synchronized_columns{synchronized_axis::create()}
+{
+}
+
 new_listlayoutmanager
 ::new_listlayoutmanager(const listlayoutstyle_impl &list_style)
 	: list_style{list_style},
 	  selection_type{single_selection_type},
 	  height_value{std::tuple<size_t, size_t>{4,4}},
-	  columns{1},
-	  synchronized_columns{synchronized_axis::create()},
+
 	  horizontal_scrollbar{scrollbar_visibility::automatic},
 	  vertical_scrollbar{scrollbar_visibility::automatic},
 	  appearance{list_appearance::base::theme()}
