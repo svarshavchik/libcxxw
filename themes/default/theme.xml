@@ -1,180 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
 <theme>
-
   <name>Default theme</name>
-
   <option>
     <description>Shading</description>
     <value id="shade_full">scalable (default)</value>
     <value id="shade_fixed">fixed (faster)</value>
     <value id="shade_none">disabled</value>
   </option>
-
   <dim id="no-padding">0</dim>
-
   <color id="0%"/>
-
   <color id="10%">
     <r>.1</r>
     <g>.1</g>
     <b>.1</b>
   </color>
-
   <color id="30%">
     <r>.3</r>
     <g>.3</g>
     <b>.3</b>
   </color>
-
   <color id="50%">
     <r>.5</r>
     <g>.5</g>
     <b>.5</b>
   </color>
-
   <color id="70%">
     <r>.7</r>
     <g>.7</g>
     <b>.7</b>
   </color>
-
   <color id="75%">
     <r>.75</r>
     <g>.75</g>
     <b>.75</b>
   </color>
-
   <color id="80%">
     <r>.8</r>
     <g>.8</g>
     <b>.8</b>
   </color>
-
   <color id="90%">
     <r>.9</r>
     <g>.9</g>
     <b>.9</b>
   </color>
-
   <color id="100%">
     <r>1</r>
     <g>1</g>
     <b>1</b>
   </color>
-
   <color id="modal_shade" scale="30%">
     <a>.7</a>
   </color>
-
   <color id="mainwindow_background" scale="75%"/>
-
   <color id="action_color1" scale="10%"/>
   <color id="action_color2" scale="50%"/>
-
   <color id="inputfocus_color1" scale="10%"/>
   <color id="inputfocus_color2" scale="50%"/>
-
   <!--
       Wait until something is dragged this much, before changing the pointer
       to the dragging pointer.
   -->
-
   <dim id="drag_horiz_start">2</dim>
   <dim id="drag_vert_start">2</dim>
-
   <!-- Stock borders -->
-
   <border id="empty">
     <color>transparent</color>
     <width>0</width>
     <height>0</height>
   </border>
-
   <border id="thin">
     <color>transparent</color>
     <width>.4</width>
     <height>.4</height>
   </border>
-
   <border id="thin_0%" from="thin">
     <color>0%</color>
   </border>
-
   <border id="thick">
     <color>transparent</color>
     <width>.75</width>
     <height>.75</height>
   </border>
-
   <border id="thick_0%" from="thick">
     <color>0%</color>
   </border>
-
   <border id="thick_50%" from="thick">
     <color>50%</color>
   </border>
-
   <border id="thin_dashed_0%">
     <width>.4</width>
     <height>.4</height>
     <dash>.4</dash>
     <color>0%</color>
   </border>
-
   <border id="thick_dashed_0%">
     <width>.75</width>
     <height>.75</height>
     <dash>.4</dash>
     <color>0%</color>
   </border>
-
   <border id="inputfocusoff_border">
     <color>transparent</color>
     <width>.75</width>
     <height>.75</height>
   </border>
-
   <border id="inputfocuson_border" from="inputfocusoff_border">
     <color>inputfocus_color1</color>
     <color2>inputfocus_color2</color2>
     <dash>.75</dash>
   </border>
-
   <border id="thin_inputfocusoff_border">
     <color>transparent</color>
     <width>.5</width>
     <height>.5</height>
   </border>
-
   <border id="thin_inputfocusoff_border_color2" from="thin_inputfocusoff_border">
     <color>inputfocus_color2</color>
   </border>
-
   <border id="thin_inputfocuson_border" from="thin_inputfocusoff_border">
     <color>inputfocus_color1</color>
     <color2>inputfocus_color2</color2>
     <dash>.75</dash>
   </border>
-
   <border id="peephole_border" from="thin_0%">
   </border>
-
   <!--
       Borders around the horizontal bar at the bottom of dialogs/popups
       with "Ok"/"Cancel" buttons.
   -->
-
   <border id="ok_button_border" from="thick">
     <color>30%</color>
   </border>
-
   <border id="ok_cancel_button_border" from="ok_button_border"/>
-
   <!-- grid padding -->
-
   <dim id="grid_horiz_padding">.5</dim>
   <dim id="grid_vert_padding">.5</dim>
-
   <!--
       Button borders are size in units based on
       button_base_[horiz|vert].
@@ -187,7 +148,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   -->
   <dim id="button_base_horiz">.2</dim>
   <dim id="button_base_vert">.2</dim>
-
   <border id="normal_button_border">
     <width>button_base_horiz</width>
     <height>button_base_vert</height>
@@ -200,7 +160,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <color>action_color1</color>
     <color2>action_color2</color2>
   </border>
-
   <border id="default_button_border">
     <width>button_base_horiz</width>
     <height>button_base_vert</height>
@@ -212,46 +171,36 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <vradius_scale>2</vradius_scale>
     <color>action_color1</color>
   </border>
-
   <color id="button_normal_color" type="linear_gradient">
     <gradient>
       <value>0</value>
       <color>50%</color>
     </gradient>
-
     <gradient>
       <value>1</value>
       <color>70%</color>
     </gradient>
   </color>
-
   <color id="button_selected_color" type="linear_gradient">
     <gradient>
       <value>0</value>
       <color>70%</color>
     </gradient>
-
     <gradient>
       <value>1</value>
       <color>80%</color>
     </gradient>
   </color>
-
   <color id="button_active_color" type="linear_gradient">
     <gradient>
       <value>0</value>
       <color>90%</color>
     </gradient>
-
     <gradient>
       <value>1</value>
       <color>100%</color>
     </gradient>
   </color>
-
-
-
-
   <color id="shade_fixed:button_normal_color" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
@@ -259,13 +208,11 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <value>0</value>
       <color>50%</color>
     </gradient>
-
     <gradient>
       <value>1</value>
       <color>70%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:button_selected_color" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
@@ -273,13 +220,11 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <value>0</value>
       <color>70%</color>
     </gradient>
-
     <gradient>
       <value>1</value>
       <color>80%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:button_active_color" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
@@ -287,23 +232,18 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <value>0</value>
       <color>90%</color>
     </gradient>
-
     <gradient>
       <value>1</value>
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="shade_none:button_normal_color" scale="70%"/>
   <color id="shade_none:button_selected_color" scale="80%"/>
   <color id="shade_none:button_active_color" scale="100%"/>
-
   <color id="button_spinner_normal_color" scale="70%"/>
   <color id="button_spinner_selected_color" scale="80%"/>
   <color id="button_spinner_active_color" scale="100%"/>
-
   <color id="button_spinner_fill" scale="30%"/>
-
   <color id="button_spinner_gradient" type="radial_gradient">
     <inner_x>.5</inner_x>
     <inner_y>.5</inner_y>
@@ -313,7 +253,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <outer_radius>.5</outer_radius>
     <inner_radius_axis>shortest</inner_radius_axis>
     <outer_radius_axis>shortest</outer_radius_axis>
-
     <gradient>
       <value>0</value>
       <color>80%</color>
@@ -323,110 +262,85 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>transparent</color>
     </gradient>
   </color>
-
   <color id="shade_none:button_spinner_gradient" scale="50%"/>
-
   <!-- Fonts -->
-
   <font id="sans_serif">
     <family>liberation sans</family>
   </font>
-
   <font id="serif">
     <family>liberation serif</family>
   </font>
-
   <font id="mono">
     <family>liberation mono</family>
   </font>
-
   <font id="list">
     <from>sans_serif</from>
     <point_size>12</point_size>
   </font>
-
   <font id="combobox">
     <from>sans_serif</from>
     <point_size>12</point_size>
   </font>
-
   <font id="menubar">
     <from>sans_serif</from>
     <point_size>12</point_size>
   </font>
-
   <font id="button">
     <from>serif</from>
     <point_size>16</point_size>
   </font>
-
   <font id="tooltip">
     <from>sans_serif</from>
     <point_size>12</point_size>
   </font>
-
   <font id="combobox">
-  <from>label</from></font>
-
+    <from>label</from>
+  </font>
   <font id="dialog_label">
     <from>serif</from>
     <point_size>16</point_size>
   </font>
-
   <!-- Labels -->
-
   <font id="label">
     <from>sans_serif</from>
     <point_size>14</point_size>
   </font>
-
   <color id="label_foreground_color" scale="10%"/>
-
   <font id="label_title">
     <from>label</from>
     <scale>3</scale>
   </font>
-
   <font id="label_header">
     <from>label</from>
     <scale>1.3</scale>
   </font>
-
   <!-- Input fields -->
-
   <font id="textedit">
     <from>mono</from>
     <point_size>12</point_size>
   </font>
-
   <font id="password">
     <from>mono</from>
     <point_size>14</point_size>
   </font>
-
   <color id="textedit_foreground_color" scale="0%"/>
   <color id="textedit_background_color" scale="100%"/>
   <color id="textedit_disabled_background_color" scale="50%"/>
   <color id="textedit_hint_color" scale="50%"/>
-
   <border id="textedit_border" from="thin_0%"/>
   <dim id="textedit_focusable_padding">.2</dim>
   <border id="texteditfocusoff_border" from="inputfocusoff_border"/>
   <border id="texteditfocuson_border" from="inputfocuson_border"/>
-
   <!-- Scrollbars -->
-
   <color id="scrollbar_background_color" scale="30%"/>
   <color id="scrollbar_foreground_color" scale="70%"/>
   <color id="scrollbar_foreground_highlight_color" scale="80%"/>
   <color id="scrollbar_dragging_color" scale="90%"/>
-
   <color id="scrollbar_horiz_foreground_color" type="linear_gradient">
     <x1>0</x1>
     <y1>0</y1>
     <x2>0</x2>
     <y2>1</y2>
-
     <gradient>
       <value>0</value>
       <color>0%</color>
@@ -440,13 +354,11 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>0%</color>
     </gradient>
   </color>
-
   <color id="scrollbar_vert_foreground_color" type="linear_gradient">
     <x1>0</x1>
     <y1>0</y1>
     <x2>1</x2>
     <y2>0</y2>
-
     <gradient>
       <value>0</value>
       <color>0%</color>
@@ -460,7 +372,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>0%</color>
     </gradient>
   </color>
-
   <color id="scrollbar_knob_foreground_color" type="radial_gradient">
     <inner_x>.5</inner_x>
     <inner_y>.5</inner_y>
@@ -470,7 +381,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <outer_radius>.5</outer_radius>
     <inner_radius_axis>shortest</inner_radius_axis>
     <outer_radius_axis>longest</outer_radius_axis>
-
     <gradient>
       <value>0</value>
       <color>scrollbar_foreground_color</color>
@@ -480,7 +390,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>0%</color>
     </gradient>
   </color>
-
   <color id="scrollbar_knob_dragging_color" type="radial_gradient">
     <inner_x>.5</inner_x>
     <inner_y>.5</inner_y>
@@ -490,7 +399,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <outer_radius>.5</outer_radius>
     <inner_radius_axis>shortest</inner_radius_axis>
     <outer_radius_axis>longest</outer_radius_axis>
-
     <gradient>
       <value>0</value>
       <color>0%</color>
@@ -500,21 +408,15 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>scrollbar_dragging_color</color>
     </gradient>
   </color>
-
   <color id="shade_none:scrollbar_horiz_foreground_color" scale="scrollbar_foreground_color"/>
-
   <color id="shade_none:scrollbar_vert_foreground_color" scale="scrollbar_foreground_color"/>
-
   <color id="shade_none:scrollbar_knob_foreground_color" scale="scrollbar_foreground_color"/>
-
   <color id="shade_none:scrollbar_knob_dragging_color" scale="scrollbar_dragging_color"/>
-
   <color id="scrollbar_horiz_dragging_color" type="linear_gradient">
     <x1>0</x1>
     <y1>0</y1>
     <x2>0</x2>
     <y2>1</y2>
-
     <gradient>
       <value>0</value>
       <color>scrollbar_dragging_color</color>
@@ -528,13 +430,11 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>scrollbar_dragging_color</color>
     </gradient>
   </color>
-
   <color id="scrollbar_vert_dragging_color" type="linear_gradient">
     <x1>0</x1>
     <y1>0</y1>
     <x2>1</x2>
     <y2>0</y2>
-
     <gradient>
       <value>0</value>
       <color>scrollbar_dragging_color</color>
@@ -548,18 +448,13 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>scrollbar_dragging_color</color>
     </gradient>
   </color>
-
   <color id="shade_none:scrollbar_horiz_dragging_color" scale="scrollbar_dragging_color"/>
-
   <color id="shade_none:scrollbar_vert_dragging_color" scale="scrollbar_dragging_color"/>
-
   <border id="scrollbarfocuson_border" from="inputfocuson_border"/>
   <border id="scrollbarfocusoff_border" from="inputfocusoff_border">
     <color>10%</color>
   </border>
-
   <!-- Tooltips -->
-
   <color id="tooltip_background_color" type="linear_gradient">
     <gradient>
       <value>0</value>
@@ -570,12 +465,8 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="shade_none:tooltip_background_color" scale="90%"/>
-
-  <color id="direction_tooltip_background_color"
-	 scale="tooltip_background_color"/>
-
+  <color id="direction_tooltip_background_color" scale="tooltip_background_color"/>
   <!-- Border when an alpha channel is available -->
   <border id="tooltip_border" from="thin_0%">
     <hradius>1</hradius>
@@ -583,58 +474,38 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   </border>
   <dim id="tooltip_border_padding_h">0</dim>
   <dim id="tooltip_border_padding_v">0</dim>
-
   <!-- Border when an alpha channel is not available -->
-
   <border id="tooltip_border_square" from="thin_0%"/>
   <dim id="tooltip_border_square_padding_h">1</dim>
   <dim id="tooltip_border_square_padding_v">1</dim>
-
   <dim id="tooltip_x_offset">1</dim>
   <dim id="tooltip_y_offset">1</dim>
-
   <!-- Static tooltips -->
-
   <border id="static_tooltip_border" from="tooltip_border"/>
   <border id="static_tooltip_border_square" from="tooltip_border_square"/>
-
   <color id="static_tooltip_background_color" scale="tooltip_background_color"/>
-
   <color id="shade_none:static_tooltip_background_color" scale="shade_none:tooltip_background_color"/>
-
   <!-- Border for a splash window -->
   <border id="splash_border" from="tooltip_border"/>
-
   <border id="splash_border_square" from="tooltip_border_square"/>
-
   <!-- Selection lists -->
-
   <dim id="list_v_padding">.2</dim>
   <dim id="list_h_padding">.5</dim>
   <dim id="list_indent">6</dim>
-
   <border id="list_border" from="thin_0%"/>
-
   <border id="listfocusoff_border" from="thin_inputfocusoff_border"/>
   <border id="listfocuson_border" from="thin_inputfocuson_border"/>
   <border id="listvisiblefocusoff_border" from="thin_inputfocusoff_border_color2"/>
-
   <border id="list_separator_border" from="thin_0%">
     <color>0%</color>
     <color2>50%</color2>
     <dash>1</dash>
   </border>
-
   <color id="list_label_color" scale="10%"/>
-
   <color id="list_background_color" scale="100%"/>
-
   <color id="list_selected_color" scale="80%"/>
-
   <color id="list_highlighted_color" scale="90%"/>
-
   <color id="list_current_color" scale="70%"/>
-
   <color id="list_header_color" type="linear_gradient">
     <gradient>
       <value>0</value>
@@ -645,7 +516,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>90%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:list_header_color" type="linear_gradient">
     <widthmm>50</widthmm>
     <heightmm>10</heightmm>
@@ -658,13 +528,9 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>90%</color>
     </gradient>
   </color>
-
   <color id="shade_none:list_header_color" scale="70%"/>
-
   <color id="list_adjustable_header_color" scale="50%"/>
-
   <dim id="list_adjustable_header_highlight_width">4</dim>
-
   <color id="list_adjustable_header_highlight_color" type="linear_gradient">
     <x1>0</x1>
     <y1>0</y1>
@@ -683,22 +549,15 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>50%</color>
     </gradient>
   </color>
-
   <color id="shade_none:list_adjustable_header_highlight_color" scale="90%"/>
-
   <!-- Combo-boxes -->
-
   <border id="combobox_border" from="thin_0%"/>
-
   <border id="combobox_popup_border" from="thin">
     <color>30%</color>
   </border>
-
   <!-- "default" background color of the combobox's current value element -->
   <color id="combobox_background_color" scale="90%"/>
-
   <!-- Background color for the popup when it's below the combobox -->
-
   <color id="combobox_below_background_color" type="linear_gradient">
     <widthmm>2</widthmm>
     <heightmm>2</heightmm>
@@ -715,9 +574,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>90%</color>
     </gradient>
   </color>
-
   <!-- Background color for the popup when it's above the combobox -->
-
   <color id="combobox_above_background_color" type="linear_gradient">
     <widthmm>2</widthmm>
     <heightmm>-2</heightmm>
@@ -734,25 +591,16 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>30%</color>
     </gradient>
   </color>
-
   <color id="shade_none:combobox_above_background_color" scale="combobox_background_color"/>
-
   <color id="shade_none:combobox_below_background_color" scale="combobox_background_color"/>
-
   <color id="combobox_selected_color" scale="80%"/>
-
   <color id="combobox_highlighted_color" scale="100%"/>
-
   <color id="combobox_current_color" scale="70%"/>
-
   <border id="comboboxbuttonfocusoff_border" from="inputfocusoff_border">
     <color>inputfocus_color2</color>
   </border>
-
   <border id="comboboxbuttonfocuson_border" from="inputfocuson_border"/>
-
   <!-- Menu bar -->
-
   <color id="menubar_background_color" type="linear_gradient">
     <x1>0</x1>
     <y1>0</y1>
@@ -767,7 +615,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>80%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:menubar_background_color" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
@@ -784,26 +631,20 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>80%</color>
     </gradient>
   </color>
-
   <color id="shade_none:menubar_background_color" scale="80%"/>
-
   <border id="menubar_border" from="thin_0%">
     <color>0%</color>
     <color2>30%</color2>
     <dash>.75</dash>
   </border>
-
   <color id="menu_highlighted_color" scale="90%"/>
   <color id="menu_clicked_color" scale="100%"/>
-
   <border id="menu_popup_border">
     <color>inputfocus_color1</color>
     <width>.5</width>
     <height>.5</height>
   </border>
-
   <!-- Background color for a menu when it's below the menu bar -->
-
   <color id="menu_below_background_color" type="linear_gradient">
     <x1>0</x1>
     <y1>0</y1>
@@ -818,9 +659,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <!-- Background color for a menu when it's above the menu bar -->
-
   <color id="menu_above_background_color" type="linear_gradient">
     <x1>0</x1>
     <y1>0</y1>
@@ -835,9 +674,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>70%</color>
     </gradient>
   </color>
-
   <!-- Background color for a submenu to the left of its menu item -->
-
   <color id="menu_left_background_color" type="linear_gradient">
     <x1>0</x1>
     <y1>0</y1>
@@ -852,9 +689,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>70%</color>
     </gradient>
   </color>
-
   <!-- Background color for a submenu to the right of its menu item -->
-
   <color id="menu_right_background_color" type="linear_gradient">
     <x1>0</x1>
     <y1>0</y1>
@@ -869,99 +704,75 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="menu_popup_background_color" scale="90%"/>
-
   <color id="shade_none:menu_above_background_color" scale="menu_popup_background_color"/>
   <color id="shade_none:menu_below_background_color" scale="menu_popup_background_color"/>
   <color id="shade_none:menu_left_background_color" scale="menu_popup_background_color"/>
   <color id="shade_none:menu_right_background_color" scale="menu_popup_background_color"/>
-
   <color id="menu_popup_foreground_color" scale="10%"/>
   <color id="menu_popup_selected_color" scale="80%"/>
   <color id="menu_popup_highlighted_color" scale="50%"/>
   <color id="menu_popup_clicked_color" scale="100%"/>
-
   <dim id="menu_list_v_padding">.2</dim>
   <dim id="menu_list_h_padding">.5</dim>
-
   <border id="menu_inputfocusoff_border">
     <color>transparent</color>
     <width>.2</width>
     <height>.2</height>
   </border>
-
   <border id="menu_inputfocuson_border" from="menu_inputfocusoff_border">
     <color>inputfocus_color1</color>
     <color2>inputfocus_color2</color2>
     <dash>.5</dash>
   </border>
-
   <font id="menu_font">
     <from>serif</from>
     <point_size>12</point_size>
   </font>
-
   <font id="menu_shortcut">
     <from>serif</from>
     <point_size>12</point_size>
     <slant>italic</slant>
     <weight>bold</weight>
   </font>
-
   <!-- Progress bar -->
-
   <border id="progressbar" from="thick_dashed_0%">
     <color>10%</color>
     <color2>30%</color2>
     <hradius>.1</hradius>
     <vradius>.1</vradius>
   </border>
-
   <dim id="progressbar">100</dim>
-
   <font id="progressbar">
     <from>serif</from>
     <point_size>16</point_size>
   </font>
-
   <color id="progressbar_foreground_color" scale="10%"/>
   <color id="progressbar_background_color" scale="100%"/>
-
   <color id="progressbar_value_0_color" scale="0%"/>
   <color id="progressbar_value_100_color" scale="70%"/>
-
   <color id="progressbar" type="linear_gradient">
-
     <x1>0</x1>
     <y1>0</y1>
     <x2>1</x2>
     <y2>0</y2>
-
     <gradient>
       <value>0</value>
       <color>progressbar_value_0_color</color>
     </gradient>
-
     <gradient>
       <value>1</value>
       <color>progressbar_value_100_color</color>
     </gradient>
-
     <gradient>
       <value>2</value>
       <color>progressbar_value_100_color</color>
     </gradient>
-
   </color>
-
   <color id="shade_none:progressbar" scale="progressbar_value_100_color"/>
-
   <!-- Books -->
-
   <dim id="book_tab_h_padding">1</dim>
   <dim id="book_tab_v_padding">1</dim>
-
   <color id="book_tab_inactive_color" type="linear_gradient">
     <gradient>
       <value>0</value>
@@ -972,7 +783,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>70%</color>
     </gradient>
   </color>
-
   <color id="book_tab_active_color" type="linear_gradient">
     <gradient>
       <value>0</value>
@@ -983,7 +793,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>90%</color>
     </gradient>
   </color>
-
   <color id="book_tab_warm_color" type="linear_gradient">
     <gradient>
       <value>0</value>
@@ -994,7 +803,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="book_tab_hot_color" type="linear_gradient">
     <gradient>
       <value>0</value>
@@ -1005,7 +813,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:book_tab_inactive_color" type="linear_gradient">
     <widthmm>5</widthmm>
     <heightmm>5</heightmm>
@@ -1018,7 +825,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>70%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:book_tab_active_color" type="linear_gradient">
     <widthmm>5</widthmm>
     <heightmm>5</heightmm>
@@ -1031,7 +837,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>90%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:book_tab_warm_color" type="linear_gradient">
     <widthmm>5</widthmm>
     <heightmm>5</heightmm>
@@ -1044,7 +849,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:book_tab_hot_color" type="linear_gradient">
     <widthmm>5</widthmm>
     <heightmm>5</heightmm>
@@ -1057,20 +861,16 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="shade_none:book_tab_inactive_color" scale="50%"/>
   <color id="shade_none:book_tab_active_color" scale="70%"/>
   <color id="shade_none:book_tab_warm_color" scale="80%"/>
   <color id="shade_none:book_tab_hot_color" scale="100%"/>
-
   <color id="page_background" scale="80%"/>
   <border id="page_border" from="thin_0%"/>
-
   <border id="book_tab_border" from="thin_0%">
     <hradius>.5</hradius>
     <vradius>.5</vradius>
   </border>
-
   <color id="book_tab_background_color" type="linear_gradient">
     <gradient>
       <value>0</value>
@@ -1081,7 +881,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>80%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:book_tab_background_color" type="linear_gradient">
     <widthmm>75</widthmm>
     <heightmm>10</heightmm>
@@ -1094,24 +893,16 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>80%</color>
     </gradient>
   </color>
-
   <color id="shade_none:book_tab_background_color" scale="50%"/>
-
   <dim id="book_scroll_height">8</dim>
-
   <font id="book_tab_font">
     <from>serif</from>
     <point_size>12</point_size>
   </font>
-
   <color id="book_tab_font_color" scale="label_foreground_color"/>
-
   <!-- Panes -->
-
   <color id="pane_slider_background" scale="100%"/>
-
   <border id="pane_border" from="thin_0%"/>
-
   <border id="pane_slider">
     <color>30%</color>
     <color2>50%</color2>
@@ -1120,42 +911,32 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
     <width>1</width>
     <height>1</height>
   </border>
-
   <border id="pane_slider_focusoff_border" from="thin_inputfocusoff_border"/>
-
   <border id="pane_slider_focuson_border" from="pane_slider_focusoff_border">
     <color>inputfocus_color1</color>
     <color2>inputfocus_color2</color2>
     <dash>.75</dash>
   </border>
-
   <!-- Date input fields -->
-
   <border id="dateedit_border" from="thin_0%"/>
   <font id="dateedit">
     <from>mono</from>
   </font>
-
   <border id="dateeditbuttonfocusoff_border" from="inputfocusoff_border">
     <color>inputfocus_color2</color>
   </border>
   <border id="dateeditbuttonfocuson_border" from="inputfocuson_border"/>
-
   <color id="dateedit_background_color" scale="textedit_background_color"/>
   <color id="dateedit_foreground_color" scale="textedit_foreground_color"/>
-
   <!-- Border when an alpha channel is available -->
   <border id="dateedit_popup_border" from="thin_0%">
     <hradius>1</hradius>
     <vradius>1</vradius>
   </border>
-
   <!-- Border when an alpha channel is not available -->
-
   <border id="dateedit_popup_border_square" from="thin_0%"/>
   <dim id="dateedit_popup_border_square_padding_h">1</dim>
   <dim id="dateedit_popup_border_square_padding_v">1</dim>
-
   <color id="dateedit_popup_background_color" type="linear_gradient">
     <gradient>
       <value>0</value>
@@ -1166,7 +947,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:dateedit_popup_background_color" type="linear_gradient">
     <widthmm>30</widthmm>
     <heightmm>30</heightmm>
@@ -1179,58 +959,41 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="shade_none:dateedit_popup_background_color" scale="100%"/>
-
   <dim id="dateedit_popup_yscroll_height">8</dim>
   <dim id="dateedit_popup_mscroll_height">6</dim>
-
   <font id="dateedit_popup_month">
     <from>serif</from>
     <point_size>14</point_size>
   </font>
-
   <color id="dateedit_popup_month" scale="10%"/>
-
   <font id="dateedit_day_of_week">
     <from>mono</from>
     <weight>bold</weight>
     <point_size>16</point_size>
   </font>
-
   <color id="dateedit_day_of_week" scale="0%"/>
-
   <font id="dateedit_day">
     <from>mono</from>
     <point_size>16</point_size>
   </font>
-
   <color id="dateedit_day" scale="10%"/>
-
   <color id="dateedit_day_highlight_fg" scale="100%"/>
   <color id="dateedit_day_highlight_bg" scale="10%"/>
-
   <!--
       Element popups
   -->
-
   <border id="element_attached_border" from="thin_0%"/>
-
   <!-- Border when an alpha channel is available -->
-
   <border id="element_attached_popup_border" from="thin_0%">
     <hradius>1</hradius>
     <vradius>1</vradius>
   </border>
-
   <!-- A popup attached to an element -->
-
   <!-- Border when an alpha channel is not available -->
-
   <border id="element_attached_popup_border_square" from="thin_0%"/>
   <dim id="element_attached_popup_border_square_padding_h">1</dim>
   <dim id="element_attached_popup_border_square_padding_v">1</dim>
-
   <color id="element_attached_popup_background_color" type="linear_gradient">
     <gradient>
       <value>0</value>
@@ -1241,83 +1004,60 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="shade_none:element_attached_popup_background_color" scale="80%"/>
-
   <border id="element_attached_popup_button_focusoff_border" from="inputfocusoff_border">
     <color>inputfocus_color2</color>
   </border>
   <border id="element_attached_popup_button_focuson_border" from="inputfocuson_border"/>
-
   <!-- Color picker -->
-
   <!-- Size of the element showing the current color -->
-
   <dim id="color_picker_current_width">10</dim>
   <dim id="color_picker_current_height">6</dim>
-
   <!--
       In the color picker popup, the dimensions of the gradient square.
   -->
-
   <dim id="color_picker_square_width">50</dim>
   <dim id="color_picker_square_height" axis="vert\">50</dim>
-
   <!--
       In the color picker popup, the buffer between the gradient square and the
       component strips.
   -->
-
   <dim id="color_picker_buffer_width">4</dim>
   <dim id="color_picker_buffer_height">4</dim>
-
   <!-- In the color picker, the width/height of the component strips. -->
-
   <dim id="color_picker_strip_width">6</dim>
   <dim id="color_picker_strip_height">6</dim>
-
   <!--
       In the color picker popup, the dimensions of each basic color button
   -->
-
   <dim id="color_picker_basic_color_width">5</dim>
   <dim id="color_picker_basic_color_height">5</dim>
-
   <!-- Border around the gradient square -->
-
   <border id="color_picker_gradient_border" from="thick_0%">
     <rounded/>
   </border>
-
   <!-- Border around the fixed component gradient -->
-
   <border id="color_picker_fixed_component_border" from="thick_0%">
     <rounded/>
     <color>30%</color>
     <color2>70%</color2>
     <dash>1</dash>
   </border>
-
   <!-- Border around the alpha channel -->
-
   <border id="color_picker_alpha_border" from="thin_0%">
     <rounded/>
   </border>
-
   <!-- Item layout manager -->
-
   <border id="itembutton_border" from="thick_0%">
     <color>0%</color>
     <rounded/>
     <hradius>.5</hradius>
     <vradius>.5</vradius>
   </border>
-
   <dim id="itembutton-h-padding">0</dim>
   <dim id="itembutton-v-padding">0</dim>
   <dim id="itemlayout-h-padding">0</dim>
   <dim id="itemlayout-v-padding">0</dim>
-
   <color id="itembutton_background_color" type="linear_gradient">
     <gradient>
       <value>0</value>
@@ -1328,7 +1068,6 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:itembutton_background_color" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
@@ -1341,200 +1080,156 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <color>100%</color>
     </gradient>
   </color>
-
   <color id="shade_none:itembutton_background_color" scale="80%"/>
-
   <!-- Border layout manager -->
-
   <border id="frame_border" from="thin">
     <color>50%</color>
     <hradius>.5</hradius>
     <vradius>.5</vradius>
   </border>
-
   <dim id="frame_title_indent">2</dim>
-
   <dim id="frame_hpad">1</dim>
-
   <dim id="frame_vpad">1</dim>
-
   <!--
       If a frame does not have a title, the frame's element can have this
       background color.
   -->
-
   <color id="frame_background" type="linear_gradient">
     <gradient>
       <value>0</value>
       <color>70%</color>
     </gradient>
-
     <gradient>
       <value>1</value>
       <color>90%</color>
     </gradient>
   </color>
-
   <color id="shade_fixed:frame_background" type="linear_gradient">
     <widthmm>10</widthmm>
     <heightmm>10</heightmm>
-
     <gradient>
       <value>0</value>
       <color>70%</color>
     </gradient>
-
     <gradient>
       <value>1</value>
       <color>90%</color>
     </gradient>
   </color>
-
   <!-- Dialogs -->
-
   <color id="dialog_background" scale="90%"/>
-
   <!-- A dialog with a single "Ok" button -->
-
   <dim id="dialog-v-padding">4</dim>
   <dim id="dialog-h-padding">4</dim>
-
   <color id="button-row-color" type="linear_gradient">
     <gradient>
       <value>0</value>
       <color>50%</color>
     </gradient>
-
     <gradient>
       <value>1</value>
       <color>75%</color>
     </gradient>
-
     <gradient>
       <value>2</value>
       <color>50%</color>
     </gradient>
   </color>
-
   <color id="shade_none:button-row-color" scale="75%"/>
-
   <layout type="grid" id="ok-dialog">
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>1</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>icon-and-message</name>
     </append_row>
-
     <append_row>
       <name>ok-button-container</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="icon-and-message">
     <padding>
       <side>top</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element>
       <name>icon</name>
     </element>
-
     <padding>
       <side>top</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element>
       <name>message</name>
     </element>
   </factory>
-
   <factory type="grid" id="ok-button-container">
     <padding>
       <side>left</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>no-padding</padding>
     </padding>
-
     <colspan>
       <columns>2</columns>
     </colspan>
     <halign>right</halign>
-
     <border>
       <side>top</side>
       <border>ok_button_border</border>
     </border>
-
     <border>
       <side>bottom</side>
       <border>ok_button_border</border>
     </border>
-
     <border>
       <side>left</side>
       <border>ok_button_border</border>
     </border>
-
     <border>
       <side>right</side>
       <border>ok_button_border</border>
     </border>
-
     <container>
       <type>grid</type>
       <name>ok-button-row</name>
     </container>
   </factory>
-
   <layout type="grid" id="ok-button-row">
     <background_color>
       <color>button-row-color</color>
@@ -1543,9 +1238,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
       <name>ok-button</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="ok-button">
-
     <!--
 
 Still need to add a filler element to the container
@@ -1556,656 +1249,519 @@ Otherwise the fixed container row metrics will constrain the width
 of wrappable labels used for the message.
 
     -->
-
     <element>
       <canvas/>
     </element>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element>
       <name>ok</name>
     </element>
   </factory>
-
   <!-- A dialog with "Ok" and "Cancel" buttons -->
-
   <layout type="grid" id="ok-cancel-dialog">
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>1</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>icon-and-message</name>
     </append_row>
-
     <append_row>
       <name>ok-cancel-button-container</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="ok-cancel-button-container">
     <padding>
       <side>left</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>no-padding</padding>
     </padding>
-
     <colspan>
       <columns>2</columns>
     </colspan>
     <halign>fill</halign>
-
     <border>
       <side>top</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <border>
       <side>bottom</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <border>
       <side>left</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <border>
       <side>right</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <container>
       <type>grid</type>
       <name>ok-cancel-button-row</name>
     </container>
   </factory>
-
   <factory type="grid" id="ok-cancel-button-container-1">
     <padding>
       <side>left</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>no-padding</padding>
     </padding>
-
     <halign>fill</halign>
-
     <border>
       <side>top</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <border>
       <side>bottom</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <border>
       <side>left</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <border>
       <side>right</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <container>
       <type>grid</type>
       <name>ok-cancel-button-row</name>
     </container>
   </factory>
-
   <layout type="grid" id="ok-cancel-button-row">
     <background_color>
       <color>button-row-color</color>
     </background_color>
-
     <append_row>
       <name>ok-cancel-button</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="ok-cancel-button">
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element>
       <name>cancel</name>
     </element>
-
     <element>
       <canvas/>
     </element>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element>
       <name>ok</name>
     </element>
   </factory>
-
   <!-- A dialog with two "Ok" and one "Cancel" buttons -->
-
   <layout type="grid" id="ok2-cancel-dialog">
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>1</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>icon-and-message</name>
     </append_row>
-
     <append_row>
       <name>ok2-cancel-button-container</name>
     </append_row>
   </layout>
-
   <!-- A dialog with an input field -->
-
   <layout type="grid" id="input-dialog">
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>1</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>icon-and-input-container</name>
     </append_row>
-
     <append_row>
       <name>ok-cancel-button-container</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="ok2-cancel-button-container">
     <padding>
       <side>left</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>no-padding</padding>
     </padding>
-
     <colspan>
       <columns>2</columns>
     </colspan>
     <halign>fill</halign>
-
     <border>
       <side>top</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <border>
       <side>bottom</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <border>
       <side>left</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <border>
       <side>right</side>
       <border>ok_cancel_button_border</border>
     </border>
-
     <container>
       <type>grid</type>
       <name>ok2-cancel-button-row</name>
     </container>
   </factory>
-
   <layout type="grid" id="ok2-cancel-button-row">
     <background_color>
       <color>button-row-color</color>
     </background_color>
-
     <append_row>
       <name>ok2-cancel-button</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="ok2-cancel-button">
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element>
       <name>cancel</name>
     </element>
-
     <element>
       <canvas/>
     </element>
-
     <element>
       <name>ok2</name>
     </element>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element>
       <name>ok</name>
     </element>
   </factory>
-
-
   <!-- Dialog container with an icon and some message -->
-
   <factory type="grid" id="icon-and-input-container">
     <padding>
       <side>top</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element>
       <name>icon</name>
     </element>
-
     <padding>
       <side>top</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <container>
       <type>grid</type>
       <name>label-and-input-container</name>
     </container>
   </factory>
-
   <layout type="grid" id="label-and-input-container">
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>label-and-input</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="label-and-input">
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>left</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>no-padding</padding>
     </padding>
-
     <element>
       <name>label</name>
     </element>
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>no-padding</padding>
     </padding>
-
     <element>
       <name>input</name>
     </element>
   </factory>
-
   <!-- File open dialog -->
-
   <layout type="grid" id="file-dialog">
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>file-input-row</name>
     </append_row>
-
     <valign>
       <row>1</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>directory-label-row</name>
     </append_row>
-
     <valign>
       <row>2</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>filter-row</name>
     </append_row>
-
     <append_row>
       <name>directory-contents-row</name>
     </append_row>
-
     <append_row>
       <name>ok-cancel-button-container</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="file-input-row">
     <padding>
       <side>top</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <halign>right</halign>
-
     <element id="file-input-label">
       <label type="theme_text">${context:file-dialog}File:</label>
     </element>
-
     <padding>
       <side>top</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element id="file-input-field">
       <input_field/>
       <config>
-	<columns>60</columns>
+        <columns>60</columns>
       </config>
     </element>
   </factory>
-
   <factory type="grid" id="directory-label-row">
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <halign>right</halign>
-
     <element id="directory-label">
       <label type="theme_text">${context:file-dialog}Directory:</label>
     </element>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element id="directory-field">
       <focusable_label> </focusable_label>
     </element>
-
   </factory>
   <factory type="grid" id="filter-row">
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <halign>right</halign>
-
     <element id="filter-label">
       <label type="theme_text">${context:file-dialog}Files:</label>
     </element>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element>
       <name>filter-field</name>
     </element>
   </factory>
-
   <factory type="grid" id="directory-contents-row">
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <element>
       <canvas/>
     </element>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <halign>fill</halign>
-
     <container>
       <name>directory-contents-pane</name>
       <type>pane</type>
       <config>
-	<size>directory-pane-size</size>
+        <size>directory-pane-size</size>
       </config>
     </container>
   </factory>
-
   <dim id="directory-pane-size">100.0</dim>
-
   <!-- Container with two panes, subdirectories and files -->
-
   <layout id="directory-contents-pane" type="pane">
     <append_panes>
       <name>create-directory-contents-pane</name>
     </append_panes>
   </layout>
-
   <factory id="create-directory-contents-pane" type="pane">
-
     <configure_for_new_list/>
     <appearance>std_file_dialog_dir</appearance>
     <container>
       <type>list</type>
       <name>subdirectory-pane</name>
       <config>
-	<columns>3</columns>
-	<configure_for_pane>
-	  <synchronized/>
-	</configure_for_pane>
-	<synchronized_columns>directory-contents-pane</synchronized_columns>
-
-	<!-- Give all space to the first column, with the filename -->
-	<requested_col_width>
-	  <column>0</column>
-	  <percentage>100</percentage>
-	</requested_col_width>
-
-	<!-- The rightmost column, file size, is right-aligned -->
-
-	<col_alignment>
-	  <column>2</column>
-	  <halign>right</halign>
-	</col_alignment>
+        <columns>3</columns>
+        <configure_for_pane>
+          <synchronized/>
+        </configure_for_pane>
+        <synchronized_columns>directory-contents-pane</synchronized_columns>
+        <!-- Give all space to the first column, with the filename -->
+        <requested_col_width>
+          <column>0</column>
+          <percentage>100</percentage>
+        </requested_col_width>
+        <!-- The rightmost column, file size, is right-aligned -->
+        <col_alignment>
+          <column>2</column>
+          <halign>right</halign>
+        </col_alignment>
       </config>
     </container>
-
     <configure_for_new_list/>
     <appearance>std_file_dialog_file</appearance>
     <container>
       <type>list</type>
       <name>file-pane</name>
       <config>
-	<columns>3</columns>
-	<configure_for_pane>
-	  <synchronized/>
-	</configure_for_pane>
-	<synchronized_columns>directory-contents-pane</synchronized_columns>
-
-	<!-- Give all space to the first column, with the filename -->
-	<requested_col_width>
-	  <column>0</column>
-	  <percentage>100</percentage>
-	</requested_col_width>
-
-	<!-- The rightmost column, file size, is right-aligned -->
-
-	<col_alignment>
-	  <column>2</column>
-	  <halign>right</halign>
-	</col_alignment>
+        <columns>3</columns>
+        <configure_for_pane>
+          <synchronized/>
+        </configure_for_pane>
+        <synchronized_columns>directory-contents-pane</synchronized_columns>
+        <!-- Give all space to the first column, with the filename -->
+        <requested_col_width>
+          <column>0</column>
+          <percentage>100</percentage>
+        </requested_col_width>
+        <!-- The rightmost column, file size, is right-aligned -->
+        <col_alignment>
+          <column>2</column>
+          <halign>right</halign>
+        </col_alignment>
       </config>
     </container>
   </factory>
-
   <appearance id="std_file_dialog_dir" type="pane" from="file_dialog_dir"/>
   <appearance id="std_file_dialog_file" type="pane" from="file_dialog_file"/>
-
   <layout id="file-pane" type="list"/>
-
   <layout id="subdirectory-pane" type="list"/>
-
   <!-- Font for the "Directory" name -->
-
   <font id="filedir_directoryfont">
     <from>mono</from>
     <point_size>12</point_size>
   </font>
-
   <!-- Directory contents element -->
   <color id="filedir_highlight_fg" scale="100%"/>
   <color id="filedir_highlight_bg" scale="30%"/>
-
   <font id="filedir_filename">
     <from>sans_serif</from>
     <point_size>12</point_size>
   </font>
-
   <font id="filedir_filedate">
     <from>mono</from>
     <point_size>12</point_size>
   </font>
-
   <font id="filedir_filesize">
     <from>mono</from>
     <point_size>12</point_size>
   </font>
-
   <!--
       Color picker.
 
@@ -2213,34 +1769,25 @@ of wrappable labels used for the message.
 
 
   -->
-
   <layout type="grid" id="color-picker-popup">
-
     <!-- First row in the color picker: two containers, left and right half -->
-
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>color-picker-main-container</name>
     </append_row>
-
     <append_row>
       <name>color-picker-error-message-row</name>
     </append_row>
-
     <append_row>
       <name>color-picker-basic-colors-row</name>
     </append_row>
-
     <append_row>
       <name>ok-cancel-button-container</name>
     </append_row>
-
   </layout>
-
   <factory type="grid" id="color-picker-main-container">
     <padding>
       <side>top</side>
@@ -2262,7 +1809,6 @@ of wrappable labels used for the message.
       <type>grid</type>
       <name>color-picker-left-container</name>
     </container>
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
@@ -2284,7 +1830,6 @@ of wrappable labels used for the message.
       <name>color-picker-right-container</name>
     </container>
   </factory>
-
   <!--
 
 The left half of the color picker selector popup.
@@ -2325,7 +1870,6 @@ and the elements around it, for visual separation, and so that we can use
 the grid layout manager's borders for it.
 
   -->
-
   <layout type="grid" id="color-picker-left-container">
     <append_row>
       <name>color-picker-left-container-top-row</name>
@@ -2343,7 +1887,6 @@ the grid layout manager's borders for it.
       <name>color-picker-left-container-bottom-row</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="color-picker-left-container-top-row">
     <colspan>
       <columns>2</columns>
@@ -2351,7 +1894,6 @@ the grid layout manager's borders for it.
     <element>
       <canvas/>
     </element>
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
@@ -2368,16 +1910,14 @@ the grid layout manager's borders for it.
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-
     <!-- HHHHH -->
-
     <element id="h-button" tooltip="color-picker-h-button-tooltip">
       <button>
-	<element id="h-canvas">
-	  <canvas>
-	    <height>color_picker_strip_height</height>
-	  </canvas>
-	</element>
+        <element id="h-canvas">
+          <canvas>
+            <height>color_picker_strip_height</height>
+          </canvas>
+        </element>
       </button>
       <shortcut>Alt-H</shortcut>
     </element>
@@ -2388,19 +1928,16 @@ the grid layout manager's borders for it.
       <canvas/>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-left-container-top-spacing">
     <colspan>
       <columns>5</columns>
     </colspan>
-
     <element>
       <canvas>
-	<height>color_picker_buffer_height</height>
+        <height>color_picker_buffer_height</height>
       </canvas>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-left-container-middle-row">
     <padding>
       <side>top</side>
@@ -2418,26 +1955,22 @@ the grid layout manager's borders for it.
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-
     <element id="v-button" tooltip="color-picker-v-button-tooltip">
       <button>
-	<element id="v-canvas">
-	  <canvas>
-	    <width>color_picker_strip_width</width>
-	  </canvas>
-	</element>
+        <element id="v-canvas">
+          <canvas>
+            <width>color_picker_strip_width</width>
+          </canvas>
+        </element>
       </button>
       <shortcut>Alt-V</shortcut>
     </element>
-
     <element>
       <canvas>
-	<width>color_picker_buffer_width</width>
+        <width>color_picker_buffer_width</width>
       </canvas>
     </element>
-
     <!-- SSSSS -->
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
@@ -2454,7 +1987,6 @@ the grid layout manager's borders for it.
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-
     <border>
       <side>left</side>
       <border>color_picker_gradient_border</border>
@@ -2474,13 +2006,11 @@ the grid layout manager's borders for it.
     <element>
       <name>square</name>
     </element>
-
     <element>
       <canvas>
-	<width>color_picker_buffer_width</width>
+        <width>color_picker_buffer_width</width>
       </canvas>
     </element>
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
@@ -2497,56 +2027,47 @@ the grid layout manager's borders for it.
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-
     <container>
       <type>page</type>
       <name>color-picker-a-canvas-page-layout</name>
     </container>
   </factory>
-
   <factory type="grid" id="color-picker-left-container-bottom-spacing">
     <colspan>
       <columns>5</columns>
     </colspan>
-
     <element>
       <canvas>
-	<height>color_picker_buffer_height</height>
+        <height>color_picker_buffer_height</height>
       </canvas>
     </element>
   </factory>
-
   <layout type="page" id="color-picker-a-canvas-page-layout">
     <append>
       <name>color-picker-a-canvas-page</name>
     </append>
   </layout>
-
   <factory type="page" id="color-picker-a-canvas-page">
     <container>
       <type>border</type>
       <name>color-picker-a-canvas-border</name>
       <config>
-	<appearance>color-picker-a-canvas-frame</appearance>
-	<no_background/>
+        <appearance>color-picker-a-canvas-frame</appearance>
+        <no_background/>
       </config>
-
       <contents>
-	<element id="a-canvas" tooltip="color-picker-a-button-tooltip">
-	  <name>alpha</name>
-	</element>
+        <element id="a-canvas" tooltip="color-picker-a-button-tooltip">
+          <name>alpha</name>
+        </element>
       </contents>
     </container>
   </factory>
-
   <layout type="border" id="color-picker-a-canvas-border"/>
-
   <appearance id="color-picker-a-canvas-frame" type="frame">
     <border>color_picker_alpha_border</border>
     <hpad>no-padding</hpad>
     <vpad>no-padding</vpad>
   </appearance>
-
   <factory type="grid" id="color-picker-left-container-bottom-row">
     <colspan>
       <columns>2</columns>
@@ -2554,9 +2075,7 @@ the grid layout manager's borders for it.
     <element>
       <canvas/>
     </element>
-
     <!-- CCCCCC -->
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
@@ -2589,13 +2108,11 @@ the grid layout manager's borders for it.
       <side>bottom</side>
       <border>color_picker_fixed_component_border</border>
     </border>
-
     <element id="fixed-canvas" tooltip="color-picker-fixed-canvas-tooltip">
       <canvas>
-	<height>color_picker_strip_height</height>
+        <height>color_picker_strip_height</height>
       </canvas>
     </element>
-
     <colspan>
       <columns>2</columns>
     </colspan>
@@ -2603,26 +2120,21 @@ the grid layout manager's borders for it.
       <canvas/>
     </element>
   </factory>
-
   <tooltip type="label" id="color-picker-h-button-tooltip">
     <label type="theme_text">Click to select this color channel
 for adjustment (Alt-H)</label>
   </tooltip>
-
   <tooltip type="label" id="color-picker-v-button-tooltip">
     <label type="theme_text">Click to select this color channel
  for adjustment (Alt-V)</label>
   </tooltip>
-
   <tooltip type="label" id="color-picker-a-button-tooltip">
     <label type="theme_text">Alpha Channel</label>
   </tooltip>
-
   <tooltip type="label" id="color-picker-fixed-canvas-tooltip">
     <label type="theme_text">Click to adjust this color channel
 (in the currently selected color)</label>
   </tooltip>
-
   <!--
 
 The right half of the popup, with the input fields for manually entering
@@ -2633,100 +2145,79 @@ second column the input fields themselves. Right-align the
 first column, to make the labels line up with their input fields.
 
   -->
-
   <layout type="grid" id="color-picker-right-container">
     <halign>
       <col>0</col>
       <halign>right</halign>
     </halign>
-
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>1</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>2</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>3</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>4</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>5</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>6</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>7</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>8</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>9</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>color-picker-right-container-r-row</name>
     </append_row>
-
     <append_row>
       <name>color-picker-right-container-g-row</name>
     </append_row>
-
     <append_row>
       <name>color-picker-right-container-b-row</name>
     </append_row>
-
     <append_row>
       <name>color-picker-right-container-a-row</name>
     </append_row>
-
     <append_row>
       <name>color-picker-right-container-h-row</name>
     </append_row>
-
     <append_row>
       <name>color-picker-right-container-s-row</name>
     </append_row>
-
     <append_row>
       <name>color-picker-right-container-v-row</name>
     </append_row>
-
     <append_row>
       <name>color-picker-right-container-hexadecimal-row</name>
     </append_row>
-
     <append_row>
       <name>color-picker-right-container-full-precision-row</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="color-picker-right-container-r-row">
     <element id="r-label">
       <label type="theme_text">${context:color-picker}R:</label>
@@ -2734,16 +2225,15 @@ first column, to make the labels line up with their input fields.
     <element id="r-input-field">
       <input_field/>
       <config>
-	<columns>6</columns>
-	<alignment>right</alignment>
-	<maximum_size>5</maximum_size>
-	<autoselect/>
-	<direction>left_to_right</direction>
-	<set_default_spin_control_factories/>
+        <columns>6</columns>
+        <alignment>right</alignment>
+        <maximum_size>5</maximum_size>
+        <autoselect/>
+        <direction>left_to_right</direction>
+        <set_default_spin_control_factories/>
       </config>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-right-container-g-row">
     <element id="g-label">
       <label type="theme_text">${context:color-picker}G:</label>
@@ -2751,16 +2241,15 @@ first column, to make the labels line up with their input fields.
     <element id="g-input-field">
       <input_field/>
       <config>
-	<columns>6</columns>
-	<alignment>right</alignment>
-	<maximum_size>5</maximum_size>
-	<autoselect/>
-	<direction>left_to_right</direction>
-	<set_default_spin_control_factories/>
+        <columns>6</columns>
+        <alignment>right</alignment>
+        <maximum_size>5</maximum_size>
+        <autoselect/>
+        <direction>left_to_right</direction>
+        <set_default_spin_control_factories/>
       </config>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-right-container-b-row">
     <element id="b-label">
       <label type="theme_text">${context:color-picker}B:</label>
@@ -2768,16 +2257,15 @@ first column, to make the labels line up with their input fields.
     <element id="b-input-field">
       <input_field/>
       <config>
-	<columns>6</columns>
-	<alignment>right</alignment>
-	<maximum_size>5</maximum_size>
-	<autoselect/>
-	<direction>left_to_right</direction>
-	<set_default_spin_control_factories/>
+        <columns>6</columns>
+        <alignment>right</alignment>
+        <maximum_size>5</maximum_size>
+        <autoselect/>
+        <direction>left_to_right</direction>
+        <set_default_spin_control_factories/>
       </config>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-right-container-a-row">
     <element id="a-label">
       <label type="theme_text">${context:color-picker}A:</label>
@@ -2787,26 +2275,23 @@ first column, to make the labels line up with their input fields.
       <name>color-picker-a-input-field-layout</name>
     </container>
   </factory>
-
   <layout type="page" id="color-picker-a-input-field-layout">
     <append>
       <name>color-picker-a-input-field</name>
     </append>
   </layout>
-
   <factory type="page" id="color-picker-a-input-field">
     <element id="a-input-field">
       <input_field/>
       <config>
-	<columns>6</columns>
-	<alignment>right</alignment>
-	<maximum_size>5</maximum_size>
-	<autoselect/>
-	<set_default_spin_control_factories/>
+        <columns>6</columns>
+        <alignment>right</alignment>
+        <maximum_size>5</maximum_size>
+        <autoselect/>
+        <set_default_spin_control_factories/>
       </config>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-right-container-h-row">
     <element id="h-label">
       <label type="theme_text">${context:color-picker}H:</label>
@@ -2814,16 +2299,15 @@ first column, to make the labels line up with their input fields.
     <element id="h-input-field">
       <input_field/>
       <config>
-	<columns>6</columns>
-	<alignment>right</alignment>
-	<maximum_size>5</maximum_size>
-	<autoselect/>
-	<direction>left_to_right</direction>
-	<set_default_spin_control_factories/>
+        <columns>6</columns>
+        <alignment>right</alignment>
+        <maximum_size>5</maximum_size>
+        <autoselect/>
+        <direction>left_to_right</direction>
+        <set_default_spin_control_factories/>
       </config>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-right-container-s-row">
     <element id="s-label">
       <label type="theme_text">${context:color-picker}S:</label>
@@ -2831,16 +2315,15 @@ first column, to make the labels line up with their input fields.
     <element id="s-input-field">
       <input_field/>
       <config>
-	<columns>6</columns>
-	<alignment>right</alignment>
-	<maximum_size>5</maximum_size>
-	<autoselect/>
-	<direction>left_to_right</direction>
-	<set_default_spin_control_factories/>
+        <columns>6</columns>
+        <alignment>right</alignment>
+        <maximum_size>5</maximum_size>
+        <autoselect/>
+        <direction>left_to_right</direction>
+        <set_default_spin_control_factories/>
       </config>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-right-container-v-row">
     <element id="v-label">
       <label type="theme_text">${context:color-picker}V:</label>
@@ -2848,16 +2331,15 @@ first column, to make the labels line up with their input fields.
     <element id="v-input-field">
       <input_field/>
       <config>
-	<columns>6</columns>
-	<alignment>right</alignment>
-	<maximum_size>5</maximum_size>
-	<autoselect/>
-	<direction>left_to_right</direction>
-	<set_default_spin_control_factories/>
+        <columns>6</columns>
+        <alignment>right</alignment>
+        <maximum_size>5</maximum_size>
+        <autoselect/>
+        <direction>left_to_right</direction>
+        <set_default_spin_control_factories/>
       </config>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-right-container-hexadecimal-row">
     <colspan>
       <columns>2</columns>
@@ -2865,13 +2347,12 @@ first column, to make the labels line up with their input fields.
     <halign>left</halign>
     <element id="hexadecimal">
       <checkbox>
-	<element>
-	  <label type="theme_text">Hexadecimal</label>
-	</element>
+        <element>
+          <label type="theme_text">Hexadecimal</label>
+        </element>
       </checkbox>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-right-container-full-precision-row">
     <colspan>
       <columns>2</columns>
@@ -2879,15 +2360,13 @@ first column, to make the labels line up with their input fields.
     <halign>left</halign>
     <element id="full-precision">
       <checkbox>
-	<element>
-	  <label type="theme_text">Full Precision</label>
-	</element>
+        <element>
+          <label type="theme_text">Full Precision</label>
+        </element>
       </checkbox>
     </element>
   </factory>
-
   <!--  A label for an error message, on the last row -->
-
   <factory type="grid" id="color-picker-error-message-row">
     <colspan>
       <columns>2</columns>
@@ -2897,19 +2376,16 @@ first column, to make the labels line up with their input fields.
       <label> </label>
     </element>
   </factory>
-
   <factory type="grid" id="color-picker-basic-colors-row">
     <colspan>
       <columns>2</columns>
     </colspan>
     <halign>center</halign>
-
     <container>
       <type>grid</type>
       <name>basic-colors-table</name>
     </container>
   </factory>
-
   <layout type="grid" id="basic-colors-table">
     <append_row>
       <name>basic-colors-table-row-1</name>
@@ -2918,298 +2394,269 @@ first column, to make the labels line up with their input fields.
       <name>basic-colors-table-row-2</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="basic-colors-table-row-1">
     <element id="basic-color-black" tooltip="basic-color-black-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>black</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>black</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-gray" tooltip="basic-color-gray-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>gray</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>gray</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-silver" tooltip="basic-color-silver-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>silver</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>silver</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-white" tooltip="basic-color-white-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>white</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>white</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-maroon" tooltip="basic-color-maroon-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>maroon</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>maroon</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-red" tooltip="basic-color-red-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>red</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>red</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-olive" tooltip="basic-color-olive-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>olive</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>olive</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-yellow" tooltip="basic-color-yellow-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>yellow</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>yellow</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
   </factory>
-
   <factory type="grid" id="basic-colors-table-row-2">
     <element id="basic-color-green" tooltip="basic-color-green-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>green</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>green</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-lime" tooltip="basic-color-lime-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>lime</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>lime</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-teal" tooltip="basic-color-teal-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>teal</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>teal</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-aqua" tooltip="basic-color-aqua-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>aqua</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>aqua</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-navy" tooltip="basic-color-navy-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>navy</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>navy</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-blue" tooltip="basic-color-blue-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>blue</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>blue</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-fuchsia" tooltip="basic-color-fuchsia-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>fuchsia</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>fuchsia</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
     <element id="basic-color-purple" tooltip="basic-color-purple-tooltip">
       <button>
-	<element>
-	  <canvas>
-	    <width>color_picker_basic_color_width</width>
-	    <height>color_picker_basic_color_height</height>
-	    <background_color>purple</background_color>
-	  </canvas>
-	</element>
+        <element>
+          <canvas>
+            <width>color_picker_basic_color_width</width>
+            <height>color_picker_basic_color_height</height>
+            <background_color>purple</background_color>
+          </canvas>
+        </element>
       </button>
     </element>
   </factory>
-
   <tooltip type="label" id="basic-color-black-tooltip">
     <label type="theme_text">Black</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-gray-tooltip">
     <label type="theme_text">Gray</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-silver-tooltip">
     <label type="theme_text">Silver</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-white-tooltip">
     <label type="theme_text">White</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-maroon-tooltip">
     <label type="theme_text">Maroon</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-red-tooltip">
     <label type="theme_text">Red</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-olive-tooltip">
     <label type="theme_text">Olive</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-yellow-tooltip">
     <label type="theme_text">Yellow</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-green-tooltip">
     <label type="theme_text">Green</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-lime-tooltip">
     <label type="theme_text">Lime</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-teal-tooltip">
     <label type="theme_text">Teal</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-aqua-tooltip">
     <label type="theme_text">Aqua</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-navy-tooltip">
     <label type="theme_text">Navy</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-blue-tooltip">
     <label type="theme_text">Blue</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-fuchsia-tooltip">
     <label type="theme_text">Fuchsia</label>
   </tooltip>
-
   <tooltip type="label" id="basic-color-purple-tooltip">
     <label type="theme_text">Purple</label>
   </tooltip>
-
   <!-- Print dialog -->
-
   <!--
       The dialog itself contains a book container, with the print option
       pages, and the button row
   -->
-
   <layout type="grid" id="print-dialog">
     <append_row>
       <name>print-dialog-book-container</name>
     </append_row>
-
     <append_row>
       <name>ok-cancel-button-container-1</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="print-dialog-book-container">
-
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
     <padding>
       <side>top</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <container>
       <type>book</type>
       <name>print-dialog-options</name>
     </container>
   </factory>
-
   <layout type="book" id="print-dialog-options">
     <append_pages>
       <name>print-dialog-options-pages</name>
@@ -3218,537 +2665,414 @@ first column, to make the labels line up with their input fields.
       <page>0</page>
     </open>
   </layout>
-
   <factory type="book" id="print-dialog-options-pages">
     <add>
       <tab>
-	<element>
-	  <label type="theme_text">${context:print-dialog}${decoration:underline}G${decoration:none}eneral</label>
-	</element>
+        <element>
+          <label type="theme_text">${context:print-dialog}${decoration:underline}G${decoration:none}eneral</label>
+        </element>
       </tab>
       <shortcut type="theme_text">${context:print-dialog}Alt-G</shortcut>
       <page>
-	<container>
-	  <type>grid</type>
-	  <name>print-dialog-general-options</name>
-	</container>
+        <container>
+          <type>grid</type>
+          <name>print-dialog-general-options</name>
+        </container>
       </page>
     </add>
-
     <add>
       <tab>
-	<element>
-	  <label type="theme_text">${context:print-dialog}${decoration:underline}P${decoration:none}age Options</label>
-	</element>
+        <element>
+          <label type="theme_text">${context:print-dialog}${decoration:underline}P${decoration:none}age Options</label>
+        </element>
       </tab>
       <shortcut type="theme_text">${context:print-dialog}Alt-P</shortcut>
       <page>
-	<container>
-	  <type>grid</type>
-	  <name>print-dialog-page-options</name>
-	</container>
+        <container>
+          <type>grid</type>
+          <name>print-dialog-page-options</name>
+        </container>
       </page>
     </add>
-
     <add>
       <tab>
-	<element>
-	  <label type="theme_text">${context:print-dialog}${decoration:underline}I${decoration:none}mage Options</label>
-	</element>
+        <element>
+          <label type="theme_text">${context:print-dialog}${decoration:underline}I${decoration:none}mage Options</label>
+        </element>
       </tab>
       <shortcut type="theme_text">${context:print-dialog}Alt-I</shortcut>
       <page>
-	<container>
-	  <label>print-dialog-image-label</label>
-	  <type>grid</type>
-	  <name>print-dialog-image-options</name>
-	</container>
+        <container>
+          <label>print-dialog-image-label</label>
+          <type>grid</type>
+          <name>print-dialog-image-options</name>
+        </container>
       </page>
     </add>
   </factory>
-
   <!-- Print dialog: general options -->
-
   <layout type="grid" id="print-dialog-general-options">
     <append_row>
       <name>print-dialog-select-printer</name>
     </append_row>
-
     <append_row>
       <name>print-dialog-printer-info</name>
     </append_row>
-
     <append_row>
       <name>print-dialog-number-of-copies</name>
     </append_row>
-
     <append_row>
       <name>print-dialog-print-all-pages</name>
     </append_row>
-
     <append_row>
       <name>print-dialog-print-selected-pages-row</name>
     </append_row>
   </layout>
-
   <!-- Print dialog: page options -->
-
   <layout type="grid" id="print-dialog-page-options">
     <append_row>
       <name>print-dialog-page-size</name>
     </append_row>
-
     <append_row>
       <name>print-dialog-duplex</name>
     </append_row>
-
     <append_row>
       <name>print-dialog-pages-per-side</name>
     </append_row>
-
     <append_row>
       <name>print-dialog-orientation-requested</name>
     </append_row>
-
     <append_row>
       <name>print-dialog-finishings</name>
     </append_row>
   </layout>
-
   <!-- Print dialog: image options -->
-
   <layout type="grid" id="print-dialog-image-options">
     <append_row>
       <name>print-dialog-color-mode</name>
     </append_row>
-
     <append_row>
       <name>print-dialog-quality</name>
     </append_row>
-
     <append_row>
       <name>print-dialog-resolution</name>
     </append_row>
   </layout>
-
   <!-- Select printer label and combo-box -->
-
   <factory type="grid" id="print-dialog-select-printer">
     <halign>right</halign>
-
     <element id="select-printer-label">
       <label type="theme_text">${context:print-dialog}Printer:</label>
     </element>
-
     <container>
       <type>list</type>
       <name>select-printer-field</name>
       <creator>select-printer-field</creator>
       <style>highlight</style>
-
       <config>
-	<selection_type>single</selection_type>
-	<height>
-	  <min_rows>4</min_rows>
-	  <max_rows>4</max_rows>
-	</height>
+        <selection_type>single</selection_type>
+        <height>
+          <min_rows>4</min_rows>
+          <max_rows>4</max_rows>
+        </height>
       </config>
     </container>
   </factory>
-
   <layout id="select-printer-field" type="list"/>
-
   <!--
       Currently selected printer info label, below the print selection combo
   -->
-
   <factory type="grid" id="print-dialog-printer-info">
     <element>
       <canvas/>
     </element>
-
     <element id="printer-info">
       <label/>
     </element>
   </factory>
-
   <!-- Number of copies label and input field row -->
-
   <factory type="grid" id="print-dialog-number-of-copies">
     <halign>right</halign>
-
     <valign>middle</valign>
-
     <element id="number-of-copies-label">
       <label type="theme_text">${context:print-dialog}Number of copies:</label>
     </element>
-
     <valign>middle</valign>
-
     <element id="number-of-copies-field">
       <input_field/>
       <config>
-	<columns>4</columns>
-	<autoselect/>
-	<set_default_spin_control_factories/>
+        <columns>4</columns>
+        <autoselect/>
+        <set_default_spin_control_factories/>
       </config>
     </element>
   </factory>
-
   <!-- Print all pages radio button row -->
-
   <factory type="grid" id="print-dialog-print-all-pages">
     <element>
       <canvas/>
     </element>
-
     <element id="all-pages-radio-button">
       <radio>
-	<element>
-	  <label type="theme_text">All Pages</label>
-	</element>
+        <element>
+          <label type="theme_text">All Pages</label>
+        </element>
       </radio>
       <group>pages-radio-group@w.libcxx.com</group>
     </element>
   </factory>
-
   <!--
       Print selected pages row.
 
      The row consists of a nested layout, with the radio button and input field.
   -->
-
   <factory type="grid" id="print-dialog-print-selected-pages-row">
     <element>
       <canvas/>
     </element>
-
     <container>
       <type>grid</type>
       <name>print-dialog-print-selected-pages-radio-button-and-input-field</name>
     </container>
   </factory>
-
   <!--
       nested layout for the print select pages radio button and input field.
   -->
-
   <layout type="grid" id="print-dialog-print-selected-pages-radio-button-and-input-field">
     <append_row>
       <name>print-dialog-print-selected-pages</name>
     </append_row>
   </layout>
-
   <!--
       Print selected pages radio button and input field
   -->
-
   <factory type="grid" id="print-dialog-print-selected-pages">
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>left</side>
       <padding>no-padding</padding>
     </padding>
-
     <valign>middle</valign>
-
     <element id="page-range-radio-button">
       <radio>
-	<element>
-	  <label type="theme_text">Pages:</label>
-	</element>
+        <element>
+          <label type="theme_text">Pages:</label>
+        </element>
       </radio>
       <group>pages-radio-group@w.libcxx.com</group>
     </element>
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>bottom</side>
       <padding>no-padding</padding>
     </padding>
-
     <padding>
       <side>right</side>
       <padding>no-padding</padding>
     </padding>
-
     <valign>middle</valign>
-
     <element id="page-range-field">
       <input_field/>
       <config>
-	<columns>8</columns>
-	<autoselect/>
+        <columns>8</columns>
+        <autoselect/>
       </config>
     </element>
   </factory>
-
   <factory type="grid" id="print-dialog-page-size">
     <halign>right</halign>
-
     <valign>middle</valign>
-
     <element id="page-size-label">
       <label type="theme_text">${context:print-dialog}Page Size:</label>
     </element>
-
     <valign>middle</valign>
-
     <container>
       <type>standard_combobox</type>
       <name>page-size-field</name>
       <config>
-	<optional/>
+        <optional/>
       </config>
     </container>
   </factory>
-
   <layout id="page-size-field" type="standard_combobox"/>
-
   <factory type="grid" id="print-dialog-duplex">
     <halign>right</halign>
-
     <valign>middle</valign>
-
     <element id="duplex-label">
       <label type="theme_text">${context:print-dialog}Duplex:</label>
     </element>
-
     <valign>middle</valign>
-
     <container>
       <type>standard_combobox</type>
       <name>duplex-field</name>
       <config>
-	<optional/>
+        <optional/>
       </config>
     </container>
   </factory>
-
   <layout id="duplex-field" type="standard_combobox"/>
-
   <factory type="grid" id="print-dialog-pages-per-side">
     <halign>right</halign>
-
     <valign>middle</valign>
-
     <element id="pages-per-side-label">
       <label type="theme_text">${context:print-dialog}Pages Per Side:</label>
     </element>
-
     <valign>middle</valign>
-
     <container>
       <type>standard_combobox</type>
       <name>pages-per-side-field</name>
       <config>
-	<optional/>
+        <optional/>
       </config>
     </container>
   </factory>
-
   <layout id="pages-per-side-field" type="standard_combobox"/>
-
   <factory type="grid" id="print-dialog-orientation-requested">
     <halign>right</halign>
-
     <valign>middle</valign>
-
     <element id="orientation-label">
       <label type="theme_text">${context:print-dialog}Orientation:</label>
     </element>
-
     <valign>middle</valign>
-
     <container>
       <type>standard_combobox</type>
       <name>orientation-field</name>
       <config>
-	<optional/>
+        <optional/>
       </config>
     </container>
   </factory>
-
   <layout id="orientation-field" type="standard_combobox"/>
-
   <!-- Finishings label and input field row -->
-
   <factory type="grid" id="print-dialog-finishings">
     <halign>right</halign>
-
     <valign>middle</valign>
-
     <element id="finishings-label">
       <label type="theme_text">${context:print-dialog}Finishing Process:</label>
     </element>
-
     <valign>middle</valign>
-
     <container>
       <type>standard_combobox</type>
       <name>finishings-field</name>
       <config>
-	<optional/>
+        <optional/>
       </config>
     </container>
   </factory>
-
   <layout id="finishings-field" type="standard_combobox"/>
-
   <!-- Print color mode label and input field row -->
-
   <factory type="grid" id="print-dialog-color-mode">
     <halign>right</halign>
-
     <valign>middle</valign>
-
     <element id="print-color-mode-label">
       <label type="theme_text">${context:print-dialog}Color Mode:</label>
     </element>
-
     <valign>middle</valign>
-
     <container>
       <type>standard_combobox</type>
       <name>print-color-mode-field</name>
       <config>
-	<optional/>
+        <optional/>
       </config>
     </container>
   </factory>
-
   <layout id="print-color-mode-field" type="standard_combobox"/>
-
   <!-- Print quality label and input field row -->
-
   <factory type="grid" id="print-dialog-quality">
     <halign>right</halign>
-
     <valign>middle</valign>
-
     <element id="print-quality-label">
       <label type="theme_text">${context:print-dialog}Print Quality:</label>
     </element>
-
     <valign>middle</valign>
-
     <container>
       <type>standard_combobox</type>
       <name>print-quality-field</name>
       <config>
-	<optional/>
+        <optional/>
       </config>
     </container>
   </factory>
-
   <layout id="print-quality-field" type="standard_combobox"/>
-
   <!-- Printer resolution label and input field row -->
-
   <factory type="grid" id="print-dialog-resolution">
     <halign>right</halign>
-
     <valign>middle</valign>
-
     <element id="printer-resolution-label">
       <label type="theme_text">${context:print-dialog}Resolution:</label>
     </element>
-
     <valign>middle</valign>
-
     <container>
       <type>standard_combobox</type>
       <name>printer-resolution-field</name>
       <config>
-	<optional/>
+        <optional/>
       </config>
     </container>
   </factory>
-
   <layout id="printer-resolution-field" type="standard_combobox"/>
-
   <font id="printer_local_font">
     <from>sans_serif</from>
   </font>
-
   <font id="printer_remote_font">
     <from>printer_local_font</from>
     <slant>italic</slant>
   </font>
-
   <font id="printer_make_and_model">
     <from>serif</from>
     <point_size>10</point_size>
   </font>
-
   <font id="printer_location">
     <from>sans_serif</from>
     <point_size>10</point_size>
   </font>
-
   <font id="printer_status">
     <from>mono</from>
     <point_size>10</point_size>
   </font>
-
   <!-- Font picker popup -->
-
   <!-- Border around the preview element -->
-
   <border id="font_picker_preview_border" from="thin_0%">
     <rounded/>
     <hradius>1</hradius>
     <vradius>1</vradius>
   </border>
-
   <layout type="grid" id="font-picker-popup">
-
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>font-picker-popup-main-row</name>
     </append_row>
-
     <append_row>
       <name>font-size-error-row</name>
     </append_row>
-
     <append_row>
       <name>ok-cancel-button-container</name>
     </append_row>
   </layout>
-
   <dim id="font_picker_preview_width">40</dim>
   <dim id="font_picker_preview_height">40</dim>
-
   <!--
       Foreground color for font options that are not available with
       the current font and point size
   -->
-
   <color id="font_picker_unavailable_option_color" scale="50%"/>
-
   <!--
       Divide the layout into the left half and the right half.
       And the button row below it.
   -->
-
   <factory type="grid" id="font-picker-popup-main-row">
     <padding>
       <side>top</side>
@@ -3770,7 +3094,6 @@ first column, to make the labels line up with their input fields.
       <type>grid</type>
       <name>font-picker-popup-left-contents</name>
     </container>
-
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
@@ -3779,12 +3102,10 @@ first column, to make the labels line up with their input fields.
       <side>bottom</side>
       <padding>no-padding</padding>
     </padding>
-
     <!--
 	Borrow color picker's width to provide some separation between the
 	columns
     -->
-
     <padding>
       <side>left</side>
       <padding>color_picker_buffer_width</padding>
@@ -3798,23 +3119,19 @@ first column, to make the labels line up with their input fields.
       <name>font-picker-popup-right-contents</name>
     </container>
   </factory>
-
   <!--
       The left half of the font picker popup: the font family
       and font size combo-boxes, and the preview window.
   -->
-
   <layout type="grid" id="font-picker-popup-left-contents">
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>1</row>
       <valign>middle</valign>
     </valign>
-
     <append_row>
       <name>font-picker-popup-font-family-row</name>
     </append_row>
@@ -3825,64 +3142,49 @@ first column, to make the labels line up with their input fields.
       <name>font-picker-popup-font-preview-row</name>
     </append_row>
   </layout>
-
   <factory type="grid" id="font-picker-popup-font-family-row">
     <halign>right</halign>
-
     <element id="font-family-label">
       <label type="theme_text">${context:font-picker}Font:</label>
     </element>
-
     <container>
       <type>standard_combobox</type>
       <name>font-family-combobox</name>
     </container>
   </factory>
-
   <layout id="font-family-combobox" type="standard_combobox"/>
-
   <factory type="grid" id="font-picker-popup-font-size-row">
     <halign>right</halign>
-
     <element id="font-size-label">
       <label type="theme_text">${context:font-picker}Size:</label>
     </element>
-
     <container>
       <type>editable_combobox</type>
       <name>font-size-combobox</name>
     </container>
   </factory>
-
   <layout id="font-size-combobox" type="editable_combobox"/>
-
   <factory type="grid" id="font-picker-popup-font-preview-row">
     <halign>center</halign>
-
     <colspan>
       <columns>2</columns>
     </colspan>
-
     <element>
       <name>font-preview</name>
     </element>
   </factory>
-
   <!--
       The left half of the font picker popup: various font options.
   -->
-
   <layout type="grid" id="font-picker-popup-right-contents">
     <halign>
       <col>0</col>
       <halign>right</halign>
     </halign>
-
     <valign>
       <row>0</row>
       <valign>middle</valign>
     </valign>
-
     <valign>
       <row>1</row>
       <valign>middle</valign>
@@ -3898,64 +3200,52 @@ first column, to make the labels line up with their input fields.
     <append_row>
       <name>font-picker-popup-font-weight-row</name>
     </append_row>
-
     <append_row>
       <name>font-picker-popup-font-slant-row</name>
     </append_row>
-
     <append_row>
       <name>font-picker-popup-font-width-row</name>
     </append_row>
- </layout>
-
+  </layout>
   <factory type="grid" id="font-picker-popup-font-weight-row">
     <element id="font-weight-label">
       <label type="theme_text">${context:font-picker}Font Weight:</label>
     </element>
-
     <container>
       <type>standard_combobox</type>
       <name>font-weight-combobox</name>
       <config>
-	<synchronized_columns>font-options</synchronized_columns>
+        <synchronized_columns>font-options</synchronized_columns>
       </config>
     </container>
   </factory>
-
   <layout id="font-weight-combobox" type="standard_combobox"/>
-
   <factory type="grid" id="font-picker-popup-font-slant-row">
     <element id="font-slant-label">
       <label type="theme_text">${context:font-picker}Font Slant:</label>
     </element>
-
     <container>
       <type>standard_combobox</type>
       <name>font-slant-combobox</name>
       <config>
-	<synchronized_columns>font-options</synchronized_columns>
+        <synchronized_columns>font-options</synchronized_columns>
       </config>
     </container>
   </factory>
-
   <layout id="font-slant-combobox" type="standard_combobox"/>
-
   <factory type="grid" id="font-picker-popup-font-width-row">
     <element id="font-width-label">
       <label type="theme_text">${context:font-picker}Font Width:</label>
     </element>
-
     <container>
       <type>standard_combobox</type>
       <name>font-width-combobox</name>
       <config>
-	<synchronized_columns>font-options</synchronized_columns>
+        <synchronized_columns>font-options</synchronized_columns>
       </config>
     </container>
   </factory>
-
   <layout id="font-width-combobox" type="standard_combobox"/>
-
   <!--
       The error row.
 
@@ -3964,20 +3254,15 @@ first column, to make the labels line up with their input fields.
 
       We only need to provide for the padding below
   -->
-
   <factory type="grid" id="font-size-error-row">
-
     <halign>center</halign>
-
     <colspan>
       <columns>2</columns>
     </colspan>
-
     <padding>
       <side>bottom</side>
       <padding>dialog-v-padding</padding>
     </padding>
-
     <element id="font-size-error">
       <label> </label>
     </element>
