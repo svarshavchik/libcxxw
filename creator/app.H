@@ -3,7 +3,6 @@
 
 #include <x/obj.H>
 #include <x/ref.H>
-#include <x/refptr_traits.H>
 #include <x/singletonptr.H>
 #include <x/functional.H>
 #include <x/functionalrefptr.H>
@@ -35,15 +34,24 @@
 #include "messages.H"
 
 #include "creator/appelements.inc.H"
+#include "creator/uicompiler_generatorsfwd.H"
+#include "creator/uicompilerfwd.H"
+#include "creator/appgenerator_functionsobj.H"
+
 #include <variant>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <map>
 #include <concepts>
 #include <vector>
 
 #ifndef CREATORDIR
 #define CREATORDIR PKGDATADIR "/creator"
+#endif
+
+#ifndef UICOMPILERDIR
+#define UICOMPILERDIR PKGDATADIR "/creator"
 #endif
 
 class appObj;
@@ -134,6 +142,7 @@ concept update_functor = requires(F f, edited_info_t &info) {
 	} -> std::same_as<void>;
 };
 
+extern x::functionref<x::w::input_field_filter_callback_t> get_label_filter();
 
 //! Singleton application class.
 
@@ -167,10 +176,12 @@ private:
 
 		std::string filename;
 		x::xml::doc theme;
+		x::w::const_uigeneratorsptr cxxwui_generators;
 		app_elements_tptr elements;
+		app_generator_elements_tptr generator_elements;
 		appearance_types_t appearance_types;
-		x::functionref<x::w::input_field_filter_callback_t
-			       > label_filter;
+
+		uicompiler uicompiler_info;
 		init_args();
 	};
 
@@ -192,6 +203,18 @@ public:
 	//! Construct an xpath for an element in the theme file.
 
 	//! They all follow the "/theme/{type}[@id="{name}"]" pattern.
+	//!
+	//! "type" may contain "|"-delimited list, this results in an
+	//! xpath. I.e. xpath_for("layout|factory", "xx") becomes:
+	//!
+	//! \code
+	//!   /theme/layout[@id="xx"]|/theme/factory[@id="xx"]
+	//! \endcode
+
+	static std::string xpath_for(const std::string_view &type,
+				     const std::string &id);
+
+	//! Call xpath_for(), then return this xpath for the given lock.
 
 	static x::xml::xpath
 	get_xpath_for(const x::xml::readlock &lock,
@@ -301,6 +324,23 @@ public:
 	//! node.
 	//!
 	//! Returns nothing for an error.
+	//!
+	//! "type" is a "dim" or "color". When creating a layout or a factory,
+	//! which share the same id namespace, "type" is "layout|factory".
+	//!
+	//! "new_type" is the same as type, or just "layout" or "factory",
+	//! when creating that one.
+
+	create_update_t create_update(const char *type,
+				      const char *new_type,
+				      const std::string &id,
+				      bool is_new);
+
+	//! Add or update a theme element.
+
+	//! \overload
+	//!
+	//! The same value for "type" and "new_type".
 
 	create_update_t create_update(const char *type,
 				      const std::string &id,
@@ -308,13 +348,13 @@ public:
 
 	//! New ID and name parameter to update_new_element
 
-	//! If description is an empty string, it's considered to be the
+	//! If description is an empty vector, it's considered to be the
 	//! same as the id. This allows for convenient uniform initialization
 	//! syntax to be used for this parameter.
 
 	struct new_element_t {
 		std::string id;
-		std::string description;
+		std::vector<std::string> description;
 	};
 
 	//! Common logic when creating a new element
@@ -421,6 +461,7 @@ private:
 	//! The current status of what's being update
 	x::mpobj<edited_info_t> current_edited_info;
 
+public:
 	//! update status of what's being edited
 	template<update_functor F>
 	void update(F &&f)
@@ -428,11 +469,10 @@ private:
 		do_update(x::make_function<void (edited_info_t &)>
 			  (std::forward<F>(f)));
 	}
-
+private:
 	//! Type-erased update().
 	void do_update(const x::function<void (edited_info_t &)> &);
 public:
-
 	//! All supported appearance types, by their name.
 	const appearance_types_t appearance_types;
 
@@ -1805,6 +1845,124 @@ private:
 	void appearance_delete2(appearance_info_t::lock &lock,
 				size_t index,
 				const x::ref<x::obj> &busy_mcguffin);
+public:
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Generator page.
+
+	// The main generator list.
+
+	const appgenerator_functions current_generators;
+
+	//! Installs callbacks.
+
+	static void generators_elements_initialize
+	(app_elements_tptr &common_elements,
+	 x::w::uielements &ui,
+	 const uicompiler &uiptr);
+
+	//! Initialize the colors page after loading/creating a new theme.
+
+	void generators_initialize(ONLY IN_THREAD);
+
+	//! The generator's description in the generator_name combo-box.
+	new_element_t generator_name_and_description(const std::string &n);
+
+	//! Something was selected or unselected in the generator combo-box
+
+	//! Reset all generator fields.
+	void generator_reset(ONLY IN_THREAD);
+
+	//! Return the state of the new generator name and type fields.
+
+	std::tuple<std::string,
+		   std::optional<size_t>>
+	get_new_generator_name_and_type(generator_info_lock &);
+
+	//! Enable/disable elements
+
+	//! Invoked from UI callback.
+
+	void generator_enable_disable_buttons(ONLY IN_THREAD,
+					      generator_info_lock &lock);
+
+	void generator_enable_disable_buttons(ONLY IN_THREAD,
+					      generator_info_lock &lock,
+					      const x::w::listlayoutmanager &);
+
+	//! Create new generator button clicked
+	get_updatecallbackptr generator_new_create_clicked(ONLY IN_THREAD);
+
+	//! Continue generator_new_create_clicked(), in the main execution thread.
+	update_callback_t generator_new_create_clicked2(generator_info_lock
+							&lock);
+
+	//! Delete generator, invoked from update_theme().
+	get_updatecallbackptr generator_delete(ONLY IN_THREAD);
+
+	//! Continue generator_delete(), in the main execution thread.
+	update_callback_t generator_delete2(generator_info_lock &lock);
+
+	//! Finish generator_delete(), in the main execution thread.
+	void generator_delete2(generator_info_lock &lock,
+			       size_t index,
+			       const x::ref<x::obj> &busy_mcguffin);
+
+private:
+
+	//! compiler_lookup() callback parameter.
+
+	typedef void compiler_lookup_cb_t(const const_uicompiler_generators &);
+
+	//! Find the current generator's compiler.
+
+	//! For the given generator #n, read from the theme file, look up
+	//! its actual definition, and its compiler, and invoke the callback
+	//! function with this information.
+	//!
+	//! The passed-in this_generator gets positioned to the XML node
+	//! for the specified generator and the callback gets invoked with
+	//! the generator's compiler as its parameter.
+
+	template<typename F>
+	void compiler_lookup(generator_info_lock &lock,
+			      size_t n,
+			      const x::xml::readlock &this_generator,
+			      F && f)
+	{
+		do_compiler_lookup(lock, n,
+				    this_generator,
+				    x::make_function<compiler_lookup_cb_t>
+				    (std::forward<F>(f)));
+	}
+
+	//! type-erased compiler_lookup().
+	void do_compiler_lookup(generator_info_lock &lock,
+				 size_t n,
+				 const x::xml::readlock &this_generator,
+				 const x::function<compiler_lookup_cb_t> &cb);
+
+	//! Return the compiler specified by the this_generator's XML node.
+
+	const_uicompiler_generators
+	compiler_lookup(const x::xml::readlock &this_generator);
+public:
+
+	//! Save/update generator, invoked from update_theme().
+
+	get_updatecallbackptr generator_update(ONLY IN_THREAD);
+
+	//! Continue generator_update(), in the main execution thread.
+
+	update_callback_t generator_update2(generator_info_lock &lock);
+
+	//! Finalize generator_update(), in the main execution thread.
+	void generator_update2(generator_info_lock &lock,
+			       const x::ref<x::obj> &busy_mcguffin);
+
+	//! Finish generator_update(), in the connection thread.
+	void generator_update3(ONLY IN_THREAD,
+			       const x::ref<x::obj> &busy_mcguffin);
 };
 
 // The singleton instance of the app object.

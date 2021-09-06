@@ -29,14 +29,14 @@ static const struct special_keys_t {
 } special_keys[]={
 		  // label() relies on the KP_ naming convention.
 
-		  {XK_Left,	 "Left",	U"\x2B05"},
-		  {XK_KP_Left,	 "KP_Left",	U"KP-\x2B05"},
-		  {XK_Right,	 "Right",	U"\x2B95"},
-		  {XK_KP_Right,	 "KP_Right",	U"KP-\x2B95"},
-		  {XK_Up,	 "Up",		U"\x2B06"},
-		  {XK_KP_Up,	 "KP_Up",	U"KP-\x2B06"},
-		  {XK_Down,	 "Down",	U"\x2B07"},
-		  {XK_KP_Down,   "KP_Down",	U"KP-\x2B07"},
+		  {XK_Left,	 "Left",	U"\x2190"},
+		  {XK_KP_Left,	 "KP_Left",	U"KP-\x2190"},
+		  {XK_Right,	 "Right",	U"\x2192"},
+		  {XK_KP_Right,	 "KP_Right",	U"KP-\x2192"},
+		  {XK_Up,	 "Up",		U"\x2191"},
+		  {XK_KP_Up,	 "KP_Up",	U"KP-\x2191"},
+		  {XK_Down,	 "Down",	U"\x2193"},
+		  {XK_KP_Down,   "KP_Down",	U"KP-\x2193"},
 		  {XK_Delete,    "Del",		U"Del"},
 		  {XK_KP_Delete, "KP_Del",	U"KP-Del"},
 		  {XK_Page_Up,   "PgUp",	U"PgUp"},

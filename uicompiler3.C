@@ -1035,7 +1035,7 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 				continue;
 			}
 
-			if (type == "book")
+			if (type == "bookpage")
 			{
 				auto ret=bookpagefactory_parseconfig(lock);
 				generators->bookpagefactory_generators
@@ -1750,7 +1750,7 @@ uicompiler::lookup_bookpagefactory_generators(const ui::parser_lock &lock,
 			return iter->second;
 	}
 
-	auto iter=find_uncompiled(name, "factory", "book");
+	auto iter=find_uncompiled(name, "factory", "bookpage");
 
 	auto new_lock=iter->second;
 

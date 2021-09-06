@@ -58,7 +58,8 @@ static x::w::image_button install_button_callback(const x::w::container
 				   (auto *app)
 				   {
 					   lm->generate(page_name,
-							app->main_generator,
+							app->current_generators
+							->cxxwui_generators,
 							ignore);
 					   app->color_updated(IN_THREAD);
 				   });
@@ -141,7 +142,7 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 					"color-radial-gradient-option-radio",
 					"color-right-side-page-open-radial");
 
-	color_new_name->on_filter(args.label_filter);
+	color_new_name->on_filter(get_label_filter());
 
 	// Basic color widget.
 

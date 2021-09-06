@@ -34,13 +34,13 @@ See COPYING for distribution information.
 
 </layout>
 
-<factory type="book" id="general-settings">
+<factory type="bookpage" id="general-settings">
 
   <!-- ... -->
 
 </factory>
 
-<factory type="book" id="process-settings">
+<factory type="bookpage" id="process-settings">
 
   <!-- ... -->
 

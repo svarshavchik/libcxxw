@@ -18,11 +18,6 @@ object and placed into discrete variables.
   </ref>
 
   <ref>
-    <type>x::w::const_uigenerators</type>
-    <name>main_generator</name>
-  </ref>
-
-  <ref>
     <type>x::w::label</type>
     <name>status</name>
   </ref>
@@ -490,7 +485,7 @@ object and placed into discrete variables.
     <name>font_delete_button</name>
   </ref>
 
-  <!-- Appearance pages fields -->
+  <!-- Appearance page fields -->
 
   <ref>
     <type>x::w::focusable_container</type>
@@ -606,5 +601,44 @@ object and placed into discrete variables.
   <ref>
     <type>x::w::label</type>
     <name>appearance_new_value_description</name>
+  </ref>
+
+  <!-- Generator page fields -->
+
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>generator_name</name>
+  </ref>
+  <ref>
+    <type>x::w::label</type>
+    <name>generator_new_name_label</name>
+  </ref>
+  <ref>
+    <type>x::w::input_field</type>
+    <name>generator_new_name</name>
+  </ref>
+  <ref>
+    <type>x::w::label</type>
+    <name>generator_new_type_label</name>
+  </ref>
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>generator_new_type</name>
+  </ref>
+  <ref>
+    <type>x::w::button</type>
+    <name>generator_new_create</name>
+  </ref>
+  <ref>
+    <type>x::w::button</type>
+    <name>generator_update_button</name>
+  </ref>
+  <ref>
+    <type>x::w::button</type>
+    <name>generator_reset_button</name>
+  </ref>
+  <ref>
+    <type>x::w::button</type>
+    <name>generator_delete_button</name>
   </ref>
 </collection>

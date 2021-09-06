@@ -4,19 +4,26 @@
 */
 #include "libcxxw_config.h"
 #include "app.H"
+#include "options.H"
 #include <x/locale.H>
 #include <x/exception.H>
+#include <x/destroy_callback.H>
 
-void cxxwcreator(int argc, char **argv)
+void cxxwcreator(creator_options &options,
+		 std::list<std::string> &args)
 {
+	x::destroy_callback::base::guard guard;
+
 	auto me=app::create();
+
+	guard(me->main_window->connection_mcguffin());
 
 	appsingleton me_singleton{me};
 
 	std::string initial_file;
 
-	if (argc > 1)
-		initial_file=argv[1];
+	if (!args.empty())
+		initial_file=args.front();
 
 	me->main_window->in_thread
 		([name=initial_file]
@@ -33,7 +40,9 @@ int main(int argc, char **argv)
 {
 	x::locale::base::environment()->global();
 	try {
-		cxxwcreator(argc, argv);
+		creator_options options;
+
+		cxxwcreator(options, options.parse(argc, argv)->args);
 	} catch (const x::exception &e)
 	{
 		e->caught();

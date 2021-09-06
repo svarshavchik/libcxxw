@@ -112,7 +112,7 @@ void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 					   IN_THREAD);
 		 });
 
-	dimension_new_name->on_filter(args.label_filter);
+	dimension_new_name->on_filter(get_label_filter());
 
 	dimension_update_button->on_activate
 		([]

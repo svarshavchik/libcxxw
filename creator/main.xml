@@ -100,7 +100,7 @@
     </open>
   </layout>
 
-  <factory type="book" id="initial_contents">
+  <factory type="bookpage" id="initial_contents">
     <add>
       <tab>
 	<element>
@@ -168,6 +168,20 @@
 	<container>
 	  <type>grid</type>
 	  <name>appearances_page</name>
+	</container>
+      </page>
+    </add>
+    <add>
+      <tab>
+	<element>
+	  <label type='theme_text'>${context:creator-main}${decoration:underline}G${decoration:none}enerators</label>
+	</element>
+      </tab>
+      <shortcut type="theme_text">${context:creator-main}Alt-G</shortcut>
+      <page>
+	<container>
+	  <type>grid</type>
+	  <name>generators_page</name>
 	</container>
       </page>
     </add>
@@ -2241,6 +2255,9 @@
     <container>
       <name>appearance_name_field</name>
       <type>standard_combobox</type>
+      <config>
+	<columns>2</columns>
+      </config>
     </container>
   </factory>
 
@@ -2483,6 +2500,278 @@
 	<appearance>normal_theme</appearance>
       </config>
       <shortcut type='theme_text'>${context:appearance}Alt-E</shortcut>
+    </element>
+  </factory>
+
+  <!-- Generators page -->
+
+  <layout type="grid" id="generators_page">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>generator-name-row</name>
+    </append_row>
+    <append_row>
+      <name>new_generator-name-row</name>
+    </append_row>
+    <append_row>
+      <name>generator-contents-values-row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="generator-name-row">
+    <halign>right</halign>
+    <element>
+      <label type='theme_text'>${context:generator}Name:</label>
+    </element>
+    <colspan>
+      <columns>4</columns>
+    </colspan>
+    <container>
+      <name>generator_name_field</name>
+      <type>standard_combobox</type>
+      <config>
+	<columns>2</columns>
+      </config>
+    </container>
+  </factory>
+
+  <layout id="generator_name_field" type="standard_combobox" />
+
+  <factory type="grid" id="new_generator-name-row">
+    <halign>right</halign>
+    <element id="generator_new_name_label">
+      <label type='theme_text'>${context:generator}New name:</label>
+    </element>
+    <element id="generator_new_name_field">
+      <input_field />
+        <config>
+	  <columns>30</columns>
+	</config>
+    </element>
+    <halign>right</halign>
+    <element id="generator_new_type_label">
+      <label type='theme_text'>${context:generator}Type:</label>
+    </element>
+    <container>
+      <name>generator_new_type_field</name>
+      <type>standard_combobox</type>
+    </container>
+    <element id="generator_new_create">
+      <button>
+	<element>
+	  <label type="theme_text">${context:generators}Create</label>
+	</element>
+      </button>
+    </element>
+  </factory>
+
+  <layout id="generator_new_type_field" type="standard_combobox" />
+
+  <factory type="grid" id="generator-contents-values-row">
+    <halign>center</halign>
+    <element>
+      <canvas />
+    </element>
+    <padding>
+      <side>all</side>
+      <padding>none</padding>
+    </padding>
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+    <container>
+      <name>generator_contents_values_grid</name>
+      <type>grid</type>
+    </container>
+  </factory>
+
+  <layout type="grid" id="generator_contents_values_grid">
+    <append_row>
+      <name>generator_contents_values_grid_values</name>
+    </append_row>
+    <append_row>
+      <name>generator_contents_values_grid_buttons</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="generator_contents_values_grid_values">
+    <colspan>
+      <columns>4</columns>
+    </colspan>
+    <container>
+      <name>generator_contents_values</name>
+      <type>list</type>
+      <config>
+	<height>
+	  <min_rows>8</min_rows>
+	  <max_rows>8</max_rows>
+	</height>
+	<width>
+	  <min>generator_values_list_width</min>
+	  <preferred>generator_values_list_width</preferred>
+	  <max>generator_values_list_width</max>
+	</width>
+      </config>
+      <context id="generator_contents_values_popup">
+	<menu>
+	  <append_items>
+	    <items>
+	      <name>generator_value_move_up</name>
+	      <shortcut>Alt-Up</shortcut>
+	      <label type='theme_text'>${context:generator}Move Up</label>
+	      <name>generator_value_move_down</name>
+	      <shortcut>Alt-Down</shortcut>
+	      <label type='theme_text'>${context:generator}Move Down</label>
+	      <name>generator_value_update</name>
+	      <label type='theme_text'>${context:generator}Update</label>
+	      <name>generator_value_create</name>
+	      <submenu />
+	      <label type='theme_text'>${context:generator}Create</label>
+	      <name>generator_value_delete</name>
+	      <shortcut>Del</shortcut>
+	      <label type='theme_text'>${context:generator}Delete</label>
+	    </items>
+	  </append_items>
+	</menu>
+	<shortcut type='theme_text'>${context:generator-list}Alt-M</shortcut>
+      </context>
+    </container>
+  </factory>
+
+  <dim id="generator_values_list_width">120</dim>
+
+  <layout type="list" id="generator_contents_values" />
+
+  <factory type="grid" id="generator_contents_values_grid_buttons">
+    <element id="generator_update">
+      <button>
+	<element>
+	  <label type="theme_text">${context:generator}${decoration:underline}U${decoration:none}pdate</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:generator}Alt-U</shortcut>
+    </element>
+    <element id="generator_reset">
+      <button>
+	<element>
+	  <label type="theme_text">${context:generator}${decoration:underline}R${decoration:none}eset</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:generator}Alt-R</shortcut>
+    </element>
+    <padding>
+      <side>top</side>
+      <padding>none</padding>
+    </padding>
+    <element id="generator_delete">
+      <button>
+	<element>
+	  <label type="theme_text">${context:generator}D${decoration:underline}e${decoration:none}lete</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:generator}Alt-E</shortcut>
+    </element>
+  </factory>
+
+  <!-- Generator function edit dialog -->
+
+  <layout id="generator_edit_title" type="grid">
+    <append_row>
+      <name>generator_edit_title_row</name>
+    </append_row>
+  </layout>
+
+  <dim id="generator_edit_title_vert_padding">3.0</dim>
+
+  <factory id="generator_edit_title_row" type="grid">
+    <element>
+      <canvas/>
+    </element>
+    <halign>center</halign>
+    <padding>
+      <side>top</side>
+      <padding>generator_edit_title_vert_padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>generator_edit_title_vert_padding</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>generator_edit_title_vert_padding</padding>
+    </padding>
+    <element>
+      <name>title</name>
+    </element>
+  </factory>
+
+  <layout id="generator_edit_buttons" type="grid">
+    <append_row>
+      <name>generator_edit_buttons_row</name>
+    </append_row>
+  </layout>
+
+  <factory id="generator_edit_buttons_row" type="grid">
+    <element>
+      <canvas/>
+    </element>
+    <padding>
+      <side>top</side>
+      <padding>generator_edit_title_vert_padding</padding>
+    </padding>
+
+    <container>
+      <name>generator_edit_button_container</name>
+      <type>grid</type>
+    </container>
+  </factory>
+
+  <layout id="generator_edit_button_container" type="grid">
+    <append_row>
+      <name>generator_edit_button_container_row</name>
+    </append_row>
+  </layout>
+
+  <factory id="generator_edit_button_container_row" type="grid">
+
+    <element id="generator_edit_cancel">
+      <button>
+	<element>
+	  <label type="theme_text">${context:generator_edit}Cancel</label>
+	</element>
+      </button>
+      <config>
+	<appearance>normal_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>${context:generator_edit}Esc</shortcut>
+    </element>
+
+    <element id="generator_edit_save">
+      <button>
+	<element>
+	  <label type="theme_text">${context:generator_edit}Save</label>
+	</element>
+      </button>
+      <config>
+	<appearance>default_theme</appearance>
+      </config>
+      <shortcut type='theme_text'>Enter</shortcut>
     </element>
   </factory>
 </theme>

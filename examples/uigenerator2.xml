@@ -31,7 +31,7 @@
     </open>
   </layout>
 
-  <factory id="settings-pages" type="book">
+  <factory id="settings-pages" type="bookpage">
 
     <!--             General        -->
     <halign>center</halign>

@@ -18,6 +18,7 @@ configure
 /ABOUT-NLS
 /compile
 /creator/appearances.xml
+/creator/options.H
 /cxxw
 /cxxwoptions.H
 /cxxwtheme

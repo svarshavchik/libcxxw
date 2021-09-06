@@ -321,7 +321,7 @@ void appObj::fonts_elements_initialize(app_elements_tptr &elements,
 
 	// Install callbacks.
 
-	font_new_name->on_filter(args.label_filter);
+	font_new_name->on_filter(get_label_filter());
 
 	font_new_name->on_validate
 		([]

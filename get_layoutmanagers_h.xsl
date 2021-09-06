@@ -36,7 +36,7 @@ Stylesheet for transforming the XML in uicompiler.xml
 	href="get_layoutmanagers.inc.C"
 	method="text">
 
-      <xsl:for-each select="parser[@layoutmanager = '1']">
+      <xsl:for-each select="parser[@type = 'layoutmanager']">
 	<xsl:call-template name="layoutmanager-type" />
 	<xsl:text>manager containerObj::</xsl:text>
 	<xsl:call-template name="layoutmanager-type" />
@@ -52,7 +52,7 @@ Stylesheet for transforming the XML in uicompiler.xml
 	href="get_layoutmanagers.inc.H"
 	method="text">
 
-      <xsl:for-each select="parser[@layoutmanager = '1']">
+      <xsl:for-each select="parser[@type = 'layoutmanager']">
 	<xsl:text>#include "x/w/</xsl:text>
 	<xsl:call-template name="layoutmanager-type" />
 	<xsl:text>manager.H"&#10;</xsl:text>
@@ -64,7 +64,7 @@ Stylesheet for transforming the XML in uicompiler.xml
 	method="text">
 
       <xsl:text>#ifdef x_w_containerobj_h&#10;&#10;</xsl:text>
-      <xsl:for-each select="parser[@layoutmanager = '1']">
+      <xsl:for-each select="parser[@type = 'layoutmanager']">
 	<xsl:text>//! Return this container's \ref </xsl:text>
 	<xsl:call-template name="layoutmanager-type" />
 	<xsl:text>manager "INSERT_LIBX_NAMESPACE::w::</xsl:text>
@@ -86,7 +86,7 @@ Stylesheet for transforming the XML in uicompiler.xml
 	href="includes/x/w/get_layoutmanagersfwd.inc.H"
 	method="text">
 
-      <xsl:for-each select="parser[@layoutmanager = '1']">
+      <xsl:for-each select="parser[@type = 'layoutmanager']">
 	<xsl:text>#include &lt;x/w/</xsl:text>
 	<xsl:call-template name="layoutmanager-type" />
 	<xsl:text>managerfwd.H&gt;&#10;</xsl:text>

@@ -6,14 +6,14 @@ See COPYING for distribution information.
 -->
 <section id="uixmlfactorybook">
   <title>
-    <tag class='attribute'>type</tag>=<quote>book</quote>
+    <tag class='attribute'>type</tag>=<quote>bookpage</quote>
     <tag class='element'>factory</tag>s
   </title>
 
   <blockquote>
     <informalexample>
       <programlisting><![CDATA[
-<factory type="book" id="settings">
+<factory type="bookpage" id="settings">
 
   <add>
     <!-- ... -->
@@ -26,7 +26,7 @@ See COPYING for distribution information.
   <para>
     The contents of a
     <tag class='element'>factory</tag>s of
-    <tag class='attribute'>type</tag>=<quote>book</quote>
+    <tag class='attribute'>type</tag>=<quote>bookpage</quote>
     specify the methods invoked on a
     <link linkend="bookpagefactory">book page factory</link>.
   </para>
@@ -37,7 +37,7 @@ See COPYING for distribution information.
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
-<factory type="book" id="settings">
+<factory type="bookpage" id="settings">
 
   <!-- ... -->
 
@@ -64,7 +64,7 @@ See COPYING for distribution information.
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
-<factory type="book" id="settings">
+<factory type="bookpage" id="settings">
 
   <!-- ... -->
 
@@ -90,7 +90,7 @@ See COPYING for distribution information.
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
-<factory type="book" id="settings">
+<factory type="bookpage" id="settings">
 
   <!-- ... -->
 
@@ -125,7 +125,7 @@ See COPYING for distribution information.
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
-<factory type="book" id="settings">
+<factory type="bookpage" id="settings">
 
   <!-- ... -->
 

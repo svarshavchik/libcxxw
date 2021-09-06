@@ -1,6 +1,9 @@
 #include "libcxxw_config.h"
 
 #include "creator/app.H"
+#include "creator/uicompiler_generators.H"
+#include "creator/appgenerator_function.H"
+#include "creator/uicompiler.H"
 #include "x/w/uigenerators.H"
 #include "x/w/uielements.H"
 #include "x/w/menubarlayoutmanager.H"
@@ -15,6 +18,7 @@
 #include "x/w/theme_text.H"
 #include "x/w/font_picker_config.H"
 #include "x/w/font_picker_appearance.H"
+#include "x/w/stop_message.H"
 #include "catch_exceptions.H"
 
 #include <x/config.H>
@@ -27,11 +31,14 @@
 #include <x/strtok.H>
 #include <x/visitor.H>
 #include <x/weakcapture.H>
+#include <x/singleton.H>
 #include <sstream>
 #include <cstdlib>
 #include <cmath>
 #include <iterator>
 #include <functional>
+#include <algorithm>
+
 
 static x::xml::doc new_theme_file()
 {
@@ -55,23 +62,37 @@ standard_font_values_t::standard_font_values_t()
 {
 }
 
+namespace {
+
+	struct label_filterObj : virtual public x::obj {
+		const x::functionref<x::w::input_field_filter_callback_t>
+		label_filter{
+			[]
+			(ONLY IN_THREAD,
+			 const auto &filter_info)
+			{
+				for (const auto c:filter_info.new_contents)
+					if (c <= ' ' || c == '<' || c == '>' ||
+					    c == '&' || c > 127)
+						return;
+
+				filter_info.update();
+			}
+		};
+	};
+}
+
+static x::singleton<label_filterObj> label_filter_singleton;
+
+x::functionref<x::w::input_field_filter_callback_t> get_label_filter()
+{
+	return label_filter_singleton.get()->label_filter;
+}
+
 appObj::init_args::init_args()
 	: configfile{x::configdir("cxxwcreator@libcxx.com") + "/windows"},
 	  theme{new_theme_file()},
-	  label_filter
-	{
-	 []
-	 (ONLY IN_THREAD,
-	  const auto &filter_info)
-	 {
-		 for (const auto c:filter_info.new_contents)
-			 if (c <= ' ' || c == '<' || c == '>' ||
-			     c == '&' || c > 127)
-				 return;
-
-		 filter_info.update();
-	 }
-	}
+	  uicompiler_info{uicompiler::create()}
 {
 
 	auto appearances=x::xml::doc::create(CREATORDIR "/appearances.xml");
@@ -98,6 +119,95 @@ appObj::init_args::init_args()
 		appearance_types.emplace(appearance_type->get_text(),
 					 save);
 	}
+
+	// All loaded uicompiler_generators, by their IDs.
+
+	std::unordered_map<std::string,
+			   std::tuple<x::xml::readlock,
+				      uicompiler_generators>> loaded_generators;
+
+	auto generators=x::xml::doc::create(UICOMPILERDIR "/uicompiler.xml");
+
+	auto generator=generators->readlock();
+
+	generator->get_root();
+
+	xpath=generator->get_xpath("/api/parser");
+
+	n=xpath->count();
+
+	// Make an initial pass, constructing an uicompiler_generators object for
+	// each parser and storing the uicompiler_generators object and its
+	// xml node.
+
+	for (size_t i=1; i<=n; ++i)
+	{
+		xpath->to_node(i);
+
+		auto name=generator->clone();
+
+		name->get_xpath("name")->to_node();
+
+		if (!loaded_generators
+		    .emplace(name->get_text(),
+			     std::tuple{generator->clone(),
+				     uicompiler_generators::create()
+			     }).second)
+		{
+			throw EXCEPTION("Internal error: duplicate "
+					<< name->get_text()
+					<< "generator");
+		}
+	}
+
+	// Now that all objects are created, store all the uicompiler_generators
+	// into their map.
+
+	for (const auto &[name, tuple]: loaded_generators)
+	{
+		const auto &[readlock, gen]=tuple;
+		uicompiler_info->uigenerators.emplace(name, gen);
+	}
+
+	// Second pass
+	//
+	// And now we call everyone's initialize()
+
+	for (const auto &[name, tuple]: loaded_generators)
+	{
+		const auto &[readlock, gen]=tuple;
+
+		gen->initialize(readlock, uicompiler_info->uigenerators);
+
+		// Take the layoutmanager and factory generators and put them
+		// into the sorted_available_uigenerators list.
+		//
+		// Also store them in the uigenerators_lookup, so they
+		// can be looked up by layout/factory and its name.
+
+		switch (gen->type_category.type) {
+		case appuigenerator_type::layoutmanager:
+		case appuigenerator_type::factory:
+			uicompiler_info
+				->sorted_available_uigenerators.push_back(name);
+
+			if (!gen->type_category.category.empty() &&
+			    !uicompiler_info
+			    ->uigenerators_lookup.insert(gen).second)
+			{
+				throw EXCEPTION("Duplicate entry for layout "
+						"or factory "
+						<< gen->type_category.category);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	std::sort(uicompiler_info->sorted_available_uigenerators.begin(),
+		  uicompiler_info->sorted_available_uigenerators.end());
+
+	uicompiler_info->sorted_available_uigenerators.shrink_to_fit();
 }
 
 // Helper for installing a main menu action.
@@ -132,11 +242,11 @@ inline appObj::init_args appObj::create_init_args()
 
 	auto catalog=x::messages::create("libcxxw", utf8_locale);
 
-	auto main_generator=
+	auto cxxwui_generators=
 		x::w::const_uigenerators::create(CREATORDIR "/main.xml", pos,
 						 catalog);
 
-	args.elements.main_generator=main_generator;
+	args.cxxwui_generators=cxxwui_generators;
 
 	args.elements.main_window=x::w::main_window::create
 		(config,
@@ -162,7 +272,7 @@ inline appObj::init_args appObj::create_init_args()
 
 					    x::w::font_picker_config config;
 
-					    config.appearance=main_generator
+					    config.appearance=cxxwui_generators
 						    ->lookup_appearance
 						    ("font-preview-appearance");
 
@@ -199,7 +309,7 @@ inline appObj::init_args appObj::create_init_args()
 
 			 auto mb=mw->get_menubarlayoutmanager();
 
-			 mb->generate("mainmenubar", main_generator, ui);
+			 mb->generate("mainmenubar", cxxwui_generators, ui);
 
 			 // Create the file save dialog
 
@@ -308,7 +418,7 @@ inline appObj::init_args appObj::create_init_args()
 			 // Initial contents.
 
 			 x::w::gridlayoutmanager lm=mw->get_layoutmanager();
-			 lm->generate("main", main_generator, ui);
+			 lm->generate("main", cxxwui_generators, ui);
 
 			 // We created a custom widget, pretend that it
 			 // came off the same assembly line sa the rest.
@@ -334,6 +444,14 @@ inline appObj::init_args appObj::create_init_args()
 
 			 appObj::appearances_elements_initialize
 				 (args.elements, ui, args, mw, catalog, pos);
+
+			 appObj::generators_elements_initialize
+				 (args.elements, ui, args.uicompiler_info);
+
+			 appgenerator_functionsObj
+				 ::generators_values_elements_initialize
+				 (args.generator_elements, ui,
+				  args.uicompiler_info);
 		 });
 
 	return args;
@@ -861,7 +979,6 @@ appObj::appObj(init_args &&args)
 	  theme{args.theme},
 	  current_edited_info{args.filename},
 	  appearance_types{std::move(args.appearance_types)},
-
 	  /////////////////////////////////////////////////////////////////////
 	  // Dimension element callbacks.
 	  dimension_new_name_validated{dimension_new_name_validator
@@ -962,7 +1079,15 @@ appObj::appObj(init_args &&args)
 				    (font_size->editable_comboboxlayout(),
 				     &appObj::font_enable_disable)),
 	  standard_font_values{std::move(static_cast<standard_font_values_t &>
-					 (args))}
+					 (args))},
+	  current_generators{
+		  appgenerator_functions::create(args.generator_elements,
+						 args.elements.main_window,
+						 args.cxxwui_generators,
+						 args.uicompiler_info,
+						 x::ref<all_generatorsObj>
+						 ::create())
+	  }
 {
 }
 
@@ -974,6 +1099,7 @@ void appObj::loaded_file(ONLY IN_THREAD)
 	borders_initialize(IN_THREAD);
 	fonts_initialize(IN_THREAD);
 	appearances_initialize(IN_THREAD);
+	generators_initialize(IN_THREAD);
 }
 
 // Update the main window title's after loading or saving a file.
@@ -1068,7 +1194,17 @@ void appObj::update_theme2(const x::functionref<update_callback_t (appObj *)
 		       " following reason:\n\n")
 		  << e;
 
-		main_window->stop_message(o.str());
+		// Some error messages are quite verbose. Word-wrap them to
+		// 200 mm in width.
+
+		x::w::stop_message_config config;
+
+		config.widthmm=200;
+
+		main_window->stop_message(o.str(), config);
+
+		// Hold a reference on the mcguffin until the UI is fully
+		// updated.
 		main_window->in_thread_idle([mcguffin]
 					    (ONLY IN_THREAD)
 					    {
@@ -1433,14 +1569,44 @@ void appObj::stoprunning(ONLY IN_THREAD)
 			  });
 }
 
+std::string appObj::xpath_for(const std::string_view &type,
+			      const std::string &id)
+{
+	std::string s;
+
+	std::string_view::const_iterator b=type.begin(), e=type.end();
+
+	do
+	{
+		auto p=std::find(b, e, '|');
+
+		s += "/theme/";
+
+		s += std::string_view{b, p};
+
+		if (!id.empty())
+		{
+			s += "[@id='";
+			s += x::xml::escapestr(id, true);
+			s += "']";
+		}
+
+		if ((b=p) != e)
+		{
+			s += "|";
+			++b;
+		}
+	} while (b != e);
+
+	return s;
+}
+
 x::xml::xpath
 appObj::get_xpath_for(const x::xml::readlock &lock,
 		      const char *type,
 		      const std::string &id)
 {
-	return lock->get_xpath("/theme/" + std::string{type} + "[@id='" +
-			       x::xml::escapestr(id, true) +
-			       "']");
+	return lock->get_xpath(xpath_for(type, id));
 }
 
 // Helper for creating a new <element>
@@ -1458,10 +1624,20 @@ static inline auto new_element(const x::xml::writelock &lock,
 		return lock->create_previous_sibling();
 	}
 
+	lock->get_xpath("/theme")->to_node();
+
 	return lock->create_child();
 }
 
 appObj::create_update_t appObj::create_update(const char *type,
+					      const std::string &id,
+					      bool is_new)
+{
+	return create_update(type, type, id, is_new);
+}
+
+appObj::create_update_t appObj::create_update(const char *type,
+					      const char *new_type,
 					      const std::string &id,
 					      bool is_new)
 {
@@ -1479,9 +1655,15 @@ appObj::create_update_t appObj::create_update(const char *type,
 	{
 		if (is_new) // It shouldn't
 		{
+			std::string type_str=type;
+
+			std::replace(type_str.begin(), type_str.end(),
+				     '|', '/');
+
 			std::string error=
 				x::gettextmsg(_("%1% %2% "
-						"already exists"), type, id);
+						"already exists"),
+					      type_str, id);
 			main_window->stop_message(error);
 
 			return std::nullopt;
@@ -1491,13 +1673,12 @@ appObj::create_update_t appObj::create_update(const char *type,
 		doc_lock->remove();
 	}
 
-	doc_lock->get_xpath("/theme")->to_node();
-	xpath=doc_lock->get_xpath(type);
+	xpath=get_xpath_for(doc_lock, type, "");
 
 	auto new_node=new_element(doc_lock, xpath);
 
 	return std::tuple{doc_lock,
-			new_node->element({type})->create_child()
+			new_node->element({new_type})->create_child()
 			->attribute({"id", id})};
 }
 
@@ -1535,8 +1716,14 @@ appObj::do_update_new_element(const new_element_t &new_element,
 	// Pos 0 is new dimension
 
 	existing_ids.insert(insert_pos, new_element.id);
-	id_lm->insert_items(i, {new_element.description.empty()
-				? new_element.id:new_element.description});
+
+	std::vector<std::string> default_description{new_element.id};
+
+	auto &new_item_description=new_element.description.empty()
+		? default_description:new_element.description;
+
+	id_lm->insert_items(i, {new_item_description.begin(),
+				new_item_description.end()});
 	callback(i);
 	id_lm->autoselect(i);
 

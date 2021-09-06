@@ -182,7 +182,7 @@ void appObj::appearances_elements_initialize(app_elements_tptr &elements,
 	}
 
 	// Name of a new appearance: allow only valid characters.
-	appearance_new_name->on_filter(args.label_filter);
+	appearance_new_name->on_filter(get_label_filter());
 
 	// And enable/disable buttons. Must have a non-empty field to enable
 	// the save button.
@@ -465,11 +465,15 @@ void appObj::appearances_initialize(ONLY IN_THREAD)
 	combobox_items.reserve(lock->ids.size()+1);
 
 	combobox_items.push_back(_("-- New Appearance --"));
+	combobox_items.push_back(_(""));
 
 	for (const auto &name:lock->ids)
 	{
-		combobox_items.emplace_back(appearance_name_and_description
-					    (name).description);
+		auto new_element=appearance_name_and_description(name);
+
+		combobox_items.insert(combobox_items.end(),
+				      new_element.description.begin(),
+				      new_element.description.end());
 	}
 
 	auto lm=appearance_name->standard_comboboxlayout();
@@ -489,8 +493,8 @@ appObj::appearance_name_and_description(const std::string &n)
 
 	get_xpath_for(this_appearance, "appearance", n)->to_node(1);
 
-	return {n, n + " (" + appearance_current_value_type(this_appearance)
-		->first + ")"};
+	return {n, {n, appearance_current_value_type(this_appearance)
+			->first}};
 }
 
 void appObj::appearance_fv::format(std::vector<x::w::list_item_param> &v) const
@@ -569,7 +573,8 @@ void appObj::appearance_reset(ONLY IN_THREAD)
 		x::w::uielements ignore;
 
 		appearance_contents_page_lm->generate("appearance_values_show",
-						      main_generator,
+						      current_generators
+						      ->cxxwui_generators,
 						      ignore);
 
 		// Reset current selection values.

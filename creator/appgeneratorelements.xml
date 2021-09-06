@@ -1,0 +1,43 @@
+<!--
+
+UI elements for generator values.
+
+-->
+
+<collection>
+  <name>app_generator_elements_t</name>
+
+  <ref>
+    <type>x::w::container</type>
+    <name>generator_contents_values_grid</name>
+  </ref>
+  <ref>
+    <type>x::w::focusable_container</type>
+    <name>generator_contents_values</name>
+  </ref>
+  <ref>
+    <type>x::w::container</type>
+    <name>generator_contents_values_popup</name>
+  </ref>
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>generator_value_move_up</name>
+  </ref>
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>generator_value_move_down</name>
+  </ref>
+
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>generator_value_update</name>
+  </ref>
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>generator_value_create</name>
+  </ref>
+  <ref>
+    <type>x::w::listitemhandle</type>
+    <name>generator_value_delete</name>
+  </ref>
+</collection>

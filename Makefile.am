@@ -5,7 +5,7 @@ include $(shell pwd)/libcxxw.mk
 EXTRA_DIST =
 
 if LOCALTHEMEDIR
-CPPFLAGS += -DTHEMEDIR=\"@pwdthemes@\" -DCREATORDIR=\"@pwdcreator@\"
+CPPFLAGS += -DTHEMEDIR=\"@pwdthemes@\" -DCREATORDIR=\"@pwdcreator@\" -DUICOMPILERDIR=\"$(srcdir)\"
 endif
 
 AUTOMAKE_OPTIONS=subdir-objects
@@ -1017,12 +1017,15 @@ cxxwtheme_LDFLAGS=$(TESTLINKTYPE)
 
 
 $(call REFCOLLECTION_GEN,creator/appelements.inc.H,$(srcdir)/creator/appelements.xml)
+$(call REFCOLLECTION_GEN,creator/appgeneratorelements.inc.H,$(srcdir)/creator/appgeneratorelements.xml)
 $(call EXTRACT_THEME_TEXT_GEN,creator.inc.C,creator/main.xml)
 
 creatorinst_DATA=creator/main.xml creator/appearance_dialog.xml \
-			creator/appearances.xml
+			creator/appearances.xml uicompiler.xml
 EXTRA_DIST += $(creatorinst_DATA)
 EXTRA_DIST += creator/appearances.xsl
+
+$(call OPTIONS_GEN,creator/options.H,creator/options.xml)
 
 cxxwcreator_SOURCES=\
 	creator/app.C				\
@@ -1032,6 +1035,25 @@ cxxwcreator_SOURCES=\
 	creator/appborders.C			\
 	creator/appdimension.C			\
 	creator/appfonts.C			\
+	creator/appgenerators.C			\
+	creator/appgenerator_functions.C	\
+	creator/appgenerator_functions.H	\
+	creator/appgenerator_functionsfwd.H	\
+	creator/appgenerator_functionsobj.H	\
+	creator/appgenerator_function.C		\
+	creator/appgenerator_function.H		\
+	creator/appgenerator_functionfwd.H	\
+	creator/appgenerator_functionobj.H	\
+	creator/uicompiler.C			\
+	creator/uicompiler.H			\
+	creator/uicompilerfwd.H			\
+	creator/uicompilerobj.H			\
+	creator/uicompiler_generators.C		\
+	creator/uicompiler_generators.H		\
+	creator/uicompiler_generatorsfwd.H	\
+	creator/uicompiler_generatorsobj.H	\
+	creator/uicompiler_generators_impl.C	\
+	creator/uicompiler_generators_impl.H	\
 	creator/cxxwcreator.C			\
 	#
 
@@ -1044,7 +1066,7 @@ man_MANS=cxxwtheme.1 cxxwcreator.1
 
 EXTRA_DIST += config.rpath m4/ChangeLog COPYING \
 	pic_constants.xml gc_constants.xml constants.xsl \
-	parseuicompiler.xsl uicompiler.xml \
+	parseuicompiler.xsl \
 	xim/xim.xml xim/xim.xsl \
 	cxxwcreator.desktop \
 	cxxwtheme.desktop \
