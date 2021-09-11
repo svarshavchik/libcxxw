@@ -5,6 +5,9 @@
 #include "libcxxw_config.h"
 #include "creator/uicompiler_generators_impl.H"
 #include "creator/appgenerator_function.H"
+#include "creator/appgenerator_functions.H"
+#include "creator/uicompiler.H"
+#include "creator/app.H"
 #include "x/w/font_literals.H"
 #include "x/w/factory.H"
 #include "x/w/input_field.H"
@@ -12,6 +15,9 @@
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/label.H"
+#include "x/w/uigenerators.H"
+#include "x/w/standard_comboboxlayoutmanager.H"
+#include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/text_param_literals.H"
 #include <x/xml/xpath.H>
 #include <x/xml/readlock.H>
@@ -86,9 +92,212 @@ struct single_value_handler : setting_handler {
 
 static const single_value_handler single_value_handler_inst;
 
+// Implement a setting based on a standard combo-box
+
+// The specific setting subclasses and implement combobox_values() that
+// returns a list of values for the standard combo-box.
+
+struct standard_combobox_handler : setting_handler {
+
+	// Helper for searching list item values for a specific u32string.
+
+	static std::vector<x::w::list_item_param>
+	::const_iterator find_string(const std::vector<x::w::list_item_param>
+				     &values,
+				     const std::u32string &value)
+	{
+		return std::find_if
+			(values.begin(),
+			 values.end(),
+			 [&]
+			 (const auto &list_item)
+			 {
+				 const x::w::list_item_param::variant_t
+					 &v=list_item;
+
+				 return std::visit(x::visitor{
+						 [&](const x::w::text_param &s)
+						 {
+							 return s.string==value;
+						 }, [&](const auto &v)
+						 {
+							 return false;
+						 }
+					 }, v);
+			 });
+
+
+
+	}
+
+	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+					  const std::u32string &value)
+		const override
+	{
+		auto values=combobox_values();
+
+		auto combobox=f->create_focusable_container
+			([&]
+			 (const auto &container)
+			{
+				auto layout=
+					container->standard_comboboxlayout();
+
+				layout->replace_all_items(values);
+
+				// Find the current value and make it selected
+				// by default.
+
+				auto p=find_string(values, value);
+
+				if (p != values.end())
+					layout->autoselect(p-values.begin());
+			},
+			 x::w::new_standard_comboboxlayoutmanager{});
+
+		// The validator reads the combo-box's selected value
+		// and uses it.
+
+		return [combobox,
+			values=std::move(values)]
+			() -> std::optional<std::u32string>
+		{
+			auto selected=combobox->standard_comboboxlayout()
+				->selected();
+
+			if (selected && *selected < values.size())
+			{
+				const x::w::list_item_param::variant_t &v=
+					values[*selected];
+
+				if (std::holds_alternative<x::w::text_param>(v))
+					return std::get<x::w::text_param>(v)
+						.string;
+			}
+			combobox->stop_message(_("Selection required"));
+			combobox->request_focus();
+			return std::nullopt;
+		};
+	}
+
+	virtual std::vector<x::w::list_item_param> combobox_values() const=0;
+};
+
+// This element is a type that specifies a layout manager.
+
+struct layoutmanager_type_handler : standard_combobox_handler {
+
+	std::vector<x::w::list_item_param> combobox_values() const override
+	{
+		std::vector<x::w::list_item_param> layout_managers;
+
+		appinvoke([&]
+			  (appObj *me)
+		{
+			for (const auto &[name, compiler]
+				     : me->current_generators->uicompiler_info
+				     ->uigenerators)
+			{
+				if (compiler->type_category.type !=
+				    appuigenerator_type::layoutmanager)
+					continue;
+
+				auto &s=compiler->type_category.category;
+				layout_managers.push_back(std::u32string{
+						s.begin(),
+						s.end()
+					});
+			}
+		});
+
+		return layout_managers;
+	}
+};
+
+static const layoutmanager_type_handler layoutmanager_type_handler_inst;
+
+// Implement a setting based on an editable combo-box
+
+// The specific setting subclasses and implement combobox_values() that
+// returns a list of values for the standard combo-box.
+
+struct editable_combobox_handler : setting_handler {
+
+	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+					  const std::u32string &value)
+		const override
+	{
+		auto values=combobox_values();
+
+		auto combobox=f->create_focusable_container
+			([&]
+			 (const auto &container)
+			{
+				auto layout=
+					container->editable_comboboxlayout();
+
+				layout->replace_all_items(values);
+
+				// Find the current value and make it selected
+				// by default.
+				auto p=standard_combobox_handler
+					::find_string(values, value);
+
+				if (p != values.end())
+				{
+					layout->autoselect(p-values.begin());
+				}
+				else
+				{
+					layout->set(value);
+				}
+			},
+			 x::w::new_editable_comboboxlayoutmanager{});
+
+		// The validator reads the combo-box's selected value
+		// and uses it.
+
+		return [combobox]
+		{
+			return combobox->editable_comboboxlayout()
+				->get_unicode();
+		};
+	}
+
+	virtual std::vector<x::w::list_item_param> combobox_values() const=0;
+};
+
 // A single_value containing a color
 
-typedef unimplemented_handler color_handler;
+struct color_handler : editable_combobox_handler {
+
+	std::vector<x::w::list_item_param> combobox_values() const override
+	{
+		// Predefined colors, a separator, then theme colors.
+
+		std::vector<x::w::list_item_param> colors;
+
+		appinvoke([&]
+			  (appObj *me)
+		{
+			appObj::colors_info_t::lock lock{me->colors_info};
+
+			colors.reserve(lock->ids.size() +
+				       x::w::n_rgb_colors+1);
+
+			for (size_t i=0; i<x::w::n_rgb_colors; ++i)
+				colors.push_back(x::w::rgb_color_names[i]);
+
+			colors.push_back(x::w::separator{});
+
+			for (const auto &c:lock->ids)
+				colors.push_back(c);
+		});
+
+		return colors;
+	}
+
+};
 
 static const color_handler color_handler_inst;
 
@@ -568,7 +777,8 @@ static const std::unordered_map<const char *,
 
 	// Aliases for single value.
 	{ "compiler.lookup_scrollbar_type", &single_value_handler_inst },
-	{ "compiler.lookup_container_generators", &single_value_handler_inst },
+	{ "compiler.lookup_container_generators",
+	  &layoutmanager_type_handler_inst },
 	{ "restore_panelayoutmanager_position", &single_value_handler_inst },
 	{ "restore_tablelayoutmanager_position", &single_value_handler_inst },
 
