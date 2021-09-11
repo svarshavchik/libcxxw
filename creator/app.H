@@ -758,11 +758,12 @@ private:
 		std::optional<dimension_save_params> save_params;
 	};
 
+public:
 	//! Thread-safe container for dimension metadata.
 
 	typedef x::mptobj<dimension_info_s,
 			  std::recursive_mutex> dimension_info_t;
-
+private:
 	//! Enable or disable the reset button.
 	void dimension_enable_disable_buttons(dimension_info_t::lock &lock);
 

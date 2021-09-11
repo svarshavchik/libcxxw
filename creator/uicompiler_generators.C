@@ -67,7 +67,8 @@ struct unimplemented_handler : setting_handler {
 					  const std::u32string &value)
 		const override
 	{
-		throw EXCEPTION( "create_ui unimplemented" );
+		throw EXCEPTION( "create_ui unimplemented: "
+				 << std::string(value.begin(), value.end()));
 	}
 };
 
@@ -303,7 +304,28 @@ static const color_handler color_handler_inst;
 
 // A single_value containing a dimension
 
-typedef unimplemented_handler dim_handler;
+struct dim_handler : editable_combobox_handler {
+
+	std::vector<x::w::list_item_param> combobox_values() const override
+	{
+		// Predefined colors, a separator, then theme colors.
+
+		std::vector<x::w::list_item_param> dims;
+
+		appinvoke([&]
+			  (appObj *me)
+		{
+			appObj::dimension_info_t::lock lock{me->dimension_info};
+
+			dims.reserve(lock->ids.size());
+
+			for (const auto &c:lock->ids)
+				dims.push_back(c);
+		});
+
+		return dims;
+	}
+};
 
 static const dim_handler dim_handler_inst;
 
@@ -1318,8 +1340,11 @@ void parse_function::save(const x::xml::writelock &lock,
 			{
 				const auto &[name, value]=name_and_value;
 
-				throw EXCEPTION("Unimplemented condition: "
-						<< name << "=" << value);
+				n->element({name});
+				n->text(value);
+
+				lock->get_parent();
+				lock->get_parent();
 			},
 			[&](const std::tuple<std::string, bool>
 			    &condition_exists)
