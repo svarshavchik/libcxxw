@@ -66,6 +66,10 @@ enum class bidi {
 	right_to_left,
 };
 
+//! For internal use.
+
+extern const char bidi_names[3][16];
+
 //! Force text direction.
 
 //! If bidi is automatic, the same string gets returned.

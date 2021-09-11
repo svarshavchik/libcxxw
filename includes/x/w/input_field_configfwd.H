@@ -65,6 +65,10 @@ enum class bidi_format {
 	automatic
 };
 
+//! For internal use.
+
+extern const char bidi_format_names[3][16];
+
 //! Callback used by an \ref input_field "input field" to search for values.
 
 typedef void input_field_search_callback_t(const input_field_search_info &);

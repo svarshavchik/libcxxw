@@ -33,6 +33,7 @@
 #include <tuple>
 #include <algorithm>
 #include <optional>
+#include <courier-unicode.h>
 
 using namespace std::literals::string_literals;
 
@@ -108,6 +109,8 @@ struct standard_combobox_handler : setting_handler {
 				     &values,
 				     const std::u32string &value)
 	{
+		auto lower_value=unicode::tolower(value);
+
 		return std::find_if
 			(values.begin(),
 			 values.end(),
@@ -120,7 +123,10 @@ struct standard_combobox_handler : setting_handler {
 				 return std::visit(x::visitor{
 						 [&](const x::w::text_param &s)
 						 {
-							 return s.string==value;
+							 return unicode::
+								 tolower
+								 (s.string)
+								 == lower_value;
 						 }, [&](const auto &v)
 						 {
 							 return false;
@@ -138,6 +144,10 @@ struct standard_combobox_handler : setting_handler {
 	{
 		auto values=combobox_values();
 
+		// Empty string value, combobox value is optional
+
+		values.insert(values.begin(), "");
+
 		auto combobox=f->create_focusable_container
 			([&]
 			 (const auto &container)
@@ -149,11 +159,20 @@ struct standard_combobox_handler : setting_handler {
 
 				// Find the current value and make it selected
 				// by default.
+				//
+				// We inserted an empty string, so it should
+				// pick it up for an unset value. Loading
+				// the theme file should've validated all
+				// values, but failsafe to autoselecting
+				// the empty string, if we don't find this
+				// value.
 
 				auto p=find_string(values, value);
+				size_t i=0;
 
 				if (p != values.end())
-					layout->autoselect(p-values.begin());
+					i=p-values.begin();
+				layout->autoselect(i);
 			},
 			 x::w::new_standard_comboboxlayoutmanager{});
 
@@ -578,7 +597,17 @@ static const shortcut_handler shortcut_handler_inst;
 //
 // Combo box.
 
-typedef unimplemented_handler to_bidi_direction_handler;
+struct to_bidi_direction_handler : standard_combobox_handler {
+
+	std::vector<x::w::list_item_param> combobox_values() const override
+	{
+		// TODO
+		return {
+			std::begin(x::w::bidi_names),
+			std::end(x::w::bidi_names),
+		};
+	}
+};
 
 static const to_bidi_direction_handler to_bidi_direction_handler_inst;
 
@@ -586,7 +615,17 @@ static const to_bidi_direction_handler to_bidi_direction_handler_inst;
 //
 // Combo box.
 
-typedef unimplemented_handler to_bidi_directional_format_handler;
+struct to_bidi_directional_format_handler : standard_combobox_handler {
+
+	std::vector<x::w::list_item_param> combobox_values() const override
+	{
+		// TODO
+		return {
+			std::begin(x::w::bidi_format_names),
+			std::end(x::w::bidi_format_names),
+		};
+	}
+};
 
 static const to_bidi_directional_format_handler
 to_bidi_directional_format_handler_inst;

@@ -1057,7 +1057,7 @@ cxxwcreator_SOURCES=\
 	creator/cxxwcreator.C			\
 	#
 
-cxxwcreator_LDADD=libcxxw.la -lcxx
+cxxwcreator_LDADD=libcxxw.la -lcxx -lcourier-unicode
 cxxwcreator_LDFLAGS=$(TESTLINKTYPE)
 
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)

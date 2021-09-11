@@ -1408,21 +1408,32 @@ void appObj::open_initial_file(ONLY IN_THREAD,
 {
 	using x::exception;
 
-	try {
-		main_window->get_menubar()->show(IN_THREAD);
-		main_window->show_all(IN_THREAD);
+	main_window->get_menubar()->show(IN_THREAD);
+	main_window->show_all(IN_THREAD);
 
-		if (filename.empty())
-		{
-			{
-				x::mpobj_lock lock{current_edited_info};
-				enable_disable_menus(*lock);
-			}
-			loaded_file(IN_THREAD);
-		}
-		else
+	{
+		x::mpobj_lock lock{current_edited_info};
+		enable_disable_menus(*lock);
+	}
+
+	if (filename.empty())
+	{
+		loaded_file(IN_THREAD);
+	}
+	else
+	{
+		bool thrown_exception=true;
+
+		try {
 			open_dialog_closed(IN_THREAD, filename);
-	} REPORT_EXCEPTIONS(main_window);
+			thrown_exception=false;
+		} REPORT_EXCEPTIONS(main_window);
+
+		if (thrown_exception)
+		{
+			new_file(IN_THREAD);
+		}
+	}
 }
 
 void appObj::open_dialog_closed(ONLY IN_THREAD,

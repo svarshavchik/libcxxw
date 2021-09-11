@@ -954,6 +954,8 @@ valign to_valign(const ui::parser_lock &lock,
 				   value, element));
 }
 
+const char bidi_names[3][16]={"automatic", "left_to_right", "right_to_left"};
+
 bidi to_bidi_direction(const ui::parser_lock &lock,
 		       const char *element, const char *parent)
 {
@@ -962,18 +964,15 @@ bidi to_bidi_direction(const ui::parser_lock &lock,
 	std::transform(value.begin(), value.end(), value.begin(),
 		       chrcasecmp::tolower);
 
-	if (value == "automatic")
-		return bidi::automatic;
-
-	if (value == "left_to_right")
-		return bidi::left_to_right;
-
-	if (value == "right_to_left")
-		return bidi::right_to_left;
+	for (size_t i=0; i<3; i++)
+		if (value == bidi_names[i])
+			return static_cast<bidi>(i);
 
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
 				   value, element));
 }
+
+const char bidi_format_names[3][16]={"none","embedded","automatic"};
 
 bidi_format to_bidi_directional_format(const ui::parser_lock &lock,
 				       const char *element, const char *parent)
@@ -983,14 +982,9 @@ bidi_format to_bidi_directional_format(const ui::parser_lock &lock,
 	std::transform(value.begin(), value.end(), value.begin(),
 		       chrcasecmp::tolower);
 
-	if (value == "none")
-		return bidi_format::none;
-
-	if (value == "embedded")
-		return bidi_format::embedded;
-
-	if (value == "automatic")
-		return bidi_format::automatic;
+	for (size_t i=0; i<3; i++)
+		if (value == bidi_names[i])
+			return static_cast<bidi_format>(i);
 
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
 				   value, element));
