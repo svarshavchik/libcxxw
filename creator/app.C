@@ -188,11 +188,14 @@ appObj::init_args::init_args()
 		switch (gen->type_category.type) {
 		case appuigenerator_type::layoutmanager:
 		case appuigenerator_type::factory:
+
+			if (gen->type_category.category.empty())
+				break; // Generic factory
+
 			uicompiler_info
 				->sorted_available_uigenerators.push_back(name);
 
-			if (!gen->type_category.category.empty() &&
-			    !uicompiler_info
+			if (!uicompiler_info
 			    ->uigenerators_lookup.insert(gen).second)
 			{
 				throw EXCEPTION("Duplicate entry for layout "
