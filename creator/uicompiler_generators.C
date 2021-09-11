@@ -383,7 +383,92 @@ static const to_mm_handler to_mm_handler_inst;
 //
 // Input field
 
-typedef unimplemented_handler to_percentage_t_handler;
+struct to_percentage_t_handler : setting_handler {
+
+	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+					  const std::u32string &value)
+		const override
+	{
+		x::w::input_field_config config{4};
+
+		config.alignment=x::w::halign::right;
+
+		auto field=f->create_input_field(value, config);
+
+		// Accept only digits.
+
+		field->on_filter([]
+				 (ONLY IN_THREAD, const auto &info)
+		{
+			for (const auto &c:info.new_contents)
+				if (c < '0' || c > '9')
+					return;
+			info.update();
+		});
+
+		// Create a size_t validator.
+
+		// The value for this validator is std::optional<size_t>,
+		// and the value is a nullopt if the entered value is
+		// an empty string.
+
+		auto validated_input=field->set_validator
+			([]
+			 (ONLY IN_THREAD,
+			  const std::string &value,
+			  const auto &field,
+			  const auto &trigger)
+			 -> std::optional<std::optional<size_t>>
+			 {
+				 if (value.empty())
+					 // Empty string, valid value.
+					 return std::optional<size_t>{};
+
+				 size_t v;
+
+				 const char *c=value.c_str();
+
+				 auto res=std::from_chars(c,
+							  c+value.size(),
+							  v);
+
+				 if (res.ec != std::errc{} || v > 100)
+				 {
+					 field->stop_message
+						 (_("Enter a percentage value"
+						    " between 0-100."));
+					 return std::nullopt;
+				 }
+				 return std::optional<size_t>{v};
+			 },
+			 []
+			 (const std::optional<size_t> &n)
+			 {
+				 if (!n)
+					 return std::string{};
+
+				 return std::to_string(*n);
+			 });
+
+
+		return 	[field, validated_input]
+			() -> std::optional<std::u32string>
+			{
+				auto vv=validated_input->validated_value.get();
+
+				if (!vv) return std::nullopt; // Bad input.
+
+				auto &v=*vv;
+
+				if (!v) return U"";
+
+				std::string s=std::to_string(*v);
+
+				return std::u32string{ s.begin(), s.end() };
+			};
+	}
+};
+
 
 static const to_percentage_t_handler to_percentage_t_handler_inst;
 
@@ -1241,9 +1326,12 @@ void parse_function::save(const x::xml::writelock &lock,
 			{
 				const auto &[name, value]=condition_exists;
 
-				throw EXCEPTION("Unimplemented ondition: "
-						<< name << "="
-						<< (value ? "true":"false"));
+				if (value)
+					return; // Will generate this parameter
+
+				throw EXCEPTION("TODO: not tested yet");
+				n->element({name});
+				lock->get_parent();
 			}}, condition);
 
 	if (new_element_or_container)

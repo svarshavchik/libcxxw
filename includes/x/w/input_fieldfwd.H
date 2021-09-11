@@ -440,12 +440,12 @@ field->on_filter([]
                  });
 \endcode
 
-on_field() installs a single callback that implements more granular control
+on_filter() installs a single callback that implements more granular control
 over changes to the input field. The callback gets invoked for every
 potential change to the contents of the input field, deletion and or
 insertion.
 
-on_field() receives an \ref input_field_filter_info "input_field_filter_info"
+on_filter() receives an \ref input_field_filter_info "input_field_filter_info"
 object. It's \c starting_pos specifies the tentative deletion/insertion
 point. \c n_delete indicates the number of characters for a tentative deletion,
 and \c new_contents gives the new contents tentatively inserted into the
