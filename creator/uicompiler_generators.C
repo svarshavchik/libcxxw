@@ -19,6 +19,7 @@
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/text_param_literals.H"
+#include "x/w/alignment.H"
 #include <x/xml/xpath.H>
 #include <x/xml/readlock.H>
 #include <x/exception.H>
@@ -331,7 +332,28 @@ static const dim_handler dim_handler_inst;
 
 // A single_value containing a border
 
-typedef unimplemented_handler border_handler;
+struct border_handler : editable_combobox_handler {
+
+	std::vector<x::w::list_item_param> combobox_values() const override
+	{
+		// Predefined colors, a separator, then theme colors.
+
+		std::vector<x::w::list_item_param> borders;
+
+		appinvoke([&]
+			  (appObj *me)
+		{
+			appObj::border_info_t::lock lock{me->border_info};
+
+			borders.reserve(lock->ids.size());
+
+			for (const auto &c:lock->ids)
+				borders.push_back(c);
+		});
+
+		return borders;
+	}
+};
 
 static const border_handler border_handler_inst;
 
@@ -506,7 +528,16 @@ static const to_selection_type_handler to_selection_type_handler_inst;
 //
 // Combo box.
 
-typedef unimplemented_handler to_halign_handler;
+struct to_halign_handler : standard_combobox_handler {
+
+	std::vector<x::w::list_item_param> combobox_values() const override
+	{
+		return {
+			std::begin(x::w::halign_names),
+			std::end(x::w::halign_names),
+		};
+	}
+};
 
 static const to_halign_handler to_halign_handler_inst;
 
@@ -514,7 +545,16 @@ static const to_halign_handler to_halign_handler_inst;
 //
 // Combo box.
 
-typedef unimplemented_handler to_valign_handler;
+struct to_valign_handler : standard_combobox_handler {
+
+	std::vector<x::w::list_item_param> combobox_values() const override
+	{
+		return {
+			std::begin(x::w::valign_names),
+			std::end(x::w::valign_names),
+		};
+	}
+};
 
 static const to_valign_handler to_valign_handler_inst;
 
