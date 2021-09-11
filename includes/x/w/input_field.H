@@ -127,6 +127,9 @@ public:
 			 const std::optional<type> &v)=0;
 };
 
+template<typename type, typename canonical_formatter>
+class LIBCXX_PUBLIC validated_input_field_implObj;
+
 //! Implement the \ref validated_input_field "input field validation" object.
 
 //! \internal
@@ -151,6 +154,11 @@ public:
 
 	//! Alias
 	typedef validated_input_field_implObj<type, canonical_formatter> me_t;
+
+	struct LIBCXX_HIDDEN set_logic;
+	struct LIBCXX_HIDDEN set_logic_in_thread;
+	struct LIBCXX_HIDDEN set_logic_not_in_thread;
+	template<typename base_type> struct LIBCXX_HIDDEN set_impl;
 
 	//! Common logic shared by set() overloads.
 
@@ -411,7 +419,7 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 			   <type,
 			    std::remove_reference_t
 			    <canonical_format_functor>>>
-		::create(ref(this),
+		::create(ref{this},
 			 std::forward<canonical_format_functor>
 			 (canonical_format));
 
@@ -502,7 +510,7 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 			 return impl.new_value->has_value();
 		 });
 
-	return validated_input_field<type>(validated);
+	return validated_input_field<type>{validated};
 }
 
 template<typename validator_functor,

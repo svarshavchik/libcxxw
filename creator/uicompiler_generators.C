@@ -8,6 +8,7 @@
 #include "x/w/font_literals.H"
 #include "x/w/factory.H"
 #include "x/w/input_field.H"
+#include "x/w/input_field_config.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/label.H"
@@ -115,7 +116,49 @@ static const single_value_exists_handler single_value_exists_handler_inst;
 //
 // Input field
 
-typedef unimplemented_handler to_size_t_handler;
+struct to_size_t_handler : setting_handler {
+
+	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+					  const std::u32string &value)
+		const override
+	{
+		x::w::input_field_config config{10};
+
+		config.alignment=x::w::halign::right;
+
+		auto field=f->create_input_field(value, config);
+
+		// Create a size_t validator.
+
+		auto validated_input=field->set_string_validator
+			([]
+			 (ONLY IN_THREAD,
+			  const std::string &value,
+			  size_t *parsed_value,
+			  const auto &field,
+			  const auto &trigger) -> std::optional<size_t>
+			 {
+				 if (parsed_value)
+					 return *parsed_value;
+
+				 return std::nullopt;
+			 },
+			 []
+			 (size_t n)
+			 {
+				 return std::to_string(n);
+			 });
+
+
+		return 	[field, validated_input]
+			() -> std::optional<std::u32string>
+			{
+				if (validated_input->validated_value.get())
+					return field->get_unicode();
+				return std::nullopt;
+			};
+	}
+};
 
 static const to_size_t_handler to_size_t_handler_inst;
 
