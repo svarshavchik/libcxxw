@@ -40,11 +40,32 @@ using namespace std::literals::string_literals;
 typedef x::functionref< std::optional<std::u32string> ()
 			> setting_create_ui_ret_t;
 
+// Setting-specific behavior.
+
+// Each possible type of a setting implements create_ui() which receives
+// the setting's current value.
+//
+// create_ui() should use the given factory to create a single widget for
+// the setting's value.
+//
+// It returns a closure that gets called to retrieve the setting's (possibly)
+// updated value. It should return std::nullopt if the setting's value failed
+// validation.
+//
+// saved_element() gets called after the element, and its value, are saved
+// The write lock is positioned at the saved element's XML node.
+//
+// This is used by the text_param setting to add type="theme_text" attribute.
+
 struct setting_handler {
 
-	virtual setting_create_ui_ret_t create_ui(const x::w::factory &f,
+	virtual setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
 						  const std::u32string &value)
 		const=0;
+
+	virtual void saved_element(const x::xml::writelock &lock) const
+	{
+	}
 };
 
 // <element> existence, nothing more.
@@ -52,7 +73,7 @@ struct setting_handler {
 
 struct checkbox_handler : setting_handler {
 
-	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
 					  const std::u32string &value)
 		const override
 	{
@@ -65,7 +86,7 @@ static const checkbox_handler checkbox_handler_inst;
 
 struct unimplemented_handler : setting_handler {
 
-	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
 					  const std::u32string &value)
 		const override
 	{
@@ -80,7 +101,7 @@ struct unimplemented_handler : setting_handler {
 
 struct single_value_handler : setting_handler {
 
-	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
 					  const std::u32string &value)
 		const override
 	{
@@ -138,7 +159,7 @@ struct standard_combobox_handler : setting_handler {
 
 	}
 
-	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
 					  const std::u32string &value)
 		const override
 	{
@@ -244,7 +265,7 @@ static const layoutmanager_type_handler layoutmanager_type_handler_inst;
 
 struct editable_combobox_handler : setting_handler {
 
-	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
 					  const std::u32string &value)
 		const override
 	{
@@ -390,7 +411,7 @@ static const single_value_exists_handler single_value_exists_handler_inst;
 
 struct to_size_t_handler : setting_handler {
 
-	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
 					  const std::u32string &value)
 		const override
 	{
@@ -448,7 +469,7 @@ static const to_mm_handler to_mm_handler_inst;
 
 struct to_percentage_t_handler : setting_handler {
 
-	setting_create_ui_ret_t create_ui(const x::w::factory &f,
+	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
 					  const std::u32string &value)
 		const override
 	{
@@ -634,7 +655,15 @@ to_bidi_directional_format_handler_inst;
 //
 // Input field
 
-typedef unimplemented_handler text_param_value_handler;
+struct text_param_value_handler : single_value_handler {
+
+
+	void saved_element(const x::xml::writelock &lock) const override
+	{
+		lock->attribute({"type", "theme_text"});
+	}
+
+};
 
 static const text_param_value_handler text_param_value_handler_inst;
 
@@ -1202,12 +1231,15 @@ void parse_parameter::save(const x::xml::writelock &lock,
 {
 	if (same_xpath)
 	{
+		handler->saved_element(lock);
 		lock->create_child()->text(value)->parent();
 	}
 	else
 	{
 		lock->create_child()->element({parameter_name})->text(value)
-			->parent()->parent();
+			->parent();
+		handler->saved_element(lock);
+		lock->get_parent();
 	}
 
 	if (is_object_parameter)
