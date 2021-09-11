@@ -628,6 +628,7 @@ bool appgenerator_functionsObj::generator_value_move_up_clicked(ONLY IN_THREAD)
 	std::swap((*lock->functions)[n-1],
 		  (*lock->functions)[n]);
 
+	--*lock.selected_value; // Reflects what just happened
 	generator_contents_values_changed(IN_THREAD, lock);
 
 	return true;
@@ -666,6 +667,7 @@ bool appgenerator_functionsObj::generator_value_move_down_clicked(ONLY IN_THREAD
 	std::swap((*lock->functions)[n+1],
 		  (*lock->functions)[n]);
 
+	++*lock.selected_value; // Reflects what just happened
 	generator_contents_values_changed(IN_THREAD, lock);
 
 	return true;

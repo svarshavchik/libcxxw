@@ -85,6 +85,24 @@ struct single_value_handler : setting_handler {
 
 static const single_value_handler single_value_handler_inst;
 
+// A single_value containing a color
+
+typedef unimplemented_handler color_handler;
+
+static const color_handler color_handler_inst;
+
+// A single_value containing a dimension
+
+typedef unimplemented_handler dim_handler;
+
+static const dim_handler dim_handler_inst;
+
+// A single_value containing a border
+
+typedef unimplemented_handler border_handler;
+
+static const border_handler border_handler_inst;
+
 // <element> exists, and is empty.
 //
 // Checkbox
@@ -316,6 +334,8 @@ static const std::unordered_map<const char *,
 	{ "optional_constant<true>", &checkbox_handler_inst },
 	{ "optional_constant<false>", &checkbox_handler_inst },
 	{ "single_value", &single_value_handler_inst },
+	{ "compiler.generators->lookup_color", &color_handler_inst },
+	{ "compiler.generators->lookup_dim", &dim_handler_inst },
 	{ "to_size_t", &to_size_t_handler_inst },
 	{ "to_mm", &to_mm_handler_inst },
 	{ "to_halign", &to_halign_handler_inst },
@@ -330,13 +350,78 @@ static const std::unordered_map<const char *,
 	{ "method_call", &method_call_handler_inst },
 };
 
+//! Extract additional information from a <lookup>.
+
+struct lookup_info {
+
+	//! The lookup function
+	std::string function;
+
+	//! An extra single_value parameter
+	std::string extra_single_value;
+
+	//! Constructor
+	lookup_info(const x::xml::const_readlock &lookup);
+};
+
+lookup_info::lookup_info(const x::xml::const_readlock &lookup)
+{
+	auto root=lookup->clone();
+
+	for (bool flag=root->get_first_element_child();
+	     flag;
+	     flag=root->get_next_element_sibling())
+	{
+		auto name=root->name();
+
+		if (name == "function")
+		{
+			function=root->get_text();
+			continue;
+		}
+		if (name == "default_params")
+			continue;
+		if (name == "modify")
+			continue;
+		if (name == "prepend-parameter")
+			continue;
+
+		if (name != "parameter")
+			throw EXCEPTION("Unknown node in <lookup>: <"
+					<< name << ">");
+
+		auto parameter=root->get_text();
+
+		if (parameter == "lock")
+			continue;
+
+		if (parameter.substr(0, 20) == "single_value(lock, \"")
+		{
+			parameter=parameter.substr(20);
+
+			extra_single_value=std::string{parameter.begin(),
+				std::find(parameter.begin(),
+					  parameter.end(),
+					  '"')};
+			continue;
+		}
+
+		throw EXCEPTION("Unknown <parameter> in <lookup>: "
+				<< parameter);
+	}
+}
+
+
 ////////////////////////////////////////////////////////////////////////////
 //
 // Parse a <member> specification.
 
-parse_member::parse_member(const x::xml::readlock &root)
+parse_member::parse_member(const x::xml::readlock &root,
+			   std::vector<parse_member> &extra_members)
 {
 	std::string member_type_name;
+
+	std::optional<lookup_info> lookup;
 
 	for (bool flag=root->get_first_element_child();
 	     flag;
@@ -357,15 +442,54 @@ parse_member::parse_member(const x::xml::readlock &root)
 			continue;
 		}
 
-		if (name == "field" ||
-		    name == "lookup")
+		if (name == "field")
 			continue;
+
+		if (name == "lookup")
+		{
+			lookup.emplace(root);
+			continue;
+		}
 		if (name == "method_call")
 		{
 			member_type_name="method_call";
 			continue;
 		}
 		throw EXCEPTION("Unknown <member> node: " << name);
+	}
+
+	// We know what to do with a <lookup> only for a single_value.
+	if (lookup)
+	{
+		if (member_type_name != "single_value")
+		{
+			throw EXCEPTION("Internal error: lookup is for"
+					" something other than a single_value");
+		}
+	}
+
+	if (member_type_name == "single_value")
+	{
+		if (lookup)
+		{
+			// Replace the type with the lookup function.
+
+			if (lookup->function
+			    == "compiler.generators->lookup_color" ||
+			    lookup->function
+			    == "compiler.generators->lookup_dim")
+			{
+				member_type_name=lookup->function;
+
+				if (!lookup->extra_single_value.empty())
+				{
+					extra_members.emplace_back
+						(lookup->extra_single_value);
+				}
+			}
+			// TODO: get_appearance_base
+			// TODO: lookup_appearance<const_type_appearance>
+		}
 	}
 
 	auto iter=member_types.find(member_type_name.c_str());
@@ -380,6 +504,12 @@ parse_member::parse_member(const x::xml::readlock &root)
 	handler=iter->second;
 }
 
+parse_member::parse_member(const std::string &extra_single_value)
+	: member_name{extra_single_value},
+	  handler{&single_value_handler_inst}
+{
+}
+
 ////////////////////////////////////////////////////////////////////////////
 //
 // Parse a <parameter> specification.
@@ -392,6 +522,17 @@ static const std::unordered_map<const char *,
 	{ "optional_constant<true>", &checkbox_handler_inst },
 	{ "optional_constant<false>", &checkbox_handler_inst },
 	{ "single_value", &single_value_handler_inst },
+
+	// Aliases for single value.
+	{ "compiler.lookup_scrollbar_type", &single_value_handler_inst },
+	{ "compiler.lookup_container_generators", &single_value_handler_inst },
+	{ "restore_panelayoutmanager_position", &single_value_handler_inst },
+	{ "restore_tablelayoutmanager_position", &single_value_handler_inst },
+
+	{ "compiler.generators->lookup_color", &color_handler_inst },
+	{ "compiler.generators->lookup_dim", &dim_handler_inst },
+	{ "compiler.generators->lookup_border", &border_handler_inst },
+
 	{ "single_value_exists", &single_value_exists_handler_inst },
 	{ "to_size_t", &to_size_t_handler_inst },
 	{ "to_mm", &to_mm_handler_inst },
@@ -428,13 +569,20 @@ static const std::unordered_map<const char *,
 	  &listlayout_parseconfig_handler_inst },
 };
 
-
-parse_parameter::parse_parameter(const x::xml::readlock &root)
+parse_parameter::parse_parameter(const x::xml::readlock &root,
+				 std::vector<parse_parameter> &extra_parameters)
 {
 	std::string parameter_type;
 	std::string factory_wrapper;
+	std::optional<lookup_info> lookup;
 
-	object_members.reserve(root->get_xpath("member")->count());
+	object_members.reserve(root->get_xpath("member")->count()+
+			       root->get_xpath("member/lookup/parameter")
+			       ->count());
+
+	std::unordered_set<std::string> all_parsed_members;
+
+	std::vector<parse_member> extra_members;
 
 	for (bool flag=root->get_first_element_child();
 	     flag;
@@ -456,7 +604,10 @@ parse_parameter::parse_parameter(const x::xml::readlock &root)
 		}
 
 		if (name == "lookup")
+		{
+			lookup.emplace(parameter_prop);
 			continue;
+		}
 
 		if (name == "xpath")
 		{
@@ -502,12 +653,40 @@ parse_parameter::parse_parameter(const x::xml::readlock &root)
 
 		if (name == "member")
 		{
-			object_members.emplace_back(parameter_prop);
+			object_members.emplace_back(parameter_prop,
+						    extra_members);
+
+			std::string member_name=
+				(--object_members.end())->member_name;
+
+			if (!all_parsed_members.insert(member_name).second)
+				throw EXCEPTION("Duplicate member: "
+						<< member_name);
 			continue;
 		}
 		throw EXCEPTION("Unknown <parameter> node: "
 				<< name);
 	}
+
+	// Review the extra members we collected
+
+	// Nothing more needs to be done if a regular member with that name
+	// was specified, this directive will piggy-back on top of it.
+	//
+	// Otherwise we add it as an additional member.
+
+	for (auto &m:extra_members)
+	{
+		if (all_parsed_members.find(m.member_name) !=
+		    all_parsed_members.end())
+		{
+			continue;
+		}
+
+		object_members.push_back(m);
+	}
+
+	object_members.shrink_to_fit();
 
 	if (scalar_parameter)
 	{
@@ -527,6 +706,37 @@ parse_parameter::parse_parameter(const x::xml::readlock &root)
 		throw EXCEPTION("<member> specified without an "
 				"<object>");
 
+	// We know what to do with a <lookup> only for a single_value.
+
+	if (lookup)
+	{
+		if (parameter_type != "single_value")
+		{
+			throw EXCEPTION("Internal error: lookup is for"
+					" something other than a single_value");
+		}
+	}
+
+	if (parameter_type == "single_value")
+	{
+		if (lookup)
+		{
+			// Replace the type with the lookup function.
+
+			if (lookup->function.substr(0, 27)
+			    != "compiler.lookup_appearance<") // TODO
+			{
+				parameter_type=lookup->function;
+
+				if (!lookup->extra_single_value.empty())
+				{
+					extra_parameters.emplace_back
+						(lookup->extra_single_value);
+				}
+			}
+		}
+	}
+
 	auto iter=parameter_types.find(parameter_type.c_str());
 
 	if (iter == parameter_types.end())
@@ -540,6 +750,12 @@ parse_parameter::parse_parameter(const x::xml::readlock &root)
 		throw EXCEPTION("Parameter <name> not specified");
 
 	handler=iter->second;
+}
+
+parse_parameter::parse_parameter(const std::string &extra_single_value)
+	: parameter_name{extra_single_value},
+	  handler{&single_value_handler_inst}
+{
 }
 
 void parse_parameter::save(const x::xml::writelock &lock,
@@ -578,7 +794,11 @@ LOG_CLASS_INIT(parse_function);
 parse_function::parse_function(const x::xml::readlock &root)
 {
 	parsed_parameters.reserve(root->get_xpath("parameter")
+				  ->count() +
+				  root->get_xpath("parameter/lookup/parameter")
 				  ->count());
+
+	std::vector<parse_parameter> extra_parameters;
 
 	std::unordered_set<std::string> all_parsed_parameters;
 
@@ -686,7 +906,7 @@ parse_function::parse_function(const x::xml::readlock &root)
 					<< name);
 		}
 
-		parse_parameter parsed_parameter{parameter};
+		parse_parameter parsed_parameter{parameter, extra_parameters};
 
 		if (parsed_parameter.scalar_parameter)
 			continue;
@@ -705,6 +925,25 @@ parse_function::parse_function(const x::xml::readlock &root)
 			.push_back(std::move(parsed_parameter));
 	}
 
+	// Review the extra parameters we collected
+
+	// Nothing more needs to be done if a regular parameter with that name
+	// was specified, this directive will piggy-back on top of it.
+	//
+	// Otherwise we add it as an additional parameter.
+
+	for (auto &p: extra_parameters)
+	{
+		if (all_parsed_parameters.find(p.parameter_name) !=
+		    all_parsed_parameters.end())
+		{
+			continue;
+		}
+
+		parsed_parameters.push_back(p);
+	}
+
+	parsed_parameters.shrink_to_fit();
 	if (same_xpath > 1 ||
 	    (same_xpath && (!condition_name.empty()
 			    || !condition_exists.empty())))

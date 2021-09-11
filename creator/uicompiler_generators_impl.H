@@ -34,7 +34,15 @@ struct parse_member {
 	const setting_handler *handler;
 
 	//! Parse a <member> declaration.
-	parse_member(const x::xml::readlock &root);
+
+	//! If there's a <lookup> with an extra <parameter>, this gets
+	//! dropped into the extra_members.
+	parse_member(const x::xml::readlock &root,
+		     std::vector<parse_member> &extra_members);
+
+	//! Construct an extra single_value member referenced in a <lookup>
+	parse_member(const std::string &extra_single_value);
+
 };
 
 //! Parsed \ref "uicompiler_generators" information
@@ -62,7 +70,14 @@ struct parse_parameter {
 	std::vector<parse_member> object_members;
 
 	//! Parse a <parameter> declaration.
-	parse_parameter(const x::xml::readlock &root);
+
+	//! If there's a <lookup> with an extra <parameter>, this gets
+	//! dropped into the extra_members.
+	parse_parameter(const x::xml::readlock &root,
+			std::vector<parse_parameter> &extra_parameters);
+
+	//! Construct an extra single_value member referenced in a <lookup>
+	parse_parameter(const std::string &extra_single_value);
 
 	//! Generate the XML for this parameter.
 
