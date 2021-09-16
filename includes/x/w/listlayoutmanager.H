@@ -116,39 +116,11 @@ that the synchronized axis object gets carefully copied to each one.
 
 class new_list_or_combobox_layoutmanager {
 
-protected:
-	//! List's or combo-box's width.
-
-	//! If not set, the list or a combo-box is always wide enough
-	//! for its widest content.
-
-	std::optional<dim_axis_arg> width_value;
 public:
 
 	new_list_or_combobox_layoutmanager() LIBCXX_HIDDEN;
 
 	//! By default, the width is determined by its widest content.
-
-	inline void default_width()
-	{
-		width_value.reset();
-	}
-
-	//! Specify an explicit width.
-
-	inline void width(const dim_axis_arg &arg)
-	{
-		width_value=arg;
-	}
-
-	//! Set the new width as completely variable.
-
-	//! The parent widget can resize it, and make this list or combo-box
-	//! shorter or wider than its widest content.
-	inline void variable_width()
-	{
-		width(dim_axis_arg{0, 0});
-	}
 
 	//! Number of columns
 
@@ -335,10 +307,43 @@ class new_listlayoutmanager : public new_focusable_layoutmanager,
 	list_item_status_change_callbackptr current_list_item_changed;
 
 private:
+
+	//! List's width.
+
+	//! If not set, the list or a combo-box is always wide enough
+	//! for its widest content.
+
+	std::optional<dim_axis_arg> width_value;
+
 	//! The height of the list.
 
 	std::variant<std::tuple<size_t, size_t>, dim_axis_arg> height_value;
+
 public:
+
+	//! Default list width
+
+	inline void default_width()
+	{
+		width_value.reset();
+	}
+
+	//! Specify an explicit width.
+
+	inline void width(const dim_axis_arg &arg)
+	{
+		width_value=arg;
+	}
+
+	//! Set the new width as completely variable.
+
+	//! The parent widget can resize it, and make this list or combo-box
+	//! shorter or wider than its widest content.
+	inline void variable_width()
+	{
+		width(dim_axis_arg{0, 0});
+	}
+
 	//! The list's height is set to this number of rows.
 
 	inline void height(size_t rows)

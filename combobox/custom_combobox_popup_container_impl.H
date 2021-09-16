@@ -10,6 +10,7 @@
 #include "image_button_internalfwd.H"
 #include "x/w/popup_list_appearancefwd.H"
 #include "x/w/elementfwd.H"
+#include "x/w/impl/themedim_elementfwd.H"
 #include <x/weakptr.H>
 #include <x/mpobj.H>
 #include <functional>
@@ -32,13 +33,18 @@ LIBCXXW_NAMESPACE_START
 //! Combines its automatically-computed width, and layout manager-provided
 //! tallest combo-box popup item's height to derive the metrics for the
 //! current combo-box selection element, if there's one installed.
+//!
+//! Also uses the themedim_elementObj template mixin to hold the
+//! combobox_minimum_width appearance setting, when deriving the metrics
+//! for the current combo-box selection element that gets passed in as the
+//! third constructor parameter.
 
 class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
-	: public p_t_l_impl_t {
+	: public themedim_elementObj<p_t_l_impl_t> {
 
 	//! Alias
 
-	typedef p_t_l_impl_t superclass_t;
+	typedef themedim_elementObj<p_t_l_impl_t> superclass_t;
 
 	//! Set the current selection element's metrics.
 
@@ -50,7 +56,8 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
 
 	//! Constructor
 	implObj(const container_impl &parent,
-		const const_popup_list_appearance &appearance);
+		const const_popup_list_appearance &appearance,
+		const dim_arg &minimum_width);
 
 	//! Destructor
 	~implObj();

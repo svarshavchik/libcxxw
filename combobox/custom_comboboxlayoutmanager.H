@@ -53,6 +53,7 @@ combobox_create_list(const container_impl &peephole_container,
 		     const popup_attachedto_info &attachedto_info,
 		     const new_listlayoutmanager &style,
 		     const const_popup_list_appearance &appearance,
+		     const dim_arg &minimum_width,
 		     custom_combobox_popup_containerptr &popup_containerptr)
 	LIBCXX_HIDDEN;
 

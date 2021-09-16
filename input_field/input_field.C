@@ -181,6 +181,7 @@ create_input_field_impl_mixin(const container_impl &parent,
 				  attachedto_info,
 				  style,
 				  config.appearance->search_popup_appearance,
+				  0.0,
 				  popup_containerptr);
 		 },
 		 [&]

@@ -2822,59 +2822,6 @@ List of values:
     </parameter>
 
     <function>
-      <name>width</name>
-      <object>layout</object>
-      <invoke>default_width</invoke>
-      <condition>
-	<exists>default</exists>
-      </condition>
-    </function>
-
-    <function>
-      <name>width</name>
-      <object>layout</object>
-      <invoke>variable_width</invoke>
-      <condition>
-	<exists>variable</exists>
-      </condition>
-    </function>
-
-    <function>
-      <name>width</name>
-      <object>layout</object>
-      <invoke>width</invoke>
-
-      <parameter>
-	<name>min</name>
-	<type>single_value</type>
-	<before-passing-parameter>{</before-passing-parameter>
-	<lookup>
-	  <function>compiler.generators-&gt;lookup_dim</function>
-	  <default_params />
-	</lookup>
-      </parameter>
-
-      <parameter>
-	<name>preferred</name>
-	<type>single_value</type>
-	<lookup>
-	  <function>compiler.generators-&gt;lookup_dim</function>
-	  <default_params />
-	</lookup>
-      </parameter>
-
-      <parameter>
-	<name>max</name>
-	<type>single_value</type>
-	<after-passing-parameter>}</after-passing-parameter>
-	<lookup>
-	  <function>compiler.generators-&gt;lookup_dim</function>
-	  <default_params />
-	</lookup>
-      </parameter>
-    </function>
-
-    <function>
       <name>columns</name>
       <object>layout</object>
       <invoke>columns=</invoke>
@@ -3042,6 +2989,59 @@ List of values:
 	<name>columns</name>
 	<xpath>.</xpath>
 	<type>to_selection_type</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>width</name>
+      <object>layout</object>
+      <invoke>default_width</invoke>
+      <condition>
+	<exists>default</exists>
+      </condition>
+    </function>
+
+    <function>
+      <name>width</name>
+      <object>layout</object>
+      <invoke>variable_width</invoke>
+      <condition>
+	<exists>variable</exists>
+      </condition>
+    </function>
+
+    <function>
+      <name>width</name>
+      <object>layout</object>
+      <invoke>width</invoke>
+
+      <parameter>
+	<name>min</name>
+	<type>single_value</type>
+	<before-passing-parameter>{</before-passing-parameter>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<name>preferred</name>
+	<type>single_value</type>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+
+      <parameter>
+	<name>max</name>
+	<type>single_value</type>
+	<after-passing-parameter>}</after-passing-parameter>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
       </parameter>
     </function>
 

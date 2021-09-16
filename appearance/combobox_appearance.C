@@ -14,7 +14,8 @@ combobox_appearance_properties::combobox_appearance_properties()
 	  button_focus_border{focus_border_appearance
 			      ::base::combobox_button_theme()},
 	  popup_button_image1{"scroll-down1"},
-	  popup_button_image2{"scroll-down2"}
+	  popup_button_image2{"scroll-down2"},
+	  combobox_minimum_width{"combobox_minimum_width"}
 {
 }
 

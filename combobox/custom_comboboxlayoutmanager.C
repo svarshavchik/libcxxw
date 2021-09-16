@@ -381,11 +381,12 @@ combobox_create_list(const container_impl &peephole_container,
 		     const popup_attachedto_info &attachedto_info,
 		     const new_listlayoutmanager &style,
 		     const const_popup_list_appearance &appearance,
+		     const dim_arg &minimum_width,
 		     custom_combobox_popup_containerptr &popup_containerptr)
 {
 	auto impl=ref<custom_combobox_popup_containerObj
-		      ::implObj>::create(peephole_container,
-					 appearance);
+		      ::implObj>::create(peephole_container, appearance,
+					 minimum_width);
 
 	auto textlist_impl=ref<list_elementObj::implObj>
 		::create(list_element_impl_init_args
@@ -445,6 +446,8 @@ focusable_container new_custom_comboboxlayoutmanager
 						     attachedto_info,
 						     style,
 						     this->appearance,
+						     this->appearance
+						     ->combobox_minimum_width,
 						     popup_containerptr);
 		 },
 
