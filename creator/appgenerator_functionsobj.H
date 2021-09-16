@@ -39,11 +39,12 @@ struct current_selection_info_s {
 	size_t index; //!< Which original layout/factory is selected.
 
 	//! Its generator functions.
-	x::vector<appgenerator_function> main_functions;
+	x::vector<const_appgenerator_function> main_functions;
 
 	//! Constructor
 	current_selection_info_s(size_t index,
-				 const x::vector<appgenerator_function> &);
+				 const x::vector<const_appgenerator_function> &)
+		;
 
 	//! Destructor
 	~current_selection_info_s();
@@ -94,7 +95,7 @@ struct generator_info_s {
 	//! placed in the \ref current_selection_info_s "current selection's"
 	//! main_functions.
 
-	x::vector<appgenerator_function> functions;
+	x::vector<const_appgenerator_function> functions;
 
 	//! The compiler for this layout or factory.
 

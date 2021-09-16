@@ -37,7 +37,7 @@
 #include "creator/uicompiler_generatorsfwd.H"
 #include "creator/uicompilerfwd.H"
 #include "creator/appgenerator_functionsobj.H"
-
+#include "creator/appgenerator_savefwd.H"
 #include <variant>
 #include <optional>
 #include <string>
@@ -342,9 +342,13 @@ public:
 
 	//! Create a new document, then call create_update_with_new_document
 
+	//! "lock" is the lock on the current document, theme.get().
+	//! this document is cloned() and returned.
+
 	create_update_t create_update(const char *type,
 				      const char *new_type,
 				      const std::string &id,
+				      const x::xml::readlock &lock,
 				      bool is_new);
 
 	//! Add or update a theme element.
@@ -1975,6 +1979,19 @@ public:
 	//! Finish generator_update(), in the connection thread.
 	void generator_update3(ONLY IN_THREAD,
 			       const x::ref<x::obj> &busy_mcguffin);
+
+	//! Automatically create a new layout or a factory
+
+	//! Called when saving/updating new generator. If a generator
+	//! function references another layour or factory, this checks
+	//! if it doesn't exist, and automatically creates it.
+
+	void generator_autocreate_layout_or_factory
+	(const x::xml::writelock &lock,
+	 appgenerator_save &save_info,
+	 const char *layout_or_factory,
+	 const std::string &type,
+	 const std::string &id);
 };
 
 // The singleton instance of the app object.

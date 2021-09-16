@@ -6,6 +6,8 @@
 #define creator_uicompiler_generators_impl_h
 
 #include "creator/uicompiler_generators.H"
+#include "creator/appgenerator_functionsfwd.H"
+#include "creator/appgenerator_savefwd.H"
 #include "x/w/text_param.H"
 #include <x/obj.H>
 #include <x/logger.H>
@@ -90,7 +92,9 @@ struct parse_parameter {
 	//! Writes this parameter's XML as a child of the given write lock's
 	//! node, and leavfes the write lock on the same node.
 	void save(const x::xml::writelock &lock,
-		  const std::u32string &value) const;
+		  const std::u32string &value,
+		  appgenerator_save &info) const;
+
 };
 
 //! Parsed \ref "uicompiler_generators" information
@@ -146,7 +150,7 @@ struct parse_function {
 	//! parameter. Returns false if the function's conditions are not met.
 
 	bool parse_generator(const x::xml::readlock &root,
-			     std::vector<appgenerator_function> &funcs)
+			     std::vector<const_appgenerator_function> &funcs)
 		const;
 
 	//! Create a new function with default parameter values.
@@ -162,9 +166,9 @@ private:
 public:
 	//! Generate the XML for this function, with the given values.
 	void save(const x::xml::writelock &parent,
-		  const std::vector<std::u32string> &parameter_values) const;
+		  const std::vector<std::u32string> &parameter_values,
+		  appgenerator_save &info) const;
 };
-
 
 //! Implementation object.
 

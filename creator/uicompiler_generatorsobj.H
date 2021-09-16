@@ -71,7 +71,7 @@ public:
 
 	//! Takes this layout from the theme file and parses it into
 	//! a list of appgenerator_functions.
-	std::vector<appgenerator_function
+	std::vector<const_appgenerator_function
 		    > parse(const x::xml::readlock &root,
 			    const uigenerators_t &all_generators)
 		const;

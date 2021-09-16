@@ -5,7 +5,9 @@
 #ifndef creator_appgenerator_functionobj_h
 #define creator_appgenerator_functionobj_h
 
-#include "appgenerator_functionfwd.H"
+#include "creator/appgenerator_functionfwd.H"
+#include "creator/appgenerator_functionsfwd.H"
+#include "creator/appgenerator_savefwd.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/text_param.H"
 #include <x/obj.H>
@@ -56,11 +58,12 @@ public:
 
 	//! Save this function as XML
 
-	//! The XML write lock is position on the parent factory or layout,
+	//! The XML write lock is positioned on the parent factory or layout,
 	//! this used create_child() to create a new child element, when
 	//! done the write lock's position is returned to what it was.
 
-	virtual void save(const x::xml::writelock &lock) const=0;
+	virtual void save(const x::xml::writelock &lock,
+			  appgenerator_save &) const=0;
 };
 
 #endif

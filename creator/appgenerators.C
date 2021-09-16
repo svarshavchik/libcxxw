@@ -1,6 +1,7 @@
 #include "libcxxw_config.h"
 #include "creator/app.H"
 #include "creator/appgenerator_function.H"
+#include "creator/appgenerator_save.H"
 #include "creator/uicompiler_generators.H"
 #include "creator/uicompiler.H"
 #include "x/w/uielements.H"
@@ -450,11 +451,15 @@ appObj::generator_new_create_clicked2(generator_info_lock &lock)
 	auto &generator=current_generators->uicompiler_info
 		->uigenerators.at(generator_name);
 
+	auto document_lock=theme.get()->readlock();
+
 	// And create an empty one.
 
 	auto created=create_update("layout|factory",
 				   generator->type_category.xml_node_name(),
-				   new_name, true);
+				   new_name,
+				   document_lock,
+				   true);
 
 	if (!created)
 		return ret;
@@ -625,7 +630,7 @@ appObj::generator_update2(generator_info_lock &lock)
 	auto created_update=
 		create_update("layout|factory",
 			      lock->compiler->type_category.xml_node_name(),
-			      id, false);
+			      id, doc, false);
 
 	auto &[doc_lock, new_generator]=*created_update;
 
@@ -633,24 +638,93 @@ appObj::generator_update2(generator_info_lock &lock)
 
 	doc_lock->attribute({"type", lock->compiler->type_category.category});
 
+	appgenerator_save save_info;
+
 	// And create the updated contents of this layout or factory
 	for (auto &func:*lock.all->current_selection->main_functions)
 	{
-		func->save(doc_lock);
+		func->save(doc_lock, save_info);
+	}
+
+	// If save() wanted to do more stuff, the time to do it now.
+
+	for (auto &func: save_info.extra_saves)
+	{
+		func(doc_lock, save_info);
 	}
 
 	ret.emplace(doc_lock,
-		    [=, saved_lock=lock.threadlock(x::ref{this})]
+		    [=, saved_lock=lock.threadlock(x::ref{this}),
+		     extra_updates=save_info.extra_updates]
 		    (appObj *me,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    generator_info_lock lock{saved_lock};
+
+			    // Any additional action on top of the
+			    // changes we need to make.
+
+			    for (auto &update:*extra_updates)
+				    update(me, lock);
 
 			    me->generator_update2(lock,
 						  busy_mcguffin);
 		    });
 
 	return ret;
+}
+
+void appObj
+::generator_autocreate_layout_or_factory(const x::xml::writelock &lock,
+					 appgenerator_save &save_info,
+					 const char *layout_or_factory,
+					 const std::string &type,
+					 const std::string &id)
+{
+	// Does it exist?
+
+	auto xpath=get_xpath_for(lock, "layout|factory", id);
+
+	if (xpath->count())
+	{
+		xpath->to_node();
+
+		// Does everything match?
+
+		if (lock->name() == layout_or_factory &&
+		    lock->get_any_attribute("type") == type)
+		{
+			// Nothing to do
+			return;
+		}
+
+		// This will not work.
+		throw EXCEPTION(x::gettextmsg
+				(_("Existing \"%1%\" is not"
+				   " a %2% factory"),
+				 id, type));
+	}
+
+	// Autocreate it.
+
+	(void)create_update_with_new_document("layout|factory",
+					      layout_or_factory,
+					      id, lock, true);
+
+	lock->attribute({"type", type});
+
+	// And if this change passes muster, we have an extra_updates to
+	// add it to the generator page.
+
+	save_info.extra_updates->emplace_back
+		([id]
+		 (appObj *me, generator_info_lock &lock)
+		{
+			me->update_new_element
+				(me->generator_name_and_description(id),
+				 lock.all->ids,
+				 me->generator_name);
+		});
 }
 
 void appObj::generator_update2(generator_info_lock &lock,

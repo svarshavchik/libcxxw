@@ -1664,15 +1664,18 @@ appObj::create_update_t appObj::create_update(const char *type,
 					      const std::string &id,
 					      bool is_new)
 {
-	return create_update(type, type, id, is_new);
+	return create_update(type, type, id,
+			     theme.get()->readlock(),
+			     is_new);
 }
 
 appObj::create_update_t appObj::create_update(const char *type,
 					      const char *new_type,
 					      const std::string &id,
+					      const x::xml::readlock &lock,
 					      bool is_new)
 {
-	auto new_doc=theme.get()->readlock()->clone_document();
+	auto new_doc=lock->clone_document();
 
 	auto doc_lock=new_doc->writelock();
 

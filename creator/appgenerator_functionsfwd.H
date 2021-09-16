@@ -2,11 +2,13 @@
 ** Copyright 2021 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef appgenerator_functionsfwd_h
-#define appgenerator_functionsfwd_h
+#ifndef creator_appgenerator_functionsfwd_h
+#define creator_appgenerator_functionsfwd_h
 
 #include "x/w/namespace.H"
 #include <x/ptrfwd.H>
+
+struct generator_info_lock;
 
 class appgenerator_functionsObj;
 

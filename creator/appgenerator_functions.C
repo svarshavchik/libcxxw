@@ -20,7 +20,7 @@
 
 current_selection_info_s
 ::current_selection_info_s(size_t index,
-			   const x::vector<appgenerator_function>
+			   const x::vector<const_appgenerator_function>
 			   &main_functions)
 	: index{index}, main_functions{main_functions}
 {
@@ -30,7 +30,7 @@ current_selection_info_s::~current_selection_info_s()=default;
 
 generator_info_s::generator_info_s(const x::ref<all_generatorsObj>
 				   &all_generators)
-	: functions{x::vector<appgenerator_function>::create()},
+	: functions{x::vector<const_appgenerator_function>::create()},
 	  all_generators{all_generators}
 {
 }
@@ -685,8 +685,15 @@ void appgenerator_functionsObj::generator_value_update_clicked(ONLY IN_THREAD)
 	if (n >= (*lock->functions).size())
 		return;
 
+	// Our maintained functions are constant, for thread-related issues,
+	// so for editing purposes we can simply clone and pass down the
+	// existing function.
+
+	auto new_generator_function=(*lock->functions)[n]->clone();
+	(*lock->functions)[n]=new_generator_function;
+
 	generator_value_edit
-		(IN_THREAD, (*lock->functions)[n],
+		(IN_THREAD, new_generator_function,
 		 &appgenerator_functionsObj::generator_value_updated);
 }
 

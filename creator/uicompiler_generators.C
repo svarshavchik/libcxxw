@@ -6,6 +6,7 @@
 #include "creator/uicompiler_generators_impl.H"
 #include "creator/appgenerator_function.H"
 #include "creator/appgenerator_functions.H"
+#include "creator/appgenerator_save.H"
 #include "creator/uicompiler.H"
 #include "creator/app.H"
 #include "x/w/font_literals.H"
@@ -27,6 +28,7 @@
 #include <x/vector.H>
 #include <x/chrcasecmp.H>
 #include <x/visitor.H>
+#include <x/locale.H>
 #include <cstring>
 #include <string>
 #include <unordered_set>
@@ -68,7 +70,10 @@ struct setting_handler {
 						  const create_ui_info &info)
 		const=0;
 
-	virtual void saved_element(const x::xml::writelock &lock) const
+	virtual void saved_element(const x::xml::writelock &lock,
+				   const std::string &handler_name,
+				   const std::u32string &value,
+				   appgenerator_save &info) const
 	{
 	}
 };
@@ -679,8 +684,10 @@ to_bidi_directional_format_handler_inst;
 
 struct text_param_value_handler : single_value_handler {
 
-
-	void saved_element(const x::xml::writelock &lock) const override
+	void saved_element(const x::xml::writelock &lock,
+			   const std::string &handler_name,
+			   const std::u32string &value,
+			   appgenerator_save &info) const override
 	{
 		lock->attribute({"type", "theme_text"});
 	}
@@ -738,7 +745,38 @@ struct lookup_factory_handler : editable_combobox_handler {
 
 		return factories;
 	}
+
+	// Add an extra_save action to autocreate this factory.
+
+	void saved_element(const x::xml::writelock &lock,
+			   const std::string &handler_name,
+			   const std::u32string &value,
+			   appgenerator_save &info) const override;
 };
+
+void lookup_factory_handler::saved_element(const x::xml::writelock &lock,
+					   const std::string &handler_name,
+					   const std::u32string &value,
+					   appgenerator_save &info) const
+{
+	auto value_string=x::locale::base::global()->fromu32(value);
+
+	info.extra_saves.emplace_back
+		([handler_name, value_string]
+		 (const x::xml::writelock &lock,
+		  appgenerator_save &save)
+		{
+			appinvoke([&]
+				  (appObj *me)
+			{
+				me->generator_autocreate_layout_or_factory
+					(lock, save,
+					 "factory",
+					 handler_name,
+					 value_string);
+			});
+		});
+}
 
 static const lookup_factory_handler lookup_factory_handler_inst;
 
@@ -1229,18 +1267,19 @@ parse_parameter::parse_parameter(const std::string &extra_single_value)
 }
 
 void parse_parameter::save(const x::xml::writelock &lock,
-			   const std::u32string &value) const
+			   const std::u32string &value,
+			   appgenerator_save &info) const
 {
 	if (same_xpath)
 	{
-		handler->saved_element(lock);
+		handler->saved_element(lock, handler_name, value, info);
 		lock->create_child()->text(value)->parent();
 	}
 	else
 	{
 		lock->create_child()->element({parameter_name})->text(value)
 			->parent();
-		handler->saved_element(lock);
+		handler->saved_element(lock, handler_name, value, info);
 		lock->get_parent();
 	}
 
@@ -1437,7 +1476,8 @@ parse_function::parse_function(const x::xml::readlock &root)
 }
 
 void parse_function::save(const x::xml::writelock &lock,
-			  const std::vector<std::u32string> &parameter_values)
+			  const std::vector<std::u32string> &parameter_values,
+			  appgenerator_save &info)
 	const
 {
 	auto n=lock->create_child();
@@ -1486,7 +1526,7 @@ void parse_function::save(const x::xml::writelock &lock,
 
 	for (const auto &p:parsed_parameters)
 	{
-		p.save(lock, *v++);
+		p.save(lock, *v++, info);
 	}
 	lock->get_parent();
 }
@@ -1634,9 +1674,10 @@ struct plain_appgenerator_functionObj : public appgenerator_functionObj {
 		};
 	}
 
-	void save(const x::xml::writelock &lock) const override
+	void save(const x::xml::writelock &lock,
+		  appgenerator_save &info) const override
 	{
-		function->save(lock, *parameter_values);
+		function->save(lock, *parameter_values, info);
 	}
 };
 
@@ -1646,7 +1687,8 @@ struct plain_appgenerator_functionObj : public appgenerator_functionObj {
 };
 
 bool parse_function::parse_generator(const x::xml::readlock &root,
-				     std::vector<appgenerator_function> &funcs)
+				     std::vector<const_appgenerator_function>
+				     &funcs)
 	const
 {
 	bool condition_found=false;
@@ -1958,11 +2000,11 @@ void uicompiler_generatorsObj::initialize(const x::xml::readlock &root,
 	}
 }
 
-std::vector<appgenerator_function>
+std::vector<const_appgenerator_function>
 uicompiler_generatorsObj::parse(const x::xml::readlock &root,
 			  const uigenerators_t &all_generators) const
 {
-	std::vector<appgenerator_function> parsed;
+	std::vector<const_appgenerator_function> parsed;
 
 	// Parse each element.
 
