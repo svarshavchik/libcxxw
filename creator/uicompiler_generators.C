@@ -924,8 +924,8 @@ lookup_info::lookup_info(const x::xml::const_readlock &lookup)
 //
 // Parse a <member> specification.
 
-parse_member::parse_member(const x::xml::readlock &root,
-			   std::vector<parse_member> &extra_members)
+void parse_parameter::define_member(const x::xml::readlock &root,
+				    std::vector<parse_parameter> &extra_members)
 {
 	std::string member_type_name;
 
@@ -941,7 +941,7 @@ parse_member::parse_member(const x::xml::readlock &root,
 
 		if (name == "name")
 		{
-			member_name=member_prop->get_text();
+			parameter_name=member_prop->get_text();
 			continue;
 		}
 		if (name == "type")
@@ -1006,16 +1006,10 @@ parse_member::parse_member(const x::xml::readlock &root,
 	{
 		throw EXCEPTION("Unknown <member> <type> "
 				<< member_type_name
-				<< " (of " << member_name << ")");
+				<< " (of " << parameter_name << ")");
 	}
 
 	handler=iter->second;
-}
-
-parse_member::parse_member(const std::string &extra_single_value)
-	: member_name{extra_single_value},
-	  handler{&single_value_handler_inst}
-{
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -1066,8 +1060,11 @@ static const std::unordered_map<const char *,
 	  &listlayout_parseconfig_handler_inst },
 };
 
-parse_parameter::parse_parameter(const x::xml::readlock &root,
-				 std::vector<parse_parameter> &extra_parameters)
+parse_parameter::parse_parameter()=default;
+
+void parse_parameter::define_parameter(const x::xml::readlock &root,
+				       std::vector<parse_parameter>
+				       &extra_parameters)
 {
 	std::string parameter_type;
 	std::string factory_wrapper;
@@ -1079,7 +1076,7 @@ parse_parameter::parse_parameter(const x::xml::readlock &root,
 
 	std::unordered_set<std::string> all_parsed_members;
 
-	std::vector<parse_member> extra_members;
+	std::vector<parse_parameter> extra_members;
 
 	for (bool flag=root->get_first_element_child();
 	     flag;
@@ -1150,15 +1147,17 @@ parse_parameter::parse_parameter(const x::xml::readlock &root,
 
 		if (name == "member")
 		{
-			object_members.emplace_back(parameter_prop,
-						    extra_members);
+			parse_parameter new_member;
 
-			std::string member_name=
-				(--object_members.end())->member_name;
+			new_member.define_member(parameter_prop, extra_members);
 
-			if (!all_parsed_members.insert(member_name).second)
+			if (!all_parsed_members
+			    .insert(new_member.parameter_name).second)
 				throw EXCEPTION("Duplicate member: "
-						<< member_name);
+						<< new_member.parameter_name);
+
+			object_members.push_back(std::move(new_member));
+
 			continue;
 		}
 		throw EXCEPTION("Unknown <parameter> node: "
@@ -1174,7 +1173,7 @@ parse_parameter::parse_parameter(const x::xml::readlock &root,
 
 	for (auto &m:extra_members)
 	{
-		if (all_parsed_members.find(m.member_name) !=
+		if (all_parsed_members.find(m.parameter_name) !=
 		    all_parsed_members.end())
 		{
 			continue;
@@ -1418,7 +1417,9 @@ parse_function::parse_function(const x::xml::readlock &root)
 					<< name);
 		}
 
-		parse_parameter parsed_parameter{parameter, extra_parameters};
+		parse_parameter parsed_parameter;
+
+		parsed_parameter.define_parameter(parameter, extra_parameters);
 
 		if (parsed_parameter.scalar_parameter)
 			continue;

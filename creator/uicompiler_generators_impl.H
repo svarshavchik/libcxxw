@@ -25,30 +25,6 @@ struct setting_handler;
 
 //! Parsed \ref "uicompiler_generators" information
 
-//! Internal data, parsed contents of a <member> specified in uicompiler.xml
-
-struct parse_member {
-
-	//! The <name> of this member.
-	std::string member_name;
-
-	//! Its <type> information.
-	const setting_handler *handler;
-
-	//! Parse a <member> declaration.
-
-	//! If there's a <lookup> with an extra <parameter>, this gets
-	//! dropped into the extra_members.
-	parse_member(const x::xml::readlock &root,
-		     std::vector<parse_member> &extra_members);
-
-	//! Construct an extra single_value member referenced in a <lookup>
-	parse_member(const std::string &extra_single_value);
-
-};
-
-//! Parsed \ref "uicompiler_generators" information
-
 //! Internal data, parsed contents of a <parameter> specified in uicompiler.xml
 
 struct parse_parameter {
@@ -75,14 +51,29 @@ struct parse_parameter {
 	bool scalar_parameter=false;
 
 	//! All of this parameter's <member>s.
-	std::vector<parse_member> object_members;
+
+	//! They are stored as just parameters.
+	std::vector<parse_parameter> object_members;
+
+	//! Constructor
+
+	parse_parameter();
 
 	//! Parse a <parameter> declaration.
 
 	//! If there's a <lookup> with an extra <parameter>, this gets
 	//! dropped into the extra_members.
-	parse_parameter(const x::xml::readlock &root,
-			std::vector<parse_parameter> &extra_parameters);
+	void define_parameter(const x::xml::readlock &root,
+			      std::vector<parse_parameter> &extra_parameters);
+
+	//! Parse a <member> declaration.
+
+	//! This is handled like a parameter.
+	//!
+	//! If there's a <lookup> with an extra <parameter>, this gets
+	//! dropped into the extra_members.
+	void define_member(const x::xml::readlock &root,
+			   std::vector<parse_parameter> &extra_members);
 
 	//! Construct an extra single_value member referenced in a <lookup>
 	parse_parameter(const std::string &extra_single_value);
