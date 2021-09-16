@@ -1139,8 +1139,14 @@ void appObj::mainloop()
 {
 	app me{this};
 
+	using x::exception;
+
 	while (running)
-		eventqueue->pop()();
+	{
+		try {
+			eventqueue->pop()();
+		} REPORT_EXCEPTIONS(main_window);
+	}
 }
 
 void appObj::update_theme(ONLY IN_THREAD,
@@ -1189,6 +1195,8 @@ void appObj::update_theme2(const x::functionref<update_callback_t (appObj *)
 		});
 
 		callback2(this, mcguffin);
+		status->update(_("Update saved."));
+
 	} catch (const x::exception &e)
 	{
 		std::ostringstream o;
@@ -1264,9 +1272,20 @@ void appObj::do_check_and_file_save(ONLY IN_THREAD,
 				    void (appObj::*what_to_do_next)
 				    (ONLY IN_THREAD))
 {
+	bool exists=true;
+
 	// Warn if the file exists.
 
-	if (access(filename.c_str(), 0) == 0)
+	if (access(filename.c_str(), 0))
+	{
+		if (filename.find('.', filename.rfind('/')+1) == filename.npos)
+			filename += ".xml";
+
+		if (access(filename.c_str(), 0))
+			exists=false;
+	}
+
+	if (exists)
 	{
 		main_window->create_ok_cancel_dialog
 			({"alert@creator.w.libcxx.com", true},
@@ -1298,8 +1317,6 @@ void appObj::do_check_and_file_save(ONLY IN_THREAD,
 		return;
 	}
 
-	if (filename.find('.', filename.rfind('/')+1) == filename.npos)
-		filename += ".xml";
 
 	do_file_save(IN_THREAD, filename, what_to_do_next);
 }
@@ -1659,6 +1676,17 @@ appObj::create_update_t appObj::create_update(const char *type,
 
 	auto doc_lock=new_doc->writelock();
 
+	return create_update_with_new_document(type, new_type, id,
+					       doc_lock, is_new);
+}
+
+appObj::create_update_t
+appObj::create_update_with_new_document(const char *type,
+					const char *new_type,
+					const std::string &id,
+					const x::xml::writelock &doc_lock,
+					bool is_new)
+{
 	doc_lock->get_root();
 
 	auto xpath=get_xpath_for(doc_lock, type, id);

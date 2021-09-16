@@ -330,6 +330,17 @@ public:
 	//!
 	//! "new_type" is the same as type, or just "layout" or "factory",
 	//! when creating that one.
+	//!
+	//! doc_lock is the lock on the new document being created.
+
+	create_update_t
+	create_update_with_new_document(const char *type,
+					const char *new_type,
+					const std::string &id,
+					const x::xml::writelock &doc_lock,
+					bool is_new);
+
+	//! Create a new document, then call create_update_with_new_document
 
 	create_update_t create_update(const char *type,
 				      const char *new_type,
