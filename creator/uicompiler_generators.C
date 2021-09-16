@@ -37,6 +37,11 @@
 
 using namespace std::literals::string_literals;
 
+struct create_ui_info {
+	const std::u32string &value;
+	const std::string &handler_name;
+};
+
 typedef x::functionref< std::optional<std::u32string> ()
 			> setting_create_ui_ret_t;
 
@@ -60,7 +65,7 @@ typedef x::functionref< std::optional<std::u32string> ()
 struct setting_handler {
 
 	virtual setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
-						  const std::u32string &value)
+						  const create_ui_info &info)
 		const=0;
 
 	virtual void saved_element(const x::xml::writelock &lock) const
@@ -74,11 +79,14 @@ struct setting_handler {
 struct checkbox_handler : setting_handler {
 
 	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
-					  const std::u32string &value)
+					  const create_ui_info &info)
 		const override
 	{
-		throw EXCEPTION( "Checkbox handler unimplemented, value: "
-				 << x::locale::base::global()->fromu32(value));
+		throw EXCEPTION( "Checkbox handler unimplemented, for "
+				 << info.handler_name << " (value "
+				 << x::locale::base::global()
+				 ->fromu32(info.value)
+				 << ")");
 	}
 };
 
@@ -87,11 +95,14 @@ static const checkbox_handler checkbox_handler_inst;
 struct unimplemented_handler : setting_handler {
 
 	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
-					  const std::u32string &value)
+					  const create_ui_info &info)
 		const override
 	{
-		throw EXCEPTION( "create_ui unimplemented: "
-				 << std::string(value.begin(), value.end()));
+		throw EXCEPTION( "Handler not implemented for "
+				 << info.handler_name << " (value "
+				 << x::locale::base::global()
+				 ->fromu32(info.value)
+				 << ")");
 	}
 };
 
@@ -102,10 +113,10 @@ struct unimplemented_handler : setting_handler {
 struct single_value_handler : setting_handler {
 
 	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
-					  const std::u32string &value)
+					  const create_ui_info &info)
 		const override
 	{
-		auto field=f->create_input_field(value);
+		auto field=f->create_input_field(info.value);
 
 		return [field]
 		{
@@ -160,10 +171,10 @@ struct standard_combobox_handler : setting_handler {
 	}
 
 	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
-					  const std::u32string &value)
+					  const create_ui_info &info)
 		const override
 	{
-		auto values=combobox_values();
+		auto values=combobox_values(info);
 
 		// Empty string value, combobox value is optional
 
@@ -188,7 +199,7 @@ struct standard_combobox_handler : setting_handler {
 				// the empty string, if we don't find this
 				// value.
 
-				auto p=find_string(values, value);
+				auto p=find_string(values, info.value);
 				size_t i=0;
 
 				if (p != values.end())
@@ -222,14 +233,16 @@ struct standard_combobox_handler : setting_handler {
 		};
 	}
 
-	virtual std::vector<x::w::list_item_param> combobox_values() const=0;
+	virtual std::vector<x::w::list_item_param>
+	combobox_values(const create_ui_info &info) const=0;
 };
 
 // This element is a type that specifies a layout manager.
 
 struct layoutmanager_type_handler : standard_combobox_handler {
 
-	std::vector<x::w::list_item_param> combobox_values() const override
+	std::vector<x::w::list_item_param
+		    > combobox_values(const create_ui_info &info) const override
 	{
 		std::vector<x::w::list_item_param> layout_managers;
 
@@ -266,10 +279,10 @@ static const layoutmanager_type_handler layoutmanager_type_handler_inst;
 struct editable_combobox_handler : setting_handler {
 
 	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
-					  const std::u32string &value)
+					  const create_ui_info &info)
 		const override
 	{
-		auto values=combobox_values();
+		auto values=combobox_values(info);
 
 		auto combobox=f->create_focusable_container
 			([&]
@@ -283,7 +296,7 @@ struct editable_combobox_handler : setting_handler {
 				// Find the current value and make it selected
 				// by default.
 				auto p=standard_combobox_handler
-					::find_string(values, value);
+					::find_string(values, info.value);
 
 				if (p != values.end())
 				{
@@ -291,7 +304,7 @@ struct editable_combobox_handler : setting_handler {
 				}
 				else
 				{
-					layout->set(value);
+					layout->set(info.value);
 				}
 			},
 			 x::w::new_editable_comboboxlayoutmanager{});
@@ -306,14 +319,17 @@ struct editable_combobox_handler : setting_handler {
 		};
 	}
 
-	virtual std::vector<x::w::list_item_param> combobox_values() const=0;
+	virtual std::vector<x::w::list_item_param
+			    > combobox_values(const create_ui_info &info)
+		const=0;
 };
 
 // A single_value containing a color
 
 struct color_handler : editable_combobox_handler {
 
-	std::vector<x::w::list_item_param> combobox_values() const override
+	std::vector<x::w::list_item_param> combobox_values(const create_ui_info
+							   &info) const override
 	{
 		// Predefined colors, a separator, then theme colors.
 
@@ -347,7 +363,8 @@ static const color_handler color_handler_inst;
 
 struct dim_handler : editable_combobox_handler {
 
-	std::vector<x::w::list_item_param> combobox_values() const override
+	std::vector<x::w::list_item_param> combobox_values(const create_ui_info
+							   &info) const override
 	{
 		// Predefined colors, a separator, then theme colors.
 
@@ -374,7 +391,8 @@ static const dim_handler dim_handler_inst;
 
 struct border_handler : editable_combobox_handler {
 
-	std::vector<x::w::list_item_param> combobox_values() const override
+	std::vector<x::w::list_item_param> combobox_values(const create_ui_info
+							   &info) const override
 	{
 		// Predefined colors, a separator, then theme colors.
 
@@ -412,14 +430,14 @@ static const single_value_exists_handler single_value_exists_handler_inst;
 struct to_size_t_handler : setting_handler {
 
 	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
-					  const std::u32string &value)
+					  const create_ui_info &info)
 		const override
 	{
 		x::w::input_field_config config{10};
 
 		config.alignment=x::w::halign::right;
 
-		auto field=f->create_input_field(value, config);
+		auto field=f->create_input_field(info.value, config);
 
 		// Create a size_t validator.
 
@@ -470,14 +488,14 @@ static const to_mm_handler to_mm_handler_inst;
 struct to_percentage_t_handler : setting_handler {
 
 	setting_create_ui_ret_t create_ui(const x::w::gridfactory &f,
-					  const std::u32string &value)
+					  const create_ui_info &info)
 		const override
 	{
 		x::w::input_field_config config{4};
 
 		config.alignment=x::w::halign::right;
 
-		auto field=f->create_input_field(value, config);
+		auto field=f->create_input_field(info.value, config);
 
 		// Accept only digits.
 
@@ -570,7 +588,8 @@ static const to_selection_type_handler to_selection_type_handler_inst;
 
 struct to_halign_handler : standard_combobox_handler {
 
-	std::vector<x::w::list_item_param> combobox_values() const override
+	std::vector<x::w::list_item_param> combobox_values(const create_ui_info
+							   &info) const override
 	{
 		return {
 			std::begin(x::w::halign_names),
@@ -587,7 +606,8 @@ static const to_halign_handler to_halign_handler_inst;
 
 struct to_valign_handler : standard_combobox_handler {
 
-	std::vector<x::w::list_item_param> combobox_values() const override
+	std::vector<x::w::list_item_param> combobox_values(const create_ui_info
+							   &info) const override
 	{
 		return {
 			std::begin(x::w::valign_names),
@@ -620,7 +640,8 @@ static const shortcut_handler shortcut_handler_inst;
 
 struct to_bidi_direction_handler : standard_combobox_handler {
 
-	std::vector<x::w::list_item_param> combobox_values() const override
+	std::vector<x::w::list_item_param> combobox_values(const create_ui_info
+							   &info) const override
 	{
 		// TODO
 		return {
@@ -638,7 +659,8 @@ static const to_bidi_direction_handler to_bidi_direction_handler_inst;
 
 struct to_bidi_directional_format_handler : standard_combobox_handler {
 
-	std::vector<x::w::list_item_param> combobox_values() const override
+	std::vector<x::w::list_item_param> combobox_values(const create_ui_info
+							   &info) const override
 	{
 		// TODO
 		return {
@@ -695,49 +717,30 @@ static const method_call_handler method_call_handler_inst;
 //
 // Combo box.
 
-typedef unimplemented_handler gridfactory_generator_handler;
+struct lookup_factory_handler : editable_combobox_handler {
 
-static const gridfactory_generator_handler gridfactory_generator_handler_inst;
+	std::vector<x::w::list_item_param> combobox_values(const create_ui_info
+							   &info) const override
+	{
+		std::vector<x::w::list_item_param> factories;
 
-// <element> specifies a page factory generator
-//
-// Combo box.
+		appinvoke([&]
+			  (appObj *me)
+		{
+			auto all_factories=me->current_generators
+				->all_generators_for("factory",
+						     info.handler_name);
 
-typedef unimplemented_handler pagefactory_generator_handler;
+			factories.insert(factories.end(),
+					 all_factories.begin(),
+					 all_factories.end());
+		});
 
-static const pagefactory_generator_handler pagefactory_generator_handler_inst;
+		return factories;
+	}
+};
 
-// <element> specifies a pane factory generator
-//
-// Combo box.
-
-typedef unimplemented_handler panefactory_generator_handler;
-
-static const panefactory_generator_handler panefactory_generator_handler_inst;
-
-// <element> specifies a bookpage factory generator
-//
-// Combo box.
-
-typedef unimplemented_handler bookpagefactory_generator_handler;
-
-static const bookpagefactory_generator_handler bookpagefactory_generator_handler_inst;
-
-// <element> specifies a menubar factory generator
-//
-// Combo box.
-
-typedef unimplemented_handler menubarfactory_generator_handler;
-
-static const menubarfactory_generator_handler menubarfactory_generator_handler_inst;
-
-// <element> specifies a toolbox factory generator
-//
-// Combo box.
-
-typedef unimplemented_handler toolboxfactory_generator_handler;
-
-static const toolboxfactory_generator_handler toolboxfactory_generator_handler_inst;
+static const lookup_factory_handler lookup_factory_handler_inst;
 
 // <elements> contains 0 or more factory elements.
 
@@ -1014,21 +1017,9 @@ static const std::unordered_map<const char *,
 
 	{ "compiler.list_items_param_value",
 	  &list_items_params_value_handler_inst },
-
+	{ "lookup_factory", &lookup_factory_handler_inst },
 	{ "compiler.shortcut_value", &shortcut_handler_inst },
 	{ "compiler.text_param_value", &text_param_value_handler_inst },
-	{ "compiler.lookup_gridfactory_generators",
-	  &gridfactory_generator_handler_inst },
-	{ "compiler.lookup_pagefactory_generators",
-	  &pagefactory_generator_handler_inst },
-	{ "compiler.lookup_panefactory_generators",
-	  &panefactory_generator_handler_inst },
-	{ "compiler.lookup_bookpagefactory_generators",
-	  &bookpagefactory_generator_handler_inst },
-	{ "compiler.lookup_menubarfactory_generators",
-	  &menubarfactory_generator_handler_inst },
-	{ "compiler.lookup_toolboxfactory_generators",
-	  &toolboxfactory_generator_handler_inst },
 
 	{ "compiler.factory_parseconfig",
 	  &factory_parseconfig_handler_inst },
@@ -1203,6 +1194,17 @@ parse_parameter::parse_parameter(const x::xml::readlock &root,
 				}
 			}
 		}
+	}
+
+	handler_name=parameter_type;
+
+	if (parameter_type.substr(0, 16) == "compiler.lookup_" &&
+	    parameter_type.size() > 34 &&
+	    parameter_type.substr(parameter_type.size()-18) ==
+	    "factory_generators")
+	{
+		parameter_type="lookup_factory";
+		handler_name=handler_name.substr(16, handler_name.size()-34);
 	}
 
 	auto iter=parameter_types.find(parameter_type.c_str());
@@ -1604,7 +1606,10 @@ struct plain_appgenerator_functionObj : public appgenerator_functionObj {
 			f->create_label(s);
 
 			f->valign(x::w::valign::middle);
-			get_values->push_back(p.handler->create_ui(f, parameter_values->at(i)));
+			get_values->push_back(p.handler->create_ui(f, {
+						parameter_values->at(i),
+						p.handler_name,
+					}));
 
 			++i;
 		}

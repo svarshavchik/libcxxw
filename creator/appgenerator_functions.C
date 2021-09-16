@@ -877,3 +877,41 @@ bool appgenerator_functionsObj::generator_value_delete_clicked(ONLY IN_THREAD)
 	generator_contents_values_changed(IN_THREAD, lock);
 	return true;
 }
+
+std::vector<std::string>
+appgenerator_functionsObj::all_generators_for(const char *layout_or_factory,
+					      const std::string &type)
+{
+	std::vector<std::string> ids;
+
+	generator_value_info lock{this};
+
+	if (!lock)
+		return ids;
+
+	appinvoke([&]
+		  (appObj *me)
+	{
+		auto this_generator=me->theme.get()->readlock();
+
+		this_generator->get_root();
+
+		for (const auto &id : lock.all->ids)
+		{
+			auto xpath=me->get_xpath_for(this_generator,
+						     layout_or_factory, id);
+
+			if (xpath->count() == 0)
+				continue;
+			xpath->to_node(1);
+
+			if (this_generator->get_any_attribute("type")
+			    == type)
+			{
+				ids.push_back(id);
+			}
+		}
+	});
+
+	return ids;
+}

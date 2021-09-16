@@ -281,6 +281,17 @@ private:
 	//! as modified.
 
 	void generator_values_modified(ONLY IN_THREAD);
+
+public:
+
+	//! Return all layout_or_factory-s with the given "type".
+
+	//! layout_or_factory is "layout" or "factory".
+
+	std::vector<std::string>
+	all_generators_for(const char *layout_or_factory,
+			   const std::string &type);
+
 };
 
 #endif

@@ -57,6 +57,12 @@ struct parse_parameter {
 	//! The parameter's <type>
 	const setting_handler *handler=nullptr;
 
+	//! Additional parameter value for the handler
+
+	//! There's one handler for all lookup*factory types. This tracks
+	//! which one it is
+	std::string handler_name;
+
 	//! This parameter specifies <xpath>.</xpath>
 	bool same_xpath=false;
 
