@@ -289,6 +289,19 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	void slide_end(ONLY IN_THREAD,
 		       const ref<elementObj::implObj> &which_slider);
 
+	//! Move the slider
+
+	//! The dimension-specific sliding() calls do_sliding() with the
+	//! relevant dimension setting the original_pos and current_pos.
+
+	void do_sliding(ONLY IN_THREAD,
+			grid_map_t::lock &grid_lock,
+			const ref<elementObj::implObj> &which_slider,
+			const pane_slider_original_sizes &original_sizes,
+
+			coord_t current_pos,
+			coord_t original_pos);
+
  protected:
 
 	//! Create the appropriate factory for the new element.

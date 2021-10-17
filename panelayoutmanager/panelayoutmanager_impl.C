@@ -203,6 +203,59 @@ class LIBCXX_HIDDEN pane_peepholed_elementObj : public peepholedObj {
 		return 0;
 	}
 };
+
+#if 0
+class my_peephole_gridlayoutmanagerObj : public peephole_gridlayoutmanagerObj {
+
+public:
+
+	using peephole_gridlayoutmanagerObj::peephole_gridlayoutmanagerObj;
+
+	bool rebuild_elements_and_update_metrics(ONLY IN_THREAD,
+						 grid_map_t::lock &grid_lock,
+						 bool already_sized) override
+	{
+
+		auto flag=peephole_gridlayoutmanagerObj
+			::rebuild_elements_and_update_metrics(IN_THREAD,
+							      grid_lock,
+							      already_sized);
+
+		std::cout << std::endl;
+
+		for (const auto &e : grid_elements(IN_THREAD)->all_elements)
+		{
+			auto c=dynamic_cast<containerObj::implObj *>
+				(&*e.child_element->impl);
+
+			if (c)
+				c->invoke_layoutmanager
+					([&]
+					 (const auto &lm)
+					{
+						std::cout << lm->objname()
+							  << " ("
+							  << &*lm
+							  << ")";
+					});
+			else
+				std::cout << "element";
+
+			std::cout << ": " << e.pos->horiz_pos.start << ", "
+				  << e.pos->vert_pos.start
+				  << ": "
+				  << e.axises->horiz.minimum()
+				  << "x"
+				  << e.axises->vert.minimum()
+				  << std::endl;
+		}
+		return flag;
+	}
+
+};
+#endif
+
+
 #if 0
 {
 #endif
@@ -285,7 +338,15 @@ pane_peephole_container panelayoutmanagerObj::implObj
 				 appearance->bottom_padding,
 			 };
 		 },
+#if 0
+		 []
+		 (const peephole_gridlayoutmanagerObj::init_args &init_args)
+		 {
+			 return ref<my_peephole_gridlayoutmanagerObj>::create(init_args);
+		 },
+#else
 		 create_peephole_gridlayoutmanager,
+#endif
 		 {
 		  pane_info.peephole_container_impl,
 		  std::nullopt,
@@ -682,8 +743,8 @@ void panelayoutmanagerObj::implObj
 					pp->reference_size(IN_THREAD)=
 						restored_sizes(IN_THREAD)[i];
 				}
+				reference_size_is_set_now=true;
 			}
-			reference_size_is_set_now=true;
 			restored_sizes(IN_THREAD).clear();
 		}
 	}
@@ -795,6 +856,68 @@ void panelayoutmanagerObj::implObj
 		nominator = dim_t::truncate(nominator % total_reference_size);
 	}
 	most_recent_pane_size=pane_size;
+}
+
+void panelayoutmanagerObj::implObj
+::do_sliding(ONLY IN_THREAD,
+	     grid_map_t::lock &grid_lock,
+	     const ref<elementObj::implObj> &which_slider,
+	     const pane_slider_original_sizes &original_sizes,
+
+	     coord_t current_pos,
+	     coord_t original_pos)
+{
+	// Figure out how to resize the panes.
+
+	auto ret=find_pane_peephole_containers(grid_lock, which_slider);
+
+	if (!ret)
+		return;
+
+	// Here are their original sizes.
+
+	dim_t first_pane=original_sizes.first_pane;
+	dim_t second_pane=original_sizes.second_pane;
+
+	// Adjust their original size by how far the pointer traveled
+	// from its grab point.
+
+	if (current_pos < original_pos)
+	{
+		dim_t move_start=dim_t::truncate(original_pos-current_pos);
+
+		if (move_start > first_pane)
+			move_start=first_pane;
+
+		first_pane=first_pane - move_start;
+
+		second_pane=dim_t::truncate(second_pane+move_start);
+	}
+	else
+	{
+		dim_t move_end=dim_t::truncate(current_pos-original_pos);
+
+		if (move_end > second_pane)
+			move_end=second_pane;
+
+		second_pane=second_pane - move_end;
+
+		first_pane=dim_t::truncate(first_pane+move_end);
+	}
+
+	// Now, update the panes' metrics, and the grid layout manager will,
+	// eventually, do the rest.
+
+	auto &[before, after]=*ret;
+
+	if (element_size(IN_THREAD, before->get_peephole()->impl) +
+	    element_size(IN_THREAD, after->get_peephole()->impl) !=
+	    first_pane+second_pane)
+		return;
+
+	reference_size_set(grid_lock)=false;
+	resize_peephole_to(IN_THREAD, before, first_pane);
+	resize_peephole_to(IN_THREAD, after, second_pane);
 }
 
 void panelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
@@ -962,51 +1085,8 @@ void panelayoutmanagerObj::implObj::orientation<vertical>
 	  coord_t current_x,
 	  coord_t current_y)
 {
-	// Figure out how to resize the panes.
-
-	auto ret=find_pane_peephole_containers(grid_lock, which_slider);
-
-	if (!ret)
-		return;
-
-	// Here are their original sizes.
-
-	dim_t first_pane=original_sizes.first_pane;
-	dim_t second_pane=original_sizes.second_pane;
-
-	// Adjust their original size by how far the pointer traveled
-	// from its grab point.
-
-	if (current_y < original_y)
-	{
-		dim_t up=dim_t::truncate(original_y-current_y);
-
-		if (up > first_pane)
-			up=first_pane;
-
-		first_pane=first_pane - up;
-
-		second_pane=dim_t::truncate(second_pane+up);
-	}
-	else
-	{
-		dim_t down=dim_t::truncate(current_y-original_y);
-
-		if (down > second_pane)
-			down=second_pane;
-
-		second_pane=second_pane - down;
-
-		first_pane=dim_t::truncate(first_pane+down);
-	}
-
-	// Now, update the panes' metrics, and the grid layout manager will,
-	// eventually, do the rest.
-
-	auto &[before, after]=*ret;
-
-	resize_peephole_to(IN_THREAD, before, first_pane);
-	resize_peephole_to(IN_THREAD, after, second_pane);
+	do_sliding(IN_THREAD, grid_lock, which_slider, original_sizes,
+		   current_y, original_y);
 }
 
 template<>
@@ -1180,51 +1260,8 @@ void panelayoutmanagerObj::implObj::orientation<horizontal>
 	  coord_t current_x,
 	  coord_t current_y)
 {
-	// Figure out how to resize the panes.
-
-	auto ret=find_pane_peephole_containers(grid_lock, which_slider);
-
-	if (!ret)
-		return;
-
-	// Here are their original sizes.
-
-	dim_t first_pane=original_sizes.first_pane;
-	dim_t second_pane=original_sizes.second_pane;
-
-	// Adjust their original size by how far the pointer traveled
-	// from its grab point.
-
-	if (current_x < original_x)
-	{
-		dim_t left=dim_t::truncate(original_x-current_x);
-
-		if (left > first_pane)
-			left=first_pane;
-
-		first_pane=first_pane - left;
-
-		second_pane=dim_t::truncate(second_pane+left);
-	}
-	else
-	{
-		dim_t right=dim_t::truncate(current_x-original_x);
-
-		if (right > second_pane)
-			right=second_pane;
-
-		second_pane=second_pane - right;
-
-		first_pane=dim_t::truncate(first_pane+right);
-	}
-
-	// Now, update the panes' metrics, and the grid layout manager will,
-	// eventually, do the rest.
-
-	auto &[before, after]=*ret;
-
-	resize_peephole_to(IN_THREAD, before, first_pane);
-	resize_peephole_to(IN_THREAD, after, second_pane);
+	do_sliding(IN_THREAD, grid_lock, which_slider, original_sizes,
+		   current_x, original_x);
 }
 
 template<>
