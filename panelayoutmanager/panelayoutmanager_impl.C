@@ -891,9 +891,9 @@ std::optional<size_t> panelayoutmanagerObj::implObj::orientation<vertical>
 
 template<>
 void panelayoutmanagerObj::implObj::orientation<vertical>
-::remove_elements(grid_map_t::lock &lock, size_t n, size_t c)
+::remove_elements(grid_map_t::lock &grid_lock, size_t n, size_t c)
 {
-	remove_rows(n, c);
+	remove_rows(grid_lock, n, c);
 }
 
 template<>
@@ -1108,9 +1108,9 @@ std::optional<size_t> panelayoutmanagerObj::implObj::orientation<horizontal>
 
 template<>
 void panelayoutmanagerObj::implObj::orientation<horizontal>
-::remove_elements(grid_map_t::lock &lock, size_t n, size_t c)
+::remove_elements(grid_map_t::lock &grid_lock, size_t n, size_t c)
 {
-	remove(0, n, c);
+	remove(grid_lock, 0, n, c);
 }
 
 template<>

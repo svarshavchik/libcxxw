@@ -88,17 +88,20 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Remove one or more elements from a row.
 
-	void remove(size_t row,
-		    size_t col, size_t n_elements=1);
+	static void remove(grid_map_t::lock &grid_lock,
+			   size_t row,
+			   size_t col, size_t n_elements=1);
 
 	//! Remove the entire row.
-	void remove_row(size_t row);
+	static void remove_row(grid_map_t::lock &grid_lock,
+			       size_t row);
 
 	//! Remove the entire row.
-	void remove_rows(size_t row, size_t n);
+	static void remove_rows(grid_map_t::lock &grid_lock,
+				size_t row, size_t n);
 
 	//! Remove everything.
-	void remove_all_rows();
+	static void remove_all_rows(grid_map_t::lock &grid_lock);
 
 	//! Set default row alignment.
 	static void row_alignment(grid_map_t::lock &grid_lock,

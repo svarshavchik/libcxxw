@@ -119,25 +119,25 @@ void gridlayoutmanagerObj::resort_rows(const std::vector<size_t> &v)
 void gridlayoutmanagerObj::remove()
 {
 	modified=true;
-	impl->remove_all_rows();
+	implObj::remove_all_rows(grid_lock);
 }
 
 void gridlayoutmanagerObj::remove(size_t row, size_t col)
 {
 	modified=true;
-	impl->remove(row, col);
+	implObj::remove(grid_lock, row, col);
 }
 
 void gridlayoutmanagerObj::remove_row(size_t row)
 {
 	modified=true;
-	impl->remove_row(row);
+	implObj::remove_row(grid_lock, row);
 }
 
 void gridlayoutmanagerObj::remove_rows(size_t row, size_t n)
 {
 	modified=true;
-	impl->remove_rows(row, n);
+	implObj::remove_rows(grid_lock, row, n);
 }
 
 size_t gridlayoutmanagerObj::rows() const

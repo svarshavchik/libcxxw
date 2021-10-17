@@ -213,7 +213,7 @@ void menubarlayoutmanagerObj::remove_menu(size_t pos)
 					   pos));
 
 	modified=true;
-	impl->remove(0, pos);
+	impl->remove(grid_lock, 0, pos);
 
 	--impl->info(grid_lock).divider_pos;
 }
@@ -225,7 +225,8 @@ void menubarlayoutmanagerObj::remove_right_menu(size_t pos)
 					   pos));
 
 	modified=true;
-	impl->remove(0,
+	impl->remove(grid_lock,
+		     0,
 		     impl->info(grid_lock)
 		     .divider_pos+1+pos);
 }

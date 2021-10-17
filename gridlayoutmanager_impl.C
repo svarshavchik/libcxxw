@@ -284,10 +284,8 @@ gridfactory gridlayoutmanagerObj::implObj
 	return create_gridfactory(public_object, row, 0);
 }
 
-void gridlayoutmanagerObj::implObj::remove_all_rows()
+void gridlayoutmanagerObj::implObj::remove_all_rows(grid_map_t::lock &grid_lock)
 {
-	grid_map_t::lock grid_lock{grid_map};
-
 	(*grid_lock)->elements.clear();
 	(*grid_lock)->elements_have_been_modified();
 	(*grid_lock)->column_defaults.clear();
@@ -295,12 +293,11 @@ void gridlayoutmanagerObj::implObj::remove_all_rows()
 	(*grid_lock)->defaults_changed();
 }
 
-void gridlayoutmanagerObj::implObj::remove(size_t row,
+void gridlayoutmanagerObj::implObj::remove(grid_map_t::lock &grid_lock,
+					   size_t row,
 					   size_t col,
 					   size_t n)
 {
-	grid_map_t::lock grid_lock{grid_map};
-
 	if (row < (*grid_lock)->elements.size())
 	{
 		auto &r=(*grid_lock)->elements.at(row);
@@ -320,15 +317,15 @@ void gridlayoutmanagerObj::implObj::remove(size_t row,
 	}
 }
 
-void gridlayoutmanagerObj::implObj::remove_row(size_t row)
+void gridlayoutmanagerObj::implObj::remove_row(grid_map_t::lock &grid_lock,
+					       size_t row)
 {
-	remove_rows(row, 1);
+	remove_rows(grid_lock, row, 1);
 }
 
-void gridlayoutmanagerObj::implObj::remove_rows(size_t row, size_t n)
+void gridlayoutmanagerObj::implObj::remove_rows(grid_map_t::lock &grid_lock,
+						size_t row, size_t n)
 {
-	grid_map_t::lock grid_lock{grid_map};
-
 	if (row < (*grid_lock)->elements.size())
 	{
 		size_t max_n=(*grid_lock)->elements.size()-row;
