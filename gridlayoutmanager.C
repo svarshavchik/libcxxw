@@ -186,14 +186,14 @@ void gridlayoutmanagerObj::row_top_padding(size_t row,
 					   const dim_arg &padding)
 {
 	modified=true;
-	impl->row_top_padding_set(row, padding);
+	implObj::row_top_padding_set(grid_lock, row, padding);
 }
 
 void gridlayoutmanagerObj::row_bottom_padding(size_t row,
 					      const dim_arg &padding)
 {
 	modified=true;
-	impl->row_bottom_padding_set(row, padding);
+	implObj::row_bottom_padding_set(grid_lock, row, padding);
 }
 
 void gridlayoutmanagerObj::default_col_border(size_t col,
@@ -219,14 +219,14 @@ void gridlayoutmanagerObj::col_left_padding(size_t col,
 					    const dim_arg &padding)
 {
 	modified=true;
-	impl->col_left_padding_set(col, padding);
+	implObj::col_left_padding_set(grid_lock, col, padding);
 }
 
 void gridlayoutmanagerObj::col_right_padding(size_t col,
 					     const dim_arg &padding)
 {
 	modified=true;
-	impl->col_right_padding_set(col, padding);
+	implObj::col_right_padding_set(grid_lock, col, padding);
 }
 
 void gridlayoutmanagerObj::remove_row_defaults(size_t row)

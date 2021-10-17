@@ -109,20 +109,24 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 				  size_t col, halign alignment);
 
 	//! Set default padding.
-	void row_top_padding_set(size_t row,
-			     const dim_arg &padding);
+	static void row_top_padding_set(grid_map_t::lock &grid_lock,
+					size_t row,
+					const dim_arg &padding);
 
 	//! Set default padding.
-	void row_bottom_padding_set(size_t row,
-				const dim_arg &padding);
+	static void row_bottom_padding_set(grid_map_t::lock &grid_lock,
+					   size_t row,
+					   const dim_arg &padding);
 
 	//! Set default padding.
-	void col_left_padding_set(size_t col,
-			      const dim_arg &padding);
+	static void col_left_padding_set(grid_map_t::lock &grid_lock,
+					 size_t col,
+					 const dim_arg &padding);
 
 	//! Set default padding.
-	void col_right_padding_set(size_t col,
-			       const dim_arg &padding);
+	static void col_right_padding_set(grid_map_t::lock &grid_lock,
+					  size_t col,
+					  const dim_arg &padding);
 
 	//! Remove all existing elements in the row, then call create_gridfactory()
 	static gridfactory replace_row(gridlayoutmanagerObj *public_object,
