@@ -225,7 +225,7 @@ class LIBCXX_HIDDEN image_button_containerObj
 			([&]
 			 (const ref<gridlayoutmanagerObj::implObj> &glm)
 			 {
-				 auto e=glm->get(0, 1);
+				 auto e=glm->lock_and_get(0, 1);
 
 				 if (!e)
 					 return;

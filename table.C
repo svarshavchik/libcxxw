@@ -787,7 +787,7 @@ public:
 			([&]
 			 (const ref<gridlayoutmanagerObj::implObj> &grid_impl)
 			 {
-				 grid_impl->get(0, 0)->impl
+				 grid_impl->lock_and_get(0, 0)->impl
 					 ->request_visibility_recursive
 					 (IN_THREAD, flag);
 			 });

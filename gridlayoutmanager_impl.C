@@ -340,28 +340,24 @@ void gridlayoutmanagerObj::implObj::remove_rows(grid_map_t::lock &grid_lock,
 	}
 }
 
-elementptr gridlayoutmanagerObj::implObj::get(size_t row, size_t col)
+elementptr gridlayoutmanagerObj::implObj::lock_and_get(size_t row, size_t col)
 {
-	grid_map_t::lock lock{grid_map};
+	grid_map_t::lock grid_lock{grid_map};
 
-	return (*lock)->get(row, col);
+	return get(grid_lock, row, col);
+}
+
+elementptr gridlayoutmanagerObj::implObj::get(const grid_map_t::lock &grid_lock,
+					      size_t row, size_t col)
+{
+	return (*grid_lock)->get(row, col);
 }
 
 std::optional<std::tuple<size_t, size_t>>
-gridlayoutmanagerObj::implObj::lookup_row_col(const ref<elementObj::implObj> &e)
-{
-	grid_map_t::lock lock{grid_map};
-
-#if 0
-	return lookup_row_col(lock, e);
-}
-
-std::optional<std::tuple<size_t, size_t>>
-gridlayoutmanagerObj::implObj::lookup_row_col(grid_map_t::lock &lock,
+gridlayoutmanagerObj::implObj::lookup_row_col(const grid_map_t::lock &grid_lock,
 					      const ref<elementObj::implObj> &e)
 {
-#endif
-	const auto &lookup_table=(*lock)->get_lookup_table();
+	const auto &lookup_table=(*grid_lock)->get_lookup_table();
 
 	auto iter=lookup_table.find(e);
 

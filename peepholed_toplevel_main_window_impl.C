@@ -80,7 +80,7 @@ void peepholed_toplevel_main_windowObj::implObj
 		([&]
 		 (const ref<gridlayoutmanagerObj::implObj> &glm)
 		 {
-			 containerptr e=glm->get(0, 0);
+			 containerptr e=glm->lock_and_get(0, 0);
 
 			 if (!e)
 				 return;

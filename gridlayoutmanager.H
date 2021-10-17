@@ -180,15 +180,20 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	// create_public_object() simply calls this.
 	gridlayoutmanager create_gridlayoutmanager();
 
+	//! Acquire a grid map lock and call get().
+	elementptr lock_and_get(size_t row, size_t col);
+
 	//! Get the display element at the given location.
-	elementptr get(size_t row, size_t col);
+	static elementptr get(const grid_map_t::lock &grid_lock,
+			      size_t row, size_t col);
 
 	//! Look up which row and column this element is in.
 
 	//! Returns [row, col] if the element was found.
 
-	std::optional<std::tuple<size_t, size_t>>
-		lookup_row_col(const ref<elementObj::implObj> &e);
+	static std::optional<std::tuple<size_t, size_t>>
+		lookup_row_col(const grid_map_t::lock &grid_lock,
+			       const ref<elementObj::implObj> &e);
 
 #if 0
 	//! Look up which row and column this element is in.

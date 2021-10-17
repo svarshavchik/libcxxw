@@ -49,7 +49,7 @@ element_impl custom_combobox_containerObj::implObj::hover_element_impl()
 		([&]
 		 (const ref<gridlayoutmanagerObj::implObj> &lm)
 		 {
-			 auto e=lm->get(0, 0);
+			 auto e=lm->lock_and_get(0, 0);
 
 			 if (e)
 				 hover_impl=e->impl;

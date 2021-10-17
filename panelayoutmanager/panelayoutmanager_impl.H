@@ -204,7 +204,8 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	//! Find the element in the pane container.
 	virtual std::optional<size_t>
-		lookup_element(const ref<elementObj::implObj> &e)=0;
+		lookup_element(const grid_map_t::lock &grid_lock,
+			       const ref<elementObj::implObj> &e)=0;
 
 	//! Remove one element.
 
@@ -479,7 +480,8 @@ class panelayoutmanagerObj::implObj::orientation
 		initial_peephole_metrics(const dim_arg &size) override;
 
 	//! Find the element in the pane container.
-	std::optional<size_t> lookup_element(const ref<elementObj::implObj> &e)
+	std::optional<size_t> lookup_element(const grid_map_t::lock &grid_lock,
+					     const ref<elementObj::implObj> &e)
 		override;
 
 	//! Remove the element.

@@ -553,7 +553,7 @@ void date_input_field_calendarObj::update_month(mpobj<ymd>::lock &lock)
 				  (const ref<gridlayoutmanagerObj::implObj>
 				   &row0_lm)
 				  {
-					  label l=row0_lm->get(0, 2);
+					  label l=row0_lm->lock_and_get(0, 2);
 
 					  l->update(mon_yyyy);
 				  });

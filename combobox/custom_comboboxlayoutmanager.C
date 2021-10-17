@@ -58,7 +58,7 @@ element custom_comboboxlayoutmanagerObj::current_selection()
 	//
 	// The same thing is done in editable_comboboxlayoutmanagerObj's
 	// constructor, which needs a peek at its input field.
-	return impl->get(0, 0);
+	return impl->lock_and_get(0, 0);
 }
 
 const_element custom_comboboxlayoutmanagerObj::current_selection() const
@@ -66,7 +66,7 @@ const_element custom_comboboxlayoutmanagerObj::current_selection() const
 	// The current selection element is always position (0, 0)
 	// in the internally-managed grid.
 
-	return impl->get(0, 0);
+	return impl->lock_and_get(0, 0);
 }
 
 /////////////////////////////////////////////////////////////////////////////

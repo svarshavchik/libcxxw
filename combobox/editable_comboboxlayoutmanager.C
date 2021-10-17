@@ -23,7 +23,7 @@ editable_comboboxlayoutmanagerObj
 	: input_lock
 	{
 	 // See current_selection()
-	 input_field{impl->get(0, 0)}
+		input_field{impl->lock_and_get(0, 0)}
 	},
 	  standard_comboboxlayoutmanagerObj{impl, list_layout_impl},
 	  impl{impl}

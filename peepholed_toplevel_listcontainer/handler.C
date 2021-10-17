@@ -75,7 +75,7 @@ peepholed_toplevel_listcontainer_handlerObj
 			 // The top level element is a grid with a
 			 // peephole being element (0, 0) in the grid.
 
-			 auto i=peephole_lm->get(0, 0)->impl;
+			 auto i=peephole_lm->lock_and_get(0, 0)->impl;
 
 			 auto &c=adjusted_new_affinity ==
 				 popup_position_affinity::above

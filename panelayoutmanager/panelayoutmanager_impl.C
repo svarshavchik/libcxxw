@@ -522,7 +522,7 @@ panelayoutmanagerObj::implObj::find_pane_peephole_containers(grid_map_t::lock &g
 	{
 		// Look up the slider's position.
 
-		auto res=lookup_element(s);
+		auto res=lookup_element(grid_lock, s);
 
 		if (res)
 		{
@@ -877,11 +877,12 @@ element panelayoutmanagerObj::implObj::orientation<vertical>
 
 template<>
 std::optional<size_t> panelayoutmanagerObj::implObj::orientation<vertical>
-::lookup_element(const ref<elementObj::implObj> &e)
+::lookup_element(const grid_map_t::lock &grid_lock,
+		 const ref<elementObj::implObj> &e)
 {
 	std::optional<size_t> res;
 
-	auto ret=lookup_row_col(e);
+	auto ret=lookup_row_col(grid_lock, e);
 
 	if (ret)
 		res=std::get<0>(*ret);
@@ -1094,11 +1095,12 @@ element panelayoutmanagerObj::implObj::orientation<horizontal>
 
 template<>
 std::optional<size_t> panelayoutmanagerObj::implObj::orientation<horizontal>
-::lookup_element(const ref<elementObj::implObj> &e)
+::lookup_element(const grid_map_t::lock &grid_lock,
+		 const ref<elementObj::implObj> &e)
 {
 	std::optional<size_t> res;
 
-	auto ret=lookup_row_col(e);
+	auto ret=lookup_row_col(grid_lock, e);
 
 	if (ret)
 		res=std::get<1>(*ret);

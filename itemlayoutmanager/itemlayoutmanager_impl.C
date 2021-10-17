@@ -325,7 +325,7 @@ element itemlayoutmanagerObj::implObj::get_item(size_t i)
 				  (const ref<gridlayoutmanagerObj
 				   ::implObj> &i)
 				  {
-					  e=i->get(0, 1);
+					  e=i->lock_and_get(0, 1);
 				  });
 
 		 });

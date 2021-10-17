@@ -26,7 +26,7 @@ factory tablelayoutmanagerObj::replace_header(size_t column)
 element tablelayoutmanagerObj::header(size_t column) const
 {
 	notmodified();
-	return impl->header_layoutmanager_impl->get(0, column);
+	return impl->header_layoutmanager_impl->lock_and_get(0, column);
 }
 
 LIBCXXW_NAMESPACE_END
