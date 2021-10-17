@@ -34,6 +34,8 @@
 #include <x/w/color_picker_configfwd.H>
 #include <x/w/font_pickerfwd.H>
 #include <x/w/font_picker_configfwd.H>
+#include <x/w/uielementsfwd.H>
+#include <x/w/uigeneratorsfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 #include <x/optional_args.H>
@@ -350,6 +352,13 @@ public:
 
 	//! Create a font picker
 	font_picker create_font_picker(const font_picker_config &);
+
+	//! Implement generate()
+
+	//! \see uigenerators
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements);
 };
 
 LIBCXXW_NAMESPACE_END

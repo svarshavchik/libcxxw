@@ -14,6 +14,8 @@
 #include <x/w/text_paramfwd.H>
 #include <x/w/alignment.H>
 #include <x/w/concepts.H>
+#include <x/w/uielementsfwd.H>
+#include <x/w/uigeneratorsfwd.H>
 #include <x/functional.H>
 #include <x/obj.H>
 
@@ -133,6 +135,14 @@ public:
 	//! Set next page's alignment
 
 	virtual bookpagefactoryObj &valign(LIBCXXW_NAMESPACE::valign)=0;
+
+	//! Implement generate()
+
+	//! \see uigenerators
+
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements);
 };
 
 LIBCXXW_NAMESPACE_END

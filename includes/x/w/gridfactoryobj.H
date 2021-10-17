@@ -13,6 +13,8 @@
 #include <x/w/border_arg.H>
 #include <x/w/alignment.H>
 #include <x/w/dim_arg.H>
+#include <x/w/uielementsfwd.H>
+#include <x/w/uigeneratorsfwd.H>
 #include <x/mpobj.H>
 #include <string_view>
 
@@ -241,6 +243,14 @@ class gridfactoryObj : public factoryObj {
 	}
 
 	void remove_when_hidden_set(bool);
+
+	//! Implement generate()
+
+	//! \see uigenerators
+
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements);
 
 private:
 	//! Created a new widget for the grid.

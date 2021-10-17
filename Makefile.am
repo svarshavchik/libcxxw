@@ -1486,6 +1486,7 @@ uicompiler_panelayout.lo			\
 uicompiler_standard_comboboxlayout.lo		\
 uicompiler_toolboxfactory.lo			\
 uicompiler_toolboxlayout.lo			\
+uielements.lo				        \
 	: uicompiler.stamp.inc.H
 
 GET_LAYOUTMANAGERS_BUILT=			\

@@ -18,6 +18,13 @@
 #include "x/w/pagelayoutmanager.H"
 #include "x/w/borderlayoutmanager.H"
 #include "x/w/toolboxlayoutmanager.H"
+#include "x/w/tablelayoutmanager.H"
+#include "x/w/gridfactory.H"
+#include "x/w/pagefactory.H"
+#include "x/w/bookpagefactory.H"
+#include "x/w/panefactory.H"
+#include "x/w/toolboxfactory.H"
+#include "x/w/menubarfactory.H"
 #include "x/w/impl/container.H"
 #include "x/w/synchronized_axis.H"
 #include "x/w/copy_cut_paste_menu_items.H"
@@ -179,119 +186,7 @@ struct generate_sentry {
 #endif
 }
 
-void gridlayoutmanagerObj::generate(const std::string_view &name,
-				    const const_uigenerators &generators,
-				    uielements &elements)
-{
-	generate_sentry sentry{elements,
-			       this,
-			       generators->gridlayoutmanager_generators,
-			       name};
-}
-
-void booklayoutmanagerObj::generate(const std::string_view &name,
-				    const const_uigenerators &generators,
-				    uielements &elements)
-{
-	generate_sentry sentry{elements,
-			       this,
-			       generators->booklayoutmanager_generators,
-			       name};
-}
-
-void listlayoutmanagerObj::generate(const std::string_view &name,
-				    const const_uigenerators &generators,
-				    uielements &elements)
-{
-	generate_sentry sentry{elements,
-			       this,
-			       generators->listlayoutmanager_generators,
-			       name};
-}
-
-void panelayoutmanagerObj::generate(const std::string_view &name,
-				    const const_uigenerators &generators,
-				    uielements &elements)
-{
-	generate_sentry sentry{elements,
-			       this,
-			       generators->panelayoutmanager_generators,
-			       name};
-}
-
-void itemlayoutmanagerObj::generate(const std::string_view &name,
-				    const const_uigenerators &generators,
-				    uielements &elements)
-{
-	generate_sentry sentry{elements,
-			       this,
-			       generators->itemlayoutmanager_generators,
-			       name};
-}
-
-void pagelayoutmanagerObj::generate(const std::string_view &name,
-				    const const_uigenerators &generators,
-				    uielements &elements)
-{
-	generate_sentry sentry{elements,
-			       this,
-			       generators->pagelayoutmanager_generators,
-			       name};
-}
-
-void toolboxlayoutmanagerObj::generate(const std::string_view &name,
-				       const const_uigenerators &generators,
-				       uielements &elements)
-{
-	generate_sentry sentry{elements,
-			       this,
-			       generators->toolboxlayoutmanager_generators,
-			       name};
-}
-
-void standard_comboboxlayoutmanagerObj
-::generate(const std::string_view &name,
-	   const const_uigenerators &generators,
-	   uielements &elements)
-{
-	generate_sentry sentry
-		{elements,
-		 this,
-		 generators->standard_comboboxlayoutmanager_generators,
-		 name};
-}
-
-void editable_comboboxlayoutmanagerObj
-::generate(const std::string_view &name,
-	   const const_uigenerators &generators,
-	   uielements &elements)
-{
-	generate_sentry sentry
-		{elements,
-		 this,
-		 generators->editable_comboboxlayoutmanager_generators,
-		 name};
-}
-
-void menubarlayoutmanagerObj::generate(const std::string_view &name,
-				       const const_uigenerators &generators,
-				       uielements &elements)
-{
-	generate_sentry sentry{elements,
-			       this,
-			       generators->menubarlayoutmanager_generators,
-			       name};
-}
-
-void borderlayoutmanagerObj::generate(const std::string_view &name,
-				    const const_uigenerators &generators,
-				    uielements &elements)
-{
-	generate_sentry sentry{elements,
-			       this,
-			       generators->borderlayoutmanager_generators,
-			       name};
-}
+#include "uielements.inc.C"
 
 void uielements::generate_factory(const named_element_factory &name_and_factory)
 {

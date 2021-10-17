@@ -19,6 +19,7 @@
 #include <x/w/shortcutfwd.H>
 #include <x/w/containerfwd.H>
 #include <x/w/uielementsfwd.H>
+#include <x/w/uigeneratorsfwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/refptr_hash.H>
 #include <x/functionalrefptrfwd.H>

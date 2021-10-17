@@ -601,8 +601,56 @@ create_new</xsl:text><xsl:value-of select="name" /><xsl:text>manager_vector(uico
 	</xsl:if>
       </xsl:for-each>
     </exsl:document>
+    <exsl:document
+	href="uielements.inc.C"
+	method="text">
+      <xsl:for-each select="parser[@type='layoutmanager']">
+	<xsl:if test="category">
+	  <xsl:text>void </xsl:text>
+	  <xsl:value-of select="category" />
+	  <xsl:text>layoutmanagerObj::generate(const std::string_view &amp;name,
+				    const const_uigenerators &amp;generators,
+				    uielements &amp;elements)
+{
+	generate_sentry sentry{elements,
+			       this,
+			       generators-></xsl:text>
+			       <xsl:value-of select="category" />
+	  <xsl:text>layoutmanager_generators,
+			       name};
+}&#10;</xsl:text>
+	</xsl:if>
+      </xsl:for-each>
+
+      <xsl:for-each select="parser[@type='factory']">
+	<xsl:if test="category">
+	  <xsl:text>void </xsl:text>
+	  <xsl:call-template name="factory-category" />
+	  <xsl:text>factoryObj::generate(const std::string_view &amp;name,
+			      const const_uigenerators &amp;generators,
+			      uielements &amp;elements)
+{
+	generate_sentry sentry{elements,
+			       this,
+			       generators-></xsl:text>
+			       <xsl:call-template name="factory-category" />
+	  <xsl:text>factory_generators,
+			       name};
+}&#10;</xsl:text>
+	</xsl:if>
+      </xsl:for-each>
+    </exsl:document>
   </xsl:template>
 
+  <xsl:template name='factory-category'>
+    <xsl:choose>
+      <xsl:when test="category='factory'">
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:value-of select="category" />
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
   <xsl:template match="*|/">
     <xsl:apply-templates />
   </xsl:template>

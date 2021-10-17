@@ -13,6 +13,8 @@
 #include <x/w/menufwd.H>
 #include <x/w/shortcutfwd.H>
 #include <x/w/concepts.H>
+#include <x/w/uielementsfwd.H>
+#include <x/w/uigeneratorsfwd.H>
 #include <x/functional.H>
 #include <x/optional_argsfwd.H>
 
@@ -100,6 +102,13 @@ public:
 				 const function<menu_content_creator_t> &,
 				 const shortcut &,
 				 const const_popup_list_appearance &)=0;
+	//! Implement generate()
+
+	//! \see uigenerators
+
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements);
 };
 
 LIBCXXW_NAMESPACE_END

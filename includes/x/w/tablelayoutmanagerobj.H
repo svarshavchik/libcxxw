@@ -9,6 +9,8 @@
 #include <x/w/screen_positionsfwd.H>
 #include <x/w/listlayoutmanagerobj.H>
 #include <x/w/factoryfwd.H>
+#include <x/w/uigeneratorsfwd.H>
+#include <x/w/uielementsfwd.H>
 #include <x/w/elementfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -41,6 +43,14 @@ public:
 	//! Return the widget representing the column header;
 
 	element header(size_t column) const;
+
+	//! Implement generate()
+
+	//! \see uigenerators
+
+	void generate(const std::string_view &name,
+		      const const_uigenerators &generators,
+		      uielements &elements) override;
 };
 
 LIBCXXW_NAMESPACE_END
