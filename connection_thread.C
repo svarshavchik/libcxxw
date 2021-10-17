@@ -50,6 +50,8 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	containers_2_recalculate_map containers_2_recalculate;
 
 	element_position_updated_t element_position_updated;
+	element_set_t element_position_finalized;
+
 	scheduled_callbacks_t scheduled_callbacks=
 		scheduled_callbacks_t::create();
 	incremental_selection_update_info pending_incremental_updates;
@@ -63,6 +65,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	elements_to_redraw_thread_only= &elements_to_redraw;
 	containers_2_recalculate_thread_only= &containers_2_recalculate;
 	element_position_updated_thread_only= &element_position_updated;
+	element_position_finalized_thread_only= &element_position_finalized;
 	scheduled_callbacks_thread_only= &scheduled_callbacks;
 	pending_incremental_updates_thread_only= &pending_incremental_updates;
 	idle_callbacks_thread_only= &idle_callbacks;

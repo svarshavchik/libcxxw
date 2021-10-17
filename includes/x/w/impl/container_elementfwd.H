@@ -55,6 +55,8 @@ public:
 
 	void draw_after_visibility_updated(ONLY IN_THREAD, bool flag) override;
 
+	void process_finalized_position(ONLY IN_THREAD) override;
+
 	void do_for_each_child(ONLY IN_THREAD,
 			       const function<void (const element &e)> &)
 		override;

@@ -172,4 +172,8 @@ void layoutmanagerObj::implObj::save(ONLY IN_THREAD,
 {
 }
 
+void layoutmanagerObj::implObj::process_finalized_position(ONLY IN_THREAD)
+{
+}
+
 LIBCXXW_NAMESPACE_END

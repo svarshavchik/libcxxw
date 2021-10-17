@@ -788,7 +788,6 @@ class elementObj::implObj : public element_drawObj,
 	//! inherited_visibility_updated() gets invoked.
 	virtual void visibility_updated(ONLY IN_THREAD, bool flag);
 
-
 	//! This element's inherited_visibility flag has changed.
 
 	//! This default implementation calls do_inherited_visibility_updated().
@@ -849,6 +848,19 @@ class elementObj::implObj : public element_drawObj,
 	virtual void draw_after_visibility_updated(ONLY IN_THREAD,
 						   bool flag);
 
+	//! Schedule ourselves for finalized position processing
+
+	//! Schedules process_finalized_position() to be invoked after
+	//! all updated widger positions have been set.
+
+	void schedule_finalized_position(ONLY IN_THREAD);
+
+	//! Invoked by the connection thread.
+
+	//! Invoked after there are no more position or visibility updates,
+	//! and no resize is pending for the top level window.
+
+	virtual void process_finalized_position(ONLY IN_THREAD);
 
 	//! Return the cached_draw_info for this widget.
 

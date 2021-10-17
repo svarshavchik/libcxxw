@@ -44,16 +44,15 @@ bool connection_threadObj::is_element_in_set(element_set_t &s,
 
 bool connection_threadObj
 ::check_resize_pending(ONLY IN_THREAD,
-		       generic_windowObj::handlerObj &wh, int &poll_for)
+		       generic_windowObj::handlerObj &wh, int &poll_for,
+		       callback_time_point_t now)
 {
 	return std::visit(visitor{
 			[](const not_resizing &)
 			{
 				return false;
-			}, [&](const tick_clock_t::time_point &resizing_timeout)
+			}, [&](const callback_time_point_t &resizing_timeout)
 			{
-				auto now=tick_clock_t::now();
-
 				if (now >= resizing_timeout)
 				{
 					LOG_ERROR("Window resizing timed out");
@@ -89,11 +88,13 @@ namespace {
 		ONLY IN_THREAD;
 		generic_windowObj::handlerObj &wh;
 		int &poll_for;
+		connection_threadObj::callback_time_point_t now;
 
 		operator bool() const
 		{
 			return connection_threadObj
-				::check_resize_pending(IN_THREAD, wh, poll_for);
+				::check_resize_pending(IN_THREAD, wh, poll_for,
+						       now);
 		}
 	};
 }
@@ -107,6 +108,8 @@ bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
 						      int &poll_for)
 {
 	CONNECTION_TRAFFIC_LOG("process visibility", *this);
+
+	auto now=tick_clock_t::now();
 
 	bool flag=false;
 
@@ -142,8 +145,10 @@ bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
 			    && is_resize_pending
 			    .try_emplace(&wh,
 					 get_resize_pending{
-						 IN_THREAD, wh,
-						 poll_for
+						 IN_THREAD,
+						 wh,
+						 poll_for,
+						 now
 					 }).first->second)
 				continue;
 
@@ -422,9 +427,10 @@ struct reposition_bucket {
 
 	reposition_bucket(ONLY IN_THREAD,
 			  const ref<generic_windowObj::handlerObj> &wh,
-			  int &poll_for)
+			  int &poll_for,
+			  connection_threadObj::callback_time_point_t now)
 		: resize_pending_flag{connection_threadObj
-		::check_resize_pending(IN_THREAD, *wh, poll_for)}
+		::check_resize_pending(IN_THREAD, *wh, poll_for, now)}
 	{
 	}
 };
@@ -440,6 +446,8 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 	CONNECTION_TRAFFIC_LOG("process position", *this);
 
 	bool flag=false;
+
+	auto now=tick_clock_t::now();
 
 	std::unordered_set<element_impl> moved;
 	std::unordered_set<element_impl> to_redraw;
@@ -481,7 +489,8 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 			auto wh=ref{&e->get_window_handler()};
 
 			auto &bucket=window_buckets.try_emplace
-				(wh, IN_THREAD, wh, poll_for).first->second;
+				(wh, IN_THREAD, wh, poll_for, now).first
+				->second;
 
 			if (bucket.resize_pending_flag)
 				continue;
@@ -625,6 +634,53 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 	return flag;
 }
 
+bool connection_threadObj::process_element_position_finalized(ONLY IN_THREAD,
+							      int &poll_for)
+{
+	CONNECTION_TRAFFIC_LOG("process position", *this);
+
+	auto now=tick_clock_t::now();
+
+	auto b=element_position_finalized(IN_THREAD)->begin();
+	auto e=element_position_finalized(IN_THREAD)->end();
+
+	while (b != e)
+	{
+		--e;
+
+		for (auto bucketb=e->second.begin(),
+			     buckete=e->second.end();
+		     bucketb != buckete;
+		     ++bucketb)
+		{
+			auto p = *bucketb;
+
+			auto &wh=p->get_window_handler();
+
+			if (check_resize_pending(IN_THREAD, wh, poll_for, now))
+				continue;
+
+			e->second.erase(bucketb);
+
+			if (e->second.empty())
+				element_position_finalized(IN_THREAD)->erase(e);
+
+			try {
+				CONNECTION_TRAFFIC_LOG("   finalized("
+						       + p->objname() + ")",
+						       *this);
+
+				p->process_finalized_position(IN_THREAD);
+
+			} CATCH_EXCEPTIONS;
+
+			CONNECTION_THREAD_ACTION_FOR("finalized", &*p);
+			return true;
+		}
+	}
+
+	return false;
+}
 
 bool connection_threadObj::redraw_elements(ONLY IN_THREAD,
 					   resize_pending_cache_t

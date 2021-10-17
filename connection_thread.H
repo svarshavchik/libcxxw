@@ -96,10 +96,6 @@ class LIBCXX_HIDDEN connection_threadObj
 	static bool is_element_in_set(element_set_t &s,
 				      const element_impl &i);
 
-	static bool check_resize_pending(ONLY IN_THREAD,
-					 generic_windowObj::handlerObj &wh,
-					 int &poll_for);
-
  private:
 
 	//! Cache for recording which windows' resize is pending.
@@ -176,7 +172,7 @@ class LIBCXX_HIDDEN connection_threadObj
 				    resize_pending_cache_t &c,
 				    int &poll_for);
 
-	//! Display elements that need their updated positions processed.
+	//! Widgets that need their updated positions processed.
 
 	//! Which elements' position has been updated. Rather than invoking
 	//! process_updated_position() immediately, they get cached here, and
@@ -189,6 +185,15 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! Invokes process_updated_position() or process_same_position(),
 	//! as appropriate.
 	bool process_element_position_updated(ONLY IN_THREAD, int &poll_for);
+
+	//! Widgets that want to be notified when their position is finalized
+	element_set_t *element_position_finalized_thread_only;
+
+	//! Notify widgets that their positions have been finalized.
+
+	//! Invokes process_finalized_position().
+	bool process_element_position_finalized(ONLY IN_THREAD,
+						int &poll_for);
 
 	//! Determine which widgets can have thjeir contents moved directly.
 
@@ -205,10 +210,25 @@ class LIBCXX_HIDDEN connection_threadObj
 		 std::unordered_set<element_impl> &to_redraw,
 		 std::unordered_set<element_impl> &to_redraw_recursively);
 
+ public:
 	//! tick_clock_t's time_point.
 
 	typedef tick_clock_t::time_point callback_time_point_t;
 
+	//! Is this window being resized?
+
+	//! Returns true if this window is pending to be resized by the
+	//! window manager. There's a reasonable timeout that gets set, for
+	//! that. If the timeout expires, something must be wrong so we
+	//! forcefully clear the pending resize flag, and perform some
+	//! cleanup.
+
+	static bool check_resize_pending(ONLY IN_THREAD,
+					 generic_windowObj::handlerObj &wh,
+					 int &poll_for,
+					 callback_time_point_t now);
+
+ private:
 	//! A regularly-scheduled callback function object.
 
 	typedef functionref<void (ONLY IN_THREAD)> callback_functional_t;
@@ -308,6 +328,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	THREAD_DATA_ONLY(elements_to_redraw);
 	THREAD_DATA_ONLY(containers_2_recalculate);
 	THREAD_DATA_ONLY(element_position_updated);
+	THREAD_DATA_ONLY(element_position_finalized);
 	THREAD_DATA_ONLY(scheduled_callbacks);
 	THREAD_DATA_ONLY(pending_incremental_updates);
 	THREAD_DATA_ONLY(idle_callbacks);

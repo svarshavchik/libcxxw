@@ -201,6 +201,12 @@ class layoutmanagerObj::implObj : virtual public obj {
 
 	virtual void request_visibility_recursive(ONLY IN_THREAD, bool);
 
+	//! All positions have been finalized.
+
+	//! The default implementation does nothing.
+
+	virtual void process_finalized_position(ONLY IN_THREAD);
+
 	//! Invoked to draw the contents of the container.
 
 	//! The default implementation uses container_clear_padding() to clear

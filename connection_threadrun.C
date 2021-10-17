@@ -148,6 +148,9 @@ bool connection_threadObj
 						     poll_for))
 			continue;
 
+		if (process_element_position_finalized(IN_THREAD, poll_for))
+			continue;
+
 		recalculate_event_processed=false;
 
 		if (process_visibility_updated(IN_THREAD,

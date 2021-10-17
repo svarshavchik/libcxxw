@@ -345,14 +345,15 @@ void containerObj::implObj::request_child_visibility_recursive(ONLY IN_THREAD,
 		 });
 }
 
-#if 0
-void containerObj::implObj::child_visibility_updated(ONLY IN_THREAD,
-						     bool flag)
+void containerObj::implObj::process_finalized_position(ONLY IN_THREAD)
 {
-	needs_recalculation(IN_THREAD);
-	container_element_impl().schedule_full_redraw(IN_THREAD);
+	invoke_layoutmanager
+		([&]
+		 (const auto &manager)
+		 {
+			 manager->process_finalized_position(IN_THREAD);
+		 });
 }
-#endif
 
 void containerObj::implObj
 ::tell_layout_manager_it_needs_recalculation(ONLY IN_THREAD)

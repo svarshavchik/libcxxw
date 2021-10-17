@@ -16,6 +16,8 @@
 #include "x/w/focusable_container.H"
 #include "x/w/button.H"
 #include "x/w/peepholelayoutmanager.H"
+#include "x/w/listlayoutmanager.H"
+#include "x/w/metrics/axis.H"
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -144,10 +146,119 @@ void testpeephole()
 	lock.wait([&] { return *lock; });
 }
 
+static void create_test_peephole(const container &c)
+{
+	auto lm=c->gridlayout();
+
+	lm->remove();
+	auto f=lm->append_row();
+
+	new_listlayoutmanager new_lm;
+
+	new_lm.height(8, 8);
+	new_lm.width({50.0});
+
+	f->create_focusable_container
+		([]
+		 (const auto &)
+		{
+		},
+		 new_lm)->show_all();
+}
+
+static void settle_down(const main_window &mw)
+{
+	mpcobj<bool> flag{false};
+
+	mw->on_stabilized
+		([&]
+		 (THREAD_CALLBACK,
+		  const auto &busy)
+		 {
+			 mpcobj_lock lock{flag};
+
+			 *lock=true;
+			 lock.notify_all();
+		 });
+
+	mpcobj_lock lock{flag};
+
+	lock.wait([&]{ return *lock; });
+}
+
+class resized_flagObj : virtual public obj {
+
+public:
+
+	mpobj<bool> resized_flag{false};
+};
+
+void automated_test()
+{
+	destroy_callback::base::guard guard;
+
+	auto close_flag=close_flag_ref::create();
+
+	auto main_window=main_window::create(create_test_peephole);
+
+	main_window->set_window_title("Test peephole");
+
+	guard(main_window->connection_mcguffin());
+
+	main_window->on_disconnect([]
+				   {
+					   _exit(1);
+				   });
+
+	main_window->on_delete
+		([close_flag]
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
+		 {
+			 close_flag->close();
+		 });
+
+	main_window->show();
+
+	auto resized=ref<resized_flagObj>::create();
+
+	main_window->on_metrics_update
+		([resized]
+		 (ONLY IN_THREAD,
+		  const auto &h,
+		  const auto &v)
+		{
+			std::cout << "h: " << h << std::endl;
+			std::cout << "v: " << v << std::endl;
+			resized->resized_flag=true;
+		});
+
+
+	settle_down(main_window);
+	std::cout << "--" << std::endl;
+	resized->resized_flag=false;
+
+	create_test_peephole(main_window);
+	settle_down(main_window);
+	settle_down(main_window);
+	settle_down(main_window);
+	std::cout << "--" << std::endl;
+
+	if (resized->resized_flag.get())
+		throw EXCEPTION("Unexpected resize");
+}
+
 int main(int argc, char **argv)
 {
 	try {
-		testpeephole();
+		if (argc > 1 && std::string{argv[1]} == "--test")
+		{
+			automated_test();
+		}
+		else
+		{
+			testpeephole();
+		}
 	} catch (const exception &e)
 	{
 		e->caught();

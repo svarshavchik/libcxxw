@@ -1671,6 +1671,7 @@ test:
 	./testcombobox -l
 	./testcombobox -c
 	./testupdatedpositioninfo
+	./testpeephole --test
 
 .PHONY: rpm
 

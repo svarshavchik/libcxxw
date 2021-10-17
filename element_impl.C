@@ -182,7 +182,7 @@ void elementObj::implObj::request_visibility(ONLY IN_THREAD, bool flag)
 void elementObj::implObj::schedule_update_visibility(ONLY IN_THREAD)
 {
 	IN_THREAD->insert_element_set
-		(*IN_THREAD->visibility_updated(IN_THREAD), element_impl(this));
+		(*IN_THREAD->visibility_updated(IN_THREAD), ref{this});
 }
 
 void elementObj::implObj::request_visibility_recursive(bool flag)
@@ -347,6 +347,17 @@ void elementObj::implObj::draw_after_visibility_updated(ONLY IN_THREAD,
 	//
 	// Otherwise we call schedule_full_redraw().
 	schedule_full_redraw(IN_THREAD);
+}
+
+void elementObj::implObj::schedule_finalized_position(ONLY IN_THREAD)
+{
+	IN_THREAD->insert_element_set
+		(*IN_THREAD->element_position_finalized(IN_THREAD),
+		 ref{this});
+}
+
+void elementObj::implObj::process_finalized_position(ONLY IN_THREAD)
+{
 }
 
 void elementObj::implObj

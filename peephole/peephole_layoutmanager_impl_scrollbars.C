@@ -292,24 +292,28 @@ void scrollbarsObj::update_scrollbars(ONLY IN_THREAD,
 				      const rectangle &element_pos,
 				      const rectangle &current_position)
 {
-	update_scrollbar(IN_THREAD,
-			 h_scrollbar->impl,
-			 horizontal_scrollbar_element,
-			 horizontal_scrollbar_visibility(IN_THREAD),
-			 element_pos.x, element_pos.width,
-			 current_position.width,
-			 element_in_peephole->horizontal_increment(IN_THREAD));
+	horizontal_scrollbar_visible=
+		update_scrollbar(IN_THREAD,
+				 h_scrollbar->impl,
+				 horizontal_scrollbar_element,
+				 horizontal_scrollbar_visibility(IN_THREAD),
+				 element_pos.x, element_pos.width,
+				 current_position.width,
+				 element_in_peephole
+				 ->horizontal_increment(IN_THREAD));
 
-	update_scrollbar(IN_THREAD,
-			 v_scrollbar->impl,
-			 vertical_scrollbar_element,
-			 vertical_scrollbar_visibility(IN_THREAD),
-			 element_pos.y, element_pos.height,
-			 current_position.height,
-			 element_in_peephole->vertical_increment(IN_THREAD));
+	vertical_scrollbar_visible=
+		update_scrollbar(IN_THREAD,
+				 v_scrollbar->impl,
+				 vertical_scrollbar_element,
+				 vertical_scrollbar_visibility(IN_THREAD),
+				 element_pos.y, element_pos.height,
+				 current_position.height,
+				 element_in_peephole
+				 ->vertical_increment(IN_THREAD));
 }
 
-void scrollbarsObj
+bool scrollbarsObj
 ::update_scrollbar(ONLY IN_THREAD,
 		   const ref<scrollbarObj::implObj> &scrollbar,
 		   const element_impl &visibility_element,
@@ -330,7 +334,7 @@ void scrollbarsObj
 
 	if (new_config.page_size >= new_config.range)
 	{
-		// Easier for update_config() to optimize itself away.
+		// Easier for reconfigure() to optimize itself away.
 		new_config.range=new_config.page_size;
 		new_config.value=0;
 	}
@@ -338,20 +342,72 @@ void scrollbarsObj
 	scrollbar->reconfigure(IN_THREAD, new_config);
 
 	// Even when we're not visible we must still religiously do the above
-	// and update_config(), so that the scrollbar configuration reflects
+	// and reconfigure(), so that the scrollbar configuration reflects
 	// reality. Scroll wheel-initiated scrolling (pointer button 4/5)
 	// may initiate scrolling even when this vertical scrollbar is not
 	// visible, and if it's not visible because there's nothing to scroll,
 	// the scrollbar metrics should reflect that.
 
-	if (visibility == scrollbar_visibility::never)
+	// For never and always visibility we can update the scrollbar's
+	// visibility immediately. Ditto for automatic_reserved. However
+	// defer visibility update after we process_finalized_position
+	// if the visibility is automatic. This gives the parent container's
+	// an opportunity to resize the peephole, nullifying the need to
+	// update the visibility in the first place.
+
+	auto should_be_visible=new_config.range > new_config.page_size;
+
+	// Making the scrollbar visible if it should_be_visible affects
+	// horizontal and vertical. This results in undesirable visual
+	// jitter.
+	//
+	// This is because updated metrics roll uphill, all the way out
+	// to the top level window, and they get included as updated
+	// window manager hints. But reposition gets deferred while
+	// top level window is_resizing.
+	//
+	// The top level window gets resized to accomodate the scrollbar's
+	// contribution to preferred metrics, then our container discovers
+	// that it can resize itself for the combined size of the peephole
+	// and the scrollbar. Once the peephole gets resized we discover
+	// that we don't need the scrollbar visible any more, and everything
+	// gets resized back, again.
+	//
+	// Defer scrollbar's request_visibility until we
+	// process_finalized_position, if the visibility is automatic. For
+	// all other visibility policies we can set or update them
+	// immediately without deferring anything. request_visibility()
+	// is a no-op if it doesn't actually change the widget's existing
+	// visibility.
+
+	switch (visibility) {
+	case scrollbar_visibility::never:
 		visibility_element->request_visibility(IN_THREAD, false);
-	else if (visibility == scrollbar_visibility::always)
+		return false;
+	case scrollbar_visibility::always:
 		visibility_element->request_visibility(IN_THREAD, true);
-	else
+		return true;
+	case scrollbar_visibility::automatic:
+		layout_container_impl->container_element_impl()
+			.schedule_finalized_position(IN_THREAD);
+		break;
+	case scrollbar_visibility::automatic_reserved:
 		visibility_element->request_visibility(IN_THREAD,
-						       new_config.range
-						       > new_config.page_size);
+						       should_be_visible);
+		break;
+	}
+
+	return should_be_visible;
+}
+
+void scrollbarsObj::process_finalized_position(ONLY IN_THREAD)
+{
+	superclass_t::process_finalized_position(IN_THREAD);
+
+	horizontal_scrollbar_element->request_visibility
+		(IN_THREAD, horizontal_scrollbar_visible);
+	vertical_scrollbar_element->request_visibility
+		(IN_THREAD, vertical_scrollbar_visible);
 }
 
 ///////////////////////////////////////////////////////////////////////////

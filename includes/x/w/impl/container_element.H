@@ -146,6 +146,19 @@ void container_elementObj<element_impl>
 	containerObj::implObj::draw_after_visibility_updated(IN_THREAD, flag);
 }
 
+//! Override process_finalized_position().
+
+//! Invokes the superclass's process_finalized_position(), then invokes
+//! containerObj::implObj.
+
+template<typename element_impl>
+void container_elementObj<element_impl>
+::process_finalized_position(ONLY IN_THREAD)
+{
+	element_impl::process_finalized_position(IN_THREAD);
+	containerObj::implObj::process_finalized_position(IN_THREAD);
+}
+
 //! Override initialize().
 
 //! Invokes the superclass's initialize(), then invokes

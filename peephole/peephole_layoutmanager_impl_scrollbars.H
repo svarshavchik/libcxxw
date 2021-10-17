@@ -152,7 +152,9 @@ class LIBCXX_HIDDEN peepholelayoutmanagerObj::implObj::scrollbarsObj
 
 	//! Update the given scrollbar after recalculation.
 
-	void update_scrollbar(ONLY IN_THREAD,
+	//! Returns an indication whether the scrollbars should be visible,
+	//! or not.
+	bool update_scrollbar(ONLY IN_THREAD,
 			      const ref<scrollbarObj::implObj> &scrollbar,
 			      const element_impl &visibility_element,
 			      const scrollbar_visibility visibility,
@@ -160,6 +162,23 @@ class LIBCXX_HIDDEN peepholelayoutmanagerObj::implObj::scrollbarsObj
 			      dim_t size,
 			      dim_t peephole_size,
 			      dim_t increment);
+
+	//! Whether the horizontal scrollbar should be visible
+
+	//! update_scrollbars() sets it, then schedule_finalized_position()s.
+
+	bool horizontal_scrollbar_visible;
+
+	//! Whether the vertical scrollbar should be visible
+
+	//! update_scrollbars() sets it, then schedule_finalized_position()s.
+
+	bool vertical_scrollbar_visible;
+
+	//! Implement process_finalized_position()
+
+	//! Update the scrollbars' visibility.
+	void process_finalized_position(ONLY IN_THREAD) override;
 };
 
 //! Scrollbar elements for a peephole

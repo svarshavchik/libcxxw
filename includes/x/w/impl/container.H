@@ -218,6 +218,10 @@ public:
 
 	void draw_after_visibility_updated(ONLY IN_THREAD, bool flag);
 
+	//! Invoke process_finalized_position.
+
+	void process_finalized_position(ONLY IN_THREAD);
+
 	//! Invoke layout manager's initialize() method.
 
 	void initialize(ONLY IN_THREAD);
