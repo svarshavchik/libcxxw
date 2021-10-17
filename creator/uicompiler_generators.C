@@ -1236,12 +1236,15 @@ void parse_parameter::define_parameter(const x::xml::readlock &root,
 	handler_name=parameter_type;
 
 	if (parameter_type.substr(0, 16) == "compiler.lookup_" &&
-	    parameter_type.size() > 34 &&
+	    parameter_type.size() >= 34 &&
 	    parameter_type.substr(parameter_type.size()-18) ==
 	    "factory_generators")
 	{
 		parameter_type="lookup_factory";
 		handler_name=handler_name.substr(16, handler_name.size()-34);
+
+		if (handler_name.empty())
+			handler_name="factory";
 	}
 
 	auto iter=parameter_types.find(parameter_type.c_str());

@@ -2056,14 +2056,16 @@ the grid layout manager's borders for it.
         <appearance>color-picker-a-canvas-frame</appearance>
         <no_background/>
       </config>
-      <contents>
-        <element id="a-canvas" tooltip="color-picker-a-button-tooltip">
-          <name>alpha</name>
-        </element>
-      </contents>
     </container>
   </factory>
-  <layout type="border" id="color-picker-a-canvas-border"/>
+  <layout type="border" id="color-picker-a-canvas-border">
+    <replace>color-picker-a-canvas-border-factory</replace>
+  </layout>
+  <factory type="factory" id="color-picker-a-canvas-border-factory">
+    <element id="a-canvas" tooltip="color-picker-a-button-tooltip">
+      <name>alpha</name>
+    </element>
+  </factory>
   <appearance id="color-picker-a-canvas-frame" type="frame">
     <border>color_picker_alpha_border</border>
     <hpad>no-padding</hpad>

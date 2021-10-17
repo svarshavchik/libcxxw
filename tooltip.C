@@ -215,13 +215,12 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 		 ([&]
 		  (const container &c)
 		  {
-			  c->set_background_color(appearance
-						  ->tooltip_background_color);
 			  auto real_container_impl=c->get_layout_impl();
 
 			  auto border_layout_impl=
 				  ref<borderlayoutmanagerObj::implObj>::create
 				  (popup_handler, popup_handler,
+				   appearance->tooltip_background_color,
 				   c,
 				   halign::fill,
 				   valign::fill);

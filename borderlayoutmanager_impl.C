@@ -19,13 +19,17 @@ LIBCXXW_NAMESPACE_START
 borderlayoutmanagerObj::implObj::implObj(const container_impl &container_impl,
 					 const ref<bordercontainer_implObj>
 					 &bordercontainer_impl,
+					 const std::optional<color_arg>
+					 &frame_background,
 					 const element &initial_element,
 					 halign element_halign,
 					 valign element_valign)
 	: singletonlayoutmanagerObj::implObj{container_impl, initial_element,
 					     element_halign,
 					     element_valign},
-	  bordercontainer_impl{bordercontainer_impl}
+	  bordercontainer_impl{bordercontainer_impl},
+	  no_background{no_background},
+	  frame_background{frame_background}
 {
 }
 
@@ -174,6 +178,8 @@ void borderlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	auto title=bordercontainer_impl->get_title(IN_THREAD);
 
+	auto previous_title=current_title;
+
 	// If the border changed, we need to redraw even if recalculate()
 	// will do nothing, and we always need to clear the cached_border_info, in
 	// order for it to be computed from scratch.
@@ -203,7 +209,37 @@ void borderlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 			.schedule_full_redraw(IN_THREAD);
 	}
 
+	if ((previous_title ? 1:0)
+	    ^ (current_title ? 1:0))
+	{
+		update_element_border(IN_THREAD, get_list_element(IN_THREAD));
+	}
+
 	superclass_t::recalculate(IN_THREAD);
+}
+
+void borderlayoutmanagerObj::implObj::created(ONLY IN_THREAD, const element &e)
+{
+	superclass_t::created(IN_THREAD, e);
+	update_element_border(IN_THREAD, e);
+}
+
+void borderlayoutmanagerObj::implObj::initialize(ONLY IN_THREAD)
+{
+	superclass_t::initialize(IN_THREAD);
+	update_element_border(IN_THREAD, get_list_element(IN_THREAD));
+}
+
+void borderlayoutmanagerObj::implObj::update_element_border(ONLY IN_THREAD,
+							    const element &e)
+{
+	if (!frame_background)
+		return;
+
+	if (!current_title)
+		e->set_background_color(IN_THREAD, *frame_background);
+	else
+		e->remove_background_color(IN_THREAD);
 }
 
 void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,

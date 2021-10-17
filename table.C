@@ -972,6 +972,7 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 		ref<listheaderinvisibleborderObj>
 		::create(header_focusframe_container_impl,
 			 header_focusframe_container_impl,
+			 std::nullopt,
 			 header,
 			 halign::fill,
 			 valign::fill);
@@ -987,6 +988,7 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 		ref<borderlayoutmanagerObj::implObj>
 		::create(header_border_container_impl,
 			 header_border_container_impl,
+			 std::nullopt,
 			 header_focusframe_container,
 			 halign::fill,
 			 valign::fill);

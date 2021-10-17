@@ -1274,40 +1274,31 @@ static void demo_misc_column2(const w::gridlayoutmanager &glm)
 {
 	auto f=glm->append_row();
 
-	w::new_borderlayoutmanager nblm
-		{[&]
-		 (const auto &factory)
-		 {
-			 factory->create_container
-				 ([&]
-				  (const auto &c)
-				  {
-					  w::gridlayoutmanager lm=
-						  c->get_layoutmanager();
+	w::new_borderlayoutmanager nblm;
 
-					  auto f=lm->append_row();
+	auto initialize=[&]
+		(const auto &c)
+	{
+		c->borderlayout()->replace()->create_container
+			([&]
+			 (const auto &c)
+			{
+				w::gridlayoutmanager lm=c->get_layoutmanager();
 
-					  f->padding(4);
-					  f->create_label("This is a frame");
-				  },
-				  w::new_gridlayoutmanager{});
-		 }};
+				auto f=lm->append_row();
 
-	f->create_container([]
-			    (const auto &)
-			    {
-			    },
-			    nblm);
+				f->padding(4);
+				f->create_label("This is a frame");
+			},
+			 w::new_gridlayoutmanager{});
+	};
+
+	f->create_container(initialize, nblm);
 
 	f=glm->insert_row(0);
 
 	nblm.title("Frame title");
-	f->create_container([]
-			    (const auto &)
-			    {
-			    },
-			    nblm);
-
+	f->create_container(initialize, nblm);
 }
 
 static void demo_table(const w::gridlayoutmanager &lm)

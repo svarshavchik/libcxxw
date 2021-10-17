@@ -28,6 +28,38 @@ Passing a \ref new_borderlayoutmanager "new_borderlayoutmanager" to
 a \ref factory "factory"'s create_container() creates a container
 that uses the border layout manager.
 
+\code
+f->update_title("New title");
+
+f->update_title(IN_THREAD, "New title");
+\endcode
+
+update_title() replaces the title shown in the upper-left corner.
+An empty string removes the title. update_title()'s parameter is
+an \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param".
+
+\code
+f->update_border("thin");
+f->update_borders("thin", "thin", "thick", "thick")
+
+f->update_border(IN_THREAD, "thin");
+f->update_borders(IN_THREAD, "thin", "thin", "thick", "thick")
+\endcode
+
+update_border() changes the shown border. update_borders() individually
+specified the left, right, top, and bottom
+\ref border_arg "borders".
+
+\code
+INSERT_LIBX_NAMESPACE::w::const_uigenerators generators;
+INSERT_LIBX_NAMESPACE::w::uielements elements;
+
+f->generate("options", generators, elements);
+\endcode
+
+generate() \ref uigenerators "generates the contents"
+of the border layout manager's container from a theme file
+
 */
 
 typedef ref<borderlayoutmanagerObj> borderlayoutmanager;

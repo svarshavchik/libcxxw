@@ -1019,6 +1019,14 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 		}
 		else if (name == "factory")
 		{
+			if (type == "factory")
+			{
+				auto ret=factory_parseconfig(lock);
+				generators->factory_generators
+					.insert_or_assign(id, ret);
+				continue;
+			}
+
 			if (type == "grid")
 			{
 				auto ret=gridfactory_parseconfig(lock);
@@ -1653,6 +1661,34 @@ uicompiler::lookup_gridfactory_generators(const ui::parser_lock &lock,
 	return ret;
 }
 
+const_vector<factory_generator>
+uicompiler::lookup_factory_generators(const ui::parser_lock &lock,
+				      const char *element,
+				      const char *parent)
+{
+	auto name=single_value(lock, element, parent);
+
+	{
+		auto iter=generators->factory_generators.find(name);
+
+		if (iter != generators->factory_generators.end())
+			return iter->second;
+	}
+
+	auto iter=find_uncompiled(name, "factory", "factory");
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=factory_parseconfig(new_lock);
+
+	generators->factory_generators.insert_or_assign(name, ret);
+
+	return ret;
+}
+
+
 const_vector<menubarlayoutmanager_generator>
 uicompiler::lookup_menubarlayoutmanager_generators
 (const ui::parser_lock &lock,
@@ -1812,6 +1848,19 @@ uicompiler::lookup_elements_generators(const ui::parser_lock &lock,
 	generators->elements_generators.insert_or_assign(name, ret);
 
 	return ret;
+}
+
+void uicompiler::singletonlayout_replace(const singletonlayoutmanager &layout,
+					 uielements &factories,
+					 const const_vector
+					 <factory_generator> &generators)
+{
+	auto f=layout->replace();
+
+	for (const auto &g:*generators)
+	{
+		g(f, factories);
+	}
 }
 
 void uicompiler::gridlayout_append_row(const gridlayoutmanager &layout,

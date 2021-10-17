@@ -2270,7 +2270,7 @@ layout_manager->generate("dialog", generators, elements);
       <tag class='attribute'>type</tag>=<quote>elements</quote>
       specify miscellaneous operations on widgets that were created by
       other factories and layout managers that
-      <link linkend="uixmlwidgetgenerate">generated from a theme file</link>.
+      <link linkend="uixmlwidgetsgenerate">generated from a theme file</link>.
     </para>
 
     <section id="uixmlfactoryelementsmanual">

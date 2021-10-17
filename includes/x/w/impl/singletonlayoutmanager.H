@@ -57,8 +57,14 @@ public:
 	//! Inherited from layoutmanagerObj::implObj
 	size_t num_children(ONLY IN_THREAD) override;
 
-	//! New element, replace the existing one.
+	//! New element, replaced the existing one.
 	void created(const element &e);
+
+	//! New element, replaced the existing one.
+
+	//! When we initialize the list's element IN_THREAD, it must mean
+	//! that it's a newly-created element.
+	virtual void created(ONLY IN_THREAD, const element &e);
 
 	//! Return the existing widget.
 
@@ -67,7 +73,7 @@ public:
 	//! Return the existing widget.
 
 	element get(ONLY IN_THREAD);
- private:
+protected:
 	//! Return list_element's implementation object.
 
 	//! Invoking initialize_if_needed()
@@ -78,7 +84,7 @@ public:
 	//! Invoking initialize_if_needed()
 	element_impl get_list_element_impl(ONLY IN_THREAD);
 
- public:
+public:
 
 	//! Override initialize()
 	void initialize(ONLY IN_THREAD) override;

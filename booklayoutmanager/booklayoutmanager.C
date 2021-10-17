@@ -360,6 +360,7 @@ static auto create_new_tab(const bookpagefactoryObj &my_factory,
 	auto inner_tab_lm=ref<borderlayoutmanagerObj::implObj>::create
 		(inner_tab_gridcontainer_impl,
 		 inner_tab_gridcontainer_impl,
+		 std::nullopt,
 		 new_page,
 		 halign::fill,
 		 valign::bottom);

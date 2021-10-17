@@ -37,12 +37,22 @@ static void create_main_window(const x::w::main_window &mw)
 
 	x::w::gridfactory f=glm->append_row();
 
-	x::w::new_borderlayoutmanager nblm
-		{[&]
-		 (const x::w::factory &f)
-		 {
-			 f->create_label("Border layout manager");
-		 }};
+	x::w::new_borderlayoutmanager nblm;
+
+	// The creator lambda that gets passed to create_container().
+	// Get the creaed borderlayout() manager and call its replace()
+	// to obtain a factory which we use to create_label() the
+	// label inside the border.
+	//
+	// This is done for both sample containers, so we just define this
+	// lambda once.
+
+	auto creator=[]
+		(const x::w::container &c)
+	{
+		c->borderlayout()->replace()
+			->create_label("Border layout manager");
+	};
 
 	// We're just creating a simple label inside each border. Usually
 	// an entire container gets created inside the border, but we just
@@ -57,14 +67,14 @@ static void create_main_window(const x::w::main_window &mw)
 			 appearance->vpad=10;
 		 });
 
-	f->create_container([](const auto &){}, nblm);
+	f->create_container(creator, nblm);
 
 	// Create the 2nd one with the title. We can use the same
 	// new_borderlayoutmanager, just set the title.
 
 	nblm.title("Hello");
 
-	f->create_container([](const auto &){}, nblm);
+	f->create_container(creator, nblm);
 }
 
 void borderlayoutmanager()

@@ -932,7 +932,6 @@ libcxxw_la_SOURCES=\
 	uicompiler_listlayout.C			    \
 	uicompiler_menubarfactory.C		    \
 	uicompiler_menubarlayout.C		    \
-	uicompiler_standard_comboboxlayout.C	    \
 	uicompiler_new_booklayout.C		    \
 	uicompiler_new_borderlayout.C		    \
 	uicompiler_new_custom_comboboxlayout.C	    \
@@ -949,6 +948,8 @@ libcxxw_la_SOURCES=\
 	uicompiler_pagelayout.C			    \
 	uicompiler_panefactory.C		    \
 	uicompiler_panelayout.C			    \
+	uicompiler_singletonlayout.C		    \
+	uicompiler_standard_comboboxlayout.C	    \
 	uicompiler_tablelayout.C		    \
 	uicompiler_toolboxfactory.C		    \
 	uicompiler_toolboxlayout.C		    \
@@ -1044,6 +1045,8 @@ cxxwcreator_SOURCES=\
 	creator/appgenerator_function.H		\
 	creator/appgenerator_functionfwd.H	\
 	creator/appgenerator_functionobj.H	\
+	creator/appgenerator_save.H		\
+	creator/appgenerator_savefwd.H		\
 	creator/uicompiler.C			\
 	creator/uicompiler.H			\
 	creator/uicompilerfwd.H			\

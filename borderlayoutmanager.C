@@ -13,6 +13,7 @@
 #include "x/w/impl/background_color.H"
 #include "x/w/borderlayoutmanager.H"
 #include "x/w/frame_appearance.H"
+#include "x/w/canvas.H"
 #include "x/w/factory.H"
 #include "x/w/container.H"
 #include "x/w/font_arg.H"
@@ -29,12 +30,8 @@ borderlayoutmanagerObj::borderlayoutmanagerObj(const ref<implObj> &impl)
 
 borderlayoutmanagerObj::~borderlayoutmanagerObj()=default;
 
-	//! Constructor
-new_borderlayoutmanager::new_borderlayoutmanager(const functionref<void
-						 (const factory &)>
-						 &element_factory)
-	: element_factory{element_factory},
-	  appearance{frame_appearance::base::theme()},
+new_borderlayoutmanager::new_borderlayoutmanager()
+	: appearance{frame_appearance::base::theme()},
 	  no_background{false}
 {
 }
@@ -82,24 +79,29 @@ container new_borderlayoutmanager::create(const container_impl &parent,
 			 appearance->vpad,
 			 parent);
 
-	// Invoke the creator to set the element for which we're providing
-	// the border.
+	// Create a canvas widget as a placeholder, initial widget in
+	// the singleton layout manager.
+
 	auto f=capturefactory::create(c_impl);
 
-	element_factory(f);
+	f->create_canvas();
 
 	auto e=f->get();
 
-	// Finish everything up.
-	auto lm_impl=ref<borderlayoutmanagerObj::implObj>::create(c_impl,
-								  c_impl,
-								  e,
-								  halign::fill,
-								  valign::fill);
-	auto new_container=container::create(c_impl, lm_impl);
+	std::optional<color_arg> frame_background;
 
-	if (!no_background && title.string.empty())
-		e->set_background_color(appearance->frame_background);
+	if (!no_background)
+		frame_background=appearance->frame_background;
+
+	// Finish everything up.
+	auto lm_impl=ref<borderlayoutmanagerObj::implObj>
+		::create(c_impl,
+			 c_impl,
+			 frame_background,
+			 e,
+			 halign::fill,
+			 valign::fill);
+	auto new_container=container::create(c_impl, lm_impl);
 
 	creator(new_container);
 

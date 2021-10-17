@@ -166,7 +166,7 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 	// for its real contents: the focusframecontainer.
 
 	auto blmi=ref<borderlayoutmanagerObj::implObj>
-		::create(impl, impl, ff,
+		::create(impl, impl, std::nullopt, ff,
 			 halign::fill, valign::fill);
 
 	return {blmi, ffi};

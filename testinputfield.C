@@ -169,24 +169,7 @@ void testbutton()
 			 my_border.hradius=2;
 			 my_border.vradius=2;
 
-			 LIBCXX_NAMESPACE::w::new_borderlayoutmanager neb
-				 {[&]
-				  (const auto &f)
-				  {
-					  auto l=f->create_label
-						  ("Border Layout Manager");
-
-					  LIBCXX_NAMESPACE::w::radial_gradient
-						  g;
-
-					  g.gradient={
-						      {0, LIBCXX_NAMESPACE::w
-						       ::silver},
-						      {1, LIBCXX_NAMESPACE::w
-						       ::white}};
-					  l->set_background_color(g);
-					  l->show();
-				  }};
+			 LIBCXX_NAMESPACE::w::new_borderlayoutmanager neb;
 
 			 neb.appearance=neb.appearance->modify
 				 ([&]
@@ -200,31 +183,41 @@ void testbutton()
 				 ([&]
 				  (const auto &c)
 				  {
+					  auto bl=c->borderlayout();
+					  auto l=bl->replace()
+						  ->create_label
+						  ("Border Layout Manager");
+
+					  LIBCXX_NAMESPACE::w::radial_gradient
+						  g;
+
+					  g.gradient={
+						      {0, LIBCXX_NAMESPACE::w
+						       ::silver},
+						      {1, LIBCXX_NAMESPACE::w
+						       ::white}};
+					  l->set_background_color(g);
+					  l->show();
 				  },
 				  neb);
 
 			 factory=layout->append_row();
 
-			 neb=LIBCXX_NAMESPACE::w::new_borderlayoutmanager
-				 {[&]
-				  (const auto &f)
-				  {
-					  auto l=f->create_label
-						  ("Border Layout Manager");
-				  }};
+			 neb=LIBCXX_NAMESPACE::w::new_borderlayoutmanager{};
 
 			 neb.title("This is a title");
 
 			 auto be=factory->create_container
 				 ([&]
-				  (const auto &)
+				  (const auto &c)
 				  {
+					  c->borderlayout()->replace()
+						  ->create_label
+						  ("Border Layout Manager");
 				  },
 				  neb);
 
-			 LIBCXX_NAMESPACE::w::borderlayoutmanager{
-				 be->get_layoutmanager()
-					 }->get()->show();
+			 be->borderlayout()->get()->show();
 
 			 factory=layout->append_row();
 

@@ -88,6 +88,12 @@ public:
 			   const_vector<gridlayoutmanager_generator>
 			   > gridlayoutmanager_generators;
 
+	//! Generators used by the generic factory
+
+	std::unordered_map<std::string,
+			   const_vector<factory_generator>
+			   > factory_generators;
+
 	//! Generators used by the grid factory
 	std::unordered_map<std::string,
 			   const_vector<gridfactory_generator>

@@ -1013,21 +1013,6 @@ struct uicompiler::booklayoutmanager_functions {
 	};
 };
 
-// Border layout manager functionality
-
-// Parse the generator for the border's contents.
-
-static const_vector<factory_generator>
-create_border_contents_generators(uicompiler &compiler,
-				  const ui::parser_lock &orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	lock->get_xpath("contents")->to_node();
-
-	return compiler.factory_parseconfig(lock);
-}
-
 struct uicompiler::borderlayoutmanager_functions {
 
 	// A vector of compiler border layout manager generators
@@ -1039,8 +1024,6 @@ struct uicompiler::borderlayoutmanager_functions {
 		const_vector<new_borderlayoutmanager_generator
 			     > new_borderlayoutmanager_vector;
 
-		const_vector<factory_generator> contents_generator_vector;
-
 		const_vector<borderlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
@@ -1050,10 +1033,6 @@ struct uicompiler::borderlayoutmanager_functions {
 			  new_borderlayoutmanager_vector
 			{
 			 create_newborderlayoutmanager_vector(compiler, lock)
-			},
-			  contents_generator_vector
-			{
-			 create_border_contents_generators(compiler, lock)
 			},
 			  generator_vector{compiler
 					   .lookup_borderlayoutmanager_generators
@@ -1065,7 +1044,7 @@ struct uicompiler::borderlayoutmanager_functions {
 					   uielements &factories)
 			const
 		{
-		        auto nblm=new_layoutmanager(factories);
+			auto nblm=new_layoutmanager(factories);
 
 			// Generate the contents of the new_borderlayoutmanager.
 
@@ -1086,13 +1065,7 @@ struct uicompiler::borderlayoutmanager_functions {
 		inline new_borderlayoutmanager new_layoutmanager(uielements &e)
 			const
 		{
-			return {[&, this]
-				(const factory &f)
-				{
-					for (const auto &g:
-						     *contents_generator_vector)
-						g(f, e);
-				}};
+			return {};
 		}
 
 		void generate(const container &c,

@@ -14,12 +14,6 @@ See COPYING for distribution information.
   <blockquote>
     <informalexample>
       <programlisting><![CDATA[
-<layout type="border" id="application-options">
-
-  <!-- Usually empty ... -->
-
-</layout>
-
 <!-- in some factory... -->
 
 <container>
@@ -28,14 +22,20 @@ See COPYING for distribution information.
   <config>
     <title type='theme_text'>Options</title>
   </config>
-  <contents>
-    <container>
-      <name>options</name>
-      <type>grid</type>
-    </container>
-  </contents>
-  </context>
-</container>]]>
+</container>
+
+<layout type="border" id="application-options">
+  <replace>application-options-contents</replace>
+</layout>
+
+<factory type="factory" id="application-option-contents">
+  <container>
+    <name>options</name>
+    <type>grid</type>
+  </container>
+</factory>
+
+]]>
 
 &ns;::w::borderlayoutmanager glm=container->get_layoutmanager();
 
@@ -64,15 +64,9 @@ glm->generate("application-options", generator, elements);</programlisting>
 
       A <tag class='element'>layout</tag> with the same
       <tag class='attribute'>id</tag> as the
-      <tag class='element'>name</tag> must exist, even if it's empty
-      (which it is, usually).
-    </para>
-
-    <para>
-      The required <tag class='element'>contents</tag> element
-      contains any valid &themewidget;. This generates the contents of the
-      border container, and it typically contains a
-      &themecontainer;.
+      <tag class='element'>name</tag> must exist and, typically,
+      containts at least a <tag class='element'>replace</tag> element,
+      and sets the initial contents of the border container.
     </para>
 
     <para>
@@ -99,7 +93,7 @@ glm->generate("application-options", generator, elements);</programlisting>
 	<term><tag class='element'>title</tag></term>
 	<listitem>
 	  <para>
-	    Sets the optional
+	    Sets the optional initial
 	    <varname>title</varname>.
 	    The contents of this element is a &text_paramvalue;.
 	  </para>

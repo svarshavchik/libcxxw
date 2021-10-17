@@ -921,6 +921,7 @@ List of values:
 
   <parser type="factory">
     <name>factory</name>
+    <category>factory</category>
 
     <parameter>
       <type>factory</type>
@@ -1909,8 +1910,9 @@ List of values:
       <invoke>update_border</invoke>
       <object>layout</object>
       <parameter>
-	<name>left_border</name>
+	<name>border</name>
 	<type>single_value</type>
+	<xpath>.</xpath>
 	<lookup>
 	  <function>compiler.generators-&gt;lookup_border</function>
 	  <default_params />
@@ -1953,6 +1955,42 @@ List of values:
 	  <function>compiler.generators-&gt;lookup_border</function>
 	  <default_params />
 	</lookup>
+      </parameter>
+    </function>
+
+    <use_common>singletonlayout</use_common>
+  </parser>
+
+  <parser type="layoutmanager">
+    <name>singletonlayout</name>
+    <category>singleton</category>
+
+    <parameter>
+      <type>singletonlayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>replace</name>
+      <invoke>singletonlayout_replace</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<xpath>.</xpath>
+	<name>name</name>
+	<type>compiler.lookup_factory_generators</type>
       </parameter>
     </function>
   </parser>

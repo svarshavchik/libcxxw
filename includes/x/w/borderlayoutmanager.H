@@ -26,21 +26,10 @@ class new_borderlayoutmanager : public new_layoutmanager {
 
 public:
 	//! Constructor
-	new_borderlayoutmanager(//! Create the border container's widget.
-
-				//! The callback gets invoked, and must
-				//! use the factory parameter to create
-				//! exactly one widget. This is
-				//! the widget in the border layout manager's
-				//! container.
-				const functionref<void (const factory &)> &);
+	new_borderlayoutmanager();
 
 	//! Destructor
 	~new_borderlayoutmanager();
-
-	//! Factory for the initial widget inside the border
-
-	functionref<void (const factory &)> element_factory;
 
 	//! The new border and frame's appearance
 

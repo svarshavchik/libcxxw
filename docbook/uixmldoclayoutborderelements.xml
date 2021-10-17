@@ -10,11 +10,85 @@ See COPYING for distribution information.
     <tag class='element'>layout</tag>
     elements</title>
 
+  <section id="uixmllayoutborderreplace">
+    <title><tag class='element'>replace</tag></title>
+
+    <para>
+      This is equivalent to invoking the
+      <ulink url="&link-typedef-x--w-borderlayoutmanager;"><classname>&ns;::w::borderlayoutmanager</classname></ulink>'s
+      <methodname>replace</methodname>() method:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+  <!-- ... -->
+
+  <replace>application-options-contents</replace>
+
+  <!-- ... -->
+
+<factory type="factory" id="application-option-contents">
+  <container>
+    <name>options</name>
+    <type>grid</type>
+  </container>
+</factory>]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This calls the
+      <ulink url="&link-typedef-x--w-borderlayoutmanager;"><classname>&ns;::w::borderlayoutmanager</classname></ulink>'s
+      <methodname>replace</methodname>() method.
+      <tag class='element'>replace</tag> gives the
+      <tag class='attribute'>id</tag> of a
+      <tag class='attribute'>type</tag>=<quote><literal>factory</literal></quote>
+      <tag class='element'>factory</tag> that
+      contains a single
+      <tag class='element'>element</tag>s or a
+      <tag class='element'>container</tag>s
+      that creates a new
+      &themewidgetorcontainer;.
+    </para>
+  </section>
+
+  <section id="uixmllayoutborderupdate_border">
+    <title><tag class='element'>update_border</tag>,
+      <tag>update_borders</tag></title>
+    <para>
+      This is equivalent to calling the
+      <ulink url="&link-typedef-x--w-borderlayoutmanager;"><classname>&ns;::w::borderlayoutmanager</classname></ulink>'s
+      <methodname>update_border</methodname>() and
+      <methodname>update_borders</methodname>() methods:
+    </para>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<update_border>double-dashed</update_border>
+
+<update_borders>
+  <left_border>double-dashed</left_border>
+  <right_border>double-dashed</right_border>
+  <top_border>single-dashed</top_border>
+  <bottom_border>single-dashed</bottom_border>
+</update_borders>]]>
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      These elements reference other
+      <link linkend="uixmldimcolorborders"><tag class='element'>border</tag></link>s
+      in the theme file, defining the appearance of the corresponding borders.
+    </para>
+  </section>
+
   <section id="uixmllayoutborderupdate_title">
     <title><tag class='element'>update_title</tag></title>
 
     <para>
-      This is equivalent to invoking the
+      This is equivalent to calling the
       <ulink url="&link-typedef-x--w-borderlayoutmanager;"><classname>&ns;::w::borderlayoutmanager</classname></ulink>'s
       <methodname>update_title</methodname>() method:
     </para>

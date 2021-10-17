@@ -5,11 +5,13 @@
 #ifndef x_w_impl_borderlayoutmanager_h
 #define x_w_impl_borderlayoutmanager_h
 
-#include "x/w/borderlayoutmanager.H"
-#include "x/w/impl/singletonlayoutmanager.H"
-#include "x/w/impl/bordercontainer_impl.H"
-#include "x/w/impl/border_implfwd.H"
-#include "x/w/richtext/richtextfwd.H"
+#include <x/w/borderlayoutmanager.H>
+#include <x/w/rgbfwd.H>
+#include <x/w/impl/singletonlayoutmanager.H>
+#include <x/w/impl/bordercontainer_impl.H>
+#include <x/w/impl/border_implfwd.H>
+#include <x/w/richtext/richtextfwd.H>
+
 #include <tuple>
 
 LIBCXXW_NAMESPACE_START
@@ -48,16 +50,31 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 	//! Current title
 	richtextptr current_title;
 
+	//! Whether no_background was requested.
+	const bool no_background;
+
+	//! Whether to install a custom background for the widget
+
+	//! Overrides the background color for the widget inside the border
+	//! if there's no title.
+	//!
+	//! If not specified, the background color never gets overriden.
+	const std::optional<color_arg> frame_background;
+
  public:
 	//! Constructor
 	implObj(const container_impl &container_impl,
 		const ref<bordercontainer_implObj> &bordercontainer_impl,
+		const std::optional<color_arg> &frame_background,
 		const element &initial_element,
 		halign element_halign,
 		valign element_valign);
 
 	//! Destructor
 	~implObj();
+
+	//! Override initialize()
+	void initialize(ONLY IN_THREAD) override;
 
 	//! Override recalculated()
 	void recalculate(ONLY IN_THREAD) override;
@@ -97,6 +114,9 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 		     clip_region_set &clip,
 		     rectarea &drawn_areas) override;
 
+	//! Override created()
+	void created(ONLY IN_THREAD, const element &e) override;
+
  private:
 
 	//! What get_all_borders returns.
@@ -124,6 +144,11 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 	//! Obtain all four borders from the container, compute four corner borders.
 
 	const border_info &get_all_borders(ONLY IN_THREAD);
+
+	//! Remove or install the widget's background color.
+
+	void update_element_border(ONLY IN_THREAD,
+				   const element &e);
 
  public:
 	//! Override theme_updated().

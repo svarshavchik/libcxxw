@@ -23,8 +23,8 @@ INSERT_LIBX_NAMESPACE::factory f=l->replace();
 \endcode
 
 get() returns the current element. replace() returns an
-\ref factory "element factory". Using the factory to create and show()
-a new widget replaces the contents of the button.
+\ref factory "widget factory". Using the factory to create and show()
+a new widget replaces the previous widget in the container.
 
 */
 

@@ -600,19 +600,21 @@
     <container>
       <name>color-preview-cell-border-container</name>
       <type>border</type>
-
-      <contents>
-	<element id="color-preview-cell-canvas">
-	  <canvas>
-	    <width>color-preview-cell-canvas-width</width>
-	    <height>color-preview-cell-canvas-height</height>
-	  </canvas>
-	</element>
-      </contents>
     </container>
   </factory>
 
-  <layout type="border" id="color-preview-cell-border-container" />
+  <layout type="border" id="color-preview-cell-border-container">
+    <replace>color-preview-cell-border-container-factory</replace>
+  </layout>
+
+  <factory type="factory" id="color-preview-cell-border-container-factory">
+    <element id="color-preview-cell-canvas">
+      <canvas>
+	<width>color-preview-cell-canvas-width</width>
+	<height>color-preview-cell-canvas-height</height>
+      </canvas>
+    </element>
+  </factory>
 
   <layout type="page" id="color-right-side-page">
     <append>
@@ -1315,12 +1317,6 @@
 	<title type='theme_text'>${context:creator}Preview</title>
 	<appearance>border-preview-frame-appearance</appearance>
       </config>
-      <contents>
-	<container>
-	  <name>border_preview_grid</name>
-	  <type>grid</type>
-	</container>
-      </contents>
     </container>
     <container>
       <name>borders_details</name>
@@ -1328,7 +1324,16 @@
     </container>
   </factory>
 
-  <layout type="border" id="border_preview_cell_border_container" />
+  <layout type="border" id="border_preview_cell_border_container">
+    <replace>border_preview_grid_factory</replace>
+  </layout>
+
+  <factory type="factory" id="border_preview_grid_factory">
+    <container>
+      <name>border_preview_grid</name>
+      <type>grid</type>
+    </container>
+  </factory>
 
   <appearance type="frame" id="border-preview-frame-appearance">
     <hpad>border-preview-frame-pad</hpad>
@@ -1384,14 +1389,6 @@
     <container>
       <name>border_preview</name>
       <type>border</type>
-      <contents>
-	<element>
-	  <canvas>
-	    <width>border-preview-cell-canvas-width</width>
-	    <height>border-preview-cell-canvas-height</height>
-	  </canvas>
-	</element>
-      </contents>
     </container>
     <element>
       <canvas>
@@ -1411,7 +1408,18 @@
   <dim id="border-preview-cell-canvas-padded-width">30</dim>
   <dim id="border-preview-cell-canvas-padded-height">30</dim>
 
-  <layout type="border" id="border_preview" />
+  <layout type="border" id="border_preview">
+    <replace>border_preview_cell_canvas_factory</replace>
+  </layout>
+
+  <factory type="factory" id="border_preview_cell_canvas_factory">
+    <element>
+      <canvas>
+	<width>border-preview-cell-canvas-width</width>
+	<height>border-preview-cell-canvas-height</height>
+      </canvas>
+    </element>
+  </factory>
 
   <!-- Border: border details -->
 
@@ -1664,16 +1672,19 @@
       <config>
 	<title type='theme_text'>${context:creator}Border Size</title>
       </config>
-      <contents>
-	<container>
-	  <name>borders-sizes-rows</name>
-	  <type>grid</type>
-	</container>
-      </contents>
     </container>
   </factory>
 
-  <layout id="border-sizes-container" type="border" />
+  <layout id="border-sizes-container" type="border">
+    <replace>border-sizes-rows-factory</replace>
+  </layout>
+
+  <factory id="border-sizes-rows-factory" type="factory">
+    <container>
+      <name>borders-sizes-rows</name>
+      <type>grid</type>
+    </container>
+  </factory>
 
   <!-- Rows for border sizes -->
 

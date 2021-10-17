@@ -26,6 +26,7 @@
 #include <x/w/toolboxlayoutmanagerfwd.H>
 #include <x/w/toolboxfactoryfwd.H>
 #include <x/w/borderlayoutmanagerfwd.H>
+#include <x/w/singletonlayoutmanagerfwd.H>
 #include <x/w/uielementsfwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/functionalrefptrfwd.H>
@@ -169,6 +170,13 @@ typedef functionref<void (const toolboxfactory &, uielements &)
 
 typedef functionref<void (const borderlayoutmanager &, uielements &)
 		    > borderlayoutmanager_generator;
+
+//! Generate something in the singleton layout manager
+
+//! \see uigenerators
+
+typedef functionref<void (const singletonlayoutmanager &, uielements &)
+		    > singletonlayoutmanager_generator;
 
 //! Pseudo-ref used to initialize a new_booklayoutmanager parameter
 

@@ -117,13 +117,20 @@ element singletonlayoutmanagerObj::implObj::get_list_element(ONLY IN_THREAD)
 				std::tuple{e, n};
 			});
 
-		e->impl->initialize_if_needed(IN_THREAD);
+		auto initialized=e->impl->initialize_if_needed(IN_THREAD);
 
+		if (initialized)
+			created(IN_THREAD, e);
 		if (n == 1)
 			return e;
 
 		e->impl->removed_from_container(IN_THREAD);
 	}
+}
+
+void singletonlayoutmanagerObj::implObj::created(ONLY IN_THREAD,
+						 const element &e)
+{
 }
 
 void singletonlayoutmanagerObj::implObj

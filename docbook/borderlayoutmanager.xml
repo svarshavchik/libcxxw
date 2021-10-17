@@ -29,7 +29,7 @@ See COPYING for distribution information.
 
   <para>
     The border layout manager has an option of adding a title to the border.
-    This visual frames related widgets, and gives them a title.
+    This visually frames related widgets together and gives them a title.
   </para>
 
   <blockquote>
@@ -52,19 +52,25 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      <classname>&ns;::w::new_borderlayoutmanager</classname>'s constructor's
-      parameter is a callable object or a lambda. The lambda receives one
-      parameter, a &factory;. The callable object must use the factory
-      to create exactly one widget:
+      <classname>&ns;::w::new_borderlayoutmanager</classname>'s creates
+      an empty container. The usual pattern is to have the &creator;
+      get the constructed container's border layout manager and use
+      its <methodname>replace</methodname>() to obtain a &factory; that
+      creates exactly one widget. But that widget can be another &container;
+      that, for example, uses the
+      <link linkend="gridlayoutmanager">grid layout mamanager</link>. Thie
+      results in a border around an entire container of widgets:
     </para>
 
     <blockquote>
       <informalexample>
 	<programlisting>
-&ns;::w::new_borderlayoutmanager nblm{
+factory->create_container(
     [&amp;]
-    (const &ns;::w::factory &amp;f)
+    (const &ns;::w::container &amp;c)
     {
+        auto f=c->borderlayout()->replace();
+
         &ns;::w::new_gridlayoutmanager nglm;
 
         f-&gt;create_container([]
@@ -73,17 +79,24 @@ See COPYING for distribution information.
                                     // ...
                                },
                               nglm);
-    }
-};</programlisting>
+    },
+    &ns;::w::new_borderlayoutmanager{}
+);</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
-      This is the typical way to create a border.
-      The lambda uses the factory to create a &container; that uses the grid
+      This is the typical way to create a border. The &creator; uses
+      <methodname>replace</methodname>() to get the new contain's &factory;.
+      The border layout manager always manages exactly one widget. Another
+      widget created by the factory replaces, and takes the place of the
+      previous one.
+      The initial <methodname>replace</methodname>() installs the border
+      layout manager's initial widget, and
+      the lambda uses the factory to create a &container; that uses the grid
       layout manager, then proceeds to initialize the grid.
-      The border layout manager draws a border around a widget,
-      but this diplay widget could be a &container; of other widgets.
+      The border layout manager draws a border around a single widget,
+      but this widget could be a &container; of other widgets.
     </para>
 
     <para>
@@ -95,7 +108,7 @@ See COPYING for distribution information.
     <blockquote>
       <informalexample>
 	<programlisting>
-&ns;::w::container c=f-&gt;create_container([](const auto &amp;){}, nblm);</programlisting>
+&ns;::w::container c=f-&gt;create_container(creator, nblm);</programlisting>
       </informalexample>
     </blockquote>
 
@@ -106,10 +119,9 @@ See COPYING for distribution information.
       lambda to create the widget with the border.
       As always, <methodname>create_container</methodname>()
       invokes the &creator; to initialize the contents of the new container.
-      However <classname>&ns;::w::new_borderlayoutmanager</classname>'s
-      lambda already did pretty much the entire job.
-      In the case of the border layout manager the &creator; is usually
-      empty; or perhaps it <methodname>show</methodname>()'s the new container.
+      In the case of the border layout manager the &creator; typically
+      retrieves the <methodname>borderlayout</methodname>() to create the
+      initial widget in the container.
     </para>
   </section>
 
@@ -128,13 +140,7 @@ See COPYING for distribution information.
     <blockquote>
       <informalexample>
 	<programlisting>
-&ns;::w::new_borderlayoutmanager nblm{
-    [&amp;]
-    (const &ns;::w::factory &amp;f)
-    {
-         // ...
-    }
-};
+&ns;::w::new_borderlayoutmanager nblm;
 
 nblm.title("Hello world");</programlisting>
       </informalexample>
@@ -187,7 +193,8 @@ blm-&gt;update_title("Lorem Ipsum");</programlisting>
 
       <para>
 	The border layout manager's <methodname>update_title</methodname>()
-	replaces the container's current title. The title should not be an
+	replaces the container's current title. It is recommended that
+	the title should not be an
 	empty string, and bordered containers that got created without a title
 	should not use <methodname>update_title</methodname> to specify a
 	title after their creation. Adding or removing a title
@@ -199,20 +206,21 @@ blm-&gt;update_title("Lorem Ipsum");</programlisting>
       <note>
 	<para>
 	  An untitled border widget's default background color gets set when
-	  the bordered widget gets created. The border layout manager inherits
+	  the bordered widget gets created by
+	  <methodname>replace</methodname>()'d factory.
+	  The border layout manager inherits
 	  from the utility singleton layout manager object, which implements
-	  methods for replacing the widget in the container. The default
-	  bordered widget's background color gets installed only in the
-	  border layout manager's container's initial widget. The singleton
-	  layout manager's <methodname>replace</methodname>() should be
-	  considered as undocumented.
+	  methods for replacing the widget in the container. The border
+	  layout manager overrides the new widget's background color if there's
+	  no title, and explicitly removes the widget's background color
+	  if there is a non-empty title.
 	</para>
 
 	<para>
-	  The established approach to modifying the contents of a bordered
+	  A preferred approach to modifying the contents of a bordered
 	  widget is to use
-	  <classname>&ns;::w::new_borderlayoutmanager</classname>'s
-	  constructor's callback to create a discrete container, with a
+	  <classname>&ns;::w::new_borderlayoutmanager</classname>
+	  &creator; to create a discrete container, with a
 	  stock grid layout manager, and use the grid layout manager to
 	  control the contents inside the border.
 	  The <link linkend="pagelayoutmanager">page</link>,

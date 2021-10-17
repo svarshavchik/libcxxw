@@ -204,6 +204,10 @@ public:
 	vector<borderlayoutmanager_generator
 	       > borderlayout_parseconfig(const ui::parser_lock &lock);
 
+	//! Parser for singleton layout manager generator.
+	vector<singletonlayoutmanager_generator
+	       > singletonlayout_parseconfig(const ui::parser_lock &lock);
+
 	//! Parser for menu bar layout manager generator.
 	vector<menubarlayoutmanager_generator
 	       > menubarlayout_parseconfig(const ui::parser_lock &lock);
@@ -405,6 +409,10 @@ private:
 	new_booklayoutmanager_generator
 	new_booklayout_parser(const ui::parser_lock &lock);
 
+	//! Generate a single singleton layout manager instruction.
+	singletonlayoutmanager_generator
+	singletonlayout_parser(const ui::parser_lock &lock);
+
 	//! Generate a single new_list_or_combobox_layoutmanager instruction.
 	new_list_or_combobox_layoutmanager_generator
 	new_list_or_combobox_layout_parser(const ui::parser_lock &lock);
@@ -455,6 +463,18 @@ private:
 
 
 public:
+	//! Return compiled factory generators.
+
+	//! Extract single_value() from element, and look it up in
+	//! factory_generators, returning the generators. If it doesn't
+	//! exist, search for them in uncompiled_elements, compile them, put
+	//! them into factory_generators, and return them.
+
+	const_vector<factory_generator
+		     > lookup_factory_generators(const ui::parser_lock &lock,
+						 const char *element,
+						 const char *parent);
+
 	//! Return compiled grid factory generators.
 
 	//! Extract single_value() from element, and look it up in
@@ -661,6 +681,13 @@ public:
 				   const char *parent);
 
 private:
+	//! Execute <replace>
+
+	static void singletonlayout_replace(const singletonlayoutmanager &,
+					    uielements &,
+					    const const_vector
+					    <factory_generator> &);
+
 	//! Execute <append_row>.
 
 	//! Executed by the compiled <append_row>.

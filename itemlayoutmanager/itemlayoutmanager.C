@@ -82,7 +82,7 @@ static auto create_new_itembutton(const ref<itemlayoutmanagerObj::implObj>
 		 });
 
 	auto blm=ref<borderlayoutmanagerObj::implObj>::create
-		(new_itembutton_impl, new_itembutton_impl, b,
+		(new_itembutton_impl, new_itembutton_impl, std::nullopt, b,
 		 halign::center, valign::middle);
 
 	return itembutton::create(new_itembutton_impl, blm, b);

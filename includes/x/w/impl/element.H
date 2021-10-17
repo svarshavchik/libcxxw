@@ -1110,12 +1110,15 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Invoke initialize(), if necessary.
 
-	inline void initialize_if_needed(ONLY IN_THREAD)
+	//! Returns "true" if this widget was initialized (first time
+	//! its container looked at it).
+
+	inline bool initialize_if_needed(ONLY IN_THREAD)
 	{
 		auto &flag=data(IN_THREAD).initialized;
 
 		if (flag)
-			return; // Already initialized
+			return false; // Already initialized
 
 		flag=true;
 
@@ -1124,6 +1127,8 @@ class elementObj::implObj : public element_drawObj,
 
 		schedule_update_visibility(IN_THREAD);
 		initialize_or_log_exception(IN_THREAD);
+
+		return true;
 	}
 
 	//! Return myself.

@@ -168,7 +168,10 @@ create_peepholed_focusable_with_frame_impl
 			 ff->show();
 
 			 auto blm_impl=ref<borderlayoutmanagerObj::implObj>
-				 ::create(pfc_impl, pfc_impl, ff, halign::fill,
+				 ::create(pfc_impl, pfc_impl,
+					  std::nullopt,
+					  ff,
+					  halign::fill,
 					  valign::fill);
 
 			 auto pfc=container::create(pfc_impl, blm_impl);
