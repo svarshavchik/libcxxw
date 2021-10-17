@@ -11,6 +11,7 @@
 #include <x/w/factoryfwd.H>
 #include <x/w/uielementsfwd.H>
 #include <x/w/uigeneratorsfwd.H>
+#include <x/w/menufwd.H>
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
@@ -35,6 +36,18 @@ public:
 
 	//! Destructor
 	~menubarlayoutmanagerObj() LIBCXX_HIDDEN;
+
+	//! How many menus there are.
+	size_t menus() const;
+
+	//! How many menus there are in the right section.
+	size_t right_menus() const;
+
+	//! Return the given menu
+	menu get_menu(size_t n) const;
+
+	//! Return the given menu
+	menu get_right_menu(size_t n) const;
 
 	//! Append new menus.
 

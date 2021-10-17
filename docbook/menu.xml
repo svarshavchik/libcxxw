@@ -153,25 +153,30 @@ See COPYING for distribution information.
       that represents the new menu in the menu bar.
     </para>
 
-    <para>
-      Constructing a
-      <ulink url="&link-x--w--menubar-lock;"><classname>&ns;::w::menubar_lock</classname></ulink>
-      blocks the menu bar from other execution threads, at which point
-      its <methodname>get_menu</methodname>() returns the
-      <classname>&ns;::w::menu</classname> elements.
-    </para>
+    <section id="menubarget">
+      <title>Retrieving the existing menus.</title>
 
-    <para>
-      The menu bar has a second section that's aligned against the right
-      margin, the typical location for a <quote>Help</quote> menu.
-      <methodname>append_right_menus</methodname>(),
-      <methodname>insert_right_menus</methodname>() and
-      <methodname>remove_right_menu</methodname>() are equivalent
-      <classname>&ns;::w::menubarfactory</classname> methods for the
-      second section (with <methodname>get_right_menu</methodname>() picking
-      up the slack in the
-      <classname>&ns;:w::menubar_lock</classname>.
-    </para>
+      <para> <methodname>get_menu</methodname>() returns the
+	<classname>&ns;::w::menu</classname> widgets.
+      </para>
+
+      <para>
+	The menu bar has a second section that's aligned against the right
+	margin, the typical location for a <quote>Help</quote> menu.
+	<methodname>append_right_menus</methodname>(),
+	<methodname>insert_right_menus</methodname>() and
+	<methodname>remove_right_menu</methodname>() are equivalent
+	<classname>&ns;::w::menubarfactory</classname> methods for the
+	second section (with <methodname>get_right_menu</methodname>()
+	returning them).
+      </para>
+
+      <para>
+	<methodname>menus</methodname>() and
+	<methodname>right_menus</methodname>() return the number of menus
+	in each menu bar section.
+      </para>
+    </section>
   </section>
 
   <section id="menulayoutmanager">

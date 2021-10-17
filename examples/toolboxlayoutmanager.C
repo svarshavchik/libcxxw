@@ -110,10 +110,8 @@ public:
 		// menu #0, "View" menu is menu #1, and its item #0 is the
 		// "Toolbox" item. Update its selection status accordingly.
 
-		auto view_menu=x::w::menubar_lock
-			{
-			 main_window->get_menubarlayoutmanager()
-			}.get_menu(1)->listlayout();
+		auto view_menu=main_window->get_menubarlayoutmanager()
+			->get_menu(1)->listlayout();
 
 		view_menu->selected(0, flag);
 	}

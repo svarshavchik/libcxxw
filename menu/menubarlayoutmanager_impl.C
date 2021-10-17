@@ -79,11 +79,8 @@ layoutmanager menubarlayoutmanagerObj::implObj::create_public_object()
 }
 
 void menubarlayoutmanagerObj::implObj::initialize(menubarlayoutmanagerObj
-						  *public_object,
-						  menubar_lock &lock)
+						  *public_object)
 {
-	grid_map_t::lock grid_lock{public_object->impl->grid_map};
-
 	auto f=append_row(public_object);
 
 	row_alignment(0, valign::middle);
@@ -98,8 +95,7 @@ menu menubarlayoutmanagerObj::implObj
       const function<menubarfactoryObj::menu_content_creator_t>
       &content_creator,
       const const_popup_list_appearance &new_popup_list_appearance,
-      const shortcut &sc,
-      menubar_lock &lock)
+      const shortcut &sc)
 {
 	// Start by creating the popup first.
 

@@ -241,10 +241,7 @@ init_containers(const container_impl &parent,
 
 	menubarlayoutmanager mblm=menubar->get_layoutmanager();
 
-	{
-		menubar_lock lock{mblm};
-		mblm->impl->initialize(&*mblm, lock);
-	}
+	mblm->impl->initialize(&*mblm);
 
 	f->created_internally(menubar);
 

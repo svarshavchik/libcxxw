@@ -74,8 +74,7 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 
 	//! Insert the divider element().
 
-	void initialize(menubarlayoutmanagerObj *public_object,
-			menubar_lock &lock);
+	void initialize(menubarlayoutmanagerObj *public_object);
 
 	//! Adding a new menu.
 
@@ -85,8 +84,7 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 		 const function<menubarfactoryObj::menu_content_creator_t>
 		 &content_creator,
 		 const const_popup_list_appearance &new_popup_list_appearance,
-		 const shortcut &sc,
-		 menubar_lock &lock);
+		 const shortcut &sc);
 
 	//! Fix tabbing order of a newly-added element.
 

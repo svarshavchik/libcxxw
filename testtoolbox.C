@@ -125,10 +125,8 @@ public:
 	void toolbox_visible(bool flag)
 	{
 		auto view_menu=
-			LIBCXX_NAMESPACE::w::menubar_lock
-			{
-			 main_window->get_menubarlayoutmanager()
-			}.get_menu(1)->listlayout();
+			main_window->get_menubarlayoutmanager()
+			->get_menu(1)->listlayout();
 
 		view_menu->selected(0, flag);
 	}

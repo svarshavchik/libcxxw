@@ -273,9 +273,7 @@ void remove_help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
 	auto lm=main_window->get_menubarlayoutmanager();
 
-	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
-
-	if (lock.right_menus())
+	if (lm->right_menus())
 		lm->remove_right_menu(0);
 }
 
@@ -283,9 +281,7 @@ void remove_view_menu(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
 	auto lm=main_window->get_menubarlayoutmanager();
 
-	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
-
-	if (lock.menus() > 1)
+	if (lm->menus() > 1)
 		lm->remove_menu(1);
 }
 
@@ -300,9 +296,7 @@ void add_recent(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 	auto s=o.str();
 
-	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
-
-	lock.get_menu(0)->listlayout()->submenu_listlayout(6)
+	lm->get_menu(0)->listlayout()->submenu_listlayout(6)
 		->append_items
 		({
 			[s](THREAD_CALLBACK, const auto &info)
@@ -662,8 +656,6 @@ void testmenu()
 
 			 auto mb=main_window->get_menubarlayoutmanager();
 
-			 LIBCXX_NAMESPACE::w::menubar_lock mbl{mb};
-
 			 auto f=mb->append_menus();
 
 			 size_t options_menu_item;
@@ -689,8 +681,8 @@ void testmenu()
 						    options_menu_item);
 				  });
 
-			 if (mbl.get_menu(0) != file_m ||
-			     mbl.get_menu(1) != view_m)
+			 if (mb->get_menu(0) != file_m ||
+			     mb->get_menu(1) != view_m)
 				 abort();
 
 			 if (getpid() & 1)
@@ -705,15 +697,13 @@ void testmenu()
 						    factory);
 				  });
 
-			 if (help_m != mbl.get_right_menu(0))
+			 if (help_m != mb->get_right_menu(0))
 				 abort();
 
 			 main_window->get_menubar()->show();
 
-			 LIBCXX_NAMESPACE::w::menubar_lock lock{mb};
-
-			 std::cout << lock.menus() << std::endl;
-			 std::cout << lock.right_menus() << std::endl;
+			 std::cout << mb->menus() << std::endl;
+			 std::cout << mb->right_menus() << std::endl;
 		 });
 
 	main_window->set_window_title("Hello world!");

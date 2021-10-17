@@ -45,6 +45,9 @@ public:
 	//! Internal implementation object.
 	const ref<implObj> impl;
 
+	//! Lock on the underlying grid
+	grid_map_t::lock grid_lock;
+
 	//! Constructor
 	gridlayoutmanagerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 

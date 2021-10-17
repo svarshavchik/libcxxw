@@ -215,16 +215,8 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 	main_window->get_menubar()->show();
 
-	// A menu bar lock blocks other execution threads from accessing
-	// the menu bar, obtaining a persistent snapshot of its contents.
-	// (Other threads can still modify the individual menus, if they
-	// already have their layout manager, but the menu bar itself is
-	// locked.
-
-	x::w::menubar_lock lock{mb};
-
-	std::cout << lock.menus() << " menus on the left side" << std::endl;
-	std::cout << lock.right_menus() << " menus on the right side" << std::endl;
+	std::cout << mb->menus() << " menus on the left side" << std::endl;
+	std::cout << mb->right_menus() << " menus on the right side" << std::endl;
 }
 
 // Factored out for readability.

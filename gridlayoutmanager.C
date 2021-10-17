@@ -43,7 +43,8 @@ layout_impl new_gridlayoutmanager::create(const container_impl &parent) const
 }
 
 gridlayoutmanagerObj::gridlayoutmanagerObj(const ref<implObj> &impl)
-	: layoutmanagerObj{impl}, impl{impl}
+	: layoutmanagerObj{impl}, impl{impl},
+	  grid_lock{impl->grid_map}
 {
 }
 
