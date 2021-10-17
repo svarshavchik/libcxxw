@@ -720,7 +720,7 @@ elementObj::implObj::can_be_moved(ONLY IN_THREAD,
 	// is the end of the road, in terms of position update processing.
 	// we clear the movable_rectangle at this point.
 
-	auto rectangle=data(IN_THREAD).movable_rectangle;
+	const auto rectangle=data(IN_THREAD).movable_rectangle;
 
 	data(IN_THREAD).movable_rectangle.reset();
 
@@ -734,11 +734,25 @@ elementObj::implObj::can_be_moved(ONLY IN_THREAD,
 		return;
 
 	// Sanity check on the coordinates of the movable_rectangle
+	//
+	// has_scrollable_window_pixmap_rectangle, before this element was
+	// resized, verified that the movable_rectangle only gets set if
+	// the entire element is not obstructed (inside a peephole and
+	// partially or fully clipped)
+	//
+	// We now verify that the element_viewport is a single rectangle
+	// and its size matches the element width. This proves that the
+	// widget is not going to get obstructed.
 
-	if (rectangle->r.x < 0 || rectangle->r.y < 0)
-	{
+	auto &di=get_draw_info(IN_THREAD);
+
+	if (di.element_viewport.size() != 1)
 		return;
-	}
+	auto &viewport_rectangle=*di.element_viewport.begin();
+
+	if (viewport_rectangle.width != c.width ||
+	    viewport_rectangle.height != c.height)
+		return;
 
 	dim_t max_x=dim_t::truncate(rectangle->r.x+rectangle->r.width);
 	dim_t max_y=dim_t::truncate(rectangle->r.y+rectangle->r.height);
@@ -812,6 +826,17 @@ elementObj::implObj
 	ret.emplace(*di.element_viewport.begin());
 
 	auto &viewport_rectangle=ret->r;
+
+	if (viewport_rectangle.x < 0 ||
+	    viewport_rectangle.y < 0 ||
+	    viewport_rectangle.width !=
+	    data(IN_THREAD).current_position.width ||
+	    viewport_rectangle.height !=
+	    data(IN_THREAD).current_position.height)
+	{
+		ret.reset();
+		return ret;
+	}
 
 	if (!current_background_color(IN_THREAD)->is_scrollable_background())
 	{
