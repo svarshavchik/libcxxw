@@ -936,6 +936,7 @@ libcxxw_la_SOURCES=\
 	uicompiler_new_borderlayout.C		    \
 	uicompiler_new_custom_comboboxlayout.C	    \
 	uicompiler_new_editable_comboboxlayout.C    \
+	uicompiler_new_gridlayout.C	            \
 	uicompiler_new_itemlayout.C		    \
 	uicompiler_new_listlayout.C		    \
 	uicompiler_new_list_or_comboboxlayout.C	    \

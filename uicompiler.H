@@ -259,6 +259,11 @@ public:
 	vector<toolboxlayoutmanager_generator
 	       > toolboxlayout_parseconfig(const ui::parser_lock &lock);
 
+	//! Parser for the new grid layout manager generator
+
+	vector<new_gridlayoutmanager_generator
+	       > new_gridlayout_parseconfig(const ui::parser_lock &lock);
+
 	//! Parser for the new book layout manager generator
 
 	vector<new_booklayoutmanager_generator
@@ -404,6 +409,10 @@ private:
 	//! Generate a single border layout manager instruction.
 	borderlayoutmanager_generator
 	borderlayout_parser(const ui::parser_lock &lock);
+
+	//! Generate a single new_gridlayoutmanager instruction.
+	new_gridlayoutmanager_generator
+	new_gridlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_booklayoutmanager instruction.
 	new_booklayoutmanager_generator

@@ -126,6 +126,8 @@ List of values:
     <name>gridlayout</name>
     <category>grid</category>
 
+    <config>new_gridlayout</config>
+
     <parameter>
       <type>gridlayoutmanager</type>
       <name>layout</name>
@@ -2809,6 +2811,67 @@ List of values:
 	<type>to_size_t</type>
       </parameter>
     </function>
+  </parser>
+
+  <!-- new_gridlayoutmanager initialization -->
+
+  <parser type="new_layoutmanager">
+    <name>new_gridlayout</name>
+
+    <parameter>
+      <type>new_gridlayoutmanager_plainptr</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>col_padding</name>
+      <object>layout</object>
+      <invoke>col_padding=</invoke>
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+	<xpath>.</xpath>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>row_padding</name>
+      <object>layout</object>
+      <invoke>row_padding=</invoke>
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+	<xpath>.</xpath>
+	<lookup>
+	  <function>compiler.generators-&gt;lookup_dim</function>
+	  <default_params />
+	</lookup>
+      </parameter>
+    </function>
+
+    <function>
+      <name>synchronized_columns</name>
+      <object>layout</object>
+      <invoke>synchronized_columns=</invoke>
+
+      <parameter>
+	<name>axis</name>
+	<type>single_value</type>
+	<xpath>.</xpath>
+	<before-passing-parameter>uicompiler::lookup_synchronized_axis(elements, </before-passing-parameter>
+	<after-passing-parameter>)</after-passing-parameter>
+      </parameter>
+    </function>
+
   </parser>
 
   <!-- new_booklayoutmanager initialization -->

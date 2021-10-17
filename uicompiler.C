@@ -218,12 +218,22 @@ struct uicompiler::gridlayoutmanager_functions {
 
 	struct generators : generators_base {
 
+		// Generators for the contents of the new_booklayoutmanager
+
+		const_vector<new_gridlayoutmanager_generator
+			     > new_gridlayoutmanager_vector;
+
 		const_vector<gridlayoutmanager_generator> generator_vector;
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
+			  new_gridlayoutmanager_vector
+			{
+				create_newgridlayoutmanager_vector(compiler,
+								   lock)
+			},
 			  generator_vector{compiler
 					   .lookup_gridlayoutmanager_generators
 					   (lock, name)}
@@ -233,13 +243,22 @@ struct uicompiler::gridlayoutmanager_functions {
 		container create_container(const factory &f,
 					   uielements &factories) const
 		{
+			auto nglm=new_layoutmanager(factories);
+
+			// Generate the contents of the new_gridlayoutmanager.
+
+			for (const auto &g:*new_gridlayoutmanager_vector)
+			{
+				g(&nglm, factories);
+			}
+
 			return f->create_container
 				([&, this]
 				 (const auto &container)
 				 {
 					 generate(container, factories);
 				 },
-				 new_gridlayoutmanager{});
+				 nglm);
 		}
 
 		inline new_gridlayoutmanager new_layoutmanager(uielements &)

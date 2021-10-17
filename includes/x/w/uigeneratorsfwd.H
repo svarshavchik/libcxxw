@@ -178,6 +178,17 @@ typedef functionref<void (const borderlayoutmanager &, uielements &)
 typedef functionref<void (const singletonlayoutmanager &, uielements &)
 		    > singletonlayoutmanager_generator;
 
+//! Pseudo-ref used to initialize a new_gridlayoutmanager parameter
+
+typedef new_gridlayoutmanager *new_gridlayoutmanager_plainptr;
+
+//! Generate something to initialize a new_gridlayoutmanager
+
+//! \see uigenerators
+typedef functionref<void (const new_gridlayoutmanager_plainptr &layout,
+			  uielements &elements)
+		    > new_gridlayoutmanager_generator;
+
 //! Pseudo-ref used to initialize a new_booklayoutmanager parameter
 
 typedef new_booklayoutmanager *new_booklayoutmanager_plainptr;

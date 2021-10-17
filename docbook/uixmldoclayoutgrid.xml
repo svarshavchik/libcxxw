@@ -14,6 +14,7 @@ See COPYING for distribution information.
   <blockquote>
     <informalexample>
       <programlisting><![CDATA[
+<dim id="no-padding">0</dim>
 <dim id="extra-padding">2.0</dim>
 
 <layout type="grid" id="main-window-grid">
@@ -39,6 +40,9 @@ See COPYING for distribution information.
 <container>
   <name>main-window-grid</name>
   <type>grid</type>
+  <config>
+    <row_padding>no-padding</row_padding>
+  </config>
 </container>]]>
 
 &ns;::w::gridlayoutmanager glm=container->get_layoutmanager();
@@ -65,7 +69,103 @@ glm->generate("main-window-grid", generator, elements);</programlisting>
       <tag class='attribute'>type</tag>=<quote>grid</quote>
       creates a container that uses the
       <link linkend="gridlayoutmanager">grid layout manager</link>.
+      An optional
+      <tag class='element'>config</tag> element sets non-default values
+      of the
+      <ulink url="&link-x--w--new-gridlayoutmanager;"><classname>&ns;::w::new_gridlayoutmanager</classname></ulink>
+      that creates the container:
     </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><tag class='element'>col_padding</tag></term>
+	<listitem>
+	  <para>
+	    Initializes
+	    <ulink url="&link-x--w--new-gridlayoutmanager;"><classname>&ns;::w::new_gridlayoutmanager</classname></ulink>'s
+	    <varname>col_paddings</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <col_padding>no-padding</col_padding>
+</config>
+
+<!-- ... -->
+
+<dim id="no-padding">0</dim>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The <tag class='element'>col_padding</tag> element references a
+	    <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>
+	    element in the theme file.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><tag class='element'>row_padding</tag></term>
+	<listitem>
+	  <para>
+	    Initializes
+	    <ulink url="&link-x--w--new-gridlayoutmanager;"><classname>&ns;::w::new_gridlayoutmanager</classname></ulink>'s
+	    <varname>row_paddings</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <row_padding>no-padding</row_padding>
+</config>
+
+<!-- ... -->
+
+<dim id="no-padding">0</dim>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The <tag class='element'>row_padding</tag> element references a
+	    <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag></link>
+	    element in the theme file.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><tag class='element'>synchronized_columns</tag></term>
+	<listitem>
+	  <para>
+	    Initializes
+	    <ulink url="&link-x--w--new-gridlayoutmanager;"><classname>&ns;::w::new_gridlayoutmanager</classname></ulink>'s
+	    <varname>synchronized_columns</varname> object:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <synchronized_columns>table_columns</synchronized_columns>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    All <methodname>generate</methodname>()d grids
+	    with the
+	    same <tag class='element'>synchronized_columns</tag> name
+	    have the
+	    <link linkend="panesynclists">same
+	      <classname>&ns;::w::synchronized_axis</classname>
+	      handle</link>.
+	    The element's name is an opaque label.
+	    <classname>&ns;::w::synchronized_axis</classname> objects
+	    get automatically created, internally, and associated with
+	    their name.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
   </section>
 </section>
 
