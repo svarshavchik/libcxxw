@@ -54,7 +54,7 @@ menubarlayoutmanagerObj::menubarlayoutmanagerObj(const ref<implObj> &impl)
 
 menubarlayoutmanagerObj::~menubarlayoutmanagerObj()
 {
-	impl->check_if_borders_changed(grid_lock);
+	impl->check_if_borders_changed(this);
 }
 
 // Implement menubarfactoryObj::implObj.

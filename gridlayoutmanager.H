@@ -239,11 +239,13 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Implement default_row_border()
 
-	void default_row_border(size_t row, const border_arg &arg);
+	void default_row_border(gridlayoutmanagerObj *public_object,
+				size_t row, const border_arg &arg);
 
 	//! Implement default_col_border()
 
-	void default_col_border(size_t col, const border_arg &arg);
+	void default_col_border(gridlayoutmanagerObj *public_object,
+				size_t col, const border_arg &arg);
 
 	class elementsObj;
 

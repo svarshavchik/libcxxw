@@ -482,9 +482,10 @@ void gridlayoutmanagerObj::implObj
 }
 
 void gridlayoutmanagerObj::implObj
-::default_row_border(size_t row, const border_arg &arg)
+::default_row_border(gridlayoutmanagerObj *public_object,
+		     size_t row, const border_arg &arg)
 {
-	grid_map_t::lock grid_lock{grid_map};
+	auto &grid_lock=public_object->grid_lock;
 
 	auto border_impl=get_current_border(arg);
 
@@ -493,9 +494,10 @@ void gridlayoutmanagerObj::implObj
 }
 
 void gridlayoutmanagerObj::implObj
-::default_col_border(size_t col, const border_arg &arg)
+::default_col_border(gridlayoutmanagerObj *public_object,
+		     size_t col, const border_arg &arg)
 {
-	grid_map_t::lock grid_lock{grid_map};
+	auto &grid_lock=public_object->grid_lock;
 
 	auto border_impl=get_current_border(arg);
 
@@ -525,7 +527,7 @@ void gridlayoutmanagerObj::implObj
 				     const element_impl &child,
 				     bool flag)
 {
-	grid_map_t::lock lock(grid_map);
+	grid_map_t::lock lock{grid_map};
 
 	auto &lookup_table=(*lock)->get_lookup_table();
 
@@ -552,7 +554,7 @@ void gridlayoutmanagerObj::implObj
 				     const element_impl &child,
 				     inherited_visibility_info &info)
 {
-	grid_map_t::lock lock(grid_map);
+	grid_map_t::lock lock{grid_map};
 
 	auto &lookup_table=(*lock)->get_lookup_table();
 

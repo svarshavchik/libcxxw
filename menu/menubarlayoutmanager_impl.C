@@ -46,9 +46,11 @@ menubarlayoutmanagerObj::implObj::implObj(const ref<menubar_container_implObj>
 
 menubarlayoutmanagerObj::implObj::~implObj()=default;
 
-void menubarlayoutmanagerObj::implObj::check_if_borders_changed(grid_map_t::lock
-								&grid_lock)
+void menubarlayoutmanagerObj::implObj
+::check_if_borders_changed(gridlayoutmanagerObj *public_object)
 {
+	auto &grid_lock=public_object->grid_lock;
+
 	// We ignore the divider element for the purpose of this calculation.
 
 	bool should_be_present=(*grid_lock)->elements.at(0).size() > 1;
@@ -59,7 +61,7 @@ void menubarlayoutmanagerObj::implObj::check_if_borders_changed(grid_map_t::lock
 	if (should_be_present != info(grid_lock).borders_present)
 	{
 		if (should_be_present)
-			default_row_border(1,
+			default_row_border(public_object, 1,
 					   appearance->menubar_border);
 		else
 			(*grid_lock)->remove_all_defaults();

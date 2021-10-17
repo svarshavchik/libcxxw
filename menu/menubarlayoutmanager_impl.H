@@ -64,7 +64,7 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 
 	//! Invoked from the public object's destructor.
 
-	void check_if_borders_changed(grid_map_t::lock &grid_lock);
+	void check_if_borders_changed(gridlayoutmanagerObj *public_object);
 
 	//! Create the menubarlayoutmanager object.
 

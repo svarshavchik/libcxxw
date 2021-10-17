@@ -167,7 +167,7 @@ void gridlayoutmanagerObj::default_row_border(size_t row,
 					      const border_arg &arg)
 {
 	modified=true;
-	impl->default_row_border(row, arg);
+	impl->default_row_border(this, row, arg);
 }
 
 void gridlayoutmanagerObj::requested_row_height(size_t row, int percentage)
@@ -200,7 +200,7 @@ void gridlayoutmanagerObj::default_col_border(size_t col,
 					      const border_arg &arg)
 {
 	modified=true;
-	impl->default_col_border(col, arg);
+	impl->default_col_border(this, col, arg);
 }
 
 void gridlayoutmanagerObj::requested_col_width(size_t col, int percentage)
