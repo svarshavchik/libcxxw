@@ -207,11 +207,10 @@ print_dialog main_windowObj
 								future_parent)
 			 };
 
-			 tmpl.creators.emplace
+			 tmpl.layout_creators.emplace
 				 ("select-printer-field",
 				  [parent=future_parent]
-				  (const auto &,
-				   const listlayoutmanager &lm)
+				  (const listlayoutmanager &lm)
 				  {
 					  lm->on_selection_changed
 						  ([=]

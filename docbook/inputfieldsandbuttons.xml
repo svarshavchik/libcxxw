@@ -412,7 +412,7 @@ factory->create_input_field("", password_conf);</programlisting>
       <varname>alignment</varname> and
       <varname>direction</varname>
       work just like
-      <link linkend="bidirectinaltext"><classname>&ns;::w::label_config</classname></link>'s.
+      <link linkend="bidirectoinaltext"><classname>&ns;::w::label_config</classname></link>'s.
       An additional <varname>directional_format</varname> setting is an
       <ulink url="&link-enum-x--w-bidi-format;"><classname>&ns;::w::bidi_format</classname></ulink>
       value that

@@ -148,9 +148,15 @@ private:
 							const char *type);
 
 public:
-	//! Parser for grid layout manager generator.
-	vector<gridlayoutmanager_generator
-	       > gridlayout_parseconfig(const ui::parser_lock &lock);
+#include "uicompiler_layoutparsers.inc.H"
+
+	//! Generate a single layout manager instruction.r
+	functionref<void (const layoutmanager &layout,  uielements &elements)>
+	layout_parser(const ui::parser_lock &lock);
+
+	vector<functionref<void (const layoutmanager &layout,
+				 uielements &elements)>>
+	layout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for base factory generator.
 	vector<factory_generator
@@ -184,10 +190,6 @@ public:
 	vector<menubarfactory_generator
 	       > menubarfactory_parseconfig(const ui::parser_lock &lock);
 
-	//! Parser for book layout manager generator.
-	vector<booklayoutmanager_generator
-	       > booklayout_parseconfig(const ui::parser_lock &lock);
-
 	//! Parser for page factory generator.
 	vector<pagefactory_generator
 	       > pagefactory_parseconfig(const ui::parser_lock &lock);
@@ -196,21 +198,9 @@ public:
 	vector<bookpagefactory_generator
 	       > bookpagefactory_parseconfig(const ui::parser_lock &lock);
 
-	//! Parser for list layout manager generator.
-	vector<listlayoutmanager_generator
-	       > listlayout_parseconfig(const ui::parser_lock &lock);
-
-	//! Parser for border layout manager generator.
-	vector<borderlayoutmanager_generator
-	       > borderlayout_parseconfig(const ui::parser_lock &lock);
-
 	//! Parser for singleton layout manager generator.
 	vector<singletonlayoutmanager_generator
 	       > singletonlayout_parseconfig(const ui::parser_lock &lock);
-
-	//! Parser for menu bar layout manager generator.
-	vector<menubarlayoutmanager_generator
-	       > menubarlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Wrapper for listlayout_parseconfig()
 
@@ -224,40 +214,6 @@ public:
 	listlayout_parseconfig(const ui::parser_lock &lock,
 			       const char *element,
 			       const char *parent);
-
-	//! Parser for standard combobox layout manager generator.
-	vector<standard_comboboxlayoutmanager_generator
-	       > standard_comboboxlayout_parseconfig(const ui::parser_lock
-						     &lock);
-
-	//! Parser for editable combobox layout manager generator.
-	vector<editable_comboboxlayoutmanager_generator
-	       > editable_comboboxlayout_parseconfig(const ui::parser_lock
-						     &lock);
-
-	//! Parser for table layout manager generator.
-	vector<tablelayoutmanager_generator
-	       > tablelayout_parseconfig(const ui::parser_lock &lock);
-
-	//! Parser for the pane layout manager generator
-
-	vector<panelayoutmanager_generator
-	       > panelayout_parseconfig(const ui::parser_lock &lock);
-
-	//! Parser for the item layout manager generator
-
-	vector<itemlayoutmanager_generator
-	       > itemlayout_parseconfig(const ui::parser_lock &lock);
-
-	//! Parser for the page layout manager generator
-
-	vector<pagelayoutmanager_generator
-	       > pagelayout_parseconfig(const ui::parser_lock &lock);
-
-	//! Parser for the toolbox layout manager generator
-
-	vector<toolboxlayoutmanager_generator
-	       > toolboxlayout_parseconfig(const ui::parser_lock &lock);
 
 	//! Parser for the new grid layout manager generator
 
@@ -338,10 +294,6 @@ private:
 			     uielements &,
 			     const std::string &name);
 
-	//! Generate a single grid layout manager instruction.
-	gridlayoutmanager_generator
-	gridlayout_parser(const ui::parser_lock &lock);
-
 	//! Generate a single grid factory instruction.
 	gridfactory_generator gridfactory_parser(const ui::parser_lock &lock);
 
@@ -358,46 +310,6 @@ private:
 	//! Generate a single factory instruction.
 	factory_generator factory_parser(const ui::parser_lock &lock);
 
-	//! Generate a single list layout manager instruction.
-	listlayoutmanager_generator
-	listlayout_parser(const ui::parser_lock &lock);
-
-	//! Generate a single menu bar layout manager instruction.
-	menubarlayoutmanager_generator
-	menubarlayout_parser(const ui::parser_lock &lock);
-
-	//! Generate a single standard combobox layout manager instruction.
-	standard_comboboxlayoutmanager_generator
-	standard_comboboxlayout_parser(const ui::parser_lock &lock);
-
-	//! Generate a single editable combobox layout manager instruction.
-	editable_comboboxlayoutmanager_generator
-	editable_comboboxlayout_parser(const ui::parser_lock &lock);
-
-	//! Generate a single table layout manager instruction.
-	tablelayoutmanager_generator
-	tablelayout_parser(const ui::parser_lock &lock);
-
-	//! Generate a single itemlayoutmanager instruction.
-	itemlayoutmanager_generator
-	itemlayout_parser(const ui::parser_lock &lock);
-
-	//! Generate a single pagelayoutmanager instruction.
-	pagelayoutmanager_generator
-	pagelayout_parser(const ui::parser_lock &lock);
-
-	//! Generate a single toolboxlayoutmanager instruction.
-	toolboxlayoutmanager_generator
-	toolboxlayout_parser(const ui::parser_lock &lock);
-
-	//! Generate a single panelayoutmanager instruction.
-	panelayoutmanager_generator
-	panelayout_parser(const ui::parser_lock &lock);
-
-	//! Generate a single book layout manager instruction.
-	booklayoutmanager_generator
-	booklayout_parser(const ui::parser_lock &lock);
-
 	//! Generate a single page factory instruction.
 	pagefactory_generator
 	pagefactory_parser(const ui::parser_lock &lock);
@@ -405,10 +317,6 @@ private:
 	//! Generate a single book page factory instruction.
 	bookpagefactory_generator
 	bookpagefactory_parser(const ui::parser_lock &lock);
-
-	//! Generate a single border layout manager instruction.
-	borderlayoutmanager_generator
-	borderlayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single new_gridlayoutmanager instruction.
 	new_gridlayoutmanager_generator

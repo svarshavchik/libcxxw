@@ -640,6 +640,33 @@ create_new</xsl:text><xsl:value-of select="name" /><xsl:text>manager_vector(uico
 	</xsl:if>
       </xsl:for-each>
     </exsl:document>
+
+    <exsl:document
+	href="uicompiler_layoutparsers.inc.H"
+	method="text">
+      <xsl:for-each select="parser[@type='layoutmanager']">
+	<xsl:if test="category">
+	  <xsl:text>
+	//! Generate a single </xsl:text>
+	<xsl:value-of select="category" /><xsl:text> layout manager instruction.
+	</xsl:text>
+	<xsl:value-of select="category" /><xsl:text>layoutmanager_generator
+	</xsl:text>
+	<xsl:value-of select="category" /><xsl:text>layout_parser(const ui::parser_lock &amp;lock);
+
+        //! Parse the &lt;config&gt; for the </xsl:text>
+	<xsl:value-of select="category" />
+	<xsl:text> layout manager
+
+	vector&lt;</xsl:text>
+	<xsl:value-of select="category" />
+	<xsl:text>layoutmanager_generator
+		&gt; </xsl:text>
+		<xsl:value-of select="category" />
+		<xsl:text>layout_parseconfig(const ui::parser_lock &amp;lock);&#10;&#10;</xsl:text>
+	</xsl:if>
+      </xsl:for-each>
+    </exsl:document>
   </xsl:template>
 
   <xsl:template name='factory-category'>

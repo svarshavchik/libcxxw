@@ -170,13 +170,11 @@ namespace {
 
 struct generators_base {
 
-	std::string creator;
 	std::string name;
 
 	generators_base(const ui::parser_lock &lock,
 			const std::string &name)
-		: creator{optional_value(lock, "creator", "container")},
-		  name{name} {}
+		: name{name} {}
 
 	layoutmanager get_new_layoutmanager(const container &new_container,
 					    uielements &elements) const
@@ -187,18 +185,6 @@ struct generators_base {
 
 		elements.new_layoutmanagers.insert_or_assign(name, lm);
 
-		if (!creator.empty())
-		{
-			auto iter=elements.creators.find(creator);
-
-			if (iter == elements.creators.end())
-				throw EXCEPTION(gettextmsg
-						(_("Container creator \"%1%\" "
-						   "was not found"),
-						 creator));
-
-			iter->second(new_container, lm);
-		}
 		return lm;
 	}
 };

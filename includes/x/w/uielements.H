@@ -99,14 +99,13 @@ struct uielements {
 	std::unordered_map<std::string,
 			   functionref<void (const factory &)>> factories;
 
-	//! Custom creators for new containers.
+	//! Custom creators for layout managers.
 
 	//! Referenced by name, from the template.
 
 	std::unordered_map<std::string,
-			   functionref<void (const container &,
-					     const layoutmanager &)>
-			   > creators;
+			   functionref<void (const layoutmanager &)>
+			   > layout_creators;
 
 	//! The new elements that get created
 

@@ -122,6 +122,40 @@ List of values:
 -->
 
 <api xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <parser type="layoutmanager">
+    <name>layout</name>
+
+    <parameter>
+      <type>layoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter mutable="1">
+      <type>uielements</type>
+      <name>elements</name>
+    </parameter>
+
+    <function>
+      <name>creator</name>
+      <invoke>invoke_creator</invoke>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>creator</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+      </parameter>
+    </function>
+  </parser>
+
   <parser type="layoutmanager">
     <name>gridlayout</name>
     <category>grid</category>
@@ -624,13 +658,14 @@ List of values:
 	<type>to_size_t</type>
       </parameter>
     </function>
+
+    <use_common>layout</use_common>
   </parser>
 
   <parser type="factory">
     <name>gridfactory</name>
     <category>grid</category>
 
-    <use_common>factory</use_common>
     <parameter>
       <type>gridfactory</type>
       <name>factory</name>
@@ -919,6 +954,8 @@ List of values:
 
       <object>factory</object>
     </function>
+
+    <use_common>factory</use_common>
   </parser>
 
   <parser type="factory">
@@ -1875,6 +1912,7 @@ List of values:
 	<type>to_size_t</type>
       </parameter>
     </function>
+    <use_common>layout</use_common>
   </parser>
 
   <!-- border layout manager parser -->
@@ -1994,6 +2032,7 @@ List of values:
 	<type>compiler.lookup_factory_generators</type>
       </parameter>
     </function>
+    <use_common>layout</use_common>
   </parser>
 
   <!-- page factory -->
@@ -2011,8 +2050,6 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
-
-    <use_common>factory</use_common>
 
     <!-- halign -->
 
@@ -2043,6 +2080,8 @@ List of values:
 	<xpath>.</xpath>
       </parameter>
     </function>
+
+    <use_common>factory</use_common>
   </parser>
 
   <!-- book page factory -->
@@ -2269,6 +2308,7 @@ List of values:
 	<type>to_size_t</type>
       </parameter>
     </function>
+    <use_common>layout</use_common>
   </parser>
 
   <!-- standard combobox layout manager -->
@@ -2331,8 +2371,6 @@ List of values:
       <name>elements</name>
     </parameter>
 
-    <use_common>listlayout</use_common>
-
     <function>
       <name>replace_header</name>
       <invoke>tablelayout_replace_header</invoke>
@@ -2355,6 +2393,8 @@ List of values:
 	<type>compiler.factory_parseconfig</type>
       </parameter>
     </function>
+
+    <use_common>listlayout</use_common>
   </parser>
 
   <!-- panelayoutmanager initialization -->
@@ -2473,6 +2513,7 @@ List of values:
 	<type>compiler.lookup_panefactory_generators</type>
       </parameter>
     </function>
+    <use_common>layout</use_common>
   </parser>
 
   <!-- panefactory initialization -->
@@ -2490,8 +2531,6 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
-
-    <use_common>factory</use_common>
 
     <function>
       <name>appearance</name>
@@ -2514,6 +2553,8 @@ List of values:
       <object>factory</object>
       <invoke>configure_for_new_list</invoke>
     </function>
+
+    <use_common>factory</use_common>
   </parser>
 
   <!-- toolboxfactory initialization -->
@@ -2634,6 +2675,7 @@ List of values:
 	<type>to_size_t</type>
       </parameter>
     </function>
+    <use_common>layout</use_common>
   </parser>
 
   <!-- pagelayoutmanager initialization -->
@@ -2724,6 +2766,7 @@ List of values:
       <object>layout</object>
     </function>
 
+    <use_common>layout</use_common>
   </parser>
 
   <!-- toolboxlayoutmanager initialization -->
@@ -2810,6 +2853,7 @@ List of values:
 	<type>to_size_t</type>
       </parameter>
     </function>
+    <use_common>layout</use_common>
   </parser>
 
   <!-- new_gridlayoutmanager initialization -->
@@ -3078,8 +3122,6 @@ List of values:
       <name>elements</name>
     </parameter>
 
-    <use_common>new_list_or_combobox_layout</use_common>
-
     <function>
       <name>selection_type</name>
       <object>layout</object>
@@ -3264,6 +3306,8 @@ List of values:
 	<scalar>layout</scalar>
       </parameter>
     </function>
+
+    <use_common>new_list_or_combobox_layout</use_common>
   </parser>
 
   <!-- new_custom_comboboxlayoutmanager initialization -->
@@ -3280,8 +3324,6 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
-
-    <use_common>new_list_or_combobox_layout</use_common>
 
     <function>
       <name>optional</name>
@@ -3323,6 +3365,8 @@ List of values:
 	</lookup>
       </parameter>
     </function>
+
+    <use_common>new_list_or_combobox_layout</use_common>
   </parser>
 
   <!-- new_standard_comboboxlayoutmanager initialization -->
@@ -3357,8 +3401,6 @@ List of values:
       <name>elements</name>
     </parameter>
 
-    <use_common>new_custom_comboboxlayout</use_common>
-
     <function>
       <name>input_appearance</name>
       <object>layout</object>
@@ -3374,6 +3416,8 @@ List of values:
 	</lookup>
       </parameter>
     </function>
+
+    <use_common>new_custom_comboboxlayout</use_common>
   </parser>
 
     <!-- new_tablelayoutmanager initialization -->
@@ -3390,8 +3434,6 @@ List of values:
       <type>uielements</type>
       <name>elements</name>
     </parameter>
-
-    <use_common>new_listlayout</use_common>
 
     <function>
       <name>extra_table_appearance</name>
@@ -3462,6 +3504,8 @@ List of values:
 	</lookup>
       </parameter>
     </function>
+
+    <use_common>new_listlayout</use_common>
   </parser>
 
   <!-- new_panelayoutmanager initialization -->
@@ -3891,6 +3935,7 @@ List of values:
 	<type>to_size_t</type>
       </parameter>
     </function>
+    <use_common>layout</use_common>
   </parser>
 
   <!-- Parser for uielements -->

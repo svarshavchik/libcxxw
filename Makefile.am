@@ -929,6 +929,7 @@ libcxxw_la_SOURCES=\
 	uicompiler_gridfactory.C		    \
 	uicompiler_gridlayout.C			    \
 	uicompiler_itemlayout.C			    \
+	uicompiler_layout.C			    \
 	uicompiler_listlayout.C			    \
 	uicompiler_menubarfactory.C		    \
 	uicompiler_menubarlayout.C		    \
@@ -1452,6 +1453,8 @@ xim/ximclient2.inc.C: xim/xim.xml xim/xim.xsl
 	$(XSLTPROC) --stringparam mode received-switch $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient2.inc.C.tmp
 	mv -f xim/ximclient2.inc.C.tmp xim/ximclient2.inc.C
 
+BUILT_SOURCES += uicompiler.stamp.inc.H
+
 uicompiler.stamp.inc.H: uicompiler.xml parseuicompiler.xsl
 	rm -rf uicompiler.inc.H
 	mkdir uicompiler.inc.H
@@ -1488,6 +1491,9 @@ uicompiler_toolboxfactory.lo			\
 uicompiler_toolboxlayout.lo			\
 uielements.lo				        \
 	: uicompiler.stamp.inc.H
+
+uicompiler_layoutparsers.inc.H: uicompiler.stamp.inc.H
+	touch uicompiler_layoutparsers.inc.H
 
 GET_LAYOUTMANAGERS_BUILT=			\
 	get_layoutmanagers.inc.C		\

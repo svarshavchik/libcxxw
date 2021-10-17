@@ -1917,12 +1917,13 @@ layout->generate("main-window-grid",
 <container>
   <type>grid</type>
   <name>bottom-container</name>
-  <creator>bottom-container-creator</creator>
 </container>
 
 <!-- ... -->
 
 <layout type="grid" id="bottom-container">
+
+  <creator>bottom-container-creator</creator>
 
 <!-- ... -->
 
@@ -1934,13 +1935,12 @@ layout->generate("main-window-grid",
 
 &ns;::w::uielements elements;
 
-elements.creators.emplace("bottom-container-creator",
-                          []
-                          (const &ns;::w::container &amp;container,
-                           const &ns;::w::gridlayoutmanager &amp;layoutmanager)
-                          {
-                                  // ...
-                          });
+elements.layout_creators.emplace("bottom-container-creator",
+                                 []
+                                 (const &ns;::w::gridlayoutmanager &amp;layoutmanager)
+                                 {
+                                      // ...
+                                 });
 layout_manager->generate("dialog", generators, elements);
 
 &ns;::w::container bottom_container=elements.get_element("bottom-container");
@@ -2009,20 +2009,6 @@ layout_manager->generate("dialog", generators, elements);
       element).
     </para>
 
-    <para>
-      An optional
-      <tag class='element'>creator</tag> value
-      specifies a creator callback in
-      <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
-      <varname>creators</varname> map.
-      The callback receives two parameters: the new container object
-      and the new layout manager object. The creators gets invoked from
-      the new container's &creator;, before
-      <methodname>generate</methodname>()ing the new container's contents from
-      the specified
-      <tag class='element'>layout</tag>.
-    </para>
-
     <note>
       <para>
 	The <tag class='element'>name</tag>d layout must exist in the
@@ -2040,6 +2026,25 @@ layout_manager->generate("dialog", generators, elements);
       optional values that depend on its <tag class='attribute'>type</tag>
       that initialize the container.
     </para>
+
+    <section id="uixmllayoutcommon">
+      <title>Common elements to all <tag class='element'>layout</tag>s</title>
+
+
+      <para>
+	An optional
+	<tag class='element'>creator</tag> value
+	specifies a creator callback in
+	<ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
+	<varname>layout_creators</varname> map.
+	The callback receives two parameters: the new container object
+	and the new layout manager object. The creators gets invoked from
+	the new container's &creator;, as part of
+	<methodname>generate</methodname>()ing the new container's contents from
+	the specified
+	<tag class='element'>layout</tag>.
+      </para>
+    </section>
   </section>
 
   &uixmllayoutbook;

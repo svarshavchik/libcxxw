@@ -2770,7 +2770,6 @@ first column, to make the labels line up with their input fields.
     <container>
       <type>list</type>
       <name>select-printer-field</name>
-      <creator>select-printer-field</creator>
       <style>highlight</style>
       <config>
         <selection_type>single</selection_type>
@@ -2781,7 +2780,10 @@ first column, to make the labels line up with their input fields.
       </config>
     </container>
   </factory>
-  <layout id="select-printer-field" type="list"/>
+  <layout id="select-printer-field" type="list">
+    <creator>select-printer-field</creator>
+  </layout>
+
   <!--
       Currently selected printer info label, below the print selection combo
   -->
