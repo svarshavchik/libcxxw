@@ -678,17 +678,6 @@ public:
 				      const char *element,
 				      const char *parent);
 
-	//! Return compiled elements factory generators.
-
-	//! If the generators are already compiled, return them. If not,
-	//! search for them in uncompiled_elements, compile them, put them
-	//! into elements_generators, and return them.
-
-	const_vector<elements_generator>
-	lookup_elements_generators(const ui::parser_lock &lock,
-				   const char *element,
-				   const char *parent);
-
 private:
 	//! Execute <replace>
 

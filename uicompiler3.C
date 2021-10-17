@@ -1823,33 +1823,6 @@ uicompiler::lookup_borderlayoutmanager_generators(const ui::parser_lock &lock,
 	return ret;
 }
 
-const_vector<elements_generator>
-uicompiler::lookup_elements_generators(const ui::parser_lock &lock,
-				       const char *element,
-				       const char *parent)
-{
-	auto name=single_value(lock, element, parent);
-
-	{
-		auto iter=generators->elements_generators.find(name);
-
-		if (iter != generators->elements_generators.end())
-			return iter->second;
-	}
-
-	auto iter=find_uncompiled(name, "factory", "pane");
-
-	auto new_lock=iter->second;
-
-	uncompiled_elements.erase(iter);
-
-	auto ret=elements_parseconfig(new_lock);
-
-	generators->elements_generators.insert_or_assign(name, ret);
-
-	return ret;
-}
-
 void uicompiler::singletonlayout_replace(const singletonlayoutmanager &layout,
 					 uielements &factories,
 					 const const_vector
