@@ -43,12 +43,14 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Set requested column width.
 
 	//! \see gridlayoutmanager
-	void requested_col_width(size_t col, int percentage);
+	static void requested_col_width(grid_map_t::lock &grid_lock,
+					size_t col, int percentage);
 
 	//! Set requested row height.
 
 	//! \see gridlayoutmanager
-	void requested_row_height(size_t row, int percentage);
+	static void requested_row_height(grid_map_t::lock &grid_lock,
+					 size_t row, int percentage);
 
 	//! Create a gridfactory for me.
 
@@ -99,10 +101,12 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	void remove_all_rows();
 
 	//! Set default row alignment.
-	void row_alignment(size_t row, valign alignment);
+	static void row_alignment(grid_map_t::lock &grid_lock,
+				  size_t row, valign alignment);
 
 	//! Set default column alignment.
-	void col_alignment(size_t col, halign alignment);
+	static void col_alignment(grid_map_t::lock &grid_lock,
+				  size_t col, halign alignment);
 
 	//! Set default padding.
 	void row_top_padding_set(size_t row,

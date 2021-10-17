@@ -99,8 +99,6 @@ void gridlayoutmanagerObj::resort_rows(const std::vector<size_t> &v)
 {
 	modified=true;
 
-	grid_map_t::lock grid_lock{impl->grid_map};
-
 	if ((*grid_lock)->elements.size() != v.size())
 		throw EXCEPTION(_("Number of rows in the grid is not the same"
 				  " as the number of rows to resort"));
@@ -144,15 +142,11 @@ void gridlayoutmanagerObj::remove_rows(size_t row, size_t n)
 
 size_t gridlayoutmanagerObj::rows() const
 {
-	grid_map_t::lock grid_lock{impl->grid_map};
-
 	return (*grid_lock)->rows();
 }
 
 size_t gridlayoutmanagerObj::cols(size_t row) const
 {
-	grid_map_t::lock grid_lock{impl->grid_map};
-
 	return (*grid_lock)->cols(row);
 }
 
@@ -179,13 +173,13 @@ void gridlayoutmanagerObj::default_row_border(size_t row,
 void gridlayoutmanagerObj::requested_row_height(size_t row, int percentage)
 {
 	modified=true;
-	impl->requested_row_height(row, percentage);
+	implObj::requested_row_height(grid_lock, row, percentage);
 }
 
 void gridlayoutmanagerObj::row_alignment(size_t row, valign alignment)
 {
 	modified=true;
-	impl->row_alignment(row, alignment);
+	implObj::row_alignment(grid_lock, row, alignment);
 }
 
 void gridlayoutmanagerObj::row_top_padding(size_t row,
@@ -212,13 +206,13 @@ void gridlayoutmanagerObj::default_col_border(size_t col,
 void gridlayoutmanagerObj::requested_col_width(size_t col, int percentage)
 {
 	modified=true;
-	impl->requested_col_width(col, percentage);
+	implObj::requested_col_width(grid_lock, col, percentage);
 }
 
 void gridlayoutmanagerObj::col_alignment(size_t col, halign alignment)
 {
 	modified=true;
-	impl->col_alignment(col, alignment);
+	implObj::col_alignment(grid_lock, col, alignment);
 }
 
 void gridlayoutmanagerObj::col_left_padding(size_t col,
@@ -238,7 +232,6 @@ void gridlayoutmanagerObj::col_right_padding(size_t col,
 void gridlayoutmanagerObj::remove_row_defaults(size_t row)
 {
 	modified=true;
-	grid_map_t::lock grid_lock{impl->grid_map};
 
 	(*grid_lock)->row_defaults.erase(row);
 	(*grid_lock)->defaults_changed();
@@ -247,7 +240,6 @@ void gridlayoutmanagerObj::remove_row_defaults(size_t row)
 void gridlayoutmanagerObj::remove_col_defaults(size_t col)
 {
 	modified=true;
-	grid_map_t::lock grid_lock{impl->grid_map};
 
 	(*grid_lock)->column_defaults.erase(col);
 	(*grid_lock)->defaults_changed();

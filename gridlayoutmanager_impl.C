@@ -98,10 +98,8 @@ static grid_map_row_defaults &get_row_defaults(grid_map_t::lock &lock,
 }
 
 void gridlayoutmanagerObj::implObj
-::requested_col_width(size_t col, int percentage)
+::requested_col_width(grid_map_t::lock &grid_lock, size_t col, int percentage)
 {
-	grid_map_t::lock grid_lock{grid_map};
-
 	if (percentage < 0)
 		percentage=0;
 
@@ -113,10 +111,8 @@ void gridlayoutmanagerObj::implObj
 }
 
 void gridlayoutmanagerObj::implObj
-::requested_row_height(size_t row, int percentage)
+::requested_row_height(grid_map_t::lock &grid_lock, size_t row, int percentage)
 {
-	grid_map_t::lock grid_lock{grid_map};
-
 	if (percentage < 0)
 		percentage=0;
 
@@ -131,7 +127,7 @@ gridfactory gridlayoutmanagerObj::implObj
 ::create_gridfactory(gridlayoutmanagerObj *public_object,
 		     size_t row, size_t col, bool replace_existing)
 {
-	grid_map_t::lock grid_lock{public_object->impl->grid_map};
+	auto &grid_lock=public_object->grid_lock;
 
 	return gridfactory::create(ref{public_object},
 				   ref<gridfactoryObj::implObj>::create
@@ -144,7 +140,7 @@ gridfactory gridlayoutmanagerObj::implObj
 gridfactory gridlayoutmanagerObj::implObj
 ::append_row(gridlayoutmanagerObj *public_object)
 {
-	grid_map_t::lock grid_lock{public_object->impl->grid_map};
+	auto &grid_lock=public_object->grid_lock;
 
 	(*grid_lock)->elements_have_been_modified();
 	(*grid_lock)->elements.push_back({});
@@ -156,7 +152,7 @@ gridfactory gridlayoutmanagerObj::implObj
 gridfactory gridlayoutmanagerObj::implObj
 ::insert_row(gridlayoutmanagerObj *public_object, size_t row)
 {
-	grid_map_t::lock grid_lock{public_object->impl->grid_map};
+	auto &grid_lock=public_object->grid_lock;
 
 	if ((*grid_lock)->elements.size() < row)
 		throw EXCEPTION(_("Attempting to insert a row before a nonexistent row"));
@@ -172,7 +168,7 @@ gridfactory gridlayoutmanagerObj::implObj::append_columns(gridlayoutmanagerObj
 							  *public_object,
 							  size_t row)
 {
-	grid_map_t::lock grid_lock{public_object->impl->grid_map};
+	auto &grid_lock=public_object->grid_lock;
 
 	if ((*grid_lock)->elements.size() <= row)
 		throw EXCEPTION(_("Attempting to add columns to a nonexistent row"));
@@ -187,7 +183,7 @@ gridfactory gridlayoutmanagerObj::implObj::insert_columns(gridlayoutmanagerObj
 							  size_t row,
 							  size_t col)
 {
-	grid_map_t::lock grid_lock{public_object->impl->grid_map};
+	auto &grid_lock=public_object->grid_lock;
 
 	if ((*grid_lock)->elements.size() <= row)
 		throw EXCEPTION(_("Attempting to add columns to a nonexistent row"));
@@ -204,7 +200,7 @@ gridfactory gridlayoutmanagerObj::implObj
 ::replace_cell(gridlayoutmanagerObj *public_object,
 	       size_t row_number, size_t col_number)
 {
-	grid_map_t::lock grid_lock{public_object->impl->grid_map};
+	auto &grid_lock=public_object->grid_lock;
 
 	if ((*grid_lock)->elements.size() <= row_number)
 		throw EXCEPTION(_("Attempting to replace a cell in a nonexistent row"));
@@ -230,17 +226,15 @@ gridfactory gridlayoutmanagerObj::implObj
 	return f;
 }
 
-void gridlayoutmanagerObj::implObj::row_alignment(size_t row, valign alignment)
+void gridlayoutmanagerObj::implObj::row_alignment(grid_map_t::lock &grid_lock,
+						  size_t row, valign alignment)
 {
-	grid_map_t::lock grid_lock{grid_map};
-
 	get_row_defaults(grid_lock, row).vertical_alignment=alignment;
 }
 
-void gridlayoutmanagerObj::implObj::col_alignment(size_t col, halign alignment)
+void gridlayoutmanagerObj::implObj::col_alignment(grid_map_t::lock &grid_lock,
+						  size_t col, halign alignment)
 {
-	grid_map_t::lock grid_lock{grid_map};
-
 	get_column_defaults(grid_lock, col).horizontal_alignment=alignment;
 }
 
@@ -279,7 +273,7 @@ void gridlayoutmanagerObj::implObj::col_right_padding_set(size_t col,
 gridfactory gridlayoutmanagerObj::implObj
 ::replace_row(gridlayoutmanagerObj *public_object, size_t row)
 {
-	grid_map_t::lock grid_lock{public_object->impl->grid_map};
+	auto &grid_lock=public_object->grid_lock;
 
 	if ((*grid_lock)->elements.size() <= row)
 		throw EXCEPTION(_("Attempting to replace a non-existent row"));
