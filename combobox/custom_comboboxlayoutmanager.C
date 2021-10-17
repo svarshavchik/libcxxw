@@ -446,8 +446,7 @@ focusable_container new_custom_comboboxlayoutmanager
 						     attachedto_info,
 						     style,
 						     this->appearance,
-						     this->appearance
-						     ->combobox_minimum_width,
+						     this->minimum_width(),
 						     popup_containerptr);
 		 },
 
@@ -649,6 +648,11 @@ focusable_container new_custom_comboboxlayoutmanager
 
 	creator(c);
 	return c;
+}
+
+dim_arg new_custom_comboboxlayoutmanager::minimum_width() const
+{
+	return 0.0;
 }
 
 void custom_comboboxlayoutmanagerObj

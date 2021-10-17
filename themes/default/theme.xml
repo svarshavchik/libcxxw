@@ -596,7 +596,7 @@ Frgsuly button border: 2 units radius = 4 padding, 3 unit width/height=7
   <color id="combobox_selected_color" scale="80%"/>
   <color id="combobox_highlighted_color" scale="100%"/>
   <color id="combobox_current_color" scale="70%"/>
-  <dim   id="combobox_minimum_width">50</dim>
+  <dim   id="editable_combobox_minimum_width">50</dim>
   <border id="comboboxbuttonfocusoff_border" from="inputfocusoff_border">
     <color>inputfocus_color2</color>
   </border>

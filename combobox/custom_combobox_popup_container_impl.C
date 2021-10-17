@@ -64,7 +64,7 @@ void custom_combobox_popup_containerObj::implObj
 			get_horizvert(IN_THREAD)->horiz.preferred();
 
 		// Check if the list's preferred width is less than the
-		// combobox_minimum_width from the appearance object.
+		// editable_combobox_minimum_width from the appearance object.
 
 		if (preferred_width < pixels(IN_THREAD))
 			preferred_width=pixels(IN_THREAD);

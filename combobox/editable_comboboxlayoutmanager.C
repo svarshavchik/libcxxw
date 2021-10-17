@@ -350,6 +350,11 @@ new_editable_comboboxlayoutmanager
 		::create(i.container_impl, *this);
 }
 
+dim_arg new_editable_comboboxlayoutmanager::minimum_width() const
+{
+	return appearance->editable_combobox_minimum_width;
+}
+
 std::string focusable_containerObj::editable_combobox_get() const
 {
 	x::w::const_editable_comboboxlayoutmanager lm=get_layoutmanager();

@@ -15,7 +15,7 @@ combobox_appearance_properties::combobox_appearance_properties()
 			      ::base::combobox_button_theme()},
 	  popup_button_image1{"scroll-down1"},
 	  popup_button_image2{"scroll-down2"},
-	  combobox_minimum_width{"combobox_minimum_width"}
+	  editable_combobox_minimum_width{"editable_combobox_minimum_width"}
 {
 }
 

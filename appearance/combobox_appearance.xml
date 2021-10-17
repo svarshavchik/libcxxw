@@ -30,11 +30,14 @@ Pressed button image
     <type>std::string</type>
   </field>
   <field>
-    <name>combobox_minimum_width</name>
+    <name>editable_combobox_minimum_width</name>
     <descr><![CDATA[
-Minimum width of the current selection field.
-If the list of combo-box items is empty or is small in width, this sets
-the minimum with of the current selection widget.
+Minimum width of the input field in an editable combo-box.
+If the list of combo-box items is empty or is smaller than this, this sets
+the minimum width of the input field. The standard combo-box's width gets
+sized according to the number of fixed items in the combo-box. This allows
+a reasonable width for the input field even if the list of existing combo-box
+items is an empty list or if it's very short.
 ]]></descr>
     <type>dim_arg</type>
   </field>

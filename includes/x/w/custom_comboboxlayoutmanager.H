@@ -165,7 +165,7 @@ class new_custom_comboboxlayoutmanager
 	: public new_focusable_layoutmanager,
 	  public new_list_or_combobox_layoutmanager {
 
- public:
+public:
 
 	//! Constructor
 	new_custom_comboboxlayoutmanager() LIBCXX_PUBLIC;
@@ -223,7 +223,7 @@ class new_custom_comboboxlayoutmanager
 				   &creator)
 		const override;
 
- protected:
+protected:
 
 	struct create_impl_info;
 
@@ -233,7 +233,16 @@ class new_custom_comboboxlayoutmanager
 	virtual ref<custom_comboboxlayoutmanagerObj::implObj
 		    > create_impl(const create_impl_info &) const;
 
- public:
+private:
+	//! Return the minimum width applicable to this combo-box
+
+	//! The default implementation returns 0.
+	//!
+	//! new_editable_comboboxlayoutmanager returns
+	//! editable_combobox_minimum_width.
+
+	virtual dim_arg minimum_width() const;
+public:
 	//! Return the selection_changed callback.
 
 	//! \internal

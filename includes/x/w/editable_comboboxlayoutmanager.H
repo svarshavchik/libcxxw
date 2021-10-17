@@ -92,6 +92,9 @@ private:
 	//! Implement selection_factory()
 	focusable selection_factory(const factory &) const override
 		LIBCXX_HIDDEN;
+
+	//! Override minimum_width
+	dim_arg minimum_width() const override;
 public:
 	//! Callback that gets invoked when the combo-box selection changes.
 
