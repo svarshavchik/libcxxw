@@ -1809,11 +1809,11 @@ void generic_windowObj::handlerObj::flush_redrawn_areas(ONLY IN_THREAD,
 
 	for (const auto &r:combined)
 	{
+		copy_configured(r, r.x, r.y,
+				window_pixmap(IN_THREAD)->impl, me);
 #ifdef DEBUG_FLUSH_REDRAWN_AREAS
 		DEBUG_FLUSH_REDRAWN_AREAS();
 #endif
-		copy_configured(r, r.x, r.y,
-				window_pixmap(IN_THREAD)->impl, me);
 	}
 }
 

@@ -106,39 +106,6 @@ class LIBCXX_HIDDEN connection_threadObj
 	typedef std::unordered_map<generic_windowObj::handlerObj *, bool
 				   > resize_pending_cache_t;
 
-	//! Invoke a closure for each element in a set, lowest to highest.
-
-	//! Invokes the closure for each element starting with the elements
-	//! with the highest nesting_level (highest nesting_level means
-	//! elements that do not contain any other elements in the set).
-	//!
-	//! Skips any elements whose window is resize_pending (updating the
-	//! poll_for accordingly).
-
-	template<typename functor>
-		static inline
-		void lowest_sizable_elements_first(ONLY IN_THREAD,
-						   element_set_t &s,
-						   resize_pending_cache_t &c,
-						   int &poll_for,
-						   functor &&f)
-	{
-		do_lowest_sizable_element_first(IN_THREAD, s, c, poll_for,
-						make_function
-						<void (const element_impl &)>
-						(f));
-	}
-
-	//! Type-erased lowest_sizable_element_first().
-
-	static void do_lowest_sizable_element_first
-		(ONLY IN_THREAD,
-		 element_set_t &s,
-		 resize_pending_cache_t &c,
-		 int &poll_for,
-		 const function<void (const element_impl &)> &f);
-
-
 	//! A list of elements that have requested their visibility to be changed.
 
 	element_set_t *visibility_updated_thread_only;

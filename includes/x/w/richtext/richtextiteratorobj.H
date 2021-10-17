@@ -16,6 +16,7 @@
 #include <x/w/rectangle.H>
 #include <x/w/text_hotspot.H>
 #include <x/obj.H>
+#include <optional>
 #include <string_view>
 #include <optional>
 

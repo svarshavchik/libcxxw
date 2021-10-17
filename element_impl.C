@@ -1075,7 +1075,7 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 						   const rectarea &areas,
 						   exposure_type type)
 {
-	auto &current_position=data(IN_THREAD).current_position;
+	const auto &current_position=data(IN_THREAD).current_position;
 
 	if (current_position.width == 0 || current_position.height == 0)
 		return;

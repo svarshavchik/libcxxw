@@ -15,6 +15,7 @@
 #include <string>
 #include <string_view>
 #include <variant>
+#include <optional>
 #include <unordered_map>
 #include <optional>
 

@@ -98,60 +98,6 @@ namespace {
 	};
 }
 
-void connection_threadObj
-::do_lowest_sizable_element_first(ONLY IN_THREAD,
-				  element_set_t &s,
-				  resize_pending_cache_t &is_resize_pending,
-				  int &poll_for,
-				  const function<void (const element_impl &)>
-				  &f)
-{
-	// Start at the end of the nesting level map, work our way up.
-
-	auto iter=s.end();
-
-	while (iter != s.begin())
-	{
-		--iter;
-
-		auto &last_set=iter->second;
-
-		// Work our way through all elements at this nesting level.
-
-		auto b=last_set.begin(), e=last_set.end();
-
-		while (b != e)
-		{
-			auto element=*b;
-
-			auto &wh=element->get_window_handler();
-
-			// Widger visibility updates are postponed when
-			// there's a pending resize for their window. However
-			// we do want to process visibility updates for the
-			// top level window itself.
-			if (!element->update_visibility_while_resize_pending()
-			    && is_resize_pending
-			    .try_emplace(&wh,
-					 get_resize_pending{
-						 IN_THREAD,
-							 wh,
-							 poll_for
-					 }).first->second)
-			{
-				++b;
-				continue;
-			}
-			b=last_set.erase(b);
-
-			f(element);
-		}
-
-		if (last_set.empty())
-			iter=s.erase(iter);
-	}
-}
-
 // Some display element changed their visibility. Invoke
 // their update_visibility() methods.
 
@@ -169,24 +115,54 @@ bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
 	// inside it is not visible, everything inherits visibility at the
 	// last possible moment.
 
-	lowest_sizable_elements_first
-		(IN_THREAD,
-		 *visibility_updated(IN_THREAD),
-		 is_resize_pending,
-		 poll_for,
-		 [&]
-		 (const auto &e)
-		 {
-			 flag=true;
-			 CONNECTION_THREAD_ACTION_FOR("process visibility",
-						      &*e);
+	auto &s=*visibility_updated(IN_THREAD);
 
-			 LOG_TRACE("update_visibility: " << e->objname()
-				   << "(" << &*e << ")");
-			 try {
-				 e->update_visibility(IN_THREAD);
-			 } CATCH_EXCEPTIONS;
-		 });
+	auto iter=s.end();
+
+	while (iter != s.begin())
+	{
+		--iter;
+
+		auto &last_set=iter->second;
+
+		// Work our way through all elements at this nesting level.
+
+		auto b=last_set.begin(), e=last_set.end();
+
+		while (b != e)
+		{
+			auto p=b;
+
+			++b;
+			auto e=*p;
+
+			auto &wh=e->get_window_handler();
+
+			if (!e->update_visibility_while_resize_pending()
+			    && is_resize_pending
+			    .try_emplace(&wh,
+					 get_resize_pending{
+						 IN_THREAD, wh,
+						 poll_for
+					 }).first->second)
+				continue;
+
+			last_set.erase(p);
+
+			flag=true;
+			CONNECTION_THREAD_ACTION_FOR("process visibility",
+						     &*e);
+
+			LOG_TRACE("update_visibility: " << e->objname()
+				  << "(" << &*e << ")");
+			try {
+				e->update_visibility(IN_THREAD);
+			} CATCH_EXCEPTIONS;
+		}
+
+		if (last_set.empty())
+			iter=s.erase(iter);
+	}
 
 	// Check if a window's initial default focus should be set, after
 	// processing all visibility updates.

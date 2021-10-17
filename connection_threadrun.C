@@ -54,6 +54,15 @@ bool connection_threadObj
 {
 	connection_thread IN_THREAD{this};
 
+	// After a recalculate event was processed, do not process any
+	// X messages as long as position updates are being processed.
+	//
+	// The grid layout manager relies on this behavior: when it
+	// determines that it needs to reposition its contents it will
+	// schedule itself for position update processing.
+
+	bool recalculate_event_processed=false;
+
 	LOG_FUNC_SCOPE(runLogger);
 
 	// Assume we'll poll() indefinitely, unless there's a change in plans.
@@ -105,7 +114,7 @@ bool connection_threadObj
 				} CATCH_EXCEPTIONS;
 		}
 
-		if (npoll == 2)
+		if (npoll == 2 && !recalculate_event_processed)
 		{
 			if (auto event=return_pointer(xcb_poll_for_event
 						      (info->conn)))
@@ -130,11 +139,16 @@ bool connection_threadObj
 
 		if (recalculate_containers(IN_THREAD, resize_pending_cache,
 					   poll_for))
+		{
+			recalculate_event_processed=true;
 			continue;
+		}
 
 		if (process_element_position_updated(IN_THREAD,
 						     poll_for))
 			continue;
+
+		recalculate_event_processed=false;
 
 		if (process_visibility_updated(IN_THREAD,
 					       resize_pending_cache, poll_for))
