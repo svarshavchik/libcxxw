@@ -20,17 +20,16 @@ See COPYING for distribution information.
     </textobject>
     <caption>
       <para>
-	Widgets with scrolling, such as multi-line
-	<link linkend="inputfieldsandbuttons">input fields</link> take
-	care of providing their own scroll-bars;
-	but scroll-bars by themselves are convenient means
-	for setting a value in some
+	Widgets that scroll, such as multi-line
+	<link linkend="inputfieldsandbuttons">input fields</link>,
+	provide their own scroll-bars.
+	Scroll-bars are also useful on their own:
+	they are an intuitive way to set a value in some
 	specified range.
 	A &factory;'s <methodname>create_horizontal_scrollbar</methodname>()
 	and <methodname>create_vertical_scrollbar</methodname>() methods
-	create new, stand-alone
-	<ulink url="&link-typedef-x--w-scrollbar;"><classname>&ns;::w::scrollbar</classname></ulink>s
-	that are not linked to any other widget.
+	create new, stand-alone, independent
+	<ulink url="&link-typedef-x--w-scrollbar;"><classname>&ns;::w::scrollbar</classname></ulink>s.
       </para>
     </caption>
   </mediaobject>
@@ -44,8 +43,8 @@ See COPYING for distribution information.
     As the scroll-bar's value gets adjusted, the input field above it
     reflects the updated volume value. A new value can be explicitly typed
     into the input field, and this manually moves the scrollbar.
-    The checkbox enables specifying the volume value with one decimal point,
-    as 0.0 through 11.0.
+    The checkbox adds (or removes) a decimal point, making the scrollbar's
+    value range from 0.0 through 11.0.
   </para>
 
   <blockquote>
@@ -75,7 +74,7 @@ See COPYING for distribution information.
       <methodname>create_horizontal_scrollbar</methodname>() and
       <methodname>create_vertical_scrollbar</methodname>() take the
       following optional parameters. Either parameter is optional, but
-      they must appear in the following order, if both are provided:
+      they must appear in the following order if both are present:
     </para>
 
     <itemizedlist>
@@ -91,7 +90,7 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  A <link linkend="appearance"><classname>&ns;::w::const_scrollbar_appearance</classname>
-	    object</link> that specifies a custom scrollbar
+	    object</link> that set a custom visual scrollbar
 	  appearance.
 	</para>
       </listitem>
@@ -110,6 +109,69 @@ See COPYING for distribution information.
       the <filename>scrollbar.C</filename> creates a larger window on account
       of that.
     </para>
+
+    <para>
+      Scroll-bars are &focusable; widgets, and they respond to the following
+      keys when they have the keyboard focus:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <keycap>Cursor-Left</keycap> and
+	  <keycap>Cursor-Up</keycap> keys move the scroll-bar towards
+	  its left or upper end (smaller scroll-bar values).
+	  <keycap>Cursor-Right</keycap> and
+	  <keycap>Cursor-Down</keycap> keys move the scroll-bar towards
+	  its right or lower end (larger scroll-bar values).
+	  The scroll-bar's value gets adjusted by the
+	  <classname>&ns;::w::scrollbar_config</classname>'s
+	  <varname>increment</varname>;
+	  in combination with the <keycap>Ctrl</keycap> key the scroll-bar's
+	  value gets incremented or decremented by 1.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <keycap>Page-Up</keycap> and
+	  <keycap>Page-Down</keycap> move the scroll-bar in the appropriate
+	  direction.
+	  The scroll-bar's value gets adjusted by the
+	  <classname>&ns;::w::scrollbar_config</classname>'s
+	  <varname>page_size</varname>.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <note>
+      <para>
+	It's possible for a
+	<classname>&ns;::w::scrollbar_config</classname>'s
+	<varname>minimum_size</varname> to be smaller than the
+	minimum size that's needed to meaningfully draw all of its
+	inner controls, subsequently the scroll-bars can get resized
+	to a very small size, accordingly.
+	When that happens the scroll-bars temporarily disable
+	themselves from receiving keyboard focus.
+	The reason for this is to avoid visual confusion when the
+	keyboard focus seems
+	to disappear (the scroll-bar's keyboard focus frame is so small
+	that it's hard to see or there may not be even enough pixels
+	to draw them).
+      </para>
+
+      <para>
+	The small scroll-bars remain disabled until their size is sufficient
+	to fully draw them, and they'll automatically reenable themselves.
+	This is combined with scroll-bars'
+	<methodname>set_enabled</methodname>() method (that all
+	&focusable; widgets have). Scroll-bars have enabled keyboard
+	focus if they are both <methodname>set_enabled</methodname>() and
+	are big enough for their drawn contents.
+      </para>
+    </note>
+
   </section>
 
   <section id="scrollbarvalues">

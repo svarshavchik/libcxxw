@@ -12,6 +12,7 @@
 #include "scrollbar/scrollbar_metrics.H"
 #include "icon_images_set_elementfwd.H"
 #include "themedim_element_minoverridefwd.H"
+#include "focus/focusframelayoutimpl.H"
 #include "x/w/scrollbar.H"
 #include "x/w/dim_arg.H"
 #include <x/mpobj.H>
@@ -66,6 +67,44 @@ struct LIBCXX_HIDDEN scrollbar_impl_init_params {
 	const scrollbar_icons_tuple_t &icons;
 	const scrollbar_config &conf;
 	const const_scrollbar_appearance &appearance;
+};
+
+class LIBCXX_HIDDEN scrollbar_focusframelayoutimplObj;
+
+//! Customized focus frame layout manager that peephole scrollbars use.
+
+class scrollbar_focusframelayoutimplObj : public focusframelayoutimplObj {
+
+public:
+
+	const scrollbar_orientation &orientation;
+
+	scrollbar_focusframelayoutimplObj(const scrollbar_orientation &,
+					  const container_impl &,
+					  const ref<focusframecontainer_implObj>
+					  &,
+					  const element &);
+
+	~scrollbar_focusframelayoutimplObj();
+
+	//! Override update_metrics
+
+	//! The pane layout manager expects to control the size of each
+	//! pane by setting the metrics on each pane peephole, including
+	//! a size of 0.
+	//!
+	//! However the scrollbars' focus frame borders will interfere
+	//! with pane layout manager plans. So, scrollbars' focus frame
+	//! layout managers shall override update_metrics(), and force the
+	//! minimum size, in the appropriate dimension, based on the
+	//! orientation, to 0.
+	//!
+	//! Once the scroll-bar becomes too small it gets automatically
+	//! disabled, so keyboard focus won't mysteriously disappear.
+
+	void update_metrics(ONLY IN_THREAD,
+			    const metrics::axis &horiz,
+			    const metrics::axis &vert) override;
 };
 
 //! Scrollbar implementation object.
@@ -267,6 +306,13 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! calculate_scrollbar_metrics().
 	void initialize(ONLY IN_THREAD) override;
 
+	//! Override set_enabled
+
+	//! Save the requested enable flag in should_be_enabled, then call
+	//! update_focusable_enabled().
+
+	void set_enabled(ONLY IN_THREAD, bool flag) override;
+
 	//! Theme has been updated.
 
 	//! theme_updated() all icons. Invoke recalculate_metrics().
@@ -365,6 +411,22 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	current_value_t current_value;
 
  private:
+
+	//! Requested focusable enabled state
+
+	//! This captures whether the scrollbar should have keyboard
+	//! focus. Whether it does is a matter for update_focusable_enabled().
+	bool should_be_enabled_thread_only;
+
+	// Determine whether the scroll-bar should really have keyboard focus
+
+	//! This is usually should_be_enabled, but the scroll-bar gets
+	//! automatically disabled if its resized to be too small, this happens
+	//! often when the pane layout manager resizing its peepholes.
+	void update_focusable_enabled(ONLY IN_THREAD);
+ public:
+	THREAD_DATA_ONLY(should_be_enabled);
+ private:
 	//! Compute and set the scrollbar display element's metrics.
 
 	//! The height of the horizontal scrollbar and the width of the
@@ -382,6 +444,10 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! icons accordingly.
 	//!
 	//! Returns false if the scrollbar metrics have not actually changed.
+	//!
+	//! Calls update_focusable_enabled() after calculating the new
+	//! metrics in order to determine if the keyboard focus needs updating.
+
 	bool calculate_scrollbar_metrics(ONLY IN_THREAD);
 
 	//! What the scrollbar metrics were based on

@@ -116,7 +116,7 @@ class focusableObj::implObj : virtual public obj {
 
 	//! Set enabled/disabled
 
-	void set_enabled(ONLY IN_THREAD, bool flag);
+	virtual void set_enabled(ONLY IN_THREAD, bool flag);
 
 	//! Must be implement in the subclass.
 

@@ -112,6 +112,50 @@ static dim_arg minimum_height(const scrollbar_orientation &orientation,
 	return orientation.minimum_height ? config.minimum_size:dim_arg{0};
 }
 
+scrollbar_focusframelayoutimplObj
+::scrollbar_focusframelayoutimplObj(const scrollbar_orientation &orientation,
+				    const container_impl &parent_container,
+				    const ref<focusframecontainer_implObj>
+					  &focusframe_container_impl,
+				    const element &initial_element)
+	: focusframelayoutimplObj{
+			parent_container,
+			focusframe_container_impl,
+			initial_element
+		},
+	  orientation{orientation}
+{
+}
+
+scrollbar_focusframelayoutimplObj
+::~scrollbar_focusframelayoutimplObj()=default;
+
+void scrollbar_focusframelayoutimplObj
+::update_metrics(ONLY IN_THREAD,
+		 const metrics::axis &horiz,
+		 const metrics::axis &vert)
+{
+
+	if (orientation.minimum_width)
+	{
+		focusframelayoutimplObj::update_metrics
+			(IN_THREAD, {0, horiz.preferred(), horiz.maximum()},
+			 vert);
+		return;
+	}
+
+	if (orientation.minimum_height)
+	{
+		focusframelayoutimplObj::update_metrics
+			(IN_THREAD, horiz,
+			 {0, vert.preferred(), vert.maximum()});
+		return;
+	}
+
+	focusframelayoutimplObj::update_metrics(IN_THREAD, horiz, vert);
+}
+
+
 scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
 	: superclass_t{minimum_width(init_params.orientation, init_params.conf),
 		       minimum_height(init_params.orientation,init_params.conf),
@@ -125,7 +169,8 @@ scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
 	  state_thread_only{init_params.conf},
 	  updated_value_thread_only{init_params.callback},
 	  current_value{std::tuple{init_params.conf.value,
-				  init_params.conf.value}}
+		init_params.conf.value}},
+	  should_be_enabled_thread_only{true}
 {
 	validate_conf(THREAD);
 }
@@ -338,6 +383,22 @@ void scrollbarObj::implObj::reset_state(ONLY IN_THREAD)
 		draw_slider(IN_THREAD);
 }
 
+void scrollbarObj::implObj::set_enabled(ONLY IN_THREAD, bool flag)
+{
+	should_be_enabled(IN_THREAD)=flag;
+
+	update_focusable_enabled(IN_THREAD);
+}
+
+void scrollbarObj::implObj::update_focusable_enabled(ONLY IN_THREAD)
+{
+	auto flag=should_be_enabled(IN_THREAD);
+
+	if (metrics.too_small)
+		flag=false;
+	superclass_t::set_enabled(IN_THREAD, flag);
+}
+
 bool scrollbarObj::implObj::calculate_scrollbar_metrics(ONLY IN_THREAD)
 {
 	auto current_position=data(IN_THREAD).current_position;
@@ -389,6 +450,7 @@ bool scrollbarObj::implObj::calculate_scrollbar_metrics(ONLY IN_THREAD)
 		current_pixel=metrics.value_to_pixel(dragged_value);
 	}
 
+	update_focusable_enabled(IN_THREAD);
 	return changed;
 }
 
