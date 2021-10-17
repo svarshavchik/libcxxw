@@ -462,7 +462,10 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 	for (auto level_b=set.begin(), level_e=set.end(), p=level_b;
 	     level_b != level_e; level_b=p)
 	{
-		++p;
+		// NOTE: it's possible that a top-level container schedules
+		// its child elements for reprocessing, and creates a new
+		// bucket, that's why we defer incrementing "p" until after
+		// the inner loop.
 
 		// Process each container's repositioned widgets.
 		for (auto parent_b=level_b->second.begin(),
@@ -511,6 +514,8 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 			} CATCH_EXCEPTIONS;
 			flag=true;
 		}
+
+		++p;
 
 		// If we processed all widgets at this nesting level, remove
 		// it.
@@ -579,11 +584,13 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 				    data.previous_position.y != new_position.y)
 					to_redraw_recursively.insert(e);
 				else
-					to_redraw.insert(e);
-
+				{
+					to_redraw_recursively.insert(e);
+				}
 				data.previous_position=new_position;
 			}
 	}
+
 	// Immediately flush the areas that were moved.
 	// This gives better results when a window gets resized because
 	// widgets were inserted in the middle, somewhere. The moved areas
