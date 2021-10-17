@@ -260,7 +260,7 @@ inline void create_cells_helper::create_separator()
 
 	// next_rowinfo should be clean
 	info.rowmeta.emplace_back
-		(extra_list_row_info::create(false),
+		(extra_list_row_info::create(next_rowinfo),
 		 next_rowinfo);
 
 	column_counter += textlist_element.columns;
@@ -425,7 +425,7 @@ void create_cells_helper::process_list_item_param(const list_item_param_base &it
 
 			auto new_extra_list=
 				extra_list_row_info
-				::create(next_rowinfo.initially_selected);
+				::create(next_rowinfo);
 
 			nonseparator_rows.push_back(new_extra_list);
 			info.rowmeta.emplace_back(new_extra_list,

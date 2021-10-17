@@ -22,6 +22,8 @@ extern const listlayoutstyle_impl &menu_list LIBCXX_HIDDEN;
 //! hierindent specifications.
 extern const listlayoutstyle_impl &combobox_list LIBCXX_HIDDEN;
 
+struct LIBCXX_HIDDEN textlist_rowinfo;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

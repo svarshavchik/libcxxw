@@ -57,6 +57,19 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : public radio_buttonObj {
 		//! An optional, installed shortcut for this list item.
 
 		shortcut_implptr current_shortcut;
+
+		//! Constructor
+
+		//! When a new list item is getting created, the
+		//! textlist_rowinfo constructor gets passedin in order to
+		//! copy over all the metadata that can be installed without
+		//! being IN_THREAD. The rest of the initialization will
+		//! take place in initialize_meta().
+		//!
+		//! So, after constructing a menu item we can call
+		//! submenu_listlayoutmanager() without throwing an exception
+		//! because this will be initialized, already.
+		protected_data(const textlist_rowinfo &meta);
 	};
 
 	//! This information requires a list lock for access.
@@ -75,7 +88,7 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : public radio_buttonObj {
 	}
 
 	//! Constructor
-	extra_list_row_infoObj(bool initially_selected);
+	extra_list_row_infoObj(const textlist_rowinfo &meta);
 
 	//! Destructor
 	~extra_list_row_infoObj();

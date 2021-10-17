@@ -149,9 +149,9 @@ public:
 
 
 extra_list_row_infoObj
-::extra_list_row_infoObj(bool initially_selected)
+::extra_list_row_infoObj(const textlist_rowinfo &meta)
 	: current_row_number_under_lock{(size_t)-1},
-	  data_under_lock{initially_selected}
+	  data_under_lock{meta}
 {
 }
 
@@ -174,6 +174,14 @@ bool extra_list_row_infoObj::selected(listimpl_info_t::lock &lock) const
 	return data(lock).selected;
 }
 
+extra_list_row_infoObj::protected_data
+::protected_data(const textlist_rowinfo &meta)
+	: selected{meta.initially_selected},
+	  status_change_callback{meta.listitem_callback},
+	  menu_item{meta.menu_item}
+{
+}
+
 void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 				      list_row_info_t &row_info,
 				      listimpl_info_t::lock &lock,
@@ -181,9 +189,6 @@ void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 				      size_t row_num,
 				      const textlist_rowinfo &meta)
 {
-	data(lock).status_change_callback=meta.listitem_callback;
-
-	data(lock).menu_item=meta.menu_item;
 	row_info.indent=meta.indent_level;
 
 	if (auto option=is_option(lock))
@@ -199,11 +204,12 @@ void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 
 	me.selected_changed(lock, row_num, data(lock).selected);
 
-
 	if (meta.inactive_shortcut ||
 	    !meta.listitem_shortcut || !*meta.listitem_shortcut)
 	{
 		if (data(lock).current_shortcut)
+			// Shouldn't happen, this is initialization, but
+			// this will do the right thing.
 		{
 			data(lock).current_shortcut->uninstall_shortcut();
 			data(lock).current_shortcut=nullptr;
