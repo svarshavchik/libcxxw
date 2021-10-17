@@ -11,26 +11,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-static auto get_extra(const ref<listlayoutmanagerObj::implObj> &layout_impl,
-		      size_t n)
-{
-	listimpl_info_t::lock lock{layout_impl->list_element_singleton->impl
-				   ->textlist_info};
-
-	if (n >= lock->row_infos.size())
-		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"),
-					   n));
-
-	return lock->row_infos.at(n).extra;
-}
-
-listitemhandleObj::implObj::implObj(const ref<listlayoutmanagerObj::implObj>
-				    &layout_impl,
-				    size_t n)
-	: implObj{layout_impl, get_extra(layout_impl, n)}
-{
-}
-
 listitemhandleObj::implObj::implObj(const ref<listlayoutmanagerObj::implObj>
 				    &layout_impl,
 				    const extra_list_row_info &extra)

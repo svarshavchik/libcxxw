@@ -25,10 +25,6 @@ class listitemhandleObj::implObj : public listitemhandleObj {
 public:
 	//! Constructor
 	implObj(const ref<listlayoutmanagerObj::implObj> &impl,
-		size_t n);
-
-	//! Constructor
-	implObj(const ref<listlayoutmanagerObj::implObj> &impl,
 		const extra_list_row_info &extra);
 
 	//! Destructor
