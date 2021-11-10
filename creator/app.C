@@ -180,12 +180,26 @@ appObj::init_args::init_args()
 		gen->initialize(readlock, uicompiler_info->uigenerators);
 
 		// Take the layoutmanager and factory generators and put them
-		// into the sorted_available_uigenerators list.
+		// into the layouts_and_factories list.
 		//
 		// Also store them in the uigenerators_lookup, so they
 		// can be looked up by layout/factory and its name.
 
 		switch (gen->type_category.type) {
+		case appuigenerator_type::new_layoutmanager:
+			if (gen->type_category.category.empty())
+				break; // A few superclasses
+
+			if (!uicompiler_info->new_layouts.emplace
+			    (gen->type_category.category, gen).second)
+			{
+				throw EXCEPTION("Duplicate entry for new"
+						" layout "
+						<<
+						gen->type_category.category);
+			}
+			break;
+
 		case appuigenerator_type::layoutmanager:
 		case appuigenerator_type::factory:
 
@@ -193,7 +207,7 @@ appObj::init_args::init_args()
 				break; // Generic factory
 
 			uicompiler_info
-				->sorted_available_uigenerators.push_back(name);
+				->layouts_and_factories.push_back(name);
 
 			if (!uicompiler_info
 			    ->uigenerators_lookup.insert(gen).second)
@@ -207,10 +221,10 @@ appObj::init_args::init_args()
 			break;
 		}
 	}
-	std::sort(uicompiler_info->sorted_available_uigenerators.begin(),
-		  uicompiler_info->sorted_available_uigenerators.end());
+	std::sort(uicompiler_info->layouts_and_factories.begin(),
+		  uicompiler_info->layouts_and_factories.end());
 
-	uicompiler_info->sorted_available_uigenerators.shrink_to_fit();
+	uicompiler_info->layouts_and_factories.shrink_to_fit();
 }
 
 // Helper for installing a main menu action.

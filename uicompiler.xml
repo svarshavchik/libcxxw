@@ -2861,6 +2861,8 @@ List of values:
   <parser type="new_layoutmanager">
     <name>new_gridlayout</name>
 
+    <category>grid</category>
+
     <parameter>
       <type>new_gridlayoutmanager_plainptr</type>
       <name>layout</name>
@@ -2921,6 +2923,7 @@ List of values:
 
   <parser type="new_layoutmanager">
     <name>new_booklayout</name>
+    <category>book</category>
 
     <parameter>
       <type>new_booklayoutmanager_plainptr</type>
@@ -3111,6 +3114,7 @@ List of values:
 
   <parser type="new_layoutmanager">
     <name>new_listlayout</name>
+    <category>list</category>
 
     <parameter>
       <type>new_listlayoutmanager_plainptr</type>
@@ -3373,6 +3377,7 @@ List of values:
 
   <parser type="new_layoutmanager">
     <name>new_standard_comboboxlayout</name>
+    <category>standard_combobox</category>
 
     <parameter>
       <type>new_standard_comboboxlayoutmanager_plainptr</type>
@@ -3390,6 +3395,7 @@ List of values:
 
   <parser type="new_layoutmanager">
     <name>new_editable_comboboxlayout</name>
+    <category>editable_combobox</category>
 
     <parameter>
       <type>new_editable_comboboxlayoutmanager_plainptr</type>
@@ -3424,6 +3430,7 @@ List of values:
 
   <parser type="new_layoutmanager">
     <name>new_tablelayout</name>
+    <category>table</category>
 
     <parameter>
       <type>new_tablelayoutmanager_plainptr</type>
@@ -3512,6 +3519,7 @@ List of values:
 
   <parser type="new_layoutmanager">
     <name>new_panelayout</name>
+    <category>pane</category>
 
     <parameter>
       <type>new_panelayoutmanager_plainptr</type>
@@ -3631,6 +3639,7 @@ List of values:
 
   <parser type="new_layoutmanager">
     <name>new_itemlayout</name>
+    <category>item</category>
 
     <parameter>
       <type>new_itemlayoutmanager_plainptr</type>
@@ -3663,6 +3672,7 @@ List of values:
 
   <parser type="new_layoutmanager">
     <name>new_pagelayout</name>
+    <category>page</category>
 
     <parameter>
       <type>new_pagelayoutmanager_plainptr</type>
@@ -3679,6 +3689,7 @@ List of values:
 
   <parser type="new_layoutmanager">
     <name>new_toolboxlayout</name>
+    <category>toolbox</category>
 
     <parameter>
       <type>new_toolboxlayoutmanager_plainptr</type>
@@ -3707,6 +3718,7 @@ List of values:
 
   <parser type="new_layoutmanager">
     <name>new_borderlayout</name>
+    <category>border</category>
 
     <parameter>
       <type>new_borderlayoutmanager_plainptr</type>

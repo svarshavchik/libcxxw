@@ -29,7 +29,7 @@ public:
 	uigenerators_t uigenerators;
 
 	//! layoutmanager and factory generators, in sorted order.
-	std::vector<std::string> sorted_available_uigenerators;
+	std::vector<std::string> layouts_and_factories;
 
 	//! layoutmanager and factory generators lookup.
 
@@ -39,6 +39,10 @@ public:
 	std::unordered_set<const_uicompiler_generators,
 			   generator_type_spec_hash,
 			   generator_type_spec_equ> uigenerators_lookup;
+
+	//! Look up the new layouts, by category
+	std::unordered_map<std::string, const_uicompiler_generators
+			   > new_layouts;
 
 	//! Constructor
 	uicompilerObj();

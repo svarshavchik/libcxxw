@@ -152,8 +152,8 @@ void appObj::generators_elements_initialize(app_elements_tptr &elements,
 
 	generator_new_type->standard_comboboxlayout()
 		->replace_all_items(std::vector<x::w::list_item_param>{
-				uiptr->sorted_available_uigenerators.begin(),
-				uiptr->sorted_available_uigenerators.end()
+				uiptr->layouts_and_factories.begin(),
+				uiptr->layouts_and_factories.end()
 			});
 
 	elements.generator_name=generator_name;
@@ -446,7 +446,7 @@ appObj::generator_new_create_clicked2(generator_info_lock &lock)
 	// Look up the compiler for the selected generator
 
 	auto &generator_name=current_generators->uicompiler_info
-		->sorted_available_uigenerators.at(*new_type);
+		->layouts_and_factories.at(*new_type);
 
 	auto &generator=current_generators->uicompiler_info
 		->uigenerators.at(generator_name);
