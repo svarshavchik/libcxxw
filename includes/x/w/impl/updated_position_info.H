@@ -7,6 +7,7 @@
 
 #include <x/w/impl/updated_position_infofwd.H>
 #include <x/w/rectangle.H>
+#include <x/number.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -30,75 +31,30 @@ struct updated_position_move_info {
 
 	struct summary {
 
-		size_t nw{0};
-		size_t ne{0};
-		size_t sw{0};
-		size_t se{0};
+		size_t n{0}, s{0}, w{0}, e{0};
 
-		static bool sort_for_nw(const updated_position_move_info &a,
-					const updated_position_move_info &b)
+		static bool sort_for_n(const updated_position_move_info &a,
+				       const updated_position_move_info &b)
 		{
-			if (coord_t::truncate(a.move_to_x+
-					      a.scroll_from.width)
-			    <= b.move_to_x)
-				return true;
-
-			if (coord_t::truncate(a.move_to_y+
-					      a.scroll_from.height)
-			    <= b.move_to_y)
-				return true;
-
-			return false;
+			return a.move_to_y < b.move_to_y;
 		}
 
-		static bool sort_for_ne(const updated_position_move_info &a,
-					const updated_position_move_info &b)
+		static bool sort_for_s(const updated_position_move_info &a,
+				       const updated_position_move_info &b)
 		{
-			if (a.move_to_x >=
-			    coord_t::truncate(b.move_to_x+
-						   b.scroll_from.width))
-				return true;
-
-			if (coord_t::truncate(a.move_to_y+
-					      a.scroll_from.height)
-			    <= b.move_to_y)
-				return true;
-
-			return false;
-
+			return a.move_to_y > b.move_to_y;
 		}
 
-		static bool sort_for_sw(const updated_position_move_info &a,
-					const updated_position_move_info &b)
+		static bool sort_for_e(const updated_position_move_info &a,
+				       const updated_position_move_info &b)
 		{
-			if (coord_t::truncate(a.move_to_x+
-					      a.scroll_from.width)
-			    <= b.move_to_x)
-				return true;
-
-			if (a.move_to_y >=
-			    coord_t::truncate(b.move_to_y+
-					      b.scroll_from.height))
-				return true;
-
-			return false;
-
+			return a.move_to_x > b.move_to_x;
 		}
 
-		static bool sort_for_se(const updated_position_move_info &a,
-					const updated_position_move_info &b)
+		static bool sort_for_w(const updated_position_move_info &a,
+				       const updated_position_move_info &b)
 		{
-			if (a.move_to_x >=
-			    coord_t::truncate(b.move_to_x+
-						   b.scroll_from.width))
-				return true;
-
-			if (a.move_to_y >=
-			    coord_t::truncate(b.move_to_y+
-					      b.scroll_from.height))
-				return true;
-
-			return false;
+			return a.move_to_x < b.move_to_x;
 		}
 
 		typedef std::tuple<
@@ -122,10 +78,10 @@ struct updated_position_move_info {
 			chosen=compare
 				(compare
 				 (compare
-				  ({&summary::nw, summary::sort_for_nw},
-				   {&summary::ne, summary::sort_for_ne}),
-				  {&summary::sw, summary::sort_for_sw}),
-				 {&summary::se, summary::sort_for_se});
+				  ({&summary::n, summary::sort_for_n},
+				   {&summary::s, summary::sort_for_s}),
+				  {&summary::w, summary::sort_for_w}),
+				 {&summary::e, summary::sort_for_e});
 		}
 	};
 
@@ -133,30 +89,22 @@ struct updated_position_move_info {
 	{
 		if (scroll_from.x > move_to_x)
 		{
-			if (scroll_from.y >= move_to_y)
-				f( &summary::nw);
-			if (scroll_from.y <= move_to_y)
-				f( &summary::sw);
+			f( &summary::w );
 		}
-		else if (scroll_from.x < move_to_x)
+
+		if (scroll_from.x < move_to_x)
 		{
-			if (scroll_from.y >= move_to_y)
-				f( &summary::ne);
-			if (scroll_from.y <= move_to_y)
-				f( &summary::se);
+			f( &summary::e);
 		}
-		else
+
+		if (scroll_from.y > move_to_y)
 		{
-			if (scroll_from.y > move_to_y)
-			{
-				f( &summary::nw);
-				f( &summary::ne);
-			}
-			else if (scroll_from.y < move_to_y)
-			{
-				f(&summary::sw);
-				f(&summary::se);
-			}
+			f( &summary::n );
+		}
+
+		if (scroll_from.y < move_to_y)
+		{
+			f( &summary::s);
 		}
 	}
 };

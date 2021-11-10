@@ -89,6 +89,11 @@ static LIBCXX_NAMESPACE::mpobj<int> moved_count=0;
 			  << ", " << move_info.move_to_y	\
 			  << std::endl;				\
 	} while (0)
+
+std::ostringstream move_order_debug_o;
+
+#define FINAL_MOVE_ORDER_DEBUG(x) do { move_order_debug_o << x; } while(0)
+
 #include "connection_threadrunelement.C"
 
 struct strict_weak_order {
@@ -119,32 +124,32 @@ updated_position_move_info;
 
 static void sanity_check()
 {
-	static const strict_weak_order nw_tests[]=
+	static const strict_weak_order n_tests[]=
 		{
-		 { {0, 0}, {1, 1} },
-		 { {0, 0}, {1, 0} },
-		 { {0, 0}, {0, 1} },
+			{ {1, 0}, {0, 1} },
+			{ {1, 0}, {1, 1} },
+			{ {1, 0}, {2, 1} },
 		};
 
-	static const strict_weak_order ne_tests[]=
+	static const strict_weak_order s_tests[]=
 		{
-		 { {1, 0}, {0, 1} },
-		 { {1, 0}, {0, 0} },
-		 { {1, 0}, {1, 1} },
+			{ {1, 2}, {0, 1} },
+			{ {1, 2}, {1, 1} },
+			{ {1, 2}, {2, 1} },
 		};
 
-	static const strict_weak_order sw_tests[]=
+	static const strict_weak_order w_tests[]=
 		{
-		 { {0, 1}, {1, 1} },
-		 { {0, 1}, {1, 0} },
-		 { {0, 1}, {0, 0} },
+			{ {0, 1}, {1, 0} },
+			{ {0, 1}, {1, 1} },
+			{ {0, 1}, {1, 2} },
 		};
 
-	static const strict_weak_order se_tests[]=
+	static const strict_weak_order e_tests[]=
 		{
-		 { {1, 1}, {0, 1} },
-		 { {1, 1}, {1, 0} },
-		 { {1, 1}, {0, 0} },
+			{ {2, 1}, {1, 0} },
+			{ {2, 1}, {1, 1} },
+			{ {2, 1}, {1, 2} },
 		};
 
 	static const struct {
@@ -158,32 +163,32 @@ static void sanity_check()
 		const strict_weak_order *strict_weak_order_tests;
 
 	} tests[] = {
-		     {0, 0, {1, 0, 0, 0},
-		      &updated_position_move_info::summary::nw,
-		      nw_tests},
-		     {2, 0, {0, 1, 0, 0},
-		      &updated_position_move_info::summary::ne,
-		      ne_tests},
-		     {0, 2, {0, 0, 1, 0},
-		      &updated_position_move_info::summary::sw,
-		      sw_tests},
-		     {2, 2, {0, 0, 0, 1},
-		      &updated_position_move_info::summary::se,
-		      se_tests},
+		     {0, 0, {1, 0, 1, 0},
+		      &updated_position_move_info::summary::n,
+		      nullptr},
+		     {2, 0, {1, 0, 0, 1},
+		      &updated_position_move_info::summary::n,
+		      nullptr},
+		     {0, 2, {0, 1, 1, 0},
+		      &updated_position_move_info::summary::s,
+		      nullptr},
+		     {2, 2, {0, 1, 0, 1},
+		      &updated_position_move_info::summary::s,
+		      nullptr},
 
-		     {1, 0, {1, 1, 0, 0},
-		      &updated_position_move_info::summary::ne,
-		     nullptr},
-		     {1, 2, {0, 0, 1, 1},
-		      &updated_position_move_info::summary::se,
-		     nullptr},
+		     {1, 0, {1, 0, 0, 0},
+		      &updated_position_move_info::summary::n,
+		     n_tests},
+		     {1, 2, {0, 1, 0, 0},
+		      &updated_position_move_info::summary::s,
+ 		     s_tests},
 
-		     {0, 1, {1, 0, 1, 0},
-		      &updated_position_move_info::summary::sw,
-		     nullptr},
-		     {2, 1, {0, 1, 0, 1},
-		      &updated_position_move_info::summary::se,
-		     nullptr}
+		     {0, 1, {0, 0, 1, 0},
+		      &updated_position_move_info::summary::w,
+		     w_tests},
+		     {2, 1, {0, 0, 0, 1},
+		      &updated_position_move_info::summary::e,
+		     e_tests}
 	};
 
 	for (const auto &test:tests)
@@ -199,10 +204,10 @@ static void sanity_check()
 					++(s.*to);
 				});
 
-		if (s.ne != test.expected_result.ne ||
-		    s.nw != test.expected_result.nw ||
-		    s.se != test.expected_result.se ||
-		    s.sw != test.expected_result.sw)
+		if (s.n != test.expected_result.n ||
+		    s.s != test.expected_result.s ||
+		    s.w != test.expected_result.w ||
+		    s.e != test.expected_result.e)
 		{
 			std::cout << "where() failed" << std::endl;
 			exit(1);
@@ -238,6 +243,139 @@ static void sanity_check()
 					exit(1);
 				}
 			}
+		}
+	}
+}
+
+void sanity_check_2()
+{
+	LIBCXX_NAMESPACE::w::all_updated_position_widgets_t dummy1;
+	LIBCXX_NAMESPACE::w::updated_position_widgets_t dummy2;
+
+	using LIBCXX_NAMESPACE::w::updated_position_container_t;
+	using LIBCXX_NAMESPACE::w::final_move_order;
+
+	struct {
+		updated_position_container_t test;
+		const char *expected_result;
+	} tests[]={
+		{
+			{
+				{ {dummy1.end(),
+					  dummy2.end()}, { {10, 10, 10, 10},
+					  40, 40}},
+				{ {dummy1.end(),
+					  dummy2.end()}, { {20, 20, 10, 10},
+					  38, 60}},
+				{ {dummy1.end(),
+					  dummy2.end()}, { {35, 35, 10, 10},
+					  30, 80}},
+			},
+			"Total boundaries: l=10, r=45, t=10, b=45\n\
+Attempting: x=10, y=10, width=10, height=10 => x=40, y=40, width=10, height=10\n\
+Remaining boundary: l=20, r=45, t=20, b=45\n\
+Next: x=20, y=20, width=10, height=10\n\
+Does not overlap.\n\
+Total boundaries: l=35, r=45, t=35, b=45\n\
+Next: x=35, y=35, width=10, height=10\n\
+Overlapping rectangle\n\
+Attempting: x=35, y=35, width=10, height=10 => x=30, y=80, width=10, height=10\n\
+Remaining boundary: empty\n\
+Move: x=35, y=35, width=10, height=10 => x=30, y=80, width=10, height=10\n\
+Reque: x=20, y=20, width=10, height=10\n\
+Reque: x=10, y=10, width=10, height=10\n\
+Attempting: x=10, y=10, width=10, height=10 => x=40, y=40, width=10, height=10\n\
+Remaining boundary: l=20, r=30, t=20, b=30\n\
+Move: x=10, y=10, width=10, height=10 => x=40, y=40, width=10, height=10\n\
+Attempting: x=20, y=20, width=10, height=10 => x=38, y=60, width=10, height=10\n\
+Remaining boundary: empty\n\
+Move: x=20, y=20, width=10, height=10 => x=38, y=60, width=10, height=10\n",
+		},
+
+		{
+			{
+				{ {dummy1.end(),
+					  dummy2.end()}, { {10, 10, 10, 10},
+					  25, 25}},
+				{ {dummy1.end(),
+					  dummy2.end()}, { {20, 20, 10, 10},
+					  35, 35}},
+				{ {dummy1.end(),
+					  dummy2.end()}, { {30, 30, 10, 10},
+					  45, 45}},
+			},
+			"Total boundaries: l=10, r=40, t=10, b=40\n\
+Attempting: x=10, y=10, width=10, height=10 => x=25, y=25, width=10, height=10\n\
+Remaining boundary: l=20, r=40, t=20, b=40\n\
+Next: x=20, y=20, width=10, height=10\n\
+Overlapping rectangle\n\
+Attempting: x=20, y=20, width=10, height=10 => x=35, y=35, width=10, height=10\n\
+Remaining boundary: l=30, r=40, t=30, b=40\n\
+Next: x=30, y=30, width=10, height=10\n\
+Overlapping rectangle\n\
+Attempting: x=30, y=30, width=10, height=10 => x=45, y=45, width=10, height=10\n\
+Remaining boundary: empty\n\
+Move: x=30, y=30, width=10, height=10 => x=45, y=45, width=10, height=10\n\
+Reque: x=20, y=20, width=10, height=10\n\
+Reque: x=10, y=10, width=10, height=10\n\
+Attempting: x=10, y=10, width=10, height=10 => x=25, y=25, width=10, height=10\n\
+Remaining boundary: l=20, r=30, t=20, b=30\n\
+Next: x=20, y=20, width=10, height=10\n\
+Overlapping rectangle\n\
+Attempting: x=20, y=20, width=10, height=10 => x=35, y=35, width=10, height=10\n\
+Remaining boundary: empty\n\
+Move: x=20, y=20, width=10, height=10 => x=35, y=35, width=10, height=10\n\
+Reque: x=10, y=10, width=10, height=10\n\
+Attempting: x=10, y=10, width=10, height=10 => x=25, y=25, width=10, height=10\n\
+Remaining boundary: empty\n\
+Move: x=10, y=10, width=10, height=10 => x=25, y=25, width=10, height=10\n",
+		},
+		{
+			{
+				{ {dummy1.end(),
+					  dummy2.end()}, { {10, 10, 10, 10},
+					  15, 15}},
+				{ {dummy1.end(),
+					  dummy2.end()}, { {30, 10, 10, 10},
+					  30, 20}},
+				{ {dummy1.end(),
+					  dummy2.end()}, { {10, 30, 10, 10},
+					  10, 40}},
+			},
+			"Total boundaries: l=10, r=40, t=10, b=40\n\
+Attempting: x=10, y=10, width=10, height=10 => x=15, y=15, width=10, height=10\n\
+Remaining boundary: l=10, r=40, t=10, b=40\n\
+Next: x=30, y=10, width=10, height=10\n\
+Does not overlap.\n\
+Total boundaries: l=10, r=20, t=30, b=40\n\
+Move: x=10, y=10, width=10, height=10 => x=15, y=15, width=10, height=10\n\
+Attempting: x=30, y=10, width=10, height=10 => x=30, y=20, width=10, height=10\n\
+Remaining boundary: l=10, r=20, t=30, b=40\n\
+Move: x=30, y=10, width=10, height=10 => x=30, y=20, width=10, height=10\n\
+Attempting: x=10, y=30, width=10, height=10 => x=10, y=40, width=10, height=10\n\
+Remaining boundary: empty\n\
+Move: x=10, y=30, width=10, height=10 => x=10, y=40, width=10, height=10\n",
+		},
+	};
+
+	int testnum=0;
+
+	for (const auto &[test, expected_result] : tests)
+	{
+		++testnum;
+		move_order_debug_o.str("");
+		final_move_order todo_rectangle_areas{test};
+
+		auto s=move_order_debug_o.str();
+
+		if (s != expected_result)
+		{
+			std::cout << "sanity_check_2: error, test "
+				  << testnum << "\n" << "Expected:\n";
+			std::cout << expected_result
+				  << "\nGot:\n"
+				  << s << std::flush;
+			exit(1);
 		}
 	}
 }
@@ -524,6 +662,8 @@ void testupdatedposition()
 int main()
 {
 	sanity_check();
+	sanity_check_2();
+
 	try {
 		testupdatedposition();
 	} catch (const LIBCXX_NAMESPACE::exception &e)

@@ -23,6 +23,18 @@ struct rectangle {
 	//! Coordinate
 	dim_t height=dim_t(0);
 
+	//! Define a class method that returns a side
+	constexpr coord_t left() const { return x; }
+
+	//! Define a class method that returns a side
+	constexpr coord_t right() const { return coord_t::truncate(x+width); }
+
+	//! Define a class method that returns a side
+	constexpr coord_t top() const { return y; }
+
+	//! Define a class method that returns a side
+	constexpr coord_t bottom() const { return coord_t::truncate(y+height); }
+
 	//! Destructor
 	~rectangle()=default;
 

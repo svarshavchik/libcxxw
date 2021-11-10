@@ -13,12 +13,14 @@
 #include "x/w/impl/updated_position_info.H"
 #include "pixmap.H"
 #include "catch_exceptions.H"
+#include "final_move_order.H"
 #include <x/refptr_hash.H>
 #include <x/visitor.H>
 #include <unordered_map>
 #include <algorithm>
 #include <functional>
 #include <charconv>
+#include <fstream>
 
 LIBCXXW_NAMESPACE_START
 
@@ -317,6 +319,55 @@ inline rectarea connection_threadObj::move_updated_position_widgets
 			  return do_remove;
 		  }), move_container.end());
 
+#if 0
+	move_container.erase(
+		std::remove_if(
+			move_container.begin(),
+			move_container.end(),
+			[&]
+			(const auto &mi)
+			{
+				auto &[iterators, info]=mi;
+
+				std::ostringstream o;
+
+				o << info.scroll_from;
+
+				std::ifstream DEBUG{"DEBUG"};
+
+				std::string debug;
+
+				if (DEBUG)
+				{
+					std::ostringstream o;
+
+					o << DEBUG.rdbuf();
+
+					debug=o.str();
+				}
+
+				auto os=o.str();
+				return std::search(debug.begin(),
+						   debug.end(),
+						   os.begin(),
+						   os.end()) != debug.end();
+			}
+		), move_container.end());
+
+	for (const auto &mi:move_container)
+	{
+		auto &[iterators, info]=mi;
+
+		auto &[all,updated]=iterators;
+
+		auto &[e_impl, rect, flag] = *updated;
+
+		std::cout << "MOVABLE: " << info.scroll_from << " to "
+			  << info.move_to_x << info.move_to_y << ": "
+			  << e_impl->objname()
+			  << std::endl;
+	}
+#endif
 	// Sort the widgets to move in the right order.
 	//
 	// If we're moving the widgets in the north-westerly direction we
@@ -337,13 +388,26 @@ inline rectarea connection_threadObj::move_updated_position_widgets
 			  return chosen_direction_comparator(a_info, b_info);
 		  });
 
+#if 0
+	for (const auto &mi:move_container)
+	{
+		auto &[iterator, info]=mi;
+
+		std::cout << "MOVE: " << info.scroll_from << " to "
+			  << info.move_to_x << ", " << info.move_to_y
+			  << std::endl;
+	}
+#endif
+
+	final_move_order final_order{move_container};
+
 	// Now, all the widgets in the move_container can be moved and have
 	// their existing contents directly copied in the window_pixmap,
 	// instead of redrawing them from scratch.
 
-	for (const auto &w:move_container)
+	for (const auto &w:final_order.moved)
 	{
-		const auto &[iterator, move_info]=w;
+		const auto &[iterator, move_info]=*w;
 
 		const auto &[all_levels_iterator, level_iterator]=iterator;
 

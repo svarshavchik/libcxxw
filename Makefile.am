@@ -307,6 +307,7 @@ libcxxw_la_SOURCES=\
 	file_dialog/file_dialog.C		    \
 	file_dialog/file_dialog_impl.C		    \
 	file_dialog/file_dialog_impl.H		    \
+	final_move_order.H			    \
 	focusable_container.C			    \
 	focusable_container_owner.C		    \
 	focusable_label.C			    \
