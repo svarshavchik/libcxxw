@@ -374,8 +374,24 @@ public:
 
 	//! Common logic when creating a new element
 
-	//! Inserts the new element's id into the list of existing_ids,
+	//! Inserts each new element's id into the list of existing_ids,
 	//! and the description into the combo-box that shows the list.
+	//!
+	//! Receives a pointer to one or more new elements, the pointer
+	//! to the first new element, and how many of them.
+	//!
+	//! The combo-box is then auto-selected to show the last new element.
+	//!
+	//! Returns the index of the last inserted element.
+	static size_t
+	update_new_element(ONLY IN_THREAD,
+			   const new_element_t *new_elements,
+			   size_t n_new_elements,
+			   std::vector<std::string> &existing_ids,
+			   const x::w::focusable_container &id_combo);
+
+	//! Overload for updating a single new_element.
+
 	static size_t
 	update_new_element(ONLY IN_THREAD,
 			   const new_element_t &new_element,
@@ -388,22 +404,42 @@ public:
 	template<typename F>
 	static inline size_t
 	update_new_element(ONLY IN_THREAD,
+			   const new_element_t *new_elements,
+			   size_t n_new_elements,
+			   std::vector<std::string> &existing_ids,
+			   const x::w::focusable_container &id_combo,
+			   F &&f)
+	{
+		return do_update_new_element(
+			IN_THREAD,
+			new_elements, n_new_elements, existing_ids,
+			id_combo,
+			x::make_function<void (size_t)>
+			(std::forward<F>(f))
+		);
+	}
+
+	//! Invoke a callback before auto-selecting the new element
+
+	//! Overload for inserting a single element
+	template<typename F>
+	static inline size_t
+	update_new_element(ONLY IN_THREAD,
 			   const new_element_t &new_element,
 			   std::vector<std::string> &existing_ids,
 			   const x::w::focusable_container &id_combo,
 			   F &&f)
 	{
-		return do_update_new_element(IN_THREAD,
-					     new_element, existing_ids,
-					     id_combo,
-					     x::make_function<void (size_t)>
-					     (std::forward<F>(f)));
+		return update_new_element(IN_THREAD, &new_element, 1,
+					  existing_ids, id_combo,
+					  std::forward<F>(f));
 	}
 
-	//! Type-erase update_new_element
+	//! Type-erased update_new_element
 	static size_t
 	do_update_new_element(ONLY IN_THREAD,
-			      const new_element_t &new_element,
+			      const new_element_t *new_elements,
+			      size_t n_new_elements,
 			      std::vector<std::string> &existing_ids,
 			      const x::w::focusable_container &id_combo,
 			      const x::function<void (size_t)> &f);

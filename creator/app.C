@@ -1758,53 +1758,82 @@ appObj::create_update_with_new_document(const char *type,
 
 size_t
 appObj::update_new_element(ONLY IN_THREAD,
+			   const new_element_t *new_elements,
+			   size_t n_new_elements,
+			   std::vector<std::string> &existing_ids,
+			   const x::w::focusable_container &id_combo)
+{
+	return update_new_element(
+		IN_THREAD,
+		new_elements, n_new_elements, existing_ids, id_combo,
+		[]
+		(auto ignore)
+		{
+		}
+	);
+}
+
+size_t
+appObj::update_new_element(ONLY IN_THREAD,
 			   const new_element_t &new_element,
 			   std::vector<std::string> &existing_ids,
 			   const x::w::focusable_container &id_combo)
 {
-	return update_new_element(IN_THREAD,
-				  new_element, existing_ids, id_combo,
-				  []
-				  (auto ignore)
-				  {
-				  });
+	return update_new_element(IN_THREAD, &new_element, 1,
+				  existing_ids,
+				  id_combo);
 }
 
 size_t
 appObj::do_update_new_element(ONLY IN_THREAD,
-			      const new_element_t &new_element,
+			      const new_element_t *new_elements,
+			      size_t n_new_elements,
 			      std::vector<std::string> &existing_ids,
 			      const x::w::focusable_container &id_combo,
 			      const x::function<void (size_t)> &callback)
 {
+	if (n_new_elements == 0)
+		return 0;
+
 	// Move the focus here first.
 	id_combo->request_focus(IN_THREAD);
-
-	auto insert_pos=std::lower_bound(existing_ids.begin(),
-					 existing_ids.end(),
-					 new_element.id);
 
 	x::w::standard_comboboxlayoutmanager id_lm=
 		id_combo->get_layoutmanager();
 
-	size_t p=insert_pos-existing_ids.begin();
+	size_t last;
 
-	auto i=p+1;
-	// Pos 0 is new dimension
+	size_t j=0;
 
-	existing_ids.insert(insert_pos, new_element.id);
+	do
+	{
+		auto &new_element=new_elements[j];
 
-	std::vector<std::string> default_description{new_element.id};
+		auto insert_pos=std::lower_bound(existing_ids.begin(),
+						 existing_ids.end(),
+						 new_element.id);
 
-	auto &new_item_description=new_element.description.empty()
-		? default_description:new_element.description;
+		size_t p=insert_pos-existing_ids.begin();
 
-	id_lm->insert_items(IN_THREAD, i, {new_item_description.begin(),
-					   new_item_description.end()});
-	callback(i);
-	id_lm->autoselect(IN_THREAD, i, {});
+		auto i=p+1;
+		// Pos 0 is new dimension
 
-	return i;
+		existing_ids.insert(insert_pos, new_element.id);
+
+		std::vector<std::string> default_description{new_element.id};
+
+		auto &new_item_description=new_element.description.empty()
+			? default_description:new_element.description;
+
+		id_lm->insert_items(IN_THREAD, i, {new_item_description.begin(),
+						   new_item_description.end()});
+		callback(i);
+
+		last=i;
+	} while (++j < n_new_elements);
+
+	id_lm->autoselect(IN_THREAD, last, {});
+	return last;
 }
 
 void appObj::busy()
