@@ -602,7 +602,7 @@ static w::container create_main_window(const w::main_window &mw)
 			 lm->append_items(descriptions);
 			 lm->autoselect(i);
 		 },
-		 themes_combobox)->autofocus(true); // Initial focus here
+		 themes_combobox);
 
 	// Sanity check.
 

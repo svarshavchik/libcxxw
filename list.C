@@ -159,8 +159,11 @@ new_listlayoutmanager::create(const container_impl &parent_container,
 	auto focusable_container_impl=
 		ref<peepholed_container_impl_t>::create(parent_container);
 
-	return create_impl(focusable_container_impl, synchronized_columns,
+	auto c=create_impl(focusable_container_impl, synchronized_columns,
 			   nullptr, lci, creator);
+
+	c->autofocus(true);
+	return c;
 }
 
 focusable_container

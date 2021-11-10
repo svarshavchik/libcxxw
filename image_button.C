@@ -36,6 +36,7 @@ image_buttonObj::image_buttonObj(const ref<implObj> &impl,
 	: containerObj(container_impl, lm_impl),
 	  impl(impl)
 {
+	autofocus(true);
 }
 
 image_buttonObj::~image_buttonObj()=default;
