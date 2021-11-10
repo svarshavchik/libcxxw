@@ -39,10 +39,26 @@ The available attributes are:
 
 Sets the font's foundry name.
 
+- family=name
+
+Sets the font's name. This is convenient for referencing a theme font and
+substituting a different font family.
+
+\code
+"label; family=liberation mono"_theme_font
+\endcode
+
+This takes the "label" theme font but sets the font family to
+"liberation mono".
+
 - point_size=n
 
 Sets the font's size to \c n, which may be fractional. The font's size
 gets automatically scaled by the current theme.
+
+- scale=n
+
+Multiply the font's size by \c n, which may be fractional.
 
 - weight=value
 

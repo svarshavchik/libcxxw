@@ -139,17 +139,30 @@ See COPYING for distribution information.
       <para>
 	An <ulink url="&link-x--w--font;"><classname>x::w::font</classname></ulink>
 	parameter sets the font for the following text.
-	<literal>#include &lt;&ns;/w/font_literals.H&gt;</literal>
-	enables
-	<ulink url="&link-function-x--w-operatorQQ-font;">"<replaceable>description</replaceable>"<literal>_font</literal>
-	  decorators</ulink>.
-	<literal>#include &lt;&ns;/w/text_param_literals.H&gt;</literal>
-	enables
-	<ulink url="&link-function-x--w-operatorQQ-theme-font;">"<replaceable>description</replaceable>"<literal>_theme_font</literal>
-	decorators</ulink>.
       </para>
     </listitem>
   </itemizedlist>
+
+  <section id="fontliterals">
+    <title>Using font literals</title>
+
+    <para>
+      <filename>wordwraplabel.C</filename> demonstrates using font literals.
+      <literal>#include &lt;&ns;/w/font_literals.H&gt;</literal>
+      enables
+      <ulink url="&link-function-x--w-operatorQQ-font;">"<replaceable>description</replaceable>"<literal>_font</literal>
+	decorators</ulink> that construct a
+      <ulink url="&link-x--w--font;"><classname>x::w::font</classname></ulink>.
+    </para>
+    <para>
+      <literal>#include &lt;&ns;/w/text_param_literals.H&gt;</literal>
+      enables
+      <ulink url="&link-function-x--w-operatorQQ-theme-font;">"<replaceable>description</replaceable>"<literal>_theme_font</literal>
+	decorators</ulink> that construct <classname>theme_font</classname>s
+      for creating
+      <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>s.
+    </para>
+  </section>
 
   <section id="screen_positions">
     <title>Preserving window positions</title>
