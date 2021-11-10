@@ -1190,9 +1190,28 @@ void appObj::update_theme2(const x::functionref<update_callback_t (appObj *)
 			info.updated_theme();
 		});
 
-		callback2(this, mcguffin);
-		status->update(_("Update saved."));
-
+		main_window->in_thread(
+			[callback2, mcguffin]
+			(ONLY IN_THREAD)
+			{
+				appinvoke(
+					[&]
+					(appObj *me)
+					{
+						// Log this message
+						// before calling callback2
+						//
+						// Callback2 may post its own
+						// message, so this is the
+						// default otherwise.
+						me->status->update(
+							_("Update saved.")
+						);
+						callback2(me, IN_THREAD,
+							  mcguffin);
+					});
+			}
+		);
 	} catch (const x::exception &e)
 	{
 		std::ostringstream o;
@@ -1724,11 +1743,13 @@ appObj::create_update_with_new_document(const char *type,
 }
 
 size_t
-appObj::update_new_element(const new_element_t &new_element,
+appObj::update_new_element(ONLY IN_THREAD,
+			   const new_element_t &new_element,
 			   std::vector<std::string> &existing_ids,
 			   const x::w::focusable_container &id_combo)
 {
-	return update_new_element(new_element, existing_ids, id_combo,
+	return update_new_element(IN_THREAD,
+				  new_element, existing_ids, id_combo,
 				  []
 				  (auto ignore)
 				  {
@@ -1736,13 +1757,14 @@ appObj::update_new_element(const new_element_t &new_element,
 }
 
 size_t
-appObj::do_update_new_element(const new_element_t &new_element,
+appObj::do_update_new_element(ONLY IN_THREAD,
+			      const new_element_t &new_element,
 			      std::vector<std::string> &existing_ids,
 			      const x::w::focusable_container &id_combo,
 			      const x::function<void (size_t)> &callback)
 {
 	// Move the focus here first.
-	id_combo->request_focus();
+	id_combo->request_focus(IN_THREAD);
 
 	auto insert_pos=std::lower_bound(existing_ids.begin(),
 					 existing_ids.end(),
@@ -1763,10 +1785,10 @@ appObj::do_update_new_element(const new_element_t &new_element,
 	auto &new_item_description=new_element.description.empty()
 		? default_description:new_element.description;
 
-	id_lm->insert_items(i, {new_item_description.begin(),
-				new_item_description.end()});
+	id_lm->insert_items(IN_THREAD, i, {new_item_description.begin(),
+					   new_item_description.end()});
 	callback(i);
-	id_lm->autoselect(i);
+	id_lm->autoselect(IN_THREAD, i, {});
 
 	return i;
 }

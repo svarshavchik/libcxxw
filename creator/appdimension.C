@@ -604,18 +604,21 @@ appObj::update_callback_t appObj::dimension_update2(dimension_info_t::lock
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    dimension_info_t::lock lock{saved_lock};
 
-			    me->dimension_update2(lock, id, is_new,
+			    me->dimension_update2(IN_THREAD,
+						  lock, id, is_new,
 						  busy_mcguffin);
 		    });
 
 	return ret;
 }
 
-void appObj::dimension_update2(dimension_info_t::lock &lock,
+void appObj::dimension_update2(ONLY IN_THREAD,
+			       dimension_info_t::lock &lock,
 			       const std::string &id,
 			       bool is_new,
 			       const x::ref<x::obj> &busy_mcguffin)
@@ -629,13 +632,14 @@ void appObj::dimension_update2(dimension_info_t::lock &lock,
 			from_name_lm=dimension_from_name->get_layoutmanager();
 
 
-		auto i=update_new_element({id}, lock->ids,
+		auto i=update_new_element(IN_THREAD,
+					  {id}, lock->ids,
 					  dimension_name,
 					  [&]
 					  (size_t i)
 					  {
 						  from_name_lm->insert_items
-							  (i, {id});
+							  (IN_THREAD, i, {id});
 					  });
 
 		if (lock->from_index && *lock->from_index >= i-1)
@@ -649,7 +653,7 @@ void appObj::dimension_update2(dimension_info_t::lock &lock,
 			x::w::standard_comboboxlayoutmanager lm=
 				(this->*(other.widget))->get_layoutmanager();
 
-			lm->insert_items(i-1, new_item );
+			lm->insert_items(IN_THREAD, i-1, new_item );
 		}
 
 		status->update(_("Created new dimension"));
@@ -659,12 +663,6 @@ void appObj::dimension_update2(dimension_info_t::lock &lock,
 		dimension_reset_values(lock);
 		status->update(_("Dimension updated"));
 	}
-
-	main_window->in_thread
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-		 });
 }
 
 appObj::get_updatecallbackptr appObj::dimension_delete(ONLY IN_THREAD)
@@ -711,18 +709,21 @@ appObj::update_callback_t appObj::dimension_delete2(dimension_info_t::lock
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    dimension_info_t::lock lock{saved_lock};
 
-			    me->dimension_delete2(lock, index,
+			    me->dimension_delete3(IN_THREAD,
+						  lock, index,
 						  busy_mcguffin);
 		    });
 
 	return ret;
 }
 
-void appObj::dimension_delete2(dimension_info_t::lock &lock,
+void appObj::dimension_delete3(ONLY IN_THREAD,
+			       dimension_info_t::lock &lock,
 			       size_t index,
 			       const x::ref<x::obj> &busy_mcguffin)
 {
@@ -732,40 +733,20 @@ void appObj::dimension_delete2(dimension_info_t::lock &lock,
 		dimension_name->get_layoutmanager(),
 		from_name_lm=dimension_from_name->get_layoutmanager();
 
-	name_lm->remove_item(index+1);
-	from_name_lm->remove_item(index+1);
+	name_lm->remove_item(IN_THREAD, index+1);
+	from_name_lm->remove_item(IN_THREAD, index+1);
 
 	lock->current_selection.reset();
 	dimension_reset_values(lock);
-	name_lm->autoselect(0);
+	name_lm->autoselect(IN_THREAD, 0, {});
 
 	for (const auto &other:other_dimension_widgets)
 	{
 		name_lm=(this->*(other.widget))->get_layoutmanager();
 
-		name_lm->remove_item(index);
+		name_lm->remove_item(IN_THREAD, index);
 	}
 
-	// autoselect(0) queues up a request.
-	// When it gets processed, the dimension new name field gets show()n.
-	// We want to request focus for that after all that processing also
-	// gets done:
-
-	main_window->in_thread_idle
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke([&]
-				   (appObj *me)
-				   {
-					   me->dimension_new_name
-						   ->request_focus();
-					   me->status->update(_("Deleted"));
-					   me->main_window->in_thread_idle
-						   ([busy_mcguffin]
-						    (ONLY IN_THREAD)
-						    {
-						    });
-				   });
-		 });
+	dimension_new_name->request_focus(IN_THREAD);
+	status->update(_("Deleted"));
 }

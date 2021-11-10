@@ -476,19 +476,16 @@ appObj::generator_new_create_clicked2(generator_info_lock &lock)
 		     generator_name=this->generator_name,
 		     saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    generator_info_lock lock{saved_lock};
 
 			    me->update_new_element
-				    (me->generator_name_and_description
+				    (IN_THREAD,
+				     me->generator_name_and_description
 				     (new_name), lock.all->ids,
 				     generator_name);
-			    generator_name->in_thread_idle
-				    ([busy_mcguffin]
-				     (ONLY IN_THREAD)
-				    {
-				    });
 		    });
 
 	return ret;
@@ -541,18 +538,21 @@ appObj::generator_delete2(generator_info_lock &lock)
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    generator_info_lock lock{saved_lock};
 
-			    me->generator_delete2(lock, index,
+			    me->generator_delete2(IN_THREAD,
+						  lock, index,
 						  busy_mcguffin);
 		    });
 
 	return ret;
 }
 
-void appObj::generator_delete2(generator_info_lock &lock,
+void appObj::generator_delete2(ONLY IN_THREAD,
+			       generator_info_lock &lock,
 			       size_t index,
 			       const x::ref<x::obj> &busy_mcguffin)
 {
@@ -567,33 +567,10 @@ void appObj::generator_delete2(generator_info_lock &lock,
 
 	lock.all->current_selection.reset();
 
-	name_lm->autoselect(0);
+	name_lm->autoselect(IN_THREAD, 0, {});
 
-	// autoselect(0) queues up a request.
-
-	main_window->in_thread_idle
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke([&]
-				   (appObj *me)
-				   {
-					   generator_info_lock lock{
-						   me->current_generators
-						   ->generator_info
-					   };
-
-					   me->generator_name
-						   ->request_focus();
-					   me->status->update(_("Deleted"));
-
-					   me->main_window->in_thread_idle
-						   ([busy_mcguffin]
-						    (ONLY IN_THREAD)
-						    {
-						    });
-				   });
-		 });
+	generator_name->request_focus(IN_THREAD);
+	status->update(_("Deleted"));
 }
 
 appObj::get_updatecallbackptr appObj::generator_update(ONLY IN_THREAD)
@@ -657,6 +634,7 @@ appObj::generator_update2(generator_info_lock &lock)
 		    [=, saved_lock=lock.threadlock(x::ref{this}),
 		     extra_updates=save_info.extra_updates]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    generator_info_lock lock{saved_lock};
@@ -665,9 +643,10 @@ appObj::generator_update2(generator_info_lock &lock)
 			    // changes we need to make.
 
 			    for (auto &update:*extra_updates)
-				    update(me, lock);
+				    update(me, IN_THREAD, lock);
 
-			    me->generator_update2(lock,
+			    me->generator_update3(IN_THREAD,
+						  lock,
 						  busy_mcguffin);
 		    });
 
@@ -718,30 +697,20 @@ void appObj
 
 	save_info.extra_updates->emplace_back
 		([id]
-		 (appObj *me, generator_info_lock &lock)
+		 (appObj *me, ONLY IN_THREAD,
+		  generator_info_lock &lock)
 		{
 			me->update_new_element
-				(me->generator_name_and_description(id),
+				(IN_THREAD,
+				 me->generator_name_and_description(id),
 				 lock.all->ids,
 				 me->generator_name);
 		});
 }
 
-void appObj::generator_update2(generator_info_lock &lock,
-			       const x::ref<x::obj> &busy_mcguffin)
-{
-	main_window->in_thread
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke(&appObj::generator_update3,
-				   IN_THREAD,
-				   busy_mcguffin);
-		 });
-}
-
 void appObj::generator_update3(ONLY IN_THREAD,
-				const x::ref<x::obj> &busy_mcguffin)
+			       generator_info_lock &lock,
+			       const x::ref<x::obj> &busy_mcguffin)
 {
 	// generator_reset() will update the UI for us.
 
@@ -750,11 +719,4 @@ void appObj::generator_update3(ONLY IN_THREAD,
 
 	// Put the input focus back on the generator name combo-box.
 	generator_name->request_focus(IN_THREAD);
-
-	// Keep the busy mcguffin in place until everything is done.
-
-	main_window->in_thread_idle([busy_mcguffin]
-				    (ONLY IN_THREAD)
-				    {
-				    });
 }

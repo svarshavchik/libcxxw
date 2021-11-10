@@ -5,6 +5,6 @@
 #ifndef creator_appgenerator_savefwd_h
 #define creator_appgenerator_savefwd_h
 
-struct appgenerator_save;
+struct LIBCXX_PUBLIC appgenerator_save;
 
 #endif

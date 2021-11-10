@@ -974,18 +974,21 @@ appObj::update_callback_t appObj::border_update2(border_info_t::lock &lock)
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    border_info_t::lock lock{saved_lock};
 
-			    me->border_update2(lock, id, is_new,
+			    me->border_update3(IN_THREAD,
+					       lock, id, is_new,
 					       busy_mcguffin);
 		    });
 
 	return ret;
 }
 
-void appObj::border_update2(border_info_t::lock &lock,
+void appObj::border_update3(ONLY IN_THREAD,
+			    border_info_t::lock &lock,
 			    const std::string &id,
 			    bool is_new,
 			    const x::ref<x::obj> &busy_mcguffin)
@@ -995,43 +998,22 @@ void appObj::border_update2(border_info_t::lock &lock,
 		x::w::standard_comboboxlayoutmanager
 			from_name_lm=border_from_name->get_layoutmanager();
 
-		update_new_element({id}, lock->ids, border_name,
+		update_new_element(IN_THREAD,
+				   {id}, lock->ids, border_name,
 				   [&]
 				   (size_t i)
 				   {
-					   from_name_lm->insert_items(i-1,
+					   from_name_lm->insert_items(IN_THREAD,
+								      i-1,
 								      {id});
 				   });
 
 		status->update(_("Created new border"));
-		main_window->in_thread_idle([busy_mcguffin]
-					    (ONLY IN_THREAD)
-					    {
-					    });
 		return;
 	}
 
-	main_window->in_thread
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke(&appObj::border_update3,
-				   IN_THREAD,
-				   busy_mcguffin);
-		 });
-}
-
-void appObj::border_update3(ONLY IN_THREAD, const x::ref<x::obj> &busy_mcguffin)
-{
-	border_info_t::lock lock{border_info};
-
 	border_selected_locked(IN_THREAD, lock);
 	status->update(_("Border updated"));
-
-	main_window->in_thread_idle([busy_mcguffin]
-				    (ONLY IN_THREAD)
-				    {
-				    });
 }
 
 appObj::get_updatecallbackptr appObj::border_delete(ONLY IN_THREAD)
@@ -1078,18 +1060,21 @@ appObj::update_callback_t appObj::border_delete2(border_info_t::lock &lock)
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    border_info_t::lock lock{saved_lock};
 
-			    me->border_delete2(lock, index,
+			    me->border_delete3(IN_THREAD,
+					       lock, index,
 					       busy_mcguffin);
 		    });
 
 	return ret;
 }
 
-void appObj::border_delete2(border_info_t::lock &lock,
+void appObj::border_delete3(ONLY IN_THREAD,
+			    border_info_t::lock &lock,
 			    size_t index,
 			    const x::ref<x::obj> &busy_mcguffin)
 {
@@ -1104,39 +1089,15 @@ void appObj::border_delete2(border_info_t::lock &lock,
 	x::w::standard_comboboxlayoutmanager from_name_lm=
 		border_from_name->get_layoutmanager();
 
-	name_lm->remove_item(index+1);
-	from_name_lm->remove_item(index);
+	name_lm->remove_item(IN_THREAD, index+1);
+	from_name_lm->remove_item(IN_THREAD, index);
 
 	lock->current_selection.reset();
 
-	name_lm->autoselect(0);
+	name_lm->autoselect(IN_THREAD, 0, {});
 
-	// autoselect(0) queues up a request.
-	// When it gets processed, the border new name field gets show()n.
-	// We want to request focus for that after all that processing also
-	// gets done:
+	border_reset_values(IN_THREAD, lock);
 
-	main_window->in_thread_idle
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke([&]
-				   (appObj *me)
-				   {
-					   border_info_t::lock
-						   lock{me->border_info};
-					   me->border_reset_values(IN_THREAD,
-								  lock);
-
-					   me->border_new_name
-						   ->request_focus();
-					   me->status->update(_("Deleted"));
-
-					   me->main_window->in_thread_idle
-						   ([busy_mcguffin]
-						    (ONLY IN_THREAD)
-						    {
-						    });
-				   });
-		 });
+	border_new_name->request_focus(IN_THREAD);
+	status->update(_("Deleted"));
 }

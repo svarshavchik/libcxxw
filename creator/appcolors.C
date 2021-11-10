@@ -2043,25 +2043,29 @@ appObj::update_callback_t appObj::color_update2(colors_info_t::lock &lock)
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    colors_info_t::lock lock{saved_lock};
 
-			    me->color_update2(lock, id, is_new,
+			    me->color_update3(IN_THREAD,
+					      lock, id, is_new,
 					      busy_mcguffin);
 		    });
 
 	return ret;
 }
 
-void appObj::color_update2(colors_info_t::lock &lock,
+void appObj::color_update3(ONLY IN_THREAD,
+			   colors_info_t::lock &lock,
 			   const std::string &id,
 			   bool is_new,
 			   const x::ref<x::obj> &busy_mcguffin)
 {
 	if (is_new)
 	{
-		auto n=update_new_element({id}, lock->ids, color_name);
+		auto n=update_new_element(IN_THREAD,
+					  {id}, lock->ids, color_name);
 
 		std::vector<x::w::list_item_param>
 			new_item{ {lock->ids.at(n-1)}};
@@ -2073,38 +2077,16 @@ void appObj::color_update2(colors_info_t::lock &lock,
 
 			// n-1 is the index. There's n_rgb_colors at the
 			// beginning, plus a separator line.
-			lm->insert_items(n + x::w::n_rgb_colors, new_item );
+			lm->insert_items(IN_THREAD,
+					 n + x::w::n_rgb_colors, new_item );
 		}
 
 		status->update(_("Created new color"));
-		main_window->in_thread_idle([busy_mcguffin]
-					    (ONLY IN_THREAD)
-					    {
-					    });
 		return;
 	}
 
-	main_window->in_thread
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke(&appObj::color_update3,
-				   IN_THREAD,
-				   busy_mcguffin);
-		 });
-}
-
-void appObj::color_update3(ONLY IN_THREAD, const x::ref<x::obj> &busy_mcguffin)
-{
-	colors_info_t::lock lock{colors_info};
-
 	color_selected_locked(IN_THREAD, lock);
 	status->update(_("Color updated"));
-
-	main_window->in_thread_idle([busy_mcguffin]
-				    (ONLY IN_THREAD)
-				    {
-				    });
 }
 
 appObj::get_updatecallbackptr appObj::color_delete(ONLY IN_THREAD)
@@ -2151,18 +2133,21 @@ appObj::update_callback_t appObj::color_delete2(colors_info_t::lock &lock)
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    colors_info_t::lock lock{saved_lock};
 
-			    me->color_delete2(lock, index,
+			    me->color_delete3(IN_THREAD,
+					      lock, index,
 					      busy_mcguffin);
 		    });
 
 	return ret;
 }
 
-void appObj::color_delete2(colors_info_t::lock &lock,
+void appObj::color_delete3(ONLY IN_THREAD,
+			   colors_info_t::lock &lock,
 			   size_t index,
 			   const x::ref<x::obj> &busy_mcguffin)
 {
@@ -2174,11 +2159,11 @@ void appObj::color_delete2(colors_info_t::lock &lock,
 	x::w::standard_comboboxlayoutmanager name_lm=
 		color_name->get_layoutmanager();
 
-	name_lm->remove_item(index+1);
+	name_lm->remove_item(IN_THREAD, index+1);
 
 	lock->current_selection.reset();
 
-	name_lm->autoselect(0);
+	name_lm->autoselect(IN_THREAD, 0, {});
 
 	for (const auto &other:other_color_widgets)
 	{
@@ -2186,35 +2171,11 @@ void appObj::color_delete2(colors_info_t::lock &lock,
 
 		// There's n_rgb_colors standard colors at the beginning,
 		// then a separator
-		name_lm->remove_item(index + x::w::n_rgb_colors+1);
+		name_lm->remove_item(IN_THREAD, index + x::w::n_rgb_colors+1);
 	}
 
-	// autoselect(0) queues up a request.
-	// When it gets processed, the color new name field gets show()n.
-	// We want to request focus for that after all that processing also
-	// gets done:
+	color_reset_values(IN_THREAD, lock);
 
-	main_window->in_thread_idle
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke([&]
-				   (appObj *me)
-				   {
-					   colors_info_t::lock
-						   lock{me->colors_info};
-					   me->color_reset_values(IN_THREAD,
-								  lock);
-
-					   me->color_new_name
-						   ->request_focus();
-					   me->status->update(_("Deleted"));
-
-					   me->main_window->in_thread_idle
-						   ([busy_mcguffin]
-						    (ONLY IN_THREAD)
-						    {
-						    });
-				   });
-		 });
+	color_new_name->request_focus(IN_THREAD);
+	status->update(_("Deleted"));
 }

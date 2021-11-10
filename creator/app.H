@@ -377,7 +377,8 @@ public:
 	//! Inserts the new element's id into the list of existing_ids,
 	//! and the description into the combo-box that shows the list.
 	static size_t
-	update_new_element(const new_element_t &new_element,
+	update_new_element(ONLY IN_THREAD,
+			   const new_element_t &new_element,
 			   std::vector<std::string> &existing_ids,
 			   const x::w::focusable_container &id_combo);
 
@@ -386,12 +387,14 @@ public:
 	//! Invokes the closure before calling autoselect() on the combo-box.
 	template<typename F>
 	static inline size_t
-	update_new_element(const new_element_t &new_element,
+	update_new_element(ONLY IN_THREAD,
+			   const new_element_t &new_element,
 			   std::vector<std::string> &existing_ids,
 			   const x::w::focusable_container &id_combo,
 			   F &&f)
 	{
-		return do_update_new_element(new_element, existing_ids,
+		return do_update_new_element(IN_THREAD,
+					     new_element, existing_ids,
 					     id_combo,
 					     x::make_function<void (size_t)>
 					     (std::forward<F>(f)));
@@ -399,7 +402,8 @@ public:
 
 	//! Type-erase update_new_element
 	static size_t
-	do_update_new_element(const new_element_t &new_element,
+	do_update_new_element(ONLY IN_THREAD,
+			      const new_element_t &new_element,
 			      std::vector<std::string> &existing_ids,
 			      const x::w::focusable_container &id_combo,
 			      const x::function<void (size_t)> &f);
@@ -410,7 +414,8 @@ public:
 	typedef std::optional<
 		std::tuple<
 			x::xml::readlock,
-			x::functionref<void (appObj *, const x::ref<x::obj> &)>
+			x::functionref<void (appObj *, ONLY,
+					     const x::ref<x::obj> &)>
 			>> update_callback_t;
 
 	//! Callable object used by update_theme()
@@ -452,8 +457,10 @@ public:
 	//! installed as the new theme, and the third callable object gets
 	//! invoked.
 	//!
-	//! The third callable object gets invoked with two parameters:
+	//! The third callable object gets invoked in the connectio thread
+	//! with three parameters:
 	//! an appObj pointer (also being executed via appinvoke);
+	//! IN_THREAD;
 	//! and an opaque mcguffin.
 	//!
 	//! The opaque mcguffin is the busy mcguffin for the connection thread
@@ -839,8 +846,9 @@ private:
 	//! Continue dimension_update processing, in the main execution thread
 	update_callback_t dimension_update2(dimension_info_t::lock &lock);
 
-	//! Finish dimension_update processing, in the main execution thread
-	void dimension_update2(dimension_info_t::lock &lock,
+	//! Finish dimension_update processing, in the connection thread
+	void dimension_update2(ONLY IN_THREAD,
+			       dimension_info_t::lock &lock,
 			       const std::string &id,
 			       bool is_new,
 			       const x::ref<x::obj> &busy_mcguffin);
@@ -853,8 +861,9 @@ private:
 	//! Continue dimension_delete processing, in the main execution thread
 	update_callback_t dimension_delete2(dimension_info_t::lock &lock);
 
-	//! Finish dimension_delete processing, in the main execution thread
-	void dimension_delete2(dimension_info_t::lock &lock,
+	//! Finish dimension_delete processing, in the connection thread
+	void dimension_delete3(ONLY IN_THREAD,
+			       dimension_info_t::lock &lock,
 			       size_t index,
 			       const x::ref<x::obj> &busy_mcguffin);
 public:
@@ -1106,14 +1115,12 @@ private:
 	//! Continue color_update(), in the main execution thread.
 	update_callback_t color_update2(colors_info_t::lock &lock);
 
-	//! Finalize color_update(), in the main execution thread.
-	void color_update2(colors_info_t::lock &,
+	//! Finalize color_update(), in the connection thread.
+	void color_update3(ONLY IN_THREAD,
+			   colors_info_t::lock &,
 			   const std::string &,
 			   bool,
 			   const x::ref<x::obj> &);
-
-	//! Finish color_update(), in the connection thread.
-	void color_update3(ONLY IN_THREAD, const x::ref<x::obj> &busy_mcguffin);
 
 public:
 	//! Delete color, invoked from update_theme().
@@ -1124,8 +1131,9 @@ private:
 	//! Continue color_delete(), in the main execution thread.
 	update_callback_t color_delete2(colors_info_t::lock &lock);
 
-	//! Finish color_delete(), in the main execution thread.
-	void color_delete2(colors_info_t::lock &lock,
+	//! Finish color_delete(), in the connection thread.
+	void color_delete3(ONLY IN_THREAD,
+			   colors_info_t::lock &lock,
 			   size_t index,
 			   const x::ref<x::obj> &busy_mcguffin);
 
@@ -1307,17 +1315,13 @@ private:
 
 	update_callback_t border_update2(border_info_t::lock &lock);
 
-	//! Finalize border_update(), in the main execution thread.
+	//! Finalize border_update(), in the connection thread.
 
-	void border_update2(border_info_t::lock &lock,
+	void border_update3(ONLY IN_THREAD,
+			    border_info_t::lock &lock,
 			    const std::string &id,
 			    bool is_new,
 			    const x::ref<x::obj> &busy_mcguffin);
-
-	//! Finish border_update(), in the connection thread.
-	void border_update3(ONLY IN_THREAD,
-			    const x::ref<x::obj> &busy_mcguffin);
-
 public:
 	//! Delete border, invoked from update_theme().
 	get_updatecallbackptr border_delete(ONLY IN_THREAD);
@@ -1327,8 +1331,9 @@ private:
 	//! Continue border_delete(), in the main execution thread.
 	update_callback_t border_delete2(border_info_t::lock &lock);
 
-	//! Finish border_delete(), in the main execution thread.
-	void border_delete2(border_info_t::lock &lock,
+	//! Finish border_delete(), in the connection thread.
+	void border_delete3(ONLY IN_THREAD,
+			    border_info_t::lock &lock,
 			    size_t index,
 			    const x::ref<x::obj> &busy_mcguffin);
 
@@ -1509,16 +1514,13 @@ private:
 
 	update_callback_t font_update2(font_info_t::lock &lock);
 
-	//! Finalize font_update(), in the main execution thread.
+	//! Finalize font_update(), in the connection thread.
 
-	void font_update2(font_info_t::lock &lock,
-			    const std::string &id,
-			    bool is_new,
-			    const x::ref<x::obj> &busy_mcguffin);
-
-	//! Finish font_update(), in the connection thread.
 	void font_update3(ONLY IN_THREAD,
-			    const x::ref<x::obj> &busy_mcguffin);
+			  font_info_t::lock &lock,
+			  const std::string &id,
+			  bool is_new,
+			  const x::ref<x::obj> &busy_mcguffin);
 
 public:
 	//! Delete font, invoked from update_theme().
@@ -1529,10 +1531,11 @@ private:
 	//! Continue font_delete(), in the main execution thread.
 	update_callback_t font_delete2(font_info_t::lock &lock);
 
-	//! Finish font_delete(), in the main execution thread.
-	void font_delete2(font_info_t::lock &lock,
-					    size_t index,
-					    const x::ref<x::obj> &busy_mcguffin);
+	//! Finish font_delete(), in the connection thread
+	void font_delete3(ONLY IN_THREAD,
+			  font_info_t::lock &lock,
+			  size_t index,
+			  const x::ref<x::obj> &busy_mcguffin);
 
 public:
 	/////////////////////////////////////////////////////////////////////
@@ -1778,8 +1781,9 @@ private:
 	//! Continue appearance_create(), in the main execution thread.
 	update_callback_t appearance_create2(appearance_info_t::lock &lock);
 
-	//! Finish appearance_create(), in the main execution thread.
-	void appearance_create2(appearance_info_t::lock &lock,
+	//! Finish appearance_create(), in the connection thread.
+	void appearance_create3(ONLY IN_THREAD,
+				appearance_info_t::lock &lock,
 				const std::string &new_appearance_name,
 				const x::ref<x::obj> &busy_mcguffin);
 
@@ -1790,13 +1794,7 @@ private:
 	get_updatecallbackptr appearance_update(ONLY IN_THREAD);
 
 	//! Continue appearance_update(), in the main execution thread.
-
 	update_callback_t appearance_update2(appearance_info_t::lock &lock);
-
-	//! Finalize appearance_update(), in the main execution thread.
-	void appearance_update2(appearance_info_t::lock &lock,
-				const std::string &id,
-				const x::ref<x::obj> &busy_mcguffin);
 
 	//! Finish appearance_update(), in the connection thread.
 	void appearance_update3(ONLY IN_THREAD,
@@ -1857,8 +1855,9 @@ private:
 	//! Continue appearance_delete(), in the main execution thread.
 	update_callback_t appearance_delete2(appearance_info_t::lock &lock);
 
-	//! Finish appearance_delete(), in the main execution thread.
-	void appearance_delete2(appearance_info_t::lock &lock,
+	//! Finish appearance_delete(), in the connection thread
+	void appearance_delete3(ONLY IN_THREAD,
+				appearance_info_t::lock &lock,
 				size_t index,
 				const x::ref<x::obj> &busy_mcguffin);
 public:
@@ -1919,8 +1918,9 @@ public:
 	//! Continue generator_delete(), in the main execution thread.
 	update_callback_t generator_delete2(generator_info_lock &lock);
 
-	//! Finish generator_delete(), in the main execution thread.
-	void generator_delete2(generator_info_lock &lock,
+	//! Finish generator_delete(), in the connection thread.
+	void generator_delete2(ONLY IN_THREAD,
+			       generator_info_lock &lock,
 			       size_t index,
 			       const x::ref<x::obj> &busy_mcguffin);
 
@@ -1972,12 +1972,9 @@ public:
 
 	update_callback_t generator_update2(generator_info_lock &lock);
 
-	//! Finalize generator_update(), in the main execution thread.
-	void generator_update2(generator_info_lock &lock,
-			       const x::ref<x::obj> &busy_mcguffin);
-
 	//! Finish generator_update(), in the connection thread.
 	void generator_update3(ONLY IN_THREAD,
+			       generator_info_lock &lock,
 			       const x::ref<x::obj> &busy_mcguffin);
 
 	//! Automatically create a new layout or a factory

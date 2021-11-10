@@ -1034,63 +1034,46 @@ appObj::update_callback_t appObj::font_update2(font_info_t::lock &lock)
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    font_info_t::lock lock{saved_lock};
 
-			    me->font_update2(lock, id, is_new,
-					       busy_mcguffin);
+			    me->font_update3(IN_THREAD, lock, id, is_new,
+					     busy_mcguffin);
 		    });
 
 	return ret;
 }
 
-void appObj::font_update2(font_info_t::lock &lock,
-			    const std::string &id,
-			    bool is_new,
-			    const x::ref<x::obj> &busy_mcguffin)
+void appObj::font_update3(ONLY IN_THREAD,
+			  font_info_t::lock &lock,
+			  const std::string &id,
+			  bool is_new,
+			  const x::ref<x::obj> &busy_mcguffin)
 {
 	if (is_new)
 	{
 		auto from_name_lm=font_from_name->standard_comboboxlayout();
 
-		update_new_element({id}, lock->ids, font_name,
+		update_new_element(IN_THREAD,
+				   {id}, lock->ids, font_name,
 				   [&]
 				   (size_t i)
 				   {
-					   from_name_lm->insert_items(i-1,
-								      {id});
+					   from_name_lm->insert_items(
+						   IN_THREAD,
+						   i-1,
+						   {id}
+					   );
 				   });
 
 		status->update(_("Created new font"));
-		main_window->in_thread_idle([busy_mcguffin]
-					    (ONLY IN_THREAD)
-					    {
-					    });
 		return;
 	}
 
-	main_window->in_thread
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke(&appObj::font_update3,
-				   IN_THREAD,
-				   busy_mcguffin);
-		 });
-}
-
-void appObj::font_update3(ONLY IN_THREAD, const x::ref<x::obj> &busy_mcguffin)
-{
-	font_info_t::lock lock{font_info};
-
 	font_selected_locked(IN_THREAD, lock);
 	status->update(_("Font updated"));
-
-	main_window->in_thread_idle([busy_mcguffin]
-				    (ONLY IN_THREAD)
-				    {
-				    });
 }
 
 appObj::get_updatecallbackptr appObj::font_delete(ONLY IN_THREAD)
@@ -1137,20 +1120,21 @@ appObj::update_callback_t appObj::font_delete2(font_info_t::lock &lock)
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    font_info_t::lock lock{saved_lock};
 
-			    me->font_delete2(lock, index,
-					       busy_mcguffin);
+			    me->font_delete3(IN_THREAD, lock, index,
+					     busy_mcguffin);
 		    });
 
 	return ret;
 }
 
-void appObj::font_delete2(font_info_t::lock &lock,
-			    size_t index,
-			    const x::ref<x::obj> &busy_mcguffin)
+void appObj::font_delete3(ONLY IN_THREAD, font_info_t::lock &lock,
+			  size_t index,
+			  const x::ref<x::obj> &busy_mcguffin)
 {
 	// Update the loaded list of fonts we store here,
 	// and set the current font combo-box dropdown to "New Font".
@@ -1160,39 +1144,15 @@ void appObj::font_delete2(font_info_t::lock &lock,
 	auto name_lm=font_name->standard_comboboxlayout(),
 		from_name_lm=font_from_name->standard_comboboxlayout();
 
-	name_lm->remove_item(index+1);
-	from_name_lm->remove_item(index);
+	name_lm->remove_item(IN_THREAD, index+1);
+	from_name_lm->remove_item(IN_THREAD, index);
 
 	lock->current_selection.reset();
 
-	name_lm->autoselect(0);
+	name_lm->autoselect(IN_THREAD, 0, {});
 
-	// autoselect(0) queues up a request.
-	// When it gets processed, the font new name field gets show()n.
-	// We want to request focus for that after all that processing also
-	// gets done:
+	font_reset_values(IN_THREAD, lock);
 
-	main_window->in_thread_idle
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke([&]
-				   (appObj *me)
-				   {
-					   font_info_t::lock
-						   lock{me->font_info};
-					   me->font_reset_values(IN_THREAD,
-								  lock);
-
-					   me->font_new_name
-						   ->request_focus();
-					   me->status->update(_("Deleted"));
-
-					   me->main_window->in_thread_idle
-						   ([busy_mcguffin]
-						    (ONLY IN_THREAD)
-						    {
-						    });
-				   });
-		 });
+	font_new_name->request_focus(IN_THREAD);
+	status->update(_("Deleted"));
 }

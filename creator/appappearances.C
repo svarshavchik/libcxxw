@@ -2078,11 +2078,13 @@ appObj::update_callback_t appObj::appearance_create2(appearance_info_t::lock
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    appearance_info_t::lock lock{saved_lock};
 
-			    me->appearance_create2(lock,
+			    me->appearance_create3(IN_THREAD,
+						   lock,
 						   new_appearance_name,
 						   busy_mcguffin);
 		    });
@@ -2090,19 +2092,15 @@ appObj::update_callback_t appObj::appearance_create2(appearance_info_t::lock
 	return ret;
 }
 
-void appObj::appearance_create2(appearance_info_t::lock &lock,
+void appObj::appearance_create3(ONLY IN_THREAD,
+				appearance_info_t::lock &lock,
 				const std::string &new_appearance_name,
 				const x::ref<x::obj> &busy_mcguffin)
 {
-	update_new_element(appearance_name_and_description
+	update_new_element(IN_THREAD,
+			   appearance_name_and_description
 			   (new_appearance_name), lock->ids,
 			   appearance_name);
-
-	main_window->in_thread_idle
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-		 });
 }
 
 appObj::get_updatecallbackptr appObj::appearance_update(ONLY IN_THREAD)
@@ -2165,29 +2163,16 @@ appObj::appearance_update2(appearance_info_t::lock &lock)
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    appearance_info_t::lock lock{saved_lock};
 
-			    me->appearance_update2(lock, id,
+			    me->appearance_update3(IN_THREAD,
 						   busy_mcguffin);
 		    });
 
 	return ret;
-}
-
-void appObj::appearance_update2(appearance_info_t::lock &lock,
-				const std::string &id,
-				const x::ref<x::obj> &busy_mcguffin)
-{
-	main_window->in_thread
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke(&appObj::appearance_update3,
-				   IN_THREAD,
-				   busy_mcguffin);
-		 });
 }
 
 void appObj::appearance_update3(ONLY IN_THREAD,
@@ -2195,11 +2180,6 @@ void appObj::appearance_update3(ONLY IN_THREAD,
 {
 	appearance_reset(IN_THREAD);
 	status->update(_("Appearance updated"));
-
-	main_window->in_thread_idle([busy_mcguffin]
-				    (ONLY IN_THREAD)
-				    {
-				    });
 }
 
 appObj::get_updatecallbackptr appObj::appearance_delete(ONLY IN_THREAD)
@@ -2247,56 +2227,36 @@ appObj::appearance_delete2(appearance_info_t::lock &lock)
 	ret.emplace(doc_lock,
 		    [=, saved_lock=lock.threadlock(x::ref{this})]
 		    (appObj *me,
+		     ONLY IN_THREAD,
 		     const x::ref<x::obj> &busy_mcguffin)
 		    {
 			    appearance_info_t::lock lock{saved_lock};
 
-			    me->appearance_delete2(lock, index,
-					       busy_mcguffin);
+			    me->appearance_delete3(IN_THREAD,
+						   lock, index,
+						   busy_mcguffin);
 		    });
 
 	return ret;
 }
 
-void appObj::appearance_delete2(appearance_info_t::lock &lock,
-			    size_t index,
-			    const x::ref<x::obj> &busy_mcguffin)
+void appObj::appearance_delete3(ONLY IN_THREAD,
+				appearance_info_t::lock &lock,
+				size_t index,
+				const x::ref<x::obj> &busy_mcguffin)
 {
 	// Update the loaded list of appearances we store here,
 	// and set the current appearance combo-box dropdown to "New Appearance".
-
 	lock->ids.erase(lock->ids.begin()+index);
 
 	auto name_lm=appearance_name->standard_comboboxlayout();
 
-
-	name_lm->remove_item(index+1);
+	name_lm->remove_item(IN_THREAD, index+1);
 
 	lock->current_selection.reset();
 
-	name_lm->autoselect(0);
+	name_lm->autoselect(IN_THREAD, 0, {});
 
-	// autoselect(0) queues up a request.
-
-	main_window->in_thread_idle
-		([busy_mcguffin]
-		 (ONLY IN_THREAD)
-		 {
-			 appinvoke([&]
-				   (appObj *me)
-				   {
-					   appearance_info_t::lock
-						   lock{me->appearance_info};
-
-					   me->appearance_name
-						   ->request_focus();
-					   me->status->update(_("Deleted"));
-
-					   me->main_window->in_thread_idle
-						   ([busy_mcguffin]
-						    (ONLY IN_THREAD)
-						    {
-						    });
-				   });
-		 });
+	appearance_name->request_focus(IN_THREAD);
+	status->update(_("Deleted"));
 }

@@ -8,6 +8,7 @@
 #include "creator/appgenerator_savefwd.H"
 #include "creator/appgenerator_functionsfwd.H"
 #include "creator/app.H"
+#include "x/w/connection_threadfwd.H"
 #include <x/vector.H>
 #include <x/functionalrefptr.H>
 #include <vector>
@@ -32,7 +33,8 @@ struct appgenerator_save {
 
 	//! The container for extra_updates.
 
-	typedef x::vector<x::functionref<void (appObj *, generator_info_lock &)>
+	typedef x::vector<x::functionref<void (appObj *, ONLY,
+					       generator_info_lock &)>
 			  > extra_updates_t;
 
 	//! Additional callbacks to update the saved XML document
