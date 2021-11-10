@@ -860,8 +860,13 @@ void appObj::border_enable_disable_buttons(ONLY IN_THREAD,
 				border_preview->get_layoutmanager();
 
 			blm->update_border(IN_THREAD, preview_border);
-		} REPORT_EXCEPTIONS(main_window);
-
+		} catch (...)
+		{
+			border_preview_cell_border_container->hide(IN_THREAD);
+			status->update(_("Border cannot be previewed"));
+			return;
+		}
+		status->update("");
 		border_preview_cell_border_container->show(IN_THREAD);
 	}
 	else

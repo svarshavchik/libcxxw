@@ -824,11 +824,7 @@ static const x::w::validated_input_field<
 				 }
 			 }
 
-			 field->stop_message(_("Invalid size, must be a "
-					       "defined dimension or a "
-					       "numeric value in millimeters"));
-
-			 ret.reset();
+			 ret=x::trim(value);
 			 return ret;
 		 },
 		 []
