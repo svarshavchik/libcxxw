@@ -244,6 +244,16 @@ static std::vector<focusable> get_focusables(const uielements &uie,
 	return focusables;
 }
 
+void uielements::autofocus_enable(const std::string &focusable_value) const
+{
+	get_focusable(*this, focusable_value)->autofocus(true);
+}
+
+void uielements::autofocus_disable(const std::string &focusable_value) const
+{
+	get_focusable(*this, focusable_value)->autofocus(false);
+}
+
 void uielements::get_focus_first(const std::string &focusable_value) const
 {
 	get_focusable(*this, focusable_value)->get_focus_first();

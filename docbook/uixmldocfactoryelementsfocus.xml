@@ -7,6 +7,7 @@ See COPYING for distribution information.
 
 <section id="uixmlfactoryelementsfocus">
   <title>
+    <tag class='element'>autofocus</tag>,
     <tag class='element'>get_focus_first</tag>,
     <tag class='element'>get_focus_before</tag>,
     <tag class='element'>get_focus_after</tag>,
@@ -19,6 +20,15 @@ See COPYING for distribution information.
     <informalexample>
       <programlisting><![CDATA[
 <factory id="initialize-focus" type="elements">
+
+  <autofocus>
+    <enable>name_radio_button_option</enable>
+  </autofocus>
+
+  <autofocus>
+    <disable>name_radio_button_option</disable>
+  </autofocus>
+
   <get_focus_after>
     <focusable>name_input_field</focusable>
     <after_focusable>name_radio_button_option</after_focusable>
@@ -40,10 +50,21 @@ See COPYING for distribution information.
     <tag class='element'>get_focus_after_me</tag>, and
     <tag class='element'>request_focus</tag>
     require
-    <tag class='element'>focusable</tag> that specifies
+    <tag class='element'>focusable</tag> that gives a name of
     a <link linkend="focusable">focusable widget</link> whose method of
     the same name gets invoked.
   </para>
+
+  <para>
+    <tag class='element'>autofocus</tag> contains either an
+    <tag class='element'>enable</tag> or a
+    <tag class='element'>disable</tag> that gives a name of
+    a <link linkend="focusable">focusable widget</link> whose
+    <methodname>autofocus</methodname>() method gets invoked with either
+    a <literal>true</literal> or a <literal>false</literal> value,
+    respectively.
+  </para>
+
 
   <para>
     <tag class='element'>request_focus</tag>'s optional

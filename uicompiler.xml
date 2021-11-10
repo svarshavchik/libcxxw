@@ -3960,6 +3960,36 @@ List of values:
     </parameter>
 
     <function>
+      <name>autofocus</name>
+      <invoke>autofocus_enable</invoke>
+      <object>elements</object>
+
+      <condition>
+	<exists>enable</exists>
+      </condition>
+
+      <parameter>
+	<name>enable</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>autofocus</name>
+      <invoke>autofocus_disable</invoke>
+      <object>elements</object>
+
+      <condition>
+	<exists>disable</exists>
+      </condition>
+
+      <parameter>
+	<name>disable</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
       <name>get_focus_first</name>
       <invoke>get_focus_first</invoke>
       <object>elements</object>

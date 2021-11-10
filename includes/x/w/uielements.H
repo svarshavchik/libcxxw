@@ -201,6 +201,14 @@ struct uielements {
 		      const const_uigenerators &generators);
 
 	//! Invoked by generate()
+	void autofocus_enable(const std::string &focusable_value)
+		const LIBCXX_HIDDEN;
+
+	//! Invoked by generate()
+	void autofocus_disable(const std::string &focusable_value)
+		const LIBCXX_HIDDEN;
+
+	//! Invoked by generate()
 	void request_focus(const std::string &focusable_value,
 			   bool now_or_never) const
 		LIBCXX_HIDDEN;
