@@ -7,10 +7,11 @@
 #define x_w_impl_richtext_richtextmeta_H
 
 #include <x/w/rgb.H>
-#include <x/w/text_hotspotfwd.H>
+#include <x/w/text_paramfwd.H>
 #include <x/w/impl/richtext/richtextmetafwd.H>
 #include <x/w/impl/fonts/current_fontcollection.H>
 #include <x/w/impl/background_colorfwd.H>
+#include <x/functionalrefptr.H>
 #include <compare>
 
 LIBCXXW_NAMESPACE_START

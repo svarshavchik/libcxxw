@@ -12,7 +12,7 @@
 #include "x/w/richtext/richtextfragmentfwd.H"
 #include "x/w/richtext/richtextfwd.H"
 #include "x/w/richtext/richtextiteratorfwd.H"
-#include "x/w/text_hotspotfwd.H"
+#include "x/w/text_paramfwd.H"
 #include <courier-unicode.h>
 #include <functional>
 #include <tuple>

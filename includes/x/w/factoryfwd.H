@@ -189,6 +189,11 @@ spcified, the label's size remains fixed.
 
 An optional third parameter sets the label's \ref halign "alignment".
 
+\par Focusable labels
+
+create_focusable_label() creates a new \ref focusable_label "focusable label"
+widget.
+
 \par Bordered widget elements
 
 \code

@@ -797,7 +797,6 @@ libcxxw_la_SOURCES=\
 	richtext/richtextstring.C		    \
 	richtext/richtextstring2.C		    \
 	richtext/richtextstring3.C		    \
-	richtext/text_hotspot.C			    \
 	run_as.H				    \
 	scratch_buffer.C			    \
 	scratch_buffer.H			    \

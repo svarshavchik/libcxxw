@@ -7,7 +7,7 @@
 #include "assert_or_throw.H"
 #include "x/w/impl/richtext/richtextstring.H"
 #include "x/w/impl/richtext/richtextmeta.H"
-#include "x/w/text_hotspot.H"
+#include "x/w/text_param.H"
 #include <x/sentry.H>
 #include <x/locale.H>
 #include <algorithm>

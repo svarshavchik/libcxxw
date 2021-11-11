@@ -25,7 +25,7 @@
 #include "x/w/impl/child_element.H"
 #include "x/w/labelfwd.H"
 #include "x/w/focusable_label.H"
-#include "x/w/text_hotspot.H"
+#include "x/w/text_param.H"
 #include <x/refptr_hash.H>
 #include <unordered_map>
 #include <xcb/xproto.h>

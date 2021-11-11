@@ -15,7 +15,7 @@
 #include "x/w/container.H"
 #include "x/w/label.H"
 #include "x/w/focusable_label.H"
-#include "x/w/text_hotspot.H"
+#include "x/w/text_param.H"
 #include "x/w/text_param_literals.H"
 #include "x/w/input_field.H"
 #include "x/w/callback_trigger.H"
@@ -175,17 +175,18 @@ static void calendar_grid(const gridlayoutmanager &glm,
 
 			auto day_str=o.str();
 
-			auto link=text_hotspot::create
-				([day_str, current_date, weak_me]
-				 (ONLY IN_THREAD,
-				  const text_event_t &event)
-				 {
-					 return do_hotspot(IN_THREAD,
-							   day_str,
-							   current_date,
-							   event,
-							   weak_me);
-				 });
+			text_hotspot link{
+				[day_str, current_date, weak_me]
+				(ONLY IN_THREAD,
+				 const text_event_t &event)
+				{
+					return do_hotspot(IN_THREAD,
+							  day_str,
+							  current_date,
+							  event,
+							  weak_me);
+				}
+			};
 
 			day_label("link"_hotspot);
 			day_label(unicode::literals::LRO);

@@ -20,7 +20,6 @@
 #include "x/w/file_dialog_appearance.H"
 #include "x/w/label.H"
 #include "x/w/focusable_label.H"
-#include "x/w/text_hotspot.H"
 #include "x/w/button.H"
 #include "x/w/text_param.H"
 #include "x/w/text_param_literals.H"
@@ -382,11 +381,10 @@ void file_dialogObj::implObj::create_hotspot(text_param &t,
 {
 	hotspots.emplace(
 		hotspot_counter,
-		text_hotspot::create
-		([name, path,
-		  me=make_weak_capture(ref(this))]
-		 (ONLY IN_THREAD,
-		  const text_event_t &event)
+		[name, path,
+		 me=make_weak_capture(ref(this))]
+		(ONLY IN_THREAD,
+		 const text_event_t &event)
 		{
 			text_param t;
 
@@ -400,7 +398,8 @@ void file_dialogObj::implObj::create_hotspot(text_param &t,
 							event, name, path);
 			}
 			return t;
-		}));
+		}
+	);
 
 	t(start_hotspot{hotspot_counter});
 	t(name);

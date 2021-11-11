@@ -21,7 +21,6 @@
 #include "x/w/font_literals.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
-#include "x/w/text_hotspot.H"
 #include "x/w/input_field.H"
 #include "testwordwrappablelabel.inc.H"
 #define DEBUG_INITIAL_METRICS
@@ -129,44 +128,46 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 			LIBCXX_NAMESPACE::w::rgb::maximum/4*3, LIBCXX_NAMESPACE::w::rgb::maximum};
 	LIBCXX_NAMESPACE::w::rgb black;
 
-	auto hotspot1=LIBCXX_NAMESPACE::w::text_hotspot
-		::create([processor=hotspot_processor{
-					{
-						"label_title"_theme_font,
-						blue,
-						"underline"_decoration,
-						"Lorem ipsum\n",
-					},
-					{
-						"label_title"_theme_font,
-						blue,
-						lightblue,
-						"underline"_decoration,
-						"Lorem ipsum\n",
-					}
-				}]
-			(THREAD_CALLBACK,
-			 const auto &e)
-			{
-				return std::visit(processor, e);
-			});
+	LIBCXX_NAMESPACE::w::text_hotspot hotspot1{
+		[processor=hotspot_processor{
+				{
+					"label_title"_theme_font,
+					blue,
+					"underline"_decoration,
+					"Lorem ipsum\n",
+				},
+				{
+					"label_title"_theme_font,
+					blue,
+					lightblue,
+					"underline"_decoration,
+					"Lorem ipsum\n",
+				}
+			}]
+		(THREAD_CALLBACK,
+		 const auto &e)
+		{
+			return std::visit(processor, e);
+		}
+	};
 
-	auto hotspot2=LIBCXX_NAMESPACE::w::text_hotspot
-		::create([processor=hotspot_processor{
-					{
-						"laborum."
-					},
-					{
-						black,
-						lightblue,
-						"laborum."
-					},
-				}]
-			(THREAD_CALLBACK,
-			 const auto &e)
-			{
-				return std::visit(processor, e);
-			});
+	LIBCXX_NAMESPACE::w::text_hotspot hotspot2{
+		[processor=hotspot_processor{
+				{
+					"laborum."
+				},
+				{
+					black,
+					lightblue,
+					"laborum."
+				},
+			}]
+		(THREAD_CALLBACK,
+		 const auto &e)
+		{
+			return std::visit(processor, e);
+		}
+	};
 
 	LIBCXX_NAMESPACE::w::focusable_label_config config;
 

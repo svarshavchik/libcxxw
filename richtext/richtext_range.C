@@ -9,7 +9,7 @@
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtextfragment.H"
 #include "x/w/impl/richtext/richtext.H"
-#include "x/w/text_hotspot.H"
+#include "x/w/text_param.H"
 #include "x/w/richtext/richtextiterator.H"
 #include "assert_or_throw.H"
 

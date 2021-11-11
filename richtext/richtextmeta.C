@@ -7,7 +7,7 @@
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/fonts/current_fontcollection.H"
 #include "x/w/impl/richtext/richtextmeta.H"
-#include "x/w/text_hotspot.H"
+#include "x/w/text_param.H"
 #include "x/w/rgb_hash.H"
 
 LIBCXXW_NAMESPACE_START

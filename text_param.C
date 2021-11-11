@@ -13,7 +13,6 @@
 #include "x/w/picture.H"
 #include "x/w/impl/richtext/richtextmeta.H"
 #include "x/w/impl/richtext/richtextstring.H"
-#include "x/w/text_hotspot.H"
 #include <courier-unicode.h>
 #include <x/visitor.H>
 #include <x/locale.H>

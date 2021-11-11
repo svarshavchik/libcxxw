@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class richtextmeta;
+class LIBCXX_PUBLIC richtextmeta;
 
 LIBCXXW_NAMESPACE_END
 

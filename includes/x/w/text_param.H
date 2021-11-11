@@ -13,8 +13,8 @@
 #include <x/w/theme_color.H>
 #include <x/w/screenfwd.H>
 #include <x/w/text_paramfwd.H>
-#include <x/w/text_hotspotfwd.H>
 #include <x/w/theme_textfwd.H>
+#include <x/functionalrefptr.H>
 
 #include <string>
 #include <unordered_map>
@@ -25,11 +25,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Optional text decorations for \ref text_param "text parameters".
+/*! \brief Optional text decorations
 
-//! - underline: draw an underline
-//!
-//! - none: remove all decorations
+This specifies the following \ref text_param "text parameters" decorations:
+
+- underline: draw an underline
+
+- none: remove all decorations
+*/
 
 enum class text_decoration {
 	none=0,
@@ -48,35 +51,38 @@ concept text_param_constructible=requires(text_param &t, Args && ...args)
 		{ (t(std::forward<Args>(args)), ...) };
 	};
 
-/*! \ref "text_param" placeholder that marks the beginning of a hotspot
-**
-** \code
-** INSERT_LIB_NAMESPACE::w::text_param str;
-**
-** // ...
-**
-** str(INSERT_LIBX_NAMESPACE::w::start_hotspot{ "link" });
-** str("click here");
-**
-** str(INSERT_LIBX_NAMESPACE::w::end_hotspot{});
- */
+/*! \brief A placeholder that marks the beginning of a hotspot
+
+\code
+INSERT_LIB_NAMESPACE::w::text_param str;
+
+// ...
+
+str(INSERT_LIBX_NAMESPACE::w::start_hotspot{ "link" });
+str("click here");
+
+str(INSERT_LIBX_NAMESPACE::w::end_hotspot{});
+\endcode
+
+*/
 
 struct start_hotspot {
 
+	//! The identifier
 	label_hotspot_id id;
 
+	//! Explicit constructor
 	explicit start_hotspot(const label_hotspot_id &id)
 		: id{id}
 	{
 	}
 };
 
-/*! \ref "text_param" placeholder that marks the end of a hotspot
- */
+//! A placeholder that marks the end of a hotspot
 
 struct end_hotspot{};
 
-/*! \brief \anchor text_param A text parameter for a new widget.
+/*! \brief A text parameter for a new widget.
 
 This parameter specifies a text string when creating
 a new widget using the \ref factory "element factory"; such
@@ -281,6 +287,36 @@ p("underline"_decoration,
 It is possible to specify fonts, colors, and markup in a single
 string parameter that's amenable to gettext-ization. See
 \ref theme_text for more information.
+
+\par Hotspots
+
+Hotspot markers are allowed only in text parameters to
+\ref focusable_label "focusable labels".
+
+\code
+p(INSERT_LIBX_NAMESPACE::w::start_hotspot{"hotspot1"});
+p(INSERT_LIBX_NAMESPACE::w::start_hotspot{1});
+
+p(INSERT_LIBX_NAMESPACE::w::end_hotspot{});
+
+\endcode
+
+The \ref start_hotspot "INSERT_LIBX_NAMESPACE::w::start_hotspot"
+placeholder marks the start of a label hotspot, a clickable part of a label.
+Another \ref start_hotspot "INSERT_LIBX_NAMESPACE::w::start_hotspot" marks
+the end of the initial clickable hotspot and a start of the next clickable
+section; \ref end_hotspot "INSERT_LIBX_NAMESPACE::w::end_hotspot" marks the
+end of a clickable hotspot without starting the next one.
+
+Each clickable portion of the label carries a unique identifier:
+either a literal string or an \c int value. The identifier gets passed
+to \c INSERT_LIBX_NAMESPACE::start_hotspot's constructor.
+
+All hotspot identifiers must be unique for the same label
+
+\note
+Literal string hotspot identifiers must remain in scope, and not destroyed
+until create_focusable_label() returns.
 
 \par Scope
 

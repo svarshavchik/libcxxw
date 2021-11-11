@@ -19,7 +19,7 @@
 #include "defaulttheme.H"
 #include "x/w/factory.H"
 #include "x/w/label.H"
-#include "x/w/text_hotspot.H"
+#include "x/w/text_param.H"
 #include "x/w/key_event.H"
 #include "x/w/motion_event.H"
 #include "x/w/button_event.H"
@@ -632,7 +632,7 @@ void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 					const text_hotspot &link,
 					const text_event_t &event_type)
 {
-	auto replacement_text=link->event(IN_THREAD, event_type);
+	auto replacement_text=link(IN_THREAD, event_type);
 
 	if (replacement_text.string.empty())
 		return;

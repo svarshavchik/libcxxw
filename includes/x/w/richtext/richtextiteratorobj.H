@@ -14,7 +14,7 @@
 #include <x/w/richtext/richtextstringfwd.H>
 #include <x/w/richtext/richtextfragmentfwd.H>
 #include <x/w/rectangle.H>
-#include <x/w/text_hotspot.H>
+#include <x/w/text_paramfwd.H>
 #include <x/obj.H>
 #include <optional>
 #include <string_view>
@@ -112,13 +112,7 @@ public:
 	//! nearest character for the X coordinate, in all cases.
 	bool moveto(ONLY IN_THREAD, coord_t x, coord_t y);
 
-	//! What the at() returns.
-
-	struct at_info {
-		rectangle position; //!< Where the character is drawn.
-		char32_t character; //!< The character at the iterator
-		text_hotspotptr link; //!< The hotspot at the iterator
-	};
+	struct at_info;
 
 	//! What's at this iterator's location
 	at_info at(ONLY IN_THREAD) const;

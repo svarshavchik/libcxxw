@@ -22,7 +22,7 @@
 #include <x/w/drawablefwd.H>
 #include <x/w/input_field_lock.H>
 #include <x/w/defaultthemefwd.H>
-#include <x/w/text_hotspotfwd.H>
+#include <x/w/text_paramfwd.H>
 #include <x/obj.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
