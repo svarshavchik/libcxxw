@@ -901,7 +901,7 @@ void appObj::font_enable_disable_buttons(ONLY IN_THREAD,
 	}
 
 	auto validated_size=
-		font_point_size_validated->validated_value.get();
+		font_point_size_validated->value();
 
 	if (!validated_size)
 	{

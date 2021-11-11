@@ -302,8 +302,8 @@ void validatedinputfields()
 	// x::w::validated_input_field<T> objects. A reference to these
 	// objects is owned by the installed callback.
 
-	std::optional<char> final_char_value=char_input->validated_value.get();
-	std::optional<int> final_int_value=int_input->validated_value.get();
+	std::optional<char> final_char_value=char_input->value();
+	std::optional<int> final_int_value=int_input->value();
 
 	if (final_char_value)
 		std::cout << "Final char value: " << *final_char_value

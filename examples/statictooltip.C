@@ -716,7 +716,7 @@ void statictooltip()
 
 	close_flag->wait();
 
-	auto value=validator->validated_value.get();
+	auto value=validator->value();
 
 	std::cout << "Final value: ";
 

@@ -1152,8 +1152,7 @@ static void demo_input(const w::gridlayoutmanager &lm)
 		  const auto &trigger,
 		  const auto &busy)
 		 {
-			 auto value=validated_input->validated_value.get()
-				 .value_or(1);
+			 auto value=validated_input->value_or(1);
 
 			 if (--value)
 				 validated_input->set(value);
@@ -1163,8 +1162,7 @@ static void demo_input(const w::gridlayoutmanager &lm)
 		  const auto &trigger,
 		  const auto &busy)
 		 {
-			 auto value=validated_input->validated_value
-				 .get().value_or(0);
+			 auto value=validated_input->value_or(0);
 
 			 if (++value < 50)
 				 validated_input->set(value);

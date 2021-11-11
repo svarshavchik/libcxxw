@@ -128,8 +128,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 			const x::w::callback_trigger_t &trigger,
 			const x::w::busy &mcguffin)
 		       {
-			       auto value=validated_int->validated_value.get()
-				       .value_or(1);
+			       auto value=validated_int->value_or(1);
 
 			       if (--value)
 				       validated_int->set(value);
@@ -139,8 +138,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 			const x::w::callback_trigger_t &trigger,
 			const x::w::busy &mcguffin)
 		       {
-			       auto value=validated_int->validated_value.get()
-				       .value_or(0);
+			       auto value=validated_int->value_or(0);
 
 			       if (++value < 50)
 				       validated_int->set(value);

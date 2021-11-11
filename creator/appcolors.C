@@ -1123,7 +1123,7 @@ bool appObj::do_parse_gradient_rows(const x::w::container &container,
 		// We store the validator here.
 		x::w::validated_input_field<size_t> validator=f->appdata;
 
-		auto v=validator->validated_value.get();
+		auto v=validator->value();
 
 		if (!v)
 			return false;
@@ -1239,7 +1239,7 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 				 x::w::validated_input_field<size_t>
 					 validator=f->appdata;
 
-				 auto v=validator->validated_value.get();
+				 auto v=validator->value();
 
 				 // Not validated, pretend it's not there.
 				 if (!v)
@@ -1569,7 +1569,7 @@ static bool update_gradient_color_values(const x::w::container &list_container,
 		       if (!flag)
 			       return;
 
-		       auto value=value_validator->validated_value.get();
+		       auto value=value_validator->value();
 
 		       if (!value)
 		       {
@@ -1657,8 +1657,7 @@ bool appObj::color_updated_locked(ONLY IN_THREAD,
 		// Pick up each scaled value.
 		for (const auto &f:scaled_fields)
 		{
-			auto v=(this->*(f.validated_value))
-				->validated_value.get();
+			auto v=(this->*(f.validated_value))->value();
 			if (!v)
 				return false;
 
@@ -1678,8 +1677,7 @@ bool appObj::color_updated_locked(ONLY IN_THREAD,
 
 		for (const auto &f:linear_gradient_color_fields)
 		{
-			auto v=(this->*(f.validator))
-				->validated_value.get();
+			auto v=(this->*(f.validator))->value();
 			if (!v)
 				return false;
 
@@ -1701,8 +1699,7 @@ bool appObj::color_updated_locked(ONLY IN_THREAD,
 
 		for (const auto &f:radial_gradient_color_fields)
 		{
-			auto v=(this->*(f.validator))
-				->validated_value.get();
+			auto v=(this->*(f.validator))->value();
 			if (!v)
 				return false;
 

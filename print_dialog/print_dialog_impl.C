@@ -126,8 +126,7 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 		  const auto &trigger,
 		  const auto &mcguffin)
 		 {
-			 auto n=number_of_copies_value->validated_value
-				 .get().value_or(1);
+			 auto n=number_of_copies_value->value_or(1);
 
 			 if (--n)
 			 {
@@ -140,8 +139,7 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 		  const auto &trigger,
 		  const auto &mcguffin)
 		 {
-			 auto n=number_of_copies_value->validated_value
-				 .get().value_or(0);
+			 auto n=number_of_copies_value->value_or(0);
 
 			 ++n;
 
@@ -923,8 +921,7 @@ cups::jobptr print_dialogObj::implObj::create_print_job()
 
 	if (info->supported(CUPS_COPIES))
 	{
-		auto number_of_copies=number_of_copies_value
-			->validated_value.get();
+		auto number_of_copies=number_of_copies_value->value();
 
 		if (number_of_copies)
 			job->set_option(CUPS_COPIES, *number_of_copies);
@@ -975,7 +972,7 @@ cups::jobptr print_dialogObj::implObj::create_print_job()
 	if (info->supported("page-ranges") &&
 	    fields.page_range_radio_button->get_value())
 	{
-		auto v=page_ranges_value->validated_value.get();
+		auto v=page_ranges_value->value();
 
 		if (v && !v->empty())
 			job->set_option("page-ranges", *v);

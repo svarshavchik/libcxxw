@@ -161,7 +161,7 @@ void filteredinputfield()
 
 	close_flag->wait();
 
-	auto phone_number=validated_phone_number->validated_value.get();
+	auto phone_number=validated_phone_number->value();
 
 	if (phone_number)
 		std::cout << "Phone number: " << *phone_number << std::endl;

@@ -420,16 +420,14 @@ void appObj
 // Dimension values are validated as std::strings. Check if the dimension
 // value is validated as a non-empty string.
 
-static bool validated_non_empty(x::mpobj<std::optional<std::string>> &v)
+static bool validated_non_empty(std::optional<std::string> &v)
 {
-	x::mpobj<std::optional<std::string>>::lock lock{v};
-
-	return *lock && (*lock)->size() > 0;
+	return v && v->size() > 0;
 }
 
 void appObj::dimension_value_entered(ONLY IN_THREAD)
 {
-	if (validated_non_empty(dimension_value_validated->validated_value))
+	if (dimension_value_validated->access(validated_non_empty))
 		// Set the radio button to ourselves
 		dimension_value_option->set_value(IN_THREAD, 1);
 
@@ -438,8 +436,7 @@ void appObj::dimension_value_entered(ONLY IN_THREAD)
 
 void appObj::dimension_scale_value_entered(ONLY IN_THREAD)
 {
-	if (validated_non_empty(dimension_scale_value_validated
-				->validated_value))
+	if (dimension_scale_value_validated->access(validated_non_empty))
 		// If a valid value was entered, set the radio button
 		// to ourselves.
 		dimension_scale_option->set_value(IN_THREAD, 1);
@@ -486,8 +483,7 @@ bool appObj::dimension_update_save_params(ONLY IN_THREAD,
 
 	if (!lock->current_selection)
 	{
-		auto new_name=
-			dimension_new_name_validated->validated_value.get();
+		auto new_name=dimension_new_name_validated->value();
 
 		if (!new_name || !new_name)
 		{
@@ -501,7 +497,7 @@ bool appObj::dimension_update_save_params(ONLY IN_THREAD,
 	{
 		// Check if a good validated value exists
 
-		auto value=dimension_value_validated->validated_value.get();
+		auto value=dimension_value_validated->value();
 
 		if (value && value->size() > 0)
 		{
@@ -527,8 +523,7 @@ bool appObj::dimension_update_save_params(ONLY IN_THREAD,
 
 		// Check if the scaled value is set
 
-		auto value=
-			dimension_scale_value_validated->validated_value.get();
+		auto value=dimension_scale_value_validated->value();
 
 		if (value && value->size())
 		{

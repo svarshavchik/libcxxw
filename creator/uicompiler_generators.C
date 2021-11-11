@@ -469,7 +469,7 @@ struct to_size_t_handler : setting_handler {
 		return 	[field, validated_input]
 			() -> std::optional<std::u32string>
 			{
-				if (validated_input->validated_value.get())
+				if (validated_input->value())
 					return field->get_unicode();
 				return std::nullopt;
 			};
@@ -561,7 +561,7 @@ struct to_percentage_t_handler : setting_handler {
 		return 	[field, validated_input]
 			() -> std::optional<std::u32string>
 			{
-				auto vv=validated_input->validated_value.get();
+				auto vv=validated_input->value();
 
 				if (!vv) return std::nullopt; // Bad input.
 

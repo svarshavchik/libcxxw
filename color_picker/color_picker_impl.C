@@ -283,10 +283,10 @@ void color_pickerObj::implObj::new_alpha_value(ONLY IN_THREAD)
 void color_pickerObj::implObj::new_rgba_values(ONLY IN_THREAD,
 					       bool update_hsv)
 {
-	auto r=r_value->validated_value.get();
-	auto g=g_value->validated_value.get();
-	auto b=b_value->validated_value.get();
-	auto a=a_value->validated_value.get();
+	auto r=r_value->value();
+	auto g=g_value->value();
+	auto b=b_value->value();
+	auto a=a_value->value();
 
 	if (!r || !g || !b || !a)
 		return; // Just in case, but shouldn't happen
@@ -317,9 +317,9 @@ void color_pickerObj::implObj::new_rgba_values(ONLY IN_THREAD,
 
 void color_pickerObj::implObj::new_hsv_values(ONLY IN_THREAD)
 {
-	auto h=h_value->validated_value.get();
-	auto s=s_value->validated_value.get();
-	auto v=v_value->validated_value.get();
+	auto h=h_value->value();
+	auto s=s_value->value();
+	auto v=v_value->value();
 
 	if (!h || !s || !v)
 		return;
@@ -447,14 +447,14 @@ void color_pickerObj::implObj::reformat_values(ONLY IN_THREAD)
 {
 	// Just tickle the validators. They know what to do.
 
-	r_value->set(r_value->validated_value.get());
-	g_value->set(g_value->validated_value.get());
-	b_value->set(b_value->validated_value.get());
-	a_value->set(a_value->validated_value.get());
+	r_value->set(r_value->value());
+	g_value->set(g_value->value());
+	b_value->set(b_value->value());
+	a_value->set(a_value->value());
 
-	h_value->set(h_value->validated_value.get());
-	s_value->set(s_value->validated_value.get());
-	v_value->set(v_value->validated_value.get());
+	h_value->set(h_value->value());
+	s_value->set(s_value->value());
+	v_value->set(v_value->value());
 }
 
 

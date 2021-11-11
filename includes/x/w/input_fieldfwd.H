@@ -17,6 +17,7 @@
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC input_fieldObj;
+template<typename type> class validated_input_field_contentsObj;
 template<typename type> class validated_input_fieldObj;
 
 class LIBCXX_HIDDEN const_input_lock;
@@ -628,6 +629,29 @@ typedef const_ref<input_fieldObj> const_input_field;
 //! \see input_field
 
 typedef const_ptr<input_fieldObj> const_input_fieldptr;
+
+
+template<typename type>
+using validated_input_field_contents=
+	ref<validated_input_field_contentsObj<type>>;
+
+//! A nullable pointer reference to a \ref validated_input_field_contents "validated input field value".
+
+template<typename type>
+using validated_input_field_contentsptr=
+	ptr<validated_input_field_contentsObj<type>>;
+
+//! A reference to a constant \ref validated_input_field_contents "validated input field value".
+
+template<typename type>
+using const_validated_input_field_contents=
+	const_ref<validated_input_field_contentsObj<type>>;
+
+//! A nullable pointer reference to a constant \ref validated_input_field_contents "validated input field value".
+
+template<typename type>
+using const_validated_input_field_contentsptr=
+	const_ptr<validated_input_field_contentsObj<type>>;
 
 //! Most recently validated value in the \ref input_field.
 

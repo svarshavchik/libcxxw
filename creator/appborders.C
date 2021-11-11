@@ -783,8 +783,7 @@ void appObj::border_enable_disable_buttons(ONLY IN_THREAD,
 		if (!good_save_params)
 			break;
 
-		auto v=(this->*(border_size.validated_field))->validated_value
-			.get();
+		auto v=(this->*(border_size.validated_field))->value();
 
 		if (!v)
 		{
@@ -801,8 +800,7 @@ void appObj::border_enable_disable_buttons(ONLY IN_THREAD,
 		if (!good_save_params)
 			break;
 
-		auto v=(this->*(border_size_scale.validated_field))
-			->validated_value.get();
+		auto v=(this->*(border_size_scale.validated_field))->value();
 
 		if (!v)
 		{
@@ -828,7 +826,7 @@ void appObj::border_enable_disable_buttons(ONLY IN_THREAD,
 	if (good_save_params && border_dashes_option->get_value())
 	{
 		save_params.border_new_value.dashes=
-			border_dashes_field_validated->validated_value.get();
+			border_dashes_field_validated->value();
 		if (!save_params.border_new_value.dashes)
 		{
 			good_save_params=false;

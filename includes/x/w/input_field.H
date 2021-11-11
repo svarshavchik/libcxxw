@@ -104,27 +104,27 @@ public:
 //! \see validated_input_field
 
 template<typename type>
-class validated_input_fieldObj : virtual public obj {
+class validated_input_field_contentsObj : virtual public obj {
 
 public:
 
-	validated_input_fieldObj()=default;
-	~validated_input_fieldObj()=default;
+	validated_input_field_contentsObj()=default;
+	~validated_input_field_contentsObj()=default;
 
 	//! Most recently validated value.
 
 	//! This should not be modified, call set() to do this and update
 	//! the input field.
-	mutable mpobj<std::optional<type>> validated_value;
+	mpobj<std::optional<type>> validated_value;
 
-	//! Set a new value in the input field.
+	//! Implement set().
 
 	virtual void set(const std::optional<type> &v)=0;
 
-	//! Set a new value in the input field.
+	//! Implement set().
 
-	virtual void set(ONLY IN_THREAD,
-			 const std::optional<type> &v)=0;
+	virtual void set(ONLY IN_THREAD, const std::optional<type> &v)=0;
+
 };
 
 template<typename type, typename canonical_formatter>
@@ -135,7 +135,8 @@ class LIBCXX_PUBLIC validated_input_field_implObj;
 //! \internal
 
 template<typename type, typename canonical_formatter>
-class validated_input_field_implObj : public validated_input_fieldObj<type> {
+class validated_input_field_implObj
+	: public validated_input_field_contentsObj<type> {
 
 public:
 
@@ -366,6 +367,76 @@ public:
 	}
 };
 
+template<typename type>
+class validated_input_fieldObj : virtual public obj {
+
+	const validated_input_field_contents<type> contents;
+
+public:
+
+	validated_input_fieldObj(
+		const validated_input_field_contents<type> &contents)
+		: contents{contents}
+	{
+	}
+
+	~validated_input_fieldObj()=default;
+
+	auto value() const
+	{
+		return contents->validated_value.get();
+	}
+
+	template<typename default_value_t>
+	auto value_or(default_value_t &&default_value) const
+	{
+		typename mpobj<std::optional<type>>::lock lock{
+			contents->validated_value
+		};
+
+		return lock->value_or(std::forward<default_value_t>(
+					      default_value
+				      ));
+	}
+
+	template<typename functor_t>
+	auto access(functor_t &&f)
+	{
+		typename mpobj<std::optional<type>>::lock lock{
+			contents->validated_value
+		};
+
+		return f(*lock);
+	}
+
+	template<typename functor_t>
+	auto access(functor_t &&f) const
+	{
+		typename mpobj<std::optional<type>>::lock lock{
+			contents->validated_value
+		};
+
+		const auto &cv=*lock;
+
+		return f(cv);
+	}
+
+	//! Set a new value in the input field.
+
+	void set(const std::optional<type> &v)
+	{
+		contents->set(v);
+	}
+
+	//! Set a new value in the input field.
+
+	void set(ONLY IN_THREAD,
+		 const std::optional<type> &v)
+	{
+		contents->set(IN_THREAD, v);
+	}
+};
+
 template<typename validator_functor,
 	 typename canonical_format_functor>
 inline auto input_fieldObj::set_validator(validator_functor &&validator,
@@ -511,7 +582,7 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 			 return impl.new_value->has_value();
 		 });
 
-	return validated_input_field<type>{validated};
+	return validated_input_field<type>::create(validated);
 }
 
 template<typename validator_functor,

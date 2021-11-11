@@ -900,7 +900,7 @@ void font_pickerObj::implObj
 
 	unsigned current_point_size=0;
 
-	auto v=font_size_validator->validated_value.get();
+	auto v=font_size_validator->value();
 
 	if (v)
 		current_point_size=*v;
@@ -1005,7 +1005,7 @@ void font_pickerObj::implObj
 
 	if (font_size_validator) // Not yet initialized, if we're constructing
 	{
-		auto v=font_size_validator->validated_value.get();
+		auto v=font_size_validator->value();
 
 		if (v)
 			current_point_size=*v;
@@ -1214,7 +1214,7 @@ void font_pickerObj::implObj::set_official_font(ONLY IN_THREAD,
 			lock->official_font_label=lm->item(*n);
 			lock->saved_font_group=sorted_families.at(*n);
 		}
-		auto v=font_size_validator->validated_value.get();
+		auto v=font_size_validator->value();
 
 		lock->saved_font_size=v ? *v:0;
 	}

@@ -549,7 +549,7 @@ make_manual_input_validator(const uielements &tmpl,
 			   if (!impl)
 				   return;
 
-			   auto current_value=validator->validated_value.get();
+			   auto current_value=validator->value();
 
 			   if (!current_value)
 				   return;
@@ -575,7 +575,7 @@ make_manual_input_validator(const uielements &tmpl,
 			   if (!impl)
 				   return;
 
-			   auto current_value=validator->validated_value.get();
+			   auto current_value=validator->value();
 
 			   if (!current_value)
 				   return;
