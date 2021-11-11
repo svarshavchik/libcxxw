@@ -89,7 +89,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 		 (ONLY IN_THREAD,
 		  const std::string &value,
 		  int *parsed_value,
-		  const x::w::input_field &f,
+		  x::w::input_lock &lock,
 		  const x::w::callback_trigger_t &trigger) -> std::optional<int>
 		 {
 			 if (parsed_value)
@@ -101,12 +101,12 @@ void create_mainwindow(const x::w::main_window &main_window,
 			 {
 				 if (value.empty())
 				 {
-					 f->stop_message("Entry required");
+					 lock.stop_message("Entry required");
 					 return std::nullopt;
 				 }
 			 }
 
-			 f->stop_message("Must enter a number 1-49");
+			 lock.stop_message("Must enter a number 1-49");
 			 return std::nullopt;
 		 },
 		 []
@@ -122,26 +122,37 @@ void create_mainwindow(const x::w::main_window &main_window,
 	//
 	// The first callback spins the value in the input field down by 1,
 	// the second one spins it up by 1.
+	//
+	// The input field holds references on both their validator callbacks
+	// and spin callbacks. For that reason the spin callbacks cannot
+	// capture either because this would create a circular reference.
+	//
+	// What spin callbacks can do is capture the validators' "contents"
+	// member, which implements value, value_or(), and an IN_THREAD-only
+	// set(). This is sufficient for the spin callbacks to read the
+	// current value and update it.
 
-	field->on_spin([validated_int]
+	field->on_spin([contents=validated_int->contents]
 		       (ONLY IN_THREAD,
+			x::w::input_lock &lock,
 			const x::w::callback_trigger_t &trigger,
 			const x::w::busy &mcguffin)
 		       {
-			       auto value=validated_int->value_or(1);
+			       auto value=contents->value_or(1);
 
 			       if (--value)
-				       validated_int->set(value);
+				       contents->set(IN_THREAD, lock, value);
 		       },
-		       [validated_int]
+		       [contents=validated_int->contents]
 		       (ONLY IN_THREAD,
+			x::w::input_lock &lock,
 			const x::w::callback_trigger_t &trigger,
 			const x::w::busy &mcguffin)
 		       {
-			       auto value=validated_int->value_or(0);
+			       auto value=contents->value_or(0);
 
 			       if (++value < 50)
-				       validated_int->set(value);
+				       contents->set(IN_THREAD, lock, value);
 		       });
 }
 

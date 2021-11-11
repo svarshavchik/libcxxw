@@ -1147,25 +1147,27 @@ static void demo_input(const w::gridlayoutmanager &lm)
 		 });
 
 	spin_field->on_spin
-		([validated_input]
+		([contents=validated_input->contents]
 		 (ONLY IN_THREAD,
+		  auto &lock,
 		  const auto &trigger,
 		  const auto &busy)
 		 {
-			 auto value=validated_input->value_or(1);
+			 auto value=contents->value_or(1);
 
 			 if (--value)
-				 validated_input->set(value);
+				 contents->set(IN_THREAD, lock, value);
 		 },
-		 [validated_input]
+		 [contents=validated_input->contents]
 		 (ONLY IN_THREAD,
+		  auto &lock,
 		  const auto &trigger,
 		  const auto &busy)
 		 {
-			 auto value=validated_input->value_or(0);
+			 auto value=contents->value_or(0);
 
 			 if (++value < 50)
-				 validated_input->set(value);
+				 contents->set(IN_THREAD, lock, value);
 		 });
 
 	f=lm->append_row();

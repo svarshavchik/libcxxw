@@ -539,8 +539,9 @@ make_manual_input_validator(const uielements &tmpl,
 	// of a spin button is to adjust the color value's most significant
 	// byte.
 
-	f->on_spin([wimpl, n, validator]
+	f->on_spin([wimpl, n, contents=validator->contents]
 		   (ONLY IN_THREAD,
+		    auto &lock,
 		    const auto &trigger,
 		    const auto &busy)
 		   {
@@ -549,7 +550,7 @@ make_manual_input_validator(const uielements &tmpl,
 			   if (!impl)
 				   return;
 
-			   auto current_value=validator->value();
+			   auto current_value=contents->value();
 
 			   if (!current_value)
 				   return;
@@ -559,14 +560,17 @@ make_manual_input_validator(const uielements &tmpl,
 			   if (high_byte)
 				   --high_byte;
 
-			   validator->set(rgb_from_high_byte(high_byte));
+			   contents->set(IN_THREAD,
+					 lock,
+					 rgb_from_high_byte(high_byte));
 
 			   // Invoke new_rgb_values() or new_hsv_values()
 
 			   ((*impl).*n)(IN_THREAD);
 		   },
-		   [wimpl, n, validator]
+		   [wimpl, n, contents=validator->contents]
 		   (ONLY IN_THREAD,
+		    auto &lock,
 		    const auto &trigger,
 		    const auto &busy)
 		   {
@@ -575,7 +579,7 @@ make_manual_input_validator(const uielements &tmpl,
 			   if (!impl)
 				   return;
 
-			   auto current_value=validator->value();
+			   auto current_value=contents->value();
 
 			   if (!current_value)
 				   return;
@@ -585,7 +589,9 @@ make_manual_input_validator(const uielements &tmpl,
 			   if (++high_byte == 0)
 				   --high_byte;
 
-			   validator->set(rgb_from_high_byte(high_byte));
+			   contents->set(IN_THREAD,
+					 lock,
+					 rgb_from_high_byte(high_byte));
 
 			   // Invoke new_rgb_values() or new_hsv_values()
 

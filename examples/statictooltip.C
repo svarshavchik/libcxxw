@@ -597,7 +597,7 @@ create_mainwindow(const x::w::main_window &main_window,
 		 (ONLY IN_THREAD,
 		  const std::string &value,
 		  double *parsed_value,
-		  const x::w::input_field &f,
+		  x::w::input_lock &lock,
 		  const x::w::callback_trigger_t &trigger)
 		 -> std::optional<double>
 		 {
@@ -617,7 +617,7 @@ create_mainwindow(const x::w::main_window &main_window,
 					 return 0.0;
 			 }
 
-			 f->stop_message("Invalid number");
+			 lock.stop_message("Invalid number");
 			 return std::nullopt;
 		 },
 		 []

@@ -7,7 +7,6 @@
 
 #include <x/w/peepholed_focusableobj.H>
 #include <x/w/input_fieldfwd.H>
-#include <x/w/hotspotfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/containerfwd.H>
 #include <x/w/input_field_config.H>
@@ -131,10 +130,16 @@ public:
 	void do_get_impl(const function<internal_focusable_cb> &)
 		const override LIBCXX_HIDDEN;
 
+	typedef functionref<void (THREAD_CALLBACK,
+				  input_lock &lock,
+				  const callback_trigger_t &,
+				  const busy &)> spin_callback_t;
+
+
 	//! Install the spin control callbacks
 
-	void on_spin(const hotspot_callback_t &,
-		     const hotspot_callback_t &);
+	void on_spin(const spin_callback_t &,
+		     const spin_callback_t &);
 
 	//! Return the current contents of the input field as UTF-8.
 	std::string get(const std::optional<bidi_format> &embedding=

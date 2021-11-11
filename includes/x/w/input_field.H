@@ -111,20 +111,55 @@ public:
 	validated_input_field_contentsObj()=default;
 	~validated_input_field_contentsObj()=default;
 
+	friend class validated_input_fieldObj<type>;
+
+	//! Public access to the current value.
+
+	auto value() const
+	{
+		return validated_value.get();
+	}
+
+	template<typename default_value_t>
+	auto value_or(default_value_t &&default_value) const
+	{
+		typename mpobj<std::optional<type>,
+			       std::recursive_mutex>::lock lock{
+			validated_value
+		};
+
+		return lock->value_or(std::forward<default_value_t>(
+					      default_value
+				      ));
+	}
+
+	template<typename functor_t>
+	auto access(functor_t &&f) const
+	{
+		typename mpobj<std::optional<type>,
+			       std::recursive_mutex>::lock lock{
+			validated_value
+		};
+
+		const auto &cv=*lock;
+
+		return f(cv);
+	}
+
+protected:
 	//! Most recently validated value.
 
 	//! This should not be modified, call set() to do this and update
 	//! the input field.
-	mpobj<std::optional<type>> validated_value;
+	mutable mpobj<std::optional<type>,
+		      std::recursive_mutex> validated_value;
 
+public:
 	//! Implement set().
 
-	virtual void set(const std::optional<type> &v)=0;
-
-	//! Implement set().
-
-	virtual void set(ONLY IN_THREAD, const std::optional<type> &v)=0;
-
+	virtual void set(ONLY IN_THREAD,
+			 input_lock &lock,
+			 const std::optional<type> &v)=0;
 };
 
 template<typename type, typename canonical_formatter>
@@ -140,10 +175,6 @@ class validated_input_field_implObj
 
 public:
 
-	//! The input field.
-
-	const weakptr<input_fieldptr> my_inputfield;
-
 	//! Captured formatting callable object.
 	const canonical_formatter formatter;
 
@@ -153,231 +184,57 @@ public:
 			 (std::declval<const type &>())
 			 ) formatter_ret_t;
 
-	//! Alias
-	typedef validated_input_field_implObj<type, canonical_formatter> me_t;
-
-	struct LIBCXX_HIDDEN set_logic;
-	struct LIBCXX_HIDDEN set_logic_in_thread;
-	struct LIBCXX_HIDDEN set_logic_not_in_thread;
-	template<typename base_type> struct LIBCXX_HIDDEN set_impl;
-
-	//! Common logic shared by set() overloads.
-
-	struct set_logic {
-
-		//! My validated input field object.
-		me_t &me;
-
-		//! A lock on the validated value.
-		typedef typename mpobj<std::optional<type>>::lock value_lock_t;
-
-		//! Constructor
-		set_logic(me_t &me) : me{me}
-		{
-		}
-
-		//! Set the new validated value
-
-		//! Lock my input field and validated value, then invoke
-		//! do_locked_set(). The implementation of do_locked_set()
-		//! receives the locked objects, must updated the locked
-		//! validated value, and call set_cleanup().
-		//!
-		//! The validated input field's set() overloads already have
-		//! the new value, and they update the validated value
-		//! directly, then call set_cleanup().
-		//!
-		//! The on_validate() callback retrieves the contents of the
-		//! input field, uses the app-provided callback to construct
-		//! a new value, place it in the validated value object,
-		//! and then invoke set_cleanup().
-
-		void do_set()
-		{
-			//! Find my input field
-			auto my_field_ptr=me.my_inputfield.getptr();
-
-			if (!my_field_ptr)
-				return;
-
-			input_field my_field{my_field_ptr};
-
-			// An input_lock is obtained first...
-
-			input_lock lock{my_field};
-
-			// ... then the validated_value lock.
-
-			value_lock_t value_lock{me.validated_value};
-
-			do_locked_set(my_field, lock, value_lock);
-		}
-
-		//! Ready to set a new value
-
-		//! do_set() calls it, after locking the input field and
-		//! the validated value.
-		//!
-		//! The implementing subclass must update the validated
-		//! value, and forward these parameters to set_cleanup().
-
-		virtual void do_locked_set(const input_field &,
-					   const input_lock &,
-					   value_lock_t &)=0;
-
-		//! Finished setting the new value.
-
-		//! Format the validated value and invoke set_as_string(),
-		//! if needed.
-		//!
-		//! set_as_string() gets implemented in either
-		//! set_logic_not_in-thread or set_logic_in_thread.
-
-		void set_cleanup(const input_field &my_field,
-				 const input_lock &lock,
-				 value_lock_t &value_lock)
-		{
-			auto &v=*value_lock;
-
-			if (!v)
-				// Do not set() the input field. No value
-				// means it's not valid, and set()ing it
-				// validates the contents of the input field.
-				return;
-
-			formatter_ret_t s=me.formatter(*v);
-
-			// Do not bother with set() if the value is the same.
-
-			if (s == input_field_get_for_validator<decltype(s)>
-			    ::get(lock))
-				return;
-			set_as_string(my_field, s);
-		}
-
-		//! A new validated value has been set.
-
-		//! Implemented in the subclass by calling the appropriate
-		//! set() overload.
-		virtual void set_as_string(const input_field &my_filter,
-					   const formatter_ret_t &s)=0;
-	};
-
-	//! Setting the new validated value not in the connection thread.
-
-	//! Invokes the non-IN_THREAD overload of set().
-	struct set_logic_not_in_thread : set_logic {
-
-		using set_logic::set_logic;
-
-		//! Implement set_as_string()
-
-		void set_as_string(const input_field &my_field,
-				   const formatter_ret_t &s) override
-		{
-			my_field->set(s);
-		}
-	};
-
-	//! Setting the new validated value not in the connection thread.
-
-	//! Invokes the IN_THREAD overload of set().
-	struct set_logic_in_thread : set_logic {
-
-		//! We are running in the connection thread.
-		ONLY IN_THREAD;
-
-		//! Constructor saves IN_THREAD.
-		set_logic_in_thread(ONLY IN_THREAD,
-				    me_t &me) : set_logic{me},
-						IN_THREAD{IN_THREAD}
-		{
-		}
-
-		//! Implement set_as_string()
-
-		void set_as_string(const input_field &my_field,
-				   const formatter_ret_t &s) override
-		{
-			my_field->set(IN_THREAD, s);
-		}
-	};
-
 	//! Constructor
 	template<typename F>
-	validated_input_field_implObj(const input_field &my_inputfield, F &&f)
-		: my_inputfield{my_inputfield},
-		formatter{std::forward<F>(f)}
+	validated_input_field_implObj(F &&f)
+		: formatter{std::forward<F>(f)}
 	{
 	}
 
 	//! Destructor
 	~validated_input_field_implObj()=default;
 
-	//! set() a new value
-
-	//! Common logic by both non-IN_THREAD and IN_THREAd set()
-	//! overrides. set() passes the new validated value to the
-	//! constructor. do_locked_set() gets implemented by copying the
-	//! new value into the locked validated value, then invoking
-	//! set_cleanup().
-
-	template<typename base_type>
-	struct set_impl : base_type {
-
-		//! New validated value.
-		const std::optional<type> &v;
-
-		//! Constructor
-		template<typename ...Args>
-		set_impl(const std::optional<type> &v,
-			 Args && ...args)
-			: base_type{std::forward<Args>(args)...}, v{v}
-		{
-		}
-
-		//! Implement do_locked_set().
-		void do_locked_set(const input_field &my_field,
-				   const input_lock &lock,
-				   typename base_type::value_lock_t
-				   &value_lock) override
-		{
-			*value_lock=v;
-			this->set_cleanup(my_field, lock, value_lock);
-		}
-	};
-
-
 	//! Implement set().
 
-	void set(const std::optional<type> &v) override
+	void set(ONLY IN_THREAD,
+		 input_lock &lock,
+		 const std::optional<type> &v) override
 	{
-		set_impl<set_logic_not_in_thread> impl{v, *this};
+		this->validated_value=v;
 
-		impl.do_set();
-	}
+		if (!v)
+			// Do not set() the input field. No value
+			// means it's not valid, and set()ing it
+			// validates the contents of the input field.
+		{
+			lock.set("");
+			return;
+		}
+		formatter_ret_t s=formatter(*v);
 
-	//! Implement set().
+		// Do not bother with set() if the value is the same.
 
-	void set(ONLY IN_THREAD, const std::optional<type> &v) override
-	{
-		set_impl<set_logic_in_thread> impl{v, IN_THREAD, *this};
+		if (s == input_field_get_for_validator<decltype(s)>::get(lock))
+			return;
 
-		impl.do_set();
+		lock.set(IN_THREAD, s);
 	}
 };
 
 template<typename type>
 class validated_input_fieldObj : virtual public obj {
 
-	const validated_input_field_contents<type> contents;
+	const input_field my_input_field;
 
-	const weakptr<input_fieldptr> my_input_field;
 public:
 
+	const validated_input_field_contents<type> contents;
+
 	validated_input_fieldObj(
-		const validated_input_field_contents<type> &contents)
-		: contents{contents}
+		const validated_input_field_contents<type> &contents,
+		const input_field &my_input_field)
+		: my_input_field{my_input_field},
+		  contents{contents}
 	{
 	}
 
@@ -385,53 +242,30 @@ public:
 
 	auto value() const
 	{
-		return contents->validated_value.get();
+		return contents->value();
 	}
 
 	template<typename default_value_t>
 	auto value_or(default_value_t &&default_value) const
 	{
-		typename mpobj<std::optional<type>>::lock lock{
-			contents->validated_value
-		};
-
-		return lock->value_or(std::forward<default_value_t>(
-					      default_value
-				      ));
-	}
-
-	template<typename functor_t>
-	auto access(functor_t &&f)
-	{
-		typename mpobj<std::optional<type>>::lock lock{
-			contents->validated_value
-		};
-
-		return f(*lock);
+		return contents->value_or(std::forward<default_value_t>(
+						  default_value
+					  ));
 	}
 
 	template<typename functor_t>
 	auto access(functor_t &&f) const
 	{
-		typename mpobj<std::optional<type>>::lock lock{
-			contents->validated_value
-		};
+		const auto &obj=*contents;
 
-		const auto &cv=*lock;
-
-		return f(cv);
+		return obj.access(std::forward<functor_t>(f));
 	}
 
 	//! Set a new value in the input field.
 
 	void set(const std::optional<type> &v)
 	{
-		auto f=my_input_field.getptr();
-
-		if (!f)
-			return;
-
-		f->in_thread(
+		my_input_field->in_thread(
 			[v, me=ref{this}]
 			(ONLY IN_THREAD)
 			{
@@ -444,7 +278,9 @@ public:
 	void set(ONLY IN_THREAD,
 		 const std::optional<type> &v)
 	{
-		contents->set(IN_THREAD, v);
+		input_lock lock{my_input_field};
+
+		contents->set(IN_THREAD, lock, v);
 	}
 };
 
@@ -501,99 +337,35 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 			   <type,
 			    std::remove_reference_t
 			    <canonical_format_functor>>>
-		::create(ref{this},
-			 std::forward<canonical_format_functor>
+		::create(std::forward<canonical_format_functor>
 			 (canonical_format));
 
-	//! The constructed validated input field implementation type.
-	typedef decltype(validated) validated_t;
-
-	//! The validated input field's base class.
-
-	//! Alias for the me_t type of the \c validated object.
-	typedef typename refptr_traits<validated_t>::obj_t::me_t me_t;
-
-	//! Alias for the set_logic_in_thread in the \c validated_object.
-	typedef typename me_t::set_logic_in_thread set_logic_in_thread;
-
-	//! Implement the on_validate() callback by set()ing the validated value
-
-	struct on_validate_set_impl : set_logic_in_thread {
-
-		//! The validator
-		const validator_functor &validator;
-
-		//! The trigger that invoked the validator.
-		const callback_trigger_t &trigger;
-
-		//! New validated value, if there is one.
-		std::optional<std::optional<type>> new_value;
-
-		//! Constructor
-		on_validate_set_impl(ONLY IN_THREAD,
-				     me_t &me,
-				     const validator_functor &validator,
-				     const callback_trigger_t &trigger)
-			: set_logic_in_thread{IN_THREAD, me},
-			  validator{validator},
-			  trigger{trigger}
-		{
-		}
-
-		//! Implement do_locked_set().
-
-		//! Gets the value of the input field, calls the validator
-		//! that computes the validated value, sets it, then
-		//! calls set_cleanup().
-		void do_locked_set(const input_field &my_field,
-				   const input_lock &lock,
-				   typename set_logic_in_thread::value_lock_t
-				   &value_lock) override
-		{
-			// Get the contents of the input
-			// field, trim off the
-			// leading and the trailing
-			// whitespace, invoke
-			// the validator function.
-
-			*value_lock=validator(this->IN_THREAD,
-					      trim(validator_t::get(lock)),
-					      lock,
-					      trigger);
-
-			// And set the validated value.
-
-			new_value=*value_lock;
-
-			this->set_cleanup(my_field, lock, value_lock);
-		}
-	};
+	auto new_validator=
+		validated_input_field<type>::create(validated, ref{this});
 
 	on_validate
-		([=]
+		([contents=new_validator->contents, validator, new_value]
 		 (ONLY IN_THREAD,
-		  const auto &lock,
+		  auto &lock,
 		  const callback_trigger_t &trigger)->bool
 		 {
-			 on_validate_set_impl impl{IN_THREAD,
-						   *validated,
-						   validator,
-						   trigger};
+			 auto v=validator(IN_THREAD,
+					  trim(validator_t::get(lock)),
+					  lock,
+					  trigger);
 
-			 impl.do_set();
+			 contents->set(IN_THREAD, lock, v);
 
-			 // No new value was produced, valid or not. We must
-			 // be in the process of getting destroyed, so punt.
-			 if (!impl.new_value)
-				 return true;
+			 if (!v)
+				 return false;
 
 			 // Declare the new value.
-			 new_value(IN_THREAD, *impl.new_value);
+			 new_value(IN_THREAD, *v);
 
-			 return impl.new_value->has_value();
+			 return true;
 		 });
 
-	return validated_input_field<type>::create(validated);
+	return new_validator;
 }
 
 template<typename validator_functor,

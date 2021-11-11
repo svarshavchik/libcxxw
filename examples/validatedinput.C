@@ -67,7 +67,7 @@ create_mainwindow(const x::w::main_window &main_window,
 		([]
 		 (ONLY IN_THREAD,
 		  const std::u32string &value,
-		  const x::w::input_field &field,
+		  x::w::input_lock &lock,
 		  const x::w::callback_trigger_t &trigger)
 		 -> std::optional<char>
 		 {
@@ -91,11 +91,11 @@ create_mainwindow(const x::w::main_window &main_window,
 
 			 if (value.empty())
 			 {
-				 field->stop_message("Input required");
+				 lock.stop_message("Input required");
 			 }
 			 else
 			 {
-				 field->stop_message("Letter 'A'-'Z' required");
+				 lock.stop_message("Letter 'A'-'Z' required");
 			 }
 
 			 return std::nullopt;
@@ -156,7 +156,7 @@ create_mainwindow(const x::w::main_window &main_window,
 		 (ONLY IN_THREAD,
 		  const std::string &value,
 		  int *parsed_value,
-		  const x::w::input_field &field,
+		  x::w::input_lock &lock,
 		  const x::w::callback_trigger_t &trigger) -> std::optional<int>
 		 {
 			 if (parsed_value)
@@ -172,12 +172,12 @@ create_mainwindow(const x::w::main_window &main_window,
 			 {
 				 if (value.empty())
 				 {
-					 field->stop_message("Input required");
+					 lock.stop_message("Input required");
 					 return std::nullopt;
 				 }
 			 }
 
-			 field->stop_message("Must enter a number 0-49");
+			 lock.stop_message("Must enter a number 0-49");
 			 return std::nullopt;
 		 },
 		 []

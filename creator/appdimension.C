@@ -420,7 +420,7 @@ void appObj
 // Dimension values are validated as std::strings. Check if the dimension
 // value is validated as a non-empty string.
 
-static bool validated_non_empty(std::optional<std::string> &v)
+static bool validated_non_empty(const std::optional<std::string> &v)
 {
 	return v && v->size() > 0;
 }

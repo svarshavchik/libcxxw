@@ -537,9 +537,11 @@ void input_fieldObj::do_get_impl(const function<internal_focusable_cb> &cb)
 
 }
 
-void input_fieldObj::on_spin(const hotspot_callback_t &a_cb,
-			     const hotspot_callback_t &b_cb)
+void input_fieldObj::on_spin(const spin_callback_t &a_cb,
+			     const spin_callback_t &b_cb)
 {
+	auto editor_impl=impl->editor_element->impl;
+
 	containerObj::impl->invoke_layoutmanager
 		([&]
 		 (const ref<gridlayoutmanagerObj::implObj> &impl)
@@ -554,8 +556,29 @@ void input_fieldObj::on_spin(const hotspot_callback_t &a_cb,
 			 button a=SPIN_CONTROL_A(),
 				 b=SPIN_CONTROL_B();
 
-			 a->on_activate(a_cb);
-			 b->on_activate(b_cb);
+			 a->on_activate(
+				 [editor_impl, a_cb]
+				 (ONLY IN_THREAD,
+				  const auto &trigger,
+				  const auto &mcguffin)
+				 {
+					 input_lock lock{&editor_impl};
+
+					 a_cb(IN_THREAD, lock,
+					      trigger, mcguffin);
+				 });
+
+			 b->on_activate(
+				 [editor_impl, b_cb]
+				 (ONLY IN_THREAD,
+				  const auto &trigger,
+				  const auto &mcguffin)
+				 {
+					 input_lock lock{&editor_impl};
+
+					 b_cb(IN_THREAD, lock,
+					      trigger, mcguffin);
+				 });
 		 });
 }
 

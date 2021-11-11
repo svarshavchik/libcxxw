@@ -121,8 +121,9 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 	number_of_copies_value->set(1);
 
 	fields.number_of_copies->on_spin
-		([number_of_copies_value=this->number_of_copies_value]
+		([number_of_copies_value=this->number_of_copies_value->contents]
 		 (ONLY IN_THREAD,
+		  auto &lock,
 		  const auto &trigger,
 		  const auto &mcguffin)
 		 {
@@ -130,12 +131,14 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 
 			 if (--n)
 			 {
-				 number_of_copies_value->set(n);
+				 number_of_copies_value->set(IN_THREAD, lock,
+							     n);
 			 }
 		 },
-		 [number_of_copies_value=this->number_of_copies_value,
+		 [number_of_copies_value=this->number_of_copies_value->contents,
 		  printer_info=this->printer_info]
 		 (ONLY IN_THREAD,
+		  auto &lock,
 		  const auto &trigger,
 		  const auto &mcguffin)
 		 {
@@ -143,18 +146,20 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 
 			 ++n;
 
-			 printer_info_lock lock{printer_info};
+			 printer_info_lock info_lock{printer_info};
 
-			 if (lock->number_of_copies.empty())
+			 if (info_lock->number_of_copies.empty())
 				 return;
 
-			 for (const auto &r:lock->number_of_copies)
+			 for (const auto &r:info_lock->number_of_copies)
 			 {
 				 auto &[from, to]=r;
 
 				 if (n >= from && n <= to)
 				 {
-					 number_of_copies_value->set(n);
+					 number_of_copies_value->set(
+						 IN_THREAD, lock, n
+					 );
 					 return;
 				 }
 			 }

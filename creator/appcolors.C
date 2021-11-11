@@ -1118,7 +1118,7 @@ bool appObj::do_parse_gradient_rows(const x::w::container &container,
 
 	for (size_t i=1; i<n; i++)
 	{
-		x::w::input_field f=glm->get(i, 0);
+		x::w::focusable_container f=glm->get(i, 1);
 
 		// We store the validator here.
 		x::w::validated_input_field<size_t> validator=f->appdata;
@@ -1130,8 +1130,7 @@ bool appObj::do_parse_gradient_rows(const x::w::container &container,
 
 		parser(*v,
 		       // Cell 1 is the combo-box with the color's value.
-		       x::w::focusable_container{glm->get(i, 1)}
-		       ->editable_combobox_get());
+		       f->editable_combobox_get());
 	}
 
 	return true;
@@ -1234,7 +1233,7 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 				 if (i == row)
 					 continue; // This is me.
 
-				 x::w::input_field f=glm->get(i, 0);
+				 x::w::focusable_container f=glm->get(i, 1);
 
 				 // We store the validator here
 				 x::w::validated_input_field<size_t>
@@ -1349,8 +1348,6 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 				  });
 		 });
 
-	value->appdata=validator;
-
 	show(value);
 
 	validator->set(initial_value);
@@ -1384,6 +1381,12 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 		 x::w::new_editable_comboboxlayoutmanager{});
 
 	show(combo);
+
+	// Store the validator for the gradient value in the combo-box's
+	// appdata. We can't store it in the gradient's appdata because that
+	// would create a circular reference.
+
+	combo->appdata=validator;
 
 	// The "Delete" button
 
@@ -1537,10 +1540,10 @@ struct parse_gradient_color_grid {
 		for (size_t i=1; i+1<n; ++i)
 		{
 			x::w::focusable_container value_field=glm->get(i, 0);
-
+			x::w::focusable_container combo_field=glm->get(i, 1);
 			cb(value_field,
-			   glm->get(i, 1),
-			   value_field->appdata);
+			   combo_field,
+			   combo_field->appdata);
 		}
 	}
 };

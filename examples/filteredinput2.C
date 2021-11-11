@@ -76,7 +76,17 @@ create_mainwindow(const x::w::main_window &main_window,
 		([]
 		 (ONLY IN_THREAD,
 		  const std::string &value,
-		  const x::w::input_field &field,
+		  //
+		  // Input fields hold a reference on their validators.
+		  // For that reason the validators cannot capture the
+		  // input field, this will create a circular reference.
+		  //
+		  // Validator receive an input_lock parameter, and can use it
+		  // to call get and set the contents of the input field, or
+		  // call stop_message() or exception_message(), to report
+		  // an error or an exception.
+		  //
+		  x::w::input_lock &lock,
 		  const x::w::callback_trigger_t &trigger)
 		 -> std::optional<std::string>
 		 {
@@ -92,7 +102,7 @@ create_mainwindow(const x::w::main_window &main_window,
 
 			 if (s.size() > 0 && s.size() < 10)
 			 {
-				 field->stop_message("Invalid phone number");
+				 lock.stop_message("Invalid phone number");
 				 return std::nullopt;
 			 }
 
