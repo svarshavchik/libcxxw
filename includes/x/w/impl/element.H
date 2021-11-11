@@ -56,6 +56,7 @@
 #include <x/functionalrefptr.H>
 #include <string_view>
 #include <queue>
+#include <variant>
 #include <xcb/xproto.h>
 
 #include <chrono>
@@ -96,23 +97,28 @@ LIBCXXW_NAMESPACE_START
 
 class clip_region_set;
 
+//! create_richtextstring: no hotspots are allowed
+
+struct LIBCXX_HIDDEN hotspots_none {};
+
+//! create_richtextstring: hotspots are allowed
+
+//! A trailing NULL byte is inserted, in the
+//! event that the string ends in a hotspot.
+struct LIBCXX_HIDDEN hotspots_create {};
+
+//! create_richtextstring: updating an existing hotspot
+
+struct LIBCXX_HIDDEN hotspots_update {};
+
 //! Whether create_richtextstring() should create focusable label hotspots.
 
 //! Used in elementObj::implObj to determine whether hotspots are allowed
 //! in the rich text string.
-enum class hotspot_processing {
-			       //! No hotspots are allowed
-			       none,
 
-			       //! Creating a new richtextstring
-
-			       //! A trailing NULL byte is inserted, in the
-			       //! event that the string ends in a hotspot.
-			       create,
-
-			       //! Updating an existing hotspot string.
-			       update,
-};
+typedef std::variant<hotspots_none,
+		     hotspots_create,
+		     hotspots_update> hotspot_processing;
 
 //! Base class for widget implementation.
 
@@ -1273,7 +1279,7 @@ class elementObj::implObj : public element_drawObj,
 	richtextstring create_richtextstring(const richtextmeta &default_font,
 					     const text_param &t,
 					     hotspot_processing allow_links=
-					     hotspot_processing::none);
+					     hotspots_none{});
 
 
 	//////////////////////////////////////////////////////////////////

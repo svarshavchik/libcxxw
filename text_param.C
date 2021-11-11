@@ -195,7 +195,7 @@ richtextstring elementObj::implObj
 
 	if (!t.hotspots.empty())
 	{
-		if (allow_links != hotspot_processing::create)
+		if (!std::holds_alternative<hotspots_create>(allow_links))
 			throw EXCEPTION(_("Links are not allowed in this text."));
 	}
 
@@ -209,7 +209,7 @@ richtextstring elementObj::implObj
 	// take care of affixing separator markers to the hotspots. Instead
 	// we just make sure that the replacement string is not empty.
 
-	auto suffix=(allow_links == hotspot_processing::update
+	auto suffix=(std::holds_alternative<hotspots_update>(allow_links)
 		     ? t.string.empty() ? U" ":U""
 		     : U"\n");
 
@@ -221,7 +221,7 @@ richtextstring elementObj::implObj
 	// And we always create metadata at position string.size(), where
 	// the trailing newline gets added. Except when we're creating
 	// replacement hotspot text.
-	if (allow_links != hotspot_processing::update)
+	if (!std::holds_alternative<hotspots_update>(allow_links))
 		all_positions.insert(t.string.size());
 
 	// Now iterate over them, in order, to create the unordered_map for

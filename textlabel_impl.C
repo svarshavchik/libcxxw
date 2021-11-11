@@ -115,8 +115,8 @@ textlabelObj::implObj::implObj(const text_param &text,
 		  *theme_lock,
 		  parent_element_impl.create_richtextstring
 		  (default_meta, text, config.allow_links
-		   ? hotspot_processing::create
-		   : hotspot_processing::none),
+		   ? hotspot_processing{hotspots_create{}}
+		   : hotspot_processing{hotspots_none{}}),
 		  default_meta}
 {
 }
@@ -268,8 +268,8 @@ void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string)
 	auto s=get_label_element_impl()
 		.create_richtextstring(default_meta, string,
 				       allow_links
-				       ? hotspot_processing::create
-				       : hotspot_processing::none);
+				       ? hotspot_processing{hotspots_create{}}
+				       : hotspot_processing{hotspots_none{}});
 
 	auto new_ordered_hotspots=rebuild_ordered_hotspots(s);
 
@@ -641,7 +641,7 @@ void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 
 	auto new_str=e.create_richtextstring
 		(default_meta, replacement_text,
-		 hotspot_processing::update);
+		 hotspots_update{});
 
 	if (new_str.get_string().empty())
 		throw EXCEPTION(_("Replacement hotspot string cannot be empty")
