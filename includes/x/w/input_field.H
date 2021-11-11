@@ -14,165 +14,152 @@
 #include <x/w/main_window.H>
 
 #include <x/ref.H>
-#include <x/weakptr.H>
-#include <x/strtok.H>
-#include <x/functionalrefptr.H>
 #include <x/refptr_traits.H>
-#include <x/functionalrefptr.H>
 #include <sstream>
 #include <utility>
-#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
 template<input_field_validation_function validation_function,
-	 typename canonical_format_functor>
-inline auto input_fieldObj::set_validator(
-	validation_function &&validator,
-	canonical_format_functor &&canonical_format
-)
-{
-	return set_validator(std::forward<validation_function>(validator),
-			     std::forward<canonical_format_functor>
-			     (canonical_format),
-			     []
-			     (ONLY IN_THREAD, const auto &ignore)
-			     {
-			     });
-}
-
-//! Install input field validation.
-
-//! \see input_field
-
-template<input_field_validation_function validation_function,
 	 typename canonical_format_functor,
-	 typename new_value_functor>
+	 typename ...Args>
 auto input_fieldObj::set_validator(
 	validation_function &&validator,
 	canonical_format_functor &&canonical_format,
-	new_value_functor &&new_value
-)
+	Args && ...args
+) -> validated_input_field<
+	typename input_field_detect_validator_functor_parameter<
+		validation_function
+		>::optional_return_type_t>
 {
-	// Figure out the validator's first parameter.
+	typedef typename input_field_detect_validator_functor_parameter<
+		validation_function
+		>::optional_return_type_t type;
 
-	typedef input_field_detect_validator_functor_parameter
-		<validation_function> validator_t;
+	const auto &[validator_callback, contents] =
+		create_validated_input_field_contents(
+			std::forward<validation_function>(validator),
+			std::forward<canonical_format_functor>(
+				canonical_format
+			),
+			std::forward<Args>(args)...);
 
-	// Figure out the std::optional that the validator returns.
+	this->in_thread([me=ref{this}, validator_callback, contents]
+			(ONLY IN_THREAD)
+	{
+		input_lock lock{me};
 
-	typedef typename validator_t::optional_return_type_t type;
+		me->on_validate(IN_THREAD, validator_callback);
+		contents->reset(IN_THREAD, lock);
+	});
 
-	// Construct the validated object, and install an on_keyboard_focus()
-	// callback.
-	validated_input_field_contents<type> validated{
-		ref<validated_input_field_implObj<type,
-		std::remove_reference_t<canonical_format_functor>>>
-		::create(std::forward<canonical_format_functor>
-			 (canonical_format))
-	};
-
-	auto new_validator=
-		validated_input_field<type>::create(validated, ref{this});
-
-	on_validate
-		([contents=validated, validator, new_value]
-		 (ONLY IN_THREAD,
-		  auto &lock,
-		  const callback_trigger_t &trigger)->bool
-		 {
-			 auto v=validator(IN_THREAD,
-					  trim(validator_t::get(lock)),
-					  lock,
-					  trigger);
-
-			 contents->set(IN_THREAD, lock, v);
-
-			 if (!v)
-				 return false;
-
-			 // Declare the new value.
-			 new_value(IN_THREAD, *v);
-
-			 return true;
-		 });
-
-	return new_validator;
+	return validated_input_field<type>::create(contents, ref{this});
 }
 
-template<input_field_string_validation_function validator_functor,
-	 typename canonical_format_functor>
-inline auto input_fieldObj::set_string_validator(validator_functor &&validator,
-						 canonical_format_functor
-						 &&canonical_format)
+template<input_field_validation_function validation_function,
+	 typename canonical_format_functor,
+	 typename ...Args>
+auto input_fieldObj::set_validator(
+	ONLY IN_THREAD,
+	validation_function &&validator,
+	canonical_format_functor &&canonical_format,
+	Args && ...args
+) -> validated_input_field<
+	typename input_field_detect_validator_functor_parameter<
+		validation_function
+		>::optional_return_type_t>
 {
-	return set_string_validator(std::forward<validator_functor>(validator),
-				    std::forward<canonical_format_functor>
-				    (canonical_format),
-				    []
-				    (ONLY IN_THREAD, const auto &ignore)
-				    {
-				    });
+	typedef typename input_field_detect_validator_functor_parameter<
+		validation_function
+		>::optional_return_type_t type;
+
+	const auto &[validator_callback, contents] =
+		create_validated_input_field_contents(
+			std::forward<validation_function>(validator),
+			std::forward<canonical_format_functor>(
+				canonical_format
+			),
+			std::forward<Args>(args)...);
+
+
+	{
+		input_lock lock{ref{this}};
+
+		on_validate(IN_THREAD, validator_callback);
+		contents->refresh(IN_THREAD, lock);
+	}
+	return validated_input_field<type>::create(contents, ref{this});
 }
 
 //! Create a set_validator() by using a formatted string extraction operator, \c >>.
 
-template<input_field_string_validation_function validator_functor,
+template<input_field_string_validation_function validation_function,
 	 typename canonical_format_functor,
-	 typename new_value_functor>
-auto input_fieldObj::set_string_validator(validator_functor &&validator,
-					  canonical_format_functor
-					  &&canonical_format,
-					  new_value_functor &&new_value)
+	 typename ...Args>
+auto input_fieldObj::set_string_validator(
+	validation_function &&validator,
+	canonical_format_functor  &&canonical_format,
+	Args && ...args
+) ->validated_input_field<
+	input_field_string_validation_function_type<validation_function>
+	>
 {
-	// The validator returns a std::optional, figure out
-	// the type being returned.
+	typedef input_field_string_validation_function_type<
+		validation_function> type;
 
-	typedef typename detect_input_field_string_validation_function<
-		validator_functor>::type object_type;
+	const auto &[validator_callback, contents] =
+		create_string_validated_input_field_contents(
+			std::forward<validation_function>(validator),
+			std::forward<canonical_format_functor>(
+				canonical_format
+			),
+			std::forward<Args>(args)...);
 
-	return set_validator
-		([=]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  auto &lock,
-		  const callback_trigger_t &trigger)
-		 {
-			 // Non empty value entered into the input field.
+	this->in_thread([me=ref{this}, validator_callback, contents]
+			(ONLY IN_THREAD)
+	{
+		input_lock lock{me};
 
-			 if (!value.empty())
-			 {
-				 // Use the formatted extraction operator.
+		me->on_validate(IN_THREAD, validator_callback);
+		contents->reset(IN_THREAD, lock);
+	});
 
-				 object_type v{};
+	return validated_input_field<type>::create(contents, ref{this});
+}
 
-				 std::istringstream i{value};
+//! Create a set_validator() by using a formatted string extraction operator, \c >>.
 
-				 i >> v;
+template<input_field_string_validation_function validation_function,
+	 typename canonical_format_functor,
+	 typename ...Args>
+auto input_fieldObj::set_string_validator(
+	ONLY IN_THREAD,
+	validation_function &&validator,
+	canonical_format_functor  &&canonical_format,
+	Args && ...args)
+	->validated_input_field<input_field_string_validation_function_type<
+					validation_function>
+				>
+{
+	typedef input_field_string_validation_function_type<
+		validation_function> type;
 
-				 if (!i.fail())
-				 {
-					 // Even if it succeeds, we want to
-					 // make sure it consumed all input.
+	const auto &[validator_callback, contents] =
+		create_string_validated_input_field_contents(
+			std::forward<validation_function>(validator),
+			std::forward<canonical_format_functor>(
+				canonical_format
+			),
+			std::forward<Args>(args)...);
 
-					 i.get();
-					 if (i.eof())
-					 {
-						 return validator(IN_THREAD,
-								  value, &v,
-								  lock,
-								  trigger);
-					 }
-				 }
-			 }
+	{
+		input_lock lock{ref{this}};
 
-			 return validator(IN_THREAD,
-					  value, nullptr,
-					  lock, trigger);
-		 },
+		this->on_validate(IN_THREAD, validator_callback);
+		contents->reset(IN_THREAD, lock);
+	}
 
-		 std::forward<canonical_format_functor>(canonical_format),
-		 std::forward<new_value_functor>(new_value));
+	return validated_input_field<type>::create(contents, ref{this});
 }
 
 #include <x/w/editable_comboboxlayoutmanager_input_field.H>

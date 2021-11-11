@@ -229,65 +229,21 @@ INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_field=field->set_
                  std::cout << "No new value" << std::endl;
          });
 
+INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_field=field->set_validator
+       (IN_THREAD,
+        []
+         (ONLY IN_THREAD,
+// ...
+
 \endcode
 
-set_validator() uses on_validate() to provide a consistent input validation
-framework for parsing and edit-checking the text input and converting it
-to a specific data type.
-
-set_validator() returns a \ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>",
+set_validator() forwards its parameters to
+\ref create_validated_input_field_contents "create_validated_input_field_contents"()
+and uses on_validate() to install the returned callback, and
+returns a
+\ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>",
 an object that represents the most recently validated contents of the
-text input field. set_validator() takes two closures as parameters.
-The first closure returns a \c std::optional<T>, where \c T is some
-data type that the entered text was converted to. This sets
-set_validator()'s return value as
-\c INSERT_LIBX_NAMESPACE::w::validated_input_field<T>.
-
-set_validator()'s first closure receives the following parameters:
-
-- either a \c std::string or \c std::u32string, the closure receives
-the current contents of the input field as either a string in the current
-encoding, or a unicode string.
-
-- a reference to an \ref input_lock "INSERT_LIBX_NAMESPACE::w::input_lock"
-on its own field, for convenience.
-
-- the triggering event.
-
-The closure returns a \c T value to indicate the value of the converted
-string, or a \c std::nullopt if the string is not valid.
-
-The closure is responsible for reporting invalid input, and the usual
-way to do that is to use the \c lock parameter and call the lock's
-stop_message(), that displays an error dialog in the input field's
-window.
-
-In all cases the value returned by the closure gets placed into the
-\ref validated_input_field "validated_input_field<T>" object that gets
-returned from set_validator().
-
-The second closure passed to set_validator() takes a
-T parameter and returns either a \c std::string in the current locale's
-encoding or a unicode string. The returned string represents the
-entered \c T value in canonical form. It may or may not be identical
-to what was entered into the text input field. It's expected that if the
-returned value gets passed to the first closure, the first closure returns
-the same value of \c T. The validator updates the text input field to the
-canonical format.
-
-The \ref date_input_field "date input field"'s parser provides a default
-year, if none was typed in, and its formatter converts the full date to
-canonical format. In this manner, typing in just the month and the day
-then tabbing out of the date input field updates it to show the full
-date.
-
-A third closure is optional. If provided, the third closure
-gets invoked after the first closure returns, and after the returned
-\ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>"
-gets updated with the validated value. This provides a hook that gets
-executed in the context where the \c validated_input_field reflects the
-new value (it doesn't until the first closure returns). But, for convenience's
-sake, the parsed value also gets passed to it as its first parameter.
+text input field.
 
 \code
 INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int=field->set_string_validator
@@ -328,28 +284,23 @@ INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int=field->set_st
              else
                  std::cout << "No new value" << std::endl;
          });
+
+INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int=field->set_string_validator
+        (IN_THREAD,
+        []
+         (ONLY IN_THREAD,
+
+         // ...
 \endcode
 
-set_string_validator() is a shortcut for using set_validator() with
-\c std::istream's formatted input extraction operation, \c >>. This
-is convenient when \c T is an integral type, but any default-constructible
-T type can be used.
+set_string_validator() forwards its parameters to
+\ref create_string_validated_input_field_contents "create_string_validated_input_field_contents()"
+and uses on_validate() to install the returned callback, and
+returns a
+\ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>",
+an object that represents the most recently validated contents of the
+text input field.
 
-Before calling the validator closure, set_string_validator() uses
-`>>` to attempt to extract `T` from the input string.
-The validator closure gets invoked whether the extraction attempt
-succeeds or fails. The validator's first parameter is a \c std::string
-that gives the original contents of the input field, and the second
-parameter is either a pointer to the extracted value, or a \c nullptr
-if the formatted extraction operator fails.
-
-set_string_validator()'s second closure is the same as \c set_validator()'s.
-The third, optional, closure is also the same as  \c set_validator()'s.
-
-\note
-set_validator() and set_string_validator() automatically trim off any
-leading and trailing whitespace in the typed in text before attempting
-to validate it.
 
 \code
 if (!f->validate_modified(IN_THREAD))
@@ -369,53 +320,6 @@ validate_modified() is for use by keyboard shortcut-invoked callbacks.
 Validation takes place when tabbing out of the input field, so it's useful
 to invoke the validation callback from a keyboard shortcut, after the
 input field was modified but not yet validated.
-
-\code
-std::optional<int> value=validated_int->value();
-
-int value=validated_int->value_or(0);
-
-validated_int->access([]
-                      (const std::optional<int> &)
-                      {
-                           // ...
-                      });
-
-std::optional<int> new_value;
-
-validated_int->set(new_value);
-
-validated_int->set(IN_THREAD, new_value);
-\endcode
-
-\ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>"'s
-value() method returns the input field's most recent validated value, or a
-\c nullopt indicating that the input field's value has not been validated.
-value_or() returns the validated value or its parameter, in the event of an
-unvalidated input field.
-
-The validated value is protected by a mutex, and has thread-safe access.
-\c access() locks the mutex and invokes its parameter, a callable object that
-gets the (possibly) validated value as its constant parameter.
-
-set() replaces the validated input field's contents. A nullopt value clears
-the input field. The IN_THREAD set() overload immediately updated the
-input field's contents, otherwise the input field does not get immediately
-updated. A message gets sent to the connection thread, which then does that.
-
-\note
-The \c validated_input_field object own a reference on its input field.
-
-\code
-INSERT_LIBX_NAMESPACE::w::validated_input_field_contents<int> contents=validated_int->contents;
-\endcode
-
-<tt>validated_input_field</tt>'s \c contents member is a reference to a
-\ref validated_input_field_contents "INSERT_LIBX_NAMESPACE::w::validated_input_field_contents<T>"
-object that implements the same value(), value_or(), and access() method,
-but only an IN_THREAD version of set(). The contents object does not own
-a reference to the underlying input field, but the input field owns a reference
-on it.
 
 \par Input filters
 

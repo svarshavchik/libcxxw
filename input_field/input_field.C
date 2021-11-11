@@ -655,14 +655,21 @@ void input_fieldObj::on_validate(
 	const input_field_validation_callback &callback
 )
 {
+	in_thread([me=ref{this}, callback]
+		  (ONLY IN_THREAD)
+	{
+		me->on_validate(IN_THREAD, callback);
+	});
+}
+
+void input_fieldObj::on_validate(
+	ONLY IN_THREAD,
+	const input_field_validation_callback &callback
+)
+{
 	auto editor_impl=impl->editor_element->impl;
 
-	editor_impl->get_window_handler().thread()->run_as
-		([callback, editor_impl]
-		 (ONLY IN_THREAD)
-		 {
-			 editor_impl->validation_callback(IN_THREAD)=callback;
-		 });
+	editor_impl->validation_callback(IN_THREAD)=callback;
 }
 
 void input_fieldObj::on_filter(const

@@ -27,6 +27,7 @@ public:
 	~validated_input_field_contentsObj()=default;
 
 	friend class validated_input_fieldObj<type>;
+	friend class input_fieldObj;
 
 	//! Public access to the current value.
 
@@ -75,6 +76,22 @@ public:
 	virtual void set(ONLY IN_THREAD,
 			 input_lock &lock,
 			 const std::optional<type> &v)=0;
+
+private:
+	//! Refresh the input field with the current validated value.
+
+	//! Called in set_validator() when installing the input field in order
+	//! to show its initial value.
+
+	void reset(ONLY IN_THREAD, input_lock &lock)
+	{
+		typename mpobj<std::optional<type>,
+			       std::recursive_mutex>::lock value_lock{
+			validated_value
+		};
+
+		set(IN_THREAD, lock, *value_lock);
+	}
 };
 
 LIBCXXW_NAMESPACE_END

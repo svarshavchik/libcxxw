@@ -7,7 +7,9 @@
 
 #include <x/w/namespace.H>
 #include <x/w/validated_input_field_contentsfwd.H>
+#include <x/w/input_fieldfwd.H>
 #include <x/ptrfwd.H>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,7 +25,7 @@ class input_field_detect_validator_functor_parameter;
 
 //! The validation function receives the following parameters:
 //!
-//! - It is invoked \ref IN_THREAD "IN_THREAD".
+//! - It is invoked \ref ONLY "IN_THREAD".
 //!
 //! - Either a std::string or a std::u32string, the validation function can
 //! declare either one as a parameter
@@ -53,16 +55,20 @@ struct detect_input_field_string_validation_function_ret_type<std::optional<T>>
 };
 
 //! Helper for the input_field_string_validation_function concept
-template<typename functor>
-struct detect_input_field_string_validation_function
-	: detect_input_field_string_validation_function_ret_type<
-	decltype(std::declval<functor &&>()
-		 (std::declval<THREAD_CALLBACK>(),
-		  std::declval<const std::string &>(),
-		  nullptr,
-		  std::declval<input_lock &>(),
-		  std::declval<const callback_trigger_t &>()))> {
+template<typename functor,
+	 typename return_type=typename
+	 detect_input_field_string_validation_function_ret_type<
+		 decltype(std::declval<functor &&>()
+			  (std::declval<THREAD_CALLBACK>(),
+			   std::declval<const std::string &>(),
+			   nullptr,
+			   std::declval<input_lock &>(),
+			   std::declval<const callback_trigger_t &>()))
+		 >::type
+	 >
+struct detect_input_field_string_validation_function {
 
+	typedef return_type type;
 };
 
 //! An input field validation function based on a parsed string.
@@ -73,7 +79,7 @@ struct detect_input_field_string_validation_function
 //!
 //! The validation function receives the following parameters:
 //!
-//! - It is invoked \ref IN_THREAD "IN_THREAD".
+//! - It is invoked \ref ONLY "IN_THREAD".
 //!
 //! - The contents of the field before valiation
 //!
@@ -165,6 +171,21 @@ The non-IN_THREAD overload does not immediately update the value(), but
 forwards a message to the connection thread, which updates the value and
 the input field widget.
 
+\note
+The \c validated_input_field object owns a reference on the underlying
+\ref input_field "INSERT_LIBX_NAMESPACE::w::input_field" widget.
+
+\code
+INSERT_LIBX_NAMESPACE::w::validated_input_field_contents<int> contents=validated_int_value->contents;
+\endcode
+
+<tt>validated_input_field</tt>'s \c contents member is a reference to a
+\ref validated_input_field_contents "INSERT_LIBX_NAMESPACE::w::validated_input_field_contents<T>"
+object that implements the same value(), value_or(), and access() method,
+but only an IN_THREAD version of set(). The contents object does not own
+a reference to the underlying input field, but the input field owns a reference
+on it.
+
 */
 
 template<typename type>
@@ -193,6 +214,62 @@ using const_validated_input_fieldptr=const_ptr<validated_input_fieldObj<type>>;
 
 template<typename type, typename canonical_formatter>
 class LIBCXX_PUBLIC validated_input_field_implObj;
+
+
+/*! Determine the validation function's type */
+
+template<input_field_validation_function validation_function>
+using input_field_validation_function_type=
+	typename input_field_detect_validator_functor_parameter<
+	validation_function
+	>::optional_return_type_t;
+
+template<typename T> struct default_new_value_function {
+	inline void operator()(ONLY IN_THREAD, const T &) const
+	{
+	}
+};
+
+/*! Defines create_validated_input_field_contents() return type
+
+Helper template that defines what
+\ref create_validated_input_field_contents "create_validated_input_field_contents()"
+returns.
+
+*/
+
+template<input_field_validation_function validation_function>
+using create_validator_ret_t=std::tuple<
+	input_field_validation_callback,
+	validated_input_field_contents<
+		input_field_validation_function_type<validation_function>
+		>
+	>;
+
+
+template<input_field_string_validation_function validation_function>
+using input_field_string_validation_function_type=
+	typename detect_input_field_string_validation_function<
+	validation_function
+	>::type;
+
+/*! Defines create_string_validated_input_field_contents() return type
+
+Helper template that defines what
+\ref create_string_validated_input_field_contents "create_validated_stromg+input_field_contents()"
+returns.
+
+*/
+
+template<input_field_string_validation_function validation_function>
+using create_string_validator_ret_t=std::tuple<
+	input_field_validation_callback,
+	validated_input_field_contents<
+		input_field_string_validation_function_type<
+			validation_function
+			>
+		>
+	>;
 
 LIBCXXW_NAMESPACE_END
 

@@ -288,7 +288,7 @@ static void testsync_case(ONLY IN_THREAD,
 				({
 					std::ostringstream o;
 
-					for (const auto v:expected_results)
+					for (const auto &v:expected_results)
 						o << " " << v;
 
 					o.str();
@@ -298,7 +298,7 @@ static void testsync_case(ONLY IN_THREAD,
 				({
 					std::ostringstream o;
 
-					for (const auto v:results)
+					for (const auto &v:results)
 						o << " " << v;
 
 					o.str();

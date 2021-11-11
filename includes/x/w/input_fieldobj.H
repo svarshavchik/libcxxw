@@ -71,6 +71,11 @@ public:
 
 	void on_validate(const input_field_validation_callback &);
 
+	//! Install a callback to validate modified input field contents.
+
+	void on_validate(ONLY IN_THREAD,
+			 const input_field_validation_callback &);
+
 	//! Install a callback to filter changes to the input field.
 
 	void on_default_filter(const functionref<bool(char32_t)> &,
@@ -93,28 +98,51 @@ public:
 	ref<elementObj::implObj> get_minimum_override_element_impl() override;
 
 	template<input_field_validation_function validation_function,
-		 typename canonical_format_functor>
+		 typename canonical_format_functor,
+		 typename ...Args>
 	auto set_validator(validation_function &&validator,
-			   canonical_format_functor &&canonical_factor);
+			   canonical_format_functor &&canonical_factor,
+			   Args && ...args)
+		-> validated_input_field<
+		typename input_field_detect_validator_functor_parameter<
+			validation_function
+			>::optional_return_type_t>;
 
 	template<input_field_validation_function validation_function,
 		 typename canonical_format_functor,
-		 typename new_value_functor>
-	auto set_validator(validation_function &&validator,
+		 typename ...Args>
+	auto set_validator(ONLY IN_THREAD,
+			   validation_function &&validator,
 			   canonical_format_functor &&canonical_factor,
-			   new_value_functor &&new_value);
+			   Args && ...args)
+		-> validated_input_field<
+		typename input_field_detect_validator_functor_parameter<
+			validation_function
+			>::optional_return_type_t>;
 
-	template<input_field_string_validation_function validator_functor,
-		 typename canonical_format_functor>
-	auto set_string_validator(validator_functor &&validator,
-				  canonical_format_functor &&canonical_format);
-
-	template<input_field_string_validation_function validator_functor,
+	template<input_field_string_validation_function validation_function,
 		 typename canonical_format_functor,
-		 typename new_value_functor>
-	auto set_string_validator(validator_functor &&validator,
+		 typename ...Args>
+	auto set_string_validator(validation_function &&validator,
 				  canonical_format_functor &&canonical_format,
-				  new_value_functor &&new_value);
+				  Args && ...args)
+		-> validated_input_field<
+		input_field_string_validation_function_type<
+			validation_function>
+		>;
+
+	template<input_field_string_validation_function validation_function,
+		 typename canonical_format_functor,
+		 typename ...Args>
+	auto set_string_validator(
+		ONLY IN_THREAD,
+		validation_function &&validator,
+		canonical_format_functor  &&canonical_format,
+		Args && ...args)
+		->validated_input_field<
+		input_field_string_validation_function_type<
+			validation_function>
+		>;
 
 	//! Validate the input field, if needed.
 

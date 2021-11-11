@@ -1181,7 +1181,8 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 	// by value.
 
 	auto validator=value->set_string_validator
-		([container=make_weak_capture(container, value)]
+		(IN_THREAD,
+		 [container=make_weak_capture(container, value)]
 		 (ONLY IN_THREAD,
 		  const std::string &value,
 		  size_t *parsed_value,
