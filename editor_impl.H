@@ -849,8 +849,7 @@ private:
  private:
 	//! The validation callback.
 
-	functionptr<input_field_validation_callback_t>
-		validation_callback_thread_only;
+	input_field_validation_callbackptr validation_callback_thread_only;
 
  public:
 	THREAD_DATA_ONLY(validation_required);

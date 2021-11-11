@@ -10,8 +10,8 @@
 #include <x/w/callback_triggerfwd.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/factoryfwd.H>
-#include <x/w/callback_triggerfwd.H>
 #include <x/ptrfwd.H>
+#include <x/functionalrefptrfwd.H>
 #include <string>
 
 LIBCXXW_NAMESPACE_START
@@ -21,11 +21,20 @@ class LIBCXX_PUBLIC input_fieldObj;
 class LIBCXX_HIDDEN const_input_lock;
 class LIBCXX_HIDDEN input_lock;
 
-//! Callback for validating the contents of the input field.
+//! Signature of a callback for validating the contents of the input field.
 
+//! An \ref input_field "input field"'s on_validate() installs this callback
+//! to validate the contents of the input field.
 typedef bool input_field_validation_callback_t(THREAD_CALLBACK,
 					       input_lock &,
 					       const callback_trigger_t &);
+
+//! Reference-counted input field validation callback.
+typedef functionref<input_field_validation_callback_t
+		    > input_field_validation_callback;
+
+//! A nullable pointer reference to a reference-counted input field validation callback.
+typedef functionptr<input_field_validation_callback_t> input_field_validation_callbackptr;
 
 //! Parameter to the input field filter callback.
 

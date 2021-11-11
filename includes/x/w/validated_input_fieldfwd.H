@@ -14,6 +14,93 @@ LIBCXXW_NAMESPACE_START
 template<typename type>
 class validated_input_fieldObj;
 
+//! Determine the type of the first parameter to an \ref input_field "input_field validator".
+
+template<typename validator_functor, typename=void>
+class input_field_detect_validator_functor_parameter;
+
+//! An input field validation function
+
+//! The validation function receives the following parameters:
+//!
+//! - It is invoked \ref IN_THREAD "IN_THREAD".
+//!
+//! - Either a std::string or a std::u32string, the validation function can
+//! declare either one as a parameter
+//!
+//! - A reference to an \ref input_lock "input field lock", the input field
+//! remains locked for the duration of the validation call.
+//!
+//! - A reference to a \ref callback_trigger_t "trigger" providing the UI
+//! context for the validation function's invocation.
+//!
+//! The validation function returns true or false, indicating whether the
+//! input field's contents are valid, or not.
+
+template<typename functor>
+concept input_field_validation_function =
+	sizeof(input_field_detect_validator_functor_parameter<functor>) > 0;
+
+//! Helper for the input_field_string_validation_function concept
+template<typename T>
+struct detect_input_field_string_validation_function_ret_type;
+
+//! Helper for the input_field_string_validation_function concept
+template<typename T>
+struct detect_input_field_string_validation_function_ret_type<std::optional<T>>
+{
+	typedef T type;
+};
+
+//! Helper for the input_field_string_validation_function concept
+template<typename functor>
+struct detect_input_field_string_validation_function
+	: detect_input_field_string_validation_function_ret_type<
+	decltype(std::declval<functor &&>()
+		 (std::declval<THREAD_CALLBACK>(),
+		  std::declval<const std::string &>(),
+		  nullptr,
+		  std::declval<input_lock &>(),
+		  std::declval<const callback_trigger_t &>()))> {
+
+};
+
+//! An input field validation function based on a parsed string.
+
+//! A validation function that gets called if the input field's contents
+//! are succesfully extracted via the >> formatted extraction operator into
+//! a type.
+//!
+//! The validation function receives the following parameters:
+//!
+//! - It is invoked \ref IN_THREAD "IN_THREAD".
+//!
+//! - The contents of the field before valiation
+//!
+//! - A possibly-NULL modifiable plain pointer to the validated type. A NULL
+//! value indicates either an empty field, or the >> formatted extraction
+//! operator failed, or it did not consumed all non-whitespace input. The
+//! specific situation can be determined by checking whether the string is
+//! empty or not.
+//!
+//! - A reference to an \ref input_lock "input field lock", the input field
+//! remains locked for the duration of the validation call.
+//!
+//! - A reference to a \ref callback_trigger_t "trigger" providing the UI
+//! context for the validation function's invocation.
+//!
+//! The validation function must return a std::optional containing the
+//! validated type.
+//!
+//! - a nullopt indicates that the validation has failed.
+//!
+//! - a value indicates that the validation succeeded.
+
+template<typename functor>
+concept input_field_string_validation_function = requires {
+	{ sizeof(detect_input_field_string_validation_function<functor>) > 0 };
+};
+
 /*! Most recently validated value in the \ref input_field.
 
 \code
@@ -103,6 +190,9 @@ using validated_input_fieldptr=ptr<validated_input_fieldObj<type>>;
 
 template<typename type>
 using const_validated_input_fieldptr=const_ptr<validated_input_fieldObj<type>>;
+
+template<typename type, typename canonical_formatter>
+class LIBCXX_PUBLIC validated_input_field_implObj;
 
 LIBCXXW_NAMESPACE_END
 

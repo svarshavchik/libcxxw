@@ -651,9 +651,9 @@ void input_fieldObj::on_autocomplete(const functionref<bool
 		 });
 }
 
-void input_fieldObj::on_validate(const
-				 functionref<input_field_validation_callback_t
-				 > &callback)
+void input_fieldObj::on_validate(
+	const input_field_validation_callback &callback
+)
 {
 	auto editor_impl=impl->editor_element->impl;
 

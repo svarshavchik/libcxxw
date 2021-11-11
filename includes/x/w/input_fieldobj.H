@@ -10,6 +10,7 @@
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/containerfwd.H>
 #include <x/w/input_field_config.H>
+#include <x/w/validated_input_fieldfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <string>
 
@@ -68,8 +69,7 @@ public:
 
 	//! Install a callback to validate modified input field contents.
 
-	void on_validate(const functionref<input_field_validation_callback_t>
-			 &);
+	void on_validate(const input_field_validation_callback &);
 
 	//! Install a callback to filter changes to the input field.
 
@@ -92,24 +92,24 @@ public:
 
 	ref<elementObj::implObj> get_minimum_override_element_impl() override;
 
-	template<typename validator_functor,
+	template<input_field_validation_function validation_function,
 		 typename canonical_format_functor>
-	auto set_validator(validator_functor &&validator,
+	auto set_validator(validation_function &&validator,
 			   canonical_format_functor &&canonical_factor);
 
-	template<typename validator_functor,
+	template<input_field_validation_function validation_function,
 		 typename canonical_format_functor,
 		 typename new_value_functor>
-	auto set_validator(validator_functor &&validator,
+	auto set_validator(validation_function &&validator,
 			   canonical_format_functor &&canonical_factor,
 			   new_value_functor &&new_value);
 
-	template<typename validator_functor,
+	template<input_field_string_validation_function validator_functor,
 		 typename canonical_format_functor>
 	auto set_string_validator(validator_functor &&validator,
 				  canonical_format_functor &&canonical_format);
 
-	template<typename validator_functor,
+	template<input_field_string_validation_function validator_functor,
 		 typename canonical_format_functor,
 		 typename new_value_functor>
 	auto set_string_validator(validator_functor &&validator,
