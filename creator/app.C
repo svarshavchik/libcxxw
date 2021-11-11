@@ -529,7 +529,7 @@ static inline auto value_validator(const x::w::input_field &field,
 		([allownan, errmsg]
 		 (ONLY IN_THREAD,
 		  const std::string &value,
-		  const auto &me,
+		  const auto &lock,
 		  const auto &trigger)
 		 -> std::optional<std::string> {
 
@@ -569,7 +569,7 @@ static inline auto value_validator(const x::w::input_field &field,
 			}
 			ret.reset();
 
-			me->stop_message(cxxwlibmsg(errmsg));
+			lock.stop_message(cxxwlibmsg(errmsg));
 			return std::nullopt;
 		},
 		 []
@@ -594,7 +594,7 @@ static inline auto dimension_new_name_validator(const x::w::input_field &field)
 		([]
 		 (ONLY IN_THREAD,
 		  const std::string &value,
-		  const auto &me,
+		  const auto &lock,
 		  const auto &trigger)
 		 -> std::optional<std::string>
 		 {
@@ -634,7 +634,7 @@ static auto optional_double_validator_closure()
 	return []
 		(ONLY IN_THREAD,
 		 const std::string &value,
-		 const x::w::input_field &me,
+		 const x::w::input_lock &lock,
 		 const auto &trigger) -> std::optional<std::optional<double>>
 	{
 		if (value.empty())
@@ -649,14 +649,14 @@ static auto optional_double_validator_closure()
 
 			if (i.fail() || !(i.get(), i.eof()))
 			{
-				me->stop_message(_("Invalid value"));
+				lock.stop_message(_("Invalid value"));
 				return std::nullopt;
 			}
 		}
 
 		if (parsed_value < 0)
 		{
-			me->stop_message(_("Value cannot be"
+			lock.stop_message(_("Value cannot be"
 					   " negative"));
 			return std::nullopt;
 		}
@@ -720,7 +720,7 @@ color_gradient_value_validator(const x::w::input_field &field,
 		 (ONLY IN_THREAD,
 		  const std::string &value,
 		  double *parsed_value,
-		  const x::w::input_field &field,
+		  const auto &lock,
 		  const auto &trigger) -> std::optional<double>
 		 {
 			 if (parsed_value)
@@ -741,7 +741,7 @@ color_gradient_value_validator(const x::w::input_field &field,
 				 return default_values.*default_value;
 			 }
 
-			 field->stop_message(_("Invalid value"));
+			 lock.stop_message(_("Invalid value"));
 
 			 return std::nullopt;
 		 },
@@ -863,7 +863,7 @@ border_size_scale_validator(const x::w::input_field &field)
 		([]
 		 (ONLY IN_THREAD,
 		  const std::string &value,
-		  const auto &me,
+		  const auto &lock,
 		  const auto &trigger)
 		 -> std::optional<std::optional<unsigned>> {
 
@@ -893,7 +893,7 @@ border_size_scale_validator(const x::w::input_field &field)
 				}
 			}
 
-			me->stop_message(_("Scale value must be a non-negative"
+			lock.stop_message(_("Scale value must be a non-negative"
 					   " integer"));
 			return ret;
 		},
@@ -917,7 +917,7 @@ create_border_dashes_field_validator(const x::w::input_field &field)
 		([]
 		 (ONLY IN_THREAD,
 		  const std::string &value,
-		  const auto &me,
+		  const auto &lock,
 		  const auto &trigger)
 		 -> std::optional<std::vector<double>> {
 
@@ -962,8 +962,9 @@ create_border_dashes_field_validator(const x::w::input_field &field)
 				v.push_back(n);
 			}
 
-			me->stop_message(_("Cannot parse a list of non-negative "
-					   "values in millimeters"));
+			lock.stop_message(
+				_("Cannot parse a list of non-negative "
+				  "values in millimeters"));
 			return ret;
 		},
 		 []

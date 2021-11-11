@@ -69,7 +69,7 @@ class input_field_detect_validator_functor_parameter<
 	std::void_t<decltype(std::declval<validator_functor &&>()
 			     (std::declval<THREAD_CALLBACK>(),
 			      std::declval<const std::string &>(),
-			      std::declval<const input_field &>(),
+			      std::declval<input_lock &>(),
 			      std::declval<const callback_trigger_t &>()))>>
 	: public input_field_get_for_validator<std::string> {};
 
@@ -80,7 +80,7 @@ class input_field_detect_validator_functor_parameter<
 	std::void_t<decltype(std::declval<validator_functor &&>()
 			     (std::declval<THREAD_CALLBACK>(),
 			      std::declval<const std::u32string &>(),
-			      std::declval<const input_field &>(),
+			      std::declval<input_lock &>(),
 			      std::declval<const callback_trigger_t &>()))>>
 	: public input_field_get_for_validator<std::u32string> {};
 
@@ -372,6 +372,7 @@ class validated_input_fieldObj : virtual public obj {
 
 	const validated_input_field_contents<type> contents;
 
+	const weakptr<input_fieldptr> my_input_field;
 public:
 
 	validated_input_fieldObj(
@@ -425,7 +426,17 @@ public:
 
 	void set(const std::optional<type> &v)
 	{
-		contents->set(v);
+		auto f=my_input_field.getptr();
+
+		if (!f)
+			return;
+
+		f->in_thread(
+			[v, me=ref{this}]
+			(ONLY IN_THREAD)
+			{
+				me->set(IN_THREAD, v);
+			});
 	}
 
 	//! Set a new value in the input field.
@@ -477,7 +488,7 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 
 	typedef decltype(validator(std::declval<THREAD_CALLBACK>(),
 				   std::declval<const validated_string_t &>(),
-				   std::declval<input_field &>(),
+				   std::declval<input_lock &>(),
 				   std::declval<const callback_trigger_t &>()))
 		validator_optional_ret_t;
 
@@ -547,7 +558,7 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 
 			*value_lock=validator(this->IN_THREAD,
 					      trim(validator_t::get(lock)),
-					      my_field,
+					      lock,
 					      trigger);
 
 			// And set the validated value.
@@ -614,7 +625,7 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 		([=]
 		 (ONLY IN_THREAD,
 		  const std::string &value,
-		  const input_field &f,
+		  auto &lock,
 		  const callback_trigger_t &trigger)
 		 {
 			 // The validator returns a std::optional, figure out
@@ -626,7 +637,7 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 						    std::declval<const
 						    std::string &>(),
 						    nullptr,
-						    std::declval<const input_field &>
+						    std::declval<input_lock &>
 						    (),
 						    trigger))>::type_t
 				 object_type;
@@ -653,7 +664,7 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 					 {
 						 return validator(IN_THREAD,
 								  value, &v,
-								  f,
+								  lock,
 								  trigger);
 					 }
 				 }
@@ -661,7 +672,7 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 
 			 return validator(IN_THREAD,
 					  value, nullptr,
-					  f, trigger);
+					  lock, trigger);
 		 },
 
 		 std::forward<canonical_format_functor>(canonical_format),

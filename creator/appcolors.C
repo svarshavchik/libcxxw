@@ -1182,21 +1182,22 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 	// by value.
 
 	auto validator=value->set_string_validator
-		([container=make_weak_capture(container)]
+		([container=make_weak_capture(container, value)]
 		 (ONLY IN_THREAD,
 		  const std::string &value,
 		  size_t *parsed_value,
-		  const auto &field,
+		  const auto &lock,
 		  const auto &trigger)
 		 -> std::optional<size_t>
 		 {
 			 if (!parsed_value)
 			 {
-				 field->stop_message
-					 (_("Enter the gradient"
-					    " scale position, "
-					    " as a positive numeric"
-					    " value"));
+				 lock.stop_message(
+					 _("Enter the gradient"
+					   " scale position, "
+					   " as a positive numeric"
+					   " value")
+				 );
 				 return std::nullopt;
 			 }
 
@@ -1207,7 +1208,7 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 			 if (!got)
 				 return *parsed_value;
 
-			 auto &[container]=*got;
+			 auto &[container, field]=*got;
 
 			 x::w::gridlayoutmanager glm=
 				 container->get_layoutmanager();
@@ -1246,9 +1247,10 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 					 continue;
 				 if (*v == *parsed_value)
 				 {
-					 field->stop_message
-						 (_("All gradient values must"
-						    " be unique"));
+					 lock.stop_message(
+						 _("All gradient values must"
+						   " be unique")
+					 );
 					 return std::nullopt;
 				 }
 

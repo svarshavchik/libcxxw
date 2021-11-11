@@ -102,5 +102,14 @@ std::u32string const_input_lock::get_unicode(
 	return internal_editor->get(embedding);
 }
 
+void const_input_lock::stop_message(const text_param &p) const
+{
+	return internal_editor->stop_message(p);
+}
+
+void const_input_lock::exception_message(const exception &e) const
+{
+	return internal_editor->exception_message(e);
+}
 
 LIBCXXW_NAMESPACE_END

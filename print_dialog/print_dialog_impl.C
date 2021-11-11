@@ -49,7 +49,7 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 			   (THREAD_CALLBACK,
 			    const std::string &value,
 			    int *parsed_value,
-			    const input_field &f,
+			    const auto &lock,
 			    const auto &ignore) -> std::optional<int>
 			   {
 				   if (parsed_value)
@@ -77,7 +77,7 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 				   }
 
 				   if (!value.empty())
-					   f->stop_message
+					   lock.stop_message
 						   (_("Invalid number of "
 						      "copies value"));
 				   return std::nullopt;
@@ -94,14 +94,14 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 			  ([]
 			   (THREAD_CALLBACK,
 			    const std::string &value,
-			    const input_field &f,
+			    const auto &lock,
 			    const auto &ignore)
 			   -> std::optional<std::vector<std::tuple<int, int>>>
 			   {
 				   auto v=cups::parse_range_string(value);
 
 				   if (!v)
-					   f->stop_message
+					   lock.stop_message
 						   (_("Invalid page range "
 						      "specified"));
 

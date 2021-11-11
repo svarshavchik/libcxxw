@@ -6,9 +6,11 @@
 #define x_w_input_field_lock_h
 
 #include <x/ref.H>
+#include <x/exception.H>
 #include <x/mpobj.H>
 #include <x/w/input_fieldfwd.H>
 #include <x/w/richtext/richtextiteratorfwd.H>
+#include <x/w/text_param.H>
 #include <tuple>
 #include <optional>
 
@@ -128,6 +130,14 @@ public:
 	std::u32string get_unicode(
 		const std::optional<bidi_format> &embedding=std::nullopt)
 		const LIBCXX_PUBLIC;
+
+	//! Forwarded to stop_message() in the main_window.
+
+	void stop_message(const text_param &) const LIBCXX_PUBLIC;
+
+	//! Forwarded to exception_message() in the main_window.
+
+	void exception_message(const exception &) const LIBCXX_PUBLIC;
 };
 
 //! Lock the \ref input_field "input field" in order to access its contents.

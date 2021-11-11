@@ -346,7 +346,7 @@ date_input_field factoryObj
 		  invalid_input_error_message=config.invalid_input]
 		 (ONLY IN_THREAD,
 		  const std::u32string &d,
-		  const input_field &f,
+		  const input_lock &lock,
 		  const callback_trigger_t &trigger)
 		 -> std::optional<validated_type_t>
 		 {
@@ -367,8 +367,9 @@ date_input_field factoryObj
 				 if (!ret.value())
 				 {
 					 error=true;
-					 f->stop_message
-						 (invalid_input_error_message);
+					 lock.stop_message(
+						 invalid_input_error_message
+					 );
 				 }
 			 }
 

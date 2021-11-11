@@ -388,7 +388,7 @@ make_manual_input_validator(const uielements &tmpl,
 		([wimpl]
 		 (ONLY IN_THREAD,
 		  std::string s,
-		  const input_field &f,
+		  const input_lock &lock,
 		  const auto &ignore) -> std::optional<rgb_component_t>
 		 {
 			 auto impl=wimpl->get();

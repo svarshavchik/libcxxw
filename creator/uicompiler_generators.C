@@ -523,7 +523,7 @@ struct to_percentage_t_handler : setting_handler {
 			([]
 			 (ONLY IN_THREAD,
 			  const std::string &value,
-			  const auto &field,
+			  const auto &lock,
 			  const auto &trigger)
 			 -> std::optional<std::optional<size_t>>
 			 {
@@ -541,7 +541,7 @@ struct to_percentage_t_handler : setting_handler {
 
 				 if (res.ec != std::errc{} || v > 100)
 				 {
-					 field->stop_message
+					 lock.stop_message
 						 (_("Enter a percentage value"
 						    " between 0-100."));
 					 return std::nullopt;

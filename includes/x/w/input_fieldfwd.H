@@ -199,7 +199,7 @@ INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_field=field->set_
        ([]
          (ONLY IN_THREAD,
           const std::string &value,
-          const INSERT_LIBX_NAMESPACE::w::input_field &field,
+          const INSERT_LIBX_NAMESPACE::w::input_lock &lock,
           const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)-> std::optional<int>
          {
              std::istringstream i{value};
@@ -209,7 +209,7 @@ INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_field=field->set_
              if (i >> n)
                   return n;
 
-             field->stop_message("Numeric input required");
+             lock.stop_message("Numeric input required");
 
              return std::nullopt;
          },
@@ -247,8 +247,8 @@ set_validator()'s first closure receives the following parameters:
 the current contents of the input field as either a UTF-8 string, or a
 unicode string.
 
-- an \c INSERT_LIBX_NAMESPACE::w::input_field reference, to its own input
-field, for convenience.
+- a reference to an \ref input_lock "INSERT_LIBX_NAMESPACE::w::input_lock"
+on its own field, for convenience.
 
 - the triggering event.
 
@@ -256,8 +256,8 @@ The closure returns a \c T value to indicate the value of the converted
 string, or a \c std::nullopt if the string is not valid.
 
 The closure is responsible for reporting invalid input, and the usual
-way to do that is to use the \c field parameter and call the input field
-element's stop_message(), that displays an error dialog in the input field's
+way to do that is to use the \c lock parameter and call the lock's
+stop_message(), that displays an error dialog in the input field's
 window.
 
 In all cases the value returned by the closure gets placed into the
@@ -293,7 +293,7 @@ INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int=field->set_st
          (ONLY IN_THREAD,
           const std::string &value,
           int *parsed_value,
-          const INSERT_LIBX_NAMESPACE::w::input_field &field,
+          const INSERT_LIBX_NAMESPACE::w::input_lock &lock,
           const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger) -> std::optional<int>
          {
              if (parsed_value)
@@ -305,12 +305,12 @@ INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int=field->set_st
              {
                  if (value.empty())
                  {
-                     field->stop_message("Input required");
+                     lock.stop_message("Input required");
                      return std::nullopt;
                  }
              }
 
-             field->stop_message("Must enter a number 0-99");
+             lock.stop_message("Must enter a number 0-99");
              return std::nullopt;
          },
          []
