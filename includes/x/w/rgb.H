@@ -52,30 +52,30 @@ public:
 	static constexpr rgb_component_t maximum=0xFFFF;
 
 	//! Default constructor
-	constexpr rgb() : r{0}, g{0}, b{0}, a{maximum} {}
+	constexpr rgb() noexcept: r{0}, g{0}, b{0}, a{maximum} {}
 
 	//! Constructor
 	constexpr rgb(rgb_component_t rv, rgb_component_t gv,
 		      rgb_component_t bv,
-		      rgb_component_t av=maximum)
+		      rgb_component_t av=maximum) noexcept
 	: r{rv}, g{gv}, b{bv}, a{av} {}
 
 	//! Comparator
 
-	bool operator==(const rgb &o) const
+	bool operator==(const rgb &o) const noexcept
 	{
 		return r == o.r && g == o.g && b == o.b && a == o.a;
 	}
 
 	//! Comparator
-	bool operator!=(const rgb &o) const
+	bool operator!=(const rgb &o) const noexcept
 	{
 		return !operator==(o);
 	}
 
 	//! Comparator, for associative containers
 
-	bool operator<(const rgb &a) const
+	bool operator<(const rgb &a) const noexcept
 	{
 		return value() < a.value();
 	}
@@ -145,7 +145,7 @@ struct linear_gradient_values {
 	double fixed_width=0, fixed_height=0;
 
 	//! Comparison operator
-	inline bool operator==(const linear_gradient_values &o) const
+	inline bool operator==(const linear_gradient_values &o) const noexcept
 	{
 		return x1 == o.x1 && y1 == o.y1 &&
 			x2 == o.x2 && y2 == o.y2 &&
@@ -154,7 +154,7 @@ struct linear_gradient_values {
 	}
 
 	//! Comparison operator
-	inline bool operator!=(const linear_gradient_values &o) const
+	inline bool operator!=(const linear_gradient_values &o) const noexcept
 	{
 		return !operator==(o);
 	}
@@ -181,6 +181,21 @@ struct linear_gradient_values {
 struct linear_gradient : linear_gradient_values {
 
 	rgb_gradient gradient;
+
+	//! Comparison operator
+
+	inline bool operator==(const linear_gradient &o) const noexcept
+	{
+		return linear_gradient_values::operator==(o) &&
+			gradient == o.gradient;
+	}
+
+	//! Comparison operator
+
+	inline bool operator!=(const linear_gradient &o) const noexcept
+	{
+		return !operator==(o);
+	}
 };
 
 //! Values of a \ref radial_gradient "radial gradient".
@@ -286,6 +301,11 @@ struct radial_gradient : radial_gradient_values {
 			fixed_width == o.fixed_width &&
 			fixed_height == o.fixed_height &&
 			gradient == o.gradient;
+	}
+
+	bool operator!=(const radial_gradient &o) const noexcept
+	{
+		return !operator==(o);
 	}
 };
 
