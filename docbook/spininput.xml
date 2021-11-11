@@ -87,6 +87,15 @@ See COPYING for distribution information.
       increment or decrement the <classname>int</classname> value, within
       bounds, and use the validator to update the input field.
     </para>
+
+    <note>
+      <para>
+	<methodname>on_spin</methodname>() callbacks must follow
+	<link linkend="inputvalidatereference">specific rules to avoid
+	  creating circular reference</link> when using input
+	field validators.
+      </para>
+    </note>
   </section>
 </chapter>
 <!--

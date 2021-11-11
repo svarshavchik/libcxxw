@@ -17,8 +17,6 @@
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC input_fieldObj;
-template<typename type> class validated_input_field_contentsObj;
-template<typename type> class validated_input_fieldObj;
 
 class LIBCXX_HIDDEN const_input_lock;
 class LIBCXX_HIDDEN input_lock;
@@ -381,7 +379,7 @@ validated_int->set(new_value);
 validated_int->set(IN_THREAD, new_value);
 \endcode
 
-\ref valudate_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>"'s
+\ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>"'s
 value() method returns the input field's most recent validated value, or a
 \c nullopt indicating that the input field's value has not been validated.
 value_or() returns the validated value or its parameter, in the event of an
@@ -671,116 +669,6 @@ typedef const_ref<input_fieldObj> const_input_field;
 //! \see input_field
 
 typedef const_ptr<input_fieldObj> const_input_fieldptr;
-
-//! Contents of a validated input field
-
-//! \see input_field
-template<typename type>
-using validated_input_field_contents=
-	ref<validated_input_field_contentsObj<type>>;
-
-//! A nullable pointer reference to a \ref validated_input_field_contents "validated input field value".
-
-template<typename type>
-using validated_input_field_contentsptr=
-	ptr<validated_input_field_contentsObj<type>>;
-
-//! A reference to a constant \ref validated_input_field_contents "validated input field value".
-
-template<typename type>
-using const_validated_input_field_contents=
-	const_ref<validated_input_field_contentsObj<type>>;
-
-//! A nullable pointer reference to a constant \ref validated_input_field_contents "validated input field value".
-
-template<typename type>
-using const_validated_input_field_contentsptr=
-	const_ptr<validated_input_field_contentsObj<type>>;
-
-//! Most recently validated value in the \ref input_field.
-
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::validated_input_field<int> value=
-//!         input_field->set_string_validator(
-//!              []
-//!		 (ONLY IN_THREAD,
-//!               const std::string &value,
-//!		  int *parsed_value,
-//!		  INSERT_LIBX_NAMESPACE::w::input_lock &lock,
-//!		  const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger) -> std::optional<int>
-//!              {
-//!                  // ...
-//!              },
-//!              []
-//!              (int n) { return std::to_string(n) });
-//! \endcode
-//!
-//! \ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>"
-//! gets returned by \ref input_field "input field"'s
-//! set_validator() and set_string_validator(). This is an object that
-//! holds the most recently entered value into the input field.
-//! The callback installed by
-//! set_validator() and set_string_validator() owns a reference to this object.
-//!
-//! \code
-//! std::optional<int> last_value=value->value();
-//!
-//! int last_value=value->value_or(0);
-//!
-//! value->set(5);
-//!
-//! value->set(IN_THREAD, 5);
-//!
-//! value->set(std::nullopt);
-//!
-//! value->access([]
-//!               (const std::optional<int> &value)
-//!               {
-//!               });
-//! \endcode
-//!
-//! value() returns the most recently entered value.
-//! Generally, no value gets returned before the first value gets entered into
-//! the input field, or if the entered contents could not be validated.
-//!
-//! value_or() returns the most recently entered value, or its parameter if
-//! no value was entered. access() locks the value and passes it to the
-//! callable object given as access()'s parameter, releasing the lock after
-//! it returns.
-//!
-//! The new value is also a \c std::optional, with a std::nullopt indicated
-//! an unvalidated (non-entered) initial value for the field.
-//!
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::validated_input_field_contents<int> contents=value->contents;
-//! \endcode
-//!
-//! A \c validated_input_field objects owns a reference to the underlying field.
-//! The input field also owns a reference to the \c contents member, a
-//! \c validated_input_field_contents object that holds the actual validated
-//! value and implements the value(), value_or(), access() and the
-//! IN_THREAD set() overload. The methods in the
-//! \c validated_input_field object are just proxies for the real one, and
-//! only the \c validated_input_field implements the non-IN_THREAD set()
-//! overload.
-
-template<typename type>
-using validated_input_field=ref<validated_input_fieldObj<type>>;
-
-//! A nullable pointer reference to a \ref validated_input_field "validated input field value".
-
-template<typename type>
-using validated_input_fieldptr=ptr<validated_input_fieldObj<type>>;
-
-//! A reference to a constant \ref validated_input_field "validated input field value".
-
-template<typename type>
-using const_validated_input_field=const_ref<validated_input_fieldObj<type>>;
-
-//! A nullable pointer reference to a constant \ref validated_input_field "validated input field value".
-
-template<typename type>
-using const_validated_input_fieldptr=const_ptr<validated_input_fieldObj<type>>;
 
 //! Identifies what kind of a change the input field change callback gets invoked for.
 

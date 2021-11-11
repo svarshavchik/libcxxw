@@ -15,6 +15,7 @@
 #include "x/w/focusable_containerfwd.H"
 #include "x/w/labelfwd.H"
 #include "x/w/busyfwd.H"
+#include "x/w/validated_input_field.H"
 #include <x/ptrfwd.H>
 #include <x/weakptr.H>
 #include <x/mpobj.H>

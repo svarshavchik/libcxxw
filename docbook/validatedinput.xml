@@ -134,6 +134,55 @@ See COPYING for distribution information.
 	layout manager</link>.
     </para>
   </section>
+
+  <section id="inputvalidatereference">
+    <title>Understanding references between input field-relaetd objects and avoiding circular references</title>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="input_fields.png" format="PNG" />
+      </imageobject>
+      <textobject>
+	<phrase>
+	  Input field object relationship
+	</phrase>
+      </textobject>
+      <caption>
+	<para>
+	  This flowchart shows the relationships between the input field widget
+	  objects and various callbacks.
+	</para>
+      </caption>
+    </mediaobject>
+
+    <para>
+      A <ulink url="&link-typedef-x--w-validated-input-field;"><classname>&ns;::w::validated_input_field&lt;<replaceable>type</replaceable>&gt;</classname></ulink>
+      owns a reference to its <classname>&ns;::w::input_field</classname>
+      widget. For that reason it should not be placed in the
+      <classname>&ns;::w::input_field</classname>'s
+      <link linkend="appdata"><varname>appdata</varname></link>, this
+      results in a circular reference.
+    </para>
+
+    <para>
+      The input field owns references to the
+      <ulink url="&link-typedef-x--w-validated-input-field-contents;"><classname>&ns;::w::validated_input_field_contents&lt;<replaceable>type</replaceable>&gt;</classname></ulink>,
+      <methodname>on_validate</methodname>() and
+      <link linkend="usingspinbuttons"><methodname>on_spin</methodname></link>()
+      callbacks. This flowchart clarifies why
+      <methodname>on_spin</methodname>() callbacks cannot capture the
+      <classname>&ns;::w::validated_input_field</classname>s, as this
+      creates a circular reference with the
+      <classname>&ns;::w::input_field</classname> widget.
+    </para>
+
+    <para>
+      <methodname>on_spin</methodname>() callbacks can capture
+      <classname>&ns;::w::validated_input_field_contents&lt;<replaceable>type</replaceable>&gt;</classname>
+      without creating a circular reference.
+    </para>
+  </section>
+
 </chapter>
 <!--
 Local Variables:

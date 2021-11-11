@@ -17,6 +17,7 @@
 #include "x/w/callback_triggerfwd.H"
 #include "x/w/input_fieldfwd.H"
 #include "x/w/labelfwd.H"
+#include "x/w/validated_input_field.H"
 #include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
