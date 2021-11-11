@@ -31,6 +31,7 @@
 #include <x/imbue.H>
 #include <x/visitor.H>
 #include <x/value_string.H>
+#include <charconv>
 #include "picture.H"
 #include "messages.H"
 #include "defaulttheme.H"
@@ -81,13 +82,11 @@ parse_dim_value(const ui::parser_lock &lock,
 		return NAN;
 	}
 
-	std::istringstream i{parsed_dim.value};
+	auto ret=std::from_chars(parsed_dim.value.c_str(),
+				 parsed_dim.value.c_str()+
+				 parsed_dim.value.size(), v);
 
-	imbue i_parse{lock.c_locale, i};
-
-	i >> v;
-
-	if (i.fail())
+	if (ret.ec != std::errc{} || *ret.ptr)
 		throw EXCEPTION(gettextmsg(_("could not parse %1% id=%2%"),
 					   descr,
 					   id));
@@ -323,16 +322,15 @@ void parse_border::parse(const ui::parser_lock &lock)
 		{
 			auto t=single_value(lock, d.scale_field, "border");
 
-			std::istringstream i{t};
-
-			imbue im{lock.c_locale, i};
-
 			unsigned scale;
 
 			// The contents of this node must be a scaling factor.
-			i >> scale;
 
-			if (i.fail())
+			auto ret=std::from_chars(t.c_str(),
+						 t.c_str()+
+						 t.size(), scale);
+
+			if (ret.ec != std::errc{} || *ret.ptr)
 				throw EXCEPTION(_("Cannot parse width_scale"));
 
 			(this->*(d.scale_callback))(scale);
@@ -373,15 +371,13 @@ void parse_border::parse(const ui::parser_lock &lock)
 			if (t.empty())
 				continue;
 
-			std::istringstream is{t};
-
-			imbue i_parse{dash_nodes.c_locale, is};
-
 			double v;
 
-			is >> v;
+			auto ret=std::from_chars(t.c_str(),
+						 t.c_str()+
+						 t.size(), v);
 
-			if (is.fail())
+			if (ret.ec != std::errc{} || *ret.ptr)
 				throw EXCEPTION(_("Cannot parse dash "
 						  "values"));
 
@@ -536,15 +532,12 @@ void parse_theme_border::save_dim_arg(std::string &d,
 				      dim_arg border_infomm::*arg,
 				      const char *name)
 {
-	std::istringstream i{d};
-
-	imbue im{lock.c_locale, i};
-
 	double v;
 
-	i >> v;
+	auto ret=std::from_chars(d.c_str(),
+				 d.c_str()+ d.size(), v);
 
-	if (i.fail())
+	if (ret.ec != std::errc{} || *ret.ptr)
 	{
 		new_border.*arg=generators->lookup_dim(d, allowthemerefs, name);
 	}
@@ -1227,9 +1220,15 @@ void parse_font::parse(const ui::parser_lock &lock,
 							     " fields"
 							     " specified"));
 
-					  auto v=x::value_string<double>
-						  ::from_string
-						  (s, lock.c_locale);
+					  double v;
+					  auto ret=
+						  std::from_chars(s.c_str(),
+								  s.c_str()+
+								  s.size(), v);
+
+					  if (ret.ec != std::errc{} || *ret.ptr)
+						  throw EXCEPTION(_("Invalid "
+								    "number"));
 
 					  (this->*func)(v);
 				  } catch (const x::exception &e)

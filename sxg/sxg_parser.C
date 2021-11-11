@@ -27,6 +27,7 @@
 #include <courier-unicode.h>
 #include <sstream>
 #include <cmath>
+#include <charconv>
 
 LIBCXXW_NAMESPACE_START
 
@@ -481,33 +482,110 @@ sxg_parserObj::execution_info::gc_info::gc_info(const std::string &pixmap_nameAr
 // validator() is an optional lambda that's called to validate the extracted
 // value. If the validation fails an error gets thrown.
 
+
+namespace {
+#if 0
+}
+#endif
+
+template<typename value_type> struct get_value_convert {
+
+
+	void convert(const std::string &text,
+		     const char *attr_name,
+		     value_type &value)
+	{
+		auto ret=std::from_chars(text.c_str(), text.c_str()+
+					 text.size(), value);
+
+		if (ret.ec != std::errc{} || *ret.ptr)
+			exception(attr_name);
+	}
+
+	void exception(const char *attr_name)
+	{
+		throw EXCEPTION("Corrupted value of <"
+				<< attr_name << ">");
+	}
+};
+
+template<>
+struct get_value_convert<std::string> {
+
+	void convert(const std::string &text,
+		     const char *attr_name,
+		     std::string &value)
+	{
+		value=text;
+	}
+
+	void exception(const char *attr_name)
+	{
+		throw EXCEPTION("Corrupted value of <"
+				<< attr_name << ">");
+	}
+};
+
+template<typename value_type> struct get_value_impl
+	: get_value_convert<value_type> {
+
+	void parse(const ui::parser_lock &parent,
+		   const char *attr_name,
+		   value_type &value)
+	{
+		auto lock=parent.clone();
+
+		if (*attr_name && *attr_name != ' ')
+		{
+			auto xpath=lock->get_xpath(attr_name);
+
+			size_t count=xpath->count();
+
+			if (count != 1)
+				throw EXCEPTION("missing <" << attr_name
+						<< ">");
+
+			xpath->to_node(1);
+		}
+
+		this->convert(lock->get_text(), attr_name, value);
+	}
+};
+
+template<typename underlying_type, typename tag, typename base>
+struct get_value_impl<number<underlying_type, tag, base>> :
+	get_value_impl<underlying_type> {
+
+	void parse(const ui::parser_lock &parent,
+		   const char *attr_name,
+		   number<underlying_type, tag, base> &value)
+	{
+		underlying_type underlying_value;
+
+		get_value_impl<underlying_type>::parse(parent,
+						       attr_name,
+						       underlying_value);
+
+		value=underlying_value;
+	}
+};
+#if 0
+{
+#endif
+}
+
 template<typename value_type, typename validator_type>
 static void get_value(const ui::parser_lock &parent,
 		      const char *attr_name,
 		      value_type &value,
 		      validator_type && validator)
 {
-	auto lock=parent.clone();
+	get_value_impl<value_type> impl;
 
-	if (*attr_name && *attr_name != ' ')
-	{
-		auto xpath=lock->get_xpath(attr_name);
+	impl.parse(parent, attr_name, value);
 
-		size_t count=xpath->count();
-
-		if (count != 1)
-			throw EXCEPTION("missing <" << attr_name << ">");
-
-		xpath->to_node(1);
-	}
-
-	std::istringstream is(lock->get_text());
-
-	imbue<std::istringstream> imbue{parent.c_locale, is};
-
-	if ((is >> value).fail() || !is.eof() || !validator(value))
-		throw EXCEPTION("Corrupted value of <"
-				<< attr_name << ">");
+	if (!validator(value))
+		impl.exception(attr_name);
 }
 
 // Determine if element "lock" has an inner element of the given name.
@@ -1390,11 +1468,11 @@ sxg_parserObj::parse_gc_foreground(const ui::parser_lock &lock)
 
 	double i;
 
-	std::istringstream ii(text);
+	auto ret=std::from_chars(text.c_str(), text.c_str()+
+				 text.size(), i);
 
-	imbue<std::istringstream> imbue{lock.c_locale, ii};
-
-	if ((ii >> i).fail() || !ii.eof() || (i < 0 && i > 1))
+	if (ret.ec != std::errc{} || *ret.ptr
+	    || i < 0 || i > 1)
 		throw EXCEPTION("Empty or invalid <foreground> value");
 
 	return make_execute_gc
@@ -1416,12 +1494,12 @@ sxg_parserObj::parse_gc_background(const ui::parser_lock &lock)
 
 	double i;
 
-	std::istringstream ii(text);
+	auto ret=std::from_chars(text.c_str(), text.c_str()+
+				 text.size(), i);
 
-	imbue<std::istringstream> imbue{lock.c_locale, ii};
-
-	if ((ii >> i).fail() || !ii.eof() || (i < 0 && i > 1))
-		throw EXCEPTION("Empty or invalid <foreground> value");
+	if (ret.ec != std::errc{} || *ret.ptr
+	    || i < 0 || i > 1)
+		throw EXCEPTION("Empty or invalid <background> value");
 
 	return make_execute_gc
 		([i]
@@ -3222,7 +3300,7 @@ sxg_parserObj::sxg_parserObj(const std::string &filename,
 		sxg_debug=this;
 #endif
 
-	auto root=ui::parser_lock{config->readlock(), locale::create("C")};
+	auto root=ui::parser_lock{config->readlock()};
 
 	if (!root->get_root())
 	{

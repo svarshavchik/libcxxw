@@ -34,6 +34,7 @@
 #include <sstream>
 #include <cmath>
 #include <algorithm>
+#include <charconv>
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -866,23 +867,51 @@ bool single_value_exists(const ui::parser_lock &lock,
 	return xpath->count() > 0;
 }
 
+
+namespace {
+#if 0
+}
+#endif
+
+template<typename to_value_t> struct to_value_impl {
+
+	to_value_t v;
+
+	void parse(const ui::parser_lock &lock,
+		   const std::string &value,
+		   const char *element)
+	{
+		auto ret=std::from_chars(value.c_str(), value.c_str()+
+					 value.size(), v);
+
+		if (ret.ec != std::errc{} || *ret.ptr)
+			throw EXCEPTION(
+				gettextmsg(_("Cannot convert the value of <%1%>"
+					   ), element));
+	};
+};
+
+
+template<typename underlying_type, typename tag, typename base>
+struct to_value_impl<number<underlying_type, tag, base>>
+	: to_value_impl<underlying_type> {
+};
+
+#if 0
+{
+#endif
+}
+
 template<typename to_value_t>
 static to_value_t to_value(const ui::parser_lock &lock,
 			   const std::string &value,
 			   const char *element)
 {
-	to_value_t v;
+	to_value_impl<to_value_t> impl;
 
-	std::istringstream i(value);
+	impl.parse(lock, value, element);
 
-	imbue i_parse{lock.c_locale, i};
-
-	i >> v;
-
-	if (i.fail() || (i.get(), !i.eof()))
-		throw EXCEPTION(gettextmsg(_("Cannot convert the value of <%1%>"
-					     ), element));
-	return v;
+	return impl.v;
 }
 
 double to_mm(const ui::parser_lock &lock,

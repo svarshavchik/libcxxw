@@ -10,6 +10,7 @@
 #include <x/imbue.H>
 #include <x/xml/xpath.H>
 #include <sstream>
+#include <charconv>
 
 LIBCXXW_NAMESPACE_START
 
@@ -54,10 +55,6 @@ parse_color_t parse_color(const parser_lock &lock)
 
 	scaled.from_name=scale;
 
-	std::istringstream s;
-
-	imbue i_parse{lock.c_locale, s};
-
 	static std::optional<double> parsed_scaled_color::* const fields[4]=
 		{
 		 &parsed_scaled_color::r,
@@ -77,17 +74,17 @@ parse_color_t parse_color(const parser_lock &lock)
 
 		xpath->to_node();
 
-		s.seekg(0);
-		s.str(attribute->get_text());
+		auto text=attribute->get_text();
 
 		double v;
 
-		s >> v;
+		auto ret=std::from_chars(text.c_str(), text.c_str()+
+					 text.size(), v);
 
-		if (s.fail())
+		if (ret.ec != std::errc{} || *ret.ptr)
 			throw EXCEPTION(gettextmsg(_("could not parse \"%1%\""
 						     " as a color"),
-						   s.str()));
+						   text));
 
 		if (v < 0)
 			throw EXCEPTION(_("negative color value"));
@@ -141,10 +138,6 @@ void parse_linear_gradient::do_parse(const ui::parser_lock &lock,
 		&linear_gradient_values::fixed_width,
 		&linear_gradient_values::fixed_height};
 
-	std::istringstream s(lock->get_text());
-
-	imbue i_parse{lock.c_locale, s};
-
 	for (size_t i=0; i<6; i++)
 	{
 		auto attribute=lock.clone();
@@ -156,14 +149,14 @@ void parse_linear_gradient::do_parse(const ui::parser_lock &lock,
 
 		xpath->to_node();
 
-		s.seekg(0);
-		s.str(attribute->get_text());
+		auto text=attribute->get_text();
 
 		double v;
 
-		s >> v;
+		auto ret=std::from_chars(text.c_str(), text.c_str()+
+					 text.size(), v);
 
-		if (s.fail())
+		if (ret.ec != std::errc{} || *ret.ptr)
 			throw EXCEPTION(gettextmsg
 					(_("could not parse <%1%>"),
 					 coords[i]));
@@ -208,10 +201,6 @@ void parse_radial_gradient::do_parse(const ui::parser_lock &lock,
 		&radial_gradient_values::fixed_width,
 		&radial_gradient_values::fixed_height};
 
-	std::istringstream s;
-
-	imbue i_parse{lock.c_locale, s};
-
 	for (size_t i=0; i<6; i++)
 	{
 		auto attribute=lock.clone();
@@ -223,14 +212,14 @@ void parse_radial_gradient::do_parse(const ui::parser_lock &lock,
 
 		xpath->to_node();
 
-		s.seekg(0);
-		s.str(attribute->get_text());
+		auto text=attribute->get_text();
 
 		double v;
 
-		s >> v;
+		auto ret=std::from_chars(text.c_str(), text.c_str()+
+					 text.size(), v);
 
-		if (s.fail())
+		if (ret.ec != std::errc{} || *ret.ptr)
 			throw EXCEPTION(gettextmsg
 					(_("could not parse <%1%>"),
 					 coords[i]));

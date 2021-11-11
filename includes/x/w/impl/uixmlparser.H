@@ -28,23 +28,16 @@ namespace ui {
 
 //! Internal lock used when reading the XML file.
 
-//! Temporary workaround until libstdc++ implement floating point
-//! from_chars: carry around the "C" locale, in order to parse the
-//! numerical values in the XML file. It's convenient to swallow
-//! the XML document's read lock, and attach a locale object, in this manner.
+//! A wrapper for an XML read lock, implements clone() to return a cloned
+//! XML lock.
 
 class parser_lock : public xml::readlock {
 
 public:
 
-	const_locale c_locale;
-
 	//! Constructor
 	parser_lock(const xml::readlock &l);
 
-	//! Constructor
-	parser_lock(const xml::readlock &l,
-		    const const_locale &c_locale);
 	//! Destructor
 	~parser_lock();
 
