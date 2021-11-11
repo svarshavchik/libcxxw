@@ -7,7 +7,6 @@
 
 #include <x/ref.H>
 #include <x/mpobj.H>
-#include <x/refptr_traits.H>
 #include <x/w/input_fieldfwd.H>
 #include <x/w/richtext/richtextiteratorfwd.H>
 #include <tuple>
@@ -19,7 +18,15 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN richtext_implObj;
 
+//! Internal implementation object.
+
+class LIBCXX_HIDDEN editor_implObj;
+
 //! A container for an internally-implemented object.
+
+//! Acquiring a lock on this object blocks access to the internal
+//! richtext structure that represents the contents of the input field,
+//! blocking other execution threads from accessing it
 
 typedef mpobj<ref<richtext_implObj>, std::recursive_mutex
 	      > internal_richtext_impl_t;
@@ -66,16 +73,17 @@ typedef mpobj<ref<richtext_implObj>, std::recursive_mutex
 //!
 //! \see input_lock
 
-class const_input_lock : public internal_richtext_impl_t::lock {
+class const_input_lock : private internal_richtext_impl_t::lock {
+
+protected:
+	const ref<editor_implObj> internal_editor;
 
 public:
-
-	//! Hold a reference on the input field
-
-	const const_input_field locked_input_field;
-
 	//! Constructor
 	const_input_lock(const const_input_field &) LIBCXX_PUBLIC;
+
+	//! Internal constructor
+	const_input_lock(const ref<editor_implObj> *) LIBCXX_HIDDEN;
 
 	//! Destructor
 
@@ -93,12 +101,12 @@ public:
 	//! #include <INSERT_LIBX_NAMESPACE/w/richtext/richtextiterator.H>
 	//! \endcode
 	//!
-	//! Return an iterator to the cursor, and and iterator to the
+	//! Return an iterator to the cursor, and an iterator to the
 	//! other end of the currently selected portion of the text.
 	//! Both iterators are the same if there is no current selection.
 	//!
 	//! \note
-	//! The second iterator can be before the second iterator, this
+	//! The second iterator can be before the first iterator, this
 	//! depends on the order the portion of the text was selected.
 	//!
 	//! \note
@@ -108,18 +116,18 @@ public:
 	//! remains valid after this input lock goes out of scope and gets
 	//! destroyed. The second iterator too, but will no longer carry any
 	//! particular meaning.
-	//!
-	std::tuple<richtextiterator, richtextiterator> pos()
-		const LIBCXX_PUBLIC;
 
-	//! Return the current contents of the input field as UTF-8.
+	std::tuple<const_richtextiterator, const_richtextiterator
+			   > pos() const LIBCXX_PUBLIC;
+
+	//! Return the current contents of the input field.
 	std::string get(const std::optional<bidi_format> &embedding=
 			std::nullopt) const LIBCXX_PUBLIC;
 
 	//! Return the current contents of the input field, as unicode.
-	std::u32string get_unicode(const std::optional<bidi_format> &embedding=
-				   std::nullopt) const LIBCXX_PUBLIC;
-
+	std::u32string get_unicode(
+		const std::optional<bidi_format> &embedding=std::nullopt)
+		const LIBCXX_PUBLIC;
 };
 
 //! Lock the \ref input_field "input field" in order to access its contents.
@@ -135,15 +143,34 @@ class input_lock : public const_input_lock {
 
  public:
 
-	//! A mutable alias to the same input field.
-
-	const input_field locked_input_field;
-
-	//! Constructor
-	input_lock(const input_field &) LIBCXX_PUBLIC;
+	using const_input_lock::const_input_lock;
 
 	//! Destructor
 	~input_lock() LIBCXX_PUBLIC;
+
+	//! Return the current cursor position.
+
+	//! \see const_input_field_editor
+	std::tuple<richtextiterator, richtextiterator> pos()
+		LIBCXX_PUBLIC;
+
+	//! Set the contents of the input field.
+	void set(const std::string_view &str, bool validated=false)
+		LIBCXX_PUBLIC;
+
+	//! Set the contents of the input field, as unicode.
+	void set(const std::u32string_view &str, bool validated=false)
+		LIBCXX_PUBLIC;
+
+	//! Set the contents of the input field.
+	void set(ONLY IN_THREAD,
+		 const std::string_view &str, bool validated=false)
+		LIBCXX_PUBLIC;
+
+	//! Set the contents of the input field, as unicode.
+	void set(ONLY IN_THREAD,
+		 const std::u32string_view &str, bool validated=false)
+		LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

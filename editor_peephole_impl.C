@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 editor_peephole_implObj::~editor_peephole_implObj()=default;
 
 void editor_peephole_implObj::recalculate(ONLY IN_THREAD,
-					  editorObj::implObj &e)
+					  editor_implObj &e)
 {
 	auto [width, height]=e.nominal_size(IN_THREAD);
 

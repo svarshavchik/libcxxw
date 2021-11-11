@@ -74,7 +74,7 @@ create_default_meta(const container_impl &container,
 	return {bg_color, font};
 }
 
-editorObj::implObj::init_args
+editor_implObj::init_args
 ::init_args(const ref<editor_peephole_implObj> &parent_peephole,
 	    const text_param &text,
 	    const input_field_config &config,
@@ -114,10 +114,10 @@ editorObj::implObj::init_args
 		.background_color=config.appearance->background_color;
 }
 
-editorObj::implObj::init_args::~init_args()=default;
+editor_implObj::init_args::~init_args()=default;
 
 static inline richtextstring
-create_initial_string(editorObj::implObj::init_args &args,
+create_initial_string(editor_implObj::init_args &args,
 		      richtext_password_info &password_info)
 {
 	auto &element=args.parent_peephole->container_element_impl();
@@ -134,7 +134,7 @@ create_initial_string(editorObj::implObj::init_args &args,
 	args.hint_meta.textcolor=element.create_background_color
 		(args.config.appearance->hint_color);
 
-	// We get called from editorObj::implObj's constructor.
+	// We get called from editor_implObj's constructor.
 	// password_info is the superclass, which is already fully
 	// constructed.
 
@@ -191,17 +191,17 @@ struct trigger_parameter {
 //
 // The destructor reenables the blinking cursor.
 
-struct editorObj::implObj::modifying_text {
+struct editor_implObj::modifying_text {
 
 protected:
 	ONLY IN_THREAD;
-	editorObj::implObj &me;
+	editor_implObj &me;
 public:
 	selection_cursor_t::lock cursor_lock;
 	const input_change_type change_type;
 	const callback_trigger_t &trigger;
 
-	modifying_text(ONLY IN_THREAD, editorObj::implObj &me,
+	modifying_text(ONLY IN_THREAD, editor_implObj &me,
 		       input_change_type change_type,
 		       const trigger_parameter &trigger)
 		: IN_THREAD{IN_THREAD}, me{me},
@@ -273,7 +273,7 @@ namespace {
 // is removed and the formerly selected text fragments get redrawn, to show
 // that the selection has been removed.
 
-struct editorObj::implObj::moving_cursor :
+struct editor_implObj::moving_cursor :
 	public modifying_text {
 
 	bool in_selection=false;
@@ -283,7 +283,7 @@ struct editorObj::implObj::moving_cursor :
 	// the bool to indicate whether we actually moved.
 
 	bool &moved;
-	moving_cursor(ONLY IN_THREAD, editorObj::implObj &me,
+	moving_cursor(ONLY IN_THREAD, editor_implObj &me,
 		      const input_mask &mask, bool &moved,
 		      const trigger_parameter &trigger)
 		: moving_cursor{
@@ -299,7 +299,7 @@ struct editorObj::implObj::moving_cursor :
 	{
 	}
 
-	moving_cursor(ONLY IN_THREAD, editorObj::implObj &me,
+	moving_cursor(ONLY IN_THREAD, editor_implObj &me,
 		      move_type type,
 		      bool &moved,
 		      const trigger_parameter &trigger)
@@ -364,11 +364,11 @@ struct editorObj::implObj::moving_cursor :
 
 // Implements current_selectionObj for editor's selected/cut text.
 
-class editorObj::implObj::selectionObj : public current_selectionObj {
+class editor_implObj::selectionObj : public current_selectionObj {
 
 	// My editor object. Must be weakly captured to avoid circular refs.
 
-	weakptr<ptr<implObj>> me;
+	weakptr<ptr<editor_implObj>> me;
 
 	// Cut text
 	std::u32string cut_text;
@@ -394,14 +394,14 @@ public:
 		return true;
 	}
 
-	selectionObj(xcb_timestamp_t timestamp, const ref<implObj> &me,
+	selectionObj(xcb_timestamp_t timestamp, const ref<editor_implObj> &me,
 		     const richtextiterator &other);
 
 	~selectionObj()=default;
 
 	void clear(ONLY IN_THREAD) override;
 
-	virtual void clear(ONLY IN_THREAD, const ref<implObj> &me)=0;
+	virtual void clear(ONLY IN_THREAD, const ref<editor_implObj> &me)=0;
 
 	ptr<convertedValueObj> convert(ONLY IN_THREAD, xcb_atom_t type)
 		override;
@@ -409,13 +409,13 @@ public:
 	std::vector<xcb_atom_t> supported(ONLY IN_THREAD) override;
 };
 
-class editorObj::implObj::primary_selectionObj : public selectionObj {
+class editor_implObj::primary_selectionObj : public selectionObj {
 
 public:
 
 	using selectionObj::selectionObj;
 
-	void clear(ONLY IN_THREAD, const ref<implObj> &me) override
+	void clear(ONLY IN_THREAD, const ref<editor_implObj> &me) override
 	{
 		bool ignored;
 
@@ -434,12 +434,12 @@ public:
 	}
 };
 
-class editorObj::implObj::secondary_selectionObj : public selectionObj {
+class editor_implObj::secondary_selectionObj : public selectionObj {
 
 public:
 
 	secondary_selectionObj(xcb_timestamp_t timestamp, const
-			       ref<implObj> &me,
+			       ref<editor_implObj> &me,
 			       const richtextiterator &other,
 			       xcb_atom_t selection)
 		: selectionObj{timestamp, me, other},
@@ -449,18 +449,18 @@ public:
 
 	const xcb_atom_t selection;
 
-	void clear(ONLY IN_THREAD, const ref<implObj> &me) override
+	void clear(ONLY IN_THREAD, const ref<editor_implObj> &me) override
 	{
 		me->secondary_selection(IN_THREAD)=nullptr;
 	}
 };
 
-class editorObj::implObj::xdnd_selectionObj : public selectionObj {
+class editor_implObj::xdnd_selectionObj : public selectionObj {
 
 public:
 	using selectionObj::selectionObj;
 
-	void clear(ONLY IN_THREAD, const ref<implObj> &me) override
+	void clear(ONLY IN_THREAD, const ref<editor_implObj> &me) override
 	{
 		me->abort_dragging(IN_THREAD);
 	}
@@ -468,41 +468,41 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////
 
-editorObj::implObj::selection_cursor_t::const_lock
-::const_lock(implObj &impl)
+editor_implObj::selection_cursor_t::const_lock
+::const_lock(editor_implObj &impl)
 	: internal_lock{impl.cursor->my_richtext->impl},
 	  cursor{impl.selection_cursor.cursor}
 {
 }
 
-editorObj::implObj::selection_cursor_t::const_lock::~const_lock()=default;
+editor_implObj::selection_cursor_t::const_lock::~const_lock()=default;
 
-richtextiteratorptr editorObj::implObj::selection_cursor_t::const_lock
+richtextiteratorptr editor_implObj::selection_cursor_t::const_lock
 ::cursor_pos() const
 {
 	return cursor;
 }
 
-richtext_draw_info editorObj::implObj::selection_cursor_t::const_lock
-::get_richtext_draw_info(implObj &me) const
+richtext_draw_info editor_implObj::selection_cursor_t::const_lock
+::get_richtext_draw_info(editor_implObj &me) const
 {
 	return {me, cursor, me.cursor};
 }
 
-editorObj::implObj::selection_cursor_t::lock::lock(ONLY IN_THREAD,
-						   implObj &impl,
-						   bool blinking_or_clearing)
+editor_implObj::selection_cursor_t::lock::lock(ONLY IN_THREAD,
+					       editor_implObj &impl,
+					       bool blinking_or_clearing)
 	: const_lock{impl}
 {
 	if (!blinking_or_clearing)
 		impl.clear_password_peek(IN_THREAD);
 }
 
-editorObj::implObj::selection_cursor_t::lock::~lock()=default;
+editor_implObj::selection_cursor_t::lock::~lock()=default;
 
 ////////////////////////////////////////////////////////////////////////////
 
-editorObj::implObj::editor_config::editor_config(const input_field_config &c)
+editor_implObj::editor_config::editor_config(const input_field_config &c)
 	: columns{c.columns},
 	  rows{c.rows},
 	  autoselect{c.autoselect},
@@ -516,7 +516,7 @@ editorObj::implObj::editor_config::editor_config(const input_field_config &c)
 {
 }
 
-static richtext_options hint_richtext_options(editorObj::implObj::init_args &args)
+static richtext_options hint_richtext_options(editor_implObj::init_args &args)
 {
 	richtext_options options{halign::center};
 
@@ -527,7 +527,7 @@ static richtext_options hint_richtext_options(editorObj::implObj::init_args &arg
 	return options;
 }
 
-editorObj::implObj::implObj(init_args &args)
+editor_implObj::editor_implObj(init_args &args)
 	: richtext_password_info{args.config},
 	  superclass_t{args.config.appearance->background_color,
 			  // Background colors
@@ -595,23 +595,23 @@ editorObj::implObj::implObj(init_args &args)
 #endif
 }
 
-editorObj::implObj::~implObj()=default;
+editor_implObj::~editor_implObj()=default;
 
-void editorObj::implObj::initialize(ONLY IN_THREAD)
+void editor_implObj::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 	parent_peephole->recalculate(IN_THREAD, *this);
 	(void)should_redraw_to_show_hint(IN_THREAD); // Set initial state.
 }
 
-void editorObj::implObj::theme_updated(ONLY IN_THREAD,
+void editor_implObj::theme_updated(ONLY IN_THREAD,
 				       const const_defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
-std::tuple<dim_t, dim_t> editorObj::implObj::nominal_size(ONLY IN_THREAD) const
+std::tuple<dim_t, dim_t> editor_implObj::nominal_size(ONLY IN_THREAD) const
 {
 	auto fc=default_meta.getfont()->fc(IN_THREAD);
 
@@ -634,7 +634,7 @@ std::tuple<dim_t, dim_t> editorObj::implObj::nominal_size(ONLY IN_THREAD) const
 	return {w, h};
 }
 
-void editorObj::implObj::set_minimum_override(ONLY IN_THREAD,
+void editor_implObj::set_minimum_override(ONLY IN_THREAD,
 					      dim_t horiz_override,
 					      dim_t vert_override)
 {
@@ -644,7 +644,7 @@ void editorObj::implObj::set_minimum_override(ONLY IN_THREAD,
 	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
-void editorObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
+void editor_implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 {
 	initialize_if_needed(IN_THREAD);
 
@@ -659,7 +659,7 @@ void editorObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 	// text->rewrap(preferred_width);
 }
 
-void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
+void editor_implObj::keyboard_focus(ONLY IN_THREAD,
 					const callback_trigger_t &trigger)
 {
 	if (!current_keyboard_focus(IN_THREAD))
@@ -725,13 +725,13 @@ void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
 	}
 }
 
-void editorObj::implObj::window_focus_change(ONLY IN_THREAD, bool flag)
+void editor_implObj::window_focus_change(ONLY IN_THREAD, bool flag)
 {
 	blink_if_has_focus(IN_THREAD);
 	superclass_t::window_focus_change(IN_THREAD, flag);
 }
 
-void editorObj::implObj::blink_if_has_focus(ONLY IN_THREAD)
+void editor_implObj::blink_if_has_focus(ONLY IN_THREAD)
 {
 	if (current_keyboard_focus(IN_THREAD) &&
 	    get_window_handler().has_focus(IN_THREAD))
@@ -747,14 +747,14 @@ void editorObj::implObj::blink_if_has_focus(ONLY IN_THREAD)
 	}
 }
 
-void editorObj::implObj::schedule_blink(ONLY IN_THREAD)
+void editor_implObj::schedule_blink(ONLY IN_THREAD)
 {
 	blinking=get_screen()->impl->thread->schedule_callback
 		(IN_THREAD,
 		 std::chrono::milliseconds{500},
 		 // Don't create a lambda that owns a strong ref to me.
 		 // Use a weak pointer.
-		 [me=make_weak_capture(ref<implObj>(this))]
+		 [me=make_weak_capture(ref<editor_implObj>(this))]
 		 (ONLY IN_THREAD)
 		 {
 			 auto got=me.get();
@@ -768,13 +768,13 @@ void editorObj::implObj::schedule_blink(ONLY IN_THREAD)
 		 });
 }
 
-void editorObj::implObj::unblink(ONLY IN_THREAD)
+void editor_implObj::unblink(ONLY IN_THREAD)
 {
 	if (blinkon)
 		blink(IN_THREAD);
 }
 
-void editorObj::implObj::blink(ONLY IN_THREAD)
+void editor_implObj::blink(ONLY IN_THREAD)
 {
 	selection_cursor_t::lock cursor_lock{IN_THREAD, *this, true};
 
@@ -810,7 +810,7 @@ void editorObj::implObj::blink(ONLY IN_THREAD)
 				 {current_position});
 }
 
-bool editorObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
+bool editor_implObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 {
 	// Hide the pointer by installing the invisible pointer, here.
 
@@ -863,7 +863,7 @@ bool editorObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 	return superclass_t::process_key_event(IN_THREAD, ke);
 }
 
-void editorObj::implObj
+void editor_implObj
 ::set_bidi_override(ONLY IN_THREAD,
 		    unicode_bidi_level_t new_bidi_override,
 		    const icon &tooltip_icon,
@@ -910,20 +910,20 @@ void editorObj::implObj
 		 });
 }
 
-void editorObj::implObj::hide_popups(ONLY IN_THREAD)
+void editor_implObj::hide_popups(ONLY IN_THREAD)
 {
 	clear_bidi_override(IN_THREAD);
 	superclass_t::hide_popups(IN_THREAD);
 }
 
-void editorObj::implObj::clear_bidi_override(ONLY IN_THREAD)
+void editor_implObj::clear_bidi_override(ONLY IN_THREAD)
 {
 	bidi_override=UNICODE_BIDI_SKIP;
 
 	direction_attached_popup(IN_THREAD)=nullptr;
 }
 
-void editorObj::implObj::update_attachedto_info(ONLY IN_THREAD)
+void editor_implObj::update_attachedto_info(ONLY IN_THREAD)
 {
 	if (bidi_override != UNICODE_BIDI_SKIP &&
 	    direction_attached_popup(IN_THREAD))
@@ -940,7 +940,7 @@ void editorObj::implObj::update_attachedto_info(ONLY IN_THREAD)
 	superclass_t::update_attachedto_info(IN_THREAD);
 }
 
-void editorObj::implObj::report_cursor_pos_as_motion_event(ONLY IN_THREAD)
+void editor_implObj::report_cursor_pos_as_motion_event(ONLY IN_THREAD)
 {
 	// Simulate a motion event so that the tooltip comes up where the
 	// cursor is.
@@ -955,7 +955,7 @@ void editorObj::implObj::report_cursor_pos_as_motion_event(ONLY IN_THREAD)
 	report_motion_event(IN_THREAD, me);
 }
 
-bidi editorObj::implObj::direction(ONLY IN_THREAD)
+bidi editor_implObj::direction(ONLY IN_THREAD)
 {
 	switch (bidi_override) {
 	case UNICODE_BIDI_LR:
@@ -969,20 +969,20 @@ bidi editorObj::implObj::direction(ONLY IN_THREAD)
 	return superclass_t::direction(IN_THREAD);
 }
 
-void editorObj::implObj::set_cursor_pointer(ONLY IN_THREAD,
+void editor_implObj::set_cursor_pointer(ONLY IN_THREAD,
 					    const cursor_pointer &p)
 {
 	parent_peephole->get_element_impl().set_cursor_pointer(IN_THREAD, p);
 }
 
-xcb_atom_t editorObj::implObj::secondary_clipboard(ONLY IN_THREAD)
+xcb_atom_t editor_implObj::secondary_clipboard(ONLY IN_THREAD)
 {
 	return IN_THREAD->info->get_atom
 		(get_window_handler().get_screen()->impl->current_theme.get()
 		 ->default_cut_paste_selection());
 }
 
-bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
+bool editor_implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 {
 	if (ke.ctrl)
 	{
@@ -1192,16 +1192,16 @@ void input_field_filter_info::update() const
 	update(starting_pos, ending_pos, new_contents);
 }
 
-struct editorObj::implObj::input_field_filter_info_impl
+struct editor_implObj::input_field_filter_info_impl
 	: public input_field_filter_info {
 
 	ONLY IN_THREAD;
-	implObj &me;
+	editor_implObj &me;
 	modifying_text &modifying;
 
 	//! Constructor
 	inline input_field_filter_info_impl(ONLY IN_THREAD,
-					    implObj &me,
+					    editor_implObj &me,
 					    input_filter_type type,
 					    const richtextiterator
 					    &starting_pos,
@@ -1248,12 +1248,12 @@ struct editorObj::implObj::input_field_filter_info_impl
 // Implement original_pos(), for an input_field_filter_info, for modification.
 // original_pos() returns same value as starting_pos().
 
-struct editorObj::implObj::input_field_filter_info_impl_change
+struct editor_implObj::input_field_filter_info_impl_change
 	: public input_field_filter_info_impl {
 
 	inline input_field_filter_info_impl_change
 	(ONLY IN_THREAD,
-	 implObj &me,
+	 editor_implObj &me,
 	 modifying_text &modifying,
 	 const richtextiterator &a,
 	 const richtextiterator &b,
@@ -1285,13 +1285,13 @@ struct editorObj::implObj::input_field_filter_info_impl_change
 //
 // original_pos() retrieves the original cursor's pos().
 
-struct editorObj::implObj::input_field_filter_info_impl_move
+struct editor_implObj::input_field_filter_info_impl_move
 	: public input_field_filter_info_impl {
 
 	const richtextiterator &original;
 
 	inline input_field_filter_info_impl_move(ONLY IN_THREAD,
-						 implObj &me,
+						 editor_implObj &me,
 						 const richtextiterator
 						 &original,
 						 modifying_text &modifying)
@@ -1315,7 +1315,7 @@ struct editorObj::implObj::input_field_filter_info_impl_move
 	}
 };
 
-editorObj::implObj::moving_cursor::~moving_cursor()
+editor_implObj::moving_cursor::~moving_cursor()
 {
 	moved=old_cursor->compare(me.cursor) != 0;
 
@@ -1339,7 +1339,7 @@ editorObj::implObj::moving_cursor::~moving_cursor()
 	}
 }
 
-void editorObj::implObj
+void editor_implObj
 ::update_content(ONLY IN_THREAD,
 		 modifying_text &modifying,
 		 const current_selection_info &info,
@@ -1370,7 +1370,7 @@ void editorObj::implObj
 				ending_position, str);
 }
 
-void editorObj::implObj
+void editor_implObj
 ::update_filtered_content(ONLY IN_THREAD,
 			  const richtextiterator &starting_position,
 			  const richtextiterator &ending_position,
@@ -1405,7 +1405,7 @@ void editorObj::implObj
 				cleaned_str.size());
 }
 
-void editorObj::implObj
+void editor_implObj
 ::update_filtered_content(ONLY IN_THREAD,
 			  richtextiterator starting_position,
 			  richtextiterator ending_position,
@@ -1495,7 +1495,7 @@ void editorObj::implObj
 	lock->insert(starting_position->pos(), str);
 }
 
-void editorObj::implObj::clear_password_peek(ONLY IN_THREAD)
+void editor_implObj::clear_password_peek(ONLY IN_THREAD)
 {
 	if (!password_peeking)
 		return;
@@ -1515,7 +1515,7 @@ void editorObj::implObj::clear_password_peek(ONLY IN_THREAD)
 				 get_draw_info(IN_THREAD));
 }
 
-richtextstring editorObj::implObj::get_content(const richtextiterator &a,
+richtextstring editor_implObj::get_content(const richtextiterator &a,
 					       const richtextiterator &b,
 					       const std::optional<bidi_format>
 					       &embedding)
@@ -1547,12 +1547,12 @@ richtextstring editorObj::implObj::get_content(const richtextiterator &a,
 	return {*lock, ap, l};
 }
 
-bool editorObj::implObj::uses_input_method()
+bool editor_implObj::uses_input_method()
 {
 	return true;
 }
 
-bool editorObj::implObj::pasted(ONLY IN_THREAD,
+bool editor_implObj::pasted(ONLY IN_THREAD,
 				const std::u32string_view &str)
 {
 	callback_trigger_t trigger{cut_copy_paste{}};
@@ -1562,7 +1562,7 @@ bool editorObj::implObj::pasted(ONLY IN_THREAD,
 	return true;
 }
 
-void editorObj::implObj::insert(ONLY IN_THREAD,
+void editor_implObj::insert(ONLY IN_THREAD,
 				const std::u32string_view &str,
 				const callback_trigger_t &trigger)
 {
@@ -1577,7 +1577,7 @@ void editorObj::implObj::insert(ONLY IN_THREAD,
 		       str);
 }
 
-void editorObj::implObj::enablability_changed(ONLY IN_THREAD)
+void editor_implObj::enablability_changed(ONLY IN_THREAD)
 {
 	set_background_color
 		(IN_THREAD,
@@ -1588,7 +1588,7 @@ void editorObj::implObj::enablability_changed(ONLY IN_THREAD)
 		 ::get(IN_THREAD));
 }
 
-void editorObj::implObj::draw_changes(ONLY IN_THREAD,
+void editor_implObj::draw_changes(ONLY IN_THREAD,
 				      selection_cursor_t::lock &cursor_lock,
 				      input_change_type change_made,
 				      size_t deleted,
@@ -1671,7 +1671,7 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 	}
 }
 
-void editorObj::implObj::do_draw(ONLY IN_THREAD,
+void editor_implObj::do_draw(ONLY IN_THREAD,
 				 const draw_info &di,
 				 const rectarea &areas)
 {
@@ -1692,7 +1692,7 @@ void editorObj::implObj::do_draw(ONLY IN_THREAD,
 			  di, areas);
 }
 
-void editorObj::implObj::draw_between(ONLY IN_THREAD,
+void editor_implObj::draw_between(ONLY IN_THREAD,
 				      const richtextiterator &a,
 				      const richtextiterator &b)
 {
@@ -1704,14 +1704,14 @@ void editorObj::implObj::draw_between(ONLY IN_THREAD,
 			     get_draw_info(IN_THREAD));
 }
 
-void editorObj::implObj
+void editor_implObj
 ::set_focus_and_ensure_visibility(ONLY IN_THREAD,
 				  const callback_trigger_t &trigger)
 {
 	set_focus_only(IN_THREAD, trigger);
 }
 
-void editorObj::implObj::scroll_cursor_into_view(ONLY IN_THREAD)
+void editor_implObj::scroll_cursor_into_view(ONLY IN_THREAD)
 {
 	auto pos=cursor->at(IN_THREAD).position;
 
@@ -1731,7 +1731,7 @@ void editorObj::implObj::scroll_cursor_into_view(ONLY IN_THREAD)
 	}
 }
 
-bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
+bool editor_implObj::process_button_event(ONLY IN_THREAD,
 					      const button_event &be,
 					      xcb_timestamp_t timestamp)
 {
@@ -1881,7 +1881,7 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 	return superclass_t::process_button_event(IN_THREAD, be, timestamp);
 }
 
-void editorObj::implObj::report_motion_event(ONLY IN_THREAD,
+void editor_implObj::report_motion_event(ONLY IN_THREAD,
 					     const motion_event &me)
 {
 	most_recent_x=me.x;
@@ -1913,7 +1913,7 @@ void editorObj::implObj::report_motion_event(ONLY IN_THREAD,
 	}
 }
 
-bool editorObj::implObj::accepts_drop(ONLY IN_THREAD,
+bool editor_implObj::accepts_drop(ONLY IN_THREAD,
 				      const source_dnd_formats_t
 				      &source_formats,
 				      xcb_timestamp_t timestamp)
@@ -1942,14 +1942,14 @@ bool editorObj::implObj::accepts_drop(ONLY IN_THREAD,
 	return false;
 }
 
-void editorObj::implObj::dragging_location(ONLY IN_THREAD, coord_t x, coord_t y,
+void editor_implObj::dragging_location(ONLY IN_THREAD, coord_t x, coord_t y,
 					   xcb_timestamp_t timestamp)
 {
 	dragged_pos->moveto(IN_THREAD, x, y);
 }
 
 current_selection_handlerptr
-editorObj::implObj::drop(ONLY IN_THREAD,
+editor_implObj::drop(ONLY IN_THREAD,
 			 xcb_atom_t &type,
 			 const ref<obj> &finish_mcguffin)
 {
@@ -1979,7 +1979,7 @@ editorObj::implObj::drop(ONLY IN_THREAD,
 		::create(std::vector<xcb_atom_t>{}, finish_mcguffin);
 }
 
-void editorObj::implObj::start_scrolling(ONLY IN_THREAD)
+void editor_implObj::start_scrolling(ONLY IN_THREAD)
 {
 	motion_scroll_callback=get_screen()->impl->thread->schedule_callback
 		(IN_THREAD,
@@ -1999,7 +1999,7 @@ void editorObj::implObj::start_scrolling(ONLY IN_THREAD)
 		 });
 }
 
-void editorObj::implObj::scroll(ONLY IN_THREAD)
+void editor_implObj::scroll(ONLY IN_THREAD)
 {
 	stop_scrolling(IN_THREAD);
 	// In order to scroll_cursor_into_view, that's it.
@@ -2008,13 +2008,13 @@ void editorObj::implObj::scroll(ONLY IN_THREAD)
 	// again.
 }
 
-void editorObj::implObj::stop_scrolling(ONLY IN_THREAD)
+void editor_implObj::stop_scrolling(ONLY IN_THREAD)
 {
 	motion_scroll_callback=nullptr;
 	scroll_cursor_into_view(IN_THREAD);
 }
 
-void editorObj::implObj::removed(ONLY IN_THREAD)
+void editor_implObj::removed(ONLY IN_THREAD)
 {
 	// When this element is removed from its container, remove all the
 	// selections, too...
@@ -2027,8 +2027,8 @@ void editorObj::implObj::removed(ONLY IN_THREAD)
 //
 // Selections
 
-editorObj::implObj::selectionObj::
-selectionObj(xcb_timestamp_t timestamp, const ref<implObj> &me,
+editor_implObj::selectionObj::
+selectionObj(xcb_timestamp_t timestamp, const ref<editor_implObj> &me,
 	     const richtextiterator &other)
 	: current_selectionObj(timestamp), me(me),
 	  cut_text{me->get_content(me->cursor,
@@ -2038,7 +2038,7 @@ selectionObj(xcb_timestamp_t timestamp, const ref<implObj> &me,
 {
 }
 
-void editorObj::implObj::selectionObj::clear(ONLY IN_THREAD)
+void editor_implObj::selectionObj::clear(ONLY IN_THREAD)
 {
 	auto p=me.getptr();
 
@@ -2047,7 +2047,7 @@ void editorObj::implObj::selectionObj::clear(ONLY IN_THREAD)
 	clear(IN_THREAD, p);
 }
 
-std::vector<xcb_atom_t> editorObj::implObj::selectionObj
+std::vector<xcb_atom_t> editor_implObj::selectionObj
 ::supported(ONLY IN_THREAD)
 {
 	std::vector<xcb_atom_t> v;
@@ -2075,7 +2075,7 @@ std::vector<xcb_atom_t> editorObj::implObj::selectionObj
 
 // Somebody is asking for our selection.
 
-ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
+ptr<current_selectionObj::convertedValueObj> editor_implObj::selectionObj
 ::convert(ONLY IN_THREAD, xcb_atom_t type)
 {
 	const char *charset=nullptr;
@@ -2139,9 +2139,9 @@ ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
 // is earlier as the starting position, and the computed character count;
 // and if there is no selection the starting_pos is the current cursor position.
 
-editorObj::implObj::delete_selection_info
+editor_implObj::delete_selection_info
 ::delete_selection_info(ONLY IN_THREAD,
-			implObj &me,
+			editor_implObj &me,
 			modifying_text &modifying)
 	: delete_selection_info{IN_THREAD, me, modifying, me.cursor,
 				modifying.cursor_lock.cursor ?
@@ -2150,9 +2150,9 @@ editorObj::implObj::delete_selection_info
 {
 }
 
-editorObj::implObj::delete_selection_info
+editor_implObj::delete_selection_info
 ::delete_selection_info(ONLY IN_THREAD,
-			implObj &me,
+			editor_implObj &me,
 			modifying_text &modifying,
 			const richtextiterator &starting_position,
 			const richtextiterator &ending_position)
@@ -2164,7 +2164,7 @@ editorObj::implObj::delete_selection_info
 {
 }
 
-editorObj::implObj::delete_selection_info::~delete_selection_info()
+editor_implObj::delete_selection_info::~delete_selection_info()
 {
 	// Now that we've computed what the current situation is, we
 	// can go ahead and remove the primary selection.
@@ -2176,12 +2176,12 @@ editorObj::implObj::delete_selection_info::~delete_selection_info()
 	}
 }
 
-bool editorObj::implObj::selection_can_be_received()
+bool editor_implObj::selection_can_be_received()
 {
 	return true;
 }
 
-void editorObj::implObj::create_primary_selection(ONLY IN_THREAD)
+void editor_implObj::create_primary_selection(ONLY IN_THREAD)
 {
 	if (!config.update_clipboards)
 		return;
@@ -2205,7 +2205,7 @@ void editorObj::implObj::create_primary_selection(ONLY IN_THREAD)
 	get_window_handler().selection_announce(IN_THREAD, XCB_ATOM_PRIMARY, s);
 }
 
-bool editorObj::implObj::cut_or_copy_selection(cut_or_copy_op op,
+bool editor_implObj::cut_or_copy_selection(cut_or_copy_op op,
 					       xcb_atom_t selection)
 {
 	if (op == cut_or_copy_op::available)
@@ -2222,7 +2222,7 @@ bool editorObj::implObj::cut_or_copy_selection(cut_or_copy_op op,
 	return true;
 }
 
-bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
+bool editor_implObj::cut_or_copy_selection(ONLY IN_THREAD,
 					       cut_or_copy_op op,
 					       xcb_atom_t selection)
 {
@@ -2258,7 +2258,7 @@ bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
 	return true;
 }
 
-void editorObj::implObj::create_secondary_selection(ONLY IN_THREAD,
+void editor_implObj::create_secondary_selection(ONLY IN_THREAD,
 						    xcb_atom_t selection)
 {
 	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
@@ -2266,7 +2266,7 @@ void editorObj::implObj::create_secondary_selection(ONLY IN_THREAD,
 	create_secondary_selection(IN_THREAD, selection, cursor_lock);
 }
 
-bool editorObj::implObj
+bool editor_implObj
 ::create_secondary_selection(ONLY IN_THREAD,
 			     xcb_atom_t selection,
 			     selection_cursor_t::lock &cursor_lock)
@@ -2292,7 +2292,7 @@ bool editorObj::implObj
 	return true;
 }
 
-void editorObj::implObj::remove_primary_selection(ONLY IN_THREAD)
+void editor_implObj::remove_primary_selection(ONLY IN_THREAD)
 {
 	if (!config.update_clipboards)
 		return;
@@ -2311,7 +2311,7 @@ void editorObj::implObj::remove_primary_selection(ONLY IN_THREAD)
 	get_window_handler().selection_discard(IN_THREAD, XCB_ATOM_PRIMARY);
 }
 
-void editorObj::implObj::remove_secondary_selection(ONLY IN_THREAD)
+void editor_implObj::remove_secondary_selection(ONLY IN_THREAD)
 {
 	if (!config.update_clipboards)
 		return;
@@ -2327,7 +2327,7 @@ void editorObj::implObj::remove_secondary_selection(ONLY IN_THREAD)
 	get_window_handler().selection_discard(IN_THREAD, selection);
 }
 
-bool editorObj::implObj::to_begin(ONLY IN_THREAD, const input_mask &mask,
+bool editor_implObj::to_begin(ONLY IN_THREAD, const input_mask &mask,
 				  const callback_trigger_t &trigger)
 {
 	bool moved;
@@ -2339,7 +2339,7 @@ bool editorObj::implObj::to_begin(ONLY IN_THREAD, const input_mask &mask,
 	return moved;
 }
 
-bool editorObj::implObj::to_end(ONLY IN_THREAD, const input_mask &mask,
+bool editor_implObj::to_end(ONLY IN_THREAD, const input_mask &mask,
 				const callback_trigger_t &trigger)
 {
 	bool moved;
@@ -2352,7 +2352,7 @@ bool editorObj::implObj::to_end(ONLY IN_THREAD, const input_mask &mask,
 	return moved;
 }
 
-void editorObj::implObj::select_all(ONLY IN_THREAD,
+void editor_implObj::select_all(ONLY IN_THREAD,
 				    const callback_trigger_t &trigger)
 {
 	input_mask mask;
@@ -2366,7 +2366,7 @@ void editorObj::implObj::select_all(ONLY IN_THREAD,
 	to_end(IN_THREAD, mask, trigger);
 }
 
-void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
+void editor_implObj::delete_char_or_selection(ONLY IN_THREAD,
 						  const input_mask &mask,
 						  const callback_trigger_t
 						  &trigger)
@@ -2393,13 +2393,13 @@ void editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 	delete_char(IN_THREAD, modifying);
 }
 
-void editorObj::implObj::delete_char(ONLY IN_THREAD,
+void editor_implObj::delete_char(ONLY IN_THREAD,
 				     modifying_text &modifying)
 {
 	delete_char(IN_THREAD, modifying, cursor);
 }
 
-void editorObj::implObj::delete_char(ONLY IN_THREAD,
+void editor_implObj::delete_char(ONLY IN_THREAD,
 				     modifying_text &modifying,
 				     const richtextiterator &delete_cursor)
 {
@@ -2414,14 +2414,14 @@ void editorObj::implObj::delete_char(ONLY IN_THREAD,
 	update_content(IN_THREAD, modifying, {clone, delete_cursor}, U"");
 }
 
-std::u32string editorObj::implObj::get(const std::optional<bidi_format>
+std::u32string editor_implObj::get(const std::optional<bidi_format>
 				       &embedding)
 {
 	return get_content(cursor->begin(), cursor->end(),
 			   embedding).get_string();
 }
 
-size_t editorObj::implObj::size() const
+size_t editor_implObj::size() const
 {
 	return cursor->my_richtext->read_only_lock
 		([]
@@ -2431,7 +2431,7 @@ size_t editorObj::implObj::size() const
 		 });
 }
 
-std::tuple<richtextiterator, richtextiterator> editorObj::implObj::pos()
+std::tuple<richtextiterator, richtextiterator> editor_implObj::pos()
 {
 	selection_cursor_t::const_lock cursor_lock{*this};
 
@@ -2439,14 +2439,40 @@ std::tuple<richtextiterator, richtextiterator> editorObj::implObj::pos()
 }
 
 std::tuple<richtextiterator, richtextiterator>
-editorObj::implObj::pos(selection_cursor_t::const_lock &cursor_lock)
+editor_implObj::pos(selection_cursor_t::const_lock &cursor_lock)
 {
 	auto cursor_pos=cursor_lock.cursor_pos();
 
 	return {cursor, cursor_pos ? richtextiterator{cursor_pos}:cursor};
 }
 
-void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
+void editor_implObj::set(const std::u32string_view &str, bool validated)
+{
+	get_window_handler().thread()->run_as
+		([str=std::u32string{str}, me=ref{this}, validated]
+		 (ONLY IN_THREAD)
+		 {
+			 me->lock_and_set(IN_THREAD, str, validated);
+		 });
+}
+
+void editor_implObj::lock_and_set(ONLY IN_THREAD,
+				      const std::u32string_view &string,
+				      bool validated)
+{
+	// This invokes the on_change() callback. Editable
+	// combo-box's on_change() callback calls
+	// the layout manager callback if the input field
+	// gets set(), so we should lock the editor element
+	// first, here.
+
+	internal_richtext_impl_t::lock lock{text->impl};
+
+	set(IN_THREAD, std::u32string{string}, validated, user_mod{});
+
+}
+
+void editor_implObj::set(ONLY IN_THREAD, const std::u32string &string,
 			     bool validated,
 			     const callback_trigger_t &trigger)
 {
@@ -2459,7 +2485,7 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 	validation_required(IN_THREAD)=!validated;
 }
 
-void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
+void editor_implObj::set(ONLY IN_THREAD, const std::u32string &string,
 			     size_t cursor_pos, size_t selection_pos,
 			     const callback_trigger_t &trigger)
 {
@@ -2500,14 +2526,14 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 	}
 }
 
-bool editorObj::implObj::ok_to_lose_focus(ONLY IN_THREAD,
+bool editor_implObj::ok_to_lose_focus(ONLY IN_THREAD,
 					  const callback_trigger_t &trigger)
 {
 	return validate_modified(IN_THREAD, trigger);
 }
 
 
-bool editorObj::implObj::validate_modified(ONLY IN_THREAD,
+bool editor_implObj::validate_modified(ONLY IN_THREAD,
 					   const callback_trigger_t &trigger)
 {
 	if (!enabled(IN_THREAD, enabled_for::input_focus))
@@ -2537,21 +2563,21 @@ bool editorObj::implObj::validate_modified(ONLY IN_THREAD,
 	return flag;
 }
 
-void editorObj::implObj::show_droppable_pointer(ONLY IN_THREAD)
+void editor_implObj::show_droppable_pointer(ONLY IN_THREAD)
 {
 	set_cursor_pointer(IN_THREAD,
 			   cursor_pointer_1tag<dragging_pointer>
 			   ::tagged_cursor_pointer(IN_THREAD));
 }
 
-void editorObj::implObj::show_notdroppable_pointer(ONLY IN_THREAD)
+void editor_implObj::show_notdroppable_pointer(ONLY IN_THREAD)
 {
 	set_cursor_pointer(IN_THREAD,
 			   cursor_pointer_1tag<dragging_wontdrop_pointer>
 			   ::tagged_cursor_pointer(IN_THREAD));
 }
 
-bool editorObj::implObj::show_hint(ONLY IN_THREAD)
+bool editor_implObj::show_hint(ONLY IN_THREAD)
 {
 	if (!hint)
 		return false;
@@ -2563,7 +2589,7 @@ bool editorObj::implObj::show_hint(ONLY IN_THREAD)
 	return !current_keyboard_focus(IN_THREAD);
 }
 
-bool editorObj::implObj::should_redraw_to_show_hint(ONLY IN_THREAD)
+bool editor_implObj::should_redraw_to_show_hint(ONLY IN_THREAD)
 {
 	auto now=show_hint(IN_THREAD);
 
@@ -2575,7 +2601,7 @@ bool editorObj::implObj::should_redraw_to_show_hint(ONLY IN_THREAD)
 	return true;
 }
 
-void editorObj::implObj::on_search(ONLY IN_THREAD,
+void editor_implObj::on_search(ONLY IN_THREAD,
 				   const input_field_config::search_info &)
 {
 	stop_message(_("Internal error: on_search() is called without enabling"

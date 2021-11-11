@@ -34,11 +34,11 @@ static std::unordered_map<std::string, size_t> filenames_loaded;
 #include "editor_impl.H"
 #include "sxg/sxg_parser.C"
 
-static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_constructed;
-static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_with_focus;
+static LIBCXX_NAMESPACE::w::editor_implObj *editor_impl_constructed;
+static LIBCXX_NAMESPACE::w::editor_implObj *editor_impl_with_focus;
 
-static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_name;
-static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_address;
+static LIBCXX_NAMESPACE::w::editor_implObj *editor_impl_name;
+static LIBCXX_NAMESPACE::w::editor_implObj *editor_impl_address;
 
 #define EDITOR_CONSTRUCTOR_DEBUG() do {		\
 		editor_impl_constructed=this;	\

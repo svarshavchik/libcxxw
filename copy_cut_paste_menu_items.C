@@ -219,7 +219,7 @@ static void set_bidi_format(ONLY IN_THREAD,
 
 // Create the copy/cut/paste menu items.
 
-// The key combinations are implemented directly in editorObj::implObj,
+// The key combinations are implemented directly in editor_implObj,
 // so we specify that their shorcuts are inactive_shortcut.
 
 static std::vector<list_item_param>

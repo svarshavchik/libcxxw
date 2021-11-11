@@ -274,7 +274,7 @@ void editor_search_implObj
 	const auto &s=most_recent_search_results(IN_THREAD)[item_number];
 
 	// We override set(), so must go straight to the horse's mouth.
-	editorObj::implObj::set(IN_THREAD, s, s.size(), s.size(), trigger);
+	editor_implObj::set(IN_THREAD, s, s.size(), s.size(), trigger);
 
 	validation_required(IN_THREAD)=true;
 	validate_modified(IN_THREAD, trigger);

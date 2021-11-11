@@ -12,9 +12,9 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN editor_search_implObj;
 
-/*! Implement searching in editorObj::implObj
+/*! Implement searching in editor_implObj
 
-A subclass of editorObj::implObj that gets constructed if a search callback
+A subclass of editor_implObj that gets constructed if a search callback
 was specified for the input field.
 
 Multiply-inherits from input_field_search_threadObj to implement the search

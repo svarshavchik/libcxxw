@@ -29,6 +29,10 @@ class editable_comboboxlayoutmanagerObj :
 	private input_lock,
 	public standard_comboboxlayoutmanagerObj {
 
+	//! The combo-box's input field.
+
+	const input_field locked_input_field;
+
 public:
 	class LIBCXX_HIDDEN implObj;
 
@@ -42,6 +46,14 @@ public:
 					  &list_layout_impl)
 		LIBCXX_HIDDEN;
 
+private:
+	//! Delegating constructor
+	editable_comboboxlayoutmanagerObj(
+		const ref<implObj> &impl,
+		const input_field &locked_input_field_arg,
+		const ref<listlayoutmanagerObj::implObj> &list_layout_impl)
+		LIBCXX_HIDDEN;
+public:
 	//! Destructor
 	~editable_comboboxlayoutmanagerObj() LIBCXX_HIDDEN;
 

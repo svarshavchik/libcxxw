@@ -204,12 +204,12 @@ create_input_field_impl_mixin(const container_impl &parent,
 	return search;
 }
 
-static inline ref<editorObj::implObj>
-create_editor_impl(editorObj::implObj::init_args &args,
+static inline ref<editor_implObj>
+create_editor_impl(editor_implObj::init_args &args,
 		   const ptr<input_field_searchObj> &search_container)
 {
 	if (!search_container)
-		return ref<editorObj::implObj>::create(args);
+		return ref<editor_implObj>::create(args);
 
 	auto editor_search_impl=
 		ref<editor_search_implObj>::create(args, search_container);
@@ -312,7 +312,7 @@ factoryObj::create_input_field(const text_param &text,
 			   // If an optional search callback was specified,
 			   // we will create an editor_search_implObj subclass.
 
-			   editorObj::implObj::init_args args
+			   editor_implObj::init_args args
 				   {
 					   peephole_impl, text, config,
 					   left_to_right_icon,
@@ -569,50 +569,22 @@ void input_fieldObj::set(const std::string_view &str, bool validated)
 
 void input_fieldObj::set(const std::u32string_view &str, bool validated)
 {
-	auto editor_impl=impl->editor_element->impl;
-
-	editor_impl->get_window_handler().thread()->run_as
-		([str=std::u32string{str}, editor_impl, validated]
-		 (ONLY IN_THREAD)
-		 {
-			 // This invokes the on_change() callback. Editable
-			 // combo-box's on_change() callback constructor
-			 // the layout manager callback if the input field
-			 // gets set(), so we should lock the editor element
-			 // first, here.
-
-			 internal_richtext_impl_t::lock
-				 lock{editor_impl->text->impl};
-
-			 editor_impl->set(IN_THREAD, str, validated,
-					  user_mod{});
-		 });
+	impl->editor_element->impl->set(str, validated);
 }
 
 void input_fieldObj::set(ONLY IN_THREAD,
 			 const std::string_view &str, bool validated)
 {
-	// This invokes the on_change() callback. Editable
-	// combo-box's on_change() callback constructor
-	// the layout manager callback if the input field
-	// gets set(), so we should lock the editor element
-	// first, here.
-
-	internal_richtext_impl_t::lock
-		lock{impl->editor_element->impl->text->impl};
-
-	impl->editor_element->impl->set
-		(IN_THREAD,
-		 unicode::iconvert::tou::convert(std::string{str},
-						 unicode_locale_chset()).first,
-		 validated, user_mod{});
+	set(IN_THREAD,
+	    unicode::iconvert::tou::convert(std::string{str},
+					    unicode_locale_chset()).first,
+	    validated);
 }
 
 void input_fieldObj::set(ONLY IN_THREAD,
 			 const std::u32string_view &str, bool validated)
 {
-	impl->editor_element->impl->set(IN_THREAD, std::u32string{str},
-					validated, user_mod{});
+	impl->editor_element->impl->lock_and_set(IN_THREAD, str, validated);
 }
 
 void input_fieldObj::on_change(const functionref<

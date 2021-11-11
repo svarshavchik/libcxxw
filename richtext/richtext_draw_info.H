@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 //! Additional information to \ref richtext "richtext"'s drawing method.
 
 //! The additional information consists of which portion of the rich text
-//! is "selected". This is used by the \ref editorObj::implObj "editor"
+//! is "selected". This is used by the \ref editor_implObj "editor"
 //! display element, to show the current selection, naturally.
 //!
 //! A selection is in place only when neither selection_start and

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-editorObj::editorObj(const ref<implObj> &impl)
+editorObj::editorObj(const ref<editor_implObj> &impl)
 	: superclass_t{impl, impl},
 	  impl(impl)
 {

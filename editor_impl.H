@@ -46,7 +46,7 @@ struct dragging_wontdrop_pointer;
 struct left_to_right_icon;
 struct right_to_left_icon;
 
-//! Compose the superclass for editorObj::implObj.
+//! Compose the superclass for editor_implObj.
 
 //! Pulls in various mixins:
 //!
@@ -76,6 +76,7 @@ typedef background_color_elementObj<
 	textedit_background_color,
 	textedit_disabled_background_color> editor_impl_superclass_t;
 
+
 //! Implementation object for the editor element.
 
 //! This editor element is derived from, guess what, the label element.
@@ -88,10 +89,10 @@ typedef background_color_elementObj<
 //! used in the constructor initialization, and this is a cheap, dirty trick
 //! to have this initialized beforehand.
 //!
-//! editorObj::implObj takes care of handling keyboard (and button) events,
+//! editor_implObj takes care of handling keyboard (and button) events,
 //! and drawing the blinking cursor by manipulating the richtext API.
 
-class LIBCXX_HIDDEN editorObj::implObj
+class editor_implObj
 	: public richtext_password_info,
 	  public editor_impl_superclass_t {
 
@@ -101,10 +102,10 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Mcguffin for the scheduled cursor blink callback.
 	ptr<obj> blinking;
 
- protected:
+protected:
 	//! The current cursor position.
 	const richtextiterator cursor;
- private:
+private:
 
 	struct LIBCXX_HIDDEN modifying_text;
 
@@ -246,14 +247,15 @@ class LIBCXX_HIDDEN editorObj::implObj
 			richtextiteratorptr &cursor;
 		public:
 			//! Constructor
-			const_lock(implObj &impl);
+			const_lock(editor_implObj &impl);
 
 			//! Destructor
 			~const_lock();
 
 			richtextiteratorptr cursor_pos() const;
 
-			richtext_draw_info get_richtext_draw_info(implObj &me)
+			richtext_draw_info get_richtext_draw_info(
+				editor_implObj &me)
 				const;
 		};
 
@@ -266,7 +268,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 			using const_lock::cursor;
 
 			//! Constructor
-			lock(ONLY IN_THREAD, implObj &impl,
+			lock(ONLY IN_THREAD, editor_implObj &impl,
 			     bool blinking_or_clearing=false);
 
 			//! Destructor
@@ -507,10 +509,10 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Construct the init_args, then pass it here.
 
-	implObj(init_args &args);
+	editor_implObj(init_args &args);
 
 	//! Destructor
-	~implObj();
+	~editor_implObj();
 
 	//! Override do_draw().
 
@@ -692,7 +694,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		//! Who created me
 
-		implObj &me;
+		editor_implObj &me;
 
 		//! The lock on me's cursor.
 
@@ -708,14 +710,14 @@ class LIBCXX_HIDDEN editorObj::implObj
 		//! Constructor
 
 		delete_selection_info(ONLY IN_THREAD,
-				      implObj &me,
+				      editor_implObj &me,
 				      modifying_text &modifying);
 
 	private:
 
 		//! Delegated constructor
 		delete_selection_info(ONLY IN_THREAD,
-				      implObj &me,
+				      editor_implObj &me,
 				      modifying_text &modifying,
 				      const richtextiterator &starting_position,
 				      const richtextiterator &ending_position);
@@ -811,6 +813,16 @@ class LIBCXX_HIDDEN editorObj::implObj
 	std::tuple<richtextiterator, richtextiterator>
 		pos(selection_cursor_t::const_lock &);
  public:
+
+	//! Set the current contents of the editor
+
+	void set(const std::u32string_view &str, bool validated);
+
+	//! Set the current contents of the editor
+
+	void lock_and_set(ONLY IN_THREAD, const std::u32string_view &string,
+			  bool validated);
+
 	//! Set the current contents of the editor
 
 	void set(ONLY IN_THREAD, const std::u32string &string, bool validated,

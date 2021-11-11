@@ -16,12 +16,12 @@ LIBCXXW_NAMESPACE_START
 
 //! \see editor_search_impl
 
-class editor_search_implObj: public editorObj::implObj,
+class editor_search_implObj: public editor_implObj,
 			     private input_field_search_threadObj {
 
 	//! Alias
 
-	typedef editorObj::implObj superclass_t;
+	typedef editor_implObj superclass_t;
 
 public:
 
@@ -56,7 +56,7 @@ public:
 				  xcb_timestamp_t timestamp)
 		override;
 
-	using editorObj::implObj::set;
+	using editor_implObj::set;
 
 	//! Override set()
 

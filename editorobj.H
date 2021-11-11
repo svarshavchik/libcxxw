@@ -9,6 +9,7 @@
 #include "x/w/elementobj.H"
 #include "x/w/focusableobj.H"
 #include "x/w/impl/focus/focusablefwd.H"
+#include "x/w/input_field.H"
 #include "peephole/peepholed_fontelementfwd.H"
 
 LIBCXXW_NAMESPACE_START
@@ -27,12 +28,10 @@ class LIBCXX_HIDDEN editorObj
 		elementObj>> superclass_t;
 
 public:
-	class implObj;
-
-	const ref<implObj> impl;
+	const ref<editor_implObj> impl;
 
 	//! Constructor
-	editorObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
+	editorObj(const ref<editor_implObj> &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
 	~editorObj() LIBCXX_HIDDEN;

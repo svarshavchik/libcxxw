@@ -223,7 +223,7 @@ struct LIBCXX_HIDDEN richtextObj::draw_fragment_info {
 
 	// If the richtext-draw_info parameter to the drawing function
 	// specifies that this label has a selection (this is the label
-	// code used by editorObj::implObj to draw the contents of the
+	// code used by editor_implObj to draw the contents of the
 	// input field, and the input field has a selected, highlighted
 	// chunk.
 	//

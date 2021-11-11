@@ -282,7 +282,7 @@ x::w::input_lock lock{f};</programlisting>
 	Constructing a
 	<ulink url="&link-x--w--input-lock;"><classname>&ns;::w::input_lock</classname></ulink>
 	has the unsurprising result of blocking other execution threads from
-	accessing the <classname>&ns;::w::input_field</classname> specified
+	accessing the <classname>&ns;::w::input_field</classname> given
 	by the parameter to
 	<classname>&ns;::w::input_lock</classname>'s constructor.
 	At that point,
@@ -299,6 +299,7 @@ x::w::input_lock lock{f};</programlisting>
 	  widgets, the
 	  <classname>&ns;::w::input_field</classname> actually gets updated
 	  by &appshort;'s internal execution thread.
+	  A non-<link linkend="callback_signatures"><literal>IN_THREAD</literal></link>
 	  <methodname>set</methodname>() does not get blocked directly by an
 	  <classname>&ns;::w::input_lock</classname>.
 	  All that <methodname>set</methodname>() does is send a message
@@ -316,8 +317,9 @@ x::w::input_lock lock{f};</programlisting>
 
 	<para>
 	  This also means that acquiring an
-	  <classname>&ns;::w::input_lock</classname> immediately after
-	  a <methodname>set</methodname>() can still return the
+	  <classname>&ns;::w::input_lock</classname> immediately after a
+	  non-<literal>IN_THREAD</literal>
+	  <methodname>set</methodname>() can still return the
 	  input field's former contents from
 	  <classname>&ns;::w::input_lock</classname>'s
 	  <methodname>get</methodname>(), if the

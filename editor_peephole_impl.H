@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 //! Sets the peephole's metrics based on the configured size of the internal
 //! editor element, defined as rows and columns.
 //!
-//! Also handles button events. editorObj::implObj::process_button_event()
+//! Also handles button events. editor_implObj::process_button_event()
 //! does not consume button 1 and button 2 events, so they propagate here.
 //! We process these events by setting the focus to the editor element.
 
@@ -50,7 +50,7 @@ class LIBCXX_HIDDEN editor_peephole_implObj
 
 	//! Invoke from the editor element, when its metrics have changed.
 	//! We might need to adjust our own metrics as well.
-	void recalculate(ONLY IN_THREAD, editorObj::implObj &e);
+	void recalculate(ONLY IN_THREAD, editor_implObj &e);
 
 	//! Destructor
 	~editor_peephole_implObj();

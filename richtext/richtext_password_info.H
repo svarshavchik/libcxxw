@@ -17,7 +17,7 @@ struct LIBCXX_HIDDEN richtext_password_info;
 
 //! Additional information for password input fields.
 
-//! Superclass of \ref editorObj::implobj "editorObj::implObj". When
+//! Superclass of \ref editorObj::implobj "editor_implObj". When
 //! password_char is non-zero, the real contents of the input field
 //! are maintained in the \c real_string.
 

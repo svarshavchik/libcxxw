@@ -20,12 +20,24 @@ editable_comboboxlayoutmanagerObj
 ::editable_comboboxlayoutmanagerObj(const ref<implObj> &impl,
 				    const ref<listlayoutmanagerObj::implObj>
 				    &list_layout_impl)
-	: input_lock
-	{
-	 // See current_selection()
-		input_field{impl->lock_and_get(0, 0)}
-	},
+	: editable_comboboxlayoutmanagerObj{
+			impl,
+			// See current_selection()
+			impl->lock_and_get(0, 0),
+			list_layout_impl
+		}
+{
+}
+
+editable_comboboxlayoutmanagerObj
+::editable_comboboxlayoutmanagerObj(
+	const ref<implObj> &impl,
+	const input_field &locked_input_field_arg,
+	const ref<listlayoutmanagerObj::implObj> &list_layout_impl)
+	: input_lock{locked_input_field_arg},
 	  standard_comboboxlayoutmanagerObj{impl, list_layout_impl},
+	  // See current_selection()
+	  locked_input_field{locked_input_field_arg},
 	  impl{impl}
 {
 }

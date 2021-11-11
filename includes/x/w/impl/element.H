@@ -1637,7 +1637,7 @@ class elementObj::implObj : public element_drawObj,
 	//! Create and show the tooltip
 
 	//! Always returns a non-null popup. By default it goes into
-	//! data.attached_popup. editorObj::implObj also uses it to create its
+	//! data.attached_popup. editor_implObj also uses it to create its
 	//! own direction popup that it manages.
 
 	popupptr show_tooltip(ONLY IN_THREAD,
@@ -1649,7 +1649,7 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Gets invoked whenever this element loses keyboard or pointer
 	//! focus, or is no longer visible. Does nothing. Overridden
-	//! in editorObj::implObj to hide the text direction tooltip, if it's
+	//! in editor_implObj to hide the text direction tooltip, if it's
 	//! displayed.
 	virtual void hide_popups(ONLY IN_THREAD) LIBCXX_PUBLIC;
 
