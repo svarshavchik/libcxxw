@@ -155,6 +155,7 @@ static void border_editable_combobox(const x::w::focusable_container &container)
 	lm->on_validate
 		([]
 		 (ONLY IN_THREAD,
+		  auto &lock,
 		  const auto &)
 		 {
 			 appObj::border_enable_disable_later();
@@ -228,6 +229,7 @@ void appObj::borders_elements_initialize(app_elements_tptr &elements,
 	border_new_name->on_validate
 		([]
 		 (ONLY IN_THREAD,
+		  auto &lock,
 		  const auto &trigger)
 		 {
 			 appObj::border_enable_disable(IN_THREAD);

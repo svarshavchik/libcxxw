@@ -490,6 +490,7 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 	on_validate
 		([=]
 		 (ONLY IN_THREAD,
+		  const auto &lock,
 		  const callback_trigger_t &trigger)->bool
 		 {
 			 on_validate_set_impl impl{IN_THREAD,

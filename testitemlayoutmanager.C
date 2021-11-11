@@ -83,8 +83,9 @@ auto create_mainwindow(const main_window &mw)
 		throw EXCEPTION("itemlayoutmanager creator not called");
 
 	field->on_validate
-		([objects=make_weak_capture(container, field)]
+		([objects=make_weak_capture(container)]
 		 (ONLY IN_THREAD,
+		  auto &lock,
 		  const callback_trigger_t &triggering_event)
 		 {
 			 auto got=objects.get();
@@ -92,17 +93,13 @@ auto create_mainwindow(const main_window &mw)
 			 if (!got)
 				 return true;
 
-			 auto &[container, field]=*got;
+			 auto &[container]=*got;
 
 			 std::vector<std::string> words;
 
-			 {
-				 input_lock lock{field};
+			 strtok_str(lock.get(), ",", words);
 
-				 strtok_str(lock.get(), ",", words);
-
-				 field->set("");
-			 }
+			 lock.set(IN_THREAD, "");
 
 			 auto nonempty_word=words.begin();
 

@@ -1406,8 +1406,9 @@ static void item_table(const w::gridlayoutmanager &lm)
 
 
 	field->on_validate
-		([objects=make_weak_capture(container, field)]
+		([objects=make_weak_capture(container)]
 		 (ONLY IN_THREAD,
+		  auto &lock,
 		  const w::callback_trigger_t &triggering_event)
 		 {
 			 auto got=objects.get();
@@ -1415,20 +1416,16 @@ static void item_table(const w::gridlayoutmanager &lm)
 			 if (!got)
 				 return true;
 
-			 auto &[container, field]=*got;
+			 auto &[container]=*got;
 
 			 w::itemlayoutmanager lm=
 				 container->get_layoutmanager();
 
 			 std::vector<std::string> words;
 
-			 {
-				 w::input_lock lock{field};
+			 strtok_str(lock.get(), ",", words);
 
-				 strtok_str(lock.get(), ",", words);
-
-				 field->set("");
-			 }
+			 lock.set(IN_THREAD, "");
 
 			 for (auto &w:words)
 			 {

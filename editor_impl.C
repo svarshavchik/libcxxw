@@ -2555,7 +2555,11 @@ bool editor_implObj::validate_modified(ONLY IN_THREAD,
 	bool flag=false;
 
 	try {
-		flag=validation_callback(IN_THREAD)(IN_THREAD, trigger);
+		auto me=ref{this};
+
+		input_lock lock{&me};
+
+		flag=validation_callback(IN_THREAD)(IN_THREAD, lock, trigger);
 	} REPORT_EXCEPTIONS(this);
 
 	if (flag)

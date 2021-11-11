@@ -285,27 +285,18 @@ void testbutton()
 			 });
 
 			 fields.first->on_validate
-				 ([f=make_weak_capture(fields.first), itemc]
+				 ([itemc]
 				  (ONLY IN_THREAD,
+				   auto &lock,
 				   const auto &trigger)
 				  {
-					  auto got=f.get();
-
-					  if (!got)
-						  return true;
-
-					  auto &[f]=*got;
-
-					  LIBCXX_NAMESPACE::w::input_lock
-						  lock{f};
-
 					  std::vector<std::u32string> words;
 
 					  LIBCXX_NAMESPACE::strtok_str
 						  (lock.get_unicode(),
 						   U",", words);
 
-					  f->set(U"");
+					  lock.set(IN_THREAD, U"");
 
 					  for (auto &w:words)
 					  {
@@ -588,18 +579,9 @@ void testbutton()
 			 search->on_validate
 				 ([f=make_weak_capture(search)]
 				  (ONLY IN_THREAD,
+				   auto &lock,
 				   const auto &trigger)
 				  {
-					  auto got=f.get();
-
-					  if (!got)
-						  return true;
-
-					  auto &[f]=*got;
-
-					  LIBCXX_NAMESPACE::w::input_lock
-						  lock{f};
-
 					  std::cout << "Search found: "
 						    << lock.get()
 						    << std::endl;

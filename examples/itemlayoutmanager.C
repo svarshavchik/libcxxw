@@ -15,6 +15,7 @@
 #include <x/w/itemlayoutmanager.H>
 #include <x/w/label.H>
 #include <x/w/input_field.H>
+#include <x/w/input_field_lock.H>
 #include <x/w/container.H>
 #include <x/w/focusable_container.H>
 #include <x/w/canvas.H>
@@ -224,6 +225,7 @@ auto create_mainwindow(const x::w::main_window &main_window)
 
 	field->on_validate([]
 			   (ONLY IN_THREAD,
+			    x::w::input_lock &lock,
 			    const x::w::callback_trigger_t &triggering_event)
 			   {
 				   app my_app;

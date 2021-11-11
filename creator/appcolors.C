@@ -261,6 +261,7 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 
 	color_new_name->on_validate([]
 				    (ONLY IN_THREAD,
+				     const auto &lock,
 				     const auto &trigger)
 				    {
 					    appinvoke(&appObj::color_updated,
@@ -299,6 +300,7 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 	->on_validate
 		  ([]
 		   (ONLY IN_THREAD,
+		    auto &lock,
 		    const auto &info)
 		   {
 			   appinvoke(&appObj::color_updated, IN_THREAD);
@@ -1368,6 +1370,7 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 			 l->on_validate
 				 ([]
 				  (ONLY IN_THREAD,
+				   auto &lock,
 				   const auto &trigger)
 				  {
 					  appinvoke(&appObj::color_updated,

@@ -17,6 +17,7 @@
 #include <x/w/text_param_literals.H>
 #include <x/w/font_literals.H>
 #include <x/w/input_field.H>
+#include <x/w/input_field_lock.H>
 #include <x/w/container.H>
 #include <x/w/button.H>
 
@@ -241,22 +242,13 @@ void create_mainwindow(const x::w::main_window &main_window,
 	//
 	// Note that what's manually typed in may not match anything that
 	// the search found, if the popup does not get used.
-	//
-	// The on_validate callback must capture the input field weakly,
-	// to avoid circular references.
 
 	field->on_validate
-		([weak_field=x::weakptr<x::w::input_fieldptr>(field)]
+		([]
 		 (ONLY IN_THREAD,
+		  x::w::input_lock &lock,
 		  const x::w::callback_trigger_t &trigger)
 		 {
-			 auto field=weak_field.getptr();
-
-			 if (!field)
-				 return true;
-
-			 x::w::input_lock lock{field};
-
 			 std::cout << "Search found: "
 				   << lock.get()
 				   << std::endl;

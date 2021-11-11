@@ -211,6 +211,7 @@ static void font_editable_combobox(const x::w::focusable_container &container)
 	lm->on_validate
 		([]
 		 (ONLY IN_THREAD,
+		  auto &lock,
 		  const auto &)
 		 {
 			 appObj::font_enable_disable_later(IN_THREAD);
@@ -326,6 +327,7 @@ void appObj::fonts_elements_initialize(app_elements_tptr &elements,
 	font_new_name->on_validate
 		([]
 		 (ONLY IN_THREAD,
+		  auto &lock,
 		  const auto &trigger)
 		 {
 			 appObj::font_enable_disable_later(IN_THREAD);
@@ -372,6 +374,7 @@ void appObj::fonts_elements_initialize(app_elements_tptr &elements,
 		(elements.*(info.init_field))->on_validate
 			([]
 			 (ONLY IN_THREAD,
+			  auto &lock,
 			  const auto &trigger)
 			 {
 				 appObj::font_enable_disable_later(IN_THREAD);

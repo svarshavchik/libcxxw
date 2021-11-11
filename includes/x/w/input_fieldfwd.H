@@ -19,9 +19,13 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_PUBLIC input_fieldObj;
 template<typename type> class validated_input_fieldObj;
 
+class LIBCXX_HIDDEN const_input_lock;
+class LIBCXX_HIDDEN input_lock;
+
 //! Callback for validating the contents of the input field.
 
 typedef bool input_field_validation_callback_t(THREAD_CALLBACK,
+					       input_lock &,
 					       const callback_trigger_t &);
 
 //! Parameter to the input field filter callback.
@@ -142,8 +146,9 @@ installs an autocomplete callback into its input field.
 \par Validation
 
 \code
-f->on_validate([f=INSERT_LIBX_NAMESPACE::make_weak_capture(f)]
+f->on_validate([]
               (ONLY IN_THREAD,
+               const INSERT_LIBX_NAMESPACE::w::input_lock &lock,
                const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &triggering_event)
               {
                   auto got=me.get();
@@ -153,7 +158,7 @@ f->on_validate([f=INSERT_LIBX_NAMESPACE::make_weak_capture(f)]
 
                   auto &[me]=*got;
 
-                  if (INSERT_LIBX_NAMESPACE::w::input_lock{me}.get() == "4")
+                  if (lock.get() == "4")
                       return true;
 
                   return false;
@@ -169,13 +174,19 @@ on_validate() installs a callback that gets executed when:
 A more detailed reason for the callback getting executed gets specified
 by the \ref callback_trigger_t "triggering event" parameter.
 
+The \ref input_lock "lock" parameter gets passed in, lock on the input
+field, whose get() method its contents. This callback gets attached
+to the input field, and this prevents the callback from capturing its own
+field (this would create a cicular reference, but a weak reference is
+an option).
+
 The callback does not get executed if the input field's contents do not
 change while the input field has focus, and the input field's contents
 already passed validation. There are some rare edge cases where the input
 field loses input focus in some other way (such as the not-very edge case
 of the application explicitly invoke request_focus() for some other
-widget). When the input field regains focus, the input field
-becomes subject to validation once again.
+widget). The input field
+becomes subject to validation the next time it gains input focus.
 
 Returning \c true marks the field as validated, and the input field
 gets normally tabbed out of, or loses input focus as a result of a pointer
@@ -359,6 +370,8 @@ input field was modified but not yet validated.
 \par Input filters
 
 \code
+#include <INSERT_LIBX_NAMESPACE/w/input_field_filter.H>
+
 INSERT_LIBX_NAMESPACE::w::input_field_config config{15};
 
 config.maximum_size=14;
@@ -401,7 +414,7 @@ whether a given Unicode character is valid input. Invalid characters
 (typed in, or pasted), get ignored.
 
 The second parameter is a \c std::vector<size_t> that specifies which
-character in the input field are fixed and cannot be typed over.
+characters in the input field are fixed and cannot be typed over.
 
 The third parameter specifies a placeholder Unicode character where text
 input actually goes. A input field with a default filter is, essentially,
@@ -678,9 +691,6 @@ using const_validated_input_field=const_ref<validated_input_fieldObj<type>>;
 
 template<typename type>
 using const_validated_input_fieldptr=const_ptr<validated_input_fieldObj<type>>;
-
-class LIBCXX_HIDDEN const_input_lock;
-class LIBCXX_HIDDEN input_lock;
 
 //! Identifies what kind of a change the input field change callback gets invoked for.
 

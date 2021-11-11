@@ -213,7 +213,7 @@ create_mainwindow(const x::w::main_window &main_window,
 
 	factory=layout->append_row();
 
-	factory->create_label("What is 2+2?");
+	auto question=factory->create_label("What is 2+2?");
 
 	config=x::w::input_field_config{3};
 	config.maximum_size=1;
@@ -238,21 +238,20 @@ create_mainwindow(const x::w::main_window &main_window,
 	// block input focus from moving to another field, if possible, keeping
 	// it in the input field that failed validation.
 
-	field->on_validate([me=x::make_weak_capture(field)]
+	field->on_validate([question]
 			   (ONLY IN_THREAD,
+			    x::w::input_lock &lock,
 			    const x::w::callback_trigger_t &triggering_event)
 			   {
-				   auto got=me.get();
-
-				   if (!got)
+				   if (lock.get() == "4")
 					   return true;
 
-				   auto &[me]=*got;
-
-				   if (x::w::input_lock{me}.get() == "4")
-					   return true;
-
-				   me->stop_message("No it's not");
+				   // Use our label to throw a stop_message
+				   // alert. We can capture "question" for
+				   // this callback because it is not a
+				   // direct parent or child widget of the
+				   // callback's widget.
+				   question->stop_message("No it's not");
 
 				   return false;
 			   });
