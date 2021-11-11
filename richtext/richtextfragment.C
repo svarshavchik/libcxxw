@@ -1859,7 +1859,9 @@ std::strong_ordering richtextfragmentObj::compare(const richtextfragment &other)
 			other->my_paragraph && other->my_paragraph->my_richtext,
 			"Internal error: fragment not linked.");
 
-	auto c=my_paragraph <=> other->my_paragraph;
+	auto c= my_paragraph->my_paragraph_number
+		<=>
+		other->my_paragraph->my_paragraph_number;
 
 	if (c != std::strong_ordering::equal)
 		return c;

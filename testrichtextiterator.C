@@ -2393,6 +2393,52 @@ void testrichtext10(ONLY IN_THREAD)
 				},
 			},
 		},
+
+		// Test 7
+		{
+			{
+				U"Lorem Ipsum\n"
+				U"Dolor Sit\n",
+				{
+					{0, meta1},
+					{12, meta0},
+				},
+			},
+			UNICODE_BIDI_LR,
+			80,
+			{
+				{
+					1, 0, 2,
+					{
+						{0, 7},
+						{0, 6},
+						{0, 1},
+					}
+				}
+			},
+
+
+			{
+				{
+					richtext_op{
+						std::in_place_type_t<
+						richtext_replace_hotspot>{},
+						1,
+						U"Lorem Ipsum\n",
+					},
+					decoded_hotspot_info_t{
+						{
+							1, 0, 2,
+							{
+								{0, 7},
+								{0, 6},
+								{0, 1},
+							}
+						},
+					}
+				},
+			},
+		},
 	};
 	size_t casenum=0;
 

@@ -102,11 +102,15 @@ void richtextmeta::glyphs_size_and_kernings(iter_type b,
 		if (*b == richtextstring::hotspot_marker)
 		{
 			lambda(0, 0, 0, 0);
-			++b;
-			continue;
 		}
-		lambda(16, 16, prev_char == ' ' ? -10:
-		       -(int)(prev_char & 15), 0);
+		else
+		{
+			lambda(16, 16,
+			       prev_char == richtextstring::hotspot_marker
+			       ? 0:
+			       prev_char == ' ' ? -10:
+			       -(int)(prev_char & 15), 0);
+		}
 
 		prev_char = *b;
 
