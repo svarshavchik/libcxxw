@@ -292,14 +292,17 @@ void file_dialogObj::implObj::selected(ONLY IN_THREAD,
 		  d, filename, mcguffin);
 }
 
-text_param file_dialogObj::implObj::create_dirlabel(const std::string &s)
+std::tuple<text_param, label_hotspots_t>
+file_dialogObj::implObj::create_dirlabel(const std::string &s)
 {
-	text_param t;
+	std::tuple<text_param, label_hotspots_t> ret;
+
+	auto &[t, hotspots]=ret;
 
 	t( appearance->filedir_directoryfont );
 
 	if (s.empty())
-		return t; // Shouldn't happen.
+		return ret; // Shouldn't happen.
 
 	// Truncate the shown filename.
 	auto b=s.begin();
@@ -330,13 +333,16 @@ text_param file_dialogObj::implObj::create_dirlabel(const std::string &s)
 	// p now points either to an intermediate / separator, or to the
 	// leading /. It's always a slash, here.
 
+	int hotspot_counter=0;
+
 	if (p > b)
 	{
 		t(".../");
 	}
 	else
 	{
-		create_hotspot(t, "/", "/"); // Root directory
+		create_hotspot(t, "/", "/", hotspots,
+			       hotspot_counter); // Root directory
 	}
 
 	++p;
@@ -347,13 +353,13 @@ text_param file_dialogObj::implObj::create_dirlabel(const std::string &s)
 
 		p=std::find(p, e, '/');
 
-		create_hotspot(t, {q, p}, {b, p});
+		create_hotspot(t, {q, p}, {b, p}, hotspots, hotspot_counter);
 
 		// Terminate the hotspot. We do this here, instead of inside
 		// create_hotspot(), because another hotspot immediately
 		// follows the leading "/".
 
-		t(nullptr);
+		t(end_hotspot{});
 
 		if (p != e)
 		{
@@ -363,36 +369,42 @@ text_param file_dialogObj::implObj::create_dirlabel(const std::string &s)
 		}
 	}
 
-	return t;
+	return ret;
 }
 
 // Create a hotspot for a component of the directory path.
 
 void file_dialogObj::implObj::create_hotspot(text_param &t,
 					     const std::string &name,
-					     const std::string &path)
+					     const std::string &path,
+					     label_hotspots_t &hotspots,
+					     int &hotspot_counter)
 {
-	t(text_hotspot::create
-	  ([name, path,
-	    me=make_weak_capture(ref(this))]
-	   (ONLY IN_THREAD,
-	    const text_event_t &event)
-	   {
-		   text_param t;
+	hotspots.emplace(
+		hotspot_counter,
+		text_hotspot::create
+		([name, path,
+		  me=make_weak_capture(ref(this))]
+		 (ONLY IN_THREAD,
+		  const text_event_t &event)
+		{
+			text_param t;
 
-		   auto got=me.get();
+			auto got=me.get();
 
-		   if (got)
-		   {
-			   auto &[me]=*got;
+			if (got)
+			{
+				auto &[me]=*got;
 
-			   t=me->hotspot_activated(IN_THREAD,
-						   event, name, path);
-		   }
-		   return t;
-	   }));
+				t=me->hotspot_activated(IN_THREAD,
+							event, name, path);
+			}
+			return t;
+		}));
 
+	t(start_hotspot{hotspot_counter});
 	t(name);
+	++hotspot_counter;
 }
 
 // Hotspot for a directory component has been activated. Figure out the
@@ -437,7 +449,12 @@ void file_dialogObj::implObj::chdir(ONLY IN_THREAD, const std::string &path)
 {
 	auto realpath=fd::base::realpath(path);
 	filename_field->set("");
-	directory_field->update(create_dirlabel(realpath));
+
+	const auto &[new_directory_field, new_hotspots]=
+		create_dirlabel(realpath);
+
+	directory_field->update(IN_THREAD, new_directory_field,
+				new_hotspots);
 	directory_contents_list->chdir(realpath);
 
 	update_popup_menu_status update{IN_THREAD, *this};
@@ -1264,8 +1281,10 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 
 	// The initial path displayed by the current directory label.
 
-	impl->directory_field->update
-		(impl->create_dirlabel(impl->directory_contents_list->pwd()));
+	const auto &[initial_label, initial_hotspots]=
+		impl->create_dirlabel(impl->directory_contents_list->pwd());
+
+	impl->directory_field->update(initial_label, initial_hotspots);
 
 	// Set up the Ok button to act like the Enter key.
 	impl->ok_button->on_activate

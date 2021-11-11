@@ -14,6 +14,8 @@
 #include <x/w/synchronized_axisfwd.H>
 #include <x/w/copy_cut_paste_menu_items.H>
 #include <x/w/layoutmanagerfwd.H>
+#include <x/w/text_param.H>
+#include <x/w/text_hotspot.H>
 #include <x/functionalrefptr.H>
 #include <x/vector.H>
 #include <unordered_map>
@@ -106,6 +108,10 @@ struct uielements {
 	std::unordered_map<std::string,
 			   functionref<void (const layoutmanager &)>
 			   > layout_creators;
+
+	//! Pre-defined text hotspot callbacks
+
+	label_hotspots_t label_hotspots;
 
 	//! The new elements that get created
 

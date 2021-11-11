@@ -21,6 +21,7 @@
 #include <x/w/focus.H>
 #include <x/w/rgbfwd.H>
 #include <x/w/focusableobj.H>
+#include <x/w/focusable_labelfwd.H>
 #include <x/w/tooltip_appearancefwd.H>
 #include <x/w/font_arg.H>
 #include <x/w/text_paramfwd.H>
@@ -105,7 +106,9 @@ struct LIBCXX_HIDDEN hotspots_none {};
 
 //! A trailing NULL byte is inserted, in the
 //! event that the string ends in a hotspot.
-struct LIBCXX_HIDDEN hotspots_create {};
+struct LIBCXX_HIDDEN hotspots_create {
+	const label_hotspots_t &hotspots;
+};
 
 //! create_richtextstring: updating an existing hotspot
 

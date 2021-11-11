@@ -1033,6 +1033,7 @@ List of values:
       <parameter>
 	<type>compiler.text_param_value</type>
 	<name>focusable_label</name>
+	<after-passing-parameter>, elements.label_hotspots</after-passing-parameter>
       </parameter>
 
       <parameter>

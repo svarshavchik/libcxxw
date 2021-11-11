@@ -156,7 +156,8 @@ void font_picker_previewObj::implObj::refresh_preview(ONLY IN_THREAD)
 
 	textlabelObj::implObj::update(IN_THREAD,
 				      create_preview(current_font(IN_THREAD),
-						     new_fc));
+						     new_fc),
+				      {});
 }
 
 LIBCXXW_NAMESPACE_END

@@ -148,18 +148,18 @@ text_param &text_param::operator()(const text_decoration d)
 	return *this;
 }
 
-text_param &text_param::operator()(const text_hotspot &h)
+text_param &text_param::operator()(const start_hotspot &h)
 {
-	if (!hotspots.insert({string.size(), h}).second)
-		throw EXCEPTION(_("Duplicate text_hotspot specification"));
+	if (!hotspots.insert({string.size(), h.id}).second)
+		throw EXCEPTION(_("Duplicate hotspot specification"));
 
 	return *this;
 }
 
-text_param &text_param::operator()(std::nullptr_t)
+text_param &text_param::operator()(end_hotspot)
 {
-	if (hotspots.empty() || hotspots.find(string.size()) != hotspots.end()
-	    || !hotspots.insert({string.size(), text_hotspotptr()}).second)
+	if (hotspots.empty()
+	    || !hotspots.insert({string.size(), {}}).second)
 		throw EXCEPTION(_("Invalid text_hotspot specification"));
 
 	return *this;
@@ -290,7 +290,40 @@ richtextstring elementObj::implObj
 			auto iter=t.hotspots.find(p);
 
 			if (iter != t.hotspots.end())
-				font.link=iter->second;
+			{
+				font.link=nullptr;
+
+				auto &hotspots=std::get<hotspots_create>(
+					allow_links
+				);
+
+				if (iter->second)
+				{
+					auto p=hotspots.hotspots.find(
+						*iter->second
+					);
+
+					if (p == hotspots.hotspots.end())
+					{
+						std::ostringstream o;
+
+						o << "Hotspot \"";
+
+						std::visit(
+							[&]
+							(const auto &v)
+							{
+								o << v;
+							}, *iter->second);
+
+						o << "\" is not specified";
+
+						throw EXCEPTION(o.str());
+					}
+
+					font.link=p->second;
+				}
+			}
 
 			if (p == t.string.size())
 			{

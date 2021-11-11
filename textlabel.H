@@ -24,6 +24,8 @@
 #include "x/w/impl/connection_threadfwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/labelfwd.H"
+#include "x/w/focusable_label.H"
+#include "x/w/text_hotspot.H"
 #include <x/refptr_hash.H>
 #include <unordered_map>
 #include <xcb/xproto.h>
@@ -45,7 +47,8 @@ struct LIBCXX_HIDDEN textlabel_config {
 	static child_element_init_params default_child_element_init();
 
 	//! Whether hotspot links are allowed (focusable labels only).
-	bool allow_links=false;
+	std::optional<std::reference_wrapper<const label_hotspots_t>
+	> initial_hotspots;
 
 	//! Fixed width, in columns.
 
@@ -231,11 +234,13 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 
 	//! Replace text
 
-	void update(const text_param &string);
+	void update(const text_param &string,
+		    const label_hotspots_t &hotspots);
 
 	//! Replace text
 
-	void update(ONLY IN_THREAD, const text_param &string);
+	void update(ONLY IN_THREAD, const text_param &string,
+		    const label_hotspots_t &hotspots);
 
 	//! Text has been updated
 	void updated(ONLY IN_THREAD,

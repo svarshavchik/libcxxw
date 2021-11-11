@@ -6,6 +6,7 @@
 #define x_w_focusable_labelfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/text_hotspotfwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START

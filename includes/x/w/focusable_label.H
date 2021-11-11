@@ -13,6 +13,8 @@
 #include <x/w/alignment.H>
 #include <x/w/border_arg.H>
 #include <x/w/label.H>
+#include <x/w/text_param.H>
+#include <x/w/text_hotspot.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

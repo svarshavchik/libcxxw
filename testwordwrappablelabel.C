@@ -175,12 +175,12 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 
 	factory->create_focusable_label
 		({
-			hotspot1,
+			LIBCXX_NAMESPACE::w::start_hotspot{"hotspot1"},
 			"label_title"_theme_font,
 			 blue,
 			"underline"_decoration,
 			"Lorem ipsum\n",
-			nullptr,
+			LIBCXX_NAMESPACE::w::end_hotspot{},
 			"no"_decoration,
 			"label"_theme_font,
 			black, lightblue,
@@ -201,9 +201,12 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 			"esse cillum dolore eu fugiat nulla pariatur. "
 			"Excepteur sint occaecat cupidatat non proident, "
 			"sunt in culpa qui officia deserunt mollit anim id est ",
-			hotspot2,
+			"hotspot2"_hotspot,
 			"laborum."
-		  }, config);
+		}, {
+			{"hotspot1", hotspot1},
+			{"hotspot2", hotspot2},
+		}, config);
 }
 
 void testlabel(const testwordwrappablelabel_options &options)

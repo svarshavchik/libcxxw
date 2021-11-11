@@ -323,7 +323,7 @@ initial_sorted_families(const std::vector<const_font_family_group_entry>
 		official_values.official_font=initial_font;
 		official_values.official_font_label=string;
 		official_values.saved_font_group=list.at(i);
-		current_font_shown->label_impl->update(string);
+		current_font_shown->label_impl->update(string, {});
 	}
 
 	if (config.initial_font || config.selection_required)
@@ -1223,7 +1223,7 @@ void font_pickerObj::implObj::set_official_font(ONLY IN_THREAD,
 
 	current_font_shown->label_impl
 		->update(IN_THREAD,
-			 official_font_value.official_font_label);
+			 official_font_value.official_font_label, {});
 
 	invoke_callback(IN_THREAD, official_font_value, trigger);
 }

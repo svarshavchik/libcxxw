@@ -149,7 +149,8 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 
 	// Show this in the directory field.
 
-	text_param create_dirlabel(const std::string &);
+	std::tuple<text_param,
+		   label_hotspots_t> create_dirlabel(const std::string &);
 
 	// Enter pressed in the filename field.
 
@@ -184,7 +185,9 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 
 	void create_hotspot(text_param &t,
 			    const std::string &name,
-			    const std::string &path);
+			    const std::string &path,
+			    label_hotspots_t &hotspots,
+			    int &hotspot_counter);
 
 	//! Callback that gets invoked when a directory component gets clicked.
 

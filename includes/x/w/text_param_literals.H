@@ -8,6 +8,7 @@
 
 #include <x/w/theme_font.H>
 #include <x/w/theme_color.H>
+#include <x/w/text_paramfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,10 +34,23 @@ theme_color operator"" _color(const char *, size_t);
 
 text_decoration operator""_decoration(const char *, size_t);
 
+//! Text hotspot identifier
+
+start_hotspot operator""_hotspot(const char *, size_t);
+
+//! Text hotspot identifier
+
+start_hotspot operator""_hotspot(unsigned long long);
+
+#define x_w_text_param_literals_H_defined 1
+#include <x/w/text_param_literals_hotspot.H>
+
 LIBCXXW_NAMESPACE_END
 
 using LIBCXXW_NAMESPACE::operator "" _theme_font;
 using LIBCXXW_NAMESPACE::operator "" _color;
 using LIBCXXW_NAMESPACE::operator "" _decoration;
+using LIBCXXW_NAMESPACE::operator "" _hotspot;
+using LIBCXXW_NAMESPACE::end_hotspot;
 
 #endif

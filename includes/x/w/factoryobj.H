@@ -140,11 +140,14 @@ public:
 
 	//! Create a focusable label.
 
-	focusable_label create_focusable_label(const text_param &text);
+	focusable_label create_focusable_label(const text_param &text,
+					       const label_hotspots_t &hotspots)
+		;
 
 	//! Create a focusable label.
 
 	focusable_label create_focusable_label(const text_param &text,
+					       const label_hotspots_t &hotspots,
 					       const focusable_label_config &);
 
 	//! Create a simple button with a text label.

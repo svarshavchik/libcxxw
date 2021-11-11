@@ -114,8 +114,9 @@ textlabelObj::implObj::implObj(const text_param &text,
 		  parent_element_impl,
 		  *theme_lock,
 		  parent_element_impl.create_richtextstring
-		  (default_meta, text, config.allow_links
-		   ? hotspot_processing{hotspots_create{}}
+		  (default_meta, text, config.initial_hotspots
+		   ? hotspot_processing{hotspots_create{
+			*config.initial_hotspots}}
 		   : hotspot_processing{hotspots_none{}}),
 		  default_meta}
 {
@@ -227,11 +228,11 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 	  current_theme{initial_theme},
 	  ordered_hotspots_thread_only{std::move(ordered_hotspots)},
 	  text{text},
-	  hotspot_cursor{config.allow_links
+	  hotspot_cursor{config.initial_hotspots
 			 ? (richtextiteratorptr)text->begin()
 			 : richtextiteratorptr{}},
 	  default_meta{clean_default_meta(default_meta)},
-	  allow_links{config.allow_links}
+	  allow_links{config.initial_hotspots}
 {
 	if (std::isnan(word_wrap_widthmm) ||
 	    word_wrap_widthmm < 0)
@@ -252,23 +253,26 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 
 textlabelObj::implObj::~implObj()=default;
 
-void textlabelObj::implObj::update(const text_param &string)
+void textlabelObj::implObj::update(const text_param &string,
+				   const label_hotspots_t &hotspots)
 {
 	get_label_element_impl().THREAD->run_as
-		([me=ref<implObj>(this), string]
+		([me=ref<implObj>(this), string, hotspots]
 		 (ONLY IN_THREAD)
 		 {
-			 me->update(IN_THREAD, string);
+			 me->update(IN_THREAD, string, hotspots);
 		 });
 }
 
-void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string)
+void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string,
+				   const label_hotspots_t &hotspots)
 {
 	get_label_element_impl().initialize_if_needed(IN_THREAD);
 	auto s=get_label_element_impl()
 		.create_richtextstring(default_meta, string,
 				       allow_links
-				       ? hotspot_processing{hotspots_create{}}
+				       ? hotspot_processing{hotspots_create{
+					       hotspots}}
 				       : hotspot_processing{hotspots_none{}});
 
 	auto new_ordered_hotspots=rebuild_ordered_hotspots(s);

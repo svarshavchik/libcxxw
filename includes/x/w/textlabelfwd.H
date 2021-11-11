@@ -17,6 +17,7 @@ class LIBCXX_PUBLIC textlabelObj;
 //! Specifies the interface for a widget that contains a text label.
 //!
 //! \see label
+//! \see focusable_label
 
 typedef ref<textlabelObj> textlabel;
 

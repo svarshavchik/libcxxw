@@ -16,6 +16,7 @@
 #include "x/w/label.H"
 #include "x/w/focusable_label.H"
 #include "x/w/text_hotspot.H"
+#include "x/w/text_param_literals.H"
 #include "x/w/input_field.H"
 #include "x/w/callback_trigger.H"
 #include "generic_window_handler.H"
@@ -186,10 +187,10 @@ static void calendar_grid(const gridlayoutmanager &glm,
 							   weak_me);
 				 });
 
-			day_label(link);
+			day_label("link"_hotspot);
 			day_label(unicode::literals::LRO);
 			day_label(day_str);
-			day_label(nullptr);
+			day_label(end_hotspot{});
 
 			if (current_date.get_day() ==
 			    current_date.get_last_day_of_month())
@@ -197,7 +198,9 @@ static void calendar_grid(const gridlayoutmanager &glm,
 			else
 				++current_date;
 
-			l->update(day_label);
+			l->update(day_label, {
+					{"link", link},
+				});
 			l->show();
 		}
 	}
@@ -448,7 +451,8 @@ void date_input_field_calendarObj
 				 for (int col=0; col<7; col++)
 				 {
 					 f->halign(halign::center)
-						 .create_focusable_label({});
+						 .create_focusable_label({},
+									 {});
 
 				 }
 			 }

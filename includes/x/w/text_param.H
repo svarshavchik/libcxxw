@@ -6,7 +6,6 @@
 #ifndef x_w_text_param_H
 #define x_w_text_param_H
 
-#include <string>
 #include <x/w/font_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/font_arg.H>
@@ -19,6 +18,8 @@
 
 #include <string>
 #include <unordered_map>
+#include <string_view>
+#include <optional>
 #include <utility>
 #include <type_traits>
 
@@ -35,11 +36,45 @@ enum class text_decoration {
 	underline=1,
 };
 
+/*! Constraint parameters to text_param's constructor.
+
+Constraint the parameters to the variadic constructor so that it
+participates in overload resolution only if all parameters are valid.
+*/
+
 template<typename ...Args>
 concept text_param_constructible=requires(text_param &t, Args && ...args)
 	{
 		{ (t(std::forward<Args>(args)), ...) };
 	};
+
+/*! \ref "text_param" placeholder that marks the beginning of a hotspot
+**
+** \code
+** INSERT_LIB_NAMESPACE::w::text_param str;
+**
+** // ...
+**
+** str(INSERT_LIBX_NAMESPACE::w::start_hotspot{ "link" });
+** str("click here");
+**
+** str(INSERT_LIBX_NAMESPACE::w::end_hotspot{});
+ */
+
+struct start_hotspot {
+
+	label_hotspot_id id;
+
+	explicit start_hotspot(const label_hotspot_id &id)
+		: id{id}
+	{
+	}
+};
+
+/*! \ref "text_param" placeholder that marks the end of a hotspot
+ */
+
+struct end_hotspot{};
 
 /*! \brief \anchor text_param A text parameter for a new widget.
 
@@ -247,6 +282,11 @@ It is possible to specify fonts, colors, and markup in a single
 string parameter that's amenable to gettext-ization. See
 \ref theme_text for more information.
 
+\par Scope
+
+A \c text_param gets normally constructed in automatic scope. As such it is
+not a thread-safe object.
+
 */
 
 class text_param {
@@ -292,7 +332,7 @@ public:
 
 	//! Hotspots for the text string being built.
 
-	std::unordered_map<size_t, text_hotspotptr> hotspots;
+	std::unordered_map<size_t, std::optional<label_hotspot_id>> hotspots;
 
 	//! Undecorated, there were no specified decorations.
 
@@ -394,10 +434,10 @@ public:
 	text_param &operator()(const text_decoration);
 
 	//! Hotspot for the following text.
-	text_param &operator()(const text_hotspot &);
+	text_param &operator()(const start_hotspot &);
 
 	//! End of hotspot.
-	text_param &operator()(std::nullptr_t);
+	text_param &operator()(end_hotspot);
 
 	//! Helper class to avoid ambiguous resolution failures.
 
@@ -432,6 +472,8 @@ public:
 			 std::forward<args>(remaining_args)...);
 	}
 };
+#define x_w_text_param_H_defined 1
+#include <x/w/text_param_literals_hotspot.H>
 
 LIBCXXW_NAMESPACE_END
 

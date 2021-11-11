@@ -18,13 +18,15 @@ LIBCXXW_NAMESPACE_START
 focusable_label_config::~focusable_label_config()=default;
 
 focusable_label factoryObj
-::create_focusable_label(const text_param &text)
+::create_focusable_label(const text_param &text,
+			 const label_hotspots_t &hotspots)
 {
-	return create_focusable_label(text, focusable_label_config{});
+	return create_focusable_label(text, hotspots, {});
 }
 
 focusable_label factoryObj
 ::create_focusable_label(const text_param &text,
+			 const label_hotspots_t &hotspots,
 			 const focusable_label_config &config)
 {
 	auto ff=create_nonrecursive_visibility_focusframe_impl
@@ -33,7 +35,7 @@ focusable_label factoryObj
 
 	textlabel_config internal_config{config};
 
-	internal_config.allow_links=true;
+	internal_config.initial_hotspots.emplace(hotspots);
 
 	auto focusable_label_impl=ref<focusable_labelObj::implObj>
 		::create(ff, text, internal_config);

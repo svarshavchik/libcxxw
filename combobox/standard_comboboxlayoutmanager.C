@@ -1097,7 +1097,7 @@ new_standard_comboboxlayoutmanager::new_standard_comboboxlayoutmanager()
 focusable new_standard_comboboxlayoutmanager
 ::selection_factory(const factory &f) const
 {
-	auto l=f->create_focusable_label("");
+	auto l=f->create_focusable_label("", {});
 
 	l->autofocus(true);
 
