@@ -26,8 +26,7 @@
 #include "x/w/booklayoutmanager.H"
 #include "x/w/stop_message.H"
 #include "x/w/validated_input_field.H"
-#include <x/weakptr.H>
-#include <x/mpobj.H>
+#include <x/mpweakptr.H>
 #include <x/threads/run.H>
 
 LIBCXXW_NAMESPACE_START
@@ -67,84 +66,6 @@ namespace {
 };
 #endif
 
-/*! Which came first, the chicken or the egg.
-
-A helper object captured by callbacks attached to the print dialog's
-display elements.
-
-The callbacks invoke the print dialog's methods, hence they need to
-weakly-capture the dialog object. This is simple enough. However these
-display elements themselves cannot be created until the dialog gets
-created first. So, this object gets created first, the dialog object
-gets created, together with its display elements, the once the dialog
-object is fully cooked, its weakly captured and stashed in here. Then
-the callback have full access to it.
-
-That's really a little white lie. It's possible to create the bare dialog
-object first and weakly capture it before creating its display elements.
-But this is simply easier, and cleaner.
-
- */
-
-class LIBCXX_HIDDEN print_dialog_parentObj : virtual public obj {
-
-
- public:
-
-	print_dialog_parentObj()=default;
-
-	~print_dialog_parentObj()=default;
-
-	//! The parent print dialog object, weakly captured.
-
-	//! The mutex protected object is a likely overkill, nothing should
-	//! be using this until everything is fully constructed. But
-	//! stranger things have happened...
-
-	mpobj<weakptr<print_dialogptr>> parent;
-
-	//! Recover the weakly-captured dialog object.
-
-	//! If we succeed in recovering it, pass it to the closure.
-	template<typename f> inline void invoke_closure(f &&F)
-	{
-		auto p=({
-				mpobj<weakptr<print_dialogptr>>::lock l{parent};
-
-				l->getptr();
-			});
-
-		if (p)
-			F(p);
-	}
-
-	//! A new printer was selected.
-
-	void printer_selected(ONLY IN_THREAD, const list_item_status_info_t &i)
-	{
-		invoke_closure(
-			[&]
-			(const auto &dialog)
-			{
-				// Enable the OK button when a printer is
-				// selected, disable it when a printer gets
-				// deselected, for some reason.
-				dialog->impl->fields.ok_button
-					->set_enabled(IN_THREAD,
-						      i.selected);
-
-				// Once a printer is select, show its
-				// particulars
-				if (!i.selected)
-					return;
-
-				dialog->impl->show_printer
-					(i.item_number,
-					 i.mcguffin);
-			});
-	}
-};
-
 //! Helper object for creating the print dialog.
 
 //! The create_elements() method returns the standard_dialog_elements_t
@@ -163,8 +84,7 @@ struct LIBCXX_HIDDEN print_dialog_init_helper {
 
 	//! The returned value gets passed to initialize_theme_dialog().
 	standard_dialog_elements_t
-		create_elements(const print_dialog_config &conf,
-				const ref<print_dialog_parentObj> &parent);
+		create_elements(const print_dialog_config &conf);
 };
 
 #if 0
@@ -173,8 +93,7 @@ struct LIBCXX_HIDDEN print_dialog_init_helper {
 };
 
 standard_dialog_elements_t print_dialog_init_helper
-::create_elements(const print_dialog_config &conf,
-		  const ref<print_dialog_parentObj> &parent)
+::create_elements(const print_dialog_config &conf)
 {
 	return {
 		{"ok", dialog_ok_button(_("Print"), fields.ok_button, '\n')},
@@ -190,13 +109,13 @@ static print_dialog create_new_print_dialog(
 	const dialog_args &args,
 	print_dialog_init_helper &helper,
 	const print_dialog_config &conf,
-	const ref<print_dialog_parentObj> &future_parent,
+	const mpweakptr<print_dialogptr> &future_parent,
 	const functionref<void (THREAD_CALLBACK)> &cancel_callback_impl,
 	const main_window &me)
 {
 	// Prepare to generate the dialog from the theme file.
 
-	uielements tmpl{helper.create_elements(conf, future_parent)};
+	uielements tmpl{helper.create_elements(conf)};
 
 	// We will attach a selection changed callback to the printer list
 
@@ -210,9 +129,30 @@ static print_dialog create_new_print_dialog(
 				(ONLY IN_THREAD,
 				 const auto &info)
 				{
-					parent->printer_selected
-						(IN_THREAD,
-						 info);
+					auto p=parent->getptr();
+
+					if (!p)
+						return;
+
+					auto dialog_impl=p->impl;
+
+					// Enable the OK button when a printer
+					// is selected, disable it when a
+					// printer gets deselected, for some
+					// reason.
+					dialog_impl->fields.ok_button
+						->set_enabled(IN_THREAD,
+							      info.selected);
+
+					// Once a printer is selected, show its
+					// particulars
+					if (!info.selected)
+						return;
+
+					dialog_impl->show_printer(
+						info.item_number,
+						info.mcguffin
+					);
 				});
 		});
 
@@ -377,7 +317,26 @@ print_dialog main_windowObj
 ::create_print_dialog(const standard_dialog_args &args,
 		      const print_dialog_config &conf)
 {
-	auto future_parent=ref<print_dialog_parentObj>::create();
+
+	/*
+	  Which came first, the chicken or the egg.
+
+	  Use an mpweakptr for a reference to the main dialog.
+
+	  The callbacks invoke the print dialog's methods, hence they need to
+	  weakly-capture the dialog object. This is simple enough. However these
+	  display elements themselves cannot be created until the dialog gets
+	  created first. So, this object gets created first, the dialog object
+	  gets created, together with its display elements, the once the dialog
+	  object is fully cooked, its weakly captured and stashed in here. Then
+	  the callback have full access to it.
+
+	  That's really a little white lie. It's possible to create the bare
+	  dialog object first and weakly capture it before creating its display
+	  elements. But this is simply easier, and cleaner.
+	*/
+
+	auto future_parent=mpweakptr<print_dialogptr>::create();
 
 	functionref<void (THREAD_CALLBACK)> cancel_callback_impl=
 		([cb=conf.cancel_callback,
@@ -419,7 +378,7 @@ print_dialog main_windowObj
 		}
 	);
 
-	future_parent->parent=d;
+	future_parent->setptr(d);
 
 	// Finish initializing the print and cancel button, by constructing
 	// and installing their callbacks.
