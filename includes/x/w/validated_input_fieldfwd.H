@@ -252,6 +252,33 @@ using create_string_validator_ret_t=std::tuple<
 	validated_input_field_contents<T>
 	>;
 
+
+template<input_field_validation_function validation_function,
+	 typename canonical_format_functor,
+	 typename new_value_functor=default_new_value_function<
+		 input_field_validation_function_type<validation_function>
+		 >
+	 >
+auto create_validated_input_field_contents(
+	validation_function &&validator,
+	canonical_format_functor &&formatter,
+	const std::optional<input_field_validation_function_type<
+	validation_function>> &initial_value=std::nullopt,
+	new_value_functor &&new_value=new_value_functor{}
+) -> create_validator_ret_t<validation_function>;
+
+template<typename T,
+	 input_field_string_validation_function<T> validation_function,
+	 typename canonical_format_functor,
+	 typename new_value_functor=default_new_value_function<T>
+	 >
+auto create_string_validated_input_field_contents(
+	validation_function &&validator,
+	canonical_format_functor &&canonical_format,
+	const std::optional<T> &initial_value=std::nullopt,
+	new_value_functor &&new_value=new_value_functor{}
+) -> create_string_validator_ret_t<T>;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

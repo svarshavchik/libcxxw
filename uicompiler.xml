@@ -1237,7 +1237,17 @@ List of values:
 
       <invoke>create_input_field</invoke>
 
-      <object>generic_factory</object>
+      <parameter>
+	<scalar>generic_factory</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>id</scalar>
+      </parameter>
 
       <parameter>
 	<name>input_field</name>

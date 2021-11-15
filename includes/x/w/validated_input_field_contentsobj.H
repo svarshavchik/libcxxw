@@ -16,10 +16,46 @@ LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 
+//! Inherited by validated_input_field_contentsObj and defines its abstract
+//! methods.
+
+class validated_input_field_contents_baseObj : virtual public obj {
+
+public:
+	validated_input_field_contents_baseObj();
+	~validated_input_field_contents_baseObj();
+
+	//! Implement to_text_param.
+
+	//! This is used when creating a new input field. This retrieves
+	//! the initial contents of the input field that represents the
+	//! initial value, and places it into the text_param, returning
+	//! true.
+	//!
+	//! A false return value indicates an unspecified initial value.
+
+	virtual bool to_text_param(text_param &t)=0;
+
+	//! Construct the validated_input_field<type> object.
+
+	//! Implemented in a validated_input_field_contents<type> subclass,
+	//! and returns a validated_input_field<type> object for the
+	//! new input field.
+	//!
+	//! Returns an opaque object. This is used by the generator, with
+	//! app-provided validators that get attached to the generated
+	//! input field. The generator has no knowledge of the actual type.
+
+	virtual ref<obj> create_validated_input_field(const input_field &)=0;
+};
+
+//! Implementation object.
+
 //! \see validated_input_field_contents
 
 template<typename type>
-class validated_input_field_contentsObj : virtual public obj {
+class validated_input_field_contentsObj
+	: public validated_input_field_contents_baseObj {
 
 public:
 
@@ -81,10 +117,6 @@ public:
 	virtual void set(ONLY IN_THREAD,
 			 input_lock &lock,
 			 const std::optional<type> &v)=0;
-
-	//! Implement to_text_param.
-
-	virtual bool to_text_param(text_param &t)=0;
 
 private:
 	//! Refresh the input field with the current validated value.

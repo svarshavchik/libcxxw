@@ -243,6 +243,7 @@ public:
 
 	//! Create a text input field
 
+	//! \internal
 	input_field
 	create_input_field(const text_param &text,
 			   bool validated,
@@ -250,6 +251,7 @@ public:
 
 	//! Create a text input field
 
+	//! \internal
 	input_field
 	create_input_field(const text_param &text,
 			   bool validated,

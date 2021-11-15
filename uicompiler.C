@@ -1529,6 +1529,61 @@ container uicompiler::create_container(const factory &f,
 	return c;
 }
 
+static element create_input_field(
+	const factory &generic_factory,
+	uielements &elements,
+	const std::string &id,
+	const text_param &input_field_value,
+	const input_field_config &config_value)
+{
+	// Check if an input field validator was provided.
+
+	if (!id.empty())
+	{
+		auto iter=elements.input_field_validators.find(id);
+
+		if (iter != elements.input_field_validators.end())
+		{
+			const auto &[callback, contents] = iter->second;
+			text_param initial_value;
+
+			// Obtain the initial value of the validated input
+			// field, and create it.
+
+			auto validated=contents->to_text_param(initial_value);
+
+			auto field=generic_factory->create_input_field(
+				initial_value,
+				validated,
+				callback,
+				config_value);
+
+			// Created the validated value object and save it
+			// in uielements.
+
+			auto validated_value=
+				contents->create_validated_input_field(field);
+
+			if (!elements.new_validated_input_fields.emplace(
+				    id,
+				    validated_value
+			    ).second)
+			{
+				throw EXCEPTION(
+					gettextmsg(
+						_("Input field validator "
+						  "\"%1%\" already defined"),
+						id)
+				);
+			}
+			return field;
+		}
+	}
+	return generic_factory->create_input_field(
+		input_field_value,
+		config_value
+	);
+}
 #include "uicompiler.inc.H/factory_parse_parameters.H"
 #include "uicompiler.inc.H/factory_parser.H"
 

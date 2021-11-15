@@ -199,6 +199,13 @@ public:
 			return flag;
 		});
 	}
+
+	//! Implement create_validated_input_field()
+
+	ref<obj> create_validated_input_field(const input_field &f) override
+	{
+		return validated_input_field<type>::create(ref{this}, f);
+	}
 };
 
 /*! Create a validator for an input field.
@@ -315,8 +322,8 @@ auto create_validated_input_field_contents(
 	validation_function &&validator,
 	canonical_format_functor &&formatter,
 	const std::optional<input_field_validation_function_type<
-	validation_function>> &initial_value=std::nullopt,
-	new_value_functor &&new_value=new_value_functor{}
+	validation_function>> &initial_value,
+	new_value_functor &&new_value
 ) -> create_validator_ret_t<validation_function>
 {
 	// Figure out what the validation function returns
@@ -437,8 +444,8 @@ template<typename T,
 auto create_string_validated_input_field_contents(
 	validation_function &&validator,
 	canonical_format_functor &&canonical_format,
-	const std::optional<T> &initial_value=std::nullopt,
-	new_value_functor &&new_value=new_value_functor{}
+	const std::optional<T> &initial_value,
+	new_value_functor &&new_value
 ) -> create_string_validator_ret_t<T>
 {
 	return create_validated_input_field_contents(

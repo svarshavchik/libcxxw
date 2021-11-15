@@ -32,6 +32,7 @@
 #include "screen.H"
 #include "defaulttheme.H"
 #include "uicompiler.H"
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -58,11 +59,27 @@ new_synchronized_axis_t::operator=(new_synchronized_axis_t &&)
 
 uielements::~uielements()=default;
 
+ref<obj> uielements::get_validated_input_field_obj(const std::string_view &name)
+	const
+{
+	auto iter=new_validated_input_fields.find(name);
+
+	if (iter == new_validated_input_fields.end())
+		validated_input_field_not_found(name);
+
+	return iter->second;
+}
+
+void uielements::validated_input_field_not_found(const std::string_view &name)
+{
+	throw EXCEPTION(gettextmsg(_("Input field validator %1% was not found, "
+				     "or its type does not match the expected "
+				     "one"), name));
+}
+
 element uielements::get_element(const std::string_view &name) const
 {
-	// TODO: C++20;
-
-	auto iter=new_elements.find(std::string{name.begin(), name.end()});
+	auto iter=new_elements.find(name);
 
 	if (iter == new_elements.end())
 		throw EXCEPTION(gettextmsg(_("Element %1% was not found"),
@@ -74,10 +91,7 @@ element uielements::get_element(const std::string_view &name) const
 
 layoutmanager uielements::get_layoutmanager(const std::string_view &name) const
 {
-	// TODO: C++20;
-
-	auto iter=new_layoutmanagers.find(std::string{name.begin(),
-							      name.end()});
+	auto iter=new_layoutmanagers.find(name);
 
 	if (iter == new_layoutmanagers.end())
 		throw EXCEPTION(gettextmsg(_("Layout manager"
@@ -90,10 +104,7 @@ layoutmanager uielements::get_layoutmanager(const std::string_view &name) const
 synchronized_axis uielements
 ::get_synchronized_axis(const std::string_view &name) const
 {
-	// TODO: C++20;
-
-	auto iter=new_synchronized_axis.find(std::string{name.begin(),
-								  name.end()});
+	auto iter=new_synchronized_axis.find(name);
 
 	if (iter == new_synchronized_axis.end())
 		throw EXCEPTION(gettextmsg

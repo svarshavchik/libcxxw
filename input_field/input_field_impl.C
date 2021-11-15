@@ -14,6 +14,12 @@
 
 LIBCXXW_NAMESPACE_START
 
+validated_input_field_contents_baseObj
+::validated_input_field_contents_baseObj()=default;
+
+validated_input_field_contents_baseObj
+::~validated_input_field_contents_baseObj()=default;
+
 input_fieldObj::implObj::implObj(const impl_mixin &impl,
 				 const editor &editor_element)
 	: impl(impl),

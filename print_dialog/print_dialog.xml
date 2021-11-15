@@ -17,6 +17,10 @@
     <type>input_field</type>
   </ref>
   <ref>
+    <name>number_of_copies_value</name>
+    <type>validated_input_field&lt;int&gt;</type>
+  </ref>
+  <ref>
     <name>all_pages_radio_button</name>
     <type>image_button</type>
   </ref>
@@ -27,6 +31,10 @@
   <ref>
     <name>page_range</name>
     <type>input_field</type>
+  </ref>
+  <ref>
+    <name>page_ranges_value</name>
+    <type>validated_input_field&lt;std::vector&lt;std::tuple&lt;int, int>>></type>
   </ref>
   <ref>
     <name>page_size</name>

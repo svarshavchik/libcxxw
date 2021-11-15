@@ -15,8 +15,11 @@
 #include <x/w/copy_cut_paste_menu_items.H>
 #include <x/w/layoutmanagerfwd.H>
 #include <x/w/text_param.H>
+#include <x/w/validated_input_field_contents.H>
+#include <x/w/validated_input_fieldfwd.H>
 #include <x/functionalrefptr.H>
 #include <x/vector.H>
+#include <x/hash.H>
 #include <unordered_map>
 #include <map>
 #include <string>
@@ -112,17 +115,126 @@ struct uielements {
 
 	label_hotspots_t label_hotspots;
 
+	//! Input field validators
+
+	std::unordered_map<
+		std::string,
+		std::tuple<input_field_validation_callback,
+			   ref<validated_input_field_contents_baseObj>>,
+		std::hash<void>,
+		std::equal_to<void>> input_field_validators;
+
+	//! Install an input field validator
+
+	//! Shortcut for calling create_validated_input_field_contents()
+	//! and then emplacing the result into input_field_validators.
+	//!
+	//! Returns the 2nd value returned from emplace().
+
+	template<input_field_validation_function validation_function,
+		 typename canonical_format_functor,
+		 typename new_value_functor=default_new_value_function<
+			 input_field_validation_function_type<validation_function>
+			 >
+		 >
+	bool create_validated_input_field(
+		std::string id,
+		validation_function &&validator,
+		canonical_format_functor &&formatter,
+		const std::optional<input_field_validation_function_type<
+		validation_function>> &initial_value=std::nullopt,
+		new_value_functor &&new_value=new_value_functor{}
+	)
+	{
+		return input_field_validators.emplace(
+			std::move(id),
+			create_validated_input_field_contents(
+				std::forward<validation_function>(validator),
+				std::forward<canonical_format_functor>(
+					formatter
+				),
+				initial_value,
+				std::forward<new_value_functor>(new_value)
+			)
+		).second;
+	}
+
+	//! Install an input field validator
+
+	//! Shortcut for calling create_string_validated_input_field_contents()
+	//! and then emplacing the result into input_field_validators.
+	//!
+	//! Returns the 2nd value returned from emplace().
+
+	template<typename T,
+		 input_field_string_validation_function<T> validation_function,
+		 typename canonical_format_functor,
+		 typename new_value_functor=default_new_value_function<T>
+		 >
+	bool create_string_validated_input_field(
+		std::string id,
+		validation_function &&validator,
+		canonical_format_functor &&canonical_format,
+		const std::optional<T> &initial_value=std::nullopt,
+		new_value_functor &&new_value=new_value_functor{}
+	)
+	{
+		return input_field_validators.emplace(
+			std::move(id),
+			create_string_validated_input_field_contents<T>(
+				std::forward<validation_function>(validator),
+				std::forward<canonical_format_functor>(
+					canonical_format
+				),
+				initial_value,
+				std::forward<new_value_functor>(new_value)
+			)
+		).second;
+	}
+
 	//! The new elements that get created
 
 	//! generate() puts new elements that get created in here.
 
-	std::unordered_map<std::string, element> new_elements;
+	std::unordered_map<std::string, element,
+			   std::hash<void>,
+			   std::equal_to<void>> new_elements;
 
+	//! The new validated_input_field objects that get created
+
+	std::unordered_map<std::string, ref<obj>,
+			   std::hash<void>,
+			   std::equal_to<void>> new_validated_input_fields;
+
+	//! Retrieve the validated input field
+
+	template<typename T>
+	validated_input_field<T> get_validated_input_field(
+		const std::string_view &name) const
+	{
+		auto obj=get_validated_input_field_obj(name);
+
+		if (!obj->isa<validated_input_field<T>>())
+		{
+			validated_input_field_not_found(name);
+		}
+		return obj;
+	}
+
+private:
+
+	ref<obj> get_validated_input_field_obj(const std::string_view &) const;
+
+	static void validated_input_field_not_found(const std::string_view &)
+		__attribute__((noreturn));
+public:
 	//! The new layout managers that get created.
 
 	//! generate() saved layout managers of created containers in here.
 
-	std::unordered_map<std::string, layoutmanager> new_layoutmanagers;
+	std::unordered_map<std::string, layoutmanager,
+			   std::hash<void>,
+			   std::equal_to<void>> new_layoutmanagers;
 
 	//! Container for the generated synchronized axis handles.
 
@@ -130,7 +242,9 @@ struct uielements {
 	//! need to pull in the full definition of synchronized_axis objects.
 
 	struct new_synchronized_axis_t :
-		std::unordered_map<std::string, synchronized_axis> {
+		std::unordered_map<std::string, synchronized_axis,
+				   std::hash<void>,
+				   std::equal_to<void>> {
 
 		//! Constructor
 		new_synchronized_axis_t();

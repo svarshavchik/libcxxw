@@ -25,6 +25,7 @@
 #include "x/w/listlayoutmanager.H"
 #include "x/w/booklayoutmanager.H"
 #include "x/w/stop_message.H"
+#include "x/w/validated_input_field.H"
 #include <x/weakptr.H>
 #include <x/mpobj.H>
 #include <x/threads/run.H>
@@ -96,6 +97,10 @@ class LIBCXX_HIDDEN print_dialog_parentObj : virtual public obj {
 
 	//! The parent print dialog object, weakly captured.
 
+	//! The mutex protected object is a likely overkill, nothing should
+	//! be using this until everything is fully constructed. But
+	//! stranger things have happened...
+
 	mpobj<weakptr<print_dialogptr>> parent;
 
 	//! Recover the weakly-captured dialog object.
@@ -115,18 +120,28 @@ class LIBCXX_HIDDEN print_dialog_parentObj : virtual public obj {
 
 	//! A new printer was selected.
 
-	void printer_selected(const list_item_status_info_t &i)
+	void printer_selected(ONLY IN_THREAD, const list_item_status_info_t &i)
 	{
-		if (!i.selected)
-			return;
+		invoke_closure(
+			[&]
+			(const auto &dialog)
+			{
+				// Enable the OK button when a printer is
+				// selected, disable it when a printer gets
+				// deselected, for some reason.
+				dialog->impl->fields.ok_button
+					->set_enabled(IN_THREAD,
+						      i.selected);
 
-		invoke_closure([&]
-			       (const auto &dialog)
-			       {
-				       dialog->impl->show_printer
-					       (i.item_number,
-						i.mcguffin);
-			       });
+				// Once a printer is select, show its
+				// particulars
+				if (!i.selected)
+					return;
+
+				dialog->impl->show_printer
+					(i.item_number,
+					 i.mcguffin);
+			});
 	}
 };
 
@@ -169,6 +184,195 @@ standard_dialog_elements_t print_dialog_init_helper
 	};
 }
 
+// Dialog creator factored out of create_print_dialog() for readability.
+
+static print_dialog create_new_print_dialog(
+	const dialog_args &args,
+	print_dialog_init_helper &helper,
+	const print_dialog_config &conf,
+	const ref<print_dialog_parentObj> &future_parent,
+	const functionref<void (THREAD_CALLBACK)> &cancel_callback_impl,
+	const main_window &me)
+{
+	// Prepare to generate the dialog from the theme file.
+
+	uielements tmpl{helper.create_elements(conf, future_parent)};
+
+	// We will attach a selection changed callback to the printer list
+
+	tmpl.layout_creators.emplace(
+		"select-printer-field",
+		[parent=future_parent]
+		(const listlayoutmanager &lm)
+		{
+			lm->on_selection_changed(
+				[=]
+				(ONLY IN_THREAD,
+				 const auto &info)
+				{
+					parent->printer_selected
+						(IN_THREAD,
+						 info);
+				});
+		});
+
+	typedef print_dialogObj::implObj implObj;
+	auto printer_info=implObj::printer_info_t::create();
+
+	// Install a validator for the page range field that uses
+	// cups::parse_range_string().
+
+	tmpl.create_validated_input_field
+		("page-range-field",
+		 []
+		 (THREAD_CALLBACK,
+		  const std::string &value,
+		  const auto &lock,
+		  const auto &ignore)
+		 -> std::optional<std::vector<std::tuple<int, int>>>
+		 {
+			 auto v=cups::parse_range_string(value);
+
+			 if (!v)
+				 lock.stop_message
+					 (_("Invalid page range specified"));
+
+			 return v;
+		 },
+		 []
+		 (const std::optional<std::vector<std::tuple<int, int>>> &v)
+		 -> std::string
+		 {
+			 if (!v || v->empty())
+				 return "";
+
+			 return cups::range_to_string(*v);
+
+		 }
+		);
+
+	// Install a validator for the number of copies field.
+	tmpl.create_string_validated_input_field<int>(
+		"number-of-copies-field",
+		[printer_info]
+		(THREAD_CALLBACK,
+		 const std::string &value,
+		 std::optional<int> &parsed_value,
+		 const auto &lock,
+		 const auto &ignore)
+		{
+			if (parsed_value)
+			{
+				implObj::printer_info_lock lock{printer_info};
+
+				if (lock->number_of_copies.empty())
+				{
+					// Option does not specify
+					// values, a small sanity
+					// check.
+					if (*parsed_value > 0)
+						return;
+				}
+
+				for (const auto &r: lock->number_of_copies)
+				{
+					auto &[from, to]=r;
+
+					if (*parsed_value >= from &&
+					    *parsed_value <= to)
+						return;
+				}
+			}
+
+			if (!value.empty())
+				lock.stop_message
+					(_("Invalid \"number of copies\""
+					   " value"));
+			parsed_value.reset();
+		},
+		[]
+		(int n)
+		{
+			return std::to_string(n);
+		},
+
+		// Initialize the field to 1 by default
+		1
+	);
+
+	// Run the generator, fetch out all the generated fields, and collect
+	// them into the print_dialog_fieldsptr helper, which will be used
+	// to construct the implementation object that will manage them.
+
+	args.dialog_window->generate("print-dialog", tmpl);
+
+	helper.fields.selected_printer=
+		tmpl.get_element("select-printer-field");
+
+	helper.fields.orientation_requested=
+		tmpl.get_element("orientation-field");
+
+	helper.fields.sides=
+		tmpl.get_element("duplex-field");
+
+	helper.fields.number_up=
+		tmpl.get_element("pages-per-side-field");
+
+	helper.fields.page_size=
+		tmpl.get_element("page-size-field");
+
+	helper.fields.finishings=
+		tmpl.get_element("finishings-field");
+
+	helper.fields.print_color_mode=
+		tmpl.get_element("print-color-mode-field");
+
+	helper.fields.print_quality=
+		tmpl.get_element("print-quality-field");
+
+	helper.fields.printer_resolution=
+		tmpl.get_element("printer-resolution-field");
+
+	helper.fields.printer_info=
+		tmpl.get_element("printer-info");
+
+	helper.fields.options_book=
+		tmpl.get_element("print-dialog-options");
+
+	helper.fields.number_of_copies=
+		tmpl.get_element("number-of-copies-field");
+
+	helper.fields.all_pages_radio_button=
+		tmpl.get_element("all-pages-radio-button");
+	helper.fields.page_range_radio_button=
+		tmpl.get_element("page-range-radio-button");
+	helper.fields.page_range=
+		tmpl.get_element("page-range-field");
+
+	// And in addition to that grab the validated input field objects and
+	// save them too.
+
+	helper.fields.number_of_copies_value=
+		tmpl.get_validated_input_field<int>(
+			"number-of-copies-field"
+		);
+	helper.fields.page_ranges_value=
+		tmpl.get_validated_input_field<
+			std::vector<std::tuple<int, int>>>(
+				"page-range-field"
+			);
+
+	auto impl=ref<print_dialogObj::implObj>
+		::create(me,
+			 printer_info,
+			 conf.appearance,
+			 cancel_callback_impl,
+			 helper.fields);
+
+	return print_dialog::create(print_dialog_args{args, impl});
+}
+
+
 print_dialog main_windowObj
 ::create_print_dialog(const standard_dialog_args &args,
 		      const print_dialog_config &conf)
@@ -196,89 +400,24 @@ print_dialog main_windowObj
 			 } REPORT_EXCEPTIONS(mw);
 		 });
 
-	print_dialog_init_helper helper{ref(this)};
+	auto me=ref{this};
+	print_dialog_init_helper helper{me};
 
-	auto d=create_custom_dialog
-		(create_dialog_args{args},
-		 [&]
-		 (const dialog_args &args)
-		 {
-			 uielements tmpl{helper.create_elements(conf,
-								future_parent)
-			 };
-
-			 tmpl.layout_creators.emplace
-				 ("select-printer-field",
-				  [parent=future_parent]
-				  (const listlayoutmanager &lm)
-				  {
-					  lm->on_selection_changed
-						  ([=]
-						   (THREAD_CALLBACK,
-						    const auto &info)
-						   {
-							   parent->printer_selected
-								   (info);
-						   });
-				  });
-
-			 args.dialog_window->generate("print-dialog", tmpl);
-
-			 helper.fields.selected_printer=
-				 tmpl.get_element("select-printer-field");
-
-			 helper.fields.orientation_requested=
-				 tmpl.get_element("orientation-field");
-
-			 helper.fields.sides=
-				 tmpl.get_element("duplex-field");
-
-			 helper.fields.number_up=
-				 tmpl.get_element("pages-per-side-field");
-
-			 helper.fields.page_size=
-				 tmpl.get_element("page-size-field");
-
-			 helper.fields.finishings=
-				 tmpl.get_element("finishings-field");
-
-			 helper.fields.print_color_mode=
-				 tmpl.get_element("print-color-mode-field");
-
-			 helper.fields.print_quality=
-				 tmpl.get_element("print-quality-field");
-
-			 helper.fields.printer_resolution=
-				 tmpl.get_element("printer-resolution-field");
-
-			 helper.fields.printer_info=
-				 tmpl.get_element("printer-info");
-
-			 helper.fields.options_book=
-				 tmpl.get_element("print-dialog-options");
-
-			 helper.fields.number_of_copies=
-				 tmpl.get_element("number-of-copies-field");
-			 helper.fields.number_of_copies->autofocus(false);
-
-			 helper.fields.all_pages_radio_button=
-				 tmpl.get_element("all-pages-radio-button");
-			 helper.fields.page_range_radio_button=
-				 tmpl.get_element("page-range-radio-button");
-			 helper.fields.page_range=
-				 tmpl.get_element("page-range-field");
-			 helper.fields.page_range->autofocus(false);
-
-			 auto impl=ref<print_dialogObj::implObj>
-				 ::create(ref{this},
-					  conf.appearance,
-					  cancel_callback_impl,
-					  helper.fields);
-
-			 impl->fields.ok_button->autofocus(true);
-			 return print_dialog::create(print_dialog_args{
-					 args, impl});
-		 });
+	auto d=create_custom_dialog(
+		create_dialog_args{args},
+		[&]
+		(const dialog_args &args)
+		{
+			return create_new_print_dialog(
+				args,
+				helper,
+				conf,
+				future_parent,
+				cancel_callback_impl,
+				me
+			);
+		}
+	);
 
 	future_parent->parent=d;
 
@@ -294,7 +433,6 @@ print_dialog main_windowObj
 		{
 		}};
 
-	auto me=ref{this};
 	hide_and_invoke_when_activated(me,
 				       d, d->impl->fields.ok_button,
 				       [what=make_weak_capture(d, ref(this)),
@@ -312,6 +450,10 @@ print_dialog main_windowObj
 					       d->impl->print(mw, callback);
 				       });
 
+	// The ok button is initially disabled because no printer is
+	// currently selected. The status callback on the printer list
+	// list will enable it when the printer is selected
+	d->impl->fields.ok_button->set_enabled(false);
 	hide_and_invoke_when_activated(me, d, d->impl->fields.cancel_button,
 				       [cancel_callback_impl]
 				       (ONLY IN_THREAD,

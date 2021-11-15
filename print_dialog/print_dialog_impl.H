@@ -77,6 +77,7 @@ class LIBCXX_HIDDEN print_dialogObj::implObj : virtual public obj {
 	struct printer_infoObj
 		: public printer_info_mpobj_t, virtual public obj {};
 
+ public:
 	typedef ref<printer_infoObj> printer_info_t;
 
 	//! Printer metadata
@@ -97,8 +98,6 @@ class LIBCXX_HIDDEN print_dialogObj::implObj : virtual public obj {
 		using printer_info_mpobj_t::lock::operator->;
 	};
 
- public:
-
 	//! The dialog's parent.
 	const weakptr<main_windowptr> parent_window;
 
@@ -113,15 +112,9 @@ class LIBCXX_HIDDEN print_dialogObj::implObj : virtual public obj {
 
 	const print_dialog_fields fields;
 
-	//! Validator attached to the "number of copies" field.
-	const validated_input_field<int> number_of_copies_value;
-
-	//! Validator attached to the "page ranges" field.
-	const validated_input_field<std::vector<std::tuple<int, int>>
-				    > page_ranges_value;
-
 	//! Constructor
 	implObj(const main_window &parent_window,
+		const printer_info_t &printer_info,
 		const const_print_dialog_appearance &appearance,
 		const functionref<void (THREAD_CALLBACK)> &cancel_callback,
 		const print_dialog_fieldsptr &fields);

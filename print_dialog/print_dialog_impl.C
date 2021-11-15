@@ -33,97 +33,21 @@
 LIBCXXW_NAMESPACE_START
 
 print_dialogObj::implObj::implObj(const main_window &parent_window,
+				  const printer_info_t &printer_info,
 				  const const_print_dialog_appearance
 				  &appearance,
 				  const functionref<void (THREAD_CALLBACK)>
 				  &cancel_callback,
 				  const print_dialog_fieldsptr &fields)
-	: printer_info{ref<printer_infoObj>::create()},
+	: printer_info{printer_info},
 	  parent_window{parent_window},
 	  appearance{appearance},
 	  cancel_callback{cancel_callback},
-	  fields{fields},
-	  number_of_copies_value{
-		  fields.number_of_copies->set_string_validator<int>(
-			  [printer_info=this->printer_info]
-			  (THREAD_CALLBACK,
-			   const std::string &value,
-			   std::optional<int> &parsed_value,
-			   const auto &lock,
-			   const auto &ignore)
-			  {
-				  if (parsed_value)
-				  {
-					  printer_info_lock lock{printer_info};
-
-					  if (lock->number_of_copies.empty())
-					  {
-						  // Option does not specify
-						  // values, a small sanity
-						  // check.
-						  if (*parsed_value > 0)
-							  return;
-					  }
-
-					  for (const auto &r:
-						       lock->number_of_copies)
-					  {
-						  auto &[from, to]=r;
-
-						  if (*parsed_value >= from &&
-						      *parsed_value <= to)
-							  return;
-					  }
-				  }
-
-				  if (!value.empty())
-					  lock.stop_message
-						  (_("Invalid \"number of "
-						     "copies\" value"));
-				  parsed_value.reset();
-			  },
-			  []
-			  (int n)
-			  {
-				  return std::to_string(n);
-			  }
-		  )
-	  },
-
-	  // Use cups::parse_range_string to validate the page ranges field.
-	  page_ranges_value{
-		  fields.page_range->set_validator(
-			  []
-			  (THREAD_CALLBACK,
-			   const std::string &value,
-			   const auto &lock,
-			   const auto &ignore)
-			  -> std::optional<std::vector<std::tuple<int, int>>>
-			  {
-				  auto v=cups::parse_range_string(value);
-
-				  if (!v)
-					  lock.stop_message
-						  (_("Invalid page range "
-						     "specified"));
-
-				  return v;
-			  },
-			  []
-			  (const std::optional<std::vector<std::tuple
-			   <int, int>>> &v) -> std::string
-			  {
-				  if (!v || v->empty())
-					  return "";
-
-				  return cups::range_to_string(*v);
-
-			  })}
+	  fields{fields}
 {
-	number_of_copies_value->set(1);
-
 	fields.number_of_copies->on_spin
-		([number_of_copies_value=this->number_of_copies_value->contents]
+		([number_of_copies_value=
+		  this->fields.number_of_copies_value->contents]
 		 (ONLY IN_THREAD,
 		  auto &lock,
 		  const auto &trigger,
@@ -137,7 +61,8 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 							     n);
 			 }
 		 },
-		 [number_of_copies_value=this->number_of_copies_value->contents,
+		 [number_of_copies_value=
+		  this->fields.number_of_copies_value->contents,
 		  printer_info=this->printer_info]
 		 (ONLY IN_THREAD,
 		  auto &lock,
@@ -774,26 +699,39 @@ void print_dialogObj::implObj::show_printer(printer_info_lock &lock,
 
 	if (info->supported(CUPS_COPIES))
 	{
-		fields.number_of_copies->set_enabled(true);
-
 		auto iter=user_defaults.find(CUPS_COPIES);
 
 		auto values=info->option_values(CUPS_COPIES);
 
+		std::optional<unsigned> n;
+
 		if (std::holds_alternative<std::vector<std::tuple<int, int>>>
 		    (values))
+		{
 			lock->number_of_copies=std::get<
 				std::vector<std::tuple<int, int>>>(values);
+
+			if (lock->number_of_copies.size())
+				n=std::get<0>(lock->number_of_copies[0]);
+		}
 
 		if (iter != user_defaults.end())
 		{
 			std::istringstream i{iter->second};
 
-			unsigned n;
+			unsigned v;
 
-			if (i >> n)
-				number_of_copies_value->set(n);
+			if (i >> v)
+				n=v;
 		}
+		else
+		{
+			// No user-specified default, we provide 1.
+			n=1;
+		}
+
+		fields.number_of_copies_value->set(n);
+		fields.number_of_copies->set_enabled(!!n);
 	}
 	else
 	{
@@ -920,7 +858,9 @@ cups::jobptr print_dialogObj::implObj::create_print_job()
 	auto n=selected_printer_list->selected();
 
 	if (!n)
-		return {};
+	{
+		throw EXCEPTION(_("Please select a printer"));
+	}
 
 	auto info=lock->available_printers.at(*n)->info();
 
@@ -928,7 +868,7 @@ cups::jobptr print_dialogObj::implObj::create_print_job()
 
 	if (info->supported(CUPS_COPIES))
 	{
-		auto number_of_copies=number_of_copies_value->value();
+		auto number_of_copies=fields.number_of_copies_value->value();
 
 		if (number_of_copies)
 			job->set_option(CUPS_COPIES, *number_of_copies);
@@ -976,10 +916,11 @@ cups::jobptr print_dialogObj::implObj::create_print_job()
 			    lock->finishings,
 			    job);
 
-	if (info->supported("page-ranges") &&
-	    fields.page_range_radio_button->get_value())
+	if (fields.page_range_radio_button->get_value())
 	{
-		auto v=page_ranges_value->value();
+		// It's enabled only if the printer supports page-ranges.
+
+		auto v=fields.page_ranges_value->value();
 
 		if (v && !v->empty())
 			job->set_option("page-ranges", *v);
