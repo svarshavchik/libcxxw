@@ -11,6 +11,8 @@
 <!ENTITY callback "<link linkend='callbacks'>callback</link>">
 <!ENTITY connection_thread "<link linkend='connection_thread'>connection thread</link>">
 <!ENTITY container "<link linkend='container'>container</link>">
+<!ENTITY create_string_validated_input_field_contents "<ulink url='&link-function-x--w-create-string-validated-input-field-contents;'><function>&ns;::w::create_string_validated_input_field_contents</function>()</ulink>">
+<!ENTITY create_validated_input_field_contents "<ulink url='&link-function-x--w-create-validated-input-field-contents;'><function>&ns;::w::create_validated_input_field_contents</function>()</ulink>">
 <!ENTITY creator "<link linkend='creator'>creator lambda</link>">
 <!ENTITY dialogid "<link linkend='dialogidentifiers'>dialog identifier</link>">
 

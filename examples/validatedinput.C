@@ -16,6 +16,8 @@
 #include <x/w/text_param_literals.H>
 #include <x/w/input_field.H>
 #include <x/w/container.H>
+#include <x/w/validated_input_field_contents.H>
+#include <x/w/validated_input_field.H>
 
 #include <x/weakcapture.H>
 
@@ -42,9 +44,14 @@ create_mainwindow(const x::w::main_window &main_window,
 	config.alignment=x::w::halign::center;
 	config.maximum_size=1;
 
-	auto field=factory->create_input_field("", config);
-
-	// set_validator() installs a closure that validates the input field.
+	// create_validated_input_field_contents() returns two values,
+	// a callback and an objects that holds a value for the input
+	// field. create_validated_input_field_contents()'s return value
+	// can be passed to create_input_field() directly. The following
+	// example documents the return value, for clarity.
+	//
+	// The first parameter is a closure that gets called IN_THREAD to
+	// convert the input field into a value.
 	//
 	// The closure must return a std::optional<T>, where T is the validated
 	// value type.
@@ -53,74 +60,91 @@ create_mainwindow(const x::w::main_window &main_window,
 	// std::u32string, and this is what was entered into the input field,
 	// with leading and trailing whitespace trimmed off.
 	//
-	// The remaining parameters are a reference to our input field, that
+	// The remaining parameters: a lock on the input field, that
 	// gets passed in for convenience, and the triggering event.
 	//
 	// A std::nullopt return value indicates that the entered text failed
 	// validation. It's up to the closure to report the parsing failure,
-	// in some way. The passed-in input_field's stop_message() method
+	// in some way. The passed-in input_field lock's stop_message() method
 	// is conveniently available.
 	//
-	// set_validator returns an x::w::validated_input<T> object.
+	// The input field owns a reference on the installed validation
+	// callback, so it can't be strongly captured, because that creates
+	// a circular reference. A weak reference is an option, but the
+	// input field lock object offers a stop_message() for this purpose.
 
-	x::w::validated_input_field<char> validated_char=field->set_validator
-		([]
-		 (ONLY IN_THREAD,
-		  const std::u32string &value,
-		  x::w::input_lock &lock,
-		  const x::w::callback_trigger_t &trigger)
-		 -> std::optional<char>
-		 {
-			 // This field expects one character.
+	std::tuple<x::w::input_field_validation_callback,
+		   x::w::validated_input_field_contents<char>> res=
+		x::w::create_validated_input_field_contents(
+			[]
+			(ONLY IN_THREAD,
+			 const std::u32string &value,
+			 x::w::input_lock &lock,
+			 const x::w::callback_trigger_t &trigger)
+			-> std::optional<char>
+			{
+				// This field expects one character.
 
-			 if (value.size() == 1)
-			 {
-				 auto c=*value.c_str();
+				if (value.size() == 1)
+				{
+					auto c=*value.c_str();
 
-				 // And it must be a letter, if so, the
-				 // validator closure must returned the
-				 // validated value.
+					// And it must be a letter, if so, the
+					// validator closure must returned the
+					// validated value.
 
-				 if ((c >= 'a' && c <= 'z')
-				     ||
-				     (c >= 'A' && c <= 'Z'))
-					 return c;
-			 }
+					if ((c >= 'a' && c <= 'z')
+					    ||
+					    (c >= 'A' && c <= 'Z'))
+						return c;
+				}
 
-			 // Validation failure.
+				// Validation failure.
 
-			 if (value.empty())
-			 {
-				 lock.stop_message("Input required");
-			 }
-			 else
-			 {
-				 lock.stop_message("Letter 'A'-'Z' required");
-			 }
+				if (value.empty())
+				{
+					lock.stop_message("Input required");
+				}
+				else
+				{
+					lock.stop_message(
+						"Letter 'A'-'Z' required"
+					);
+				}
 
-			 return std::nullopt;
-		 },
+				return std::nullopt;
+			},
 
-		 // The second parameter to set_validator() is a closure which
-		 // receives the most recently validated value, which may be
-		 // null if the most recently entered did not pass validation.
-		 //
-		 // The closure can return either a std::string or a
-		 // std::u32string, which becomes the contents of the input
-		 // field.
-		 []
-		 (const std::optional<char> &v) -> std::u32string
-		 {
-			 if (!v)
-				 return U"";
+			// The second parameter is a closure which
+			// receives the most recently validated value,
+			// which may be std::nullopy if the most recently
+			// entered did not pass validation.
+			//
+			// The closure can return either a std::string or a
+			// std::u32string, which becomes the contents of the
+			// input field.
+			[]
+			(const std::optional<char> &v) -> std::u32string
+			{
+				if (!v)
+					return U"";
 
-			 char32_t c=*v;
+				char32_t c=*v;
 
-			 if (c >= 'a' && c <= 'z')
-				 c += 'A'-'a';
+				if (c >= 'a' && c <= 'z')
+					c += 'A'-'a';
 
-			 return {&c, &c+1};
-		 });
+				return {&c, &c+1};
+			});
+
+	// Passing the returned value to create_input_field() returns two
+	// values: the new input field, and a validated input field object
+	// that provides thread-safe access to the validated value.
+
+	std::tuple<x::w::input_field, x::w::validated_input_field<char>> res2=
+		factory->create_input_field(res, config);
+
+	auto &[field, validated_char]=res2;
 
 	factory=layout->append_row();
 
@@ -131,10 +155,8 @@ create_mainwindow(const x::w::main_window &main_window,
 	config.alignment=x::w::halign::right;
 	config.maximum_size=2;
 
-	field=factory->create_input_field("", config);
-
-	// set_string_validator() takes a slightly-different approach.
-	// set_string_validator uses std::istream's formatted extraction
+	// create_string_validated_input_field_contents() takes a
+	// slightly different approach: use std::istream's formatted extraction
 	// operator, ">>" to attempt to extract the typed in value.
 	//
 	// The template parameter gives the type of the extracted value.
@@ -147,68 +169,87 @@ create_mainwindow(const x::w::main_window &main_window,
 	// as set_validator(), the second closure is the same as
 	// set_validator()'s.
 	//
-	// set_string_validator also returns an x::w::validated_input<T> object.
+	// create_string_validated_input_field_contents() also returns an
+	// a validation callback with an x::w::validated_input_contents<T>.
 
-	auto validated_int=field->set_string_validator<int>(
-		[]
-		(ONLY IN_THREAD,
-		 const std::string &value,
-		 std::optional<int> &parsed_value,
-		 x::w::input_lock &lock,
-		 const x::w::callback_trigger_t &trigger)
-		 {
-			 if (parsed_value)
-			 {
-				 if (*parsed_value >= 0 && *parsed_value <= 49)
-					 return;
+	std::tuple<x::w::input_field_validation_callback,
+		   x::w::validated_input_field_contents<int>> res3=
+		x::w::create_string_validated_input_field_contents<int>(
+			[]
+			(ONLY IN_THREAD,
+			 const std::string &value,
+			 std::optional<int> &parsed_value,
+			 x::w::input_lock &lock,
+			 const x::w::callback_trigger_t &trigger)
+			{
+				if (parsed_value)
+				{
+					if (*parsed_value >= 0 &&
+					    *parsed_value <= 49)
+						return;
 
-				 // Even though the int was parsed, we fall
-				 // through and reset the parsed_value
-				 // indicating a parsing failure.
-			 }
-			 else
-			 {
-				 if (value.empty())
-				 {
-					 lock.stop_message("Input required");
-					 return;
-				 }
-			 }
+					// Even though the int was parsed,
+					// we fall through and reset the
+					// parsed_value indicating a parsing
+					// failure.
+				}
+				else
+				{
+					if (value.empty())
+					{
+						lock.stop_message(
+							"Input required"
+						);
+						return;
+					}
+				}
 
-			 parsed_value.reset();
-			 lock.stop_message("Must enter a number 0-49");
-		 },
-		 []
-		 (int n)
-		 {
-			 return std::to_string(n);
-		 },
+				parsed_value.reset();
+				lock.stop_message("Must enter a number 0-49");
+			},
+			[]
+			(int n)
+			{
+				return std::to_string(n);
+			},
 
-		std::nullopt,
-		 // Both set_string_validator() and set_validator() take an
-		 // optional third closure. This closure receives the returned
-		 // value from the first closure. This third closure gets
-		 // invoked after the returned x::w::validated_input_field
-		 // gets updated with the parsed value.
-		 //
-		 // This provides the means of implementing a hook that
-		 // gets invoked with the newly-entered value "already on the
-		 // books". It is not, until the first closure returns, so
-		 // if something gets called from the first closure and it
-		 // looks at the x::w::validated_input_field's contents, it
-		 // will get the previous value, and not the current value.
-		 //
-		 // This is really the only purpose of this closure, but, as
-		 // an added bonus, the closure gets the new value of the
-		 // validated input field as its parameter.
-		 []
-		 (ONLY IN_THREAD, const std::optional<int> &v)
-		 {
-			 if (v)
-				 std::cout << "You entered a " << *v
-					   << std::endl;
-		 });
+			// Optional parameters (also optional for
+			// create_validated_input_field_contents():
 
+			// Initial value
+			0,
+
+			// Both create_validated_input_field_contents() and
+			// create_string_validated_input_field_contents()
+			// take an optional third closure. This closure
+			// receives the returned value from the first
+			// closure. This third closure gets invoked after
+			// the returned x::w::validated_input_field
+			// gets updated with the parsed value.
+			//
+			// This provides the means of implementing a hook that
+			// gets invoked with the newly-entered value "already
+			// on the books". It is not, until the first closure
+			// returns, so if something gets called from the
+			// first closure and it looks at the
+			// x::w::validated_input_field's contents, it will
+			// get the previous value, and not the current value.
+			//
+			// This is really the only purpose of this closure,
+			// but, as an added bonus, the closure gets the new
+			// value of the validated input field as its parameter.
+			[]
+			(ONLY IN_THREAD, const std::optional<int> &v)
+			{
+				if (v)
+					std::cout << "You entered a " << *v
+						  << std::endl;
+			});
+
+	std::tuple<x::w::input_field, x::w::validated_input_field<int>> res4=
+		factory->create_input_field(res3, config);
+
+	auto &[field2, validated_int] = res4;
 
 	factory=layout->append_row();
 
@@ -219,41 +260,45 @@ create_mainwindow(const x::w::main_window &main_window,
 
 	field=factory->create_input_field("", config);
 
-	// on_validate() is an alternative that provides a raw callback that
+	// Creating a validated input field passes an
+	// input_field_validation_callback value to create_input_field().
+	//
+	// on_validate() is a lower-level hook that installs an
+	// input_field_validation_callback, a callback that
 	// gets executed to validate the contents of the input field.
 	//
 	// Validation callbacks, like any other callbacks attach to the
 	// display element, cannot capture a reference to the display element,
 	// or any element in its parent or child hierarchy.
 	//
-	// set_validator() and set_string_validator() take care of
-	// weakly-capturing the input field reference. on_validate() leaves
-	// this up to you, and merely invokes the callback, with the callback
-	// responsible for fetching the reference, and looking at what's in
-	// the input field.
+	// create_validated_input_field_contents() and
+	// create_string_validated_input_field_contents() take care of
+	// constructing the callback that uses the passed-in closures.
 	//
 	// Returning "true" resumes normal processing. Returning "false"
 	// indicates that the input field failed validation. This is used to
 	// block input focus from moving to another field, if possible, keeping
 	// it in the input field that failed validation.
 
-	field->on_validate([question]
-			   (ONLY IN_THREAD,
-			    x::w::input_lock &lock,
-			    const x::w::callback_trigger_t &triggering_event)
-			   {
-				   if (lock.get() == "4")
-					   return true;
+	field->on_validate(
+		[]
+		(ONLY IN_THREAD,
+		 x::w::input_lock &lock,
+		 const x::w::callback_trigger_t &triggering_event)
+		{
+			if (lock.get() == "4")
+				return true;
 
-				   // Use our label to throw a stop_message
-				   // alert. We can capture "question" for
-				   // this callback because it is not a
-				   // direct parent or child widget of the
-				   // callback's widget.
-				   question->stop_message("No it's not");
+			// Use our label to throw a stop_message
+			// alert. We can capture "question" for
+			// this callback because it is not a
+			// direct parent or child widget of the
+			// callback's widget.
+			lock.stop_message("No it's not");
 
-				   return false;
-			   });
+			return false;
+		}
+	);
 	return {validated_char, validated_int};
 }
 
@@ -297,7 +342,8 @@ void validatedinputfields()
 
 	close_flag->wait();
 
-	// set_validator() and set_string_validator() returns
+	// create_validated_input_field_contents() and
+	// create_string_validated_input_field_contents() return
 	// x::w::validated_input_field<T> objects. A reference to these
 	// objects is owned by the installed callback.
 

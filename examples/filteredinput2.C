@@ -70,22 +70,29 @@ create_mainwindow(const x::w::main_window &main_window,
 			       const auto &mcguffin)
 			      {
 				      close_flag->close();
+
 			      });
+
+	// An existing input field's set_validator() is equivalent to
+	// using create_validated_input_field_contents() for
+	// a new input field. set_validator() has the effect of converting
+	// a regular input field into a validated input field.
+	//
+	// This is less efficient, but sometimes it's not convenient to
+	// create the validator closures until after all widgets in the window
+	// get created.
+	//
+	// set_validator() takes the same parameters as
+	// create_validated_input_field_contents() and returns a
+	// x::w::validated_input_field<type>.
+	//
+	// There's also set_string_validator() that's comparable to using
+	// create_string_validated_input_field_contents().
 
 	return field->set_validator
 		([]
 		 (ONLY IN_THREAD,
 		  const std::string &value,
-		  //
-		  // Input fields hold a reference on their validators.
-		  // For that reason the validators cannot capture the
-		  // input field, this will create a circular reference.
-		  //
-		  // Validator receive an input_lock parameter, and can use it
-		  // to call get and set the contents of the input field, or
-		  // call stop_message() or exception_message(), to report
-		  // an error or an exception.
-		  //
 		  x::w::input_lock &lock,
 		  const x::w::callback_trigger_t &trigger)
 		 -> std::optional<std::string>

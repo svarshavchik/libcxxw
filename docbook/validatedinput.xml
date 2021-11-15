@@ -42,27 +42,98 @@ See COPYING for distribution information.
   </blockquote>
 
   <para>
-    <methodname>set_validator</methodname>() and
-    <methodname>set_string_validator</methodname>() install
-    &callback;s that get executed to validate the input field's text
-    and convert it to some arbitrary <replaceable>type</replaceable>.
-    They take two closures, or callable objects, as parameters.
-    The first closure takes the input field's contents.
-    <methodname>set_validator</methodname>()'s first closure returns
+    Validated input fields get created in several steps.
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	&create_validated_input_field_contents; or
+	&create_string_validated_input_field_contents;
+	create and return two objects:
+	a validation callback
+	and an internal, thread-safe object that holds the validated value.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Both objects get passed to <methodname>create_input_field</methodname>()
+	instead of the plain character string with the
+	initial contents of the input field.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	<methodname>create_input_field</methodname>() returns an
+	<ulink url="&link-typedef-x--w-validated-input-field;"><classname>&ns;::w::validated_input_field&lt;type&gt;</classname></ulink>
+	<ulink url="&refobj;">reference-counted object</ulink> that
+	represents the validated contents of the input field, in
+	addition to the new <classname>&ns;::w::input_field</classname>.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	The contents of the input field get accessed, and updated
+	via the
+	<classname>&ns;::w::validated_input_field&lt;type&gt;</classname>
+	object from that point on, instead of the input field.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    &create_validated_input_field_contents;
+    and
+    &create_string_validated_input_field_contents;
+    take two closures, or callable objects, as parameters.
+    The first closure takes the input field's contents and converts it into
+    the validated value.
+  </para>
+
+  <para>
+    &create_validated_input_field_contents;'s first closure returns
     the
     <classname>std::optional&lt;<replaceable>type</replaceable>&gt;</classname>
     representing the validated value.
-    <methodname>set_string_validator</methodname>'s first closure gets
+    &create_string_validated_input_field_contents;'s
+    first closure gets
     a reference to the parsed value as an additional parameter.
-    <methodname>set_validator</methodname>() and
-    <methodname>set_string_validator</methodname>() return an
-    <ulink url="&link-typedef-x--w-validated-input-field;"><classname>&ns;::w::validated_input_field&lt;<replaceable>type</replaceable>&gt;</classname></ulink>.
-    This object represents the most recently validated value.
   </para>
+
+  <para>
+    &create_string_validated_input_field_contents;'s first closure
+    gets the parsed value passed in by reference. The closure can do nothing,
+    this results in the default behavior: <literal>&lt;&lt;</literal>'s
+    results in the new value getting quietly rejected, with no further
+    diagnostics. The closure also has additional options:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	<methodname>reset</methodname>() the parsed value to a
+	<literal>std::nullopt</literal>, indicating that the parsed value
+	is not valid. The passed in <classname>input_lock</classname>'s
+	<methodname>stop_message</methodname>() should be called to display
+	an error popup.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Replace the parsed value (the replacement value can be a
+	<literal>std::nullopt</literal>). This has the effect if overriding
+	the manual input.
+      </para>
+    </listitem>
+  </itemizedlist>
 
   <note>
     <para>
-      <methodname>set_validator</methodname>()'s
+      &create_validated_input_field_contents;'s
       closure returns a <classname>std::optional</classname> without
       a value to indicate that the entered text is not valid. The closure
       gets called when leaving the input field. Returning a value-less
@@ -75,8 +146,8 @@ See COPYING for distribution information.
     <para>
       The closure's first parameter is a <classname>std::string</classname> or
       a <classname>std::u32string</classname> containing the entered text,
-      and the second parameter is its own
-      <classname>&ns;::w::input_field</classname> object.
+      and the second parameter is an
+      <classname>&ns;::w::input_lock</classname> object.
       <filename>validatedinput.C</filename> shows a simple example of
       using its <methodname>stop_message</methodname>() method, which
       display a modal dialog with a <quote>stop</quote> icon, and an error
@@ -84,10 +155,10 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      <methodname>set_string_validator</methodname>() supplies a first closure
+      &create_string_validated_input_field_contents; supplies a first closure
       that uses the <literal>&gt;&gt;</literal> formatted extraction
       operator to convert the input text to the type given as
-      <methodname>set_string_validator</methodname>'s first template parameter.
+      &create_string_validated_input_field_contents;'s first template parameter.
       The first closure gets the resulting
       <classname>std::optional</classname> value as an additional parameter
       (a <literal>std::nullopt</literal> value indicates parsing value).
@@ -100,8 +171,8 @@ See COPYING for distribution information.
 
   <para>
     The second parameter to
-    <methodname>set_validator</methodname>() and
-    <methodname>set_string_validator</methodname>() is another closure, or a
+    &create_validated_input_field_contents; and
+    &create_string_validated_input_field_contents; is another closure, or a
     callable object, that takes a
     <classname>std::optional&lt;<replaceable>type</replaceable>&gt;</classname>
     and converts it to some standardized, or canonical, format, returning it as
@@ -130,20 +201,47 @@ See COPYING for distribution information.
     canonical format that includes the year.
   </para>
 
+  <para>
+    There are two optional parameters that follow the required two closures:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	The initial value of the validated input field.
+	A <literal>std::nullopt</literal> value indicates no initial
+	validated input field.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	A third closure that gets invoked after the input field's contents
+	were changed and then validated.
+	<filename>validatedinput.C</filename> uses the third closure
+	to print a message every time the numeric field's value changes.
+      </para>
+    </listitem>
+  </itemizedlist>
+
   <section id="onvalidate">
     <title>Using <methodname>on_validate</methodname>()</title>
 
     <para>
-      <methodname>set_validator</methodname>() and
-      <methodname>set_string_validator</methodname>() implement their
-      validation logic using <methodname>on_validate</methodname>(), which
-      installs a &callback; that gets invoked by enter <keycap>Enter</keycap>,
+      &create_validated_input_field_contents; and
+      &create_string_validated_input_field_contents; implement their
+      validation logic using <methodname>on_validate</methodname>().
+      This is a method of an existing input field
+      which
+      installs a &callback; that gets invoked by <keycap>Enter</keycap>,
       or by attempting to tab out of, or click out of, the text input field.
       <methodname>on_validate</methodname>() is a low-level &callback;;
-      <methodname>set_validator</methodname>() and
-      <methodname>set_string_validator</methodname>() add their own
+      &create_validated_input_field_contents; and
+      &create_string_validated_input_field_contents; add their own
       supplemental logic to retrieve the text input's contents, and
-      validate it according to their rules.
+      validate it according to their rules. It's also possible to
+      create and install the same validated input callbacks in an existing
+      input field, see <xref linkend="ondefaultfilter" /> for more information.
     </para>
 
     <para>
