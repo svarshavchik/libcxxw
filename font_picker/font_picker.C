@@ -589,76 +589,82 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 	editable_comboboxlayoutmanager fs_lm=
 		font_picker_impl->popup_fields.font_size->get_layoutmanager();
 
-	auto font_size_validator=fs_lm->set_string_validator
-		([selection_required=config.selection_required,
-		  font_size_error=font_picker_impl
-		  ->popup_fields.font_size_error]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  unsigned *parsed_value,
-		  const auto &my_field,
-		  const auto &trigger)->std::optional<unsigned>
-		 {
-			 if (selection_required &&
-			     (!parsed_value || *parsed_value == 0))
-			 {
-				 font_size_error->update
-					 (value.empty() ?
-					  _("Font size required") :
-					  _("Invalid size"));
-				 return std::nullopt;
-			 }
+	auto font_size_validator=fs_lm->set_string_validator<unsigned>(
+		[selection_required=config.selection_required,
+		 font_size_error=font_picker_impl
+		 ->popup_fields.font_size_error]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 std::optional<unsigned> &parsed_value,
+		 const auto &my_field,
+		 const auto &trigger)
+		{
+			if (selection_required &&
+			    (!parsed_value || *parsed_value == 0))
+			{
+				font_size_error->update
+					(value.empty() ?
+					 _("Font size required") :
+					 _("Invalid size"));
+				parsed_value.reset();
+				return;
+			}
 
-			 if (!parsed_value)
-			 {
-				 if (value.empty())
-					 return 0;
+			if (!parsed_value)
+			{
+				if (value.empty())
+				{
+					parsed_value=0;
+					return;
+				}
 
-				 font_size_error->update(_("Invalid size"));
-				 return std::nullopt;
-			 }
+				font_size_error->update(_("Invalid size"));
+				parsed_value.reset();
+				return;
+			}
 
-			 if (*parsed_value > 999)
-			 {
-				 font_size_error->update(_("Maximum point size is 999"));
-				 return std::nullopt;
-			 }
+			if (*parsed_value > 999)
+			{
+				font_size_error->update(_("Maximum point size is 999"));
+				parsed_value.reset();
+				return;
+			}
 
-			 font_size_error->update(" ");
+			font_size_error->update(" ");
+		},
+		[]
+		(unsigned v) -> std::string
+		{
+			if (v == 0)
+				return "";
 
-			 return *parsed_value;
-		 },
-		 []
-		 (unsigned v) -> std::string
-		 {
-			 if (v == 0)
-				 return "";
+			char buffer[8];
 
-			 char buffer[8];
+			auto res=std::to_chars(buffer, buffer+sizeof(buffer),
+					       v);
 
-			 auto res=std::to_chars(buffer, buffer+sizeof(buffer),
-						v);
+			if (res.ec != std::errc{}) // Shouldn't happen.
+			{
+				return "";
+			}
 
-			 if (res.ec != std::errc{}) // Shouldn't happen.
-			 {
-				 return "";
-			 }
+			return {buffer, res.ptr};
+		},
+		std::nullopt,
+		[wimpl]
+		(ONLY IN_THREAD, const std::optional<unsigned> &v)
+		{
+			if (!v)
+				return;
 
-			 return {buffer, res.ptr};
-		 },
-		 [wimpl]
-		 (ONLY IN_THREAD, const std::optional<unsigned> &v)
-		 {
-			 if (!v)
-				 return;
+			auto impl=wimpl->get();
 
-			 auto impl=wimpl->get();
+			if (!impl)
+				return;
 
-			 if (!impl)
-				 return;
-
-			 impl->update_font_size(IN_THREAD, *v);
-		 });
+			impl->update_font_size(IN_THREAD, *v);
+		}
+	);
 
 	// Need the initial point size shown?
 	if (config.selection_required || config.initial_font)

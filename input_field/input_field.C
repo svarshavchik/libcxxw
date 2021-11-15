@@ -265,6 +265,27 @@ input_field
 factoryObj::create_input_field(const text_param &text,
 			       const input_field_config &config)
 {
+	return create_input_field(text, false, {}, config);
+}
+
+input_field
+factoryObj::create_input_field(const text_param &text,
+			       bool validated,
+			       const input_field_validation_callbackptr &cb)
+{
+	input_field_config config;
+
+	return create_input_field(text, validated, cb, config);
+}
+
+input_field
+factoryObj::create_input_field(
+	const text_param &text,
+	bool validated,
+	const input_field_validation_callbackptr  &validation_callback,
+	const input_field_config &config
+)
+{
 	// First, create the input field object. The input field object is
 	// basically a grid container.
 	//
@@ -314,7 +335,9 @@ factoryObj::create_input_field(const text_param &text,
 
 			   editor_implObj::init_args args
 				   {
-					   peephole_impl, text, config,
+					   peephole_impl, text, validated,
+					   config,
+					   validation_callback,
 					   left_to_right_icon,
 					   right_to_left_icon,
 				   };

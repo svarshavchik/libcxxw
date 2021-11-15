@@ -84,36 +84,37 @@ void create_mainwindow(const x::w::main_window &main_window,
 	// So first, we'll attach a validator for the input field, to
 	// make the input field accept only numbers between 1 and 49.
 
-	auto validated_int=field->set_string_validator
-		([]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  int *parsed_value,
-		  x::w::input_lock &lock,
-		  const x::w::callback_trigger_t &trigger) -> std::optional<int>
-		 {
-			 if (parsed_value)
-			 {
-				 if (*parsed_value > 0 && *parsed_value <= 49)
-					 return *parsed_value;
-			 }
-			 else
-			 {
-				 if (value.empty())
-				 {
-					 lock.stop_message("Entry required");
-					 return std::nullopt;
-				 }
-			 }
+	auto validated_int=field->set_string_validator<int>(
+		[]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 std::optional<int> &parsed_value,
+		 x::w::input_lock &lock,
+		 const x::w::callback_trigger_t &trigger)
+		{
+			if (parsed_value)
+			{
+				if (*parsed_value > 0 && *parsed_value <= 49)
+					return;
+			}
+			else
+			{
+				if (value.empty())
+				{
+					lock.stop_message("Entry required");
+					return;
+				}
+			}
 
-			 lock.stop_message("Must enter a number 1-49");
-			 return std::nullopt;
-		 },
-		 []
-		 (int n)
-		 {
-			 return std::to_string(n);
-		 });
+			parsed_value.reset();
+			lock.stop_message("Must enter a number 1-49");
+		},
+		[]
+		(int n)
+		{
+			return std::to_string(n);
+		}
+	);
 
 	// Now that we have our validated input field, we can make use of
 	// it to drive the spin buttons.

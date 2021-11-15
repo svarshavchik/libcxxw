@@ -1180,174 +1180,174 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 	// sure all are unique, and we will automatically sort the rows
 	// by value.
 
-	auto validator=value->set_string_validator
-		(IN_THREAD,
-		 [container=make_weak_capture(container, value)]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  size_t *parsed_value,
-		  const auto &lock,
-		  const auto &trigger)
-		 -> std::optional<size_t>
-		 {
-			 if (!parsed_value)
-			 {
-				 lock.stop_message(
-					 _("Enter the gradient"
-					   " scale position, "
-					   " as a positive numeric"
-					   " value")
-				 );
-				 return std::nullopt;
-			 }
+	auto validator=value->set_string_validator<size_t>(
+		IN_THREAD,
+		[container=make_weak_capture(container, value)]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 std::optional<size_t> &parsed_value,
+		 const auto &lock,
+		 const auto &trigger)
+		{
+			if (!parsed_value)
+			{
+				lock.stop_message(
+					_("Enter the gradient"
+					  " scale position, "
+					  " as a positive numeric"
+					  " value")
+				);
+				return;
+			}
 
-			 // make sure this is not a dupe.
+			// make sure this is not a dupe.
 
-			 auto got=container.get();
+			auto got=container.get();
 
-			 if (!got)
-				 return *parsed_value;
+			if (!got)
+				return;
 
-			 auto &[container, field]=*got;
+			auto &[container, field]=*got;
 
-			 x::w::gridlayoutmanager glm=
-				 container->get_layoutmanager();
+			x::w::gridlayoutmanager glm=
+				container->get_layoutmanager();
 
-			 // skip this row, when checking for dupes.
-			 auto rowcol=glm->lookup_row_col(field);
+			// skip this row, when checking for dupes.
+			auto rowcol=glm->lookup_row_col(field);
 
-			 if (!rowcol)
-				 return *parsed_value;
+			if (!rowcol)
+				return;
 
-			 auto &[row, col]=*rowcol;
+			auto &[row, col]=*rowcol;
 
-			 // 1) Check for dupes
-			 // 2) Figure out where this index value should go,
-			 //    keeping all rows in sorted order.
+			// 1) Check for dupes
+			// 2) Figure out where this index value should go,
+			//    keeping all rows in sorted order.
 
-			 size_t real_row=1; // Where we think this row belongs.
+			size_t real_row=1; // Where we think this row belongs.
 
-			 auto n=glm->rows();
+			auto n=glm->rows();
 
-			 for (size_t i=1; i+1<n; ++i)
-			 {
-				 if (i == row)
-					 continue; // This is me.
+			for (size_t i=1; i+1<n; ++i)
+			{
+				if (i == row)
+					continue; // This is me.
 
-				 x::w::focusable_container f=glm->get(i, 1);
+				x::w::focusable_container f=glm->get(i, 1);
 
-				 // We store the validator here
-				 x::w::validated_input_field<size_t>
-					 validator=f->appdata;
+				// We store the validator here
+				x::w::validated_input_field<size_t>
+					validator=f->appdata;
 
-				 auto v=validator->value();
+				auto v=validator->value();
 
-				 // Not validated, pretend it's not there.
-				 if (!v)
-					 continue;
-				 if (*v == *parsed_value)
-				 {
-					 lock.stop_message(
-						 _("All gradient values must"
-						   " be unique")
-					 );
-					 return std::nullopt;
-				 }
+				// Not validated, pretend it's not there.
+				if (!v)
+					continue;
+				if (*v == *parsed_value)
+				{
+					lock.stop_message(
+						_("All gradient values must"
+						  " be unique")
+					);
+					parsed_value.reset();
+					return;
+				}
 
-				 // As long as we see a smaller value,
-				 // make a very adamant statement that this
-				 // value belongs on the next line.
+				// As long as we see a smaller value,
+				// make a very adamant statement that this
+				// value belongs on the next line.
 
-				 if (*v < *parsed_value)
-					 real_row=i+1;
-			 }
+				if (*v < *parsed_value)
+					real_row=i+1;
+			}
 
-			 if (real_row != row)
-			 {
-				 // Ok, move the row.
-				 //
-				 // Start by creating the sort_by index.
+			if (real_row != row)
+			{
+				// Ok, move the row.
+				//
+				// Start by creating the sort_by index.
 
-				 std::vector<size_t> indexes;
+				std::vector<size_t> indexes;
 
-				 indexes.resize(n);
-				 size_t i=0;
-				 std::generate_n(indexes.begin(), n,
-						 [&]
-						 {
-							 return i++;
-						 });
+				indexes.resize(n);
+				size_t i=0;
+				std::generate_n(indexes.begin(), n,
+						[&]
+						{
+							return i++;
+						});
 
-				 indexes.erase(indexes.begin()+row);
+				indexes.erase(indexes.begin()+row);
 
-				 if (real_row > row)
-					 --real_row; // erase() moved it.
+				if (real_row > row)
+					--real_row; // erase() moved it.
 
-				 indexes.insert(indexes.begin()+real_row,
-						row);
+				indexes.insert(indexes.begin()+real_row,
+					       row);
 
-				 glm->resort_rows(indexes);
+				glm->resort_rows(indexes);
 
-				 // Update tabbing order.
-				 //
-				 // There's always a focusable element on
-				 // the next row. It could be the "Add"
-				 // button.
+				// Update tabbing order.
+				//
+				// There's always a focusable element on
+				// the next row. It could be the "Add"
+				// button.
 
-				 x::w::focusable next_focusable=
-					 glm->get(real_row+1, 0);
+				x::w::focusable next_focusable=
+					glm->get(real_row+1, 0);
 
-				 next_focusable->get_focus_before_me
-					 ({ glm->get(real_row, 0),
-					    glm->get(real_row, 1),
-					    glm->get(real_row, 2)
-					 });
-			 }
-			 return *parsed_value;
-		 },
-		 []
-		 (size_t n) -> std::string
-		 {
-			 return std::to_string(n);
-		 },
-		 [container=make_weak_capture(container)]
-		 (ONLY IN_THREAD, const std::optional<size_t> &value)
-		 {
-			 // Enable or disable the Add button depending on
-			 // the results of this field's validation.
+				next_focusable->get_focus_before_me
+					({ glm->get(real_row, 0),
+						 glm->get(real_row, 1),
+						 glm->get(real_row, 2)
+					});
+			}
+		},
+		[]
+		(size_t n) -> std::string
+		{
+			return std::to_string(n);
+		},
+		std::nullopt,
+		[container=make_weak_capture(container)]
+		(ONLY IN_THREAD, const std::optional<size_t> &value)
+		{
+			// Enable or disable the Add button depending on
+			// the results of this field's validation.
 
-			 auto got=container.get();
+			auto got=container.get();
 
-			 if (!got)
-				 return;
+			if (!got)
+				return;
 
-			 auto &[container]=*got;
+			auto &[container]=*got;
 
-			 x::w::gridlayoutmanager glm=
-				 container->get_layoutmanager();
+			x::w::gridlayoutmanager glm=
+				container->get_layoutmanager();
 
-			 appinvoke
-				 ([&]
-				  (auto *app)
-				  {
-					  // If validation failed presume
-					  // that "Add" is disabled
+			appinvoke
+				([&]
+				 (auto *app)
+				{
+					// If validation failed presume
+					// that "Add" is disabled
 
-					  if (!value)
-						  app->color_add_enable_disable
-							  (IN_THREAD,
-							   container,
-							   glm,
-							   false);
-					  else
-						  // Otherwise compute it
-						  // the long way.
-						  app->color_add_enable_disable
-							  (IN_THREAD,
-							   container,
-							   glm);
-				  });
-		 });
+					if (!value)
+						app->color_add_enable_disable
+							(IN_THREAD,
+							 container,
+							 glm,
+							 false);
+					else
+						// Otherwise compute it
+						// the long way.
+						app->color_add_enable_disable
+							(IN_THREAD,
+							 container,
+							 glm);
+				});
+		});
 
 	show(value);
 

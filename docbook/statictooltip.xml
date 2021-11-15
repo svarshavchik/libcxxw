@@ -28,13 +28,13 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    A static tooltip behaves differently in several ways:
+    A static tooltip behaves differently:
   </para>
 
   <itemizedlist>
     <listitem>
       <para>
-	A static tooltip gets explicitly <methodname>show</methodname>() and
+	A static tooltip gets explicitly <methodname>show</methodname>()n and
 	<methodname>hide</methodname>()n by the application.
       </para>
     </listitem>
@@ -53,7 +53,7 @@ See COPYING for distribution information.
 	  widgets</link>. The static tooltip gets shown
 	only when its widget has keyboard focus, and hidden when
 	the widget loses keyboard focus.
-	This functionality employs the
+	This functionality uses the
 	<methodname>on_keyboard_focus</methodname>() &callback;.
       </para>
     </listitem>

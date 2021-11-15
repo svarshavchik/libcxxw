@@ -502,31 +502,36 @@ void testbutton()
 				  });
 			 factory=layout->append_row();
 
-			 auto n=factory->create_input_field("", {5});
+			 auto n=factory->create_input_field(
+				 LIBCXX_NAMESPACE::w::create_string_validated_input_field_contents<int>(
+					 []
+					 (THREAD_CALLBACK,
+					  const std::string &v,
+					  std::optional<int> &nptr,
+					  const auto &lock,
+					  const auto &ignore)
+					 {
+						 if (nptr && *nptr >= 0
+						     && *nptr <= 99)
+							 return;
 
-			 n->set_string_validator([]
-						 (THREAD_CALLBACK,
-						  const std::string &v,
-						  int *nptr,
-						  const auto &lock,
-						  const auto &ignore)
-						 -> std::optional<int> {
-							 if (nptr && *nptr >= 0
-							     && *nptr <= 99)
-								 return *nptr;
+						 if (!v.empty())
+							 lock.stop_message(
+								 "0-99, "
+								 "please...");
+						 nptr.reset();
+					 },
+					 []
+					 (const std::optional<int> &n)
+					 -> std::string
+					 {
+						 if (!n)
+							 return "";
 
-							 if (!v.empty())
-								 lock.stop_message("0-99, please...");
-							 return std::nullopt;
-						 },
-						 []
-						 (const std::optional<int> &n)
-						 -> std::string {
-							 if (!n)
-								 return "";
-
-							 return std::to_string(*n);
-						 });
+						 return std::to_string(*n);
+					 },
+					 1),
+				 {5});
 
 			 factory=layout->append_row();
 

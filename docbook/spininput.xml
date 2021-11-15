@@ -22,7 +22,7 @@ See COPYING for distribution information.
       <para>
 	Two optional, small buttons to the right of an input field provide
 	a convenient way to enter a number in a relatively small numerical
-	range. The two small buttons typically "spin" the value in the
+	range. The two small buttons "spin" the value in the
 	input field; decreasing or increasing the value with each click.
       </para>
     </caption>
@@ -77,7 +77,8 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      <filename>spininput.C</filename> gives an example of using
+      <filename>spininput.C</filename> is an example of a typical
+      imeplementation:
       <link linkend="validatedinput">input field validators</link>.
       <filename>spininput.C</filename> installs a validator that requires
       a number value in the input field, rejects invalid input, and

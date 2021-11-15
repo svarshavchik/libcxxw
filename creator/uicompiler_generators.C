@@ -446,24 +446,20 @@ struct to_size_t_handler : setting_handler {
 
 		// Create a size_t validator.
 
-		auto validated_input=field->set_string_validator
-			([]
-			 (ONLY IN_THREAD,
-			  const std::string &value,
-			  size_t *parsed_value,
-			  const auto &field,
-			  const auto &trigger) -> std::optional<size_t>
-			 {
-				 if (parsed_value)
-					 return *parsed_value;
-
-				 return std::nullopt;
-			 },
-			 []
-			 (size_t n)
-			 {
-				 return std::to_string(n);
-			 });
+		auto validated_input=field->set_string_validator<size_t>(
+			[]
+			(ONLY IN_THREAD,
+			 const std::string &value,
+			 std::optional<size_t> &parsed_value,
+			 const auto &field,
+			 const auto &trigger)
+			{
+			},
+			[]
+			(size_t n)
+			{
+				return std::to_string(n);
+			});
 
 
 		return 	[field, validated_input]

@@ -508,6 +508,7 @@ make_manual_input_validator(const uielements &tmpl,
 
 			 return buffer;
 		 },
+		 std::nullopt,
 		 [wimpl, n]
 		 (ONLY IN_THREAD, const std::optional<rgb_component_t> &v)
 		 {

@@ -137,35 +137,33 @@ create_mainwindow(const x::w::main_window &main_window,
 	// set_string_validator uses std::istream's formatted extraction
 	// operator, ">>" to attempt to extract the typed in value.
 	//
-	// The first closure passed to set_string_validator() also returns
-	// a std::optional<T>. set_string_validator() uses >> to attempt
-	// to extract the typed-in value.
+	// The template parameter gives the type of the extracted value.
 	//
 	// The first parameter is the original, raw input, before the
-	// formatted extraction. The next parameter is a pointer to the
-	// extracted value, or nullptr if the extraction failed. The extraction
-	// could fail if nothing was typed, and that's what the first
-	// parameter is for. The remaining parameters have the same meaning
-	// as set_validator(), and the second closure is the same as
+	// formatted extraction. The next parameter is the parsed value,
+	// std::nullopt indicates a failure to extract the value. This
+	// includes no input, inspect the raw value to determine that.
+	// The remaining parameters have the same meaning
+	// as set_validator(), the second closure is the same as
 	// set_validator()'s.
 	//
-	// set_validator also returns an x::w::validated_input<T> object.
+	// set_string_validator also returns an x::w::validated_input<T> object.
 
-	auto validated_int=field->set_string_validator
-		([]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  int *parsed_value,
-		  x::w::input_lock &lock,
-		  const x::w::callback_trigger_t &trigger) -> std::optional<int>
+	auto validated_int=field->set_string_validator<int>(
+		[]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 std::optional<int> &parsed_value,
+		 x::w::input_lock &lock,
+		 const x::w::callback_trigger_t &trigger)
 		 {
 			 if (parsed_value)
 			 {
 				 if (*parsed_value >= 0 && *parsed_value <= 49)
-					 return *parsed_value;
+					 return;
 
 				 // Even though the int was parsed, we fall
-				 // through and return a null optional,
+				 // through and reset the parsed_value
 				 // indicating a parsing failure.
 			 }
 			 else
@@ -173,12 +171,12 @@ create_mainwindow(const x::w::main_window &main_window,
 				 if (value.empty())
 				 {
 					 lock.stop_message("Input required");
-					 return std::nullopt;
+					 return;
 				 }
 			 }
 
+			 parsed_value.reset();
 			 lock.stop_message("Must enter a number 0-49");
-			 return std::nullopt;
 		 },
 		 []
 		 (int n)
@@ -186,6 +184,7 @@ create_mainwindow(const x::w::main_window &main_window,
 			 return std::to_string(n);
 		 },
 
+		std::nullopt,
 		 // Both set_string_validator() and set_validator() take an
 		 // optional third closure. This closure receives the returned
 		 // value from the first closure. This third closure gets

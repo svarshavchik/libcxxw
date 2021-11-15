@@ -89,6 +89,13 @@ public:
 		>::optional_return_type_t optional_return_type_t;
 };
 
+//! What create_validated_input_field_contents()'s validation_function's type.
+
+template<input_field_validation_function validation_function>
+using input_field_validation_function_type=
+	typename input_field_detect_validator_functor_parameter<
+	validation_function>::optional_return_type_t;
+
 //! Specialization: the input field validator takes a \c std::u32string parameter.
 template<typename validator_functor>
 class input_field_detect_validator_functor_parameter<
@@ -133,8 +140,10 @@ public:
 
 	//! Constructor
 	template<typename F>
-	validated_input_field_implObj(F &&f)
-		: formatter{std::forward<F>(f)}
+	validated_input_field_implObj(const std::optional<type> &initial_value,
+				      F &&f)
+		: validated_input_field_contentsObj<type>{initial_value},
+		formatter{std::forward<F>(f)}
 	{
 	}
 
@@ -167,6 +176,28 @@ public:
 		// Set it, and mark it as validated.
 
 		lock.set(IN_THREAD, s, true);
+	}
+
+	//! Set text_param to the formatted contents of the validated value.
+
+	//! This is used when creating the input field.
+
+	virtual bool to_text_param(text_param &t) override
+	{
+		return this->access([&]
+			     (const auto &v)
+		{
+			bool flag=v;
+
+			if (flag)
+			{
+				formatter_ret_t s=formatter(*v);
+
+				t(s);
+			}
+
+			return flag;
+		});
 	}
 };
 
@@ -207,6 +238,7 @@ const auto &[callback, contents] = create_validated_input_field_contents(
          {
              return std::to_string(v);
          },
+         std::nullopt,
          []
          (ONLY IN_THREAD, int v)
          {
@@ -264,9 +296,12 @@ canonical format. In this manner, typing in just the month and the day
 then tabbing out of the date input field updates it to show the full
 date.
 
-create_validated_input_field_contents() optional third closure gets called after
-the input field's validated value changes, and it receives the new validated
-value.
+create_validated_input_field_contents() has two defaulted parameters:
+
+- the initial value of the input field, or \c std::nullopt.
+
+- a third closure that gets called after the input field's validated value
+changes, and it receives the new validated value.
 
 */
 
@@ -279,10 +314,12 @@ template<input_field_validation_function validation_function,
 auto create_validated_input_field_contents(
 	validation_function &&validator,
 	canonical_format_functor &&formatter,
+	const std::optional<input_field_validation_function_type<
+	validation_function>> &initial_value=std::nullopt,
 	new_value_functor &&new_value=new_value_functor{}
 ) -> create_validator_ret_t<validation_function>
 {
-	// Figure out the validator's first parameter.
+	// Figure out what the validation function returns
 
 	typedef input_field_detect_validator_functor_parameter
 		<validation_function> validator_t;
@@ -294,7 +331,8 @@ auto create_validated_input_field_contents(
 	validated_input_field_contents<type> contents=
 		ref<validated_input_field_implObj
 		    <type, canonical_format_functor>>
-		::create(std::forward<canonical_format_functor>(formatter));
+		::create(initial_value,
+			 std::forward<canonical_format_functor>(formatter));
 
 	return {
 		[contents, validator, new_value]
@@ -326,8 +364,10 @@ auto create_validated_input_field_contents(
 Uses create_validated_input_field_contents() to create an
 \ref input_field "input field"
 validator that uses the >> operator to convert the input field's contents
-to an object. This is convenient when the object is an integral type, but
-any default-constructible type can be used.
+to a the type given by the template parameter. This is convenient when
+the object is an integral type, but any default-constructible type can be used.
+
+The first template parameter is the object type.
 
 create_validated_input_field_contents() returns the same values: the
 callback that gets passed to the input field's "on_validate()" and
@@ -335,30 +375,30 @@ a \ref validated_input_field_contents "validated_input_field_contents<T>"
 validator object.
 
 \code
-const auto &[callback, contents] = create_string_validated_input_field_contents(
+const auto &[callback, contents] = create_string_validated_input_field_contents<int>(
          []
          (ONLY IN_THREAD,
-          const std::string &value,
-          int *parsed_value,
+          const std::string &unparsed_value,
+          std::optional<int> &value,
           INSERT_LIBX_NAMESPACE::w::input_lock &lock,
-          const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)-> std::optional<int>
+          const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)
          {
-             if (parsed_value)
+             if (value)
              {
-                 if (*parsed_value > 99)
+                 if (*value > 99)
                  {
                       lock.stop_message("Invalid number");
-                      return std::nullopt;
+                      value.reset();
+		      return;
                  }
              }
-
-             return *parsed_value;
          },
          []
          (int v) -> std::string
          {
              return std::to_string(v);
          },
+         std::nullopt,
          []
          (ONLY IN_THREAD, int v)
          {
@@ -373,83 +413,82 @@ that receives the following parameters
 
 - the closure gets invoked IN_THREAD.
 
-- a \c std::string with the input field's contents
+- a \c std::string with the input field's unparsed contents
 
-- a possibly NULL pointer to an object that the input field's contents were
-converted to using the >> operator. A NULL value indicates a conversion failure
+- a reference to a \c std::optional object. It's value is what input field's
+contents were converted to using the >> operator. A \c std::nullopt
+indicates a conversion failure
 which could be because the field is empty (the closure can look at the
-string parameter to verify that).
+unparsed value parameter to verify that).
 
 - an input lock and a trigger, they serve the same purpose as the corresponding
 parameters to the analogous create_validated_input_field_contents() callback.
 
-The closure returns a \c std::optional of the same object that the pointer
-parameter points to. The closure can return a different value, which updates
-the input field.
+The closure may modify the referenced \c std::optional value, and change a
+\c std::nullopt to some value, or the other way around. The input field gets
+updated to reflect the changed value.
+*/
 
- */
-
-template<input_field_string_validation_function validation_function,
+template<typename T,
+	 input_field_string_validation_function<T> validation_function,
 	 typename canonical_format_functor,
-	 typename new_value_functor=default_new_value_function<
-		 input_field_string_validation_function_type<
-			 validation_function>
-		 >
+	 typename new_value_functor=default_new_value_function<T>
 	 >
 auto create_string_validated_input_field_contents(
 	validation_function &&validator,
 	canonical_format_functor &&canonical_format,
+	const std::optional<T> &initial_value=std::nullopt,
 	new_value_functor &&new_value=new_value_functor{}
-) -> create_string_validator_ret_t<validation_function>
+) -> create_string_validator_ret_t<T>
 {
-	// The validator returns a std::optional, figure out
-	// the type being returned.
-
-	typedef input_field_string_validation_function_type<
-		validation_function> object_type;
-
 	return create_validated_input_field_contents(
 		[validator]
 		(ONLY IN_THREAD,
 		 const std::string &value,
 		 auto &lock,
 		 const callback_trigger_t &trigger)
-		 {
-			 // Non empty value entered into the input field.
+		{
+			std::optional<T> v;
 
-			 if (!value.empty())
-			 {
-				 // Use the formatted extraction operator.
+			// Non empty value entered into the input field.
 
-				 object_type v{};
+			if (!value.empty())
+			{
+				// Use the formatted extraction operator.
 
-				 std::istringstream i{value};
+				v.emplace();
 
-				 i >> v;
+				std::istringstream i{value};
 
-				 if (!i.fail())
-				 {
-					 // Even if it succeeds, we want to
-					 // make sure it consumed all input.
+				i >> *v;
 
-					 i.get();
-					 if (i.eof())
-					 {
-						 return validator(IN_THREAD,
-								  value, &v,
-								  lock,
-								  trigger);
-					 }
-				 }
-			 }
+				if (!i.fail())
+				{
+					// Even if it succeeds, we want to
+					// make sure it consumed all input.
 
-			 return validator(IN_THREAD,
-					  value, nullptr,
-					  lock, trigger);
-		 },
+					i.get();
+					if (i.eof())
+					{
+						validator(IN_THREAD,
+							  value, v,
+							  lock,
+							  trigger);
+						return v;
+					}
+				}
+				v.reset();
+			}
 
-		 std::forward<canonical_format_functor>(canonical_format),
-		 std::forward<new_value_functor>(new_value));
+			validator(IN_THREAD,
+				  value, v,
+				  lock, trigger);
+			return v;
+		},
+
+		std::forward<canonical_format_functor>(canonical_format),
+		initial_value,
+		std::forward<new_value_functor>(new_value));
 }
 
 LIBCXXW_NAMESPACE_END

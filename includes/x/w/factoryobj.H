@@ -21,6 +21,7 @@
 #include <x/w/focusable_labelfwd.H>
 #include <x/w/buttonfwd.H>
 #include <x/w/input_fieldfwd.H>
+#include <x/w/validated_input_fieldfwd.H>
 #include <x/w/imagefwd.H>
 #include <x/w/image_buttonfwd.H>
 #include <x/w/image_button_appearancefwd.H>
@@ -40,6 +41,7 @@
 #include <x/functional.H>
 #include <x/optional_args.H>
 #include <string_view>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -191,6 +193,67 @@ public:
 
 	input_field
 	create_input_field(const text_param &text,
+			   const input_field_config &config);
+
+	//! Create a text input field
+
+	template<typename T, typename ...Args>
+	std::tuple<input_field, validated_input_field<T>
+		   > create_input_field(const std::tuple<
+					input_field_validation_callback,
+					validated_input_field_contents<T>
+					> &initial_contents)
+	{
+		const auto &[callback, contents]=initial_contents;
+
+		text_param t;
+
+		bool validated=contents->to_text_param(t);
+
+		auto f=this->create_input_field(t, validated, callback);
+
+		return {
+			f,
+			validated_input_field<T>::create(contents, f)
+		};
+	}
+
+	//! Create a text input field
+
+	template<typename T, typename ...Args>
+	std::tuple<input_field, validated_input_field<T>> create_input_field(
+		const std::tuple<input_field_validation_callback,
+		validated_input_field_contents<T>> &initial_contents,
+		const input_field_config &config)
+	{
+		const auto &[callback, contents]=initial_contents;
+
+		text_param t;
+
+		bool validated=contents->to_text_param(t);
+
+		auto f=this->create_input_field(t, validated, callback,
+						config);
+
+		return {
+			f,
+			validated_input_field<T>::create(contents, f)
+		};
+	}
+
+	//! Create a text input field
+
+	input_field
+	create_input_field(const text_param &text,
+			   bool validated,
+			   const input_field_validation_callbackptr &cb);
+
+	//! Create a text input field
+
+	input_field
+	create_input_field(const text_param &text,
+			   bool validated,
+			   const input_field_validation_callbackptr &cb,
 			   const input_field_config &config);
 
 	//! Create a date input field

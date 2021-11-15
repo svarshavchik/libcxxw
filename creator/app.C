@@ -580,6 +580,7 @@ static inline auto value_validator(const x::w::input_field &field,
 
 			 return v;
 		 },
+		 std::nullopt,
 		 [callback]
 		 (ONLY IN_THREAD,
 		  const std::optional<std::string> &v)
@@ -590,27 +591,29 @@ static inline auto value_validator(const x::w::input_field &field,
 
 static inline auto dimension_new_name_validator(const x::w::input_field &field)
 {
-	return field->set_validator
-		([]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  const auto &lock,
-		  const auto &trigger)
-		 -> std::optional<std::string>
-		 {
-			 return value;
-		 },
-		 []
-		 (const std::string &v) -> std::string
-		 {
-			 return v;
-		 },
-		 []
-		 (ONLY IN_THREAD,
-		  const std::optional<std::string> &v)
-		 {
-			 appinvoke(&appObj::dimension_field_updated, IN_THREAD);
-		 });
+	return field->set_validator(
+		[]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 const auto &lock,
+		 const auto &trigger)
+		-> std::optional<std::string>
+		{
+			return value;
+		},
+		[]
+		(const std::string &v) -> std::string
+		{
+			return v;
+		},
+		std::nullopt,
+		[]
+		(ONLY IN_THREAD,
+		 const std::optional<std::string> &v)
+		{
+			appinvoke(&appObj::dimension_field_updated, IN_THREAD);
+		}
+	);
 }
 
 static inline auto dimension_value_validator(const x::w::input_field &field)
@@ -702,10 +705,12 @@ template<typename field_type>
 static auto optional_double_validator(field_type &&field,
 				      void (appObj::*validated_cb)(ONLY))
 {
-	return field->set_validator
-		(optional_double_validator_closure(),
-		 optional_double_formatter_closure(),
-		 optional_double_new_value_closure(validated_cb));
+	return field->set_validator(
+		optional_double_validator_closure(),
+		optional_double_formatter_closure(),
+		std::nullopt,
+		optional_double_new_value_closure(validated_cb)
+	);
 }
 
 struct all_gradient_values : x::w::linear_gradient_values,
@@ -715,46 +720,48 @@ static const x::w::validated_input_field<double>
 color_gradient_value_validator(const x::w::input_field &field,
 			       double all_gradient_values::*default_value)
 {
-	return field->set_string_validator
-		([default_value]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  double *parsed_value,
-		  const auto &lock,
-		  const auto &trigger) -> std::optional<double>
-		 {
-			 if (parsed_value)
-			 {
-				 auto s=appObj::fmtdblval(*parsed_value);
+	return field->set_string_validator<double>(
+		[default_value]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 std::optional<double> &parsed_value,
+		 const auto &lock,
+		 const auto &trigger)
+		{
+			if (parsed_value)
+			{
+				auto s=appObj::fmtdblval(*parsed_value);
 
-				 std::istringstream i{s};
+				std::istringstream i{s};
 
-				 i >> *parsed_value;
+				i >> *parsed_value;
+				return;
+			}
 
-				 return *parsed_value;
-			 }
+			if (value.empty())
+			{
+				all_gradient_values default_values;
 
-			 if (value.empty())
-			 {
-				 all_gradient_values default_values;
+				parsed_value=default_values.*default_value;
+				return;
+			}
 
-				 return default_values.*default_value;
-			 }
+			lock.stop_message(_("Invalid value"));
 
-			 lock.stop_message(_("Invalid value"));
-
-			 return std::nullopt;
-		 },
-		 [default_value]
-		 (double v) -> std::string
-		 {
-			 return appObj::fmtdblval(v);
-		 },
-		 []
-		 (ONLY IN_THREAD, const std::optional<double> &v)
-		 {
-			 appinvoke(&appObj::color_updated, IN_THREAD);
-		 });
+			parsed_value.reset();
+		},
+		[default_value]
+		(double v) -> std::string
+		{
+			return appObj::fmtdblval(v);
+		},
+		std::nullopt,
+		[]
+		(ONLY IN_THREAD, const std::optional<double> &v)
+		{
+			appinvoke(&appObj::color_updated, IN_THREAD);
+		}
+	);
 }
 
 std::string appObj::border_format_size(const std::variant<std::string,
@@ -846,6 +853,7 @@ static const x::w::validated_input_field<
 		 {
 			 return appObj::border_format_size(v);
 		 },
+		 std::nullopt,
 		 []
 		 (ONLY IN_THREAD, const auto &ignore)
 		 {

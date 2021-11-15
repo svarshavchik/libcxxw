@@ -9,6 +9,7 @@
 #include <x/w/standard_comboboxlayoutmanagerobj.H>
 #include <x/w/input_field_lock.H>
 #include <x/w/input_fieldfwd.H>
+#include <x/w/validated_input_fieldfwd.H>
 #include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -109,7 +110,8 @@ public:
 
 	//! Equivalent to calling set_validator() for the underlying
 	//! input_field.
-	template<typename ...Args>
+	template<typename T,
+		 typename ...Args>
 	auto set_string_validator(Args && ...args);
 
 	//! Check validation status

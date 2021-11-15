@@ -23,7 +23,12 @@ class validated_input_field_contentsObj : virtual public obj {
 
 public:
 
-	validated_input_field_contentsObj()=default;
+	validated_input_field_contentsObj(
+		const std::optional<type> &initial_value
+	) : validated_value{initial_value}
+	{
+	}
+
 	~validated_input_field_contentsObj()=default;
 
 	friend class validated_input_fieldObj<type>;
@@ -76,6 +81,10 @@ public:
 	virtual void set(ONLY IN_THREAD,
 			 input_lock &lock,
 			 const std::optional<type> &v)=0;
+
+	//! Implement to_text_param.
+
+	virtual bool to_text_param(text_param &t)=0;
 
 private:
 	//! Refresh the input field with the current validated value.

@@ -44,31 +44,21 @@ concept input_field_validation_function =
 	sizeof(input_field_detect_validator_functor_parameter<functor>) > 0;
 
 //! Helper for the input_field_string_validation_function concept
-template<typename T>
-struct detect_input_field_string_validation_function_ret_type;
-
-//! Helper for the input_field_string_validation_function concept
-template<typename T>
-struct detect_input_field_string_validation_function_ret_type<std::optional<T>>
-{
-	typedef T type;
-};
-
-//! Helper for the input_field_string_validation_function concept
-template<typename functor,
-	 typename return_type=typename
-	 detect_input_field_string_validation_function_ret_type<
-		 decltype(std::declval<functor &&>()
-			  (std::declval<THREAD_CALLBACK>(),
-			   std::declval<const std::string &>(),
-			   nullptr,
-			   std::declval<input_lock &>(),
-			   std::declval<const callback_trigger_t &>()))
-		 >::type
-	 >
-struct detect_input_field_string_validation_function {
-
-	typedef return_type type;
+template<typename T,
+	 typename functor,
+	 typename=std::enable_if_t<
+		 std::is_same_v<
+			 decltype(std::declval<functor &&>()
+				  (std::declval<THREAD_CALLBACK>(),
+				   std::declval<const std::string &>(),
+				   std::declval<std::optional<T> &>(),
+				   std::declval<input_lock &>(),
+				   std::declval<const callback_trigger_t &>()
+				  )),
+			 void>
+		 >
+	 > struct detect_input_field_string_validation_function {
+	int n;
 };
 
 //! An input field validation function based on a parsed string.
@@ -102,9 +92,10 @@ struct detect_input_field_string_validation_function {
 //!
 //! - a value indicates that the validation succeeded.
 
-template<typename functor>
+template<typename functor, typename T>
 concept input_field_string_validation_function = requires {
-	{ sizeof(detect_input_field_string_validation_function<functor>) > 0 };
+	{ sizeof(detect_input_field_string_validation_function<T,
+		 functor>) > 0 };
 };
 
 /*! Most recently validated value in the \ref input_field.
@@ -247,12 +238,6 @@ using create_validator_ret_t=std::tuple<
 	>;
 
 
-template<input_field_string_validation_function validation_function>
-using input_field_string_validation_function_type=
-	typename detect_input_field_string_validation_function<
-	validation_function
-	>::type;
-
 /*! Defines create_string_validated_input_field_contents() return type
 
 Helper template that defines what
@@ -261,14 +246,10 @@ returns.
 
 */
 
-template<input_field_string_validation_function validation_function>
+template<typename T>
 using create_string_validator_ret_t=std::tuple<
 	input_field_validation_callback,
-	validated_input_field_contents<
-		input_field_string_validation_function_type<
-			validation_function
-			>
-		>
+	validated_input_field_contents<T>
 	>;
 
 LIBCXXW_NAMESPACE_END

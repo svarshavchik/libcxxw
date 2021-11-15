@@ -77,12 +77,16 @@ create_default_meta(const container_impl &container,
 editor_implObj::init_args
 ::init_args(const ref<editor_peephole_implObj> &parent_peephole,
 	    const text_param &text,
+	    bool validated,
 	    const input_field_config &config,
+	    const input_field_validation_callbackptr &validation_callback,
 	    const icon &left_to_right_icon,
 	    const icon &right_to_left_icon)
 	: parent_peephole{parent_peephole},
 	  text{text},
+	  validated{validated},
 	  config{config},
+	  validation_callback{validation_callback},
 	  left_to_right_icon{left_to_right_icon},
 	  right_to_left_icon{right_to_left_icon},
 	  // The theme lock exists before we create the rich text string
@@ -584,7 +588,11 @@ editor_implObj::editor_implObj(init_args &args)
 	       (parent_peephole->container_element_impl()
 		.create_richtextstring(args.hint_meta,
 				       args.config.hint),
-		hint_richtext_options(args))}
+		hint_richtext_options(args))},
+	  validation_required_thread_only{!args.validated},
+	  validation_callback_thread_only{
+		  args.validation_callback
+	  }
 {
 	// The first input field in a window gets focus when its shown.
 

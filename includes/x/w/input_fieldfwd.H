@@ -246,28 +246,29 @@ an object that represents the most recently validated contents of the
 text input field.
 
 \code
-INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int=field->set_string_validator
+INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int=field->set_string_validator<int>
         ([]
          (ONLY IN_THREAD,
           const std::string &value,
-          int *parsed_value,
+          std::optional<int> &parsed_value,
           INSERT_LIBX_NAMESPACE::w::input_lock &lock,
-          const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger) -> std::optional<int>
+          const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)
          {
              if (parsed_value)
              {
                  if (*parsed_value >= 0 && *parsed_value <= 99)
-                     return *parsed_value;
+                     return;
              }
              else
              {
                  if (value.empty())
                  {
-                     lock.stop_message("Input required");
-                     return std::nullopt;
+                     parsed_value=0;
+		     return;
                  }
              }
 
+             parsed_value.reset();
              lock.stop_message("Must enter a number 0-99");
              return std::nullopt;
          },
@@ -295,8 +296,8 @@ INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int=field->set_st
 
 set_string_validator() forwards its parameters to
 \ref create_string_validated_input_field_contents "create_string_validated_input_field_contents()"
-and uses on_validate() to install the returned callback, and
-returns a
+and uses on_validate() to install the returned callback.
+set_string_validator() returns a
 \ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>",
 an object that represents the most recently validated contents of the
 text input field.

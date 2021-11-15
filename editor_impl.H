@@ -478,7 +478,9 @@ private:
 	struct init_args {
 		const ref<editor_peephole_implObj> &parent_peephole;
 		const text_param &text;
+		bool validated;
 		const input_field_config &config;
+		const input_field_validation_callbackptr &validation_callback;
 		const icon &left_to_right_icon;
 		const icon &right_to_left_icon;
 		current_theme_t::lock theme_lock;
@@ -491,7 +493,10 @@ private:
 
 		init_args(const ref<editor_peephole_implObj> &parent_peephole,
 			  const text_param &text,
+			  bool validated,
 			  const input_field_config &config,
+			  const input_field_validation_callbackptr
+			  &validation_callback,
 			  const icon &left_to_right_icon,
 			  const icon &right_to_left_icon);
 
@@ -840,7 +845,7 @@ private:
  private:
 	//! Whether the contents of the input field have been modified since they were validated.
 
-	bool validation_required_thread_only=true;
+	bool validation_required_thread_only;
 
  public:
 	//! Invoke validation_callback if validation_required.

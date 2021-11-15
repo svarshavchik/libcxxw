@@ -592,50 +592,58 @@ create_mainwindow(const x::w::main_window &main_window,
 	// typed in into a double value.
 
 	x::w::validated_input_field<double>
-		validated_value=field->set_string_validator
-		([]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  double *parsed_value,
-		  x::w::input_lock &lock,
-		  const x::w::callback_trigger_t &trigger)
-		 -> std::optional<double>
-		 {
-			 if (parsed_value)
-			 {
-				 // Official input field validator borrows
-				 // the validator from amount_fieldObj.
-				 auto res=amount_fieldObj::validate
-					 (*parsed_value);
+		validated_value=field->set_string_validator<double>(
+			[]
+			(ONLY IN_THREAD,
+			 const std::string &value,
+			 std::optional<double> &parsed_value,
+			 x::w::input_lock &lock,
+			 const x::w::callback_trigger_t &trigger)
+			{
+				if (parsed_value)
+				{
+					// Official input field validator
+					// borrows the validator from
+					// amount_fieldObj.
+					auto res=amount_fieldObj::validate(
+						*parsed_value
+					);
 
-				 if (res)
-					 return res;
-			 }
-			 else
-			 {
-				 if (value.empty())
-					 return 0.0;
-			 }
+					if (res)
+					{
+						parsed_value=res;
+						return;
+					}
+				}
+				else
+				{
+					if (value.empty())
+					{
+						parsed_value=0;
+						return;
+					}
+				}
 
-			 lock.stop_message("Invalid number");
-			 return std::nullopt;
-		 },
-		 []
-		 (double n)
-		 {
-			 auto s=amount_fieldObj::round_value(n);
+				parsed_value.reset();
+			},
+			[]
+			(double n)
+			{
+				auto s=amount_fieldObj::round_value(n);
 
-			 // Return an empty string instead of 0.00
+				// Return an empty string instead of 0.00
 
-			 if (std::find_if(s.begin(), s.end(),
-					  []
-					  (char c)
-					  {
-						  return c != '0' && c != '.';
-					  }) == s.end())
-				 s="";
-			 return s;
-		 });
+				if (std::find_if(s.begin(), s.end(),
+						 []
+						 (char c)
+						 {
+							 return c != '0' &&
+								 c != '.';
+						 }) == s.end())
+					s="";
+				return s;
+			}
+		);
 
 	// Create the amount_field object that manages this input_field,
 	// and install all the callbacks that do the heavy lifting.

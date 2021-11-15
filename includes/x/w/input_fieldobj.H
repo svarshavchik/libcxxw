@@ -120,18 +120,17 @@ public:
 			validation_function
 			>::optional_return_type_t>;
 
-	template<input_field_string_validation_function validation_function,
+	template<typename T,
+		 input_field_string_validation_function<T> validation_function,
 		 typename canonical_format_functor,
 		 typename ...Args>
 	auto set_string_validator(validation_function &&validator,
 				  canonical_format_functor &&canonical_format,
 				  Args && ...args)
-		-> validated_input_field<
-		input_field_string_validation_function_type<
-			validation_function>
-		>;
+		-> validated_input_field<T>;
 
-	template<input_field_string_validation_function validation_function,
+	template<typename T,
+		 input_field_string_validation_function<T> validation_function,
 		 typename canonical_format_functor,
 		 typename ...Args>
 	auto set_string_validator(
@@ -139,10 +138,7 @@ public:
 		validation_function &&validator,
 		canonical_format_functor  &&canonical_format,
 		Args && ...args)
-		->validated_input_field<
-		input_field_string_validation_function_type<
-			validation_function>
-		>;
+		->validated_input_field<T>;
 
 	//! Validate the input field, if needed.
 

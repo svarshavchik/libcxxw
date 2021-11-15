@@ -12,6 +12,7 @@
 #include <x/w/validated_input_field.H>
 #include <x/w/busy.H>
 #include <x/w/main_window.H>
+#include <x/w/text_param.H>
 
 #include <x/ref.H>
 #include <x/refptr_traits.H>
@@ -86,29 +87,27 @@ auto input_fieldObj::set_validator(
 		input_lock lock{ref{this}};
 
 		on_validate(IN_THREAD, validator_callback);
-		contents->refresh(IN_THREAD, lock);
+		contents->reset(IN_THREAD, lock);
 	}
 	return validated_input_field<type>::create(contents, ref{this});
 }
 
 //! Create a set_validator() by using a formatted string extraction operator, \c >>.
 
-template<input_field_string_validation_function validation_function,
+template<typename T,
+	 input_field_string_validation_function<T> validation_function,
 	 typename canonical_format_functor,
 	 typename ...Args>
 auto input_fieldObj::set_string_validator(
 	validation_function &&validator,
 	canonical_format_functor  &&canonical_format,
 	Args && ...args
-) ->validated_input_field<
-	input_field_string_validation_function_type<validation_function>
-	>
+) ->validated_input_field<T>
 {
-	typedef input_field_string_validation_function_type<
-		validation_function> type;
+	typedef T type;
 
 	const auto &[validator_callback, contents] =
-		create_string_validated_input_field_contents(
+		create_string_validated_input_field_contents<T>(
 			std::forward<validation_function>(validator),
 			std::forward<canonical_format_functor>(
 				canonical_format
@@ -129,7 +128,8 @@ auto input_fieldObj::set_string_validator(
 
 //! Create a set_validator() by using a formatted string extraction operator, \c >>.
 
-template<input_field_string_validation_function validation_function,
+template<typename T,
+	 input_field_string_validation_function<T> validation_function,
 	 typename canonical_format_functor,
 	 typename ...Args>
 auto input_fieldObj::set_string_validator(
@@ -137,15 +137,12 @@ auto input_fieldObj::set_string_validator(
 	validation_function &&validator,
 	canonical_format_functor  &&canonical_format,
 	Args && ...args)
-	->validated_input_field<input_field_string_validation_function_type<
-					validation_function>
-				>
+	->validated_input_field<T>
 {
-	typedef input_field_string_validation_function_type<
-		validation_function> type;
+	typedef T type;
 
 	const auto &[validator_callback, contents] =
-		create_string_validated_input_field_contents(
+		create_string_validated_input_field_contents<T>(
 			std::forward<validation_function>(validator),
 			std::forward<canonical_format_functor>(
 				canonical_format

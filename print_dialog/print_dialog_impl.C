@@ -44,79 +44,81 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 	  cancel_callback{cancel_callback},
 	  fields{fields},
 	  number_of_copies_value{
-		  fields.number_of_copies->set_string_validator
-			  ([printer_info=this->printer_info]
-			   (THREAD_CALLBACK,
-			    const std::string &value,
-			    int *parsed_value,
-			    const auto &lock,
-			    const auto &ignore) -> std::optional<int>
-			   {
-				   if (parsed_value)
-				   {
-					   printer_info_lock lock{printer_info};
+		  fields.number_of_copies->set_string_validator<int>(
+			  [printer_info=this->printer_info]
+			  (THREAD_CALLBACK,
+			   const std::string &value,
+			   std::optional<int> &parsed_value,
+			   const auto &lock,
+			   const auto &ignore)
+			  {
+				  if (parsed_value)
+				  {
+					  printer_info_lock lock{printer_info};
 
-					   if (lock->number_of_copies.empty())
-					   {
-						   // Option does not specify
-						   // values, a small sanity
-						   // check.
-						   if (*parsed_value > 0)
-							   return *parsed_value;
-					   }
+					  if (lock->number_of_copies.empty())
+					  {
+						  // Option does not specify
+						  // values, a small sanity
+						  // check.
+						  if (*parsed_value > 0)
+							  return;
+					  }
 
-					   for (const auto &r:
-							lock->number_of_copies)
-					   {
-						   auto &[from, to]=r;
+					  for (const auto &r:
+						       lock->number_of_copies)
+					  {
+						  auto &[from, to]=r;
 
-						   if (*parsed_value >= from &&
-						       *parsed_value <= to)
-							   return *parsed_value;
-					   }
-				   }
+						  if (*parsed_value >= from &&
+						      *parsed_value <= to)
+							  return;
+					  }
+				  }
 
-				   if (!value.empty())
-					   lock.stop_message
-						   (_("Invalid number of "
-						      "copies value"));
-				   return std::nullopt;
-			   },
-			   []
-			   (int n)
-			   {
-				   return std::to_string(n);
-			   })},
+				  if (!value.empty())
+					  lock.stop_message
+						  (_("Invalid \"number of "
+						     "copies\" value"));
+				  parsed_value.reset();
+			  },
+			  []
+			  (int n)
+			  {
+				  return std::to_string(n);
+			  }
+		  )
+	  },
 
 	  // Use cups::parse_range_string to validate the page ranges field.
 	  page_ranges_value{
-		  fields.page_range->set_validator
-			  ([]
-			   (THREAD_CALLBACK,
-			    const std::string &value,
-			    const auto &lock,
-			    const auto &ignore)
-			   -> std::optional<std::vector<std::tuple<int, int>>>
-			   {
-				   auto v=cups::parse_range_string(value);
+		  fields.page_range->set_validator(
+			  []
+			  (THREAD_CALLBACK,
+			   const std::string &value,
+			   const auto &lock,
+			   const auto &ignore)
+			  -> std::optional<std::vector<std::tuple<int, int>>>
+			  {
+				  auto v=cups::parse_range_string(value);
 
-				   if (!v)
-					   lock.stop_message
-						   (_("Invalid page range "
-						      "specified"));
+				  if (!v)
+					  lock.stop_message
+						  (_("Invalid page range "
+						     "specified"));
 
-				   return v;
-			   },
-			   []
-			   (const std::optional<std::vector<std::tuple
-			    <int, int>>> &v) -> std::string
-			   {
-				   if (!v || v->empty())
-					   return "";
+				  return v;
+			  },
+			  []
+			  (const std::optional<std::vector<std::tuple
+			   <int, int>>> &v) -> std::string
+			  {
+				  if (!v || v->empty())
+					  return "";
 
-				   return cups::range_to_string(*v);
+				  return cups::range_to_string(*v);
 
-			   })}
+			  })}
 {
 	number_of_copies_value->set(1);
 

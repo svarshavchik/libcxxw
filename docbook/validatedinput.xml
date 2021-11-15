@@ -47,10 +47,13 @@ See COPYING for distribution information.
     &callback;s that get executed to validate the input field's text
     and convert it to some arbitrary <replaceable>type</replaceable>.
     They take two closures, or callable objects, as parameters.
-    The first closure takes the input field's contents and returns
+    The first closure takes the input field's contents.
+    <methodname>set_validator</methodname>()'s first closure returns
     the
     <classname>std::optional&lt;<replaceable>type</replaceable>&gt;</classname>
     representing the validated value.
+    <methodname>set_string_validator</methodname>'s first closure gets
+    a reference to the parsed value as an additional parameter.
     <methodname>set_validator</methodname>() and
     <methodname>set_string_validator</methodname>() return an
     <ulink url="&link-typedef-x--w-validated-input-field;"><classname>&ns;::w::validated_input_field&lt;<replaceable>type</replaceable>&gt;</classname></ulink>.
@@ -59,7 +62,8 @@ See COPYING for distribution information.
 
   <note>
     <para>
-      The closure returns a <classname>std::optional</classname> without
+      <methodname>set_validator</methodname>()'s
+      closure returns a <classname>std::optional</classname> without
       a value to indicate that the entered text is not valid. The closure
       gets called when leaving the input field. Returning a value-less
       <classname>std::optional</classname> results in the input focus
@@ -77,6 +81,20 @@ See COPYING for distribution information.
       using its <methodname>stop_message</methodname>() method, which
       display a modal dialog with a <quote>stop</quote> icon, and an error
       message.
+    </para>
+
+    <para>
+      <methodname>set_string_validator</methodname>() supplies a first closure
+      that uses the <literal>&gt;&gt;</literal> formatted extraction
+      operator to convert the input text to the type given as
+      <methodname>set_string_validator</methodname>'s first template parameter.
+      The first closure gets the resulting
+      <classname>std::optional</classname> value as an additional parameter
+      (a <literal>std::nullopt</literal> value indicates parsing value).
+      The closure can do nothing, resulting in unmodified
+      <literal>&gt;&gt;</literal> operator semantics. The closure can also
+      modify or adjust the parsed value, and the input field gets automatically
+      updated to reflect any changes.
     </para>
   </note>
 
@@ -120,7 +138,7 @@ See COPYING for distribution information.
       <methodname>set_string_validator</methodname>() implement their
       validation logic using <methodname>on_validate</methodname>(), which
       installs a &callback; that gets invoked by enter <keycap>Enter</keycap>,
-      or by attempting to tab out of the text input field.
+      or by attempting to tab out of, or click out of, the text input field.
       <methodname>on_validate</methodname>() is a low-level &callback;;
       <methodname>set_validator</methodname>() and
       <methodname>set_string_validator</methodname>() add their own
@@ -136,7 +154,7 @@ See COPYING for distribution information.
   </section>
 
   <section id="inputvalidatereference">
-    <title>Understanding references between input field-relaetd objects and avoiding circular references</title>
+    <title>Understanding references between input field-related objects and avoiding circular references</title>
 
     <mediaobject>
       <imageobject>

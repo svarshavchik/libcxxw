@@ -1118,27 +1118,26 @@ static void demo_input(const w::gridlayoutmanager &lm)
 
 	auto spin_field=f->create_input_field("", conf);
 
-	auto validated_input=spin_field->set_string_validator
-		([]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  unsigned *parsed_value,
-		  const w::input_lock &lock,
-		  const auto &trigger)
-		 -> std::optional<unsigned>
-		 {
-			 if (parsed_value)
-			 {
-				 if (*parsed_value > 0 && *parsed_value < 50)
-					 return *parsed_value;
-			 }
-			 else
-			 {
-				 if (value.empty())
-					 return std::nullopt;
-			 }
-			 lock.stop_message(_("Must enter a number 1-49"));
-			 return std::nullopt;
+	auto validated_input=spin_field->set_string_validator<unsigned>(
+		[]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 std::optional<unsigned> &parsed_value,
+		 const w::input_lock &lock,
+		 const auto &trigger)
+		{
+			if (parsed_value)
+			{
+				if (*parsed_value > 0 && *parsed_value < 50)
+					return;
+			}
+			else
+			{
+				if (value.empty())
+					return;
+			}
+			lock.stop_message(_("Must enter a number 1-49"));
+			parsed_value.reset();
 		 },
 		 []
 		 (unsigned n)

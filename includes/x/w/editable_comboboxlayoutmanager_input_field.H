@@ -30,11 +30,11 @@ auto editable_comboboxlayoutmanagerObj::set_validator(Args && ...args)
 		(std::forward<Args>(args)...);
 }
 
-template<typename ...Args>
+template<typename T, typename ...Args>
 auto editable_comboboxlayoutmanagerObj::set_string_validator(Args && ...args)
 {
 	this->notmodified();
-	return this->locked_input_field->set_string_validator
+	return this->locked_input_field->set_string_validator<T>
 		(std::forward<Args>(args)...);
 }
 
