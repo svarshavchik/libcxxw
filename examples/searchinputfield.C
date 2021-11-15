@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/ondestroy.H>
 
 #include <x/w/main_window.H>
 #include <x/w/listlayoutmanager.H>
