@@ -227,6 +227,7 @@ struct uicompiler::gridlayoutmanager_functions {
 		}
 
 		container create_container(const factory &f,
+					   const std::string &id,
 					   uielements &factories) const
 		{
 			auto nglm=new_layoutmanager(factories);
@@ -305,6 +306,7 @@ struct uicompiler::listlayoutmanager_functions {
 		}
 
 		focusable_container create_container(const factory &f,
+						     const std::string &id,
 						     uielements &factories)
 			const
 		{
@@ -421,6 +423,7 @@ struct uicompiler::tablelayoutmanager_functions {
 		}
 
 		focusable_container create_container(const factory &f,
+						     const std::string &id,
 						     uielements &factories)
 			const
 		{
@@ -520,6 +523,7 @@ struct uicompiler::panelayoutmanager_functions {
 		}
 
 		focusable_container create_container(const factory &f,
+						     const std::string &id,
 						     uielements &factories)
 			const
 		{
@@ -599,6 +603,7 @@ struct uicompiler::itemlayoutmanager_functions {
 		}
 
 		focusable_container create_container(const factory &f,
+						     const std::string &id,
 						     uielements &factories)
 			const
 		{
@@ -676,6 +681,7 @@ struct uicompiler::pagelayoutmanager_functions {
 		}
 
 		container create_container(const factory &f,
+					   const std::string &id,
 					   uielements &factories) const
 		{
 		        auto nplm=new_layoutmanager(factories);
@@ -752,6 +758,7 @@ struct uicompiler::toolboxlayoutmanager_functions {
 		}
 
 		container create_container(const factory &f,
+					   const std::string &id,
 					   uielements &factories)
 			const
 		{
@@ -830,6 +837,7 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 		}
 
 		focusable_container create_container(const factory &f,
+						     const std::string &id,
 						     uielements &factories)
 			const
 		{
@@ -904,6 +912,7 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 		}
 
 		focusable_container create_container(const factory &f,
+						     const std::string &id,
 						     uielements &factories)
 			const
 		{
@@ -977,6 +986,7 @@ struct uicompiler::booklayoutmanager_functions {
 		}
 
 		focusable_container create_container(const factory &f,
+						     const std::string &id,
 						     uielements &factories)
 			const
 		{
@@ -1046,6 +1056,7 @@ struct uicompiler::borderlayoutmanager_functions {
 		}
 
 		container create_container(const factory &f,
+					   const std::string &id,
 					   uielements &factories)
 			const
 		{
@@ -1521,7 +1532,7 @@ container uicompiler::create_container(const factory &f,
 			  (const auto &generators) -> container
 			  {
 				  return generators
-					  .create_container(f, factories);
+					  .create_container(f, name, factories);
 			  }, v);
 
 	factories.new_elements.insert_or_assign(name, c);
