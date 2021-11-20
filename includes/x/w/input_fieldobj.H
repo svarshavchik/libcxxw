@@ -61,9 +61,22 @@ public:
 	void on_change(const functionref<void(THREAD_CALLBACK,
 					      const input_change_info_t &)>&);
 
+	//! Install a callback that gets invoked when the contents of the input field change.
+
+	void on_change(ONLY IN_THREAD,
+		       const functionref<void(THREAD_CALLBACK,
+					      const input_change_info_t &)>&);
+
 	//! Install a callback that gets invoked to autocomplete typed in text.
 
 	void on_autocomplete(const functionref<bool
+			     (THREAD_CALLBACK,
+			      input_autocomplete_info_t &)> &);
+
+	//! Install a callback that gets invoked to autocomplete typed in text.
+
+	void on_autocomplete(ONLY IN_THREAD,
+			     const functionref<bool
 			     (THREAD_CALLBACK,
 			      input_autocomplete_info_t &)> &);
 
@@ -84,11 +97,28 @@ public:
 
 	//! Install a callback to filter changes to the input field.
 
+	void on_default_filter(ONLY IN_THREAD,
+			       const functionref<bool(char32_t)> &,
+			       const std::vector<size_t> &,
+			       char32_t empty=' ');
+
+	//! Install a callback to filter changes to the input field.
+
 	void on_filter(const functionref<input_field_filter_callback_t> &);
+
+	//! Install a callback to filter changes to the input field.
+
+	void on_filter(ONLY IN_THREAD,
+		       const functionref<input_field_filter_callback_t> &);
 
 	//! Installs or replaces the search callback
 
 	void on_search(const input_field_config::search_info &search_info);
+
+	//! Installs or replaces the search callback
+
+	void on_search(ONLY IN_THREAD,
+		       const input_field_config::search_info &search_info);
 
 	//! Inherited from elementObj
 
@@ -163,6 +193,12 @@ public:
 	//! Install the spin control callbacks
 
 	void on_spin(const spin_callback_t &,
+		     const spin_callback_t &);
+
+	//! Install the spin control callbacks
+
+	void on_spin(ONLY IN_THREAD,
+		     const spin_callback_t &,
 		     const spin_callback_t &);
 
 	//! Return the current contents of the input field as UTF-8.

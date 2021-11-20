@@ -125,7 +125,24 @@ f->on_change([]
              {
              });
 
-f->on_autocomplete([]
+f->on_change(IN_THREAD,
+             []
+             (ONLY IN_THREAD,
+              const INSERT_LIBX_NAMESPACE::w::input_change_info_t &)
+             {
+             });
+
+f->on_autocomplete(
+              []
+              (ONLY IN_THREAD,
+               const INSERT_LIBX_NAMESPACE::w::input_autocomplete_info_t &)
+              {
+                      return false;
+              });
+
+f->on_autocomplete(
+              ONLY IN_THREAD,
+              []
               (ONLY IN_THREAD,
                const INSERT_LIBX_NAMESPACE::w::input_autocomplete_info_t &)
               {
@@ -341,6 +358,15 @@ field->on_default_filter([]
                          },
                          {0, 4, 5, 9},
                          '#');
+
+field->on_default_filter(ONLY IN_THREAD,
+                         []
+                         (char32_t c)
+                         {
+                             return c >= '0' && c <= '9';
+                         },
+                         {0, 4, 5, 9},
+                         '#');
 \endcode
 
 on_validate() callbacks get executed only after finishing the editing of the
@@ -406,6 +432,14 @@ field->on_filter([]
                       info.move(0);
 		      info.select_all();
                  });
+
+field->on_filter(ONLY IN_THREAD,
+                 []
+                 (ONLY IN_THREAD,
+                  const INSERT_LIBX_NAMESPACE::w::input_field_filter_info &info)
+                 {
+                       //
+                 });
 \endcode
 
 on_filter() installs a single callback that implements more granular control
@@ -452,12 +486,25 @@ conf.enable_search();
 
 // ...
 
-field->on_search({
-    []
-    (const INSERT_LIBX_NAMESPACE::w::input_field_search_info &info)
+field->on_search(
     {
+        []
+        (const INSERT_LIBX_NAMESPACE::w::input_field_search_info &info)
+        {
 
+        }
     });
+
+field->on_search(
+    IN_THREAD,
+    {
+        []
+        (const INSERT_LIBX_NAMESPACE::w::input_field_search_info &info)
+        {
+
+        }
+    });
+
 \endcode
 
 A search widget behavior gets enabled by setting
@@ -489,12 +536,12 @@ conf.set_default_spin_control_factories();
 
 INSERT_LIBX_NAMESPACE::w::input_field f=factory->create_input_field({""}, conf);
 
-auto validated_int=field->set_string_validator
+auto validated_int=field->set_string_validator<int>
         ([]
          (ONLY IN_THREAD,
           const std::string &value,
-          int *parsed_value,
-          const INSERT_LIBX_NAMESPACE::w::text_param &field,
+          std::optional<int> &parsed_value,
+          const INSERT_LIBX_NAMESPACE::w::input_lock &lock,
           const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)
          -> std::optional<int>
          {
@@ -507,6 +554,22 @@ auto validated_int=field->set_string_validator
     	 });
 
 field->on_spin([contents=validated_int->contents]
+               (ONLY IN_THREAD,
+                const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger,
+                const INSERT_LIBX_NAMESPACE::w::busy &mcguffin)
+               {
+                      // ...
+               },
+               [validated_int->contents]
+               (ONLY IN_THREAD,
+                const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger,
+                const INSERT_LIBX_NAMESPACE::w::busy &mcguffin)
+               {
+                      // ...
+               });
+
+field->on_spin(IN_THREAD,
+               [contents=validated_int->contents]
                (ONLY IN_THREAD,
                 const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger,
                 const INSERT_LIBX_NAMESPACE::w::busy &mcguffin)

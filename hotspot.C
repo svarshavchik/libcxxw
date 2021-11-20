@@ -22,4 +22,10 @@ void hotspotObj::on_activate(const hotspot_callback_t &callback)
 	impl->on_activate(callback);
 }
 
+void hotspotObj::on_activate(ONLY IN_THREAD,
+			     const hotspot_callback_t &callback)
+{
+	impl->on_activate(IN_THREAD, callback);
+}
+
 LIBCXXW_NAMESPACE_END

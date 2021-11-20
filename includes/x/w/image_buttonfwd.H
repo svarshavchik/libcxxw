@@ -84,6 +84,18 @@ typedef functionref<void (THREAD_CALLBACK, size_t,
 //!                                  {
 //!                                  }
 //!                           });
+//!
+//! image_button->on_activate(IN_THREAD,
+//!                           []
+//!                           (ONLY IN_THREAD,
+//!                            size_t value,
+//!                            const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger,
+//!                            const INSERT_LIBX_NAMESPACE::w::busy &busy_mcguffin)
+//!                           {
+//!                                  if (trigger.index() == INSERT_LIBX_NAMESPACE::w::callback_trigger_initial)
+//!                                  {
+//!                                  }
+//!                           });
 //! \endcode
 //!
 //! The value of the image_button is its current state. For an ordinary

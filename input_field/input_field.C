@@ -563,6 +563,17 @@ void input_fieldObj::do_get_impl(const function<internal_focusable_cb> &cb)
 void input_fieldObj::on_spin(const spin_callback_t &a_cb,
 			     const spin_callback_t &b_cb)
 {
+	in_thread([me=ref{this}, a_cb, b_cb]
+		  (ONLY IN_THREAD)
+	{
+		me->on_spin(IN_THREAD, a_cb, b_cb);
+	});
+}
+
+void input_fieldObj::on_spin(ONLY IN_THREAD,
+			     const spin_callback_t &a_cb,
+			     const spin_callback_t &b_cb)
+{
 	auto editor_impl=impl->editor_element->impl;
 
 	containerObj::impl->invoke_layoutmanager
@@ -580,6 +591,7 @@ void input_fieldObj::on_spin(const spin_callback_t &a_cb,
 				 b=SPIN_CONTROL_B();
 
 			 a->on_activate(
+				 IN_THREAD,
 				 [editor_impl, a_cb]
 				 (ONLY IN_THREAD,
 				  const auto &trigger,
@@ -592,6 +604,7 @@ void input_fieldObj::on_spin(const spin_callback_t &a_cb,
 				 });
 
 			 b->on_activate(
+				 IN_THREAD,
 				 [editor_impl, b_cb]
 				 (ONLY IN_THREAD,
 				  const auto &trigger,
@@ -637,14 +650,19 @@ void input_fieldObj::on_change(const functionref<
 			       void(THREAD_CALLBACK,
 				    const input_change_info_t &)> &callback)
 {
-	auto editor_impl=impl->editor_element->impl;
+	in_thread([me=ref{this}, callback]
+		  (ONLY IN_THREAD)
+	{
+		me->on_change(IN_THREAD, callback);
+	});
+}
 
-	editor_impl->get_window_handler().thread()->run_as
-		([callback, editor_impl]
-		 (ONLY IN_THREAD)
-		 {
-			 editor_impl->on_change(IN_THREAD)=callback;
-		 });
+void input_fieldObj::on_change(ONLY IN_THREAD,
+			       const functionref<
+			       void(THREAD_CALLBACK,
+				    const input_change_info_t &)> &callback)
+{
+	impl->editor_element->impl->on_change(IN_THREAD)=callback;
 }
 
 bool input_fieldObj::validate_modified(ONLY IN_THREAD)
@@ -664,14 +682,20 @@ void input_fieldObj::on_autocomplete(const functionref<bool
 				      input_autocomplete_info_t &)>
 				     &callback)
 {
-	auto editor_impl=impl->editor_element->impl;
+	in_thread([me=ref{this}, callback]
+		  (ONLY IN_THREAD)
+	{
+		me->on_autocomplete(IN_THREAD, callback);
+	});
+}
 
-	editor_impl->get_window_handler().thread()->run_as
-		([callback, editor_impl]
-		 (ONLY IN_THREAD)
-		 {
-			 editor_impl->on_autocomplete(IN_THREAD)=callback;
-		 });
+void input_fieldObj::on_autocomplete(ONLY IN_THREAD,
+				     const functionref<bool
+				     (THREAD_CALLBACK,
+				      input_autocomplete_info_t &)>
+				     &callback)
+{
+	impl->editor_element->impl->on_autocomplete(IN_THREAD)=callback;
 }
 
 void input_fieldObj::on_validate(
@@ -699,26 +723,34 @@ void input_fieldObj::on_filter(const
 			       functionref<input_field_filter_callback_t>
 			       &callback)
 {
-	auto editor_impl=impl->editor_element->impl;
+	in_thread([me=ref{this}, callback]
+		  (ONLY IN_THREAD)
+	{
+		me->on_filter(IN_THREAD, callback);
+	});
+}
 
-	editor_impl->get_window_handler().thread()->run_as
-		([callback, editor_impl]
-		 (ONLY IN_THREAD)
-		 {
-			 editor_impl->on_filter(IN_THREAD)=callback;
-		 });
+void input_fieldObj::on_filter(ONLY IN_THREAD,
+			       const
+			       functionref<input_field_filter_callback_t>
+			       &callback)
+{
+	impl->editor_element->impl->on_filter(IN_THREAD)=callback;
 }
 
 void input_fieldObj::on_search(const input_field_config::search_info &info)
 {
-	auto editor_impl=impl->editor_element->impl;
+	in_thread([me=ref{this}, info]
+		  (ONLY IN_THREAD)
+	{
+		me->on_search(IN_THREAD, info);
+	});
+}
 
-	editor_impl->get_window_handler().thread()->run_as
-		([info, editor_impl]
-		 (ONLY IN_THREAD)
-		 {
-			 editor_impl->on_search(IN_THREAD, info);
-		 });
+void input_fieldObj::on_search(ONLY IN_THREAD,
+			       const input_field_config::search_info &info)
+{
+	impl->editor_element->impl->on_search(IN_THREAD, info);
 }
 
 std::u32string bidi_override(const std::u32string_view &u,
@@ -756,231 +788,253 @@ std::string bidi_override(const std::string_view &s,
 	return out_buf;
 }
 
-void input_fieldObj::on_default_filter(const functionref<bool(char32_t)> &cb,
-				       const std::vector<size_t> &immutable,
-				       char32_t empty)
+static functionref<input_field_filter_callback_t> create_default_filter(
+	input_fieldObj *me,
+	const functionref<bool(char32_t)> &cb,
+	const std::vector<size_t> &immutable,
+	char32_t empty
+)
 {
-	on_filter
-		([me=weakptr<input_fieldptr>(ref{this}), cb, immutable, empty]
-		 (ONLY IN_THREAD,
-		  const input_field_filter_info &s)
-		 {
-			 // Recover a strong reference to my input field.
+	return [me=weakptr<input_fieldptr>(ref{me}), cb, immutable, empty]
+		(ONLY IN_THREAD,
+		 const input_field_filter_info &s)
+	{
+		// Recover a strong reference to my input field.
 
-			 auto got=me.getptr();
+		auto got=me.getptr();
 
-			 if (!got)
-				 return;
+		if (!got)
+			return;
 
-			 if (s.size != s.maximum_size)
-				 throw EXCEPTION("Internal error: on_default_filter() requires its input field "
-						 "set to its maximum size.");
+		if (s.size != s.maximum_size)
+			throw EXCEPTION("Internal error: on_default_filter() requires its input field "
+					"set to its maximum size.");
 
-			 size_t starting_pos=s.starting_pos->pos();
-			 size_t n_delete=s.ending_pos->pos()-starting_pos;
+		size_t starting_pos=s.starting_pos->pos();
+		size_t n_delete=s.ending_pos->pos()-starting_pos;
 
-			 if (s.type == input_filter_type::move_only)
-			 {
-				 // If moving to a valid input pos, we're
-				 // done here.
-				 if (std::find(immutable.begin(),
-					       immutable.end(),
-					       starting_pos)
-				     == immutable.end())
-					 return;
+		if (s.type == input_filter_type::move_only)
+		{
+			// If moving to a valid input pos, we're
+			// done here.
+			if (std::find(immutable.begin(),
+				      immutable.end(),
+				      starting_pos)
+			    == immutable.end())
+				return;
 
-				 // Now, depending upon where we started we'll
-				 // search for the next or the previous
-				 // valid input position, and set adjusted_pos.
-				 //
-				 // There are some subtle nuances that must
-				 // be paid attention to. if there are immutable
-				 // positions at the beginning of the input
-				 // field, and we're already there, we'll
-				 // return back to the original_pos(),
-				 // presumably it's valid.
-				 size_t adjusted_pos=s.original_pos();
+			// Now, depending upon where we started we'll
+			// search for the next or the previous
+			// valid input position, and set adjusted_pos.
+			//
+			// There are some subtle nuances that must
+			// be paid attention to. if there are immutable
+			// positions at the beginning of the input
+			// field, and we're already there, we'll
+			// return back to the original_pos(),
+			// presumably it's valid.
+			size_t adjusted_pos=s.original_pos();
 
-				 if (starting_pos < s.original_pos())
-				 {
-					 while (starting_pos > 0)
-					 {
-						 --starting_pos;
+			if (starting_pos < s.original_pos())
+			{
+				while (starting_pos > 0)
+				{
+					--starting_pos;
 
-						 if (std::find(immutable
-							       .begin(),
-							       immutable.end(),
-							       starting_pos)
-						     == immutable.end())
-						 {
-							 adjusted_pos=
-								 starting_pos;
-							 break;
-						 }
-					 }
-				 }
-				 else
-				 {
-					 for (;;)
-					 {
-						 ++starting_pos;
+					if (std::find(immutable
+						      .begin(),
+						      immutable.end(),
+						      starting_pos)
+					    == immutable.end())
+					{
+						adjusted_pos=
+							starting_pos;
+						break;
+					}
+				}
+			}
+			else
+			{
+				for (;;)
+				{
+					++starting_pos;
 
-						 if (std::find(immutable
-							       .begin(),
-							       immutable.end(),
-							       starting_pos)
-						     == immutable.end())
-						 {
-							 adjusted_pos=
-								 starting_pos;
-							 break;
-						 }
-					 }
-				 }
+					if (std::find(immutable
+						      .begin(),
+						      immutable.end(),
+						      starting_pos)
+					    == immutable.end())
+					{
+						adjusted_pos=
+							starting_pos;
+						break;
+					}
+				}
+			}
 
-				 if (adjusted_pos != s.starting_pos->pos())
-					 s.move(adjusted_pos);
-				 return;
-			 }
+			if (adjusted_pos != s.starting_pos->pos())
+				s.move(adjusted_pos);
+			return;
+		}
 
-			 auto current_contents=input_lock{got}.get_unicode();
+		auto current_contents=input_lock{got}.get_unicode();
 
-			 // If the insertion point is in the middle of the
-			 // input field, move it back to the beginning.
+		// If the insertion point is in the middle of the
+		// input field, move it back to the beginning.
 
-			 for (auto i=starting_pos; i>0; --i)
-				 if (std::find(immutable.begin(),
-					       immutable.end(),
-					       i-1) == immutable.end() &&
-				     current_contents.at(i-1) == empty)
-				 {
-					 starting_pos=i-1;
-					 n_delete=0;
-				 }
+		for (auto i=starting_pos; i>0; --i)
+			if (std::find(immutable.begin(),
+				      immutable.end(),
+				      i-1) == immutable.end() &&
+			    current_contents.at(i-1) == empty)
+			{
+				starting_pos=i-1;
+				n_delete=0;
+			}
 
-			 if (n_delete > 0)
-			 {
-				 // Include immutable positions within the
-				 // deletion zone.
+		if (n_delete > 0)
+		{
+			// Include immutable positions within the
+			// deletion zone.
 
-				 size_t end_pos=starting_pos+n_delete;
+			size_t end_pos=starting_pos+n_delete;
 
-				 while (std::find(immutable.begin(),
-						  immutable.end(),
-						  end_pos) != immutable.end())
-				 {
-					 ++end_pos;
-					 ++n_delete;
-				 }
+			while (std::find(immutable.begin(),
+					 immutable.end(),
+					 end_pos) != immutable.end())
+			{
+				++end_pos;
+				++n_delete;
+			}
 
-				 // If the deletion zone starts at an immutable
-				 // position, move it back. A backspace from
-				 // the character that follows the immutable
-				 // position ends up getting extended to the
-				 // preceding position, effectively skipping
-				 // over the immutable position.
+			// If the deletion zone starts at an immutable
+			// position, move it back. A backspace from
+			// the character that follows the immutable
+			// position ends up getting extended to the
+			// preceding position, effectively skipping
+			// over the immutable position.
 
-				 while (std::find(immutable.begin(),
-						  immutable.end(),
-						  starting_pos)
-					!= immutable.end())
-				 {
-					 if (starting_pos == 0)
-						 break;
+			while (std::find(immutable.begin(),
+					 immutable.end(),
+					 starting_pos)
+			       != immutable.end())
+			{
+				if (starting_pos == 0)
+					break;
 
-					 --starting_pos;
-					 ++n_delete;
-				 }
+				--starting_pos;
+				++n_delete;
+			}
 
-				 // Make sure there is no non-immutable content
-				 // after the deletion zone. Can't delete the
-				 // middle of "real" entered text.
+			// Make sure there is no non-immutable content
+			// after the deletion zone. Can't delete the
+			// middle of "real" entered text.
 
-				 while (end_pos < current_contents.size())
-				 {
-					 if (std::find(immutable.begin(),
-						       immutable.end(),
-						       end_pos)
-					     != immutable.end()
-					     || current_contents[end_pos]
-					     == empty)
-					 {
-						 ++end_pos;
-						 continue;
-					 }
+			while (end_pos < current_contents.size())
+			{
+				if (std::find(immutable.begin(),
+					      immutable.end(),
+					      end_pos)
+				    != immutable.end()
+				    || current_contents[end_pos]
+				    == empty)
+				{
+					++end_pos;
+					continue;
+				}
 
-					 return;
-				 }
-			 }
+				return;
+			}
+		}
 
-			 // Now, rebuild what we're inserting.
-			 std::u32string new_contents;
+		// Now, rebuild what we're inserting.
+		std::u32string new_contents;
 
-			 new_contents.reserve(s.new_contents.size());
+		new_contents.reserve(s.new_contents.size());
 
-			 for (auto c:s.new_contents)
-			 {
-				 if (c == empty || !cb(c))
-					 continue; // Only valid characters.
+		for (auto c:s.new_contents)
+		{
+			if (c == empty || !cb(c))
+				continue; // Only valid characters.
 
-				 while (1)
-				 {
-					 auto p=starting_pos+
-						 new_contents.size();
+			while (1)
+			{
+				auto p=starting_pos+
+					new_contents.size();
 
-					 if (std::find(immutable.begin(),
-						       immutable.end(), p)
-					     == immutable.end())
-						 break;
+				if (std::find(immutable.begin(),
+					      immutable.end(), p)
+				    == immutable.end())
+					break;
 
-					 if (p >= current_contents.size())
-						 break;
+				if (p >= current_contents.size())
+					break;
 
-					 new_contents.push_back
-						 (current_contents[p]);
-				 }
+				new_contents.push_back
+					(current_contents[p]);
+			}
 
-				 new_contents.push_back(c);
-			 }
+			new_contents.push_back(c);
+		}
 
-			 // This is the ending cursor position.
+		// This is the ending cursor position.
 
-			 auto end_pos=starting_pos+new_contents.size();
+		auto end_pos=starting_pos+new_contents.size();
 
-			 // However, if n_deleted was more, more stuff is
-			 // to be deleted, so pad out new_contents, to
-			 // effectively delete it, by overwriting it.
+		// However, if n_deleted was more, more stuff is
+		// to be deleted, so pad out new_contents, to
+		// effectively delete it, by overwriting it.
 
-			 while (new_contents.size() < n_delete)
-			 {
-				 auto i=starting_pos+new_contents.size();
+		while (new_contents.size() < n_delete)
+		{
+			auto i=starting_pos+new_contents.size();
 
-				 if (std::find(immutable.begin(),
-					       immutable.end(), i)
-				     != immutable.end() &&
-				     i < current_contents.size())
-				 {
-					 new_contents.push_back
-						 (current_contents[i]);
-				 }
-				 else
-					 new_contents.push_back(empty);
-			 }
+			if (std::find(immutable.begin(),
+				      immutable.end(), i)
+			    != immutable.end() &&
+			    i < current_contents.size())
+			{
+				new_contents.push_back
+					(current_contents[i]);
+			}
+			else
+				new_contents.push_back(empty);
+		}
 
-			 n_delete=new_contents.size();
+		n_delete=new_contents.size();
 
-			 s.update(s.starting_pos->pos(starting_pos),
-				  s.starting_pos->pos(starting_pos+n_delete),
-				  bidi_override(new_contents,
-						s.direction));
+		s.update(s.starting_pos->pos(starting_pos),
+			 s.starting_pos->pos(starting_pos+n_delete),
+			 bidi_override(new_contents,
+				       s.direction));
 
-			 while (std::find(immutable.begin(),
-					  immutable.end(),
-					  end_pos) != immutable.end())
-				 ++end_pos;
+		while (std::find(immutable.begin(),
+				 immutable.end(),
+				 end_pos) != immutable.end())
+			++end_pos;
 
-			 s.move(end_pos);
-		 });
+		s.move(end_pos);
+	};
+}
+
+void input_fieldObj::on_default_filter(
+	const functionref<bool(char32_t)> &cb,
+	const std::vector<size_t> &immutable,
+	char32_t empty
+)
+{
+	return on_filter(create_default_filter(this, cb, immutable, empty));
+}
+
+void input_fieldObj::on_default_filter(
+	ONLY IN_THREAD,
+	const functionref<bool(char32_t)> &cb,
+	const std::vector<size_t> &immutable,
+	char32_t empty
+)
+{
+	return on_filter(IN_THREAD,
+			 create_default_filter(this, cb, immutable, empty));
 }
 
 ref<elementObj::implObj> input_fieldObj::get_minimum_override_element_impl()

@@ -72,6 +72,11 @@ public:
 
 	void on_activate(const image_button_callback_t &callback);
 
+	//! Install a new activation callback.
+
+	void on_activate(ONLY IN_THREAD,
+			 const image_button_callback_t &callback);
+
 	//! Replace the label widget next to the image button.
 
 	template<factory_processor functor>

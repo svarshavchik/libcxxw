@@ -33,6 +33,14 @@ typedef functionref<void (THREAD_CALLBACK,
 //!                      const INSERT_LIBX_NAMESPACE::w::busy &)
 //!                     {
 //!                     });
+//!
+//! element->on_activate(IN_THREAD,
+//!                     []
+//!                     (ONLY IN_THREAD,
+//!                      const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &,
+//!                      const INSERT_LIBX_NAMESPACE::w::busy &)
+//!                     {
+//!                     });
 //! \endcode
 //!
 //! Installs a callback that gets invoked when the hotspot is activated.

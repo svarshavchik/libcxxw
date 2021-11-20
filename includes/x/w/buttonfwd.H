@@ -34,6 +34,14 @@ typedef optional_argconstrefs<button_config, shortcut> create_button_args_t;
 //!                      const INSERT_LIBX_NAMESPACE::w::busy &)
 //!                     {
 //!                     });
+//!
+//! button->on_activate(IN_THREAD,
+//!                     []
+//!                     (ONLY IN_THREAD,
+//!                      const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &,
+//!                      const INSERT_LIBX_NAMESPACE::w::busy &)
+//!                     {
+//!                     });
 //! \endcode
 //!
 //! on_activate() installs a callback that gets invoked by clicking on the

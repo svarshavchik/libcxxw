@@ -77,23 +77,26 @@ void image_buttonObj::set_value(ONLY IN_THREAD, size_t n,
 
 void image_buttonObj::on_activate(const image_button_callback_t &callback)
 {
-	element_impl e=impl->button->impl;
+	in_thread([me=ref{this}, callback]
+		  (ONLY IN_THREAD)
+	{
+		me->on_activate(IN_THREAD, callback);
+	});
+}
 
-	e->get_window_handler().thread()->run_as
-		([&, impl=this->impl, callback]
-		 (ONLY IN_THREAD)
-		 {
-			 auto i=impl->button->impl;
+void image_buttonObj::on_activate(ONLY IN_THREAD,
+				  const image_button_callback_t &callback)
+{
+	auto i=impl->button->impl;
 
-			 i->current_callback(IN_THREAD)=callback;
+	i->current_callback(IN_THREAD)=callback;
 
-			 try {
-				 callback(IN_THREAD,
-					  i->get_image_number(),
-					  initial{},
-					  busy_impl{*i});
-			 } REPORT_EXCEPTIONS(impl->button->impl);
-		 });
+	try {
+		callback(IN_THREAD,
+			 i->get_image_number(),
+			 initial{},
+			 busy_impl{*i});
+	} REPORT_EXCEPTIONS(impl->button->impl);
 }
 
 void image_buttonObj::do_update_label(const function<void (const factory &)> &f)

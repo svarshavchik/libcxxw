@@ -33,6 +33,11 @@ public:
 	//! Install an activation callback.
 
 	void on_activate(const hotspot_callback_t &);
+
+	//! Install an activation callback.
+
+	void on_activate(ONLY IN_THREAD,
+			 const hotspot_callback_t &);
 };
 
 LIBCXXW_NAMESPACE_END
