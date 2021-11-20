@@ -33,10 +33,14 @@ class LIBCXX_HIDDEN pane_peephole_containerObj :
 	//! to proportionately scale all panes to adjust the sum total of the
 	//! panes and the sliders to match the pane's new size.
 
-	dim_t reference_size_thread_only;
+	dim_t reference_size_thread_only=0;
 
+	//! This pane's fixed overhead, for reference purposes
+
+	dim_t fixed_overhead_thread_only=0;
 public:
 	THREAD_DATA_ONLY(reference_size);
+	THREAD_DATA_ONLY(fixed_overhead);
 
 	class implObj;
 

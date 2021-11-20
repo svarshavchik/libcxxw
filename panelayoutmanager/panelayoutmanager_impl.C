@@ -712,6 +712,68 @@ void panelayoutmanagerObj::implObj
 
 	auto &reference_size_is_set_now=reference_size_set(grid_lock);
 
+	size_t n=total_size(grid_lock);
+	dim_squared_t fixed_overhead{0};
+
+	std::vector<pane_peephole_container> pane_peephole_containers;
+	pane_peephole_containers.reserve(n/2+1);
+
+	// If there's only one element, it's a slider. Otherwise
+	// all elements in odd positions are sliders, and even positions
+	// are peephole containers.
+
+	if (n > 1)
+	{
+		for (size_t i=0; i<n; i += 2)
+		{
+			pane_peephole_container pp=get_element(grid_lock, i);
+
+			auto pc_size=element_size(IN_THREAD, pp->impl);
+			auto pp_size=element_size(IN_THREAD, pp->get_peephole()
+						  ->impl);
+
+			// The peephole container's size should be larger than
+			// the peephole's size.
+			if (pc_size < pp_size)
+				pc_size=pp_size;
+
+			// The fixed overhead is the difference between the two.
+			//
+			// The fixed overhead gets added to the total fixed
+			// overhead, and gets stored in the pane. If it changes
+			// we'll need to reset the reference size of all the
+			// panes.
+			//
+			// This happens when the peephole changes its
+			// horizontal scrollbar's visibility, which it punts
+			// to the process_element_position_finalized phase
+			// which happens after initial metrics.
+			//
+			// 1) The peephole's metrics get calculated
+			//
+			// 2) We get here
+			//
+			// 3) process_element_position_finalized phase runs
+			//    and the peephole determines whether or not
+			//    the horizontal scrollbar should be visible.
+			//
+			// This affects the fixed overhead, so we store it
+			// and if we detect that the fixed overhead changed
+			// then reference_size_is_set_now no more.
+
+			auto overhead=pc_size-pp_size;
+
+			fixed_overhead += overhead;
+
+			if (pp->fixed_overhead(IN_THREAD) != overhead)
+			{
+				reference_size_is_set_now=false;
+				pp->fixed_overhead(IN_THREAD)=overhead;
+			}
+			pane_peephole_containers.push_back(pp);
+		}
+	}
+
 	// We want to run through the following calculations if either:
 	//
 	// 1) The size of the pane changed, pane_size is not equal to
@@ -749,14 +811,7 @@ void panelayoutmanagerObj::implObj
 		}
 	}
 
-	std::vector<pane_peephole_container> pane_peephole_containers;
-	dim_squared_t fixed_overhead{0};
-
 	dim_squared_t total_reference_size;
-
-	size_t n=total_size(grid_lock);
-
-	pane_peephole_containers.reserve(n/2+1);
 
 	// First pass. We scan through the entire container, both panes
 	// and the dividing sliders. The total size of the sliders is
@@ -768,40 +823,25 @@ void panelayoutmanagerObj::implObj
 	// that's saved in each pane_peephole_container, otherwise we set
 	// its reference_size now.
 
-	for (size_t i=0; i<n; ++i)
+	for (size_t i= n > 1 ? 1:0; i<n; i += 2)
 	{
 		// If there's only one element, it's a slider. Otherwise
 		// all elements in odd positions are sliders...
-		if (n <= 1 || (i % 2))
+
+		fixed_overhead+=element_size(IN_THREAD,
+					     get_element(grid_lock, i)->impl);
+	}
+
+	for (const auto &pp:pane_peephole_containers)
+	{
+		if (!reference_size_is_set_now)
 		{
-			fixed_overhead+=element_size(IN_THREAD,
-						     get_element(grid_lock, i)
-						     ->impl);
+			auto s=element_size(IN_THREAD,
+					    pp->get_peephole()->impl);
+
+			pp->reference_size(IN_THREAD)=s;
 		}
-		else
-		{
-			// ... and all elements in even positions are panes.
-			pane_peephole_container pp=get_element(grid_lock, i);
-
-			// We adjust the peephole's metrics. The overhead is
-			// the difference between the peephole's size and the
-			// pane_peephole_container's size, which is due to the
-			// padding specified for this pane.
-			fixed_overhead +=
-				element_size(IN_THREAD, pp->impl) -
-				element_size(IN_THREAD, pp->get_peephole()
-					     ->impl);
-
-			if (!reference_size_is_set_now)
-			{
-				auto s=element_size(IN_THREAD,
-						    pp->get_peephole()->impl);
-
-				pp->reference_size(IN_THREAD)=s;
-			}
-			total_reference_size += pp->reference_size(IN_THREAD);
-			pane_peephole_containers.push_back(pp);
-		}
+		total_reference_size += pp->reference_size(IN_THREAD);
 	}
 
 	// Also include the real estate occupied by the borders in the
