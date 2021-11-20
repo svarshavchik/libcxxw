@@ -107,6 +107,59 @@ static const other_color_widget other_color_widgets[]=
 #endif
 }
 
+struct all_gradient_values : x::w::linear_gradient_values,
+			     x::w::radial_gradient_values {};
+
+static void create_color_gradient_value_validator(
+	x::w::uielements &ui,
+	const char *field,
+	double all_gradient_values::*default_value)
+{
+	ui.create_string_validated_input_field<double>(
+		field,
+		[default_value]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 std::optional<double> &parsed_value,
+		 const auto &lock,
+		 const auto &trigger)
+		{
+			if (parsed_value)
+			{
+				auto s=appObj::fmtdblval(*parsed_value);
+
+				std::istringstream i{s};
+
+				i >> *parsed_value;
+				return;
+			}
+
+			if (value.empty())
+			{
+				all_gradient_values default_values;
+
+				parsed_value=default_values.*default_value;
+				return;
+			}
+
+			lock.stop_message(_("Invalid value"));
+
+			parsed_value.reset();
+		},
+		[default_value]
+		(double v) -> std::string
+		{
+			return appObj::fmtdblval(v);
+		},
+		std::nullopt,
+		[]
+		(ONLY IN_THREAD, const std::optional<double> &v)
+		{
+			appinvoke(&appObj::color_updated, IN_THREAD);
+		}
+	);
+}
+
 void appObj::colors_elements_create(x::w::uielements &ui)
 {
 	create_optional_double_validator(
@@ -125,6 +178,76 @@ void appObj::colors_elements_create(x::w::uielements &ui)
 		ui,
 		"color-scaled-page-contents-a-value-field",
 		&appObj::color_updated);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-linear-x1",
+		&all_gradient_values::x1);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-linear-y1",
+		&all_gradient_values::y1);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-linear-x2",
+		&all_gradient_values::x2);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-linear-y2",
+		&all_gradient_values::y2);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-linear-width",
+		&all_gradient_values::linear_gradient_values::fixed_width);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-linear-height",
+		&all_gradient_values::linear_gradient_values::fixed_height);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-radial-inner-x",
+		&all_gradient_values::inner_center_x);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-radial-inner-y",
+		&all_gradient_values::inner_center_y);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-radial-inner-radius",
+		&all_gradient_values::inner_radius);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-radial-outer-x",
+		&all_gradient_values::outer_center_x);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-radial-outer-y",
+		&all_gradient_values::outer_center_y);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-radial-outer-radius",
+		&all_gradient_values::outer_radius);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-radial-fixed-width",
+		&all_gradient_values::radial_gradient_values::fixed_width);
+
+	create_color_gradient_value_validator(
+		ui,
+		"color-radial-fixed-height",
+		&all_gradient_values::radial_gradient_values::fixed_height);
 }
 
 void appObj::colors_elements_initialize(app_elements_tptr &elements,
@@ -236,16 +359,28 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 
 	x::w::input_field color_linear_x1=
 		ui.get_element("color-linear-x1");
+        auto color_linear_x1_validated=
+		ui.get_validated_input_field<double>("color-linear-x1");
 	x::w::input_field color_linear_y1=
 		ui.get_element("color-linear-y1");
+	auto color_linear_y1_validated=
+		ui.get_validated_input_field<double>("color-linear-y1");
 	x::w::input_field color_linear_x2=
 		ui.get_element("color-linear-x2");
+	auto color_linear_x2_validated=
+		ui.get_validated_input_field<double>("color-linear-x2");
 	x::w::input_field color_linear_y2=
 		ui.get_element("color-linear-y2");
+	auto color_linear_y2_validated=
+		ui.get_validated_input_field<double>("color-linear-y2");
 	x::w::input_field color_linear_width=
 		ui.get_element("color-linear-width");
+	auto color_linear_width_validated=
+		ui.get_validated_input_field<double>("color-linear-width");
 	x::w::input_field color_linear_height=
 		ui.get_element("color-linear-height");
+	auto color_linear_height_validated=
+		ui.get_validated_input_field<double>("color-linear-height");
 	x::w::button color_add_linear_gradient_button=
 		ui.get_element("color-add-linear-gradient-button");
 
@@ -262,28 +397,51 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 		color_add_linear_gradient_button;
 	elements.color_linear_page_values_grid=color_linear_page_values_grid;
 
+	elements.color_linear_x1_validated=color_linear_x1_validated;
+	elements.color_linear_y1_validated=color_linear_y1_validated;
+	elements.color_linear_x2_validated=color_linear_x2_validated;
+	elements.color_linear_y2_validated=color_linear_y2_validated;
+	elements.color_linear_width_validated=color_linear_width_validated;
+	elements.color_linear_height_validated=color_linear_height_validated;
+
 	// Radial gradient
 	x::w::input_field color_radial_inner_x=
 		ui.get_element("color-radial-inner-x");
+	auto color_radial_inner_x_validated=
+		ui.get_validated_input_field<double>("color-radial-inner-x");
 	x::w::input_field color_radial_inner_y=
 		ui.get_element("color-radial-inner-y");
+	auto color_radial_inner_y_validated=
+		ui.get_validated_input_field<double>("color-radial-inner-y");
 	x::w::input_field color_radial_inner_radius=
 		ui.get_element("color-radial-inner-radius");
+	auto color_radial_inner_radius_validated=
+		ui.get_validated_input_field<double>("color-radial-inner-radius");
 	x::w::focusable_container color_radial_inner_axis=
 		ui.get_element("color-radial-inner-axis");
 
 	x::w::input_field color_radial_outer_x=
 		ui.get_element("color-radial-outer-x");
+	auto color_radial_outer_x_validated=
+		ui.get_validated_input_field<double>("color-radial-outer-x");
 	x::w::input_field color_radial_outer_y=
 		ui.get_element("color-radial-outer-y");
+	auto color_radial_outer_y_validated=
+		ui.get_validated_input_field<double>("color-radial-outer-y");
 	x::w::input_field color_radial_outer_radius=
 		ui.get_element("color-radial-outer-radius");
+	auto color_radial_outer_radius_validated=
+		ui.get_validated_input_field<double>("color-radial-outer-radius");
 	x::w::focusable_container color_radial_outer_axis=
 		ui.get_element("color-radial-outer-axis");
 	x::w::input_field color_radial_fixed_width=
 		ui.get_element("color-radial-fixed-width");
+	auto color_radial_fixed_width_validated=
+		ui.get_validated_input_field<double>("color-radial-fixed-width");
 	x::w::input_field color_radial_fixed_height=
 		ui.get_element("color-radial-fixed-height");
+	auto color_radial_fixed_height_validated=
+		ui.get_validated_input_field<double>("color-radial-fixed-height");
 	x::w::button color_add_radial_gradient_button=
 		ui.get_element("color-add-radial-gradient-button");
 
@@ -303,6 +461,19 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 	elements.color_add_radial_gradient_button=
 		color_add_radial_gradient_button;
 	elements.color_radial_page_values_grid=color_radial_page_values_grid;
+
+	elements.color_radial_inner_x_validated=color_radial_inner_x_validated;
+	elements.color_radial_inner_y_validated=color_radial_inner_y_validated;
+	elements.color_radial_inner_radius_validated=
+		color_radial_inner_radius_validated;
+	elements.color_radial_outer_x_validated=color_radial_outer_x_validated;
+	elements.color_radial_outer_y_validated=color_radial_outer_y_validated;
+	elements.color_radial_outer_radius_validated=
+		color_radial_outer_radius_validated;
+	elements.color_radial_fixed_width_validated=
+		color_radial_fixed_width_validated;
+	elements.color_radial_fixed_height_validated=
+		color_radial_fixed_height_validated;
 
 	color_new_name->on_validate([]
 				    (ONLY IN_THREAD,

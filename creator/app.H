@@ -545,49 +545,6 @@ public:
 	//! All supported appearance types, by their name.
 	const appearance_types_t appearance_types;
 
-	//! Colors page: linear gradient value
-	const x::w::validated_input_field<
-		double> color_linear_x1_validated,
-
-	//! Colors page: linear gradient value
-		color_linear_y1_validated,
-
-	//! Colors page: linear gradient value
-		color_linear_x2_validated,
-
-	//! Colors page: linear gradient value
-		color_linear_y2_validated,
-
-	//! Colors page: linear gradient value
-		color_linear_width_validated,
-
-	//! Colors page: linear gradient value
-		color_linear_height_validated,
-
-	//! Colors page: radial gradient value
-		color_radial_inner_x_validated,
-
-	//! Colors page: radial gradient value
-		color_radial_inner_y_validated,
-
-	//! Colors page: radial gradient value
-		color_radial_inner_radius_validated,
-
-	//! Colors page: radial gradient value
-		color_radial_outer_x_validated,
-
-	//! Colors page: radial gradient value
-		color_radial_outer_y_validated,
-
-	//! Colors page: radial gradient value
-		color_radial_outer_radius_validated,
-
-	//! Colors page: radial gradient value
-		color_radial_fixed_width_validated,
-
-	//! Colors page: radial gradient value
-		color_radial_fixed_height_validated;
-
 	//! Create an input field validator for a double value.
 
 	//! Installs a validator in uielements for an input field for

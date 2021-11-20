@@ -682,56 +682,6 @@ void appObj::create_optional_double_validator(
 	);
 }
 
-struct all_gradient_values : x::w::linear_gradient_values,
-			     x::w::radial_gradient_values {};
-
-static const x::w::validated_input_field<double>
-color_gradient_value_validator(const x::w::input_field &field,
-			       double all_gradient_values::*default_value)
-{
-	return field->set_string_validator<double>(
-		[default_value]
-		(ONLY IN_THREAD,
-		 const std::string &value,
-		 std::optional<double> &parsed_value,
-		 const auto &lock,
-		 const auto &trigger)
-		{
-			if (parsed_value)
-			{
-				auto s=appObj::fmtdblval(*parsed_value);
-
-				std::istringstream i{s};
-
-				i >> *parsed_value;
-				return;
-			}
-
-			if (value.empty())
-			{
-				all_gradient_values default_values;
-
-				parsed_value=default_values.*default_value;
-				return;
-			}
-
-			lock.stop_message(_("Invalid value"));
-
-			parsed_value.reset();
-		},
-		[default_value]
-		(double v) -> std::string
-		{
-			return appObj::fmtdblval(v);
-		},
-		std::nullopt,
-		[]
-		(ONLY IN_THREAD, const std::optional<double> &v)
-		{
-			appinvoke(&appObj::color_updated, IN_THREAD);
-		}
-	);
-}
 
 std::string appObj::border_format_size(const std::variant<std::string,
 				       double> &v)
@@ -755,65 +705,6 @@ appObj::appObj(init_args &&args)
 	  current_edited_info{args.filename},
 	  appearance_types{std::move(args.appearance_types)},
 	  /////////////////////////////////////////////////////////////////////
-
-	  color_linear_x1_validated{color_gradient_value_validator
-				    (color_linear_x1,
-				     &all_gradient_values::x1)},
-	  color_linear_y1_validated{color_gradient_value_validator
-				    (color_linear_y1,
-				     &all_gradient_values::y1)},
-	  color_linear_x2_validated{color_gradient_value_validator
-				    (color_linear_x2,
-				     &all_gradient_values::x2)},
-	  color_linear_y2_validated{color_gradient_value_validator
-				    (color_linear_y2,
-				     &all_gradient_values::y2)},
-	  color_linear_width_validated{color_gradient_value_validator
-				       (color_linear_width,
-					&all_gradient_values
-					::linear_gradient_values::fixed_width)},
-	  color_linear_height_validated{color_gradient_value_validator
-					(color_linear_height,
-					 &all_gradient_values
-					 ::linear_gradient_values::fixed_height)
-	  },
-
-	  color_radial_inner_x_validated{color_gradient_value_validator
-					 (color_radial_inner_x,
-					  &all_gradient_values::inner_center_x)
-	  },
-	  color_radial_inner_y_validated{color_gradient_value_validator
-					 (color_radial_inner_y,
-					  &all_gradient_values::inner_center_y)
-	  },
-	  color_radial_inner_radius_validated{color_gradient_value_validator
-					      (color_radial_inner_radius,
-					       &all_gradient_values
-					       ::inner_radius)},
-	  color_radial_outer_x_validated{color_gradient_value_validator
-					 (color_radial_outer_x,
-					  &all_gradient_values
-					  ::outer_center_x)},
-	  color_radial_outer_y_validated{color_gradient_value_validator
-					 (color_radial_outer_y,
-					  &all_gradient_values
-					  ::outer_center_y)},
-	  color_radial_outer_radius_validated{color_gradient_value_validator
-					      (color_radial_outer_radius,
-					       &all_gradient_values::outer_radius)
-	  },
-	  color_radial_fixed_width_validated{color_gradient_value_validator
-					     (color_radial_fixed_width,
-					      &all_gradient_values::
-					      radial_gradient_values::
-					      fixed_width)
-	  },
-	  color_radial_fixed_height_validated{color_gradient_value_validator
-					      (color_radial_fixed_height,
-					       &all_gradient_values::
-					       radial_gradient_values::
-					       fixed_height)
-	  },
 
 	  standard_font_values{std::move(static_cast<standard_font_values_t &>
 					 (args))},

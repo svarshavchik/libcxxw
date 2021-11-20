@@ -213,24 +213,49 @@ object and placed into discrete variables.
     <name>color_linear_x1</name>
   </ref>
   <ref>
+    <name>color_linear_x1_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
+  </ref>
+
+  <ref>
     <type>x::w::input_field</type>
     <name>color_linear_y1</name>
+  </ref>
+  <ref>
+    <name>color_linear_y1_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
   </ref>
   <ref>
     <type>x::w::input_field</type>
     <name>color_linear_x2</name>
   </ref>
   <ref>
+    <name>color_linear_x2_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
+  </ref>
+  <ref>
     <type>x::w::input_field</type>
     <name>color_linear_y2</name>
+  </ref>
+  <ref>
+    <name>color_linear_y2_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
   </ref>
   <ref>
     <type>x::w::input_field</type>
     <name>color_linear_width</name>
   </ref>
   <ref>
+    <name>color_linear_width_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
+  </ref>
+  <ref>
     <type>x::w::input_field</type>
     <name>color_linear_height</name>
+  </ref>
+  <ref>
+    <name>color_linear_height_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
   </ref>
 
   <!-- Radial gradient color -->
@@ -240,12 +265,24 @@ object and placed into discrete variables.
     <name>color_radial_inner_x</name>
   </ref>
   <ref>
+    <name>color_radial_inner_x_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
+  </ref>
+  <ref>
     <type>x::w::input_field</type>
     <name>color_radial_inner_y</name>
   </ref>
   <ref>
+    <name>color_radial_inner_y_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
+  </ref>
+  <ref>
     <type>x::w::input_field</type>
     <name>color_radial_inner_radius</name>
+  </ref>
+  <ref>
+    <name>color_radial_inner_radius_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
   </ref>
   <ref>
     <type>x::w::focusable_container</type>
@@ -256,12 +293,24 @@ object and placed into discrete variables.
     <name>color_radial_outer_x</name>
   </ref>
   <ref>
+    <name>color_radial_outer_x_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
+  </ref>
+  <ref>
     <type>x::w::input_field</type>
     <name>color_radial_outer_y</name>
   </ref>
   <ref>
+    <name>color_radial_outer_y_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
+  </ref>
+  <ref>
     <type>x::w::input_field</type>
     <name>color_radial_outer_radius</name>
+  </ref>
+  <ref>
+    <name>color_radial_outer_radius_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
   </ref>
   <ref>
     <type>x::w::focusable_container</type>
@@ -272,8 +321,16 @@ object and placed into discrete variables.
     <name>color_radial_fixed_width</name>
   </ref>
   <ref>
+    <name>color_radial_fixed_width_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
+  </ref>
+  <ref>
     <type>x::w::input_field</type>
     <name>color_radial_fixed_height</name>
+  </ref>
+  <ref>
+    <name>color_radial_fixed_height_validated</name>
+    <type>x::w::validated_input_field&lt;double&gt;</type>
   </ref>
 
   <ref>
