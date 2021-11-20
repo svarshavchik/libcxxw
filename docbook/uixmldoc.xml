@@ -3020,6 +3020,102 @@ widgets.generate("initialize-dialog", generators);
 	</listitem>
       </varlistentry>
     </variablelist>
+
+    <section id="uixmlfactoryvalidatedinputfieldelement">
+      <title>Creating validated input fields</title>
+
+      <para>
+	It is possible to use a theme file to create a
+	<link linkend="validatedinput">validated input field</link>.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<element id='items'>
+  <input_field />
+</element>]]>
+#include &lt;&ns;/w/validated_input_field.H&gt;
+
+&ns;::w::uielements widgets;
+
+widgets.create_validated_input_field(
+    "items",
+    []
+    (ONLY IN_THREAD,
+     const std::string &amp;value,
+     const auto &amp;lock,
+     const auto &amp;ignore) -&gt; std::optional&lt;int&gt;
+    {
+          // ...
+    },
+    []
+    (const std::optional&lt;int&gt; &amp;v)
+    {
+          // ...
+    }
+);
+
+widgets.create_string_validated_input_field&lt;int&gt;(
+    "items",
+    []
+    (ONLY IN_THREAD,
+     const std::string &amp;value,
+     std::optional&lt;int&gt; &amp;parsed_value,
+     const auto &amp;lock,
+     const auto &amp;ignore)
+    {
+          // ...
+    },
+    []
+    (const std::optional&lt;int&gt; &amp;v)
+    {
+          // ...
+    }
+);
+
+// Generate the UI
+
+&ns;::w::input_field items=widgets.get_element("items");
+
+&ns;::w::validated_input_field&lt;int&gt; items_value=
+    widgets.get_validated_input_field&lt;int&gt;("items");
+</programlisting>
+	  </informalexample>
+      </blockquote>
+
+      <para>
+	Calling
+	<methodname>created_validated_input_field</methodname>() or
+	<methodname>created_string_validated_input_field</methodname>()
+	creates a input field validator that's bound to the
+	<tag class='element'>input_field</tag>
+	<tag class='element'>element</tag>
+	with the given identifier. Generating an input field using the
+	theme file automatically creates it with the specified validator.
+	The remaining parameters are the same as the parameters to
+	&create_validated_input_field_contents; and
+	&create_string_validated_input_field_contents;.
+      </para>
+
+      <note>
+	<para>
+	  The initial contents of the input field in the theme file get
+	  ignored, and <tag class='emptytag'>input_field</tag> is an
+	  empty tag. The initial contents come from the optional initial
+	  value parameter to
+	  &create_validated_input_field_contents; and
+	  &create_string_validated_input_field_contents;.
+	</para>
+      </note>
+
+      <para>
+	The <methodname>get_validated_input_field</methodname>() retrieves
+	the
+	<ulink url="&link-typedef-x--w-validated-input-field;"><classname>&ns;::w::validated_input_field&lt;type&gt;</classname></ulink>
+	of the created input field.
+      </para>
+    </section>
   </section>
 
 

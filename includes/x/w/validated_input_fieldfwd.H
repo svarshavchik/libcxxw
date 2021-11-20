@@ -101,6 +101,8 @@ concept input_field_string_validation_function = requires {
 /*! Most recently validated value in the \ref input_field.
 
 \code
+#include <INSERT_LIBX_NAMESPACE/w/validated_input_field.H>
+
 INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int_value=
         input_field->set_string_validator(
              []
@@ -116,13 +118,17 @@ INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int_value=
              (int n) { return std::to_string(n) });
 \endcode
 
+An
 \ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>"
-gets returned by \ref input_field "input field"'s
+is one of the values that gets returned from a
+ \ref factory "widget factory's" create_input_field() overload that takes
+the return value from create_validated_input_field_contents(), or
+create_string_validated_input_field_contents() as the first parameter to
+create_input_field(). It also gets returned by an existing
+ \ref input_field "input field"'s
 set_validator() and set_string_validator().
 
 \code
-#include &lt;INSERT_LIBX_NAMESPACE/w/validated_input_field_contents&gt;
-
 INSERT_LIBX_NAMESPACE::w::validated_input_field_contents<int> validated_int_contents=validated_int_value->contents;
 \endcode
 
