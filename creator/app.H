@@ -545,19 +545,6 @@ public:
 	//! All supported appearance types, by their name.
 	const appearance_types_t appearance_types;
 
-	const x::w::validated_input_field<std::optional<double>>
-	//! Colors page: validated R scale value.
-		color_scaled_r_validated,
-
-	//! Colors page: validated G scale value.
-		color_scaled_g_validated,
-
-	//! Colors page: validated B scale value.
-		color_scaled_b_validated,
-
-	//! Colors page: validated A scale value.
-		color_scaled_a_validated;
-
 	//! Colors page: linear gradient value
 	const x::w::validated_input_field<
 		double> color_linear_x1_validated,
@@ -600,37 +587,6 @@ public:
 
 	//! Colors page: radial gradient value
 		color_radial_fixed_height_validated;
-
-	const x::w::validated_input_field<
-		std::variant<std::string, double>
-		//! Borders page: border_size
-
-		> border_width_validated,
-
-	//! Borders page: border_size
-		border_height_validated,
-
-	//! Borders page: border_size
-		border_hradius_validated,
-
-	//! Borders page: border_size
-		border_vradius_validated;
-
-	//! Borders page: scaled border size
-	const x::w::validated_input_field<
-		std::optional<unsigned>
-		> border_width_scale_validated,
-	//! Borders page: scaled border size
-		border_height_scale_validated,
-	//! Borders page: scaled border size
-		border_hradius_scale_validated,
-	//! Borders page: scaled border size
-		border_vradius_scale_validated;
-
-	//! Borders page: border dashes
-	const x::w::validated_input_field<
-		std::vector<double>
-		> border_dashes_field_validated;
 
 	//! Create an input field validator for a double value.
 
@@ -920,6 +876,10 @@ public:
 	//
 	// Colors page.
 
+	//! Install any validators for the UI generator
+
+	static void colors_elements_create(x::w::uielements &ui);
+
 	//! Installs callbacks.
 
 	static void colors_elements_initialize(app_elements_tptr &,
@@ -1194,6 +1154,10 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	//
 	// Borders page.
+
+	//! Install any validators for the UI generator
+
+	static void borders_elements_create(x::w::uielements &ui);
 
 	//! Installs callbacks.
 

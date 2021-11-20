@@ -227,7 +227,7 @@ public:
 
 	//! Internal helper object
 
-	//! \interal
+	//! \internal
 	struct create_current_selection {
 
 		const new_custom_comboboxlayoutmanager &me;

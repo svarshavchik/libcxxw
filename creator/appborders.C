@@ -164,6 +164,254 @@ static void border_editable_combobox(const x::w::focusable_container &container)
 		 });
 }
 
+// Creator a validator for one of the size fields.
+
+static void create_border_size_validator(
+	x::w::uielements &ui,
+	const char *field_name,
+	x::w::focusable_container appObj::*combobox)
+{
+	ui.create_validated_input_field(
+		field_name,
+		[combobox]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 const auto &me,
+		 const auto &trigger)
+		{
+			std::optional<std::variant<std::string, double>>
+				ret{value};
+
+			bool builtin=false;
+
+			appinvoke(
+				[&]
+				(appObj *me)
+				{
+					auto lm=(me->*combobox)
+						->editable_comboboxlayout();
+
+					if (lm->selected())
+					{
+						// Some item is selected,
+						// don't bother
+						// checking.
+
+						builtin=true;
+					}
+				});
+
+			if (!builtin)
+				return ret;
+
+			if (value.empty())
+			{
+				return ret;
+			}
+
+			// Nothing is selected, must be a
+			// mm value.
+
+			std::istringstream i{x::trim(value)};
+
+			double v;
+
+			i >> v;
+
+			if (!i.fail() && (i.get(), i.eof()))
+			{
+				if (v >= 0 && v < 10000)
+				{
+					auto s=appObj::fmtdblval(v);
+
+					std::istringstream i{s};
+
+					i >> v;
+
+					ret=v;
+
+					return ret;
+				}
+			}
+
+			return ret;
+		},
+		[]
+		(const auto &v)
+		{
+			return appObj::border_format_size(v);
+		},
+		std::nullopt,
+		[]
+		(ONLY IN_THREAD, const auto &ignore)
+		{
+			appObj::border_enable_disable_later();
+		});
+}
+
+// Validator for the "scaled" fields on the border page, that have an
+// optional "unsigned" value.
+
+static void create_border_size_scale_validator(
+	x::w::uielements &ui,
+	const char *field_name
+)
+{
+	ui.create_validated_input_field(
+		field_name,
+		[]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 const auto &lock,
+		 const auto &trigger) -> std::optional<std::optional<unsigned>>
+		{
+			std::optional<std::optional<unsigned>> ret;
+
+			if (value.empty())
+			{
+				ret.emplace();
+
+				appObj::border_enable_disable_later();
+				return ret;
+			}
+
+			unsigned v;
+
+			std::istringstream i{x::trim(value)};
+
+			i >> v;
+
+			if (!i.fail() && (i.get(), i.eof()))
+			{
+				if (v >= 0 && v < 10000)
+				{
+					ret.emplace()=v;
+					appObj::border_enable_disable_later();
+					return ret;
+				}
+			}
+
+			lock.stop_message(_("Scale value must be a non-negative"
+					    " integer"));
+			return ret;
+		},
+		[]
+		(const std::optional<unsigned> &v) -> std::string
+		{
+			std::string s;
+
+			if (v)
+				s=x::value_string<unsigned>
+					::to_string(*v, x::locale::base::c());
+
+			return s;
+		});
+}
+
+void appObj::borders_elements_create(x::w::uielements &ui)
+{
+	create_border_size_validator(ui,
+				     "border_width",
+				     &appObj::border_width);
+
+	create_border_size_validator(ui,
+				     "border_height",
+				     &appObj::border_height);
+
+	create_border_size_validator(ui,
+				     "border_hradius",
+				     &appObj::border_hradius);
+
+	create_border_size_validator(ui,
+				     "border_vradius",
+				     &appObj::border_vradius);
+
+	create_border_size_scale_validator(ui,
+					   "border_width_scale");
+
+	create_border_size_scale_validator(ui,
+					   "border_height_scale");
+
+	create_border_size_scale_validator(ui,
+					   "border_hradius_scale");
+
+	create_border_size_scale_validator(ui,
+					   "border_vradius_scale");
+
+	ui.create_validated_input_field(
+		"border_dashes_field",
+		[]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 const auto &lock,
+		 const auto &trigger) -> std::optional<std::vector<double>>
+		{
+			std::optional<std::vector<double>> ret;
+
+			auto &v=ret.emplace();
+
+			std::istringstream i{value};
+
+			while (1)
+			{
+				auto c=i.peek();
+
+				if (c == ' ' || c == '\t' ||
+				    c == ';' ||
+				    c == '\n' || c == '\r')
+				{
+					i.get();
+					continue;
+				}
+
+				if (i.eof())
+				{
+					appObj::border_enable_disable_later();
+					return ret;
+				}
+
+				double n;
+
+				if (!(i >> n))
+					break;
+
+				std::istringstream rounded{appObj::fmtdblval(n)};
+
+				x::imbue im{x::locale::base::c(), rounded};
+
+				if (!(rounded >> n))
+					break;
+
+				if (n <= 0)
+					break;
+				v.push_back(n);
+			}
+
+			lock.stop_message(
+				_("Cannot parse a list of non-negative "
+				  "values in millimeters"));
+			return ret;
+		},
+		[]
+		(const std::optional<std::vector<double>> &v) -> std::string
+		{
+			std::ostringstream o;
+
+			const char *p="";
+
+			if (v)
+			{
+				for (auto n:*v)
+				{
+					o << p << appObj::fmtdblval(n);
+					p="; ";
+				}
+			}
+
+			return o.str();
+		});
+}
+
 void appObj::borders_elements_initialize(app_elements_tptr &elements,
 					 x::w::uielements &ui,
 					 init_args &args)
@@ -191,25 +439,52 @@ void appObj::borders_elements_initialize(app_elements_tptr &elements,
 
 	x::w::focusable_container border_width=
 		ui.get_element("border_width");
+	auto border_width_validated=
+		ui.get_validated_input_field<
+			std::variant<std::string, double>>("border_width");
 	x::w::input_field border_width_scale=
 		ui.get_element("border_width_scale");
+	auto border_width_scale_validated=
+		ui.get_validated_input_field<
+			std::optional<unsigned>>("border_width_scale");
 	x::w::focusable_container border_height=
 		ui.get_element("border_height");
+	auto border_height_validated=
+		ui.get_validated_input_field<
+			std::variant<std::string, double>>("border_height");
 	x::w::input_field border_height_scale=
 		ui.get_element("border_height_scale");
+	auto border_height_scale_validated=
+		ui.get_validated_input_field<
+			std::optional<unsigned>>("border_height_scale");
 	x::w::focusable_container border_hradius=
 		ui.get_element("border_hradius");
+	auto border_hradius_validated=
+		ui.get_validated_input_field<
+			std::variant<std::string, double>>("border_hradius");
 	x::w::input_field border_hradius_scale=
 		ui.get_element("border_hradius_scale");
+	auto border_hradius_scale_validated=
+		ui.get_validated_input_field<
+			std::optional<unsigned>>("border_hradius_scale");
 	x::w::focusable_container border_vradius=
 		ui.get_element("border_vradius");
+	auto border_vradius_validated=
+		ui.get_validated_input_field<
+			std::variant<std::string, double>>("border_vradius");
 	x::w::input_field border_vradius_scale=
 		ui.get_element("border_vradius_scale");
+	auto border_vradius_scale_validated=
+		ui.get_validated_input_field<
+			std::optional<unsigned>>("border_vradius_scale");
 
 	x::w::image_button border_dashes_option=
 		ui.get_element("border_dashes_option");
 	x::w::input_field border_dashes_field=
 		ui.get_element("border_dashes_field");
+	auto border_dashes_field_validated=
+		ui.get_validated_input_field<
+			std::vector<double>>("border_dashes_field");
 
 	x::w::container border_preview_cell_border_container=
 		ui.get_element("border_preview_cell_border_container");
@@ -277,15 +552,24 @@ void appObj::borders_elements_initialize(app_elements_tptr &elements,
 	elements.border_rounded_corner_no=border_rounded_corner_no;
 
 	elements.border_width=border_width;
+	elements.border_width_validated=border_width_validated;
 	elements.border_width_scale=border_width_scale;
+	elements.border_width_scale_validated=border_width_scale_validated;
 	elements.border_height=border_height;
+	elements.border_height_validated=border_height_validated;
 	elements.border_height_scale=border_height_scale;
+	elements.border_height_scale_validated=border_height_scale_validated;
 	elements.border_hradius=border_hradius;
+	elements.border_hradius_validated=border_hradius_validated;
 	elements.border_hradius_scale=border_hradius_scale;
+	elements.border_hradius_scale_validated=border_hradius_scale_validated;
 	elements.border_vradius=border_vradius;
+	elements.border_vradius_validated=border_vradius_validated;
 	elements.border_vradius_scale=border_vradius_scale;
+	elements.border_vradius_scale_validated=border_vradius_scale_validated;
 	elements.border_dashes_option=border_dashes_option;
 	elements.border_dashes_field=border_dashes_field;
+	elements.border_dashes_field_validated=border_dashes_field_validated;
 	elements.border_preview_cell_border_container=
 		border_preview_cell_border_container;
 	elements.border_preview=border_preview;

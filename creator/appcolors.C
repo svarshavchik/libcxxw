@@ -107,6 +107,26 @@ static const other_color_widget other_color_widgets[]=
 #endif
 }
 
+void appObj::colors_elements_create(x::w::uielements &ui)
+{
+	create_optional_double_validator(
+		ui,
+		"color-scaled-page-contents-r-value-field",
+		&appObj::color_updated);
+	create_optional_double_validator(
+		ui,
+		"color-scaled-page-contents-g-value-field",
+		&appObj::color_updated);
+	create_optional_double_validator(
+		ui,
+		"color-scaled-page-contents-b-value-field",
+		&appObj::color_updated);
+	create_optional_double_validator(
+		ui,
+		"color-scaled-page-contents-a-value-field",
+		&appObj::color_updated);
+}
+
 void appObj::colors_elements_initialize(app_elements_tptr &elements,
 					x::w::uielements &ui,
 					init_args &args)
@@ -162,12 +182,28 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 		ui.get_element("color-scaled-page-from");
 	x::w::input_field color_scaled_page_r=
 		ui.get_element("color-scaled-page-contents-r-value-field");
+	auto color_scaled_page_r_validated=
+		ui.get_validated_input_field<std::optional<double>>(
+			"color-scaled-page-contents-r-value-field"
+		);
 	x::w::input_field color_scaled_page_g=
 		ui.get_element("color-scaled-page-contents-g-value-field");
+	auto color_scaled_page_g_validated=
+		ui.get_validated_input_field<std::optional<double>>(
+			"color-scaled-page-contents-g-value-field"
+		);
 	x::w::input_field color_scaled_page_b=
 		ui.get_element("color-scaled-page-contents-b-value-field");
+	auto color_scaled_page_b_validated=
+		ui.get_validated_input_field<std::optional<double>>(
+			"color-scaled-page-contents-b-value-field"
+		);
 	x::w::input_field color_scaled_page_a=
 		ui.get_element("color-scaled-page-contents-a-value-field");
+	auto color_scaled_page_a_validated=
+		ui.get_validated_input_field<std::optional<double>>(
+			"color-scaled-page-contents-a-value-field"
+		);
 
 	elements.color_name=color_name;
 	elements.color_new_name=color_new_name;
@@ -183,9 +219,18 @@ void appObj::colors_elements_initialize(app_elements_tptr &elements,
 	elements.color_scaled_page_from=color_scaled_page_from;
 
 	elements.color_scaled_page_r=color_scaled_page_r;
+	elements.color_scaled_page_r_validated=
+		color_scaled_page_r_validated;
+
 	elements.color_scaled_page_g=color_scaled_page_g;
+	elements.color_scaled_page_g_validated=
+		color_scaled_page_g_validated;
 	elements.color_scaled_page_b=color_scaled_page_b;
+	elements.color_scaled_page_b_validated=
+		color_scaled_page_b_validated;
 	elements.color_scaled_page_a=color_scaled_page_a;
+	elements.color_scaled_page_a_validated=
+		color_scaled_page_a_validated;
 
 	// Linear gradient
 
@@ -562,16 +607,16 @@ static const struct {
 } scaled_color_fields[]={
 			 {"r",
 			  &x::w::ui::parsed_scaled_color::r,
-			  &appObj::color_scaled_r_validated},
+			  &appObj::color_scaled_page_r_validated},
 			 {"g",
 			  &x::w::ui::parsed_scaled_color::g,
-			  &appObj::color_scaled_g_validated},
+			  &appObj::color_scaled_page_g_validated},
 			 {"b",
 			  &x::w::ui::parsed_scaled_color::b,
-			  &appObj::color_scaled_b_validated},
+			  &appObj::color_scaled_page_b_validated},
 			 {"a",
 			  &x::w::ui::parsed_scaled_color::a,
-			  &appObj::color_scaled_a_validated},
+			  &appObj::color_scaled_page_a_validated},
 };
 
 // For the linear gradient, enumerate:
@@ -1611,16 +1656,16 @@ static const struct {
 	std::optional<double>
 	x::w::ui::parsed_scaled_color::*field;
 } scaled_fields[]={
-	    {&appObj::color_scaled_r_validated,
+	    {&appObj::color_scaled_page_r_validated,
 	     &appObj::color_scaled_page_r,
 	     &x::w::ui::parsed_scaled_color::r},
-	    {&appObj::color_scaled_g_validated,
+	    {&appObj::color_scaled_page_g_validated,
 	     &appObj::color_scaled_page_g,
 	     &x::w::ui::parsed_scaled_color::g},
-	    {&appObj::color_scaled_b_validated,
+	    {&appObj::color_scaled_page_b_validated,
 	     &appObj::color_scaled_page_b,
 	     &x::w::ui::parsed_scaled_color::b},
-	    {&appObj::color_scaled_a_validated,
+	    {&appObj::color_scaled_page_a_validated,
 	     &appObj::color_scaled_page_a,
 	     &x::w::ui::parsed_scaled_color::a}
 };

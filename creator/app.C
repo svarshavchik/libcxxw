@@ -310,6 +310,8 @@ inline appObj::init_args appObj::create_init_args()
 
 			 dimension_elements_create(ui);
 			 fonts_elements_create(ui);
+			 colors_elements_create(ui);
+			 borders_elements_create(ui);
 
 			 mw->on_disconnect([]
 					   {
@@ -680,18 +682,6 @@ void appObj::create_optional_double_validator(
 	);
 }
 
-template<typename field_type>
-static auto optional_double_validator(field_type &&field,
-				      void (appObj::*validated_cb)(ONLY))
-{
-	return field->set_validator(
-		optional_double_validator_closure(),
-		optional_double_formatter_closure(),
-		std::nullopt,
-		optional_double_new_value_closure(validated_cb)
-	);
-}
-
 struct all_gradient_values : x::w::linear_gradient_values,
 			     x::w::radial_gradient_values {};
 
@@ -758,222 +748,6 @@ std::string appObj::border_format_size(const std::variant<std::string,
 			v);
 }
 
-static const x::w::validated_input_field<
-	std::variant<std::string, double>
-	> border_size_validator(const x::w::focusable_container &field)
-{
-	x::w::editable_comboboxlayoutmanager lm=field->get_layoutmanager();
-
-	return lm->set_validator
-		([field=x::make_weak_capture(field)]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  const auto &me,
-		  const auto &trigger)
-		 {
-			 std::optional<std::variant<std::string, double>>
-				 ret{value};
-
-			 auto got=field.get();
-
-			 if (!got)
-			 {
-				 // Being destroyed
-
-				 return ret;
-			 }
-
-			 auto &[field]=*got;
-
-			 x::w::editable_comboboxlayoutmanager lm=
-				 field->get_layoutmanager();
-
-			 if (lm->selected())
-			 {
-				 // Some item is selected, don't bother
-				 // checking.
-				 return ret;
-			 }
-
-			 if (value.empty())
-			 {
-				 return ret;
-			 }
-
-			 // Nothing is selected, must be a mm value.
-
-			 std::istringstream i{x::trim(value)};
-
-			 double v;
-
-			 i >> v;
-
-			 if (!i.fail() && (i.get(), i.eof()))
-			 {
-				 if (v >= 0 && v < 10000)
-				 {
-					 auto s=appObj::fmtdblval(v);
-
-					 std::istringstream i{s};
-
-					 i >> v;
-
-					 ret=v;
-
-					 return ret;
-				 }
-			 }
-
-			 ret=x::trim(value);
-			 return ret;
-		 },
-		 []
-		 (const auto &v)
-		 {
-			 return appObj::border_format_size(v);
-		 },
-		 std::nullopt,
-		 []
-		 (ONLY IN_THREAD, const auto &ignore)
-		 {
-			 appObj::border_enable_disable_later();
-		 });
-}
-
-// Validator for the "scaled" fields on the border page, that have an
-// optional "unsigned" value.
-
-static const x::w::validated_input_field<std::optional<unsigned>>
-border_size_scale_validator(const x::w::input_field &field)
-{
-	return field->set_validator
-		([]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  const auto &lock,
-		  const auto &trigger)
-		 -> std::optional<std::optional<unsigned>> {
-
-			std::optional<std::optional<unsigned>> ret;
-
-			if (value.empty())
-			{
-				ret.emplace();
-
-				appObj::border_enable_disable_later();
-				return ret;
-			}
-
-			unsigned v;
-
-			std::istringstream i{x::trim(value)};
-
-			i >> v;
-
-			if (!i.fail() && (i.get(), i.eof()))
-			{
-				if (v >= 0 && v < 10000)
-				{
-					ret.emplace()=v;
-					appObj::border_enable_disable_later();
-					return ret;
-				}
-			}
-
-			lock.stop_message(_("Scale value must be a non-negative"
-					   " integer"));
-			return ret;
-		},
-		 []
-		 (const std::optional<unsigned> &v) -> std::string
-		 {
-			 std::string s;
-
-			 if (v)
-				 s=x::value_string<unsigned>
-					 ::to_string(*v, x::locale::base::c());
-
-			 return s;
-		 });
-}
-
-static inline x::w::validated_input_field<std::vector<double>>
-create_border_dashes_field_validator(const x::w::input_field &field)
-{
-	return field->set_validator
-		([]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  const auto &lock,
-		  const auto &trigger)
-		 -> std::optional<std::vector<double>> {
-
-			std::optional<std::vector<double>> ret;
-
-			auto &v=ret.emplace();
-
-			std::istringstream i{value};
-
-			while (1)
-			{
-				auto c=i.peek();
-
-				if (c == ' ' || c == '\t' ||
-				    c == ';' ||
-				    c == '\n' || c == '\r')
-				{
-					i.get();
-					continue;
-				}
-
-				if (i.eof())
-				{
-					appObj::border_enable_disable_later();
-					return ret;
-				}
-
-				double n;
-
-				if (!(i >> n))
-					break;
-
-				std::istringstream rounded{appObj::fmtdblval(n)};
-
-				x::imbue im{x::locale::base::c(), rounded};
-
-				if (!(rounded >> n))
-					break;
-
-				if (n <= 0)
-					break;
-				v.push_back(n);
-			}
-
-			lock.stop_message(
-				_("Cannot parse a list of non-negative "
-				  "values in millimeters"));
-			return ret;
-		},
-		 []
-		 (const std::optional<std::vector<double>> &v) -> std::string
-		 {
-			 std::ostringstream o;
-
-			 const char *p="";
-
-			 if (v)
-			 {
-				 for (auto n:*v)
-				 {
-					 o << p << appObj::fmtdblval(n);
-					 p="; ";
-				 }
-			 }
-
-			 return o.str();
-		 });
-}
-
 appObj::appObj(init_args &&args)
 	: const_app_elements_t{std::move(args.elements)},
 	  configfile{args.configfile},
@@ -981,20 +755,6 @@ appObj::appObj(init_args &&args)
 	  current_edited_info{args.filename},
 	  appearance_types{std::move(args.appearance_types)},
 	  /////////////////////////////////////////////////////////////////////
-	  // Dimension element callbacks.
-	  color_scaled_r_validated{optional_double_validator
-				   (color_scaled_page_r,
-				    &appObj::color_updated)},
-	  color_scaled_g_validated{optional_double_validator
-				   (color_scaled_page_g,
-				    &appObj::color_updated)},
-	  color_scaled_b_validated{optional_double_validator
-				   (color_scaled_page_b,
-				    &appObj::color_updated)},
-	  color_scaled_a_validated{optional_double_validator
-				   (color_scaled_page_a,
-				    &appObj::color_updated)},
-
 
 	  color_linear_x1_validated{color_gradient_value_validator
 				    (color_linear_x1,
@@ -1055,21 +815,6 @@ appObj::appObj(init_args &&args)
 					       fixed_height)
 	  },
 
-	  border_width_validated{border_size_validator(border_width)},
-	  border_height_validated{border_size_validator(border_height)},
-	  border_hradius_validated{border_size_validator(border_hradius)},
-	  border_vradius_validated{border_size_validator(border_vradius)},
-
-	  border_width_scale_validated{border_size_scale_validator
-			  (border_width_scale)},
-	  border_height_scale_validated{border_size_scale_validator
-			  (border_height_scale)},
-	  border_hradius_scale_validated{border_size_scale_validator
-			  (border_hradius_scale)},
-	  border_vradius_scale_validated{border_size_scale_validator
-			  (border_vradius_scale)},
-	  border_dashes_field_validated{create_border_dashes_field_validator
-					(border_dashes_field)},
 	  standard_font_values{std::move(static_cast<standard_font_values_t &>
 					 (args))},
 	  current_generators{

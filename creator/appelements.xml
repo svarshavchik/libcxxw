@@ -172,8 +172,18 @@ object and placed into discrete variables.
   </ref>
 
   <ref>
+    <type>x::w::validated_input_field&lt;std::optional&lt;double&gt;&gt;</type>
+    <name>color_scaled_page_r_validated</name>
+  </ref>
+
+  <ref>
     <type>x::w::input_field</type>
     <name>color_scaled_page_g</name>
+  </ref>
+
+  <ref>
+    <type>x::w::validated_input_field&lt;std::optional&lt;double&gt;&gt;</type>
+    <name>color_scaled_page_g_validated</name>
   </ref>
 
   <ref>
@@ -182,8 +192,18 @@ object and placed into discrete variables.
   </ref>
 
   <ref>
+    <type>x::w::validated_input_field&lt;std::optional&lt;double&gt;&gt;</type>
+    <name>color_scaled_page_b_validated</name>
+  </ref>
+
+  <ref>
     <type>x::w::input_field</type>
     <name>color_scaled_page_a</name>
+  </ref>
+
+  <ref>
+    <type>x::w::validated_input_field&lt;std::optional&lt;double&gt;&gt;</type>
+    <name>color_scaled_page_a_validated</name>
   </ref>
 
   <!-- Linear gradient color -->
@@ -339,8 +359,18 @@ object and placed into discrete variables.
   </ref>
 
   <ref>
+    <type>x::w::validated_input_field&lt;std::variant&lt;std::string, double&gt;&gt;</type>
+    <name>border_width_validated</name>
+  </ref>
+
+  <ref>
     <type>x::w::input_field</type>
     <name>border_width_scale</name>
+  </ref>
+
+  <ref>
+    <type>x::w::validated_input_field&lt;std::optional&lt;unsigned&gt;&gt;</type>
+    <name>border_width_scale_validated</name>
   </ref>
 
   <ref>
@@ -349,8 +379,18 @@ object and placed into discrete variables.
   </ref>
 
   <ref>
+    <type>x::w::validated_input_field&lt;std::variant&lt;std::string, double&gt;&gt;</type>
+    <name>border_height_validated</name>
+  </ref>
+
+  <ref>
     <type>x::w::input_field</type>
     <name>border_height_scale</name>
+  </ref>
+
+  <ref>
+    <type>x::w::validated_input_field&lt;std::optional&lt;unsigned&gt;&gt;</type>
+    <name>border_height_scale_validated</name>
   </ref>
 
   <ref>
@@ -359,8 +399,18 @@ object and placed into discrete variables.
   </ref>
 
   <ref>
+    <type>x::w::validated_input_field&lt;std::variant&lt;std::string, double&gt;&gt;</type>
+    <name>border_hradius_validated</name>
+  </ref>
+
+  <ref>
     <type>x::w::input_field</type>
     <name>border_hradius_scale</name>
+  </ref>
+
+  <ref>
+    <type>x::w::validated_input_field&lt;std::optional&lt;unsigned&gt;&gt;</type>
+    <name>border_hradius_scale_validated</name>
   </ref>
 
   <ref>
@@ -369,8 +419,18 @@ object and placed into discrete variables.
   </ref>
 
   <ref>
+    <type>x::w::validated_input_field&lt;std::variant&lt;std::string, double&gt;&gt;</type>
+    <name>border_vradius_validated</name>
+  </ref>
+
+  <ref>
     <type>x::w::input_field</type>
     <name>border_vradius_scale</name>
+  </ref>
+
+  <ref>
+    <type>x::w::validated_input_field&lt;std::optional&lt;unsigned&gt;&gt;</type>
+    <name>border_vradius_scale_validated</name>
   </ref>
 
   <ref>
@@ -381,6 +441,11 @@ object and placed into discrete variables.
   <ref>
     <type>x::w::input_field</type>
     <name>border_dashes_field</name>
+  </ref>
+
+  <ref>
+    <type>x::w::validated_input_field&lt;std::vector&lt;double&gt;&gt;</type>
+    <name>border_dashes_field_validated</name>
   </ref>
 
   <ref>
