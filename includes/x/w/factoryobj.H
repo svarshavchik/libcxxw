@@ -83,7 +83,7 @@ public:
 
 	void created_internally(const element &);
 
-private:
+protected:
 	//! Invoked by factory's methods, after creating a new widget.
 
 	virtual void created(const element &) LIBCXX_HIDDEN=0;
@@ -197,7 +197,7 @@ public:
 
 	//! Create a text input field
 
-	template<typename T, typename ...Args>
+	template<typename T>
 	std::tuple<input_field, validated_input_field<T>
 		   > create_input_field(const std::tuple<
 					input_field_validation_callback,
@@ -220,7 +220,7 @@ public:
 
 	//! Create a text input field
 
-	template<typename T, typename ...Args>
+	template<typename T>
 	std::tuple<input_field, validated_input_field<T>> create_input_field(
 		const std::tuple<input_field_validation_callback,
 		validated_input_field_contents<T>> &initial_contents,
@@ -312,10 +312,10 @@ public:
 	//! Create a focusable container.
 
 	template<focusable_container_processor functor>
-	focusable_container
-	create_focusable_container(functor &&creator,
-				   const new_focusable_layoutmanager
-				   &layout_manager)
+	focusable_container create_focusable_container(
+		functor &&creator,
+		const new_focusable_layoutmanager &layout_manager
+	)
 	{
 		return do_create_focusable_container(make_function<void
 						     (const focusable_container
@@ -324,12 +324,54 @@ public:
 	}
 
 	//! Create a focusable container
-	virtual focusable_container
-	do_create_focusable_container(const function<void
-				      (const focusable_container
-				       &)> &creator,
-				      const new_focusable_layoutmanager
-				      &layout_manager) LIBCXX_PUBLIC;
+	focusable_container
+	do_create_focusable_container(
+		const function<void (const focusable_container &)> &creator,
+		const new_focusable_layoutmanager &layout_manager
+	) LIBCXX_PUBLIC;
+
+	//! Create a focusable container with a validated input field
+
+	template<typename T, typename functor>
+	std::tuple<focusable_container, validated_input_field<T>
+		   > create_focusable_container(
+			   const std::tuple<
+			   input_field_validation_callback,
+			   validated_input_field_contents<T>> &initial_contents,
+			   functor &&creator,
+			   const new_focusable_layoutmanager &layout_manager
+		   )
+	{
+		const auto &[callback, contents]=initial_contents;
+
+		text_param t;
+
+		bool validated=contents->to_text_param(t);
+
+		const auto &[fc, field] =
+			this->do_create_focusable_container(
+				make_function<void (const focusable_container &)
+				>(
+					creator
+				), layout_manager, t, callback, validated
+			);
+
+		return {
+			fc,
+			validated_input_field<T>::create(contents, field)
+		};
+	}
+
+	//! Create a focusable container.
+
+	std::tuple<focusable_container, input_field>
+	do_create_focusable_container(
+		const function<void (const focusable_container &)> &creator,
+		const new_focusable_layoutmanager &layout_manager,
+		const text_param &t,
+		const input_field_validation_callback &callback,
+		bool validated
+	) LIBCXX_PUBLIC;
 
 	//! Create a progress bar
 

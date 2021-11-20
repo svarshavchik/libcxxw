@@ -8,8 +8,11 @@
 #include <x/w/namespace.H>
 #include <x/w/focusable_containerfwd.H>
 #include <x/w/focusable_containerobj.H>
+#include <x/w/text_paramfwd.H>
+#include <x/w/input_fieldfwd.H>
 
 #include <x/functional.H>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,11 +37,19 @@ public:
 	~new_focusable_layoutmanager();
 
 	//! Internal implementation
-	virtual focusable_container create(const container_impl &parent,
-					   const function<void
-					   (const focusable_container
-					    &)> &creator)
-		const=0;
+	virtual focusable_container create(
+		const container_impl &parent,
+		const function<void (const focusable_container &)> &creator
+	) const=0;
+
+	//! Internal implementation
+	virtual std::tuple<focusable_container, input_field> create(
+		const container_impl &parent,
+		const function<void (const focusable_container &)> &creator,
+		const text_param &initial_contents,
+		const input_field_validation_callback &callback,
+		bool validated
+	) const;
 };
 
 LIBCXXW_NAMESPACE_END

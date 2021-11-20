@@ -9,6 +9,7 @@
 #include <x/w/editable_comboboxlayoutmanagerobj.H>
 #include <x/w/standard_comboboxlayoutmanager.H>
 #include <x/w/input_field_appearancefwd.H>
+#include <x/w/input_field.H>
 #include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
@@ -93,6 +94,15 @@ private:
 	focusable selection_factory(const factory &) const override
 		LIBCXX_HIDDEN;
 
+public:
+	struct LIBCXX_HIDDEN selection_factory_creator;
+
+	focusable selection_factory_using_input_field(
+		const factory &,
+		const selection_factory_creator &creator
+	) const LIBCXX_HIDDEN;
+
+private:
 	//! Override minimum_width
 	dim_arg minimum_width() const override;
 public:
@@ -102,6 +112,20 @@ public:
 
 	//! Appearance of the input field.
 	const_input_field_appearance input_appearance;
+
+private:
+
+	//! Create the focusable container.
+
+	//! \internal
+
+	std::tuple<focusable_container, input_field> create(
+		const container_impl &parent,
+		const function<void (const focusable_container &)> &creator,
+		const text_param &initial_contents,
+		const input_field_validation_callback &callback,
+		bool validated
+	) const override;
 
 protected:
 
@@ -118,6 +142,7 @@ protected:
 		const override;
 };
 
+#define x_w_editable_comboboxlayoutmanager_h_defined
 #include <x/w/editable_comboboxlayoutmanager_input_field.H>
 
 LIBCXXW_NAMESPACE_END

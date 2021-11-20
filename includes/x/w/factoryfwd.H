@@ -160,6 +160,32 @@ the new container uses the \ref itemlayoutmanager "item layout manager".
 - \ref new_panelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_panelayoutmanager":
 the new container uses the \ref panelayoutmanager "pane layout manager".
 
+\par Focusable containers with validated input fields
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/validated_input_field.H>
+
+INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager combobox_lm;
+
+auto [new_container, validated] =
+   factory->create_focusable_container(
+      INSERT_LIBX_NAMESPACE::w::create_validated_input_field_contents(
+          // ...
+      ),
+      []
+      (const auto &new_container)
+      {
+          // Creator lambda
+      }, combobox_lm);
+\endcode
+
+An editable combo-box layout manager uses an input field for editing, and
+this creates one, containing a validated value, by passing the return
+value from create_validated_input_field_contents() or
+create_string_validated_input_field_contents(). This overload returns two
+values, the new combo-box container, and a
+\ref validated_input_field "validated input field object".
+
 \par Labels
 
 \code
@@ -345,26 +371,33 @@ first parameter to \c create_input_field is a
 \ref text_param "text_param" that sets the input field's initial contents.
 
 The \c text_param may not contain any special formatting, just plain text,
-with one exception. The \c text_param may specify an initial font and/or
-color:
-
-\code
-#include <INSERT_LIBX_NAMESPACE/w/input_field.H>
-#include <INSERT_LIBX_NAMESPACE/w/text_param_literals.H>
-
-INSERT_LIBX_NAMESPACE::w::input_field field=
-   factory->create_input_field({"sans serif"_font,
-                                INSERT_LIBX_NAMESPACE::w::rgb{0, 0,
-				     INSERT_LIBX_NAMESPACE::w::rgb::maximum},
-				"Hello world!"},{40});
-\endcode
-
-This creates a text input field that uses a non-default font and/or text
-color.
+This provides the means of setting the initial contents of the input field
+as either a string or a unicode string.
 
 The second parameter to \c create_input_field() is optional. It is an
 \ref input_field_config "input_field_config" that sets the width of the
 text input field, and various other properties.
+
+\par Validated input fields
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/input_field.H>
+#include <INSERT_LIBX_NAMESPACE/w/validated_input_field.H>
+
+auto [input_field, validated] =
+   factory->create_input_field(
+     INSERT_LIBX_NAMESPACE::w::create_validated_input_field_contents(
+        // ...
+     ), config);
+\endcode
+
+Passing the return value from create_validated_input_field_contents()
+or create_string_validated_input_field_contents() creates a validated
+input field,
+and returns two values: the input field and a
+\ref validated_input_field "validated input field object".
+
+\par Date input fields
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/date_input_field.H>

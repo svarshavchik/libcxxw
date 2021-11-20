@@ -223,9 +223,36 @@ public:
 				   &creator)
 		const override;
 
+	struct LIBCXX_HIDDEN create_current_selection;
+
+	//! Internal helper object
+
+	//! \interal
+	struct create_current_selection {
+
+		const new_custom_comboboxlayoutmanager &me;
+
+		create_current_selection(
+			const new_custom_comboboxlayoutmanager &me
+		);
+
+		virtual focusable call_selection_factory(
+			const factory &
+		) const=0;
+	};
+
 protected:
 
 	struct create_impl_info;
+
+	//! Create the input field width that represents the current selection
+
+	//! \internal
+	focusable_container create_with_current_selection_factory(
+		const container_impl &,
+		const function<void (const focusable_container &)> &,
+		const create_current_selection &
+	) const;
 
 	//! Internal constructor
 

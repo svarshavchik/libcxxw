@@ -52,7 +52,7 @@ void panefactory_implObj::created_at(const element &e, size_t position)
 
 	grid_map_t::lock grid_lock{layout->impl->grid_map};
 
-	created_pane_peephole=layout->impl
+	auto pp=layout->impl
 		->created_pane_peephole(layout,
 					info,
 					appearance,
@@ -60,35 +60,22 @@ void panefactory_implObj::created_at(const element &e, size_t position)
 					e,
 					position,
 					grid_lock);
+	created_pane_peephole=pp;
+
+	auto fc=dynamic_cast<focusableObj *>(&*e);
+
+	if (fc)
+	{
+		//! Adjust the initial tabbing order.
+
+		fc->get_focus_before(pp);
+
+		//! And make sure it keeps getting updated, going forward.
+
+		pp->focusable_element=focusable{fc};
+	}
 
 	appearance=pane_appearance::base::theme();
-}
-
-focusable_container panefactory_implObj
-::do_create_focusable_container(const function<void
-				(const focusable_container
-				 &)> &creator,
-				const new_focusable_layoutmanager
-				&layout_manager)
-{
-	grid_map_t::lock lock{layout->impl->grid_map};
-	// To protect the created_pane_peephole
-
-	auto fc=panefactoryObj::do_create_focusable_container(creator,
-							      layout_manager);
-
-	pane_peephole_container new_pane_peephole=
-		created_pane_peephole.get();
-
-	//! Adjust the initial tabbing order.
-
-	fc->get_focus_before(new_pane_peephole);
-
-	//! And make sure it keeps getting updated, going forward.
-
-	new_pane_peephole->focusable_element=fc;
-
-	return fc;
 }
 
 LIBCXXW_NAMESPACE_END

@@ -113,12 +113,165 @@ new_editable_comboboxlayoutmanager &
 new_editable_comboboxlayoutmanager::operator=
 (const new_editable_comboboxlayoutmanager &)=default;
 
+// Helper proxy used by selection_factory_using_input_field to create the
+// actual input field.
+//
+// Creates a regular input field or a validated input field.
+
+struct new_editable_comboboxlayoutmanager::selection_factory_creator {
+
+	virtual input_field create(const factory &f,
+				   const input_field_config &config) const=0;
+
+};
+
+namespace {
+#if 0
+}
+#endif
+
+// Create a regular input field for the editable combo-box.
+
+struct create_regular_input_field
+	: new_editable_comboboxlayoutmanager::selection_factory_creator {
+
+	input_field create(const factory &f,
+			   const input_field_config &config) const override
+	{
+		return f->create_input_field(U"", config);
+	}
+};
+
+// Create a validated input field for the editable combo-box.
+
+struct create_validated_input_field
+	: new_editable_comboboxlayoutmanager::selection_factory_creator {
+
+	const text_param &initial_contents;
+	const input_field_validation_callback &callback;
+	const bool validated;
+	// Capture the resulting input field so that it can be returned
+	// together with the combo-box.
+
+	input_fieldptr &result;
+
+	create_validated_input_field(
+		const text_param &initial_contents,
+		const input_field_validation_callback &callback,
+		const bool validated,
+		input_fieldptr &result
+	) : initial_contents{initial_contents},
+	    callback{callback},
+	    validated{validated},
+	    result{result}
+	{
+	}
+
+	input_field create(const factory &f,
+			   const input_field_config &config) const override
+	{
+		auto field=f->create_input_field(initial_contents,
+						 validated,
+						 callback,
+						 config);
+
+		result=field;
+
+		return field;
+	}
+};
+
+// Override selection_factory() to create a validated input field
+
+// Overrides the call to selection_factory() when creating the combo-box.
+//
+// The default implementation calls selection_factory() to create a regular
+// input field.
+//
+// Pass a create_validated_input_field, instead, to create a validated
+// input field.
+
+struct create_current_selection_as_validated_input_field
+	: new_custom_comboboxlayoutmanager::create_current_selection {
+
+	const new_editable_comboboxlayoutmanager &me;
+	create_validated_input_field &do_creator;
+
+	create_current_selection_as_validated_input_field(
+		const new_editable_comboboxlayoutmanager &me,
+		create_validated_input_field &do_creator
+	) : create_current_selection{me},
+	    me{me},
+	    do_creator{do_creator}
+	{
+	}
+
+	// Override call_selection_factory().
+
+	focusable call_selection_factory(
+		const factory &f
+	) const override
+	{
+		return me.selection_factory_using_input_field(
+			f,
+			do_creator
+		);
+	}
+};
+
+#if 0
+{
+#endif
+}
+
+std::tuple<focusable_container, input_field>
+new_editable_comboboxlayoutmanager::create(
+	const container_impl &parent,
+	const function<void (const focusable_container &)> &creator,
+	const text_param &initial_contents,
+	const input_field_validation_callback &callback,
+	bool validated
+) const
+{
+	// The input field creator will create a validated input field
+
+	input_fieldptr new_input_field;
+
+	create_validated_input_field input_field_creator{
+		initial_contents,
+		callback,
+		validated,
+		new_input_field
+	};
+
+	// Yes, when we're creating the current selection, we'll create
+	// a validated input field.
+	create_current_selection_as_validated_input_field
+		current_selection_creator{*this, input_field_creator};
+
+	auto new_field=create_with_current_selection_factory(
+		parent,
+		creator,
+		current_selection_creator
+	);
+
+	return { new_field, new_input_field };
+}
+
 focusable new_editable_comboboxlayoutmanager
 ::selection_factory(const factory &f) const
 {
-	// Make sure input field's default font matches the
-	// labels'.
+	create_regular_input_field create_input_field;
 
+	return selection_factory_using_input_field(f, create_input_field);
+}
+
+focusable new_editable_comboboxlayoutmanager
+::selection_factory_using_input_field(
+	const factory &f,
+	const selection_factory_creator &creator
+) const
+{
 	// The field gets automatically sized by the combobox
 	// layout manager accoridng to the width of the combobox
 	// items, so for the purpose of creating the input field
@@ -133,16 +286,7 @@ focusable new_editable_comboboxlayoutmanager
 
 	config.appearance=input_appearance;
 
-	text_param initial_contents;
-
-	std::visit(visitor{
-			[&](const auto &p)
-			{
-				initial_contents(p);
-			}},
-		f->get_element_impl().label_theme_font());
-
-	auto input_field=f->create_input_field(initial_contents, config);
+	auto input_field=creator.create(f, config);
 
 	input_field->on_autocomplete
 		([container_impl=make_weak_capture(f->get_container_impl())]

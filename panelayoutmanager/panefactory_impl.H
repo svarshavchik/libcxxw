@@ -50,23 +50,13 @@ class LIBCXX_HIDDEN panefactory_implObj : public panefactoryObj {
 
 	//! End of the road. New element has been created.
 
+	//! Insert the created focusable element into the peephole container's
+	//! tabbing order.
+	//!
 	//! The append/insert factory subclass implements created(), then
 	//! tells us which position the new element goes into, and we
 	//! take care of it.
 	void created_at(const element &e, size_t position);
-
-	//! Override do_create_focusable_container()
-
-	//! Insert the focusable container into the peephole container's
-	//! tabbing order.
-
-	focusable_container
-	do_create_focusable_container(const function<void
-				      (const focusable_container
-				       &)> &creator,
-				      const new_focusable_layoutmanager
-				      &layout_manager) override;
-
 };
 
 LIBCXXW_NAMESPACE_END

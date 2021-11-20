@@ -2,8 +2,8 @@
 ** Copyright 2017-2021 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifdef x_w_editable_comboboxlayoutmanager_h
-#ifdef x_w_input_field_h
+#ifdef x_w_editable_comboboxlayoutmanager_h_defined
+#ifdef x_w_input_field_h_defined
 
 template<typename ...Args>
 struct editable_comboboxlayoutmanagerObj::set_args_t {

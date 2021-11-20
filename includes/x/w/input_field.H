@@ -159,6 +159,7 @@ auto input_fieldObj::set_string_validator(
 	return validated_input_field<type>::create(contents, ref{this});
 }
 
+#define x_w_input_field_h_defined
 #include <x/w/editable_comboboxlayoutmanager_input_field.H>
 
 LIBCXXW_NAMESPACE_END

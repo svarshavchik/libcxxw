@@ -408,9 +408,56 @@ combobox_create_list(const container_impl &peephole_container,
 	return {container, container};
 }
 
+new_custom_comboboxlayoutmanager::create_current_selection
+::create_current_selection(const new_custom_comboboxlayoutmanager &me)
+	: me{me}
+{
+}
+
+namespace {
+#if 0
+}
+#endif
+
+// By default call selection_factory() to create the focuable widget
+// for the current selection. This is overriden by the editable combobox
+// layout manager to create a validated input field.
+
+struct create_default_current_selection
+	: new_custom_comboboxlayoutmanager::create_current_selection {
+
+	using create_current_selection::create_current_selection;
+
+	focusable call_selection_factory(const factory &f) const override
+	{
+		return me.selection_factory(f);
+	}
+};
+
+#if 0
+{
+#endif
+}
+
 focusable_container new_custom_comboboxlayoutmanager
 ::create(const container_impl &parent,
 	 const function<void (const focusable_container &)> &creator) const
+{
+	create_default_current_selection current_selection_creator{*this};
+
+	return create_with_current_selection_factory(
+		parent,
+		creator,
+		current_selection_creator
+	);
+}
+
+focusable_container new_custom_comboboxlayoutmanager
+::create_with_current_selection_factory(
+	const container_impl &parent,
+	const function<void (const focusable_container &)> &creator,
+	const create_current_selection &create_selection_factory
+) const
 {
 	// Start by creating the popup first.
 
@@ -478,7 +525,10 @@ focusable_container new_custom_comboboxlayoutmanager
 	auto capture_current_selection=
 		capturefactory::create(combobox_container_impl);
 
-	auto focusable_selection=selection_factory(capture_current_selection);
+	auto focusable_selection=
+		create_selection_factory.call_selection_factory(
+			capture_current_selection
+		);
 
 	auto current_selection=capture_current_selection->get();
 
