@@ -308,6 +308,8 @@ inline appObj::init_args appObj::create_init_args()
 				  },
 				 };
 
+			 dimension_elements_create(ui);
+
 			 mw->on_disconnect([]
 					   {
 						   exit(1);
@@ -520,19 +522,21 @@ std::string appObj::fmtdblval(double d)
 //
 // The callback gets invoked when the field gets validated.
 
-static inline auto value_validator(const x::w::input_field &field,
-				   bool allownan,
-				   const char *errmsg,
-				   void (appObj::*callback)(ONLY IN_THREAD))
+void appObj::create_value_validator(
+	x::w::uielements &ui,
+	const char *field_name,
+	bool allownan,
+	const char *errmsg,
+	void (appObj::*callback)(ONLY IN_THREAD))
 {
-	return field->set_validator
-		([allownan, errmsg]
-		 (ONLY IN_THREAD,
-		  const std::string &value,
-		  const auto &lock,
-		  const auto &trigger)
-		 -> std::optional<std::string> {
-
+	ui.create_validated_input_field(
+		field_name,
+		[allownan, errmsg]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 const auto &lock,
+		 const auto &trigger) -> std::optional<std::string>
+		{
 			std::optional<std::string> ret;
 
 			ret.emplace();
@@ -561,8 +565,7 @@ static inline auto value_validator(const x::w::input_field &field,
 				{
 					if (v >= 0 && v < 10000)
 					{
-						double_value=
-							appObj::fmtdblval(v);
+						double_value=fmtdblval(v);
 						return ret;
 					}
 				}
@@ -572,62 +575,22 @@ static inline auto value_validator(const x::w::input_field &field,
 			lock.stop_message(cxxwlibmsg(errmsg));
 			return std::nullopt;
 		},
-		 []
-		 (const std::string &v) -> std::string
-		 {
-			 if (v == "inf")
-				 return _("inf");
-
-			 return v;
-		 },
-		 std::nullopt,
-		 [callback]
-		 (ONLY IN_THREAD,
-		  const std::optional<std::string> &v)
-		 {
-			 appinvoke(callback, IN_THREAD);
-		 });
-}
-
-static inline auto dimension_new_name_validator(const x::w::input_field &field)
-{
-	return field->set_validator(
-		[]
-		(ONLY IN_THREAD,
-		 const std::string &value,
-		 const auto &lock,
-		 const auto &trigger)
-		-> std::optional<std::string>
-		{
-			return value;
-		},
 		[]
 		(const std::string &v) -> std::string
 		{
+			if (v == "inf")
+				return _("inf");
+
 			return v;
 		},
 		std::nullopt,
-		[]
+		[callback]
 		(ONLY IN_THREAD,
 		 const std::optional<std::string> &v)
 		{
-			appinvoke(&appObj::dimension_field_updated, IN_THREAD);
+			appinvoke(callback, IN_THREAD);
 		}
 	);
-}
-
-static inline auto dimension_value_validator(const x::w::input_field &field)
-{
-	return value_validator(field, true,
-			       _txt("Invalid millimeter value"),
-			       &appObj::dimension_value_entered);
-}
-
-static inline auto dimension_scale_value_validator(const x::w::input_field
-						   &field)
-{
-	return value_validator(field, false, _txt("Invalid scale value"),
-			       &appObj::dimension_scale_value_entered);
 }
 
 // Double value input field validator.
@@ -1003,12 +966,6 @@ appObj::appObj(init_args &&args)
 	  appearance_types{std::move(args.appearance_types)},
 	  /////////////////////////////////////////////////////////////////////
 	  // Dimension element callbacks.
-	  dimension_new_name_validated{dimension_new_name_validator
-				       (dimension_new_name)},
-	  dimension_value_validated{dimension_value_validator
-				    (dimension_value)},
-	  dimension_scale_value_validated{dimension_scale_value_validator
-					  (dimension_scale_value)},
 	  color_scaled_r_validated{optional_double_validator
 				   (color_scaled_page_r,
 				    &appObj::color_updated)},

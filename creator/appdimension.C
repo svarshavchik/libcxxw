@@ -35,6 +35,53 @@ static const other_dimension_widget other_dimension_widgets[]=
 #endif
 }
 
+void appObj::dimension_elements_create(x::w::uielements &ui)
+{
+	// Validator for the dimension_value_field
+	create_value_validator(
+		ui,
+		"dimension_value_field",
+		true,
+		_txt("Invalid millimeter value"),
+		&appObj::dimension_value_entered
+	);
+
+	// Validator for the dimension_scale_value_field
+	create_value_validator(
+		ui,
+		"dimension_scale_value_field",
+		false,
+		_txt("Invalid scale value"),
+		&appObj::dimension_scale_value_entered
+	);
+
+	// Validator for the new name field
+	ui.create_validated_input_field(
+		"dimension_new_name_field",
+		[]
+		(ONLY IN_THREAD,
+		 const std::string &value,
+		 const auto &lock,
+		 const auto &trigger)
+		-> std::optional<std::string>
+		{
+			return value;
+		},
+		[]
+		(const std::string &v) -> std::string
+		{
+			return v;
+		},
+		std::nullopt,
+		[]
+		(ONLY IN_THREAD,
+		 const std::optional<std::string> &v)
+		{
+			appinvoke(&appObj::dimension_field_updated, IN_THREAD);
+		}
+	);
+}
+
 void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 					   x::w::uielements &ui,
 					   init_args &args)
@@ -45,16 +92,28 @@ void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 		ui.get_element("dimension_new_name_label");
 	x::w::input_field dimension_new_name=
 		ui.get_element("dimension_new_name_field");
+	auto dimension_new_name_validated=
+		ui.get_validated_input_field<std::string>(
+			"dimension_new_name_field"
+		);
 	x::w::image_button dimension_value_option=
 		ui.get_element("dimension_value_option_field");
 	x::w::input_field dimension_value=
 		ui.get_element("dimension_value_field");
+	auto dimension_value_validated=
+		ui.get_validated_input_field<std::string>(
+			"dimension_value_field"
+		);
 	x::w::image_button dimension_scale_option=
 		ui.get_element("dimension_scale_option_field");
 	x::w::focusable_container dimension_from_name=
 		ui.get_element("dimension_from_name_field");
 	x::w::input_field dimension_scale_value=
 		ui.get_element("dimension_scale_value_field");
+	auto dimension_scale_value_validated=
+		ui.get_validated_input_field<std::string>(
+			"dimension_scale_value_field"
+		);
 	x::w::button dimension_update_button=
 		ui.get_element("dimension_update_button");
 	x::w::button dimension_reset_button=
@@ -149,11 +208,15 @@ void appObj::dimension_elements_initialize(app_elements_tptr &elements,
 	elements.dimension_name=dimension_name;
 	elements.dimension_new_name_label=dimension_new_name_label;
 	elements.dimension_new_name=dimension_new_name;
+	elements.dimension_new_name_validated=dimension_new_name_validated;
 	elements.dimension_value_option=dimension_value_option;
 	elements.dimension_value=dimension_value;
+	elements.dimension_value_validated=dimension_value_validated;
 	elements.dimension_scale_option=dimension_scale_option;
 	elements.dimension_from_name=dimension_from_name;
 	elements.dimension_scale_value=dimension_scale_value;
+	elements.dimension_scale_value_validated=
+		dimension_scale_value_validated;
 	elements.dimension_update_button=dimension_update_button;
 	elements.dimension_reset_button=dimension_reset_button;
 	elements.dimension_delete_button=dimension_delete_button;
@@ -297,9 +360,9 @@ void appObj::dimension_selected(ONLY IN_THREAD,
 		// deselected first. So, hook this to clear and reset all
 		// fields.
 
-		dimension_new_name->set("");
-		dimension_value->set("");
-		dimension_scale_value->set("");
+		dimension_new_name_validated->set(IN_THREAD, std::nullopt);
+		dimension_value_validated->set(IN_THREAD, std::nullopt);
+		dimension_scale_value_validated->set(IN_THREAD, std::nullopt);
 
 		x::w::standard_comboboxlayoutmanager
 			lm=dimension_from_name->get_layoutmanager();
@@ -349,9 +412,9 @@ void appObj::dimension_reset_values(dimension_info_t::lock &lock)
 	if (!lock->current_selection)
 	{
 		dimension_value_option->set_value(1);
-		dimension_new_name->set("");
-		dimension_value->set("");
-		dimension_scale_value->set("");
+		dimension_new_name_validated->set(std::nullopt);
+		dimension_value_validated->set(std::nullopt);
+		dimension_scale_value_validated->set(std::nullopt);
 		lm->autoselect(0);
 	}
 	else
@@ -362,15 +425,15 @@ void appObj::dimension_reset_values(dimension_info_t::lock &lock)
 		{
 			dimension_scale_option->set_value(1);
 			lm->autoselect(*orig_values.scale_from+1);
-			dimension_scale_value->set(orig_values.value);
-			dimension_value->set("");
+			dimension_scale_value_validated->set(orig_values.value);
+			dimension_value_validated->set(std::nullopt);
 		}
 		else
 		{
 			dimension_value_option->set_value(1);
-			dimension_value->set(orig_values.value);
+			dimension_value_validated->set(orig_values.value);
 			lm->autoselect(0);
-			dimension_scale_value->set("");
+			dimension_scale_value_validated->set(std::nullopt);
 		}
 	}
 
@@ -452,14 +515,14 @@ void appObj::dimension_value_option_selected(ONLY IN_THREAD)
 		dimension_from_name->get_layoutmanager();
 
 	lm->unselect(IN_THREAD);
-	dimension_scale_value->set("");
+	dimension_scale_value_validated->set(IN_THREAD, std::nullopt);
 }
 
 void appObj::dimension_scale_option_selected(ONLY IN_THREAD)
 {
 	// Clear the explicit value, the scale option is selected.
 
-	dimension_value->set("");
+	dimension_value_validated->set(IN_THREAD, std::nullopt);
 }
 
 void appObj::dimension_field_updated(ONLY IN_THREAD)

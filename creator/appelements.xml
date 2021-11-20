@@ -56,12 +56,20 @@ object and placed into discrete variables.
     <name>dimension_new_name</name>
   </ref>
   <ref>
+    <type>x::w::validated_input_field&lt;std::string&gt;</type>
+    <name>dimension_new_name_validated</name>
+  </ref>
+  <ref>
     <type>x::w::image_button</type>
     <name>dimension_value_option</name>
   </ref>
   <ref>
     <type>x::w::input_field</type>
     <name>dimension_value</name>
+  </ref>
+  <ref>
+    <type>x::w::validated_input_field&lt;std::string&gt;</type>
+    <name>dimension_value_validated</name>
   </ref>
   <ref>
     <type>x::w::image_button</type>
@@ -74,6 +82,10 @@ object and placed into discrete variables.
   <ref>
     <type>x::w::input_field</type>
     <name>dimension_scale_value</name>
+  </ref>
+  <ref>
+    <type>x::w::validated_input_field&lt;std::string&gt;</type>
+    <name>dimension_scale_value_validated</name>
   </ref>
 
   <ref>

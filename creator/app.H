@@ -16,6 +16,7 @@
 #include "x/w/main_window.H"
 #include "x/w/dialog.H"
 #include "x/w/uigenerators.H"
+#include "x/w/uielementsfwd.H"
 #include "x/w/file_dialogfwd.H"
 #include "x/w/focusable_container.H"
 #include "x/w/input_field.H"
@@ -295,6 +296,16 @@ public:
 	//! Format double value to three deicmal points.
 	static std::string fmtdblval(double d);
 
+	//! Create a validator for an input field for a double value.
+
+	static void create_value_validator(
+		x::w::uielements &ui,
+		const char *field_name,
+		bool allownan,
+		const char *errmsg,
+		void (appObj::*callback)(ONLY IN_THREAD)
+	);
+
 	//! Main application loop
 	void mainloop();
 
@@ -534,16 +545,6 @@ public:
 	//! All supported appearance types, by their name.
 	const appearance_types_t appearance_types;
 
-	//! Dimensions page: validated new name field
-	const x::w::validated_input_field<
-		std::string> dimension_new_name_validated,
-
-	//! Dimensions page: validated value field.
-		dimension_value_validated,
-
-	//! Dimensions page: validated scale field.
-		dimension_scale_value_validated;
-
 	const x::w::validated_input_field<std::optional<double>>
 	//! Colors page: validated R scale value.
 		color_scaled_r_validated,
@@ -749,6 +750,10 @@ private:
 	//////////////////////////////////////////////////////////////////
 	//
 	// appdimension.C
+
+	//! Install any validators for the UI generator
+
+	static void dimension_elements_create(x::w::uielements &ui);
 
 	//! Install elements on the dimension page
 
