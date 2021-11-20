@@ -632,9 +632,16 @@ public:
 		std::vector<double>
 		> border_dashes_field_validated;
 
-	//! Validator for the point size field
-	const x::w::validated_input_field<std::optional<double>
-					  > font_point_size_validated;
+	//! Create an input field validator for a double value.
+
+	//! Installs a validator in uielements for an input field for
+	//! a double value. The passed-in callback gets invoked whenever
+	//! it is changed.
+	static void create_optional_double_validator(
+		x::w::uielements &ui,
+		const char *field_name,
+		void (appObj::*validated_cb)(ONLY)
+	);
 
 	//! Collection of standard values of various font properties.
 
@@ -1384,6 +1391,10 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	//
 	// Fonts page.
+
+	//! Install any validators for the UI generator
+
+	static void fonts_elements_create(x::w::uielements &ui);
 
 	//! Installs callbacks.
 

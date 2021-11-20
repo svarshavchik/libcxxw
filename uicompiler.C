@@ -914,25 +914,7 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 		focusable_container create_container(const factory &f,
 						     const std::string &id,
 						     uielements &factories)
-			const
-		{
-		        auto nlm=new_layoutmanager(factories);
-
-			// Generate the contents of the new_editable_comboboxlayoutmanager.
-
-			for (const auto &g:*new_editable_comboboxlayoutmanager_vector)
-			{
-				g(&nlm, factories);
-			}
-
-			return f->create_focusable_container
-				([&, this]
-				 (const auto &container)
-				 {
-					 generate(container, factories);
-				 },
-				 nlm);
-		}
+			const;
 
 		inline new_editable_comboboxlayoutmanager
 		new_layoutmanager(uielements &) const
@@ -955,6 +937,88 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 		}
 	};
 };
+
+focusable_container uicompiler::editable_comboboxlayoutmanager_functions
+::generators::create_container(const factory &f,
+			       const std::string &id,
+			       uielements &factories)
+	const
+{
+	auto nlm=new_layoutmanager(factories);
+
+	// Generate the contents of the
+	// new_editable_comboboxlayoutmanager.
+
+	for (const auto &g: *new_editable_comboboxlayoutmanager_vector)
+	{
+		g(&nlm, factories);
+	}
+
+	// Do we have a validator, if so create an editable combo-box
+	// with a validated input field.
+
+	if (!id.empty())
+	{
+		auto iter=factories.input_field_validators.find(id);
+
+		if (iter != factories.input_field_validators.end())
+		{
+			const auto &[callback, contents] = iter->second;
+			text_param initial_value;
+
+			// Obtain the initial value of the validated input
+			// field, and create it.
+
+			auto validated=contents->to_text_param(initial_value);
+
+			const auto &[container, field]=
+				f->do_create_focusable_container(
+					make_function<void (
+						const focusable_container &
+								 )>
+					(
+						[&, this]
+						(const auto &container)
+						{
+							generate(container,
+								 factories);
+						}
+					),
+					nlm,
+					initial_value,
+					callback,
+					validated
+				);
+
+			auto validated_value=
+				contents->create_validated_input_field(field);
+
+			if (!factories.new_validated_input_fields.emplace(
+				    id,
+				    validated_value
+			    ).second)
+			{
+				throw EXCEPTION(
+					gettextmsg(
+						_("Input field validator "
+						  "\"%1%\" already defined"),
+						id)
+				);
+			}
+
+			return container;
+		}
+	}
+
+	return f->create_focusable_container(
+		[&, this]
+		(const auto &container)
+		{
+			generate(container, factories);
+		},
+		nlm
+	);
+}
 
 // Book layout manager functionality
 

@@ -192,6 +192,68 @@ See COPYING for distribution information.
     &uixmllayoutnewlistcombobox;
 
   </section>
+  <section id="uixmllayouteditablecomboboxvalidated">
+    <title>Creating a
+      <tag class='attribute'>type</tag>=<quote>editable_combobox</quote>
+      with a validated input field</title>
+
+    <para>
+      It is possible to use a theme file to create an editable combo-box
+      with a
+      <link linkend="validatedinput">validated input field</link>.
+      This is done the same way that validated input fields themselves
+      <link linkend="uixmlfactoryvalidatedinputfieldelement">get
+	created</link>.
+    </para>
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<container>
+  <name>line_size</name>
+  <type>editable_combobox</type>
+  <config>
+    <optional />
+  </config>
+</container>]]>
+
+#include &lt;&ns;/w/validated_input_field.H&gt;
+
+&ns;::w::uielements widgets;
+
+widgets.create_validated_input_field(
+    "line_size",
+    []
+    (ONLY IN_THREAD,
+     const std::string &amp;value,
+     const auto &amp;lock,
+     const auto &amp;ignore) -&gt; std::optional&lt;int&gt;
+    {
+          // ...
+    },
+    []
+    (const std::optional&lt;int&gt; &amp;v)
+    {
+          // ...
+    }
+);
+
+// Generate the UI
+
+&ns;::w::focusable_container line_size=widgets.get_element("line_size");
+
+&ns;::w::validated_input_field&lt;int&gt; line_size_validated=
+    widgets.get_validated_input_field&lt;int&gt;("line_size");</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      An editable combo-box with a validated input field gets created,
+      automatically,
+      if a validator is installed for a <tag class='element'>name</tag>
+      of a <tag class='attribute'>type</tag>=<quote>editable_combobox</quote>
+      <tag class='element'>container</tag>.
+    </para>
+  </section>
 </section>
 
 <!--

@@ -443,6 +443,11 @@ object and placed into discrete variables.
   </ref>
 
   <ref>
+    <type>x::w::validated_input_field&lt;std::optional&lt;double&gt;&gt;</type>
+    <name>font_size_validated</name>
+  </ref>
+
+  <ref>
     <type>x::w::input_field</type>
     <name>font_foundry</name>
   </ref>

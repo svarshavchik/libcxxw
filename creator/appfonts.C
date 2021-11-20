@@ -220,9 +220,18 @@ static void font_editable_combobox(const x::w::focusable_container &container)
 		 });
 }
 
+void appObj::fonts_elements_create(x::w::uielements &ui)
+{
+	create_optional_double_validator(
+		ui,
+		"font_size",
+		&appObj::font_enable_disable
+	);
+}
+
 void appObj::fonts_elements_initialize(app_elements_tptr &elements,
-					 x::w::uielements &ui,
-					 init_args &args)
+				       x::w::uielements &ui,
+				       init_args &args)
 {
 	x::w::focusable_container font_name=
 		ui.get_element("font_name_field");
@@ -291,6 +300,11 @@ void appObj::fonts_elements_initialize(app_elements_tptr &elements,
 
 		font_size->editable_comboboxlayout()->replace_all_items(items);
 	}
+
+	auto font_size_validated=
+		ui.get_validated_input_field<std::optional<double>>(
+			"font_size"
+		);
 	x::w::input_field font_foundry=
 		ui.get_element("font_foundry");
 
@@ -352,6 +366,7 @@ void appObj::fonts_elements_initialize(app_elements_tptr &elements,
 	elements.font_family=font_family;
 	elements.font_size_type=font_size_type;
 	elements.font_size=font_size;
+	elements.font_size_validated=font_size_validated;
 	elements.font_foundry=font_foundry;
 	elements.font_style=font_style;
 	elements.font_weight=font_weight;
@@ -720,7 +735,7 @@ void appObj::font_reset_values(ONLY IN_THREAD,
 		font_size_type->standard_comboboxlayout()
 			->autoselect(IN_THREAD, 0, {});
 
-		font_point_size_validated->set(IN_THREAD, std::nullopt);
+		font_size_validated->set(IN_THREAD, std::nullopt);
 
 		for (const auto &ifield:font_freeform_input_fields)
 		{
@@ -801,8 +816,7 @@ void appObj::font_reset_values(ONLY IN_THREAD,
 		//
 		// Then set the pair of free-form input fields.
 
-		font_point_size_validated->set(IN_THREAD,
-					       loaded_font.size);
+		font_size_validated->set(IN_THREAD, loaded_font.size);
 		font_size_type->standard_comboboxlayout()
 			->autoselect(IN_THREAD,
 				     static_cast<size_t>(loaded_font.size_type),
@@ -900,8 +914,7 @@ void appObj::font_enable_disable_buttons(ONLY IN_THREAD,
 			static_cast<font_size_type_t>(*st);
 	}
 
-	auto validated_size=
-		font_point_size_validated->value();
+	auto validated_size=font_size_validated->value();
 
 	if (!validated_size)
 	{

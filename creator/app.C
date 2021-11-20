@@ -309,6 +309,7 @@ inline appObj::init_args appObj::create_init_args()
 				 };
 
 			 dimension_elements_create(ui);
+			 fonts_elements_create(ui);
 
 			 mw->on_disconnect([]
 					   {
@@ -623,7 +624,7 @@ static auto optional_double_validator_closure()
 		if (parsed_value < 0)
 		{
 			lock.stop_message(_("Value cannot be"
-					   " negative"));
+					    " negative"));
 			return std::nullopt;
 		}
 
@@ -662,6 +663,21 @@ static auto optional_double_new_value_closure(void
 	       {
 		       appinvoke(validated_cb, IN_THREAD);
 	       };
+}
+
+void appObj::create_optional_double_validator(
+	x::w::uielements &ui,
+	const char *field_name,
+	void (appObj::*validated_cb)(ONLY)
+)
+{
+	ui.create_validated_input_field(
+		field_name,
+		optional_double_validator_closure(),
+		optional_double_formatter_closure(),
+		std::nullopt,
+		optional_double_new_value_closure(validated_cb)
+	);
 }
 
 template<typename field_type>
@@ -1054,9 +1070,6 @@ appObj::appObj(init_args &&args)
 			  (border_vradius_scale)},
 	  border_dashes_field_validated{create_border_dashes_field_validator
 					(border_dashes_field)},
-	  font_point_size_validated(optional_double_validator
-				    (font_size->editable_comboboxlayout(),
-				     &appObj::font_enable_disable)),
 	  standard_font_values{std::move(static_cast<standard_font_values_t &>
 					 (args))},
 	  current_generators{
