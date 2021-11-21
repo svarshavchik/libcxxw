@@ -3331,11 +3331,11 @@ widgets.create_string_validated_input_field&lt;int&gt;(
 <element id="progressbar">
   <progressbar>progressbar_label_layout</progressbar>
   <type>grid</type>
-  <config>
+  <progressbar_config>
     <value>25</value>
     <maximum_value>50</maximum_value>
     <appearance>custom_progressbar</appearance>
-  </config>
+  </progressbar_config>
 </element>
 
 <!-- ...... -->
@@ -3385,11 +3385,13 @@ widgets.create_string_validated_input_field&lt;int&gt;(
     </para>
 
     <para>
-      An optional <tag class='element'>config</tag> value
+      An optional <tag class='element'>progressbar_config</tag> value
       initializes
       <methodname>create_progressbar</methodname>'s
       <ulink url="&link-x--w--progressbar-config;"><classname>&ns;::w::progressbar_config</classname></ulink>
       parameter.
+      An optional <tag class='element'>config</tag> value sets the
+      progress bar's layout manager's optional configuration object.
     </para>
   </section>
 

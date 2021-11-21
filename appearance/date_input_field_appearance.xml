@@ -118,20 +118,6 @@ has its own background color
     <ref>input_field</ref>
   </field>
   <field>
-    <name>input_field_font</name>
-    <descr><![CDATA[
-Input field's font
-]]></descr>
-    <type>font_arg</type>
-  </field>
-  <field>
-    <name>input_field_font_color</name>
-    <descr><![CDATA[
-Input field's font's color
-]]></descr>
-    <type>text_color_arg</type>
-  </field>
-  <field>
     <name>border</name>
     <descr><![CDATA[
 Border

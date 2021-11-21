@@ -119,9 +119,9 @@
 	  <!-- Set a custom appearance in the progressbar_config parameter.
 	       This sets the default font for labels in the progress bar.
 	  -->
-	  <config>
+	  <progressbar_config>
 	    <appearance>progressbar_large_font</appearance>
-	  </config>
+	  </progressbar_config>
 	</element>
       </page>
       <shortcut>Alt-P</shortcut>

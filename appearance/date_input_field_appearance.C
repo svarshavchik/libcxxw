@@ -7,7 +7,8 @@
 #include "x/w/generic_window_appearance.H"
 #include "x/w/image_button_appearance.H"
 #include "x/w/input_field_appearance.H"
-#include <x/w/focus_border_appearance.H>
+#include "x/w/text_param_literals.H"
+#include "x/w/focus_border_appearance.H"
 #include <x/singleton.H>
 
 LIBCXXW_NAMESPACE_START
@@ -19,6 +20,9 @@ static const_input_field_appearance create_date_input_field_appearance()
 			 (const auto &custom)
 			 {
 				 custom->border={};
+				 custom->regular_font="dateedit"_theme_font;
+				 custom->foreground_color=
+					 "dateedit_foreground_color";
 				 custom->background_color=
 					 "dateedit_background_color";
 			 });
@@ -53,8 +57,6 @@ date_input_field_appearance_properties::date_input_field_appearance_properties()
 	  yscroll_height{"dateedit_popup_yscroll_height"},
 	  mscroll_height{"dateedit_popup_mscroll_height"},
 	  input_appearance{default_date_input_field_appearance()},
-	  input_field_font{theme_font{"dateedit"}},
-	  input_field_font_color{theme_color{"dateedit_foreground_color"}},
 	  border{"dateedit_border"},
 	  popup_border{"dateedit_popup_border"},
 	  popup_background_color{"dateedit_popup_background_color"},

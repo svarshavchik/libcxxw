@@ -69,20 +69,22 @@
 
   <dim id="radio-width">10</dim>
   <dim id="radio-height">10</dim>
-
   <factory type="grid" id="progressbar_row">
     <element>
       <progressbar>progressbar_label_layout</progressbar>
       <type>grid</type>
-      <config>
-	<value>25</value>
+      <progressbar_config>
+	<value>50</value>
 	<maximum_value>50</maximum_value>
 	<appearance>test_progressbar</appearance>
-      </config>
+      </progressbar_config>
     </element>
   </factory>
 
   <layout type="grid" id="progressbar_label_layout">
+    <append_row>
+      <name>progressbar_label_row</name>
+    </append_row>
     <append_row>
       <name>progressbar_label_row</name>
     </append_row>
@@ -96,6 +98,6 @@
   </factory>
 
   <appearance type="progressbar" id="test_progressbar">
-    <label_font>serif; point_size=24</label_font>
+    <label_font>serif; point_size=48</label_font>
   </appearance>
 </theme>

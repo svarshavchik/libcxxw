@@ -30,6 +30,7 @@
 
 #include <x/functional.H>
 #include <x/weakcapture.H>
+#include <x/mpweakptr.H>
 #include <x/strtok.H>
 #include <x/strftime.H>
 #include <x/visitor.H>
@@ -159,15 +160,91 @@ date_input_field factoryObj
 
 	text_param initial;
 
-	std::visit(visitor{
-			[&](const auto &font)
+	auto ccweak=mpweakptr<date_input_field_calendarptr>::create();
+
+	// Validate the contents of the date input field.
+
+	// on_validate() uses std::optional to indicate whether the input
+	// passed validation, or not. If nullopt, validation failed.
+	//
+	// In order to allow empty input, our validated data type
+	// is std::optional<ymd>, so if no date is entered it is nullopt.
+
+	typedef std::optional<ymd> validated_type_t;
+
+	// And the validator validates std::optional<validated_type_t>
+
+	auto contents=create_validated_input_field_contents(
+		[ccweak,
+		 invalid_input_error_message=config.invalid_input]
+		(ONLY IN_THREAD,
+		 const std::u32string &d,
+		 input_lock &lock,
+		 const callback_trigger_t &trigger)
+		-> std::optional<validated_type_t>
+		{
+			std::optional<validated_type_t> ret;
+
+			// try_parse() what was entered.
+
+			bool error=false;
+
+			if (d.empty())
 			{
-				initial(font);
-			}}, config.appearance->input_field_font);
+				ret.emplace(std::nullopt);
+			}
+			else
+			{
+				ret=ymd::parser{}.try_parse(d);
 
-	initial(config.appearance->input_field_font_color);
+				if (!ret.value())
+				{
+					error=true;
+					lock.stop_message(
+						invalid_input_error_message
+					);
+				}
+			}
 
-	auto text_input_field=f->create_input_field(initial, input_conf);
+			auto &parsed_date=ret.value();
+
+			auto cc=ccweak->getptr();
+
+			if (!cc)
+				return ret;
+
+			cc->report_new_date(IN_THREAD, parsed_date, trigger);
+
+			// If a valid date was entered, move the calendar
+			// popup to its month.
+
+			if (parsed_date)
+				cc->update_month(*parsed_date);
+
+			// And report the new date to the callback.
+
+			cc->report_new_date(IN_THREAD, parsed_date, trigger);
+
+			if (error)
+				ret.reset();
+			return ret;
+		},
+		[preferred]
+		(const auto &new_date)
+		{
+			if (!new_date)
+				return std::u32string{};
+
+			// Canonically format the date.
+
+			return new_date->format_date(preferred);
+		});
+
+	const auto &[text_input_field, validated_text_input_field] =
+		f->create_input_field(
+			contents,
+			input_conf
+		);
 
 	text_input_field->show();
 
@@ -233,6 +310,8 @@ date_input_field factoryObj
 					  text_input_field);
 
 			 calendar_containerptr=container;
+
+			 ccweak->setptr(container);
 
 			 return container;
 		 });
@@ -328,86 +407,6 @@ date_input_field factoryObj
 					     ->pos(starting_pos+n_delete),
 					     new_string);
 			 });
-
-	// Validate the contents of the date input field.
-
-	// on_validate() uses std::optional to indicate whether the input
-	// passed validation, or not. If nullopt, validation failed.
-	//
-	// In order to allow empty input, our validated data type
-	// is std::optional<ymd>, so if no date is entered it is nullopt.
-
-	typedef std::optional<ymd> validated_type_t;
-
-	// And the validator validates std::optional<validated_type_t>
-
-	text_input_field->set_validator
-		([cc=make_weak_capture(calendar_containerptr),
-		  invalid_input_error_message=config.invalid_input]
-		 (ONLY IN_THREAD,
-		  const std::u32string &d,
-		  input_lock &lock,
-		  const callback_trigger_t &trigger)
-		 -> std::optional<validated_type_t>
-		 {
-			 std::optional<validated_type_t> ret;
-
-			 // try_parse() what was entered.
-
-			 bool error=false;
-
-			 if (d.empty())
-			 {
-				 ret.emplace(std::nullopt);
-			 }
-			 else
-			 {
-				 ret=ymd::parser{}.try_parse(d);
-
-				 if (!ret.value())
-				 {
-					 error=true;
-					 lock.stop_message(
-						 invalid_input_error_message
-					 );
-				 }
-			 }
-
-			 auto &parsed_date=ret.value();
-
-			 auto got=cc.get();
-
-			 if (!got)
-				 return ret;
-
-			 auto &[cc]=*got;
-
-			 cc->report_new_date(IN_THREAD, parsed_date, trigger);
-
-			 // If a valid date was entered, move the calendar
-			 // popup to its month.
-
-			 if (parsed_date)
-				 cc->update_month(*parsed_date);
-
-			 // And report the new date to the callback.
-
-			 cc->report_new_date(IN_THREAD, parsed_date, trigger);
-
-			 if (error)
-				 ret.reset();
-			 return ret;
-		 },
-		 [preferred]
-		 (const auto &new_date)
-		 {
-			 if (!new_date)
-				 return std::u32string{};
-
-			 // Canonically format the date.
-
-			 return new_date->format_date(preferred);
-		 });
 
 	auto date_picker_popup=popup::create(popup_impl, popup_lm->impl,
 					     popup_lm->impl);

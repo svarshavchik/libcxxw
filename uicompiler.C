@@ -232,13 +232,6 @@ struct uicompiler::gridlayoutmanager_functions {
 		{
 			auto nglm=new_layoutmanager(factories);
 
-			// Generate the contents of the new_gridlayoutmanager.
-
-			for (const auto &g:*new_gridlayoutmanager_vector)
-			{
-				g(&nglm, factories);
-			}
-
 			return f->create_container
 				([&, this]
 				 (const auto &container)
@@ -248,10 +241,19 @@ struct uicompiler::gridlayoutmanager_functions {
 				 nglm);
 		}
 
-		inline new_gridlayoutmanager new_layoutmanager(uielements &)
-			const
+		inline new_gridlayoutmanager new_layoutmanager(
+			uielements &factories) const
 		{
-			return {};
+			new_gridlayoutmanager nglm;
+
+			// Generate the contents of the new_gridlayoutmanager.
+
+			for (const auto &g:*new_gridlayoutmanager_vector)
+			{
+				g(&nglm, factories);
+			}
+
+			return nglm;
 		}
 
 		void generate(const container &c,
@@ -312,13 +314,6 @@ struct uicompiler::listlayoutmanager_functions {
 		{
 		        auto nlm=new_layoutmanager(factories);
 
-			// Generate the contents of the new_listlayoutmanager.
-
-			for (const auto &g:*new_listlayoutmanager_vector)
-			{
-				g(&nlm, factories);
-			}
-
 			return f->create_focusable_container
 				([&, this]
 				 (const auto &container)
@@ -328,10 +323,17 @@ struct uicompiler::listlayoutmanager_functions {
 				 nlm);
 		}
 
-		inline new_listlayoutmanager new_layoutmanager(uielements &)
-			const
+		inline new_listlayoutmanager new_layoutmanager(
+			uielements &factories) const
 		{
 			new_listlayoutmanager nlm{style};
+
+			// Generate the contents of the new_listlayoutmanager.
+
+			for (const auto &g:*new_listlayoutmanager_vector)
+			{
+				g(&nlm, factories);
+			}
 
 			return nlm;
 		}
@@ -429,21 +431,6 @@ struct uicompiler::tablelayoutmanager_functions {
 		{
 		        auto ntlm=new_layoutmanager(factories);
 
-			// Generate the contents of the new_tablelayoutmanager.
-
-			for (const auto &g:*new_tablelayoutmanager_vector)
-			{
-				g(&ntlm, factories);
-			}
-
-			if (ntlm.columns != header_generators.size())
-				throw EXCEPTION(gettextmsg
-						(_("number of <header>s (%1%) "
-						   "is different from "
-						   "<columns> (%2%)"),
-						 header_generators.size(),
-						 ntlm.columns));
-
 			return f->create_focusable_container
 				([&, this]
 				 (const auto &container)
@@ -471,6 +458,21 @@ struct uicompiler::tablelayoutmanager_functions {
 				 },
 				 style
 				};
+
+			// Generate the contents of the new_tablelayoutmanager.
+
+			for (const auto &g:*new_tablelayoutmanager_vector)
+			{
+				g(&ntlm, factories);
+			}
+
+			if (ntlm.columns != header_generators.size())
+				throw EXCEPTION(gettextmsg
+						(_("number of <header>s (%1%) "
+						   "is different from "
+						   "<columns> (%2%)"),
+						 header_generators.size(),
+						 ntlm.columns));
 
 			return ntlm;
 		}
@@ -529,13 +531,6 @@ struct uicompiler::panelayoutmanager_functions {
 		{
 		        auto nplm=new_layoutmanager(factories);
 
-			// Generate the contents of the new_tablelayoutmanager.
-
-			for (const auto &g:*new_panelayoutmanager_vector)
-			{
-				g(&nplm, factories);
-			}
-
 			return f->create_focusable_container
 				([&, this]
 				 (const auto &container)
@@ -549,6 +544,13 @@ struct uicompiler::panelayoutmanager_functions {
 		new_layoutmanager(uielements &factories) const
 		{
 			new_panelayoutmanager nplm{ {} };
+
+			// Generate the contents of the new_panelayoutmanager.
+
+			for (const auto &g:*new_panelayoutmanager_vector)
+			{
+				g(&nplm, factories);
+			}
 
 			return nplm;
 		}
@@ -607,14 +609,7 @@ struct uicompiler::itemlayoutmanager_functions {
 						     uielements &factories)
 			const
 		{
-		        auto nplm=new_layoutmanager(factories);
-
-			// Generate the contents of the new_tablelayoutmanager.
-
-			for (const auto &g:*new_itemlayoutmanager_vector)
-			{
-				g(&nplm, factories);
-			}
+		        auto nilm=new_layoutmanager(factories);
 
 			return f->create_focusable_container
 				([&, this]
@@ -622,13 +617,20 @@ struct uicompiler::itemlayoutmanager_functions {
 				 {
 					 generate(container, factories);
 				 },
-				 nplm);
+				 nilm);
 		}
 
 		inline new_itemlayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
 			new_itemlayoutmanager nilm;
+
+			// Generate the contents of the new_itemlayoutmanager.
+
+			for (const auto &g:*new_itemlayoutmanager_vector)
+			{
+				g(&nilm, factories);
+			}
 
 			return nilm;
 		}
@@ -686,13 +688,6 @@ struct uicompiler::pagelayoutmanager_functions {
 		{
 		        auto nplm=new_layoutmanager(factories);
 
-			// Generate the contents of the new_tablelayoutmanager.
-
-			for (const auto &g:*new_pagelayoutmanager_vector)
-			{
-				g(&nplm, factories);
-			}
-
 			return f->create_container
 				([&, this]
 				 (const auto &container)
@@ -705,9 +700,16 @@ struct uicompiler::pagelayoutmanager_functions {
 		inline new_pagelayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
-			new_pagelayoutmanager nilm;
+			new_pagelayoutmanager nplm;
 
-			return nilm;
+			// Generate the contents of the new_tablelayoutmanager.
+
+			for (const auto &g:*new_pagelayoutmanager_vector)
+			{
+				g(&nplm, factories);
+			}
+
+			return nplm;
 		}
 
 		void generate(const container &c,
@@ -762,14 +764,7 @@ struct uicompiler::toolboxlayoutmanager_functions {
 					   uielements &factories)
 			const
 		{
-		        auto nplm=new_layoutmanager(factories);
-
-			// Generate the contents of the new_tablelayoutmanager.
-
-			for (const auto &g:*new_toolboxlayoutmanager_vector)
-			{
-				g(&nplm, factories);
-			}
+		        auto ntlm=new_layoutmanager(factories);
 
 			return f->create_container
 				([&, this]
@@ -777,15 +772,22 @@ struct uicompiler::toolboxlayoutmanager_functions {
 				 {
 					 generate(container, factories);
 				 },
-				 nplm);
+				 ntlm);
 		}
 
 		inline new_toolboxlayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
-			new_toolboxlayoutmanager nilm;
+			new_toolboxlayoutmanager ntlm;
 
-			return nilm;
+			// Generate the contents of the new_tablelayoutmanager.
+
+			for (const auto &g:*new_toolboxlayoutmanager_vector)
+			{
+				g(&ntlm, factories);
+			}
+
+			return ntlm;
 		}
 
 		void generate(const container &c,
@@ -843,13 +845,6 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 		{
 		        auto nlm=new_layoutmanager(factories);
 
-			// Generate the contents of the new_standard_comboboxlayoutmanager.
-
-			for (const auto &g:*new_standard_comboboxlayoutmanager_vector)
-			{
-				g(&nlm, factories);
-			}
-
 			return f->create_focusable_container
 				([&, this]
 				 (const auto &container)
@@ -860,9 +855,16 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 		}
 
 		inline new_standard_comboboxlayoutmanager
-		new_layoutmanager(uielements &) const
+		new_layoutmanager(uielements &factories) const
 		{
 			new_standard_comboboxlayoutmanager nlm;
+
+			// Generate the contents of the new_standard_comboboxlayoutmanager.
+
+			for (const auto &g:*new_standard_comboboxlayoutmanager_vector)
+			{
+				g(&nlm, factories);
+			}
 
 			return nlm;
 		}
@@ -917,9 +919,18 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 			const;
 
 		inline new_editable_comboboxlayoutmanager
-		new_layoutmanager(uielements &) const
+		new_layoutmanager(uielements &factories) const
 		{
 			new_editable_comboboxlayoutmanager nlm;
+
+			// Generate the contents of the
+			// new_editable_comboboxlayoutmanager.
+
+			for (const auto &g:
+				     *new_editable_comboboxlayoutmanager_vector)
+			{
+				g(&nlm, factories);
+			}
 
 			return nlm;
 		}
@@ -945,14 +956,6 @@ focusable_container uicompiler::editable_comboboxlayoutmanager_functions
 	const
 {
 	auto nlm=new_layoutmanager(factories);
-
-	// Generate the contents of the
-	// new_editable_comboboxlayoutmanager.
-
-	for (const auto &g: *new_editable_comboboxlayoutmanager_vector)
-	{
-		g(&nlm, factories);
-	}
 
 	// Do we have a validator, if so create an editable combo-box
 	// with a validated input field.
@@ -1056,13 +1059,6 @@ struct uicompiler::booklayoutmanager_functions {
 		{
 		        auto nblm=new_layoutmanager(factories);
 
-			// Generate the contents of the new_booklayoutmanager.
-
-			for (const auto &g:*new_booklayoutmanager_vector)
-			{
-				g(&nblm, factories);
-			}
-
 			return f->create_focusable_container
 				([&, this]
 				 (const auto &container)
@@ -1072,10 +1068,19 @@ struct uicompiler::booklayoutmanager_functions {
 				 nblm);
 		}
 
-		inline new_booklayoutmanager new_layoutmanager(uielements &)
-			const
+		inline new_booklayoutmanager
+		new_layoutmanager(uielements &factories) const
 		{
-			return {};
+			new_booklayoutmanager nblm;
+
+			// Generate the contents of the new_booklayoutmanager.
+
+			for (const auto &g:*new_booklayoutmanager_vector)
+			{
+				g(&nblm, factories);
+			}
+
+			return nblm;
 		}
 
 		void generate(const container &c,
@@ -1126,13 +1131,6 @@ struct uicompiler::borderlayoutmanager_functions {
 		{
 			auto nblm=new_layoutmanager(factories);
 
-			// Generate the contents of the new_borderlayoutmanager.
-
-			for (const auto &g:*new_borderlayoutmanager_vector)
-			{
-				g(&nblm, factories);
-			}
-
 			return f->create_container
 				([&, this]
 				 (const auto &container)
@@ -1142,10 +1140,19 @@ struct uicompiler::borderlayoutmanager_functions {
 				 nblm);
 		}
 
-		inline new_borderlayoutmanager new_layoutmanager(uielements &e)
-			const
+		inline new_borderlayoutmanager
+		new_layoutmanager(uielements &factories) const
 		{
-			return {};
+			new_borderlayoutmanager nblm;
+
+			// Generate the contents of the new_borderlayoutmanager.
+
+			for (const auto &g:*new_borderlayoutmanager_vector)
+			{
+				g(&nblm, factories);
+			}
+
+			return nblm;
 		}
 
 		void generate(const container &c,
@@ -1211,8 +1218,7 @@ element uicompiler::create_progressbar(const factory &generic_factory,
 						(elements))
 				       >>)
 			 {
-				const auto &nlm=
-					generators.new_layoutmanager(elements);
+				auto nlm=generators.new_layoutmanager(elements);
 
 				return generic_factory->create_progressbar
 					([&]
