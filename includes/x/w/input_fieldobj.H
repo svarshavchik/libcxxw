@@ -16,31 +16,60 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! A text input_field object.
+//! Common methods employed by input fields and editable combo-boxes.
 
-//! The text input field is actually a container; however the container
-//! is managed internally by the library. Do not access the internal
-//! container, only use the input field's methods.
+//! Implements methods that are common to \ref input_field "input fields" and
+//! \ref editable_comboboxlayoutmanager "editable combo-box layout managers"
+//! that use input fields.
 
-//! \see input_field
+class input_field_setObj {
 
-class input_fieldObj : public peepholed_focusableObj {
+	virtual input_fieldObj *my_input_field()=0;
 
 public:
-	class LIBCXX_HIDDEN implObj;
 
-	//! Internal implementation object.
+	template<input_field_validation_function validation_function,
+		 typename canonical_format_functor,
+		 typename ...Args>
+	auto set_validator(validation_function &&validator,
+			   canonical_format_functor &&canonical_factor,
+			   Args && ...args)
+		-> validated_input_field<
+		typename input_field_detect_validator_functor_parameter<
+			validation_function
+			>::optional_return_type_t>;
 
-	const ref<implObj> impl;
+	template<input_field_validation_function validation_function,
+		 typename canonical_format_functor,
+		 typename ...Args>
+	auto set_validator(ONLY IN_THREAD,
+			   validation_function &&validator,
+			   canonical_format_functor &&canonical_factor,
+			   Args && ...args)
+		-> validated_input_field<
+		typename input_field_detect_validator_functor_parameter<
+			validation_function
+			>::optional_return_type_t>;
 
-	//! Constructor
-	input_fieldObj(const ref<implObj> &impl,
-		       const ref<peepholed_focusableObj::implObj> &peephole_impl,
-		       const layout_impl &container_layout_impl)
-		LIBCXX_HIDDEN;
+	template<typename T,
+		 input_field_string_validation_function<T> validation_function,
+		 typename canonical_format_functor,
+		 typename ...Args>
+	auto set_string_validator(validation_function &&validator,
+				  canonical_format_functor &&canonical_format,
+				  Args && ...args)
+		-> validated_input_field<T>;
 
-	//! Destructor
-	~input_fieldObj() LIBCXX_HIDDEN;
+	template<typename T,
+		 input_field_string_validation_function<T> validation_function,
+		 typename canonical_format_functor,
+		 typename ...Args>
+	auto set_string_validator(
+		ONLY IN_THREAD,
+		validation_function &&validator,
+		canonical_format_functor  &&canonical_format,
+		Args && ...args)
+		->validated_input_field<T>;
 
 	//! Set the contents of the input field.
 	void set(const std::string_view &str, bool validated=false);
@@ -55,6 +84,49 @@ public:
 	//! Set the contents of the input field, as unicode.
 	void set(ONLY IN_THREAD,
 		 const std::u32string_view &str, bool validated=false);
+
+	//! Validate the input field, if needed.
+
+	//! Returns an indication if the input field is validated.
+	bool validate_modified(ONLY IN_THREAD);
+
+	//! Validate the input field, if needed.
+
+	//! Returns an indication if the input field is validated.
+	bool validate_modified(ONLY IN_THREAD, const callback_trigger_t &);
+};
+
+//! A text input_field object.
+
+//! The text input field is actually a container; however the container
+//! is managed internally by the library. Do not access the internal
+//! container, only use the input field's methods.
+
+//! \see input_field
+
+class input_fieldObj : public peepholed_focusableObj,
+		       public input_field_setObj {
+
+	//! Return this
+	input_fieldObj *my_input_field() override;
+
+public:
+	class LIBCXX_HIDDEN implObj;
+
+	friend class input_field_setObj;
+	//! Internal implementation object.
+
+	const ref<implObj> impl;
+
+	//! Constructor
+	input_fieldObj(const ref<implObj> &impl,
+		       const ref<peepholed_focusableObj::implObj> &peephole_impl,
+		       const layout_impl &container_layout_impl)
+		LIBCXX_HIDDEN;
+
+	//! Destructor
+	~input_fieldObj() LIBCXX_HIDDEN;
+
 
 	//! Install a callback that gets invoked when the contents of the input field change.
 
@@ -126,59 +198,6 @@ public:
 	//! inside the focus frame.
 
 	ref<elementObj::implObj> get_minimum_override_element_impl() override;
-
-	template<input_field_validation_function validation_function,
-		 typename canonical_format_functor,
-		 typename ...Args>
-	auto set_validator(validation_function &&validator,
-			   canonical_format_functor &&canonical_factor,
-			   Args && ...args)
-		-> validated_input_field<
-		typename input_field_detect_validator_functor_parameter<
-			validation_function
-			>::optional_return_type_t>;
-
-	template<input_field_validation_function validation_function,
-		 typename canonical_format_functor,
-		 typename ...Args>
-	auto set_validator(ONLY IN_THREAD,
-			   validation_function &&validator,
-			   canonical_format_functor &&canonical_factor,
-			   Args && ...args)
-		-> validated_input_field<
-		typename input_field_detect_validator_functor_parameter<
-			validation_function
-			>::optional_return_type_t>;
-
-	template<typename T,
-		 input_field_string_validation_function<T> validation_function,
-		 typename canonical_format_functor,
-		 typename ...Args>
-	auto set_string_validator(validation_function &&validator,
-				  canonical_format_functor &&canonical_format,
-				  Args && ...args)
-		-> validated_input_field<T>;
-
-	template<typename T,
-		 input_field_string_validation_function<T> validation_function,
-		 typename canonical_format_functor,
-		 typename ...Args>
-	auto set_string_validator(
-		ONLY IN_THREAD,
-		validation_function &&validator,
-		canonical_format_functor  &&canonical_format,
-		Args && ...args)
-		->validated_input_field<T>;
-
-	//! Validate the input field, if needed.
-
-	//! Returns an indication if the input field is validated.
-	bool validate_modified(ONLY IN_THREAD);
-
-	//! Validate the input field, if needed.
-
-	//! Returns an indication if the input field is validated.
-	bool validate_modified(ONLY IN_THREAD, const callback_trigger_t &);
 
 	//! Override peepholed_focusable.
 	void do_get_impl(const function<internal_focusable_cb> &)

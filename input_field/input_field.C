@@ -59,6 +59,11 @@ input_fieldObj::input_fieldObj(const ref<implObj> &impl,
 
 input_fieldObj::~input_fieldObj()=default;
 
+input_fieldObj *input_fieldObj::my_input_field()
+{
+	return this;
+}
+
 void input_field_config
 ::set_spin_control_factories(const functionref<void(const factory &)> &first,
 			     const functionref<void(const factory &)> &second)
@@ -619,20 +624,20 @@ void input_fieldObj::on_spin(ONLY IN_THREAD,
 }
 
 
-void input_fieldObj::set(const std::string_view &str, bool validated)
+void input_field_setObj::set(const std::string_view &str, bool validated)
 {
 	set(unicode::iconvert::tou::convert(std::string{str},
 					    unicode_locale_chset()).first,
 	    validated);
 }
 
-void input_fieldObj::set(const std::u32string_view &str, bool validated)
+void input_field_setObj::set(const std::u32string_view &str, bool validated)
 {
-	impl->editor_element->impl->set(str, validated);
+	my_input_field()->impl->editor_element->impl->set(str, validated);
 }
 
-void input_fieldObj::set(ONLY IN_THREAD,
-			 const std::string_view &str, bool validated)
+void input_field_setObj::set(ONLY IN_THREAD,
+			     const std::string_view &str, bool validated)
 {
 	set(IN_THREAD,
 	    unicode::iconvert::tou::convert(std::string{str},
@@ -640,10 +645,12 @@ void input_fieldObj::set(ONLY IN_THREAD,
 	    validated);
 }
 
-void input_fieldObj::set(ONLY IN_THREAD,
-			 const std::u32string_view &str, bool validated)
+void input_field_setObj::set(ONLY IN_THREAD,
+			     const std::u32string_view &str, bool validated)
 {
-	impl->editor_element->impl->lock_and_set(IN_THREAD, str, validated);
+	my_input_field()->impl->editor_element->impl->lock_and_set(
+		IN_THREAD, str, validated
+	);
 }
 
 void input_fieldObj::on_change(const functionref<
@@ -665,16 +672,17 @@ void input_fieldObj::on_change(ONLY IN_THREAD,
 	impl->editor_element->impl->on_change(IN_THREAD)=callback;
 }
 
-bool input_fieldObj::validate_modified(ONLY IN_THREAD)
+bool input_field_setObj::validate_modified(ONLY IN_THREAD)
 {
 	return validate_modified(IN_THREAD, {});
 }
 
-bool input_fieldObj::validate_modified(ONLY IN_THREAD,
-				       const callback_trigger_t &trigger)
+bool input_field_setObj::validate_modified(ONLY IN_THREAD,
+					   const callback_trigger_t &trigger)
 {
-	return impl->editor_element->impl->validate_modified(IN_THREAD,
-							     trigger);
+	return my_input_field()->impl->editor_element->impl->validate_modified(
+		IN_THREAD, trigger
+	);
 }
 
 void input_fieldObj::on_autocomplete(const functionref<bool

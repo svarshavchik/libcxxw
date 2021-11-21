@@ -16,6 +16,7 @@
 
 LIBCXXW_NAMESPACE_START
 
+class LIBCXX_PUBLIC input_field_setObj;
 class LIBCXX_PUBLIC input_fieldObj;
 
 class LIBCXX_HIDDEN const_input_lock;

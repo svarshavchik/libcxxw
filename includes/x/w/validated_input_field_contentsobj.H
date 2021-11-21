@@ -68,7 +68,7 @@ public:
 	~validated_input_field_contentsObj()=default;
 
 	friend class validated_input_fieldObj<type>;
-	friend class input_fieldObj;
+	friend class input_field_setObj;
 
 	//! Public access to the current value.
 

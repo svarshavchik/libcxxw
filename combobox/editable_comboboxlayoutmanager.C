@@ -44,6 +44,11 @@ editable_comboboxlayoutmanagerObj
 
 editable_comboboxlayoutmanagerObj::~editable_comboboxlayoutmanagerObj()=default;
 
+input_fieldObj *editable_comboboxlayoutmanagerObj::my_input_field()
+{
+	return &*locked_input_field;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
 static inline bool autocomplete(ONLY IN_THREAD,

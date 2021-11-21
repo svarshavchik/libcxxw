@@ -142,9 +142,6 @@ protected:
 		const override;
 };
 
-#define x_w_editable_comboboxlayoutmanager_h_defined
-#include <x/w/editable_comboboxlayoutmanager_input_field.H>
-
 LIBCXXW_NAMESPACE_END
 
 #endif

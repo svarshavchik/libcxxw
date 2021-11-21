@@ -24,7 +24,7 @@ LIBCXXW_NAMESPACE_START
 template<input_field_validation_function validation_function,
 	 typename canonical_format_functor,
 	 typename ...Args>
-auto input_fieldObj::set_validator(
+auto input_field_setObj::set_validator(
 	validation_function &&validator,
 	canonical_format_functor &&canonical_format,
 	Args && ...args
@@ -45,8 +45,10 @@ auto input_fieldObj::set_validator(
 			),
 			std::forward<Args>(args)...);
 
-	this->in_thread([me=ref{this}, validator_callback, contents]
-			(ONLY IN_THREAD)
+	auto me=my_input_field();
+
+	me->in_thread([me=ref{me}, validator_callback, contents]
+		      (ONLY IN_THREAD)
 	{
 		input_lock lock{me};
 
@@ -54,13 +56,13 @@ auto input_fieldObj::set_validator(
 		contents->reset(IN_THREAD, lock);
 	});
 
-	return validated_input_field<type>::create(contents, ref{this});
+	return validated_input_field<type>::create(contents, ref{me});
 }
 
 template<input_field_validation_function validation_function,
 	 typename canonical_format_functor,
 	 typename ...Args>
-auto input_fieldObj::set_validator(
+auto input_field_setObj::set_validator(
 	ONLY IN_THREAD,
 	validation_function &&validator,
 	canonical_format_functor &&canonical_format,
@@ -82,14 +84,14 @@ auto input_fieldObj::set_validator(
 			),
 			std::forward<Args>(args)...);
 
-
+	auto me=my_input_field();
 	{
-		input_lock lock{ref{this}};
+		input_lock lock{ref{me}};
 
-		on_validate(IN_THREAD, validator_callback);
+		me->on_validate(IN_THREAD, validator_callback);
 		contents->reset(IN_THREAD, lock);
 	}
-	return validated_input_field<type>::create(contents, ref{this});
+	return validated_input_field<type>::create(contents, ref{me});
 }
 
 //! Create a set_validator() by using a formatted string extraction operator, \c >>.
@@ -98,7 +100,7 @@ template<typename T,
 	 input_field_string_validation_function<T> validation_function,
 	 typename canonical_format_functor,
 	 typename ...Args>
-auto input_fieldObj::set_string_validator(
+auto input_field_setObj::set_string_validator(
 	validation_function &&validator,
 	canonical_format_functor  &&canonical_format,
 	Args && ...args
@@ -114,8 +116,10 @@ auto input_fieldObj::set_string_validator(
 			),
 			std::forward<Args>(args)...);
 
-	this->in_thread([me=ref{this}, validator_callback, contents]
-			(ONLY IN_THREAD)
+	auto me=my_input_field();
+
+	me->in_thread([me=ref{me}, validator_callback, contents]
+		      (ONLY IN_THREAD)
 	{
 		input_lock lock{me};
 
@@ -123,7 +127,7 @@ auto input_fieldObj::set_string_validator(
 		contents->reset(IN_THREAD, lock);
 	});
 
-	return validated_input_field<type>::create(contents, ref{this});
+	return validated_input_field<type>::create(contents, ref{me});
 }
 
 //! Create a set_validator() by using a formatted string extraction operator, \c >>.
@@ -132,7 +136,7 @@ template<typename T,
 	 input_field_string_validation_function<T> validation_function,
 	 typename canonical_format_functor,
 	 typename ...Args>
-auto input_fieldObj::set_string_validator(
+auto input_field_setObj::set_string_validator(
 	ONLY IN_THREAD,
 	validation_function &&validator,
 	canonical_format_functor  &&canonical_format,
@@ -149,18 +153,17 @@ auto input_fieldObj::set_string_validator(
 			),
 			std::forward<Args>(args)...);
 
-	{
-		input_lock lock{ref{this}};
+	auto me=my_input_field();
 
-		this->on_validate(IN_THREAD, validator_callback);
+	{
+		input_lock lock{ref{me}};
+
+		me->on_validate(IN_THREAD, validator_callback);
 		contents->reset(IN_THREAD, lock);
 	}
 
-	return validated_input_field<type>::create(contents, ref{this});
+	return validated_input_field<type>::create(contents, ref{me});
 }
-
-#define x_w_input_field_h_defined
-#include <x/w/editable_comboboxlayoutmanager_input_field.H>
 
 LIBCXXW_NAMESPACE_END
 

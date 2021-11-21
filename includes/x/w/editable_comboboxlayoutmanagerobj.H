@@ -9,6 +9,7 @@
 #include <x/w/standard_comboboxlayoutmanagerobj.H>
 #include <x/w/input_field_lock.H>
 #include <x/w/input_fieldfwd.H>
+#include <x/w/input_fieldobj.H>
 #include <x/w/validated_input_fieldfwd.H>
 #include <x/functionalrefptrfwd.H>
 
@@ -28,13 +29,20 @@ LIBCXXW_NAMESPACE_START
 
 class editable_comboboxlayoutmanagerObj :
 	private input_lock,
+	public input_field_setObj,
 	public standard_comboboxlayoutmanagerObj {
 
 	//! The combo-box's input field.
 
 	const input_field locked_input_field;
 
+	//! Return locked input field.
+
+	input_fieldObj *my_input_field() override;
 public:
+
+	using input_lock::set;
+
 	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
@@ -85,41 +93,12 @@ public:
 	using input_lock::get;
 	using input_lock::get_unicode;
 
-	//! Forward set() to the underlying input field
-
-	template<typename ...Args> struct set_args_t;
-
-	template<typename ...Args>
-	typename set_args_t<Args...>::void_t set(Args && ...args);
-
 	//! Contents of the input field were updated directly
 
 	//! Equivalent to on_validate() for the underlying input field.
 
 	void on_validate(const functionref<input_field_validation_callback_t>
 			 &);
-
-	//! Install a validator
-
-	//! Equivalent to calling set_validator() for the underlying
-	//! input_field.
-	template<typename ...Args>
-	auto set_validator(Args && ...args);
-
-	//! Install a validator
-
-	//! Equivalent to calling set_validator() for the underlying
-	//! input_field.
-	template<typename T,
-		 typename ...Args>
-	auto set_string_validator(Args && ...args);
-
-	//! Check validation status
-
-	//! Equivalent to calling validate_modified() for the underlying
-	//! input_field.
-	template<typename ...Args>
-	bool validate_modified(Args && ...args);
 };
 
 LIBCXXW_NAMESPACE_END
