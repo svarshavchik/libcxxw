@@ -253,26 +253,16 @@ class font_pickerObj::implObj : virtual public obj {
 	//! Finish initializing this object.
 
 	//! Some things cannot be taken care of in the constructor.
-	//! The validator for point size editable combo-box captures
-	//! this implementation object so that it can call our
-	//! update_font_size(), and our update_font_properties() needs to have
-	//! point size validator.
 	//!
-	//! Additionally, we would like to take care of the messy details of
+	//! We would like to take care of the messy details of
 	//! supplying our font picker element object to the callback.
 	//!
 	//! finish_initialization() gets called after the public object gets
 	//! constructed, and it safely stashes away all the missing pieces...
 
-	void finish_initialization(const font_picker &,
-				   const validated_input_field<unsigned>
-				   &new_font_size_validator);
+	void finish_initialization(const font_picker &);
 
  private:
-	//! Validator for popup_fields.font_size
-
-	validated_input_fieldptr<unsigned> font_size_validator;
-
 	//! Our public object
 	weakptr<font_pickerptr> public_object;
 

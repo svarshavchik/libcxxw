@@ -620,12 +620,9 @@ font_pickerObj::implObj::implObj(const font_picker_impl_init_params
 font_pickerObj::implObj::~implObj()=default;
 
 void font_pickerObj::implObj
-::finish_initialization(const font_picker &fp,
-			const validated_input_field<unsigned>
-			&new_font_size_validator)
+::finish_initialization(const font_picker &fp)
 {
 	public_object=fp;
-	font_size_validator=new_font_size_validator;
 
 	current_font_shown->in_thread
 		([impl=ref(this)]
@@ -900,7 +897,7 @@ void font_pickerObj::implObj
 
 	unsigned current_point_size=0;
 
-	auto v=font_size_validator->value();
+	auto v=popup_fields.font_size_validated->value();
 
 	if (v)
 		current_point_size=*v;
@@ -1003,13 +1000,10 @@ void font_pickerObj::implObj
 
 	unsigned current_point_size=0;
 
-	if (font_size_validator) // Not yet initialized, if we're constructing
-	{
-		auto v=font_size_validator->value();
+	auto v=popup_fields.font_size_validated->value();
 
-		if (v)
-			current_point_size=*v;
-	}
+	if (v)
+		current_point_size=*v;
 
 	update_font_options(set_func, e, current_point_size);
 }
@@ -1102,7 +1096,7 @@ void font_pickerObj::implObj::set_font(ONLY IN_THREAD,
 	}
 
 	// Now, pretend that the "Save" button has been pressed.
-	font_size_validator->set(new_values.saved_font_size);
+	popup_fields.font_size_validated->set(new_values.saved_font_size);
 
 	// We now need to validate all other int options, and update their
 	// corresponding combo-box values.
@@ -1146,7 +1140,9 @@ void font_pickerObj::implObj::popup_closed(ONLY IN_THREAD)
 	// There are a few more details to do, besides resetting current_font
 	current_font(IN_THREAD)=official_font_value.official_font;
 
-	font_size_validator->set(official_font_value.saved_font_size);
+	popup_fields.font_size_validated->set(
+		official_font_value.saved_font_size
+	);
 	// update_font_size() does not get called by set(). That's wonderful,
 	// because we only need to call save_font_size(), compute_new_preview()
 	// gets called as part of update_font_family().
@@ -1214,7 +1210,7 @@ void font_pickerObj::implObj::set_official_font(ONLY IN_THREAD,
 			lock->official_font_label=lm->item(*n);
 			lock->saved_font_group=sorted_families.at(*n);
 		}
-		auto v=font_size_validator->value();
+		auto v=popup_fields.font_size_validated->value();
 
 		lock->saved_font_size=v ? *v:0;
 	}

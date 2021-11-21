@@ -40,7 +40,7 @@
 #include "x/w/uielements.H"
 #include "gridlayoutmanager.H"
 #include <fontconfig/fontconfig.h>
-#include <x/weakptr.H>
+#include <x/mpweakptr.H>
 #include <x/xml/xpath.H>
 #include <charconv>
 LIBCXXW_NAMESPACE_START
@@ -163,27 +163,6 @@ namespace {
 }
 #endif
 
-//! Weakly-captured font picker implementation object.
-
-//! A bunch of callbacks need it. We'll weakly-capture it once, and recycle
-//! this in every callback.
-
-class LIBCXX_HIDDEN weak_implObj : virtual public obj {
-
-
- public:
-	const weakptr<ptr<font_pickerObj::implObj>> weak_impl;
-
-	weak_implObj(const ref<font_pickerObj::implObj> &ref_impl)
-		: weak_impl{ref_impl}
-	{
-	}
-
-	auto get() const
-	{
-		return weak_impl.getptr();
-	}
-};
 
 //! Custom placeholder implementation object
 
@@ -450,6 +429,14 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	auto initial_state=font_pickerObj::implObj::current_state::create();
 
+
+	//! Weakly-captured font picker implementation object.
+
+	//! A bunch of callbacks need it. We'll weakly-capture it once, and
+	//! recycle this in every callback.
+
+	auto wimpl=mpweakptr<ptr<font_pickerObj::implObj>>::create();
+
 	auto [real_impl, popup_imagebutton, glm, font_picker_popup]
 		=create_popup_attachedto_element
 		(*this, config.appearance->attached_popup_appearance,
@@ -472,13 +459,112 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 			 uielements tmpl{helper.create_elements(config)};
 
-			 glm->generate("font-picker-popup", tmpl);
+			 tmpl.create_string_validated_input_field<unsigned>(
+				 "font-size-combobox",
+				 [selection_required=config.selection_required,
+				  wimpl]
+				 (ONLY IN_THREAD,
+				  const std::string &value,
+				  std::optional<unsigned> &parsed_value,
+				  const auto &my_field,
+				  const auto &trigger)
+				 {
+					 auto font_picker_impl=wimpl->getptr();
 
+					 if (!font_picker_impl)
+						 return;
+
+					 auto &font_size_error=font_picker_impl
+						 ->popup_fields
+						 .font_size_error;
+
+					 if (selection_required &&
+					     (!parsed_value ||
+					      *parsed_value == 0))
+					 {
+						 font_size_error->update(
+							 value.empty() ?
+							 _("Font size required")
+							 :
+							 _("Invalid size")
+						 );
+						 parsed_value.reset();
+						 return;
+					 }
+
+					 if (!parsed_value)
+					 {
+						 if (value.empty())
+						 {
+							 parsed_value=0;
+							 return;
+						 }
+
+						 font_size_error->update(
+							 _("Invalid size"));
+						 parsed_value.reset();
+						 return;
+					 }
+
+					 if (*parsed_value > 999)
+					 {
+						 font_size_error->update(
+							 _("Maximum point size"
+							   " is 999"));
+						 parsed_value.reset();
+						 return;
+					 }
+
+					 font_size_error->update(" ");
+				 },
+				 []
+				 (unsigned v) -> std::string
+				 {
+					 if (v == 0)
+						 return "";
+
+					 char buffer[8];
+
+					 auto res=std::to_chars(
+						 buffer,
+						 buffer+sizeof(buffer),
+						 v);
+
+					 if (res.ec != std::errc{})
+						 // Shouldn't happen.
+					 {
+						 return "";
+					 }
+
+					 return {buffer, res.ptr};
+				 },
+				 std::nullopt,
+				 [wimpl]
+				 (ONLY IN_THREAD,
+				  const std::optional<unsigned> &v)
+				 {
+					 if (!v)
+						 return;
+
+					 auto impl=wimpl->getptr();
+
+					 if (!impl)
+						 return;
+
+					 impl->update_font_size(IN_THREAD, *v);
+				 }
+			 );
+
+			 glm->generate("font-picker-popup", tmpl);
 
 			 helper.font_family=
 				 tmpl.get_element("font-family-combobox");
 			 helper.font_size=
 				 tmpl.get_element("font-size-combobox");
+			 helper.font_size_validated=
+				 tmpl.get_validated_input_field<unsigned>(
+					 "font-size-combobox"
+				 );
 			 helper.font_weight=
 				 tmpl.get_element("font-weight-combobox");
 			 helper.font_slant=
@@ -530,7 +616,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 					  (IN_THREAD);
 			  });
 
-	auto wimpl=ref<weak_implObj>::create(font_picker_impl);
+	wimpl->setptr(font_picker_impl);
 
 	// Call update_font_family() when the font family combo-box value
 	// changes.
@@ -550,7 +636,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 			 if (!info.list_item_status_info.selected)
 				 return;
 
-			 auto impl=wimpl->get();
+			 auto impl=wimpl->getptr();
 
 			 if (!impl)
 				 return;
@@ -586,92 +672,13 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	// Validator for the font size editable combo-box.
 
-	editable_comboboxlayoutmanager fs_lm=
-		font_picker_impl->popup_fields.font_size->get_layoutmanager();
-
-	auto font_size_validator=fs_lm->set_string_validator<unsigned>(
-		[selection_required=config.selection_required,
-		 font_size_error=font_picker_impl
-		 ->popup_fields.font_size_error]
-		(ONLY IN_THREAD,
-		 const std::string &value,
-		 std::optional<unsigned> &parsed_value,
-		 const auto &my_field,
-		 const auto &trigger)
-		{
-			if (selection_required &&
-			    (!parsed_value || *parsed_value == 0))
-			{
-				font_size_error->update
-					(value.empty() ?
-					 _("Font size required") :
-					 _("Invalid size"));
-				parsed_value.reset();
-				return;
-			}
-
-			if (!parsed_value)
-			{
-				if (value.empty())
-				{
-					parsed_value=0;
-					return;
-				}
-
-				font_size_error->update(_("Invalid size"));
-				parsed_value.reset();
-				return;
-			}
-
-			if (*parsed_value > 999)
-			{
-				font_size_error->update(_("Maximum point size is 999"));
-				parsed_value.reset();
-				return;
-			}
-
-			font_size_error->update(" ");
-		},
-		[]
-		(unsigned v) -> std::string
-		{
-			if (v == 0)
-				return "";
-
-			char buffer[8];
-
-			auto res=std::to_chars(buffer, buffer+sizeof(buffer),
-					       v);
-
-			if (res.ec != std::errc{}) // Shouldn't happen.
-			{
-				return "";
-			}
-
-			return {buffer, res.ptr};
-		},
-		std::nullopt,
-		[wimpl]
-		(ONLY IN_THREAD, const std::optional<unsigned> &v)
-		{
-			if (!v)
-				return;
-
-			auto impl=wimpl->get();
-
-			if (!impl)
-				return;
-
-			impl->update_font_size(IN_THREAD, *v);
-		}
-	);
-
 	// Need the initial point size shown?
 	if (config.selection_required || config.initial_font)
-		font_size_validator->set(initial_state->official_font
-					 .get().saved_font_size);
+		helper.font_size_validated->set(
+			initial_state->official_font.get().saved_font_size
+		);
 
-	font_picker_impl->finish_initialization(fp, font_size_validator);
+	font_picker_impl->finish_initialization(fp);
 
 	// Install selection_changed() callback for all options
 
@@ -693,7 +700,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 				       .index()==0)
 					   return;
 
-				   auto impl=wimpl->get();
+				   auto impl=wimpl->getptr();
 
 				   if (!impl)
 					   return;
@@ -716,7 +723,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 			     new_state.before_hiding)
 				 return;
 
-			 auto impl=wimpl->get();
+			 auto impl=wimpl->getptr();
 
 			 if (impl)
 				 impl->popup_closed(IN_THREAD);
@@ -754,7 +761,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 			 auto &[popup]=*got;
 
-			 auto impl=wimpl->get();
+			 auto impl=wimpl->getptr();
 
 			 popup->elementObj::impl->request_visibility(IN_THREAD,
 								     false);

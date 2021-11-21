@@ -9,6 +9,10 @@
     <type>focusable_container</type>
   </ref>
   <ref>
+    <name>font_size_validated</name>
+    <type>x::w::validated_input_field&lt;unsigned&gt;</type>
+  </ref>
+  <ref>
     <name>font_size_error</name>
     <type>label</type>
   </ref>
