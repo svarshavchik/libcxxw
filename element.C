@@ -238,22 +238,40 @@ void elementObj::on_pointer_focus(const functionref<focus_callback_t> &cb)
 	impl->on_pointer_focus(cb);
 }
 
+void elementObj::on_pointer_focus(ONLY IN_THREAD,
+				  const functionref<focus_callback_t> &cb)
+{
+	impl->on_pointer_focus(IN_THREAD, cb);
+}
+
 void elementObj::on_button_event(const functionref<button_event_callback_t> &cb)
 {
-	in_thread([cb, impl=this->impl]
+	in_thread([me=ref{this}, cb]
 		  (ONLY IN_THREAD)
-		  {
-			  impl->data(IN_THREAD).on_button_event_callback=cb;
-		  });
+	{
+		me->on_button_event(IN_THREAD, cb);
+	});
+}
+
+void elementObj::on_button_event(ONLY IN_THREAD,
+				 const functionref<button_event_callback_t> &cb)
+{
+	impl->data(IN_THREAD).on_button_event_callback=cb;
 }
 
 void elementObj::on_motion_event(const functionref<motion_event_callback_t> &cb)
 {
-	in_thread([cb, impl=this->impl]
+	in_thread([me=ref{this}, cb]
 		  (ONLY IN_THREAD)
-		  {
-			  impl->data(IN_THREAD).on_motion_event_callback=cb;
-		  });
+	{
+		me->on_motion_event(IN_THREAD, cb);
+	});
+}
+
+void elementObj::on_motion_event(ONLY IN_THREAD,
+				 const functionref<motion_event_callback_t> &cb)
+{
+	impl->data(IN_THREAD).on_motion_event_callback=cb;
 }
 
 void elementObj::create_custom_tooltip(const functionref<void

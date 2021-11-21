@@ -18,6 +18,7 @@
 #include "x/w/input_fieldfwd.H"
 #include "x/w/labelfwd.H"
 #include "x/w/validated_input_field.H"
+#include "x/w/uielements.H"
 #include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -104,14 +105,10 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 
 		const color_picker_config &config,
 		const official_color &initial_color,
-		const element &horiz_component_gradient,
-		const element &vert_component_gradient,
+		const uielements &ui,
 		const color_picker_alpha_canvas &alpha_component_gradient,
 		const element &fixed_component_gradient,
-		const color_picker_square &variable_gradients,
-
-		const label &error_message_field);
-
+		const color_picker_square &variable_gradients);
 
 	//! Destructor
 	~implObj();
@@ -229,25 +226,25 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 		compute_hsv(const rgb &color);
 
 	//! The manually-entered red component
-	validated_input_fieldptr<rgb_component_t> r_value;
+	const validated_input_field<rgb_component_t> r_value;
 
 	//! The manually-entered green component
-	validated_input_fieldptr<rgb_component_t> g_value;
+	const validated_input_field<rgb_component_t> g_value;
 
 	//! The manually-entered blue component
-	validated_input_fieldptr<rgb_component_t> b_value;
+	const validated_input_field<rgb_component_t> b_value;
 
 	//! The manually-entered alpha component
-	validated_input_fieldptr<rgb_component_t> a_value;
+	const validated_input_field<rgb_component_t> a_value;
 
 	//! The manually-entered hue component
-	validated_input_fieldptr<rgb_component_t> h_value;
+	const validated_input_field<rgb_component_t> h_value;
 
 	//! The manually-entered saturation component
-	validated_input_fieldptr<rgb_component_t> s_value;
+	const validated_input_field<rgb_component_t> s_value;
 
 	//! The manually-entered value component
-	validated_input_fieldptr<rgb_component_t> v_value;
+	const validated_input_field<rgb_component_t> v_value;
 
 	//! Reformat the fields after full_precision or hexadecimal settings are changed.
 

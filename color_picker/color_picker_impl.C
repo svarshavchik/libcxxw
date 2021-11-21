@@ -138,25 +138,37 @@ color_pickerObj::implObj::implObj(const popup_attachedto_element_impl &impl,
 
 				  const color_picker_config &config,
 				  const official_color &initial_color,
-				  const element &horiz_component_gradient,
-				  const element &vert_component_gradient,
+				  const uielements &ui,
 				  const color_picker_alpha_canvas
 				  &alpha_component_gradient,
 				  const element &fixed_component_gradient,
-				  const color_picker_square &variable_gradients,
-				  const label &error_message_field)
+				  const color_picker_square &variable_gradients)
 	: impl{impl}, popup_button{popup_button},
 	  current_color_element{current_color_element},
-
-	  horiz_component_gradient{horiz_component_gradient},
-	  vert_component_gradient{vert_component_gradient},
+	  horiz_component_gradient{ui.get_element("h-canvas")},
+	  vert_component_gradient{ui.get_element("v-canvas")},
 	  alpha_component_gradient{alpha_component_gradient},
 	  fixed_component_gradient{fixed_component_gradient},
 	  variable_gradients{variable_gradients},
-	  error_message_field{error_message_field},
+	  error_message_field{ui.get_element("error-message-field")},
 	  callback_thread_only{config.initial_callback},
 	  current_color_thread_only{config.initial_color},
-	  current_official_color{initial_color}
+	  current_official_color{initial_color},
+	  r_value{ui.get_validated_input_field<rgb_component_t>(
+			  "r-input-field")},
+	  g_value{ui.get_validated_input_field<rgb_component_t>(
+			  "g-input-field")},
+	  b_value{ui.get_validated_input_field<rgb_component_t>(
+			  "b-input-field")},
+	  a_value{ui.get_validated_input_field<rgb_component_t>(
+			  "a-input-field")},
+	  h_value{ui.get_validated_input_field<rgb_component_t>(
+			  "h-input-field")},
+	  s_value{ui.get_validated_input_field<rgb_component_t>(
+			  "s-input-field")},
+	  v_value{ui.get_validated_input_field<rgb_component_t>(
+			  "v-input-field")}
+
 {
 	update_gradients(horiz_component_gradient,
 			 initial_horiz_component,
@@ -191,10 +203,10 @@ void color_pickerObj::implObj::set_color(ONLY IN_THREAD,
 {
 	current_color(IN_THREAD)=c;
 
-	r_value->set(c.r);
-	g_value->set(c.g);
-	b_value->set(c.b);
-	a_value->set(c.a);
+	r_value->set(IN_THREAD, c.r);
+	g_value->set(IN_THREAD, c.g);
+	b_value->set(IN_THREAD, c.b);
+	a_value->set(IN_THREAD, c.a);
 	new_rgb_values(IN_THREAD);
 }
 
@@ -207,9 +219,9 @@ void color_pickerObj::implObj::update_fixed_component(ONLY IN_THREAD,
 
 	c.*fixed_component(IN_THREAD)=v;
 
-	r_value->set(c.r);
-	g_value->set(c.g);
-	b_value->set(c.b);
+	r_value->set(IN_THREAD, c.r);
+	g_value->set(IN_THREAD, c.g);
+	b_value->set(IN_THREAD, c.b);
 
 	new_rgb_values(IN_THREAD);
 }
@@ -221,7 +233,7 @@ void color_pickerObj::implObj::update_alpha_component(ONLY IN_THREAD,
 {
 	current_color(IN_THREAD).a=v;
 
-	a_value->set(v);
+	a_value->set(IN_THREAD, v);
 	new_alpha_value(IN_THREAD);
 }
 
@@ -306,9 +318,9 @@ void color_pickerObj::implObj::new_rgba_values(ONLY IN_THREAD,
 	{
 		auto [h, s, v]=compute_hsv(c);
 
-		h_value->set(h);
-		s_value->set(s);
-		v_value->set(v);
+		h_value->set(IN_THREAD, h);
+		s_value->set(IN_THREAD, s);
+		v_value->set(IN_THREAD, v);
 	}
 
 	//! New official color
@@ -339,7 +351,7 @@ void color_pickerObj::implObj::new_hsv_values(ONLY IN_THREAD)
 		// Reset h to 0, to make things consistent.
 
 		if (h != 0)
-			h_value->set(0);
+			h_value->set(IN_THREAD, 0);
 	}
 	else
 	{
@@ -433,10 +445,10 @@ void color_pickerObj::implObj::new_hsv_values(ONLY IN_THREAD)
 		}
 	}
 
-	r_value->set(c.r);
-	g_value->set(c.g);
-	b_value->set(c.b);
-	a_value->set(c.a);
+	r_value->set(IN_THREAD, c.r);
+	g_value->set(IN_THREAD, c.g);
+	b_value->set(IN_THREAD, c.b);
+	a_value->set(IN_THREAD, c.a);
 	current_color(IN_THREAD)=c;
 	refresh_component_gradients(IN_THREAD);
 	refresh_variable_gradients(IN_THREAD);
@@ -447,14 +459,14 @@ void color_pickerObj::implObj::reformat_values(ONLY IN_THREAD)
 {
 	// Just tickle the validators. They know what to do.
 
-	r_value->set(r_value->value());
-	g_value->set(g_value->value());
-	b_value->set(b_value->value());
-	a_value->set(a_value->value());
+	r_value->set(IN_THREAD, r_value->value());
+	g_value->set(IN_THREAD, g_value->value());
+	b_value->set(IN_THREAD, b_value->value());
+	a_value->set(IN_THREAD, a_value->value());
 
-	h_value->set(h_value->value());
-	s_value->set(s_value->value());
-	v_value->set(v_value->value());
+	h_value->set(IN_THREAD, h_value->value());
+	s_value->set(IN_THREAD, s_value->value());
+	v_value->set(IN_THREAD, v_value->value());
 }
 
 
@@ -487,10 +499,10 @@ void color_pickerObj::implObj::popup_closed(ONLY IN_THREAD)
 		c=*lock;
 	}
 
-	r_value->set(c.r);
-	g_value->set(c.g);
-	b_value->set(c.b);
-	a_value->set(c.a);
+	r_value->set(IN_THREAD, c.r);
+	g_value->set(IN_THREAD, c.g);
+	b_value->set(IN_THREAD, c.b);
+	a_value->set(IN_THREAD, c.a);
 	new_rgb_values(IN_THREAD);
 }
 

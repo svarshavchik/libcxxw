@@ -149,13 +149,26 @@ public:
 	//! Install a pointer focus callback.
 	void on_pointer_focus(const functionref<focus_callback_t> &);
 
+	//! Install a pointer focus callback.
+	void on_pointer_focus(ONLY IN_THREAD,
+			      const functionref<focus_callback_t> &);
+
 	//! Install a button event callback
 
 	void on_button_event(const functionref<button_event_callback_t> &);
 
+	//! Install a button event callback
+
+	void on_button_event(ONLY IN_THREAD,
+			     const functionref<button_event_callback_t> &);
 	//! Install a motion event callback
 
 	void on_motion_event(const functionref<motion_event_callback_t> &);
+
+	//! Install a motion event callback
+
+	void on_motion_event(ONLY IN_THREAD,
+			     const functionref<motion_event_callback_t> &);
 
 	//! Create a standard tooltip consisting of an unwrapped label.
 

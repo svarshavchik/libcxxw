@@ -38,11 +38,12 @@
 
 #include <x/chrcasecmp.H>
 #include <x/weakcapture.H>
-#include <x/weakptr.H>
+#include <x/mpweakptr.H>
 #include <x/xml/readlock.H>
 #include <x/xml/xpath.H>
 #include <cmath>
 #include <limits>
+#include <utility>
 #include <sstream>
 #include <iomanip>
 #include <charconv>
@@ -151,6 +152,33 @@ static const struct {
 		    {purple, "basic-color-purple"},
 };
 
+namespace {
+#if 0
+}
+#endif
+
+// Need a helper template that will grab the basic_colors' buttons out of
+// the generated uielements, and place them into an array together with
+// their names, for construction purposes.
+
+template<typename=std::make_index_sequence<std::size(basic_colors)>>
+struct get_basic_colors;
+
+template<size_t ...i>
+struct get_basic_colors<std::index_sequence<i...>> {
+
+	static auto get(const uielements &ui)
+	{
+		return std::array<button, sizeof...(i)>{
+			ui.get_element(basic_colors[i].name)...
+		};
+	}
+};
+
+#if 0
+{
+#endif
+}
 
 struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 
@@ -315,34 +343,7 @@ static rgb_component_t compute_from_click(const element &e,
 	return std::round(xc * 1.0 / sc * rgb::maximum);
 }
 
-namespace {
-#if 0
-}
-#endif
-
-// A bunch of callbacks need to weakly-capture the implementation object.
-// We'll do it just once.
-
-class weak_implObj : virtual public obj {
-
-public:
-
-	weakptr<ptr<color_pickerObj::implObj>> impl;
-
-	weak_implObj(const ref<color_pickerObj::implObj> &impl)
-		: impl{impl}
-	{
-	};
-
-	inline auto get() const { return impl.getptr(); }
-};
-
-#if 0
-{
-#endif
-}
-
-typedef ref<weak_implObj> weak_impl;
+typedef mpweakptr<ptr<color_pickerObj::implObj>> weak_impl;
 
 // Internally the channel value is always stored in full precision. But
 // by default we show only the most significant byte. This is purely a
@@ -374,24 +375,27 @@ static constexpr rgb_component_t rgb_from_high_byte(uint8_t v)
 	return c;
 }
 
-// Build an input field validator for one of the manual entry fields.
+// Define input field validators in the color picker popup, this is factored
+// out for readability.
 
-static auto
-make_manual_input_validator(const uielements &tmpl,
-			    const char *name,
-			    const weak_impl &wimpl,
-			    void (color_pickerObj::implObj::*n)(ONLY IN_THREAD))
+static void
+create_manual_input_validator(
+	uielements &tmpl,
+	const char *name,
+	rgb_component_t initial_value,
+	const weak_impl &wimpl,
+	void (color_pickerObj::implObj::*notify)(ONLY IN_THREAD)
+)
 {
-	input_field f{tmpl.get_element(name)};
-
-	auto validator=f->set_validator
-		([wimpl]
+	tmpl.create_validated_input_field
+		(name,
+		 [wimpl]
 		 (ONLY IN_THREAD,
 		  std::string s,
 		  const input_lock &lock,
 		  const auto &ignore) -> std::optional<rgb_component_t>
 		 {
-			 auto impl=wimpl->get();
+			 auto impl=wimpl->getptr();
 
 			 if (!impl)
 				 return std::nullopt;
@@ -460,7 +464,7 @@ make_manual_input_validator(const uielements &tmpl,
 		 [wimpl]
 		 (rgb_component_t v) -> std::string
 		 {
-			 // Format currently value for display.
+			 // Format current value for display.
 
 			 constexpr auto digits=std::numeric_limits<
 				 rgb_component_t>::digits10+1;
@@ -468,7 +472,7 @@ make_manual_input_validator(const uielements &tmpl,
 			 bool full_precision=false;
 			 bool hexadecimal=false;
 
-			 auto impl=wimpl->get();
+			 auto impl=wimpl->getptr();
 
 			 if (impl)
 			 {
@@ -508,8 +512,8 @@ make_manual_input_validator(const uielements &tmpl,
 
 			 return buffer;
 		 },
-		 std::nullopt,
-		 [wimpl, n]
+		 initial_value,
+		 [wimpl, notify]
 		 (ONLY IN_THREAD, const std::optional<rgb_component_t> &v)
 		 {
 			 // Setting a new R/G/B value recomputes the H/S/V
@@ -524,32 +528,47 @@ make_manual_input_validator(const uielements &tmpl,
 			 if (!v)
 				 return;
 
-			 auto impl=wimpl->get();
+			 auto impl=wimpl->getptr();
 
 			 if (!impl)
 				 return;
 
 			 // Invoke new_rgb_values() or new_hsv_values()
 
-			 ((*impl).*n)(IN_THREAD);
+			 ((*impl).*notify)(IN_THREAD);
 		 });
+}
 
+// Configure the validated input fields now that they are created.
+
+static void configure_manual_input_validator(
+	ONLY IN_THREAD,
+	const input_field &f,
+	const weak_impl &wimpl,
+	const validated_input_field<rgb_component_t>
+	color_pickerObj::implObj::*validator,
+	void (color_pickerObj::implObj::*notify)(ONLY IN_THREAD)
+)
+{
 	// Make the input field's spin buttons do something useful.
 	//
 	// No matter what the currently displayed options are, the net effect
 	// of a spin button is to adjust the color value's most significant
 	// byte.
 
-	f->on_spin([wimpl, n, contents=validator->contents]
+	f->on_spin(IN_THREAD,
+		   [wimpl, notify, validator]
 		   (ONLY IN_THREAD,
 		    auto &lock,
 		    const auto &trigger,
 		    const auto &busy)
 		   {
-			   auto impl=wimpl->get();
+			   auto impl=wimpl->getptr();
 
 			   if (!impl)
 				   return;
+
+			   auto &contents=((*impl).*validator)->contents;
 
 			   auto current_value=contents->value();
 
@@ -567,18 +586,20 @@ make_manual_input_validator(const uielements &tmpl,
 
 			   // Invoke new_rgb_values() or new_hsv_values()
 
-			   ((*impl).*n)(IN_THREAD);
+			   ((*impl).*notify)(IN_THREAD);
 		   },
-		   [wimpl, n, contents=validator->contents]
+		   [wimpl, notify, validator]
 		   (ONLY IN_THREAD,
 		    auto &lock,
 		    const auto &trigger,
 		    const auto &busy)
 		   {
-			   auto impl=wimpl->get();
+			   auto impl=wimpl->getptr();
 
 			   if (!impl)
 				   return;
+
+			   auto &contents=((*impl).*validator)->contents;
 
 			   auto current_value=contents->value();
 
@@ -596,15 +617,16 @@ make_manual_input_validator(const uielements &tmpl,
 
 			   // Invoke new_rgb_values() or new_hsv_values()
 
-			   ((*impl).*n)(IN_THREAD);
+			   ((*impl).*notify)(IN_THREAD);
 		   });
 
 	// As long as we're here, install a filter.
 
-	f->on_filter([wimpl]
+	f->on_filter(IN_THREAD,
+		     [wimpl]
 		     (ONLY IN_THREAD, const auto &info)
 		     {
-			 auto impl=wimpl->get();
+			 auto impl=wimpl->getptr();
 
 			 if (!impl)
 				 return;
@@ -638,8 +660,6 @@ make_manual_input_validator(const uielements &tmpl,
 
 			 info.update();
 		     });
-
-	return validator;
 }
 
 color_picker factoryObj
@@ -654,7 +674,41 @@ color_picker factoryObj
 	auto initial_color=color_pickerObj::implObj::official_color
 		::create(config.initial_color);
 
+	// Weakly-captured implementation object, referenced by the various
+	// callbacks.
+
+	auto wimpl=weak_impl::create();
+
 	uielements tmpl{helper.elements()};
+
+	// Add the validators for manual entry input fields.
+	{
+		auto [h, s, v]=color_pickerObj::implObj
+			::compute_hsv(config.initial_color);
+
+		create_manual_input_validator(
+			tmpl, "r-input-field", config.initial_color.r, wimpl,
+			&color_pickerObj::implObj::new_rgb_values);
+		create_manual_input_validator(
+			tmpl, "g-input-field", config.initial_color.g, wimpl,
+			&color_pickerObj::implObj::new_rgb_values);
+		create_manual_input_validator(
+			tmpl, "b-input-field", config.initial_color.b, wimpl,
+			&color_pickerObj::implObj::new_rgb_values);
+		create_manual_input_validator(
+			tmpl, "a-input-field", config.initial_color.a, wimpl,
+			&color_pickerObj::implObj::new_alpha_value);
+
+		create_manual_input_validator(
+			tmpl, "h-input-field", h, wimpl,
+			&color_pickerObj::implObj::new_hsv_values);
+		create_manual_input_validator(
+			tmpl, "s-input-field", s, wimpl,
+			&color_pickerObj::implObj::new_hsv_values);
+		create_manual_input_validator(
+			tmpl, "v-input-field", v, wimpl,
+			&color_pickerObj::implObj::new_hsv_values);
+	}
 
 	auto [real_impl, popup_imagebutton, glm, color_picker_popup]
 		=create_popup_attachedto_element
@@ -719,379 +773,495 @@ color_picker factoryObj
 	auto impl=ref<color_pickerObj::implObj>
 		::create(real_impl, popup_imagebutton,
 			 color_picker_current,
-
 			 config,
 			 initial_color,
-			 tmpl.get_element("h-canvas"),
-			 tmpl.get_element("v-canvas"),
+			 tmpl,
 			 alpha,
 			 fixed_canvas,
-			 contents.square,
-			 tmpl.get_element("error-message-field"));
+			 contents.square);
 
-	auto wimpl=weak_impl::create(impl);
+	wimpl->setptr(impl);
 
-	// Install validators for manual R, G, and B fields.
-	impl->r_value=make_manual_input_validator
-		(tmpl, "r-input-field", wimpl,
-		 &color_pickerObj::implObj::new_rgb_values);
-	impl->g_value=make_manual_input_validator
-		(tmpl, "g-input-field", wimpl,
-		 &color_pickerObj::implObj::new_rgb_values);
-	impl->b_value=make_manual_input_validator
-		(tmpl, "b-input-field", wimpl,
-		 &color_pickerObj::implObj::new_rgb_values);
+	// Finish a bunch of initializations IN_THREAD.
+	//
+	// By calling the IN_THREAD overloads we avoid a context switch for
+	// each individual method call. We just need to capture all the objects
+	// we created here and toss them over IN_THREAD.
 
-	impl->a_value=make_manual_input_validator
-		(tmpl, "a-input-field", wimpl,
-		 &color_pickerObj::implObj::new_alpha_value);
-
-	// And set their initial values
-	impl->r_value->set(config.initial_color.r);
-	impl->g_value->set(config.initial_color.g);
-	impl->b_value->set(config.initial_color.b);
-	impl->a_value->set(config.initial_color.a);
-
-	// Install validators for manual H, S, and V fields.
-
-	impl->h_value=make_manual_input_validator
-		(tmpl, "h-input-field", wimpl,
-		 &color_pickerObj::implObj::new_hsv_values);
-	impl->s_value=make_manual_input_validator
-		(tmpl, "s-input-field", wimpl,
-		 &color_pickerObj::implObj::new_hsv_values);
-	impl->v_value=make_manual_input_validator
-		(tmpl, "v-input-field", wimpl,
-		 &color_pickerObj::implObj::new_hsv_values);
-
-	// And set their initial values.
-
-	{
-		auto [h, s, v]=color_pickerObj::implObj
-			::compute_hsv(config.initial_color);
-
-		impl->h_value->set(h);
-		impl->s_value->set(s);
-		impl->v_value->set(v);
-	}
-
-	image_button hexadecimal=tmpl.get_element("hexadecimal"),
-		full_precision=tmpl.get_element("full-precision");
-	hexadecimal->set_value(impl->hexadecimal.get() ? 1:0);
-	full_precision->set_value(impl->full_precision.get() ? 1:0);
-
-	// Load basic colors
-
-	for (const auto &basic_color:basic_colors)
-	{
-		button b=tmpl.get_element(basic_color.name);
-
-		b->on_activate([color=basic_color.color, wimpl]
-			       (ONLY IN_THREAD,
-				const auto &trigger,
-				const auto &busy)
-			       {
-				       auto impl=wimpl->get();
-
-				       if (!impl)
-					       return;
-
-				       impl->set_color(IN_THREAD, color);
-			       });
-	}
-	// Invoke reformat_values() when the display options change.
-
-	hexadecimal->on_activate
-		([wimpl]
-		 (ONLY IN_THREAD,
-		  size_t value,
-		  const callback_trigger_t &trigger,
-		  const busy &mcguffin)
-		 {
-			 if (std::holds_alternative<initial>(trigger))
-				 return; // Ignore initial callback.
-
-			 auto impl=wimpl->get();
-
-			 if (impl)
+	fixed_canvas->in_thread(
+		[v_button=button{tmpl.get_element("v-button")},
+		 h_button=button{tmpl.get_element("h-button")},
+		 basic_color_buttons=get_basic_colors<>::get(tmpl),
+		 color_channels=std::array<std::tuple<element,
+		 const validated_input_field<rgb_component_t>
+		 color_pickerObj::implObj::*,
+		 void (color_pickerObj::implObj::*)(ONLY IN_THREAD)
+		 >, 7>{
 			 {
-				 impl->hexadecimal=value > 0;
-				 impl->reformat_values(IN_THREAD);
+				 { tmpl.get_element("r-input-field"),
+				   &color_pickerObj::implObj::r_value,
+				   &color_pickerObj::implObj::new_rgb_values},
+
+				 { tmpl.get_element("g-input-field"),
+				   &color_pickerObj::implObj::g_value,
+				   &color_pickerObj::implObj::new_rgb_values},
+
+				 { tmpl.get_element("b-input-field"),
+				   &color_pickerObj::implObj::b_value,
+				   &color_pickerObj::implObj::new_rgb_values},
+
+				 { tmpl.get_element("a-input-field"),
+				   &color_pickerObj::implObj::a_value,
+				   &color_pickerObj::implObj::new_alpha_value},
+
+				 { tmpl.get_element("h-input-field"),
+				   &color_pickerObj::implObj::h_value,
+				   &color_pickerObj::implObj::new_hsv_values},
+
+				 { tmpl.get_element("s-input-field"),
+				   &color_pickerObj::implObj::s_value,
+				   &color_pickerObj::implObj::new_hsv_values},
+
+				 { tmpl.get_element("v-input-field"),
+				   &color_pickerObj::implObj::v_value,
+				   &color_pickerObj::implObj::new_hsv_values},
 			 }
-		 });
+		 },
+		 impl,
+		 wimpl,
+		 hexadecimal=image_button{
+			 tmpl.get_element("hexadecimal")
+		 },
+		 full_precision=image_button{
+			 tmpl.get_element("full-precision")
+		 },
+		 square=contents.square,
+		 fixed_canvas,
+		 alpha,
+		 color_picker_popup,
+		 cancel_button=contents.cancel_button,
+		 ok_button=contents.ok_button
+		]
+		(ONLY IN_THREAD)
+		{
+			hexadecimal->set_value(
+				IN_THREAD,
+				impl->hexadecimal.get() ? 1:0);
+			full_precision->set_value(
+				IN_THREAD,
+				impl->full_precision.get() ? 1:0);
 
-	full_precision->on_activate
-		([wimpl]
-		 (ONLY IN_THREAD,
-		  size_t value,
-		  const callback_trigger_t &trigger,
-		  const busy &mcguffin)
-		 {
-			 if (std::holds_alternative<initial>(trigger))
-				 return; // Ignore initial callback.
-			 auto impl=wimpl->get();
 
-			 if (impl)
-			 {
-				 impl->full_precision=value > 0;
-				 impl->reformat_values(IN_THREAD);
-			 }
-		 });
+			// Configure R, G, B, A, H, S, and V fields.
 
-	// Clicking on the square gradient.
+			for (const auto &[field, validator, notify]
+				     : color_channels)
+			{
+				configure_manual_input_validator(
+					IN_THREAD,
+					field,
+					wimpl,
+					validator,
+					notify
+				);
+			}
 
-	contents.square->on_button_event
-		([get=make_weak_capture(impl, contents.square)]
-		 (ONLY IN_THREAD,
-		  const auto &be,
-		  bool activated,
-		  const auto &ignore)
-		 {
-			 auto got=get.get();
+			// Load basic colors
 
-			 if (!got)
-				 return false;
+			for (size_t color_num=0;
+			     color_num < std::size(basic_colors);
+			     ++color_num)
+			{
+				const auto &b=basic_color_buttons[color_num];
 
-			 auto &[color_picker_impl, square]=*got;
+				b->on_activate(
+					IN_THREAD,
+					[color=basic_colors[color_num].color,
+					 wimpl]
+					(ONLY IN_THREAD,
+					 const auto &trigger,
+					 const auto &busy)
+					{
+						auto impl=wimpl->getptr();
 
-			 if (!activated || be.button != 1)
-				 return false;
+						if (!impl)
+							return;
 
-			 // Compute the new component values.
+						impl->set_color(IN_THREAD,
+								color);
+					});
+			}
 
-			 auto &data=square->impl->data(IN_THREAD);
-			 auto h=compute_from_click
-				 (square,
-				  data.last_motion_x,
-				  data.current_position.width);
+			// Invoke reformat_values() when the display options
+			// change.
 
-			 auto v=compute_from_click
-				 (square,
-				  data.last_motion_y,
-				  data.current_position.height);
+			hexadecimal->on_activate(
+				IN_THREAD,
+				[wimpl]
+				(ONLY IN_THREAD,
+				 size_t value,
+				 const callback_trigger_t &trigger,
+				 const busy &mcguffin)
+				{
+					if (std::holds_alternative<initial>(
+						    trigger
+					    ))
+						// Ignore initial callback.
+						return;
 
-			 // And update the color.
+					auto impl=wimpl->getptr();
 
-			 color_picker_impl->update_hv_components
-				 (IN_THREAD, h, v, &be);
+					if (impl)
+					{
+						impl->hexadecimal=value > 0;
+						impl->reformat_values(
+							IN_THREAD
+						);
+					}
+				});
 
-			 return true;
-		 });
+			full_precision->on_activate(
+				IN_THREAD,
+				[wimpl]
+				(ONLY IN_THREAD,
+				 size_t value,
+				 const callback_trigger_t &trigger,
+				 const busy &mcguffin)
+				{
+					if (std::holds_alternative<initial>(
+						    trigger))
+						// Ignore initial callback.
+						return;
 
-	// Clicking on the gradient strips
+					auto impl=wimpl->getptr();
 
-	button{tmpl.get_element("h-button")}->on_activate
-		([wimpl]
-		 (ONLY IN_THREAD,
-		  const auto &trigger,
-		  const auto &ignore)
-		 {
-			 auto impl=wimpl->get();
+					if (impl)
+					{
+						impl->full_precision=value > 0;
+						impl->reformat_values(
+							IN_THREAD
+						);
+					}
+				});
 
-			 if (!impl)
-				 return;
+			// Clicking on the square gradient.
 
-			 impl->swap_horiz_gradient(IN_THREAD);
-		 });
+			square->on_button_event(
+				IN_THREAD,
+				[wimpl,
+				 get=make_weak_capture(square)]
+				(ONLY IN_THREAD,
+				 const auto &be,
+				 bool activated,
+				 const auto &ignore)
+				{
+					auto got=get.get();
 
-	button{tmpl.get_element("v-button")}->on_activate
-		([wimpl]
-		 (ONLY IN_THREAD,
-		  const auto &trigger,
-		  const auto &ignore)
-		 {
-			 auto impl=wimpl->get();
+					if (!got)
+						return false;
 
-			 if (!impl)
-				 return;
+					auto &[square]=*got;
 
-			 impl->swap_vert_gradient(IN_THREAD);
-		 });
+					auto color_picker_impl=wimpl->getptr();
 
-	// Clicking or dragging the button on the bottom fixed component
-	// strip adjusts the fixed component.
+					if (!color_picker_impl)
+						return false;
 
-	fixed_canvas->on_button_event
-		([get=make_weak_capture(impl, fixed_canvas)]
-		 (ONLY IN_THREAD,
-		  const auto &be,
-		  bool activate_for,
-		  const auto &ignore)
-		 {
-			 auto got=get.get();
+					if (!activated || be.button != 1)
+						return false;
 
-			 if (!got)
-				 return false;
+					// Compute the new component values.
 
-			 auto &[color_picker_impl, square]=*got;
+					auto &data=
+						square->impl->data(IN_THREAD);
+					auto h=compute_from_click
+						(square,
+						 data.last_motion_x,
+						 data.current_position.width);
 
-			 if (be.press != activate_for || be.button != 1)
-				 return false;
+					auto v=compute_from_click
+						(square,
+						 data.last_motion_y,
+						 data.current_position.height);
 
-			 auto &data=square->impl->data(IN_THREAD);
-			 auto v=compute_from_click
-				 (square,
-				  data.last_motion_x,
-				  data.current_position.width);
+					// And update the color.
 
-			 color_picker_impl->update_fixed_component
-				 (IN_THREAD, v, &be);
+					color_picker_impl
+						->update_hv_components
+						(IN_THREAD, h, v, &be);
 
-			 return true;
-		 });
+					return true;
+				});
 
-	fixed_canvas->on_motion_event
-		([get=make_weak_capture(impl, fixed_canvas)]
-		 (ONLY IN_THREAD,
-		  const auto &me)
-		 {
-			 if (me.type != motion_event_type::real_motion ||
-			     !(me.mask.buttons & 1))
-				 return; // Dragging with button 1 pressed
+			// Clicking on the gradient strips
 
-			 auto got=get.get();
+			h_button->on_activate(
+				IN_THREAD,
+				[wimpl]
+				(ONLY IN_THREAD,
+				 const auto &trigger,
+				 const auto &ignore)
+				{
+					auto impl=wimpl->getptr();
 
-			 if (!got)
-				 return;
+					if (!impl)
+						return;
 
-			 auto &[color_picker_impl, square]=*got;
+					impl->swap_horiz_gradient(IN_THREAD);
+				});
 
-			 auto &data=square->impl->data(IN_THREAD);
-			 auto v=compute_from_click
-				 (square,
-				  me.x,
-				  data.current_position.width);
+			v_button->on_activate(
+				IN_THREAD,
+				[wimpl]
+				(ONLY IN_THREAD,
+				 const auto &trigger,
+				 const auto &ignore)
+				{
+					auto impl=wimpl->getptr();
 
-			 color_picker_impl->update_fixed_component
-				 (IN_THREAD, v, &me);
-		 });
+					if (!impl)
+						return;
 
-	alpha->on_button_event
-		([get=make_weak_capture(impl, alpha)]
-		 (ONLY IN_THREAD,
-		  const auto &be,
-		  bool activate_for,
-		  const auto &ignore)
-		 {
-			 auto got=get.get();
+					impl->swap_vert_gradient(IN_THREAD);
+				});
 
-			 if (!got)
-				 return false;
+			// Clicking or dragging the button on the bottom
+			// fixed component strip adjusts the fixed component.
 
-			 auto &[color_picker_impl, alpha]=*got;
+			fixed_canvas->on_button_event(
+				IN_THREAD,
+				[get=make_weak_capture(impl, fixed_canvas)]
+				(ONLY IN_THREAD,
+				 const auto &be,
+				 bool activate_for,
+				 const auto &ignore)
+				{
+					auto got=get.get();
 
-			 if (be.press != activate_for || be.button != 1)
-				 return false;
+					if (!got)
+						return false;
 
-			 auto &data=alpha->impl->data(IN_THREAD);
-			 auto v=compute_from_click
-				 (alpha,
-				  data.last_motion_y,
-				  data.current_position.height);
+					auto &[color_picker_impl, square]=*got;
 
-			 color_picker_impl->update_alpha_component
-				 (IN_THREAD, v, &be);
+					if (be.press != activate_for
+					    || be.button != 1)
+						return false;
 
-			 return true;
-		 });
+					auto &data=
+						square->impl->data(IN_THREAD);
+					auto v=compute_from_click
+						(square,
+						 data.last_motion_x,
+						 data.current_position.width);
 
-	alpha->on_motion_event
-		([get=make_weak_capture(impl, alpha)]
-		 (ONLY IN_THREAD,
-		  const auto &me)
-		 {
-			 if (me.type != motion_event_type::real_motion ||
-			     !(me.mask.buttons & 1))
-				 return; // Dragging with button 1 pressed
+					color_picker_impl
+						->update_fixed_component
+						(IN_THREAD, v, &be);
 
-			 auto got=get.get();
+					return true;
+				});
 
-			 if (!got)
-				 return;
+			fixed_canvas->on_motion_event(
+				IN_THREAD,
+				[wimpl, get=make_weak_capture(fixed_canvas)]
+				(ONLY IN_THREAD,
+				 const auto &me)
+				{
+					if (me.type !=
+					    motion_event_type::real_motion ||
+					    !(me.mask.buttons & 1))
+						// Dragging with button 1
+						// pressed
+						return;
 
-			 auto &[color_picker_impl, alpha]=*got;
+					auto got=get.get();
 
-			 auto &data=alpha->impl->data(IN_THREAD);
-			 auto v=compute_from_click
-				 (alpha,
-				  me.y,
-				  data.current_position.height);
+					if (!got)
+						return;
 
-			 color_picker_impl->update_alpha_component
-				 (IN_THREAD, v, &me);
-		 });
+					auto &[square]=*got;
 
-	///////////////////////////////////////////////////////////////////
+					auto color_picker_impl=wimpl->getptr();
 
-	// If the popup gets closed for any reason, invoke popup_closed().
+					if (!color_picker_impl)
+						return;
+					auto &data=square->impl
+						->data(IN_THREAD);
 
-	color_picker_popup->on_state_update
-		([wimpl]
-		 (ONLY IN_THREAD,
-		  const element_state &new_state,
-		  const busy &mcguffin)
-		 {
-			 // popup_closed() must be tied to "after_hiding".
-			 //
-			 // If one of the channel input fields is modified
-			 // and Esc is hit triggering the popup closing, the
-			 // channel input validator executes, updating the
-			 // current color value swatch, as part of hiding
-			 // the popup, since it loses the input focus.
-			 //
-			 // We need to call popup_closed() after that occurs,
-			 // to restore the official color, so trigger this
-			 // to happen after the popup is hidden.
-			 if (new_state.state_update !=
-			     new_state.after_hiding)
-				 return;
+					auto v=compute_from_click
+						(square,
+						 me.x,
+						 data.current_position.width);
 
-			 auto impl=wimpl->get();
+					color_picker_impl
+						->update_fixed_component
+						(IN_THREAD, v, &me);
+				});
 
-			 if (impl)
-				 impl->popup_closed(IN_THREAD);
-		 });
+			// Clicking on the alpha channel strip.
+			alpha->on_button_event(
+				IN_THREAD,
+				[wimpl,
+				 get=make_weak_capture(alpha)]
+				(ONLY IN_THREAD,
+				 const auto &be,
+				 bool activate_for,
+				 const auto &ignore)
+				{
+					auto got=get.get();
 
-	// The cancel button closes the popup.
-	contents.cancel_button->on_activate
-		([popup=make_weak_capture(color_picker_popup)]
-		 (ONLY IN_THREAD,
-		  const auto &trigger,
-		  const auto &busy)
-		 {
-			 auto got=popup.get();
+					if (!got)
+						return false;
 
-			 if (!got)
-				 return;
+					auto &[alpha]=*got;
 
-			 auto &[popup]=*got;
+					if (be.press != activate_for
+					    || be.button != 1)
+						return false;
 
-			 popup->elementObj::impl->request_visibility(IN_THREAD,
+					auto color_picker_impl=wimpl->getptr();
+
+					if (!color_picker_impl)
+						return false;
+
+					auto &data=alpha->impl->data(IN_THREAD);
+					auto v=compute_from_click
+						(alpha,
+						 data.last_motion_y,
+						 data.current_position.height);
+
+					color_picker_impl
+						->update_alpha_component
+						(IN_THREAD, v, &be);
+
+					return true;
+				});
+
+			alpha->on_motion_event(
+				IN_THREAD,
+				[wimpl,
+				 get=make_weak_capture(alpha)]
+				(ONLY IN_THREAD,
+				 const auto &me)
+				{
+					if (me.type !=
+					    motion_event_type::real_motion ||
+					    !(me.mask.buttons & 1))
+						// Dragging with button 1
+						// pressed
+						return;
+
+					auto got=get.get();
+
+					if (!got)
+						return;
+
+					auto &[alpha]=*got;
+
+					auto color_picker_impl=wimpl->getptr();
+
+					if (!color_picker_impl)
+						return;
+
+					auto &data=alpha->impl->data(IN_THREAD);
+					auto v=compute_from_click
+						(alpha,
+						 me.y,
+						 data.current_position.height);
+
+					color_picker_impl
+						->update_alpha_component
+						(IN_THREAD, v, &me);
+				});
+
+			/////////////////////////////////////////////////////
+
+			// If the popup gets closed for any reason,
+			// invoke popup_closed().
+
+			color_picker_popup->on_state_update(
+				IN_THREAD,
+				[wimpl]
+				(ONLY IN_THREAD,
+				 const element_state &new_state,
+				 const busy &mcguffin)
+				{
+					// popup_closed() must be tied to
+					// "after_hiding".
+					//
+					// If one of the channel input fields
+					// is modified and Esc is hit
+					// triggering the popup closing, the
+					// channel input validator executes,
+					// updating the current color value
+					// swatch, as part of hiding the popup,
+					// since it loses the input focus.
+					//
+					// We need to call popup_closed() after
+					// that occurs, to restore the
+					// official color, so trigger this
+					// to happen after the popup is hidden.
+
+					if (new_state.state_update !=
+					    new_state.after_hiding)
+						return;
+
+					auto impl=wimpl->getptr();
+
+					if (impl)
+						impl->popup_closed(IN_THREAD);
+				});
+
+			// The cancel button closes the popup.
+			cancel_button->on_activate(
+				IN_THREAD,
+				[popup=make_weak_capture(color_picker_popup)]
+				(ONLY IN_THREAD,
+				 const auto &trigger,
+				 const auto &busy)
+				{
+					auto got=popup.get();
+
+					if (!got)
+						return;
+
+					auto &[popup]=*got;
+
+					popup->elementObj::impl
+						->request_visibility(IN_THREAD,
 								     false);
-		 });
+				});
 
-	//! The ok button calls set_official_color(), then closes the popup.
-	contents.ok_button->on_activate
-		([wimpl, popup=make_weak_capture(color_picker_popup)]
-		 (ONLY IN_THREAD,
-		  const auto &trigger,
-		  const auto &busy)
-		 {
-			 auto got=popup.get();
+			//! The ok button calls set_official_color(),
+			// then closes the popup.
 
-			 if (!got)
-				 return;
+			ok_button->on_activate(
+				IN_THREAD,
+				[wimpl,
+				 popup=make_weak_capture(color_picker_popup)]
+				(ONLY IN_THREAD,
+				 const auto &trigger,
+				 const auto &busy)
+				{
+					auto got=popup.get();
 
-			 auto &[popup]=*got;
+					if (!got)
+						return;
 
-			 auto impl=wimpl->get();
+					auto &[popup]=*got;
 
-			 if (impl)
-				 impl->set_official_color(IN_THREAD);
-			 popup->elementObj::impl->request_visibility(IN_THREAD,
+					auto impl=wimpl->getptr();
+
+					if (impl)
+						impl->set_official_color(
+							IN_THREAD
+						);
+
+					popup->elementObj::impl
+						->request_visibility(IN_THREAD,
 								     false);
-		 });
-
+				});
+		});
 	auto p=color_picker::create(impl, glm->impl);
 
 	created(p);
