@@ -1026,6 +1026,9 @@ std::string format(const std::vector<std::string> &l)
 template<typename F> static void extract(ONLY IN_THREAD,
 					 const richtext &richtext, F &&f)
 {
+	size_t height=0;
+	size_t nfragments=0;
+
 	richtext->thread_lock
 		(IN_THREAD,
 		 [&]
@@ -1036,11 +1039,26 @@ template<typename F> static void extract(ONLY IN_THREAD,
 				  [&]
 				  (auto p)
 				  {
-					  p->fragments.for_fragments
-						  (std::forward<F>(f));
+					  height += dim_t::truncate(
+						  p->below_baseline +
+						  p->above_baseline
+					  );
+
+					  p->fragments.for_fragments(
+						  [&]
+						  (auto f)
+						  {
+							  ++nfragments;
+						  });
+					  p->fragments.for_fragments(
+						  std::forward<F>(f)
+					  );
 					  return true;
 				  });
 		 });
+
+	if (nfragments * 12 != height)
+		throw EXCEPTION("Height was not recalculated");
 }
 
 static void dump(ONLY IN_THREAD,
@@ -1517,6 +1535,22 @@ void testrichtext8(ONLY IN_THREAD)
 			5,
 			12,
 		},
+		// Test 26
+		{
+			U"Hello World\n\n",
+			10,
+			UNICODE_BIDI_LR,
+			12,
+			U"\n",
+			{
+				"Hello ",
+				"World\n",
+				"\n",
+				"\n",
+			},
+			12,
+			13
+		}
 	};
 
 	size_t testnum=0;

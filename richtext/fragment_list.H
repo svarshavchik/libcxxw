@@ -160,6 +160,7 @@ class fragment_list : public const_fragment_list {
 	//! paragraph, adjusting all character counts accordingly...
 
 	void split_from(const richtextfragment &new_fragment,
+			fragment_list &split_after_fragment_list,
 			richtextfragmentObj *split_after);
 
 	//! Split a fragment, put all remaining fragments into a new paragraph
@@ -168,7 +169,8 @@ class fragment_list : public const_fragment_list {
 	//! in a middle, but rather moving all fragments after split_after
 	//! into a new paragraph.
 
-	void split_from(richtextfragmentObj *split_after);
+	void split_from(fragment_list &split_after_fragment_list,
+			richtextfragmentObj *split_after);
 
 	// Move next paragraph's fragments to this paragraph.
 

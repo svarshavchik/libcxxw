@@ -692,7 +692,7 @@ void richtextfragmentObj
 	fragment_list new_paragraph_fragments{my_paragraphs,
 		*new_paragraph};
 
-	new_paragraph_fragments.split_from(this);
+	new_paragraph_fragments.split_from(my_fragments, this);
 }
 
 richtext_insert_results
@@ -1310,7 +1310,8 @@ void richtextfragmentObj::split(fragment_list &my_fragments, size_t pos,
 						*new_paragraph};
 
 		// Move the remaining fragments to the new paragraph
-		new_paragraph_fragments.split_from(new_fragment, this);
+		new_paragraph_fragments.split_from(new_fragment,
+						   my_fragments, this);
 	}
 	else
 	{

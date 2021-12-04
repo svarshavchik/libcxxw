@@ -184,6 +184,7 @@ size_t fragment_list::size() const
 }
 
 void fragment_list::split_from(const richtextfragment &new_fragment,
+			       fragment_list &split_after_fragment_list,
 			       richtextfragmentObj *split_after)
 {
 	// First order of business is to add the new fragment. This
@@ -195,10 +196,11 @@ void fragment_list::split_from(const richtextfragment &new_fragment,
 	split_after->my_paragraph->adjust_char_count(-new_fragment->string
 						     .size());
 
-	split_from(split_after);
+	split_from(split_after_fragment_list, split_after);
 }
 
-void fragment_list::split_from(richtextfragmentObj *split_after)
+void fragment_list::split_from(fragment_list &split_after_fragment_list,
+			       richtextfragmentObj *split_after)
 {
 	// Make a copy of the fragments that are going to get moved.
 	auto &old_fragments=split_after->my_paragraph->fragments;
@@ -232,6 +234,9 @@ void fragment_list::split_from(richtextfragmentObj *split_after)
 		append_no_recalculate(f);
 		f->update_hotspots();
 	}
+
+	// Both paragraphs' sizes have changed.
+	split_after_fragment_list.size_changed=true;
 	size_changed=true;
 }
 
