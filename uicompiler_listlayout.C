@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "uicompiler.H"
+#include "uicompiler_list_items.H"
 #include "messages.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/uigenerators.H"
@@ -11,6 +11,138 @@
 #include <x/xml/xpath.H>
 
 LIBCXXW_NAMESPACE_START
+
+void uicompiler::list_items_parse_info_t::name(const std::string &name) const
+{
+	labels->push_back(name);
+}
+
+void uicompiler::list_items_parse_info_t::label(const text_param &label) const
+{
+	params->emplace_back(
+		[label]
+		(std::vector<list_item_param> &params,
+		 uielements &elements)
+		{
+			params.emplace_back(label);
+		});
+}
+
+void uicompiler::list_items_parse_info_t::image(const std::string &name) const
+{
+	params->emplace_back
+		([image=image_param{name}]
+		 (std::vector<list_item_param> &params,
+		  uielements &elements)
+		{
+			params.emplace_back(image);
+		});
+}
+
+void uicompiler::list_items_parse_info_t::add_separator() const
+{
+	params->emplace_back
+		([]
+		 (std::vector<list_item_param> &params,
+		  uielements &elements)
+		{
+			params.emplace_back(separator{});
+		});
+}
+
+void uicompiler::list_items_parse_info_t::add_shortcut(const shortcut &sc) const
+{
+	params->emplace_back([sc]
+			     (std::vector<list_item_param> &params,
+			      uielements &elements)
+	{
+		params.emplace_back(sc);
+	});
+}
+
+void uicompiler::list_items_parse_info_t::add_inactive_shortcut(
+	const shortcut &sc
+) const
+{
+	params->emplace_back([sc=inactive_shortcut{sc}]
+			     (std::vector<list_item_param> &params,
+			      uielements &elements)
+	{
+		params.emplace_back(sc);
+	});
+}
+
+void uicompiler::list_items_parse_info_t::add_hierindent(size_t n) const
+{
+	params->emplace_back([n]
+			     (std::vector<list_item_param> &params,
+			      uielements &elements)
+	{
+		params.emplace_back(hierindent{n});
+	});
+}
+
+void uicompiler::list_items_parse_info_t::add_menuoption(
+	const std::string &groupname
+) const
+{
+	params->emplace_back([groupname]
+			     (std::vector<list_item_param> &params,
+			      uielements &elements)
+	{
+		params.emplace_back(menuoption{groupname});
+	});
+}
+
+void uicompiler::list_items_parse_info_t::add_selected() const
+{
+	params->emplace_back([]
+			     (std::vector<list_item_param> &params,
+			      uielements &elements)
+	{
+		params.emplace_back(selected{});
+	});
+}
+
+void uicompiler::list_items_parse_info_t::add_submenu(
+	const listlayoutmanager_generator &gens
+) const
+{
+	// We're going to compile this closure and stash
+	// it in params, which gets returned as list_item_params
+	//
+	// The list_item_params gets captured, by value
+	// into the final compiled generator for this list and
+	// captured, by value into a closure.
+	//
+	// The closure calls create(), passing in uielements.
+	//
+	// create() returns the vector of list_items,
+	// which gets passed to the list layout manager method
+	// that creates new items.
+	//
+	// That method is going to process all the list items,
+	// and invoke the submenu{} closure, which captured
+	// the uielements object, and uses it to generate
+	// the new submenu contents.
+	//
+	// The uielements is guaranteed not to go out of scope
+	// until the list layout manager method that creates
+	// new items gets returned.
+
+	params->emplace_back([gens]
+			     (std::vector<list_item_param> &params,
+			      uielements &elements)
+	{
+		params.emplace_back(
+			submenu{
+				[gens, &elements]
+					(const auto &lm)
+				{
+					gens(lm, elements);
+				}});
+	});
+}
 
 uicompiler::list_items_params
 uicompiler::list_items_param_value(const ui::parser_lock &orig_lock,
@@ -35,175 +167,20 @@ uicompiler::list_items_param_value(const ui::parser_lock &orig_lock,
 
 	size_t n_names=xpath->count();
 
-	xpath=lock->get_xpath("*");
-
-	size_t n=xpath->count();
+	size_t n=lock->get_child_element_count();
 
 	params->reserve(n-n_names + (n_names ? 1:0));
 	labels->reserve(n_names);
 
-	for (size_t i=1; i <= n; ++i)
+	list_items_parse_info_t parse_info{params, labels};
+
+	auto ret=list_items_parseconfig(lock);
+
+	const list_items_parse_info_t *ptr=&parse_info;
+
+	for (const auto &generator:*ret)
 	{
-		xpath->to_node(i);
-
-		auto name=lock->name();
-
-		if (name == "name")
-		{
-			labels->push_back(single_value(lock, ".",
-						       element));
-			continue;
-		}
-
-		if (name == "label")
-		{
-			params->emplace_back
-				([label=text_param_value(lock,
-							 ".",
-							 element)]
-				 (std::vector<list_item_param> &params,
-				  uielements &elements)
-				 {
-					 params.emplace_back(label);
-				 });
-			continue;
-		}
-
-		if (name == "image")
-		{
-			params->emplace_back
-				([image=image_param{single_value(lock, ".",
-								 element)}]
-					(std::vector<list_item_param> &params,
-					 uielements &elements)
-				 {
-					 params.emplace_back(image);
-				 });
-			continue;
-		}
-
-		if (name == "separator")
-		{
-			params->emplace_back
-				([]
-				 (std::vector<list_item_param> &params,
-				  uielements &elements)
-				 {
-					 params.emplace_back(separator{});
-				 });
-			continue;
-		}
-
-		if (name == "shortcut")
-		{
-			params->emplace_back
-				([sc=shortcut_value(lock, ".",
-						    element)]
-				 (std::vector<list_item_param> &params,
-				  uielements &elements)
-				 {
-					 params.emplace_back(sc);
-				 });
-			continue;
-		}
-
-		if (name == "inactive_shortcut")
-		{
-			params->emplace_back
-				([sc=inactive_shortcut
-						{shortcut_value(lock, ".",
-								element)
-						}]
-				 (std::vector<list_item_param> &params,
-				  uielements &elements)
-				 {
-					 params.emplace_back(sc);
-				 });
-			continue;
-		}
-
-		if (name == "hierindent")
-		{
-			params->emplace_back
-				([n=to_size_t(lock, ".", element)]
-				 (std::vector<list_item_param> &params,
-				  uielements &elements)
-				 {
-					 params.emplace_back(hierindent{n});
-				 });
-			continue;
-		}
-
-		if (name == "menuoption")
-		{
-			params->emplace_back
-				([groupname=optional_value(lock, ".",
-							   element)]
-				 (std::vector<list_item_param> &params,
-				  uielements &elements)
-				 {
-					 params.emplace_back(menuoption{
-							 groupname
-						 });
-				 });
-			continue;
-		}
-
-		if (name == "selected")
-		{
-			params->emplace_back
-				([]
-				 (std::vector<list_item_param> &params,
-				  uielements &elements)
-				 {
-					 params.emplace_back(selected{});
-				 });
-			continue;
-		}
-
-		if (name == "submenu")
-		{
-			// We're going to compile this closure and stash
-			// it in params, which gets returned as list_item_params
-			//
-			// The list_item_params gets captured, by value
-			// into the final compiled generator for this list and
-			// captured, by value into a closure.
-			//
-			// The closure calls create(), passing in uielements.
-			//
-			// create() returns the vector of list_items,
-			// which gets passed to the list layout manager method
-			// that creates new items.
-			//
-			// That method is going to process all the list items,
-			// and invoke the submenu{} closure, which captured
-			// the uielements object, and uses it to generate
-			// the new submenu contents.
-			//
-			// The uielements is guaranteed not to go out of scope
-			// until the list layout manager method that creates
-			// new items gets returned.
-
-			params->emplace_back
-				([gens=listlayout_parseconfig(lock, ".",
-							      element)]
-				 (std::vector<list_item_param> &params,
-				  uielements &elements)
-				 {
-					 params.emplace_back
-						 (submenu
-						  {[gens, &elements]
-						   (const auto &lm)
-						   {
-							   gens(lm, elements);
-						   }});
-				 });
-			continue;
-		}
-
-		throw EXCEPTION(gettextmsg(_("Unknown <%1%> element in <%2%>"),
-					   name, element));
+		generator(ptr);
 	}
 
 	if (!labels->empty())

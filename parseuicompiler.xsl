@@ -667,6 +667,28 @@ create_new</xsl:text><xsl:value-of select="name" /><xsl:text>manager_vector(uico
 	</xsl:if>
       </xsl:for-each>
     </exsl:document>
+
+    <exsl:document
+	href="uicompiler_factoryparsers.inc.H"
+	method="text">
+      <xsl:for-each select="parser[@type='factory']">
+	<xsl:if test="category">
+	  <xsl:text>
+	//! Generate a single </xsl:text>
+	<xsl:value-of select="category" /><xsl:text> factory instruction.
+	</xsl:text>
+	<xsl:if test="category != 'factory'">
+	  <xsl:value-of select="category" />
+	</xsl:if>
+	<xsl:text>factory_generator
+	</xsl:text>
+	<xsl:if test="category != 'factory'">
+	  <xsl:value-of select="category" />
+	</xsl:if>
+	<xsl:text>factory_parser(const ui::parser_lock &amp;lock);&#10;</xsl:text>
+	</xsl:if>
+      </xsl:for-each>
+    </exsl:document>
   </xsl:template>
 
   <xsl:template name='factory-category'>

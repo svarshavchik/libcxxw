@@ -4137,4 +4137,121 @@ List of values:
 
   </parser>
 
+  <parser type="list_items">
+    <name>list_items</name>
+    <category>list_items</category>
+
+    <parameter>
+      <type>uicompiler::list_items_parse_info_t *</type>
+      <name>list_items_parse_info</name>
+    </parameter>
+
+    <function>
+      <name>name</name>
+      <invoke>name</invoke>
+      <object>list_items_parse_info</object>
+
+      <parameter>
+	<name>name</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>label</name>
+      <invoke>label</invoke>
+      <object>list_items_parse_info</object>
+
+      <parameter>
+	<name>label</name>
+	<xpath>.</xpath>
+	<type>compiler.text_param_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>image</name>
+      <invoke>image</invoke>
+      <object>list_items_parse_info</object>
+
+      <parameter>
+	<name>image</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>separator</name>
+      <invoke>add_separator</invoke>
+      <object>list_items_parse_info</object>
+    </function>
+
+    <function>
+      <name>shortcut</name>
+      <invoke>add_shortcut</invoke>
+      <object>list_items_parse_info</object>
+
+      <parameter>
+	<name>shortcut</name>
+	<xpath>.</xpath>
+	<type>compiler.shortcut_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>inactive_shortcut</name>
+      <invoke>add_inactive_shortcut</invoke>
+      <object>list_items_parse_info</object>
+
+      <parameter>
+	<name>inactive_shortcut</name>
+	<xpath>.</xpath>
+	<type>compiler.shortcut_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>hierindent</name>
+      <invoke>add_hierindent</invoke>
+      <object>list_items_parse_info</object>
+
+      <parameter>
+	<name>hierindent</name>
+	<xpath>.</xpath>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>menuoption</name>
+      <invoke>add_menuoption</invoke>
+      <object>list_items_parse_info</object>
+
+      <parameter>
+	<name>groupname</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>selected</name>
+      <invoke>add_selected</invoke>
+      <object>list_items_parse_info</object>
+    </function>
+
+    <function>
+      <name>submenu</name>
+      <invoke>add_submenu</invoke>
+      <object>list_items_parse_info</object>
+
+      <parameter>
+	<name>submenu</name>
+	<xpath>.</xpath>
+	<type>compiler.listlayout_parseconfig</type>
+      </parameter>
+    </function>
+  </parser>
 </api>

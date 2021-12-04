@@ -295,29 +295,7 @@ private:
 			     uielements &,
 			     const std::string &name);
 
-	//! Generate a single grid factory instruction.
-	gridfactory_generator gridfactory_parser(const ui::parser_lock &lock);
-
-	//! Generate a single menu bar factory instruction.
-	menubarfactory_generator menubarfactory_parser(const ui::parser_lock &lock);
-
-	//! Generate a single pane factory instruction.
-	panefactory_generator panefactory_parser(const ui::parser_lock &lock);
-
-	//! Generate a single toolbox factory instruction.
-	toolboxfactory_generator
-	toolboxfactory_parser(const ui::parser_lock &lock);
-
-	//! Generate a single factory instruction.
-	factory_generator factory_parser(const ui::parser_lock &lock);
-
-	//! Generate a single page factory instruction.
-	pagefactory_generator
-	pagefactory_parser(const ui::parser_lock &lock);
-
-	//! Generate a single book page factory instruction.
-	bookpagefactory_generator
-	bookpagefactory_parser(const ui::parser_lock &lock);
+#include "uicompiler_factoryparsers.inc.H"
 
 	//! Generate a single new_gridlayoutmanager instruction.
 	new_gridlayoutmanager_generator
@@ -379,6 +357,16 @@ private:
 	elements_generator
 	elements_parser(const ui::parser_lock &lock);
 
+	struct list_items_parse_info_t;
+
+	//! Generate parsers for new list items
+
+	vector<functionref<void (const list_items_parse_info_t * &)>>
+	list_items_parseconfig(const ui::parser_lock &lock);
+
+	//! Generate a single parser for new list layout manager items
+	functionref<void (const list_items_parse_info_t * &)>
+	list_items_parser(const ui::parser_lock &lock);
 
 public:
 	//! Return compiled factory generators.

@@ -931,6 +931,8 @@ libcxxw_la_SOURCES=\
 	uicompiler_itemlayout.C			    \
 	uicompiler_layout.C			    \
 	uicompiler_listlayout.C			    \
+	uicompiler_list_items.C			    \
+	uicompiler_list_items.H			    \
 	uicompiler_menubarfactory.C		    \
 	uicompiler_menubarlayout.C		    \
 	uicompiler_new_booklayout.C		    \
@@ -1424,6 +1426,9 @@ CLEANFILES += \
 	appearance/appearance_parser.inc.C \
 	appearance/appearance_parser.xml \
 	uicompiler_appearance_proto.inc.H \
+	uicompiler_layoutparsers.inc.H \
+	uicompiler_factoryparsers.inc.H \
+	uielements.inc.C \
         $(XIM_AUTOGEN)
 
 dist-hook:
@@ -1470,6 +1475,7 @@ uicompiler_gridfactory.lo			\
 uicompiler_gridlayout.lo			\
 uicompiler_itemlayout.lo			\
 uicompiler_listlayout.lo			\
+uicompiler_list_items.lo			\
 uicompiler_menubarlayout.lo			\
 uicompiler_new_booklayout.lo			\
 uicompiler_new_borderlayout.lo			\
@@ -1494,6 +1500,9 @@ uielements.lo				        \
 
 uicompiler_layoutparsers.inc.H: uicompiler.stamp.inc.H
 	touch uicompiler_layoutparsers.inc.H
+
+uicompiler_factoryparsers.inc.H: uicompiler.stamp.inc.H
+	touch uicompiler_factoryparsers.inc.H
 
 GET_LAYOUTMANAGERS_BUILT=			\
 	get_layoutmanagers.inc.C		\
