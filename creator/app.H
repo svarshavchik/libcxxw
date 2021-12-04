@@ -1677,6 +1677,22 @@ public:
 	//! Reset all appearance fields.
 	void appearance_reset(ONLY IN_THREAD);
 
+	//! Compile a list of appearances for the "based on" combo-box.
+
+	//! Takes an appearance_type_t iterator parameter, identifying the
+	//! appearance type.
+	//!
+	//! Returns a list of all default appearances for the given type,
+	//! and a list of all appearances of the given type currently defined.
+
+	std::tuple<
+		std::vector<std::string>,
+		std::vector<std::string>
+		> appearance_get_by_type(
+			appearance_info_t::lock &lock,
+			appearance_types_t::const_iterator iter
+		);
+
 	//! Something was selected or unselected in the new appearance type combo-box
 
 	void new_appearance_type_selected

@@ -519,6 +519,61 @@ void appObj::appearance_fv::format(std::vector<x::w::list_item_param> &v) const
 			   }},value);
 }
 
+std::tuple<
+	std::vector<std::string>,
+	std::vector<std::string>
+	> appObj::appearance_get_by_type(
+		appearance_info_t::lock &lock,
+		appearance_types_t::const_iterator iter
+	)
+{
+	std::tuple<
+		std::vector<std::string>,
+		std::vector<std::string>
+		> ret;
+
+	auto &[app_defaults, app_defined] = ret;
+
+	if (iter == appearance_types.end())
+		return ret; // Shouldn't happen
+
+	auto value=iter->second->clone();
+
+	// Grab all the default values
+
+	auto xpath=value->get_xpath("default");
+
+	size_t n=xpath->count();
+
+	app_defaults.reserve(n);
+
+	for (size_t i=1; i <= n; ++i)
+	{
+		xpath->to_node(i);
+
+		app_defaults.push_back(value->get_text());
+	}
+
+	auto this_appearance=theme.get()->readlock();
+
+	this_appearance->get_root();
+
+	for (const auto &n:lock->ids)
+	{
+		get_xpath_for(this_appearance, "appearance", n)->to_node(1);
+
+		if (this_appearance->get_any_attribute("type") != iter->first)
+			continue;
+
+		app_defined.push_back(n);
+	}
+
+	std::sort(app_defined.begin(), app_defined.end());
+
+	return ret;
+}
+
+
 void appObj::appearance_reset(ONLY IN_THREAD)
 {
 	appearance_info_t::lock lock{appearance_info};
@@ -595,42 +650,75 @@ void appObj::appearance_reset(ONLY IN_THREAD)
 		std::vector<std::tuple<std::string,
 				       x::xml::readlock>> current_field_names;
 
-		lock->current_defaults.clear();
 		size_t current_default=0;
 
 		auto type_iter=appearance_current_value_type(current_value);
 
+		const auto &[app_defaults, app_defined]=
+			appearance_get_by_type(lock, type_iter);
+
+		lock->current_defaults.clear();
+
+		lock->current_defaults.reserve(app_defaults.size() +
+					       app_defined.size() + 2);
+
+		size_t i=0;
+
+		for (const auto &n:app_defaults)
+		{
+			// Code below adds an empty string at the beginning
+			// of the list, therefore "current-default" is 1-based.
+			//
+			// i.e., if the current_selection is the first default
+			// value, current_default is 1.
+
+			++i;
+
+			if (n == lock->current_selection->from)
+				current_default=i;
+
+			lock->current_defaults.emplace_back(n);
+		}
+
+		// Ok, if app_defined contains only the current_selection,
+		// there are no app_defined appearances that the
+		// current_selection is based on, so we don't add a placeholder
+		// for the separator line. Otherwise we do and then add all
+		// other app_defined that the current_selection can be
+		// based_on.
+
+		for (const auto &n:app_defined)
+		{
+			if (n == lock->ids.at(lock->current_selection->index))
+				continue;
+
+			lock->current_defaults.emplace_back("");
+			++i;
+
+			for (const auto &n:app_defined)
+			{
+				if (n == lock->ids.at(
+					    lock->current_selection->index
+				    ))
+				{
+					continue; // Omit it from the list
+				}
+				++i;
+
+				if (n == lock->current_selection->from)
+					current_default=i;
+
+				lock->current_defaults.emplace_back(n);
+			}
+			break;
+		}
+
+
 		if (type_iter != appearance_types.end()) // Else shouldn't
 		{
-			auto value=type_iter->second->clone();
-
-			// Grab all the default values
-
-			auto xpath=value->get_xpath("default");
-
-			size_t n=xpath->count();
-
-			lock->current_defaults.reserve(n);
-
-			for (size_t i=1; i <= n; ++i)
-			{
-				xpath->to_node(i);
-
-				auto s=value->get_text();
-				lock->current_defaults.push_back(s);
-
-				// The initial value in the from combo-box
-				// is an empty placeholder. This 1-based
-				// for-loop ideally sets current_default to the
-				// right value.
-
-				if (s == lock->current_selection->from)
-					current_default=i;
-			}
-
 			// Possible fields
-			value=type_iter->second->clone();
-			xpath=value->get_xpath("field");
+			auto value=type_iter->second->clone();
+			auto xpath=value->get_xpath("field");
 
 			n=xpath->count();
 
@@ -729,9 +817,13 @@ void appObj::appearance_reset(ONLY IN_THREAD)
 
 		list_values.push_back("");
 
-		list_values.insert(list_values.end(),
-				   lock->current_defaults.begin(),
-				   lock->current_defaults.end());
+		for (const auto &n:lock->current_defaults)
+		{
+			if (n.empty())
+				list_values.emplace_back(x::w::separator{});
+			else
+				list_values.emplace_back(n);
+		}
 
 		auto appearance_based_on=
 			appearance_based_on_field->standard_comboboxlayout();
