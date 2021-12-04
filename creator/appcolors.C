@@ -18,6 +18,7 @@
 #include <x/messages.H>
 #include <x/visitor.H>
 #include <x/xml/escape.H>
+#include <x/mpweakptr.H>
 #include <x/weakcapture.H>
 #include <x/locale.H>
 #include <x/imbue.H>
@@ -1387,8 +1388,8 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 
 	if_config.columns=6;
 	if_config.alignment=x::w::halign::right;
-	auto value=f->valign(x::w::valign::middle)
-		.create_input_field("", if_config);
+
+	auto wvalue=x::mpweakptr<x::w::input_fieldptr>::create();
 
 	// Validator for the gradient value
 	//
@@ -1396,9 +1397,8 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 	// sure all are unique, and we will automatically sort the rows
 	// by value.
 
-	auto validator=value->set_string_validator<size_t>(
-		IN_THREAD,
-		[container=make_weak_capture(container, value)]
+	auto vv=x::w::create_string_validated_input_field_contents<size_t>(
+		[wcontainer=container.weaken(), wvalue]
 		(ONLY IN_THREAD,
 		 const std::string &value,
 		 std::optional<size_t> &parsed_value,
@@ -1418,12 +1418,15 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 
 			// make sure this is not a dupe.
 
-			auto got=container.get();
+			auto container=wcontainer.getptr();
 
-			if (!got)
+			if (!container)
 				return;
 
-			auto &[container, field]=*got;
+			auto field=wvalue->getptr();
+
+			if (!field)
+				return;
 
 			x::w::gridlayoutmanager glm=
 				container->get_layoutmanager();
@@ -1525,19 +1528,17 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 		{
 			return std::to_string(n);
 		},
-		std::nullopt,
-		[container=make_weak_capture(container)]
+		initial_value,
+		[wcontainer=container.weaken()]
 		(ONLY IN_THREAD, const std::optional<size_t> &value)
 		{
 			// Enable or disable the Add button depending on
 			// the results of this field's validation.
 
-			auto got=container.get();
+			auto container=wcontainer.getptr();
 
-			if (!got)
+			if (!container)
 				return;
-
-			auto &[container]=*got;
 
 			x::w::gridlayoutmanager glm=
 				container->get_layoutmanager();
@@ -1565,9 +1566,12 @@ appObj::color_create_gradient_row::add(ONLY IN_THREAD,
 				});
 		});
 
-	show(value);
+	auto [value, validator] = f->valign(x::w::valign::middle)
+		.create_input_field(vv, if_config);
 
-	validator->set(initial_value);
+	wvalue->setptr(value);
+
+	show(value);
 
 	// Drop-down list for the color.
 	auto combo=f->valign(x::w::valign::middle)
