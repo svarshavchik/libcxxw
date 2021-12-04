@@ -1415,7 +1415,8 @@ uicompiler::uncompiled_elements_t
 		throw EXCEPTION(gettextmsg
 				(_("Layout or factory \"%1%\" "
 				   "is not found or cannot be removed.  "
-				   "Possible reasons are: is the wrong <type>, "
+				   "Possible reasons are: It is the wrong "
+				   "<type>, "
 				   "it is referenced by another layout "
 				   "or factory, or it is "
 				   "now a part of a recursive sequence "

@@ -31,19 +31,12 @@ struct appgenerator_save {
 					 appgenerator_save &)>
 		    > extra_saves;
 
-	//! The container for extra_updates.
+	//! New layouts and factories that were created when saving generators
 
-	typedef x::vector<x::functionref<void (appObj *, ONLY,
-					       generator_info_lock &)>
-			  > extra_updates_t;
+	//! If the new theme gets successfully insalled, these ids get
+	//! added to the generator name combo-box.
 
-	//! Additional callbacks to update the saved XML document
-
-	//! Called after the new XML document passed validation. If a new
-	//! layout or factory was added, this updates the list of layouts
-	//! and factories displayed in the app.
-
-	extra_updates_t extra_updates=extra_updates_t::create();
+	std::vector<std::string> new_layouts_and_factories;
 };
 
 #endif

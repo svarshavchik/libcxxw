@@ -5,21 +5,18 @@
 #ifndef creator_uicompiler_generatorsobj_h
 #define creator_uicompiler_generatorsobj_h
 
-#include "creator/uicompiler_generatorsfwd.H"
+#include "creator/uicompiler_generatorsbaseobj.H"
 #include "creator/appgenerator_functionfwd.H"
-#include "x/w/text_paramfwd.H"
 #include <x/obj.H>
 #include <x/ptrfwd.H>
-#include <x/xml/readlockfwd.H>
 #include <vector>
-#include <tuple>
 #include <string>
 
 //! Implementation object.
 
 //! \see uicompiler_generators
 
-class uicompiler_generatorsObj: virtual public x::obj {
+class uicompiler_generatorsObj: public uicompiler_generatorsbaseObj {
 
 public:
 	class implObj;
@@ -51,10 +48,6 @@ public:
 
 	std::string name; //!< <name> in uicompiler.xml
 
-	//! The type and category of this generator
-
-	type_category_t type_category;
-
 	//! The <config> generator
 
 	//! All generators are in the same container, so this pointer will
@@ -67,22 +60,16 @@ public:
 	//! be valid.
 	const uicompiler_generatorsObj *parent=nullptr;
 
-	//! Parse this layout/factory.
+	//! Implement parse()
 
-	//! Takes this layout from the theme file and parses it into
-	//! a list of appgenerator_functions.
 	std::vector<const_appgenerator_function
 		    > parse(const x::xml::readlock &root,
 			    const uigenerators_t &all_generators)
 		const;
 
-	//! Return all available functions
+	//! Implement available_functions
 
-	//! Returns a vector of tuples of all available functions in this
-	//! layout/factory generator, and their description.
-
-	std::vector<std::tuple<const_appgenerator_function, x::w::text_param>
-		    > available_functions() const;
+	compiler_available_functions_t available_functions() const override;
 };
 
 #endif

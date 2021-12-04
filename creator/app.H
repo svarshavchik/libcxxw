@@ -1943,12 +1943,14 @@ private:
 
 	//! type-erased compiler_lookup().
 	void do_compiler_lookup(generator_info_lock &lock,
-				 size_t n,
-				 const x::xml::readlock &this_generator,
-				 const x::function<compiler_lookup_cb_t> &cb);
+				size_t n,
+				const x::xml::readlock &this_generator,
+				const x::function<compiler_lookup_cb_t> &cb);
 
 	//! Return the compiler specified by the this_generator's XML node.
 
+	//! Inspects the "type" and "layout" of the XML node, and figures out
+	//! which uicompiler_generators this is.
 	const_uicompiler_generators
 	compiler_lookup(const x::xml::readlock &this_generator);
 public:
@@ -1984,18 +1986,55 @@ public:
 typedef x::singletonptr<appObj> appsingleton;
 
 // Helper for invoking something in the app object.
+//
+// Obtains a pointer to the global application singleton. The first parameter
+// is a callable object. Handle an un-impossible race condition when this is
+// called after the application singleton gets destroyed as follows:
+//
+// 1) If the callable object returns a void appinvoke() returns false, and
+//    true otherwise (if the closure was invoked).
+//
+// 2) Otherwise appinvoke() returns a std::optional containing the value
+//    returned from the callable object, and returns std::nullopt after the
+//    application singleton gets destroyed.
 
 template<typename T, typename ...Args>
-static inline void appinvoke(T t, Args && ...args)
+static inline auto appinvoke(T &&t, Args && ...args)
 {
+	typedef decltype(std::invoke(std::forward<T>(t), (appObj *)nullptr,
+				     std::forward<Args>(args)...))
+		closure_ret_t;
+
 	appsingleton singleton;
 
 	if (!singleton)
-		return;
+	{
+		if constexpr (std::is_same_v<closure_ret_t, void>)
+		{
+			return false;
+		}
+		else
+		{
+			return std::optional<closure_ret_t>{};
+		}
+	}
 
 	auto &me=*singleton;
 
-	std::invoke(t, &me, std::forward<Args>(args)...);
+	if constexpr (std::is_same_v<closure_ret_t, void>)
+	{
+		std::invoke(std::forward<T>(t), &me,
+			    std::forward<Args>(args)...);
+		return true;
+	}
+	else
+	{
+		std::optional<closure_ret_t> ret;
+
+		ret.emplace(std::invoke(std::forward<T>(t), &me,
+					std::forward<Args>(args)...));
+		return ret;
+	}
 }
 
 #endif

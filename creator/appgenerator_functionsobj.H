@@ -22,8 +22,8 @@
 #include "creator/appgenerator_functionsfwd.H"
 #include "creator/appgenerator_functionfwd.H"
 #include "creator/appgeneratorelements.inc.H"
-#include "creator/uicompiler_generatorsfwd.H"
-#include "creator/uicompiler_generatorsobj.H"
+#include "creator/uicompiler_generatorsbasefwd.H"
+#include "creator/uicompiler_generatorsbaseobj.H"
 
 #include <vector>
 #include <string>
@@ -40,6 +40,10 @@ struct current_selection_info_s {
 
 	//! Its generator functions.
 	x::vector<const_appgenerator_function> main_functions;
+
+	//! Indicates that they were successfully parsed
+
+	bool loaded=true;
 
 	//! Constructor
 	current_selection_info_s(size_t index,
@@ -103,7 +107,7 @@ struct generator_info_s {
 	//! the compiler is determined, and type and functions gets
 	//! set by generator_values_initialize().
 
-	const_uicompiler_generatorsptr compiler;
+	const_uicompiler_generatorsbaseptr compilerbase;
 
 	//! All generators
 
@@ -183,7 +187,7 @@ public:
 
 	//! Parent main window
 
-	const x::w::main_window parent_window;
+	const x::weakptr<x::w::main_windowptr> parent_window;
 
 	//! Main generator for our UI.
 	const x::w::const_uigenerators cxxwui_generators;
@@ -207,6 +211,15 @@ public:
 	 const const_uicompiler &uicompiler_info,
 	 const x::ref<all_generatorsObj> &all_generators);
 
+	//! Constructor for secondary set of generator functions
+
+	//! Retrieve the generators, compilerifo, and all_generators from the
+	//! parent appgenerator_functions instance.
+	appgenerator_functionsObj
+	(app_generator_elements_tptr &generator_elements,
+	 const x::w::main_window &parent_window,
+	 const appgenerator_functions &parent_functions);
+
 	//! Destructor
 	~appgenerator_functionsObj();
 
@@ -216,18 +229,34 @@ public:
 	generators_values_elements_initialize
 	(app_generator_elements_tptr &elements,
 	 x::w::uielements &ui,
-	 const uicompiler &uiptr);
+	 const const_uicompiler &uiptr);
 
-	//! Parse and initialize the values.
+	//! Parse and initialize the generator values.
 
-	//! This is called after constructing this object, to load its contents
-	//! from XML.
-	void generator_values_initialize(ONLY IN_THREAD,
-					 generator_info_lock &lock,
-					 const const_uicompiler_generators
-					 &compiler,
-					 const x::xml::readlock &xml);
+	//! This is called:
+	//!
+	//! 1) Main generator function list in the main window, that shows
+	//!    the currently-selected generators: from generator_reset() when
+	//!    loading some existing generator, replacing the previous list
+	//! 2) For additional, extra generators list: when creating a
+	//!    secondary dialog.
+	//!
+	//! What happens here:
+	//!
+	//! A) Attaches all callbacks to our associated UI widgets.
+	//!
+	//! B) Load the existing_functions in to the generator_contents_values
+	//!    together with the "-- Create --" placeholder at the end.
+	//!
+	//! C) Load the "Create" submenu popup.
+	//!
+	//!
 
+	void generator_values_initialize(
+		ONLY IN_THREAD,
+		generator_info_lock &lock,
+		const existing_appgenerator_functions &existing_functions
+	);
 
 	//! Currently selected value has changed.
 
@@ -287,7 +316,8 @@ public:
 
 	//! Return all layout_or_factory-s with the given "type".
 
-	//! layout_or_factory is "layout" or "factory".
+	//! layout_or_factory is "layout" or "factory", and "type" specifies
+	//! what their type attribute shouldbe.
 
 	std::vector<std::string>
 	all_generators_for(const char *layout_or_factory,

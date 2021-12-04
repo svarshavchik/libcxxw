@@ -182,9 +182,7 @@ static void create_border_size_validator(
 			std::optional<std::variant<std::string, double>>
 				ret{value};
 
-			bool builtin=false;
-
-			appinvoke(
+			auto builtin=appinvoke(
 				[&]
 				(appObj *me)
 				{
@@ -197,11 +195,12 @@ static void create_border_size_validator(
 						// don't bother
 						// checking.
 
-						builtin=true;
+						return true;
 					}
+					return false;
 				});
 
-			if (!builtin)
+			if (!builtin || *builtin)
 				return ret;
 
 			if (value.empty())

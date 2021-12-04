@@ -1051,6 +1051,20 @@ cxxwcreator_SOURCES=\
 	creator/appgenerator_functionobj.H	\
 	creator/appgenerator_save.H		\
 	creator/appgenerator_savefwd.H		\
+	creator/create_ui_info.H		\
+	creator/object_appgenerator_function.C		\
+	creator/object_appgenerator_function.H		\
+	creator/object_appgenerator_functionfwd.H	\
+	creator/object_appgenerator_functionobj.H	\
+	creator/parameter_value.C		\
+	creator/parameter_value.H		\
+	creator/parse_parameter.C		\
+	creator/parse_parameter.H		\
+	creator/parse_parameterfwd.H		\
+	creator/parse_parameterobj.H		\
+	creator/setting_handler.H		\
+	creator/setting_handlerfwd.H		\
+	creator/setting_handler.C		\
 	creator/uicompiler.C			\
 	creator/uicompiler.H			\
 	creator/uicompilerfwd.H			\
@@ -1061,6 +1075,12 @@ cxxwcreator_SOURCES=\
 	creator/uicompiler_generatorsobj.H	\
 	creator/uicompiler_generators_impl.C	\
 	creator/uicompiler_generators_impl.H	\
+	creator/uicompiler_generatorsbase.C	\
+	creator/uicompiler_generatorsbase.H	\
+	creator/uicompiler_generatorsbasefwd.H	\
+	creator/uicompiler_generatorsbaseobj.H	\
+	creator/uicompiler_generator_collection.H \
+	creator/uicompiler_generator_collection.C \
 	creator/cxxwcreator.C			\
 	#
 

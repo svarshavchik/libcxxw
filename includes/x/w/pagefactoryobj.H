@@ -57,7 +57,7 @@ public:
 
 	void generate(const std::string_view &name,
 		      const const_uigenerators &generators,
-		      uielements &elements);
+		      uielements &elements) override;
 };
 
 LIBCXXW_NAMESPACE_END

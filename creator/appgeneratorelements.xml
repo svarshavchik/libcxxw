@@ -8,10 +8,6 @@ UI elements for generator values.
   <name>app_generator_elements_t</name>
 
   <ref>
-    <type>x::w::container</type>
-    <name>generator_contents_values_grid</name>
-  </ref>
-  <ref>
     <type>x::w::focusable_container</type>
     <name>generator_contents_values</name>
   </ref>

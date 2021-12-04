@@ -981,6 +981,8 @@ extern const list_selection_type_cb_t multiple_selection_type LIBCXX_PUBLIC;
 
 extern const list_selection_type_cb_t no_selection_type LIBCXX_PUBLIC;
 
+extern const char selection_type_str[4][16];
+
 LIBCXXW_NAMESPACE_END
 
 #endif

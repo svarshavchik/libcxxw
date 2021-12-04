@@ -7,7 +7,7 @@
 
 #include "creator/uicompiler_generatorsfwd.H"
 #include "creator/uicompiler_generatorsobj.H"
-#include "x/w/text_param.H"
+#include "creator/uicompiler_generatorsbase.H"
 #include <x/ref.H>
 
 #endif

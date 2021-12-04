@@ -202,6 +202,8 @@ appObj::init_args::init_args()
 
 		case appuigenerator_type::layoutmanager:
 		case appuigenerator_type::factory:
+		case appuigenerator_type::elements:
+		case appuigenerator_type::list_items:
 
 			if (gen->type_category.category.empty())
 				break; // Generic factory
@@ -806,6 +808,13 @@ void appObj::update_theme2(const x::functionref<update_callback_t (appObj *)
 
 	auto new_theme=lock->clone_document();
 
+#if 0
+	std::string s;
+
+	lock->save_to(std::back_insert_iterator{s}, true);
+
+	std::cout << s << std::flush;
+#endif
 	try {
 		// Try to reparse the proposed theme file.
 

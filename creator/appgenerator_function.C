@@ -8,3 +8,9 @@
 appgenerator_functionObj::appgenerator_functionObj()=default;
 
 appgenerator_functionObj::~appgenerator_functionObj()=default;
+
+
+bool appgenerator_functionObj::has_ui() const
+{
+	return true;
+}

@@ -250,7 +250,7 @@ class gridfactoryObj : public factoryObj {
 
 	void generate(const std::string_view &name,
 		      const const_uigenerators &generators,
-		      uielements &elements);
+		      uielements &elements) override;
 
 private:
 	//! Created a new widget for the grid.

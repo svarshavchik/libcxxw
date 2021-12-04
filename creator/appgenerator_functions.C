@@ -38,6 +38,22 @@ generator_info_s::generator_info_s(const x::ref<all_generatorsObj>
 generator_info_s::~generator_info_s()=default;
 
 appgenerator_functionsObj
+::appgenerator_functionsObj
+(app_generator_elements_tptr &generator_elements,
+ const x::w::main_window &parent_window,
+ const appgenerator_functions &parent_functions)
+	: appgenerator_functionsObj{
+			generator_elements,
+			parent_window,
+			parent_functions->cxxwui_generators,
+			parent_functions->uicompiler_info,
+			generator_info_lock{parent_functions->generator_info}
+			->all_generators
+		}
+{
+}
+
+appgenerator_functionsObj
 ::appgenerator_functionsObj(app_generator_elements_tptr &generator_elements,
 		      const x::w::main_window &parent_window,
 		      const x::w::const_uigenerators &cxxwui_generators,
@@ -262,6 +278,15 @@ struct appgenerators_values_invokeObj : virtual public x::obj {
 			if (!lock.all->current_selection)
 				return; // Shouldn't happen.
 
+			// Do not mark the generators as modified if this
+			// is editing a secondary set of functions.
+			//
+			// We'll mark them as modified when the main function
+			// gets updated.
+
+			if (lock->functions !=
+			    lock.all->current_selection->main_functions)
+				return;
 
 			me->update([&](auto &info)
 			{
@@ -285,13 +310,12 @@ typedef x::ref<appgenerators_values_invokeObj> appgenerators_values_invoke;
 void appgenerator_functionsObj::
 generators_values_elements_initialize(app_generator_elements_tptr &elements,
 				      x::w::uielements &ui,
-				      const uicompiler &uicompiler_info)
+				      const const_uicompiler &uicompiler_info)
 {
 	x::w::focusable_container generator_contents_values=
 		ui.get_element("generator_contents_values");
 	x::w::container generator_contents_values_popup=
 		ui.get_element("generator_contents_values_popup");
-
 	x::w::listitemhandle generator_value_move_up=
 		ui.get_listitemhandle("generator_value_move_up");
 	x::w::listitemhandle generator_value_move_down=
@@ -314,16 +338,14 @@ generators_values_elements_initialize(app_generator_elements_tptr &elements,
 	elements.generator_value_create=generator_value_create;
 	elements.generator_value_delete=generator_value_delete;
 
-	elements.generator_contents_values_grid=
-		ui.get_element("generator_contents_values_grid");
 	elements.generator_contents_values=generator_contents_values;
 }
 
 void appgenerator_functionsObj
 ::generator_values_initialize(ONLY IN_THREAD,
 			      generator_info_lock &lock,
-			      const const_uicompiler_generators &compiler,
-			      const x::xml::readlock &xml)
+			      const existing_appgenerator_functions
+			      &existing_functions)
 {
 	// Capture myself, weakly.
 	auto generator_values=appgenerators_values_invoke::create(this);
@@ -474,11 +496,12 @@ void appgenerator_functionsObj
 				});
 		});
 
-	// Load this generator's functions, and record the compiler used.
-	(*lock->functions)=
-		compiler->parse(xml, uicompiler_info->uigenerators);
+	// Save the compiler of these functions, and make a copy of the
+	// existing functions. It is not a given that any changes made here
+	// will be saved, so we create a copy and that's what we edit.
 
-	lock->compiler=compiler;
+	lock->compilerbase=existing_functions.compilerbase;
+	*lock->functions=existing_functions.parsed_functions;
 
 	// Now load all the parsed functions in the generator_contents_values
 	// list.
@@ -501,16 +524,15 @@ void appgenerator_functionsObj
 
 	std::vector<x::w::list_item_param> creator_values;
 
-	auto available_functions=compiler->available_functions();
+	auto available_functions=lock->compilerbase->available_functions();
 
 	creator_values.reserve(available_functions.size()*2);
 
 	for (const auto &[function, description] : available_functions)
 	{
-		creator_values.push_back
-			([function, generator_values]
-			 (ONLY IN_THREAD,
-			  const auto &info)
+		creator_values.push_back(
+			[function, generator_values]
+			(ONLY IN_THREAD, const auto &info)
 			{
 				if (info.trigger.index() ==
 				    x::w::callback_trigger_initial)
@@ -524,11 +546,22 @@ void appgenerator_functionsObj
 				// gets opened in the generator_value_edit
 				// dialog window.
 
-				(*generator_values)
-					(IN_THREAD,
-					 [&]
-					 (auto me)
+				(*generator_values)(
+					IN_THREAD,
+					[&]
+					(auto me)
 					{
+						auto new_function=
+							function->clone();
+
+						if (!new_function->has_ui())
+						{
+							me->generator_value_created(
+								IN_THREAD,
+								new_function
+							);
+							return true;
+						}
 						me->generator_value_edit
 							(IN_THREAD,
 							 function->clone(),
@@ -588,8 +621,11 @@ void appgenerator_functionsObj
 		generator_value_move_down
 			->enabled(*lock.selected_value+1 < n_functions);
 
-		// Update, create, and delete are available.
-		generator_value_update->enabled(true);
+		// Update is available if this function has a UI.
+		generator_value_update->enabled(
+			(*lock->functions)[*lock.selected_value]->has_ui()
+		);
+		// Create, and delete are available.
 		generator_value_create->enabled(true);
 		generator_value_delete->enabled(true);
 	}
@@ -692,6 +728,8 @@ void appgenerator_functionsObj::generator_value_update_clicked(ONLY IN_THREAD)
 	auto new_generator_function=(*lock->functions)[n]->clone();
 	(*lock->functions)[n]=new_generator_function;
 
+	if (!new_generator_function->has_ui())
+		return; // We shouldn't get here, but if we did, bail out.
 	generator_value_edit
 		(IN_THREAD, new_generator_function,
 		 &appgenerator_functionsObj::generator_value_updated);
@@ -707,6 +745,11 @@ void appgenerator_functionsObj
 	generator_value_info lock{this};
 
 	if (!lock)
+		return;
+
+	auto parent_window_p=parent_window.getptr();
+
+	if (!parent_window_p)
 		return;
 
 	// Prepare to open a dialog where the generator function's parameters
@@ -732,13 +775,17 @@ void appgenerator_functionsObj
 				 [&]
 				 (auto me)
 				{
-					me->parent_window->remove_dialog
-						(dialog_id);
+					auto parent_window_p=
+						me->parent_window.getptr();
+
+					if (parent_window_p)
+						parent_window_p->remove_dialog
+							(dialog_id);
 					return false;
 				});
 		};
 
-	auto new_dialog=parent_window->create_dialog
+	auto new_dialog=parent_window_p->create_dialog
 		({
 			dialog_id,
 			true,
@@ -770,7 +817,10 @@ void appgenerator_functionsObj
 
 			// Let the function object create its UI
 
-			auto validator=function->create_ui(glm);
+			auto validator=function->create_ui(
+				IN_THREAD,
+				new_dialog->dialog_window,
+				glm);
 
 			// And then gerate the cancel an dok buttons.
 

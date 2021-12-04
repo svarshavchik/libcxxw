@@ -466,9 +466,9 @@ public:
 	//! Implement generate()
 
 	//! \see uigenerators
-	void generate(const std::string_view &name,
-		      const const_uigenerators &generators,
-		      uielements &elements);
+	virtual void generate(const std::string_view &name,
+			      const const_uigenerators &generators,
+			      uielements &elements);
 };
 
 LIBCXXW_NAMESPACE_END

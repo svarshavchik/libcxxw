@@ -1012,7 +1012,7 @@ bidi_format to_bidi_directional_format(const ui::parser_lock &lock,
 		       chrcasecmp::tolower);
 
 	for (size_t i=0; i<3; i++)
-		if (value == bidi_names[i])
+		if (value == bidi_format_names[i])
 			return static_cast<bidi_format>(i);
 
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),

@@ -14,22 +14,29 @@ LIBCXXW_NAMESPACE_START
 
 /* selection_type */
 
+const char selection_type_str[4][16]={
+	"single",
+	"single_optional",
+	"multiple",
+	"no"
+};
+
 static list_selection_type_cb_t to_selection_type(const ui::parser_lock &lock,
 						  const char *element,
 						  const char *parent)
 {
 	auto v=lowercase_single_value(lock, element, parent);
 
-	if (v == "single")
+	if (v == selection_type_str[0])
 		return single_selection_type;
 
-	if (v == "single_optional")
+	if (v == selection_type_str[1])
 		return single_optional_selection_type;
 
-	if (v == "multiple")
+	if (v == selection_type_str[2])
 		return multiple_selection_type;
 
-	if (v != "no")
+	if (v != selection_type_str[3])
 		throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid "
 					     "selection type for <%2%>"),
 					   v, parent));

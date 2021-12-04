@@ -2608,14 +2608,11 @@
       <name>generator_contents_values_grid_values</name>
     </append_row>
     <append_row>
-      <name>generator_contents_values_grid_buttons</name>
+      <name>generator_contents_values_grid_buttons_row</name>
     </append_row>
   </layout>
 
   <factory type="grid" id="generator_contents_values_grid_values">
-    <colspan>
-      <columns>4</columns>
-    </colspan>
     <container>
       <name>generator_contents_values</name>
       <type>list</type>
@@ -2659,6 +2656,24 @@
   <dim id="generator_values_list_width">120</dim>
 
   <layout type="list" id="generator_contents_values" />
+
+  <factory type="grid" id="generator_contents_values_grid_buttons_row">
+    <padding>
+      <side>all</side>
+      <padding>none</padding>
+    </padding>
+
+    <container>
+      <name>generator_contents_values_grid_buttons_layout</name>
+      <type>grid</type>
+    </container>
+  </factory>
+
+  <layout type="grid" id="generator_contents_values_grid_buttons_layout">
+    <append_row>
+      <name>generator_contents_values_grid_buttons</name>
+    </append_row>
+  </layout>
 
   <factory type="grid" id="generator_contents_values_grid_buttons">
     <element id="generator_update">
@@ -2776,13 +2791,13 @@
     <element id="generator_edit_save">
       <button>
 	<element>
-	  <label type="theme_text">${context:generator_edit}Save</label>
+	  <label type="theme_text">${context:generator_edit}${decoration:underline}S${decoration:none}ave</label>
 	</element>
       </button>
       <config>
-	<appearance>default_theme</appearance>
+	<appearance>normal_theme</appearance>
       </config>
-      <shortcut type='theme_text'>Enter</shortcut>
+      <shortcut type='theme_text'>${context:generator_edit}Alt-S</shortcut>
     </element>
   </factory>
 </theme>

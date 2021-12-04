@@ -745,6 +745,11 @@ object and placed into discrete variables.
   <!-- Generator page fields -->
 
   <ref>
+    <type>x::w::container</type>
+    <name>generator_contents_values_grid</name>
+  </ref>
+
+  <ref>
     <type>x::w::focusable_container</type>
     <name>generator_name</name>
   </ref>

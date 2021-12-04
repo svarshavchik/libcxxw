@@ -165,6 +165,8 @@ void appObj::generators_elements_initialize(app_elements_tptr &elements,
 	elements.generator_update_button=generator_update_button;
 	elements.generator_reset_button=generator_reset_button;
 	elements.generator_delete_button=generator_delete_button;
+	elements.generator_contents_values_grid=
+		ui.get_element("generator_contents_values_grid");
 }
 
 void appObj::generators_initialize(ONLY IN_THREAD)
@@ -267,8 +269,7 @@ void appObj::generator_reset(ONLY IN_THREAD)
 		generator_new_create->show(IN_THREAD);
 
 		// Hide current generator values.
-		current_generators->generator_contents_values_grid
-			->hide(IN_THREAD);
+		generator_contents_values_grid->hide(IN_THREAD);
 	}
 	else
 	{
@@ -283,8 +284,7 @@ void appObj::generator_reset(ONLY IN_THREAD)
 		generator_new_create->hide(IN_THREAD);
 
 		// Show current generator values
-		current_generators->generator_contents_values_grid
-			->show(IN_THREAD);
+		generator_contents_values_grid->show(IN_THREAD);
 
 		--n;
 
@@ -303,25 +303,40 @@ void appObj::generator_reset(ONLY IN_THREAD)
 		try {
 			auto this_generator=theme.get()->readlock();
 
-			compiler_lookup
-				(lock, n, this_generator,
-				 [&]
-				 (const auto &compiler)
-				 {
-					 current_generators->
-						 generator_values_initialize
-						 (IN_THREAD,
-						  lock, compiler,
-						  this_generator);
+			compiler_lookup(
+				lock, n, this_generator,
+				[&]
+				(const auto &compiler)
+				{
+					existing_appgenerator_functions
+						existing_functions{
+						compiler,
+						compiler->parse(
+							this_generator,
+							current_generators
+							->uicompiler_info
+							->uigenerators
+						)
+					};
+
+					current_generators->
+						generator_values_initialize(
+							IN_THREAD,
+							lock,
+							existing_functions
+						);
 
 					 current_selection.modified=false;
 				 });
 		} catch (const std::exception &e)
 		{
-			main_window->stop_message
-				(std::string{"An error occured while loading"
-					 " this generator: "
-				} + e.what());
+			lock.all->current_selection->loaded=false;
+
+			main_window->stop_message(
+				std::string{"An error occured while loading"
+					" this generator: "
+				} + e.what()
+			);
 		}
 	}
 
@@ -336,10 +351,10 @@ void appObj::generator_reset(ONLY IN_THREAD)
 }
 
 void appObj::do_compiler_lookup(generator_info_lock &lock,
-				 size_t n,
-				 const x::xml::readlock &this_generator,
-				 const x::function<compiler_lookup_cb_t>
-				 &callback)
+				size_t n,
+				const x::xml::readlock &this_generator,
+				const x::function<compiler_lookup_cb_t>
+				&callback)
 {
 	this_generator->get_root();
 
@@ -366,6 +381,9 @@ appObj::compiler_lookup(const x::xml::readlock &this_generator)
 	else
 		throw EXCEPTION("Unknown generator type: "
 				<< type);
+
+	if (type_category.category == "elements")
+		type_category.type=appuigenerator_type::elements;
 
 	auto iter=current_generators->uicompiler_info
 		->uigenerators_lookup.find(type_category);
@@ -406,14 +424,31 @@ void appObj::generator_enable_disable_buttons(ONLY IN_THREAD,
 	{
 		auto &current_selection=*lock.all->current_selection;
 
-		generator_name->set_enabled(!current_selection.modified);
+		// If the generators failed to load due to a parsing error:
+		// The generator name combo-box is enabled, otherwise it
+		// is enabled only if the generators were not modified since
+		// loading.
+		//
+		// The update and delete buttons are enabled after the current
+		// selection is modified, unless it failed to load.
+		//
+		// The reset button is enabled after the current selection is
+		// modified OR the generator failed to load
+
+		generator_name->set_enabled(
+			!current_selection.modified
+			|| !current_selection.loaded);
 
 		generator_update_button
-			->set_enabled(current_selection.modified);
+			->set_enabled(current_selection.modified
+				      && current_selection.loaded);
 		generator_reset_button
-			->set_enabled(current_selection.modified);
+			->set_enabled(current_selection.modified
+				      || !current_selection.loaded);
+
 		generator_delete_button
-			->set_enabled(!current_selection.modified);
+			->set_enabled(!current_selection.modified
+				      && current_selection.loaded);
 	}
 	// else: update/reset/delete are hidden
 }
@@ -606,14 +641,14 @@ appObj::generator_update2(generator_info_lock &lock)
 
 	auto created_update=
 		create_update("layout|factory",
-			      lock->compiler->type_category.xml_node_name(),
+			      lock->compilerbase->type_category.xml_node_name(),
 			      id, doc, false);
 
 	auto &[doc_lock, new_generator]=*created_update;
 
 	// Put back the type attribute.
 
-	doc_lock->attribute({"type", lock->compiler->type_category.category});
+	doc_lock->attribute({"type", lock->compilerbase->type_category.category});
 
 	appgenerator_save save_info;
 
@@ -630,25 +665,50 @@ appObj::generator_update2(generator_info_lock &lock)
 		func(doc_lock, save_info);
 	}
 
-	ret.emplace(doc_lock,
-		    [=, saved_lock=lock.threadlock(x::ref{this}),
-		     extra_updates=save_info.extra_updates]
-		    (appObj *me,
-		     ONLY IN_THREAD,
-		     const x::ref<x::obj> &busy_mcguffin)
-		    {
-			    generator_info_lock lock{saved_lock};
+	// What happens after the new theme validates and gets installed:
+	//
+	// 1) Any new_layouts_and_factories get added to the generator_name
+	//    combo-box.
+	//
+	// 2) generate_update3() gets called to clean things up.
 
-			    // Any additional action on top of the
-			    // changes we need to make.
+	ret.emplace(
+		doc_lock,
+		[=, saved_lock=lock.threadlock(x::ref{this}),
+		 new_layouts_and_factories=save_info.new_layouts_and_factories]
+		 (appObj *me,
+		  ONLY IN_THREAD,
+		  const x::ref<x::obj> &busy_mcguffin)
+		 {
+			 generator_info_lock lock{saved_lock};
 
-			    for (auto &update:*extra_updates)
-				    update(me, IN_THREAD, lock);
+			 std::vector<appObj::new_element_t> new_combo_items;
 
-			    me->generator_update3(IN_THREAD,
-						  lock,
-						  busy_mcguffin);
-		    });
+			 new_combo_items.reserve(
+				 new_layouts_and_factories.size()
+			 );
+
+			 for (const auto &id:new_layouts_and_factories)
+			 {
+				 new_combo_items.push_back(
+					 me->generator_name_and_description(id)
+				 );
+			 }
+
+			 if (new_combo_items.size() > 0)
+			 {
+				 me->update_new_element(
+					 IN_THREAD,
+					 &new_combo_items[0],
+					 new_combo_items.size(),
+					 lock.all->ids,
+					 me->generator_name);
+			 }
+
+			 me->generator_update3(IN_THREAD,
+					       lock,
+					       busy_mcguffin);
+		 });
 
 	return ret;
 }
@@ -692,20 +752,10 @@ void appObj
 
 	lock->attribute({"type", type});
 
-	// And if this change passes muster, we have an extra_updates to
+	// And if this change passes muster, we have another id to
 	// add it to the generator page.
 
-	save_info.extra_updates->emplace_back
-		([id]
-		 (appObj *me, ONLY IN_THREAD,
-		  generator_info_lock &lock)
-		{
-			me->update_new_element
-				(IN_THREAD,
-				 me->generator_name_and_description(id),
-				 lock.all->ids,
-				 me->generator_name);
-		});
+	save_info.new_layouts_and_factories.push_back(id);
 }
 
 void appObj::generator_update3(ONLY IN_THREAD,

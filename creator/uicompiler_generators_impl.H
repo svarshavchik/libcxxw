@@ -6,143 +6,55 @@
 #define creator_uicompiler_generators_impl_h
 
 #include "creator/uicompiler_generators.H"
+#include "creator/uicompiler_generator_collection.H"
 #include "creator/appgenerator_functionsfwd.H"
 #include "creator/appgenerator_savefwd.H"
+#include "creator/parse_parameter.H"
+#include "creator/parameter_value.H"
 #include "x/w/text_param.H"
 #include <x/obj.H>
-#include <x/logger.H>
 #include <x/visitor.H>
-#include <unordered_map>
-#include <string>
+#include <x/vector.H>
 #include <x/xml/readlock.H>
+#include <unordered_map>
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <variant>
 #include <tuple>
 
-struct setting_handler;
-
-//! Parsed \ref "uicompiler_generators" information
-
-//! Internal data, parsed contents of a <parameter> specified in uicompiler.xml
-
-struct parse_parameter {
-
-	//! The parameter's <name>
-	std::string parameter_name;
-
-	//! The parameter's <type>
-	const setting_handler *handler=nullptr;
-
-	//! Additional parameter value for the handler
-
-	//! There's one handler for all lookup*factory types. This tracks
-	//! which one it is
-	std::string handler_name;
-
-	//! This parameter specifies <xpath>.</xpath>
-	bool same_xpath=false;
-
-	//! This parameter has an <object>
-	bool is_object_parameter=false;
-
-	//! This parameter has a <scalar>
-	bool scalar_parameter=false;
-
-	//! All of this parameter's <member>s.
-
-	//! They are stored as just parameters.
-	std::vector<parse_parameter> object_members;
-
-	//! Constructor
-
-	parse_parameter();
-
-	//! Parse a <parameter> declaration.
-
-	//! If there's a <lookup> with an extra <parameter>, this gets
-	//! dropped into the extra_members.
-	void define_parameter(const x::xml::readlock &root,
-			      std::vector<parse_parameter> &extra_parameters);
-
-	//! Parse a <member> declaration.
-
-	//! This is handled like a parameter.
-	//!
-	//! If there's a <lookup> with an extra <parameter>, this gets
-	//! dropped into the extra_members.
-	void define_member(const x::xml::readlock &root,
-			   std::vector<parse_parameter> &extra_members);
-
-	//! Construct an extra single_value member referenced in a <lookup>
-	parse_parameter(const std::string &extra_single_value);
-
-	//! Generate the XML for this parameter.
-
-	//! Writes this parameter's XML as a child of the given write lock's
-	//! node, and leavfes the write lock on the same node.
-	void save(const x::xml::writelock &lock,
-		  const std::u32string &value,
-		  appgenerator_save &info) const;
-
-};
+struct parse_function;
 
 //! Parsed \ref "uicompiler_generators" information
 
 //! Internal data, parsed contents of a <function> specified in uicompiler.xml
 
-struct parse_function {
+struct parse_function : uicompiler_generator_collection {
 
-	LOG_CLASS_SCOPE;
-
-	//! The parameter's name.
+	//! The function's name.
 
 	std::string name;
-
-	//! This parameter does not have a <condition>
-	typedef std::monostate no_condition;
-
-	//! This <condition> has a <name> and a <value>
-	typedef std::tuple<std::string, std::string> condition_name_and_value;
-
-	//! This condition> has an <exists> value.
-
-	//! The bool flag indicates whether the given string exists as a
-	//! discrete parameter. It's possible that <exists> names one of the
-	//! parameters, or a different element that exists by itself.
-	typedef std::tuple<std::string, bool> condition_exists;
-
-	//! Whether or not this function has a <condition>
-	std::variant<no_condition,
-		     condition_name_and_value,
-		     std::tuple<std::string, bool>> condition;
-
-	//! This <function> is a <new_element> or <new_container>.
-
-	bool new_element_or_container=false;
-
-	//! All of this function's <parameter>s.
-	std::vector<parse_parameter> parsed_parameters;
 
 	//! Parse this <function> in uicompiler.xml
 	parse_function(const x::xml::readlock &root);
 
+	//! Implement is_parameter().
+
+	bool is_parameter() const override;
+
+	//! Implement get_name().
+	std::string get_name() const override;
+
 	//! Give a description of tihs function.
 	x::w::text_param description(description_format fmt) const;
 
-	//! Try to parse this function.
 
-	//! For an element in the theme file that specifies this function's
-	//! name try to parse it. There can be several parsed function's
-	//! with the given name, if they specify <condition>s.
-	//!
-	//! Returns true if the function was parsed and added to the "funcs"
-	//! parameter. Returns false if the function's conditions are not met.
+	//! Call parse_function_or_generator to parse a function.
 
-	bool parse_generator(const x::xml::readlock &root,
-			     std::vector<const_appgenerator_function> &funcs)
-		const;
+	//! If successful, add it to the parsed vector.
+
+	bool try_parse_function(
+		const x::xml::readlock &root,
+		std::vector<const_appgenerator_function> &parsed) const;
 
 	//! Create a new function with default parameter values.
 
@@ -152,12 +64,12 @@ private:
 
 	//! Common logic for creating the appropriate generator function.
 
-	appgenerator_function create(std::vector<std::u32string> &&args) const;
+	appgenerator_function create(std::vector<parameter_value> &&args) const;
 
 public:
 	//! Generate the XML for this function, with the given values.
 	void save(const x::xml::writelock &parent,
-		  const std::vector<std::u32string> &parameter_values,
+		  const std::vector<parameter_value> &parameter_values,
 		  appgenerator_save &info) const;
 };
 

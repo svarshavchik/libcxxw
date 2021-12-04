@@ -8,19 +8,9 @@
 #include <x/ptrfwd.H>
 #include <string>
 #include <unordered_map>
+#include "creator/uicompiler_generatorsbasefwd.H"
 
 class uicompiler_generatorsObj;
-
-//! What kind of a generator
-
-//! Initialized from the "type" attribute.
-
-enum class appuigenerator_type {
-	elements,
-	factory,
-	layoutmanager,
-	new_layoutmanager
-};
 
 /*! Parsed <layout> or <factory> from uicompiler.xml
 
@@ -54,37 +44,6 @@ typedef x::const_ptr<uicompiler_generatorsObj> const_uicompiler_generatorsptr;
 
 typedef std::unordered_map<std::string,
 			   const_uicompiler_generators> uigenerators_t;
-
-//! What kind of a generator it is, how it is identified.
-
-struct type_category_t {
-
-	//! Type of this generator.
-
-	appuigenerator_type type=appuigenerator_type::elements;
-
-	//! The XML node name, "layout" or "factory".
-
-	const char *xml_node_name() const;
-
-	//! The category of this generator
-
-	//! This is the <category> label in uicompiler.xml.
-	//!
-	//! When parsing something like:
-	//!
-	//!     <factory type="grid" id="identifier">
-	//!
-	//! or
-	//!
-	//!     <layout type="grid" id="identifier"
-	//!
-	//! The "type" value specifies the <category> in uicompiler.xml
-	//! that parses this factory or layout, and factory or layout
-	//! is mapped to appuigenerator_type.
-
-	std::string category;
-};
 
 //! A hash of a <layout> or <factory>, plus its type.
 

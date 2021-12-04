@@ -3965,6 +3965,7 @@ List of values:
 
   <parser type="elements">
     <name>elements</name>
+    <category>elements</category>
     <parameter>
       <type>uielements * const</type>
       <name>elements</name>
