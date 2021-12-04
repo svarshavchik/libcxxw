@@ -1213,7 +1213,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>compiler.get_appearance_base</function>
+	    <function>compiler.get_button_appearance_base</function>
 	  </lookup>
 	</member>
       </parameter>
@@ -1349,7 +1349,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>compiler.get_appearance_base</function>
+	    <function>compiler.get_input_field_appearance_base</function>
 	  </lookup>
 	</member>
       </parameter>
@@ -1381,7 +1381,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>compiler.get_appearance_base</function>
+	    <function>compiler.get_date_input_field_appearance_base</function>
 	  </lookup>
 	</member>
 	<member>
@@ -1563,7 +1563,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>compiler.get_appearance_base</function>
+	    <function>compiler.get_progressbar_appearance_base</function>
 	  </lookup>
 	</member>
       </parameter>
@@ -1616,7 +1616,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>compiler.get_appearance_base</function>
+	    <function>compiler.get_color_picker_appearance_base</function>
 	  </lookup>
 	</member>
       </parameter>
@@ -1693,7 +1693,7 @@ List of values:
 	  <type>single_value</type>
 	  <lookup>
 	    <modify />
-	    <function>compiler.get_appearance_base</function>
+	    <function>compiler.get_font_picker_appearance_base</function>
 	  </lookup>
 	</member>
       </parameter>

@@ -33,6 +33,7 @@
 #include "uicompilerfwd.H"
 
 #include <x/vector.H>
+#include <x/refptr_traits.H>
 #include <tuple>
 #include <optional>
 #include <unordered_map>

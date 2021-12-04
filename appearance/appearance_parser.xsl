@@ -37,7 +37,9 @@ const_appearance uicompiler::compile_appearance(const ui::parser_lock &amp;paren
     if (type == "</xsl:text>
       <xsl:value-of select="name" />
       <xsl:text>")
-        return get_appearance(parent, get_appearance_base(</xsl:text>
+      return get_appearance(parent, get_</xsl:text>
+      <xsl:value-of select="name" />
+      <xsl:text>_appearance_base(</xsl:text>
       <xsl:value-of select="name" />
       <xsl:text>_appearance::base::</xsl:text>
       <xsl:value-of select="default[position() = 1]" />
@@ -200,9 +202,11 @@ inline void uicompiler::generate(const generate_info &amp;info,
 
 const_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance uicompiler::get_appearance_base(const const_</xsl:text>
+    <xsl:text>_appearance uicompiler::get_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance &amp;base_appearance,
+    <xsl:text>_appearance_base(const x::explicit_refptr&lt;const_</xsl:text>
+    <xsl:value-of select="name"/>
+    <xsl:text>_appearance&gt; &amp;base_appearance,
         const std::string &amp;based_on)
 {
     if (based_on.empty())

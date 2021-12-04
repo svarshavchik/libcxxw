@@ -30,9 +30,11 @@ defined in appearance/*.xml
     <xsl:value-of select="name" />
     <xsl:text>_appearance &amp;appearance);&#10;&#10;//! Find the base appearance object&#10;const_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance get_appearance_base(const const_</xsl:text>
+    <xsl:text>_appearance get_</xsl:text>
     <xsl:value-of select="name"/>
-    <xsl:text>_appearance &amp;, const std::string &amp;);
+    <xsl:text>_appearance_base(const x::explicit_refptr&lt;const_</xsl:text>
+    <xsl:value-of select="name"/>
+    <xsl:text>_appearance&gt; &amp;, const std::string &amp;);
 //! Appearance generator&#10;&#10;const_</xsl:text>
     <xsl:value-of select="name"/>
     <xsl:text>_appearance get_appearance(const ui::parser_lock &amp;,
