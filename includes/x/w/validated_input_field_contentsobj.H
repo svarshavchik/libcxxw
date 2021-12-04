@@ -58,6 +58,7 @@ class validated_input_field_contentsObj
 	: public validated_input_field_contents_baseObj {
 
 public:
+	friend class validated_input_fieldObj<type>;
 
 	validated_input_field_contentsObj(
 		const std::optional<type> &initial_value
@@ -112,11 +113,12 @@ protected:
 		      std::recursive_mutex> validated_value;
 
 public:
-	//! Implement set().
+	//! Replace the contents of th einput field
 
 	virtual void set(ONLY IN_THREAD,
 			 input_lock &lock,
-			 const std::optional<type> &v)=0;
+			 const std::optional<type> &v,
+			 bool update_if_invalid=true)=0;
 
 private:
 	//! Refresh the input field with the current validated value.

@@ -27,9 +27,6 @@ value->access([]
               {
               });
 
-value->set(IN_THREAD, 5);
-
-value->set(IN_THREAD, std::nullopt);
 \endcode
 
 value() returns the most recently entered value.
@@ -41,8 +38,26 @@ no value was entered. access() locks the value and passes it to the
 callable object given as access()'s parameter, releasing the lock after
 it returns.
 
-The new value is also a \c std::optional, with a std::nullopt indicated
-an unvalidated (non-entered) initial value for the field.
+\code
+value->set(IN_THREAD,
+           lock,
+           3);
+\endcode
+
+set() is a shortcut for updating the value of the validated input field.
+It is used by the installed input field validation callback, and is also
+available for on_spin() callbacks as means of updating the spinned value.
+These callbacks receive an \ref input_lock "input field lock" object that
+gets passed in as set()'s 2nd parameter. The third parameter is the new
+\c std::optional value of this input field, with the \c std::nullopt value
+indicating an unset/unvalidated value.
+
+An option fourth parameter is a \c bool value, defaulting to \c true which
+specifies that the passed in \c std::nullopt value should result in the
+input field getting cleared. In all cases the passed in value, \c std::nullopt
+or otherwise, sets the new value of the validated input field. Passing in
+a \c false flag results in whatever actual text is in an input field not
+getting cleared by a \c std::nullopt.
 
 \code
 INSERT_LIBX_NAMESPACE::w::validated_input_field_contents<int> contents=value->contents;

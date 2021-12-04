@@ -154,16 +154,16 @@ public:
 
 	void set(ONLY IN_THREAD,
 		 input_lock &lock,
-		 const std::optional<type> &v) override
+		 const std::optional<type> &v,
+		 bool update_if_invalid) override
 	{
 		this->validated_value=v;
 
 		if (!v)
-			// Do not set() the input field. No value
-			// means it's not valid, and set()ing it
-			// validates the contents of the input field.
 		{
-			lock.set("");
+			if (update_if_invalid)
+				lock.set("");
+
 			return;
 		}
 		formatter_ret_t s=formatter(*v);
@@ -352,7 +352,7 @@ auto create_validated_input_field_contents(
 					 lock,
 					 trigger);
 
-			contents->set(IN_THREAD, lock, v);
+			contents->set(IN_THREAD, lock, v, false);
 
 			if (!v)
 				return false;

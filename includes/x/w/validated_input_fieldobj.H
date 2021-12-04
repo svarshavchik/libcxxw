@@ -75,7 +75,7 @@ public:
 	{
 		input_lock lock{my_input_field};
 
-		contents->set(IN_THREAD, lock, v);
+		contents->set(IN_THREAD, lock, v, true);
 	}
 };
 
