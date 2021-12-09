@@ -526,6 +526,15 @@ private:
 			   > &,
 			   const x::ref<x::obj> &mcguffin);
 
+	//! Invoked by update_theme2() in the connection thread.
+
+	void update_theme3(
+		ONLY IN_THREAD,
+		const x::functionref<void (appObj *, ONLY,
+					   const x::ref<x::obj> &)> &callback,
+		const x::ref<x::obj> &mcguffin
+	);
+
 	//! The current status of what's being update
 	x::mpobj<edited_info_t> current_edited_info;
 

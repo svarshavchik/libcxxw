@@ -832,22 +832,8 @@ void appObj::update_theme2(const x::functionref<update_callback_t (appObj *)
 			[callback2, mcguffin]
 			(ONLY IN_THREAD)
 			{
-				appinvoke(
-					[&]
-					(appObj *me)
-					{
-						// Log this message
-						// before calling callback2
-						//
-						// Callback2 may post its own
-						// message, so this is the
-						// default otherwise.
-						me->status->update(
-							_("Update saved.")
-						);
-						callback2(me, IN_THREAD,
-							  mcguffin);
-					});
+				appinvoke(&appObj::update_theme3,
+					  IN_THREAD, callback2, mcguffin);
 			}
 		);
 	} catch (const x::exception &e)
@@ -874,6 +860,29 @@ void appObj::update_theme2(const x::functionref<update_callback_t (appObj *)
 					    {
 					    });
 	}
+}
+
+void appObj::update_theme3(
+	ONLY IN_THREAD,
+	const x::functionref<void (appObj *, ONLY,
+				   const x::ref<x::obj> &)> &callback,
+	const x::ref<x::obj> &mcguffin
+)
+{
+	{
+		border_info_t::lock lock{border_info};
+
+		border_selected_locked(IN_THREAD, lock);
+	}
+
+	// Log this message
+	// before calling callback2
+	//
+	// Callback2 may post its own
+	// message, so this is the
+	// default otherwise.
+	status->update(_("Update saved."));
+	callback(this, IN_THREAD, mcguffin);
 }
 
 void appObj::file_save_event(ONLY IN_THREAD)
