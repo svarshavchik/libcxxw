@@ -4193,7 +4193,6 @@ factory-&gt;create_checkbox(generator-&gt;lookup_appearance("custom-checkbox"));
     </mediaobject>
 
     <para>
-      <command>cxxwcreator</command> is a work in progress.
       <command>cxxwcreator</command> loads a <link linkend="uixmldoc">theme
 	UI file</link> and provides an interactive editor for modifying the
       UI elements in the file.
