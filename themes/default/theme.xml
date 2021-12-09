@@ -2706,7 +2706,6 @@ first column, to make the labels line up with their input fields.
       <shortcut type="theme_text">${context:print-dialog}Alt-I</shortcut>
       <page>
         <container>
-          <label>print-dialog-image-label</label>
           <type>grid</type>
           <name>print-dialog-image-options</name>
         </container>
@@ -2770,8 +2769,8 @@ first column, to make the labels line up with their input fields.
     <container>
       <type>list</type>
       <name>select-printer-field</name>
-      <style>highlight</style>
       <config>
+	<style>highlight</style>
         <selection_type>single</selection_type>
         <height>
           <min_rows>4</min_rows>

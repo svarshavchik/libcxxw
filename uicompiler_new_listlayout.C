@@ -71,6 +71,18 @@ void configure_list_for_pane(new_listlayoutmanager *p)
 	p->configure_for_pane(false);
 }
 
+// Scaffolding for <style>. This actually gets parsed in
+// uicompiler::listlayoutmanager_functions.
+
+static int listlayoutstyle(const ui::parser_lock &, const char *, const char *)
+{
+	return 0;
+}
+
+static void style_placeholder(int)
+{
+}
+
 #include "uicompiler.inc.H/new_listlayout_parse_parameters.H"
 #include "uicompiler.inc.H/new_listlayout_parser.H"
 

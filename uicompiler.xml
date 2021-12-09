@@ -3159,6 +3159,17 @@ List of values:
     </function>
 
     <function>
+      <name>style</name>
+      <invoke>style_placeholder</invoke>
+      <parameter>
+	<name>style</name>
+	<xpath>.</xpath>
+	<type>listlayoutstyle</type>
+      </parameter>
+
+    </function>
+
+    <function>
       <name>width</name>
       <object>layout</object>
       <invoke>variable_width</invoke>

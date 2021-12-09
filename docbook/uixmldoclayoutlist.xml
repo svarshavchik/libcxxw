@@ -77,8 +77,8 @@ See COPYING for distribution information.
 <container>
   <name>option-list</name>
   <type>list</type>
-  <style>bullet</style>
   <config>
+    <style>bullet</style>
     <height>
       <min_rows>4</min_rows>
       <max_rows>4</max_rows>
@@ -87,12 +87,6 @@ See COPYING for distribution information.
 </container>]]></programlisting>
       </informalexample>
     </blockquote>
-
-    <para>
-      The optional
-      <tag class='element'>style</tag>'s value is
-      <quote>highlight</quote> (default) or <quote>bullet</quote>.
-    </para>
 
     <blockquote>
       <informalexample>
@@ -112,6 +106,17 @@ See COPYING for distribution information.
     </para>
 
     <variablelist>
+      <varlistentry>
+	<term><tag class='element'>style</tag></term>
+	<listitem>
+	  Sets the list style that gets passed to
+	  <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>'s
+	  constructor.
+	  <tag class='element'>style</tag>'s value is
+	  <quote>highlight</quote> (default) or <quote>bullet</quote>.
+	</listitem>
+      </varlistentry>
+
       <varlistentry>
 	<term><tag class='element'>selection_type</tag></term>
 	<listitem>

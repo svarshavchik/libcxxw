@@ -77,11 +77,15 @@ bool uicompiler_generator_collection::parse_function_or_object_generator(
 
 	for (auto &p:parsed_parameters)
 	{
-		LOG_TRACE("   parameter: " << p->parameter_name);
-
 		auto &value=parameter_values[i++];
 
-		if (!(p->load_from_parent_element(root, value)
+		auto is_loaded =
+			p->load_from_parent_element(root, value);
+
+		LOG_TRACE("   parameter: " << p->parameter_name
+			  << (is_loaded ? " (preloaded)":""));
+
+		if (!(is_loaded
 		      ? already_loaded_parameters.insert(
 			      p->parameter_name).second
 		      : single_parameter_lookup.emplace(

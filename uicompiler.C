@@ -292,9 +292,9 @@ struct uicompiler::listlayoutmanager_functions {
 			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
-			  style{single_value_exists(lock, "style")
+			  style{single_value_exists(lock, "config/style")
 				? list_style_by_name(lowercase_single_value
-						     (lock, "style",
+						     (lock, "config/style",
 						      "container"))
 				: highlighted_list},
 			  new_listlayoutmanager_vector
@@ -403,9 +403,9 @@ struct uicompiler::tablelayoutmanager_functions {
 			   const ui::parser_lock &lock,
 			   const std::string &name)
 			: generators_base{lock, name},
-			  style{single_value_exists(lock, "style")
+			  style{single_value_exists(lock, "config/style")
 				? list_style_by_name(lowercase_single_value
-						     (lock, "style",
+						     (lock, "config/style",
 						      "container"))
 				: highlighted_list},
 			  new_tablelayoutmanager_vector

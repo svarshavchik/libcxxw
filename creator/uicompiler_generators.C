@@ -2186,6 +2186,24 @@ struct multiple_values_handler : single_value_handler {
 
 static const multiple_values_handler multiple_values_handler_inst;
 
+// List layout style
+
+// Use a multi-line input field, for now.
+
+struct listlayoutstyle_handler : standard_combobox_handler {
+
+	std::vector<x::w::list_item_param> combobox_values(const create_ui_info
+							   &info) const override
+	{
+		return {
+			"highlight",
+			"bullet",
+		};
+	};
+};
+
+static const listlayoutstyle_handler listlayoutstyle_handler_inst;
+
 const std::unordered_map<std::string_view,
 			 const setting_handler *> setting_handler::member_types{
 	{ "optional_constant<true>", &checkbox_handler_inst },
@@ -2252,6 +2270,8 @@ const std::unordered_map<std::string_view,
 	  &listlayout_parseconfig_handler_inst },
 
 	{ "lookup_appearance", &appearance_handler_inst },
+
+	{ "listlayoutstyle", &listlayoutstyle_handler_inst },
 };
 
 ////////////////////////////////////////////////////////////////////////////
