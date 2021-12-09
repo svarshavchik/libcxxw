@@ -54,7 +54,7 @@ See COPYING for distribution information.
 	<para>
 	  &appshort; implements natural support for bi-directional text input
 	  (&larr; and &rarr; keys don't switch direction in the middle of
-	  right-to-left text).
+	  right-to-left text, for example).
 	</para>
       </listitem>
 
@@ -127,11 +127,23 @@ See COPYING for distribution information.
       <para>
 	&app;'s core functionality is complete, and
 	<link linkend="INSTALL">is available for downloading</link>.
-	The most recent build of &app; implements robust support for
-	<link linkend="bidi">bi-directional text</link>
-	and
-	<link linkend="menuattributes">menu option radio groups</link>.
+	New API features in the most recent version:
       </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <link linkend="cxxwcreator.1"><command>cxxwcreator</command></link>
+	    support for all <link linkend="uixmldoc">theme UI</link> features.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Improved <link linkend="validatedinput">input field
+	      validation</link> abstraction layer.
+	  </para>
+	</listitem>
+      </itemizedlist>
     </section>
   </section>
 

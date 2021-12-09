@@ -1197,7 +1197,7 @@ appObj::update_callback_t appObj::border_update2(border_info_t::lock &lock)
 	if (!created_update)
 		return ret;
 
-	auto &[doc_lock, new_border]=*created_update;
+	auto &[doc_lock]=*created_update;
 
 	auto &new_value=save_params.border_new_value;
 

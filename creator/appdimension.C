@@ -452,6 +452,15 @@ void appObj::dimension_reset_values(dimension_info_t::lock &lock)
 					   me->dimension_scale_value
 						   ->validate_modified
 						   (IN_THREAD);
+					   dimension_info_t::lock lock{
+						   me->dimension_info
+					   };
+					   me->dimension_update_save_params(
+						   IN_THREAD, lock
+					   );
+					   me->dimension_enable_disable_buttons(
+						   lock
+					   );
 				   });
 		 });
 }
@@ -645,7 +654,9 @@ appObj::update_callback_t appObj::dimension_update2(dimension_info_t::lock
 	if (!created_update)
 		return ret;
 
-	auto &[doc_lock, new_dim]=*created_update;
+	auto &[doc_lock]=*created_update;
+
+	auto new_dim=doc_lock->create_child();
 
 	if (save_params.value == "inf")
 		new_dim->text("inf");
@@ -715,6 +726,7 @@ void appObj::dimension_update2(ONLY IN_THREAD,
 		}
 
 		status->update(_("Created new dimension"));
+		dimension_enable_disable_buttons(lock);
 	}
 	else
 	{

@@ -1366,18 +1366,32 @@ appObj::create_update_with_new_document(const char *type,
 
 			return std::nullopt;
 		}
-
-		xpath->to_node(1); // Remove existing element
-		doc_lock->remove();
+	}
+	else
+	{
+		xpath=get_xpath_for(doc_lock, type, "");
 	}
 
-	xpath=get_xpath_for(doc_lock, type, "");
+	new_element(doc_lock, xpath)->element({new_type})->create_child()
+		->attribute({"id", id});
 
-	auto new_node=new_element(doc_lock, xpath);
+	// The new element will be the previous sibling of any existing
+	// element, so remove the existing element now.
 
-	return std::tuple{doc_lock,
-			new_node->element({new_type})->create_child()
-			->attribute({"id", id})};
+	xpath=get_xpath_for(doc_lock, type, id);
+
+	if (xpath->count() > 1)
+	{
+		xpath->to_node(2);
+		doc_lock->remove();
+
+		xpath=get_xpath_for(doc_lock, type, id);
+	}
+
+	xpath->to_node(1); // We're back at the new element
+
+
+	return std::tuple{doc_lock};
 }
 
 size_t

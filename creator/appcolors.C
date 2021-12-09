@@ -2261,7 +2261,7 @@ appObj::update_callback_t appObj::color_update2(colors_info_t::lock &lock)
 	if (!created_update)
 		return ret;
 
-	auto &[doc_lock, new_color]=*created_update;
+	auto &[doc_lock]=*created_update;
 
 	std::visit(color_update_impl{doc_lock},
 		   save_params.color_new_value);

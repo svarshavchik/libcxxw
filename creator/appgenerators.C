@@ -499,7 +499,7 @@ appObj::generator_new_create_clicked2(generator_info_lock &lock)
 	if (!created)
 		return ret;
 
-	auto &[doc_lock, new_generator]=*created;
+	auto &[doc_lock]=*created;
 
 	// We need to set the type attribue of the new <layout> or <factory>
 	// node.
@@ -644,7 +644,7 @@ appObj::generator_update2(generator_info_lock &lock)
 			      lock->compilerbase->type_category.xml_node_name(),
 			      id, doc, false);
 
-	auto &[doc_lock, new_generator]=*created_update;
+	auto &[doc_lock]=*created_update;
 
 	// Put back the type attribute.
 

@@ -319,8 +319,7 @@ public:
 	//!
 	//! Nothing gets returned for an error.
 
-	typedef std::optional<std::tuple<x::xml::writelock,
-					 x::xml::createnode>
+	typedef std::optional<std::tuple<x::xml::writelock>
 			      > create_update_t;
 
 	//! Add or update a theme element.

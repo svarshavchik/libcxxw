@@ -2163,7 +2163,7 @@ appObj::update_callback_t appObj::appearance_create2(appearance_info_t::lock
 	if (!created)
 		return ret;
 
-	auto &[doc_lock, new_appearance]=*created;
+	auto &[doc_lock]=*created;
 
 	doc_lock->attribute({"type", lock->new_appearance_type});
 
@@ -2227,7 +2227,7 @@ appObj::appearance_update2(appearance_info_t::lock &lock)
 	if (!created_update)
 		return ret;
 
-	auto &[doc_lock, new_appearance]=*created_update;
+	auto &[doc_lock]=*created_update;
 
 	doc_lock->attribute({"type", appearance_current_value(lock)
 			     ->get_any_attribute("type")});

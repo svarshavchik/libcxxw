@@ -46,8 +46,11 @@ See COPYING for distribution information.
     <title>Bugs</title>
 
     <para>
-      This is a work in progress, supporting only a small subset of
-      &appshort;'s UI theme file objects.
+      XInclude references in existing XML theme files are processed when
+      loading the XML theme file. However that's logically equivalent to
+      inserting the included contents in the XML document, and when
+      <command>cxxwcreator</command> saves the updated theme file all
+      included content appears, verbatim, in the theme file.
     </para>
   </refsect1>
 </refentry>

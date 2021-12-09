@@ -1003,7 +1003,7 @@ appObj::update_callback_t appObj::font_update2(font_info_t::lock &lock)
 	if (!created_update)
 		return ret;
 
-	auto &[doc_lock, new_font]=*created_update;
+	auto &[doc_lock]=*created_update;
 
 	auto &new_value=save_params.font_new_value;
 
