@@ -6,9 +6,9 @@
 #include "tablelayoutmanager/table_synchronized_axis.H"
 #include "tablelayoutmanager/tablelayoutmanager_impl.H"
 #include "calculate_borders.H"
-#include "screen_positions_impl.H"
 #include "catch_exceptions.H"
 #include "generic_window_handler.H"
+#include "screen_positions_impl.H"
 #include <x/exception.H>
 #include <x/xml/xpath.H>
 #include <algorithm>
@@ -16,9 +16,10 @@
 LIBCXXW_NAMESPACE_START
 
 tablelayoutmanagerObj::table_synchronized_axisObj
-::table_synchronized_axisObj(const new_tablelayoutmanager &ntlm)
+::table_synchronized_axisObj(const new_tablelayoutmanager &ntlm,
+			     const std::vector<dim_t> &restored_widths)
 	: adjustable_column_widths{ntlm.adjustable_column_widths},
-	  restored_widths{ntlm.restored_widths}
+	  restored_widths{restored_widths}
 {
 }
 
@@ -544,54 +545,4 @@ void tablelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
 	}
 }
 
-void new_tablelayoutmanager_restored_position
-::restore(const const_screen_positions &pos,
-	  const std::string_view &name_arg)
-{
-	name=name_arg;
-
-	auto lock=pos->impl->data->readlock();
-
-	if (!lock->get_root())
-	    return;
-
-	auto xpath=lock->get_xpath(saved_element_to_xpath("table", name_arg));
-
-	if (xpath->count() != 1)
-		return;
-	xpath->to_node();
-
-	xpath=lock->get_xpath("width");
-
-	size_t n=xpath->count();
-
-	restored_widths.clear();
-	restored_widths.reserve(n);
-
-	try {
-		for (size_t i=1; i <= n; ++i)
-		{
-			xpath->to_node(i);
-
-			std::istringstream w{lock->get_text()};
-
-			dim_t n;
-
-			if (!(w >> n))
-				throw EXCEPTION("Invalid saved value.");
-
-			restored_widths.push_back(n);
-		}
-		return;
-	} catch (const exception &e)
-	{
-		auto ee=EXCEPTION( "Error restoring table \""
-				   << name << "\": " << e );
-
-		ee->caught();
-	}
-
-
-	restored_widths.clear();
-}
 LIBCXXW_NAMESPACE_END

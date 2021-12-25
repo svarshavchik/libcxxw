@@ -32,6 +32,7 @@
 #include "x/w/busy.H"
 #include "x/w/rgb.H"
 #include "x/w/main_windowfwd.H"
+#include "x/w/screen_positionsfwd.H"
 #include "x/w/generic_window_appearancefwd.H"
 #include "x/w/impl/focus/focusablefwd.H"
 #include "x/w/impl/dnd.H"
@@ -148,6 +149,30 @@ class generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(root_y);
 	THREAD_DATA_ONLY(wm_class_instance);
 	THREAD_DATA_ONLY(wm_class_resource);
+
+	//! Saved screen positions
+	const screen_positions positions;
+
+	//! Container for unique widget labels
+
+	typedef weakunordered_multimap<std::string, obj> unique_widget_labels_t;
+
+	//! Unique widget labels
+
+	//! This serves as means of enforcing unique labels for widgets,
+	//! for saving and restoring their positions and attributes.
+	//!
+	//! A widget with a name registers itself here, as a mcguffin.
+
+	unique_widget_labels_t unique_widget_labels;
+
+	//! Register a unique widget label
+
+	//! The widget's label gets passed in, together with the widget
+	//! object. They get added to the unique_widget_labels map.
+
+	void register_unique_widget_label(const std::string &label,
+					  const ref<obj> &mcguffin);
 
 	//! Return the labels representing the window hierarchy
 
@@ -423,6 +448,9 @@ class generic_windowObj::handlerObj
 
 		//! Appearance
 		const const_generic_window_appearance &appearance;
+
+		//! Screen positions
+		const screen_positions &positions;
 
 		//! What we will put into WM_CLASS
 		const std::string &wm_class_instance;

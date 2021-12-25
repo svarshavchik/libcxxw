@@ -1323,7 +1323,7 @@ static void demo_table(const w::gridlayoutmanager &lm)
 
 	ntlm.selection_type=w::no_selection_type;
 
-	ntlm.adjustable_column_widths=true;
+	ntlm.adjustable("demo_table");
 	ntlm.table_width=150;
 	ntlm.col_alignments={
 			     {1, w::halign::right},

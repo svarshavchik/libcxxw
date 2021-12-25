@@ -16,7 +16,6 @@
 #include <x/w/gridfactory.H>
 #include <x/w/tablelayoutmanager.H>
 #include <x/w/label.H>
-#include <x/w/screen_positions.H>
 
 #include "close_flag.H"
 
@@ -65,8 +64,7 @@ public:
 typedef x::ref<my_appdataObj> my_appdata;
 
 auto create_process_table(const x::w::main_window &mw,
-			  const x::w::gridfactory &f,
-			  const x::w::screen_positions &saved_positions)
+			  const x::w::gridfactory &f)
 {
 	x::w::new_tablelayoutmanager
 		ntlm{[]
@@ -104,16 +102,13 @@ auto create_process_table(const x::w::main_window &mw,
 	};
 
 	// Enable adjustable columns.
-	ntlm.adjustable_column_widths=true;
+	ntlm.adjustable("main_table");
 
 	// Initial table width, in millimeters
 	ntlm.table_width=200;
 
 	// Maximum table width, in millimeters.
 	ntlm.maximum_table_width=500;
-
-	// Restore this table's prior column widths.
-	ntlm.restore(saved_positions, "main_table");
 
 	auto c=f->create_focusable_container
 		([&]
@@ -178,8 +173,6 @@ void testlist()
 
 	auto close_flag=close_flag_ref::create();
 
-	auto pos=x::w::screen_positions::create();
-
 	x::w::main_window_config config{"main"};
 
 	auto main_window=x::w::main_window::create
@@ -191,8 +184,7 @@ void testlist()
 			 x::w::gridfactory factory=
 				     layout->append_row();
 
-			 auto c=create_process_table(main_window, factory,
-						     pos);
+			 auto c=create_process_table(main_window, factory);
 			 main_window->set_window_title("Table");
 
 			 // Use main_window's appdata member to store

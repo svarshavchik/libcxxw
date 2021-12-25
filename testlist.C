@@ -332,7 +332,6 @@ static mondata processes[]=
 #include "connection.H"
 
 auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
-			  const LIBCXX_NAMESPACE::w::screen_positions &pos,
 			  const LIBCXX_NAMESPACE::w::gridfactory &f,
 			  const testlistoptions &options)
 {
@@ -352,7 +351,10 @@ auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 			    f->create_label(titles[i])->show();
 		    }};
 
-	ntlm.restore(pos, "list");
+	if (options.adjustable->value)
+	{
+		ntlm.adjustable("list");
+	}
 	ntlm.selection_type=LIBCXX_NAMESPACE::w::no_selection_type;
 	ntlm.columns=5;
 
@@ -371,8 +373,6 @@ auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 			    {3, "thin_dashed_0%"},
 			    {4, "thin_dashed_0%"},
 	};
-
-	ntlm.adjustable_column_widths=options.adjustable->value;
 
 	if (options.width->is_set())
 		ntlm.table_width=ntlm.maximum_table_width=options.width->value;
@@ -437,7 +437,6 @@ auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 
 void listtable(const LIBCXX_NAMESPACE::w::screen &default_screen,
 	      const LIBCXX_NAMESPACE::w::main_window &main_window,
-	      const LIBCXX_NAMESPACE::w::screen_positions &pos,
 	      const testlistoptions &options)
 {
 	auto [original_theme, original_scale, original_options]
@@ -449,7 +448,7 @@ void listtable(const LIBCXX_NAMESPACE::w::screen &default_screen,
 
 	factory->halign(LIBCXX_NAMESPACE::w::halign::fill);
 	factory->colspan(2);
-	auto l=create_process_table(main_window, pos, factory, options);
+	auto l=create_process_table(main_window, factory, options);
 
 	factory=layout->append_row();
 
@@ -1109,8 +1108,6 @@ void testlist(const testlistoptions &options)
 
 	auto close_flag=close_flag_ref::create();
 
-	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create();
-
 	auto default_screen=LIBCXX_NAMESPACE::w::screen::create();
 
 	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
@@ -1125,7 +1122,7 @@ void testlist(const testlistoptions &options)
 			 if (options.hier->value)
 				 listhiertest(main_window);
 			 else if (options.table->value)
-				 listtable(default_screen, main_window, pos,
+				 listtable(default_screen, main_window,
 					   options);
 			 else
 				 mainlist=plain_list(main_window, options);

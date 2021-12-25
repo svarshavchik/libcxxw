@@ -451,7 +451,7 @@ void initialize_adjustable_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager
 		 }
 		};
 	ntlm.unlimited_table_width();
-	ntlm.adjustable_column_widths=true;
+	ntlm.adjustable_column_widths={};
 	ntlm.columns=5;
 	ntlm.requested_col_widths={{0, 100}};
 

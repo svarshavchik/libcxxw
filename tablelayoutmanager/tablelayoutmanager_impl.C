@@ -6,6 +6,7 @@
 #include "tablelayoutmanager/tablelayoutmanager_impl.H"
 #include "tablelayoutmanager/table_synchronized_axis.H"
 #include "gridlayoutmanager.H"
+#include "generic_window_handler.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -21,6 +22,21 @@ tablelayoutmanagerObj::implObj
 	  header_layoutmanager_impl{header_layoutmanager_impl},
 	  name{name}
 {
+	if (!name.empty())
+	{
+		std::string s;
+
+		s.reserve(name.size() + 6);
+
+		s="table:";
+		s += name;
+
+		container_impl->elementObj::implObj::get_window_handler()
+			.register_unique_widget_label(
+				s,
+				container_impl
+			);
+	}
 }
 
 tablelayoutmanagerObj::implObj::~implObj()=default;

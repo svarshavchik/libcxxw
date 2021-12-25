@@ -136,17 +136,19 @@ new_table.columns=2;
     <blockquote>
       <informalexample>
 	<programlisting>
-ntlm.adjustable_column_widths=true;
+ntlm.adjustable("main_table");
 ntlm.table_width=200;
 ntlm.maximum_table_width=500;</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
-      Setting <ulink url="&link-x--w--new-tablelayoutmanager;"><classname>&ns;::w::new_tablelayoutmanager</classname></ulink>'s
-      <varname>adjustable_column_widths</varname> to
-      <literal>true</literal>
-      enables adjusting of the table's columns' widths.
+      <ulink url="&link-x--w--new-tablelayoutmanager;"><classname>&ns;::w::new_tablelayoutmanager</classname></ulink>'s
+      <methodname>adjustable</methodname>() enables adjustable table columns
+      and assigns the table's label for
+      <link linkend="preservetablecolumnwidths">saving the adjustable
+	table column widths</link> and restoring them the next time the
+      table window gets opened.
       Moving the mouse pointer on top of a dividing border
       <emphasis>in the header row</emphasis> changes the pointer to
       a bi-directional horizontal arrow. Pressing pointer button #1 drags
@@ -218,18 +220,11 @@ ntlm.maximum_table_width=500;</programlisting>
 
       <para>
 	It's natural to expect that reopening an application opens the
-	table and its columns using their original size, and
-	<xref linkend="screen_positions" /> describes how to preserve the
-	position and the size of the main application window. But this
-	only preserves size and the position of the main window itself.
-	Any resizing of a table's columns' width does not get preserved;
-	the reopened table's columns' widths get reset to their default
-	sizes.
-      </para>
-
-      <para>
-	<ulink url="examples/table2.C">table2.C</ulink> shows what additional
-	steps are necessary for taking care of this last detail:
+	table and its columns using their original size. This behavior
+	is enabled by assigning a unique label to each table in the window,
+	and passing this label to <methodname>adjustable</methodname>().
+	<ulink url="examples/table2.C">table2.C</ulink> gives an example of
+	enabling adjustable table columns:
       </para>
 
       <blockquote>
@@ -239,7 +234,7 @@ ntlm.maximum_table_width=500;</programlisting>
                     // ...
     };
 
-ntlm.restore(saved_positions, "main_table");
+ntlm.adjustable("main_table");
 
 f->create_focusable_container
     ([&amp;]
@@ -247,50 +242,42 @@ f->create_focusable_container
      {
          // ...
      }, ntlm);
-
-// ...
-
-main_window->save("main", pos);
-pos.save(configfile);</programlisting>
+</programlisting>
 	</informalexample>
       </blockquote>
 
       <para>
-	A necessary prerequisite for preserving table column widths is that
-	the table's main application window's size also gets preserved;
-	so <filename>table2.C</filename> <methodname>save</methodname>()s
-	its main window's size (and position), just like the
-	<link linkend="wordwraplabel">word wrap label example</link>.
-      </para>
-
-      <para>
-	Each preserved table has a unique identifier.
+	A unique identifier must get assigned to each table in a window that
+	has adjustable columns.
 	<filename>table2.C</filename> calls its sole table, unimaginatively,
 	<quote>main_table</quote>.
       </para>
 
-      <para>
-	Before creating the pane container
-	<filename>table2.C</filename> reads the
-	<varname>saved_positions</varname> from its configuration file,
-	the next time it runs, and restores its main window's position and
-	size, first.
-	Then
-	<classname>&ns;::w::new_tablelayoutmanager</classname>'s
-	<methodname>restore()</methodname> reads the saved column widths
-	called <quote>main_table</quote>. This has no effect if the
-	configuration does not have previously saved table column sizes,
-	otherwise they get restored.
-	If everything goes according to plan,
-	<filename>table2.C</filename>'s window and table reappear just as
-	it was the last time it ran.
-      </para>
+      <blockquote>
+	<informalexample>
+	  <programlisting>ntlm.adjustable();</programlisting>
+	</informalexample>
+      </blockquote>
 
       <para>
-	When the main window <methodname>save</methodname>()s its
-	position and size, the table's then column widths get automatically
-	saved together with it, to be <methodname>restore</methodname>()d
-	the next time.
+	Calling <methodname>adjustable</methodname>() without any parameters
+	enables adjustable table column widths, but they do not get preserved
+	and each time the window gets opened the column widths get reset
+	to their default values.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>ntlm.adjustable("main_table", false);</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Passing a <literal>false</literal> as the optional 2nd parameter
+	enables adjustable column widths, but resets all column widths to their
+	default values. They'll still get preserved and the next time the
+	window gets opened the column widths will get restored to what they
+	were, once more.
       </para>
     </section>
   </section>

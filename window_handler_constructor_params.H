@@ -10,6 +10,7 @@
 #include "x/w/font_arg.H"
 #include "x/w/generic_window_appearancefwd.H"
 #include "x/w/main_window_appearancefwd.H"
+#include "x/w/screen_positionsfwd.H"
 #include "shared_handler_datafwd.H"
 #include <functional>
 
@@ -43,6 +44,9 @@ struct generic_window_handler_constructor_params {
 
 	//! Shared data between popups and their main application window.
 	shared_handler_data handler_data;
+
+	//! Saved screen positions
+	const screen_positions &positions;
 
 	//! What we will put into WM_CLASS
 	const std::string &wm_class_instance;
@@ -78,8 +82,8 @@ struct main_window_handler_constructor_params
 	 const std::reference_wrapper<const color_arg> &background_color,
 	 const std::reference_wrapper<const const_main_window_appearance>
 	 &appearance,
+	 const std::reference_wrapper<const screen_positions> &positions,
 	 const std::reference_wrapper<const std::string> &wm_class_instance,
-	 const std::reference_wrapper<const std::string> &wm_class_resource,
 	 bool override_redirect);
 
 	//! Appearance

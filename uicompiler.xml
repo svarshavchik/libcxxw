@@ -3511,28 +3511,18 @@ List of values:
     <function>
       <name>adjustable_column_widths</name>
       <object>layout</object>
-      <invoke>adjustable_column_widths=</invoke>
+      <invoke>norestore</invoke>
       <parameter>
-	<name>adjustable_column_widths</name>
-	<xpath>.</xpath>
-	<type>optional_constant&lt;true&gt;</type>
+	<name>name</name>
+	<type>optional_value</type>
+      </parameter>
+
+      <parameter>
+	<name>norestore</name>
+	<type>single_value_exists</type>
       </parameter>
     </function>
 
-    <function>
-      <name>restore</name>
-      <object>layout</object>
-      <invoke>restore</invoke>
-      <parameter>
-	<name>restore</name>
-	<type>single_value</type>
-	<xpath>.</xpath>
-	<lookup>
-	  <function>restore_tablelayoutmanager_position</function>
-	  <prepend-parameter>compiler</prepend-parameter>
-	</lookup>
-      </parameter>
-    </function>
 
     <use_common>new_listlayout</use_common>
   </parser>

@@ -19,6 +19,7 @@
 #include "x/w/impl/layoutmanager.H"
 #include "screen.H"
 #include "screen_depthinfo.H"
+#include "screen_positions_impl.H"
 #include "xid_t.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/background_color_element.H"
@@ -177,6 +178,7 @@ create_extra_constructor_params(const generic_window_handler_constructor_params
 		params.background_color,
 		background_color_obj,
 		params.appearance,
+		params.positions,
 		params.wm_class_instance,
 		params.wm_class_resource,
 	};
@@ -248,6 +250,8 @@ generic_windowObj::handlerObj
 				     .events_and_mask.m.at(XCB_CW_EVENT_MASK)},
 	  wm_class_instance_thread_only{params.wm_class_instance},
 	  wm_class_resource_thread_only{params.wm_class_resource},
+	  positions{params.positions},
+	  unique_widget_labels{unique_widget_labels_t::create()},
 	  current_position{params.window_handler_params.initial_position},
 	  window_pixmap_thread_only
 	{params.window_handler_params.screenref

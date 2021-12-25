@@ -107,6 +107,7 @@ public:
 
 	//! Check that saved_positions were given, then return them.
 
+	//! TODO - remove
 	const_screen_positions positions_to_restore() const;
 
 	//! Whether this is a custom theme compiler

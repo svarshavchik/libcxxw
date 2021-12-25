@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2019 Double Precision, Inc.
+Copyright 2019-2021 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -144,14 +144,54 @@ See COPYING for distribution information.
 
       <varlistentry>
 	<term>
-	  <tag class='emptytag'>adjustable_column_widths</tag>
+	  <tag class='element'>adjustable_column_widths</tag>
 	</term>
 	<listitem>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <adjustable_column_widths />
+</config>
+
+<config>
+  <adjustable_column_widths>
+    <name>demo_table</name>
+  </adjustable_column_widths>
+</config>
+
+<config>
+  <adjustable_column_widths>
+    <name>demo_table</name>
+    <norestore />
+  </adjustable_column_widths>
+</config>
+]]></programlisting>
+	    </informalexample>
+	  </blockquote>
 	  <para>
 	    This element sets
 	    <classname>&ns;::w::new_tablelayoutmanager</classname>'s
-	    <varname>adjustable_column_widths</varname> to
-	    <literal>true</literal>.
+	    <varname>adjustable_column_widths</varname> to enable adjustabe
+	    column widths.
+	  </para>
+
+	  <para>
+	    The <tag class='element'>name</tag> gives a unique label to this
+	    table widget (a unique label in its window) which identifies the
+	    table widget's column widths and restores them the next time the
+	    window gets opened. An unspecified <tag class='element'>name</tag>,
+	    or an empty <tag class='emptytag'>adjustable_column_widths</tag>
+	    creates a table with adjustable columns that get reset to their
+	    initial default size every time.
+	  </para>
+
+	  <para>
+	    An explicit <tag class='emptytag'>norestore</tag>
+	    serves as an exception, a
+	    one-time override that does not restore the previous table column
+	    widths but still saves the resulting column widths for the next
+	    time the table gets created.
 	  </para>
 	</listitem>
       </varlistentry>

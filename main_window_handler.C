@@ -37,8 +37,8 @@ main_window_handler_constructor_params
 	const std::reference_wrapper<const color_arg> &background_color,
 	const std::reference_wrapper<const
 	const_main_window_appearance> &appearance,
+	const std::reference_wrapper<const screen_positions> &positions,
 	const std::reference_wrapper<const std::string> &wm_class_instance,
-	const std::reference_wrapper<const std::string> &wm_class_resource,
 	bool override_redirect)
 	: generic_window_handler_constructor_params
 	{
@@ -48,8 +48,9 @@ main_window_handler_constructor_params
 		background_color,
 		appearance.get()->toplevel_appearance,
 		shared_handler_data::create(),
+		positions,
 		wm_class_instance,
-		wm_class_resource,
+		positions.get()->impl->appid,
 		0,
 		override_redirect
 	}, appearance{appearance.get()}
@@ -59,16 +60,14 @@ main_window_handler_constructor_params
 main_windowObj::handlerObj::handlerObj(
 	const constructor_params &params,
 	const std::optional<rectangle> &suggested_position,
-	const std::string &window_id,
-	const screen_positions &positions)
+	const std::string &window_id)
 	: superclass_t{{}, params},
 	  on_delete_callback_thread_only([](THREAD_CALLBACK,
 					    const auto &ignore) {}),
 	  net_wm_sync_request_counter{screenref->impl->thread},
 	  suggested_position_thread_only{suggested_position},
 	  appearance{params.appearance},
-	  window_id{window_id},
-	  positions{positions}
+	  window_id{window_id}
 {
 }
 

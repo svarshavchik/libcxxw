@@ -49,6 +49,8 @@ void containerObj::implObj::uninstall_layoutmanager(ONLY IN_THREAD)
 		if (!p)
 			throw EXCEPTION("Internal error - no layout manager to uninstall");
 		*lock=layout_implptr();
+
+		p->uninstalling(IN_THREAD);
 	}
 }
 

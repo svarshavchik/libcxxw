@@ -425,8 +425,8 @@ create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 		main_params{me, "splash,normal", "above",
 			    background_color,
 			    config.appearance,
+			    config.positions,
 			    config.name,
-			    config.positions->impl->appid,
 			    true,
 	};
 
@@ -434,8 +434,7 @@ create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 
 	return ref<splash_window_handlerObj>::create(main_params,
 						     std::nullopt,
-						     config.name,
-						     config.positions);
+						     config.name);
 }
 
 static ref<main_windowObj::handlerObj>
@@ -519,23 +518,23 @@ main_window screenObj
 						  << "\n";
 				}
 				main_window_handler_constructor_params
-					main_params{me, "normal", "",
-					std_config.appearance
-						    ->background_color,
-						    std_config.appearance,
-						    std_config.name,
-						    std_config.positions
-						    ->impl->appid,
-						    false,
-				};
+					main_params
+					{
+						me, "normal", "",
+						std_config.appearance
+						->background_color,
+						std_config.appearance,
+						std_config.positions,
+						std_config.name,
+						false,
+					};
 
 				return std::tuple
 				{ref<main_windowObj::handlerObj>
 						::create(main_params,
 							 suggested_position,
-							 std_config.name,
-							 std_config.positions),
-						&std_config};
+							 std_config.name),
+				 &std_config};
 			},
 			[&](const splash_window_config &splash_config)
 			{

@@ -38,7 +38,8 @@ public:
 	dragged_scaled_axis_t dragged_scaled_axis;
 
 	//! Constructor
-	table_synchronized_axisObj(const new_tablelayoutmanager &);
+	table_synchronized_axisObj(const new_tablelayoutmanager &,
+				   const std::vector<dim_t> &);
 
 	//! Destructor
 	~table_synchronized_axisObj();

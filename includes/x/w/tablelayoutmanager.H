@@ -11,40 +11,10 @@
 #include <x/w/listlayoutmanager.H>
 #include <cmath>
 #include <string_view>
+#include <string>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
-
-struct LIBCXX_HIDDEN new_tablelayoutmanager_restored_position;
-
-//! Restored table layout manager configuration
-
-//! Implements \ref new_tablelayoutmanager "new_tablelayoutmanager"'s
-//! restore() method.
-
-struct new_tablelayoutmanager_restored_position {
-
-	//! Restore previously save()d columns widths.
-
-	//! The 2nd parameter is a unique identifier/label for this table.
-	//! All tables should have unique identifiers. This label also gets
-	//! used when save()ing window's position.
-	void restore(const const_screen_positions &,
-		     const std::string_view &) LIBCXX_PUBLIC;
-
-	//! Table's name
-
-	//! \internal
-	//!
-	//! The name that was passed to restore().
-	std::string name;
-
-	//! Restored widths.
-
-	//! \internal
-	//!
-	//! Use restore() to populate this.
-	std::vector<dim_t> restored_widths;
-};
 
 //! Create a new table layout manager.
 
@@ -68,8 +38,7 @@ struct new_tablelayoutmanager_restored_position {
 //!
 //! This is not a thread-safe object.
 
-class new_tablelayoutmanager : public new_listlayoutmanager,
-			       public new_tablelayoutmanager_restored_position {
+class new_tablelayoutmanager : public new_listlayoutmanager {
 
  public:
 
@@ -116,19 +85,39 @@ class new_tablelayoutmanager : public new_listlayoutmanager,
 
 	//! Whether the table borders can be dragged to adjust column widths.
 
-	bool adjustable_column_widths=false;
+	//! If set, a non-empty string gives a unique label for this table
+	//! which is used to save the adjusted table column widths and
+	//! restore them the next time. An empty string still enables
+	//! adjustable column widths but doesn't save their widths, for
+	//! next time.
+	//!
+	//! The bool flag enables restoring the previous column widths. If
+	//! false the column widths get reset to default, this time, but
+	//! their widths are saved and then restored the next time.
 
-	using new_tablelayoutmanager_restored_position::restore;
+	std::optional<std::tuple<std::string, bool>> adjustable_column_widths;
 
-	//! Helper used by the theme parser.
+	//! Enable saving and restoring the column widths.
 
-	inline void restore(const new_tablelayoutmanager_restored_position &rp)
+	//! Shortcut for setting adjustable_column_widths.
+
+	void adjustable(const std::string &name="",
+			bool restore=true)
 	{
-		static_cast<new_tablelayoutmanager_restored_position &>(*this)
-			=rp;
+		adjustable_column_widths.emplace(name, restore);
 	}
 
- private:
+	//! Used by the theme parser
+
+	//! An optional \<norestore /> is used in theme files. The theme
+	//! parser calls this helper.
+
+	void norestore(const std::string &name, bool norestore)
+	{
+		adjustable_column_widths.emplace(name, !norestore);
+	}
+
+private:
 
 	//! Create the focusable container.
 
@@ -138,7 +127,7 @@ class new_tablelayoutmanager : public new_listlayoutmanager,
 				   (const focusable_container &)>
 				   &creator)
 		const override LIBCXX_HIDDEN;
- private:
+private:
 
 	//! Implement created_list_container().
 

@@ -60,8 +60,7 @@ public:
 	//! Constructor
 	handlerObj(const constructor_params &params,
 		   const std::optional<rectangle> &suggested_position,
-		   const std::string &window_id,
-		   const screen_positions &positions);
+		   const std::string &window_id);
 
 	//! Destructor
 	~handlerObj();
@@ -149,9 +148,6 @@ public:
 
 	//! Unique identifier for the window.
 	const std::string window_id;
-
-	//! Saved screen positions
-	const screen_positions positions;
 
 	//! Retrieve hierarchical window identifier
 

@@ -145,9 +145,18 @@ xml::writelock screen_positionsObj::implObj::create_writelock_for_saving(
 
 	size_t n=xpath->count();
 
-	for (size_t i=1; i <= n; ++i)
+	if (type == "window" && n)
 	{
-		xpath->to_node(i);
+		// Do not remove the existing <window> node, since it may
+		// have inferiors that we want to keep.
+
+		xpath->to_node();
+		return lock;
+	}
+
+	if (n)
+	{
+		xpath->to_node();
 		lock->remove();
 	}
 
@@ -213,6 +222,27 @@ main_windowObj::~main_windowObj()
 		if (!handler->has_exposed(IN_THREAD))
 			return;
 
+		std::string prev;
+		bool first=true;
+
+		// Sanity check:
+
+		for (const auto &[key, mcguffin]
+			     : *handler->unique_widget_labels)
+		{
+			auto p=mcguffin.getptr();
+
+			if (!p)
+				continue;
+
+			if (!first && prev == key)
+				throw EXCEPTION("Duplicate widget label: \""
+						<< prev
+						<< "\"");
+			prev=key;
+			first=false;
+		}
+
 		// Save any save-able widgets in the window, first.
 
 		handler->save(IN_THREAD, handler->positions);
@@ -232,6 +262,16 @@ main_windowObj::~main_windowObj()
 						      "window",
 						      window_id);
 
+		// Remove any previous <position>
+		{
+			auto xpath=lock->get_xpath("position");
+
+			if (xpath->count())
+			{
+				xpath->to_node();
+				lock->remove();
+			}
+		}
 		auto window=lock->create_child()->element({"position"});
 
 		window=window->create_child()->element({"x"})->text(wx);
@@ -327,6 +367,13 @@ screen_positionsObj::implObj::find_window_position(
 	}
 
 	return info;
+}
+
+void generic_windowObj::handlerObj::register_unique_widget_label(
+	const std::string &label,
+	const ref<obj> &mcguffin)
+{
+	unique_widget_labels->insert(label, mcguffin);
 }
 
 void preserve_screen_number(bool flag)

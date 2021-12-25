@@ -59,6 +59,7 @@ popupObj::handlerObj::handlerObj(const popup_handler_args &args)
 			transparent,
 			args.appearance,
 			args.parent->handler_data,
+			args.parent->positions,
 			args.wm_class_instance,
 			"popup.w.libcxx.com",
 			args.nesting_level,
