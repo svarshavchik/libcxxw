@@ -11,6 +11,43 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Base class for \ref screen_positions "screen_positions".
+
+//! Implements custom create() functions that cache screen_positions objects
+//! by configuration filename. Instantiating a default screen_positions
+//! object ends up returning the same actual object.
+class screen_positionsBase {
+
+public:
+
+	//! Instantiate the default screen_positions object.
+
+	static screen_positions create();
+
+	//! Initialize a custom screen_positions object.
+	static screen_positions create(const std::string &filename);
+
+	//! Object creation factory.
+
+	template<typename ptrrefType> class objfactory {
+	public:
+
+		//! Forward create() to the internal implementation
+
+		static inline ptrrefType create()
+		{
+			return screen_positionsBase::create();
+		}
+
+		//! Forward create() to the internal implementation
+
+		static inline ptrrefType create(const std::string &filename)
+		{
+			return screen_positionsBase::create(filename);
+		}
+	};
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

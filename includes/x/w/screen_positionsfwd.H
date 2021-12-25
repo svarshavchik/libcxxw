@@ -11,6 +11,7 @@
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC screen_positionsObj;
+class LIBCXX_PUBLIC screen_positionsBase;
 
 //! Memorize screen number as part of the window's positions
 
@@ -90,25 +91,29 @@ configuration file.
 
 */
 
-typedef ref<screen_positionsObj> screen_positions;
+typedef ref<screen_positionsObj,
+	    screen_positionsBase> screen_positions;
 
 //! Constant \ref screen_positions "memorized screen positions".
 
 //! \see screen_positions
 
-typedef const_ref<screen_positionsObj> const_screen_positions;
+typedef const_ref<screen_positionsObj,
+		  screen_positionsBase> const_screen_positions;
 
 //! A nullable pointer reference to \ref screen_positions "memorized screen positions".
 
 //! \see screen_positions
 
-typedef ptr<screen_positionsObj> screen_positionsptr;
+typedef ptr<screen_positionsObj,
+	    screen_positionsBase> screen_positionsptr;
 
 //! A nullable pointer reference to const \ref screen_positions "memorized screen positions".
 
 //! \see screen_positions
 
-typedef const_ptr<screen_positionsObj> const_screen_positionsptr;
+typedef const_ptr<screen_positionsObj,
+		  screen_positionsBase> const_screen_positionsptr;
 
 LIBCXXW_NAMESPACE_END
 

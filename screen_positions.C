@@ -4,12 +4,56 @@
 */
 #include "libcxxw_config.h"
 #include "screen_positions_impl.H"
+#include <x/weakmultimap.H>
+#include <x/singleton.H>
 #include <x/config.H>
 
 LIBCXXW_NAMESPACE_START
 
-screen_positionsObj::screen_positionsObj()
-	: screen_positionsObj{configdir() + "/windows"}
+namespace {
+#if 0
+}
+#endif
+
+struct global_screen_positionsObj : virtual public obj {
+
+public:
+	const std::string default_config=configdir() + "/windows";
+
+	const weakmultimap<std::string, screen_positionsObj> cache=
+		weakmultimap<std::string, screen_positionsObj>::create();
+};
+
+static singleton<global_screen_positionsObj> positions_cache;
+
+#if 0
+{
+#endif
+}
+
+screen_positions screen_positionsBase::create()
+{
+	return create(positions_cache.get()->default_config);
+}
+
+screen_positions screen_positionsBase::create(const std::string &filename)
+{
+	return positions_cache.get()->cache->find_or_create(
+		filename,
+		[&]
+		{
+			auto impl=ref<screen_positionsObj::implObj>::create(
+				filename
+			);
+
+			return ptrref_base::objfactory<screen_positions>
+				::create(impl);
+		}
+	);
+}
+
+screen_positionsObj::screen_positionsObj(const ref<implObj> &impl)
+	: impl{impl}
 {
 }
 
@@ -25,11 +69,6 @@ screen_positionsObj::~screen_positionsObj()
 		std::cerr << e.what() << std::endl;
 	}
 
-}
-
-screen_positionsObj::screen_positionsObj(const std::string &filename)
-	: impl{ref<implObj>::create(filename)}
-{
 }
 
 LIBCXXW_NAMESPACE_END

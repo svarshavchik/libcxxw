@@ -24,16 +24,10 @@ public:
 	const ref<implObj> impl;
 
 	//! Constructor
-	screen_positionsObj();
+	screen_positionsObj(const ref<implObj> &);
 
 	//! Destructor
 	~screen_positionsObj();
-
-	//! Constructor
-
-	//! Construct a new instance and initialize it with the contents
-	//! of the specified file.
-	screen_positionsObj(const std::string &filename);
 };
 
 LIBCXXW_NAMESPACE_END
