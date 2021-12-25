@@ -106,18 +106,17 @@ void main_window_config::restore(const const_screen_positions &pos)
 	}
 }
 
-main_window_config::main_window_config()
-	: main_window_config{""}
+main_window_config::appearance_t::appearance_t()
+	: const_main_window_appearance{main_window_appearance::base::theme()}
 {
 }
 
-main_window_config::main_window_config(const std::string_view &name)
-	: appearance{main_window_appearance::base::theme()},
-	  name{name}
-{
-}
+main_window_config::appearance_t::~appearance_t()=default;
 
-main_window_config::main_window_config(const main_window_config &)=default;
+main_window_config::appearance_t::appearance_t(const appearance_t &)=default;
+
+main_window_config::appearance_t
+&main_window_config::appearance_t::operator=(const appearance_t &)=default;
 
 main_window_config::~main_window_config()=default;
 
