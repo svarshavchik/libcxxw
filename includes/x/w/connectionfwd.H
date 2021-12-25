@@ -108,6 +108,14 @@ typedef ref<connectionObj, connectionBase> connection;
 
 typedef const_ref<connectionObj, connectionBase> const_connection;
 
+//! A nullable pointer reference to a \ref connection "display server connection".
+
+typedef ptr<connectionObj, connectionBase> connectionptr;
+
+//! A nullable pointer reference to a constant connection to \ref connection "display server connection".
+
+typedef const_ptr<connectionObj, connectionBase> const_connectionptr;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

@@ -20,6 +20,7 @@
 #include "fonts/freetype.H"
 #include "icon_cache.H"
 #include "cursor_pointer_cache.H"
+#include <x/singleton.H>
 #include <x/mpobj.H>
 #include <x/weakptr.H>
 #include <x/refptr_traits.H>
@@ -30,15 +31,30 @@ LIBCXXW_NAMESPACE_START
 
 LOG_CLASS_INIT(screenObj::implObj);
 
-typedef mpobj< weakptr<refptr_traits<connection>::ptr_t> > default_connection_t;
+namespace {
+#if 0
+}
+#endif
 
-static default_connection_t default_connection;
+struct default_connectionObj : virtual public obj {
+
+	mpobj< weakptr<connectionptr> > default_connection;
+};
+
+static singleton<default_connectionObj> default_connection;
+
+#if 0
+{
+#endif
+}
 
 // Autocreate the default connection to the server.
 
 static connection get_default_connection()
 {
-	default_connection_t::lock lock{default_connection};
+	auto s=default_connection.get();
+
+	mpobj_lock lock{s->default_connection};
 
 	auto conn=lock->getptr();
 
