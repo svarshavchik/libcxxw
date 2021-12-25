@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include <x/mpobj.H>
+#include <x/appid.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/ref.H>
@@ -24,6 +25,11 @@
 #include <errno.h>
 #include <poll.h>
 #include <chrono>
+
+std::string x::appid() noexcept
+{
+	return "busy.examples.w.libcxx.com";
+}
 
 typedef x::ref<x::obj> mcguffin_t;
 

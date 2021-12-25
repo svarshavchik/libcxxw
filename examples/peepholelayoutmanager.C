@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/peepholelayoutmanager.H>
@@ -22,6 +23,11 @@
 
 #include <iostream>
 #include <sstream>
+
+std::string x::appid() noexcept
+{
+	return "peepholelayoutmanager.examples.w.libcxx.com";
+}
 
 // Peepholed contents. Both peepholes use the grid layout manager.
 

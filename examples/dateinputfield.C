@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
@@ -29,6 +30,11 @@
 #include <x/ymd.H>
 #include <x/locale.H>
 #include <x/mpobj.H>
+
+std::string x::appid() noexcept
+{
+	return "dateinputfield.examples.w.libcxx.com";
+}
 
 // A helper object that holds the current values of the starting and the
 // ending date fields.
@@ -201,7 +207,7 @@ void dateinputfields()
 			 });
 
 	main_window->set_window_title("Date calculator");
-	main_window->set_window_class("main", "dateinputfield@examples.w.libcxx.com");
+	main_window->set_window_class("main", "dateinputfield.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

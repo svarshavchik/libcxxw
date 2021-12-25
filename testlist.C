@@ -1109,10 +1109,7 @@ void testlist(const testlistoptions &options)
 
 	auto close_flag=close_flag_ref::create();
 
-	auto configfile=
-		LIBCXX_NAMESPACE::configdir("testlist@libcxx.com") + "/windows";
-
-	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create();
 
 	auto default_screen=LIBCXX_NAMESPACE::w::screen::create();
 
@@ -1120,7 +1117,6 @@ void testlist(const testlistoptions &options)
 
 	LIBCXX_NAMESPACE::w::focusable_containerptr mainlist;
 
-	config.restore(pos);
 	auto main_window=default_screen->create_mainwindow
 		(config,
 		 [&]
@@ -1244,11 +1240,6 @@ void testlist(const testlistoptions &options)
 	}
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 	lock.wait([&] { return *lock; });
-
-	if (main_window->appdata)
-	{
-		main_window->save(pos);
-	}
 }
 
 int main(int argc, char **argv)

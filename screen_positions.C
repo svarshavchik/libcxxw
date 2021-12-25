@@ -7,6 +7,9 @@
 #include <x/weakmultimap.H>
 #include <x/singleton.H>
 #include <x/config.H>
+#include <x/appid.H>
+#include <x/fileattr.H>
+#include <x/pidinfo.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,17 +36,18 @@ static singleton<global_screen_positionsObj> positions_cache;
 
 screen_positions screen_positionsBase::create()
 {
-	return create(positions_cache.get()->default_config);
+	return create(positions_cache.get()->default_config, appver());
 }
 
-screen_positions screen_positionsBase::create(const std::string &filename)
+screen_positions screen_positionsBase::create(const std::string &filename,
+					      const std::string &version)
 {
 	return positions_cache.get()->cache->find_or_create(
 		filename,
 		[&]
 		{
 			auto impl=ref<screen_positionsObj::implObj>::create(
-				filename
+				filename, version
 			);
 
 			return ptrref_base::objfactory<screen_positions>

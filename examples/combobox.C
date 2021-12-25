@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include <x/mpobj.H>
+#include <x/appid.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/w/main_window.H>
@@ -23,6 +24,11 @@
 
 #include "close_flag.H"
 #include "combobox.H"
+
+std::string x::appid() noexcept
+{
+	return "combobox.examples.w.libcxx.com";
+}
 
 static inline auto
 create_standard_combobox(const x::w::factory &factory,
@@ -315,7 +321,7 @@ void create_combobox(const options &opts)
 				      "Editable combo-box"
 				      : "Standard combo-box");
 	main_window->set_window_class("main",
-				      "combobox@examples.w.libcxx.com");
+				      "combobox.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

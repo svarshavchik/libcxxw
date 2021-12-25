@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -25,6 +26,11 @@
 #include <iostream>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "customcanvas.examples.w.libcxx.com";
+}
 
 // Implementation object derives from the canvas element implementation object.
 //
@@ -80,22 +86,26 @@ public:
 	// Start the ball rolling by constructing the canvas_init_params
 
 	my_canvas_implObj(const x::w::container_impl &parent_container)
-		: my_canvas_implObj(parent_container,
-				    x::w::canvas_init_params{
-					    // Horizontal metrics:
-					    {default_minimum,
-					     default_preferred,
-					     default_maximum},
+		: my_canvas_implObj
+		{
+			parent_container,
+			x::w::canvas_init_params{
+				// Horizontal metrics:
+				{default_minimum,
+				 default_preferred,
+				 default_maximum},
 
-					    // Vertical metrics:
-					    {default_minimum,
-					     default_preferred,
-					     default_maximum},
+				// Vertical metrics:
+				{default_minimum,
+				 default_preferred,
+				 default_maximum},
 
-					    // Label ID for the custom
-					    // element's scratch buffer.
+				// Label ID for the custom
+				// element's scratch buffer.
 
-					    "my_canvas@examples.w.libcxx.com"})
+				"my_canvas@customcanvas.examples.w.libcxx.com"
+			}
+		}
 	{
 	}
 
@@ -121,7 +131,7 @@ public:
 		// scratch_and_mask_buffer_draw mixin constructor params:
 		//
 		// Label ID for the scratch mask.
-		        "my_canvas_mask@examples.w.libcxx.com",
+		        "my_canvas_mask@customcanvas.examples.w.libcxx.com",
 
 
 		// The background_color_element mixin constructor param:

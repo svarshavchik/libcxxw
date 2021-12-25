@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/button.H>
@@ -27,6 +28,11 @@
 
 #include <string>
 #include <iostream>
+
+std::string x::appid() noexcept
+{
+	return "printdialog.examples.w.libcxx.com";
+}
 
 // Our "application" object.
 
@@ -229,7 +235,7 @@ void testprintdialog()
 
 	main_window->set_window_title("Print something!");
 	main_window->set_window_class("main",
-				      "printdialog@examples.w.libcxx.com");
+				      "printdialog.examples.w.libcxx.com");
 
 	// Construct the application singleton object.
 	//

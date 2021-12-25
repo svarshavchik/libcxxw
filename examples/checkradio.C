@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -21,6 +22,11 @@
 #include <vector>
 #include <tuple>
 #include <string>
+
+std::string x::appid() noexcept
+{
+	return "checkradio.examples.w.libcxx.com";
+}
 
 typedef std::vector<std::tuple<std::string, x::w::image_button>> buttons_t;
 
@@ -154,13 +160,14 @@ void create_mainwindow(const x::w::main_window &main_window,
 	// Create the "Train" button, initially set.
 
 	x::w::image_button train=
-		factory->create_radio("checkradiogroup@examples.w.libcxx.com",
-				      []
-				      (const x::w::factory &f)
-				      {
-					      // And the "set" label.
-					      set_train_label(f, true);
-				      });
+		factory->create_radio(
+			"checkradiogroup@checkradio.examples.w.libcxx.com",
+			[]
+			(const x::w::factory &f)
+			{
+				// And the "set" label.
+				set_train_label(f, true);
+			});
 
 	// Set this radio button.
 	train->set_value(1);
@@ -228,12 +235,13 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 	// Create a "bus" radio button and label.
 	x::w::image_button bus=
-		factory->create_radio("checkradiogroup@examples.w.libcxx.com",
-				      []
-				      (const x::w::factory &f)
-				      {
-					      f->create_label("Bus");
-				      });
+		factory->create_radio(
+			"checkradiogroup@checkradio.examples.w.libcxx.com",
+			[]
+			(const x::w::factory &f)
+			{
+				f->create_label("Bus");
+			});
 
 	bus->on_activate([]
 			 (ONLY IN_THREAD,
@@ -255,12 +263,13 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 	factory=layout->append_columns(2);
 	x::w::image_button drive=
-		factory->create_radio("checkradiogroup@examples.w.libcxx.com",
-				      []
-				      (const x::w::factory &f)
-				      {
-					      f->create_label("Drive");
-				      });
+		factory->create_radio(
+			"checkradiogroup@checkradio.examples.w.libcxx.com",
+			[]
+			(const x::w::factory &f)
+			{
+				f->create_label("Drive");
+			});
 
 	drive->on_activate([]
 			   (ONLY IN_THREAD,
@@ -329,7 +338,7 @@ void checkradio()
 
 	main_window->set_window_title("Checkboxes");
 	main_window->set_window_class("main",
-				      "checkradio@examples.w.libcxx.com");
+				      "checkradio.examples.w.libcxx.com");
 
 	main_window->on_delete
 		([close_flag]

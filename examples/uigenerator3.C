@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include <x/mpobj.H>
+#include <x/appid.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/pidinfo.H>
@@ -20,6 +21,11 @@
 #include <sstream>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "uigenerator3.examples.w.libcxx.com";
+}
 
 static inline void create_main_window(const x::w::main_window &main_window)
 {
@@ -83,7 +89,7 @@ void uigenerator3()
 	main_window->set_window_title("Custom checkbox");
 
 	main_window->set_window_class("main",
-				      "uigenerator3@examples.w.libcxx.com");
+				      "uigenerator3.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

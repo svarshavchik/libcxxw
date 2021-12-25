@@ -22,6 +22,7 @@ class LIBCXX_PUBLIC transparent_splash_window_config;
 typedef std::variant<main_window_config,
 		     splash_window_config,
 		     transparent_splash_window_config> main_window_config_t;
+struct window_position_t;
 
 /*! Top level application window.
 

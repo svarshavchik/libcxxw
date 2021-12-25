@@ -50,14 +50,24 @@ class dialogObj::handlerObj : public main_windowObj::handlerObj {
 	//! Constructor
 
 	handlerObj(const ref<main_windowObj::handlerObj> &parent_handler,
-		   const std::variant<dialog_position, rectangle> &position,
+		   const dialog_position &position,
+		   const std::optional<rectangle> &initial_pos,
 		   const std::string &window_id,
+		   const screen_positions &positions,
 		   const color_arg &background_color,
 		   const const_main_window_appearance &appearance,
 		   const char *window_type,
 		   bool modal,
 		   bool urgent,
 		   bool grab_input_focus);
+
+	//! Override window_id_hierarchy().
+
+	void window_id_hierarchy(std::vector<std::string> &) const override;
+
+	//! Override register_current_main_window()
+
+	void register_current_main_window() override;
 
 	//! Override set_default_wm_hints().
 

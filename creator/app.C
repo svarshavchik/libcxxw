@@ -32,6 +32,7 @@
 #include <x/visitor.H>
 #include <x/weakcapture.H>
 #include <x/singleton.H>
+#include <x/appid.H>
 #include <sstream>
 #include <cstdlib>
 #include <cmath>
@@ -251,11 +252,9 @@ inline appObj::init_args appObj::create_init_args()
 {
 	appObj::init_args args;
 
-	auto pos=x::w::screen_positions::create(args.configfile);
+	auto pos=x::w::screen_positions::create();
 
 	x::w::main_window_config config{"main"};
-
-	config.restore(pos);
 
 	auto utf8_locale=x::locale::base::utf8();
 
@@ -342,7 +341,6 @@ inline appObj::init_args appObj::create_init_args()
 				  "filesave@creator.w.libcxx.com",
 				  true
 				 };
-			 file_save_dialog_args.restore(pos, "filesave");
 
 			 x::w::file_dialog_config file_save_dialog_config
 				 {[](ONLY IN_THREAD,
@@ -384,7 +382,6 @@ inline appObj::init_args appObj::create_init_args()
 				  "fileopen@creator.w.libcxx.com",
 				  true
 				 };
-			 file_open_dialog_args.restore(pos, "fileopen");
 
 			 x::w::file_dialog_config file_open_dialog_config
 				 {[](ONLY IN_THREAD,
@@ -702,7 +699,6 @@ std::string appObj::border_format_size(const std::variant<std::string,
 
 appObj::appObj(init_args &&args)
 	: const_app_elements_t{std::move(args.elements)},
-	  configfile{args.configfile},
 	  theme{args.theme},
 	  current_edited_info{args.filename},
 	  appearance_types{std::move(args.appearance_types)},
@@ -754,12 +750,7 @@ void appObj::update_title()
 	main_window->set_window_title(title);
 }
 
-appObj::~appObj()
-{
-	auto pos=x::w::screen_positions::create();
-
-	main_window->save(pos);
-}
+appObj::~appObj()=default;
 
 void appObj::mainloop()
 {
@@ -1557,4 +1548,15 @@ void appObj::enable_disable_urd(bool is_updating,
 	}
 
 	d_button->set_enabled(unchanged);
+}
+
+
+std::string x::appid() noexcept
+{
+	return "cxxwtheme.w.libcxx.com";
+}
+
+std::string x::appver() noexcept
+{
+	return VERSION;
 }

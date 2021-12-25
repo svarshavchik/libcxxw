@@ -9,6 +9,7 @@
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/config.H>
+#include <x/appid.H>
 #include <x/ref.H>
 #include <x/ptr.H>
 #include <x/obj.H>
@@ -31,6 +32,11 @@
 #include <vector>
 #include <tuple>
 #include <random>
+
+std::string x::appid() noexcept
+{
+	return "fontcolorpickers.examples.w.libcxx.com";
+}
 
 // Helper object for the random color button.
 
@@ -287,11 +293,7 @@ void fontcolorpickers()
 {
 	// My configuration file.
 
-	auto configfilename=
-		x::configdir("fontcolorpickers@examples.w.libcxx.com")
-		+ "/windows";
-
-	auto pos=x::w::screen_positions::create(configfilename);
+	auto pos=x::w::screen_positions::create();
 
 	x::destroy_callback::base::guard guard;
 
@@ -301,9 +303,6 @@ void fontcolorpickers()
 	x::w::color_pickerptr color_picker;
 
 	x::w::main_window_config config{"main"};
-
-	// Restore previous window positions
-	config.restore(pos);
 
 	auto main_window=x::w::main_window::create
 		(config,
@@ -322,8 +321,7 @@ void fontcolorpickers()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Fonts & Colors");
-	main_window->set_window_class("main",
-				      "fontcolorpickers@examples.w.libcxx.com");
+
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,
@@ -346,8 +344,6 @@ void fontcolorpickers()
 
 	std::cout << "Final color: " << color_picker->current_color()
 		  << std::endl;
-
-	main_window->save(pos);
 }
 
 int main(int argc, char **argv)

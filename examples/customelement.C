@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/main_window_appearance.H>
@@ -27,13 +28,19 @@
 
 #include "close_flag.H"
 
+std::string x::appid() noexcept
+{
+	return "customelement.examples.w.libcxx.com";
+}
+
 struct fore_color_tag; // Tag for the background_color_element
 
 static inline auto create_child_element_init_params()
 {
 	x::w::child_element_init_params init_params;
 
-	init_params.scratch_buffer_id="my_element@examples.w.libcxx.com";
+	init_params.scratch_buffer_id=
+		"my_element@customelement.examples.w.libcxx.com";
 
 	init_params.initial_metrics={
 		{50, 50, 50},
@@ -59,7 +66,7 @@ public:
 		: superclass_t{
 
 		// Label ID for the scratch mask.
-		        "my_element_mask@examples.w.libcxx.com",
+		        "my_element_mask@customelement.examples.w.libcxx.com",
 
 		// Background color will be a linear gradient
 

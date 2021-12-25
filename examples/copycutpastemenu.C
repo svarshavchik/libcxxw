@@ -7,6 +7,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -23,6 +24,11 @@
 #include <x/singletonptr.H>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "copycutpastemenu.examples.w.libcxx.com";
+}
 
 // Our "application" object.
 

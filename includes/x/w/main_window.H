@@ -19,6 +19,7 @@
 #include <x/w/rgb.H>
 #include <x/w/rectangle.H>
 #include <x/w/concepts.H>
+#include <x/w/screen_positionsfwd.H>
 #include <x/functional.H>
 #include <x/functionalrefptrfwd.H>
 #include <functional>
@@ -31,6 +32,40 @@ struct main_window_position {
 	//! The name of this window.
 
 	const std::string name="main";
+
+	//! Wrapper for screen_positions
+
+	//! Avoids the need to include screen_positions header file.
+
+	struct screen_positions_t : screen_positions {
+
+		//! Default constructor
+
+		screen_positions_t();
+
+		//! Explicit constructor
+		screen_positions_t(const screen_positions &);
+
+		//! Destructor
+
+		~screen_positions_t();
+
+		//! Copy constructor
+
+		screen_positions_t(const screen_positions_t &);
+
+		//! Assignment operator
+
+		screen_positions_t &operator=(const screen_positions_t &);
+
+		using screen_positions::operator=;
+
+		using screen_positions::operator->;
+	};
+
+	//! Saved positions of windows and widgets
+
+	screen_positions_t positions;
 };
 
 //! Optional configuration of a \ref main_window "main application window".
@@ -58,6 +93,8 @@ public:
 
 		appearance_t &operator=(const appearance_t &);
 
+		using const_main_window_appearance::const_main_window_appearance
+		;
 		using const_main_window_appearance::operator=;
 
 		using const_main_window_appearance::operator->;
@@ -66,19 +103,14 @@ public:
 	//! Appearance
 	appearance_t appearance;
 
+#if 0
 	//! Specify optional position on the screen.
 
 	void restore(const const_screen_positions &) LIBCXX_PUBLIC;
 
-	//! Restored window position.
-	struct window_info_t {
-		std::optional<size_t> screen_number;
-		rectangle coordinates;
-	};
-
 	//! Successfully restore()d position.
 	std::optional<window_info_t> window_info;
-
+#endif
 	//! Destructor
 	~main_window_config();
 };

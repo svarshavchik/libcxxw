@@ -212,19 +212,14 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 
 void testlabel(const testwordwrappablelabel_options &options)
 {
-	auto configfile=
-		LIBCXX_NAMESPACE::configdir("testwordwrappablelabel@libcxx.com") + "/windows";
-
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	LIBCXX_NAMESPACE::w::screen_positions pos=
 		options.testmetrics->value ?
 		LIBCXX_NAMESPACE::w::screen_positions::create() :
-		LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
+		LIBCXX_NAMESPACE::w::screen_positions::create();
 
 	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
-
-	config.restore(pos);
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create(config,
@@ -295,11 +290,6 @@ void testlabel(const testwordwrappablelabel_options &options)
 	else
 	{
 		lock.wait([&] { return *lock; });
-	}
-
-	if (!options.testmetrics->value)
-	{
-		main_window->save(pos);
 	}
 }
 

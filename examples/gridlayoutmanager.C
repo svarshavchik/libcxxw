@@ -8,6 +8,7 @@
 #include <x/destroy_callback.H>
 #include <x/refptr_traits.H>
 #include <x/weakcapture.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -20,6 +21,11 @@
 
 #include "gridlayoutmanager.inc.H"
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "helloworld.examples.w.libcxx.com";
+}
 
 // This is attached as the main_window's appdata.
 
@@ -338,8 +344,6 @@ void gridlayoutmanager()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Grid Layout Manager");
-	main_window->set_window_class("main",
-				      "gridlayoutmanager@examples.w.libcxx.com");
 
 	auto close_flag=close_flag_ref::create();
 

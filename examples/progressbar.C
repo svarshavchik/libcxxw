@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/label.H>
@@ -20,6 +21,11 @@
 
 #include <string>
 #include <iostream>
+
+std::string x::appid() noexcept
+{
+	return "progressbar.examples.w.libcxx.com";
+}
 
 // Create the progress bar.
 
@@ -91,7 +97,7 @@ void showprogressbar()
 
 	main_window->set_window_title("Progress bar!");
 	main_window->set_window_class("main",
-				      "progressbar@examples.w.libcxx.com");
+				      "progressbar.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

@@ -8,6 +8,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -16,6 +17,11 @@
 #include <x/w/label.H>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "table.examples.w.libcxx.com";
+}
 
 struct mondata {
 	std::string process;

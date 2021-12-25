@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -25,6 +26,11 @@
 #include <iostream>
 #include <sstream>
 #include <optional>
+
+std::string x::appid() noexcept
+{
+	return "validatedinput.examples.w.libcxx.com";
+}
 
 std::tuple<x::w::validated_input_field<char>,
 	   x::w::validated_input_field<int>>
@@ -329,7 +335,7 @@ void validatedinputfields()
 
 	main_window->set_window_title("Enter a message");
 	main_window->set_window_class("main",
-				      "validatedinputfields@examples.w.libcxx.com");
+				      "validatedinput.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,

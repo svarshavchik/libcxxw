@@ -9,6 +9,7 @@
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/weakcapture.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -30,6 +31,11 @@
 #include <cmath>
 #include <algorithm>
 #include <fenv.h>
+
+std::string x::appid() noexcept
+{
+	return "statictooltip.examples.w.libcxx.com";
+}
 
 // Maximum number of digits before the decimal point
 //
@@ -711,7 +717,7 @@ void statictooltip()
 
 	main_window->set_window_title("Calculator");
 	main_window->set_window_class("main",
-				      "statictooltip@examples.w.libcxx.com");
+				      "statictooltip.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,

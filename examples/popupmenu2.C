@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -21,6 +22,11 @@
 #include <x/threads/run.H>
 #include <string>
 #include <iostream>
+
+std::string x::appid() noexcept
+{
+	return "popupmenu2.examples.w.libcxx.com";
+}
 
 // Temporary holding object for the most recently created context menu popup.
 
@@ -150,7 +156,7 @@ void popupmenu2()
 
 	main_window->set_window_title("Click the label for a popup");
 	main_window->set_window_class("main",
-				      "popupmenu2@examples.w.libcxx.com");
+				      "popupmenu2.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,

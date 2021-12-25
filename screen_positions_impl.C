@@ -36,10 +36,13 @@ void screen_positionsObj::implObj::save()
 
 	auto lock=create_unique();
 
+	create_writelock(); // Make sure root element exists.
+
 	data->readlock()->save_file(filename);
 }
 
-static auto load(const std::string &filename)
+static auto load(const std::string &filename,
+		 const std::string &version)
 {
 	LOG_FUNC_SCOPE(load_log);
 
@@ -48,7 +51,19 @@ static auto load(const std::string &filename)
 		try
 		{
 			try {
-				return xml::doc::create(filename);
+				auto d=xml::doc::create(filename);
+
+				auto lock=d->readlock();
+
+				lock->get_root();
+
+				lock->get_xpath("/windows")->to_node();
+
+				auto s=lock->get_any_attribute("version");
+
+				if (s == version)
+					return d;
+
 			} catch (const exception &e)
 			{
 				throw EXCEPTION(filename << ": " << e);
@@ -56,11 +71,21 @@ static auto load(const std::string &filename)
 		} CATCH_EXCEPTIONS;
 	}
 
-	return xml::doc::create();
+	auto d=xml::doc::create();
+
+	auto l=d->writelock();
+
+	l->create_child()->element({"windows"})->attribute({"version",
+			version});
+
+	return d;
 }
 
-screen_positionsObj::implObj::implObj(const std::string &filename)
-	: filename{filename}, data{load(filename)}
+screen_positionsObj::implObj::implObj(const std::string &filename,
+				      const std::string &version)
+	: filename{filename}, version{version},
+	  data{load(filename, version)},
+	  current_main_window_handlers{current_main_window_handlers_t::create()}
 {
 }
 
@@ -81,6 +106,15 @@ std::string saved_element_to_xpath(const std::string_view &type,
 	return s;
 }
 
+xml::writelock screen_positionsObj::implObj::create_writelock()
+{
+	auto lock=data->writelock();
+
+	lock->get_root();
+
+	return lock;
+}
+
 xml::writelock
 screen_positionsObj::implObj
 ::create_writelock_for_saving(const std::string_view &type,
@@ -88,9 +122,8 @@ screen_positionsObj::implObj
 {
 	std::string name{name_s};
 
-	auto lock=data->writelock();
+	auto lock=create_writelock();
 
-	if (lock->get_root())
 	{
 		auto xpath=lock->get_xpath(saved_element_to_xpath(type,
 								  name_s));
@@ -104,10 +137,6 @@ screen_positionsObj::implObj
 			lock->remove();
 		}
 	}
-	else
-	{
-		lock->create_child()->element({"windows"});
-	}
 
 	lock->get_xpath("/windows")->to_node();
 
@@ -117,45 +146,32 @@ screen_positionsObj::implObj
 	return lock;
 }
 
-void main_windowObj::save(const screen_positions &pos) const
+main_windowObj::~main_windowObj()
 {
-	auto handler=impl->handler;
-
-	if (handler->window_id.empty())
-		throw EXCEPTION(_("Window label was not set."));
-
-	in_thread([me=const_ref{this},
-		   pos,
-		   lock=pos->impl->create_shared()]
+	in_thread([impl=this->impl,
+		   lock=impl->handler->positions->impl->create_shared()]
 		  (ONLY IN_THREAD)
-		  {
-			  me->save(IN_THREAD, pos);
-		  });
-}
-
-void main_windowObj::save(ONLY IN_THREAD,
-			  const screen_positions &pos) const
-{
-	auto handler=impl->handler;
-
-	if (handler->window_id.empty())
-		throw EXCEPTION(_("Window label was not set."));
-
-	auto [wx, wy] = handler->root_xy.get();
-
-	auto r=handler->current_position.get();
-
-	// A window or a dialog can be created but never shown, so its
-	// screen position will not get initialized. Avoid saving this
-	// window's coordinates, in this case.
-
-	if (handler->has_exposed(IN_THREAD))
 	{
-		auto lock=pos->impl
+		auto handler=impl->handler;
+
+		auto [wx, wy] = handler->root_xy.get();
+
+		auto r=handler->current_position.get();
+
+		// A window or a dialog can be created but never shown, so its
+		// screen position will not get initialized. Avoid saving this
+		// window's coordinates, in this case.
+
+		if (!handler->has_exposed(IN_THREAD))
+			return;
+
+		auto lock=handler->positions->impl
 			->create_writelock_for_saving("window",
 						      handler->window_id);
 
-		auto window=lock->create_child()->element({"x"})->text(wx);
+		auto window=lock->create_child()->element({"position"});
+
+		window=window->create_child()->element({"x"})->text(wx);
 		window=window->parent()->create_next_sibling()->element({"y"})
 			->create_child()->text(wy);
 		window=window->parent()->create_next_sibling()
@@ -165,59 +181,33 @@ void main_windowObj::save(ONLY IN_THREAD,
 
 		if (preserve_screen_number_prop.get())
 		{
-			std::ostringstream screen_number;
-
-			screen_number << get_screen()->impl->screen_number;
-
 			window=window->parent()->create_next_sibling()
 				->element({"screen"})
-				->create_child()->text(screen_number.str());
+				->create_child()->text(
+					handler->get_screen()->impl
+					->screen_number
+				);
 		}
-	}
-
-	std::vector<dialog> all_dialogs;
-
-	{
-		implObj::all_dialogs_t::lock lock{impl->all_dialogs};
-
-		all_dialogs.reserve(lock->size());
-
-		for (const auto &dialogs:*lock)
-			all_dialogs.push_back(dialogs.second);
-	}
-
-	// Recursively invoke save() of all containers/elements in the window
-
-	handler->save(IN_THREAD, pos);
-
-	// Recursively save all dialog positions.
-
-	for (const auto &d:all_dialogs)
-	{
-		auto handler=d->dialog_window->impl->handler;
-
-		if (handler->window_id.empty())
-			continue;
-
-		d->dialog_window->save(IN_THREAD, pos);
-	}
+	});
 }
 
-
-std::optional<main_window_config::window_info_t>
-screen_positionsObj::implObj::find(const std::string_view &window_name) const
+std::optional<window_position_t>
+screen_positionsObj::implObj::find_window_position(
+	const std::string_view &window_name
+) const
 {
 	LOG_FUNC_SCOPE(load_log);
 
 	auto lock=data->readlock();
 
-	std::optional<main_window_config::window_info_t> info;
+	std::optional<window_position_t> info;
 
 	if (!lock->get_root())
 		return info;
 
 	auto xpath=lock->get_xpath(saved_element_to_xpath("window",
-							  window_name));
+							  window_name)
+				   + "/position");
 
 	size_t n=xpath->count();
 
@@ -228,36 +218,31 @@ screen_positionsObj::implObj::find(const std::string_view &window_name) const
 		try {
 			info.emplace();
 
+			auto &r=info->coordinates;
+
 			auto value=lock->clone();
 
 			value->get_xpath("x")->to_node();
 
-			auto x=value->get_text();
+			r.x=value->get_text<coord_t>();
 
 			value=lock->clone();
 
 			value->get_xpath("y")->to_node();
 
-			auto y=value->get_text();
+			r.y=value->get_text<coord_t>();
 
 			value=lock->clone();
 
 			value->get_xpath("width")->to_node();
 
-			auto width=value->get_text();
+			r.width=value->get_text<dim_t>();
 
 			value=lock->clone();
 
 			value->get_xpath("height")->to_node();
 
-			auto height=value->get_text();
-
-			auto &r=info->coordinates;
-
-			std::istringstream{x} >> r.x;
-			std::istringstream{y} >> r.y;
-			std::istringstream{width} >> r.width;
-			std::istringstream{height} >> r.height;
+			r.height=value->get_text<dim_t>();
 
 			value=lock->clone();
 
@@ -268,9 +253,7 @@ screen_positionsObj::implObj::find(const std::string_view &window_name) const
 			{
 				xpath->to_node();
 
-				size_t n=0;
-				std::istringstream{value->get_text()} >> n;
-				info->screen_number=n;
+				info->screen_number=value->get_text<size_t>();
 			}
 
 			return info;

@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/button_appearance.H>
@@ -31,13 +32,19 @@
 #include "close_flag.H"
 #include "customkeyfocus.H"
 
+std::string x::appid() noexcept
+{
+	return "customkeyfocus.examples.w.libcxx.com";
+}
+
 // custom subclass of child_elementObj. Fixed metrics, 50x50 pixel size.
 
 static inline auto create_child_element_init_params()
 {
 	x::w::child_element_init_params init_params;
 
-	init_params.scratch_buffer_id="my_element@examples.w.libcxx.com";
+	init_params.scratch_buffer_id=
+		"my_element.customkeyfocus.examples.w.libcxx.com";
 
 	init_params.initial_metrics={
 		{50, 50, 50},

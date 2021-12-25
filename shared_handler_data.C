@@ -43,12 +43,6 @@ shared_handler_dataObj::shared_handler_dataObj()
 
 shared_handler_dataObj::~shared_handler_dataObj()=default;
 
-void shared_handler_dataObj::set_toplevel_handler(const ref<generic_windowObj
-						  ::handlerObj> &h)
-{
-	toplevel_handler=h;
-}
-
 ref<obj> shared_handler_dataObj
 ::opening_exclusive_popup(ONLY IN_THREAD,
 			 const ref<popupObj::handlerObj> &popup)
@@ -145,13 +139,6 @@ void shared_handler_dataObj
 void shared_handler_dataObj::close_all_menu_popups(ONLY IN_THREAD)
 {
 	hide_menu_popups_until(IN_THREAD, opened_menu_popups->end());
-#if 0
-	// invoked on_validate callback in an input field, if it had
-	// keyboard focus.
-	auto h=toplevel_handler.getptr();
-	if (h)
-		h->unset_keyboard_focus(IN_THREAD, {});
-#endif
 }
 
 ref<obj> shared_handler_dataObj

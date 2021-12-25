@@ -571,11 +571,9 @@ void testpane(const testpaneoptions &options)
 	auto configfile=
 		LIBCXX_NAMESPACE::configdir("testpane@libcxx.com") + "/windows";
 
-	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create();
 
 	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
-
-	config.restore(pos);
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create(config,
@@ -614,8 +612,6 @@ void testpane(const testpaneoptions &options)
 
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 	lock.wait([&] { return *lock; });
-
-	main_window->save(pos);
 }
 
 int main(int argc, char **argv)

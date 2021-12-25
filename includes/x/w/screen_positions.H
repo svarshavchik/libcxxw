@@ -25,7 +25,8 @@ public:
 	static screen_positions create();
 
 	//! Initialize a custom screen_positions object.
-	static screen_positions create(const std::string &filename);
+	static screen_positions create(const std::string &filename,
+				       const std::string &version);
 
 	//! Object creation factory.
 
@@ -41,9 +42,11 @@ public:
 
 		//! Forward create() to the internal implementation
 
-		static inline ptrrefType create(const std::string &filename)
+		static inline ptrrefType create(const std::string &filename,
+						const std::string &version)
 		{
-			return screen_positionsBase::create(filename);
+			return screen_positionsBase::create(filename,
+							    version);
 		}
 	};
 };

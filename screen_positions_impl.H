@@ -11,11 +11,21 @@
 #include <x/xml/doc.H>
 #include <x/xml/writelock.H>
 #include <x/sharedlock.H>
+#include <x/weakmultimap.H>
+#include <x/mpobj.H>
 
 #include <optional>
 #include <string_view>
+#include <unordered_set>
 
 LIBCXXW_NAMESPACE_START
+
+//! Restored window position.
+
+struct window_position_t {
+	std::optional<size_t> screen_number;
+	rectangle coordinates;
+};
 
 //! Internal implementation object.
 
@@ -32,6 +42,9 @@ class screen_positionsObj::implObj : public sharedlockObj {
 	//! Filename
 	const std::string filename;
 
+	//! Version
+	const std::string version;
+
 	//! Internal XML data.
 	const xml::doc data;
 
@@ -39,7 +52,8 @@ class screen_positionsObj::implObj : public sharedlockObj {
 
 	//! Construct a new instance and initialize it with the contents
 	//! of the specified file.
-	implObj(const std::string &filename);
+	implObj(const std::string &filename,
+		const std::string &version);
 
 	//! Destructor
 	~implObj();
@@ -47,9 +61,15 @@ class screen_positionsObj::implObj : public sharedlockObj {
 	//! Find a memorized position.
 
 	//! \internal
-	std::optional<main_window_config::window_info_t
-		      > find(const std::string_view &identifier)
-		const LIBCXX_HIDDEN;
+	std::optional<window_position_t> find_window_position(
+		const std::string_view &identifier
+	) const;
+
+	//! Create a new write lock.
+
+	//! Creates the root <windows> element, for an empty document.
+
+	xml::writelock create_writelock();
 
 	//! Create a new node when saving something.
 
@@ -59,6 +79,20 @@ class screen_positionsObj::implObj : public sharedlockObj {
 
 	//! Save all memorized positions in a file.
 	void save();
+
+	//! Container for current_main_window_handlers
+
+	typedef weakmultimap<std::string,
+			     main_windowObj::handlerObj
+			     > current_main_window_handlers_t;
+
+	//! Current main window handlers
+
+	//! Enforce unique main window ids. Each main_windowObj::handlerObj
+	//! inserts itself under its id. If it exists already an exception
+	//! gets thrown.
+
+	const current_main_window_handlers_t current_main_window_handlers;
 };
 
 //! Internal Xpath assembler.

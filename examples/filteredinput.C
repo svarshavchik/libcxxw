@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -26,6 +27,11 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+
+std::string x::appid() noexcept
+{
+	return "filteredinput.examples.w.libcxx.com";
+}
 
 void create_mainwindow(const x::w::main_window &main_window,
 		       const close_flag_ref &close_flag)
@@ -286,7 +292,7 @@ void filteredinputfield()
 
 	main_window->set_window_title("Enter your ID");
 	main_window->set_window_class("main",
-				      "filteredinput@examples.w.libcxx.com");
+				      "filteredinput.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,

@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -18,6 +19,11 @@
 #include <x/w/image.H>
 #include <string>
 #include <iostream>
+
+std::string x::appid() noexcept
+{
+	return "helloworld.examples.w.libcxx.com";
+}
 
 void testlabel()
 {
@@ -162,9 +168,14 @@ void testlabel()
 	// Set the window manager class instance and resource identifiers.
 	// This sets the internal WM_CLASS window property that some window
 	// managers use for window-specific settings.
+	//
+	// The default resource identifier is set to the window's name,
+	// which defaults to "main" (unless overridden when the main_window
+	// gets created), and to the appid(), so these values are the default
+	// ones:
 
 	main_window->set_window_class("main",
-				      "helloworld@examples.w.libcxx.com");
+				      "helloworld.examples.w.libcxx.com");
 
 	// Install a callback lambda that the connection thread invokes when
 	// it gets a "close window" message from the display server.

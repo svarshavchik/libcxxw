@@ -18,11 +18,14 @@
 #include "x/w/connection.H"
 #include "x/w/generic_window_appearance.H"
 #include "x/w/main_window_appearance.H"
+#include "x/w/screen_positions.H"
 #include "busy.H"
 #include "catch_exceptions.H"
 #include "inherited_visibility_info.H"
 #include "size_hints.H"
 #include "messages.H"
+#include "screen_positions_impl.H"
+#include <x/messages.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -51,18 +54,41 @@ main_window_handler_constructor_params
 {
 }
 
-main_windowObj::handlerObj::handlerObj(const constructor_params &params,
-				       const std::optional<rectangle>
-				       &suggested_position,
-				       const std::string &window_id)
+main_windowObj::handlerObj::handlerObj(
+	const constructor_params &params,
+	const std::optional<rectangle> &suggested_position,
+	const std::string &window_id,
+	const screen_positions &positions)
 	: superclass_t{{}, params},
 	  on_delete_callback_thread_only([](THREAD_CALLBACK,
 					    const auto &ignore) {}),
 	  net_wm_sync_request_counter{screenref->impl->thread},
 	  suggested_position_thread_only{suggested_position},
 	  appearance{params.appearance},
-	  window_id{window_id}
+	  window_id{window_id},
+	  positions{positions}
 {
+}
+
+void main_windowObj::handlerObj::window_id_hierarchy(
+	std::vector<std::string> &v) const
+{
+	v.push_back(window_id);
+}
+
+void main_windowObj::handlerObj::register_current_main_window()
+{
+	auto me=ref{this};
+
+	if (positions->impl->current_main_window_handlers->find_or_create(
+		    window_id,
+		    [&]
+		    {
+			    return me;
+		    }) != me)
+		throw EXCEPTION(gettextmsg(
+					_("Main window \"%1%\" already exists"),
+					window_id));
 }
 
 void main_windowObj::handlerObj::installed(ONLY IN_THREAD)

@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include <x/mpobj.H>
+#include <x/appid.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/pidinfo.H>
@@ -25,6 +26,11 @@
 #include <algorithm>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "uigenerator1.examples.w.libcxx.com";
+}
 
 static inline auto
 create_standard_combobox(const x::w::factory &factory,
@@ -294,7 +300,7 @@ void uigenerator1()
 			 });
 
 	main_window->set_window_class("main",
-				      "uigenerator1@examples.w.libcxx.com");
+				      "uigenerator1.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/main_window_appearance.H>
@@ -29,6 +30,11 @@
 #include <optional>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "customfontrenderer.examples.w.libcxx.com";
+}
 
 struct color1_tag;
 struct color2_tag;
@@ -52,7 +58,7 @@ static inline auto create_child_element_init_params(x::w::dim_t width,
 	x::w::child_element_init_params init_params;
 
 	init_params.scratch_buffer_id=
-		"customfontrenderer@examples.w.libcxx.com";
+		"customfontrenderer@customfontrenderer.examples.w.libcxx.com";
 
 	// The type-safe integer classes employed by the library,
 	// x::w::dim_t, x::w::coord_t, et. al. overload the + operator

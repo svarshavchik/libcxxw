@@ -45,9 +45,6 @@ void appObj::appearances_elements_initialize(app_elements_tptr &elements,
 		{"appearance_dialog@cxxwcreator.w.libcxx.com",
 		 true};
 
-	appearance_args.restore(pos,
-				"appearance_dialog");
-
 	args.elements.appearance_dialog=mw->create_dialog
 		(appearance_args,
 		 [&](const auto &d)

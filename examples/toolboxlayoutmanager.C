@@ -12,6 +12,7 @@
 #include <x/obj.H>
 #include <x/singletonptr.H>
 #include <x/config.H>
+#include <x/appid.H>
 
 #include <x/w/screen_positions.H>
 #include <x/w/main_window.H>
@@ -33,6 +34,11 @@
 #include <sstream>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "toolboxlayoutmanager.examples.w.libcxx.com";
+}
 
 // Singleton application object.
 
@@ -177,7 +183,7 @@ static void create_toolbox_contents(const x::w::toolboxlayoutmanager &tlm)
 		// And pass the custom appearance as an additional parameter
 		// to create_radio().
 
-		auto b=f->create_radio("toolboxradiogroup@examples.w.libcxx.com",
+		auto b=f->create_radio("toolboxradiogroup@toolboxlayoutmanager.examples.w.libcxx.com",
 				       [](const auto &f) {},
 				       custom);
 
@@ -229,13 +235,10 @@ static void create_main_window(const x::w::main_window &mw,
 
 	// Creating a dialog with this unique identifier.
 	x::w::create_dialog_args
-		args{"toolbox_dialog1@examples.w.libcxx.com"};
+		args{"toolbox_dialog1.toolboxlayoutmanager.examples.w.libcxx.com"};
 
 	// Initial position of this dialog is to the left of the main window.
 	args.restore(x::w::dialog_position::on_the_left);
-
-	// But if we saved the previous dialog position, load it.
-	args.restore(pos, "toolbox");
 
 	// The new dialog's layout manager is th etoolbox layout manager.
 	args.dialog_layout=dialog_lm;
@@ -257,7 +260,7 @@ static void create_main_window(const x::w::main_window &mw,
 	// Set the X window type and class, and hints. Most window manager
 	// probably ignore this, but we'll go ahead and do this.
 	d->dialog_window->set_window_class("toolbox",
-					   "toolboxlayoutmanager@examples.w.libcxx.com");
+					   "toolboxlayoutmanager.examples.w.libcxx.com");
 	d->dialog_window->set_window_type("toolbar,normal");
 
 	// If the window manager gives the dialog a close button, have its
@@ -377,8 +380,6 @@ new_app create_app(const x::w::screen_positions &pos)
 
 	x::w::main_window_config config{"main"};
 
-	config.restore(pos);
-
 	auto main_window=x::w::main_window
 		::create(config,
 			 [&]
@@ -394,7 +395,7 @@ new_app create_app(const x::w::screen_positions &pos)
 
 	main_window->set_window_title("Toolbox");
 	main_window->set_window_class("main",
-				      "testtoolbox@examples.w.libcxx.com");
+				      "toolboxlayoutmanager.examples.w.libcxx.com");
 
 	return new_app::create(main_window, toolbox_dialog);
 }
@@ -403,11 +404,7 @@ void testtoolbox()
 {
 	x::destroy_callback::base::guard guard;
 
-	auto configfile=
-		x::configdir("toolboxlayoutmanager@examples.w.libcxx.com")
-		+ "/windows";
-
-	new_app my_app=create_app(x::w::screen_positions::create(configfile));
+	new_app my_app=create_app(x::w::screen_positions::create());
 
 	guard(my_app->main_window->connection_mcguffin());
 
@@ -435,11 +432,6 @@ void testtoolbox()
 		lock{my_app->close_flag->flag};
 
 	lock.wait([&] { return *lock; });
-
-	auto pos=x::w::screen_positions::create();
-
-	my_app->main_window->save(pos);
-	my_app->toolbox_dialog->dialog_window->save(pos);
 }
 
 int main(int argc, char **argv)

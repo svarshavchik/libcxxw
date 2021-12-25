@@ -10,6 +10,7 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include <x/weakcapture.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/label.H>
@@ -30,6 +31,11 @@
 #include <iomanip>
 #include <sstream>
 #include <cmath>
+
+std::string x::appid() noexcept
+{
+	return "scrollbar.examples.w.libcxx.com";
+}
 
 // Need an object to keep track of some metadata, that can be captured
 // by several callbacks.
@@ -105,7 +111,7 @@ public:
 		// Bad input. Show an error dialog.
 
 		auto d=main_window->create_ok_dialog
-			({"scrollbar_error@examples.w.libcxx.com", true},
+			({"error@scrollbar.examples.w.libcxx.com", true},
 			 "alert",
 			 []
 			 (const x::w::factory &f)
@@ -114,12 +120,12 @@ public:
 			 },
 
 			 main_window->destroy_when_closed
-			 ("scrollbar_error@examples.w.libcxx.com"));
+			 ("error@scrollbar.examples.w.libcxx.com"));
 
 		d->dialog_window->set_window_title("Error");
 		main_window->set_window_class
 			("main",
-			 "scrollbar@examples.w.libcxx.com");
+			 "scrollbar.examples.w.libcxx.com");
 		d->dialog_window->show_all();
 	}
 

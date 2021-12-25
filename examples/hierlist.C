@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/listlayoutmanager.H>
@@ -19,6 +20,11 @@
 #include <iostream>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "hierlist.examples.w.libcxx.com";
+}
 
 static const char * const lorem_ipsum[]={
 	"Lorem ipsum",
@@ -204,7 +210,7 @@ void hierlist()
 
 	main_window->set_window_title("Hierarchical list");
 	main_window->set_window_class("main",
-				      "hierlist@examples.w.libcxx.com");
+				      "hierlist.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

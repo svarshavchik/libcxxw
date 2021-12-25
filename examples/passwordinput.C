@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -21,6 +22,11 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+
+std::string x::appid() noexcept
+{
+	return "passwordinput.examples.w.libcxx.com";
+}
 
 x::w::input_field create_mainwindow(const x::w::main_window &main_window)
 {
@@ -65,7 +71,7 @@ void enterpassword()
 
 	main_window->set_window_title("Password!");
 	main_window->set_window_class("main",
-				      "passwordinput@examples.w.libcxx.com");
+				      "passwordinput.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,

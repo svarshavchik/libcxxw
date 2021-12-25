@@ -75,17 +75,11 @@ void testcolorpicker(const testcolorpicker_options &options)
 
 	auto close_flag=close_flag_ref::create();
 
-	auto configfile=
-		LIBCXX_NAMESPACE::configdir("testcolorpicker@libcxx.com")
-		+ "/windows";
-
-	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create();
 
 	color_pickerptr cpp;
 
 	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
-
-	config.restore(pos);
 
 	auto main_window=main_window::create
 		(config,
@@ -263,8 +257,6 @@ void testcolorpicker(const testcolorpicker_options &options)
 	mpcobj<bool>::lock lock{close_flag->flag};
 
 	lock.wait([&] { return *lock; });
-
-	main_window->save(pos);
 
 	std::cout << "Final color: " << cpp->current_color()
 		  << std::endl;

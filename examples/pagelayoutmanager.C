@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -24,6 +25,11 @@
 
 #include <iostream>
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "pagelayoutmanager.examples.w.libcxx.com";
+}
 
 /*
 ** Create:
@@ -396,7 +402,7 @@ void testpage()
 
 	mw->set_window_title("Page!");
 	mw->set_window_class("main",
-			     "pagelayoutmanager@examples.w.libcxx.com");
+			     "pagelayoutmanager.examples.w.libcxx.com");
 
 	guard(mw->connection_mcguffin());
 

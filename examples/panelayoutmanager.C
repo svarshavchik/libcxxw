@@ -10,6 +10,7 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include <x/config.H>
+#include <x/appid.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
@@ -30,6 +31,11 @@
 
 #include "close_flag.H"
 #include "panelayoutmanager.H"
+
+std::string x::appid() noexcept
+{
+	return "panelayoutmanager.examples.w.libcxx.com";
+}
 
 static void insert(const x::w::container &c,
 		   x::w::scrollbar_visibility v);
@@ -582,17 +588,9 @@ void testpane(const options &opts)
 
 	auto close_flag=close_flag_ref::create();
 
-	// Restore previous window position and size.
-
-	auto configfile=
-		x::configdir("panelayoutmanager@examples.w.libcxx.com")
-		+ "/windows";
-
-	auto pos=x::w::screen_positions::create(configfile);
+	auto pos=x::w::screen_positions::create();
 
 	x::w::main_window_config config{"main"};
-
-	config.restore(pos);
 
 	auto main_window=x::w::main_window
 		::create(config,
@@ -603,7 +601,8 @@ void testpane(const options &opts)
 			 });
 
 	main_window->set_window_title("Panes!");
-	main_window->set_window_class("main", "testpane@examples.w.libcxx.com");
+	main_window->set_window_class("main",
+				      "panelayoutmanager.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 
@@ -624,10 +623,6 @@ void testpane(const options &opts)
 
 	x::mpcobj<bool>::lock lock{close_flag->flag};
 	lock.wait([&] { return *lock; });
-
-	// Save window position and size.
-
-	main_window->save(pos);
 }
 
 int main(int argc, char **argv)

@@ -9,6 +9,7 @@
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/ondestroy.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/listlayoutmanager.H>
@@ -25,6 +26,11 @@
 #include <courier-unicode.h>
 #include <string>
 #include <iostream>
+
+std::string x::appid() noexcept
+{
+	return "searchinputfield.examples.w.libcxx.com";
+}
 
 static void search_function(const x::w::input_field_search_info &search_info)
 {
@@ -296,7 +302,7 @@ void searchinputfield()
 
 	main_window->set_window_title("QuackQuackRun!");
 	main_window->set_window_class("main",
-				      "searchinputfield@examples.w.libcxx.com");
+				      "searchinputfield.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,

@@ -211,7 +211,6 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 		args{"toolbox_dialog1@examples.w.libcxx.com"};
 
 	args.restore(LIBCXX_NAMESPACE::w::dialog_position::on_the_left);
-	args.restore(pos, "toolbox");
 
 	args.dialog_layout=dialog_lm;
 	args.grab_input_focus=false;
@@ -331,8 +330,6 @@ new_app create_app(const testtoolboxoptions &options,
 
 	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
 
-	config.restore(pos);
-
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create(config,
 			 [&]
@@ -354,15 +351,10 @@ void testtoolbox(const testtoolboxoptions &options)
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
-	auto configfile=
-		LIBCXX_NAMESPACE::configdir("testtoolbox@libcxx.com")
-		+ "/windows";
-
-
 	new_app my_app=create_app(options,
 				  options.norestore->value ?
 				  LIBCXX_NAMESPACE::w::screen_positions::create() :
-				  LIBCXX_NAMESPACE::w::screen_positions::create(configfile));
+				  LIBCXX_NAMESPACE::w::screen_positions::create());
 
 	guard(my_app->main_window->connection_mcguffin());
 
@@ -449,10 +441,6 @@ void testtoolbox(const testtoolboxoptions &options)
 	{
 		lock.wait([&] { return *lock; });
 	}
-	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create();
-
-	my_app->main_window->save(pos);
-	my_app->toolbox_dialog->dialog_window->save(pos);
 }
 
 int main(int argc, char **argv)

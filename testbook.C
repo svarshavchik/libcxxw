@@ -366,14 +366,10 @@ void testbook()
 
 	auto close_flag=close_flag_ref::create();
 
-	auto configfile=
-		LIBCXX_NAMESPACE::configdir("testbook@libcxx.com") + "/windows";
-
-	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create();
 
 	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
 
-	config.restore(pos);
 	auto mw=LIBCXX_NAMESPACE::w::main_window::create(config,
 							 []
 							 (const auto &mw)
@@ -402,7 +398,6 @@ void testbook()
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 
 	lock.wait([&] { return *lock; });
-	mw->save(pos);
 }
 
 int main(int argc, char **argv)

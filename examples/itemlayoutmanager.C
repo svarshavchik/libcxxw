@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -27,6 +28,11 @@
 #include <courier-unicode.h>
 #include <unordered_set>
 #include <vector>
+
+std::string x::appid() noexcept
+{
+	return "itemlayoutmanager.examples.w.libcxx.com";
+}
 
 // The application object.
 
@@ -304,7 +310,7 @@ void itemlayoutmanager()
 
 	main_window->set_window_title("Sam's pizzeria");
 	main_window->set_window_class("main",
-				      "itemlayoutmanager@examples.w.libcxx.com");
+				      "itemlayoutmanager.examples.w.libcxx.com");
 	// Put an initial item into the list.
 	my_app->add_toppings({"cheese"});
 	main_window->on_delete

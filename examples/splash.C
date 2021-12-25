@@ -7,6 +7,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/main_window_appearance.H>
@@ -21,6 +22,11 @@
 #include <x/fditer.H>
 
 #include <string>
+
+std::string x::appid() noexcept
+{
+	return "splash.examples.w.libcxx.com";
+}
 
 // Creator for the splash window, factored out for readability.
 
@@ -165,7 +171,7 @@ void splashwindow(const options &opts)
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_class("splash",
-				      "splash@examples.w.libcxx.com");
+				      "splash.examples.w.libcxx.com");
 
 	main_window->show_all();
 

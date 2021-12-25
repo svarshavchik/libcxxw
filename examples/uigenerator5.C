@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/pidinfo.H>
 #include <x/config.H>
+#include <x/appid.H>
 #include <x/w/main_window.H>
 #include <x/w/listlayoutmanager.H>
 #include <x/w/listitemhandle.H>
@@ -21,6 +22,11 @@
 #include <sstream>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "uigenerator5.examples.w.libcxx.com";
+}
 
 static inline void create_main_window(const x::w::main_window &main_window,
 				      const x::w::screen_positions &pos)
@@ -67,17 +73,9 @@ void uigenerator5()
 {
 	x::destroy_callback::base::guard guard;
 
-	// Configuration filename where we save the window's position.
-
-	std::string configfile=
-		x::configdir("uigenerator5@examples.w.libcxx.com")
-		+ "/windows";
-
 	x::w::main_window_config config{"main"};
 
-	auto pos=x::w::screen_positions::create(configfile);
-
-	config.restore(pos);
+	auto pos=x::w::screen_positions::create();
 
 	auto close_flag=close_flag_ref::create();
 
@@ -94,7 +92,7 @@ void uigenerator5()
 	main_window->set_window_title("List");
 
 	main_window->set_window_class("main",
-				      "uigenerator5@examples.w.libcxx.com");
+				      "uigenerator5.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 
@@ -114,8 +112,6 @@ void uigenerator5()
 	main_window->show_all();
 
 	close_flag->wait();
-
-	main_window->save(pos);
 }
 
 int main(int argc, char **argv)

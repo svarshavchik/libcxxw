@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 #include <x/weakcapture.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -33,6 +34,11 @@
 #include <sstream>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "menu.examples.w.libcxx.com";
+}
 
 void testmenu();
 
@@ -76,7 +82,7 @@ void testmenu()
 
 	main_window->set_window_title("Menus!");
 	main_window->set_window_class("main",
-				      "menu@examples.w.libcxx.com");
+				      "menu.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 
@@ -266,7 +272,7 @@ void file_menu(const x::w::main_window &main_window,
 					auto & [main_window]=*got;
 
 					open_file_dialog(main_window,
-							 "file_new@example.libcxx.com");
+							 "file_new@menu.example.libcxx.com");
 				}
 			},
 			"New",
@@ -282,7 +288,7 @@ void file_menu(const x::w::main_window &main_window,
 					auto & [main_window]=*got;
 
 					open_file_dialog(main_window,
-							 "file_open@example.libcxx.com");
+							 "file_open@menu.example.libcxx.com");
 				}
 			},
 			"Open",
@@ -391,7 +397,7 @@ size_t view_menu(const x::w::listlayoutmanager &m)
 			x::w::separator{},
 
 			// A menu option, radio group, initially selected
-			x::w::menuoption{"radiooption@examples.libcxx.com"},
+			x::w::menuoption{"radiooption@menu.examples.libcxx.com"},
 			x::w::selected{},
 			[]
 			(ONLY IN_THREAD,
@@ -403,7 +409,7 @@ size_t view_menu(const x::w::listlayoutmanager &m)
 			"Basic",
 
 			// A menu option, radio group, initially selected
-			x::w::menuoption{"radiooption@examples.libcxx.com"},
+			x::w::menuoption{"radiooption@menu.examples.libcxx.com"},
 			[]
 			(ONLY IN_THREAD,
 			 const x::w::list_item_status_info_t &info)
@@ -427,7 +433,7 @@ static inline void help_question(const x::w::main_window &main_window)
 	// convert the ref.
 
 	x::w::input_dialog help_question=
-		main_window->get_dialog("help_question@example.libcxx.com");
+		main_window->get_dialog("help_question@menu.example.libcxx.com");
 
 	// Before showing the dialog, clear the input field's existing
 	// contents, if any. We keep show()ing the same dialog object,
@@ -472,7 +478,7 @@ void help_menu(const x::w::main_window &main_window,
 					auto & [main_window]=*got;
 
 					main_window->get_dialog
-						("help_about@example.libcxx.com")
+						("help_about@menu.example.libcxx.com")
 						->dialog_window
 						->show_all();
 				}
@@ -510,7 +516,7 @@ void create_help_about(const x::w::main_window &main_window)
 
 	x::w::dialog d=main_window->create_ok_dialog
 		(// dialog id, modal dialog flag
-		 {"help_about@example.libcxx.com", true},
+		 {"help_about@menu.example.libcxx.com", true},
 		 "alert",
 		 []
 		 (const x::w::gridfactory &f)
@@ -602,7 +608,7 @@ void create_help_question(const x::w::main_window &main_window)
 {
 	x::w::input_dialog d=main_window->create_input_dialog
 		(// Dialog ID, modal dialog flag:
-		 {"help_question@example.libcxx.com", true},
+		 {"help_question@menu.example.libcxx.com", true},
 		 "question",
 		 []
 		 (const x::w::gridfactory &f)
@@ -690,7 +696,7 @@ void create_file_open(const x::w::main_window &main_window)
 	set_filename_filters(config);
 
 	x::w::file_dialog d=main_window->create_file_dialog
-		({"file_open@example.libcxx.com", true},
+		({"file_open@menu.example.libcxx.com", true},
 		 config);
 
 	d->dialog_window->set_window_title("Open File");
@@ -720,7 +726,7 @@ void create_file_new(const x::w::main_window &main_window)
 	set_filename_filters(config);
 
 	x::w::file_dialog d=main_window->create_file_dialog
-		({"file_new@example.libcxx.com", true}, config);
+		({"file_new@menu.example.libcxx.com", true}, config);
 
 	d->dialog_window->set_window_title("Create File");
 }

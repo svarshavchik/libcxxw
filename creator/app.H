@@ -152,10 +152,6 @@ extern x::functionref<x::w::input_field_filter_callback_t> get_label_filter();
 
 class appObj : public const_app_elements_t, virtual public x::obj {
 
-	//! My configuration file
-
-	const std::string configfile;
-
 public:
 	//! Constructor
 	appObj();

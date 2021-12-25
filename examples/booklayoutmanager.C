@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include <x/mpobj.H>
+#include <x/appid.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/ref.H>
@@ -25,6 +26,11 @@
 
 #include <iostream>
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "booklayoutmanager.examples.w.libcxx.com";
+}
 
 /*
 ** Create:
@@ -378,7 +384,7 @@ void testbook()
 
 	mw->set_window_title("Book!");
 	mw->set_window_class("main",
-			     "book@examples.w.libcxx.com");
+			     "booklayoutmanager.examples.w.libcxx.com");
 
 	guard(mw->connection_mcguffin());
 

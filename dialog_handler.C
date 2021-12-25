@@ -15,9 +15,10 @@ LIBCXXW_NAMESPACE_START
 
 dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 				  &parent_handler,
-				  const std::variant<dialog_position,
-				  rectangle> &position,
+				  const dialog_position &position,
+				  const std::optional<rectangle> &initial_pos,
 				  const std::string &window_id,
+				  const screen_positions &positions,
 				  const color_arg &background_color,
 				  const const_main_window_appearance
 				  &appearance,
@@ -25,40 +26,34 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 				  bool modal,
 				  bool urgent,
 				  bool grab_input_focus)
-	: superclass_t{{parent_handler->screenref,
-			window_type,
-			modal ? "MODAL":"",
-			background_color,
-			appearance,
-			false
+	: superclass_t{
+			{
+				parent_handler->screenref,
+				window_type,
+				modal ? "MODAL":"",
+				background_color,
+				appearance,
+				false
 			},
-		       std::visit(visitor{[&](const rectangle &r)
-					  -> std::optional<rectangle>
-					  {
-					   return r;
-					  },
-					  [](const auto &)
-					  -> std::optional<rectangle>
-					  {
-					   return std::nullopt;
-					  }}, position),
-		       window_id},
-	  my_position_thread_only
-	{
-	 std::visit(visitor{[&](const dialog_position &pos)
-			    {
-				    return pos;
-			    },
-			    [](const auto &)
-			    {
-				    return dialog_position::default_position;
-			    }}, position)
-	},
+			initial_pos,
+			window_id, positions},
+	  my_position_thread_only{position},
 	  modal{modal},
 	  parent_handler{parent_handler},
 	  urgent_dialog{urgent},
 	  grab_input_focus{grab_input_focus},
 	  urgent_thread_only{urgent}
+{
+}
+
+void dialogObj::handlerObj::window_id_hierarchy(std::vector<std::string> &v)
+	const
+{
+	parent_handler->window_id_hierarchy(v);
+	superclass_t::window_id_hierarchy(v);
+}
+
+void dialogObj::handlerObj::register_current_main_window()
 {
 }
 

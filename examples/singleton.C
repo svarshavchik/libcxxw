@@ -8,6 +8,7 @@
 #include <x/exception.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 #include <x/singletonptr.H>
 #include <x/managedsingletonapp.H>
 
@@ -22,6 +23,11 @@
 #include <cstdlib>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "singleton.examples.w.libcxx.com";
+}
 
 // Use a singletonptr to store our main_window and close_flag, so that they
 // can be instantiated in automatic scope, yet conveniently accessed from

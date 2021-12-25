@@ -11,6 +11,7 @@
 #include <x/obj.H>
 #include <x/threadmsgdispatcher.H>
 #include <x/config.H>
+#include <x/appid.H>
 
 #include "x/w/main_window.H"
 #include "x/w/screen_positions.H"
@@ -157,7 +158,9 @@ void testbusy()
 {
 	auto configfile=
 		LIBCXX_NAMESPACE::configdir("testbusy@libcxx.com") + "/windows";
-	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(
+		configfile,
+		LIBCXX_NAMESPACE::appver());
 
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
@@ -165,7 +168,6 @@ void testbusy()
 
 	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
 
-	config.restore(pos);
 	auto main_window=LIBCXX_NAMESPACE::w::screen::create()
 		->create_mainwindow
 		(config,
@@ -193,7 +195,6 @@ void testbusy()
 		 });
 
 	mythread->run(main_window);
-	main_window->save(pos);
 }
 
 int main(int argc, char **argv)

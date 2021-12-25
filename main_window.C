@@ -61,8 +61,6 @@ void main_windowObj::constructor(const ref<implObj> &impl,
 	impl->handler->public_object=ref(this);
 }
 
-main_windowObj::~main_windowObj()=default;
-
 void main_windowObj::on_delete(const functionref<void (THREAD_CALLBACK,
 						       const busy &)> &callback)
 {
@@ -90,20 +88,23 @@ void main_windowObj::install_window_icons(const std::string &filename)
 	impl->handler->install_window_icons(filename);
 }
 
-void main_window_config::restore(const const_screen_positions &pos)
+static std::optional<window_position_t> get_window_info(
+	const main_window_config &config
+)
 {
-	if (name.empty())
-		throw EXCEPTION(_("Cannot restore(): empty window name"));
+	std::optional<window_position_t> info;
 
 	try {
-		window_info=pos->impl->find(name);
+		info=config.positions->impl->find_window_position(config.name);
 	} catch (const exception &e)
 	{
 		auto ee=EXCEPTION( "Error restoring window \""
-				   << name << "\": " << e );
+				   << config.name << "\": " << e );
 
 		ee->caught();
 	}
+
+	return info;
 }
 
 main_window_config::appearance_t::appearance_t()
@@ -119,6 +120,28 @@ main_window_config::appearance_t
 &main_window_config::appearance_t::operator=(const appearance_t &)=default;
 
 main_window_config::~main_window_config()=default;
+
+main_window_position::screen_positions_t::screen_positions_t()
+	: screen_positions{screen_positions::create()}
+{
+}
+
+main_window_position::screen_positions_t::screen_positions_t(
+	const screen_positions &s
+)
+	: screen_positions{s}
+{
+}
+
+main_window_position::screen_positions_t::~screen_positions_t()=default;
+
+main_window_position::screen_positions_t::screen_positions_t(
+	const screen_positions_t &
+)=default;
+
+main_window_position::screen_positions_t &
+main_window_position::screen_positions_t::operator=(const screen_positions_t &)
+=default;
 
 border_arg splash_window_config::default_border()
 {
@@ -162,18 +185,22 @@ main_window main_windowBase::do_create(const main_window_config_t &config,
 	return std::visit
 		([&](const main_window_config &std_config)
 		 {
+			 auto window_info=get_window_info(std_config);
+
 			 auto s=screen::base::create();
 
-			 if (std_config.window_info &&
-			     std_config.window_info->screen_number)
+			 if (window_info &&
+			     window_info->screen_number)
 			 {
 				 auto conn=s->get_connection();
 
-				 auto n=*std_config.window_info->screen_number;
+				 auto n=*window_info->screen_number;
 				 if (n < conn->screens())
 					 s=screen::create(conn, n);
 			 }
-			 return s->do_create_mainwindow(config, f, factory);
+			 return s->do_create_mainwindow(config,
+							window_info,
+							f, factory);
 		 }, config);
 }
 
@@ -402,7 +429,8 @@ create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 
 	return ref<splash_window_handlerObj>::create(main_params,
 						     std::nullopt,
-						     config.name);
+						     config.name,
+						     config.positions);
 }
 
 static ref<main_windowObj::handlerObj>
@@ -441,6 +469,25 @@ main_window screenObj
 		       const function<main_window_creator_t> &f,
 		       const new_layoutmanager &layout_factory)
 {
+	return do_create_mainwindow(
+		config,
+		std::visit(
+			[&]
+			(const main_window_config &config)
+			{
+				return get_window_info(config);
+			},
+			config),
+		f,
+		layout_factory);
+}
+
+main_window screenObj
+::do_create_mainwindow(const main_window_config_t &config,
+		       const std::optional<window_position_t> &position,
+		       const function<main_window_creator_t> &f,
+		       const new_layoutmanager &layout_factory)
+{
 	// Keep a batch queue in scope for the duration of the creation,
 	// so everything gets buffered up.
 
@@ -457,14 +504,18 @@ main_window screenObj
 			{
 				std::optional<rectangle> suggested_position;
 
-				if (std_config.window_info)
+				if (position)
+				{
 					suggested_position=
-						std_config.window_info
-						->coordinates;
+						position->coordinates;
 
+					std::cout << "Suggested: "
+						  << *suggested_position
+						  << "\n";
+				}
 				main_window_handler_constructor_params
 					main_params{me, "normal", "",
-						    std_config.appearance
+					std_config.appearance
 						    ->background_color,
 						    std_config.appearance,
 						    false,
@@ -474,7 +525,8 @@ main_window screenObj
 				{ref<main_windowObj::handlerObj>
 						::create(main_params,
 							 suggested_position,
-							 std_config.name),
+							 std_config.name,
+							 std_config.positions),
 						&std_config};
 			},
 			[&](const splash_window_config &splash_config)

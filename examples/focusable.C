@@ -9,6 +9,7 @@
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/weakcapture.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -19,6 +20,11 @@
 #include <x/visitor.H>
 #include <string>
 #include <iostream>
+
+std::string x::appid() noexcept
+{
+	return "focusable.examples.w.libcxx.com";
+}
 
 void create_mainwindow(const x::w::main_window &main_window)
 {
@@ -193,7 +199,7 @@ void focusables()
 
 	main_window->set_window_title("Focusable fields");
 	main_window->set_window_class("main",
-				      "focusable@examples.w.libcxx.com");
+				      "focusable.examples.w.libcxx.com");
 
 	main_window->on_delete
 		([close_flag]

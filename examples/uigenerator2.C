@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/pidinfo.H>
 #include <x/config.H>
+#include <x/appid.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/label.H>
@@ -26,6 +27,10 @@
 
 #include "close_flag.H"
 
+std::string x::appid() noexcept
+{
+	return "uigenerator2.examples.w.libcxx.com";
+}
 
 static inline auto create_main_window(const x::w::main_window &main_window,
 				      const x::w::screen_positions &pos)
@@ -107,17 +112,9 @@ void uigenerator2()
 {
 	x::destroy_callback::base::guard guard;
 
-	// Configuration filename where we save the window's position.
-
-	std::string configfile=
-		x::configdir("uigenerator2@examples.w.libcxx.com")
-		+ "/windows";
-
 	x::w::main_window_config config{"main"};
 
-	auto pos=x::w::screen_positions::create(configfile);
-
-	config.restore(pos);
+	auto pos=x::w::screen_positions::create();
 
 	auto close_flag=close_flag_ref::create();
 
@@ -136,7 +133,7 @@ void uigenerator2()
 			 x::w::new_gridlayoutmanager{});
 
 	main_window->set_window_class("main",
-				      "uigenerator2@examples.w.libcxx.com");
+				      "uigenerator2.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 
@@ -177,8 +174,6 @@ void uigenerator2()
 		lock.wait_for(std::chrono::milliseconds(500),
 			      [&] { return *lock; });
 	} while (!*lock);
-
-	main_window->save(pos);
 }
 
 int main(int argc, char **argv)

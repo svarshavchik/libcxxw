@@ -9,6 +9,7 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include <x/config.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -22,6 +23,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+std::string x::appid() noexcept
+{
+	return "table2.examples.w.libcxx.com";
+}
 
 struct mondata {
 	std::string process;
@@ -172,16 +178,9 @@ void testlist()
 
 	auto close_flag=close_flag_ref::create();
 
-	// My configuration file.
-
-	auto configfile=
-		x::configdir("table2@examples.w.libcxx.com") + "/windows";
-
-	auto pos=x::w::screen_positions::create(configfile);
+	auto pos=x::w::screen_positions::create();
 
 	x::w::main_window_config config{"main"};
-
-	config.restore(pos);
 
 	auto main_window=x::w::main_window::create
 		(config,
@@ -233,10 +232,6 @@ void testlist()
 					    });
 
 	close_flag->wait();
-
-	// Save the final position and size of the main window.
-
-	main_window->save(pos);
 }
 
 int main(int argc, char **argv)

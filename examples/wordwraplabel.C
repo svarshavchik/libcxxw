@@ -9,6 +9,8 @@
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/config.H>
+#include <x/appid.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/main_window_appearance.H>
@@ -20,6 +22,29 @@
 #include <x/w/font_literals.H>
 #include <string>
 #include <iostream>
+
+// Application identifier
+
+// The application's main windows' positions and other internal settings
+// are associated with its application identifier. Provide an explicit
+// application identifier instead of using the default one that's derived
+// from the filename.
+//
+// Applications may also declare an explicit x::appver() instead of using
+// one that's derived from their executable's timestamp. The saved
+// main window positions are tied to the application identifier and version,
+// and a different version removes all previously saved settings. Explicit
+// application versions should be updated with each application release.
+// Once a window's or a dialog's position, or some widget-specific setting
+// is saved it remains tied to its identifier even if its actual code is
+// removed from the application and it no longer uses it. Versioned
+// configurations serve to purge stale configuration data that's no longer
+// applicable.
+
+std::string x::appid() noexcept
+{
+	return "wordwraplabel.examples.w.libcxx.com";
+}
 
 // This is the creator lambda, that gets passed to create_mainwindow() below,
 // factored out for readability.
@@ -78,19 +103,12 @@ void wordwrap()
 
 	auto close_flag=close_flag_ref::create();
 
-	// Configuration filename where we save the window's position.
+	// A default screen_positions object gets created automatically,
+	// stored as <libcxx config directory>/<appid>/windows. But it can
+	// be created manually in order to keep the window configuration
+	// stored somewhere else, if needed.
 
-	std::string configfile=
-		x::configdir("wordwraplabel@examples.w.libcxx.com")
-		+ "/windows";
-
-	// Load the saved window position.
-	//
-	// x::w::screen_positions captures the position and size of
-	// main_windows. If the configuration file exists, the previously
-	// captured positions and sizes of main_windows get loaded. Nothing
-	// happens if the file does not exist.
-	auto pos=x::w::screen_positions::create(configfile);
+	x::w::screen_positions pos=x::w::screen_positions::create();
 
 	// It's possible to capture more than one main_window's position and
 	// size, and save it. Each main_window must have a unique label, that
@@ -103,21 +121,8 @@ void wordwrap()
 	// This has no effect if no memorized position was loaded from the
 	// the configuration (which includes the situation where the
 	// configuration file does not exist).
-	//
-	// Passing an optional x::w::main_window_config as the first parameter
-	// to main_window's constructor specifies optional main window settings.
 
-	x::w::main_window_config config{"main"};
-
-	// set_name_and_position() sets the main window's unique label, and
-	// restores it from the specified x::w::screen_positions, if one was
-	// saved
-	//
-	// NOTE: the screen_positions parameter that gets passed in here must
-	// remain in scope and not get destroyed until the main window's
-	// constructor returns.
-
-	config.restore(pos);
+	x::w::main_window_config config{"main", pos};
 
 	// Obtain main window's appearance
 
@@ -153,6 +158,14 @@ void wordwrap()
 			 custom_appearance->background_color=light_yellow;
 		 });
 
+	// Passing an optional x::w::main_window_config as the first parameter
+	// to main_window's constructor specifies the window's label, and
+	// the screen_positions object (if one gets declared explicitly).
+	//
+	// If not specified, the window's label defaults to "main". An
+	// application with two or more main_windows must use an explicit
+	// main_window_config, with unique labels, to create each one.
+
 	auto main_window=
 		x::w::main_window::create(config, create_mainwindow);
 
@@ -164,7 +177,7 @@ void wordwrap()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Hello world!");
-	main_window->set_window_class("main", "wordwraplabel@examples.w.libcxx.com");
+	main_window->set_window_class("main", "wordwraplabel.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (THREAD_CALLBACK,
@@ -176,23 +189,6 @@ void wordwrap()
 	main_window->show_all();
 
 	close_flag->wait();
-
-	// Before terminating the most recent window position and save
-	// needs to be saved into a screen_positions object:
-
-	main_window->save(pos);
-
-	// In this case we're using the initial screen_positions that were
-	// loaded from the configuration file. Specifying an existing label
-	// replaces the existing saved position with the same label.
-	//
-	// It's also possible to default-construct a new screen_positions,
-	// and use it.
-	//
-	// Multiple main_windows must have a unique label, each.
-	//
-	// Finally, the screen_positions gets save()d into the configuration
-	// file.
 }
 
 int main(int argc, char **argv)

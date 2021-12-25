@@ -6,6 +6,7 @@
 #define x_w_screen_positionsobj_h
 
 #include <x/w/screen_positionsfwd.H>
+#include <vector>
 #include <string>
 #include <x/obj.H>
 

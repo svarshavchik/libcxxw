@@ -47,6 +47,7 @@
 #include <x/weakcapture.H>
 #include <x/threads/run.H>
 #include <x/config.H>
+#include <x/appid.H>
 #include <x/singletonptr.H>
 #include <x/property_value.H>
 #include <x/managedsingletonapp.H>
@@ -1458,9 +1459,7 @@ static void item_table(const w::gridlayoutmanager &lm)
 void cxxwtheme()
 {
 	w::preserve_screen_number(false);
-	auto configfile=configdir("cxxwtheme@w.libcxx.com")+"/windows";
-
-	auto pos=w::screen_positions::create(configfile);
+	auto pos=w::screen_positions::create();
 
 	destroy_callback::base::guard guard;
 
@@ -1473,7 +1472,6 @@ void cxxwtheme()
 
 	w::main_window_config config{"main"};
 
-	config.restore(pos);
 	auto main_window=default_screen->create_mainwindow
 		(config,
 		 [&]
@@ -1543,8 +1541,6 @@ void cxxwtheme()
 
 	mpcobj<bool>::lock lock{appstate->close_flag};
 	lock.wait([&] { return *lock; });
-
-	main_window->save(pos);
 }
 
 class args_retObj : virtual public x::obj {
@@ -1611,4 +1607,14 @@ int main(int argc, char **argv)
 		e->caught();
 	}
 	return 0;
+}
+
+std::string x::appid() noexcept
+{
+	return "cxxwtheme.w.libcxx.com";
+}
+
+std::string x::appver() noexcept
+{
+	return VERSION;
 }

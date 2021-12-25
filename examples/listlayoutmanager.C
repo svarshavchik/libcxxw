@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/appid.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/listlayoutmanager.H>
@@ -21,6 +22,11 @@
 
 #include "close_flag.H"
 #include "listlayoutmanager.H"
+
+std::string x::appid() noexcept
+{
+	return "listlayoutmanager.examples.w.libcxx.com";
+}
 
 static const char * const lorem_ipsum[]={
 	"Lorem ipsum",
@@ -449,7 +455,7 @@ void testlistlayoutmanager(const options &opts)
 
 	main_window->set_window_title("List layout manager");
 	main_window->set_window_class("main",
-				      "listlayoutmanager@examples.w.libcxx.com");
+				      "listlayoutmanager.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

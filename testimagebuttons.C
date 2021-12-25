@@ -220,18 +220,13 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 
 void testimagebuttons()
 {
-	auto configfile=
-		LIBCXX_NAMESPACE::configdir("testimagebuttons@libcxx.com")
-		+ "/windows";
-	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create(configfile);
+	auto pos=LIBCXX_NAMESPACE::w::screen_positions::create();
 
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
 	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
-
-	config.restore(pos);
 
 	config.appearance=config.appearance->modify
 		([]
@@ -295,7 +290,6 @@ void testimagebuttons()
 				    (i % 2) ? 100:200);
 	}
 #endif
-	main_window->save(pos);
 }
 
 int main(int argc, char **argv)

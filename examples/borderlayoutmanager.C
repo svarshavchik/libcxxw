@@ -5,6 +5,7 @@
 
 #include "config.h"
 #include <x/mpobj.H>
+#include <x/appid.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/ref.H>
@@ -22,6 +23,11 @@
 #include <utility>
 
 #include "close_flag.H"
+
+std::string x::appid() noexcept
+{
+	return "borderlayoutmanager.examples.w.libcxx.com";
+}
 
 static void create_main_window(const x::w::main_window &mw)
 {
@@ -87,7 +93,7 @@ void borderlayoutmanager()
 
 	main_window->set_window_title("Borders!");
 	main_window->set_window_class("main",
-				      "borderlayoutmanager@examples.w.libcxx.com");
+				      "borderlayoutmanager.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

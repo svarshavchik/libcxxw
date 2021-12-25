@@ -38,8 +38,7 @@ struct standard_dialog_args {
 	std::string name;
 
 	//! Default dialog position
-	std::variant<dialog_position, rectangle> position=
-		dialog_position::default_position;
+	dialog_position position=dialog_position::default_position;
 
 	//! Set the urgent flag on the dialog.
 
@@ -63,10 +62,6 @@ struct standard_dialog_args {
 
 	//! Default dialog position.
 	void restore(dialog_position, const std::string_view &) LIBCXX_PUBLIC;
-
-	//! Restore the dialog's previous screen position.
-	void restore(const const_screen_positions &,
-		     const std::string_view &) LIBCXX_PUBLIC;
 };
 
 //! An additional parameter for create_dialog() and create_custom_dialog().

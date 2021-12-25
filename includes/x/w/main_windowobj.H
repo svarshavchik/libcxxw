@@ -342,27 +342,6 @@ public:
 
 	ok_cancel_dialog_callback_t destroy_when_closed(const
 							std::string_view &);
-
-	//! Save the main window's current position and size.
-
-	//! Each main window has a unique identifier that was used to
-	//! restore the main window's previous position. The main window's
-	//! current
-	//! position replaces any previous memorized position with the same
-	//! identifier, if it exists.
-	//!
-	//! \see screen_positions
-
-	void save(ONLY IN_THREAD, const screen_positions &pos) const;
-
-	//! Save the main window's current position and size.
-
-	//! This overload sends a message to the connection thread to invoke
-	//! this main window's save() method, IN_THREAD.
-	//!
-	//! A callback that's executed IN_THREAD must use the IN_THREAD
-	//! overload, instead of this function.
-	void save(const screen_positions &pos) const;
 };
 
 LIBCXXW_NAMESPACE_END

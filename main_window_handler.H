@@ -10,10 +10,13 @@
 #include "window_handler_constructor_params.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/main_window_appearancefwd.H"
+#include "x/w/screen_positionsfwd.H"
 #include "icon_images_vector_elementfwd.H"
 #include "x/w/busyfwd.H"
 #include "sync_counter.H"
 #include <xcb/xcb_icccm.h>
+#include <vector>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -66,10 +69,17 @@ public:
 	//! Constructor
 	handlerObj(const constructor_params &params,
 		   const std::optional<rectangle> &suggested_position,
-		   const std::string &window_id);
+		   const std::string &window_id,
+		   const screen_positions &positions);
 
 	//! Destructor
 	~handlerObj();
+
+	//! Register a top-level window
+
+	//! Overridden in dialog_handlerObj.
+
+	virtual void register_current_main_window();
 
 	//! Override installed().
 
@@ -148,6 +158,18 @@ public:
 
 	//! Unique identifier for the window.
 	const std::string window_id;
+
+	//! Saved screen positions
+	const screen_positions positions;
+
+	//! Retrieve hierarchical window identifier
+
+	//! The default implementation returns window_id. A dialog handler
+	//! overrides this, calls the parent handler's window_id_hierarchy()
+	//! then this one. This populates the parameter with the hierarchical
+	//! list of window_id from top level ids.
+
+	virtual void window_id_hierarchy(std::vector<std::string> &) const;
 
 	//! Translate our metrics into WM_SIZE_HINTS
 	virtual xcb_size_hints_t compute_size_hints(ONLY IN_THREAD);

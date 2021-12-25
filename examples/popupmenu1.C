@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/appid.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -21,6 +22,10 @@
 #include <string>
 #include <iostream>
 
+std::string x::appid() noexcept
+{
+	return "popupmenu1.examples.w.libcxx.com";
+}
 
 // This is the creator lambda, that gets passed to create_mainwindow() below,
 // factored out for readability.
@@ -109,7 +114,7 @@ void popupmenu1()
 
 	main_window->set_window_title("Click the label for a popup");
 	main_window->set_window_class("main",
-				      "popupmenu1@examples.w.libcxx.com");
+				      "popupmenu1.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,

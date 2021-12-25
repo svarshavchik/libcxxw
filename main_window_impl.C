@@ -28,7 +28,7 @@ main_windowObj::implObj::implObj(const main_window_impl_args &args)
 	menubar_container(args.menubar_container),
 	app_container(args.app_container)
 {
-	handler->handler_data->set_toplevel_handler(handler);
+	handler->register_current_main_window();
 }
 
 main_windowObj::implObj::~implObj()=default;

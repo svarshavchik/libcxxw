@@ -28,12 +28,6 @@ class LIBCXX_HIDDEN shared_handler_dataObj : virtual public obj {
 
 	class handler_mcguffinObj;
 
-	//! Top level handler object.
-	//! This is the top level main window object, that owns a strong
-	//! reference to this object.
-
-	weakptr<ptr<generic_windowObj::handlerObj>> toplevel_handler;
-
 	//! A container for currently-opened exclusive popups.
 	typedef weaklist<handler_mcguffinObj> opened_exclusive_popups_t;
 
@@ -64,10 +58,6 @@ public:
 
 	//! Destructor
 	~shared_handler_dataObj() LIBCXX_HIDDEN;
-
-	//! Set our top level handler object.
-
-	void set_toplevel_handler(const ref<generic_windowObj::handlerObj> &);
 
 	//! A new exclusive popup is being opened.
 
