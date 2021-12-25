@@ -237,14 +237,6 @@ void testlist()
 	// Save the final position and size of the main window.
 
 	main_window->save(pos);
-
-	// Save the final adjusted column widths.
-
-	my_appdata appdata=main_window->appdata;
-
-	auto tlm=appdata->main_table->tablelayout();
-
-	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

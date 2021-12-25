@@ -34,9 +34,6 @@ public:
 	//! Construct a new instance and initialize it with the contents
 	//! of the specified file.
 	screen_positionsObj(const std::string &filename);
-
-	//! Save all memorized positions in a file.
-	void save(const std::string &filename) const;
 };
 
 LIBCXXW_NAMESPACE_END

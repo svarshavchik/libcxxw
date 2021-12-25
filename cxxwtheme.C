@@ -1545,7 +1545,6 @@ void cxxwtheme()
 	lock.wait([&] { return *lock; });
 
 	main_window->save(pos);
-	pos->save(configfile);
 }
 
 class args_retObj : virtual public x::obj {

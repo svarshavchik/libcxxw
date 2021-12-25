@@ -616,7 +616,6 @@ void testpane(const testpaneoptions &options)
 	lock.wait([&] { return *lock; });
 
 	main_window->save(pos);
-	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

@@ -348,7 +348,6 @@ void fontcolorpickers()
 		  << std::endl;
 
 	main_window->save(pos);
-	pos->save(configfilename);
 }
 
 int main(int argc, char **argv)

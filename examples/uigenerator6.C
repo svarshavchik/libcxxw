@@ -259,7 +259,6 @@ void uigenerator6()
 	close_flag->wait();
 
 	main_window->save(pos);
-	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

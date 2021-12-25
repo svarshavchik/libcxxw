@@ -628,7 +628,6 @@ void testpane(const options &opts)
 	// Save window position and size.
 
 	main_window->save(pos);
-	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

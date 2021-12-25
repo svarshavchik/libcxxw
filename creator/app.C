@@ -759,7 +759,6 @@ appObj::~appObj()
 	auto pos=x::w::screen_positions::create();
 
 	main_window->save(pos);
-	pos->save(configfile);
 }
 
 void appObj::mainloop()

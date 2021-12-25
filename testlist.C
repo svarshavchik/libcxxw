@@ -1248,8 +1248,6 @@ void testlist(const testlistoptions &options)
 	if (main_window->appdata)
 	{
 		main_window->save(pos);
-
-		pos->save(configfile);
 	}
 }
 

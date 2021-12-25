@@ -440,7 +440,6 @@ void testtoolbox()
 
 	my_app->main_window->save(pos);
 	my_app->toolbox_dialog->dialog_window->save(pos);
-	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

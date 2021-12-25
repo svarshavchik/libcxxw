@@ -26,19 +26,17 @@ static property::value<bool>
 preserve_screen_number_prop(LIBCXX_NAMESPACE_STR "::w::preserve_screen_number",
 			    true);
 
-screen_positionsObj::implObj::implObj()
-	: data{xml::doc::create()}
-{
-}
-
 screen_positionsObj::implObj::~implObj()=default;
 
 
-void screen_positionsObj::implObj::save(const std::string &filename) const
+void screen_positionsObj::implObj::save()
 {
-	auto lock=data->readlock();
+	// Make sure to wait for the connection thread to finish saving
+	// individual window data.
 
-	lock->save_file(filename);
+	auto lock=create_unique();
+
+	data->readlock()->save_file(filename);
 }
 
 static auto load(const std::string &filename)
@@ -62,7 +60,7 @@ static auto load(const std::string &filename)
 }
 
 screen_positionsObj::implObj::implObj(const std::string &filename)
-	: data{load(filename)}
+	: filename{filename}, data{load(filename)}
 {
 }
 

@@ -300,7 +300,6 @@ void testlabel(const testwordwrappablelabel_options &options)
 	if (!options.testmetrics->value)
 	{
 		main_window->save(pos);
-		pos->save(configfile);
 	}
 }
 

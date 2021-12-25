@@ -296,7 +296,6 @@ void testimagebuttons()
 	}
 #endif
 	main_window->save(pos);
-	pos->save(configfile);
 }
 
 int main(int argc, char **argv)

@@ -403,8 +403,6 @@ void testbook()
 
 	lock.wait([&] { return *lock; });
 	mw->save(pos);
-	pos->save(configfile);
-
 }
 
 int main(int argc, char **argv)

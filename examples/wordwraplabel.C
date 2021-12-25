@@ -192,9 +192,7 @@ void wordwrap()
 	// Multiple main_windows must have a unique label, each.
 	//
 	// Finally, the screen_positions gets save()d into the configuration
-	// file, for next time:
-
-	pos->save(configfile);
+	// file.
 }
 
 int main(int argc, char **argv)

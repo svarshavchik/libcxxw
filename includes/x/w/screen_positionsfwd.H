@@ -21,9 +21,11 @@ void preserve_screen_number(bool flag);
 \code
 #include <INSERT_LIBX_NAMESPACE/config.H>
 
+auto my_screen_positions=INSERT_LIBX_NAMESPACE::w::screen_positions::create();
+
 auto configfile=INSERT_LIBX_NAMESPACE::configdir("app@example.com") + "/windows";
 
-auto my_screen_positions=INSERT_LIBX_NAMESPACE::w::screen_positions::create{configfile};
+auto my_screen_positions=INSERT_LIBX_NAMESPACE::w::screen_positions::create(configfile);
 
 INSERT_LIBX_NAMESPACE::w::main_window_config config;
 
@@ -37,7 +39,7 @@ auto main_window=INSERT_LIBX_NAMESPACE::w::main_window::create(config,
      });
 
 main_window->save("main", my_screen_positions);
-my_screen_positions->save(configfile);
+my_screen_positions->save();
 \endcode
 
 \par Restoring the main window's previous size and position.

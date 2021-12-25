@@ -266,7 +266,6 @@ void testcolorpicker(const testcolorpicker_options &options)
 
 	main_window->save(pos);
 
-	pos->save(configfile);
 	std::cout << "Final color: " << cpp->current_color()
 		  << std::endl;
 }

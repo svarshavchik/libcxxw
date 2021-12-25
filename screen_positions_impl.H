@@ -29,15 +29,11 @@ class screen_positionsObj::implObj : public sharedlockObj {
 
  public:
 
+	//! Filename
+	const std::string filename;
+
 	//! Internal XML data.
 	const xml::doc data;
-
-	//! Default constructor. An empty list of memorized screen positions.
-
-	implObj();
-
-	//! Destructor
-	~implObj();
 
 	//! Load memorized screen positions from a file.
 
@@ -45,6 +41,8 @@ class screen_positionsObj::implObj : public sharedlockObj {
 	//! of the specified file.
 	implObj(const std::string &filename);
 
+	//! Destructor
+	~implObj();
 
 	//! Find a memorized position.
 
@@ -60,7 +58,7 @@ class screen_positionsObj::implObj : public sharedlockObj {
 				    const std::string_view &name);
 
 	//! Save all memorized positions in a file.
-	void save(const std::string &filename) const;
+	void save();
 };
 
 //! Internal Xpath assembler.
