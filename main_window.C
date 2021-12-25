@@ -95,7 +95,10 @@ static std::optional<window_position_t> get_window_info(
 	std::optional<window_position_t> info;
 
 	try {
-		info=config.positions->impl->find_window_position(config.name);
+		info=config.positions->impl->find_window_position(
+			std::vector<std::string>{},
+			config.name
+		);
 	} catch (const exception &e)
 	{
 		auto ee=EXCEPTION( "Error restoring window \""

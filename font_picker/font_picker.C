@@ -7,6 +7,7 @@
 #include "font_picker/font_picker_preview_impl.H"
 #include "textlabel.H"
 #include "label_element.H"
+#include "generic_window_handler.H"
 #include "screen_positions_impl.H"
 #include "x/w/font_picker_config.H"
 #include "x/w/font_picker_appearance.H"
@@ -220,7 +221,12 @@ void current_font_placeholderObj::save(ONLY IN_THREAD,
 	if (name.empty())
 		return;
 
-	auto writelock=pos->impl->create_writelock_for_saving("font", name);
+	std::vector<std::string> hierarchy;
+
+	get_window_handler().window_id_hierarchy(hierarchy);
+
+	auto writelock=pos->impl->create_writelock_for_saving(
+		hierarchy, "font", name);
 
 	writelock->create_child()->element({"font"})
 		->text(static_cast<std::string>

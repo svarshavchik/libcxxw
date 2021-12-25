@@ -966,9 +966,16 @@ void panelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
 	if (name.empty())
 		return;
 
+	std::vector<std::string> hierarchy;
+
+	layout_container_impl->get_window_handler().window_id_hierarchy(
+		hierarchy
+	);
+
 	grid_map_t::lock grid_lock{grid_map};
 
-	auto writelock=pos->impl->create_writelock_for_saving("pane", name);
+	auto writelock=pos->impl->create_writelock_for_saving(
+		hierarchy, "pane", name);
 
 	size_t s=size(grid_lock);
 

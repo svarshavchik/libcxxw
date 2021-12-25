@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "color_picker/color_picker_current_canvas_impl.H"
 #include "screen_positions_impl.H"
+#include "generic_window_handler.H"
 #include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START
@@ -63,7 +64,12 @@ void color_picker_current_canvasObj::implObj
 	if (name.empty())
 		return;
 
-	auto writelock=pos->impl->create_writelock_for_saving("color", name);
+	std::vector<std::string> hierarchy;
+
+	get_window_handler().window_id_hierarchy(hierarchy);
+
+	auto writelock=pos->impl->create_writelock_for_saving(
+		hierarchy, "color", name);
 
 	auto color=current_official_color->official_color.get();
 

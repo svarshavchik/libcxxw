@@ -66,6 +66,40 @@ make</programlisting>
       example demonstrates several basic concepts used by &app;:
     </para>
 
+    <section id="screen_positions">
+      <title>Application identifiers and version</title>
+
+      <para>
+	Running
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>
+	again should open its window in the same position with most
+	window managers. This uses &libcxx;'s
+	<ulink url="/configdir.html">application identifier-based
+	configuration directory</ulink>.
+	&app; automatically saves window positions in the
+	<filename>windows</filename> file in the application's
+	configuration directory.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+$ [command] --set-property &ns;::w::preserve_screen_number=0
+
+#include &lt;&ns;/w/screen_positions.H&gt;
+
+&ns;::w::preserve_screen_number(false);</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	On display servers with multiple screens the main windows get opened
+	on the same screen as before. This flag can be turned off by
+	calling <function>&ns;::w::preserve_screen_number</function> or setting
+	an application property of the same name.
+      </para>
+    </section>
+
     <section id="refobjelements">
       <title>Widgets are reference-counted objects with smart pointers</title>
       <para>
@@ -890,25 +924,6 @@ x::w::label l=f->create_label("Hello world");</programlisting>
 	&libcxx; object.
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
 	shows the basic approach of catching the exception, and reporting it.
-      </para>
-    </section>
-
-    <section id="locale">
-      <title>Application locale</title>
-
-      <para>
-	Linking with &appshort; results in automatically loading the system
-	environment locale into the application, i.e.:
-      </para>
-
-      <blockquote>
-	<informalexample>
-	  <programlisting>setlocale(LC_ALL, "");</programlisting>
-	</informalexample>
-      </blockquote>
-
-      <para>
-	This happens automatically, with no explicit action.
       </para>
     </section>
   </section>

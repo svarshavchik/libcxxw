@@ -190,6 +190,12 @@ public:
 
  public:
 
+	//! Override window_id_hierarchy().
+
+	//! This should never get called for a popup. This is called only
+	//! when saving main windows' positions.
+	void window_id_hierarchy(std::vector<std::string> &) const override;
+
 	//! Perform processing after a popup is opened.
 
 	//! Grab the pointer.

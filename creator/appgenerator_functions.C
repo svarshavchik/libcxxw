@@ -789,7 +789,6 @@ void appgenerator_functionsObj
 		({
 			dialog_id,
 			true,
-			dialog_id
 		}, [&, this](const auto &new_dialog)
 		{
 			// Use the generator function's description string

@@ -15,6 +15,7 @@
 #include <x/mpobj.H>
 
 #include <optional>
+#include <string>
 #include <string_view>
 #include <unordered_set>
 
@@ -65,20 +66,23 @@ class screen_positionsObj::implObj : public sharedlockObj {
 
 	//! \internal
 	std::optional<window_position_t> find_window_position(
+		const std::vector<std::string> &parent_windows,
 		const std::string_view &identifier
 	) const;
-
-	//! Create a new write lock.
-
-	//! Creates the root <windows> element, for an empty document.
-
-	xml::writelock create_writelock();
 
 	//! Create a new node when saving something.
 
 	xml::writelock
-	create_writelock_for_saving(const std::string_view &type,
+	create_writelock_for_saving(const std::vector<std::string> &window_path,
+				    const std::string_view &type,
 				    const std::string_view &name);
+
+	//! Create an xpath when trying to load something
+	xml::readlockptr create_readlock_for_loading(
+		const std::vector<std::string> &window_path,
+		const std::string_view &type,
+		const std::string_view &name
+	) const;
 
 	//! Save all memorized positions in a file.
 	void save();

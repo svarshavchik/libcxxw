@@ -149,6 +149,12 @@ class generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(wm_class_instance);
 	THREAD_DATA_ONLY(wm_class_resource);
 
+	//! Return the labels representing the window hierarchy
+
+	//! Adds this window's label to the vector. Dialogs and secondary
+	//! windows invoke their parent windows' window_id_hierarchy.
+	virtual void window_id_hierarchy(std::vector<std::string> &) const=0;
+
 	//! Current position and dimensions
 
 	//! This is a mutex-protected object. ConfigureNotify event saves

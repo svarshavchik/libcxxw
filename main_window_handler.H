@@ -160,7 +160,8 @@ public:
 	//! then this one. This populates the parameter with the hierarchical
 	//! list of window_id from top level ids.
 
-	virtual void window_id_hierarchy(std::vector<std::string> &) const;
+	virtual void window_id_hierarchy(std::vector<std::string> &)
+		const override;
 
 	//! Translate our metrics into WM_SIZE_HINTS
 	virtual xcb_size_hints_t compute_size_hints(ONLY IN_THREAD);

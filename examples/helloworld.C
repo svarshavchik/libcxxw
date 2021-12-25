@@ -20,6 +20,24 @@
 #include <string>
 #include <iostream>
 
+// Application identifier
+
+// The application's main windows' positions and other internal settings
+// are associated with its application identifier. Provide an explicit
+// application identifier instead of using the default one that's derived
+// from the program's filename.
+//
+// Applications may also declare an explicit x::appver() instead of using
+// the default one that's derived from the program's timestamp. The saved
+// main window positions are tied to the application identifier and version,
+// and a different version removes all previously saved spositions. Explicit
+// application versions should be updated with each application release.
+// Once a window's or a dialog's position, or some widget-specific setting
+// is saved it remains tied to its identifier even if its actual code is
+// removed from the application and it no longer uses it. A versioned
+// configuration serve to purge stale configuration data that's no longer
+// applicable.
+
 std::string x::appid() noexcept
 {
 	return "helloworld.examples.w.libcxx.com";

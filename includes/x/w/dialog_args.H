@@ -32,11 +32,6 @@ struct standard_dialog_args {
 	//! Whether the new dialog is a modal dialog.
 	bool modal=false;
 
-	//! Window name
-
-	//! Used when saving/loading screen_positions.
-	std::string name;
-
 	//! Default dialog position
 	dialog_position position=dialog_position::default_position;
 
@@ -59,9 +54,6 @@ struct standard_dialog_args {
 
 	//! Default dialog position.
 	void restore(dialog_position) LIBCXX_PUBLIC;
-
-	//! Default dialog position.
-	void restore(dialog_position, const std::string_view &) LIBCXX_PUBLIC;
 };
 
 //! An additional parameter for create_dialog() and create_custom_dialog().

@@ -37,8 +37,6 @@ void screen_positionsObj::implObj::save()
 
 	auto lock=create_unique();
 
-	create_writelock(); // Make sure root element exists.
-
 	data->readlock()->save_file(filename);
 }
 
@@ -101,54 +99,103 @@ std::string saved_element_to_xpath(const std::string_view &type,
 
 	s += type;
 	s += "[name=";
-	s += xml::quote_string_literal(std::string{name});
+	s += xml::quote_string_literal(name);
 	s += "]";
 
 	return s;
 }
 
-xml::writelock screen_positionsObj::implObj::create_writelock()
+xml::writelock screen_positionsObj::implObj::create_writelock_for_saving(
+	const std::vector<std::string> &window_path,
+	const std::string_view &type,
+	const std::string_view &name_s
+)
 {
 	auto lock=data->writelock();
-
 	lock->get_root();
+
+	lock->get_xpath("/windows")->to_node();
+
+	for (const auto &p:window_path)
+	{
+		auto xpath=lock->get_xpath("window[name="
+					   + xml::quote_string_literal(p)
+					   + "]");
+
+		if (xpath->count())
+			xpath->to_node();
+		else
+		{
+			lock->create_child()->element({"window"})
+				->element({"name"})->text(p)
+				->parent()->parent();
+		}
+	}
+
+	std::string s;
+
+	s.reserve(type.size()+name_s.size()+20);
+
+	s = type;
+	s += "[name=";
+	s += xml::quote_string_literal(name_s);
+	s += "]";
+
+	auto xpath=lock->get_xpath(s);
+
+	size_t n=xpath->count();
+
+	for (size_t i=1; i <= n; ++i)
+	{
+		xpath->to_node(i);
+		lock->remove();
+	}
+
+	lock->create_child()->element({std::string{type}})
+		->element({"name"})->text(name_s)->parent()->parent();
 
 	return lock;
 }
 
-xml::writelock
-screen_positionsObj::implObj
-::create_writelock_for_saving(const std::string_view &type,
-			      const std::string_view &name_s)
+xml::readlockptr screen_positionsObj::implObj::create_readlock_for_loading(
+	const std::vector<std::string> &window_path,
+	const std::string_view &type,
+	const std::string_view &name
+) const
 {
-	std::string name{name_s};
+	size_t l=type.size()+name.size()+40;
 
-	auto lock=create_writelock();
+	for (const auto &p:window_path)
+		l += p.size()+20;
 
+	std::string s{"/windows"};
+
+	for (const auto &p:window_path)
+		s += "/window[name=" + xml::quote_string_literal(p) + "]";
+
+	s += "/";
+	s += type;
+	s += "[name=" + xml::quote_string_literal(name) + "]";
+
+	auto lock=data->readlock();
+
+	lock->get_root();
+
+	auto xpath=lock->get_xpath(s);
+
+	if (xpath->count())
 	{
-		auto xpath=lock->get_xpath(saved_element_to_xpath(type,
-								  name_s));
-
-		// Remove any existing memorized setting.
-		size_t n=xpath->count();
-
-		for (size_t i=1; i <= n; ++i)
-		{
-			xpath->to_node(i);
-			lock->remove();
-		}
+		xpath->to_node();
+		return lock;
 	}
-
-	lock->get_xpath("/windows")->to_node();
-
-	lock->create_child()->element(std::string{type})
-		->element({"name"})->text(name)->parent()->parent();
-
-	return lock;
+	return {};
 }
 
 main_windowObj::~main_windowObj()
 {
+	if (impl->handler->window_id.empty())
+		return;
+
 	in_thread([impl=this->impl,
 		   lock=impl->handler->positions->impl->create_shared()]
 		  (ONLY IN_THREAD)
@@ -166,9 +213,24 @@ main_windowObj::~main_windowObj()
 		if (!handler->has_exposed(IN_THREAD))
 			return;
 
+		// Save any save-able widgets in the window, first.
+
+		handler->save(IN_THREAD, handler->positions);
+
+		// Now save the current window position.
+
+		std::vector<std::string> window_path;
+
+		handler->window_id_hierarchy(window_path);
+
+		std::string window_id=window_path.back();
+
+		window_path.pop_back();
+
 		auto lock=handler->positions->impl
-			->create_writelock_for_saving("window",
-						      handler->window_id);
+			->create_writelock_for_saving(window_path,
+						      "window",
+						      window_id);
 
 		auto window=lock->create_child()->element({"position"});
 
@@ -194,25 +256,26 @@ main_windowObj::~main_windowObj()
 
 std::optional<window_position_t>
 screen_positionsObj::implObj::find_window_position(
+	const std::vector<std::string> &parent_windows,
 	const std::string_view &window_name
 ) const
 {
 	LOG_FUNC_SCOPE(load_log);
 
-	auto lock=data->readlock();
-
 	std::optional<window_position_t> info;
 
-	if (!lock->get_root())
+	auto lockptr=create_readlock_for_loading(parent_windows,
+						 "window",
+						 window_name);
+
+	if (!lockptr)
 		return info;
 
-	auto xpath=lock->get_xpath(saved_element_to_xpath("window",
-							  window_name)
-				   + "/position");
+	xml::readlock lock{lockptr};
 
-	size_t n=xpath->count();
+	auto xpath=lock->get_xpath("position");
 
-	if (n == 1)
+	if (xpath->count())
 	{
 		xpath->to_node();
 

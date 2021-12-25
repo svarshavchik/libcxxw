@@ -1,3 +1,9 @@
+2021-12-24  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Automatically save and restore window positions, remove the explicit
+	API to do so, handle this automatically using the underlying LibCXX
+	application identifier and configuration directories.
+
 2021-12-23  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Default WM_CLASS to the window label and appid.

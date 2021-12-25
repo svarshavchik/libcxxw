@@ -71,6 +71,12 @@ popupObj::handlerObj::handlerObj(const popup_handler_args &args)
 
 popupObj::handlerObj::~handlerObj()=default;
 
+void popupObj::handlerObj::window_id_hierarchy(std::vector<std::string> &) const
+{
+	throw EXCEPTION(
+		"Internal error: window_id_hierarchy called for a popup"
+	);
+}
 
 void popupObj::handlerObj::installed(ONLY IN_THREAD)
 {

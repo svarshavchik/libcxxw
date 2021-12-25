@@ -8,6 +8,7 @@
 #include "calculate_borders.H"
 #include "screen_positions_impl.H"
 #include "catch_exceptions.H"
+#include "generic_window_handler.H"
 #include <x/exception.H>
 #include <x/xml/xpath.H>
 #include <algorithm>
@@ -515,7 +516,14 @@ void tablelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
 	if (name.empty())
 		return;
 
-	auto writelock=pos->impl->create_writelock_for_saving("table", name);
+	std::vector<std::string> hierarchy;
+
+	layout_container_impl->get_window_handler().window_id_hierarchy(
+		hierarchy
+	);
+
+	auto writelock=pos->impl->create_writelock_for_saving(
+		hierarchy, "table", name);
 
 	table_synchronized_axisObj::dragged_scaled_axis_t::lock lock
 		{
