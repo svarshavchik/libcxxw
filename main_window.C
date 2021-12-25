@@ -90,13 +90,10 @@ void main_windowObj::install_window_icons(const std::string &filename)
 	impl->handler->install_window_icons(filename);
 }
 
-void main_window_config::restore(const const_screen_positions &pos,
-				 const std::string_view &name_arg)
+void main_window_config::restore(const const_screen_positions &pos)
 {
-	if (name_arg.empty())
-		throw EXCEPTION(_("Window name cannot be empty"));
-
-	name=name_arg;
+	if (name.empty())
+		throw EXCEPTION(_("Cannot restore(): empty window name"));
 
 	try {
 		window_info=pos->impl->find(name);
@@ -110,14 +107,17 @@ void main_window_config::restore(const const_screen_positions &pos,
 }
 
 main_window_config::main_window_config()
-	: appearance{main_window_appearance::base::theme()}
+	: main_window_config{""}
+{
+}
+
+main_window_config::main_window_config(const std::string_view &name)
+	: appearance{main_window_appearance::base::theme()},
+	  name{name}
 {
 }
 
 main_window_config::main_window_config(const main_window_config &)=default;
-
-main_window_config &main_window_config::operator=(const main_window_config &)
-=default;
 
 main_window_config::~main_window_config()=default;
 

@@ -83,9 +83,9 @@ void testcolorpicker(const testcolorpicker_options &options)
 
 	color_pickerptr cpp;
 
-	LIBCXX_NAMESPACE::w::main_window_config config;
+	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
 
-	config.restore(pos, "main");
+	config.restore(pos);
 
 	auto main_window=main_window::create
 		(config,

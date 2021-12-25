@@ -107,7 +107,7 @@ void wordwrap()
 	// Passing an optional x::w::main_window_config as the first parameter
 	// to main_window's constructor specifies optional main window settings.
 
-	x::w::main_window_config config;
+	x::w::main_window_config config{"main"};
 
 	// set_name_and_position() sets the main window's unique label, and
 	// restores it from the specified x::w::screen_positions, if one was
@@ -117,7 +117,7 @@ void wordwrap()
 	// remain in scope and not get destroyed until the main window's
 	// constructor returns.
 
-	config.restore(pos, "main");
+	config.restore(pos);
 
 	// Obtain main window's appearance
 

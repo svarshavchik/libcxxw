@@ -163,9 +163,9 @@ void testbusy()
 
 	auto mythread=LIBCXX_NAMESPACE::ref<testbusythreadObj>::create();
 
-	LIBCXX_NAMESPACE::w::main_window_config config;
+	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
 
-	config.restore(pos, "main");
+	config.restore(pos);
 	auto main_window=LIBCXX_NAMESPACE::w::screen::create()
 		->create_mainwindow
 		(config,

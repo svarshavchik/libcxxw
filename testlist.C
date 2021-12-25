@@ -1116,11 +1116,11 @@ void testlist(const testlistoptions &options)
 
 	auto default_screen=LIBCXX_NAMESPACE::w::screen::create();
 
-	LIBCXX_NAMESPACE::w::main_window_config config;
+	LIBCXX_NAMESPACE::w::main_window_config config{"main"};
 
 	LIBCXX_NAMESPACE::w::focusable_containerptr mainlist;
 
-	config.restore(pos, "name");
+	config.restore(pos);
 	auto main_window=default_screen->create_mainwindow
 		(config,
 		 [&]

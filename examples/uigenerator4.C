@@ -50,11 +50,11 @@ void uigenerator4()
 		x::configdir("uigenerator4@examples.w.libcxx.com")
 		+ "/windows";
 
-	x::w::main_window_config config;
+	x::w::main_window_config config{"main"};
 
 	auto pos=x::w::screen_positions::create(configfile);
 
-	config.restore(pos, "main");
+	config.restore(pos);
 
 	auto close_flag=close_flag_ref::create();
 

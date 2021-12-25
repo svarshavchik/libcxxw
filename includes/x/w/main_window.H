@@ -32,25 +32,24 @@ class main_window_config {
 
 
 public:
-	//! Constructor
+	//! Default constructor
 	main_window_config();
+
+	//! Constructor, named window
+	main_window_config(const std::string_view &name);
 
 	//! Copy constructor
 	main_window_config(const main_window_config &);
-
-	//! Assignment operator
-	main_window_config &operator=(const main_window_config &);
 
 	//! Appearance
 	const_main_window_appearance appearance;
 
 	//! Specify optional position on the screen.
 
-	void restore(const const_screen_positions &,
-		     const std::string_view &) LIBCXX_PUBLIC;
+	void restore(const const_screen_positions &) LIBCXX_PUBLIC;
 
-	//! The name that was passed to restore().
-	std::string name;
+	//! The name that was passed to the constructor
+	const std::string name;
 
 	//! Restored window position.
 	struct window_info_t {

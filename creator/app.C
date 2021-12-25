@@ -253,9 +253,9 @@ inline appObj::init_args appObj::create_init_args()
 
 	auto pos=x::w::screen_positions::create(args.configfile);
 
-	x::w::main_window_config config;
+	x::w::main_window_config config{"main"};
 
-	config.restore(pos, "main");
+	config.restore(pos);
 
 	auto utf8_locale=x::locale::base::utf8();
 
