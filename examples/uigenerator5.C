@@ -91,8 +91,6 @@ void uigenerator5()
 
 	main_window->set_window_title("List");
 
-	main_window->set_window_class("main",
-				      "uigenerator5.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

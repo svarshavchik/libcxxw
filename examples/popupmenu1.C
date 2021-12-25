@@ -113,8 +113,6 @@ void popupmenu1()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Click the label for a popup");
-	main_window->set_window_class("main",
-				      "popupmenu1.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,

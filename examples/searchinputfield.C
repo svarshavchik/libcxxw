@@ -301,8 +301,6 @@ void searchinputfield()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("QuackQuackRun!");
-	main_window->set_window_class("main",
-				      "searchinputfield.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,

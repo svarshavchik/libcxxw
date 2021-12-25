@@ -96,8 +96,6 @@ void showprogressbar()
 	x::w::label l=pb->gridlayout()->get(0, 0);
 
 	main_window->set_window_title("Progress bar!");
-	main_window->set_window_class("main",
-				      "progressbar.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

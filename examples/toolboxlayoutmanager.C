@@ -257,10 +257,9 @@ static void create_main_window(const x::w::main_window &mw,
 						 ->toolboxlayout());
 		 });
 
-	// Set the X window type and class, and hints. Most window manager
+	// Set the X window type. Most window manager
 	// probably ignore this, but we'll go ahead and do this.
-	d->dialog_window->set_window_class("toolbox",
-					   "toolboxlayoutmanager.examples.w.libcxx.com");
+
 	d->dialog_window->set_window_type("toolbar,normal");
 
 	// If the window manager gives the dialog a close button, have its
@@ -390,12 +389,7 @@ new_app create_app(const x::w::screen_positions &pos)
 						    pos);
 			 });
 
-	// Set the X window type and class, and hints. Most window manager
-	// probably ignore this, but we'll go ahead and do this.
-
 	main_window->set_window_title("Toolbox");
-	main_window->set_window_class("main",
-				      "toolboxlayoutmanager.examples.w.libcxx.com");
 
 	return new_app::create(main_window, toolbox_dialog);
 }

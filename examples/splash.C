@@ -170,8 +170,6 @@ void splashwindow(const options &opts)
 
 	guard(main_window->connection_mcguffin());
 
-	main_window->set_window_class("splash",
-				      "splash.examples.w.libcxx.com");
 
 	main_window->show_all();
 

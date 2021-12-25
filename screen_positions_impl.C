@@ -14,6 +14,7 @@
 #include <x/exception.H>
 #include <x/logger.H>
 #include <x/property_value.H>
+#include <x/appid.H>
 
 #include <unistd.h>
 #include <sstream>
@@ -83,7 +84,7 @@ static auto load(const std::string &filename,
 
 screen_positionsObj::implObj::implObj(const std::string &filename,
 				      const std::string &version)
-	: filename{filename}, version{version},
+	: appid{x::appid()}, filename{filename}, version{version},
 	  data{load(filename, version)},
 	  current_main_window_handlers{current_main_window_handlers_t::create()}
 {

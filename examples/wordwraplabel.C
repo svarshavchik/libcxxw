@@ -177,7 +177,6 @@ void wordwrap()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Hello world!");
-	main_window->set_window_class("main", "wordwraplabel.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (THREAD_CALLBACK,

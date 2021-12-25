@@ -234,8 +234,6 @@ void testprintdialog()
 			 });
 
 	main_window->set_window_title("Print something!");
-	main_window->set_window_class("main",
-				      "printdialog.examples.w.libcxx.com");
 
 	// Construct the application singleton object.
 	//

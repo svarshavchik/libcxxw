@@ -291,8 +291,6 @@ void filteredinputfield()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Enter your ID");
-	main_window->set_window_class("main",
-				      "filteredinput.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,

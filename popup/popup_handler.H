@@ -25,8 +25,8 @@ struct LIBCXX_HIDDEN popup_handler_args {
 	//! The new popup's semantics
 	const popup_visibility_semantics &attachedto_type;
 
-	//! What WM_CLASS instance this is
-	const char *wm_class_instance;
+	//! What we will put into WM_CLASS
+	const std::string &wm_class_instance;
 
 	//! Parent top level display element
 	const ref<generic_windowObj::handlerObj> &parent;
@@ -105,10 +105,6 @@ public:
 	//! When popup semantics this popup belongs to.
 	const popup_visibility_semantics &attachedto_type;
 
-	//! What WM_CLASS instance this is
-
-	const char * const wm_class_instance;
-
 	//! Constructor
 	handlerObj(const popup_handler_args &);
 
@@ -180,16 +176,6 @@ public:
 	//! The parent window, which is used for the pointer grab.
 
 	weakptr<ptr<generic_windowObj::handlerObj>> popup_parent;
-
-	//! Override default_wm_class_resource().
-
-	//! Look to the popup parent's.
-
-	std::string default_wm_class_resource(ONLY IN_THREAD) override;
-
-	//! Override wm_class_instance.
-
-	const char *default_wm_class_instance() const override;
 
 	//! Return the popup's parent main window.
 

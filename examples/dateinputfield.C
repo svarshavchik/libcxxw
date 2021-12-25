@@ -207,7 +207,6 @@ void dateinputfields()
 			 });
 
 	main_window->set_window_title("Date calculator");
-	main_window->set_window_class("main", "dateinputfield.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

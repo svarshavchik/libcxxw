@@ -27,11 +27,6 @@ class dialogObj::handlerObj : public main_windowObj::handlerObj {
 
 	ptr<obj> acquired_busy_mcguffin_thread_only;
 
-	//! Override default_wm_class_instance()
-
-	//! This is a "dialog".
-	const char *default_wm_class_instance() const override;
-
 	//! My position with respect to the parent
 
 	dialog_position my_position_thread_only=
@@ -129,13 +124,7 @@ public:
 
 	xcb_size_hints_t compute_size_hints(ONLY IN_THREAD) override;
 
-	//! Override default_wm_class_resource().
-
-	//! Use the same one as the parent, by default.
-
-	std::string default_wm_class_resource(ONLY IN_THREAD) override;
-
- private:
+private:
 
 	//! Check if the window manager support _NET_WM_FULL_PLACEMENT, or not.
 
@@ -143,7 +132,7 @@ public:
 	//! it also depends on my_position, too.
 	bool handle_our_own_placement(ONLY IN_THREAD);
 
- public:
+public:
 	//! Destructor
 	~handlerObj();
 };

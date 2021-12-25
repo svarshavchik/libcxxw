@@ -232,8 +232,6 @@ void uigenerator6()
 
 	main_window->set_window_title("List");
 
-	main_window->set_window_class("menu",
-				      "uigenerator6.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

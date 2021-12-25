@@ -59,11 +59,12 @@ popupObj::handlerObj::handlerObj(const popup_handler_args &args)
 			transparent,
 			args.appearance,
 			args.parent->handler_data,
+			args.wm_class_instance,
+			"popup.w.libcxx.com",
 			args.nesting_level,
 			true}},
 	  attachedto_info{args.attachedto_info},
 	  attachedto_type{args.attachedto_type},
-	  wm_class_instance{args.wm_class_instance},
 	  popup_parent{args.parent}
 {
 }
@@ -156,27 +157,6 @@ void popupObj::handlerObj::set_inherited_visibility_unmapped(ONLY IN_THREAD)
 
 	closing_popup(IN_THREAD);
 	unset_keyboard_focus(IN_THREAD, {});
-}
-
-const char *popupObj::handlerObj::default_wm_class_instance() const
-{
-	return wm_class_instance;
-}
-
-std::string popupObj::handlerObj::default_wm_class_resource(ONLY IN_THREAD)
-{
-	auto p=popup_parent.getptr();
-
-	if (p)
-	{
-		auto &parent=*p;
-
-		if (parent.wm_class_resource(IN_THREAD).empty())
-			return parent.default_wm_class_resource(IN_THREAD);
-
-		return parent.wm_class_resource(IN_THREAD);
-	}
-	return superclass_t::default_wm_class_resource(IN_THREAD);
 }
 
 ptr<generic_windowObj::handlerObj>

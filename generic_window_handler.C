@@ -177,6 +177,8 @@ create_extra_constructor_params(const generic_window_handler_constructor_params
 		params.background_color,
 		background_color_obj,
 		params.appearance,
+		params.wm_class_instance,
+		params.wm_class_resource,
 	};
 }
 
@@ -244,6 +246,8 @@ generic_windowObj::handlerObj
 	  current_events_thread_only{(xcb_event_mask_t)
 				     params.window_handler_params
 				     .events_and_mask.m.at(XCB_CW_EVENT_MASK)},
+	  wm_class_instance_thread_only{params.wm_class_instance},
+	  wm_class_resource_thread_only{params.wm_class_resource},
 	  current_position{params.window_handler_params.initial_position},
 	  window_pixmap_thread_only
 	{params.window_handler_params.screenref
@@ -603,18 +607,6 @@ void generic_windowObj::handlerObj
 	set_default_focus(IN_THREAD);
 }
 
-std::string
-generic_windowObj::handlerObj::default_wm_class_resource(ONLY IN_THREAD)
-{
-	auto n=exename();
-
-	size_t p=n.rfind('/');
-
-	if (p != n.npos)
-		n=n.substr(++p);
-	return n;
-}
-
 void generic_windowObj::handlerObj
 ::set_inherited_visibility_mapped(ONLY IN_THREAD)
 {
@@ -654,14 +646,6 @@ void generic_windowObj::handlerObj
 	}
 
 	// Set WM_CLASS before mapping the window.
-
-	if (wm_class_resource(IN_THREAD).empty())
-		wm_class_resource(IN_THREAD)=
-			default_wm_class_resource(IN_THREAD);
-
-	if (wm_class_instance(IN_THREAD).empty())
-		wm_class_instance(IN_THREAD)=
-			default_wm_class_instance();
 
 	{
 		std::vector<char> instance_resource;

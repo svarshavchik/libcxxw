@@ -92,8 +92,6 @@ void borderlayoutmanager()
 	auto main_window=x::w::main_window::create(create_main_window);
 
 	main_window->set_window_title("Borders!");
-	main_window->set_window_class("main",
-				      "borderlayoutmanager.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

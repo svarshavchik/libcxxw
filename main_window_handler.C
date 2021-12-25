@@ -30,16 +30,16 @@
 LIBCXXW_NAMESPACE_START
 
 main_window_handler_constructor_params
-::main_window_handler_constructor_params(const std::reference_wrapper<const
-					 screen> &parent_screen,
-					 const char *window_type,
-					 const char *window_state,
-					 const std::reference_wrapper<const
-					 color_arg> &background_color,
-					 const std::reference_wrapper
-					 <const const_main_window_appearance>
-					 &appearance,
-					 bool override_redirect)
+::main_window_handler_constructor_params(
+	const std::reference_wrapper<const screen> &parent_screen,
+	const char *window_type,
+	const char *window_state,
+	const std::reference_wrapper<const color_arg> &background_color,
+	const std::reference_wrapper<const
+	const_main_window_appearance> &appearance,
+	const std::reference_wrapper<const std::string> &wm_class_instance,
+	const std::reference_wrapper<const std::string> &wm_class_resource,
+	bool override_redirect)
 	: generic_window_handler_constructor_params
 	{
 		parent_screen,
@@ -47,9 +47,11 @@ main_window_handler_constructor_params
 		window_state,
 		background_color,
 		appearance.get()->toplevel_appearance,
-	 shared_handler_data::create(),
-	 0,
-	 override_redirect
+		shared_handler_data::create(),
+		wm_class_instance,
+		wm_class_resource,
+		0,
+		override_redirect
 	}, appearance{appearance.get()}
 {
 }
@@ -141,11 +143,6 @@ main_windowObj::handlerObj::~handlerObj()=default;
 main_windowptr main_windowObj::handlerObj::get_main_window()
 {
 	return public_object.getptr();
-}
-
-const char *main_windowObj::handlerObj ::default_wm_class_instance() const
-{
-	return "main";
 }
 
 void main_windowObj::handlerObj

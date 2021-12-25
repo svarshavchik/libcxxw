@@ -47,7 +47,9 @@ typedef functionref<void (THREAD_CALLBACK,
 //! instance and the resource identifiers.
 //!
 //! The default resource identifier is the executing program's name. The
-//! default instance identifier may be one of: "main", "menu", "dialog",
+//! default instance identifier is the main window's or the dialog's name.
+//! Popups specify a "popup.w.libcxx.com" as their resource identifiers, and
+//! instance may be one of: "date_input", "element_popup", "menu",
 //! "combobox", or "tooltip".
 //!
 //! \c set_window_type() overrides the _NET_WM_WINDOW_TYPE property.

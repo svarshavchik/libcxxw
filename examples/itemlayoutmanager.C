@@ -309,8 +309,6 @@ void itemlayoutmanager()
 					  toppings_list)};
 
 	main_window->set_window_title("Sam's pizzeria");
-	main_window->set_window_class("main",
-				      "itemlayoutmanager.examples.w.libcxx.com");
 	// Put an initial item into the list.
 	my_app->add_toppings({"cheese"});
 	main_window->on_delete

@@ -51,15 +51,6 @@ class main_windowObj::handlerObj :
 public:
 	THREAD_DATA_ONLY(reconfigure_sync_request_received);
 	THREAD_DATA_ONLY(reconfigure_sync_request_processed);
-
-private:
-	//! Override default_wm_class_instance()
-
-	//! This is a "main".
-	const char *default_wm_class_instance() const override;
-
-public:
-
 	THREAD_DATA_ONLY(on_delete_callback);
 	THREAD_DATA_ONLY(wm_icon_set);
 

@@ -383,8 +383,6 @@ void testbook()
 					  });
 
 	mw->set_window_title("Book!");
-	mw->set_window_class("main",
-			     "booklayoutmanager.examples.w.libcxx.com");
 
 	guard(mw->connection_mcguffin());
 

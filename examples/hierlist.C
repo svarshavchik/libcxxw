@@ -209,8 +209,6 @@ void hierlist()
 			 });
 
 	main_window->set_window_title("Hierarchical list");
-	main_window->set_window_class("main",
-				      "hierlist.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

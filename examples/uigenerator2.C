@@ -132,8 +132,6 @@ void uigenerator2()
 
 			 x::w::new_gridlayoutmanager{});
 
-	main_window->set_window_class("main",
-				      "uigenerator2.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

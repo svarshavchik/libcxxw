@@ -39,6 +39,9 @@ class screen_positionsObj::implObj : public sharedlockObj {
 
  public:
 
+	//! App id
+	const std::string appid;
+
 	//! Filename
 	const std::string filename;
 

@@ -337,8 +337,6 @@ void checkradio()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Checkboxes");
-	main_window->set_window_class("main",
-				      "checkradio.examples.w.libcxx.com");
 
 	main_window->on_delete
 		([close_flag]

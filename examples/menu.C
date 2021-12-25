@@ -81,8 +81,6 @@ void testmenu()
 		 });
 
 	main_window->set_window_title("Menus!");
-	main_window->set_window_class("main",
-				      "menu.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

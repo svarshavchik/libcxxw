@@ -41,7 +41,7 @@ struct create_peepholed_toplevel_listcontainer_popup_args {
 	const char *popup_window_type;
 
 	//! The popup's window class instance.
-	const char *popup_wm_class_instance;
+	std::string popup_wm_class_instance;
 
 	//! The popup's border.
 	std::optional<border_arg> popup_border;

@@ -401,8 +401,6 @@ void testpage()
 					  });
 
 	mw->set_window_title("Page!");
-	mw->set_window_class("main",
-			     "pagelayoutmanager.examples.w.libcxx.com");
 
 	guard(mw->connection_mcguffin());
 

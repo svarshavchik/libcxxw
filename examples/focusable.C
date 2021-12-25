@@ -198,8 +198,6 @@ void focusables()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Focusable fields");
-	main_window->set_window_class("main",
-				      "focusable.examples.w.libcxx.com");
 
 	main_window->on_delete
 		([close_flag]

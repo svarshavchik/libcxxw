@@ -9,6 +9,7 @@
 #include "shared_handler_data.H"
 #include "screen.H"
 #include "connection.H"
+#include "screen_positions_impl.H"
 #include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
@@ -33,6 +34,8 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 				modal ? "MODAL":"",
 				background_color,
 				appearance,
+				window_id,
+				positions->impl->appid,
 				false
 			},
 			initial_pos,
@@ -58,11 +61,6 @@ void dialogObj::handlerObj::register_current_main_window()
 }
 
 dialogObj::handlerObj::~handlerObj()=default;
-
-const char *dialogObj::handlerObj::default_wm_class_instance() const
-{
-	return "dialog";
-}
 
 void dialogObj::handlerObj
 ::set_default_wm_hints(ONLY IN_THREAD,
@@ -252,14 +250,6 @@ void dialogObj::handlerObj::set_inherited_visibility_unmapped(ONLY IN_THREAD)
 	parent_handler->handler_data->closing_dialog(IN_THREAD);
 	acquired_busy_mcguffin(IN_THREAD)=nullptr;
 	my_position(IN_THREAD)=dialog_position::default_position;
-}
-
-std::string dialogObj::handlerObj::default_wm_class_resource(ONLY IN_THREAD)
-{
-	if (parent_handler->wm_class_resource(IN_THREAD).empty())
-		return parent_handler->default_wm_class_resource(IN_THREAD);
-
-	return parent_handler->wm_class_resource(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

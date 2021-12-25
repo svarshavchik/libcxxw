@@ -44,6 +44,12 @@ struct generic_window_handler_constructor_params {
 	//! Shared data between popups and their main application window.
 	shared_handler_data handler_data;
 
+	//! What we will put into WM_CLASS
+	const std::string &wm_class_instance;
+
+	//! What we will put into WM_CLASS
+	const std::string &wm_class_resource;
+
 	//! Relative nesting level of this top-level window.
 
 	//! 0 for main application windows. For popups attached to display
@@ -58,6 +64,9 @@ struct generic_window_handler_constructor_params {
 //! Parameters to main_windowObj::handlerObj's constructor.
 
 //! These parameters get forwarded to its generic_windowObj::handlerObj, as is.
+//!
+//! Explicit reference_wrappers ensure that they won't bind to temporary
+//! values.
 
 struct main_window_handler_constructor_params
 	: generic_window_handler_constructor_params {
@@ -69,6 +78,8 @@ struct main_window_handler_constructor_params
 	 const std::reference_wrapper<const color_arg> &background_color,
 	 const std::reference_wrapper<const const_main_window_appearance>
 	 &appearance,
+	 const std::reference_wrapper<const std::string> &wm_class_instance,
+	 const std::reference_wrapper<const std::string> &wm_class_resource,
 	 bool override_redirect);
 
 	//! Appearance

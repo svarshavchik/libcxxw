@@ -422,6 +422,8 @@ create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 		main_params{me, "splash,normal", "above",
 			    background_color,
 			    config.appearance,
+			    config.name,
+			    config.positions->impl->appid,
 			    true,
 	};
 
@@ -518,6 +520,9 @@ main_window screenObj
 					std_config.appearance
 						    ->background_color,
 						    std_config.appearance,
+						    std_config.name,
+						    std_config.positions
+						    ->impl->appid,
 						    false,
 				};
 

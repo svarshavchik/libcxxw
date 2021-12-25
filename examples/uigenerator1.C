@@ -299,8 +299,6 @@ void uigenerator1()
 				 create_main_window(main_window);
 			 });
 
-	main_window->set_window_class("main",
-				      "uigenerator1.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

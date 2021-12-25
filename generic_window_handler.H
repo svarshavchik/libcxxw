@@ -144,17 +144,6 @@ class generic_windowObj::handlerObj
 	std::string wm_class_resource_thread_only;
 
  public:
-	//! The default value for the instance
-	virtual const char *default_wm_class_instance() const=0;
-
-	//! The default value for the resource.
-
-	//! The default implementation grabs exename.
-
-	virtual std::string default_wm_class_resource(ONLY IN_THREAD);
-
-	class resourcesObj;
-
 	THREAD_DATA_ONLY(root_x);
 	THREAD_DATA_ONLY(root_y);
 	THREAD_DATA_ONLY(wm_class_instance);
@@ -428,6 +417,12 @@ class generic_windowObj::handlerObj
 
 		//! Appearance
 		const const_generic_window_appearance &appearance;
+
+		//! What we will put into WM_CLASS
+		const std::string &wm_class_instance;
+
+		//! What we will put into WM_CLASS
+		const std::string &wm_class_resource;
 	};
 
 	//! Public constructor

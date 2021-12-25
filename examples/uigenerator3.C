@@ -88,8 +88,6 @@ void uigenerator3()
 
 	main_window->set_window_title("Custom checkbox");
 
-	main_window->set_window_class("main",
-				      "uigenerator3.examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

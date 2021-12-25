@@ -334,8 +334,6 @@ void validatedinputfields()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Enter a message");
-	main_window->set_window_class("main",
-				      "validatedinput.examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (ONLY IN_THREAD,
