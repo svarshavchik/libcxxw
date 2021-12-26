@@ -565,35 +565,15 @@ pf->create_focusable_container([]
       It is possible to preserve the sizes of the individual panes, and
       restore their previous sizes the next time the application runs and
       opens its window.
-      This is done as by preserving the entire window size and position
-      in the <classname>&ns;::w::screen_positions</classname> object and
-      then saving it, as described in
-      <xref linkend="screen_positions" />:
+      This is done by specifying a unique label for each pane container
+      in the window and &appshort; automatically saves the number of panes
+      and their relative sizes when their main window gets destroyed.
     </para>
 
-    <blockquote>
-      <informalexample>
-	<programlisting>
-auto pos=&ns;::w::screen_positions::create(configfile);
-
-&ns;::w::main_window_config config;
-
-config.restore(pos, "main");
-
-auto main_window=&ns;::w::main_window::create
-    (config,
-     [&amp;]
-     (const auto &amp;main_window)
-     {
-         // ...
-     });</programlisting>
-      </informalexample>
-    </blockquote>
-
     <para>
-      The application's main window's previous position and screen size gets
-      <methodname>restore</methodname>()d first, if the configuration file
-      with previously-saved position and screen size exists.
+      The application code needs to check for the number of restored pane
+      sizes, and create the same number of panes in the container's
+      &creator;:
     </para>
 
     <blockquote>
@@ -601,15 +581,17 @@ auto main_window=&ns;::w::main_window::create
 	<programlisting>
 &ns;::w::new_panelayoutmanager npl{{10,50,100}};
 
-npl.restore(pos, "main_pane");
+npl.name="main_pane";
 
 factory->create_focusable_container
     ([&amp;]
      (const auto &amp;pane_container)
      {
-          &ns;::w::panelayoutmanager lm=pane_container->get_layoutmanager();
+          &ns;::w::panelayoutmanager lm=pane_container->panelayout();
 
-          // Create panes here.
+          size_t n=lm->restored_size();
+
+          // Create 'n' panes here.
 
      }, npl);</programlisting>
       </informalexample>
@@ -621,8 +603,6 @@ factory->create_focusable_container
       labels its sole pane container with <quote>main_pane</quote>. All
       pane containers' labels must be unique.
       This label gets used to preserve the size of the container's panes.
-      <methodname>restore</methodname>() loads the panes sizes from the
-      configuration file, if they exist.
     </para>
 
     <note>
@@ -636,23 +616,12 @@ factory->create_focusable_container
 	got <methodname>restore</methodname>(), and automatically creates
 	the same number of sample panes in its &creator;.
       </para>
+
+      <para>
+	It is not an error for the &creator; to fail to create the number
+	of restored pane container sizes, if so they get ignored.
+      </para>
     </note>
-
-    <blockquote>
-      <informalexample>
-	<programlisting>
-main_window->save(pos);
-pos->save(configfile);</programlisting>
-      </informalexample>
-    </blockquote>
-
-    <para>
-      <filename>panelayoutmanager.C</filename> <methodname>save</methodname>()s
-      its window's position and size before it terminates. This automatically
-      saves the pane container's size as well, which gets
-      <methodname>restore</methodname>() the next time the program runs.
-      See <xref linkend="screen_positions" /> for more information.
-    </para>
   </section>
 </chapter>
 <!--

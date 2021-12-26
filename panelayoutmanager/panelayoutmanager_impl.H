@@ -112,6 +112,8 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
  public:
 	THREAD_DATA_ONLY(restored_sizes);
 
+	const size_t restored_size;
+
 	class horizontal;
 	class vertical;
 
@@ -126,7 +128,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	implObj(const ref<panecontainer_implObj> &pane_container_impl,
 		const const_pane_layout_appearance &appearance,
 		const std::string &name,
-		const std::vector<dim_t> &restored_sizes);
+		std::vector<dim_t> &restored_sizes);
 
 	//! Destructor
 	~implObj();

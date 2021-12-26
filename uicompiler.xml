@@ -3632,17 +3632,13 @@ List of values:
     </function>
 
     <function>
-      <name>restore</name>
+      <name>name</name>
       <object>layout</object>
-      <invoke>restore</invoke>
+      <invoke>name=</invoke>
       <parameter>
-	<name>restore</name>
+	<name>name</name>
 	<type>single_value</type>
 	<xpath>.</xpath>
-	<lookup>
-	  <function>restore_panelayoutmanager_position</function>
-	  <prepend-parameter>compiler</prepend-parameter>
-	</lookup>
       </parameter>
     </function>
   </parser>

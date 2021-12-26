@@ -36,6 +36,9 @@ public:
 	//! How many panes currently exist.
 	size_t size() const;
 
+	//! How many pane sizes were restored
+	size_t restored_size() const;
+
 	//! Return an existing widget in the pane.
 	elementptr get(size_t) const;
 

@@ -1681,6 +1681,7 @@ of wrappable labels used for the message.
       <type>pane</type>
       <config>
         <size>directory-pane-size</size>
+	<name>directory_contents_pane</name>
       </config>
     </container>
   </factory>

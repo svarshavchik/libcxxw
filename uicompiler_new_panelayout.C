@@ -12,20 +12,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-// Helper used by <restore>
-
-static new_panelayoutmanager_restored_position
-restore_panelayoutmanager_position(uicompiler &compiler,
-				    const std::string &name)
-{
-	new_panelayoutmanager_restored_position restored_position;
-
-	restored_position.restore(compiler.positions_to_restore(),
-				  name);
-
-	return restored_position;
-}
-
 #include "uicompiler.inc.H/new_panelayout_parse_parameters.H"
 #include "uicompiler.inc.H/new_panelayout_parser.H"
 

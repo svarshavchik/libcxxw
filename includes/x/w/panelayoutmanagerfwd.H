@@ -61,6 +61,8 @@ using the pane layout manager, just like the
 \code
 #include <INSERT_LIBX_NAMESPACE/w/panefactory.H>
 
+size_t n=pane_lm->restored_size();
+
 size_t n=pane_lm->size();
 
 INSERT_LIBX_NAMESPACE::w::element e=lm->get(0);
@@ -84,7 +86,7 @@ methods gets placed into a new pane.
 
 The pane layout manager automatically numbers the panes in the container,
 starting with pane #0. size() returns the number of panes currently in
-the container. get() returns the pane element.
+the container. get() returns the pane element given its 0-based index.
 
 Use
 \ref panefactory "INSERT_LIBX_NAMESPACE::w::panefactory"'s methods before
@@ -96,6 +98,37 @@ container.
 remove_pane() removes an existing pane. remove_all_panes() removes all
 panes from the container. replace_all_panes() is equivalent to using
 remove_all_panes(), followed by append_panes().
+
+\par Restoring pane sizes
+
+\code
+LIBCXX_NAMESPACE::w::new_panelayoutmanager nplm{100};
+
+nplm.restore("stack");
+
+auto pane=factory->create_focusable_container(
+    [&](const auto &pane_container)
+    {
+        auto lm=pane_container->panelayout();
+
+        size_t n=lm->restored_size();
+
+        // ...
+    });
+\endcode
+
+\ref new_panelayoutmanager "new_panelayoutmanager"'s restore() assigns a label
+to the new pane container. Labeled pane container have their number of panes
+automatically saved, when they're closed, and then restored when the container
+gets created again. All pane containers in the same window must have unique
+labels.
+
+In the creator function use restored_size() to determine how many panes were
+restored. Restoration is not guaranteed. It's possible that there are no
+previously-saved panes, and in all cases the new pane container is empty.
+It is the creator function's responsibilty to create the given number of
+panes, if it does so their initial sizes get restored automatically when
+the pane container becomes visible.
 
 \par Pane focusability.
 

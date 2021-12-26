@@ -160,32 +160,86 @@ plm->generate("mainpane", generator, elements);</programlisting>
       </varlistentry>
       <varlistentry>
 	<term>
-	  <tag class='element'>restore</tag>
+	  <tag class='element'>name</tag>
 	</term>
 	<listitem>
 	  <para>
-	    Calls <classname>&ns;::w::new_panelayoutmanager</classname>'s
-	    <methodname>restore</methodname>() method. The
-	    <link linkend="uigenerator"><classname>&ns;::w::uigenerator</classname></link>
-	    must get constructed with a
-	    <link linkend="screen_positions"><classname>&ns;::w::const_screen_positions</classname></link>
-	    parameter with preserved window positions.
+	    Sets <classname>&ns;::w::new_panelayoutmanager</classname>'s
+	    <methodname>name</methodname> field, in order to preserve
+	    the number and sizes of panes.
+	    A full control of the preservation of number and pane sizes
+	    is done by using an
+	    installed layout creator in the
+	    <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>:
+	  </para>
+
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<container>
+  <name>inventory</name>
+  <type>pane</type>
+  <config>
+    <vertical />
+    <name>inventory</name>
+  </config>
+</container>
+
+<layout id="inventory" type="pane">
+  <creator>create_inventory</creator>
+</layout>]]>
+
+&ns;::w::uielements elements;
+
+elements.layout_creators.emplace(
+    "create_inventory",
+    []
+    (const &ns;::w::panelayoutmanager &amp;plm)
+    {
+          size_t s=plm-&gt;restored_size();
+
+          // ...
+    });
+
+</programlisting>
+	    </informalexample>
+	  </blockquote>
+	  <para>
+	    The creator lambda is free to choose to restore the given number
+	    of panes, or not. When the pane container always has the same
+	    number of panes they can be created directly in the theme file:
 	  </para>
 	  <blockquote>
 	    <informalexample>
 	      <programlisting><![CDATA[
-<config>
-  <restore>inventory-settings</restore>
-</config>]]></programlisting>
+<container>
+  <name>directory</name>
+  <type>pane</type>
+  <config>
+    <vertical />
+    <name>directory</name>
+  </config>
+</container>
+
+<layout id="directory" type="pane">
+  <append_panes>
+    <name>create-directory-contents-pane</name>
+  </append_panes>
+</layout>
+
+<factory id="create-directory-contents-pane" type="pane">
+  <container>
+    <type>grid</type>
+    <name>header-pane</name>
+  </container>
+  <container>
+    <type>grid</type>
+    <name>contents-pane</name>
+  </container>
+</factory>
+]]></programlisting>
 	    </informalexample>
 	  </blockquote>
-
-	  <para>
-	    The value of the element specifies the pane container's unique
-	    label
-	    that gets passed to its <methodname>restore</methodname>()
-	    method.
-	  </para>
 	</listitem>
       </varlistentry>
     </variablelist>

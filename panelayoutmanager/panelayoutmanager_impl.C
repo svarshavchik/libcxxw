@@ -39,11 +39,12 @@ panelayoutmanagerObj::implObj::implObj(const ref<panecontainer_implObj>
 				       const const_pane_layout_appearance
 				       &appearance,
 				       const std::string &name,
-				       const std::vector<dim_t> &restored_sizes)
+				       std::vector<dim_t> &restored_sizes)
 	: gridlayoutmanagerObj::implObj{pane_container_impl, {}},
 	  pane_container_impl{pane_container_impl},
 	  appearance{appearance}, name{name},
-	  restored_sizes_thread_only{restored_sizes}
+	  restored_sizes_thread_only{std::move(restored_sizes)},
+	  restored_size{restored_sizes_thread_only.size()}
 {
 }
 

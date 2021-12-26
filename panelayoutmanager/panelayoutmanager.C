@@ -6,6 +6,7 @@
 #include "panelayoutmanager/panelayoutmanager_impl.H"
 #include "panelayoutmanager/panecontainer_impl.H"
 #include "panelayoutmanager/panefactory_impl.H"
+#include "generic_window_handler.H"
 #include "screen_positions_impl.H"
 #include "x/w/focusable_container.H"
 #include "x/w/panefactory.H"
@@ -14,7 +15,7 @@
 #include "x/w/impl/themedim_axis_element.H"
 #include "defaulttheme.H"
 #include "screen.H"
-
+#include "messages.H"
 #include <x/xml/xpath.H>
 
 LIBCXXW_NAMESPACE_START
@@ -31,6 +32,12 @@ size_t panelayoutmanagerObj::size() const
 {
 	notmodified();
 	return impl->size(grid_lock);
+}
+
+size_t panelayoutmanagerObj::restored_size() const
+{
+	notmodified();
+	return impl->restored_size;
 }
 
 elementptr panelayoutmanagerObj::get(size_t n) const
@@ -366,24 +373,29 @@ new_panelayoutmanager::new_panelayoutmanager(const new_panelayoutmanager &)
 new_panelayoutmanager &new_panelayoutmanager
 ::operator=(const new_panelayoutmanager &)=default;
 
-void new_panelayoutmanager_restored_position
-::restore(const const_screen_positions &pos,
-	  const std::string_view &name_arg)
+// Helper for loading preserved sizes, factored out for readability.
+
+static inline std::vector<dim_t> load(generic_windowObj::handlerObj &wh,
+				      const container_impl &impl,
+				      const std::string &name)
 {
-	name=name_arg;
+	std::vector<dim_t> restored_sizes;
 
-	auto lock=pos->impl->data->readlock();
+	std::vector<std::string> window_path;
 
-	if (!lock->get_root())
-	    return;
+	wh.window_id_hierarchy(window_path);
 
-	auto xpath=lock->get_xpath(saved_element_to_xpath("pane", name_arg));
+	auto rlock=wh.positions->impl->create_readlock_for_loading(
+		window_path,
+		"pane",
+		name);
 
-	if (xpath->count() != 1)
-		return;
-	xpath->to_node();
+	if (!rlock)
+		return restored_sizes;
 
-	xpath=lock->get_xpath("size");
+	xml::readlock lock{rlock};
+
+	auto xpath=lock->get_xpath("size");
 
 	size_t n=xpath->count();
 
@@ -395,25 +407,19 @@ void new_panelayoutmanager_restored_position
 		{
 			xpath->to_node(i);
 
-			std::istringstream w{lock->get_text()};
-
-			dim_t n;
-
-			if (!(w >> n))
-				throw EXCEPTION("Invalid saved value.");
-
-			restored_sizes.push_back(n);
+			restored_sizes.push_back(lock->get_text<dim_t>());
 		}
-		return;
 	} catch (const exception &e)
 	{
 		auto ee=EXCEPTION( "Error restoring pane \""
 				   << name << "\": " << e );
 
 		ee->caught();
+
+		restored_sizes.clear();
 	}
 
-	restored_sizes.clear();
+	return restored_sizes;
 }
 
 // For optimal results, precompute the initial metrics of the pane container,
@@ -451,6 +457,24 @@ new_panelayoutmanager::create(const container_impl &parent,
 	const
 {
 	auto impl=create_panecontainer_impl(parent, *this);
+
+	std::vector<dim_t> restored_sizes;
+
+	if (!name.empty())
+	{
+		auto &wh=impl->elementObj::implObj::get_window_handler();
+
+		restored_sizes=load(wh, impl, name);
+
+		std::string label;
+
+		label.reserve(name.size()+5);
+
+		label="pane:";
+		label += name;
+
+		wh.unique_widget_labels->insert(label, impl);
+	}
 
 	// Create the appropriate implementation subclass.
 
