@@ -387,6 +387,7 @@ static inline std::vector<dim_t> load(generic_windowObj::handlerObj &wh,
 
 	auto rlock=wh.positions->impl->create_readlock_for_loading(
 		window_path,
+		libcxx_uri,
 		"pane",
 		name);
 

@@ -226,7 +226,7 @@ void current_font_placeholderObj::save(ONLY IN_THREAD,
 	get_window_handler().window_id_hierarchy(hierarchy);
 
 	auto writelock=pos->impl->create_writelock_for_saving(
-		hierarchy, "font", name);
+		hierarchy, libcxx_uri, "font", name);
 
 	writelock->create_child()->element({"font"})
 		->text(static_cast<std::string>

@@ -69,7 +69,7 @@ void color_picker_current_canvasObj::implObj
 	get_window_handler().window_id_hierarchy(hierarchy);
 
 	auto writelock=pos->impl->create_writelock_for_saving(
-		hierarchy, "color", name);
+		hierarchy, libcxx_uri, "color", name);
 
 	auto color=current_official_color->official_color.get();
 

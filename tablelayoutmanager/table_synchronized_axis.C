@@ -524,7 +524,7 @@ void tablelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
 	);
 
 	auto writelock=pos->impl->create_writelock_for_saving(
-		hierarchy, "table", name);
+		hierarchy, libcxx_uri, "table", name);
 
 	table_synchronized_axisObj::dragged_scaled_axis_t::lock lock
 		{

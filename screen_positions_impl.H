@@ -9,6 +9,7 @@
 #include "x/w/main_window.H"
 
 #include <x/xml/doc.H>
+#include <x/xml/readlock.H>
 #include <x/xml/writelock.H>
 #include <x/sharedlock.H>
 #include <x/weakmultimap.H>
@@ -27,6 +28,8 @@ struct window_position_t {
 	std::optional<size_t> screen_number;
 	rectangle coordinates;
 };
+
+extern const std::string_view libcxx_uri LIBCXX_HIDDEN;
 
 //! Internal implementation object.
 
@@ -74,12 +77,14 @@ class screen_positionsObj::implObj : public sharedlockObj {
 
 	xml::writelock
 	create_writelock_for_saving(const std::vector<std::string> &window_path,
+				    const std::string_view &ns,
 				    const std::string_view &type,
 				    const std::string_view &name);
 
 	//! Create an xpath when trying to load something
 	xml::readlockptr create_readlock_for_loading(
 		const std::vector<std::string> &window_path,
+		const std::string_view &ns,
 		const std::string_view &type,
 		const std::string_view &name
 	) const;

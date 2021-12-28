@@ -976,7 +976,7 @@ void panelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
 	grid_map_t::lock grid_lock{grid_map};
 
 	auto writelock=pos->impl->create_writelock_for_saving(
-		hierarchy, "pane", name);
+		hierarchy, libcxx_uri, "pane", name);
 
 	size_t s=size(grid_lock);
 

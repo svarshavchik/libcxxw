@@ -29,6 +29,7 @@ preserve_screen_number_prop(LIBCXX_NAMESPACE_STR "::w::preserve_screen_number",
 
 screen_positionsObj::implObj::~implObj()=default;
 
+const std::string_view libcxx_uri="https://www.libcxx.org/w";
 
 void screen_positionsObj::implObj::save()
 {
@@ -56,13 +57,15 @@ static auto load(const std::string &filename,
 
 				lock->get_root();
 
-				lock->get_xpath("/windows")->to_node();
-
-				auto s=lock->get_any_attribute("version");
-
-				if (s == version)
+				if (lock->name() == "windows" &&
+				    lock->uri() == libcxx_uri &&
+				    lock->get_attribute(
+					    "version",
+					    libcxx_uri
+				    ) == version)
+				{
 					return d;
-
+				}
 			} catch (const exception &e)
 			{
 				throw EXCEPTION(filename << ": " << e);
@@ -74,8 +77,11 @@ static auto load(const std::string &filename,
 
 	auto l=d->writelock();
 
-	l->create_child()->element({"windows"})->attribute({"version",
-			version});
+	l->create_child()->element({"windows",
+			"libcxx",
+			libcxx_uri})->attribute({"version",
+					libcxx_uri,
+					version});
 
 	return d;
 }
@@ -107,6 +113,7 @@ std::string saved_element_to_xpath(const std::string_view &type,
 
 xml::writelock screen_positionsObj::implObj::create_writelock_for_saving(
 	const std::vector<std::string> &window_path,
+	const std::string_view &ns,
 	const std::string_view &type,
 	const std::string_view &name_s
 )
@@ -114,38 +121,52 @@ xml::writelock screen_positionsObj::implObj::create_writelock_for_saving(
 	auto lock=data->writelock();
 	lock->get_root();
 
-	lock->get_xpath("/windows")->to_node();
+	auto my_ns=lock->prefix();
 
 	for (const auto &p:window_path)
 	{
-		auto xpath=lock->get_xpath("window[name="
-					   + xml::quote_string_literal(p)
-					   + "]");
+		std::string s;
+
+		s.reserve(my_ns.size()*2 + p.size() + 100);
+
+		s=my_ns;
+		s += ":window[";
+		s += my_ns;
+		s += ":name=";
+		s += xml::quote_string_literal(p);
+		s += "]";
+
+		auto xpath=lock->get_xpath(s);
 
 		if (xpath->count())
 			xpath->to_node();
 		else
 		{
-			lock->create_child()->element({"window"})
-				->element({"name"})->text(p)
+			lock->create_child()->element({"window",
+					libcxx_uri})
+				->element({"name", libcxx_uri})->text(p)
 				->parent()->parent();
 		}
 	}
 
 	std::string s;
 
-	s.reserve(type.size()+name_s.size()+20);
+	s.reserve(type.size()+ns.size()+name_s.size()+100);
 
-	s = type;
-	s += "[name=";
+	s = "ns:";
+	s += type;
+	s += "[libcxx:name=";
 	s += xml::quote_string_literal(name_s);
 	s += "]";
 
-	auto xpath=lock->get_xpath(s);
+	auto xpath=lock->get_xpath(s, {
+			{ "ns", ns },
+			{ "libcxx", libcxx_uri }
+		});
 
 	size_t n=xpath->count();
 
-	if (type == "window" && n)
+	if (type == "window" && ns == libcxx_uri && n)
 	{
 		// Do not remove the existing <window> node, since it may
 		// have inferiors that we want to keep.
@@ -160,37 +181,55 @@ xml::writelock screen_positionsObj::implObj::create_writelock_for_saving(
 		lock->remove();
 	}
 
-	lock->create_child()->element({std::string{type}})
-		->element({"name"})->text(name_s)->parent()->parent();
+	if (ns == libcxx_uri)
+		lock->create_child()->element({type, ns});
+	else
+		lock->create_child()->element({type, "ns", ns});
+
+	lock->create_child()->element(
+		{
+			"name",
+			libcxx_uri
+		})->text(name_s)->parent()->parent();
 
 	return lock;
 }
 
 xml::readlockptr screen_positionsObj::implObj::create_readlock_for_loading(
 	const std::vector<std::string> &window_path,
+	const std::string_view &ns,
 	const std::string_view &type,
 	const std::string_view &name
 ) const
 {
-	size_t l=type.size()+name.size()+40;
+	size_t l=type.size()+name.size()+50;
 
 	for (const auto &p:window_path)
 		l += p.size()+20;
 
-	std::string s{"/windows"};
+	std::string s;
 
+	s.reserve(l);
 	for (const auto &p:window_path)
-		s += "/window[name=" + xml::quote_string_literal(p) + "]";
+	{
+		s += "libcxx:window[libcxx:name=";
+		s += xml::quote_string_literal(p);
+		s += "]/";
+	}
 
-	s += "/";
+	s += "ns:";
 	s += type;
-	s += "[name=" + xml::quote_string_literal(name) + "]";
+	s += "[libcxx:name=";
+	s += xml::quote_string_literal(name) + "]";
 
 	auto lock=data->readlock();
 
 	lock->get_root();
 
-	auto xpath=lock->get_xpath(s);
+	auto xpath=lock->get_xpath(s, {
+			{ "libcxx", libcxx_uri },
+			{ "ns", ns },
+		});
 
 	if (xpath->count())
 	{
@@ -259,6 +298,7 @@ main_windowObj::~main_windowObj()
 
 		auto lock=handler->positions->impl
 			->create_writelock_for_saving(window_path,
+						      libcxx_uri,
 						      "window",
 						      window_id);
 
@@ -305,6 +345,7 @@ screen_positionsObj::implObj::find_window_position(
 	std::optional<window_position_t> info;
 
 	auto lockptr=create_readlock_for_loading(parent_windows,
+						 libcxx_uri,
 						 "window",
 						 window_name);
 

@@ -829,6 +829,7 @@ new_tablelayoutmanager::create(const container_impl &parent_container,
 
 		auto lock=wh.positions->impl->create_readlock_for_loading(
 			window_path,
+			libcxx_uri,
 			"table",
 			name);
 
