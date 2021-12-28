@@ -17,7 +17,7 @@
 LIBCXXW_NAMESPACE_START
 
 create_attachedto_element_ret_t
-create_popup_attachedto_element_impl(factoryObj &parent_factory,
+create_popup_attachedto_element_impl(const container_impl &parent_container,
 				     const const_element_popup_appearance
 				     &appearance,
 				     const function<create_popup_contents_impl_t
@@ -27,8 +27,6 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 				     const function<void (const gridfactory &)
 				     > &current_value_factory)
 {
-	auto parent_container=parent_factory.get_container_impl();
-
 	auto attachedto_info=
 		popup_attachedto_info::create(rectangle{},
 					      attached_to::right_or_left);

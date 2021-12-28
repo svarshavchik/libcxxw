@@ -14,6 +14,7 @@
 #include "x/w/elementfwd.H"
 #include "x/w/gridfactoryfwd.H"
 #include "x/w/factoryfwd.H"
+#include "x/w/containerobj.H"
 #include "x/w/border_arg.H"
 #include "x/w/rgb.H"
 #include "x/w/gridlayoutmanagerfwd.H"
@@ -94,7 +95,7 @@ create_popup_contents_t(const popup_attachedto_info &,
 //! Implements the framework for a display element with a button that
 //! opens a popup.
 //!
-//! Receives a reference to the factory object that's creating it,
+//! Receives the return value from a factory object's get_container_impl(),
 //! an \ref element_popup_appearance "element_popup_appearance", and
 //! three closures.
 //!
@@ -152,15 +153,15 @@ create_popup_contents_t(const popup_attachedto_info &,
 template<typename current_value_t,
 	 typename popup_contents_impl_t,
 	 typename popup_contents_t> create_attachedto_element_ret_t
-create_popup_attachedto_element(factoryObj &parent_factory,
-				const const_element_popup_appearance
-				&appearance,
-				popup_contents_impl_t &&popup_contents_impl,
-				popup_contents_t &&popup_contents,
-				current_value_t &&current_value)
+create_popup_attachedto_element(
+	const container_impl &parent_container,
+	const const_element_popup_appearance &appearance,
+	popup_contents_impl_t &&popup_contents_impl,
+	popup_contents_t &&popup_contents,
+	current_value_t &&current_value)
 {
 	return create_popup_attachedto_element_impl
-		(parent_factory, appearance,
+		(parent_container, appearance,
 		 make_function<create_popup_contents_impl_t>
 		 (std::forward<popup_contents_impl_t>(popup_contents_impl)),
 		 make_function<create_popup_contents_t>
@@ -173,15 +174,13 @@ create_popup_attachedto_element(factoryObj &parent_factory,
 //! Type-erased created_popup_attachedto_element().
 
 create_attachedto_element_ret_t
-create_popup_attachedto_element_impl(factoryObj &parent_factory,
-				     const const_element_popup_appearance
-				     &appearance,
-				     const function<create_popup_contents_impl_t
-				     > &popup_contents_impl_factory,
-				     const function<create_popup_contents_t
-				     > &popup_contents_factory,
-				     const function<void (const gridfactory &)
-				     > &current_value_factory)
+create_popup_attachedto_element_impl(
+	const container_impl &parent_container,
+	const const_element_popup_appearance &appearance,
+	const function<create_popup_contents_impl_t
+	> &popup_contents_impl_factory,
+	const function<create_popup_contents_t> &popup_contents_factory,
+	const function<void (const gridfactory &)> &current_value_factory)
 	LIBCXX_HIDDEN;
 
 

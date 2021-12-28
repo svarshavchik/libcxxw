@@ -445,7 +445,8 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	auto [real_impl, popup_imagebutton, glm, font_picker_popup]
 		=create_popup_attachedto_element
-		(*this, config.appearance->attached_popup_appearance,
+		(get_container_impl(),
+		 config.appearance->attached_popup_appearance,
 
 		 [&](const container_impl &parent,
 		     const child_element_init_params &params)
