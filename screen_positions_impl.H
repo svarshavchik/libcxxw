@@ -107,13 +107,6 @@ class screen_positionsObj::implObj : public sharedlockObj {
 	const current_main_window_handlers_t current_main_window_handlers;
 };
 
-//! Internal Xpath assembler.
-
-//! \internal
-
-std::string saved_element_to_xpath(const std::string_view &type,
-				   const std::string_view &name) LIBCXX_HIDDEN;
-
 LIBCXXW_NAMESPACE_END
 
 #endif

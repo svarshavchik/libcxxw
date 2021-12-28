@@ -3403,7 +3403,7 @@ widgets.create_string_validated_input_field&lt;int&gt;(
 <element id="foreground_color">
   <color_picker />
   <config>
-    <restore />
+    <name>foreground_color</name>
   </config>
 </element>]]></programlisting>
       </informalexample>
@@ -3463,18 +3463,17 @@ widgets.create_string_validated_input_field&lt;int&gt;(
 
       <varlistentry>
 	<term>
-	  <tag class='emptytag'>restore</tag>
+	  <tag class='element'>name</tag>
 	</term>
 	<listitem>
+
 	  <para>
-	    Calls <classname>&ns;::w::color_picker_config</classname>'s
-	    <methodname>restore</methodname>() method.
-	    The <tag class='element'>element</tag> must have a specified
-	    <tag class='attribute'>id</tag>, and the
-	    <link linkend="uigenerator"><classname>&ns;::w::uigenerator</classname></link>
-	    must get constructed with a
-	    <link linkend="screen_positions"><classname>&ns;::w::const_screen_positions</classname></link>
-	    parameter with preserved window positions.
+	    The <tag class='element'>name</tag> gives a unique label to this
+	    color picker (a unique label in its window) which identifies the
+	    color picker's configuration. A set
+	    <tag class='element'>name</tag> results in the color picker
+	    settings getting preserved and restored the next time a color
+	    picker gets created in its main window.
 	  </para>
 	</listitem>
       </varlistentry>
@@ -3501,7 +3500,7 @@ widgets.create_string_validated_input_field&lt;int&gt;(
 <element id="title_font">
   <font_picker />
   <config>
-    <restore />
+    <name>title_font</name>
   </config>
 </element>]]></programlisting>
       </informalexample>
@@ -3618,18 +3617,17 @@ widgets.create_string_validated_input_field&lt;int&gt;(
 
       <varlistentry>
 	<term>
-	  <tag class='emptytag'>restore</tag>
+	  <tag class='element'>name</tag>
 	</term>
 	<listitem>
+
 	  <para>
-	    Calls <classname>&ns;::w::font_picker_config</classname>'s
-	    <methodname>restore</methodname>() method.
-	    The <tag class='element'>element</tag> must have a specified
-	    <tag class='attribute'>id</tag>, and the
-	    <link linkend="uigenerator"><classname>&ns;::w::uigenerator</classname></link>
-	    must get constructed with a
-	    <link linkend="screen_positions"><classname>&ns;::w::const_screen_positions</classname></link>
-	    parameter with preserved window positions.
+	    The <tag class='element'>name</tag> gives a unique label to this
+	    font picker (a unique label in its window) which identifies the
+	    font picker's configuration. A set
+	    <tag class='element'>name</tag> results in the font picker
+	    settings getting preserved and restored the next time a font
+	    picker gets created in its main window.
 	  </para>
 	</listitem>
       </varlistentry>

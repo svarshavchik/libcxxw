@@ -14,6 +14,7 @@
 #include "x/w/motion_event.H"
 #include "x/w/pagelayoutmanager.H"
 #include "x/w/label.H"
+#include "generic_window_handler.H"
 #include "screen_positions_impl.H"
 #include "popup/popup_attachedto_element.H"
 #include "color_picker/color_picker_impl.H"
@@ -63,42 +64,6 @@ color_picker_config_appearance::color_picker_config_appearance
 
 color_picker_config_appearance &color_picker_config_appearance
 ::operator=(const color_picker_config_appearance &)=default;
-
-void color_picker_config::restore(const const_screen_positions &pos,
-				  const std::string_view &name_arg)
-{
-	name=name_arg;
-
-	if (name.empty())
-		return;
-
-	auto lock=pos->impl->data->readlock();
-
-	if (!lock->get_root())
-	    return;
-
-	auto xpath=lock->get_xpath(saved_element_to_xpath("color", name_arg));
-
-	if (xpath->count() != 1)
-		return;
-	xpath->to_node();
-
-	for (size_t i=0; i<4; i++)
-	{
-		auto lock2=lock->clone();
-
-		xpath=lock2->get_xpath(rgb_channels[i]);
-
-		if (xpath->count() == 1)
-		{
-			xpath->to_node();
-
-			std::istringstream ii{lock2->get_text()};
-
-			ii >> initial_color.*(rgb_fields[i]);
-		}
-	}
-}
 
 color_pickerObj::color_pickerObj(const ref<implObj> &impl,
 				 const layout_impl &container_layoutmanager)
@@ -183,9 +148,10 @@ struct get_basic_colors<std::index_sequence<i...>> {
 struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 
 	const color_picker_config &config;
-
-	color_picker_layout_helper(const color_picker_config &config)
-		: config{config}
+	rgb &initial_color_rgb;
+	color_picker_layout_helper(const color_picker_config &config,
+				   rgb &initial_color_rgb)
+		: config{config}, initial_color_rgb{initial_color_rgb}
 	{
 	}
 
@@ -206,7 +172,7 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 					 implObj::
 					 initial_fixed_component
 					 )=
-					config.initial_color.*
+					initial_color_rgb.*
 					(color_pickerObj::
 					 implObj::
 					 initial_fixed_component
@@ -243,7 +209,7 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 				  auto impl=ref<color_picker_alpha_canvasObj
 						::implObj>
 					  ::create(parent_container,
-						   config.initial_color);
+						   initial_color_rgb);
 
 				  auto c=color_picker_alpha_canvas
 					  ::create(impl);
@@ -669,10 +635,63 @@ color_picker factoryObj
 
 	ptr<color_picker_selectorObj::implObj> color_picker_selector_impl;
 
-	color_picker_layout_helper helper{config};
+	auto initial_color_rgb=config.initial_color;
+
+	auto parent_container=get_container_impl();
+
+	if (!config.name.empty())
+	{
+		auto &wh=parent_container->get_window_handler();
+
+		std::string s;
+
+		s.reserve(config.name.size() + 13);
+
+		s="color_picker:";
+		s += config.name;
+
+		parent_container->get_window_handler()
+			.register_unique_widget_label(
+				s,
+				parent_container
+			);
+
+		std::vector<std::string> window_path;
+
+		wh.window_id_hierarchy(window_path);
+
+		auto rlock=wh.positions->impl->create_readlock_for_loading(
+			window_path,
+			libcxx_uri,
+			"color",
+			config.name);
+
+		if (rlock)
+		{
+			xml::readlock lock{rlock};
+
+			for (size_t i=0; i<4; i++)
+			{
+				auto lock2=lock->clone();
+
+				auto xpath=lock2->get_xpath(rgb_channels[i]);
+
+				if (xpath->count() == 1)
+				{
+					xpath->to_node();
+
+					initial_color_rgb.*(rgb_fields[i])=
+						lock2->get_text<rgb_component_t>
+						();
+				}
+			}
+		}
+	}
+
+	color_picker_layout_helper helper{config, initial_color_rgb};
 
 	auto initial_color=color_pickerObj::implObj::official_color
-		::create(config.initial_color);
+		::create(initial_color_rgb);
 
 	// Weakly-captured implementation object, referenced by the various
 	// callbacks.
@@ -684,19 +703,19 @@ color_picker factoryObj
 	// Add the validators for manual entry input fields.
 	{
 		auto [h, s, v]=color_pickerObj::implObj
-			::compute_hsv(config.initial_color);
+			::compute_hsv(initial_color_rgb);
 
 		create_manual_input_validator(
-			tmpl, "r-input-field", config.initial_color.r, wimpl,
+			tmpl, "r-input-field", initial_color_rgb.r, wimpl,
 			&color_pickerObj::implObj::new_rgb_values);
 		create_manual_input_validator(
-			tmpl, "g-input-field", config.initial_color.g, wimpl,
+			tmpl, "g-input-field", initial_color_rgb.g, wimpl,
 			&color_pickerObj::implObj::new_rgb_values);
 		create_manual_input_validator(
-			tmpl, "b-input-field", config.initial_color.b, wimpl,
+			tmpl, "b-input-field", initial_color_rgb.b, wimpl,
 			&color_pickerObj::implObj::new_rgb_values);
 		create_manual_input_validator(
-			tmpl, "a-input-field", config.initial_color.a, wimpl,
+			tmpl, "a-input-field", initial_color_rgb.a, wimpl,
 			&color_pickerObj::implObj::new_alpha_value);
 
 		create_manual_input_validator(
@@ -712,9 +731,7 @@ color_picker factoryObj
 
 	auto [real_impl, popup_imagebutton, glm, color_picker_popup]
 		=create_popup_attachedto_element
-		(get_container_impl(),
-		 config.appearance->attached_popup_appearance,
-
+		(parent_container, config.appearance->attached_popup_appearance,
 		 [&](const container_impl &parent,
 		     const child_element_init_params &init_params)
 		 {

@@ -1601,13 +1601,9 @@ List of values:
 	</member>
 
 	<member>
-	  <name>restore</name>
-
-	  <method_call>
-	    <name>invoke_restore</name>
-	    <parameter>orig_lock</parameter>
-	    <parameter>compiler</parameter>
-	  </method_call>
+	  <name>name</name>
+	  <field>name</field>
+	  <type>single_value</type>
 	</member>
 
 	<member>
@@ -1678,13 +1674,9 @@ List of values:
 	</member>
 
 	<member>
-	  <name>restore</name>
-
-	  <method_call>
-	    <name>invoke_restore</name>
-	    <parameter>orig_lock</parameter>
-	    <parameter>compiler</parameter>
-	  </method_call>
+	  <name>name</name>
+	  <field>name</field>
+	  <type>single_value</type>
 	</member>
 
 	<member>

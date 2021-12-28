@@ -574,9 +574,9 @@ parameter sets the initial appearance of the color-picker.
 #include <INSERT_LIBX_NAMESPACE/w/font_picker.H>
 #include <INSERT_LIBX_NAMESPACE/w/font_picker_config.H>
 
-INSERT_LIBX_NAMESPACE::w::color_picker_config config;
+INSERT_LIBX_NAMESPACE::w::font_picker_config config;
 
-INSERT_LIBX_NAMESPACE::w::color_picker cp=factory->create_color_picker(config);
+INSERT_LIBX_NAMESPACE::w::font_picker fp=factory->create_font_picker(config);
 
 \endcode
 

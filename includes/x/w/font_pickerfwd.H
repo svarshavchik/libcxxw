@@ -193,21 +193,12 @@ care of.
 \code
 INSERT_LIBX_NAMESPACE::font_picker_config config;
 
-config.restore(pos, "title-font");
+config.name="title-font";
 \endcode
 
-Restores previously-saved font picker state.
-A \ref screen_positions "screen_positions" object must get constructed
-previously and used to restore() the font picker's
-\ref main_window "main_window".
-This restores the font picker's state alongside with the main window's.
-The second parameter is the new font picker's unique identifier label. This is
-an opaque text string that identifies this font picker. Multiple
-font pickers' configurations can be saved, with each
-font picker using a unique label.
-
-save()ing the main window's positions automatically saves the font picker's
-state.
+Assigns a unique label to the font picker widget that's used to restore
+its previous state. All font pickers in a main window must have unique
+labels.
 
 */
 

@@ -84,9 +84,10 @@ auto create_mainwindow(const x::w::main_window &main_window,
 
 	x::w::font_picker_config fp_config;
 
-	// Restore previous font picker font, and most recently used fonts.
+	// Font picker widget's name, that is used to save and restore
+	// its settings.
 
-	fp_config.restore(pos, "main_font");
+	fp_config.name="main_font";
 
 	// Use this to set the font picker's callback that gets invoked
 	// whenever a new font gets selected.
@@ -127,7 +128,7 @@ auto create_mainwindow(const x::w::main_window &main_window,
 			// display element gets created.
 			//
 			// The most recently used font list gets validated
-			// during constructions. Save the validated list
+			// during construction. Save the validated list
 
 			if (std::holds_alternative<x::w::initial>(trigger))
 			{
@@ -203,8 +204,8 @@ auto create_mainwindow(const x::w::main_window &main_window,
 				  << std::endl;
 		}};
 
-	// Restore saved color picker's color.
-	cp_config.restore(pos, "main_color");
+	// Color picker's unique label, for its saved settings.
+	cp_config.name="main_color";
 
 	x::w::color_picker cp=factory->create_color_picker(cp_config);
 

@@ -273,6 +273,7 @@ initial_sorted_families(const std::vector<const_font_family_group_entry>
 			const label &current_font_shown,
 			font &initial_font,
 			const font_picker_config &config,
+			const std::optional<font> &conf_initial_font,
 			font_pickerObj::implObj::official_values_t
 			&official_values)
 {
@@ -287,13 +288,14 @@ initial_sorted_families(const std::vector<const_font_family_group_entry>
 		 validated_most_recently_used,
 		 items,
 		 {}, dummy);
+	std::cout << "=========\n";
 
 	lm->replace_all_items(items);
 	if (!items.empty())
 	{
 		size_t i=0;
 
-		if (config.selection_required || config.initial_font)
+		if (config.selection_required || conf_initial_font)
 		{
 			i=search_font_family_with_default(list, initial_font);
 
@@ -326,7 +328,7 @@ initial_sorted_families(const std::vector<const_font_family_group_entry>
 		current_font_shown->label_impl->update(string, {});
 	}
 
-	if (config.initial_font || config.selection_required)
+	if (conf_initial_font || config.selection_required)
 		// The input field will be set in create_font_picker()
 		official_values.saved_font_size=initial_font.point_size;
 	return list;
@@ -482,22 +484,24 @@ static int reset_option_combobox(const standard_comboboxlayoutmanager &lm,
 }
 
 font_picker_impl_init_params::
-font_picker_impl_init_params(const image_button_internal &popup_button,
-			     const label &current_font_shown,
-			     const font_picker_popup_fieldsptr &popup_fields,
-			     const font_picker_config &config,
-			     const font_pickerObj::implObj::current_state
-			     &initial_state)
+font_picker_impl_init_params(
+	const image_button_internal &popup_button,
+	const label &current_font_shown,
+	const font_picker_popup_fieldsptr &popup_fields,
+	const font_picker_config &config,
+	const std::optional<font> &conf_initial_font,
+	const std::vector<font_picker_group_id> &conf_most_recently_used,
+	const font_pickerObj::implObj::current_state &initial_state)
 	: popup_button{popup_button},
 	  current_font_shown{current_font_shown},
 	  popup_fields{popup_fields},
 	  font_family_lm{popup_fields.font_family->get_layoutmanager()},
 	  config{config},
-
+	  conf_initial_font{conf_initial_font},
 	  initial_state{initial_state},
 
-	  initial_font{config.initial_font ?
-			  *config.initial_font:font{}},
+	  initial_font{conf_initial_font ?
+			  *conf_initial_font:font{}},
 	  families{create_families(config)}
 {
 	// Some edit checking
@@ -552,7 +556,7 @@ font_picker_impl_init_params(const image_button_internal &popup_button,
 
 	sorted_families=initial_sorted_families
 		(families,
-		 config.most_recently_used,
+		 conf_most_recently_used,
 		 *mru_lock,
 		 font_family_lm,
 		 current_font_shown,
@@ -565,6 +569,7 @@ font_picker_impl_init_params(const image_button_internal &popup_button,
 		 // it here.
 		 initial_font,
 		 config,
+		 conf_initial_font,
 		 // initial_sorted_families()
 		 // populates this.
 		 *font_lock);
@@ -589,7 +594,7 @@ font_pickerObj::implObj::implObj(const font_picker_impl_init_params
 	// Initialize the placeholder font family name label element.
 	update_font_properties(init_params.initial_state->official_font.get()
 			       .saved_font_group,
-			       (init_params.config.initial_font ||
+			       (init_params.conf_initial_font ||
 				init_params.config.selection_required)
 			       ? init_params.initial_font.point_size:0,
 			       make_function<update_font_properties_t>
@@ -603,7 +608,7 @@ font_pickerObj::implObj::implObj(const font_picker_impl_init_params
 						lm->autoselect(*n);
 				}));
 
-	if (init_params.config.initial_font ||
+	if (init_params.conf_initial_font ||
 	    init_params.config.selection_required)
 	{
 		reset_font_options(current_font_thread_only,

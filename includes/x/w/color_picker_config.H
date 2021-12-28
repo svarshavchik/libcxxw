@@ -74,13 +74,6 @@ struct color_picker_config {
 
 	bool enable_alpha_channel=false;
 
-	//! Restore previously-saved color picker configuration.
-
-	//! This resets initial_color
-
-	void restore(const const_screen_positions &,
-		     const std::string_view &);
-
 	//! Visual appearance
 	color_picker_config_appearance appearance;
 };

@@ -1311,36 +1311,6 @@ const_screen_positions uicompiler::positions_to_restore() const
 	return saved_positions;
 }
 
-namespace {
-#if 0
-}
-#endif
-
-static std::string get_id_to_restore(const ui::parser_lock &lock)
-{
-	auto id=lock->get_any_attribute("id");
-
-	if (id.empty())
-		throw EXCEPTION(_("<restore> requires <element> to specify an"
-				  " id attribute"));
-
-	return id;
-}
-
-template<typename object_type>
-inline void invoke_restore(object_type &object,
-			   const ui::parser_lock &lock,
-			   uicompiler &compiler)
-{
-	object.restore(compiler.positions_to_restore(),
-		       get_id_to_restore(lock));
-}
-
-#if 0
-{
-#endif
-}
-
 uicompiler::scrollbar_type
 uicompiler::lookup_scrollbar_type(const std::string &value)
 {

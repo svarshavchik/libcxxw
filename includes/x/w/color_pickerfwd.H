@@ -127,21 +127,12 @@ that case.
 \code
 INSERT_LIBX_NAMESPACE::color_picker_config config;
 
-config.restore(pos, "foreground-color");
+config.name="foreground-color";
 \endcode
 
-Restores previously-saved color picker state.
-A \ref screen_positions "screen_positions" object must get constructed
-previously and used to restore() the color picker's
-\ref main_window "main_window".
-This restores the color picker's state alongside with the main window's.
-The second parameter is the new color picker's unique identifier label. This is
-an opaque text string that identifies this color picker. Multiple
-color pickers' configurations can be saved, with each
-color picker using a unique label.
-
-save()ing the main window's positions automatically saves the color picker's
-state.
+Assigns a unique label to the color picker widget that's used to restore
+its previous state. All color pickers in a main window must have unique
+labels.
 
 */
 

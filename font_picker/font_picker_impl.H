@@ -364,7 +364,7 @@ struct LIBCXX_HIDDEN font_picker_impl_init_params {
 	const font_picker_popup_fieldsptr &popup_fields;
 	standard_comboboxlayoutmanager font_family_lm;
 	const font_picker_config &config;
-
+	const std::optional<font> &conf_initial_font;
 	font_pickerObj::implObj::current_state initial_state;
 
 	font initial_font;
@@ -372,13 +372,16 @@ struct LIBCXX_HIDDEN font_picker_impl_init_params {
 	std::vector<const_font_family_group_entry> families;
 	std::vector<const_font_family_group_entryptr> sorted_families;
 
-	font_picker_impl_init_params(const image_button_internal &popup_button,
-				     const label &current_font_shown,
-				     const font_picker_popup_fieldsptr
-				     &popup_fields,
-				     const font_picker_config &config,
-				     const font_pickerObj::implObj
-				     ::current_state &initial_state);
+	font_picker_impl_init_params(
+		const image_button_internal &popup_button,
+		const label &current_font_shown,
+		const font_picker_popup_fieldsptr &popup_fields,
+		const font_picker_config &config,
+		const std::optional<font> &conf_initial_font,
+		const std::vector<font_picker_group_id
+		> &conf_most_recently_used,
+		const font_pickerObj::implObj::current_state &initial_state
+	);
 };
 
 LIBCXXW_NAMESPACE_END

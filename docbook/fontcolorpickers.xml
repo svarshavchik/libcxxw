@@ -117,38 +117,39 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      The initial list of most recently used fonts gets specified in
+      The initial list of most recently used fonts gets tentatively specified in
       the <ulink url="&link-x--w--font-picker-config;"><classname>&ns;::w::font_picker_config</classname></ulink>
       when creating the font picker.
-      The font picker widget's overloaded
-      <methodname>most_recently_used</methodname>() method either returns
+      The final list of most recently used fonts, in the new widget, may
+      differ for the following reasons.
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Current system's font availability.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Previously used and restored most recently used font settings.
+	  Setting <varname>name</varname> in the
+	  <classname>&ns;::w::font_picker_config</classname> assigns a unique
+	  label (in its window) that identifies the font picker's configuration
+	  which gets automatically saved when the main window gets closed;
+	  then gets automatically loaded the next time the main window gets
+	  opened.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The final list of the font picker's most recently used fonts comes from
+      the widget's overloaded
+      <methodname>most_recently_used</methodname>() method. It either returns
       the current list of most recently used fonts, or sets the new list,
       updating the font picker popup accordingly.
-      An application can be responsible for saving and restoring the list of
-      fonts each time it runs, but it's easier to use the
-      existing support for <link linkend="screen_positions">preserving the
-	position and size of windows and widgets</link>.
-    </para>
-
-    <para>
-      A necessary prerequisite for preserving the most recently used fonts
-      is that
-      the table's main application window's size also gets preserved;
-      so <filename>fontcolorpickers.C</filename>
-      <methodname>save</methodname>()s
-      its main window's size (and position), just like the
-      <link linkend="wordwraplabel">word wrap label example</link>.
-    </para>
-
-    <para>
-      Each font picker has a unique identifier, or a label.
-      <classname>&ns;::w::font_picker_config</classname>'s
-      <methodname>restore</methodname>() method sets the new font picker's
-      label and restores the font picker's most recently used fonts, together
-      with the font picker's current font, if they were previously
-      <methodname>save</methodname>().
-
-      All font pickers created by the application must have unique labels.
     </para>
   </section>
 
@@ -184,12 +185,10 @@ See COPYING for distribution information.
 
     <para>
       The same approach that gets used to save and restore the font picker's
-      setting also gets used with the color picker.
+      settings also gets used with the color picker.
       Each color picker has a unique identifier, or a label.
       <classname>&ns;::w::color_picker_config</classname>'s
-      <methodname>restore</methodname>() method sets the new color picker's
-      label and restores the color picker's saved color, if there is one.
-      All color pickers created by the application must have unique labels.
+      <varname>name</varname> specifies its unique label.
     </para>
   </section>
 </chapter>

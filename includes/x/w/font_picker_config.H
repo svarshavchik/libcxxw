@@ -62,9 +62,8 @@ struct font_picker_config_settings {
 	//! Default "Cancel" button label
 	static text_param default_cancel_label();
 
-	//! This font picker's label
+	//! This font picker's unique label
 
-	//! Set by restore().
 	std::string name;
 
 	//! Whether a font family+group must be specified
@@ -126,13 +125,6 @@ struct font_picker_config_appearance {
 struct font_picker_config : font_picker_config_settings,
 			    font_picker_config_appearance
 {
-	//! Restore previously-saved font picker configuration.
-
-	//! This resets initial_font, most_recently_used, and name,
-
-	void restore(const const_screen_positions &,
-		     const std::string_view &);
-
 };
 
 LIBCXXW_NAMESPACE_END

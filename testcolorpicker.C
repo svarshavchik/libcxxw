@@ -99,7 +99,7 @@ void testcolorpicker(const testcolorpicker_options &options)
 
 			 LIBCXX_NAMESPACE::w::color_picker_config cconfig;
 
-			 cconfig.restore(pos, "main_color");
+			 cconfig.name="main_color";
 			 cconfig.enable_alpha_channel=true;
 
 			 auto cp=factory->create_color_picker(cconfig);
@@ -123,7 +123,7 @@ void testcolorpicker(const testcolorpicker_options &options)
 			 font_picker_config config;
 
 			 config.selection_required=options.required->value;
-			 config.restore(pos, "main_font");
+			 config.name="main_font";
 
 			 font f;
 
@@ -152,9 +152,12 @@ void testcolorpicker(const testcolorpicker_options &options)
 
 			 auto fp=factory->create_font_picker(config);
 
+			 auto final_most_recently_used=
+				 fp->most_recently_used();
+
 			 fp->on_font_update([mru=std::list<font_picker_group_id>
-					 {config.most_recently_used.begin(),
-					  config.most_recently_used.end()}]
+					 {final_most_recently_used.begin(),
+					  final_most_recently_used.end()}]
 					    (THREAD_CALLBACK,
 					     const font &new_font,
 					     const font_picker_group_id *new_font_group,

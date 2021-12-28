@@ -94,23 +94,6 @@ screen_positionsObj::implObj::implObj(const std::string &filename,
 {
 }
 
-std::string saved_element_to_xpath(const std::string_view &type,
-				   const std::string_view &name)
-{
-	std::string s;
-
-	s.reserve(type.size()+name.size()+20);
-
-	s += "/windows/";
-
-	s += type;
-	s += "[name=";
-	s += xml::quote_string_literal(name);
-	s += "]";
-
-	return s;
-}
-
 xml::writelock screen_positionsObj::implObj::create_writelock_for_saving(
 	const std::vector<std::string> &window_path,
 	const std::string_view &ns,

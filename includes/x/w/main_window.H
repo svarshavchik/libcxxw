@@ -103,14 +103,6 @@ public:
 	//! Appearance
 	appearance_t appearance;
 
-#if 0
-	//! Specify optional position on the screen.
-
-	void restore(const const_screen_positions &) LIBCXX_PUBLIC;
-
-	//! Successfully restore()d position.
-	std::optional<window_info_t> window_info;
-#endif
 	//! Destructor
 	~main_window_config();
 };

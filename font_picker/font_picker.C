@@ -75,88 +75,6 @@ focusable_impl font_pickerObj::get_impl() const
 	return impl->popup_button->get_impl();
 }
 
-void font_picker_config::restore(const const_screen_positions &pos,
-				 const std::string_view &name_arg)
-{
-	name=name_arg;
-
-	if (name.empty())
-		return;
-
-	try
-	{
-		auto lock=pos->impl->data->readlock();
-
-		if (!lock->get_root())
-			return;
-
-		auto xpath=lock->get_xpath(saved_element_to_xpath("font",
-								  name_arg));
-
-		if (xpath->count() != 1)
-			return;
-		xpath->to_node();
-
-		{
-			auto font=lock->clone();
-
-			auto xpath2=font->get_xpath("font");
-
-			if (xpath2->count() == 1)
-			{
-				xpath2->to_node();
-
-				initial_font=font->get_text();
-			}
-		}
-
-		xpath=lock->get_xpath("recent");
-
-		size_t n=xpath->count();
-		most_recently_used.clear();
-		most_recently_used.reserve(n);
-
-		for (size_t i=1; i <= n; ++i)
-		{
-			xpath->to_node(i);
-
-			auto value=lock->clone();
-
-			auto xpath2=value->get_xpath("family");
-
-			font_picker_group_id mru;
-
-			if (xpath2->count() == 1)
-			{
-				xpath2->to_node();
-
-				mru.family=value->get_text();
-
-				value=lock->clone();
-
-				xpath2=value->get_xpath("foundry");
-
-				if (xpath2->count() == 1)
-				{
-					xpath2->to_node();
-					mru.foundry=value->get_text();
-				}
-			}
-			most_recently_used.push_back(mru);
-		}
-		return;
-	} catch (const exception &e)
-	{
-		auto ee=EXCEPTION( "Error restoring font \""
-				   << name << "\": " << e );
-
-		ee->caught();
-	}
-
-	initial_font.reset();
-	most_recently_used.clear();
-}
-
 //////////////////////////////////////////////////////////////////////////
 
 namespace {
@@ -435,6 +353,105 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	auto initial_state=font_pickerObj::implObj::current_state::create();
 
+	auto parent_container=get_container_impl();
+
+	auto conf_initial_font=config.initial_font;
+	auto conf_most_recently_used=config.most_recently_used;
+
+	if (!config.name.empty())
+	{
+		auto &wh=parent_container->get_window_handler();
+
+		std::string s;
+
+		s.reserve(config.name.size() + 12);
+
+		s="font_picker:";
+		s += config.name;
+
+		parent_container->get_window_handler()
+			.register_unique_widget_label(
+				s,
+				parent_container
+			);
+
+		std::vector<std::string> window_path;
+
+		wh.window_id_hierarchy(window_path);
+
+		auto rlock=wh.positions->impl->create_readlock_for_loading(
+			window_path,
+			libcxx_uri,
+			"font",
+			config.name);
+
+		if (rlock)
+		{
+			xml::readlock lock{rlock};
+
+			try
+			{
+				auto font=lock->clone();
+
+				auto xpath=font->get_xpath("font");
+
+				if (xpath->count() == 1)
+				{
+					xpath->to_node();
+
+					conf_initial_font=font->get_text();
+				}
+
+				xpath=lock->get_xpath("recent");
+
+				size_t n=xpath->count();
+				conf_most_recently_used.clear();
+				conf_most_recently_used.reserve(n);
+
+				for (size_t i=1; i <= n; ++i)
+				{
+					xpath->to_node(i);
+
+					auto value=lock->clone();
+
+					auto xpath2=value->get_xpath("family");
+
+					font_picker_group_id mru;
+
+					if (xpath2->count() == 1)
+					{
+						xpath2->to_node();
+
+						mru.family=value->get_text();
+
+						value=lock->clone();
+
+						xpath2=value->get_xpath(
+							"foundry"
+						);
+
+						if (xpath2->count() == 1)
+						{
+							xpath2->to_node();
+							mru.foundry=value->
+								get_text();
+						}
+					}
+					conf_most_recently_used.push_back(mru);
+				}
+			} catch (const exception &e)
+			{
+				auto ee=EXCEPTION( "Error restoring font \""
+						   << config.name
+						   << "\": " << e );
+
+				ee->caught();
+				conf_initial_font=config.initial_font;
+				conf_most_recently_used=
+					config.most_recently_used;
+			}
+		}
+	}
 
 	//! Weakly-captured font picker implementation object.
 
@@ -445,8 +462,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	auto [real_impl, popup_imagebutton, glm, font_picker_popup]
 		=create_popup_attachedto_element
-		(get_container_impl(),
-		 config.appearance->attached_popup_appearance,
+		(parent_container, config.appearance->attached_popup_appearance,
 
 		 [&](const container_impl &parent,
 		     const child_element_init_params &params)
@@ -609,6 +625,8 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 		helper.current_font_shown,
 		helper,
 		config,
+		conf_initial_font,
+		conf_most_recently_used,
 		initial_state};
 
 	auto font_picker_impl=ref<font_pickerObj::implObj>::create(init_params);
@@ -680,7 +698,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 	// Validator for the font size editable combo-box.
 
 	// Need the initial point size shown?
-	if (config.selection_required || config.initial_font)
+	if (config.selection_required || conf_initial_font)
 		helper.font_size_validated->set(
 			initial_state->official_font.get().saved_font_size
 		);

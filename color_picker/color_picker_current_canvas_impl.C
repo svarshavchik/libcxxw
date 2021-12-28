@@ -57,9 +57,8 @@ void color_picker_current_canvasObj::implObj
 			    render_pict_op::op_atop);
 }
 
-void color_picker_current_canvasObj::implObj
-::save(ONLY IN_THREAD,
-       const screen_positions &pos)
+void color_picker_current_canvasObj::implObj::save(ONLY IN_THREAD,
+						   const screen_positions &pos)
 {
 	if (name.empty())
 		return;
