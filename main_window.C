@@ -442,18 +442,17 @@ create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 
 ///////////////////////////////////////////////////////////////////////////
 
-main_window screenObj
-::do_create_mainwindow(const main_window_config_t &config,
-		       const std::optional<window_position_t> &position,
-		       const function<main_window_creator_t> &f,
-		       const new_layoutmanager &layout_factory)
+static main_window create_main_window_with_config_handle(
+	const screen &window_screen,
+	const main_window_config_t &config,
+	const std::optional<window_position_t> &position,
+	const function<screenObj::main_window_creator_t> &f,
+	const new_layoutmanager &layout_factory)
 {
 	// Keep a batch queue in scope for the duration of the creation,
 	// so everything gets buffered up.
 
-	auto queue=connref->impl->thread->get_batch_queue();
-
-	auto me=screen{this};
+	auto queue=window_screen->connref->impl->thread->get_batch_queue();
 
 	std::optional<border_arg> main_window_border;
 	std::optional<color_arg> inner_background_color;
@@ -472,7 +471,7 @@ main_window screenObj
 				main_window_handler_constructor_params
 					main_params
 					{
-						me, "normal", "",
+						window_screen, "normal", "",
 						std_config.appearance
 						->background_color,
 						std_config.appearance,
@@ -491,7 +490,7 @@ main_window screenObj
 			[&](const splash_window_config &splash_config)
 			{
 				auto ret=create_splash_window_handler
-					(me, splash_config,
+					(window_screen, splash_config,
 					 splash_config.appearance
 					 ->background_color,
 					 main_window_border);
@@ -504,7 +503,7 @@ main_window screenObj
 			    &splash_config)
 			{
 				auto ret=create_splash_window_handler
-					(me, splash_config,
+					(window_screen, splash_config,
 					 main_window_border,
 					 inner_background_color);
 
@@ -532,6 +531,21 @@ main_window screenObj
 
 	return mw;
 }
+
+main_window screenObj
+::do_create_mainwindow(const main_window_config_t &config,
+		       const std::optional<window_position_t> &position,
+		       const function<main_window_creator_t> &f,
+		       const new_layoutmanager &layout_factory)
+{
+	return create_main_window_with_config_handle(
+		ref{this},
+		config,
+		position,
+		f,
+		layout_factory);
+}
+
 
 main_window screenObj
 ::do_create_mainwindow(const main_window_config_t &config,
