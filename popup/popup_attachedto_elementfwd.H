@@ -95,6 +95,9 @@ create_popup_contents_t(const popup_attachedto_info &,
 //! Implements the framework for a display element with a button that
 //! opens a popup.
 //!
+//! The first parameter is the parent container. The second parameter
+//! is a popup_attachedto_info object constructed with default parameters.
+//!
 //! Receives the return value from a factory object's get_container_impl(),
 //! an \ref element_popup_appearance "element_popup_appearance", and
 //! three closures.
@@ -107,7 +110,7 @@ create_popup_contents_t(const popup_attachedto_info &,
 //! object, constructed using the two parameters, and return it. This is
 //! the implementation object for the contents of the attached popup.
 //!
-//! The second closure gets called next, with a
+//! The second closure gets called next, with the forwarded
 //! \ref popup_attachedto_info "popup_attachedto_info object",
 //! and a \ref gridlayoutmanagerObj::implObj "gridlayoutmanagerObj::implObj".
 //! The popup's contents use the grid layout manager. The second closure
@@ -155,13 +158,14 @@ template<typename current_value_t,
 	 typename popup_contents_t> create_attachedto_element_ret_t
 create_popup_attachedto_element(
 	const container_impl &parent_container,
+	const popup_attachedto_info &attachedto_info,
 	const const_element_popup_appearance &appearance,
 	popup_contents_impl_t &&popup_contents_impl,
 	popup_contents_t &&popup_contents,
 	current_value_t &&current_value)
 {
 	return create_popup_attachedto_element_impl
-		(parent_container, appearance,
+		(parent_container, attachedto_info, appearance,
 		 make_function<create_popup_contents_impl_t>
 		 (std::forward<popup_contents_impl_t>(popup_contents_impl)),
 		 make_function<create_popup_contents_t>
@@ -176,6 +180,7 @@ create_popup_attachedto_element(
 create_attachedto_element_ret_t
 create_popup_attachedto_element_impl(
 	const container_impl &parent_container,
+	const popup_attachedto_info &attachedto_info,
 	const const_element_popup_appearance &appearance,
 	const function<create_popup_contents_impl_t
 	> &popup_contents_impl_factory,

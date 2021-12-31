@@ -32,8 +32,8 @@ class LIBCXX_HIDDEN popup_attachedto_infoObj : virtual public obj {
 
 	//! Constructor
 	popup_attachedto_infoObj
-		(const rectangle &attachedto_element_position,
-		 const attached_to how);
+		(const rectangle &attachedto_element_position={},
+		 const attached_to how=attached_to::right_or_left);
 
 	//! Destructor
 	~popup_attachedto_infoObj();

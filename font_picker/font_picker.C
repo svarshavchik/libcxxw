@@ -351,6 +351,8 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	font_picker_init_helper helper;
 
+	auto attachedto_info=popup_attachedto_info::create();
+
 	auto initial_state=font_pickerObj::implObj::current_state::create();
 
 	auto parent_container=get_container_impl();
@@ -462,7 +464,8 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	auto [real_impl, popup_imagebutton, glm, font_picker_popup]
 		=create_popup_attachedto_element
-		(parent_container, config.appearance->attached_popup_appearance,
+		(parent_container, attachedto_info,
+		 config.appearance->attached_popup_appearance,
 
 		 [&](const container_impl &parent,
 		     const child_element_init_params &params)

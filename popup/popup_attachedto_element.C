@@ -17,20 +17,15 @@
 LIBCXXW_NAMESPACE_START
 
 create_attachedto_element_ret_t
-create_popup_attachedto_element_impl(const container_impl &parent_container,
-				     const const_element_popup_appearance
-				     &appearance,
-				     const function<create_popup_contents_impl_t
-				     > &popup_contents_impl_factory,
-				     const function<create_popup_contents_t
-				     > &popup_contents_factory,
-				     const function<void (const gridfactory &)
-				     > &current_value_factory)
+create_popup_attachedto_element_impl(
+	const container_impl &parent_container,
+	const popup_attachedto_info &attachedto_info,
+	const const_element_popup_appearance &appearance,
+	const function<create_popup_contents_impl_t
+	> &popup_contents_impl_factory,
+	const function<create_popup_contents_t> &popup_contents_factory,
+	const function<void (const gridfactory &)> &current_value_factory)
 {
-	auto attachedto_info=
-		popup_attachedto_info::create(rectangle{},
-					      attached_to::right_or_left);
-
 	// Our container implementation object, for the current color field and
 	// the popup button.
 	auto real_impl=popup_attachedto_element_impl::create(parent_container);

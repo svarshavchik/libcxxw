@@ -635,6 +635,8 @@ color_picker factoryObj
 
 	ptr<color_picker_selectorObj::implObj> color_picker_selector_impl;
 
+	auto attachedto_info=popup_attachedto_info::create();
+
 	auto initial_color_rgb=config.initial_color;
 
 	auto parent_container=get_container_impl();
@@ -731,7 +733,8 @@ color_picker factoryObj
 
 	auto [real_impl, popup_imagebutton, glm, color_picker_popup]
 		=create_popup_attachedto_element
-		(parent_container, config.appearance->attached_popup_appearance,
+		(parent_container, attachedto_info,
+		 config.appearance->attached_popup_appearance,
 		 [&](const container_impl &parent,
 		     const child_element_init_params &init_params)
 		 {
