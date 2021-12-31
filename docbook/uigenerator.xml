@@ -108,19 +108,10 @@ layout->generate("main-window-grid",
       </term>
       <listitem>
 	<para>
-	  <methodname>create</methodname>() takes two optional parameters.
-	  Either one is optional, but if specified they must appear in the
-	  following order:
+	  <methodname>create</methodname>() takes an optional parameter:
 	</para>
 
 	<itemizedlist>
-	  <listitem>
-	    <para>
-	      <link linkend="screen_positions">Preserved window positions</link>
-	      in the <classname>&ns;::w::const_screen_positions</classname>
-	      object.
-	    </para>
-	  </listitem>
 	  <listitem>
 	    <para>
 	      An

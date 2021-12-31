@@ -31,7 +31,7 @@ struct main_window_position {
 
 	//! The name of this window.
 
-	const std::string name="main";
+	std::string name="main";
 
 	//! Wrapper for screen_positions
 

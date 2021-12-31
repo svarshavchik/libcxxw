@@ -29,12 +29,11 @@ void appObj::appearances_elements_initialize(app_elements_tptr &elements,
 					     x::w::uielements &ui,
 					     init_args &args,
 					     const x::w::main_window &mw,
-					     const x::messages &catalog,
-					     const x::w::screen_positions &pos)
+					     const x::messages &catalog)
 {
 	auto appearance_dialog_gen=
 		x::w::const_uigenerators::create(CREATORDIR
-						 "/appearance_dialog.xml", pos,
+						 "/appearance_dialog.xml",
 						 catalog);
 
 	args.elements.appearance_dialog_gen=appearance_dialog_gen;

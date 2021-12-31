@@ -1303,14 +1303,6 @@ uicompiler::get_layoutmanager(const std::string &type)
 				   type));
 }
 
-const_screen_positions uicompiler::positions_to_restore() const
-{
-	if (!saved_positions)
-		throw EXCEPTION(_("<restore> requires saved screen_positions"));
-
-	return saved_positions;
-}
-
 uicompiler::scrollbar_type
 uicompiler::lookup_scrollbar_type(const std::string &value)
 {

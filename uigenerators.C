@@ -31,13 +31,7 @@ const_uigenerators uigeneratorsBase::create(const xml::doc &parsed_xml,
 
 	if (lock->get_root())
 	{
-		std::optional<const_screen_positionsptr> no_positions;
-
-		uicompiler compiler{lock, g,
-				    optional_arg_or<explicit_refptr
-				    <const_screen_positions>>(args,
-							      no_positions),
-				    true};
+		uicompiler compiler{lock, g, true};
 	}
 
 	auto messages=optional_arg<explicit_refptr<const_messages>>(args);

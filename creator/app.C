@@ -252,8 +252,6 @@ inline appObj::init_args appObj::create_init_args()
 {
 	appObj::init_args args;
 
-	auto pos=x::w::screen_positions::create();
-
 	x::w::main_window_config config{"main"};
 
 	auto utf8_locale=x::locale::base::utf8();
@@ -261,7 +259,7 @@ inline appObj::init_args appObj::create_init_args()
 	auto catalog=x::messages::create("libcxxw", utf8_locale);
 
 	auto cxxwui_generators=
-		x::w::const_uigenerators::create(CREATORDIR "/main.xml", pos,
+		x::w::const_uigenerators::create(CREATORDIR "/main.xml",
 						 catalog);
 
 	args.cxxwui_generators=cxxwui_generators;
@@ -464,7 +462,7 @@ inline appObj::init_args appObj::create_init_args()
 				 (args.elements, ui, args);
 
 			 appObj::appearances_elements_initialize
-				 (args.elements, ui, args, mw, catalog, pos);
+				 (args.elements, ui, args, mw, catalog);
 
 			 appObj::generators_elements_initialize
 				 (args.elements, ui, args.uicompiler_info);

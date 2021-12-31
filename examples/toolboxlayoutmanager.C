@@ -14,7 +14,6 @@
 #include <x/config.H>
 #include <x/appid.H>
 
-#include <x/w/screen_positions.H>
 #include <x/w/main_window.H>
 #include <x/w/dialog.H>
 #include <x/w/gridlayoutmanager.H>
@@ -214,8 +213,7 @@ static void create_toolbox_contents(const x::w::toolboxlayoutmanager &tlm)
 // Creator for the main window.
 
 static void create_main_window(const x::w::main_window &mw,
-			       x::w::dialogptr &toolbox_dialog,
-			       const x::w::screen_positions &pos)
+			       x::w::dialogptr &toolbox_dialog)
 {
 	auto glm=mw->gridlayout();
 
@@ -373,7 +371,7 @@ static void create_main_window(const x::w::main_window &mw,
 // Create the new application object, optionally restoring previously-
 // used position on the screen.
 
-new_app create_app(const x::w::screen_positions &pos)
+new_app create_app()
 {
 	x::w::dialogptr toolbox_dialog;
 
@@ -385,8 +383,7 @@ new_app create_app(const x::w::screen_positions &pos)
 			 (const auto &main_window)
 			 {
 				 create_main_window(main_window,
-						    toolbox_dialog,
-						    pos);
+						    toolbox_dialog);
 			 });
 
 	main_window->set_window_title("Toolbox");
@@ -398,7 +395,7 @@ void testtoolbox()
 {
 	x::destroy_callback::base::guard guard;
 
-	new_app my_app=create_app(x::w::screen_positions::create());
+	new_app my_app=create_app();
 
 	guard(my_app->main_window->connection_mcguffin());
 

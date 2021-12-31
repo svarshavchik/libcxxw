@@ -58,7 +58,7 @@ See COPYING for distribution information.
 	a separate function, for clarity.
 	Setting <varname>background_color</varname> in the
 	<classname>&ns;::w::main_window_config</classname> and using it to
-	create the main window (see <xref linkend="screen_positions" />
+	create the main window (see <xref linkend="appids" />
 	for more information) with
 	<function>create_mainwindow</function>() sets the main window's
 	background to light yellow, then just like

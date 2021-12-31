@@ -15,7 +15,6 @@
 #include <x/w/listitemhandle.H>
 #include <x/w/uielements.H>
 #include <x/w/uigenerators.H>
-#include <x/w/screen_positions.H>
 #include <x/w/callback_trigger.H>
 #include <string>
 #include <iostream>
@@ -28,8 +27,7 @@ std::string x::appid() noexcept
 	return "uigenerator5.examples.w.libcxx.com";
 }
 
-static inline void create_main_window(const x::w::main_window &main_window,
-				      const x::w::screen_positions &pos)
+static inline void create_main_window(const x::w::main_window &main_window)
 {
 	std::string me=x::exename(); // My path.
 	size_t p=me.rfind('/');
@@ -38,7 +36,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	x::w::const_uigenerators generator=
 		x::w::const_uigenerators::create(me.substr(0, ++p) +
-						 "uigenerator5.xml", pos);
+						 "uigenerator5.xml");
 
 	x::w::uielements element_factory;
 	auto layout=main_window->gridlayout();
@@ -75,8 +73,6 @@ void uigenerator5()
 
 	x::w::main_window_config config{"main"};
 
-	auto pos=x::w::screen_positions::create();
-
 	auto close_flag=close_flag_ref::create();
 
 	auto main_window=x::w::main_window
@@ -84,7 +80,7 @@ void uigenerator5()
 			 [&]
 			 (const auto &main_window)
 			 {
-				 create_main_window(main_window, pos);
+				 create_main_window(main_window);
 			 },
 
 			 x::w::new_gridlayoutmanager{});

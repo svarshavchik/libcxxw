@@ -7,7 +7,6 @@
 
 #include <x/w/uigeneratorsfwd.H>
 #include <x/w/uigeneratorsobj.H>
-#include <x/w/screen_positions.H>
 #include <x/functionalrefptr.H>
 #include <x/vector.H>
 #include <x/ref.H>
@@ -29,8 +28,7 @@ public:
 
 	//! Optional create() parameters.
 
-	typedef optional_args<explicit_refptr<const_screen_positions>,
-			      explicit_refptr<const_messages>> create_args_t;
+	typedef optional_args<explicit_refptr<const_messages>> create_args_t;
 
 	//! Load template from file.
 	static const_uigenerators create(const std::string_view &filename,

@@ -604,10 +604,8 @@ void parse_theme_border::dashes(std::vector<double> &values)
 
 uicompiler::uicompiler(const ui::parser_lock &root_lock,
 		       const uigenerators &generators,
-		       const const_screen_positionsptr &saved_positions,
 		       bool allowthemerefs)
 	: generators{generators},
-	  saved_positions{saved_positions},
 	  allowthemerefs{allowthemerefs}
 {
 	if (!root_lock->get_root())

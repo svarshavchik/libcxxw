@@ -19,7 +19,6 @@
 #include <x/w/menu.H>
 #include <x/w/copy_cut_paste_menu_items.H>
 #include <x/w/element_state.H>
-#include <x/w/screen_positions.H>
 #include <x/w/callback_trigger.H>
 #include <string>
 #include <iostream>
@@ -33,7 +32,6 @@ std::string x::appid() noexcept
 }
 
 static inline void create_main_window(const x::w::main_window &main_window,
-				      const x::w::screen_positions &pos,
 				      const close_flag_ref &close_flag)
 {
 	std::string me=x::exename(); // My path.
@@ -43,7 +41,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	x::w::const_uigenerators generator=
 		x::w::const_uigenerators::create(me.substr(0, ++p) +
-						 "uigenerator6.xml", pos);
+						 "uigenerator6.xml");
 
 	x::w::uielements element_factory;
 
@@ -215,8 +213,6 @@ void uigenerator6()
 
 	x::w::main_window_config config{"main"};
 
-	auto pos=x::w::screen_positions::create();
-
 	auto close_flag=close_flag_ref::create();
 
 	auto main_window=x::w::main_window
@@ -224,8 +220,7 @@ void uigenerator6()
 			 [&]
 			 (const auto &main_window)
 			 {
-				 create_main_window(main_window, pos,
-						    close_flag);
+				 create_main_window(main_window, close_flag);
 			 },
 
 			 x::w::new_gridlayoutmanager{});

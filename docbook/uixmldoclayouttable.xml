@@ -172,7 +172,7 @@ See COPYING for distribution information.
 	  <para>
 	    This element sets
 	    <classname>&ns;::w::new_tablelayoutmanager</classname>'s
-	    <varname>adjustable_column_widths</varname> to enable adjustabe
+	    <varname>adjustable_column_widths</varname> to enable adjustable
 	    column widths.
 	  </para>
 
@@ -227,36 +227,6 @@ See COPYING for distribution information.
 	    The value of the element specifies an
 	    <link linkend="uixmlappearance"><tag class='element'>appearance</tag></link>
 	    object of <tag class='attribute'>type</tag>=<quote>table</quote>.
-	  </para>
-	</listitem>
-      </varlistentry>
-
-      <varlistentry>
-	<term>
-	  <tag class='element'>restore</tag>
-	</term>
-	<listitem>
-	  <para>
-	    Calls <classname>&ns;::w::new_tablelayoutmanager</classname>'s
-	    <methodname>restore</methodname>() method. The
-	    <link linkend="uigenerator"><classname>&ns;::w::uigenerator</classname></link>
-	    must get constructed with a
-	    <link linkend="screen_positions"><classname>&ns;::w::const_screen_positions</classname></link>
-	    parameter with preserved window positions.
-	  </para>
-	  <blockquote>
-	    <informalexample>
-	      <programlisting><![CDATA[
-<config>
-  <restore>table-settings</restore>
-</config>]]></programlisting>
-	    </informalexample>
-	  </blockquote>
-
-	  <para>
-	    The value of the element specifies the table's unique label
-	    that gets passed to its <methodname>restore</methodname>()
-	    method.
 	  </para>
 	</listitem>
       </varlistentry>

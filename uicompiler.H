@@ -66,7 +66,6 @@ public:
 
 	uicompiler(const ui::parser_lock &lock,
 		   const uigenerators &generators,
-		   const const_screen_positionsptr &saved_positions,
 		   bool allowthemerefs);
 
 	//! Load font definitions.
@@ -101,14 +100,6 @@ public:
 
 	//! What's being generated.
 	const uigenerators generators;
-
-	//! Saved screen positions that might be restored
-	const const_screen_positionsptr saved_positions;
-
-	//! Check that saved_positions were given, then return them.
-
-	//! TODO - remove
-	const_screen_positions positions_to_restore() const;
 
 	//! Whether this is a custom theme compiler
 

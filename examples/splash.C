@@ -122,6 +122,13 @@ x::w::main_window create_mainwindow(const options &options)
 
 	transparent_splash_config.border=rounded_border;
 
+	// main_window_config's (inherited) "name" gives the main window's
+	// name (defaults to "main"). This example program starts another
+	// program with a main window. If this example program opened a
+	// a 2nd main window, in addition to the splash one, they must use
+	// different names, so this is not strictly needed here:
+	transparent_splash_config.name="splash";
+
 	// After passing either an x::w::splash_window_config or a
 	// x::w::transparent_splash_window_config to main_window's create(),
 	// the next parameter is the creator lambda, as usual.

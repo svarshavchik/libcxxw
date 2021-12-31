@@ -57,7 +57,7 @@ See COPYING for distribution information.
   <para>
     Adjusting the toolbox dialog's width rearranges the icons automatically.
     Closing and rerunning <filename>toolboxlayoutmanager.C</filename>
-    <link linkend="screen_positions">preserves the main window's and the
+    <link linkend="appids">preserves the main window's and the
       dialog's position</link>.
     The <quote>View</quote> menu's <quote>Toolbox</quote> item has an
     <keycap>Alt-T</keycap> keyboard shortcut. This closes and reopens the
@@ -129,24 +129,6 @@ args.restore(&ns;::w::dialog_position::on_the_left);</programlisting>
 	for reliable dialog positioning.
       </para>
     </note>
-
-    <blockquote>
-      <informalexample>
-	<programlisting>
-args.restore(pos, "toolbox");</programlisting>
-      </informalexample>
-    </blockquote>
-
-    <para>
-      An <link linkend="screen_positions"><classname>&ns;::w::screen_positions</classname></link>
-      object restores the dialog's prior location and size, identified by
-      a unique label.
-      <link linkend="toolbox"><filename>toolboxlayoutmanager.C</filename></link>
-      first sets the dialog to open next to the main window's left border,
-      then attempts to restore its prior position. If there was no
-      previously saved position, the dialog's default position on the
-      left border remains in place.
-    </para>
 
     <blockquote>
       <informalexample>

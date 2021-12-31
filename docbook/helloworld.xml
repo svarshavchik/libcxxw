@@ -66,7 +66,7 @@ make</programlisting>
       example demonstrates several basic concepts used by &app;:
     </para>
 
-    <section id="screen_positions">
+    <section id="appids">
       <title>Application identifiers and version</title>
 
       <para>
@@ -138,7 +138,7 @@ $ [command] --set-property &ns;::w::preserve_screen_number=0
 	<classname>&ns;::w::main_window</classname> is a
 	&container;,
 	a widget that contains other widgets.
-	All widgets are either individuals elements, like buttons and input
+	All widgets are either individual elements, like buttons and input
 	fields, or they are containers with their own widgets; and
 	each container is, itself, a widget.
       </para>

@@ -14,7 +14,6 @@
 
 #include <x/w/main_window.H>
 #include <x/w/main_window_appearance.H>
-#include <x/w/screen_positions.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
 #include <x/w/label.H>
@@ -103,26 +102,16 @@ void wordwrap()
 
 	auto close_flag=close_flag_ref::create();
 
-	// A default screen_positions object gets created automatically,
-	// stored as <libcxx config directory>/<appid>/windows. But it can
-	// be created manually in order to keep the window configuration
-	// stored somewhere else, if needed.
-
-	x::w::screen_positions pos=x::w::screen_positions::create();
-
 	// It's possible to capture more than one main_window's position and
 	// size, and save it. Each main_window must have a unique label, that
 	// identifies the stored position.
 	//
-	// Creating a new main_window with an optional screen_position and
-	// a label ends up reopening the window (eventually, when it gets
-	// show()n) in its former position and size (hopefully).
-	//
-	// This has no effect if no memorized position was loaded from the
-	// the configuration (which includes the situation where the
-	// configuration file does not exist).
+	// Positions of main windows get stored together with their
+	// associated label. If there's a saved position for a window with
+	// the given label then the main_window gets opened in its previous
+	// position (and size, if it's adjustable).
 
-	x::w::main_window_config config{"main", pos};
+	x::w::main_window_config config{"main"};
 
 	// Obtain main window's appearance
 
@@ -159,8 +148,7 @@ void wordwrap()
 		 });
 
 	// Passing an optional x::w::main_window_config as the first parameter
-	// to main_window's constructor specifies the window's label, and
-	// the screen_positions object (if one gets declared explicitly).
+	// to main_window's constructor specifies the window's label.
 	//
 	// If not specified, the window's label defaults to "main". An
 	// application with two or more main_windows must use an explicit

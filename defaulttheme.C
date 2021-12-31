@@ -572,7 +572,7 @@ void defaultthemeObj::constructor(const xcb_screen_t *screen,
 		ui::parser_lock
 			lock{theme_config.theme_configfile->readlock()};
 
-		uicompiler compiler{lock, uigenerators{this}, {}, false};
+		uicompiler compiler{lock, uigenerators{this}, false};
 	} catch (const exception &e)
 	{
 		throw EXCEPTION("An error occured while parsing the "

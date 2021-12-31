@@ -30,7 +30,6 @@
 #include "x/w/color_picker.H"
 #include "x/w/impl/connection_threadfwd.H"
 #include "x/w/impl/uixmlparser.H"
-#include "x/w/screen_positions.H"
 #include "font_picker/font_picker_preview.H"
 #include "messages.H"
 
@@ -1525,9 +1524,7 @@ public:
 						    x::w::uielements &ui,
 						    init_args &args,
 						    const x::w::main_window &,
-						    const x::messages &,
-						    const
-						    x::w::screen_positions &);
+						    const x::messages &);
 
 	//! Placeholder for an \ref appearance_value_t "appearance value".
 	struct reset {

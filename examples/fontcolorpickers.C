@@ -65,8 +65,7 @@ struct random_color_sourceObj : virtual public x::obj {
 
 typedef x::ref<random_color_sourceObj> random_color_source;
 
-auto create_mainwindow(const x::w::main_window &main_window,
-		       const x::w::screen_positions &pos)
+auto create_mainwindow(const x::w::main_window &main_window)
 {
 	auto layout=main_window->gridlayout();
 
@@ -292,10 +291,6 @@ auto create_mainwindow(const x::w::main_window &main_window,
 
 void fontcolorpickers()
 {
-	// My configuration file.
-
-	auto pos=x::w::screen_positions::create();
-
 	x::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
@@ -311,7 +306,7 @@ void fontcolorpickers()
 		 (const auto &main_window)
 		 {
 			 std::tie(font_picker, color_picker)=
-				 create_mainwindow(main_window, pos);
+				 create_mainwindow(main_window);
 		 });
 
 	main_window->on_disconnect([]

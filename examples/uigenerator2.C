@@ -18,7 +18,6 @@
 #include <x/w/text_param_literals.H>
 #include <x/w/font_picker.H>
 #include <x/w/progressbar.H>
-#include <x/w/screen_positions.H>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -32,8 +31,7 @@ std::string x::appid() noexcept
 	return "uigenerator2.examples.w.libcxx.com";
 }
 
-static inline auto create_main_window(const x::w::main_window &main_window,
-				      const x::w::screen_positions &pos)
+static inline auto create_main_window(const x::w::main_window &main_window)
 {
 	std::string me=x::exename(); // My path.
 	size_t p=me.rfind('/');
@@ -42,13 +40,7 @@ static inline auto create_main_window(const x::w::main_window &main_window,
 
 	x::w::const_uigenerators generator=
 		x::w::const_uigenerators::create(me.substr(0, ++p) +
-						 "uigenerator2.xml",
-
-						 // Previous settings of the
-						 // font and color picker
-						 // widgets to restore:
-
-						 pos);
+						 "uigenerator2.xml");
 
 	x::w::uielements element_factory;
 
@@ -114,8 +106,6 @@ void uigenerator2()
 
 	x::w::main_window_config config{"main"};
 
-	auto pos=x::w::screen_positions::create();
-
 	auto close_flag=close_flag_ref::create();
 
 	x::w::progressbarptr progressbar;
@@ -127,7 +117,7 @@ void uigenerator2()
 			 (const auto &main_window)
 			 {
 				 std::tie(progressbar, progressbar_label)=
-					 create_main_window(main_window, pos);
+					 create_main_window(main_window);
 			 },
 
 			 x::w::new_gridlayoutmanager{});
