@@ -291,7 +291,7 @@ public:
 							 const rectangle &r);
 
 	//! Forward save() to the layout manager.
-	void save(ONLY IN_THREAD, const screen_positions &);
+	void save(ONLY IN_THREAD);
 };
 
 // The connection thread maintains a map of all containers that need to

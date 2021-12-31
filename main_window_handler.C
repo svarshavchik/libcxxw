@@ -38,6 +38,8 @@ main_window_handler_constructor_params
 	const std::reference_wrapper<const
 	const_main_window_appearance> &appearance,
 	const std::reference_wrapper<const screen_positions> &positions,
+	const std::reference_wrapper<const screen_positions_handle>
+	&config_handle,
 	const std::reference_wrapper<const std::string> &wm_class_instance,
 	bool override_redirect)
 	: generic_window_handler_constructor_params
@@ -49,6 +51,7 @@ main_window_handler_constructor_params
 		appearance.get()->toplevel_appearance,
 		shared_handler_data::create(),
 		positions,
+		config_handle,
 		wm_class_instance,
 		positions.get()->impl->appid,
 		0,

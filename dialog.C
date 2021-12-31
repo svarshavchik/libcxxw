@@ -96,16 +96,22 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 
 	auto queue=s->connref->impl->thread->get_batch_queue();
 
+	std::vector<std::string> window_path;
+	impl->handler->window_id_hierarchy(window_path);
+
+	auto config_handle=impl->handler->positions->impl->config_handle(
+		window_path,
+		libcxx_uri,
+		"window",
+		args.dialog_id
+	);
+
 	std::optional<rectangle> initial_pos;
 
 	if (args.position == dialog_position::default_position)
 	{
-		std::vector<std::string> window_path;
-		impl->handler->window_id_hierarchy(window_path);
 
-		auto window_info=impl->handler->positions
-			->impl->find_window_position(window_path,
-						     args.dialog_id);
+		auto window_info=find_window_position(config_handle);
 
 		if (window_info)
 			initial_pos=window_info->coordinates;
@@ -117,6 +123,7 @@ void main_windowObj::do_create_dialog(const create_dialog_args &args,
 			 initial_pos,
 			 std::string{args.dialog_id},
 			 impl->handler->positions,
+			 config_handle,
 			 args.dialog_background,
 			 args.appearance,
 			 "dialog,normal",

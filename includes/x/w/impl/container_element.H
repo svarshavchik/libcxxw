@@ -217,11 +217,10 @@ void container_elementObj<element_impl>
 
 //! Forward save() to the layout manager
 template<typename element_impl>
-void container_elementObj<element_impl>
-::save(ONLY IN_THREAD, const screen_positions &pos)
+void container_elementObj<element_impl>::save(ONLY IN_THREAD)
 {
-	containerObj::implObj::save(IN_THREAD, pos);
-	element_impl::save(IN_THREAD, pos);
+	containerObj::implObj::save(IN_THREAD);
+	element_impl::save(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

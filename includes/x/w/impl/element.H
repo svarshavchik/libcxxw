@@ -50,7 +50,6 @@
 #include <x/w/key_eventfwd.H>
 #include <x/w/fontfwd.H>
 #include <x/w/tooltipfwd.H>
-#include <x/w/screen_positionsfwd.H>
 #include <x/obj.H>
 #include <x/logger.H>
 #include <x/functional.H>
@@ -1875,7 +1874,7 @@ class elementObj::implObj : public element_drawObj,
 	//! Save the element's status
 
 	//! The default implementation forwards this call for_each_child().
-	virtual void save(ONLY IN_THREAD, const screen_positions &);
+	virtual void save(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

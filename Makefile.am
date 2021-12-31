@@ -814,6 +814,7 @@ libcxxw_la_SOURCES=\
 	screen_picturecache.H			    \
 	screen_picturecachefwd.H		    \
 	screen_positions.C			    \
+	screen_positions_confighandle.C		    \
 	screen_positions_impl.C			    \
 	screen_positions_impl.H			    \
 	screen_update_current_theme.C		    \

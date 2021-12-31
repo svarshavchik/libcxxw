@@ -809,8 +809,7 @@ new_tablelayoutmanager::create(const container_impl &parent_container,
 			       (const focusable_container &)>
 			       &creator) const
 {
-	std::vector<dim_t> restored_widths;
-
+	auto axis_impl=table_synchronized_axis::create(*this);
 	std::string name;
 	bool restore=false;
 
@@ -819,30 +818,27 @@ new_tablelayoutmanager::create(const container_impl &parent_container,
 		std::tie(name, restore) = *adjustable_column_widths;
 	}
 
-	if (!name.empty() && restore)
+	screen_positions_handleptr config_handle;
+
+	if (!name.empty())
 	{
-		auto &wh=parent_container->get_window_handler();
+		auto handle=parent_container->get_window_handler()
+			.widget_config_handle(libcxx_uri, "table", name,
+					      axis_impl);
 
-		std::vector<std::string> window_path;
+		config_handle=handle;
 
-		wh.window_id_hierarchy(window_path);
-
-		auto lock=wh.positions->impl->create_readlock_for_loading(
-			window_path,
-			libcxx_uri,
-			"table",
-			name);
-
-		if (lock)
+		if (restore)
 		{
-			xml::readlock rlock{lock};
+			auto lock=handle->config();
 			auto xpath=lock->get_xpath("width");
 
+			auto &restored_widths=
+				axis_impl->get_restored_widths();
 			try {
 
 				size_t n=xpath->count();
 
-				restored_widths.clear();
 				restored_widths.reserve(n);
 
 				for (size_t i=1; i <= n; ++i)
@@ -853,6 +849,7 @@ new_tablelayoutmanager::create(const container_impl &parent_container,
 						lock->get_text<dim_t>()
 					);
 				}
+
 			} catch (const exception &e)
 			{
 				auto ee=EXCEPTION( "Error restoring table \""
@@ -864,10 +861,6 @@ new_tablelayoutmanager::create(const container_impl &parent_container,
 		}
 	}
 
-	auto axis_impl=table_synchronized_axis::create(
-		*this,
-		restored_widths
-	);
 	auto axis=synchronized_axis::create(axis_impl);
 
 	table_create_info tci{axis_impl, axis};
@@ -889,7 +882,7 @@ new_tablelayoutmanager::create(const container_impl &parent_container,
 		make_function< ref<listlayoutmanagerObj::implObj>
 			       (const ref<listcontainer_pseudo_implObj> &,
 				const list_element &)>
-		([&, name]
+		([&, config_handle]
 		 (const ref<listcontainer_pseudo_implObj> &container_impl,
 		  const list_element &list_element_singleton)
 		 {
@@ -898,7 +891,7 @@ new_tablelayoutmanager::create(const container_impl &parent_container,
 					  tci.gridlayoutmanager_impl,
 					  list_element_singleton,
 					  axis_impl,
-					  name);
+					  config_handle);
 		 });
 
 	list_create_info lci{create_list_element_impl,

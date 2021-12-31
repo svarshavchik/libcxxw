@@ -167,8 +167,7 @@ void layoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 		 });
 }
 
-void layoutmanagerObj::implObj::save(ONLY IN_THREAD,
-				     const screen_positions &pos)
+void layoutmanagerObj::implObj::save(ONLY IN_THREAD)
 {
 }
 

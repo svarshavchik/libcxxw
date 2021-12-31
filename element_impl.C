@@ -2014,13 +2014,13 @@ bidi elementObj::implObj::direction(ONLY IN_THREAD)
 	return bidi::automatic;
 }
 
-void elementObj::implObj::save(ONLY IN_THREAD, const screen_positions &pos)
+void elementObj::implObj::save(ONLY IN_THREAD)
 {
 	for_each_child(IN_THREAD,
 		       [&]
 		       (const element &e)
 		       {
-			       e->impl->save(IN_THREAD, pos);
+			       e->impl->save(IN_THREAD);
 		       });
 }
 

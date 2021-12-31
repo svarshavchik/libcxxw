@@ -74,7 +74,7 @@ public:
 
 	void removed_from_container(ONLY IN_THREAD) override;
 
-	void save(ONLY IN_THREAD, const screen_positions &) override;
+	void save(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

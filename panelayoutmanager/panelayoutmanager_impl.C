@@ -34,15 +34,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-panelayoutmanagerObj::implObj::implObj(const ref<panecontainer_implObj>
-				       &pane_container_impl,
-				       const const_pane_layout_appearance
-				       &appearance,
-				       const std::string &name,
-				       std::vector<dim_t> &restored_sizes)
+panelayoutmanagerObj::implObj::implObj(
+	const ref<panecontainer_implObj> &pane_container_impl,
+	const const_pane_layout_appearance &appearance,
+	const screen_positions_handleptr &config_handle,
+	std::vector<dim_t> &restored_sizes)
 	: gridlayoutmanagerObj::implObj{pane_container_impl, {}},
 	  pane_container_impl{pane_container_impl},
-	  appearance{appearance}, name{name},
+	  appearance{appearance}, config_handle{config_handle},
 	  restored_sizes_thread_only{std::move(restored_sizes)},
 	  restored_size{restored_sizes_thread_only.size()}
 {
@@ -790,7 +789,7 @@ void panelayoutmanagerObj::implObj
 
 	// If we restored previous pane sizes, we'll install them as
 	// existing reference sizes.
-	if (!name.empty())
+	if (config_handle)
 	{
 		size_t n=size(grid_lock);
 
@@ -961,22 +960,14 @@ void panelayoutmanagerObj::implObj
 	resize_peephole_to(IN_THREAD, after, second_pane);
 }
 
-void panelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
-					 const screen_positions &pos)
+void panelayoutmanagerObj::implObj::save(ONLY IN_THREAD)
 {
-	if (name.empty())
+	if (!config_handle)
 		return;
-
-	std::vector<std::string> hierarchy;
-
-	layout_container_impl->get_window_handler().window_id_hierarchy(
-		hierarchy
-	);
 
 	grid_map_t::lock grid_lock{grid_map};
 
-	auto writelock=pos->impl->create_writelock_for_saving(
-		hierarchy, libcxx_uri, "pane", name);
+	auto writelock=config_handle->newconfig();
 
 	size_t s=size(grid_lock);
 

@@ -20,6 +20,7 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 				  const std::optional<rectangle> &initial_pos,
 				  const std::string &window_id,
 				  const screen_positions &positions,
+				  const screen_positions_handle &config_handle,
 				  const color_arg &background_color,
 				  const const_main_window_appearance
 				  &appearance,
@@ -35,6 +36,7 @@ dialogObj::handlerObj::handlerObj(const ref<main_windowObj::handlerObj>
 				background_color,
 				appearance,
 				positions,
+				config_handle,
 				window_id,
 				false
 			},

@@ -375,32 +375,19 @@ new_panelayoutmanager &new_panelayoutmanager
 
 // Helper for loading preserved sizes, factored out for readability.
 
-static inline std::vector<dim_t> load(generic_windowObj::handlerObj &wh,
-				      const container_impl &impl,
-				      const std::string &name)
+static inline std::vector<dim_t> load(
+	const std::string &name,
+	const container_impl &impl,
+	const screen_positions_handle &config_handle)
 {
 	std::vector<dim_t> restored_sizes;
 
-	std::vector<std::string> window_path;
-
-	wh.window_id_hierarchy(window_path);
-
-	auto rlock=wh.positions->impl->create_readlock_for_loading(
-		window_path,
-		libcxx_uri,
-		"pane",
-		name);
-
-	if (!rlock)
-		return restored_sizes;
-
-	xml::readlock lock{rlock};
+	auto lock=config_handle->config();
 
 	auto xpath=lock->get_xpath("size");
 
 	size_t n=xpath->count();
 
-	restored_sizes.clear();
 	restored_sizes.reserve(n);
 
 	try {
@@ -460,21 +447,22 @@ new_panelayoutmanager::create(const container_impl &parent,
 	auto impl=create_panecontainer_impl(parent, *this);
 
 	std::vector<dim_t> restored_sizes;
+	screen_positions_handleptr config_handleptr;
 
 	if (!name.empty())
 	{
 		auto &wh=impl->elementObj::implObj::get_window_handler();
 
-		restored_sizes=load(wh, impl, name);
+		auto config_handle=wh.widget_config_handle(
+			libcxx_uri,
+			"pane",
+			name,
+			impl
+		);
 
-		std::string label;
+		restored_sizes=load(name, impl, config_handle);
 
-		label.reserve(name.size()+5);
-
-		label="pane:";
-		label += name;
-
-		wh.unique_widget_labels->insert(label, impl);
+		config_handleptr=config_handle;
 	}
 
 	// Create the appropriate implementation subclass.
@@ -484,12 +472,12 @@ new_panelayoutmanager::create(const container_impl &parent,
 			ref<panelayoutmanagerObj::implObj>{
 			ref<panelayoutmanagerObj::implObj::orientation
 			<panelayoutmanagerObj::implObj::vertical>>
-			::create(impl, appearance, name,
+			::create(impl, appearance, config_handleptr,
 				 restored_sizes)}
 		: ref<panelayoutmanagerObj::implObj>{
 			ref<panelayoutmanagerObj::implObj::orientation
 			    <panelayoutmanagerObj::implObj::horizontal>>
-			::create(impl, appearance, name,
+			::create(impl, appearance, config_handleptr,
 				 restored_sizes)}
 	};
 

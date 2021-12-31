@@ -90,136 +90,102 @@ screen_positionsObj::implObj::implObj(const std::string &filename,
 				      const std::string &version)
 	: appid{x::appid()}, filename{filename}, version{version},
 	  data{load(filename, version)},
-	  current_main_window_handlers{current_main_window_handlers_t::create()}
+	  current_main_window_handlers{current_main_window_handlers_t::create()
+	  },
+	  widget_type_cache{widget_type_cache_t::create()}
 {
 }
 
-xml::writelock screen_positionsObj::implObj::create_writelock_for_saving(
-	const std::vector<std::string> &window_path,
-	const std::string_view &ns,
-	const std::string_view &type,
-	const std::string_view &name_s
-)
-{
-	auto lock=data->writelock();
-	lock->get_root();
-
-	auto my_ns=lock->prefix();
-
-	for (const auto &p:window_path)
-	{
-		std::string s;
-
-		s.reserve(my_ns.size()*2 + p.size() + 100);
-
-		s=my_ns;
-		s += ":window[";
-		s += my_ns;
-		s += ":name=";
-		s += xml::quote_string_literal(p);
-		s += "]";
-
-		auto xpath=lock->get_xpath(s);
-
-		if (xpath->count())
-			xpath->to_node();
-		else
-		{
-			lock->create_child()->element({"window",
-					libcxx_uri})
-				->element({"name", libcxx_uri})->text(p)
-				->parent()->parent();
-		}
-	}
-
-	std::string s;
-
-	s.reserve(type.size()+ns.size()+name_s.size()+100);
-
-	s = "ns:";
-	s += type;
-	s += "[libcxx:name=";
-	s += xml::quote_string_literal(name_s);
-	s += "]";
-
-	auto xpath=lock->get_xpath(s, {
-			{ "ns", ns },
-			{ "libcxx", libcxx_uri }
-		});
-
-	size_t n=xpath->count();
-
-	if (type == "window" && ns == libcxx_uri && n)
-	{
-		// Do not remove the existing <window> node, since it may
-		// have inferiors that we want to keep.
-
-		xpath->to_node();
-		return lock;
-	}
-
-	if (n)
-	{
-		xpath->to_node();
-		lock->remove();
-	}
-
-	if (ns == libcxx_uri)
-		lock->create_child()->element({type, ns});
-	else
-		lock->create_child()->element({type, "ns", ns});
-
-	lock->create_child()->element(
-		{
-			"name",
-			libcxx_uri
-		})->text(name_s)->parent()->parent();
-
-	return lock;
-}
-
-xml::readlockptr screen_positionsObj::implObj::create_readlock_for_loading(
+screen_positions_handle screen_positionsObj::implObj::config_handle(
 	const std::vector<std::string> &window_path,
 	const std::string_view &ns,
 	const std::string_view &type,
 	const std::string_view &name
-) const
+)
 {
-	size_t l=type.size()+name.size()+50;
-
-	for (const auto &p:window_path)
-		l += p.size()+20;
-
-	std::string s;
-
-	s.reserve(l);
-	for (const auto &p:window_path)
-	{
-		s += "libcxx:window[libcxx:name=";
-		s += xml::quote_string_literal(p);
-		s += "]/";
-	}
-
-	s += "ns:";
-	s += type;
-	s += "[libcxx:name=";
-	s += xml::quote_string_literal(name) + "]";
-
-	auto lock=data->readlock();
+	auto lock=data->writelock();
 
 	lock->get_root();
 
-	auto xpath=lock->get_xpath(s, {
-			{ "libcxx", libcxx_uri },
+	std::string p;
+
+	p.reserve(type.size()+ns.size()+name.size()+40);
+
+	p = "ns:";
+	p += type;
+	p += "[libcxx:name=";
+	p += xml::quote_string_literal(name);
+	p += "]";
+
+	std::string s;
+
+	size_t n=p.size() + 10;
+
+	for (const auto &p:window_path)
+		n += sizeof("libcxx:window[libcxx:name=]/")+10
+			+ p.size();
+	s.reserve(n);
+
+	std::string xpath_str;
+
+	const char *sep="";
+
+	for (const auto &p:window_path)
+	{
+		s += sep;
+		s += "libcxx:window[";
+		s += "libcxx:name=";
+		s += xml::quote_string_literal(p);
+		s += "]";
+		sep="/";
+	}
+
+	if (s.size())
+		lock->get_xpath(s, {
+				{
+					"libcxx", libcxx_uri
+				}
+			})->to_node();
+
+	s += sep;
+	s += p;
+
+	auto xpath=lock->get_xpath(p, {
 			{ "ns", ns },
+			{ "libcxx", libcxx_uri }
 		});
 
-	if (xpath->count())
+	n=xpath->count();
+
+	if (n == 0)
 	{
-		xpath->to_node();
-		return lock;
+		if (ns == libcxx_uri)
+			lock->create_child()->element({type, ns});
+		else
+			lock->create_child()->element({type, "ns", ns});
+
+		lock->create_child()->element(
+			{
+				"name",
+				libcxx_uri
+			})->text(name)->parent()->parent();
 	}
-	return {};
+
+	std::string ns_s{ns};
+	std::string type_s{type};
+
+	return screen_positions_handle::create(
+		ref{this}, s,
+		widget_type_cache->find_or_create(
+			{ns_s, type_s},
+			[&]
+			{
+				return ref<widget_typeObj>::create(
+					ns_s,
+					type_s
+				);
+			}),
+		name);
 }
 
 main_windowObj::~main_windowObj()
@@ -267,7 +233,7 @@ main_windowObj::~main_windowObj()
 
 		// Save any save-able widgets in the window, first.
 
-		handler->save(IN_THREAD, handler->positions);
+		handler->save(IN_THREAD);
 
 		// Now save the current window position.
 
@@ -279,11 +245,9 @@ main_windowObj::~main_windowObj()
 
 		window_path.pop_back();
 
-		auto lock=handler->positions->impl
-			->create_writelock_for_saving(window_path,
-						      libcxx_uri,
-						      "window",
-						      window_id);
+		// Not newconfig, we don't want to remove the whole kit and
+		// kaboodle.
+		auto lock=handler->config_handle->newconfig(false);
 
 		// Remove any previous <position>
 		{
@@ -317,25 +281,15 @@ main_windowObj::~main_windowObj()
 	});
 }
 
-std::optional<window_position_t>
-screen_positionsObj::implObj::find_window_position(
-	const std::vector<std::string> &parent_windows,
-	const std::string_view &window_name
-) const
+std::optional<window_position_t> find_window_position(
+	const screen_positions_handle &config_handle
+)
 {
 	LOG_FUNC_SCOPE(load_log);
 
 	std::optional<window_position_t> info;
 
-	auto lockptr=create_readlock_for_loading(parent_windows,
-						 libcxx_uri,
-						 "window",
-						 window_name);
-
-	if (!lockptr)
-		return info;
-
-	xml::readlock lock{lockptr};
+	auto lock=config_handle->config();
 
 	auto xpath=lock->get_xpath("position");
 
@@ -393,11 +347,32 @@ screen_positionsObj::implObj::find_window_position(
 	return info;
 }
 
-void generic_windowObj::handlerObj::register_unique_widget_label(
-	const std::string &label,
-	const ref<obj> &mcguffin)
+screen_positions_handle generic_windowObj::handlerObj::widget_config_handle(
+	const std::string_view &ns,
+	const std::string_view &type,
+	const std::string_view &name,
+	const ref<obj> &mcguffin
+) const
 {
-	unique_widget_labels->insert(label, mcguffin);
+	std::vector<std::string> window_path;
+
+	window_id_hierarchy(window_path);
+
+	std::string s;
+
+	s.reserve(type.size() + name.size() + 1);
+
+	s=std::string{type};
+	s += ":";
+	s += name;
+
+	unique_widget_labels->insert(s, mcguffin);
+
+	return positions->impl->config_handle(
+		window_path,
+		ns,
+		type,
+		name);
 }
 
 void preserve_screen_number(bool flag)

@@ -225,7 +225,7 @@ class layoutmanagerObj::implObj : virtual public obj {
 	//! Save this container's current state, if supported.
 
 	//! The default implementation does nothing.
-	virtual void save(ONLY IN_THREAD, const screen_positions &);
+	virtual void save(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

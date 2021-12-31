@@ -9,6 +9,7 @@
 #include "label_element.H"
 #include "generic_window_handler.H"
 #include "screen_positions_impl.H"
+#include "x/w/impl/screen_positions_confighandle.H"
 #include "x/w/font_picker_config.H"
 #include "x/w/font_picker_appearance.H"
 #include "x/w/element_popup_appearance.H"
@@ -104,22 +105,23 @@ class LIBCXX_HIDDEN current_font_placeholderObj :
  public:
 	mpobj<std::pair<metrics::axis, metrics::axis>> overridden_metrics;
 
-	const std::string name;
+	const screen_positions_handleptr config_handle;
+
 	const font_pickerObj::implObj::current_state state;
 
-	current_font_placeholderObj(const container_impl &parent_container,
-				    textlabel_config &label_config,
-				    const font_picker_config &config,
-				    const font_pickerObj::implObj
-				    ::current_state &state)
+	current_font_placeholderObj(
+		const container_impl &parent_container,
+		textlabel_config &label_config,
+		const screen_positions_handleptr &config_handle,
+		const font_pickerObj::implObj::current_state &state)
 		: superclass_t{parent_container, "", label_config},
-		name{config.name}, state{state}
+		config_handle{config_handle}, state{state}
 	{
 	}
 
 	~current_font_placeholderObj()=default;
 
-	void save(ONLY IN_THREAD, const screen_positions &) override;
+	void save(ONLY IN_THREAD) override;
 
  protected:
 	//! Override calculate_current_metrics
@@ -131,20 +133,14 @@ class LIBCXX_HIDDEN current_font_placeholderObj :
 	}
 };
 
-void current_font_placeholderObj::save(ONLY IN_THREAD,
-				       const screen_positions &pos)
+void current_font_placeholderObj::save(ONLY IN_THREAD)
 {
-	superclass_t::save(IN_THREAD, pos);
+	superclass_t::save(IN_THREAD);
 
-	if (name.empty())
+	if (!config_handle)
 		return;
 
-	std::vector<std::string> hierarchy;
-
-	get_window_handler().window_id_hierarchy(hierarchy);
-
-	auto writelock=pos->impl->create_writelock_for_saving(
-		hierarchy, libcxx_uri, "font", name);
+	auto writelock=config_handle->newconfig();
 
 	writelock->create_child()->element({"font"})
 		->text(static_cast<std::string>
@@ -360,99 +356,82 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 	auto conf_initial_font=config.initial_font;
 	auto conf_most_recently_used=config.most_recently_used;
 
+	screen_positions_handleptr config_handle;
+
 	if (!config.name.empty())
 	{
-		auto &wh=parent_container->get_window_handler();
-
-		std::string s;
-
-		s.reserve(config.name.size() + 12);
-
-		s="font_picker:";
-		s += config.name;
-
-		parent_container->get_window_handler()
-			.register_unique_widget_label(
-				s,
-				parent_container
+		auto handle=parent_container->get_window_handler()
+			.widget_config_handle(
+				libcxx_uri,
+				"font_picker",
+				config.name,
+				attachedto_info
 			);
 
-		std::vector<std::string> window_path;
+		auto lock=handle->config();
 
-		wh.window_id_hierarchy(window_path);
-
-		auto rlock=wh.positions->impl->create_readlock_for_loading(
-			window_path,
-			libcxx_uri,
-			"font",
-			config.name);
-
-		if (rlock)
+		try
 		{
-			xml::readlock lock{rlock};
+			auto font=lock->clone();
 
-			try
+			auto xpath=font->get_xpath("font");
+
+			if (xpath->count() == 1)
 			{
-				auto font=lock->clone();
+				xpath->to_node();
 
-				auto xpath=font->get_xpath("font");
+				conf_initial_font=font->get_text();
+			}
 
-				if (xpath->count() == 1)
+			xpath=lock->get_xpath("recent");
+
+			size_t n=xpath->count();
+			conf_most_recently_used.clear();
+			conf_most_recently_used.reserve(n);
+
+			for (size_t i=1; i <= n; ++i)
+			{
+				xpath->to_node(i);
+
+				auto value=lock->clone();
+
+				auto xpath2=value->get_xpath("family");
+
+				font_picker_group_id mru;
+
+				if (xpath2->count() == 1)
 				{
-					xpath->to_node();
+					xpath2->to_node();
 
-					conf_initial_font=font->get_text();
-				}
+					mru.family=value->get_text();
 
-				xpath=lock->get_xpath("recent");
+					value=lock->clone();
 
-				size_t n=xpath->count();
-				conf_most_recently_used.clear();
-				conf_most_recently_used.reserve(n);
-
-				for (size_t i=1; i <= n; ++i)
-				{
-					xpath->to_node(i);
-
-					auto value=lock->clone();
-
-					auto xpath2=value->get_xpath("family");
-
-					font_picker_group_id mru;
+					xpath2=value->get_xpath(
+						"foundry"
+					);
 
 					if (xpath2->count() == 1)
 					{
 						xpath2->to_node();
-
-						mru.family=value->get_text();
-
-						value=lock->clone();
-
-						xpath2=value->get_xpath(
-							"foundry"
-						);
-
-						if (xpath2->count() == 1)
-						{
-							xpath2->to_node();
-							mru.foundry=value->
-								get_text();
-						}
+						mru.foundry=value->
+							get_text();
 					}
-					conf_most_recently_used.push_back(mru);
 				}
-			} catch (const exception &e)
-			{
-				auto ee=EXCEPTION( "Error restoring font \""
-						   << config.name
-						   << "\": " << e );
-
-				ee->caught();
-				conf_initial_font=config.initial_font;
-				conf_most_recently_used=
-					config.most_recently_used;
+				conf_most_recently_used.push_back(mru);
 			}
+		} catch (const exception &e)
+		{
+			auto ee=EXCEPTION( "Error restoring font \""
+					   << config.name
+					   << "\": " << e );
+
+			ee->caught();
+			conf_initial_font=config.initial_font;
+			conf_most_recently_used=
+				config.most_recently_used;
 		}
+		config_handle=handle;
 	}
 
 	//! Weakly-captured font picker implementation object.
@@ -614,7 +593,7 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 			 auto label_impl=ref<current_font_placeholderObj>
 				 ::create(f->get_container_impl(),
 					  internal_config,
-					  config, initial_state);
+					  config_handle, initial_state);
 
 			 auto l=label::create(label_impl, label_impl);
 

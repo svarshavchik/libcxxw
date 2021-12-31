@@ -38,8 +38,7 @@ public:
 	dragged_scaled_axis_t dragged_scaled_axis;
 
 	//! Constructor
-	table_synchronized_axisObj(const new_tablelayoutmanager &,
-				   const std::vector<dim_t> &);
+	table_synchronized_axisObj(const new_tablelayoutmanager &);
 
 	//! Destructor
 	~table_synchronized_axisObj();
@@ -55,13 +54,24 @@ public:
 		override;
 
  private:
-	//! Previously saved restore columns width
-
-	//! Initialized in the constructor, and moved to scaled_derived_axis
-	//! at the first opportunity.
+	//! Previously saved, now restored columns width
 
 	std::vector<dim_t> restored_widths;
 
+ public:
+
+	//! Obtain a reference to restored_width
+
+	//! This is used just after this object is constructed to obtain
+	//! a reference to restored_widths, for the purpose of, well, restoring
+	//! them. This is never used again.
+
+	std::vector<dim_t> &get_restored_widths()
+	{
+		return restored_widths;
+	}
+
+ private:
 	//! Cached coordinates and sizes of border columns only
 
 	//! Cached for lookup_draggable_border()'s speed.

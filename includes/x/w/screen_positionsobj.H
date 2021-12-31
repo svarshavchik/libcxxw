@@ -24,6 +24,10 @@ public:
 	//! Internal implementation object.
 	const ref<implObj> impl;
 
+	class config_handleObj;
+
+	class LIBCXX_HIDDEN widget_typeObj;
+
 	//! Constructor
 	screen_positionsObj(const ref<implObj> &);
 

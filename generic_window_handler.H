@@ -33,6 +33,7 @@
 #include "x/w/rgb.H"
 #include "x/w/main_windowfwd.H"
 #include "x/w/screen_positionsfwd.H"
+#include "x/w/impl/screen_positions_confighandlefwd.H"
 #include "x/w/generic_window_appearancefwd.H"
 #include "x/w/impl/focus/focusablefwd.H"
 #include "x/w/impl/dnd.H"
@@ -47,6 +48,8 @@
 #include <x/mpobj.H>
 #include <xcb/xcb_icccm.h>
 #include <x/functional.H>
+#include <x/xml/readlockfwd.H>
+#include <x/xml/writelockfwd.H>
 
 #include <chrono>
 #include <optional>
@@ -153,6 +156,9 @@ class generic_windowObj::handlerObj
 	//! Saved screen positions
 	const screen_positions positions;
 
+	//! Handle for this main window's saved position
+	const screen_positions_handle config_handle;
+
 	//! Container for unique widget labels
 
 	typedef weakunordered_multimap<std::string, obj> unique_widget_labels_t;
@@ -162,17 +168,35 @@ class generic_windowObj::handlerObj
 	//! This serves as means of enforcing unique labels for widgets,
 	//! for saving and restoring their positions and attributes.
 	//!
-	//! A widget with a name registers itself here, as a mcguffin.
+	//! widget_config_handle() registers the passed-in mcguffin here.
 
 	unique_widget_labels_t unique_widget_labels;
 
-	//! Register a unique widget label
+	//! Find the XML configuration for a widget.
 
-	//! The widget's label gets passed in, together with the widget
-	//! object. They get added to the unique_widget_labels map.
+	//! Locates the portion of the XML document in the screen positions
+	//! where configuration for the given widget is kept.
+	//!
+	//! Creates an empty XML node if the XML document does not have
+	//! a saved configuration.
+	//!
+	//! ns and type is the widget type and namespace, and name is its
+	//! unique label.
+	//!
+	//! mcguffin is an opaque mcguffin that represents the widget. A
+	//! weak reference to the mcguffin is kept. When it's time to save
+	//! all widgets configurations this is used to detect duplicate
+	//! widget labels. Because widget destruction is asynchronous we
+	//! can't block duplicate registration (the old version of the widget
+	//! might be in the process of getting destroyed before its new
+	//! version is
 
-	void register_unique_widget_label(const std::string &label,
-					  const ref<obj> &mcguffin);
+	screen_positions_handle widget_config_handle(
+		const std::string_view &ns,
+		const std::string_view &type,
+		const std::string_view &name,
+		const ref<obj> &mcguffin
+	) const;
 
 	//! Return the labels representing the window hierarchy
 
@@ -451,6 +475,9 @@ class generic_windowObj::handlerObj
 
 		//! Screen positions
 		const screen_positions &positions;
+
+		//! Configuration handle for this main window.
+		const screen_positions_handle config_handle;
 
 		//! What we will put into WM_CLASS
 		const std::string &wm_class_instance;

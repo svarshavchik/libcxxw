@@ -11,6 +11,7 @@
 #include "x/w/generic_window_appearancefwd.H"
 #include "x/w/main_window_appearancefwd.H"
 #include "x/w/screen_positionsfwd.H"
+#include "x/w/impl/screen_positions_confighandlefwd.H"
 #include "shared_handler_datafwd.H"
 #include <functional>
 
@@ -48,6 +49,9 @@ struct generic_window_handler_constructor_params {
 	//! Saved screen positions
 	const screen_positions &positions;
 
+	//! Handle for this main window's saved position
+	const screen_positions_handle &config_handle;
+
 	//! What we will put into WM_CLASS
 	const std::string &wm_class_instance;
 
@@ -83,6 +87,8 @@ struct main_window_handler_constructor_params
 	 const std::reference_wrapper<const const_main_window_appearance>
 	 &appearance,
 	 const std::reference_wrapper<const screen_positions> &positions,
+	 const std::reference_wrapper<const screen_positions_handle>
+	 &config_handle,
 	 const std::reference_wrapper<const std::string> &wm_class_instance,
 	 bool override_redirect);
 

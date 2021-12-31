@@ -60,6 +60,10 @@ popupObj::handlerObj::handlerObj(const popup_handler_args &args)
 			args.appearance,
 			args.parent->handler_data,
 			args.parent->positions,
+			// We don't have our own config, but this should
+			// not be used, anyway. window_id_hierarchy() throws
+			// an exception, also.
+			args.parent->config_handle,
 			args.wm_class_instance,
 			"popup.w.libcxx.com",
 			args.nesting_level,

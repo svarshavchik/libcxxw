@@ -11,6 +11,8 @@
 #include "x/w/generic_window_appearancefwd.H"
 #include "main_window_handler.H"
 #include "x/w/connection_threadfwd.H"
+#include "x/w/screen_positionsfwd.H"
+#include "x/w/impl/screen_positions_confighandlefwd.H"
 #include <optional>
 
 LIBCXXW_NAMESPACE_START
@@ -49,6 +51,7 @@ class dialogObj::handlerObj : public main_windowObj::handlerObj {
 		   const std::optional<rectangle> &initial_pos,
 		   const std::string &window_id,
 		   const screen_positions &positions,
+		   const screen_positions_handle &config_handle,
 		   const color_arg &background_color,
 		   const const_main_window_appearance &appearance,
 		   const char *window_type,

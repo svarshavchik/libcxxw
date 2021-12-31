@@ -88,17 +88,26 @@ void main_windowObj::install_window_icons(const std::string &filename)
 	impl->handler->install_window_icons(filename);
 }
 
-static std::optional<window_position_t> get_window_info(
+static std::tuple<screen_positions_handle,
+		  std::optional<window_position_t>
+		  > get_window_info_and_config_handle(
 	const main_window_config &config
 )
 {
-	std::optional<window_position_t> info;
+	std::tuple<screen_positions_handle,
+		   std::optional<window_position_t>
+		   > ret{
+		config.positions->impl->config_handle(
+			{},
+			libcxx_uri,
+			"window",
+			config.name
+		),
+		std::nullopt
+	};
 
 	try {
-		info=config.positions->impl->find_window_position(
-			std::vector<std::string>{},
-			config.name
-		);
+		std::get<1>(ret)=find_window_position(std::get<0>(ret));
 	} catch (const exception &e)
 	{
 		auto ee=EXCEPTION( "Error restoring window \""
@@ -107,7 +116,7 @@ static std::optional<window_position_t> get_window_info(
 		ee->caught();
 	}
 
-	return info;
+	return ret;
 }
 
 main_window_config::appearance_t::appearance_t()
@@ -391,6 +400,7 @@ public:
 static ref<main_windowObj::handlerObj>
 create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 			     const splash_window_config &config,
+			     const screen_positions_handle &config_handle,
 			     const std::reference_wrapper<const color_arg>
 			     & background_color,
 			     std::optional<border_arg> &main_window_border)
@@ -400,6 +410,7 @@ create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 			    background_color,
 			    config.appearance,
 			    config.positions,
+			    config_handle,
 			    config.name,
 			    true,
 	};
@@ -414,6 +425,7 @@ create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 static ref<main_windowObj::handlerObj>
 create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 			     const transparent_splash_window_config &config,
+			     const screen_positions_handle &config_handle,
 			     std::optional<border_arg> &main_window_border,
 			     std::optional<color_arg> &inner_background_color)
 
@@ -423,14 +435,14 @@ create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 		const splash_window_config &nonalpha_config=config;
 
 		return create_splash_window_handler
-			(me, nonalpha_config,
+			(me, nonalpha_config, config_handle,
 			 nonalpha_config.appearance->background_color,
 			 main_window_border);
 	}
 
 	color_arg transparent_background_color{transparent};
 
-	auto handler=create_splash_window_handler(me, config,
+	auto handler=create_splash_window_handler(me, config, config_handle,
 						  transparent_background_color,
 						  main_window_border);
 
@@ -446,6 +458,7 @@ static main_window create_main_window_with_config_handle(
 	const screen &window_screen,
 	const main_window_config_t &config,
 	const std::optional<window_position_t> &position,
+	const screen_positions_handle &config_handle,
 	const function<screenObj::main_window_creator_t> &f,
 	const new_layoutmanager &layout_factory)
 {
@@ -468,6 +481,7 @@ static main_window create_main_window_with_config_handle(
 					suggested_position=
 						position->coordinates;
 				}
+
 				main_window_handler_constructor_params
 					main_params
 					{
@@ -476,6 +490,7 @@ static main_window create_main_window_with_config_handle(
 						->background_color,
 						std_config.appearance,
 						std_config.positions,
+						config_handle,
 						std_config.name,
 						false,
 					};
@@ -491,6 +506,7 @@ static main_window create_main_window_with_config_handle(
 			{
 				auto ret=create_splash_window_handler
 					(window_screen, splash_config,
+					 config_handle,
 					 splash_config.appearance
 					 ->background_color,
 					 main_window_border);
@@ -504,6 +520,7 @@ static main_window create_main_window_with_config_handle(
 			{
 				auto ret=create_splash_window_handler
 					(window_screen, splash_config,
+					 config_handle,
 					 main_window_border,
 					 inner_background_color);
 
@@ -538,10 +555,22 @@ main_window screenObj
 		       const function<main_window_creator_t> &f,
 		       const new_layoutmanager &layout_factory)
 {
+	const auto &[config_handle, window_info] =
+		std::visit(
+			[&]
+			(const main_window_config &config)
+			{
+				return get_window_info_and_config_handle(
+					config
+				);
+			},
+			config);
+
 	return create_main_window_with_config_handle(
 		ref{this},
 		config,
-		position,
+		(position ? position:window_info),
+		config_handle,
 		f,
 		layout_factory);
 }
@@ -552,17 +581,7 @@ main_window screenObj
 		       const function<main_window_creator_t> &f,
 		       const new_layoutmanager &layout_factory)
 {
-	return do_create_mainwindow(
-		config,
-		std::visit(
-			[&]
-			(const main_window_config &config)
-			{
-				return get_window_info(config);
-			},
-			config),
-		f,
-		layout_factory);
+	return do_create_mainwindow(config, std::nullopt, f, layout_factory);
 }
 
 main_window main_windowBase::do_create(const main_window_config_t &config,
@@ -572,7 +591,8 @@ main_window main_windowBase::do_create(const main_window_config_t &config,
 	return std::visit
 		([&](const main_window_config &std_config)
 		 {
-			 auto window_info=get_window_info(std_config);
+			 const auto &[config_handle, window_info] =
+				 get_window_info_and_config_handle(std_config);
 
 			 auto s=screen::base::create();
 
@@ -585,9 +605,11 @@ main_window main_windowBase::do_create(const main_window_config_t &config,
 				 if (n < conn->screens())
 					 s=screen::create(conn, n);
 			 }
-			 return s->do_create_mainwindow(config,
-							window_info,
-							f, factory);
+
+			 return create_main_window_with_config_handle(
+				 s, config,
+				 window_info, config_handle,
+				 f, factory);
 		 }, config);
 }
 

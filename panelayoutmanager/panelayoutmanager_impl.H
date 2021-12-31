@@ -21,6 +21,7 @@
 #include "metrics_grid.H"
 #include "x/w/peephole_style.H"
 #include "x/w/impl/current_border_implfwd.H"
+#include "x/w/impl/screen_positions_confighandle.H"
 #include <tuple>
 
 LIBCXXW_NAMESPACE_START
@@ -104,8 +105,9 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	const const_pane_layout_appearance appearance;
 
-	//! This pane's name
-	const std::string name;
+	//! This pane's configuration handle, if there is one.
+
+	const screen_positions_handleptr config_handle;
 
  private:
 	std::vector<dim_t> restored_sizes_thread_only;
@@ -127,7 +129,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! Constructor
 	implObj(const ref<panecontainer_implObj> &pane_container_impl,
 		const const_pane_layout_appearance &appearance,
-		const std::string &name,
+		const screen_positions_handleptr &config_handle,
 		std::vector<dim_t> &restored_sizes);
 
 	//! Destructor
@@ -394,7 +396,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	//! Implement save()
 
-	void save(ONLY IN_THREAD, const screen_positions &) override;
+	void save(ONLY IN_THREAD) override;
  private:
 
 	//! Recalculate the size of each individual pane.

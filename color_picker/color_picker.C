@@ -228,10 +228,11 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 
 
 static inline canvas
-create_color_picker_canvas(const factory &f,
-			   const color_picker_config &config,
-			   const color_pickerObj::implObj
-			   ::official_color &initial_color)
+create_color_picker_canvas(
+	const factory &f,
+	const color_picker_config &config,
+	const screen_positions_handleptr &config_handle,
+	const color_pickerObj::implObj::official_color &initial_color)
 {
 	canvas_init_params ciparams{{config.appearance->width},
 				    {config.appearance->height}};
@@ -240,7 +241,7 @@ create_color_picker_canvas(const factory &f,
 		image_color{"color-picker-alpha-background"};
 
 	auto impl=ref<color_picker_current_canvasObj::implObj>
-		::create(f->get_container_impl(), config.name, initial_color,
+		::create(f->get_container_impl(), config_handle, initial_color,
 			 ciparams);
 
 	auto canvas=color_picker_current_canvas::create(impl);
@@ -641,53 +642,44 @@ color_picker factoryObj
 
 	auto parent_container=get_container_impl();
 
+	screen_positions_handleptr config_handle;
+
 	if (!config.name.empty())
 	{
-		auto &wh=parent_container->get_window_handler();
-
-		std::string s;
-
-		s.reserve(config.name.size() + 13);
-
-		s="color_picker:";
-		s += config.name;
-
-		parent_container->get_window_handler()
-			.register_unique_widget_label(
-				s,
-				parent_container
+		auto handle=parent_container->get_window_handler()
+			.widget_config_handle(
+				libcxx_uri,
+				"color_picker",
+				config.name,
+				attachedto_info
 			);
 
-		std::vector<std::string> window_path;
+		auto lock=handle->config();
 
-		wh.window_id_hierarchy(window_path);
-
-		auto rlock=wh.positions->impl->create_readlock_for_loading(
-			window_path,
-			libcxx_uri,
-			"color",
-			config.name);
-
-		if (rlock)
-		{
-			xml::readlock lock{rlock};
-
+		try {
 			for (size_t i=0; i<4; i++)
 			{
 				auto lock2=lock->clone();
 
 				auto xpath=lock2->get_xpath(rgb_channels[i]);
 
-				if (xpath->count() == 1)
-				{
-					xpath->to_node();
+				if (xpath->count() != 1)
+					continue;
 
-					initial_color_rgb.*(rgb_fields[i])=
-						lock2->get_text<rgb_component_t>
-						();
-				}
+				xpath->to_node();
+
+				initial_color_rgb.*(rgb_fields[i])=
+					lock2->get_text<rgb_component_t>();
 			}
+		} catch (const exception &e)
+		{
+			auto ee=EXCEPTION( "Error restoring color picker \""
+					   << config.name << "\": " << e );
+
+			ee->caught();
 		}
+
+		config_handle=handle;
 	}
 
 	color_picker_layout_helper helper{config, initial_color_rgb};
@@ -759,6 +751,7 @@ color_picker factoryObj
 
 			 color_picker_current=
 				 create_color_picker_canvas(f, config,
+							    config_handle,
 							    initial_color);
 			 color_picker_current->show();
 		 });

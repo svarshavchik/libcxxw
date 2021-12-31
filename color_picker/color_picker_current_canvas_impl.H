@@ -9,6 +9,7 @@
 #include "color_picker/color_picker_impl.H"
 #include "x/w/impl/canvas.H"
 #include "x/w/impl/connection_threadfwd.H"
+#include "x/w/impl/screen_positions_confighandlefwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,7 +24,7 @@ public:
 
 	//! Constructor
 	implObj(const container_impl &container,
-		const std::string name,
+		const screen_positions_handleptr &config_handle,
 		const color_pickerObj::implObj::official_color &initial_color,
 		const canvas_init_params &params);
 
@@ -31,7 +32,7 @@ public:
 	~implObj();
 
 	//! Name of this restore color picker
-	const std::string name;
+	const screen_positions_handleptr config_handle;
 
 	//! This color picker's current official color.
 	const color_pickerObj::implObj::official_color current_official_color;
@@ -46,7 +47,7 @@ public:
 					 const rectangle &) override;
 
 	//! Implement save()
-	void save(ONLY IN_THREAD, const screen_positions &pos) override;
+	void save(ONLY IN_THREAD) override;
 
 };
 

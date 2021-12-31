@@ -15,28 +15,13 @@ tablelayoutmanagerObj::implObj
 	  const ref<gridlayoutmanagerObj::implObj> &header_layoutmanager_impl,
 	  const list_element &list_element_singleton,
 	  const table_synchronized_axis &axis_impl,
-	  const std::string &name)
+	  const screen_positions_handleptr &config_handle)
 	: listlayoutmanagerObj::implObj{container_impl,
 					list_element_singleton},
 	  axis_impl{axis_impl},
 	  header_layoutmanager_impl{header_layoutmanager_impl},
-	  name{name}
+	  config_handle{config_handle}
 {
-	if (!name.empty())
-	{
-		std::string s;
-
-		s.reserve(name.size() + 6);
-
-		s="table:";
-		s += name;
-
-		container_impl->elementObj::implObj::get_window_handler()
-			.register_unique_widget_label(
-				s,
-				container_impl
-			);
-	}
 }
 
 tablelayoutmanagerObj::implObj::~implObj()=default;

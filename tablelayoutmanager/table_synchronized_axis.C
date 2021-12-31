@@ -16,10 +16,8 @@
 LIBCXXW_NAMESPACE_START
 
 tablelayoutmanagerObj::table_synchronized_axisObj
-::table_synchronized_axisObj(const new_tablelayoutmanager &ntlm,
-			     const std::vector<dim_t> &restored_widths)
-	: adjustable_column_widths{ntlm.adjustable_column_widths},
-	  restored_widths{restored_widths}
+::table_synchronized_axisObj(const new_tablelayoutmanager &ntlm)
+	: adjustable_column_widths{ntlm.adjustable_column_widths}
 {
 }
 
@@ -511,20 +509,12 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 }
 
 
-void tablelayoutmanagerObj::implObj::save(ONLY IN_THREAD,
-					  const screen_positions &pos)
+void tablelayoutmanagerObj::implObj::save(ONLY IN_THREAD)
 {
-	if (name.empty())
+	if (!config_handle)
 		return;
 
-	std::vector<std::string> hierarchy;
-
-	layout_container_impl->get_window_handler().window_id_hierarchy(
-		hierarchy
-	);
-
-	auto writelock=pos->impl->create_writelock_for_saving(
-		hierarchy, libcxx_uri, "table", name);
+	auto writelock=config_handle->newconfig();
 
 	table_synchronized_axisObj::dragged_scaled_axis_t::lock lock
 		{
