@@ -181,32 +181,6 @@ main_window main_windowBase::do_create(const main_window_config_t &config,
 	return do_create(config, f, new_gridlayoutmanager{});
 }
 
-main_window main_windowBase::do_create(const main_window_config_t &config,
-				       const function<main_window_creator_t> &f,
-				       const new_layoutmanager &factory)
-{
-	return std::visit
-		([&](const main_window_config &std_config)
-		 {
-			 auto window_info=get_window_info(std_config);
-
-			 auto s=screen::base::create();
-
-			 if (window_info &&
-			     window_info->screen_number)
-			 {
-				 auto conn=s->get_connection();
-
-				 auto n=*window_info->screen_number;
-				 if (n < conn->screens())
-					 s=screen::create(conn, n);
-			 }
-			 return s->do_create_mainwindow(config,
-							window_info,
-							f, factory);
-		 }, config);
-}
-
 main_window screenObj
 ::do_create_mainwindow(const function<main_window_creator_t> &f)
 {
@@ -470,24 +444,6 @@ create_splash_window_handler(const std::reference_wrapper<const screen> &me,
 
 main_window screenObj
 ::do_create_mainwindow(const main_window_config_t &config,
-		       const function<main_window_creator_t> &f,
-		       const new_layoutmanager &layout_factory)
-{
-	return do_create_mainwindow(
-		config,
-		std::visit(
-			[&]
-			(const main_window_config &config)
-			{
-				return get_window_info(config);
-			},
-			config),
-		f,
-		layout_factory);
-}
-
-main_window screenObj
-::do_create_mainwindow(const main_window_config_t &config,
 		       const std::optional<window_position_t> &position,
 		       const function<main_window_creator_t> &f,
 		       const new_layoutmanager &layout_factory)
@@ -512,10 +468,6 @@ main_window screenObj
 				{
 					suggested_position=
 						position->coordinates;
-
-					std::cout << "Suggested: "
-						  << *suggested_position
-						  << "\n";
 				}
 				main_window_handler_constructor_params
 					main_params
@@ -579,6 +531,50 @@ main_window screenObj
 	f(mw);
 
 	return mw;
+}
+
+main_window screenObj
+::do_create_mainwindow(const main_window_config_t &config,
+		       const function<main_window_creator_t> &f,
+		       const new_layoutmanager &layout_factory)
+{
+	return do_create_mainwindow(
+		config,
+		std::visit(
+			[&]
+			(const main_window_config &config)
+			{
+				return get_window_info(config);
+			},
+			config),
+		f,
+		layout_factory);
+}
+
+main_window main_windowBase::do_create(const main_window_config_t &config,
+				       const function<main_window_creator_t> &f,
+				       const new_layoutmanager &factory)
+{
+	return std::visit
+		([&](const main_window_config &std_config)
+		 {
+			 auto window_info=get_window_info(std_config);
+
+			 auto s=screen::base::create();
+
+			 if (window_info &&
+			     window_info->screen_number)
+			 {
+				 auto conn=s->get_connection();
+
+				 auto n=*window_info->screen_number;
+				 if (n < conn->screens())
+					 s=screen::create(conn, n);
+			 }
+			 return s->do_create_mainwindow(config,
+							window_info,
+							f, factory);
+		 }, config);
 }
 
 layout_impl main_windowObj::get_layout_impl() const
