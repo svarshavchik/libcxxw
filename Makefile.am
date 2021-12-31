@@ -1717,14 +1717,6 @@ rpm: dist
 	rm -rf rpm/BUILDROOT/*
 	rpmbuild -ta --clean \
 		--define "_topdir `pwd`/rpm" \
-		--define '_rpmdir %{_topdir}/RPMS' \
-		--define '_srcrpmdir %{_topdir}/SRPMS' \
-		--define '_sourcedir %{_topdir}/SOURCES' \
-		--define '_specdir %{_topdir}/SPECS' \
-		--define '_builddir %{_topdir}/BUILD' \
-		--define '_build_name_fmt %%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm' \
-		--define '_tmppath %{_var}/tmp' \
-		--define '__spec_prep_pre %{___build_pre}' \
 		--define "extrarelease .`date '+%Y%m%d%H%M%S'`" @PACKAGE@-@VERSION@.tar.bz2
 	sh $$HOME/repos.sh
 

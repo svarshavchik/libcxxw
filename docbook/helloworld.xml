@@ -149,15 +149,24 @@ $ [command] --set-property &ns;::w::preserve_screen_number=0
 	container's reference on the widget. Normally, no other references
 	remain and all resources used by the widget get released.
       </para>
+    </section>
+
+    <section id="reflifetime">
+      <title>Proper reference-counting is critical</title>
 
       <para>
-	The application creates all widgets, and it's possible
-	for the application to retain its own reference to a widget.
-	The application must make sure that it no longer holds
-	its own reference on a widget when it gets removed from
-	the container;
+	The application creates all widgets. Each &factory; method that
+	creates a widget returns a reference to the new widget.
+	The application should generally avoid storing references to
+	widgets in static or dynamic objects, the safest thing to do
+	is to hold it in a local variable, in automatic scope, so that
+	the reference gets destroyed at the end of the scope.
+	This is because it is critical that no other references to a
+	widget remain when it gets removed from its container;
 	or when any of its parent containers get removed from their respective
 	container.
+	Otherwise the &appshort; will not be able to properly clean up all
+	resources, and handle its internal book-keeping.
       </para>
 
       <para>
@@ -191,6 +200,16 @@ $ [command] --set-property &ns;::w::preserve_screen_number=0
 	the application retained its own reference to the label object,
 	this would prevent everything from getting destroyed properly,
 	and all resources released.
+      </para>
+
+      <para>
+	Attaching a reference to a widget in some way (via a &callback;)
+	is generally safe as long as the reference is to a widget that's not
+	an immediate parent or child of the widget to which the reference
+	gets attached to.
+	If necessary, it is safe to store or capture
+	<ulink url="&weakptr;">weak pointer references</ulink> and recover
+	strong references when needed.
       </para>
     </section>
 

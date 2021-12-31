@@ -591,11 +591,10 @@ void testpane(const options &opts)
 
 	auto close_flag=close_flag_ref::create();
 
-	x::w::main_window_config config{"main"};
+	x::w::main_window_config config;
 
 	auto main_window=x::w::main_window
-		::create(config,
-			 [&]
+		::create([&]
 			 (const auto &mw)
 			 {
 				 create_main_window(mw, opts);

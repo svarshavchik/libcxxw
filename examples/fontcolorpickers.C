@@ -298,11 +298,8 @@ void fontcolorpickers()
 	x::w::font_pickerptr font_picker;
 	x::w::color_pickerptr color_picker;
 
-	x::w::main_window_config config{"main"};
-
 	auto main_window=x::w::main_window::create
-		(config,
-		 [&]
+		([&]
 		 (const auto &main_window)
 		 {
 			 std::tie(font_picker, color_picker)=

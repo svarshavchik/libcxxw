@@ -56,7 +56,7 @@ See COPYING for distribution information.
 	<link linkend="creator"><classname>&ns;::w::main_window</classname>
 	  creator lambda</link> is factored out, in this example, into
 	a separate function, for clarity.
-	Setting <varname>background_color</varname> in the
+	Adjusting an appearance object in the
 	<classname>&ns;::w::main_window_config</classname> and using it to
 	create the main window (see <xref linkend="appids" />
 	for more information) with

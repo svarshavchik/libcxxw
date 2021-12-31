@@ -173,11 +173,8 @@ void testlist()
 
 	auto close_flag=close_flag_ref::create();
 
-	x::w::main_window_config config{"main"};
-
 	auto main_window=x::w::main_window::create
-		(config,
-		 [&]
+		([&]
 		 (const auto &main_window)
 		 {
 			 auto layout=main_window->gridlayout();

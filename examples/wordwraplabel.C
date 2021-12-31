@@ -102,18 +102,13 @@ void wordwrap()
 
 	auto close_flag=close_flag_ref::create();
 
-	// It's possible to capture more than one main_window's position and
-	// size, and save it. Each main_window must have a unique label, that
-	// identifies the stored position.
-	//
-	// Positions of main windows get stored together with their
-	// associated label. If there's a saved position for a window with
-	// the given label then the main_window gets opened in its previous
-	// position (and size, if it's adjustable).
+	// An x::w::main_window_config gets optionally passed to
+	// create_main_window(). This parameter allows customizing the
+	// main application window's appearance.
 
-	x::w::main_window_config config{"main"};
+	x::w::main_window_config config;
 
-	// Obtain main window's appearance
+	// Obtain main window's appearance detail.
 
 	x::w::const_main_window_appearance appearance=config.appearance;
 
@@ -146,13 +141,6 @@ void wordwrap()
 		 {
 			 custom_appearance->background_color=light_yellow;
 		 });
-
-	// Passing an optional x::w::main_window_config as the first parameter
-	// to main_window's constructor specifies the window's label.
-	//
-	// If not specified, the window's label defaults to "main". An
-	// application with two or more main_windows must use an explicit
-	// main_window_config, with unique labels, to create each one.
 
 	auto main_window=
 		x::w::main_window::create(config, create_mainwindow);

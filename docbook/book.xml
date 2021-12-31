@@ -28,6 +28,7 @@
 <!ENTITY layoutmanager "<link linkend='layoutmanager'>layout manager</link>">
 <!ENTITY libcxxname "<application>LIBCXX</application>">
 <!ENTITY libcxx "<ulink url='/'>LibCXX</ulink>">
+<!ENTITY weakptr "/weakptr.html">
 <!ENTITY listitemparamvalueslist "<link linkend='uixmllistitemvalue'><classname>&ns;::w::list_item_param</classname></link> values list">
 <!ENTITY metrics "<link linkend='dim_axis_arg'>metrics</link>">
 <!ENTITY namedwidget "<link linkend='uixmlfactoryelement'>named <tag class='element'>element</tag> widget</link>">

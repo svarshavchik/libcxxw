@@ -16,8 +16,6 @@ Group: System Environment/Libraries
 URL: http://www.libcxx.org/w/
 Source0: libcxxw-@VERSION@.tar.bz2
 
-%define _hardened_build 1
-
 Requires: font(liberationsans)
 Requires: font(liberationserif)
 Requires: font(liberationmono)

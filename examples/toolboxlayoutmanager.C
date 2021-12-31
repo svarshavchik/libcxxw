@@ -375,11 +375,8 @@ new_app create_app()
 {
 	x::w::dialogptr toolbox_dialog;
 
-	x::w::main_window_config config{"main"};
-
 	auto main_window=x::w::main_window
-		::create(config,
-			 [&]
+		::create([&]
 			 (const auto &main_window)
 			 {
 				 create_main_window(main_window,

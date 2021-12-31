@@ -133,14 +133,18 @@ See COPYING for distribution information.
       <itemizedlist>
 	<listitem>
 	  <para>
-	    <link linkend="cxxwcreator.1"><command>cxxwcreator</command></link>
-	    support for all <link linkend="uixmldoc">theme UI</link> features.
+	    Supply default values for the <literal>WM_CLASS</literal>
+	    property that comes from the application's identifier and version.
+	    Remove the need to explicitly set it.
 	  </para>
 	</listitem>
 	<listitem>
 	  <para>
-	    Improved <link linkend="validatedinput">input field
-	      validation</link> abstraction layer.
+	    Reimplement the framework for transparently saving and restoring
+	    the default window position and widget attributes. It is only
+	    necessary to assign unique labels to windows and widgets, and
+	    the library automatically takes care of restoring their
+	    previous attributes.
 	  </para>
 	</listitem>
       </itemizedlist>
