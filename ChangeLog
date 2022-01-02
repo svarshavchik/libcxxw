@@ -1,4 +1,4 @@
-0.30.0
+0.31.0
 
 2021-12-24  Sam Varshavchik  <mrsam@courier-mta.com>
 
@@ -9,6 +9,8 @@
 2021-12-23  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Default WM_CLASS to the window label and appid.
+
+0.30.0
 
 2021-08-29  Sam Varshavchik  <mrsam@courier-mta.com>
 
