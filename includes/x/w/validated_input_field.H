@@ -187,7 +187,7 @@ public:
 		return this->access([&]
 			     (const auto &v)
 		{
-			bool flag=v;
+			auto flag=v.has_value();
 
 			if (flag)
 			{
@@ -314,10 +314,7 @@ changes, and it receives the new validated value.
 
 template<input_field_validation_function validation_function,
 	 typename canonical_format_functor,
-	 typename new_value_functor=default_new_value_function<
-		 input_field_validation_function_type<validation_function>
-		 >
-	 >
+	 typename new_value_functor>
 auto create_validated_input_field_contents(
 	validation_function &&validator,
 	canonical_format_functor &&formatter,
@@ -439,8 +436,7 @@ updated to reflect the changed value.
 template<typename T,
 	 input_field_string_validation_function<T> validation_function,
 	 typename canonical_format_functor,
-	 typename new_value_functor=default_new_value_function<T>
-	 >
+	 typename new_value_functor>
 auto create_string_validated_input_field_contents(
 	validation_function &&validator,
 	canonical_format_functor &&canonical_format,

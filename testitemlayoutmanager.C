@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
@@ -248,6 +249,7 @@ void testitemlayoutmanager(const testitems_options &options)
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		testitems_options options;
 

@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
@@ -127,6 +128,7 @@ void testfocusrestore()
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		testfocusrestore();
 	} catch (const exception &e)

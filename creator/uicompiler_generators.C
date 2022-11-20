@@ -136,7 +136,7 @@ struct checkbox_handler : setting_handler {
 	{
 		// This element exists, so it has a value.
 
-		value.string_value=U"1";
+		value.string_value=std::u32string{U"1"}; // TODO: gcc warning
 	}
 
 	void save(const setting_save_info &save_info,

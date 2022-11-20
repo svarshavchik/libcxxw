@@ -407,7 +407,7 @@ metrics::grid_xy calculate_borders(container_type &container,
 
 		for (auto beg=row.begin(), end=row.end() ; beg != end; )
 		{
-			dim_t::value_type colspan=(*beg)->width;
+			dim_t::value_type colspan{(*beg)->width};
 
 			// Check for overflow on the column.
 			{

@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include <x/mpobj.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
@@ -282,6 +283,8 @@ void testlist3(const LIBCXX_NAMESPACE::w::element &e)
 
 void testlist1()
 {
+	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
+
 	LIBCXX_NAMESPACE::w::containerptr c;
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
@@ -303,6 +306,8 @@ void testlist1()
 					 testlist2(c->get_layoutmanager());
 				 }, nlm);
 			 });
+
+	guard(main_window->connection_mcguffin());
 
 	testlist3(c);
 }
@@ -1241,6 +1246,7 @@ void testlist(const testlistoptions &options)
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		testlistoptions options;
 

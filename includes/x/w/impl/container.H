@@ -67,38 +67,12 @@ private:
 
 	mutable layoutmanager_ptr_t layoutmanager_ptr;
 public:
-	//! If the layout manager has been installed, invoke it.
-
-	//! This nicely handles race conditions during destructions by
-	//! doing nothing.
 
 	template<typename functor_type>
-		inline void invoke_layoutmanager(functor_type &&functor)
-	{
-		auto p=layoutmanager_ptr.get();
-
-		if (!p)
-			return; // In the process of being destroyed
-
-		functor(layout_impl{p});
-	}
-
-	//! If the layout manager has been installed, invoke it.
-
-	//! This nicely handles race conditions during destructions by
-	//! doing nothing.
+	void invoke_layoutmanager(functor_type &&functor);
 
 	template<typename functor_type>
-		inline void invoke_layoutmanager(functor_type &&functor)
-		const
-	{
-		auto p=layoutmanager_ptr.get();
-
-		if (!p)
-			return; // In the process of being destroyed
-
-		functor(const_layout_impl{p});
-	}
+	void invoke_layoutmanager(functor_type &&functor) const;
 
 	//! Invoked from layoutmanager's public object's constructor
 
@@ -304,6 +278,10 @@ class containers_2_recalculate_map
 			  std::unordered_set<container_impl>>
 {
 };
+
+#define x_w_impl_container_H_defined 1
+
+#include <x/w/impl/container_layoutmanager.H>
 
 LIBCXXW_NAMESPACE_END
 

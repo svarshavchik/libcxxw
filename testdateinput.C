@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include <x/mpobj.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
@@ -139,6 +140,7 @@ void testdateinput()
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		LIBCXX_NAMESPACE::property
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",

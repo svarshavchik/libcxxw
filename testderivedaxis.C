@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include <x/exception.H>
 #include <iostream>
 #include <sstream>
@@ -341,6 +342,7 @@ void test_synchronization(ONLY IN_THREAD)
 
 int main()
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		check("empty list", 0, 0, dim_t::infinite());
 

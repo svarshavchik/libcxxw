@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include <x/exception.H>
 #include "x/w/namespace.H"
 #include <iostream>
@@ -2810,6 +2811,7 @@ void canonicaltest4()
 
 int main()
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		inserttest();
 		erasesubstrtest();

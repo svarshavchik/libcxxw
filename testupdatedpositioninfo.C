@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include "x/w/impl/updated_position_info.H"
 
 #include "x/w/main_window.H"
@@ -661,6 +662,7 @@ void testupdatedposition()
 
 int main()
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	sanity_check();
 	sanity_check_2();
 

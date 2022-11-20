@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include <x/exception.H>
 #include <iostream>
 #include <sstream>
@@ -294,6 +295,7 @@ void testfiledircontents()
 
 int main()
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		LIBCXX_NAMESPACE::property
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",

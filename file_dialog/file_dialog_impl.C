@@ -886,7 +886,12 @@ static std::u32string base_filename(const std::string &filename)
 	if (ustr.size() < 40)
 		return ustr;
 
-	return ustr.substr(0, 40) + U"\u2026";
+	// TODO: spurious gcc warning
+	auto s=ustr.substr(0, 40);
+
+	s += std::u32string{U"\u2026"};
+
+	return s;
 }
 
 // Filename field in dialogs: does not accept '/' characters.

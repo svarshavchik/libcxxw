@@ -228,6 +228,10 @@ class layoutmanagerObj::implObj : virtual public obj {
 	virtual void save(ONLY IN_THREAD);
 };
 
+#define x_w_impl_layoutmanager_H_defined 1
+
+#include <x/w/impl/container_layoutmanager.H>
+
 LIBCXXW_NAMESPACE_END
 
 #endif

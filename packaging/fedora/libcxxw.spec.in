@@ -74,9 +74,9 @@ custom LibCXXW display elements.
 
 %prep
 %setup -q -n libcxxw-@VERSION@
-%configure
 
 %build
+%configure
 %{__make} %{_smp_mflags}
 
 %install

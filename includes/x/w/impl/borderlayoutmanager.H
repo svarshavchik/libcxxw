@@ -50,9 +50,6 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 	//! Current title
 	richtextptr current_title;
 
-	//! Whether no_background was requested.
-	const bool no_background;
-
 	//! Whether to install a custom background for the widget
 
 	//! Overrides the background color for the widget inside the border

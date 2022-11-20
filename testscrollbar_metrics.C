@@ -1,4 +1,5 @@
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include "scrollbar/scrollbar_metrics.H"
 #include "x/w/rectangle.H"
 #include <x/exception.H>
@@ -186,6 +187,7 @@ void testscrollbar_metrics()
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		testscrollbar_metrics();
 	} catch (const LIBCXX_NAMESPACE::exception &e)

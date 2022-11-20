@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include <x/mpobj.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
@@ -737,6 +738,7 @@ void testmenu()
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		testmenu();
 	} catch (const LIBCXX_NAMESPACE::exception &e)

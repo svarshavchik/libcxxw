@@ -399,8 +399,10 @@ date_input_field factoryObj
 
 #include "date_input_field/date_input_field_filter.H"
 
-				 new_string.insert(0,
-						   unicode::literals::LRO);
+				 // TODO: spurious gcc warning
+				 new_string.insert(new_string.begin(),
+						   unicode::literals::LRO[0]);
+
 				 info.update(info.starting_pos
 					     ->pos(starting_pos),
 					     info.starting_pos

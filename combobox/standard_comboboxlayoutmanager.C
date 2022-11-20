@@ -107,7 +107,7 @@ static std::vector<text_param> to_text_param(const std::vector<list_item_param>
 
 new_items_ret standard_combobox_lock::append_items(const list_item_param &item)
 {
-	return append_items({item});
+	return append_items(std::vector{item});
 }
 
 namespace {
@@ -607,7 +607,7 @@ new_items_ret standard_combobox_lock
 new_items_ret standard_combobox_lock::insert_items(size_t i,
 						   const list_item_param &item)
 {
-	return insert_items(i, {item});
+	return insert_items(i, std::vector{item});
 }
 
 new_items_ret standard_combobox_lock
@@ -662,7 +662,7 @@ new_items_ret standard_combobox_lock
 new_items_ret standard_combobox_lock::replace_items(size_t i,
 						    const list_item_param &item)
 {
-	return replace_items(i, {item});
+	return replace_items(i, std::vector{item});
 }
 
 new_items_ret standard_combobox_lock

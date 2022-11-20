@@ -552,7 +552,7 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 			stat_succeeded=true;
 
 			if (!S_ISDIR(st.st_mode) &&
-			    !lock->filename_filter->match(f.name))
+			    lock->filename_filter->match(f.name).empty())
 				continue;
 		}
 

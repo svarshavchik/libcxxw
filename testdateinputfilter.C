@@ -1,3 +1,5 @@
+#include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -127,6 +129,7 @@ void runtests()
 
 int main()
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	locale::create("en_US.UTF-8")->global();
 
 	runtests();

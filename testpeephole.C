@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include <x/mpobj.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
@@ -250,6 +251,7 @@ void automated_test()
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		if (argc > 1 && std::string{argv[1]} == "--test")
 		{

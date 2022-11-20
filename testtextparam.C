@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include <x/exception.H>
 #include <x/options.H>
 #include "x/w/impl/richtext/richtextstring.H"
@@ -158,6 +159,7 @@ void testshortcut()
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		auto options=option::list::create();
 

@@ -28,7 +28,6 @@ borderlayoutmanagerObj::implObj::implObj(const container_impl &container_impl,
 					     element_halign,
 					     element_valign},
 	  bordercontainer_impl{bordercontainer_impl},
-	  no_background{no_background},
 	  frame_background{frame_background}
 {
 }

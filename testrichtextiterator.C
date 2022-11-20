@@ -1,4 +1,5 @@
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include "mockrichtext.H"
 #include "x/w/impl/richtext/richtext.H"
 #include "x/w/richtext/richtextiterator.H"
@@ -3149,6 +3150,7 @@ void testrichtext14(ONLY IN_THREAD)
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		LIBCXX_NAMESPACE::property
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",

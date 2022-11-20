@@ -47,7 +47,7 @@ public:
 
 	//! A iterator over a constant font list.
 
-	class const_iterator : public std::iterator<std::random_access_iterator_tag, pattern> {
+	class const_iterator {
 
 	protected:
 		//! List reference
@@ -57,6 +57,12 @@ public:
 		size_t p;
 
 	public:
+		typedef std::random_access_iterator_tag iterator_category;
+		typedef pattern value_type;
+		typedef ssize_t difference_type;
+		typedef value_type *pointer;
+		typedef value_type &reference;
+
 		//! Constructor
 		const_iterator(const ref<implObj> &lArg, size_t pArg);
 

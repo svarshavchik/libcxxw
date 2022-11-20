@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 
 #include <iostream>
 #include <string>
@@ -540,6 +541,7 @@ void test7()
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		alarm(60);
 		test1();

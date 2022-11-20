@@ -1,4 +1,5 @@
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include "x/w/impl/richtext/richtext.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/fragment_list.H"
@@ -924,6 +925,7 @@ void testunwrap(const current_fontcollection &font1,
 
 int main(int argc, char **argv)
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		LIBCXX_NAMESPACE::property
 			::load_property(LIBCXX_NAMESPACE_STR "::w::themes",

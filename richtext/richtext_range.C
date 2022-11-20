@@ -98,7 +98,7 @@ struct find_word : unicode::wordbreak_callback_base {
 	size_t begin_pos;
 	size_t end_pos;
 
-	find_word(size_t pos) : pos{pos}, begin_pos{0}, end_pos{end_pos}
+	find_word(size_t pos) : pos{pos}, begin_pos{0}, end_pos{0}
 	{
 	}
 

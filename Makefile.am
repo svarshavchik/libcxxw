@@ -1718,7 +1718,7 @@ rpm: dist
 	rpmbuild -ta --clean \
 		--define "_topdir `pwd`/rpm" \
 		--define "extrarelease .`date '+%Y%m%d%H%M%S'`" @PACKAGE@-@VERSION@.tar.bz2
-	sh $$HOME/repos.sh
+	sh $$HOME/bin/rpmrepos.sh
 
 ACLOCAL_AMFLAGS = -I m4
 

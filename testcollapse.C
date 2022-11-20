@@ -1,4 +1,5 @@
 #include "libcxxw_config.h"
+#include <x/property_properties.H>
 #include <iostream>
 #include <sstream>
 #include <x/exception.H>
@@ -241,6 +242,7 @@ void test1()
 
 int main()
 {
+	x::property::load_property("x::w::themes", "./themes", true, false);
 	try {
 		LIBCXX_NAMESPACE::property
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",
