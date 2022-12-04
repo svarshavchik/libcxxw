@@ -1,8 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
-AC_INIT([libcxxw], [0.31.0], [libcxx-users@lists.libcxx.org])
+AC_PREREQ([2.71])
+AC_INIT([libcxxw],[0.31.0],[libcxx-users@lists.libcxx.org])
 AC_CONFIG_SRCDIR([connection.C])
 AC_CONFIG_HEADERS([libcxxw_config.h])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign -Wno-portability])
@@ -82,7 +82,7 @@ do
 	then
 	    :
 	else
-	    AC_ERROR([Cannot find $pkg development libraries, please install the $pkg devel package])
+	    AC_MSG_ERROR(Cannot find $pkg development libraries, please install the $pkg devel package)
 	fi
 done
 
