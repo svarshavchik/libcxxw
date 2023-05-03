@@ -390,7 +390,7 @@ class generic_windowObj::handlerObj
 		frame_extents_t(const rectangle &workarea);
 
 		//! Comparison operator.
-		bool operator==(const frame_extents_t &o);
+		bool operator==(const frame_extents_t &o) const;
 	};
 
 	//! The current window frame size and screen geometry.
@@ -1156,6 +1156,8 @@ public:
 
 	//! \overload
 	void receive_selection(ONLY IN_THREAD, const std::string_view &);
+
+	using superclass_t::cut_or_copy_selection;
 
 	//! Execute a cut/copy operation.
 

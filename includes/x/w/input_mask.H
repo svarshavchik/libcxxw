@@ -6,6 +6,7 @@
 #define x_w_input_mask_h
 
 #include <string>
+#include <cstdint>
 #include <x/w/namespace.H>
 
 #include <string_view>

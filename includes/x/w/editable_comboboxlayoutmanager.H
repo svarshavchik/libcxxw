@@ -115,6 +115,8 @@ public:
 
 private:
 
+	using new_custom_comboboxlayoutmanager::create;
+
 	//! Create the focusable container.
 
 	//! \internal

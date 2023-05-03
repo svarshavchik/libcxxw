@@ -7,6 +7,7 @@
 
 #include <x/number.H>
 #include "x/w/namespace.H"
+#include <cstdint>
 
 LIBCXXW_NAMESPACE_START
 

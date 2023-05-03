@@ -127,7 +127,7 @@ template<typename child_type>
 class scratch_and_mask_buffer_draw : public scratch_buffer_draw<child_type>,
 	scratch_and_mask_buffer_draw_impl {
 
- public:
+public:
 
 	template<typename name1_type, typename ...Args>
 		scratch_and_mask_buffer_draw(name1_type &&mask_picture_name,
@@ -135,6 +135,11 @@ class scratch_and_mask_buffer_draw : public scratch_buffer_draw<child_type>,
 
 	~scratch_and_mask_buffer_draw();
 
+protected:
+	using scratch_buffer_draw<child_type>::do_draw;
+
+	using scratch_and_mask_buffer_draw_impl::do_draw;
+public:
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const picture &area_picture,

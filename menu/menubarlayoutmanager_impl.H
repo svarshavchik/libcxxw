@@ -70,6 +70,8 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 
 	layoutmanager create_public_object() override;
 
+	using gridlayoutmanagerObj::implObj::initialize;
+
 	//! Invoked after the container with the menubar is created.
 
 	//! Insert the divider element().

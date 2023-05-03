@@ -926,9 +926,15 @@ extern const listlayoutstyle_impl &highlighted_list LIBCXX_PUBLIC;
 
 extern const listlayoutstyle_impl &bulleted_list LIBCXX_PUBLIC;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdangling-reference"
+
 //! Return a list layout style by name.
 
-const listlayoutstyle_impl &list_style_by_name(const std::string_view &);
+const listlayoutstyle_impl &list_style_by_name(const std::string_view &)
+	LIBCXX_HIDDEN;
+
+#pragma GCC diagnostic pop
 
 //! selection_type callback.
 

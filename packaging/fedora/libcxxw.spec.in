@@ -102,6 +102,11 @@ rm -f $RPM_BUILD_ROOT%{_mandir}/*/*
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%changelog
+
+* Sun Apr 16 2023 Sam Varshavchik <mrsam@courier-mta.com>
+- Initial version
+
 %files
 %defattr(-,root,root,-)
 %dir %{_libdir}/libcxxw*

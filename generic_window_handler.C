@@ -85,7 +85,7 @@ generic_windowObj::handlerObj::frame_extents_t
 }
 
 bool generic_windowObj::handlerObj::frame_extents_t
-::operator==(const frame_extents_t &o)
+::operator==(const frame_extents_t &o) const
 {
 	return workarea == o.workarea &&
 		left == o.left && right == o.right &&

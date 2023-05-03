@@ -482,6 +482,8 @@ public:
 		     bool flag);
 
 private:
+	using list_element_impl_superclass_t::enabled;
+
 	//! Enable or disable the list item.
 
 	void enabled(ONLY IN_THREAD,
