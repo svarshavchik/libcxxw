@@ -84,10 +84,12 @@ void filedircontentsObj::implObj::run(ptr<obj> &mcguffin)
 	try {
 		initial_b=initial_e=nullptr;
 
-		auto initial_dir_contents=dir::create(directory);
+		std::error_code ec;
 
-		auto b=initial_dir_contents->begin();
-		auto e=initial_dir_contents->end();
+		auto b=std::filesystem::directory_iterator{
+			directory, {}, ec
+		};
+		auto e=end(b);
 
 		initial_b=&b;
 		initial_e=&e;
@@ -171,7 +173,8 @@ void filedircontentsObj::implObj::dispatch_next_chunk()
 	{
 		if (*initial_b == *initial_e)
 			break;
-		c->files->files.emplace_back((*initial_b)->first, false);
+		c->files->files.emplace_back((*initial_b)->path().filename(),
+					     false);
 
 		++*initial_b;
 	}

@@ -14,7 +14,7 @@
 #include "metrics_axis.H"
 #include "dirlisting/filedircontents.H"
 #include "dirlisting/filedir_file.H"
-#include <x/dir.H>
+#include <filesystem>
 #include <x/fd.H>
 #include <x/mpobj.H>
 #include <set>
@@ -29,7 +29,7 @@ struct contentsObj : virtual public obj {
 
 void testfiledircontents()
 {
-	dir::base::rmrf("testfiledircontents.dir");
+	std::filesystem::remove_all("testfiledircontents.dir");
 	mkdir("testfiledircontents.dir", 0777);
 
 	for (int i=0; i<100; ++i)
@@ -301,7 +301,7 @@ int main()
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",
 					"themes", true, true);
 		testfiledircontents();
-		dir::base::rmrf("testfiledircontents.dir");
+		std::filesystem::remove_all("testfiledircontents.dir");
 	} catch (const exception &e)
 	{
 		e->caught();

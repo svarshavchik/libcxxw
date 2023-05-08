@@ -8,8 +8,8 @@
 #include "dirlisting/filedircontents.H"
 #include "dirlisting/filedir_file.H"
 #include <x/threadmsgdispatcherobj.H>
-#include <x/dir.H>
 #include <x/logger.H>
+#include <filesystem>
 
 LIBCXXW_NAMESPACE_START
 
@@ -51,9 +51,7 @@ class LIBCXX_HIDDEN filedircontentsObj::implObj
 	//! Initial contents of the directory being synced
 
 	//! On the executing thread's stack.
-	dir::base::iterator *initial_b;
-	dir::base::iterator *initial_e;
-
+	std::filesystem::directory_iterator *initial_b, *initial_e;
 };
 
 LIBCXXW_NAMESPACE_END
