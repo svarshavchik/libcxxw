@@ -1083,23 +1083,48 @@ void appObj::open_initial_file(ONLY IN_THREAD,
 		enable_disable_menus(*lock);
 	}
 
+	std::exception_ptr thrown_exception;
+
 	if (filename.empty())
 	{
 		loaded_file(IN_THREAD);
 	}
 	else
 	{
-		bool thrown_exception=true;
-
 		try {
 			open_dialog_closed(IN_THREAD, filename);
-			thrown_exception=false;
-		} REPORT_EXCEPTIONS(main_window);
-
-		if (thrown_exception)
+		} catch (...)
 		{
-			new_file(IN_THREAD);
+			thrown_exception=std::current_exception();
 		}
+	}
+
+	if (thrown_exception)
+	{
+		main_window->in_thread_idle(
+			[e=thrown_exception]
+			(ONLY IN_THREAD)
+			{
+				appinvoke(
+					[e]
+					(appObj *app)
+					{
+						auto &main_window=
+							app->main_window;
+
+						try {
+							std::rethrow_exception(
+								e
+							);
+						} REPORT_EXCEPTIONS(
+							main_window
+						);
+					}
+
+				);
+			});
+
+		new_file(IN_THREAD);
 	}
 }
 
