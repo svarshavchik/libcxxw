@@ -972,9 +972,12 @@ static void help_menu(const w::main_window &mw,
 }
 
 
-static void demo_list(const w::gridlayoutmanager &lm);
-static void demo_input(const w::gridlayoutmanager &lm);
-static void demo_misc(const w::gridlayoutmanager &lm);
+static void demo_input(const w::gridlayoutmanager &lm,
+		       const w::const_uigenerators &generators,
+		       w::uielements &factories);
+static void demo_misc(const w::gridlayoutmanager &lm,
+		      const w::const_uigenerators &generators,
+		      w::uielements &factories);
 static void item_table(const w::gridlayoutmanager &lm);
 
 static void create_demo(const w::booklayoutmanager &lm,
@@ -984,40 +987,48 @@ static void create_demo(const w::booklayoutmanager &lm,
 	auto f=lm->append();
 
 	f->add("Lists",
-	       []
+	       [&generators, &factories]
 	       (const auto &f)
 	       {
 		       f->create_container
-			       ([]
+			       ([&generators, &factories]
 				(const auto &c)
 				{
-					demo_list(c->get_layoutmanager());
+					c->gridlayout()->generate(
+						"demo_list", generators,
+						factories);
 				},
 				w::new_gridlayoutmanager{});
 	       });
 
 	f->add("Input",
-	       []
+	       [&]
 	       (const auto &f)
 	       {
 		       f->create_container
-			       ([]
+			       ([&]
 				(const auto &c)
 				{
-					demo_input(c->get_layoutmanager());
+					demo_input(
+						c->get_layoutmanager(),
+						generators,
+						factories
+					);
 				},
 				w::new_gridlayoutmanager{});
 	       });
 
 	f->add("Misc",
-	       []
+	       [&]
 	       (const auto &f)
 	       {
 		       f->create_container
-			       ([]
+			       ([&]
 				(const auto &c)
 				{
-					demo_misc(c->get_layoutmanager());
+					demo_misc(c->get_layoutmanager(),
+						  generators,
+						  factories);
 				},
 				w::new_gridlayoutmanager{});
 	       });
@@ -1055,86 +1066,13 @@ static void create_demo(const w::booklayoutmanager &lm,
 	lm->open(0);
 }
 
-static void demo_list(const w::gridlayoutmanager &lm)
+static void demo_input(const w::gridlayoutmanager &lm,
+			const w::const_uigenerators &generators,
+			w::uielements &factories)
 {
-	std::vector<w::list_item_param> lorem_ipsum{"Lorem ipsum",
-			"dolor sit amet",
-			"consectetur",
-			"adipisicing elit sed",
-			"do eiusmod",
-			"tempor incididunt ut",
-			"labore et",
-			"dolore magna"
-			"aliqua"};
+	lm->generate("demo_input", generators, factories);
 
-	auto f=lm->append_row();
-
-	f->create_label("Highlighted list:");
-
-	f->create_focusable_container
-		([&]
-		 (const auto &c)
-		 {
-			 w::listlayoutmanager lm=c->get_layoutmanager();
-
-			 lm->append_items(lorem_ipsum);
-		 },
-		 w::new_listlayoutmanager{w::highlighted_list});
-
-	f->create_label("Bulleted list:");
-
-	f->create_focusable_container
-		([&]
-		 (const auto &c)
-		 {
-			 w::listlayoutmanager lm=c->get_layoutmanager();
-
-			 lm->append_items(lorem_ipsum);
-		 },
-		 w::new_listlayoutmanager{w::bulleted_list});
-
-	lm->row_alignment(1, w::valign::middle);
-
-	f=lm->append_row();
-
-	f->create_label("Standard combo-box:");
-
-	f->create_focusable_container
-		([&]
-		 (const auto &c)
-		 {
-			 w::standard_comboboxlayoutmanager
-				 lm=c->get_layoutmanager();
-
-			 lm->append_items(lorem_ipsum);
-		 },
-		 w::new_standard_comboboxlayoutmanager{});
-
-	f->create_label("Editable combo-box:");
-
-	f->create_focusable_container
-		([&]
-		 (const auto &c)
-		 {
-			 w::editable_comboboxlayoutmanager
-				 lm=c->get_layoutmanager();
-
-			 lm->append_items(lorem_ipsum);
-		 },
-		 w::new_editable_comboboxlayoutmanager{});
-}
-
-static void demo_input(const w::gridlayoutmanager &lm)
-{
-	auto f=lm->append_row();
-
-	w::input_field_config conf{3};
-
-	conf.maximum_size=2;
-	conf.set_default_spin_control_factories();
-	conf.alignment=w::halign::right;
-
-	auto spin_field=f->create_input_field("", conf);
+	w::input_field spin_field=factories.get_element("spin_field");
 
 	auto validated_input=spin_field->set_string_validator<unsigned>(
 		[]
@@ -1186,24 +1124,19 @@ static void demo_input(const w::gridlayoutmanager &lm)
 			 if (++value < 50)
 				 contents->set(IN_THREAD, lock, value);
 		 });
-
-	f=lm->append_row();
-
-	w::input_field_config conf2{40};
-
-	conf2.hint("Type something here...");
-
-	f->create_input_field("", conf2);
-
-	f=lm->append_row();
-	f->create_input_field("", {40, 4});
 }
 
-static void demo_misc_column1(const w::gridlayoutmanager &);
+static void demo_misc_column1(const w::gridlayoutmanager &,
+			      const w::const_uigenerators &generators,
+			      w::uielements &factories);
 
-static void demo_misc_column2(const w::gridlayoutmanager &);
+static void demo_misc_column2(const w::gridlayoutmanager &,
+			      const w::const_uigenerators &generators,
+			      w::uielements &factories);
 
-static void demo_misc(const w::gridlayoutmanager &lm)
+static void demo_misc(const w::gridlayoutmanager &lm,
+		      const w::const_uigenerators &generators,
+		      w::uielements &factories)
 {
 	auto columns=lm->append_row();
 	w::new_gridlayoutmanager nglm;
@@ -1212,7 +1145,8 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 		([&]
 		 (const auto &c)
 		 {
-			 demo_misc_column1(c->get_layoutmanager());
+			 demo_misc_column1(c->get_layoutmanager(),
+					   generators, factories);
 		 },
 		 nglm);
 
@@ -1220,49 +1154,23 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 		([&]
 		 (const auto &c)
 		 {
-			 demo_misc_column2(c->get_layoutmanager());
+			 demo_misc_column2(c->get_layoutmanager(),
+					   generators, factories);
 		 },
 		 nglm);
 }
 
-static void demo_misc_column1(const w::gridlayoutmanager &lm)
+static void demo_misc_column1(const w::gridlayoutmanager &lm,
+			      const w::const_uigenerators &generators,
+			      w::uielements &factories)
 {
-	for (int i=1; i<=3; ++i)
-	{
-		auto f=lm->append_row();
+	lm->generate("demo_misc_column1", generators, factories);
 
-		f->create_checkbox([&]
-				   (const auto &f)
-				   {
-					   std::ostringstream o;
+	w::progressbar pb=factories.get_element(
+		"demo_misc_column1_row4_progressbar"
+	);
 
-					   o << "Checkbox " << i;
-
-					   f->create_label(o.str());
-				   });
-
-		f->create_radio("demo_options", [&]
-				(const auto &f)
-				{
-					std::ostringstream o;
-
-					o << "Radio " << i;
-
-					f->create_label(o.str());
-				});
-	}
-
-	lm->append_row()->colspan(2).create_progressbar
-		([]
-		 (const auto &pb)
-		 {
-			 w::gridlayoutmanager glm=pb->get_layoutmanager();
-
-			 glm->append_row()->halign(w::halign::center)
-				 .create_label("100%")->show();
-
-			 pb->update(75, 100);
-		 });
+	pb->update(75, 100);
 
 	auto b=lm->append_row()->colspan(2).halign(w::halign::center)
 		.create_button("Busy pointer with a tooltip");
@@ -1287,7 +1195,9 @@ static void demo_misc_column1(const w::gridlayoutmanager &lm)
 
 }
 
-static void demo_misc_column2(const w::gridlayoutmanager &glm)
+static void demo_misc_column2(const w::gridlayoutmanager &glm,
+			      const w::const_uigenerators &generators,
+			      w::uielements &factories)
 {
 	auto f=glm->append_row();
 

@@ -1,5 +1,221 @@
 <?xml version="1.0"?>
 <theme version="1">
+  <factory id="demo_misc_column1_row4_progressbar_contents" type="grid">
+    <halign>center</halign>
+    <element>
+      <label type="theme_text">75%</label>
+    </element>
+  </factory>
+  <layout id="demo_misc_column1_row4_progressbar" type="grid">
+    <append_row>
+      <name>demo_misc_column1_row4_progressbar_contents</name>
+    </append_row>
+  </layout>
+  <factory id="demo_misc_column1_row4" type="grid">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element id="demo_misc_column1_row4_progressbar">
+      <progressbar>demo_misc_column1_row4_progressbar</progressbar>
+      <type>grid</type>
+    </element>
+  </factory>
+  <factory id="demo_misc_column1_row3" type="grid">
+    <element>
+      <checkbox>
+        <element>
+          <label type="theme_text">Checkbox 3</label>
+        </element>
+      </checkbox>
+    </element>
+    <element>
+      <group>demo_options</group>
+      <radio>
+        <element>
+          <label type="theme_text">Radio 3</label>
+        </element>
+      </radio>
+    </element>
+  </factory>
+  <factory id="demo_misc_column1_row2" type="grid">
+    <element>
+      <checkbox>
+        <element>
+          <label type="theme_text">Checkbox 2</label>
+        </element>
+      </checkbox>
+    </element>
+    <element>
+      <group>demo_options</group>
+      <radio>
+        <element>
+          <label type="theme_text">Radio 2</label>
+        </element>
+      </radio>
+    </element>
+  </factory>
+  <factory id="demo_misc_column1_row1" type="grid">
+    <element>
+      <checkbox>
+        <element>
+          <label type="theme_text">Checkbox 1</label>
+        </element>
+      </checkbox>
+    </element>
+    <element>
+      <group>demo_options</group>
+      <radio>
+        <element>
+          <label type="theme_text">Radio 1</label>
+        </element>
+      </radio>
+    </element>
+  </factory>
+  <layout id="demo_misc_column1" type="grid">
+    <append_row>
+      <name>demo_misc_column1_row1</name>
+    </append_row>
+    <append_row>
+      <name>demo_misc_column1_row2</name>
+    </append_row>
+    <append_row>
+      <name>demo_misc_column1_row3</name>
+    </append_row>
+    <append_row>
+      <name>demo_misc_column1_row4</name>
+    </append_row>
+  </layout>
+  <factory id="demo_input_3" type="grid">
+    <element>
+      <config>
+        <columns>40</columns>
+        <rows>4</rows>
+      </config>
+      <input_field/>
+    </element>
+  </factory>
+  <factory id="demo_input_2" type="grid">
+    <element>
+      <config>
+        <columns>40</columns>
+        <hint type="theme_text">Type something here...</hint>
+      </config>
+      <input_field/>
+    </element>
+  </factory>
+  <factory id="demo_input_1" type="grid">
+    <element id="spin_field">
+      <config>
+        <columns>3</columns>
+        <maximum_size>2</maximum_size>
+        <set_default_spin_control_factories/>
+      </config>
+      <input_field/>
+    </element>
+  </factory>
+  <layout id="demo_input" type="grid">
+    <append_row>
+      <name>demo_input_1</name>
+    </append_row>
+    <append_row>
+      <name>demo_input_2</name>
+    </append_row>
+    <append_row>
+      <name>demo_input_3</name>
+    </append_row>
+  </layout>
+  <layout id="demo_list_editable_combobox" type="editable_combobox">
+    <append_items>
+      <items>
+        <label type="theme_text">Lorem ipsum</label>
+        <label type="theme_text">dolor sit amet</label>
+        <label type="theme_text">adipisicing elit sed</label>
+        <label type="theme_text">do eiusmod</label>
+        <label type="theme_text">tempor incididunt ut</label>
+        <label type="theme_text">labore et</label>
+        <label type="theme_text">dolore magna</label>
+        <label type="theme_text">aliqua</label>
+      </items>
+    </append_items>
+  </layout>
+  <layout id="demo_list_standard_combobox" type="standard_combobox">
+    <append_items>
+      <items>
+        <label type="theme_text">Lorem ipsum</label>
+        <label type="theme_text">dolor sit amet</label>
+        <label type="theme_text">adipisicing elit sed</label>
+        <label type="theme_text">do eiusmod</label>
+        <label type="theme_text">tempor incididunt ut</label>
+        <label type="theme_text">labore et</label>
+        <label type="theme_text">dolore magna</label>
+        <label type="theme_text">aliqua</label>
+      </items>
+    </append_items>
+  </layout>
+  <factory id="demo_list_combobox_row" type="grid">
+    <element>
+      <label type="theme_text">${context:cxxwtheme}Standard combo-box:</label>
+    </element>
+    <container>
+      <name>demo_list_standard_combobox</name>
+      <type>standard_combobox</type>
+    </container>
+    <element>
+      <label type="theme_text">${context:cxxwtheme}Editable combo-box:</label>
+    </element>
+    <container>
+      <name>demo_list_editable_combobox</name>
+      <type>editable_combobox</type>
+    </container>
+  </factory>
+  <layout id="demo_list_text" type="list">
+    <append_items>
+      <items>
+        <label type="theme_text">Lorem ipsum</label>
+        <label type="theme_text">dolor sit amet</label>
+        <label type="theme_text">adipisicing elit sed</label>
+        <label type="theme_text">do eiusmod</label>
+        <label type="theme_text">tempor incididunt ut</label>
+        <label type="theme_text">labore et</label>
+        <label type="theme_text">dolore magna</label>
+        <label type="theme_text">aliqua</label>
+      </items>
+    </append_items>
+  </layout>
+  <factory id="demo_list_list_row" type="grid">
+    <element>
+      <label type="theme_text">${context:cxxwtheme}Highlighted list:</label>
+    </element>
+    <container id="demo_list_highlighted_list_items">
+      <name>demo_list_text</name>
+      <type>list</type>
+      <config>
+        <style>highlight</style>
+      </config>
+    </container>
+    <element>
+      <label type="theme_text">${context:cxxwtheme}Bulleted list:</label>
+    </element>
+    <container id="demo_list_text_bulleted_list_items">
+      <name>demo_list_text</name>
+      <type>list</type>
+      <config>
+        <style>bullet</style>
+      </config>
+    </container>
+  </factory>
+  <layout id="demo_list" type="grid">
+    <append_row>
+      <name>demo_list_list_row</name>
+    </append_row>
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>demo_list_combobox_row</name>
+    </append_row>
+  </layout>
   <factory id="demo_table_header4" type="factory">
     <element id="demo_table_header4_label">
       <label type="theme_text">${context:cxxwtheme}Blue</label>
