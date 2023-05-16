@@ -537,7 +537,13 @@ bool parse_parameterObj::load(const x::xml::readlock &lock,
 		throw EXCEPTION("Internal error: handler is not set "
 				"(" << parameter_name << ")");
 
-	handler->load(lock->clone(), value);
+	handler->load(
+		setting_load_info{
+			lock->clone(),
+			get_name(),
+			value
+		}
+	);
 	return true;
 }
 

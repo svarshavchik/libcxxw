@@ -131,12 +131,11 @@ struct checkbox_handler : setting_handler {
 		return true;
 	}
 
-	void load(const x::xml::readlock &lock,
-		  parameter_value &value) const override
+	void load(const setting_load_info &info) const override
 	{
 		// This element exists, so it has a value.
 
-		value.string_value=std::u32string{U"1"}; // TODO: gcc warning
+		info.value.string_value=U"1";
 	}
 
 	void save(const setting_save_info &save_info,
@@ -1969,8 +1968,7 @@ struct factory_parseconfig_handler : public setting_handler {
 	}
 
 	// The contents of this generator are a factory generator
-	void load(const x::xml::readlock &lock,
-		  parameter_value &value) const override
+	void load(const setting_load_info &info) const override
 	{
 		appinvoke(
 			[&]
@@ -1980,13 +1978,13 @@ struct factory_parseconfig_handler : public setting_handler {
 				// generator and save it in the value.
 
 				const auto &[compiler, functions]=
-					initialize_value(me, value);
+					initialize_value(me, info.value);
 
 				auto &uicompiler_info=me->current_generators
 					->uicompiler_info;
 
 				functions.get()=compiler->parse(
-					lock,
+					info.lock,
 					uicompiler_info->uigenerators
 				);
 			});

@@ -91,8 +91,7 @@ struct setting_handler {
 		const parse_parameterObj &parameter,
 		parameter_value &value) const;
 
-	virtual void load(const x::xml::readlock &lock,
-			  parameter_value &value) const;
+	virtual void load(const setting_load_info &load_info) const;
 
 	// Default logic for saving a parameter, used when <xpath>.</xpath>
 	// was not specified:

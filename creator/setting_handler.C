@@ -20,10 +20,9 @@ bool setting_handler::load_from_parent_element(
 	return false;
 }
 
-void setting_handler::load(const x::xml::readlock &lock,
-			   parameter_value &value) const
+void setting_handler::load(const setting_load_info &load_info) const
 {
-	value.string_value=lock->get_u32text();
+	load_info.value.string_value=load_info.lock->get_u32text();
 }
 
 bool setting_handler::flag_value() const
@@ -34,11 +33,22 @@ bool setting_handler::flag_value() const
 void setting_handler::save(const setting_save_info &save_info,
 			   appgenerator_save &info) const
 {
-	save_info.lock->create_child()
-		->element({save_info.parameter_name})
-		->text(save_info.value.string_value)->parent();
-	saved_element(save_info, info);
-	save_info.lock->get_parent();
+	if (*save_info.parameter_name.c_str() == '@')
+	{
+		save_info.lock->attribute({
+				save_info.parameter_name.substr(1),
+				save_info.value.string_value
+			});
+		saved_element(save_info, info);
+	}
+	else
+	{
+		save_info.lock->create_child()
+			->element({save_info.parameter_name})
+			->text(save_info.value.string_value)->parent();
+		saved_element(save_info, info);
+		save_info.lock->get_parent();
+	}
 }
 
 void setting_handler::saved_element(const setting_save_info &save_info,
