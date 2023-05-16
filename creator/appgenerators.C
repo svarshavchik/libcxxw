@@ -358,8 +358,11 @@ void appObj::do_compiler_lookup(generator_info_lock &lock,
 {
 	this_generator->get_root();
 
+	if (n >= lock.all->ids.size())
+		throw EXCEPTION("Invalid internal index out of range.");
+
 	get_xpath_for(this_generator, "layout|factory",
-			      lock.all->ids.at(n))->to_node(1);
+			      lock.all->ids[n])->to_node(1);
 
 	callback( compiler_lookup(this_generator));
 }

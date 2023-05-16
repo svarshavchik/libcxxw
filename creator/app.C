@@ -1250,8 +1250,9 @@ void appObj::stoprunning(ONLY IN_THREAD)
 			  });
 }
 
-std::string appObj::xpath_for(const std::string_view &type,
-			      const std::string &id)
+std::string appObj::make_xpath(
+	const std::string_view &type,
+	const std::optional<std::reference_wrapper<const std::string>> &id)
 {
 	std::string s;
 
@@ -1265,11 +1266,11 @@ std::string appObj::xpath_for(const std::string_view &type,
 
 		s += std::string_view{b, p};
 
-		if (!id.empty())
+		if (id)
 		{
-			s += "[@id='";
-			s += x::xml::escapestr(id, true);
-			s += "']";
+			s += "[@id=";
+			s += x::xml::xpathescapestr(id->get());
+			s += "]";
 		}
 
 		if ((b=p) != e)
@@ -1287,7 +1288,14 @@ appObj::get_xpath_for(const x::xml::readlock &lock,
 		      const char *type,
 		      const std::string &id)
 {
-	return lock->get_xpath(xpath_for(type, id));
+	return lock->get_xpath(make_xpath(type, id));
+}
+
+x::xml::xpath
+appObj::get_xpath_for_all(const x::xml::readlock &lock,
+			  const char *type)
+{
+	return lock->get_xpath(make_xpath(type, std::nullopt));
 }
 
 // Helper for creating a new <element>
@@ -1366,7 +1374,7 @@ appObj::create_update_with_new_document(const char *type,
 	}
 	else
 	{
-		xpath=get_xpath_for(doc_lock, type, "");
+		xpath=get_xpath_for_all(doc_lock, type);
 	}
 
 	new_element(doc_lock, xpath)->element({new_type})->create_child()

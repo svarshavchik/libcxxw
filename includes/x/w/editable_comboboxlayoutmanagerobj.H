@@ -45,6 +45,8 @@ public:
 
 	class LIBCXX_HIDDEN implObj;
 
+	friend class focusable_containerObj;
+
 	//! Internal implementation object.
 	const ref<implObj> impl;
 

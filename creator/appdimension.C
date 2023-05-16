@@ -323,11 +323,13 @@ void appObj::dimension_selected(ONLY IN_THREAD,
 			auto current_value=theme.get()->readlock();
 			current_value->get_root();
 
+			if (n >= lock->ids.size())
+				throw EXCEPTION(
+					"Invalid internal index out of range.");
+
 			auto xpath=get_xpath_for(current_value,
 						 "dim",
-						 n < lock->ids.size()
-						 ? lock->ids[n]
-						 : "" /* Boom, on next line */);
+						 lock->ids[n]);
 
 			// We expect one to be there, of course.
 			xpath->to_node(1);

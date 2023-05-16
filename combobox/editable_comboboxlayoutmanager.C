@@ -516,18 +516,14 @@ dim_arg new_editable_comboboxlayoutmanager::minimum_width() const
 	return appearance->editable_combobox_minimum_width;
 }
 
-std::string focusable_containerObj::editable_combobox_get() const
+input_field focusable_containerObj::editable_combobox_input_field()
 {
-	x::w::const_editable_comboboxlayoutmanager lm=get_layoutmanager();
-
-	return lm->get();
+	return editable_comboboxlayout()->locked_input_field;
 }
 
-std::u32string focusable_containerObj::editable_combobox_get_unicode() const
+const_input_field focusable_containerObj::editable_combobox_input_field() const
 {
-	x::w::const_editable_comboboxlayoutmanager lm=get_layoutmanager();
-
-	return lm->get_unicode();
+	return editable_comboboxlayout()->locked_input_field;
 }
 
 LIBCXXW_NAMESPACE_END

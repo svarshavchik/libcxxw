@@ -39,6 +39,10 @@ struct create_ui_info {
 	// The value of this generator
 	const parameter_value &value;
 
+	// Parameter is required
+
+	const bool required;
+
 	// Parameter's name
 
 	const std::string &parameter_name;

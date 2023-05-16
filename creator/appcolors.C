@@ -705,11 +705,12 @@ void appObj::color_selected_locked(ONLY IN_THREAD,
 	auto current_value=theme.get()->readlock();
 	current_value->get_root();
 
+	if (n >= lock->ids.size())
+		throw EXCEPTION("Invalid internal index out of range.");
+
 	auto xpath=get_xpath_for(current_value,
 				 "color",
-				 n < lock->ids.size()
-				 ? lock->ids[n]
-				 : "" /* Boom, on next line */);
+				 lock->ids[n]);
 
 	// We expect one to be there, of course.
 	xpath->to_node(1);
@@ -1347,7 +1348,7 @@ bool appObj::do_parse_gradient_rows(const x::w::container &container,
 
 		parser(*v,
 		       // Cell 1 is the combo-box with the color's value.
-		       f->editable_combobox_get());
+		       f->editable_combobox_input_field()->get());
 	}
 
 	return true;
@@ -1803,7 +1804,8 @@ static bool update_gradient_color_values(const x::w::container &list_container,
 			       return;
 		       }
 
-		       auto color=color_field->editable_combobox_get();
+		       auto color=color_field->editable_combobox_input_field()
+			       ->get();
 
 		       if (color.empty())
 		       {
@@ -1875,7 +1877,8 @@ bool appObj::color_updated_locked(ONLY IN_THREAD,
 			.emplace<x::w::ui::parsed_scaled_color>();
 
 		scaled_color.from_name=
-			color_scaled_page_from->editable_combobox_get();
+			color_scaled_page_from->editable_combobox_input_field()
+			->get();
 
 		if (scaled_color.from_name.empty())
 			return false;
@@ -1984,7 +1987,8 @@ static bool validate_gradient_color_values(ONLY IN_THREAD,
 			       return;
 		       }
 
-		       if (color_field->editable_combobox_get().empty())
+		       if (color_field->editable_combobox_input_field()
+			   ->get().empty())
 		       {
 			       color_field->request_focus();
 			       color_field->stop_message
@@ -2178,7 +2182,8 @@ appObj::get_updatecallbackptr appObj::color_update(ONLY IN_THREAD)
 
 	if (color_scaled_option_radio->get_value())
 	{
-		if (color_scaled_page_from->editable_combobox_get().empty())
+		if (color_scaled_page_from->editable_combobox_input_field()
+		    ->get().empty())
 		{
 			color_scaled_page_from->request_focus();
 			color_scaled_page_from->stop_message

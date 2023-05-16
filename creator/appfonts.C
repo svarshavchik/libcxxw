@@ -682,9 +682,12 @@ void appObj::font_selected_locked(ONLY IN_THREAD,
 	auto current_value=theme.get()->readlock();
 	current_value->get_root();
 
+	if (n >= lock->ids.size())
+		throw EXCEPTION("Invalid internal index out of range.");
+
 	auto xpath=get_xpath_for(current_value,
 				 "font",
-				 lock->ids.at(n));
+				 lock->ids[n]);
 
 	// We expect one to be there, of course.
 	xpath->to_node(1);
@@ -859,13 +862,14 @@ void appObj::font_enable_disable_buttons(ONLY IN_THREAD,
 	}
 
 	save_params.font_new_value.from=
-		x::trim(font_from_name->editable_combobox_get());
+		x::trim(font_from_name->editable_combobox_input_field()->get());
 
 	// Read what's in the editable combo-boxes.
 
 	for (const auto &combo:font_editable_comboboxes)
 	{
-		auto value=(this->*(combo.app_field))->editable_combobox_get();
+		auto value=(this->*(combo.app_field))
+			->editable_combobox_input_field()->get();
 
 		// If this one has preset values and the entered field matches
 		// one of the preset values we will use the preset value's

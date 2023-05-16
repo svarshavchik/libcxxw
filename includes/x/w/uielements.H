@@ -52,6 +52,12 @@ automatic scope, and then used with the generator. Use get_element()
 and other methods to retrieve the generated widgets and other objects, then
 this element factory object goes out of scope and gets destroyed.
 
+\note
+This object stores generated layout managers, factories, and other
+objects which hold internal locks that will block the connection thread,
+did I mention that this object should be created in automatic scoped, used
+and then go out of scope and get destroyed?
+
 The widgets get created from the template. The first member of this object
 is a map for custom widget factories.
 The key is the custom \<element>'s \<name> from the

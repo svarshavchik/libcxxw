@@ -701,7 +701,7 @@ while (!appdata->close_flag)
 	    <para>
 	      A list with a header row. The table layout manager offers
 	      the optional ability to interactively adjust the relative widths
-	      of the columns in the table by moving the border betweens the
+	      of the columns in the table by moving the border between the
 	      columns.
 	    </para>
 	  </listitem>
@@ -847,7 +847,7 @@ while (!appdata->close_flag)
 	<methodname>get_layoutmanager</methodname>() and
 	returns a <link linkend="borderlayoutmanager"><classname>&ns;::w::borderlayoutmanager</classname></link>;
 	and so on. An exception gets thrown if the container uses a different
-	layout mangaer.
+	layout manager.
       </para>
 
       <note>
@@ -867,7 +867,12 @@ while (!appdata->close_flag)
 	  For this reason, the application should not store, or stash away,
 	  the layout manager object, but use it only long enough to effect
 	  changes to the container, or examine its contents.
-	  The internal locks block the
+	  As a rule of thumb, the layout manager should be a variable in
+	  automatic scope.
+	</para>
+
+	<para>
+	  Layout managers' internal locks are likely to block the
 	  <link linkend="connthread">connection thread</link>, until the
 	  lock gets released, and all changes made to the container, through
 	  the layout manager, take effect. Depending on the layout manager

@@ -1028,7 +1028,7 @@ void appObj::border_enable_disable_buttons(ONLY IN_THREAD,
 	auto &save_params=*lock->save_params;
 
 	save_params.border_new_value.color=
-		x::trim(border_color->editable_combobox_get());
+		x::trim(border_color->editable_combobox_input_field()->get());
 
 	// Disable color2 if there is no color or no dashes.
 
@@ -1055,11 +1055,13 @@ void appObj::border_enable_disable_buttons(ONLY IN_THREAD,
 	}
 
 	save_params.border_new_value.from=
-		x::trim(border_from_name->editable_combobox_get());
+		x::trim(border_from_name->editable_combobox_input_field()
+			->get());
 
 	if (!save_params.border_new_value.color.empty())
 		save_params.border_new_value.color2=
-			x::trim(border_color2->editable_combobox_get());
+			x::trim(border_color2->editable_combobox_input_field()
+				->get());
 
 	for (const auto &border_size:all_border_sizes)
 	{

@@ -134,6 +134,7 @@ generator_create_ui_ret_t object_appgenerator_functionObj::create_ui(
 			f,
 			glm,
 			*value,
+			!member->is_optional,
 			member->parameter_name,
 			member->handler_name,
 		});

@@ -35,13 +35,13 @@ public:
 
 	const_element combobox_current_selection() const;
 
-	//! If this is an editable combo-box return the current input.
+	//! If this is an editable combo-box: return the input field.
 
-	std::string editable_combobox_get() const;
+	input_field editable_combobox_input_field();
 
-	//! If this is an editable combo-box return the current input.
+	//! If this is an editable combo-box: return the input field.
 
-	std::u32string editable_combobox_get_unicode() const;
+	const_input_field editable_combobox_input_field() const;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -34,15 +34,14 @@ class LIBCXX_PUBLIC focusable_containerObj;
 //! \ref element "element widget" that represents the combo-box's current value.
 //!
 //! \code
-//! std::string s=container->editable_combobox_get();
+//! #include <INSERT_LIBX_NAMESPACE/w/input_field.H>
 //!
-//! std::u32string us=container->editable_combobox_get_unicode();
+//! auto f=container->editable_combobox_input_field();
 //! \endcode
 //!
-//! This is equivalent to using get_layoutmanager() to obtain the
-//! \ref editable_comboboxlayoutmanager "editable combo-box layout manager"
-//! and then using its get() methods to retrieve that contents of the
-//! editable combobox's internal input field.
+//! Return an
+//! \ref editable_comboboxlayoutmanager "editable combo-box"'s
+//! input field (this focusable_container is an editable combo-box).
 
 typedef ref<focusable_containerObj> focusable_container;
 

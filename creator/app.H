@@ -44,6 +44,7 @@
 #include <string_view>
 #include <map>
 #include <concepts>
+#include <utility>
 #include <vector>
 
 #ifndef CREATORDIR
@@ -206,9 +207,14 @@ public:
 	//! \code
 	//!   /theme/layout[@id="xx"]|/theme/factory[@id="xx"]
 	//! \endcode
+	//!
+	//! Passing in a nullopt drops the [@id="xx"] part, constructing an
+	//! xpath for all elements.
 
-	static std::string xpath_for(const std::string_view &type,
-				     const std::string &id);
+	static std::string make_xpath(
+		const std::string_view &type,
+		const std::optional<std::reference_wrapper<const std::string>>
+		&id);
 
 	//! Call xpath_for(), then return this xpath for the given lock.
 
@@ -216,6 +222,12 @@ public:
 	get_xpath_for(const x::xml::readlock &lock,
 		      const char *type,
 		      const std::string &id);
+
+	//! Call xpath_for(), then return this xpath for the given lock.
+
+	static x::xml::xpath
+	get_xpath_for_all(const x::xml::readlock &lock,
+			  const char *type);
 
 private:
 

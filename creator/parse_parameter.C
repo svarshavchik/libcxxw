@@ -403,7 +403,8 @@ void parse_parameterObj::define_parameter(const x::xml::readlock &root,
 	}
 
 	if (parameter_type == "single_value_exists" ||
-	    parameter_type == "compiler.shortcut_value")
+	    parameter_type == "compiler.shortcut_value" ||
+	    parameter_type == "compiler.text_param_value")
 		is_optional=true;
 
 	handler_name=parameter_type;

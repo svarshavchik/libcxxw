@@ -1992,7 +1992,7 @@ void appObj::appearance_new_value_edit_combo(ONLY IN_THREAD,
 
 	appearance_new_value_save_and_hide
 		(IN_THREAD, field_name,
-		 combo->editable_combobox_get_unicode());
+		 combo->editable_combobox_input_field()->get_unicode());
 }
 
 void appObj::appearance_new_value_input(ONLY IN_THREAD,

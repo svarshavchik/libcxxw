@@ -153,6 +153,26 @@ struct checkbox_handler : setting_handler {
 
 static const checkbox_handler checkbox_handler_inst;
 
+static std::optional<parameter_value> get_inputfield(
+	const x::w::input_field &field,
+	bool alert,
+	bool required
+)
+{
+	auto str=field->get_unicode();
+
+	if (required && str.empty())
+	{
+		if (alert)
+		{
+			field->stop_message(_("Value required"));
+			field->request_focus();
+		}
+		return std::nullopt;
+	}
+	return parameter_value{str};
+}
+
 // <element> contains an opaque value, not interpreted any further.
 //
 // Input field
@@ -169,9 +189,9 @@ struct single_value_handler : setting_handler {
 				get_config()
 			);
 
-		return [field](bool alert)
+		return [field, required=info.required](bool alert)
 		{
-			return parameter_value{field->get_unicode()};
+			return get_inputfield(field, alert, required);
 		};
 	}
 
@@ -1107,7 +1127,7 @@ struct editable_combobox_handler : setting_handler {
 		return [combobox](bool alert)
 		{
 			return parameter_value{
-				combobox->editable_comboboxlayout()
+				combobox->editable_combobox_input_field()
 				->get_unicode()
 			};
 		};
@@ -1306,11 +1326,11 @@ struct to_size_t_handler : setting_handler {
 					 const auto &field,
 					 const auto &trigger)
 					{
+						if (value.empty())
+							return;
+
 						if (!parsed_value)
 							field.stop_message(
-								value.empty() ?
-								_("Value "
-								  "required") :
 								_("Invalid "
 								  "value")
 							);
@@ -1323,13 +1343,16 @@ struct to_size_t_handler : setting_handler {
 					initial_value),
 				config);
 
-		return 	[field, validated_input]
-			(bool alert) -> std::optional<parameter_value>
+		return 	[field, validated_input, required=info.required]
+			(bool alert)
 			{
+				auto ret=get_inputfield(field, alert, required);
+
+				if (!ret)
+					return ret;
+
 				if (validated_input->value())
-					return parameter_value{
-						field->get_unicode()
-					};
+					return ret;
 
 				if (alert)
 				{
@@ -1337,7 +1360,8 @@ struct to_size_t_handler : setting_handler {
 					field->request_focus();
 				}
 
-				return std::nullopt;
+				ret.reset();
+				return ret;
 			};
 	}
 };
@@ -1453,14 +1477,15 @@ struct to_mm_handler : setting_handler {
 			),
 			config);
 
-		return 	[field, validator]
+		return 	[field, validator, required=info.required]
 			(bool alert) -> std::optional<parameter_value>
 			{
 				if (validator->value())
-					return parameter_value{
-						field->get_unicode()
-					};
-
+				{
+					return get_inputfield(
+						field, alert, required
+					);
+				}
 				if (alert)
 				{
 					field->stop_message(_("Invalid input"));
@@ -1567,28 +1592,10 @@ struct to_percentage_t_handler : setting_handler {
 			info.update();
 		});
 
-		return 	[field, validated_input]
-			(bool alert) -> std::optional<parameter_value>
+		return 	[field, required=info.required]
+			(bool alert)
 			{
-				auto vv=validated_input->value();
-
-				if (!vv) return std::nullopt; // Bad input.
-
-				auto &v=*vv;
-
-				if (!v) return parameter_value{};
-
-				char buffer[40];
-
-				*std::to_chars(buffer,
-					       buffer+sizeof(buffer)-1,
-					       *v).ptr=0;
-
-				std::string_view s{buffer};
-
-				return parameter_value{
-					std::u32string{ s.begin(), s.end() }
-				};
+				return get_inputfield(field, alert, required);
 			};
 	}
 };
@@ -2850,6 +2857,7 @@ generator_create_ui_ret_t appgenerator_function_implObj::create_ui(
 		if (!p->handler)
 			throw EXCEPTION("Internal error: handler not "
 					"set for " << p->handler_name);
+
 		// Call each parameters create_ui() and capture
 		// all parameters' validators in get_values.
 		get_values->push_back(p->handler->create_ui(IN_THREAD, {
@@ -2858,6 +2866,7 @@ generator_create_ui_ret_t appgenerator_function_implObj::create_ui(
 					f,
 					glm,
 					v,
+					!p->is_optional,
 					p->parameter_name,
 					p->handler_name,
 				}));

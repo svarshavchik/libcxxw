@@ -435,12 +435,33 @@ grid_layout->generate("main-window-grid", generator, creators);</programlisting>
 
     <para>
       <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
-      second purpose is to store widgets and other object that
+      second purpose is to store widgets and other objects that
       <methodname>generate</methodname>() creates.
       <classname>&ns;::w::uielements</classname>'s
       various methods return different kinds of objects created
       by <methodname>generate</methodname>().
     </para>
+
+    <note>
+      <para>
+	These "other objects" also include layout managers and
+	factories created by
+	<methodname>generate</methodname>().
+	As explained in <xref linkend="layoutmanager" />, instantiated
+	layout manager (and factories) bring the &connection_thread; to
+	a screeching halt. <classname>&ns;::w::uielements</classname>
+	should be created in automatic scope, initialized, and used to
+	<methodname>generate</methodname>() stuff.
+      </para>
+
+      <para>
+	Afterwords if any follow-up work is needed with any generated objects:
+	they should be fetched out of the
+	<classname>&ns;::w::uilements</classname> object, and everything
+	should then go out of automatic scope and get destroyed after all
+	business gets taken care of.
+      </para>
+    </note>
   </section>
 
   <section id="uixmlwidgets">
