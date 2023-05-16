@@ -2173,20 +2173,13 @@ layout_manager->generate("dialog", generators, elements);
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
-<element id="fixed-canvas" tooltip="canvas-tooltip">
-
-    ...
-
-</element>]]>
-
-/* ----- */
-
-&ns;::w::uielements elements;
-
-layout_manager->generate("dialog", generators, elements);
-
-&ns;::w::canvas fixed_canvas=elements.get_element("fixed-canvas");
-</programlisting>
+<element id="button">
+  <button>
+    <element>
+      <label type="theme_text">Calculate</label>
+    </element>
+  </button>
+</element></programlisting>
       </informalexample>
     </blockquote>
 
@@ -2275,10 +2268,8 @@ layout_manager->generate("dialog", generators, elements);
     </para>
 
     <para>
-      These <tag class="element">element</tag>s have an optional
-      <tag class="attribute">tooltip</tag> attribute that
-      <link linkend="uixmlelementtooltip">creates a tooltip for the
-	widget</link> and an optional
+      These <tag class="element">element</tag>s have optional
+      <link linkend="uixmlelementtooltip">tooltip tags</link> and an optional
       <tag class="context">context</tag> that
       <link linkend="uixmlelementcontext">creates a context popup menu
 	for the widget</link>.
@@ -2429,40 +2420,85 @@ widgets.generate("initialize-dialog", generators);
     <blockquote>
       <informalexample>
 	<programlisting><![CDATA[
-<element id="fixed-canvas" tooltip="canvas-tooltip">
+<element id="button">
+  <button>
+    <element>
+      <label type="theme_text">Calculate</label>
+    </element>
+  </button>
 
-    ...
-
+  <tooltip_name>button_tooltip</tooltip_name>
+  <tooltip_type>grid</tooltip_type>
 </element>
 
-<tooltip type="label" id="canvas-tooltip">
-    <label type='theme_text'>Click to adjust this color channel&#10;(in the currently selected color)</label>
-</tooltip>]]></programlisting>
+// ...
+
+<layout id="button_tooltip" type="grid">
+  <append_row>
+    <name>button_tooltip_row</name>
+  </append_row>
+</layout>
+
+<factory id="button_tooltip_row" type="grid">
+  <element>
+    <label type="theme_text">Lorem ipsum dolor sit amet</label>
+  </element>
+</factory>
+]]></programlisting>
       </informalexample>
     </blockquote>
 
     <para>
-      <tag class='element'>tooltip</tag>s have unique
-      <tag class='attribute'>id</tag>s. The second and subsequent
-      <tag class='element'>tooltip</tag>s with the same
-      <tag class='attribute'>id</tag> get ignored.
-      <tag class='attribute'>type</tag> must always be
-      <quote>label</quote>, this is currently ignored but should be set for
-      future extensibility.
-    </para>
-
-    <para>
-      <tag class="element">element</tag>s'
-      <tag class='attribute'>tooltip</tag> attribute refers to a tooltip
-      with the given
-      <tag class='attribute'>id</tag>. More then one
-      <tag class='element'>element</tag> may refer to the same tooltip.
+      <tag class='element'>element</tag>s
+      and
+      <tag class='element'>container</tag>s
+      can have an optional
+      <tag class='element'>tooltip_name</tag>.
+      A <tag class='element'>layout</tag>
+      with a matching <tag class='attribute'>id</tag>
+      defines the
+      <link linkend="tooltips">tooltip</link>'s layout manager.
+      The required <tag class='element'>tooltip_type</tag> must match
+      the <tag class='element'>layout</tag>'s
+      <tag class='attribute'>type</tag>.
     </para>
 
     <note>
       <para>
-	Only &supportedthemewidget;s have a
-	<tag class='attribute'>tooltip</tag> attribute;
+	Use <tag class='element'>tooltip_config</tag> instead of
+	<tag class='element'>config</tag> to specify layout manager-specific
+	configuration settings.
+      </para>
+    </note>
+
+    <para>
+      As explained in <xref linkend="tooltips" /> the actual tooltip gets
+      created when the tooltip becomes visible. This uses
+      <function>create_custom_tooltip</function>() to install a callback
+      that executes the referenced factory to create the actual tooltip.
+      The factory execution uses an empty
+      <link linkend="uixmlwidgetsgenerate"><classname>&ns;::w::const_uigenerators</classname></link>
+      object (the one that created the original widget, to which the tooltip
+      is attached to, is just a distant memory).
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<tooltip_appearance>custom_tooltip_appearance</tooltip_appearance>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The optional <tag class='element'>tooltip_appearance</tag>
+      sets a custom tooltip
+      <link linkend="uixmlappearance">appearance object</link>.
+    </para>
+
+    <note>
+      <para>
+	Only &supportedthemewidget;s have these tooltip attributes.
 	&namedwidget;s are under the callbacks'
 	control and only the callbacks can set their tooltips.
       </para>

@@ -973,106 +973,23 @@ static void help_menu(const w::main_window &mw,
 }
 
 
-static void demo_input(const w::gridlayoutmanager &lm,
-		       const w::const_uigenerators &generators,
-		       w::uielements &factories);
-static void demo_misc(const w::gridlayoutmanager &lm,
-		      const w::const_uigenerators &generators,
-		      w::uielements &factories);
-static void item_table(const w::gridlayoutmanager &lm);
+static void demo_input(w::uielements &factories);
+static void demo_misc(w::uielements &factories);
+static void item_table(w::uielements &factories);
 
 static void create_demo(const w::booklayoutmanager &lm,
 			const w::const_uigenerators &generators,
 			w::uielements &factories)
 {
-	auto f=lm->append();
+	lm->generate("demo", generators, factories);
 
-	f->add("Lists",
-	       [&generators, &factories]
-	       (const auto &f)
-	       {
-		       f->create_container
-			       ([&generators, &factories]
-				(const auto &c)
-				{
-					c->gridlayout()->generate(
-						"demo_list", generators,
-						factories);
-				},
-				w::new_gridlayoutmanager{});
-	       });
-
-	f->add("Input",
-	       [&]
-	       (const auto &f)
-	       {
-		       f->create_container
-			       ([&]
-				(const auto &c)
-				{
-					demo_input(
-						c->get_layoutmanager(),
-						generators,
-						factories
-					);
-				},
-				w::new_gridlayoutmanager{});
-	       });
-
-	f->add("Misc",
-	       [&]
-	       (const auto &f)
-	       {
-		       f->create_container
-			       ([&]
-				(const auto &c)
-				{
-					demo_misc(c->get_layoutmanager(),
-						  generators,
-						  factories);
-				},
-				w::new_gridlayoutmanager{});
-	       });
-
-	f->add("Table",
-	       [&generators, &factories]
-	       (const auto &f)
-	       {
-		       f->create_container
-			       ([&generators, &factories]
-				(const auto &c)
-				{
-					c->gridlayout()->generate(
-						"demo_table",
-						generators,
-						factories
-					);
-				},
-				w::new_gridlayoutmanager{});
-	       });
-
-	f->add("Item List",
-	       []
-	       (const auto &f)
-	       {
-		       f->create_container
-			       ([]
-				(const auto &c)
-				{
-					item_table(c->get_layoutmanager());
-				},
-				w::new_gridlayoutmanager{});
-	       });
-
-	lm->open(0);
+	demo_input(factories);
+	demo_misc(factories);
+	item_table(factories);
 }
 
-static void demo_input(const w::gridlayoutmanager &lm,
-			const w::const_uigenerators &generators,
-			w::uielements &factories)
+static void demo_input(w::uielements &factories)
 {
-	lm->generate("demo_input", generators, factories);
-
 	w::input_field spin_field=factories.get_element("spin_field");
 
 	auto validated_input=spin_field->set_string_validator<unsigned>(
@@ -1127,59 +1044,15 @@ static void demo_input(const w::gridlayoutmanager &lm,
 		 });
 }
 
-static void demo_misc_column1(const w::gridlayoutmanager &,
-			      const w::const_uigenerators &generators,
-			      w::uielements &factories);
-
-static void demo_misc_column2(const w::gridlayoutmanager &,
-			      const w::const_uigenerators &generators,
-			      w::uielements &factories);
-
-static void demo_misc(const w::gridlayoutmanager &lm,
-		      const w::const_uigenerators &generators,
-		      w::uielements &factories)
+static void demo_misc(w::uielements &factories)
 {
-	auto columns=lm->append_row();
-	w::new_gridlayoutmanager nglm;
-
-	columns->padding(0).create_container
-		([&]
-		 (const auto &c)
-		 {
-			 demo_misc_column1(c->get_layoutmanager(),
-					   generators, factories);
-		 },
-		 nglm);
-
-	columns->padding(0).create_container
-		([&]
-		 (const auto &c)
-		 {
-			 demo_misc_column2(c->get_layoutmanager(),
-					   generators, factories);
-		 },
-		 nglm);
-}
-
-static void demo_misc_column1(const w::gridlayoutmanager &lm,
-			      const w::const_uigenerators &generators,
-			      w::uielements &factories)
-{
-	lm->generate("demo_misc_column1", generators, factories);
-
 	w::progressbar pb=factories.get_element(
 		"demo_misc_column1_row4_progressbar"
 	);
 
 	pb->update(75, 100);
 
-	auto b=lm->append_row()->colspan(2).halign(w::halign::center)
-		.create_button("Busy pointer with a tooltip");
-
-	b->create_tooltip("Click me to be busy for 5 seconds\n"
-			  "\n"
-			  "Lorem ipsum dolor sit amet,\n"
-			  "consectetur adipisicing elit.");
+	w::button b=factories.get_element("demo_misc_column1_row5_button");
 
 	b->on_activate
 		([]
@@ -1193,40 +1066,6 @@ static void demo_misc_column1(const w::gridlayoutmanager &lm,
 					    sleep(5);
 				    });
 		 });
-
-}
-
-static void demo_misc_column2(const w::gridlayoutmanager &glm,
-			      const w::const_uigenerators &generators,
-			      w::uielements &factories)
-{
-	auto f=glm->append_row();
-
-	w::new_borderlayoutmanager nblm;
-
-	auto initialize=[&]
-		(const auto &c)
-	{
-		c->borderlayout()->replace()->create_container
-			([&]
-			 (const auto &c)
-			{
-				w::gridlayoutmanager lm=c->get_layoutmanager();
-
-				auto f=lm->append_row();
-
-				f->padding(4);
-				f->create_label("This is a frame");
-			},
-			 w::new_gridlayoutmanager{});
-	};
-
-	f->create_container(initialize, nblm);
-
-	f=glm->insert_row(0);
-
-	nblm.title("Frame title");
-	f->create_container(initialize, nblm);
 }
 
 static void demo_table_create(const w::tablelayoutmanager &tlm)
@@ -1264,29 +1103,12 @@ static void demo_table_create(const w::tablelayoutmanager &tlm)
 		});
 }
 
-static void item_table(const w::gridlayoutmanager &lm)
+static void item_table(w::uielements &factories)
 {
-	w::gridfactory f=lm->append_row();
+	w::input_field field=factories.get_element("demo_item_input_field");
 
-	f->create_label("Pizza toppings:");
-
-	w::input_field_config config{30};
-
-	auto field=f->create_input_field("", config);
-
-	f=lm->append_row();
-
-	f->create_canvas();
-
-	w::new_itemlayoutmanager nilm;
-
-	auto container=f->create_focusable_container
-		([]
-		 (const auto &c)
-		 {
-		 },
-		 nilm);
-
+	w::focusable_container container=
+		factories.get_element("demo_item_list");
 
 	field->on_validate
 		([objects=make_weak_capture(container)]

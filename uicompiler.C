@@ -32,6 +32,7 @@
 #include "x/w/scrollbar.H"
 #include "x/w/theme_text.H"
 #include "x/w/tooltip.H"
+#include "x/w/tooltip_appearance.H"
 #include "x/w/button.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_config.H"
@@ -213,13 +214,15 @@ struct uicompiler::gridlayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
 			: generators_base{lock, name},
-			  new_gridlayoutmanager_vector
-			{
-				create_newgridlayoutmanager_vector(compiler,
-								   lock)
-			},
+			  new_gridlayoutmanager_vector {
+				  create_newgridlayoutmanager_vector(
+					  compiler,
+					  lock,
+					  configname)
+			  },
 			  generator_vector{compiler
 					   .lookup_gridlayoutmanager_generators
 					   (lock, name)}
@@ -241,7 +244,7 @@ struct uicompiler::gridlayoutmanager_functions {
 				 nglm);
 		}
 
-		inline new_gridlayoutmanager new_layoutmanager(
+		new_gridlayoutmanager new_layoutmanager(
 			uielements &factories) const
 		{
 			new_gridlayoutmanager nglm;
@@ -290,17 +293,30 @@ struct uicompiler::listlayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
+			: generators{compiler, lock, name, configname,
+				     configname + "/style"}
+		{
+		}
+		generators(uicompiler &compiler,
+			   const ui::parser_lock &lock,
+			   const std::string &name,
+			   std::string configname,
+			   const std::string &style_name)
 			: generators_base{lock, name},
-			  style{single_value_exists(lock, "config/style")
+			  style{single_value_exists(lock,
+						    style_name.c_str())
 				? list_style_by_name(lowercase_single_value
-						     (lock, "config/style",
+						     (lock,
+						      style_name.c_str(),
 						      "container"))
 				: highlighted_list},
-			  new_listlayoutmanager_vector
-			{
-			 create_newlistlayoutmanager_vector(compiler, lock)
-			},
+			  new_listlayoutmanager_vector{
+				  create_newlistlayoutmanager_vector(
+					  compiler, lock, configname
+				  )
+			  },
 			  generator_vector{compiler
 					   .lookup_listlayoutmanager_generators
 					   (lock, name)}
@@ -323,7 +339,7 @@ struct uicompiler::listlayoutmanager_functions {
 				 nlm);
 		}
 
-		inline new_listlayoutmanager new_layoutmanager(
+		new_listlayoutmanager new_layoutmanager(
 			uielements &factories) const
 		{
 			new_listlayoutmanager nlm{style};
@@ -373,22 +389,35 @@ struct uicompiler::tablelayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
+			: generators{compiler, lock, name, configname,
+				     configname + "/style"}
+		{
+		}
+		generators(uicompiler &compiler,
+			   const ui::parser_lock &lock,
+			   const std::string &name,
+			   std::string configname,
+			   const std::string &style_name)
 			: generators_base{lock, name},
-			  style{single_value_exists(lock, "config/style")
+			  style{single_value_exists(lock,
+						    style_name.c_str())
 				? list_style_by_name(lowercase_single_value
-						     (lock, "config/style",
+						     (lock,
+						      style_name.c_str(),
 						      "container"))
 				: highlighted_list},
-			  new_tablelayoutmanager_vector
-			{
-			 create_newtablelayoutmanager_vector(compiler, lock)
-			},
-			  generator_vector
-			{
-			 compiler.lookup_tablelayoutmanager_generators(lock,
-								       name)
-			}
+			  new_tablelayoutmanager_vector{
+				  create_newtablelayoutmanager_vector(
+					  compiler, lock, configname
+				  )
+			  },
+			  generator_vector{
+				  compiler.lookup_tablelayoutmanager_generators(
+					  lock,
+					  name)
+			  }
 		{
 		}
 
@@ -408,7 +437,7 @@ struct uicompiler::tablelayoutmanager_functions {
 				 ntlm);
 		}
 
-		inline new_tablelayoutmanager
+		new_tablelayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
 			new_tablelayoutmanager ntlm
@@ -468,17 +497,18 @@ struct uicompiler::panelayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
 			: generators_base{lock, name},
-			  new_panelayoutmanager_vector
-			{
-			 create_newpanelayoutmanager_vector(compiler, lock)
-			},
-			  generator_vector
-			{
-			 compiler.lookup_panelayoutmanager_generators(lock,
-								      name)
-			}
+			  new_panelayoutmanager_vector{
+				  create_newpanelayoutmanager_vector(
+					  compiler, lock, configname)
+			  },
+			  generator_vector{
+				  compiler.lookup_panelayoutmanager_generators(
+					  lock,
+					  name)
+			  }
 		{
 		}
 
@@ -498,7 +528,7 @@ struct uicompiler::panelayoutmanager_functions {
 				 nplm);
 		}
 
-		inline new_panelayoutmanager
+		new_panelayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
 			new_panelayoutmanager nplm{ {} };
@@ -548,17 +578,18 @@ struct uicompiler::itemlayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
 			: generators_base{lock, name},
-			  new_itemlayoutmanager_vector
-			{
-			 create_newitemlayoutmanager_vector(compiler, lock)
-			},
-			  generator_vector
-			{
-			 compiler.lookup_itemlayoutmanager_generators(lock,
-								      name)
-			}
+			  new_itemlayoutmanager_vector{
+				  create_newitemlayoutmanager_vector(
+					  compiler, lock, configname)
+			  },
+			  generator_vector{
+				  compiler.lookup_itemlayoutmanager_generators(
+					  lock,
+					  name)
+			  }
 		{
 		}
 
@@ -578,7 +609,7 @@ struct uicompiler::itemlayoutmanager_functions {
 				 nilm);
 		}
 
-		inline new_itemlayoutmanager
+		new_itemlayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
 			new_itemlayoutmanager nilm;
@@ -626,17 +657,18 @@ struct uicompiler::pagelayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
 			: generators_base{lock, name},
-			  new_pagelayoutmanager_vector
-			{
-			 create_newpagelayoutmanager_vector(compiler, lock)
-			},
-			  generator_vector
-			{
-			 compiler.lookup_pagelayoutmanager_generators(lock,
-								      name)
-			}
+			  new_pagelayoutmanager_vector{
+				  create_newpagelayoutmanager_vector(
+					  compiler, lock, configname)
+			  },
+			  generator_vector{
+				  compiler.lookup_pagelayoutmanager_generators(
+					  lock,
+					  name)
+			  }
 		{
 		}
 
@@ -655,7 +687,7 @@ struct uicompiler::pagelayoutmanager_functions {
 				 nplm);
 		}
 
-		inline new_pagelayoutmanager
+		new_pagelayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
 			new_pagelayoutmanager nplm;
@@ -703,17 +735,18 @@ struct uicompiler::toolboxlayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
 			: generators_base{lock, name},
-			  new_toolboxlayoutmanager_vector
-			{
-			 create_newtoolboxlayoutmanager_vector(compiler, lock)
-			},
-			  generator_vector
-			{
-			 compiler.lookup_toolboxlayoutmanager_generators(lock,
-								      name)
-			}
+			  new_toolboxlayoutmanager_vector{
+				  create_newtoolboxlayoutmanager_vector(
+					  compiler, lock, configname)
+			  },
+			  generator_vector{
+				  compiler.lookup_toolboxlayoutmanager_generators(
+					  lock,
+					  name)
+			  }
 		{
 		}
 
@@ -733,7 +766,7 @@ struct uicompiler::toolboxlayoutmanager_functions {
 				 ntlm);
 		}
 
-		inline new_toolboxlayoutmanager
+		new_toolboxlayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
 			new_toolboxlayoutmanager ntlm;
@@ -784,15 +817,18 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
 			: generators_base{lock, name},
-			  new_standard_comboboxlayoutmanager_vector
-			{
-			 create_newstandard_comboboxlayoutmanager_vector(compiler, lock)
-			},
-			  generator_vector{compiler
-					   .lookup_standard_comboboxlayoutmanager_generators
-					   (lock, name)}
+			  new_standard_comboboxlayoutmanager_vector{
+				  create_newstandard_comboboxlayoutmanager_vector(
+					  compiler, lock, configname
+				  )
+			  },
+			  generator_vector{
+				  compiler.lookup_standard_comboboxlayoutmanager_generators(
+					  lock, name)
+			  }
 		{
 		}
 
@@ -812,7 +848,7 @@ struct uicompiler::standard_comboboxlayoutmanager_functions {
 				 nlm);
 		}
 
-		inline new_standard_comboboxlayoutmanager
+		new_standard_comboboxlayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
 			new_standard_comboboxlayoutmanager nlm;
@@ -859,15 +895,17 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
 			: generators_base{lock, name},
-			  new_editable_comboboxlayoutmanager_vector
-			{
-			 create_neweditable_comboboxlayoutmanager_vector(compiler, lock)
-			},
-			  generator_vector{compiler
-					   .lookup_editable_comboboxlayoutmanager_generators
-					   (lock, name)}
+			  new_editable_comboboxlayoutmanager_vector{
+				  create_neweditable_comboboxlayoutmanager_vector(
+					  compiler, lock, configname)
+			  },
+			  generator_vector{
+				  compiler.lookup_editable_comboboxlayoutmanager_generators(
+					  lock, name
+				  )}
 		{
 		}
 
@@ -876,7 +914,7 @@ struct uicompiler::editable_comboboxlayoutmanager_functions {
 						     uielements &factories)
 			const;
 
-		inline new_editable_comboboxlayoutmanager
+		new_editable_comboboxlayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
 			new_editable_comboboxlayoutmanager nlm;
@@ -998,15 +1036,19 @@ struct uicompiler::booklayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
 			: generators_base{lock, name},
-			  new_booklayoutmanager_vector
-			{
-			 create_newbooklayoutmanager_vector(compiler, lock)
-			},
-			  generator_vector{compiler
-					   .lookup_booklayoutmanager_generators
-					   (lock, name)}
+			  new_booklayoutmanager_vector{
+				  create_newbooklayoutmanager_vector(
+					  compiler, lock, configname
+				  )
+			  },
+			  generator_vector{
+				  compiler.lookup_booklayoutmanager_generators(
+					  lock, name
+				  )
+			  }
 		{
 		}
 
@@ -1026,7 +1068,7 @@ struct uicompiler::booklayoutmanager_functions {
 				 nblm);
 		}
 
-		inline new_booklayoutmanager
+		new_booklayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
 			new_booklayoutmanager nblm;
@@ -1070,15 +1112,18 @@ struct uicompiler::borderlayoutmanager_functions {
 
 		generators(uicompiler &compiler,
 			   const ui::parser_lock &lock,
-			   const std::string &name)
+			   const std::string &name,
+			   std::string configname)
 			: generators_base{lock, name},
-			  new_borderlayoutmanager_vector
-			{
-			 create_newborderlayoutmanager_vector(compiler, lock)
-			},
-			  generator_vector{compiler
-					   .lookup_borderlayoutmanager_generators
-					   (lock, name)}
+			  new_borderlayoutmanager_vector{
+				  create_newborderlayoutmanager_vector(
+					  compiler, lock, configname
+				  )
+			  },
+			  generator_vector{
+				  compiler.lookup_borderlayoutmanager_generators(
+					  lock, name)
+			  }
 		{
 		}
 
@@ -1098,7 +1143,7 @@ struct uicompiler::borderlayoutmanager_functions {
 				 nblm);
 		}
 
-		inline new_borderlayoutmanager
+		new_borderlayoutmanager
 		new_layoutmanager(uielements &factories) const
 		{
 			new_borderlayoutmanager nblm;
@@ -1161,12 +1206,10 @@ struct uicompiler::container_generators_t
 element uicompiler::create_progressbar(const factory &generic_factory,
 				       const std::string &name,
 				       const container_generators_t
-				       &generators_arg,
+				       &generators,
 				       uielements &elements,
 				       const progressbar_config &config)
 {
-	const container_generators_t::variant_t &generators=generators_arg;
-
 	return std::visit
 		([&]
 		 (const auto &generators) -> progressbar
@@ -1348,6 +1391,148 @@ uicompiler::uncompiled_elements_t
 	return iter;
 }
 
+struct uicompiler::tooltip_infoObj_impl : uicompiler::tooltip_infoObj {
+
+	const uicompiler::container_generators_t generators;
+	const const_tooltip_appearance appearance;
+	tooltip_infoObj_impl(const std::string &tooltip_type,
+			     const std::string &tooltip_name,
+			     uicompiler &compiler,
+			     const ui::parser_lock &lock,
+			     const const_tooltip_appearance &appearance);
+
+	void create_custom_tooltip(const tooltip_factory &f) const override;
+};
+
+uicompiler::tooltip_infoObj_impl::tooltip_infoObj_impl(
+	const std::string &tooltip_type,
+	const std::string &tooltip_name,
+	uicompiler &compiler,
+	const ui::parser_lock &lock,
+	const const_tooltip_appearance &appearance)
+	: generators{
+			compiler.lookup_container_generators(
+				tooltip_type,
+				lock,
+				tooltip_name,
+				compiler.allowthemerefs,
+				"tooltip_type",
+				"tooltip_config"
+			)
+		}, appearance{appearance}
+{
+}
+
+void uicompiler::tooltip_infoObj_impl::create_custom_tooltip(
+	const tooltip_factory &f
+) const
+{
+	uielements elements;
+
+	std::visit([&, this]
+		   (const auto &g)
+	{
+		typedef decltype(g.new_layoutmanager(
+					 std::declval<uielements &>())
+		) new_layoutmanager_t;
+
+		if constexpr (std::is_base_of_v<new_layoutmanager,
+			      new_layoutmanager_t>)
+		{
+			auto nlm=g.new_layoutmanager(elements);
+
+			f([&, this]
+			  (const auto &new_container)
+			{
+				g.generate(new_container, elements);
+			}, nlm, appearance);
+		}
+	}, generators);
+}
+
+const_ptr<uicompiler::tooltip_infoObj>
+uicompiler::compiler_functions::get_optional_tooltip(
+	uicompiler &compiler,
+	const ui::parser_lock &lock
+)
+{
+	auto tooltip=lock->clone();
+	auto xpath=tooltip->get_xpath("tooltip_name");
+
+	if (xpath->count() == 0)
+		return {};
+
+	xpath->to_node();
+
+	auto tooltip_name=tooltip->get_text();
+
+	tooltip=lock->clone();
+	tooltip->get_xpath("tooltip_type")->to_node();
+
+	auto tooltip_type=tooltip->get_text();
+
+	tooltip=lock->clone();
+	xpath = tooltip->get_xpath("tooltip_appearance");
+
+	const_tooltip_appearance appearance=
+		tooltip_appearance::base::tooltip_theme();
+
+	if (xpath->count())
+	{
+		xpath->to_node();
+
+		appearance=compiler.get_tooltip_appearance_base(
+			appearance,
+			tooltip->get_text()
+		);
+	}
+
+	auto info=ref<tooltip_infoObj_impl>::create(
+		tooltip_type,
+		tooltip_name,
+		compiler,
+		lock,
+		appearance
+	);
+
+	if (!std::visit([&]
+		       (const auto &g)
+	{
+		typedef decltype(g.new_layoutmanager(
+					 std::declval<uielements &>())
+		) new_layoutmanager_t;
+
+		return std::is_base_of_v<new_layoutmanager,
+			new_layoutmanager_t>;
+	}, info->generators))
+	{
+		throw EXCEPTION(
+			gettextmsg(
+				_("Tooltip %1% cannot be type=\"%2%\""),
+				tooltip_name, tooltip_type));
+	}
+
+	return info;
+}
+
+void uicompiler::compiler_functions::install_tooltip(
+	const element &e,
+	uielements &elements,
+	const const_ptr<tooltip_infoObj> &optional_tooltip
+)
+{
+	if (!optional_tooltip)
+		return;
+
+	e->create_custom_tooltip(
+		[optional_tooltip=const_ref<tooltip_infoObj>{optional_tooltip}]
+		(ONLY IN_THREAD, const tooltip_factory &f)
+		{
+			optional_tooltip->create_custom_tooltip(f);
+		});
+}
+
+#if 0
 functionptr<void (THREAD_CALLBACK, const tooltip_factory &)>
 uicompiler::compiler_functions::get_optional_tooltip(uicompiler &compiler,
 						     const ui::parser_lock
@@ -1383,7 +1568,7 @@ void uicompiler::compiler_functions
 
 	e->create_custom_tooltip(optional_tooltip);
 }
-
+#endif
 std::optional<uicompiler::compiler_functions::contextpopup_t>
 uicompiler::compiler_functions::get_optional_contextpopup
 (uicompiler &compiler, const ui::parser_lock &lock)
@@ -1493,7 +1678,8 @@ uicompiler::lookup_container_generators(const std::string &type,
 					const ui::parser_lock &lock,
 					const std::string &name,
 					bool,
-					const char *tag)
+					const char *tag,
+					const char *config_tag)
 {
 	auto functions=get_layoutmanager(type);
 
@@ -1507,7 +1693,7 @@ uicompiler::lookup_container_generators(const std::string &type,
 
 				  return container_generators_t{
 					  std::in_place_type_t<generators>{},
-					  *this, lock, name
+					  *this, lock, name, config_tag
 				  };
 			  }, functions);
 }
@@ -1517,15 +1703,12 @@ container uicompiler::create_container(const factory &f,
 				       const std::string &name,
 				       const container_generators_t &generators)
 {
-	// std::visit needs a variant to work with.
-	const container_generators_t::variant_t &v=generators;
-
 	auto c=std::visit([&]
 			  (const auto &generators) -> container
 			  {
 				  return generators
 					  .create_container(f, name, factories);
-			  }, v);
+			  }, generators);
 
 	factories.new_elements.insert_or_assign(name, c);
 

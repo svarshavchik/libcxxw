@@ -768,11 +768,13 @@ public:
 	//! Validate container <type>, and look up name's generators.
 
 	container_generators_t
-	lookup_container_generators(const std::string &name,
+	lookup_container_generators(const std::string &type,
 				    const ui::parser_lock &lock,
-				    const std::string &type,
+				    const std::string &name,
 				    bool,
-				    const char *tag);
+				    const char *tag,
+
+				    const char *config_tag="config");
 private:
 	//! Parsed "horizontal" or "vertical" scrollbar value.
 	enum scrollbar_type {horizontal, vertical};
@@ -950,19 +952,29 @@ public:
 		return ret;
 	}
 private:
+
+	struct LIBCXX_HIDDEN tooltip_infoObj : virtual public x::obj {
+
+		virtual void create_custom_tooltip(const tooltip_factory &f)
+			const=0;
+	};
+
+	struct LIBCXX_HIDDEN tooltip_infoObj_impl;
+
 	struct generate_info;
 
 	struct compiler_functions {
-		static functionptr<void (THREAD_CALLBACK,
-					 const tooltip_factory &)>
-		get_optional_tooltip(uicompiler &compiler,
-				     const ui::parser_lock &lock);
+		static const_ptr<tooltip_infoObj>
+		get_optional_tooltip(
+			uicompiler &compiler,
+			const ui::parser_lock &lock
+		);
 
-		static void install_tooltip(const element &e,
-					    const functionptr
-					    <void (THREAD_CALLBACK,
-						   const tooltip_factory &)>
-					    &optional_tooltip);
+		static void install_tooltip(
+			const element &e,
+			uielements &elements,
+			const const_ptr<tooltip_infoObj> &optional_tooltip
+		);
 
 		typedef std::tuple<listlayoutmanager_generator,
 				   std::string,

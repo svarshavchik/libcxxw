@@ -1,5 +1,199 @@
 <?xml version="1.0"?>
 <theme version="1">
+  <layout id="demo_item_list" type="item"/>
+  <factory id="demo_item_row2" type="grid">
+    <element>
+      <canvas/>
+    </element>
+    <container id="demo_item_list">
+      <name>demo_item_list</name>
+      <type>item</type>
+    </container>
+  </factory>
+  <factory id="demo_item_row1" type="grid">
+    <element>
+      <label type="theme_text">Pizza Toppings:</label>
+    </element>
+    <element id="demo_item_input_field">
+      <config>
+        <columns>30</columns>
+      </config>
+      <input_field/>
+    </element>
+  </factory>
+  <layout id="demo_item" type="grid">
+    <append_row>
+      <name>demo_item_row1</name>
+    </append_row>
+    <append_row>
+      <name>demo_item_row2</name>
+    </append_row>
+  </layout>
+  <factory id="demo_misc_row0" type="grid">
+    <container>
+      <name>demo_misc_column1</name>
+      <type>grid</type>
+    </container>
+    <container>
+      <name>demo_misc_column2</name>
+      <type>grid</type>
+    </container>
+  </factory>
+  <layout id="demo_misc" type="grid">
+    <append_row>
+      <name>demo_misc_row0</name>
+    </append_row>
+  </layout>
+  <factory id="demo_pages" type="bookpage">
+    <add>
+      <tab>
+        <element>
+          <label type="theme_text">Lists</label>
+        </element>
+      </tab>
+      <page>
+        <container>
+          <name>demo_list</name>
+          <type>grid</type>
+        </container>
+      </page>
+    </add>
+    <add>
+      <tab>
+        <element>
+          <label type="theme_text">Input</label>
+        </element>
+      </tab>
+      <page>
+        <container>
+          <name>demo_input</name>
+          <type>grid</type>
+        </container>
+      </page>
+    </add>
+    <add>
+      <tab>
+        <element>
+          <label type="theme_text">Misc</label>
+        </element>
+      </tab>
+      <page>
+        <container>
+          <name>demo_misc</name>
+          <type>grid</type>
+        </container>
+      </page>
+    </add>
+    <add>
+      <tab>
+        <element>
+          <label type="theme_text">Table</label>
+        </element>
+      </tab>
+      <page>
+        <container>
+          <name>demo_table</name>
+          <type>grid</type>
+        </container>
+      </page>
+    </add>
+    <add>
+      <tab>
+        <element>
+          <label type="theme_text">Item List</label>
+        </element>
+      </tab>
+      <page>
+        <container>
+          <name>demo_item</name>
+          <type>grid</type>
+        </container>
+      </page>
+    </add>
+  </factory>
+  <layout id="demo" type="book">
+    <append_pages>
+      <name>demo_pages</name>
+    </append_pages>
+    <open>
+      <page>0</page>
+    </open>
+  </layout>
+  <factory id="demo_misc_column2_row0" type="grid">
+    <container>
+      <name>demo_misc_column2_frame</name>
+      <type>border</type>
+      <config>
+        <title type="theme_text">Frame title</title>
+      </config>
+    </container>
+  </factory>
+  <factory id="demo_misc_column2_frame_contents_grid_cell" type="grid">
+    <padding>
+      <side>all</side>
+      <padding>misc_frame_padding</padding>
+    </padding>
+    <element>
+      <label type="theme_text">This is a frame</label>
+    </element>
+  </factory>
+  <layout id="demo_misc_column2_frame_contents_grid" type="grid">
+    <append_row>
+      <name>demo_misc_column2_frame_contents_grid_cell</name>
+    </append_row>
+  </layout>
+  <factory id="demo_misc_column2_frame_contents" type="factory">
+    <container>
+      <name>demo_misc_column2_frame_contents_grid</name>
+      <type>grid</type>
+    </container>
+  </factory>
+  <layout id="demo_misc_column2_frame" type="border">
+    <replace>demo_misc_column2_frame_contents</replace>
+  </layout>
+  <factory id="demo_misc_column2_row1" type="grid">
+    <container>
+      <name>demo_misc_column2_frame</name>
+      <type>border</type>
+    </container>
+  </factory>
+  <layout id="demo_misc_column2" type="grid">
+    <append_row>
+      <name>demo_misc_column2_row1</name>
+    </append_row>
+    <insert_row>
+      <row>0</row>
+      <name>demo_misc_column2_row0</name>
+    </insert_row>
+  </layout>
+  <factory id="demo_misc_column1_row5_button_tooltip_row" type="grid">
+    <element>
+      <label type="theme_text">Click me to be busy for 5 seconds
+
+Lorem ipsum dolor sit amet,
+consectetur adipisicing elit.</label>
+    </element>
+  </factory>
+  <layout id="demo_misc_column1_row5_button_tooltip" type="grid">
+    <append_row>
+      <name>demo_misc_column1_row5_button_tooltip_row</name>
+    </append_row>
+  </layout>
+  <factory id="demo_misc_column1_row5" type="grid">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <halign>center</halign>
+    <element id="demo_misc_column1_row5_button">
+      <button>
+        <element>
+          <label type="theme_text">Busy pointer with a tooltip</label>
+        </element>
+      </button>
+      <tooltip_name>demo_misc_column1_row5_button_tooltip</tooltip_name>
+      <tooltip_type>grid</tooltip_type>
+    </element>
+  </factory>
   <factory id="demo_misc_column1_row4_progressbar_contents" type="grid">
     <halign>center</halign>
     <element>
@@ -83,6 +277,9 @@
     </append_row>
     <append_row>
       <name>demo_misc_column1_row4</name>
+    </append_row>
+    <append_row>
+      <name>demo_misc_column1_row5</name>
     </append_row>
   </layout>
   <factory id="demo_input_3" type="grid">
@@ -289,5 +486,6 @@
       <name>demo_table_row</name>
     </append_row>
   </layout>
+  <dim id="misc_frame_padding">4</dim>
   <dim id="demo_table_width">150</dim>
 </theme>

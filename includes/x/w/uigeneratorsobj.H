@@ -11,7 +11,6 @@
 #include <x/w/border_infomm.H>
 #include <x/w/font_arg.H>
 #include <x/w/all_appearancesfwd.H>
-#include <x/w/tooltipfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/functionalrefptrobj.H>
 #include <x/obj.H>
@@ -190,12 +189,6 @@ public:
 	std::unordered_map<std::string,
 			   const_vector<toolboxfactory_generator>
 			   > toolboxfactory_generators;
-
-	//! Tooltip generators
-	std::unordered_map<std::string,
-			   functionref<void (THREAD_CALLBACK,
-					     const tooltip_factory &)>
-			   > tooltip_generators;
 
 	//! Generic elements generators
 

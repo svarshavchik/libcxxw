@@ -9,8 +9,11 @@
 #include "x/w/gridfactoryfwd.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "creator/parameter_value.H"
+#include "creator/setting_handlerfwd.H"
 
 #include <string>
+#include <unordered_map>
+#include <string_view>
 
 //! Parameters to a setting_handler's create_ui() call.
 
@@ -52,6 +55,16 @@ struct create_ui_info {
 	// The "lookup_factory" handler, for example, uses this to store the
 	// name of the factory. Elsewhere this is used in error messages.
 	const std::string &handler_name;
+
+	//! Already completed return values from create_ui().
+
+	//! As the entered values are retrieved, for each parameter, they
+	//! get placed here, so that other parameter validators may use
+	//! the already-created ones.
+
+	std::unordered_map<std::string_view,
+			   setting_create_ui_ret_t
+			   > &values_map;
 };
 
 #endif

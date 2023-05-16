@@ -465,7 +465,7 @@ The actual parameter we generate is
 		    <xsl:text>&#10;                elements.new_elements.insert_or_assign(id, new_element);&#10;</xsl:text>
 		    </xsl:if>
 		    <xsl:if test="new_element or new_container">
-		    <xsl:text>                if (optional_elements)&#10;                    elements.generate_factory(*optional_elements);&#10;                if (optional_contextpopup)&#10;                    compiler_functions::install_contextpopup(elements, new_element, *optional_contextpopup);&#10;                compiler_functions::install_tooltip(new_element, optional_tooltip);&#10;</xsl:text>
+		    <xsl:text>                if (optional_elements)&#10;                    elements.generate_factory(*optional_elements);&#10;                if (optional_contextpopup)&#10;                    compiler_functions::install_contextpopup(elements, new_element, *optional_contextpopup);&#10;                compiler_functions::install_tooltip(new_element, elements, optional_tooltip);&#10;</xsl:text>
 		  </xsl:if>
 
 		  <xsl:text>            };
@@ -580,11 +580,12 @@ uicompiler::<xsl:value-of select="name" />_parseconfig(const ui::parser_lock &am
 	  <xsl:value-of select="config" />
 	  <xsl:text>manager_generator&gt;
 create_new</xsl:text><xsl:value-of select="name" /><xsl:text>manager_vector(uicompiler &amp;compiler,
-				   const ui::parser_lock &amp;orig_lock)
+				   const ui::parser_lock &amp;orig_lock,
+                                   const std::string &amp;configname)
 {
 	auto lock=orig_lock->clone();
 
-	auto xpath=lock->get_xpath("config");
+	auto xpath=lock->get_xpath(configname);
 
 	if (xpath->count() == 0) // None, return an empty vector.
 		return const_vector&lt;</xsl:text>

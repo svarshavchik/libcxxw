@@ -847,35 +847,6 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 
 	///////////////////////////////////////////////////////////////////////
 	//
-	// Compile all tooltips
-
-	xpath=lock->get_xpath("/theme/tooltip");
-
-	count=xpath->count();
-
-	for (size_t i=0; i<count; ++i)
-	{
-		xpath->to_node(i+1);
-
-		auto id=lock->get_any_attribute("id");
-
-		if (id.empty())
-			throw EXCEPTION(_("Missing <tooltip> \"id\""));
-
-		if (generators->tooltip_generators.find(id) !=
-		    generators->tooltip_generators.end())
-			continue;
-
-		auto tooltip_info=get_label_parameters(lock);
-
-		const auto &[text, config]=tooltip_info;
-
-		generators->tooltip_generators.insert_or_assign
-			(id, create_label_tooltip(text, config));
-	}
-
-	///////////////////////////////////////////////////////////////////////
-	//
 	// Build the list of uncompiled_elements, by id.
 
 	xpath=lock->get_xpath("/theme/layout | /theme/factory");

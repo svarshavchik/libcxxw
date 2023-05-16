@@ -45,6 +45,7 @@
 #include <x/weakcapture.H>
 #include <x/messages.H>
 #include <x/strtok.H>
+#include <x/weakcapture.H>
 #include <cstring>
 #include <string>
 #include <string_view>
@@ -119,10 +120,13 @@ struct checkbox_handler : setting_handler {
 			field->set_value(1);
 		}
 
-		return [field, name=info.parameter_name](bool alert)
-		{
-			return parameter_value{field->get_value()
-				? U"1":U""};
+		return setting_create_ui_ret_t{
+			[field, name=info.parameter_name](bool alert)
+			{
+				return parameter_value{field->get_value()
+						       ? U"1":U""};
+			},
+			field,
 		};
 	}
 
@@ -188,9 +192,12 @@ struct single_value_handler : setting_handler {
 				get_config()
 			);
 
-		return [field, required=info.required](bool alert)
-		{
-			return get_inputfield(field, alert, required);
+		return setting_create_ui_ret_t{
+			[field, required=info.required](bool alert)
+			{
+				return get_inputfield(field, alert, required);
+			},
+			field,
 		};
 	}
 
@@ -357,9 +364,10 @@ struct standard_combobox_handler : setting_handler {
 		// The validator reads the combo-box's selected value
 		// and uses it.
 
-		return [combobox=x::make_weak_capture(combobox),
-			values=std::move(values),
-			required=info.required]
+		return setting_create_ui_ret_t{
+			[combobox=x::make_weak_capture(combobox),
+			 values=std::move(values),
+			 required=info.required]
 			(bool alert) -> std::optional<parameter_value>
 			{
 				auto got=combobox.get();
@@ -404,7 +412,9 @@ struct standard_combobox_handler : setting_handler {
 					combobox->request_focus();
 				}
 				return std::nullopt;
-			};
+			},
+			combobox
+		};
 	}
 
 	virtual std::vector<x::w::list_item_param>
@@ -815,8 +825,9 @@ struct layoutmanager_type_handler : standard_combobox_handler {
 
 		// Is there a <config> here?
 
-		auto config_iter=unparsed_additional_parameters
-			.find("config");
+		auto config_iter=unparsed_additional_parameters.find(
+			config_name()
+		);
 
 		appinvoke([&]
 			  (appObj *me)
@@ -855,6 +866,7 @@ struct layoutmanager_type_handler : standard_combobox_handler {
 			   appgenerator_save &info) const override;
 
 	virtual const char *container_name() const=0;
+	virtual const char *config_name() const=0;
 };
 
 struct layoutmanager_type_handler_name : layoutmanager_type_handler {
@@ -863,6 +875,10 @@ struct layoutmanager_type_handler_name : layoutmanager_type_handler {
 	{
 		return "name";
 	}
+	const char *config_name() const override
+	{
+		return "config";
+	}
 };
 
 struct layoutmanager_type_handler_progressbar : layoutmanager_type_handler {
@@ -870,6 +886,10 @@ struct layoutmanager_type_handler_progressbar : layoutmanager_type_handler {
 	const char *container_name() const override
 	{
 		return "progressbar";
+	}
+	const char *config_name() const override
+	{
+		return "config";
 	}
 };
 
@@ -922,7 +942,8 @@ layoutmanager_type_handler::create_ui(ONLY IN_THREAD,
 	// gets selected.
 
 	type_lm->on_selection_changed
-		([ret, config_container, current_config_info,
+		([validator=ret.validator, config_container,
+		  current_config_info,
 		  wmw=info.mw.weaken(),
 		  type_combo=x::weakptr<x::w::focusable_containerptr>{type_combo}]
 		 (ONLY IN_THREAD,
@@ -947,7 +968,7 @@ layoutmanager_type_handler::create_ui(ONLY IN_THREAD,
 			if (!status_info.list_item_status_info.selected)
 				return;
 
-			auto value=ret(false);
+			auto value=validator(false);
 
 			// Before figuring out what to do with the new
 			// layout manager selection: if an existing
@@ -1026,21 +1047,24 @@ layoutmanager_type_handler::create_ui(ONLY IN_THREAD,
 			config_container->gridlayout()->remove();
 		});
 
-	return [current_config_info, ret]
+	return setting_create_ui_ret_t{
+		[current_config_info, validator=ret.validator]
 		(bool alert)
-	{
-		auto value=ret(alert);
+		{
+			auto value=validator(alert);
 
-		// nullopt value: error reported.
-		//
-		// empty value: this one was optional, valid result.
+			// nullopt value: error reported.
+			//
+			// empty value: this one was optional, valid result.
 
-		if (!value || value->string_value.empty())
+			if (!value || value->string_value.empty())
+				return value;
+
+			current_config_info->save_config_container(value);
+
 			return value;
-
-		current_config_info->save_config_container(value);
-
-		return value;
+		},
+		ret.setting_focusable,
 	};
 }
 
@@ -1106,7 +1130,8 @@ void layoutmanager_type_handler::saved_element(
 	if (parsed_functions.empty())
 		return;
 
-	auto config=save_info.lock->create_next_sibling()->element({"config"});
+	auto config=save_info.lock->create_next_sibling()->element({
+			config_name()});
 
 	for (const auto &f:parsed_functions)
 		f->save(config, info);
@@ -1161,12 +1186,15 @@ struct editable_combobox_handler : setting_handler {
 		// The validator reads the combo-box's selected value
 		// and uses it.
 
-		return [combobox](bool alert)
-		{
-			return parameter_value{
-				combobox->editable_combobox_input_field()
-				->get_unicode()
-			};
+		return setting_create_ui_ret_t{
+			[combobox](bool alert)
+			{
+				return parameter_value{
+					combobox->editable_combobox_input_field(
+					)->get_unicode()
+				};
+			},
+			combobox
 		};
 	}
 
@@ -1241,8 +1269,153 @@ struct appearance_handler : appearance_or_base_handler {
 	}
 };
 
-
 static const appearance_handler appearance_handler_inst;
+
+/*
+  Two parameters that are either both required, or both unspecified.
+
+  Both parameters have the required flag turned off.
+
+  This creates a wrapper around the first create_ui() return value that
+  verifies that this UI return value is an empty string, and the other one
+  must be too; or both are non-empty.
+
+  create_ui_dependent() gets:
+
+  - the return value of the wrapped create_ui()
+
+  - the create_ui_info parameter that was passed into the wrapped create_ui()
+
+  - the name of the other UI parameter.
+
+  create_ui_dependent() returns a setting_create_ui_ret_t that calls the
+  wrapped create_ui(), and makes the additional checks.
+
+*/
+
+
+static setting_create_ui_ret_t create_ui_dependent(
+	setting_create_ui_ret_t this_ret,
+	const create_ui_info &info,
+	const char *dependent_name,
+
+	// If exclusive_or is set the behavior is as described above.
+	//
+	// If not set, this UI parameter can be omitted if the other one
+	// is set.
+
+	bool exclusive_or)
+{
+	// The other UI parameter must be created already.
+
+	auto iter=info.values_map.find(dependent_name);
+
+	if (iter == info.values_map.end() ||
+	    !iter->second.setting_focusable)
+		throw EXCEPTION("Internal error: did not find the UI "
+				"for " + std::string{dependent_name});
+
+	return setting_create_ui_ret_t{
+		[this_validator=this_ret.validator,
+		 other_validator=iter->second.validator,
+
+		 exclusive_or,
+
+		 // We must capture the actual focusables weakly. This gets
+		 // installed as a callback to this widget, and cannot capture
+		 // the widget itself strongly because this will create a
+		 // circular reference.
+
+		 weak=x::make_weak_capture(
+			 this_ret.setting_focusable,
+			 iter->second.setting_focusable
+		 )]
+		(bool alert) {
+
+			// Our validation failed, we're done.
+
+			auto ret=this_validator(alert);
+
+			if (!ret) return ret;
+
+			// Recover strong references to this_focusable
+			// and the other_focusable.
+
+			auto got = weak.get();
+
+			if (!got)
+				return ret;
+
+			auto &[this_focusable, other_focusable] = *got;
+
+			// Call the other validator again.
+
+			auto other_ret=other_validator(alert);
+
+			if (!other_ret)
+			{
+				ret.reset();
+				return ret;
+			}
+
+			// Either both are blank, or neither one of
+			// us is blank.
+
+			bool this_empty=ret->string_value.empty();
+			bool other_empty=other_ret->string_value.empty();
+
+			if (exclusive_or ? this_empty != other_empty
+			    : !this_empty && other_empty)
+			{
+				if (alert)
+				{
+					// Move the input focus to whichever
+					// one is empty.
+
+					(ret->string_value.empty()
+					 ? this_focusable
+					 : other_focusable)
+						->request_focus();
+
+					x::w::element{
+						this_focusable
+					}->stop_message(
+						_("Value required")
+					);
+				}
+				ret.reset();
+			}
+
+			return ret;
+		},
+		this_ret.setting_focusable,
+	};
+}
+
+/*
+  A new element's tooltip appearance object for its tooltip
+
+  Override save() to store the tooltip appearance object in the
+  tooltip_appearance attribute.
+*/
+
+struct tooltip_appearance_handler : appearance_or_base_handler {
+
+	// The tooltip name is required if the tooltip appearance is set.
+
+	setting_create_ui_ret_t create_ui(ONLY IN_THREAD,
+					  const create_ui_info &info)
+		const override
+	{
+		return create_ui_dependent(
+			appearance_or_base_handler::create_ui(
+				IN_THREAD, info
+			), info, "tooltip_name", false);
+	}
+};
+
+static const tooltip_appearance_handler tooltip_appearance_handler_inst;
+
 
 // A single_value with a color
 
@@ -1380,7 +1553,8 @@ struct to_size_t_handler : setting_handler {
 					initial_value),
 				config);
 
-		return 	[field, validated_input, required=info.required]
+		return 	setting_create_ui_ret_t{
+			[field, validated_input, required=info.required]
 			(bool alert)
 			{
 				auto ret=get_inputfield(field, alert, required);
@@ -1399,7 +1573,9 @@ struct to_size_t_handler : setting_handler {
 
 				ret.reset();
 				return ret;
-			};
+			},
+			field
+		};
 	}
 };
 
@@ -1514,7 +1690,8 @@ struct to_mm_handler : setting_handler {
 			),
 			config);
 
-		return 	[field, validator, required=info.required]
+		return 	setting_create_ui_ret_t{
+			[field, validator, required=info.required]
 			(bool alert) -> std::optional<parameter_value>
 			{
 				if (validator->value())
@@ -1529,7 +1706,9 @@ struct to_mm_handler : setting_handler {
 					field->request_focus();
 				}
 				return std::nullopt;
-			};
+			},
+			field,
+		};
 	}
 };
 
@@ -1629,11 +1808,14 @@ struct to_percentage_t_handler : setting_handler {
 			info.update();
 		});
 
-		return 	[field, required=info.required]
+		return 	setting_create_ui_ret_t{
+			[field, required=info.required]
 			(bool alert)
 			{
 				return get_inputfield(field, alert, required);
-			};
+			},
+			field
+		};
 	}
 };
 
@@ -1907,6 +2089,39 @@ void lookup_factory_handler::saved_element(const setting_save_info &save_info,
 
 static const lookup_factory_handler lookup_factory_handler_inst;
 
+// A tooltip factory
+//
+// Subclasses lookup_factory_handler, but overrides save() to put the
+// tooltip in the "tooltip" attribute.
+
+struct layoutmanager_type_handler_tooltip : layoutmanager_type_handler {
+
+	const char *container_name() const override
+	{
+		return "tooltip_name";
+	}
+
+	const char *config_name() const override
+	{
+		return "tooltip_config";
+	}
+
+	// The tooltip type is required together with tooltip_name
+
+	setting_create_ui_ret_t create_ui(ONLY IN_THREAD,
+					  const create_ui_info &info)
+		const override
+	{
+		return create_ui_dependent(
+			layoutmanager_type_handler::create_ui(
+				IN_THREAD, info
+			), info, "tooltip_name", true);
+	}
+};
+
+static const layoutmanager_type_handler_tooltip
+layoutmanager_type_handler_tooltip_inst;
+
 // <elements> contains 0 or more factory elements.
 
 // Dialog
@@ -2017,7 +2232,7 @@ struct factory_parseconfig_handler : public setting_handler {
 				IN_THREAD, info.app, info.mw, info.value_factory
 			);
 
-		return [current_config_info, config_container,
+		auto validator=[current_config_info, config_container,
 			one_only=this->one_only()]
 			(bool alert)
 		{
@@ -2066,6 +2281,10 @@ struct factory_parseconfig_handler : public setting_handler {
 					  *lock->functions);
 			}
 			return ret;
+		};
+
+		return setting_create_ui_ret_t{
+			validator, {}
 		};
 	}
 
@@ -2521,6 +2740,8 @@ parse_function::parse_function(const x::xml::readlock &root)
 		// and an optonal tooptip string.
 		auto elements_parameter=parse_parameter::create();
 		auto tooltip_parameter=parse_parameter::create();
+		auto tooltip_layout_parameter=parse_parameter::create();
+		auto tooltip_appearance_parameter=parse_parameter::create();
 
 		elements_parameter->parameter_name="elements";
 		elements_parameter->handler_name="elements";
@@ -2529,11 +2750,24 @@ parse_function::parse_function(const x::xml::readlock &root)
 
 		parsed_parameters.push_back(elements_parameter);
 
-		tooltip_parameter->parameter_name="tooltip";
-		tooltip_parameter->handler_name="tooltip";
-		tooltip_parameter->handler=&text_param_value_handler_inst;
+		tooltip_parameter->parameter_name="tooltip_name";
+		tooltip_parameter->handler=&single_value_handler_inst;
 		tooltip_parameter->is_optional=true;
 		parsed_parameters.push_back(tooltip_parameter);
+
+		tooltip_layout_parameter->parameter_name="tooltip_type";
+		tooltip_layout_parameter->handler=
+			&layoutmanager_type_handler_tooltip_inst;
+		tooltip_layout_parameter->is_optional=true;
+		parsed_parameters.push_back(tooltip_layout_parameter);
+
+		tooltip_appearance_parameter->parameter_name=
+			"tooltip_appearance";
+		tooltip_appearance_parameter->handler_name="tooltip";
+		tooltip_appearance_parameter->handler=
+			&tooltip_appearance_handler_inst;
+		tooltip_appearance_parameter->is_optional=true;
+		parsed_parameters.push_back(tooltip_appearance_parameter);
 	}
 
 	parsed_parameters.shrink_to_fit();
@@ -2858,7 +3092,9 @@ generator_create_ui_ret_t appgenerator_function_implObj::create_ui(
 
 	// Collect all parameter values here.
 
-	auto get_values = x::vector<setting_create_ui_ret_t>::create();
+	auto get_values = x::vector<setting_create_ui_validator>::create();
+	std::unordered_map<std::string_view,
+			   setting_create_ui_ret_t> values_map;
 
 	// Create the same number of get_values as there are
 	// parsed_parameters.
@@ -2872,7 +3108,7 @@ generator_create_ui_ret_t appgenerator_function_implObj::create_ui(
 	// a parameter and its value, generates the row in the grid
 	// for this parameter (actual one, or an object member).
 
-	auto create_ui_for=[&IN_THREAD, &mw, app]
+	auto create_ui_for=[&IN_THREAD, &mw, &values_map, app]
 		(const auto &get_values,
 		 const auto &glm,
 		 const auto &p,
@@ -2888,6 +3124,7 @@ generator_create_ui_ret_t appgenerator_function_implObj::create_ui(
 
 		s[0] = x::chrcasecmp::toupper(s[0]);
 
+		std::replace(s.begin(), s.end(), '_', ' ');
 		f->create_label(s);
 
 		f->valign(x::w::valign::middle);
@@ -2898,16 +3135,20 @@ generator_create_ui_ret_t appgenerator_function_implObj::create_ui(
 
 		// Call each parameters create_ui() and capture
 		// all parameters' validators in get_values.
-		get_values->push_back(p->handler->create_ui(IN_THREAD, {
-					app,
-					mw,
-					f,
-					glm,
-					v,
-					!p->is_optional,
-					p->parameter_name,
-					p->handler_name,
-				}));
+		auto ui=p->handler->create_ui(IN_THREAD, {
+				app,
+				mw,
+				f,
+				glm,
+				v,
+				!p->is_optional,
+				p->parameter_name,
+				p->handler_name,
+				values_map
+			});
+
+		values_map.emplace(p->parameter_name, ui);
+		get_values->push_back(ui.validator);
 	};
 
 	// Handles processing of the UI elements.

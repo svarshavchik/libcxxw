@@ -125,6 +125,10 @@ generator_create_ui_ret_t object_appgenerator_functionObj::create_ui(
 		throw EXCEPTION("Internal error: handler not "
 				"set for " << member->handler_name);
 
+	std::unordered_map<std::string_view,
+			   setting_create_ui_ret_t
+			   > values_map;
+
 	// Call the parameter's create_ui() and then return a wrapper
 	// for it, that updates the stored value object.
 
@@ -137,11 +141,12 @@ generator_create_ui_ret_t object_appgenerator_functionObj::create_ui(
 			!member->is_optional,
 			member->parameter_name,
 			member->handler_name,
+			values_map,
 		});
 
 	return [func, me=x::const_ref{this}]
 	{
-		auto value=func(true);
+		auto value=func.validator(true);
 
 		if (!value)
 			return false;
