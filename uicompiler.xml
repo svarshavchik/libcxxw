@@ -1530,7 +1530,13 @@ List of values:
 
       <parameter>
 	<type>single_value</type>
+	<name>progressbar</name>
+      </parameter>
+
+      <parameter>
+	<type>single_value</type>
 	<name>type</name>
+	<generator>progressbar</generator>
 	<lookup>
 	  <function>compiler.lookup_container_generators</function>
 	  <parameter>lock</parameter>
@@ -1819,6 +1825,7 @@ List of values:
       <parameter>
 	<type>single_value</type>
 	<name>type</name>
+	<generator>name</generator>
 	<lookup>
 	  <function>compiler.lookup_container_generators</function>
 	  <parameter>lock</parameter>

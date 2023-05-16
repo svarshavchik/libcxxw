@@ -847,7 +847,26 @@ struct layoutmanager_type_handler : standard_combobox_handler {
 
 	void saved_element(const setting_save_info &save_info,
 			   appgenerator_save &info) const override;
+
+	virtual const char *container_name() const=0;
 };
+
+struct layoutmanager_type_handler_name : layoutmanager_type_handler {
+
+	const char *container_name() const override
+	{
+		return "name";
+	}
+};
+
+struct layoutmanager_type_handler_progressbar : layoutmanager_type_handler {
+
+	const char *container_name() const override
+	{
+		return "progressbar";
+	}
+};
+
 
 // Override create_ui
 
@@ -1022,7 +1041,7 @@ void layoutmanager_type_handler::saved_element(
 	// A <container> has a <name> and a <type>.
 
 	if (!save_info.lock->get_previous_element_sibling() ||
-	    save_info.lock->name() != "name")
+	    save_info.lock->name() != container_name())
 	{
 		throw EXCEPTION("Internal error: cannot locate new container's "
 				"<name>");
@@ -1080,7 +1099,12 @@ void layoutmanager_type_handler::saved_element(
 		f->save(config, info);
 }
 
-static const layoutmanager_type_handler layoutmanager_type_handler_inst;
+static const layoutmanager_type_handler_name
+layoutmanager_type_handler_name_inst;
+
+static const layoutmanager_type_handler_progressbar
+layoutmanager_type_handler_progressbar_inst;
+
 
 // Implement a setting based on an editable combo-box
 
@@ -2244,8 +2268,10 @@ const std::unordered_map<std::string_view,
 
 	// Aliases for single value.
 	{ "compiler.lookup_scrollbar_type", &single_value_handler_inst },
-	{ "compiler.lookup_container_generators",
-	  &layoutmanager_type_handler_inst },
+	{ "compiler.lookup_container_generators(name)",
+	  &layoutmanager_type_handler_name_inst },
+	{ "compiler.lookup_container_generators(progressbar)",
+	  &layoutmanager_type_handler_progressbar_inst },
 	{ "restore_panelayoutmanager_position", &single_value_handler_inst },
 	{ "restore_tablelayoutmanager_position", &single_value_handler_inst },
 

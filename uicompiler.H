@@ -803,6 +803,7 @@ public:
 
 	static element
 	create_progressbar(const factory &generic_factory,
+			   const std::string &name,
 			   const container_generators_t &generators,
 			   uielements &elements,
 			   const progressbar_config &config);

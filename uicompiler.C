@@ -1159,6 +1159,7 @@ struct uicompiler::container_generators_t
 // Used by compiler progressbar code
 
 element uicompiler::create_progressbar(const factory &generic_factory,
+				       const std::string &name,
 				       const container_generators_t
 				       &generators_arg,
 				       uielements &elements,

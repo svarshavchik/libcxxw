@@ -237,6 +237,8 @@ void parse_parameterObj::define_parameter(const x::xml::readlock &root,
 
 	std::vector<parse_parameter> extra_members;
 
+	std::string generator;
+
 	for (bool flag=root->get_first_element_child();
 	     flag;
 	     flag=root->get_next_element_sibling())
@@ -325,6 +327,13 @@ void parse_parameterObj::define_parameter(const x::xml::readlock &root,
 
 			continue;
 		}
+
+		if (name == "generator")
+		{
+			generator="(" + parameter_prop->get_text() + ")";
+			continue;
+		}
+
 		throw EXCEPTION("Unknown <parameter> node: "
 				<< name);
 	}
@@ -468,7 +477,9 @@ void parse_parameterObj::define_parameter(const x::xml::readlock &root,
 
 	}
 
-	auto iter=setting_handler::parameter_types.find(parameter_type.c_str());
+	auto iter=setting_handler::parameter_types.find(
+		(parameter_type+generator).c_str()
+	);
 
 	if (iter == setting_handler::parameter_types.end())
 	{
