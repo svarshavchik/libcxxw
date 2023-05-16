@@ -432,25 +432,30 @@ void initialize_adjustable_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager
 
 	LIBCXX_NAMESPACE::w::panefactory f=plm->append_panes();
 
-	LIBCXX_NAMESPACE::w::new_tablelayoutmanager ntlm
+	LIBCXX_NAMESPACE::w::new_tablelayoutmanager ntlm{
+		{[](const auto &f)
 		{
-		 []
-		 (const auto &f, size_t i)
-		 {
-			 static const char * const titles[]=
-				 {
-				  "Process",
-				  "CPU %",
-				  "RAM %",
-				  "Disk I/O (Mbps)",
-				  "Net I/O (Mbps)",
-				 };
-			 f->create_label(titles[i])->show();
-		 }
-		};
+			f->create_label("Process")->show();
+		},
+		 [](const auto &f)
+		{
+			f->create_label("CPU %")->show();
+		},
+		 [](const auto &f)
+		{
+			f->create_label("RAM %")->show();
+		},
+		 [](const auto &f)
+		{
+			f->create_label("Disk I/O (Mbps)")->show();
+		},
+		 [](const auto &f)
+		{
+			f->create_label("Net I/O (Mbps)")->show();
+		}}};
+
 	ntlm.unlimited_table_width();
 	ntlm.adjustable_column_widths={};
-	ntlm.columns=5;
 	ntlm.requested_col_widths={{0, 100}};
 
 	ntlm.col_alignments=

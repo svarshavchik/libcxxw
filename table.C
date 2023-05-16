@@ -11,6 +11,7 @@
 #include "x/w/motion_event.H"
 #include "x/w/button_event.H"
 #include "x/w/input_mask.H"
+#include "x/w/label.H"
 #include "gridlayoutmanager.H"
 #include "capturefactory.H"
 #include "tablelayoutmanager/table_synchronized_axis.H"
@@ -31,6 +32,7 @@
 #include "x/w/impl/icon.H"
 #include "screen.H"
 #include "defaulttheme.H"
+#include "messages.H"
 #include <x/xml/readlock.H>
 #include <x/xml/xpath.H>
 #include <X11/keysym.h>
@@ -723,14 +725,34 @@ class LIBCXX_HIDDEN list_container_implObj : public list_elementObj::implObj {
 #endif
 }
 
-new_tablelayoutmanager
-::new_tablelayoutmanager(const functionref<void (const factory &, size_t)
-			 > &header_factory,
-			 const listlayoutstyle_impl &list_style)
-	: new_listlayoutmanager{list_style},
-	  header_factory{header_factory},
-	  extra_table_appearance{table_appearance::base::theme()}
+std::vector<new_tablelayoutmanager::header_factory_t> table_headers(
+	const table_headers_param_t &table_headers_param
+)
 {
+	std::vector<new_tablelayoutmanager::header_factory_t> ret;
+
+	ret.reserve(table_headers_param.size());
+
+	for (const auto &[text, config] : table_headers_param)
+	{
+		ret.push_back([text, config]
+			      (const auto &factory)
+		{
+			factory->create_label(text, config)->show();
+		});
+	}
+
+	return ret;
+}
+
+new_tablelayoutmanager::new_tablelayoutmanager(
+	std::vector<header_factory_t> header_factories,
+	const listlayoutstyle_impl &list_style
+) : new_listlayoutmanager{list_style},
+    header_factories{std::move(header_factories)},
+    extra_table_appearance{table_appearance::base::theme()}
+{
+	columns=this->header_factories.size();
 	appearance=list_appearance_base::table_theme();
 }
 
@@ -971,15 +993,20 @@ void new_tablelayoutmanager::created_list_container(const container_impl
 					 requested_col_width.second);
 	auto hf=glm->append_row();
 
+	if (header_factories.size() < columns)
+		throw EXCEPTION(gettextmsg(_("Table has %1% columns but "
+					     "only %2% header factories"),
+					   columns,
+					   header_factories.size()));
+
 	// Must use the padding logic as the
 	// actual list.
 
 	for (size_t i=0; i<columns; ++i)
 	{
-		auto cf=capturefactory::create
-			(hf->get_container_impl());
+		auto cf=capturefactory::create(hf->get_container_impl());
 
-		header_factory(cf, i);
+		header_factories[i](cf);
 
 		auto left_padding=appearance->h_padding;
 		auto right_padding=appearance->h_padding;

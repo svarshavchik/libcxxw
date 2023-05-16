@@ -44,21 +44,17 @@ static mondata processes[]=
 auto create_process_table(const x::w::main_window &mw,
 			  const x::w::gridfactory &f)
 {
-	x::w::new_tablelayoutmanager
-		ntlm{[]
-		     (const x::w::factory &f, size_t i)
-		     {
-			     static const char * const titles[]=
-				     {
-				      "Process",
-				      "CPU %",
-				      "RAM %",
-				      "Disk I/O (Mbps)",
-				      "Net I/O (Mbps)",
-				     };
+	x::w::new_tablelayoutmanager ntlm{
 
-			     f->create_label(titles[i])->show();
-		     }};
+		x::w::table_headers(
+			{
+				{"Process", {}},
+				{"CPU %", {}},
+				{"RAM %", {}},
+				{"Disk I/O (Mbps)", {}},
+				{"Net I/O (Mbps)", {}}
+			})
+	};
 
 	// The table layout manager inherits from the list layout manager.
 	// Set the selection_type to no-selection_type if the table or the
@@ -66,7 +62,12 @@ auto create_process_table(const x::w::main_window &mw,
 	// an element from the list, setting the selection_type to
 	// no_selection_type
 	ntlm.selection_type=x::w::no_selection_type;
-	ntlm.columns=5;
+
+	// No need to set columns, inherited from new_listlayoutmanager.
+	// new_tablelayoutmanager's constructor initializes it from the number
+	// of the header factories
+	//
+	// ntlm.columns = 5
 
 	// The col_alignments and column_borders are inherited from
 	// new_listlayoutmanager, and can be also set in a

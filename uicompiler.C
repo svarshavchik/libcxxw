@@ -357,32 +357,6 @@ struct uicompiler::listlayoutmanager_functions {
 // Table layout manager functionality.
 //
 
-// Parse all header cell generators.
-
-static std::vector<const_vector<factory_generator>>
-create_table_header_generators(uicompiler &compiler,
-			       const ui::parser_lock &orig_lock)
-{
-	auto lock=orig_lock->clone();
-
-	auto xpath=lock->get_xpath("header");
-
-	size_t n=xpath->count();
-
-	std::vector<const_vector<factory_generator>> ret;
-
-	ret.reserve(n);
-
-	for (size_t i=1; i<=n; ++i)
-	{
-		xpath->to_node(i);
-
-		ret.push_back(compiler.factory_parseconfig(lock));
-	}
-
-	return ret;
-}
-
 struct uicompiler::tablelayoutmanager_functions {
 
 	struct generators : generators_base {
@@ -393,8 +367,6 @@ struct uicompiler::tablelayoutmanager_functions {
 
 		const_vector<new_tablelayoutmanager_generator
 			     > new_tablelayoutmanager_vector;
-
-		std::vector<const_vector<factory_generator>> header_generators;
 
 		// Generators for the contents of the list layout manager.
 		const_vector<tablelayoutmanager_generator> generator_vector;
@@ -411,10 +383,6 @@ struct uicompiler::tablelayoutmanager_functions {
 			  new_tablelayoutmanager_vector
 			{
 			 create_newtablelayoutmanager_vector(compiler, lock)
-			},
-			  header_generators
-			{
-			 create_table_header_generators(compiler, lock)
 			},
 			  generator_vector
 			{
@@ -445,18 +413,8 @@ struct uicompiler::tablelayoutmanager_functions {
 		{
 			new_tablelayoutmanager ntlm
 				{
-				 [&, this]
-				 (const factory &f,
-				  size_t column)
-				 {
-					 for (const auto &g :
-						      *header_generators
-						      .at(column))
-					 {
-						 g(f, factories);
-					 }
-				 },
-				 style
+					{},
+					style
 				};
 
 			// Generate the contents of the new_tablelayoutmanager.
@@ -466,12 +424,12 @@ struct uicompiler::tablelayoutmanager_functions {
 				g(&ntlm, factories);
 			}
 
-			if (ntlm.columns != header_generators.size())
+			if (ntlm.columns != ntlm.header_factories.size())
 				throw EXCEPTION(gettextmsg
 						(_("number of <header>s (%1%) "
 						   "is different from "
 						   "<columns> (%2%)"),
-						 header_generators.size(),
+						 ntlm.header_factories.size(),
 						 ntlm.columns));
 
 			return ntlm;

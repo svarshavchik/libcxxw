@@ -2262,6 +2262,23 @@ layout_manager->generate("dialog", generators, elements);
       <link linkend="uixmlelementcontext">creates a context popup menu
 	for the widget</link>.
     </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+  <factory id="option-table-header-1" type="factory">
+    <element>
+      <label type='theme_text'>Name</label>
+    </element>
+  </header>
+  ]]></programlisting>
+      </informalexample>
+    </blockquote>
+    <para>
+      A <tag class='attribute'>type</tag>=<quote>factory</quote>
+      <tag class='element'>factory</tag> represents a &factory;
+      superclass that creates only these generic widgets.
+    </para>
   </section>
 
   <section id="uixmlfactoryelements">

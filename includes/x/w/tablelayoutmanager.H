@@ -9,47 +9,59 @@
 #include <x/w/tablelayoutmanagerobj.H>
 #include <x/w/table_appearancefwd.H>
 #include <x/w/listlayoutmanager.H>
+#include <x/w/labelfwd.H>
+#include <x/w/text_paramfwd.H>
 #include <cmath>
 #include <string_view>
 #include <string>
+#include <vector>
 #include <optional>
 
 LIBCXXW_NAMESPACE_START
 
-//! Create a new table layout manager.
+/*! Create a new table layout manager.
 
-//! A subclass of the \ref listlayoutmanager "list layout manager" that
-//! adds a header row to the list. Inherits from the
-//! \ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager".
-//!
-//! The new container uses the
-//! \ref tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::tablelayoutmanager".
-//!
-//! The required constructor parameter is a callable object that gets used
-//! to construct each column's header. This callback ends up getting
-//! invoked by create_focusable_container() to populate each
-//! column's header. The callback gets called once for each
-//! column, with the \c column parameter varying from 0 to
-//! columns-1.
-//!
-//! The callback must use the given factory to construct exactly
-//! one widget. The callback is responsible for show()ing
-//! the widget.
-//!
-//! This is not a thread-safe object.
+A subclass of the \ref listlayoutmanager "list layout manager" that
+adds a header row to the list. Inherits from the
+\ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager".
+
+The new container uses the
+\ref tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::tablelayoutmanager".
+
+The required constructor parameter is a vector of callable objects, one
+for each column in the table. The constructor's calla ble object get used
+to construct each column's header. This callback ends up getting
+invoked by create_focusable_container() to populate each
+column's header.
+
+Each callback gets a \ref factory "factory" as its parameter.
+The callback must use the given factory to construct exactly
+one widget. The callback is responsible for show()ing
+the widget.
+
+Use \ref table_headers "INSERT_LIBX_NAMESPACE::w::table_headers" as a
+shortcut for creating the header factories.
+
+The size of the passed in vector initializes the \c columns value in the
+inheritable \ref new_listlayoutmanager "new_listlayoutmanager".
+
+This is not a thread-safe object.
+
+*/
 
 class new_tablelayoutmanager : public new_listlayoutmanager {
 
  public:
 
+	typedef functionref<void (const factory &)> header_factory_t;
+
 	//! Constructor
 
 	//! Optional second parameter specifies the list style.
 
-	new_tablelayoutmanager(const functionref<void (const factory &, size_t)
-			       > &header_factory,
-			       const listlayoutstyle_impl &list_style
-			       =highlighted_list)
+	new_tablelayoutmanager(
+		std::vector<header_factory_t> header_factories,
+		const listlayoutstyle_impl &list_style=highlighted_list)
 		LIBCXX_PUBLIC;
 
 	//! Destructor
@@ -61,9 +73,15 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 
 	void set_pane_theme() override LIBCXX_HIDDEN;
 
-	//! The header factory that was passed to the constructor.
+	//! Header factories
 
-	functionref<void (const factory &, size_t)> header_factory;
+	//! This was passed to the constructor. This can be modified after
+	//! construction and before calling create_focusable_container(), if
+	//! \c columns in the inheritable
+	//! \ref new_listlayoutmanager "new_listlayoutmanager" is also
+	//! updated.
+
+	std::vector<header_factory_t> header_factories;
 
 	//! Header appearance.
 
@@ -142,6 +160,42 @@ private:
 				     table_create_info *) const override
 		LIBCXX_HIDDEN;
 };
+
+//! Parameter for table_headers()
+
+typedef std::vector<std::tuple<x::w::text_param, x::w::label_config>
+		    > table_headers_param_t;
+
+/*! Create header factories for \ref new_tablelayoutmanager "new_tablelayoutmanager"'s constructor
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/label.H>
+
+INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager new_table{
+      INSERT_LIBX_NAMESPACE::w::table_headers(
+          {
+	      {"Column1", {}},
+	      {"Column2", {}},
+	  })
+    };
+\endcode
+
+This is helper for creating a vector of factories for a table's columns.
+table_headers() returns a vector for
+\ref new_tablelayoutmanager "new_tablelayoutmanager"'s
+constructor with factories that use \ref factory "create_label()" and show() it.
+
+table_headers()'s parameter is a vector of tuples with two values:
+
+- \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param"
+
+- \ref label_config "INSERT_LIBX_NAMESPACE::w::label_config"
+
+*/
+
+std::vector<new_tablelayoutmanager::header_factory_t> table_headers(
+	const table_headers_param_t &table_headers_param
+);
 
 LIBCXXW_NAMESPACE_END
 

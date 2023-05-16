@@ -50,7 +50,7 @@ struct callback_trigger_is_not_copyable {
 					 &)=delete;
 };
 
-//! What triggered a callback activation.
+//! \anchor callback_trigger_t What triggered a callback activation.
 
 //! This parameter specifies the reason for a callback's activation: a
 //! key event, a button event,  or something else. The default (monostate)

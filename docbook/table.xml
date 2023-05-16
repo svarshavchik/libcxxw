@@ -44,13 +44,18 @@ See COPYING for distribution information.
 #include &lt;&ns;/w/tablelayoutmanager.H&gt;
 
 &ns;::w::new_tablelayoutmanager new_table{
-    []
-    (const x::w::factory &amp;f, size_t i)
     {
-          // ...
+       []
+       (const x::w::factory &amp;f)
+       {
+          f->create_label("Column 1")->show();
+       },
+       []
+       (const x::w::factory &amp;f)
+       {
+          f->create_label("Column 2")->show();
+       },
     }};
-
-new_table.columns=2;
 
 &ns;::w::focusable_container list=f->create_focusable_container(
        []
@@ -83,13 +88,14 @@ new_table.columns=2;
       with a header row.
       The required parameter to
       <classname>&ns;::w::new_tablelayoutmanager</classname>'s constructor
-      is a &creator; for the list's header.
-      <methodname>create_focusable_container</methodname> calls this closure
-      to create the header for each column. The clouse receives
-      a &factory; parameter and the column number. The closure uses the
+      is a vector with &creator;s for each header column.
+      <methodname>create_focusable_container</methodname> calls each closure
+      to create the header for the corresponding column. Each closure receives
+      a &factory; parameter. The closure uses the
       factory to create exactly one widget that represents the column's
-      header. The closure must call <methodname>show</methodname>()
-      to make the new header widget visible.
+      header. The closure should call <methodname>show</methodname>()
+      to make the new header widget visible (or
+      <methodname>show_all</methodname>() on the table itself).
     </para>
 
     <note>
@@ -102,6 +108,25 @@ new_table.columns=2;
 	header row.
       </para>
     </note>
+
+    <section id="tableheaders">
+      <title>Using <ulink url="&link-function-x--w-table-headers;"><function>&ns;::w::table_headers</function></ulink>()</title>
+
+	<para>
+	  <filename>table.C</filename> uses the
+	  <ulink url="&link-function-x--w-table-headers;"><function>&ns;::w::table_headers</function></ulink>()
+	  helper function to create the header factories.
+	  <function>&ns;::w::table_headers</function>()'s
+	  parameter is a <classname>std::vector</classname> of tuples with
+	  two values:
+	  a <ulink url="&link-x--w--text-param;">text string</ulink> and a
+	  <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>
+	  (which can be default-constructed), and returns a vector of factories
+	  that gets passed directly to
+	  <classname>&ns;::w::new_tablelayoutmanager</classname>'s
+	  constructor.
+	</para>
+      </section>
   </section>
 
   <section id="adjustabletables">

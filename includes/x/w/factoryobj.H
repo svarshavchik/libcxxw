@@ -98,7 +98,7 @@ public:
 	//! Destructor
 	~factoryObj() LIBCXX_HIDDEN;
 
-	//! Create an empty \ref canvas.
+	//! Create an empty \ref canvas "canvas".
 
 	//! A default usage of create_canvas() that specifies a completely
 	//! unbound canvas. This is used to fill in unused cells in

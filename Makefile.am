@@ -15,7 +15,7 @@ SUBDIRS= po includes/x/w
 DISTCHECK_CONFIGURE_FLAGS=--with-pkgconfigdir='$$(prefix)/local/pkgconf'
 
 pkgdatainstdir=$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@
-pkgdatainst_DATA=extract-theme-text.xsl libcxxw.mk
+pkgdatainst_DATA=extract-theme-text.xsl libcxxw.mk cxxwtheme.xml
 
 creatorinstdir=$(pkgdatainstdir)/creator
 
@@ -1020,6 +1020,7 @@ cxxw_LDFLAGS=$(TESTLINKTYPE)
 cxxwtheme_SOURCES=cxxwtheme.C
 cxxwtheme_LDADD=libcxxw.la -lcourier-unicode
 cxxwtheme_LDFLAGS=$(TESTLINKTYPE)
+$(call EXTRACT_THEME_TEXT_GEN,cxxwtheme.inc.C,cxxwtheme.xml)
 
 
 $(call REFCOLLECTION_GEN,creator/appelements.inc.H,$(srcdir)/creator/appelements.xml)

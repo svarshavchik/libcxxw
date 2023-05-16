@@ -16,8 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see listlayoutmanager
 
-class listlayoutmanagerObj : public layoutmanagerObj,
-			     virtual public obj {
+class listlayoutmanagerObj : virtual public obj, public layoutmanagerObj {
 
 public:
 	class LIBCXX_HIDDEN implObj;

@@ -1551,7 +1551,7 @@ void appObj::enable_disable_urd(bool is_updating,
 
 std::string x::appid() noexcept
 {
-	return "cxxwtheme.w.libcxx.com";
+	return "cxxwcreator.w.libcxx.com";
 }
 
 std::string x::appver() noexcept

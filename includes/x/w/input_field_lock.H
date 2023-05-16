@@ -140,7 +140,7 @@ public:
 	void exception_message(const exception &) const LIBCXX_PUBLIC;
 };
 
-//! Lock the \ref input_field "input field" in order to access its contents.
+//! \anchor input_lock Lock the \ref input_field "input field" in order to access its contents.
 
 //! Most functionality inherited from \ref const_input_lock "const_input_lock"
 //! which implements non-mutating operations on the input field. With a mutable

@@ -3506,7 +3506,7 @@ List of values:
       <invoke>norestore</invoke>
       <parameter>
 	<name>name</name>
-	<type>optional_value</type>
+	<type>single_value</type>
       </parameter>
 
       <parameter>
@@ -3515,7 +3515,25 @@ List of values:
       </parameter>
     </function>
 
+    <function>
+      <name>header</name>
+      <invoke>add_table_header_factory</invoke>
 
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<xpath>.</xpath>
+	<name>name</name>
+	<type>compiler.lookup_factory_generators</type>
+      </parameter>
+
+    </function>
     <use_common>new_listlayout</use_common>
   </parser>
 

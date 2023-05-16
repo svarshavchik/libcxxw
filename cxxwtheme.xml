@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<theme version="1">
+  <factory id="demo_table_header4" type="factory">
+    <element id="demo_table_header4_label">
+      <label type="theme_text">${context:cxxwtheme}Blue</label>
+    </element>
+  </factory>
+  <factory id="demo_table_header3" type="factory">
+    <element id="demo_header_table3_label">
+      <label type="theme_text">${context:cxxwtheme}Green</label>
+    </element>
+  </factory>
+  <factory id="demo_table_header2" type="factory">
+    <element id="demo_table_header2_label">
+      <label type="theme_text">${context:cxxwtheme}Red</label>
+    </element>
+  </factory>
+  <factory id="demo_table_header1" type="factory">
+    <element id="demo_table_header1_label">
+      <label type="theme_text">${context:cxxwtheme}Name</label>
+    </element>
+  </factory>
+  <layout id="demo_table_main" type="table">
+    <creator>demo_table_create</creator>
+  </layout>
+  <factory id="demo_table_row" type="grid">
+    <container id="demo_table_main">
+      <name>demo_table_main</name>
+      <type>table</type>
+      <config>
+        <header>demo_table_header1</header>
+        <header>demo_table_header2</header>
+        <header>demo_table_header3</header>
+        <header>demo_table_header4</header>
+        <selection_type>no</selection_type>
+        <adjustable_column_widths>
+          <name>demo_table</name>
+        </adjustable_column_widths>
+        <width>
+          <min>demo_table_width</min>
+          <preferred>demo_table_width</preferred>
+          <max>demo_table_width</max>
+        </width>
+        <col_alignment>
+          <column>1</column>
+          <halign>right</halign>
+        </col_alignment>
+        <col_alignment>
+          <column>2</column>
+          <halign>right</halign>
+        </col_alignment>
+        <col_alignment>
+          <column>3</column>
+          <halign>right</halign>
+        </col_alignment>
+        <column_border>
+          <column>1</column>
+          <border>thin_0%</border>
+        </column_border>
+        <column_border>
+          <column>2</column>
+          <border>thin_dashed_0%</border>
+        </column_border>
+        <column_border>
+          <column>3</column>
+          <border>thin_dashed_0%</border>
+        </column_border>
+      </config>
+    </container>
+  </factory>
+  <layout id="demo_table" type="grid">
+    <append_row>
+      <name>demo_table_row</name>
+    </append_row>
+  </layout>
+  <dim id="demo_table_width">150</dim>
+</theme>

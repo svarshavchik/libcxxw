@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2021 Double Precision, Inc.
+** Copyright 2017-2023 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -39,6 +39,8 @@
 #include "x/w/scrollbar_appearance.H"
 #include "x/w/text_param_literals.H"
 #include "x/w/theme_text.H"
+#include "x/w/uigenerators.H"
+#include "x/w/uielements.H"
 #include "configfile.H"
 #include "messages.H"
 
@@ -52,6 +54,7 @@
 #include <x/property_value.H>
 #include <x/managedsingletonapp.H>
 #include <x/locale.H>
+#include <x/options.H>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -59,6 +62,10 @@
 #include <iterator>
 #include <string>
 #include <unistd.h>
+
+#ifndef UICOMPILERDIR
+#define UICOMPILERDIR PKGDATADIR
+#endif
 
 LOG_FUNC_SCOPE_DECL("cxxwtheme", cxxwLog);
 
@@ -490,14 +497,18 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 	}
 }
 
-static void create_demo(const w::booklayoutmanager &lm);
+static void create_demo(const w::booklayoutmanager &lm,
+			const w::const_uigenerators &generators,
+			w::uielements &factories);
 
 static void file_menu(const w::main_window &mw,
 		      const w::listlayoutmanager &lm);
 static void help_menu(const w::main_window &mw,
 		      const w::listlayoutmanager &lm);
 
-static w::container create_main_window(const w::main_window &mw)
+static w::container create_main_window(const w::main_window &mw,
+				       const w::const_uigenerators &generators,
+				       w::uielements &factories)
 {
 	w::gridlayoutmanager glm=mw->get_layoutmanager();
 
@@ -703,7 +714,8 @@ static w::container create_main_window(const w::main_window &mw)
 		([&]
 		 (const auto &container)
 		 {
-			 create_demo(container->get_layoutmanager());
+			 create_demo(container->get_layoutmanager(),
+				     generators, factories);
 		 },
 		 w::new_booklayoutmanager{});
 
@@ -963,10 +975,11 @@ static void help_menu(const w::main_window &mw,
 static void demo_list(const w::gridlayoutmanager &lm);
 static void demo_input(const w::gridlayoutmanager &lm);
 static void demo_misc(const w::gridlayoutmanager &lm);
-static void demo_table(const w::gridlayoutmanager &lm);
 static void item_table(const w::gridlayoutmanager &lm);
 
-static void create_demo(const w::booklayoutmanager &lm)
+static void create_demo(const w::booklayoutmanager &lm,
+			const w::const_uigenerators &generators,
+			w::uielements &factories)
 {
 	auto f=lm->append();
 
@@ -1010,14 +1023,18 @@ static void create_demo(const w::booklayoutmanager &lm)
 	       });
 
 	f->add("Table",
-	       []
+	       [&generators, &factories]
 	       (const auto &f)
 	       {
 		       f->create_container
-			       ([]
+			       ([&generators, &factories]
 				(const auto &c)
 				{
-					demo_table(c->get_layoutmanager());
+					c->gridlayout()->generate(
+						"demo_table",
+						generators,
+						factories
+					);
 				},
 				w::new_gridlayoutmanager{});
 	       });
@@ -1301,84 +1318,39 @@ static void demo_misc_column2(const w::gridlayoutmanager &glm)
 	f->create_container(initialize, nblm);
 }
 
-static void demo_table(const w::gridlayoutmanager &lm)
+static void demo_table_create(const w::tablelayoutmanager &tlm)
 {
-	auto f=lm->append_row();
-
-	w::new_tablelayoutmanager ntlm
-		{[]
-		 (const w::factory &f, size_t i)
-		 {
-			 static const char * const titles[]=
-				 {
-				  "Name",
-				  "Red",
-				  "Green",
-				  "Blue",
-				 };
-			 f->create_label(titles[i])->show();
-		 }};
-
-	ntlm.columns=4;
-
-	ntlm.selection_type=w::no_selection_type;
-
-	ntlm.adjustable("demo_table");
-	ntlm.table_width=150;
-	ntlm.col_alignments={
-			     {1, w::halign::right},
-			     {2, w::halign::right},
-			     {3, w::halign::right},
-	};
-
-	ntlm.column_borders={
-			     {1, "thin_0%"},
-			     {2, "thin_dashed_0%"},
-			     {3, "thin_dashed_0%"}
-	};
-
-	f->create_focusable_container
-		([]
-		 (const auto &c)
-		 {
-			 w::tablelayoutmanager tlm
-				 {c->get_layoutmanager()};
 
 #define FMT(n) ({					\
-					 std::ostringstream o;		\
-				 o << std::fixed << std::setprecision(3) \
-				   << n;				\
-				 					\
-				 w::text_param{	\
-					 "liberation mono"_font,	\
-						 o.str()};		\
-				 })
+			std::ostringstream o;				\
+			o << std::fixed << std::setprecision(3)		\
+			  << n;						\
+									\
+			w::text_param{"liberation mono"_font, o.str()};	\
+		})
 
 #define FMTFL(c) FMT(((c) + 0.0) / w::rgb::maximum)
 
 #define FMTRGB(name) FMTFL(name.r), FMTFL(name.g), FMTFL(name.b)
 #define FMTRGBNS(name) FMTRGB(w::name)
 
-			 tlm->append_items
-				 ({"Black", FMTRGBNS(black),
-				   "Gray", FMTRGBNS(gray),
-				   "Silver", FMTRGBNS(silver),
-				   "White", FMTRGBNS(white),
-				   "Maroon", FMTRGBNS(maroon),
-				   "Red", FMTRGBNS(red),
-				   "Olive", FMTRGBNS(olive),
-				   "Yellow", FMTRGBNS(yellow),
-				   "Green", FMTRGBNS(green),
-				   "Lime", FMTRGBNS(lime),
-				   "Teal", FMTRGBNS(teal),
-				   "Aqua", FMTRGBNS(aqua),
-				   "Navy", FMTRGBNS(navy),
-				   "Blue", FMTRGBNS(blue),
-				   "Fuchsia", FMTRGBNS(fuchsia),
-				   "Purple", FMTRGBNS(purple),
-				 });
-		 },
-		 ntlm)->show();
+	tlm->append_items({"Black", FMTRGBNS(black),
+			"Gray", FMTRGBNS(gray),
+			"Silver", FMTRGBNS(silver),
+			"White", FMTRGBNS(white),
+			"Maroon", FMTRGBNS(maroon),
+			"Red", FMTRGBNS(red),
+			"Olive", FMTRGBNS(olive),
+			"Yellow", FMTRGBNS(yellow),
+			"Green", FMTRGBNS(green),
+			"Lime", FMTRGBNS(lime),
+			"Teal", FMTRGBNS(teal),
+			"Aqua", FMTRGBNS(aqua),
+			"Navy", FMTRGBNS(navy),
+			"Blue", FMTRGBNS(blue),
+			"Fuchsia", FMTRGBNS(fuchsia),
+			"Purple", FMTRGBNS(purple),
+		});
 }
 
 static void item_table(const w::gridlayoutmanager &lm)
@@ -1472,12 +1444,27 @@ void cxxwtheme()
 
 	w::main_window_config config{"main"};
 
+	auto generators=w::uigenerators::create(UICOMPILERDIR "/cxxwtheme.xml");
+
 	auto main_window=default_screen->create_mainwindow
 		(config,
 		 [&]
 		 (const auto &main_window)
 		 {
-			 options_containerptr=create_main_window(main_window);
+			 w::uielements factories{
+				 {},
+				 {
+					 {
+						 "demo_table_create",
+						 demo_table_create,
+					 }
+				 }
+			 };
+
+			 options_containerptr=create_main_window(
+				 main_window,
+				 generators, factories
+			 );
 		 });
 
 	appstate_t appstate{appstate_ref::create(main_window)};
@@ -1595,6 +1582,26 @@ typedef x::ref<cxxwtheme_threadObj> cxxwtheme_thread;
 int main(int argc, char **argv)
 {
 	try {
+		auto optlist=x::option::list::create();
+		optlist->addDefaultOptions();
+
+		auto optparser=x::option::parser::create();
+
+		optparser->setOptions(optlist);
+
+		int err=optparser->parseArgv(argc, argv);
+
+		if (err == 0) err=optparser->validate();
+
+		if (err)
+		{
+			if (err == x::option::parser::base::err_builtin)
+				exit(0);
+
+			std::cerr << optparser->errmessage() << std::flush;
+			exit(1);
+		}
+
 		x::singletonapp::managed
 			([]
 			 {

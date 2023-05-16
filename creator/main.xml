@@ -2417,17 +2417,9 @@
 	  <left>appearance_value_padding</left>
 	  <right>appearance_value_padding</right>
 	</lr_padding>
+	<header>appearance_values_column1</header>
+	<header>appearance_values_column2</header>
       </config>
-      <header>
-	<element>
-	  <label type='theme_text'>${context:appearance}Field</label>
-	</element>
-      </header>
-      <header>
-	<element>
-	  <label type='theme_text'>${context:appearance}Value</label>
-	</element>
-      </header>
 
       <context id="appearance_values_popup">
 	<menu>
@@ -2453,6 +2445,18 @@
 	<shortcut type='theme_text'>${context:appearance-list}Alt-M</shortcut>
       </context>
     </container>
+  </factory>
+
+  <factory id="appearance_values_column1" type="factory">
+    <element>
+      <label type='theme_text'>${context:appearance}Field</label>
+    </element>
+  </factory>
+
+  <factory id="appearance_values_column2" type="factory">
+    <element>
+      <label type='theme_text'>${context:appearance}Value</label>
+    </element>
   </factory>
 
   <dim id="appearance_value_padding">2</dim>

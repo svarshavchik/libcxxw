@@ -18,15 +18,19 @@ class LIBCXX_PUBLIC tablelayoutmanagerObj;
 
 \code
 INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager new_table{
-    []
-    (const INSERT_LIBX_NAMESPACE::w::factory &f,
-     size_t column)
     {
-          f->create_label("Header!")->show();
+      []
+      (const INSERT_LIBX_NAMESPACE::w::factory &f)
+      {
+          f->create_label("Column 1")->show();
+      },
+      []
+      (const INSERT_LIBX_NAMESPACE::w::factory &f)
+      {
+          f->create_label("Column 2")->show();
+      }
     }
 };
-
-new_table.columns=2;
 
 INSERT_LIBX_NAMESPACE::w::focusable_container list=f->create_focusable_container(
    []
@@ -90,7 +94,7 @@ column. The size of the entire table also includes any borders, and is
 included in \c width and \c maximum_width.
 
 \code
-new_table.adjustable_column_widths=true;
+new_table.adjustable("table1");
 
 new_table.column_borders={
    {1, "thin_0%"},
@@ -98,9 +102,10 @@ new_table.column_borders={
 };
 \endcode
 
-Setting \c adjustable_column_widths enables interactive adjustments to
+\c adjustable() enables interactive adjustments to
 the table columns' relative widths by dragging table's borders. This is
-independent of the overall column and table width settings.
+independent of the overall column and table width settings. \c adjustable()'s
+parameter is the table's unique label.
 
 Note that the table layout manager inherits from the list layout manager
 which does not draw borders by default. Set \c column_borders to have
@@ -108,6 +113,10 @@ visible borders in the table for best visual results (column border
 settings get inherited from
 \ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::new_listlayoutmanager",
 which has no borders by default).
+
+\c adjustable()'s parameter is the table's unique identifier. The
+adjusted column widths \ref screen_positions "get preserved" and
+restored. All tables in the window should have a unique identifier.
 
 \par Accessing and modifying the table's headers
 

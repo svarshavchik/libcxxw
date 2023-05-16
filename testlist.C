@@ -340,28 +340,33 @@ auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 			  const LIBCXX_NAMESPACE::w::gridfactory &f,
 			  const testlistoptions &options)
 {
-	LIBCXX_NAMESPACE::w::new_tablelayoutmanager
-		ntlm{[]
-		    (const LIBCXX_NAMESPACE::w::factory &f, size_t i)
-		    {
-			    static const char * const titles[]=
-				    {
-				     "Process",
-				     "CPU %",
-				     "RAM %",
-				     "Disk I/O (Mbps)",
-				     "Net I/O (Mbps)",
-				    };
-
-			    f->create_label(titles[i])->show();
-		    }};
+	LIBCXX_NAMESPACE::w::new_tablelayoutmanager ntlm{
+		{[](const auto &f)
+		{
+			f->create_label("Process")->show();
+		},
+		 [](const auto &f)
+		{
+			f->create_label("CPU %")->show();
+		},
+		 [](const auto &f)
+		{
+			f->create_label("RAM %")->show();
+		},
+		 [](const auto &f)
+		{
+			f->create_label("Disk I/O (Mbps)")->show();
+		},
+		 [](const auto &f)
+		{
+			f->create_label("Net I/O (Mbps)")->show();
+		}}};
 
 	if (options.adjustable->value)
 	{
 		ntlm.adjustable("list");
 	}
 	ntlm.selection_type=LIBCXX_NAMESPACE::w::no_selection_type;
-	ntlm.columns=5;
 
 	ntlm.requested_col_widths={{0, 100}};
 	ntlm.col_alignments={

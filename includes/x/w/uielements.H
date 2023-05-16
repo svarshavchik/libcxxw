@@ -82,7 +82,7 @@ INSERT_LIBX_NAMESPACE::w::uielements factories{
 
 In the XML template, an
 
-\code{.unparsed}
+\code
 <element>
     <name>label</name>
 <element>

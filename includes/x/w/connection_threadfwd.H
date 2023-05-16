@@ -20,7 +20,7 @@ class LIBCXX_HIDDEN elements_2_batch_showhide_map;
 
 typedef ref<connection_threadObj> connection_thread;
 
-//! Some class methods can only be executed by the internal connection thread
+//! \anchor ONLY Some class methods can only be executed by the internal connection thread
 
 //! Syntactic sugar for designating class methods and library
 //! functions that are callable only by the library's internal connection

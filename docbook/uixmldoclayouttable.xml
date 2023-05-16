@@ -57,19 +57,30 @@ See COPYING for distribution information.
   <type>table</type>
   <style>highlight</style>
   <config>
-    <columns>2</columns>
+    <header>option-table-header-1</header>
+    <header>option-table-header-2</header>
   </config>
-  <header>
-    <element>
-      <label type='theme_text'>Name</label>
-    </element>
-  </header>
-  <header>
-    <element>
-      <label type='theme_text'>Value</label>
-    </element>
-  </header>
-</container>]]></programlisting>
+  <elements>option-table-elements</elements>
+</container>
+
+<factory id="option-table-header-1" type="factory">
+  <element>
+    <label type='theme_text'>Name</label>
+  </element>
+</factory>
+
+<factory id="option-table-header-2" type="factory">
+  <element>
+    <label type='theme_text'>Value</label>
+  </element>
+</factory>
+
+<factory id="option-table-elements" type="elements">
+  <show_all>
+    <element>option-table</element>
+  </show_all>
+</factory>
+]]></programlisting>
       </informalexample>
     </blockquote>
 
@@ -251,9 +262,10 @@ See COPYING for distribution information.
 	  </para>
 
 	  <para>
-	    Of particular importance is the
+	    Notably is the
 	    <tag class='element'>columns</tag> value that sets the
-	    number of columns in the table.
+	    number of columns in the table; but this gets set automatically
+	    to the number of <tag class='element'>header</tag>s.
 	  </para>
 	</listitem>
       </varlistentry>
@@ -263,21 +275,19 @@ See COPYING for distribution information.
       A list of
       <tag class='element'>header</tag> values defines the contents of the
       table's header row.
-      The internally-constructed
-      <classname>&ns;::w::new_tablelayoutmanager</classname>'s
-      <varname>header_factory</varname> uses the
-      <tag class='element'>header</tag>s to create the table's header
-      widgets.
+      Each <tag class='element'>header</tag> gives a name of a
+      The header for each header gives the name of a
+      <link linkend="uixmlfactoryelement"><tag class='attribute'>type</tag>=<quote>factory</quote>
+	<tag class='element'>factory</tag></link>.
+      Each <tag class='element'>factory</tag> should create one
+      widget, usually just a
+      <link linkend="uixmlfactorylabelelement">plain label</link>.
     </para>
 
     <para>
-      The number of <tag class='element'>header</tag> values must be equal
-      to the table's
-      <tag class='element'>columns</tag> value.
-      Each <tag class='element'>header</tag> should create one
-      &themewidget;.
-      The usual table header theme widget is a
-      <link linkend="uixmlfactorylabelelement">plain label</link>.
+      The number of <tag class='element'>header</tag>s sets the
+      <tag class='element'>columns</tag> value, the numbers of
+      columns in the table/list.
     </para>
   </section>
 </section>

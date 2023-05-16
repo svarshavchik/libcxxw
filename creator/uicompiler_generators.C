@@ -2945,7 +2945,6 @@ generator_create_ui_ret_t appgenerator_function_implObj::create_ui(
 
 			f->valign(x::w::valign::middle);
 
-			std::cout << "YO\n";
 			auto functions=create_object_ui(
 				app, IN_THREAD,  mw, p, latest_functions,
 				f

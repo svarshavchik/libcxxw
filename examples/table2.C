@@ -66,25 +66,19 @@ typedef x::ref<my_appdataObj> my_appdata;
 auto create_process_table(const x::w::main_window &mw,
 			  const x::w::gridfactory &f)
 {
-	x::w::new_tablelayoutmanager
-		ntlm{[]
-		     (const x::w::factory &f, size_t i)
-		     {
-			     static const char * const titles[]=
-				     {
-				      "Process",
-				      "CPU %",
-				      "RAM %",
-				      "Disk I/O (Mbps)",
-				      "Net I/O (Mbps)",
-				     };
+	x::w::new_tablelayoutmanager ntlm{
 
-			     f->create_label(titles[i])->show();
-		     }};
-
+		x::w::table_headers(
+			{
+				{"Process", {}},
+				{"CPU %", {}},
+				{"RAM %", {}},
+				{"Disk I/O (Mbps)", {}},
+				{"Net I/O (Mbps)", {}}
+			})
+	};
 
 	ntlm.selection_type=x::w::no_selection_type;
-	ntlm.columns=5;
 
 	ntlm.col_alignments={
 			    {0, x::w::halign::center},
