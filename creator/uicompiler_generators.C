@@ -359,7 +359,8 @@ struct standard_combobox_handler : setting_handler {
 		// and uses it.
 
 		return [combobox=x::make_weak_capture(combobox),
-			values=std::move(values)]
+			values=std::move(values),
+			required=info.required]
 			(bool alert) -> std::optional<parameter_value>
 			{
 				auto got=combobox.get();
@@ -384,12 +385,18 @@ struct standard_combobox_handler : setting_handler {
 
 					if (std::holds_alternative<
 					    x::w::text_param>(v))
-						return parameter_value{
-							std::get<
+					{
+						auto s=std::get<
 							x::w::text_param>(v)
-							.string
-						};
+							.string;
+
+						if (!s.empty() || !required)
+							return parameter_value{
+								s
+							};
+					}
 				}
+
 				if (alert)
 				{
 					combobox->stop_message(
@@ -1024,6 +1031,13 @@ layoutmanager_type_handler::create_ui(ONLY IN_THREAD,
 		(bool alert)
 	{
 		auto value=ret(alert);
+
+		// nullopt value: error reported.
+		//
+		// empty value: this one was optional, valid result.
+
+		if (!value || value->string_value.empty())
+			return value;
 
 		current_config_info->save_config_container(value);
 
