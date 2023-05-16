@@ -20,6 +20,56 @@
 
 LIBCXXW_NAMESPACE_START
 
+#if 0
+grid_map_t::lock::lock(grid_map_t &m) : real_grid_map_t::lock{m}
+{
+	ptr=&m;
+	if (&m == DEBUG3)
+	{
+		bool found=false;
+
+		size_t r=0;
+		size_t c=0;
+
+		for (const auto &row:(**this)->elements)
+		{
+			c=0;
+			for (const auto &col:row)
+			{
+				if (&*col->grid_element->impl == DEBUG)
+				{
+					found=true;
+					break;
+				}
+				++c;
+			}
+			if (found) break;
+			++r;
+		}
+		std::cout << "lock: FOUND=" << found << std::endl;
+		if (found)
+			std::cout << "    " << r << " " << c << std::endl;
+	}
+}
+
+grid_map_t::lock::~lock()
+{
+	if (ptr == DEBUG3)
+	{
+		bool found=false;
+
+		for (const auto &row:(**this)->elements)
+			for (const auto &col:row)
+			{
+				if (&*col->grid_element->impl == DEBUG)
+					found=true;
+			}
+
+		std::cout << "~lock: FOUND=" << found << std::endl;
+	}
+}
+#endif
+
 // #define PROCESS_UPDATED_POSITION_DEBUG
 
 // #define STRAIGHT_BORDERS_DEBUG

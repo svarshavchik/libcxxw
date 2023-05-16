@@ -54,9 +54,26 @@ struct grid_map_t : public mpobj<ref<grid_map_infoObj>, std::recursive_mutex> {
 };
 #else
 
+#if 0
+typedef mpobj<ref<grid_map_infoObj>, std::recursive_mutex> real_grid_map_t;
+
+struct LIBCXX_HIDDEN grid_map_t : real_grid_map_t {
+
+	using real_grid_map_t::real_grid_map_t;
+
+	struct LIBCXX_HIDDEN lock : real_grid_map_t::lock {
+
+		grid_map_t *ptr;
+		lock(grid_map_t &);
+		~lock();
+
+		using real_grid_map_t::lock::operator *;
+	};
+};
+#else
 //! Internal structure used by the \ref gridlayoutmanager "grid layout manager".
 typedef mpobj<ref<grid_map_infoObj>, std::recursive_mutex> grid_map_t;
-
+#endif
 #endif
 
 LIBCXXW_NAMESPACE_END

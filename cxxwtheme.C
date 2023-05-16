@@ -495,6 +495,7 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 			},
 			 new_option_combobox);
 	}
+	c->show_all();
 }
 
 static void create_demo(const w::booklayoutmanager &lm,

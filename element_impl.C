@@ -49,7 +49,7 @@ LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
 
 LIBCXXW_NAMESPACE_START
 
-// #define DEBUG_EXPOSURE_CALCULATIONS
+// #define DEBUG_EXPOSURE_CALCULATIONS 1
 
 elementObj::implObj::implObj(size_t nesting_level,
 			     generic_windowObj::handlerObj
@@ -1126,16 +1126,19 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 
 #ifdef DEBUG_EXPOSURE_CALCULATIONS
 
-	std::cout << "Exposure: " << objname() << ": "
-		  << data(IN_THREAD).current_position << std::endl;
+	if (DEBUG_EXPOSURE_CALCULATIONS)
+	{
+		std::cout << "Exposure: " << objname() << ": "
+			  << data(IN_THREAD).current_position << std::endl;
 
-	for (const auto &r:areas)
-		std::cout << "        " << r << std::endl;
+		for (const auto &r:areas)
+			std::cout << "        " << r << std::endl;
 
-	std::cout << "    Viewport:" << std::endl;
+		std::cout << "    Viewport:" << std::endl;
 
-	for (const auto &r:di.element_viewport)
-		std::cout << "        " << r << std::endl;
+		for (const auto &r:di.element_viewport)
+			std::cout << "        " << r << std::endl;
+	}
 #endif
 	// The intersection of areas, and the calculated viewport, is what
 	// we need to draw.
@@ -1149,10 +1152,13 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 
 #ifdef DEBUG_EXPOSURE_CALCULATIONS
 
-	std::cout << "    Draw:" << std::endl;
+	if (DEBUG_EXPOSURE_CALCULATIONS)
+	{
+		std::cout << "    Draw:" << std::endl;
 
-	for (const auto &r:draw_area)
-		std::cout << "        " << r << std::endl;
+		for (const auto &r:draw_area)
+			std::cout << "        " << r << std::endl;
+	}
 #endif
 
 	if (full_redraw_scheduled(IN_THREAD))
@@ -1201,6 +1207,25 @@ void elementObj::implObj::draw(ONLY IN_THREAD,
 {
 	if (areas.empty() || di.element_viewport.empty())
 		return; // Don't bother.
+
+#ifdef DEBUG_EXPOSURE_CALCULATIONS
+
+	if (DEBUG_EXPOSURE_CALCULATIONS)
+	{
+		std::cout << "draw: "
+			  << get_absolute_location(IN_THREAD);
+
+		if (DO_NOT_DRAW(IN_THREAD))
+			std::cout << " CLEAR";
+		std::cout << "\n";
+		for (auto &area: areas)
+			std::cout << "    " << area << "\n";
+		std::cout << "viewport:\n";
+		for (auto &area: di.element_viewport)
+			std::cout << "    " << area << "\n";
+		std::cout << std::flush;
+	}
+#endif
 
 #ifdef DEBUG_ACTUAL_DRAW
 	DEBUG_ACTUAL_DRAW();
