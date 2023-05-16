@@ -11,6 +11,7 @@
 #include "x/w/dialog.H"
 #include <x/xml/doc.H>
 #include <x/xml/xpath.H>
+#include <x/xml/escape.H>
 #include <x/exception.H>
 #include <x/logger.H>
 #include <x/property_value.H>
@@ -114,7 +115,7 @@ screen_positions_handle screen_positionsObj::implObj::config_handle(
 	p = "ns:";
 	p += type;
 	p += "[libcxx:name=";
-	p += xml::quote_string_literal(name);
+	p += xml::xpathescapestr(name);
 	p += "]";
 
 	std::string s;
@@ -135,7 +136,7 @@ screen_positions_handle screen_positionsObj::implObj::config_handle(
 		s += sep;
 		s += "libcxx:window[";
 		s += "libcxx:name=";
-		s += xml::quote_string_literal(p);
+		s += xml::xpathescapestr(p);
 		s += "]";
 		sep="/";
 	}

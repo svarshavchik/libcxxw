@@ -69,12 +69,12 @@ See COPYING for distribution information.
 
 &ns;::w::input_field_config config{30};
 
-config.input_field_search_callback=
+config.input_field_search.emplace(
     []
     (const &ns;::w::input_field_search_info &amp;search_info)
     {
           // ...
-    };</programlisting>
+    });</programlisting>
       </informalexample>
     </blockquote>
 
@@ -91,10 +91,12 @@ config.input_field_search_callback=
       popup to the search input field.
       <varname>input_field_search</varname> is a small object with two
       fields: a <varname>callback</varname> for the actual callable object,
-      and a
+      and a <varname>search_format</varname>. This is a
       <ulink url="&link-enum-x--w-bidi-format;"><classname>&ns;::w::bidi_format</classname></ulink>
-      that sets whether the search string received by the callback
-      has <link linkend="bidi">bi-directional markers</link>.
+      value that sets whether the search string received by the callback
+      has <link linkend="bidi">bi-directional markers</link>,
+      and defaults to
+      <ulink url="&link-enum-x--w-bidi-format;"><literal>&ns;::w::bidi_format::none</literal></ulink>.
     </para>
 
     <para>

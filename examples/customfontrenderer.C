@@ -112,6 +112,9 @@ class my_font_renderer_implObj : public x::w::scratch_buffer_draw<
 	x::w::dim_t descender;
 	size_t shadow;
 
+protected:
+	using superclass_t::do_draw;
+
 public:
 
 	my_font_renderer_implObj(const x::w::container_impl &parent_container,

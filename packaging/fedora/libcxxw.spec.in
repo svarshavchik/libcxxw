@@ -53,6 +53,7 @@ This package installs the LibCXXW printing dialog library.
 Group: Development/Libraries
 Summary: LibCXXW development libraries
 Requires: %{name} = 0:%{version}-%{release}
+Requires: %{name}-cups = 0:%{version}-%{release}
 Requires: libcxxbase-abi = %{libcxx_version}
 Requires: libX11-devel
 Provides: libcxxw-abi = @ABIVER@
