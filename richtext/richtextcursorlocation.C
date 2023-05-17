@@ -593,6 +593,8 @@ bool richtextcursorlocationObj::moveto(ONLY IN_THREAD, coord_t x, coord_t y)
 	if (y < 0)
 		y=0;
 
+	if (x < 0)
+		x=0;
 	assert_or_throw(my_fragment,
 			"Internal error: my_fragment is null in moveto()");
 
