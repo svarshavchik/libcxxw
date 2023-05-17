@@ -498,14 +498,14 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 	c->show_all();
 }
 
-static void create_demo(const w::booklayoutmanager &lm,
-			const w::const_uigenerators &generators,
-			w::uielements &factories);
+static void create_demo(w::uielements &factories);
 
 static void file_menu(const w::main_window &mw,
-		      const w::listlayoutmanager &lm);
+		      const w::const_uigenerators &generators,
+		      w::uielements &factories);
 static void help_menu(const w::main_window &mw,
-		      const w::listlayoutmanager &lm);
+		      const w::const_uigenerators &generators,
+		      w::uielements &factories);
 
 static w::container create_main_window(const w::main_window &mw,
 				       const w::const_uigenerators &generators,
@@ -513,17 +513,11 @@ static w::container create_main_window(const w::main_window &mw,
 {
 	w::gridlayoutmanager glm=mw->get_layoutmanager();
 
-	glm->row_alignment(0, w::valign::middle);
-
 	// [Theme:] [combobox] [Scale:] [x%] [canvas]
 	//
 	// [        options           ] [ scrollbar ]
 	//
 	// [             demo container             ]
-
-	auto f=glm->append_row();
-
-	f->halign(w::halign::right).create_label("Theme: ");
 
 	auto conn=mw->get_screen()->get_connection();
 
@@ -591,31 +585,38 @@ static w::container create_main_window(const w::main_window &mw,
 					 ->options_container);
 		}};
 
-	f->create_focusable_container
-		([&]
-		 (const auto &new_container)
-		 {
-			 w::standard_comboboxlayoutmanager
-				 lm=new_container->get_layoutmanager();
+	std::vector<w::list_item_param> descriptions;
 
-			 std::vector<w::list_item_param> descriptions;
+	descriptions.reserve(theme_info->available_themes.size());
 
-			 descriptions.reserve(theme_info
-					      ->available_themes.size());
+	std::transform(theme_info->available_themes.begin(),
+		       theme_info->available_themes.end(),
+		       std::back_insert_iterator{descriptions},
+		       []
+		       (const auto &available_theme)
+		       {
+			       return available_theme.description;
+		       });
 
-			 std::transform(theme_info->available_themes.begin(),
-					theme_info->available_themes.end(),
-					std::back_insert_iterator{descriptions},
-					[]
-					(const auto &available_theme)
-					{
-						return available_theme
-							.description;
-					});
-			 lm->append_items(descriptions);
-			 lm->autoselect(i);
-		 },
-		 themes_combobox);
+	factories.factories.emplace(
+		"themes_combobox",
+		[&]
+		(const auto &f)
+		{
+			f->create_focusable_container(
+				[&]
+				(const auto &new_container)
+				{
+					w::standard_comboboxlayoutmanager
+						lm=new_container
+						->get_layoutmanager();
+
+					lm->append_items(descriptions);
+					lm->autoselect(i);
+				},
+				themes_combobox);
+		}
+	);
 
 	// Sanity check.
 
@@ -631,32 +632,49 @@ static w::container create_main_window(const w::main_window &mw,
 
 	initial_scale << theme_info->scale << "%";
 
-	f->halign(w::halign::right).left_padding(4).create_label("Scale:");
+	w::labelptr scale_label;
 
-	auto scale_label=f->create_label(initial_scale.str());
+	factories.factories.emplace(
+		"scale_label",
+		[&]
+		(const auto &f)
+		{
+			scale_label=f->create_label(initial_scale.str());
+		}
+	);
 
-	f->create_canvas();
+	x::w::containerptr options_container;
+	x::w::scrollbarptr scale_scrollbar;
 
-	glm->row_alignment(1, w::valign::top);
+	factories.factories.emplace(
+		"options_container",
+		[&]
+		(const auto &f)
+		{
+			options_container=f->create_container(
+				[&]
+				(const auto &c)
+				{
+					theme_info->set_theme_options(mw, c);
+				},
+				w::new_gridlayoutmanager{});
+		});
 
-	f=glm->append_row();
+	factories.factories.emplace(
+		"scale_scrollbar",
+		[&]
+		(const auto &f)
+		{
+			w::scrollbar_config config{
+				(SCALE_MAX-SCALE_MIN)/SCALE_INC+1};
 
-	auto options_container=
-		f->colspan(3).create_container
-		([&]
-		 (const auto &c)
-		 {
-			 theme_info->set_theme_options(mw, c);
-		 },
-		 w::new_gridlayoutmanager{});
+			config.value=(theme_info->scale-SCALE_MIN)/SCALE_INC;
+			config.minimum_size=100;
 
-	w::scrollbar_config config{(SCALE_MAX-SCALE_MIN)/SCALE_INC+1};
+			scale_scrollbar=f->create_horizontal_scrollbar(config);
+		});
 
-	config.value=(theme_info->scale-SCALE_MIN)/SCALE_INC;
-	config.minimum_size=100;
-
-	auto scale_scrollbar=
-		f->colspan(2).create_horizontal_scrollbar(config);
+	glm->generate("main_layout", generators, factories);
 
 	scale_scrollbar->on_update
 		([scale_label, conn, mw=make_weak_capture(mw)]
@@ -709,132 +727,87 @@ static w::container create_main_window(const w::main_window &mw,
 					  ->options_container);
 		 });
 
-	f=glm->append_row();
-	f->top_padding(4).bottom_padding(4).halign(w::halign::center)
-		.colspan(5).create_focusable_container
-		([&]
-		 (const auto &container)
-		 {
-			 create_demo(container->get_layoutmanager(),
-				     generators, factories);
-		 },
-		 w::new_booklayoutmanager{});
 
-	f=glm->append_row();
-	f->halign(w::halign::right).colspan(5).create_container
-		([&]
-		 (const auto &container)
-		 {
-			 w::gridlayoutmanager
-				 glm=container->get_layoutmanager();
+	create_demo(factories);
 
-			 auto f=glm->append_row();
+	x::w::button b=factories.get_element("main_button_cancel");
 
-			 f->create_button
-				 ("Cancel", { LIBCXX_NAMESPACE::w::shortcut
-					 {'\e'}
-				 })->on_activate
-				 ([]
-				  (THREAD_CALLBACK,
-				   const auto &ignore1,
-				   const auto &ignore2)
-				  {
-					  appstate_t appstate;
+	b->on_activate
+		([]
+		 (THREAD_CALLBACK,
+		  const auto &ignore1,
+		  const auto &ignore2)
+		{
+			appstate_t appstate;
 
-					  if (!appstate)
-						  return;
+			if (!appstate)
+				return;
 
-					  appstate->close();
-				  });
+			appstate->close();
+		});
 
-			 f->create_button
-				 ("Set")->on_activate
-				 ([conn]
-				  (ONLY IN_THREAD,
-				   const auto &ignore1,
-				   const auto &ignore2)
-				  {
-					  theme_info_t theme_info;
+	b=factories.get_element("main_button_set");
+	b->on_activate
+		([conn]
+		 (ONLY IN_THREAD,
+		  const auto &ignore1,
+		  const auto &ignore2)
+		{
+			theme_info_t theme_info;
 
-					  if (!theme_info)
-						  return;
+			if (!theme_info)
+				return;
 
-					  appstate_t appstate;
+			appstate_t appstate;
 
-					  if (!appstate)
-						  return;
+			if (!appstate)
+				return;
 
-					  theme_info->validate_options();
-					  conn->set_theme
-						  (IN_THREAD,
-						   theme_info->name,
-						   theme_info->scale,
-						   theme_info
-						   ->enabled_theme_options,
-						   false,
-						   {});
-					  appstate->close();
-				  });
+			theme_info->validate_options();
+			conn->set_theme
+				(IN_THREAD,
+				 theme_info->name,
+				 theme_info->scale,
+				 theme_info
+				 ->enabled_theme_options,
+				 false,
+				 {});
+			appstate->close();
+		});
 
-			 f->create_button
-				 ({
-					 "underline"_decoration,
-					 "S",
-					 "no"_decoration,
-					 "et and save"
-				 }, {
-					 LIBCXX_NAMESPACE::w::default_button(),
-						 LIBCXX_NAMESPACE::w::shortcut
-					 {_("${context:cxxwtheme_save}Alt-S")}
-				 })->on_activate
-				 ([conn]
-				  (ONLY IN_THREAD,
-				   const auto &ignore1,
-				   const auto &ignore2)
-				  {
-					  theme_info_t theme_info;
+	b=factories.get_element("main_button_save");
+	b->on_activate
+		([conn]
+		 (ONLY IN_THREAD,
+		  const auto &ignore1,
+		  const auto &ignore2)
+		{
+			theme_info_t theme_info;
 
-					  if (!theme_info)
-						  return;
+			if (!theme_info)
+				return;
 
-					  appstate_t appstate;
+			appstate_t appstate;
 
-					  if (!appstate)
-						  return;
+			if (!appstate)
+				return;
 
-					  theme_info->validate_options();
-					  conn->set_and_save_theme
-						  (IN_THREAD,
-						   theme_info->name,
-						   theme_info->scale,
-						   theme_info
-						   ->enabled_theme_options);
-					  appstate->close();
-				  });
-		 },
-		 w::new_gridlayoutmanager{});
+			theme_info->validate_options();
+			conn->set_and_save_theme
+				(IN_THREAD,
+				 theme_info->name,
+				 theme_info->scale,
+				 theme_info
+				 ->enabled_theme_options);
+			appstate->close();
+		});
 
-	auto mb=mw->get_menubarlayoutmanager();
+	file_menu(mw, generators, factories);
+	help_menu(mw, generators, factories);
 
-	auto mbf=mb->append_menus();
-
-	mbf->add_text(T(_("${context:cxxwtheme}File")),
-		      [&]
-		      (const auto &lm)
-		      {
-			      file_menu(mw, lm);
-		      },
-		      w::shortcut{_("${context:cxxwtheme_file}Alt-F")});
-
-	mbf=mb->append_right_menus();
-
-	mbf->add_text(T(_("${context:cxxwtheme}Help")),
-		      [&]
-		      (const auto &lm)
-		      {
-			      help_menu(mw, lm);
-		      },
-		      w::shortcut{_("${context:cxxwtheme_save}Alt-H")});
+	mw->get_menubarlayoutmanager()->generate(
+		"main_menu", generators, factories
+	);
 
 	mw->get_menubar()->show();
 
@@ -842,7 +815,8 @@ static w::container create_main_window(const w::main_window &mw,
 }
 
 static void file_menu(const w::main_window &mw,
-		      const w::listlayoutmanager &lm)
+		      const w::const_uigenerators &generators,
+		      w::uielements &factories)
 {
 	w::file_dialog_config conf{
 		[](ONLY IN_THREAD,
@@ -900,54 +874,44 @@ static void file_menu(const w::main_window &mw,
 		 {
 		 });
 
-	lm->append_items({
-			[file_new](THREAD_CALLBACK,
-				   const w::list_item_status_info_t &info)
-			{
-				file_new->dialog_window->show_all();
-			},
-			T(_("${context:cxxwtheme}New")),
-			[file_open](THREAD_CALLBACK,
+	factories.list_item_status_change_callbacks.emplace(
+		"file_new_callback",
+		[file_new](THREAD_CALLBACK,
+			   const w::list_item_status_info_t &info)
+		{
+			file_new->dialog_window->show_all();
+		});
+
+	factories.list_item_status_change_callbacks.emplace(
+		"file_open_callback",
+		[file_open](THREAD_CALLBACK,
+			    const w::list_item_status_info_t &info)
+		{
+			file_open->dialog_window->show_all();
+		});
+
+	factories.list_item_status_change_callbacks.emplace(
+		"file_ok_cancel_callback",
+		[file_ok_cancel](THREAD_CALLBACK,
+				 const w::list_item_status_info_t &info)
+		{
+			file_ok_cancel->dialog_window->show_all();
+		});
+
+	factories.list_item_status_change_callbacks.emplace(
+		"file_input_callback",
+		[file_input_dialog](THREAD_CALLBACK,
 				    const w::list_item_status_info_t &info)
-			{
-				file_open->dialog_window->show_all();
-			},
-			T(_("${context:cxxwtheme}Open")),
-			[file_ok_cancel](THREAD_CALLBACK,
-					 const w::list_item_status_info_t &info)
-			{
-				file_ok_cancel->dialog_window->show_all();
-			},
-			T(_("${context:cxxwtheme}Ok/Cancel")),
-			[file_input_dialog](THREAD_CALLBACK,
-					    const w::list_item_status_info_t &info)
-			{
-				file_input_dialog->input_dialog_field->set("");
-				file_input_dialog->dialog_window->show_all();
-			},
-			w::shortcut{_("${context:cxxwtheme_input}Alt-I")},
-			T(_("${context:cxxwtheme}Input something")),
-
-			w::separator{},
-
-			w::menuoption{},
-			T(_("${context:cxxwtheme}Option")),
-
-			w::submenu{[](const auto &submenu_lm)
-				{
-					submenu_lm->append_items
-						({T(_("${context:cxxwtheme}Submenu item 1")),
-						  T(_("${context:cxxwtheme}Submenu item 2")),
-						  T(_("${context:cxxwtheme}Submenu item 3"))});
-				}},
-			T(_("${context:cxxwtheme}Submenu"))
-		    });
-
+		{
+			file_input_dialog->input_dialog_field->set("");
+			file_input_dialog->dialog_window->show_all();
+		});
 }
 
 
 static void help_menu(const w::main_window &mw,
-		      const w::listlayoutmanager &lm)
+		      const w::const_uigenerators &generators,
+		      w::uielements &factories)
 {
 	auto help_about=mw->create_ok_dialog
 		({"help_about@cxxwtheme.w.libcxx.com", true},
@@ -962,14 +926,13 @@ static void help_menu(const w::main_window &mw,
 		 {
 		 });
 
-	lm->append_items({
-			[help_about](THREAD_CALLBACK,
-				     const w::list_item_status_info_t &info)
-			{
-				help_about->dialog_window->show_all();
-			},
-			w::shortcut{_("${context:cxxwtheme_save}F1")},
-			T(_("${context:cxxwtheme}About"))});
+	factories.list_item_status_change_callbacks.emplace(
+		"help_about_callback",
+		[help_about](THREAD_CALLBACK,
+			     const w::list_item_status_info_t &info)
+		{
+			help_about->dialog_window->show_all();
+		});
 }
 
 
@@ -977,12 +940,8 @@ static void demo_input(w::uielements &factories);
 static void demo_misc(w::uielements &factories);
 static void item_table(w::uielements &factories);
 
-static void create_demo(const w::booklayoutmanager &lm,
-			const w::const_uigenerators &generators,
-			w::uielements &factories)
+static void create_demo(w::uielements &factories)
 {
-	lm->generate("demo", generators, factories);
-
 	demo_input(factories);
 	demo_misc(factories);
 	item_table(factories);

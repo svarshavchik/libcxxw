@@ -4245,6 +4245,16 @@ List of values:
       <object>list_items_parse_info</object>
 
       <parameter>
+	<scalar>""</scalar>
+      </parameter>
+    </function>
+
+    <function>
+      <name>menugroup</name>
+      <invoke>add_menuoption</invoke>
+      <object>list_items_parse_info</object>
+
+      <parameter>
 	<name>groupname</name>
 	<xpath>.</xpath>
 	<type>single_value</type>
@@ -4266,6 +4276,17 @@ List of values:
 	<name>submenu</name>
 	<xpath>.</xpath>
 	<type>compiler.listlayout_parseconfig</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>status_change</name>
+      <invoke>add_status_change</invoke>
+      <object>list_items_parse_info</object>
+      <parameter>
+	<name>name</name>
+	<xpath>.</xpath>
+	<type>single_value</type>
       </parameter>
     </function>
   </parser>

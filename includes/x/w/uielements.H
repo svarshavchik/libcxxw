@@ -14,6 +14,7 @@
 #include <x/w/synchronized_axisfwd.H>
 #include <x/w/copy_cut_paste_menu_items.H>
 #include <x/w/layoutmanagerfwd.H>
+#include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/text_param.H>
 #include <x/w/validated_input_field_contents.H>
 #include <x/w/validated_input_fieldfwd.H>
@@ -43,7 +44,7 @@ struct named_element_factory {
 
 /*! XML element factory.
 
-Passed to a supported layout manager's generate(), to
+This object gets passed to a supported layout manager's generate(), to
 \ref uigenerators "generate the contents of the container from an XML template".
 
 \note
@@ -54,12 +55,13 @@ this element factory object goes out of scope and gets destroyed.
 
 \note
 This object stores generated layout managers, factories, and other
-objects which hold internal locks that will block the connection thread,
-did I mention that this object should be created in automatic scoped, used
-and then go out of scope and get destroyed?
+objects which hold internal locks that will block the connection thread.
+For that reason it is important for this object to be destroyed after
+the generate(), to unblock the connection thread and update the window
+with all generated widgets.
 
-The widgets get created from the template. The first member of this object
-is a map for custom widget factories.
+The following example uses aggregate initialization to initialize the
+first member of this object: a map for custom widget factories.
 The key is the custom \<element>'s \<name> from the
 XML template. The value is a lambda, or a callable object. \<element>
 invokes the lambda, passing to it a \ref factory "factory". The lambda
@@ -96,8 +98,6 @@ In the XML template, an
 
 results in the corresponding lambda getting invoked.
 
-The second member of this object is a map for custom layout manager
-
 */
 
 struct uielements {
@@ -109,9 +109,14 @@ struct uielements {
 	std::unordered_map<std::string,
 			   functionref<void (const factory &)>> factories;
 
-	//! Custom creators for layout managers.
+	/*! Custom creators for layout managers.
 
-	//! Referenced by name, from the template.
+	  Referenced by name, from the template.
+
+	  \code
+	  <creator>name</creator>
+	  \endcode
+	*/
 
 	std::unordered_map<std::string,
 			   functionref<void (const layoutmanager &)>
@@ -120,6 +125,18 @@ struct uielements {
 	//! Pre-defined text hotspot callbacks
 
 	label_hotspots_t label_hotspots;
+
+	/*! Generators for list item status change callbacks
+
+	  Invoked by:
+
+	  \code
+	  <status_change>name</status_change>
+	  \endcode
+	*/
+	std::unordered_map<std::string,
+			   list_item_status_change_callback
+			   > list_item_status_change_callbacks;
 
 	//! Input field validators
 

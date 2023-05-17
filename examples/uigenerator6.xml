@@ -116,12 +116,12 @@
 	    <!-- A radio group of two menu options -->
 
 	    <name>file_plain_format</name>
-	    <menuoption>optiongroup@examples.w.libcxx.com</menuoption>
+	    <menugroup>optiongroup@examples.w.libcxx.com</menugroup>
 	    <selected /> <!-- Selected by default -->
 	    <label type="theme_text">Plain</label>
 
 	    <name>file_full_format</name>
-	    <menuoption>optiongroup@examples.w.libcxx.com</menuoption>
+	    <menugroup>optiongroup@examples.w.libcxx.com</menugroup>
 	    <label type="theme_text">Full</label>
 
 	  </items>
@@ -150,7 +150,7 @@
       <menu>
 	<append_items>
 	  <items>
-	    <name>help_about</name>
+	    <status_change>help_about_callback</status_change>
 	    <label type="theme_text">About...</label>
 	  </items>
 	</append_items>

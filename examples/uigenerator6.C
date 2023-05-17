@@ -60,6 +60,19 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	x::w::menubarlayoutmanager mb=
 		main_window->get_menubarlayoutmanager();
 
+	element_factory.list_item_status_change_callbacks.emplace(
+		"help_about_callback",
+		[]
+		(ONLY IN_THREAD,
+		 const x::w::list_item_status_info_t &i)
+		{
+			if (std::holds_alternative<x::w::initial>(i.trigger))
+				return;
+
+			std::cout << "Help/About" << std::endl;
+		}
+	);
+
 	mb->generate("main-window-menu", generator, element_factory);
 
 	// Attach callbacks for the menu items.
@@ -168,19 +181,6 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 			 std::cout << "File/Full Format: "
 				   << i.selected << std::endl;
-		 });
-
-	h=element_factory.get_listitemhandle("help_about");
-
-	h->on_status_update
-		([]
-		 (ONLY IN_THREAD,
-		  const x::w::list_item_status_info_t &i)
-		 {
-			 if (std::holds_alternative<x::w::initial>(i.trigger))
-				 return;
-
-			 std::cout << "Help/About" << std::endl;
 		 });
 
 	// In the theme file:

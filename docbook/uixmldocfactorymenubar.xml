@@ -86,6 +86,32 @@ See COPYING for distribution information.
       element specifies the menu's
       <link linkend="uixmlappearance">appearance object</link>.
     </para>
+
+    <para>
+      The <quote>Help / About</quote> menu item gives an example of an
+      alternative to using a
+      <classname>&ns;::w::listitemhandle</classname>:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Install the callback in
+	  <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
+	  <varname>list_item_status_change_callback</varname> container,
+	  before calling <function>generate</function>().
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Use <tag class="element">status_change</tag> instead of
+	  <link linkend="uixmllistitemvaluename"><tag class='element'>name</tag></link>
+	  to <link linkend="uixmllistitemvaluestatus">install status change
+	    callbacks</link>.
+	</para>
+      </listitem>
+    </itemizedlist>
   </section>
 </section>
 

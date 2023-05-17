@@ -41,6 +41,7 @@ struct uicompiler::list_items_parse_info_t {
 
 	void add_submenu(const listlayoutmanager_generator &gens) const;
 
+	void add_status_change(const std::string &name) const;
 };
 
 

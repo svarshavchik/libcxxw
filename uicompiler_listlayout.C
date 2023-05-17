@@ -144,6 +144,31 @@ void uicompiler::list_items_parse_info_t::add_submenu(
 	});
 }
 
+void uicompiler::list_items_parse_info_t::add_status_change(
+	const std::string &name
+) const
+{
+	params->emplace_back(
+		[name]
+		(std::vector<list_item_param> &params,
+		 uielements &elements)
+		{
+			auto &cb=elements.list_item_status_change_callbacks;
+
+			auto iter=cb.find(name);
+
+			if (iter == cb.end())
+			{
+				throw EXCEPTION(
+					gettextmsg(
+						_("List item status change "
+						  "callback %1% not defined"),
+						name));
+			}
+			params.emplace_back(iter->second);
+		});
+}
+
 uicompiler::list_items_params
 uicompiler::list_items_param_value(const ui::parser_lock &orig_lock,
 				   const char *element,

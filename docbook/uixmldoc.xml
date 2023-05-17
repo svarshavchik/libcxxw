@@ -1728,10 +1728,11 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 	  </term>
 	  <listitem>
 	    <para>
-	      Inserts
+	      <tag class='emptytag'>menuoption</tag>
+	      inserts
 	      a <classname>&ns;::w::menuoption</classname>
 	      <link linkend="menuattributes">menu attribute</link>, in a
-	      <classname>&ns;::w::list_item_param</classname>. in a
+	      <classname>&ns;::w::list_item_param</classname>. In a
 	      <link linkend="uixmlfactorymenubar"><tag class='attribute'>type</tag>=<quote>menubar</quote>
 		<tag class='element'>factory</tag>s</link>
 	      that creates menu items.
@@ -1741,7 +1742,7 @@ auto generators=&ns;::w::const_uigenerators::create("uigenerator4.xml", catalog)
 
 	<varlistentry>
 	  <term>
-	    <tag class='element'>menuoption</tag><replaceable>name</replaceable><tag class='endtag'>menuoption</tag>
+	    <tag class='element'>menugroup</tag><replaceable>name</replaceable><tag class='endtag'>menugroup</tag>
 	  </term>
 
 	  <listitem>
@@ -1882,6 +1883,68 @@ layout->generate("main-window-grid",
 	  <tag class='element'>name</tag> element values are optional, but
 	  if specified every item in a &listitemparamvalueslist; must have
 	  a <tag class='element'>name</tag>.
+	</para>
+      </section>
+
+      <section id="uixmllistitemvaluestatus">
+	<title>List item
+	  <tag class='element'>status_change</tag> callbacks</title>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+   <items>
+
+      <status_change>file_new_callback</status_change>
+      <label>New</label>
+      <status_change>file_open_callback</status_change>
+      <label>Open</label>
+
+   </items>
+]]>
+
+&ns;::w::uielements elements;
+
+elements.list_item_status_change_callbacks.emplace(
+        "file_new_callback",
+        (ONLY IN_THREAD, const w::list_item_status_info_t &amp;info)
+        {
+            file_new(IN_THREAD);
+        });
+
+    factories.list_item_status_change_callbacks.emplace(
+        "file_open_callback",
+        (ONLY IN_THREAD, const w::list_item_status_info_t &amp;info)
+        {
+            if (std::holds_alternative&lt;x::w::initial&gt;(info.trigger))
+                return;
+            file_open(IN_THREAD);
+        });
+
+
+layout->generate("main-menu",
+                 generator, elements);
+</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  A
+	  <tag class='element'>status_change</tag> element in a
+	  &listitemparamvalueslist;
+	  installs a <link linkend="listcallbacks">list status change
+	    callback</link> (status change callbacks also report menu
+	  item selections).
+	  <ulink url="&link-x--w--uielements;"><classname>&ns;::w::uielements</classname></ulink>'s
+	  <varname>list_item_status_change_callbacks</varname> member is
+	  an associate container that maps callback names to the actual
+	  callbacks.
+	</para>
+
+	<para>
+	  <tag class='element'>status_change</tag> retrieves the callback,
+	  by name, and puts it into the
+	  <classname>&ns;::w::list_item_param</classname>.
 	</para>
       </section>
     </section>

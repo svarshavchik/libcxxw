@@ -1,5 +1,185 @@
 <?xml version="1.0"?>
 <theme version="1">
+  <factory id="help_menu" type="menubar">
+    <add>
+      <title>
+        <element>
+          <label type="theme_text">${context:cxxwtheme}Help</label>
+        </element>
+      </title>
+      <menu>
+        <append_items>
+          <items>
+            <status_change>help_about_callback</status_change>
+            <shortcut type="theme_text">${context:cxxwtheme_about}F1</shortcut>
+            <label type="theme_text">${context:cxxwtheme}About</label>
+          </items>
+        </append_items>
+      </menu>
+      <shortcut type="theme_text">${context:cxxwtheme_help}ALT-H</shortcut>
+    </add>
+  </factory>
+  <factory id="file_menu" type="menubar">
+    <add>
+      <title>
+        <element>
+          <label type="theme_text">${context:cxxwtheme}File</label>
+        </element>
+      </title>
+      <menu>
+        <append_items>
+          <items>
+            <status_change>file_new_callback</status_change>
+            <label>${context:cxxwtheme}New</label>
+            <status_change>file_open_callback</status_change>
+            <label>${context:cxxwtheme}Open</label>
+            <status_change>file_ok_cancel_callback</status_change>
+            <label>${context:cxxwtheme}Ok/Cancel</label>
+            <status_change>file_input_callback</status_change>
+            <shortcut type="theme_text">${context:cxxwtheme_input}Alt-I</shortcut>
+            <label>${context:cxxwtheme}Input something</label>
+            <separator/>
+            <menuoption/>
+            <label>${context:cxxwtheme}Option</label>
+            <submenu>
+              <append_items>
+                <items>
+                  <label>${context:cxxwtheme}Submenu item 1</label>
+                  <label>${context:cxxwtheme}Submenu item 2</label>
+                  <label>${context:cxxwtheme}Submenu item 3</label>
+                </items>
+              </append_items>
+            </submenu>
+            <label>${context:cxxwtheme}Submenu</label>
+          </items>
+        </append_items>
+      </menu>
+      <shortcut type="theme_text">${context:cxxwtheme_file}ALT-F</shortcut>
+    </add>
+  </factory>
+  <layout id="main_menu" type="menubar">
+    <append_menus>
+      <name>file_menu</name>
+    </append_menus>
+    <append_right_menus>
+      <name>help_menu</name>
+    </append_right_menus>
+  </layout>
+  <factory id="main_layout_theme_row" type="grid">
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:cxxwtheme}Theme:</label>
+    </element>
+    <element>
+      <name>themes_combobox</name>
+    </element>
+    <halign>right</halign>
+    <element>
+      <label type="theme_text">${context:cxxwtheme}Scale:</label>
+    </element>
+    <element>
+      <name>scale_label</name>
+    </element>
+    <element>
+      <canvas/>
+    </element>
+  </factory>
+  <factory id="main_layout_option_scrollbar_row" type="grid">
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+    <element>
+      <name>options_container</name>
+    </element>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <name>scale_scrollbar</name>
+    </element>
+  </factory>
+  <factory id="main_layout_button_row" type="grid">
+    <halign>right</halign>
+    <colspan>
+      <columns>5</columns>
+    </colspan>
+    <container>
+      <name>main_button_table</name>
+      <type>grid</type>
+    </container>
+  </factory>
+  <factory id="main_layout_demo_row" type="grid">
+    <padding>
+      <side>top</side>
+      <padding>main_section_padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>main_section_padding</padding>
+    </padding>
+    <colspan>
+      <columns>5</columns>
+    </colspan>
+    <container>
+      <name>demo</name>
+      <type>book</type>
+    </container>
+  </factory>
+  <layout id="main_layout" type="grid">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>main_layout_theme_row</name>
+    </append_row>
+    <valign>
+      <row>1</row>
+      <valign>top</valign>
+    </valign>
+    <append_row>
+      <name>main_layout_option_scrollbar_row</name>
+    </append_row>
+    <append_row>
+      <name>main_layout_demo_row</name>
+    </append_row>
+    <append_row>
+      <name>main_layout_button_row</name>
+    </append_row>
+  </layout>
+  <factory id="main_button_row" type="grid">
+    <element id="main_button_cancel">
+      <button>
+        <element>
+          <label type="theme_text">${context:cxxwtheme}Cancel</label>
+        </element>
+      </button>
+      <shortcut type="theme_text">${context:cxxwtheme}esc</shortcut>
+    </element>
+    <element id="main_button_set">
+      <button>
+        <element>
+          <label type="theme_text">${context:cxxwtheme}Set</label>
+        </element>
+      </button>
+    </element>
+    <element id="main_button_save">
+      <button>
+        <element>
+          <label type="theme_text">${context:cxxwtheme}${decoration:underline}S${decoration:none}et and save</label>
+        </element>
+      </button>
+      <config>
+        <appearance>default_theme</appearance>
+      </config>
+      <shortcut type="theme_text">${context:cxxwtheme_set_and_save}ALT-S</shortcut>
+    </element>
+  </factory>
+  <layout id="main_button_table" type="grid">
+    <append_row>
+      <name>main_button_row</name>
+    </append_row>
+  </layout>
   <layout id="demo_item_list" type="item"/>
   <factory id="demo_item_row2" type="grid">
     <element>
@@ -12,7 +192,7 @@
   </factory>
   <factory id="demo_item_row1" type="grid">
     <element>
-      <label type="theme_text">Pizza Toppings:</label>
+      <label type="theme_text">${context:cxxwtheme}Pizza Toppings:</label>
     </element>
     <element id="demo_item_input_field">
       <config>
@@ -48,7 +228,7 @@
     <add>
       <tab>
         <element>
-          <label type="theme_text">Lists</label>
+          <label type="theme_text">${context:cxxwtheme}Lists</label>
         </element>
       </tab>
       <page>
@@ -61,7 +241,7 @@
     <add>
       <tab>
         <element>
-          <label type="theme_text">Input</label>
+          <label type="theme_text">${context:cxxwtheme}Input</label>
         </element>
       </tab>
       <page>
@@ -74,7 +254,7 @@
     <add>
       <tab>
         <element>
-          <label type="theme_text">Misc</label>
+          <label type="theme_text">${context:cxxwtheme}Misc</label>
         </element>
       </tab>
       <page>
@@ -87,7 +267,7 @@
     <add>
       <tab>
         <element>
-          <label type="theme_text">Table</label>
+          <label type="theme_text">${context:cxxwtheme}Table</label>
         </element>
       </tab>
       <page>
@@ -100,7 +280,7 @@
     <add>
       <tab>
         <element>
-          <label type="theme_text">Item List</label>
+          <label type="theme_text">${context:cxxwtheme}Item List</label>
         </element>
       </tab>
       <page>
@@ -124,7 +304,7 @@
       <name>demo_misc_column2_frame</name>
       <type>border</type>
       <config>
-        <title type="theme_text">Frame title</title>
+        <title type="theme_text">${context:cxxwtheme}Frame title</title>
       </config>
     </container>
   </factory>
@@ -134,7 +314,7 @@
       <padding>misc_frame_padding</padding>
     </padding>
     <element>
-      <label type="theme_text">This is a frame</label>
+      <label type="theme_text">${context:cxxwtheme}This is a frame</label>
     </element>
   </factory>
   <layout id="demo_misc_column2_frame_contents_grid" type="grid">
@@ -168,7 +348,7 @@
   </layout>
   <factory id="demo_misc_column1_row5_button_tooltip_row" type="grid">
     <element>
-      <label type="theme_text">Click me to be busy for 5 seconds
+      <label type="theme_text">${context:cxxwtheme}Click me to be busy for 5 seconds
 
 Lorem ipsum dolor sit amet,
 consectetur adipisicing elit.</label>
@@ -187,7 +367,7 @@ consectetur adipisicing elit.</label>
     <element id="demo_misc_column1_row5_button">
       <button>
         <element>
-          <label type="theme_text">Busy pointer with a tooltip</label>
+          <label type="theme_text">${context:cxxwtheme}Busy pointer with a tooltip</label>
         </element>
       </button>
       <tooltip_name>demo_misc_column1_row5_button_tooltip</tooltip_name>
@@ -197,7 +377,7 @@ consectetur adipisicing elit.</label>
   <factory id="demo_misc_column1_row4_progressbar_contents" type="grid">
     <halign>center</halign>
     <element>
-      <label type="theme_text">75%</label>
+      <label type="theme_text">${context:cxxwtheme}75%</label>
     </element>
   </factory>
   <layout id="demo_misc_column1_row4_progressbar" type="grid">
@@ -218,7 +398,7 @@ consectetur adipisicing elit.</label>
     <element>
       <checkbox>
         <element>
-          <label type="theme_text">Checkbox 3</label>
+          <label type="theme_text">${context:cxxwtheme}Checkbox 3</label>
         </element>
       </checkbox>
     </element>
@@ -226,7 +406,7 @@ consectetur adipisicing elit.</label>
       <group>demo_options</group>
       <radio>
         <element>
-          <label type="theme_text">Radio 3</label>
+          <label type="theme_text">${context:cxxwtheme}Radio 3</label>
         </element>
       </radio>
     </element>
@@ -235,7 +415,7 @@ consectetur adipisicing elit.</label>
     <element>
       <checkbox>
         <element>
-          <label type="theme_text">Checkbox 2</label>
+          <label type="theme_text">${context:cxxwtheme}Checkbox 2</label>
         </element>
       </checkbox>
     </element>
@@ -243,7 +423,7 @@ consectetur adipisicing elit.</label>
       <group>demo_options</group>
       <radio>
         <element>
-          <label type="theme_text">Radio 2</label>
+          <label type="theme_text">${context:cxxwtheme}Radio 2</label>
         </element>
       </radio>
     </element>
@@ -252,7 +432,7 @@ consectetur adipisicing elit.</label>
     <element>
       <checkbox>
         <element>
-          <label type="theme_text">Checkbox 1</label>
+          <label type="theme_text">${context:cxxwtheme}Checkbox 1</label>
         </element>
       </checkbox>
     </element>
@@ -260,7 +440,7 @@ consectetur adipisicing elit.</label>
       <group>demo_options</group>
       <radio>
         <element>
-          <label type="theme_text">Radio 1</label>
+          <label type="theme_text">${context:cxxwtheme}Radio 1</label>
         </element>
       </radio>
     </element>
@@ -295,7 +475,7 @@ consectetur adipisicing elit.</label>
     <element>
       <config>
         <columns>40</columns>
-        <hint type="theme_text">Type something here...</hint>
+        <hint type="theme_text">${context:cxxwtheme}Type something here...</hint>
       </config>
       <input_field/>
     </element>
@@ -324,28 +504,28 @@ consectetur adipisicing elit.</label>
   <layout id="demo_list_editable_combobox" type="editable_combobox">
     <append_items>
       <items>
-        <label type="theme_text">Lorem ipsum</label>
-        <label type="theme_text">dolor sit amet</label>
-        <label type="theme_text">adipisicing elit sed</label>
-        <label type="theme_text">do eiusmod</label>
-        <label type="theme_text">tempor incididunt ut</label>
-        <label type="theme_text">labore et</label>
-        <label type="theme_text">dolore magna</label>
-        <label type="theme_text">aliqua</label>
+        <label type="theme_text">${context:cxxwtheme}Lorem ipsum</label>
+        <label type="theme_text">${context:cxxwtheme}dolor sit amet</label>
+        <label type="theme_text">${context:cxxwtheme}adipisicing elit sed</label>
+        <label type="theme_text">${context:cxxwtheme}do eiusmod</label>
+        <label type="theme_text">${context:cxxwtheme}tempor incididunt ut</label>
+        <label type="theme_text">${context:cxxwtheme}labore et</label>
+        <label type="theme_text">${context:cxxwtheme}dolore magna</label>
+        <label type="theme_text">${context:cxxwtheme}aliqua</label>
       </items>
     </append_items>
   </layout>
   <layout id="demo_list_standard_combobox" type="standard_combobox">
     <append_items>
       <items>
-        <label type="theme_text">Lorem ipsum</label>
-        <label type="theme_text">dolor sit amet</label>
-        <label type="theme_text">adipisicing elit sed</label>
-        <label type="theme_text">do eiusmod</label>
-        <label type="theme_text">tempor incididunt ut</label>
-        <label type="theme_text">labore et</label>
-        <label type="theme_text">dolore magna</label>
-        <label type="theme_text">aliqua</label>
+        <label type="theme_text">${context:cxxwtheme}Lorem ipsum</label>
+        <label type="theme_text">${context:cxxwtheme}dolor sit amet</label>
+        <label type="theme_text">${context:cxxwtheme}adipisicing elit sed</label>
+        <label type="theme_text">${context:cxxwtheme}do eiusmod</label>
+        <label type="theme_text">${context:cxxwtheme}tempor incididunt ut</label>
+        <label type="theme_text">${context:cxxwtheme}labore et</label>
+        <label type="theme_text">${context:cxxwtheme}dolore magna</label>
+        <label type="theme_text">${context:cxxwtheme}aliqua</label>
       </items>
     </append_items>
   </layout>
@@ -368,14 +548,14 @@ consectetur adipisicing elit.</label>
   <layout id="demo_list_text" type="list">
     <append_items>
       <items>
-        <label type="theme_text">Lorem ipsum</label>
-        <label type="theme_text">dolor sit amet</label>
-        <label type="theme_text">adipisicing elit sed</label>
-        <label type="theme_text">do eiusmod</label>
-        <label type="theme_text">tempor incididunt ut</label>
-        <label type="theme_text">labore et</label>
-        <label type="theme_text">dolore magna</label>
-        <label type="theme_text">aliqua</label>
+        <label type="theme_text">${context:cxxwtheme}Lorem ipsum</label>
+        <label type="theme_text">${context:cxxwtheme}dolor sit amet</label>
+        <label type="theme_text">${context:cxxwtheme}adipisicing elit sed</label>
+        <label type="theme_text">${context:cxxwtheme}do eiusmod</label>
+        <label type="theme_text">${context:cxxwtheme}tempor incididunt ut</label>
+        <label type="theme_text">${context:cxxwtheme}labore et</label>
+        <label type="theme_text">${context:cxxwtheme}dolore magna</label>
+        <label type="theme_text">${context:cxxwtheme}aliqua</label>
       </items>
     </append_items>
   </layout>
@@ -486,6 +666,7 @@ consectetur adipisicing elit.</label>
       <name>demo_table_row</name>
     </append_row>
   </layout>
+  <dim id="main_section_padding">4</dim>
   <dim id="misc_frame_padding">4</dim>
   <dim id="demo_table_width">150</dim>
 </theme>
