@@ -1723,7 +1723,7 @@ void editor_implObj::scroll_cursor_into_view(ONLY IN_THREAD)
 {
 	auto pos=cursor->at(IN_THREAD).position;
 
-	ensure_visibility(IN_THREAD, pos);
+	ensure_visibility(IN_THREAD, {pos, false});
 	report_current_cursor_position(IN_THREAD, pos);
 
 	if (bidi_override != UNICODE_BIDI_SKIP)

@@ -395,7 +395,7 @@ void containerObj::implObj::theme_updated(ONLY IN_THREAD,
 
 void containerObj::implObj::ensure_visibility(ONLY IN_THREAD,
 					      elementObj::implObj &e,
-					      const rectangle &r)
+					      const element_visibility_t &v)
 {
 	// First, have the layout manager do any adjustments to the element.
 
@@ -403,18 +403,22 @@ void containerObj::implObj::ensure_visibility(ONLY IN_THREAD,
 			     {
 				     manager->ensure_visibility(IN_THREAD,
 								e,
-								r);
+								v);
 			     });
 
-	ensured_visibility_of_child_element(IN_THREAD, e, r);
+	ensured_visibility_of_child_element(IN_THREAD, e, v);
 }
 
 void containerObj::implObj
 ::ensured_visibility_of_child_element(ONLY IN_THREAD,
 				      elementObj::implObj &e,
-				      const rectangle &r)
+				      const element_visibility_t &v)
 {
-	const auto &my_pos=container_element_impl().data(IN_THREAD).current_position;
+	const auto &my_pos=container_element_impl().data(
+		IN_THREAD
+	).current_position;
+
+	auto &r=v.r;
 
 	// Add the child element (x, y) coordinate to the requested visibility
 	// (x, y) coordinate, to derive the position in this container whose
@@ -453,12 +457,24 @@ void containerObj::implObj
 	coord_t new_x=coord_t::truncate(ex);
 	coord_t new_y=coord_t::truncate(ey);
 
+	dim_t new_width{dim_t::truncate(right-new_x)};
+	dim_t new_height{dim_t::truncate(bottom-new_y)};
 
 	container_element_impl().ensure_visibility(IN_THREAD, {
-			new_x, new_y,
-				dim_t::truncate(right-new_x),
-				dim_t::truncate(bottom-new_y)
-				});
+			{
+				new_x, new_y,
+				new_width, new_height
+			},
+
+			// If the child element requested entire visibility and
+			// our computed visibility request gets clipped to the
+			// entire viewport, then we are also requesting entire
+			// visibility; otherwise we're not.
+
+			(v.entire_visibility && new_x == 0 && new_y == 0 &&
+			 new_width == my_pos.width &&
+			 new_height == my_pos.height)
+		});
 }
 
 void containerObj::implObj::save(ONLY IN_THREAD)

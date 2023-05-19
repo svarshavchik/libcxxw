@@ -16,6 +16,7 @@
 #include <x/w/impl/inherited_visibility_infofwd.H>
 #include <x/w/impl/get_window_handler.H>
 #include <x/w/impl/redraw_priority.H>
+#include <x/w/impl/element_visibility.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
 
@@ -246,7 +247,7 @@ public:
 	//! ensured_visibility_of_child_element().
 
 	void ensure_visibility(ONLY IN_THREAD, elementObj::implObj &e,
-			       const rectangle &r);
+			       const element_visibility_t &v);
 
 	//! This container itself was removed from its container.
 
@@ -260,9 +261,10 @@ public:
 	//! coordinates, then computes the corresponding coordinates in the
 	//! container, then invokes the container's ensure_visibility().
 
-	virtual void ensured_visibility_of_child_element(ONLY IN_THREAD,
-							 elementObj::implObj &e,
-							 const rectangle &r);
+	virtual void ensured_visibility_of_child_element(
+		ONLY IN_THREAD,
+		elementObj::implObj &e,
+		const element_visibility_t &v);
 
 	//! Forward save() to the layout manager.
 	void save(ONLY IN_THREAD);

@@ -195,7 +195,7 @@ class layoutmanagerObj::implObj : virtual public obj {
 
 	virtual void ensure_visibility(ONLY IN_THREAD,
 				       elementObj::implObj &e,
-				       const rectangle &r);
+				       const element_visibility_t &v);
 
 	//! Invoke request_visibility_recursive() for each child.
 

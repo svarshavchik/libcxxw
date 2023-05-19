@@ -1921,15 +1921,22 @@ void elementObj::implObj::unschedule_hover_action(ONLY IN_THREAD)
 	hide_tooltip(IN_THREAD);
 }
 
-void elementObj::implObj::ensure_visibility(ONLY IN_THREAD, const rectangle &r)
+void elementObj::implObj::ensure_visibility(ONLY IN_THREAD,
+					    const element_visibility_t &v)
 {
 }
 
 void elementObj::implObj::ensure_entire_visibility(ONLY IN_THREAD)
 {
-	ensure_visibility(IN_THREAD, {0, 0,
-				data(IN_THREAD).current_position.width,
-				data(IN_THREAD).current_position.height});
+	ensure_visibility(
+		IN_THREAD, {
+			{0, 0,
+			 data(IN_THREAD).current_position.width,
+			 data(IN_THREAD).current_position.height
+			},
+			true
+		}
+	);
 }
 
 std::string elementObj::implObj::default_cut_paste_selection() const

@@ -22,7 +22,7 @@ template<typename container_impl>
 void container_visible_elementObj<container_impl>
 ::ensured_visibility_of_child_element(ONLY IN_THREAD,
 				      elementObj::implObj &e,
-				      const rectangle &r)
+				      const element_visibility_t &v)
 {
 	this->ensure_entire_visibility(IN_THREAD);
 }

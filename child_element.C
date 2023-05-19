@@ -386,9 +386,10 @@ void child_elementObj::report_motion_event(ONLY IN_THREAD,
 		.report_motion_event(IN_THREAD, cpy);
 }
 
-void child_elementObj::ensure_visibility(ONLY IN_THREAD, const rectangle &r)
+void child_elementObj::ensure_visibility(ONLY IN_THREAD,
+					 const element_visibility_t &v)
 {
-	child_container->ensure_visibility(IN_THREAD, *this, r);
+	child_container->ensure_visibility(IN_THREAD, *this, v);
 }
 
 bool child_elementObj::pasted(ONLY IN_THREAD,

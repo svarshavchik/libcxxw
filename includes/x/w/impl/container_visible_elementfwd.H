@@ -6,8 +6,8 @@
 #define x_w_impl_container_visible_elementfwd_H
 
 #include <x/w/connection_threadfwd.H>
-#include <x/w/rectanglefwd.H>
 #include <x/w/elementobj.H>
+#include <x/w/impl/element_visibility.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -30,9 +30,10 @@ public:
 
 	using container_impl::container_impl;
 
-	void ensured_visibility_of_child_element(ONLY IN_THREAD,
-						 elementObj::implObj &e,
-						 const rectangle &r) override;
+	void ensured_visibility_of_child_element(
+		ONLY IN_THREAD,
+		elementObj::implObj &e,
+		const element_visibility_t &v) override;
 };
 
 LIBCXXW_NAMESPACE_END

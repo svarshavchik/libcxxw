@@ -47,6 +47,7 @@
 #include <x/w/impl/dnd.H>
 #include <x/w/impl/richtext/richtextmetafwd.H>
 #include <x/w/impl/selection/current_selection_handlerfwd.H>
+#include <x/w/impl/element_visibility.H>
 #include <x/w/key_eventfwd.H>
 #include <x/w/fontfwd.H>
 #include <x/w/tooltipfwd.H>
@@ -1745,7 +1746,8 @@ class elementObj::implObj : public element_drawObj,
 	//! makes sure that its child element's specified position will be
 	//! scrolled into view.
 
-	virtual void ensure_visibility(ONLY IN_THREAD, const rectangle &);
+	virtual void ensure_visibility(ONLY IN_THREAD,
+				       const element_visibility_t &);
 
 	//! Ensure visibility of this entire widget.
 

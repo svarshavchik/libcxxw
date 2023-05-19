@@ -82,7 +82,7 @@ public:
 
 	void ensure_visibility(ONLY IN_THREAD,
 			       elementObj::implObj &e,
-			       const rectangle &r) override;
+			       const element_visibility_t &) override;
 
 	//! Implement process_updated_position().
 

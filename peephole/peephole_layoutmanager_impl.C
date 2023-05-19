@@ -77,11 +77,24 @@ layoutmanager peepholelayoutmanagerObj::implObj::create_public_object()
 void peepholelayoutmanagerObj::implObj
 ::ensure_visibility(ONLY IN_THREAD,
 		    elementObj::implObj &e,
-		    const rectangle &rArg)
+		    const element_visibility_t &v)
 {
+	// If the peepholed element wants to be entirely visibility, ignore it.
+	//
+	// A widget requests entire visibility for itself whenever it gets
+	// input focus.
+	//
+	// If a popup combobox demands its entire visibility this would
+	// result in recalculate_with_requested_visibility() to always reset
+	// its scrolled position to upper/left, every time it gets input focus,
+	// when it opens. This is undesirable and we can ignore it.
+
+	if (v.entire_visibility)
+		return;
+
 	auto hv=e.get_horizvert(IN_THREAD);
 
-	rectangle r=rArg;
+	rectangle r=v.r;
 
 	// Sanity check the requested visibility against the element's metrics,
 	// not its current size.

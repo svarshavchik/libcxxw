@@ -256,7 +256,8 @@ public:
 
 	//! Override ensure_visibility.
 
-	void ensure_visibility(ONLY IN_THREAD, const rectangle &) override;
+	void ensure_visibility(ONLY IN_THREAD, const element_visibility_t &v)
+		override;
 
  protected:
 	/////////////////////////////////////////////////////////////////////

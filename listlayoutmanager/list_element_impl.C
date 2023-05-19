@@ -1346,7 +1346,9 @@ void list_elementObj::implObj::redraw_rows(ONLY IN_THREAD,
 						     v_padding + v_padding)};
 
 		if (make_sure_row2_is_visible)
-			ensure_visibility(IN_THREAD, entire_row);
+			ensure_visibility(IN_THREAD, {
+					entire_row, false
+				});
 
 		schedule_redraw(IN_THREAD, entire_row);
 	}
