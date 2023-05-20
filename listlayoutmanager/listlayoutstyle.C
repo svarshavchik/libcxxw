@@ -586,6 +586,11 @@ void listlayoutstyle_impl::nonmenu_attribute_requested() const
 {
 }
 
+bool listlayoutstyle_impl::clear_on_focus_loss() const
+{
+	return false;
+}
+
 void listlayoutstyle_impl::validate_rowinfo(const textlist_rowinfo &) const
 {
 }
@@ -883,6 +888,10 @@ class LIBCXX_HIDDEN menu_list_style_impl
 			  "in menus"));
 	}
 
+	bool clear_on_focus_loss() const override
+	{
+		return true;
+	}
 
 	void validate_rowinfo(const textlist_rowinfo &info) const override
 	{

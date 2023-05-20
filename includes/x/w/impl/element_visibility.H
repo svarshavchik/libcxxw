@@ -17,7 +17,7 @@ struct element_visibility_t {
 	//! Make sure that this part of me is visible.
 
 	//! If this ends up being in a peephole the peephole gets scrolled to
-	//! make this area come into view.
+	//! make this area comes into view.
 	const rectangle r;
 
 	//! We wanted to make sure that the entire widget is visible

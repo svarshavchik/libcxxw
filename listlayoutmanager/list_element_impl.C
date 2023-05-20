@@ -537,10 +537,6 @@ void list_elementObj::implObj
 		current_element(IN_THREAD, lock, *current_element(lock) + rows,
 				std::monostate{});
 	}
-
-	if (current_keyed_element(lock) &&
-	    current_keyed_element(lock).value()>=row_number)
-		*current_keyed_element(lock) += rows;
 }
 
 void list_elementObj::implObj
@@ -624,7 +620,6 @@ void list_elementObj::implObj
 	if (current_element(lock))
 		current_element(IN_THREAD, lock, std::nullopt,
 				std::monostate{});
-	current_keyed_element(lock)={};
 
 	// Clear out everything, then use insert_rows().
 
@@ -647,7 +642,6 @@ void list_elementObj::implObj
 	if (current_element(lock))
 		current_element(IN_THREAD, lock, std::nullopt,
 				std::monostate{});
-	current_keyed_element(lock)={};
 
 	lock->row_infos.modified=true; // We don't do anything that gets flagged
 	lock->full_redraw_needed=true;
@@ -733,17 +727,6 @@ void list_elementObj::implObj
 			current_element(IN_THREAD, lock,
 					*current_element(lock)-count,
 					std::monostate{});
-		}
-	}
-
-	if (current_keyed_element(lock) &&
-	    current_keyed_element(lock).value() >= row)
-	{
-		if (current_keyed_element(lock).value() < row+count)
-			current_keyed_element(lock)={};
-		else
-		{
-			*current_keyed_element(lock) -= count;
 		}
 	}
 
@@ -1431,16 +1414,17 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 	// color.
 
 	if (current_element(lock) && current_element(lock).value()
-	    == row_number)
+	    == row_number && combined_focus(IN_THREAD))
 	{
 		auto cpy=di;
 
-		cpy.window_background_color=
-			(is_key_or_button_down
-			 ? background_color_element<
-			 listcontainer_highlighted_color>::get(IN_THREAD)
+		cpy.window_background_color=(
+			is_key_or_button_down
+			? background_color_element<
+			listcontainer_highlighted_color>::get(IN_THREAD)
 			 : background_color_element<listcontainer_current_color>
-			 ::get(IN_THREAD))->get_current_color(IN_THREAD);
+			 ::get(IN_THREAD)
+		)->get_current_color(IN_THREAD);
 
 
 		return do_draw_row(IN_THREAD, cpy, clipped, bounds,
@@ -1652,8 +1636,8 @@ void list_elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 	    me.y < coord_t::truncate(iter->y+iter->height) &&
 	    iter->extra->enabled(lock))
 		set_current_element(IN_THREAD, lock, iter-b, false, &me);
-	// There is a small margin between rows that this motion even can
-	// fall into. Don't both to unset_current_element() in this case.
+	// There is a small margin between rows that this motion event can
+	// fall into. Don't both do unset_current_element() in this case.
 }
 
 bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
@@ -1718,6 +1702,16 @@ bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
 	if (!activate_for(ke))
 		return false;
 
+	// Step 1: we received keyboard focus.
+	//
+	// Step 2: the pointer is moved out, combined_focus gets set to false
+	//
+	// Step 3: a key is pressed.
+	//
+	// We still have meaningful focus, so set it to true.
+
+	combined_focus(IN_THREAD)=true;
+
 	switch (ke.keysym) {
 	case XK_Up:
 	case XK_KP_Up:
@@ -1770,29 +1764,52 @@ bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
 		break;
 	case XK_Home:
 	case XK_KP_Home:
-		if (current_keyed_element(lock) &&
-		    current_keyed_element(lock).value() == 0)
-			return false;
+
 		next_row=0;
+
+		while (1)
+		{
+			if (next_row >=
+			    lock->row_infos.size())
+				return false;
+
+			auto &info=lock->row_infos.at(next_row);
+
+			if (info.extra->enabled(lock))
+				break;
+			++next_row;
+		}
+
+		if (current_element(lock) &&
+		    current_element(lock).value() == next_row)
+			return false;
 		break;
 	case XK_End:
 	case XK_KP_End:
+
+		next_row=lock->row_infos.size();
+
+		while(1)
 		{
-			size_t s=lock->row_infos.size();
-
-			if (current_keyed_element(lock) ||
-			    current_keyed_element(lock).value()+1 >= s)
+			if (next_row == 0)
 				return false;
+			--next_row;
 
-			next_row=--s;
+			auto &info=lock->row_infos.at(next_row);
+
+			if (info.extra->enabled(lock))
+				break;
 		}
+
+		if (current_element(lock) &&
+		    current_element(lock).value() == next_row)
+			return false;
 		break;
 	default:
 		return false;
 	}
 
 	set_current_element(IN_THREAD, lock, next_row, true, &ke);
-	current_keyed_element(lock)=next_row;
 
 	return true;
 }
@@ -1806,10 +1823,10 @@ std::optional<size_t>
 list_elementObj::implObj::move_up_by(listimpl_info_t::lock &lock,
 				     dim_t howmuch)
 {
-	if (!current_keyed_element(lock))
+	if (!current_element(lock))
 		return {};
 
-	auto next_row=current_keyed_element(lock).value();
+	auto next_row=current_element(lock).value();
 
 	std::optional<size_t> move_to;
 	dim_t moved_by=0;
@@ -1839,10 +1856,10 @@ list_elementObj::implObj::move_down_by(listimpl_info_t::lock &lock,
 {
 	size_t next_row;
 
-	if (!current_keyed_element(lock))
-		next_row=0;
+	if (!current_element(lock))
+		next_row=0; // Start at the beginning of the list.
 	else
-		next_row=current_keyed_element(lock).value()+1;
+		next_row=current_element(lock).value()+1;
 
 	std::optional<size_t> move_to;
 	dim_t moved_by=0;
@@ -1903,12 +1920,22 @@ void list_elementObj::implObj::pointer_focus(ONLY IN_THREAD,
 {
 	superclass_t::pointer_focus(IN_THREAD, trigger);
 
+	combined_focus(IN_THREAD)=current_pointer_focus(IN_THREAD);
+
 	create_textlist_info_lock lock{IN_THREAD, *this};
 
-	if (!current_pointer_focus(IN_THREAD))
+	if (current_element(lock))
 	{
-		unset_current_element(IN_THREAD, lock, trigger);
-		current_keyed_element(lock).reset();
+		if (!current_pointer_focus(IN_THREAD) &&
+		    list_style.clear_on_focus_loss())
+		{
+			current_element(IN_THREAD, lock, std::nullopt,
+					trigger);
+		}
+		else
+		{
+			redraw_rows(IN_THREAD, lock, *current_element(lock));
+		}
 	}
 }
 
@@ -1919,10 +1946,20 @@ void list_elementObj::implObj::keyboard_focus(ONLY IN_THREAD,
 
 	create_textlist_info_lock lock{IN_THREAD, *this};
 
-	if (!current_keyboard_focus(IN_THREAD))
+	combined_focus(IN_THREAD)=current_keyboard_focus(IN_THREAD);
+
+	if (current_element(lock))
 	{
-		unset_current_element(IN_THREAD, lock, trigger);
-		current_keyed_element(lock).reset();
+		if (!current_keyboard_focus(IN_THREAD) &&
+		    list_style.clear_on_focus_loss())
+		{
+			current_element(IN_THREAD, lock, std::nullopt,
+					trigger);
+		}
+		else
+		{
+			redraw_rows(IN_THREAD, lock, *current_element(lock));
+		}
 	}
 }
 
@@ -1958,7 +1995,6 @@ void list_elementObj::implObj
 
 	// Reset some things.
 	is_key_or_button_down=false;
-	current_keyed_element(lock)={};
 	redraw_rows(IN_THREAD, lock, row_number1, row_number,
 		    make_sure_row_is_visible);
 

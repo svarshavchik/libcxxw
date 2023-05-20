@@ -580,8 +580,15 @@ public:
 	//! only this is set, and recalculate() will double-check this.
 	std::optional<size_t> should_be_current_element_under_lock;
 
-	//! Current list element that was navigated to via keyboard
-	std::optional<size_t> current_keyed_element_under_lock;
+
+	//! Whether the most recent pointer or keyboard focus was gain or loss
+
+	//! This is used to determine whether the "current" list item is
+	//! highlighted.
+
+	bool combined_focus_thread_only=false;
+
+	THREAD_DATA_ONLY(combined_focus);
 
 	//! Whether the enter/space key or button 1 is down.
 	bool is_key_or_button_down=false;
@@ -626,11 +633,6 @@ public:
 					   trigger);
 	}
 
-	//! This can be accessed only while holding the lock.
-	inline auto &current_keyed_element(const listimpl_info_t::lock &lock)
-	{
-		return current_keyed_element_under_lock;
-	}
 private:
 	//! Currently highlighted list item changed.
 

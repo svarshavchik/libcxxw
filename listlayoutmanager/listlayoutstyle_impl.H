@@ -111,9 +111,9 @@ struct new_cells_info {
 //! Implements create(), and defines additional virtual methods that specify the
 //! list style.
 
-class LIBCXX_HIDDEN listlayoutstyle_impl {
+class listlayoutstyle_impl {
 
- public:
+public:
 
 	//! Create a new list element.
 	std::tuple<container, peepholed, focusable, focusable_impl>
@@ -202,7 +202,7 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 	//! updates the bullet image cell accordingly.
 	virtual void selected_changed(list_cell *row,
 				      bool selected_flag) const=0;
- private:
+private:
 
 	//! Whether a menuoption or a submenu can be specified.
 
@@ -212,7 +212,14 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 
 	virtual void nonmenu_attribute_requested() const;
 
- public:
+public:
+
+	//! Whether loss of input focus clears the current selection.
+
+	//! This is used by menu popups.
+
+	virtual bool clear_on_focus_loss() const;
+
 	//! About to create a new cell.
 
 	virtual void validate_rowinfo(const textlist_rowinfo &) const;
