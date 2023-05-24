@@ -978,6 +978,14 @@ uicompiler::uicompiler(const ui::parser_lock &root_lock,
 					.insert_or_assign(id, ret);
 				continue;
 			}
+
+			if (type == "peephole")
+			{
+				auto ret=peepholelayout_parseconfig(lock);
+				generators->peepholelayoutmanager_generators
+					.insert_or_assign(id, ret);
+				continue;
+			}
 		}
 		else if (name == "factory")
 		{
@@ -1787,6 +1795,33 @@ uicompiler::lookup_borderlayoutmanager_generators(const ui::parser_lock &lock,
 	auto ret=borderlayout_parseconfig(new_lock);
 
 	generators->borderlayoutmanager_generators.insert_or_assign(name, ret);
+
+	return ret;
+}
+
+const_vector<peepholelayoutmanager_generator>
+uicompiler::lookup_peepholelayoutmanager_generators(const ui::parser_lock &lock,
+						  const std::string &name)
+{
+	{
+		auto iter=generators->peepholelayoutmanager_generators.find(
+			name
+		);
+
+		if (iter != generators->peepholelayoutmanager_generators.end())
+			return iter->second;
+	}
+
+	auto iter=find_uncompiled(name, "layout", "peephole");
+
+	auto new_lock=iter->second;
+
+	uncompiled_elements.erase(iter);
+
+	auto ret=peepholelayout_parseconfig(new_lock);
+
+	generators->peepholelayoutmanager_generators.insert_or_assign(name,
+								      ret);
 
 	return ret;
 }

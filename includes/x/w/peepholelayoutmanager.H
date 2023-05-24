@@ -49,6 +49,9 @@ public:
 	//! Constructor
 	new_peepholelayoutmanager(const functionref<void (const factory &)> &);
 
+	//! Down-convert the scrollable version to the non-scrollable one.
+
+	new_peepholelayoutmanager(const new_scrollable_peepholelayoutmanager &);
 	//! Destructor
 	~new_peepholelayoutmanager();
 

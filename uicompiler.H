@@ -274,6 +274,11 @@ public:
 	vector<new_borderlayoutmanager_generator
 	       > new_borderlayout_parseconfig(const ui::parser_lock &lock);
 
+	//! Parser for the new peephole layout manager generator
+
+	vector<new_peepholelayoutmanager_generator
+	       > new_peepholelayout_parseconfig(const ui::parser_lock &lock);
+
 	//! Parser for uielements-based generator
 	vector<elements_generator>
 	elements_parseconfig(const ui::parser_lock &lock);
@@ -344,6 +349,10 @@ private:
 	//! Generate a single new_borderlayoutmanager instruction.
 	new_borderlayoutmanager_generator
 	new_borderlayout_parser(const ui::parser_lock &lock);
+
+	//! Generate a single new_borderlayoutmanager instruction.
+	new_peepholelayoutmanager_generator
+	new_peepholelayout_parser(const ui::parser_lock &lock);
 
 	//! Generate a single uielements instruction.
 	elements_generator
@@ -545,6 +554,16 @@ public:
 	lookup_borderlayoutmanager_generators(const ui::parser_lock &lock,
 					      const std::string &);
 
+	//! Return compiled peephole layout manager generators.
+
+	//! If the generators are already compiled, return them. If not,
+	//! search for them in uncompiled_elements, compile them, put them
+	//! into peepholelayoutmanager_generators, and return them.
+
+	const_vector<peepholelayoutmanager_generator>
+	lookup_peepholelayoutmanager_generators(const ui::parser_lock &lock,
+						const std::string &);
+
 	//! Return compiled pane factory manager generators.
 
 	//! If the generators are already compiled, return them. If not,
@@ -743,6 +762,10 @@ private:
 
 	struct borderlayoutmanager_functions;
 
+	//! Supporter peephole layout manager functionality
+
+	struct peepholelayoutmanager_functions;
+
 	//! All supported layout manager funcitonality.
 
 	typedef std::variant<gridlayoutmanager_functions,
@@ -755,7 +778,8 @@ private:
 			     pagelayoutmanager_functions,
 			     toolboxlayoutmanager_functions,
 			     borderlayoutmanager_functions,
-			     booklayoutmanager_functions
+			     booklayoutmanager_functions,
+			     peepholelayoutmanager_functions
 			     > layoutmanager_functions;
 
 	//! Convert "grid" or "book" to all_layoutmanagers

@@ -130,6 +130,7 @@
 <!ENTITY uixmllayoutpage SYSTEM "uixmldoclayoutpage.xml">
 <!ENTITY uixmllayoutpaneelements SYSTEM "uixmldoclayoutpaneelements.xml">
 <!ENTITY uixmllayoutpane SYSTEM "uixmldoclayoutpane.xml">
+<!ENTITY uixmllayoutpeephole SYSTEM "uixmldoclayoutpeephole.xml">
 <!ENTITY uixmllayouttableelements SYSTEM "uixmldoclayouttableelements.xml">
 <!ENTITY uixmllayouttable SYSTEM "uixmldoclayouttable.xml">
 <!ENTITY uixmllayouttoolboxelements SYSTEM "uixmldoclayouttoolboxelements.xml">

@@ -10,6 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+class LIBCXX_PUBLIC new_peepholelayoutmanager;
+class LIBCXX_PUBLIC new_scrollable_peepholelayoutmanager;
 class LIBCXX_PUBLIC peepholelayoutmanagerObj;
 
 /*! The peephole layout manager

@@ -2162,6 +2162,8 @@ layout_manager->generate("dialog", generators, elements);
   &uixmllayoutpaneelements;
   &uixmlfactorypane;
 
+  &uixmllayoutpeephole;
+
   &uixmllayouttable;
   &uixmllayouttableelements;
 

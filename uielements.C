@@ -19,6 +19,7 @@
 #include "x/w/borderlayoutmanager.H"
 #include "x/w/toolboxlayoutmanager.H"
 #include "x/w/tablelayoutmanager.H"
+#include "x/w/peepholelayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/pagefactory.H"
 #include "x/w/bookpagefactory.H"

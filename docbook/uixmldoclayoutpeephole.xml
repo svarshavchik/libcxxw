@@ -1,0 +1,459 @@
+<!--
+
+Copyright 2023 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="uixmllayoutpeephole">
+  <title>
+    <tag class='attribute'>type</tag>=<quote>peephole</quote>
+    <tag class='element'>layout</tag>s
+  </title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting><![CDATA[
+<layout id="new_peephole" type="peephole"/>
+]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The contents of a
+    <tag class='element'>layout</tag>s with
+    <tag class='attribute'>type</tag>=<quote>peephole</quote>
+    specify the <link linkend="peepholelayoutmanager">peephole
+      layout manager</link> methods that get invoked to
+    <methodname>generate</methodname>() its contents, just like all
+    other layout managers' <tag class='element'>layout</tag>s.
+    However there's only one actual method, <function>get</function>(),
+    which only actual code can use, hence there are no peephole layout
+    manager methods that get executed from a theme file.
+  </para>
+
+  <para>
+    Therefore
+    <tag class='attribute'>type</tag>=<quote>peephole</quote>
+    <tag class='element'>layout</tag>s are empty, but they still must
+    exist. A <tag class='element'>container</tag>'s
+    <tag class='element'>name</tag> always names a
+    <tag class='element'>layout</tag>, so it must exist and be empty.
+  </para>
+
+  <section id="uixmllayoutpeepholecreatecontainer">
+    <title>Creating
+      <tag class='attribute'>type</tag>=<quote>peephole</quote>
+      <tag class='element'>layout</tag>s</title>
+
+    <para>
+      A <tag class='element'>container</tag> with a
+      <tag class='attribute'>type</tag>=<quote>peephole</quote>
+      creates a container that uses the
+      <link linkend="peepholelayoutmanager">peephole layout manager</link>.
+    </para>
+  </section>
+
+  <section id="uixmllayoutnewpeepholelayoutmanager">
+    <title>Initializing
+      <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>s</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+    <container>
+      <name>new_peephole</name>
+      <type>peephole</type>
+      <config>
+         <factory>initpeephole</factory>
+      </config>
+    </container>
+
+    <!-- -->
+
+<factory id="initpeephole" type="factory">
+  <container>
+    <type>grid</type>
+    <name>peepholed_container</name>
+  </container>
+</factory>
+
+<layout id="peepholed_container" type="grid">
+
+  <!-- -->
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+
+    <para>
+      The
+      <tag class='element'>config</tag> element is required, and must
+      contain a <tag class='element'>factory</tag>. Other elements are
+      optional,and they
+      set non-default values
+      of the
+      <ulink url="&link-x--w--new-scrollable-peepholelayoutmanager;"><classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname></ulink>
+      that creates the peephole container.
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>
+	  <tag class='element'>factory</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>'s
+	    factory.
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+</config>
+
+<!-- -->
+
+<factory id="initpeephole" type="factory">
+  <container>
+    <name>peephole_contents</name>
+    <type>grid</type>
+  </container>
+</factory>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The mandatory <tag class='element'>factory</tag> specifies the
+	    <tag class='attribute'>id</tag> of a
+	    <tag class='attribute'>type</tag>=<quote>factory</quote>
+	    <tag class='element'>factory</tag>.
+	    The factory must generate a single widget which becomes the
+	    peepholed widget. It is typically a
+	    <link linkend="uixmlfactorycontainer"><tag class='element'>container</tag></link>
+	    of its own.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>width</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>'s
+	    <varname>width_algorithm</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <width>
+    <min>peepholemin</min>
+    <preferred>peepholepref</preferred>
+    <max>peepholemax</min>
+  </width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    This sets <varname>width_algorithm</varname> to a
+	    <link linkend="uixmldimaxisarg"><classname>&ns;::w::dim_axis_arg</classname></link> value.
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <width>
+    <automatic />
+  </width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	  <para>
+	    This sets <varname>width_algorithm</varname> to a
+	    <literal>peephole_algorithm::automatic</literal> value.
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <width>
+    <stretch_peephole />
+  </width>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	  <para>
+	    This sets <varname>width_algorithm</varname> to a
+	    <literal>peephole_algorithm::stretch_peephole</literal> value.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>height</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>'s
+	    <varname>height_algorithm</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <height>
+    <min>peepholemin</min>
+    <preferred>peepholepref</preferred>
+    <max>peepholemax</min>
+  </height>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    This sets <varname>height_algorithm</varname> to a
+	    <link linkend="uixmldimaxisarg"><classname>&ns;::w::dim_axis_arg</classname></link> value.
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <height>
+    <automatic />
+  </height>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	  <para>
+	    This sets <varname>height_algorithm</varname> to a
+	    <literal>peephole_algorithm::automatic</literal> value.
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <height>
+    <stretch_peephole />
+  </height>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	  <para>
+	    This sets <varname>height_algorithm</varname> to a
+	    <literal>peephole_algorithm::stretch_peephole</literal> value.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>horizontal_alignment</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>'s
+	    <varname>horizontal_alignment</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <horizontal_alignment>left</horizontal_alignment>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    This element specifies a
+	    <link linkend="uixmlhalignvalue"><classname>&ns;::w::halign</classname></link> value.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>vertical_alignment</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>'s
+	    <varname>vertical_alignment</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <vertical_alignment>top</vertical_alignment>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    This element specifies a
+	    <link linkend="uixmlvalignvalue"><classname>&ns;::w::valign</classname></link> value.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>scroll</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>'s
+	    <varname>scroll</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <scroll>
+    <centered />
+  </scroll>
+</config>
+
+<config>
+  <factory>initpeephole</factory>
+  <scroll>
+    <minimal />
+  </scroll>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    This element sets <varname>scroll</varname> to
+	    <literal>peephole_scroll::centered</literal> or
+	    <literal>peephole_scroll::minimal</literal>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>width_truncate</tag> and
+	  <tag class='element'>height_truncate</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>'s
+	    <varname>width_truncate</varname> or
+	    <varname>height_truncate</varname> value to <literal>true</literal>:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <width_truncate />
+  <height_truncate />
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>
+	  <tag class='element'>horizontal_scrollbar</tag> and
+	  <tag class='element'>vertical_scrollbar</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>'s
+	    <varname>horizontal_scrollbar</varname>
+	    or <varname>vertical_scrollbar</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <horizontal_scrollbar>never</horizontal_scrollbar>
+  <vertical_scrollbar>never</vertical_scrollbar>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    This sets the corresponding
+	    <link linkend="uixmlscrollbar_visibilityvalue"><classname>&ns;::w::scrollbar_visibility</classname></link>
+	    value.
+	  </para>
+
+	  <note>
+	    <para>
+	      Setting both of them to <literal>never</literal> results in
+	      the <link linkend="peepholelayoutmanager">peephole
+		layout manager</link>'s container getting created with a
+	      <ulink url="&link-x--w--new-peepholelayoutmanager;"><classname>&ns;::w::new_peepholelayoutmanager</classname></ulink> instead of a
+		<ulink url="&link-x--w--new-scrollable-peepholelayoutmanager;"><classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname></ulink>.
+	    </para>
+	  </note>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>
+	  <tag class='element'>appearance</tag>
+	</term>
+	<listitem>
+	  <para>
+	    Sets the
+	    <classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname>'s
+	    <varname>appearance</varname> value:
+	  </para>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting><![CDATA[
+<config>
+  <factory>initpeephole</factory>
+  <appearance>custom_peephole</appearance>
+</config>]]></programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    The value of the element specifies an
+	    <link linkend="uixmlappearance"><tag class='element'>appearance</tag></link>
+	    object of <tag class='attribute'>type</tag>=<quote>peephole</quote>.
+	    This element is ignored when peepholes get created without
+	    any scroll-bars (<quote>never</quote> visibility for both
+	    horizontal and vertical scroll-bar.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("uixmldoc.xml" "appendix" "section")
+End:
+-->

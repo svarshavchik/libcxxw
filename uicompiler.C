@@ -25,6 +25,7 @@
 #include "x/w/booklayoutmanager.H"
 #include "x/w/bookpagefactory.H"
 #include "x/w/borderlayoutmanager.H"
+#include "x/w/peepholelayoutmanager.H"
 #include "x/w/shortcut.H"
 #include "x/w/border_arg.H"
 #include "x/w/text_param.H"
@@ -127,8 +128,6 @@ void uicompiler::wrong_appearance_type(const std::string_view &name,
 // - Declare {name}layoutmanager_functions, and add it to the
 //   layoutmanager_functions variant.
 //
-// - Declare {name}layout_parseconfig() and {name}layout_parser()
-//
 // - Declare lookup_{name}layoutmanager_generators().
 //
 // uicompiler.C:
@@ -141,10 +140,6 @@ void uicompiler::wrong_appearance_type(const std::string_view &name,
 // and parse it.
 //
 // - Define lookup_{name}layoutmanager_generators().
-//
-// {name}layoutmanager.C
-//
-// - Implement generate() (in uielements.C).
 //
 // Then define the factory (if applicable):
 //
@@ -1172,6 +1167,151 @@ struct uicompiler::borderlayoutmanager_functions {
 	};
 };
 
+
+
+
+// Peephole layout manager functionality
+
+struct uicompiler::peepholelayoutmanager_functions {
+
+	// A vector of compiler peephole layout manager generators
+
+	struct generators : generators_base {
+
+		// Generators for the contents of the new_peepholelayoutmanager
+
+		const_vector<new_peepholelayoutmanager_generator
+			     > new_peepholelayoutmanager_vector;
+
+		const_vector<factory_generator> peepholed_generator;
+
+		const_vector<peepholelayoutmanager_generator> generator_vector;
+
+		generators(uicompiler &compiler,
+			   const ui::parser_lock &lock,
+			   const std::string &name,
+			   std::string configname)
+			: generators_base{lock, name},
+			  new_peepholelayoutmanager_vector{
+				  create_newpeepholelayoutmanager_vector(
+					  compiler, lock, configname
+				  )
+			  },
+			  peepholed_generator{
+				  create_peepholed_generator(
+					  compiler, lock, name, configname)
+			  },
+			  generator_vector{
+				  compiler.lookup_peepholelayoutmanager_generators(
+					  lock, name
+				  )
+			  }
+		{
+		}
+
+		static const_vector<factory_generator
+				    > create_peepholed_generator(
+					    uicompiler &compiler,
+					    const ui::parser_lock &orig_lock,
+					    const std::string &name,
+					    const std::string &configname
+				    )
+		{
+			auto lock=orig_lock->clone();
+
+			auto xpath=lock->get_xpath(configname + "/factory");
+
+			if (xpath->count() != 1)
+				throw EXCEPTION(
+					gettextmsg(
+						_("Peephole container %1% "
+						  "must have exactly one "
+						  "<config/factory>"),
+						name));
+
+			xpath->to_node();
+
+			return compiler.lookup_factory_generators(
+				lock, ".", "factory"
+			);
+		}
+
+		container create_container(const factory &f,
+					   const std::string &id,
+					   uielements &factories)
+			const
+		{
+		        auto nplm=new_layoutmanager(factories);
+
+			if (nplm.horizontal_scrollbar ==
+			    scrollbar_visibility::never &&
+			    nplm.vertical_scrollbar ==
+			    scrollbar_visibility::never)
+			{
+				return f->create_container(
+					[&, this]
+					(const auto &container)
+					{
+						generate(container, factories);
+					},
+					new_peepholelayoutmanager{nplm}
+				);
+			}
+
+			return f->create_focusable_container
+				([&, this]
+				 (const auto &container)
+				 {
+					 generate(container, factories);
+				 },
+				 nplm);
+		}
+
+		new_scrollable_peepholelayoutmanager
+		new_layoutmanager(uielements &factories) const
+		{
+			new_scrollable_peepholelayoutmanager nplm{
+				[&factories, peepholed_generators=
+				this->peepholed_generator]
+				(const factory &f)
+				{
+					for (auto &generator:
+						     *peepholed_generators)
+					{
+						generator(f, factories);
+					}
+				}
+			};
+
+			// Generate the contents of the
+			// new_scrollable_peepholelayoutmanager.
+
+			for (const auto &g:*new_peepholelayoutmanager_vector)
+			{
+				g(&nplm, factories);
+			}
+
+			return nplm;
+		}
+
+		void generate(const container &c,
+			      uielements &factories) const
+		{
+			peepholelayoutmanager blm=
+				get_new_layoutmanager(c, factories);
+
+			for (const auto &g:*generator_vector)
+			{
+				g(blm, factories);
+			}
+		}
+	};
+};
+
+
+
+
+
 //
 // "container_generators_t" is a variant of all these "generators' classes.
 //
@@ -1301,6 +1441,10 @@ uicompiler::get_layoutmanager(const std::string &type)
 			std::in_place_type_t<borderlayoutmanager_functions>{}
 		};
 
+	if (type == "peephole")
+		return layoutmanager_functions{
+			std::in_place_type_t<peepholelayoutmanager_functions>{}
+		};
 	throw EXCEPTION(gettextmsg(_("\"%1%\" is not a known layout/container"),
 				   type));
 }

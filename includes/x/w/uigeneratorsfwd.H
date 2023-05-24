@@ -27,6 +27,7 @@
 #include <x/w/toolboxfactoryfwd.H>
 #include <x/w/borderlayoutmanagerfwd.H>
 #include <x/w/singletonlayoutmanagerfwd.H>
+#include <x/w/peepholelayoutmanagerfwd.H>
 #include <x/w/uielementsfwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/functionalrefptrfwd.H>
@@ -326,8 +327,6 @@ typedef functionref<void (const new_borderlayoutmanager_plainptr &layout,
 			  uielements &elements)
 		    > new_borderlayoutmanager_generator;
 
-
-
 //! Generate something using already-generated elements
 
 //! \see uigenerators
@@ -401,6 +400,26 @@ typedef ptr<uigeneratorsObj, uigeneratorsBase> uigeneratorsptr;
 //! \see uigenerators
 
 typedef const_ptr<uigeneratorsObj, uigeneratorsBase> const_uigeneratorsptr;
+
+//! Pseudo-ref used to initialize a new_scrollable_peepholelayout parameter
+
+typedef new_scrollable_peepholelayoutmanager *new_peepholelayoutmanager_plainptr;
+
+//! Generate something to initialize a new_peepholelayoutmanager (scrollable)
+
+//! \see uigenerators
+typedef functionref<void (const new_peepholelayoutmanager_plainptr &layout,
+				  uielements &elements)
+		    > new_peepholelayoutmanager_generator;
+
+//! Generate something in the peephole layout manager
+
+//! \see uigenerators
+
+typedef functionref<void (const peepholelayoutmanager &, uielements &)
+		    > peepholelayoutmanager_generator;
+
+
 
 LIBCXXW_NAMESPACE_END
 

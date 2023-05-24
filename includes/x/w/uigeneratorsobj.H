@@ -174,6 +174,11 @@ public:
 			   const_vector<borderlayoutmanager_generator>
 			   > borderlayoutmanager_generators;
 
+	//! Generators used by the peephole layout manager
+	std::unordered_map<std::string,
+			   const_vector<peepholelayoutmanager_generator>
+			   > peepholelayoutmanager_generators;
+
 	//! Generators used by the page factory
 	std::unordered_map<std::string,
 			   const_vector<pagefactory_generator>

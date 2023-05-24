@@ -946,6 +946,7 @@ libcxxw_la_SOURCES=\
 	uicompiler_new_list_or_comboboxlayout.C	    \
 	uicompiler_new_pagelayout.C		    \
 	uicompiler_new_panelayout.C		    \
+	uicompiler_new_peepholelayout.C		    \
 	uicompiler_new_standard_comboboxlayout.C    \
 	uicompiler_new_tablelayout.C		    \
 	uicompiler_new_toolboxlayout.C		    \
@@ -953,6 +954,7 @@ libcxxw_la_SOURCES=\
 	uicompiler_pagelayout.C			    \
 	uicompiler_panefactory.C		    \
 	uicompiler_panelayout.C			    \
+	uicompiler_peepholelayout.C		    \
 	uicompiler_singletonlayout.C		    \
 	uicompiler_standard_comboboxlayout.C	    \
 	uicompiler_tablelayout.C		    \
@@ -1507,6 +1509,7 @@ uicompiler_new_itemlayout.lo			\
 uicompiler_new_listlayout.lo			\
 uicompiler_new_pagelayout.lo			\
 uicompiler_new_panelayout.lo			\
+uicompiler_new_peepholelayout.lo		\
 uicompiler_new_standard_comboboxlayout.lo	\
 uicompiler_new_tablelayout.lo			\
 uicompiler_new_toolboxlayout.lo			\
@@ -1514,6 +1517,7 @@ uicompiler_pagefactory.lo			\
 uicompiler_pagelayout.lo			\
 uicompiler_panefactory.lo			\
 uicompiler_panelayout.lo			\
+uicompiler_peepholelayout.lo			\
 uicompiler_standard_comboboxlayout.lo		\
 uicompiler_toolboxfactory.lo			\
 uicompiler_toolboxlayout.lo			\

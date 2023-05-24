@@ -57,6 +57,13 @@ new_peepholelayoutmanager
 
 new_peepholelayoutmanager::~new_peepholelayoutmanager()=default;
 
+new_peepholelayoutmanager::new_peepholelayoutmanager(
+	const new_scrollable_peepholelayoutmanager &o
+)
+	: peephole_style{o}, peepholed_factory{o.peepholed_factory}
+{
+}
+
 namespace {
 #if 0
 }
