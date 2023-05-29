@@ -1,3 +1,14 @@
+0.32.0
+
+2023-05-30  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* gcc 13 update.
+
+	* cxxwcreator: add support for the peephole layout manager, other
+	enhancements
+
+	* Fix unwanted scrolling and input focus behavior in combo-boxes.
+
 2022-11-19  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* gcc 12 update.

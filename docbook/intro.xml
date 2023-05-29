@@ -127,24 +127,27 @@ See COPYING for distribution information.
       <para>
 	&app;'s core functionality is complete, and
 	<link linkend="INSTALL">is available for downloading</link>.
-	New API features in the most recent version:
+	Changes in the most recent version.
       </para>
 
       <itemizedlist>
 	<listitem>
 	  <para>
-	    Supply default values for the <literal>WM_CLASS</literal>
-	    property that comes from the application's identifier and version.
-	    Remove the need to explicitly set it.
+	    Fixes for gcc 13.
 	  </para>
 	</listitem>
 	<listitem>
 	  <para>
-	    Reimplement the framework for transparently saving and restoring
-	    the default window position and widget attributes. It is only
-	    necessary to assign unique labels to windows and widgets, and
-	    the library automatically takes care of restoring their
-	    previous attributes.
+	    <command>cxxwcreator</command> and
+	    <link linkend="uixmldoc">theme file improvements</link>,
+	    including support
+	    for the peephole layoutmanager.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Fix input focus and unwanted scrolling in
+	    <link linkend="combobox">combo-boxes</link>.
 	  </para>
 	</listitem>
       </itemizedlist>
