@@ -877,6 +877,22 @@ void appgenerator_functionsObj::generator_values_modified(ONLY IN_THREAD)
 {
 	generator_value_info_lm lock{this};
 
+	if (!lock)
+		return;
+
+	auto n=*lock.selected_value;
+
+	auto &functions=(*lock->functions);
+
+	if (n >= functions.size())
+		return;
+
+	lock.lm->replace_items
+		(IN_THREAD, n,
+		 std::vector<x::w::list_item_param>
+		 {functions[n]->description(description_format::list)}
+		 );
+
 	generator_contents_values_changed(IN_THREAD, lock);
 }
 

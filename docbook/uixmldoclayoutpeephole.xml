@@ -90,7 +90,7 @@ See COPYING for distribution information.
       The
       <tag class='element'>config</tag> element is required, and must
       contain a <tag class='element'>factory</tag>. Other elements are
-      optional,and they
+      optional, and they
       set non-default values
       of the
       <ulink url="&link-x--w--new-scrollable-peepholelayoutmanager;"><classname>&ns;::w::new_scrollable_peepholelayoutmanager</classname></ulink>

@@ -45,8 +45,10 @@ struct parse_function : uicompiler_generator_collection {
 	std::string get_name() const override;
 
 	//! Give a description of tihs function.
-	x::w::text_param description(description_format fmt) const;
-
+	x::w::text_param description(
+		description_format fmt,
+		const std::vector<parameter_value> &values
+	) const;
 
 	//! Call parse_function_or_generator to parse a function.
 

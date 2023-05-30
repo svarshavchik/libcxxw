@@ -82,7 +82,7 @@ do
 	then
 	    :
 	else
-	    AC_MSG_ERROR(Cannot find $pkg development libraries, please install the $pkg devel package)
+	    AC_MSG_ERROR([Cannot find $pkg development libraries, please install the $pkg devel package])
 	fi
 done
 

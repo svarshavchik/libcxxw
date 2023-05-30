@@ -12,7 +12,7 @@ See COPYING for distribution information.
     A theme UI file automates creation of widgets from an
     <acronym>XML</acronym> document, which
     <link linkend="uixmlgenerate">generates
-      the contents of a &layoutmanager; or a factory</link>. The theme UI
+      the contents of a &layoutmanager; or a &factory;</link>. The theme UI
     file also creates several supporting objects:
     <link linkend="uixmldimcolorborders"><tag class='element'>dim</tag>s,
       <tag class='element'>color</tag>s,
@@ -58,7 +58,7 @@ See COPYING for distribution information.
   </blockquote>
 
   <para>
-    The <acronym>XML</acronym> document's root widget is a
+    The <acronym>XML</acronym> document's root element is a
     <tag class='element'>theme</tag>
     element. For future compatibility, its
     <tag class='attribute'>version</tag> attribute should be 1.
@@ -93,7 +93,7 @@ See COPYING for distribution information.
     doesn't matter,
     and
     together with <application>XInclude</application> this makes it possible
-    to implement to create a theme file with shared
+    to implement a theme file with shared
     <tag class='element'>layout</tag>s
     and
     <tag class='element'>factory</tag>s, and then
@@ -215,6 +215,27 @@ See COPYING for distribution information.
 	  methods of a
 	  <ulink url="&link-typedef-x--w-tablelayoutmanager;">pane
 	    layout manager</ulink>.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<link linkend="uixmllayoutpeephole"><tag class='element'>layout</tag>s
+	  with a
+	  <tag class='attribute'>type</tag> of <literal>peephole</literal></link>
+      </term>
+      <listitem>
+	<para>
+	  This is a placeholder for the corresponding methods of a
+	  <ulink url="&link-typedef-x--w-peepholelayoutmanager;">peephole
+	    layout manager</ulink>.
+	  All functionality related to the
+	  <link linkend="peepholelayoutmanager">peephole layout manager</link>
+	  comes from
+	  the <tag class='element'>config</tag> element of the
+	  <tag class='element'>container</tag> that creates a container
+	  managed by the peephole layout manager.
 	</para>
       </listitem>
     </varlistentry>

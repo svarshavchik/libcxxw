@@ -2911,14 +2911,19 @@ void parse_function::save(const x::xml::writelock &lock,
 	lock->get_parent();
 }
 
-x::w::text_param parse_function::description(description_format fmt) const
+x::w::text_param parse_function::description(
+	description_format fmt, const std::vector<parameter_value> &values
+) const
 {
 	x::w::text_param t;
 
 	auto parameter_font = "list; weight=bold"_font;
 
+	bool list=false;
+
 	switch (fmt) {
 	case description_format::list:
+		list=true;
 		break;
 	case description_format::title:
 		t("label; scale=2"_theme_font);
@@ -2950,13 +2955,30 @@ x::w::text_param parse_function::description(description_format fmt) const
 				t(name);
 				if (has_value)
 				{
-					t(">...<");
+					t(">...</");
 					t(name);
 				}
 				t(">");
 			}
 		}, condition);
 
+	if (list)
+	{
+		const char *pfix=" (";
+		const char *sfix="";
+
+		for (auto &v:values)
+		{
+			if (v.string_value.size() == 0)
+				continue;
+
+			t(pfix);
+			t(v.string_value);
+			pfix=", ";
+			sfix=")";
+		}
+		t(sfix);
+	}
 	return t;
 }
 
@@ -3030,7 +3052,7 @@ struct appgenerator_function_implObj : public appgenerator_functionObj {
 
 	x::w::text_param description(description_format fmt) const override
 	{
-		return function->description(fmt);
+		return function->description(fmt, *parameter_values);
 	}
 
 	generator_create_ui_ret_t create_ui(ONLY IN_THREAD,
@@ -3596,7 +3618,7 @@ std::vector<std::tuple<const_appgenerator_function, x::w::text_param>
 		{
 			list.emplace_back(function.create(),
 					  function.description
-					  (description_format::list));
+					  (description_format::list, {}));
 		}
 	}
 
