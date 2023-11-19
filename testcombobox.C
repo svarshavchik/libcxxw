@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <utility>
 #include <set>
+#include <random>
 #include "testcombobox.inc.H"
 
 using namespace LIBCXX_NAMESPACE;
@@ -223,7 +224,9 @@ static void do_resort(ONLY IN_THREAD,
 					       return n++;
 				       });
 
-			 std::random_shuffle(n.begin(), n.end());
+			 std::random_device rd;
+			 std::mt19937 g{rd()};
+			 std::shuffle(n.begin(), n.end(), g);
 
 			 lm->resort_items(n);
 		 });

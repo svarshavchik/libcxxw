@@ -32,6 +32,7 @@
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/list_element_impl.H"
 #include <vector>
+#include <random>
 #include <sstream>
 #include <X11/keysym.h>
 
@@ -509,7 +510,9 @@ void listtable(const LIBCXX_NAMESPACE::w::screen &default_screen,
 					       return n++;
 				       });
 
-			 std::random_shuffle(i.begin(), i.end());
+			 std::random_device rd;
+			 std::mt19937 g{rd()};
+			 std::shuffle(i.begin(), i.end(), g);
 			 lm->resort_items(IN_THREAD, i);
 		 });
 	factory->create_canvas();
