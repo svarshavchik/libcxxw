@@ -71,7 +71,7 @@ BuildRequires: xcb-util-renderutil-devel
 
 %description devel-internals
 This package installs additional internal header files for building
-custom LibCXXW display elements.
+custom LibCXXW widgets.
 
 %prep
 %setup -q -n libcxxw-@VERSION@

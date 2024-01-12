@@ -926,15 +926,23 @@ extern const listlayoutstyle_impl &highlighted_list LIBCXX_PUBLIC;
 
 extern const listlayoutstyle_impl &bulleted_list LIBCXX_PUBLIC;
 
+#ifdef __GNUC__
+#if __GNUC__ >= 13
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdangling-reference"
+#endif
+#endif
 
 //! Return a list layout style by name.
 
 const listlayoutstyle_impl &list_style_by_name(const std::string_view &)
 	LIBCXX_HIDDEN;
 
+#ifdef __GNUC__
+#if __GNUC__ >= 13
 #pragma GCC diagnostic pop
+#endif
+#endif
 
 //! selection_type callback.
 

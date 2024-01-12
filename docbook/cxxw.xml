@@ -1,0 +1,57 @@
+<!--
+
+Copyright 2024 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<refentry id="cxxw.1">
+  <info>
+    <author>
+      <firstname>Sam</firstname>
+      <surname>Varshavchik</surname>
+      <contrib>Author</contrib>
+    </author>
+    <productname>&app;</productname>
+  </info>
+
+  <refmeta>
+    <refentrytitle>cxxw</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class='manual'>&appshort;</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>cxxw</refname>
+    <refpurpose>Show display diagnostic information for &appshort;-based applications</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis id="cxxwcmd">
+      <command>cxxw</command>
+      <group choice='req'>
+	<arg choice='plain'>-d</arg>
+	<arg choice='plain'>-s</arg>
+      </group>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1 id="cxxwdesc">
+    <title>Description</title>
+
+    <para>
+      <command>cxxw</command> displays internal display server properties.
+      <option>-s</option>
+      lists all screens avilable on the server, the screens' window
+      manager hints, and available resolution.
+      <option>-d</option> shows the screens' &render; details.
+    </para>
+  </refsect1>
+</refentry>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "appendix" "refentry")
+End:
+-->

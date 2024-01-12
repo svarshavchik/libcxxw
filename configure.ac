@@ -3,6 +3,8 @@
 
 AC_PREREQ([2.71])
 AC_INIT([libcxxw],[0.32.0],[libcxx-users@lists.libcxx.org])
+AC_CANONICAL_TARGET
+
 AC_CONFIG_SRCDIR([connection.C])
 AC_CONFIG_HEADERS([libcxxw_config.h])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign -Wno-portability])
@@ -15,7 +17,8 @@ LT_INIT
 AC_ARG_WITH(pkgconfigdir,[AS_HELP_STRING([--with-pkgconfigdir=dir],[Specify where pkgconfig configuration file gets installed])],
 	[PKGCONFIGDIR="$withval"],
 	[
-for d in /usr/lib64/pkgconfig /usr/lib/pkgconfig /usr/local/libdata/pkgconfig
+for d in /usr/lib64/pkgconfig /usr/lib/$host_cpu-$host_os/pkgconfig \
+    /usr/lib/pkgconfig /usr/local/libdata/pkgconfig
 do
 	if test -d "$d"
 	then
@@ -74,6 +77,9 @@ AC_SUBST(ABIVER)
 VERSION_INFO=30:0:0
 AC_SUBST(VERSION_INFO)
 
+SOVERSION=30
+AC_SUBST(SOVERSION)
+
 # Checks for libraries.
 
 for pkg in xcb xcb-proto xcb-keysyms xcb-ewmh xcb-icccm xcb-image xcb-renderutil freetype2 fontconfig
@@ -95,7 +101,7 @@ LIBCXXW_LIBS=""
 
 for l in $all_libs
 do
-	LIBCXXW_LIBS="$LIBCXXW_LIBS -Wl,$l"
+	LIBCXXW_LIBS="$LIBCXXW_LIBS $l"
 done
 
 AC_SUBST([LIBCXXW_LIBS])
@@ -128,6 +134,7 @@ AC_SUBST(BUILT_INTERACTIVETESTPROGRAMS)
 
 AM_CONDITIONAL(HAVE_DOCS,[test -d $srcdir/docbook])
 AC_CONFIG_FILES([Makefile
+	debuild
 	Doxyfile
 	libcxxw.m4
 	libcxxw.mk

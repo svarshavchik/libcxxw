@@ -37,7 +37,7 @@
 <!ENTITY public_class "<link linkend='pubimpl'>public object class</link>">
 <!ENTITY public_object "<link linkend='pubimpl'>public object</link>">
 <!ENTITY RENDER "<application>RENDER</application>">
-<!ENTITY render "<ulink url=&#34;http://www.x.org/releases/current/doc/renderproto/renderproto.txt&#34;>RENDER extension</ulink>">
+<!ENTITY render "<ulink url=&#34;https://www.x.org/releases/current/doc/renderproto/renderproto.txt&#34;>RENDER extension</ulink>">
 <!ENTITY scrollbar_visibilityvalue "<link linkend='uixmlscrollbar_visibilityvalue'><classname>&ns;::w::scrollbar_visibility</classname></link> value">
 <!ENTITY sxg "<acronym>SXG</acronym>">
 <!ENTITY supportedthemewidget "<link linkend='uixmlfactoryelement'>supported theme widget</link>">
@@ -47,7 +47,7 @@
 <!ENTITY themewidget "<link linkend='uixmlfactoryelement'>theme widget</link>">
 <!ENTITY themewidgetorcontainer "theme <link linkend='uixmlfactoryelement'>widget</link> or <link linkend='uixmlfactorycontainer'>container</link>">
 <!ENTITY valignvalue "<link linkend='uixmlvalignvalue'><classname>&ns;::w::valign</classname></link> value">
-<!ENTITY xproto "<ulink url=&#34;http://www.x.org/releases/X11R7.7/doc/xproto/x11protocol.html&#34;>X protocol</ulink>">
+<!ENTITY xproto "<ulink url=&#34;https://www.x.org/releases/X11R7.7/doc/xproto/x11protocol.html&#34;>X protocol</ulink>">
 
 <!ENTITY booklayoutmanager SYSTEM "booklayoutmanager.xml">
 <!ENTITY borderlayoutmanager SYSTEM "borderlayoutmanager.xml">
@@ -64,6 +64,7 @@
 <!ENTITY customfocusableelement SYSTEM "customfocusableelement.xml">
 <!ENTITY customfontrendering SYSTEM "customfontrendering.xml">
 <!ENTITY customintro SYSTEM "customintro.xml">
+<!ENTITY cxxw SYSTEM "cxxw.xml">
 <!ENTITY cxxwtheme SYSTEM "cxxwtheme.xml">
 <!ENTITY cxxwcreator SYSTEM "cxxwcreator.xml">
 <!ENTITY dateinputfield SYSTEM "dateinputfield.xml">
@@ -220,6 +221,7 @@ See COPYING for distribution information.
   <appendix id="manpages">
     <title>Manual pages</title>
 
+    &cxxw;
     &cxxwtheme;
     &cxxwcreator;
   </appendix>

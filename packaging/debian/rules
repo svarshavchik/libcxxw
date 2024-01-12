@@ -1,0 +1,60 @@
+#!/usr/bin/make -f
+
+ABIVER=@ABIVER@
+LIBCXX_VERSION=@LIBCXX_VERSION@
+SOVERSION=@SOVERSION@
+ABIVER=@ABIVER@
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- CC=@CC@ CXX=@CXX@
+
+override_dh_auto_test:
+	:
+override_dh_makeshlibs:
+	dh_makeshlibs -n
+
+override_dh_builddeb:
+	dh_builddeb -- $(DEB_BUILDDEB_OPTIONS)
+
+override_dh_auto_install:
+	dh_auto_install
+	perl -p -i -e "s/dependency_libs=.*/dependency_libs=''/" debian/tmp/usr/lib/*/libcxxw*/*.la
+	dh_install --package libcxxw usr/bin/cxxw
+	dh_install --package libcxxw usr/bin/cxxwtheme
+	dh_install --package libcxxw cxxwtheme.desktop usr/share/applications/cxxwtheme.desktop
+	dh_install --package libcxxw$(SOVERSION) debian/tmp/usr/lib/*/libcxxw*/libcxxw.so.*  `cd debian/tmp; ls -d usr/lib/*/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)`
+	dh_install --package libcxxw$(SOVERSION)-cups debian/tmp/usr/lib/*/libcxxw*/libcxxwcups.so.*  `cd debian/tmp; ls -d usr/lib/*/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)`
+	dh_install --package libcxxw$(SOVERSION) usr/share/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)/themes
+	dh_install --package libcxxw$(SOVERSION) debian/tmp/usr/share/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)/*.xml usr/share/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)
+	set -ex; (cd debian/tmp; \
+		find usr/include -name impl -prune -o -type d -print ) | \
+		while read D ; do \
+			find debian/tmp/$$D -maxdepth 1 ! -type d -print | \
+		xargs echo | while read L; do \
+			test "$$L" = "" || \
+			dh_install --package libcxxw-dev $$L $$D; done; done
+	dh_install --package libcxxw-internals-dev usr/include/*/x/w/impl
+	dh_install --package libcxxw-dev \
+		debian/tmp/usr/lib/*/*/*.a \
+			`cd debian/tmp; echo usr/lib/*/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)`
+	dh_install --package libcxxw-dev \
+		debian/tmp/usr/lib/*/*/*.la \
+			`cd debian/tmp; echo usr/lib/*/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)`
+	dh_install --package libcxxw-dev \
+		debian/tmp/usr/lib/*/*/*.so \
+			`cd debian/tmp; echo usr/lib/*/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)`
+	dh_install --package libcxxw-dev \
+		debian/tmp/usr/lib/*/pkgconfig/*
+	dh_install --package libcxxw-dev \
+		debian/tmp/usr/share/aclocal/*
+	dh_install --package libcxxw-dev usr/share/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)/*.mk usr/share/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)
+	dh_install --package libcxxw-dev usr/share/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)/*.xsl usr/share/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)
+	dh_install --package libcxxw-dev usr/share/libcxxw-$(ABIVER)-$(LIBCXX_VERSION)/creator
+	dh_install --package libcxxw-dev usr/bin/cxxwcreator
+	dh_install --package libcxxw-dev cxxwcreator.desktop usr/share/applications/cxxwcreator.desktop
+	dh_installman --package libcxxw debian/tmp/usr/share/man/man1/cxxw.1*
+	dh_installman --package libcxxw debian/tmp/usr/share/man/man1/cxxwtheme*
+	dh_installman --package libcxxw-dev debian/tmp/usr/share/man/man1/cxxwcreator*

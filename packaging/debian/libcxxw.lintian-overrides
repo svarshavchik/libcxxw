@@ -1,0 +1,4 @@
+#
+# Standard libcxx library directory
+#
+custom-library-search-path RUNPATH /usr/lib/*/libcxx*

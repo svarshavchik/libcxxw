@@ -1,0 +1,5 @@
+libcxxw (@VERSION@-@RELEASE@) devel; urgency=medium
+
+  * Automatic build.
+
+ -- Sam Varshavchik <mrsam@courier-mta.com>  @DATE@

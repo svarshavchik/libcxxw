@@ -2,7 +2,18 @@
 include $(shell pwd)/libcxxw.mk
 
 
-EXTRA_DIST =
+EXTRA_DIST = debuild \
+	packaging/debian/source/format \
+	packaging/debian/changelog \
+	packaging/debian/control \
+	packaging/debian/copyright \
+	packaging/debian/libcxxw-cups.soname.lintian-overrides \
+	packaging/debian/libcxxw-dev.lintian-overrides \
+	packaging/debian/libcxxw.lintian-overrides \
+	packaging/debian/libcxxw.soname.lintian-overrides \
+	packaging/debian/lintian-overrides.allow-errors \
+	packaging/debian/rules
+
 
 if LOCALTHEMEDIR
 CPPFLAGS += -DTHEMEDIR=\"@pwdthemes@\" -DCREATORDIR=\"@pwdcreator@\" -DUICOMPILERDIR=\"$(srcdir)\"
@@ -49,7 +60,7 @@ libcxxw-@VERSION@-@LIBCXX_VERSION@.m4: libcxxw.m4
 
 CLEANFILES=$(aclocal_DATA) $(pkgconf_DATA)
 
-STATICLINKFLAGS=-Wl,-ljpeg -Wl,-lgif -Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread -Wl,-export-dynamic
+STATICLINKFLAGS=-lpthread @LIBCXXW_LIBS@ -pthread -Wl,-export-dynamic -ljpeg -lgif -lcourier-unicode -lcxx
 
 abilibdir=$(libdir)/libcxxw-@ABIVER@-@LIBCXX_VERSION@
 abilib_LTLIBRARIES=libcxxw.la libcxxwcups.la
@@ -1016,11 +1027,11 @@ XIM_AUTOGEN=xim/ximclient.inc.C xim/ximclient2.inc.C xim/ximclient.inc.H
 TESTLINKTYPE=$(if $(STATIC),-static $(STATICLINKFLAGS))
 
 cxxw_SOURCES=cxxw.C
-cxxw_LDADD=libcxxw.la
+cxxw_LDADD=libcxxw.la -lcxx
 cxxw_LDFLAGS=$(TESTLINKTYPE)
 
 cxxwtheme_SOURCES=cxxwtheme.C
-cxxwtheme_LDADD=libcxxw.la -lcourier-unicode
+cxxwtheme_LDADD=libcxxw.la -lcourier-unicode -lcxx
 cxxwtheme_LDFLAGS=$(TESTLINKTYPE)
 $(call EXTRACT_THEME_TEXT_GEN,cxxwtheme.inc.C,cxxwtheme.xml)
 
@@ -1093,9 +1104,9 @@ cxxwcreator_LDFLAGS=$(TESTLINKTYPE)
 
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
-man_MANS=cxxwtheme.1 cxxwcreator.1
+man_MANS=cxxwtheme.1 cxxwcreator.1 cxxw.1
 
-EXTRA_DIST += config.rpath m4/ChangeLog COPYING \
+EXTRA_DIST += config.rpath COPYING \
 	pic_constants.xml gc_constants.xml constants.xsl \
 	parseuicompiler.xsl \
 	xim/xim.xml xim/xim.xsl \
@@ -1169,26 +1180,26 @@ noinst_PROGRAMS=$(BUILT_TESTPROGRAMS) $(BUILT_INTERACTIVETESTPROGRAMS) genconsta
 
 testbook_SOURCES=testbook.C
 testbook_LDADD=libcxxw.la
-testbook_LDFLAGS=$(TESTLINKTYPE)
+testbook_LDFLAGS=$(TESTLINKTYPE) -lcxx
 
 $(call THREADMSGDISPATCHER_GEN,testbusy.inc.H,testbusy.xml)
 testbusy_SOURCES=testbusy.C
 testbusy_LDADD=libcxxw.la
-testbusy_LDFLAGS=$(TESTLINKTYPE)
+testbusy_LDFLAGS=$(TESTLINKTYPE) -lcxx
 
 testbutton_SOURCES=testbutton.C
 testbutton_LDADD=libcxxw.la
-testbutton_LDFLAGS=$(TESTLINKTYPE)
+testbutton_LDFLAGS=$(TESTLINKTYPE) -lcxx
 
 $(call OPTIONS_GEN,testcolorpicker.inc.H,testcolorpicker.xml)
 testcolorpicker_SOURCES=testcolorpicker.C
 testcolorpicker_LDADD=libcxxw.la
-testcolorpicker_LDFLAGS=$(TESTLINKTYPE)
+testcolorpicker_LDFLAGS=$(TESTLINKTYPE) -lcxx
 
 $(call OPTIONS_GEN,testcombobox.inc.H,testcombobox.xml)
 testcombobox_SOURCES=testcombobox.C testcombobox.inc.H
 testcombobox_LDADD=libcxxw.la
-testcombobox_LDFLAGS=$(TESTLINKTYPE)
+testcombobox_LDFLAGS=$(TESTLINKTYPE) -lcxx
 
 testcustomcanvas_SOURCES=testcustomcanvas.C
 testcustomcanvas_LDADD=libcxxw.la
@@ -1211,7 +1222,7 @@ testinputfield_LDFLAGS=-static $(STATICLINKFLAGS)
 $(call OPTIONS_GEN,testitemlayoutmanager.inc.H,testitemlayoutmanager.xml)
 testitemlayoutmanager_SOURCES=testitemlayoutmanager.C
 testitemlayoutmanager_LDADD=libcxxw.la -lcourier-unicode
-testitemlayoutmanager_LDFLAGS=$(TESTLINKTYPE)
+testitemlayoutmanager_LDFLAGS=$(TESTLINKTYPE) -lcxx
 
 testcollapse_SOURCES=testcollapse.C
 testcollapse_LDADD=-lcxx
@@ -1234,7 +1245,7 @@ testfocusable_LDADD=-lcxx
 
 testfocusrestore_SOURCES=testfocusrestore.C
 testfocusrestore_LDADD=libcxxw.la
-testfocusrestore_LDFLAGS=$(TESTLINKTYPE)
+testfocusrestore_LDFLAGS=$(TESTLINKTYPE) -lcxx
 
 testgrid_SOURCES=testgrid.C
 testgrid_LDADD=libcxxw.la
@@ -1258,7 +1269,7 @@ testmainwindow_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testmenu_SOURCES=testmenu.C
 testmenu_LDADD=libcxxwcups.la libcxxw.la
-testmenu_LDFLAGS=$(TESTLINKTYPE)
+testmenu_LDFLAGS=$(TESTLINKTYPE) -lcxx -lcxxcups
 
 $(call OPTIONS_GEN,testpage.inc.H,testpage.xml)
 testpage_SOURCES=testpage.C
@@ -1268,15 +1279,15 @@ testpage_LDFLAGS=-static $(STATICLINKFLAGS)
 $(call OPTIONS_GEN,testpane.inc.H,testpane.xml)
 testpane_SOURCES=testpane.C testpane_theme.xml
 testpane_LDADD=libcxxw.la
-testpane_LDFLAGS=$(TESTLINKTYPE)
+testpane_LDFLAGS=$(TESTLINKTYPE) -lcxx
 
 testpeephole_SOURCES=testpeephole.C
 testpeephole_LDADD=libcxxw.la
-testpeephole_LDFLAGS=$(TESTLINKTYPE)
+testpeephole_LDFLAGS=$(TESTLINKTYPE) -lcxx
 
 testping_SOURCES=testping.C
 testping_LDADD=libcxxw.la
-testping_LDFLAGS=$(TESTLINKTYPE)
+testping_LDFLAGS=$(TESTLINKTYPE) -lcxx
 
 testprogressbar_SOURCES=testprogressbar.C
 testprogressbar_LDADD=libcxxw.la
@@ -1306,6 +1317,7 @@ testscrollbar_metrics_LDFLAGS=-static $(STATICLINKFLAGS)
 $(call REFCOLLECTION_GEN,testshowhide.inc.H,testshowhide.xml)
 testshowhide_SOURCES=testshowhide.C
 testshowhide_LDADD=libcxxw.la
+testshowhide_LDFLAGS=-lcxx
 
 testsearch_SOURCES=testsearch.C
 testsearch_LDADD=-lcxx
@@ -1457,6 +1469,7 @@ CLEANFILES += \
 
 dist-hook:
 	rm -f $(patsubst %,$(distdir)/%, $(BUILT_SOURCES))
+	chmod +x $(distdir)/debuild
 
 includes/x/w/constants_inc.H: genconstants
 	./genconstants >$@.tmp
@@ -1567,7 +1580,7 @@ ALL_DOCS=html/book.css html/.htaccess html/frame.js \
 
 docs: $(ALL_DOCS) html/index.html
 	-chcon -R -t httpd_sys_content_t html/. 2>/dev/null || true
-	rsync -a -X --delete-after html/. ~/www/hostrocket/libcxx.org/w
+	test -f ~/www/hostrocket || exit 0; rsync -a -X --delete-after html/. ~/www/hostrocket/libcxx.org/w
 
 DOCS_SRC = $(shell find includes -name '*.H' -print)
 
@@ -1596,7 +1609,7 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml docbook/xmllinks*.
 	find examples -depth ! -name autom4te.cache \( -type d -o -name '*.[CH]' -o -name '*.xml' -o -name '*.jpg' -o -name Makefile.am -o -name configure.ac \) -print | cpio -o --quiet | (cd html.tmp; cpio -i --quiet --make-directories)
 	echo 'ForceType text/plain' >html.tmp/examples/.htaccess
 	echo 'Options +Indexes' >>html.tmp/examples/.htaccess
-	links -dump -no-numbering -no-references html.tmp/INSTALL.html >INSTALL.tmp
+	elinks -dump -no-numbering -no-references html.tmp/INSTALL.html >INSTALL.tmp
 	mv -f INSTALL.tmp INSTALL
 	-rm -rf html 2>/dev/null >/dev/null || :
 	mv html.tmp html
@@ -1724,6 +1737,19 @@ rpm: dist
 		--define "_topdir `pwd`/rpm" \
 		--define "extrarelease .`date '+%Y%m%d%H%M%S'`" @PACKAGE@-@VERSION@.tar.bz2
 	sh $$HOME/bin/rpmrepos.sh
+
+.PHONY: deb
+
+deb: dist
+	rm -rf deb
+	mkdir deb
+	cp libcxxw-@VERSION@.tar.bz2 deb
+	cd deb; set -e; tar xf libcxxw-@VERSION@.tar.bz2; cd libcxxw-@VERSION@; \
+                RELEASE="`date +%Y%m%d%H%M%S`" \
+		./debuild -us -uc
+	rm -rf deb.new; mv deb/*/deb deb.new
+	rm -rf deb; mv deb.new deb
+	$$HOME/bin/debrepos.sh
 
 ACLOCAL_AMFLAGS = -I m4
 

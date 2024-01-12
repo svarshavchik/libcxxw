@@ -1,0 +1,75 @@
+Source: libcxxw
+Priority: optional
+Maintainer: Sam Varshavchik <mrsam@courier-mta.com>
+Build-Depends: debhelper-compat (= 13),
+	       perl:any,
+	       libcxxbase-abi (= @LIBCXX_VERSION@),
+	       libcxxbase-dev,
+	       libx11-dev,
+	       xcb-proto,
+	       libcourier-unicode-dev,
+	       libxcb1-dev,
+	       libxcb-icccm4-dev,
+	       libxcb-sync-dev,
+	       libxcb-ewmh-dev,
+	       libxcb-keysyms1-dev,
+	       libxcb-image0-dev,
+	       libxcb-render-util0-dev,
+	       libx11-dev,
+	       libgif-dev,
+	       libjpeg-turbo8-dev,
+	       libfreetype-dev,
+	       libfontconfig-dev,
+	       gettext
+Standards-Version: 4.6.0
+Section: contrib/libs
+Homepage: https://www.libcxx.org/
+Rules-Requires-Root: no
+
+
+Package: libcxxw
+Section: contrib/libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Command line tools for LibCXXW
+ This package installs command line tools.
+
+Package: libcxxw@SOVERSION@
+Section: contrib/libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: LibCXXW runtime library
+ This package installs the LibCXXW runtime library. This package must be
+ installed to run software that's linked against libcxxw.
+
+Package: libcxxw@SOVERSION@-cups
+Section: contrib/libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: LibCXXW print dialog
+ This package installs the LibCXXW printing dialog library.
+
+Package: libcxxw-dev
+Section: contrib/libdevel
+Architecture: any
+Provides: libcxxw-abi (= @ABIVER@)
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libcxxbase-abi (= @LIBCXX_VERSION@),
+ libx11-dev,
+ libcxxw@SOVERSION@-cups (= ${binary:Version}),
+ libcxxw@SOVERSION@ (= ${binary:Version})
+Suggests: libcxxw-internals-dev
+Description: LibCXXW development libraries
+ This package installs files needed to develop applications that use
+ LibCXX SQL development libraries.
+
+Package: libcxxw-internals-dev
+Section: contrib/libdevel
+Architecture: any
+Depends: ${misc:Depends}, libcxxbase-abi (= @LIBCXX_VERSION@),
+	 libcxxw-dev (= ${binary:Version}),
+	 libxcb1-dev,
+	 libcourier-unicode-dev
+Description: LibCXXW development libraries
+ This package installs additional internal header files for building
+ custom LibCXXW widgets.
