@@ -37,7 +37,8 @@ Description: Command line tools for LibCXXW
 Package: libcxxw@SOVERSION@
 Section: contrib/libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends},
+	 fonts-liberation | fonts-liberation2
 Description: LibCXXW runtime library
  This package installs the LibCXXW runtime library. This package must be
  installed to run software that's linked against libcxxw.
