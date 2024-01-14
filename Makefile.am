@@ -1580,7 +1580,7 @@ ALL_DOCS=html/book.css html/.htaccess html/frame.js \
 
 docs: $(ALL_DOCS) html/index.html
 	-chcon -R -t httpd_sys_content_t html/. 2>/dev/null || true
-	test -f ~/www/hostrocket || exit 0; rsync -a -X --delete-after html/. ~/www/hostrocket/libcxx.org/w
+	test -d ~/www/hostrocket || exit 0; rsync -a -X --delete-after html/. ~/www/hostrocket/libcxx.org/w
 
 DOCS_SRC = $(shell find includes -name '*.H' -print)
 
