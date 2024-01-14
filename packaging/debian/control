@@ -45,7 +45,8 @@ Description: LibCXXW runtime library
 Package: libcxxw@SOVERSION@-cups
 Section: contrib/libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends},
+	 libcxxw@SOVERSION@ (= ${binary:Version})
 Description: LibCXXW print dialog
  This package installs the LibCXXW printing dialog library.
 
@@ -56,6 +57,7 @@ Provides: libcxxw-abi (= @ABIVER@)
 Depends: ${shlibs:Depends}, ${misc:Depends},
  libcxxbase-abi (= @LIBCXX_VERSION@),
  libx11-dev,
+ libcxxw (= ${binary:Version}),
  libcxxw@SOVERSION@-cups (= ${binary:Version}),
  libcxxw@SOVERSION@ (= ${binary:Version})
 Suggests: libcxxw-internals-dev

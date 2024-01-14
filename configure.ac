@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([libcxxw],[0.32.0],[libcxx-users@lists.libcxx.org])
+AC_INIT([libcxxw],[0.32.1],[libcxx-users@lists.libcxx.org])
 AC_CANONICAL_TARGET
 
 AC_CONFIG_SRCDIR([connection.C])

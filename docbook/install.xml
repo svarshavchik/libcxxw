@@ -44,17 +44,30 @@ See COPYING for distribution information.
   </informaltable>
 
   <para>
-    The &app; should be converted into an installable package, instead of
-    building
-    and installing the &app; directly. The source tarball
-    includes a canned build script for Fedora. Running
+    &app; should be converted into an installable package instead of building
+    and installing &app; directly. The source tarball
+    contains build scripts for Fedora and Ubuntu (most likely works on Debian
+    too, but untested).
+  </para>
+
+  <para>
+    The installable packages get created the same way &libcxx;'s packages
+    get created.
+    Running
     <quote><command>rpmbuild -ta libcxxw-<replaceable>version</replaceable>.tar.bz2</command></quote>
+    on Fedora
     creates the following packages:
   </para>
 
   <itemizedlist>
     <listitem>
       <para>The main binary rpm package, with runtime libraries.</para>
+    </listitem>
+    <listitem>
+      <para>
+	The <quote>cups</quote> sub-package, with the library that creates the
+	<xref linkend="printdialog">print dialog</xref>.
+      </para>
     </listitem>
     <listitem>
       <para>
@@ -73,8 +86,82 @@ See COPYING for distribution information.
   </itemizedlist>
 
   <para>
+    To build a DEB package:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	Create an empty directory and copy/move the tarball into it:
+      </para>
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+$ mkdir tmp
+$ mv libcxxw-VERSION.tar.bz2 tmp
+$ cd tmp</programlisting>
+	</informalexample>
+      </blockquote>
+      <para>Unpack the tarball and cd into the unpacked subdirectory:</para>
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+$ tar xvf libcxxw-VERSION.tar.bz2
+$ cd libcxxw-VERSION</programlisting>
+	</informalexample>
+      </blockquote>
+    </listitem>
+    <listitem>
+      <para>
+	Run the <command>debuild</command> script in the current directory,
+	which is a wrapper for the system
+	<command>debuild</command> script,
+	and forwards its parameters to it:
+      </para>
+      <blockquote>
+	<informalexample>
+	  <programlisting>$ ./debuild -us -uc</programlisting>
+	</informalexample>
+      </blockquote>
+    </listitem>
+  </itemizedlist>
+
+  <note>
+    <para>
+      The above steps must be followed strictly. The
+      <command>debuild</command> script expects the
+      distributed tarball in its parent
+      directory.
+    </para>
+  </note>
+
+  <para>
+    This eventually produces a <filename>deb</filename> subdirectory with
+    .deb packages that can be
+    installed with "dpkg -i".
+  </para>
+
+  <note>
+    <para>
+      The above steps must be followed strictly. The
+      <command>debuild</command> script expects the
+      distributed tarball in its parent
+      directory.
+    </para>
+  </note>
+
+  <note>
+    <para>
+      Building the &app; results in an implicit dependency on the underlying
+      version of the &libcxx;, and the resulting rpm packages carry both
+      the &app; and the &libcxx; version numbers on them.
+    </para>
+  </note>
+
+  <para>
     Use the following documentation as a guide for preparing an
-    installable the &app; package on platforms other than Fedora.
+    installable the &app; package on platforms other than Fedora or
+    Ubuntu.
   </para>
 
   <simplesect id='reqandprereq'>
