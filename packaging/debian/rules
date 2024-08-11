@@ -8,9 +8,6 @@ ABIVER=@ABIVER@
 %:
 	dh $@
 
-override_dh_auto_configure:
-	dh_auto_configure -- CC=@CC@ CXX=@CXX@
-
 override_dh_auto_test:
 	:
 override_dh_makeshlibs:

@@ -11,6 +11,7 @@ AM_INIT_AUTOMAKE([dist-bzip2 foreign -Wno-portability])
 AM_GNU_GETTEXT([external])
 AM_SILENT_RULES([yes])
 
+LIBCXX_INIT
 LT_INIT
 
 # Checks for programs.
@@ -35,7 +36,6 @@ fi
 AC_SUBST(PKGCONFIGDIR)
 
 AC_PROG_CXX
-LIBCXX_INIT
 CXXFLAGS="$CXXFLAGS -fvisibility-inlines-hidden"
 export CXXFLAGS
 LDFLAGS="$LDFLAGS -z relro -z now"
