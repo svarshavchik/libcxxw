@@ -4,7 +4,7 @@
 */
 
 #ifndef freetypeobj_h
-#define freetypeobj_H
+#define freetypeobj_h
 
 #include <x/obj.H>
 #include "x/w/screenfwd.H"

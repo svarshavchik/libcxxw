@@ -22,6 +22,7 @@ Requires: font(liberationmono)
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
+BuildRequires: perl
 BuildRequires: libcxxbase-abi = %{libcxx_version}
 BuildRequires: freetype-devel
 BuildRequires: fontconfig-devel
@@ -106,7 +107,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 
-* Sun Apr 16 2023 Sam Varshavchik <mrsam@courier-mta.com>
+* @DATE@ Sam Varshavchik <mrsam@courier-mta.com>
 - Initial version
 
 %files
@@ -144,6 +145,7 @@ rm -rf $RPM_BUILD_ROOT
 %else
 %{_bindir}/cxxwcreator
 %{_mandir}/*/cxxwcreator*
+%{_mandir}/man1/cxxw.*
 %{_datadir}/libcxxw*/creator
 %{_datadir}/applications/cxxwcreator.desktop
 %endif

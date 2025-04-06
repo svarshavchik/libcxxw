@@ -178,9 +178,17 @@ class layoutmanagerObj::implObj : virtual public obj {
 
 	elementObj::implObj &get_element_impl();
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Woverloaded-virtual="
+#endif
+
 	//! Initialize the layout manager, in the connection thread.
 	virtual void initialize(ONLY IN_THREAD);
 
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 	//! The theme has changed
 
 	virtual void theme_updated(ONLY IN_THREAD, const const_defaulttheme &new_theme);

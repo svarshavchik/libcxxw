@@ -159,5 +159,11 @@ pwdcreator="`pwd`/creator"
 AC_SUBST(pwdthemes)
 AC_SUBST(pwdcreator)
 
+env LC_ALL=C perl -e 'use POSIX qw(strftime); print strftime("DATE=\"%a %b %d %Y\"; DATEFULL=\"%a, %d %b %Y %H:%M:%S %z\"", localtime)' >configure.date
+. ./configure.date
+rm configure.date
+AC_SUBST(DATE)
+AC_SUBST(DATEFULL)
+
 AC_SUBST([LIBTOOL_DEPS])
 AC_OUTPUT
