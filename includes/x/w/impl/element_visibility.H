@@ -1,5 +1,5 @@
 /*
-** Copyright 2023 Double Precision, Inc.
+** Copyright 2023 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #ifndef x_w_impl_element_visibility_h

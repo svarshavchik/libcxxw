@@ -1,5 +1,5 @@
 /*
-** Copyright 2018-2021 Double Precision, Inc.
+** Copyright 2018-2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -195,7 +195,7 @@ main_windowObj::~main_windowObj()
 		return;
 
 	in_thread([impl=this->impl,
-		   lock=impl->handler->positions->impl->create_shared()]
+		   lockc=impl->handler->positions->impl->create_shared()]
 		  (ONLY IN_THREAD)
 	{
 		auto handler=impl->handler;

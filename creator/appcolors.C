@@ -1196,12 +1196,12 @@ void appObj::color_reset_values(ONLY IN_THREAD, colors_info_t::lock &lock)
 		// The "Add" button
 
 		values.add_button->on_activate
-			([container=make_weak_capture(values.list_container)]
+			([containerc=make_weak_capture(values.list_container)]
 			 (ONLY IN_THREAD,
 			  const auto &trigger,
 			  const auto &mcguffin)
 			 {
-				 auto got=container.get();
+				 auto got=containerc.get();
 
 				 if (!got)
 					 return;

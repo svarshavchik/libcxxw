@@ -1,5 +1,5 @@
 /*
-** Copyright 2019-2021 Double Precision, Inc.
+** Copyright 2019-2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #ifndef x_w_button_appearance_h

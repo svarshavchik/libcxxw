@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2023 Double Precision, Inc.
+** Copyright 2017-2023 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -350,7 +350,7 @@ static auto create_option_callback(const std::string &label,
 				   const w::main_window &mw)
 {
 	return [label,
-		mw=make_weak_capture(mw)]
+		mwc=make_weak_capture(mw)]
 		(ONLY IN_THREAD,
 		 const w::list_item_status_info_t &info)
 	{
@@ -359,7 +359,7 @@ static auto create_option_callback(const std::string &label,
 		if (!appstate)
 			return;
 
-		auto got=mw.get();
+		auto got=mwc.get();
 
 		if (!got)
 			return;
@@ -546,7 +546,7 @@ static w::container create_main_window(const w::main_window &mw,
 
 	w::new_standard_comboboxlayoutmanager
 		themes_combobox{
-		[themeids, conn, mw=make_weak_capture(mw)]
+		[themeids, conn, mwc=make_weak_capture(mw)]
 			(ONLY IN_THREAD, const auto &info)
 		{
 			if (!info.list_item_status_info.selected)
@@ -557,7 +557,7 @@ static w::container create_main_window(const w::main_window &mw,
 			if (!appstate)
 				return;
 
-			auto got=mw.get();
+			auto got=mwc.get();
 
 			if (!got)
 				return;
@@ -677,7 +677,7 @@ static w::container create_main_window(const w::main_window &mw,
 	glm->generate("main_layout", generators, factories);
 
 	scale_scrollbar->on_update
-		([scale_label, conn, mw=make_weak_capture(mw)]
+		([scale_label, conn, mwc=make_weak_capture(mw)]
 		 (ONLY IN_THREAD, const auto &info)
 		 {
 			 if (std::holds_alternative<w::initial>(info.trigger))
@@ -688,7 +688,7 @@ static w::container create_main_window(const w::main_window &mw,
 			 if (!appstate)
 				 return;
 
-			 auto got=mw.get();
+			 auto got=mwc.get();
 
 			 if (!got)
 				 return;

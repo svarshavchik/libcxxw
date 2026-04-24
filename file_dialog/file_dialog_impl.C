@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2021 Double Precision, Inc.
+** Copyright 2017-2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -1168,12 +1168,12 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 	}
 
 	impl->directory_contents_list->set_selected_callback
-		([impl=make_weak_capture(impl, dialog_window)]
+		([implc=make_weak_capture(impl, dialog_window)]
 		 (ONLY IN_THREAD,
 		  const auto &arg,
 		  const callback_trigger_t &trigger)
 		 {
-			 auto got=impl.get();
+			 auto got=implc.get();
 
 			 if (!got)
 				 return;

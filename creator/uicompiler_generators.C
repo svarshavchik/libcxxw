@@ -1,5 +1,5 @@
 /*
-** Copyright 2021 Double Precision, Inc.
+** Copyright 2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -365,12 +365,12 @@ struct standard_combobox_handler : setting_handler {
 		// and uses it.
 
 		return setting_create_ui_ret_t{
-			[combobox=x::make_weak_capture(combobox),
+			[comboboxc=x::make_weak_capture(combobox),
 			 values=std::move(values),
 			 required=info.required]
 			(bool alert) -> std::optional<parameter_value>
 			{
-				auto got=combobox.get();
+				auto got=comboboxc.get();
 
 				if (!got)
 					return std::nullopt;

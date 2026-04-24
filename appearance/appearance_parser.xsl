@@ -2,7 +2,7 @@
 
 <!--
 
-Copyright 2019 Double Precision, Inc.
+Copyright 2019 S. Varshavchik
 See COPYING for distribution information.
 
 Stylesheet for creating a parser for appearance objects whose members are

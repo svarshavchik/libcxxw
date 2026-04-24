@@ -1,5 +1,5 @@
 /*
-** Copyright 2018-2021 Double Precision, Inc.
+** Copyright 2018-2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -1229,12 +1229,12 @@ color_picker factoryObj
 			// The cancel button closes the popup.
 			cancel_button->on_activate(
 				IN_THREAD,
-				[popup=make_weak_capture(color_picker_popup)]
+				[popupc=make_weak_capture(color_picker_popup)]
 				(ONLY IN_THREAD,
 				 const auto &trigger,
 				 const auto &busy)
 				{
-					auto got=popup.get();
+					auto got=popupc.get();
 
 					if (!got)
 						return;
@@ -1252,12 +1252,12 @@ color_picker factoryObj
 			ok_button->on_activate(
 				IN_THREAD,
 				[wimpl,
-				 popup=make_weak_capture(color_picker_popup)]
+				 popupc=make_weak_capture(color_picker_popup)]
 				(ONLY IN_THREAD,
 				 const auto &trigger,
 				 const auto &busy)
 				{
-					auto got=popup.get();
+					auto got=popupc.get();
 
 					if (!got)
 						return;

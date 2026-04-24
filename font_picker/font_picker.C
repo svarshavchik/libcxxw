@@ -1,5 +1,5 @@
 /*
-** Copyright 2018-2021 Double Precision, Inc.
+** Copyright 2018-2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -738,12 +738,12 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	// The cancel button closes the popup.
 	font_picker_impl->popup_fields.cancel_button->on_activate
-		([popup=make_weak_capture(font_picker_popup)]
+		([popupc=make_weak_capture(font_picker_popup)]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,
 		  const auto &busy)
 		 {
-			 auto got=popup.get();
+			 auto got=popupc.get();
 
 			 if (!got)
 				 return;
@@ -756,12 +756,12 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	//! The ok button calls set_official_font(), then closes the popup.
 	font_picker_impl->popup_fields.ok_button->on_activate
-		([wimpl, popup=make_weak_capture(font_picker_popup)]
+		([wimpl, popupc=make_weak_capture(font_picker_popup)]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,
 		  const auto &busy)
 		 {
-			 auto got=popup.get();
+			 auto got=popupc.get();
 
 			 if (!got)
 				 return;

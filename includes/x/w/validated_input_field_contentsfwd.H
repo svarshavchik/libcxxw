@@ -1,5 +1,5 @@
 /*
-** Copyright 2021 Double Precision, Inc.
+** Copyright 2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #ifndef x_w_validated_input_field_contentsfwd_h

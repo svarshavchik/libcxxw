@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2021 Double Precision, Inc.
+** Copyright 2017-2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -760,12 +760,12 @@ new_booklayoutmanager::create(const container_impl &parent,
 	// install callbacks for its internal hotspot, that gets clicked on.
 
 	left_scroll_impl->on_activate
-		([c=make_weak_capture(c)]
+		([cc=make_weak_capture(c)]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,
 		  const auto &mcguffin)
 		 {
-			 auto got=c.get();
+			 auto got=cc.get();
 
 			 if (!got)
 				 return;
@@ -807,12 +807,12 @@ new_booklayoutmanager::create(const container_impl &parent,
 		 });
 
 	right_scroll_impl->on_activate
-		([c=make_weak_capture(c)]
+		([cc=make_weak_capture(c)]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,
 		  const auto &mcguffin)
 		 {
-			 auto got=c.get();
+			 auto got=cc.get();
 
 			 if (!got)
 				 return;

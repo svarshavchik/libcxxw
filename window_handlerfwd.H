@@ -1,5 +1,5 @@
 /*
-** Copyright 2018-2021 Double Precision, Inc.
+** Copyright 2018-2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #ifndef window_handlerfwd_h

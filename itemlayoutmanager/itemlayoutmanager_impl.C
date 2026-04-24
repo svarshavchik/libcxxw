@@ -1,5 +1,5 @@
 /*
-** Copyright 2018-2021 Double Precision, Inc.
+** Copyright 2018-2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -238,12 +238,12 @@ void itemlayoutmanagerObj::implObj::initialize(const itembutton &b,
 {
 	b->deletebutton->impl->button->impl->on_activate
 		([layout_container_impl=this->layout_container_impl,
-		  b=make_weak_capture(b)]
+		  bc=make_weak_capture(b)]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,
 		  const auto &busy_mcguffin)
 		 {
-			 auto got=b.get();
+			 auto got=bc.get();
 
 			 if (!got)
 				 return;

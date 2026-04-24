@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2021 Double Precision, Inc.
+** Copyright 2017-2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #ifndef shortcut_activation_elementfwd_h

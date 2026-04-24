@@ -1,5 +1,5 @@
 /*
-** Copyright 2017-2021 Double Precision, Inc.
+** Copyright 2017-2021 S. Varshavchik
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -433,12 +433,12 @@ void elementObj::install_contextpopup_callback
 				 [callback,
 				  sc_impl,
 				  sc_active,
-				  me=make_weak_capture(me)]
+				  mec=make_weak_capture(me)]
 				 (ONLY IN_THREAD,
 				  const auto &trigger,
 				  const auto &mcguffin)
 				 {
-					 auto got=me.get();
+					 auto got=mec.get();
 
 					 if (!got)
 						 return;
