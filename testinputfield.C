@@ -344,8 +344,8 @@ void testbutton()
 							    if (!got)
 								    return;
 
-							    auto &[w]=*got;
-							    w->focusable_cut_or_copy_selection(LIBCXX_NAMESPACE::w::cut_or_copy_op::copy);
+							    auto &[w2]=*got;
+							    w2->focusable_cut_or_copy_selection(LIBCXX_NAMESPACE::w::cut_or_copy_op::copy);
 						    },
 
 						    {"Copy"},
@@ -358,9 +358,9 @@ void testbutton()
 							    if (!got)
 								    return;
 
-							    auto &[w]=*got;
+							    auto &[w2]=*got;
 
-							    w->focusable_cut_or_copy_selection(LIBCXX_NAMESPACE::w::cut_or_copy_op::cut);
+							    w2->focusable_cut_or_copy_selection(LIBCXX_NAMESPACE::w::cut_or_copy_op::cut);
 						    },
 						    {"Cut"},
 						    [w=LIBCXX_NAMESPACE::make_weak_capture(fields.first)]
@@ -372,9 +372,9 @@ void testbutton()
 							    if (!got)
 								    return;
 
-							    auto &[w]=*got;
+							    auto &[w2]=*got;
 
-							    w->focusable_receive_selection();
+							    w2->focusable_receive_selection();
 						    },
 						    {"Paste"}});
 				  });
@@ -392,13 +392,13 @@ void testbutton()
 					  if (!got)
 						  return;
 
-					  auto & [field]=*got;
+					  auto & [field2]=*got;
 
 					  LIBCXX_NAMESPACE::w::listlayoutmanager
 						  l=context_popup
 						  ->get_layoutmanager();
 
-					  bool cut_or_copy=field
+					  bool cut_or_copy=field2
 						  ->focusable_cut_or_copy_selection
 						  (IN_THREAD,
 						   LIBCXX_NAMESPACE::w
@@ -452,7 +452,7 @@ void testbutton()
 					  if (!got)
 						  return;
 
-					  auto & [me]=*got;
+					  auto & [me2]=*got;
 
 					  auto new_focus=in_focus(change);
 
@@ -463,7 +463,7 @@ void testbutton()
 
 					  if (!current_focus)
 					  {
-						  me->remove_tooltip();
+						  me2->remove_tooltip();
 						  return;
 					  }
 
@@ -486,7 +486,7 @@ void testbutton()
 													       border->border="thin_0%";
 												       });
 						   });
-					  me->create_static_tooltip
+					  me2->create_static_tooltip
 						  ([]
 						   (const auto &c)
 						   {
@@ -664,9 +664,9 @@ void testbutton()
 				 if (!got)
 					 return;
 
-				 auto &[mw]=*got;
+				 auto &[mw2]=*got;
 
-				 appdata_t appdata=mw->appdata;
+				 appdata_t appdata=mw2->appdata;
 
 				 appdata->first->set_enabled(flag);
 				 appdata->second->set_enabled(flag);

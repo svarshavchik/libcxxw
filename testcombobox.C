@@ -488,10 +488,10 @@ void testcombobox(const testcombobox_options &options)
 					  if (!got)
 						  return;
 
-					  auto &[resort]=*got;
+					  auto &[resort2]=*got;
 
 					  do_resort(IN_THREAD,
-						    combobox, resort);
+						    combobox, resort2);
 				  });
 		 },
 		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
