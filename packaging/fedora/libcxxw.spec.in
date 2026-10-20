@@ -86,6 +86,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 RPM_BUILD_ROOT="$RPM_BUILD_ROOT" desktop-file-install cxxwtheme.desktop
 RPM_BUILD_ROOT="$RPM_BUILD_ROOT" desktop-file-install cxxwcreator.desktop
+rm -f $RPM_BUILD_ROOT/%{_libdir}/*/*.a
 rm -f $RPM_BUILD_ROOT/%{_libdir}/*/*.la
 
 echo '%defattr(-,root,root,-)' >public-headers
@@ -134,7 +135,6 @@ rm -rf $RPM_BUILD_ROOT
 %files devel -f public-headers
 %defattr(-,root,root,-)
 %{_libdir}/libcxxw*/*.so
-%{_libdir}/libcxxw*/*.a
 %{_libdir}/pkgconfig/*
 %{_datadir}/aclocal/*
 %{_datadir}/libcxxw*/*.mk
